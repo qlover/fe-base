@@ -4,8 +4,7 @@ module.exports = {
     es2021: true,
     node: true
   },
-  extends: ['standard-with-typescript'],
-  parser: '@typescript-eslint/parser',
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   overrides: [
     {
       env: {
@@ -17,13 +16,11 @@ module.exports = {
       }
     }
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: './tsconfig.json'
+    sourceType: 'module'
   },
-  plugins: ['@typescript-eslint', 'prettier'],
-  rules: {
-    'prettier/prettier': 'error'
-  }
+  plugins: ['@typescript-eslint'],
+  rules: {}
 }
