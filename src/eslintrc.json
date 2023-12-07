@@ -4,12 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": [
-    "standard",
-    "plugin:prettier/recommended",
-    "eslint-config-standard-with-typescript",
-    "prettier"
-  ],
+  "extends": ["plugin:prettier/recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "plugins": ["unused-imports", "@typescript-eslint", "prettier"],
   "rules": {
