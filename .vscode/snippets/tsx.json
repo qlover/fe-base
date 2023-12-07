@@ -1,0 +1,30 @@
+{
+  "css": {
+    "prefix": "css",
+    "body": ["import css from './index.module.scss'"]
+  },
+  "comm": {
+    "prefix": "comm",
+    "body": [
+      "import classNames from \"classnames\";",
+      "",
+      "import css from \"./index.module.scss\";",
+      "",
+      "type $1Props = {",
+      "  $2",
+      "};",
+      "",
+      "export default function $1(props: $1Props) {",
+      "  const { $3 } = props;",
+      "  return (",
+      "    <div data-testid=\"$1\" data-class=\"$1\" className={classNames(css[\"wrap\"])}>",
+      "      $4",
+      "    </div>",
+      "  );",
+      "}",
+      "",
+      "$1.displayName = '$1';",
+      ""
+    ]
+  }
+}

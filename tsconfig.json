@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    // 允许
+    // "allowJs": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "target": "ESNEXT",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "dist/types",
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node"
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules"]
+}
