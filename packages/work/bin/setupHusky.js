@@ -1,11 +1,10 @@
-import { join } from 'path'
+const { join } = require('path')
 
-import { install, add } from 'husky'
+const { install, add } = require('husky')
 
-import { rootPath } from '../config/path.config'
+const { rootPath } = require('../config/path.config')
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const main = () => {
+function main() {
   install()
   add(
     join(rootPath, '.husky/pre-commit'),

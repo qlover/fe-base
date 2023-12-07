@@ -1,16 +1,18 @@
-import { join } from 'path'
+const { join } = require('path')
 
 /**
  * 项目根路径
  */
-export const rootPath = join(__dirname, '../../')
+const rootPath = join(__dirname, '../../')
 
 /**
  * work 根目录
  */
-export const workRootPath = join(rootPath, 'work')
+const workRootPath = join(rootPath, 'work')
 
 /**
  * src 根目录
  */
-export const srcRootPath = join(rootPath, 'src')
+const srcRootPath = join(rootPath, 'src')
+
+module.exports = { rootPath, workRootPath, srcRootPath }

@@ -1,10 +1,4 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-    node: true
-  },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   overrides: [
     {
       env: {
@@ -14,13 +8,20 @@ module.exports = {
       parserOptions: {
         sourceType: 'script'
       }
+    },
+    {
+      ...require('./src/eslintrc.json'),
+      files: ['./src/*.js', './src/*.ts']
+    },
+    {
+      ...require('./packages/work/eslintrc.json'),
+      files: ['./packages/work/*.js']
     }
   ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module'
-  },
-  plugins: ['@typescript-eslint'],
-  rules: {}
+    sourceType: 'module',
+    project: ['./tsconfig.json'],
+    tsconfigRootDir: __dirname
+  }
 }
