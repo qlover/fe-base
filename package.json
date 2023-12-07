@@ -11,7 +11,8 @@
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
     "eslint:src": "eslint src --ext .js,.ts --cache --fix",
     "eslint:work": "eslint packages/work --ext .js --cache --fix",
-    "setup:husky": "node packages/work/bin/setupHusky"
+    "setup:husky": "node packages/work/bin/setupHusky",
+    "commit": "node ./packages/work/bin/commit.js"
   },
   "keywords": [],
   "author": "qlover",
@@ -20,8 +21,11 @@
     "access": "public"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^40.0.0",

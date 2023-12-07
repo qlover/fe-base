@@ -3,7 +3,7 @@ const { join } = require('path')
 /**
  * 项目根路径
  */
-const rootPath = join(__dirname, '../../')
+const rootPath = join(__dirname, '../../../')
 
 /**
  * work 根目录
