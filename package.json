@@ -16,7 +16,8 @@
     "lint": "eslint src --ext .js,.ts --cache --fix",
     "eslint:work": "eslint packages/work --ext .js --cache --fix",
     "setup:husky": "node packages/work/bin/setupHusky",
-    "commit": "node ./packages/work/bin/commit.js"
+    "commit": "node ./packages/work/bin/commit.js",
+    "release": "npx semantic-release"
   },
   "keywords": [],
   "author": "qlover",
