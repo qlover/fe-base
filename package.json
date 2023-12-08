@@ -9,7 +9,7 @@
     "build": "npm run clean && tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
-    "eslint:src": "eslint src --ext .js,.ts --cache --fix",
+    "lint": "eslint src --ext .js,.ts --cache --fix",
     "eslint:work": "eslint packages/work --ext .js --cache --fix",
     "setup:husky": "node packages/work/bin/setupHusky",
     "commit": "node ./packages/work/bin/commit.js"
