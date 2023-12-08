@@ -4,34 +4,11 @@
     "es2021": true,
     "node": true
   },
-  "extends": ["plugin:prettier/recommended", "prettier"],
+  "extends": ["standard"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["unused-imports", "@typescript-eslint", "prettier"],
-  "rules": {
-    "prettier/prettier": "error",
-    "no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "error",
-    "react-hooks/exhaustive-deps": 0,
-    "no-use-before-define": "error",
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          ["internal", "parent", "sibling", "index"],
-          "unknown"
-        ],
-        "pathGroups": [
-          {
-            "pattern": "@app/**",
-            "group": "external",
-            "position": "after"
-          }
-        ],
-        "pathGroupsExcludedImportTypes": ["builtin"],
-        "newlines-between": "always"
-      }
-    ]
-  }
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"]
 }
