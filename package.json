@@ -1,13 +1,17 @@
 {
-  "name": "front-work",
+  "name": "front-work-base",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
+  "files": [
+    "src"
+  ],
   "scripts": {
     "dev": "tsc --watch",
     "build": "npm run clean && tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
+    "reinit": "npm run clean && yarn",
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
     "lint": "eslint src --ext .js,.ts --cache --fix",
     "eslint:work": "eslint packages/work --ext .js --cache --fix",
@@ -23,6 +27,8 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "cz-conventional-changelog": "^3.3.0",
@@ -37,6 +43,7 @@
     "husky": "^8.0.3",
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5",
+    "semantic-release": "^22.0.10",
     "typescript": "*"
   }
 }
