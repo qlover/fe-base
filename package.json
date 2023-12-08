@@ -17,7 +17,7 @@
     "eslint:work": "eslint packages/work --ext .js --cache --fix",
     "setup:husky": "node packages/work/bin/setupHusky",
     "commit": "node ./packages/work/bin/commit.js",
-    "release": "npx semantic-release"
+    "release": "release-it"
   },
   "keywords": [],
   "author": "qlover",
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@release-it/conventional-changelog": "^8.0.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
@@ -43,6 +44,7 @@
     "eslint-plugin-unused-imports": "^3.0.0",
     "husky": "^8.0.3",
     "prettier": "^3.1.0",
+    "release-it": "^17.0.0",
     "rimraf": "^5.0.5",
     "semantic-release": "^22.0.10",
     "typescript": "*"
