@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "npx tsc --watch",
     "build": "npx tsc",
-    "clean": "rimraf dist node_modules yarn.lock package-lock.json",
+    "clean": "npm run clean:build && npm run build:modules",
+    "clean:build": "rimraf dist",
+    "clean:modules": "rimraf node_modules yarn.lock package-lock.json",
     "reinit": "npm run clean && yarn",
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
     "lint": "eslint src --ext .js,.ts --cache --fix",
