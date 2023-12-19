@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     // 允许
-    // "allowJs": true,
+    "allowJs": true,
     "baseUrl": ".",
-    "rootDir": "src",
+    "rootDir": "./",
     "target": "ESNEXT",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
@@ -16,7 +16,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "paths": {
+      "config/*": ["./config/*"]
+    }
   },
   // 保证 ts-node 执行正确
   // https://github.com/TypeStrong/ts-node/issues/422

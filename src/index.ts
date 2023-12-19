@@ -1,7 +1,3 @@
-const calc = (a: number, b: number) => {
-  return a - b
-}
+import { env } from 'config/app.config'
 
-const a = '1234'
-
-// console.log(calc(1024, 28))
+console.log('src env', env)
