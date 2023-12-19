@@ -8,8 +8,8 @@
     "src"
   ],
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "npm run clean && tsc",
+    "dev": "npx tsc --watch",
+    "build": "npx tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
     "reinit": "npm run clean && yarn",
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
