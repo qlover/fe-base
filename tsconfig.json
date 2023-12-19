@@ -19,6 +19,7 @@
     "moduleResolution": "Node"
   },
   // 保证 ts-node 执行正确
+  // https://github.com/TypeStrong/ts-node/issues/422
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
