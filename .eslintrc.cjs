@@ -16,7 +16,7 @@ module.exports = {
     },
     // src root
     {
-      ...require('./src/eslintrc.json'),
+      ...require('./config/eslint/eslintrc.base.json'),
       files: ['./src/*.js', './src/*.ts']
     }
   ],
