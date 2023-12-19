@@ -15,6 +15,11 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 18
+      - name: Install Yarn and dependencies
+      - run: npm install yarn -g && yarn -v && yarn
+
+      - name: lint-test-build
       # https://github.com/semantic-release/git/issues/209
-      - run: npm run lint
-      - run: npm run test
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build

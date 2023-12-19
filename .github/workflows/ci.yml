@@ -8,22 +8,21 @@ on:
     branches:
       - base
 jobs:
-  linter:
+  lint-and-build:
     runs-on: ubuntu-latest
-    steps:
+    steps: 
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm run lint
-  tests:
-    needs: linter
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 18
-      - run: npm ci
-      # - run: npm run test
+      - name: Install Yarn and dependencies
+        run: npm install yarn -g && yarn -v && yarn
+
+      - name: Lint
+        run: yarn lint
+
+      - name: test
+        run: yarn test
+
+      - name: build
+        run: yarn build
