@@ -14,9 +14,9 @@
     "reinit": "npm run clean && yarn",
     "eslint": "eslint src packages --ext .js,.ts --cache --fix",
     "lint": "eslint src --ext .js,.ts --cache --fix",
-    "eslint:work": "eslint packages/work --ext .js --cache --fix",
-    "setup:husky": "node packages/work/bin/setupHusky",
-    "commit": "node ./packages/work/bin/commit.js",
+    "eslint:work": "eslint packages/_work --ext .js --cache --fix",
+    "setup:husky": "node packages/_work/bin/setupHusky",
+    "commit": "node ./packages/_work/bin/commit.js",
     "release": "release-it"
   },
   "keywords": [],
@@ -47,6 +47,7 @@
     "release-it": "^17.0.0",
     "rimraf": "^5.0.5",
     "semantic-release": "^22.0.10",
-    "typescript": "*"
+    "typescript": "*",
+    "ts-node": "^10.9.2"
   }
 }
