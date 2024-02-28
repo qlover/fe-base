@@ -1,7 +1,7 @@
 const { join } = require('path')
 const husky = require('husky')
 const { execSync } = require('child_process')
-const { rootPath } = require('../../../config/path.config.mjs')
+const { rootPath } = require('../../../config/path.config.cjs')
 const pkg = require('../../../package.json')
 
 function main() {

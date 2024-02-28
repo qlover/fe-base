@@ -1,6 +1,6 @@
 const { program } = require('commander')
 const { join } = require('path')
-const { rootPath } = require('../../../config/path.config.mjs')
+const { rootPath } = require('../../../config/path.config.cjs')
 const { exec } = require('child_process')
 
 program.option('-p, --path', 'run script path')
