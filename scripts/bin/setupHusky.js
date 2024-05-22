@@ -1,11 +1,11 @@
-const { join } = require('path')
-const husky = require('husky')
-const { execSync } = require('child_process')
-const { rootPath } = require('../../../config/path.config.cjs')
-const pkg = require('../../../package.json')
+const { join } = require('path');
+const husky = require('husky');
+const { execSync } = require('child_process');
+const { rootPath } = require('../../config/path.config.cjs');
+const pkg = require('../../package.json');
 
 function main() {
-  execSync(`npx rimraf ${rootPath}/.husky`)
+  execSync(`npx rimraf ${rootPath}/.husky`);
 
   if (
     !(
@@ -15,10 +15,10 @@ function main() {
   ) {
     execSync(
       'npx commitizen init cz-conventional-changelog --save-dev --save-exact'
-    )
+    );
   }
 
-  husky.install()
+  husky.install();
   // husky.add(
   //   join(rootPath, '.husky/pre-commit'),
   //   '#!/bin/sh\n. "$(dirname "$0")/_/husky.sh"\nnpm run lint\n'
@@ -26,7 +26,7 @@ function main() {
   husky.add(
     join(rootPath, '.husky/commit-msg'),
     'npx --no -- commitlint --edit "$1"'
-  )
+  );
 }
 
-main()
+main();
