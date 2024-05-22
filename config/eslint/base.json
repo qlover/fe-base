@@ -6,13 +6,16 @@
   },
   "extends": [
     "standard",
+    "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "prettier/prettier": "error",
     "arrow-body-style": "off",
-    "prefer-arrow-callback": "off"
+    "prefer-arrow-callback": "off",
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/no-explicit-any": "off"
   },
   "parserOptions": {
     "ecmaVersion": 12,
@@ -21,9 +24,5 @@
   "plugins": [
     "@typescript-eslint",
     "prettier"
-  ],
-  "files": [
-    "packages/**/*.js",
-    "packages/**/*.ts"
   ]
 }

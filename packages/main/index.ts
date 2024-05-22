@@ -1,3 +1,3 @@
 import { env } from 'config/app.config';
 
-console.log('src env', env);
+console.log('packages/main env', env);
