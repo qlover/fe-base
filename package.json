@@ -1,28 +1,23 @@
 {
-  "name": "front-work-base",
+  "name": "fe-base",
   "version": "1.0.1",
   "description": "",
   "type": "module",
   "private": true,
-  "main": "dist/index.js",
-  "files": [
-    "src"
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "dev": "npx tsc --watch",
     "build": "npx tsc",
-    "clean": "npm run clean:build && npm run build:modules",
-    "clean:build": "rimraf dist",
-    "clean:modules": "rimraf node_modules yarn.lock package-lock.json",
-    "prettier": "prettier src --write",
+    "clean": "rimraf dist node_modules yarn.lock package-lock.json",
+    "prettier": "prettier packages --write",
     "reinit": "npm run clean && yarn",
-    "eslint": "eslint src packages --ext .js,.ts --cache --fix",
-    "lint": "eslint src --ext .js,.ts --cache --fix",
-    "eslint:work": "eslint packages/_work --ext .js --cache --fix",
-    "setup:husky": "node packages/_work/bin/setupHusky",
-    "commit": "node ./packages/_work/bin/commit.js",
+    "eslint": "eslint packages --ext .js,.ts --cache --fix",
+    "lint": "eslint packages --ext .js,.ts --cache --fix",
+    "setup:husky": "node scripts/bin/setupHusky",
+    "commit": "node ./scripts/bin/commit.js",
     "release": "release-it",
-    "ts-run": "node ./packages/_work/bin/ts-run.js",
+    "ts-run": "node ./scripts/bin/ts-run.js",
     "test": "jest"
   },
   "keywords": [],
@@ -31,21 +26,25 @@
   "publishConfig": {
     "access": "public"
   },
+  "devEngines": {
+    "node": ">=18.18.0"
+  },
+  "packageManager": "yarn@1.22.22",
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.3",
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
     "@release-it/conventional-changelog": "^8.0.1",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
+    "commander": "^12.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^40.0.0",
     "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jest": "^28.5.0",
     "eslint-plugin-n": "^16.3.1",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-promise": "^6.1.1",
@@ -53,12 +52,10 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "prettier": "^3.1.0",
-    "release-it": "^17.0.0",
+    "release-it": "^17.3.0",
     "rimraf": "^5.0.5",
-    "semantic-release": "^22.0.10",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "*",
-    "commander": "^12.0.0"
+    "typescript": "*"
   }
 }

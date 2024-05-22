@@ -6,7 +6,10 @@
     "rootDir": "./",
     "target": "ESNEXT",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
@@ -18,7 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "Node",
     "paths": {
-      "config/*": ["./config/*"]
+      "config/*": [
+        "./config/*"
+      ]
     }
   },
   // 保证 ts-node 执行正确
@@ -28,6 +33,10 @@
     "experimentalSpecifierResolution": "node",
     "transpileOnly": true
   },
-  "include": ["./src"],
-  "exclude": ["node_modules", "packages/_work"]
+  "include": [
+    "./packages"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

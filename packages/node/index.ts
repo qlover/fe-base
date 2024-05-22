@@ -1,3 +1,3 @@
-import { getCurrentPath } from './files'
+import { getCurrentPath } from './files';
 
-console.log('packages/node, path is:', getCurrentPath())
+console.log('packages/node, path is:', getCurrentPath());

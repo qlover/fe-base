@@ -21,5 +21,9 @@
   "plugins": [
     "@typescript-eslint",
     "prettier"
+  ],
+  "files": [
+    "packages/**/*.js",
+    "packages/**/*.ts"
   ]
 }
