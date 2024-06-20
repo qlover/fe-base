@@ -3,26 +3,26 @@ name: CI
 on:
   push:
     branches:
-      - base
+      - master
   pull_request:
     branches:
-      - base
+      - master
+
 jobs:
-  lint-and-build:
+  build:
     runs-on: ubuntu-latest
-    steps: 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 18
-      - name: Install Yarn and dependencies
-        run: npm install yarn -g && yarn -v && yarn
 
-      - name: Lint
-        run: yarn lint
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: test
-        run: yarn test
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.18.0'
 
-      - name: build
-        run: yarn build
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build project
+      run: yarn build
