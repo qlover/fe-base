@@ -10,21 +10,22 @@ interface ExecCommandOptions {
  * 获取执行该方法时所在的目录
  * @returns
  */
-export const getCurrentPath = () => process.cwd();
+export const getCurrentPath = (): string => process.cwd();
 
 /**
  * 判断当前路径是否是文件
  * @param path
  * @returns
  */
-export const isFile = (path: string) => lstatSync(path).isFile();
+export const isFile = (path: string): boolean => lstatSync(path).isFile();
 
 /**
  * 判断当前路径是否是目录
  * @param path
  * @returns
  */
-export const isDirectory = (path: string) => lstatSync(path).isDirectory();
+export const isDirectory = (path: string): boolean =>
+  lstatSync(path).isDirectory();
 
 type FileName = string | { name: string; suffix: string };
 
@@ -46,7 +47,7 @@ export const getFileName = (path: string): FileName => {
  * @param path
  * @returns
  */
-export const getExtensionName = (path: string) => {
+export const getExtensionName = (path: string): string => {
   const name = extname(path);
   if (name === '') return '';
   return name.split('.')[1] as string;
@@ -60,7 +61,7 @@ export const getExtensionName = (path: string) => {
 export const execCommand = (
   command: string,
   options: ExecCommandOptions = { cwd: getCurrentPath() }
-) => {
+): void => {
   const { cwd } = options;
   execSync(command, { stdio: 'inherit', cwd });
 };
@@ -69,7 +70,7 @@ export const execCommand = (
  * 递归删除目录
  * @param path
  */
-export const recursionDelete = (path: string) => {
+export const recursionDelete = (path: string): void => {
   const files = readdirSync(path);
   for (const file of files) {
     const newpath = `${path}/${file}`;
