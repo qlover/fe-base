@@ -1,7 +1,7 @@
 {
   "name": "fe-base",
   "version": "1.0.1",
-  "description": "",
+  "description": "A base frontwork",
   "type": "module",
   "private": true,
   "workspaces": [
