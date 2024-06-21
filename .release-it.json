@@ -16,6 +16,7 @@
     }
   },
   "git": {
+    "push": false,
     "commitMessage": "chore(tag): release v${version}"
   }
 }

@@ -1,6 +1,7 @@
 name: FE Release
 on:
-  push:
+  # TODO: use push
+  pull_request:
     branches:
       - master
 jobs:
@@ -25,23 +26,43 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
+      # 如果当前分支被保护,需要单独处理
       - name: Publishing to NPM and GitHub
         run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-    # 下面是单独需要 push 代码时用到的配置
-    # - name: Commit New Version Change
-    #   run: |
-    #     git config --global user.name "github-actions[bot]"
-    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    #     git fetch --all
-    #     git checkout ${{ github.event.pull_request.head.ref }}
-    #     git add .
-    #     git commit -m "[From bot] Apply CI changes"
-    #     git remote set-url origin https://qlover:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
-    #     git remote -v
-    #     git push
-    #   env:
-    #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      # 创建一个临时分支,将该分支合并到 master 上
+      - name: Push changes to temporary branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git checkout -b release-temp
+          git add .
+          git commit -m "[From bot]chore: bump version"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:release-temp
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "[From bot]chore: bump version"
+          branch: release-temp
+          title: "[From bot]chore: bump version"
+          body: "This PR bumps the version number after publishing to npm."
+          base: master
+
+# 下面是单独需要 push 代码时用到的配置
+# - name: Commit New Version Change
+#   run: |
+#     git config --global user.name "github-actions[bot]"
+#     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+#     git fetch --all
+#     git checkout ${{ github.event.pull_request.head.ref }}
+#     git add .
+#     git commit -m "[From bot] Apply CI changes"
+#     git remote set-url origin https://qlover:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+#     git remote -v
+#     git push
+#   env:
+#     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
