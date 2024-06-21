@@ -1,0 +1,48 @@
+name: FE Release
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.message, '[From bot]') == false &&
+      contains(github.event.head_commit.message, 'chore(tag)') == false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Build dist
+        run: yarn build
+      - name: Config Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
+      # release 时会创建一个 commit 然后向分支提交,但是master是被保护的,目前用的 pat 提交绕过的这个权限
+      - name: Publishing to NPM and GitHub
+        run: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+    # 下面是单独需要 push 代码时用到的配置
+    # - name: Commit New Version Change
+    #   run: |
+    #     git config --global user.name "github-actions[bot]"
+    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    #     git fetch --all
+    #     git checkout ${{ github.event.pull_request.head.ref }}
+    #     git add .
+    #     git commit -m "[From bot] Apply CI changes"
+    #     git remote set-url origin https://qlover:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+    #     git remote -v
+    #     git push
+    #   env:
+    #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

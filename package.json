@@ -1,11 +1,13 @@
 {
-  "name": "fe-base",
-  "version": "1.0.1",
-  "description": "",
+  "name": "@qlover/fe-base",
+  "version": "1.0.26",
+  "description": "A base frontwork",
   "type": "module",
-  "private": true,
-  "workspaces": [
-    "packages/*"
+  "private": false,
+  "files": [
+    "dist",
+    "package.json",
+    "REMEAD.md"
   ],
   "scripts": {
     "build": "npx tsc",
@@ -16,7 +18,7 @@
     "lint": "eslint packages --ext .js,.ts --cache --fix",
     "setup:husky": "node scripts/bin/setupHusky",
     "commit": "node ./scripts/bin/commit.js",
-    "release": "release-it",
+    "release": "node ./scripts/bin/release.js",
     "ts-run": "node ./scripts/bin/ts-run.js",
     "test": "jest"
   },
