@@ -39,6 +39,9 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
       - name: Git status
         run: |
+          git fetch --all
+          git checkout ${{ github.event.pull_request.head.ref }}
+          git checkout -b release-temp
           git status
           git branch -a
       # 创建一个临时分支,将该分支合并到 master 上
@@ -46,7 +49,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git checkout -b release-temp
           git add .
           git commit -m "[From bot]chore: bump version"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:release-temp
