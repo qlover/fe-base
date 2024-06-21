@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-base",
-  "version": "1.0.16",
+  "version": "1.0.18",
   "description": "A base frontwork",
   "type": "module",
   "private": false,

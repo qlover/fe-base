@@ -17,6 +17,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.18.0'
       - name: Install dependencies
         run: yarn install
       - name: Build dist
@@ -28,7 +32,7 @@ jobs:
       # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
       # 如果当前分支被保护,需要单独处理
       - name: Publishing to NPM and GitHub
-        run: npm run release
+        run: npx release-it --ci
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
