@@ -25,6 +25,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
+      # release 时会创建一个 commit 然后向分支提交,但是master是被保护的,目前用的 pat 提交绕过的这个权限
       - name: Publishing to NPM and GitHub
         run: npm run release
         env:
