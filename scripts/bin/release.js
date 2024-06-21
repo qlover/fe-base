@@ -40,7 +40,7 @@ function main() {
   // }
 
   console.log('Publishing to NPM and GitHub...');
-  runCommand('npx release-it --ci', {
+  execSync('npx release-it --config ./.release-it.json --ci', {
     env: {
       ...process.env,
       NPM_TOKEN: process.env.NPM_TOKEN
