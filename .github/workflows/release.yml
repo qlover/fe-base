@@ -1,4 +1,4 @@
-name: Develop Release
+name: FE Release
 on:
   push:
     branches:

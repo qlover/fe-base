@@ -1,4 +1,4 @@
-name: Develop Build
+name: FE Build
 on:
   pull_request:
     branches:
