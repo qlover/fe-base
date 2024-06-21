@@ -38,6 +38,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
+          git status
           git checkout -b release-temp
           git add .
           git commit -m "[From bot]chore: bump version"
