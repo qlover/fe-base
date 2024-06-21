@@ -17,6 +17,10 @@
   },
   "git": {
     "push": false,
-    "commitMessage": "chore(tag): release v${version}"
+    "commitMessage": "chore(tag): release v${version}",
+    "requireCleanWorkingDir": true,
+    "tagName": "v${version}",
+    "tagAnnotation": "Release ${version}",
+    "pushRepo": "origin"
   }
 }
