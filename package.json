@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-base",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A base frontwork",
   "type": "module",
   "private": false,
@@ -18,7 +18,7 @@
     "lint": "eslint packages --ext .js,.ts --cache --fix",
     "setup:husky": "node scripts/bin/setupHusky",
     "commit": "node ./scripts/bin/commit.js",
-    "release": "release-it",
+    "release": "node ./scripts/bin/release.js",
     "ts-run": "node ./scripts/bin/ts-run.js",
     "test": "jest"
   },
