@@ -1,9 +1,14 @@
 {
-  "name": "fe-base",
+  "name": "@qlover/fe-base",
   "version": "1.0.1",
   "description": "A base frontwork",
   "type": "module",
   "private": false,
+  "files": [
+    "dist",
+    "package.json",
+    "REMEAD.md"
+  ],
   "scripts": {
     "build": "npx tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
