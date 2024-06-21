@@ -32,7 +32,7 @@ jobs:
       # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
       # 如果当前分支被保护,需要单独处理
       - name: Publishing to NPM and GitHub
-        run: npx release-it --ci
+        run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
