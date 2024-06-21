@@ -24,7 +24,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      # Workflow permissions 记得在仓库 setting 打开, Actions -> general -> Workflow permissions -> Read and write permissions
       - name: Publishing to NPM and GitHub
         run: npm run release
         env:

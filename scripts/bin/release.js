@@ -39,6 +39,7 @@ function main() {
   //   process.exit(1);
   // }
 
+  console.log('Publishing to NPM and GitHub...');
   runCommand('npx release-it --ci', {
     env: {
       ...process.env,
