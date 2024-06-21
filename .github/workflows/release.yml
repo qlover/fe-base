@@ -33,25 +33,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Git status
+        - run: git status
       # 创建一个临时分支,将该分支合并到 master 上
-      - name: Push changes to temporary branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          git status
-          git checkout -b release-temp
-          git add .
-          git commit -m "[From bot]chore: bump version"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:release-temp
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "[From bot]chore: bump version"
-          branch: release-temp
-          title: "[From bot]chore: bump version"
-          body: "This PR bumps the version number after publishing to npm."
-          base: master
+      # - name: Push changes to temporary branch
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      #   run: |
+      #     git checkout -b release-temp
+      #     git add .
+      #     git commit -m "[From bot]chore: bump version"
+      #     git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:release-temp
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     commit-message: "[From bot]chore: bump version"
+      #     branch: release-temp
+      #     title: "[From bot]chore: bump version"
+      #     body: "This PR bumps the version number after publishing to npm."
+      #     base: master
 
 # 下面是单独需要 push 代码时用到的配置
 # - name: Commit New Version Change
