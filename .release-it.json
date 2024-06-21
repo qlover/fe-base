@@ -1,9 +1,11 @@
 {
   "github": {
-    "release": true
+    "release": true,
+    "tokenRef": "GITHUB_TOKEN"
   },
   "npm": {
-    "publish": false
+    "publish": true,
+    "tokenref": "NPM_TOKEN"
   },
   "plugins": {
     "@release-it/conventional-changelog": {

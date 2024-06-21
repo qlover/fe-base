@@ -3,10 +3,7 @@
   "version": "1.0.1",
   "description": "A base frontwork",
   "type": "module",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "private": false,
   "scripts": {
     "build": "npx tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
