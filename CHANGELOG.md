@@ -1,5 +1,20 @@
 
 
+## [1.0.33](https://github.com/qlover/fe-base/compare/1.0.26...1.0.33) (2024-06-22)
+
+
+### Bug Fixes
+
+* package version ([74eb8bf](https://github.com/qlover/fe-base/commit/74eb8bf060e85004d9574c009e1e0cce9183155a))
+* package version ([#14](https://github.com/qlover/fe-base/issues/14)) ([fc344a2](https://github.com/qlover/fe-base/commit/fc344a2b3825d2673aa63dcc90b2411e4fb304b0))
+* package version ([#17](https://github.com/qlover/fe-base/issues/17)) ([fe2088f](https://github.com/qlover/fe-base/commit/fe2088fb5bb24d04b52c4ec7160a6d73f8e6ef4c))
+
+
+### Features
+
+* clean branch ([075952b](https://github.com/qlover/fe-base/commit/075952b5230a4518a7243c9d716e3a245eac1115))
+* clean branch ([b5156ce](https://github.com/qlover/fe-base/commit/b5156ceebb5caa3266147a0255eeefc451f27a28))
+
 ## [1.0.26](https://github.com/qlover/fe-base/compare/1.0.10...1.0.26) (2024-06-21)
 
 
