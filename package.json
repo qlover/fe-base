@@ -20,7 +20,8 @@
     "commit": "node ./scripts/bin/commit.js",
     "release": "node ./scripts/bin/release.js",
     "ts-run": "node ./scripts/bin/ts-run.js",
-    "test": "jest"
+    "test": "jest",
+    "clean:branch": "node ./scripts/bin/clean-branch.js"
   },
   "keywords": [],
   "author": "qlover",
