@@ -43,7 +43,8 @@ function main() {
   runCommand('npx release-it --ci', {
     env: {
       ...process.env,
-      NPM_TOKEN: process.env.NPM_TOKEN
+      NPM_TOKEN: process.env.NPM_TOKEN,
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN
     }
   });
 }
