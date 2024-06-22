@@ -1,6 +1,9 @@
 const { execSync } = require('child_process');
 const readline = require('readline');
 
+// 定义被保护的分支列表
+const protectedBranches = ['master', 'develop', 'main', 'root-src'];
+
 // Fetch and prune remote branches
 execSync('git fetch -p', { stdio: 'inherit' });
 
@@ -16,12 +19,13 @@ const branches = branchesOutput
   .map((line) => line.trim())
   .filter((line) => line);
 
-// Find branches that are gone from the remote
+// Find branches that are gone from the remote and not protected
 const branchesToDelete = branches
+  .filter((line) => line.includes(': gone]'))
+  .map((line) => line.split(' ')[0].replace('*', '').trim())
   .filter(
-    (line) => line.includes(': gone]') && !line.includes(` ${currentBranch} `)
-  )
-  .map((line) => line.split(' ')[0].replace('*', '').trim());
+    (branch) => branch !== currentBranch && !protectedBranches.includes(branch)
+  );
 
 // Function to ask for user confirmation
 const askUserConfirmation = (branchesToDelete) => {
