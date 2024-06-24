@@ -1,7 +1,6 @@
 const { execSync } = require('child_process');
 const { loadEnv } = require('../loadEnv');
 const pkg = require('../../package.json');
-const relesaeIt = require('../../.release-it.json');
 
 function runCommand(command, options = {}) {
   try {
@@ -60,7 +59,7 @@ function main() {
   });
 
   // create PR
-  const mainBranch = relesaeIt.git.pushRepo || 'master';
+  const mainBranch = 'main';
   const releaseBranch = `release-v${pkg.version}`;
   runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
