@@ -1,6 +1,8 @@
 const { execSync } = require('child_process');
 const { loadEnv } = require('../loadEnv');
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
+const releaseIt = require('../../.release-it.json');
+
 function runCommand(command, options = {}) {
   try {
     execSync(command, { stdio: 'inherit', ...options });
@@ -31,9 +33,10 @@ function main() {
 
   const ghToken = process.env.GITHUB_TOKEN;
   clearEnvVariable('GITHUB_TOKEN');
-  // runCommand(
-  //   `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
-  // );
+
+  runCommand(
+    `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
+  );
 
   // // 确保设置了上游分支
   // try {
@@ -48,17 +51,18 @@ function main() {
   //   process.exit(1);
   // }
 
-  // console.log('Publishing to NPM and GitHub...');
-  // runCommand('npx release-it --ci', {
-  //   env: {
-  //     ...process.env,
-  //     NPM_TOKEN: process.env.NPM_TOKEN,
-  //     GITHUB_TOKEN: process.env.GITHUB_TOKEN
-  //   }
-  // });
+  console.log('Publishing to NPM and GitHub...');
+  runCommand('npx release-it --ci', {
+    env: {
+      ...process.env,
+      NPM_TOKEN: process.env.NPM_TOKEN,
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN
+    }
+  });
 
-  // create PR
-  const mainBranch = 'main';
+  // create PR to merge master branch
+  console.log('Create PR to merge branch...');
+  const mainBranch = releaseIt.git.pushRepo || 'master';
   const releaseBranch = `release-v${pkg.version}`;
   runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
