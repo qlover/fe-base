@@ -58,7 +58,7 @@ function main() {
   runCommand(`echo "${ghToken}" | gh auth login --with-token`);
   // auto merage
   runCommand(
-    `gh pr create --title "[From bot] Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch} --auto-merge`
+    `gh pr create --title "[From bot] Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch}`
   );
 }
 
