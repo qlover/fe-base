@@ -59,10 +59,11 @@ function main() {
   });
 
   // create PR
-  const mainBranch = 'main';
+  const mainBranch = process.env.PR_BRANCH || 'master';
   const releaseBranch = `release-v${pkg.version}`;
-  runCommand(`git checkout ${mainBranch}`);
+  // runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
+  runCommand(`git merge origin/main`);
   runCommand(`git checkout -b ${releaseBranch}`);
   runCommand(`git push origin ${releaseBranch}`);
 
