@@ -22,21 +22,21 @@ function clearEnvVariable(variable) {
 function main() {
   loadEnv();
 
-  if (!process.env.NPM_TOKEN) {
+  let npmToken;
+  let ghToken;
+
+  if (!(npmToken = process.env.NPM_TOKEN)) {
     console.error('NPM_TOKEN environment variable is not set.');
     process.exit(1);
   }
-  if (!process.env.GITHUB_TOKEN) {
+  if (!(ghToken = process.env.GITHUB_TOKEN)) {
     console.error('GITHUB_TOKEN environment variable is not set.');
     process.exit(1);
   }
 
-  const ghToken = process.env.GITHUB_TOKEN;
   clearEnvVariable('GITHUB_TOKEN');
 
-  runCommand(
-    `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
-  );
+  runCommand(`echo "//registry.npmjs.org/:_authToken=${npmToken}" > .npmrc`);
 
   // // 确保设置了上游分支
   // try {
@@ -55,8 +55,8 @@ function main() {
   runCommand('npx release-it --ci', {
     env: {
       ...process.env,
-      NPM_TOKEN: process.env.NPM_TOKEN,
-      GITHUB_TOKEN: process.env.GITHUB_TOKEN
+      NPM_TOKEN: npmToken,
+      GITHUB_TOKEN: ghToken
     }
   });
 
