@@ -32,14 +32,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      - name: check tag
-        run: |
-          git status
-          git branch -a
-          git remote set-url origin https://qlover:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
-          git push
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          # - name: check tag
+          #   run: |
+          #     git status
+          #     git branch -a
+          #     git remote set-url origin https://qlover:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+          #     git push
+          #   env:
+          #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
     # 下面是单独需要 push 代码时用到的配置
     # - name: Commit New Version Change
     #   run: |
