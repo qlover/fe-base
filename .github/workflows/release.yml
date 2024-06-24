@@ -36,6 +36,7 @@ jobs:
         run: |
           git status
           git branch -a
+          git push
     # 下面是单独需要 push 代码时用到的配置
     # - name: Commit New Version Change
     #   run: |
