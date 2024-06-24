@@ -1,12 +1,19 @@
 const { execSync } = require('child_process');
 const { loadEnv } = require('../loadEnv');
-
+const pkg = require('../package.json');
 function runCommand(command, options = {}) {
   try {
     execSync(command, { stdio: 'inherit', ...options });
   } catch (error) {
     console.error(`Error executing command: ${command}`, error);
     process.exit(1);
+  }
+}
+
+// Function to clear environment variable
+function clearEnvVariable(variable) {
+  if (process.env[variable]) {
+    delete process.env[variable];
   }
 }
 
@@ -22,9 +29,11 @@ function main() {
     process.exit(1);
   }
 
-  runCommand(
-    `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
-  );
+  const ghToken = process.env.GITHUB_TOKEN;
+  clearEnvVariable('GITHUB_TOKEN');
+  // runCommand(
+  //   `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
+  // );
 
   // // 确保设置了上游分支
   // try {
@@ -39,14 +48,28 @@ function main() {
   //   process.exit(1);
   // }
 
-  console.log('Publishing to NPM and GitHub...');
-  runCommand('npx release-it --ci', {
-    env: {
-      ...process.env,
-      NPM_TOKEN: process.env.NPM_TOKEN,
-      GITHUB_TOKEN: process.env.GITHUB_TOKEN
-    }
-  });
+  // console.log('Publishing to NPM and GitHub...');
+  // runCommand('npx release-it --ci', {
+  //   env: {
+  //     ...process.env,
+  //     NPM_TOKEN: process.env.NPM_TOKEN,
+  //     GITHUB_TOKEN: process.env.GITHUB_TOKEN
+  //   }
+  // });
+
+  // create PR
+  const mainBranch = 'main';
+  const releaseBranch = `release-v${pkg.version}`;
+  runCommand(`git checkout ${mainBranch}`);
+  // runCommand(`git branch -d ${releaseBranch}`);
+  runCommand(`git checkout -b ${releaseBranch}`);
+  runCommand(`git push origin ${releaseBranch}`);
+
+  // runCommand(`gh auth login --with-token <<< "${process.env.GITHUB_TOKEN}"`);
+  runCommand(`echo "${ghToken}" | gh auth login --with-token`);
+  runCommand(
+    `gh pr create --title "Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch}`
+  );
 }
 
 main();
