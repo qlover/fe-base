@@ -1,8 +1,4 @@
 {
-  "github": {
-    "release": true,
-    "tokenRef": "GITHUB_TOKEN"
-  },
   "npm": {
     "publish": true,
     "tokenref": "NPM_TOKEN"
@@ -16,7 +12,20 @@
     }
   },
   "git": {
+    "requireCleanWorkingDir": true,
+    "tag": true,
+    "tagName": "v${version}",
+    "commit": true,
     "commitMessage": "chore(tag): release v${version}",
     "push": false
+  },
+  "github": {
+    "release": true,
+    "releaseName": "chore(tag): release v${version}",
+    "pr": true,
+    "prTitle": "chore(tag): release v${version}",
+    "prBody": "This is the release PR for version ${version}",
+    "draft": false,
+    "autoMerge": true
   }
 }
