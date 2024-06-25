@@ -1,5 +1,12 @@
 
 
+## [1.0.82](https://github.com/qlover/fe-base/compare/1.0.39...1.0.82) (2024-06-25)
+
+
+### Bug Fixes
+
+* release merge target branch ([7a39157](https://github.com/qlover/fe-base/commit/7a39157c41a24ece97eae8070037f2edd4520647))
+
 ## [1.0.33](https://github.com/qlover/fe-base/compare/1.0.26...1.0.33) (2024-06-22)
 
 
