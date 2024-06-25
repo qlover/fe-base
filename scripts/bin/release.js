@@ -58,8 +58,8 @@ function main() {
   const tagName = tags.length ? tags[tags.length - 1] : pkg.version;
   console.log('Created Tag is:', tagName);
 
-  // push tag
-  runCommand(`git push origin ${tagName}`);
+  // when .release-it github.release is flase
+  // runCommand(`git push origin ${tagName}`);
 
   // use main branch
   // runCommand(`git checkout ${mainBranch}`);
