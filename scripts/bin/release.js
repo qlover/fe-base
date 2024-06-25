@@ -50,7 +50,7 @@ function main() {
   const releaseBranch = `release-v${pkg.version}`;
   // runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
-  runCommand(`git merge origin/main`);
+  runCommand(`git merge origin/${mainBranch}`);
   runCommand(`git checkout -b ${releaseBranch}`);
   runCommand(`git push origin ${releaseBranch}`);
 
