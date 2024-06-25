@@ -48,14 +48,22 @@ function main() {
   // create PR
   const mainBranch = process.env.PR_BRANCH || 'master';
   const releaseBranch = `release-v${pkg.version}`;
+  // FIXME: Tagname can be modified through configuration
+  const tagName = pkg.version;
+
   // runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
+
+  // .release-it git push is false, push tags
+  runCommand(`git push origin ${tagName}`);
+
+  // create a release branch
   runCommand(`git merge origin/${mainBranch}`);
   runCommand(`git checkout -b ${releaseBranch}`);
   runCommand(`git push origin ${releaseBranch}`);
 
+  // create PR
   runCommand(`echo "${ghToken}" | gh auth login --with-token`);
-  // auto merage
   runCommand(
     `gh pr create --title "[From bot] Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch}`
   );
