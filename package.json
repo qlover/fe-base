@@ -9,6 +9,11 @@
     "package.json",
     "REMEAD.md"
   ],
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/qlover/fe-base"
+  },
+  "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
     "build": "npx tsc",
     "clean": "rimraf dist node_modules yarn.lock package-lock.json",
@@ -16,11 +21,11 @@
     "reinit": "npm run clean && yarn",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
-    "setup:husky": "node scripts/bin/setupHusky",
+    "test": "jest",
+    "setup:husky": "node scripts/bin/setup-husky.js",
     "commit": "node ./scripts/bin/commit.js",
     "release": "node ./scripts/bin/release.js",
     "ts-run": "node ./scripts/bin/ts-run.js",
-    "test": "jest",
     "clean:branch": "node ./scripts/bin/clean-branch.js"
   },
   "keywords": [],
@@ -41,7 +46,6 @@
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "commander": "^12.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.0.1",

@@ -1,23 +1,10 @@
 {
   "eslint.enable": true,
   "eslint.format.enable": false,
-
+  "prettier.requireConfig": true,
+  "prettier.endOfLine": "lf",
+  "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-
-  "prettier.requireConfig": true,
-  "prettier.endOfLine": "lf",
-  "[scss]": {
-    "tailwindCSS.suggestions": true,
-    "editor.formatOnSave": false
-  },
-  "editor.tabSize": 2,
-  "tailwindCSS.rootFontSize": 10,
-  "tailwindCSS.classAttributes": [
-    "class",
-    "className",
-    "wrapperClassName",
-    "bodyClassName"
-  ]
 }

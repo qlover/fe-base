@@ -1,14 +1,12 @@
 {
-  "name": "scripts",
+  "name": "@qlover/fe-base-scripts",
   "version": "1.0.0",
-  "description": "",
+  "description": "A frontwork scripts",
   "type": "commonjs",
   "main": "index.js",
-  "bin": {
-    "work": "bin/setupHusky.js"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "setup:husky": "node ./bin/setup-husky.js",
+    "ts-run": "node ./bin/ts-run.js"
   },
   "author": "",
   "license": "ISC",
