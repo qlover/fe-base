@@ -4,7 +4,7 @@ const pkg = require('../../package.json');
 
 function runCommand(command, options = {}) {
   try {
-    execSync(command, { stdio: 'inherit', ...options });
+    return execSync(command, { stdio: 'inherit', ...options });
   } catch (error) {
     console.error(`Error executing command: ${command}`, error);
     process.exit(1);
@@ -45,24 +45,34 @@ function main() {
     }
   });
 
-  // create PR
+  console.log('======== Publishing to NPM finish ========');
+
   const mainBranch = process.env.PR_BRANCH || 'master';
   const releaseBranch = `release-v${pkg.version}`;
-  // FIXME: Tagname can be modified through configuration
-  const tagName = pkg.version;
 
+  // .release-it git push is false, push tags
+  const tagResult = runCommand(`git tag`, { stdio: null });
+  const tags = tagResult.toString().trim().split('\n');
+  console.log('All Tags:', tags);
+  // FIXME: Tagname can be modified through configuration
+  const tagName = tags.length ? tags[tags.length - 1] : pkg.version;
+  console.log('Created Tag is:', tagName);
+
+  // push tag
+  runCommand(`git push origin ${tagName}`);
+
+  // use main branch
   // runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
 
-  // .release-it git push is false, push tags
-  runCommand(`git push origin ${tagName}`);
-
   // create a release branch
+  console.log('Create Release PR branch', releaseBranch);
   runCommand(`git merge origin/${mainBranch}`);
   runCommand(`git checkout -b ${releaseBranch}`);
   runCommand(`git push origin ${releaseBranch}`);
 
   // create PR
+  console.log('Create Release PR');
   runCommand(`echo "${ghToken}" | gh auth login --with-token`);
   runCommand(
     `gh pr create --title "[From bot] Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch}`
