@@ -5,6 +5,8 @@ const { rootPath } = require('../../config/path.config.cjs');
 function log(...args) {
   console.log('========', ...args);
 }
+const owner = pkg.author;
+const repo = pkg.repository.url.split('/').pop();
 
 const ContentTpl = {
   PR_TITLE_TPL: '[From bot] Release {mainBranch} v{tagName} from {env}',
@@ -143,11 +145,16 @@ class Release {
       return;
     }
 
+    if (!repo || !owner) {
+      log('Not round repo or owner!!!');
+      process.exit(1);
+    }
+
     log(`Merging PR #${prNumber} ...`);
 
     await this.octokit.pulls.merge({
-      owner: 'qlover',
-      repo: 'fe-base',
+      owner,
+      repo,
       pull_number: prNumber,
       merge_method: 'merge' // 合并方式，可以是 merge, squash 或 rebase
     });
