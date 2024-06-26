@@ -2,9 +2,9 @@ const dotenv = require('dotenv');
 const { existsSync } = require('fs');
 const path = require('path');
 
-function loadEnv() {
-  const envLocalPath = path.resolve(__dirname, '../.env.local');
-  const envPath = path.resolve(__dirname, '../.env');
+function loadEnv(rootPath = __dirname) {
+  const envLocalPath = path.resolve(rootPath, '.env.local');
+  const envPath = path.resolve(rootPath, '.env');
 
   if (existsSync(envLocalPath)) {
     console.log('Loading .env.local file...');

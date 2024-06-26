@@ -1,25 +1,14 @@
-const { execSync } = require('child_process');
-const { loadEnv } = require('../loadEnv');
+const { runCommand, loadEnv, clearEnvVariable } = require('../utils');
 const pkg = require('../../package.json');
-
-function runCommand(command, options = {}) {
-  try {
-    return execSync(command, { stdio: 'inherit', ...options });
-  } catch (error) {
-    console.error(`Error executing command: ${command}`, error);
-    process.exit(1);
-  }
-}
-
-// Function to clear environment variable
-function clearEnvVariable(variable) {
-  if (process.env[variable]) {
-    delete process.env[variable];
-  }
-}
+const { rootPath } = require('../../config/path.config.cjs');
 
 function main() {
-  loadEnv();
+  loadEnv(rootPath);
+
+  if (process.env.RELEASE === 'false') {
+    console.log('Skip Release');
+    return;
+  }
 
   if (!process.env.NPM_TOKEN) {
     console.error('NPM_TOKEN environment variable is not set.');
