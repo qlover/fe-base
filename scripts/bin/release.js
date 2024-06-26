@@ -1,8 +1,14 @@
 const { runCommand, loadEnv, clearEnvVariable } = require('../utils');
 const pkg = require('../../package.json');
+const { rootPath } = require('../../config/path.config.cjs');
 
 function main() {
-  loadEnv();
+  loadEnv(rootPath);
+
+  if (process.env.RELEASE === 'false') {
+    console.log('Skip Release');
+    return;
+  }
 
   if (!process.env.NPM_TOKEN) {
     console.error('NPM_TOKEN environment variable is not set.');
