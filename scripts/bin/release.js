@@ -75,9 +75,9 @@ class Release {
     const tagResult = runCommand(`git tag`, { stdio: null });
 
     let tags = tagResult.toString().trim().split('\n');
-    log('All Tags:', tags);
-
     tags = tags.map((item) => item.replace(/v/g, '')).sort();
+
+    log('All Tags:', tags);
 
     // FIXME: Tagname can be modified through configuration
     const tagName = tags.length ? tags[tags.length - 1] : pkg.version;
@@ -176,7 +176,7 @@ async function main() {
 
   const prNumber = release.createReleasePR(tagName, releaseBranch);
 
-  release.autoMergePR(prNumber);
+  await release.autoMergePR(prNumber);
 
   release.checkedPR(prNumber, releaseBranch);
 }
