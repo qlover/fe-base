@@ -18,6 +18,13 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Install dependencies
         run: yarn install
+      - name: Install Scripts dependencies
+        run: |
+          cd scripts
+          yarn install
+          cd ..
+      - name: Install dependencies
+        run: yarn install
       - name: Build dist
         run: yarn build
       - name: Config Git

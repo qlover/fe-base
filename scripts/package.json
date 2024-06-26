@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@octokit/rest": "^21.0.0",
     "commander": "^11.1.0"
   }
 }
