@@ -36,8 +36,6 @@ function main() {
 
   console.log('======== Publishing to NPM finish ========');
 
-  const mainBranch = process.env.PR_BRANCH || 'master';
-
   // .release-it git push is false, push tags
   const tagResult = runCommand(`git tag`, { stdio: null });
   const tags = tagResult.toString().trim().split('\n');
@@ -46,14 +44,8 @@ function main() {
   const tagName = tags.length ? tags[tags.length - 1] : pkg.version;
   console.log('Created Tag is:', tagName);
 
-  // when .release-it github.release is flase
-  // runCommand(`git push origin ${tagName}`);
-
-  // use main branch
-  // runCommand(`git checkout ${mainBranch}`);
-  // runCommand(`git branch -d ${releaseBranch}`);
-
   // create a release branch, use new tagName as release branch name
+  const mainBranch = process.env.PR_BRANCH || 'master';
   const releaseBranch = `release-v${tagName}`;
   console.log('Create Release PR branch', releaseBranch);
   runCommand(`git merge origin/${mainBranch}`);
@@ -64,7 +56,7 @@ function main() {
   console.log('Create Release PR');
   runCommand(`echo "${ghToken}" | gh auth login --with-token`);
   runCommand(
-    `gh pr create --title "[From bot] Release ${mainBranch} v${pkg.version}" --body "This PR includes version bump to v${pkg.version}" --base ${mainBranch} --head ${releaseBranch}`
+    `gh pr create --title "[From bot] Release ${mainBranch} v${tagName}" --body "This PR includes version bump to v${tagName}" --base ${mainBranch} --head ${releaseBranch}`
   );
 }
 
