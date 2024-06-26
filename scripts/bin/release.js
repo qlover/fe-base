@@ -37,7 +37,6 @@ function main() {
   console.log('======== Publishing to NPM finish ========');
 
   const mainBranch = process.env.PR_BRANCH || 'master';
-  const releaseBranch = `release-v${pkg.version}`;
 
   // .release-it git push is false, push tags
   const tagResult = runCommand(`git tag`, { stdio: null });
@@ -54,7 +53,8 @@ function main() {
   // runCommand(`git checkout ${mainBranch}`);
   // runCommand(`git branch -d ${releaseBranch}`);
 
-  // create a release branch
+  // create a release branch, use new tagName as release branch name
+  const releaseBranch = `release-v${tagName}`;
   console.log('Create Release PR branch', releaseBranch);
   runCommand(`git merge origin/${mainBranch}`);
   runCommand(`git checkout -b ${releaseBranch}`);
