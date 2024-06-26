@@ -16,9 +16,9 @@
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
     "build": "npx tsc",
-    "clean": "rimraf dist node_modules yarn.lock package-lock.json",
+    "clean": "node ./scripts/bin/clean.js",
     "prettier": "prettier packages --write",
-    "reinit": "npm run clean && yarn",
+    "reinit": "node ./scripts/bin/init.js",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
     "test": "jest",
