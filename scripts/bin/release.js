@@ -21,7 +21,7 @@ const ContentTpl = {
   }
 };
 class Release {
-  constructor() {
+  constructor(Octokit) {
     if (!process.env.NPM_TOKEN) {
       console.error('NPM_TOKEN environment variable is not set.');
       process.exit(1);
@@ -34,7 +34,11 @@ class Release {
     this.ghToken = process.env.GITHUB_TOKEN;
     this.mainBranch = process.env.PR_BRANCH || 'master';
 
+    this.octokit = new Octokit({ auth: this.ghToken });
+
     clearEnvVariable('GITHUB_TOKEN');
+
+    runCommand(`echo "${this.ghToken}" | gh auth login --with-token`);
   }
 
   getPRNumber(output) {
@@ -71,9 +75,9 @@ class Release {
     const tagResult = runCommand(`git tag`, { stdio: null });
 
     let tags = tagResult.toString().trim().split('\n');
-    log('All Tags:', tags);
-
     tags = tags.map((item) => item.replace(/v/g, '')).sort();
+
+    log('All Tags:', tags);
 
     // FIXME: Tagname can be modified through configuration
     const tagName = tags.length ? tags[tags.length - 1] : pkg.version;
@@ -103,7 +107,6 @@ class Release {
 
   createReleasePR(tagName, releaseBranch) {
     log('Create Release PR', tagName, releaseBranch);
-    runCommand(`echo "${this.ghToken}" | gh auth login --with-token`);
 
     const title = ContentTpl.getPRtitle(
       this.mainBranch,
@@ -134,30 +137,38 @@ class Release {
     return prNumber;
   }
 
-  autoMergePR(prNumber) {
+  async autoMergePR(prNumber) {
     if (!prNumber) {
       log('Failed to create Pull Request.', prNumber);
       return;
     }
 
-    log(`Merging PR #${prNumber}`);
-    runCommand(`gh pr merge ${prNumber} --merge --auto`);
+    log(`Merging PR #${prNumber} ...`);
+
+    await this.octokit.pulls.merge({
+      owner: 'qlover',
+      repo: 'fe-base',
+      pull_number: prNumber,
+      merge_method: 'merge' // 合并方式，可以是 merge, squash 或 rebase
+    });
 
     log('Merged successfully');
   }
 
   checkedPR(prNumber, releaseBranch) {
     runCommand(`gh pr view ${prNumber}`);
-    runCommand(`git checkout ${this.mainBranch}`);
-    runCommand(`git branch -d ${releaseBranch}`);
+    // runCommand(`git checkout ${this.mainBranch}`);
+    // runCommand(`git branch -d ${releaseBranch}`);
     runCommand(`git push origin --delete ${releaseBranch}`);
   }
 }
 
-function main() {
+async function main() {
+  const { Octokit } = await import('@octokit/rest');
+
   loadEnv(rootPath);
 
-  const release = new Release();
+  const release = new Release(Octokit);
 
   release.publish();
 
@@ -165,7 +176,7 @@ function main() {
 
   const prNumber = release.createReleasePR(tagName, releaseBranch);
 
-  release.autoMergePR(prNumber);
+  await release.autoMergePR(prNumber);
 
   release.checkedPR(prNumber, releaseBranch);
 }
