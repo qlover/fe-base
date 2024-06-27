@@ -78,4 +78,8 @@ export class Logger {
       this.obtrusive(`Empty ${lowerCase(title)}`);
     }
   }
+
+  success(...args) {
+    this.log('✅', ...args);
+  }
 }

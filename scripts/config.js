@@ -1,4 +1,4 @@
-const cleanFiles = [
+export const cleanFiles = [
   'dist',
   'node_modules',
   'yarn.lock',
@@ -6,7 +6,3 @@ const cleanFiles = [
   '.eslintcache',
   '*.log'
 ];
-
-module.exports = {
-  cleanFiles
-}
