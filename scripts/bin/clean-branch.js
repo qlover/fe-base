@@ -1,5 +1,5 @@
 const { execSync } = require('child_process');
-const readline = require('readline');
+const { createInterface } = require('readline');
 
 // 定义被保护的分支列表
 const protectedBranches = ['master', 'develop', 'main', 'root-src'];
@@ -29,7 +29,7 @@ const branchesToDelete = branches
 
 // Function to ask for user confirmation
 const askUserConfirmation = (branchesToDelete) => {
-  const rl = readline.createInterface({
+  const rl = createInterface({
     input: process.stdin,
     output: process.stdout
   });
