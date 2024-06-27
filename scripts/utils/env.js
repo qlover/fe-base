@@ -1,8 +1,8 @@
-const { config } = require('dotenv');
-const { resolve } = require('path');
-const { Logger } = require('../lib/logger.js');
-const { createRequire } = require('module');
-const { existsSync } = require('fs');
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { Logger } from '../lib/logger.js';
+import { createRequire } from 'module';
+import { existsSync } from 'fs';
 
 const log = new Logger();
 const preloadList = ['.env.local', '.env'];
@@ -45,9 +45,4 @@ function importCJS(id) {
   return require(id);
 }
 
-module.exports = {
-  clearEnvVariable,
-  loadEnv,
-  getEnvDestroy,
-  importCJS
-};
+export { clearEnvVariable, loadEnv, getEnvDestroy, importCJS };

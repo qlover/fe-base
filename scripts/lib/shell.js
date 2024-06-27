@@ -37,6 +37,18 @@ export class Shell {
       : this.execFormattedCommand(command, options);
   }
 
+  /**
+   * 默认不输出
+   * @param {string} command
+   * @param {object} options
+   * @param {object} context
+   * @returns
+   */
+  run(command, options = {}, context = {}) {
+    options = { silent: true, ...options };
+    return this.exec(command, options, context);
+  }
+
   async execFormattedCommand(command, options = {}) {
     const { isDryRun } = this.config;
     const isWrite = options.write !== false;
@@ -71,7 +83,7 @@ export class Shell {
     return new Promise((resolve, reject) => {
       const childProcess = shell.exec(
         command,
-        { async: true },
+        { async: true, ...options },
         (code, stdout, stderr) => {
           stdout = stdout.toString().trimEnd();
           // debug({ command, options, code, stdout, stderr });
