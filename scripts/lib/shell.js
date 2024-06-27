@@ -30,6 +30,14 @@ export class Shell {
     this.log = new Logger();
   }
 
+  /**
+   *
+   * @param {*} command
+   * @param {object} options
+   * @param {boolean} options.silent
+   * @param {*} context
+   * @returns
+   */
   exec(command, options = {}, context = {}) {
     if (!command || !command.length) {
       throw new Error('Command is empty');

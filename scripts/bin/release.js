@@ -34,15 +34,17 @@ async function main() {
     octokit: new Octokit({ auth: ghToken })
   });
 
-  // await release.publish();
+  await release.publish();
 
   const { tagName, releaseBranch } = await release.createReleaseBranch();
 
   const prNumber = await release.createReleasePR(tagName, releaseBranch);
 
-  // await release.autoMergePR(prNumber);
+  await release.autoMergePR(prNumber);
 
-  // await release.checkedPR(prNumber, releaseBranch);
+  await release.checkedPR(prNumber, releaseBranch);
+
+  log.success('Release successfully');
 }
 
 main();

@@ -81,7 +81,7 @@ export class Release {
     //   }
     // });
 
-    this.log.log('Publishing to NPM successfully');
+    this.log.success('Publishing to NPM successfully');
   }
 
   async checkTag() {
@@ -90,9 +90,6 @@ export class Release {
 
     let tags = tagResult.toString().trim().split('\n');
     tags = tags.map((item) => item.replace(/v/g, '')).sort();
-
-    this.log.log('All Tags:', tags);
-
     // FIXME: Tagname can be modified through configuration
     const tagName = tags.length ? tags[tags.length - 1] : this.pkgVersion;
     this.log.log('Created Tag is:', tagName);
@@ -127,32 +124,38 @@ export class Release {
     const body = ContentTpl.getPRBody(tagName);
     const command = `gh pr create --title "${title}" --body "${body}" --base ${this.mainBranch} --head ${releaseBranch}`;
 
-    const output = await this.shell.exec(command);
-
-    if (output.includes('already exists:')) {
-      this.log.log('already PR');
+    let output = '';
+    try {
+      output = await this.shell.run(command);
+    } catch (error) {
+      if (error.toString().includes('already exists:')) {
+        this.log.warn('already PR');
+        output = error.toString();
+      } else {
+        throw error;
+      }
     }
 
     const prNumber = this.getPRNumber(output);
 
     if (!prNumber) {
-      this.log.log('Created PR Failed');
+      this.log.error('Created PR Failed');
       // process.exit(1);
       return;
     }
-    this.log.log('Created PR Successfully');
+    this.log.success('Created PR Successfully');
 
     return prNumber;
   }
 
   async autoMergePR(prNumber) {
     if (!prNumber) {
-      this.log.log('Failed to create Pull Request.', prNumber);
+      this.log.error('Failed to create Pull Request.', prNumber);
       return;
     }
 
     if (!this.repo || !this.owner) {
-      this.log.log('Not round repo or owner!!!');
+      this.log.error('Not round repo or owner!!!');
       process.exit(1);
     }
 
@@ -165,7 +168,7 @@ export class Release {
       merge_method: 'merge' // 合并方式，可以是 merge, squash 或 rebase
     });
 
-    this.log.log('Merged successfully');
+    this.log.success('Merged successfully');
   }
 
   async checkedPR(prNumber, releaseBranch) {
@@ -173,5 +176,7 @@ export class Release {
     // this.shell.exec(`git checkout ${this.mainBranch}`);
     // this.shell.exec(`git branch -d ${releaseBranch}`);
     await this.shell.exec(`git push origin --delete ${releaseBranch}`);
+
+    this.log.success(`Branch ${releaseBranch} has been deleted`);
   }
 }
