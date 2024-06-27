@@ -1,5 +1,13 @@
 
 
+## [1.0.106](https://github.com/qlover/fe-base/compare/1.0.104...1.0.106) (2024-06-27)
+
+
+### Bug Fixes
+
+* change pr branche name ([c35b267](https://github.com/qlover/fe-base/commit/c35b2679b0f7fecdec3c1749896e5a4b9802c811))
+* change pr branche name ([156d9a3](https://github.com/qlover/fe-base/commit/156d9a3cb6cc7c56eba295465b855a1725e192ed))
+
 ## [1.0.102](https://github.com/qlover/fe-base/compare/1.0.99...1.0.102) (2024-06-27)
 
 
