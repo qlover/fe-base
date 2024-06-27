@@ -35,6 +35,7 @@ export class Shell {
    * @param {*} command
    * @param {object} options
    * @param {boolean} options.silent
+   * @param {object} options.env
    * @param {*} context
    * @returns
    */
