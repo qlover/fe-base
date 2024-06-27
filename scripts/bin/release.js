@@ -1,12 +1,16 @@
-const { loadEnv, getEnvDestroy } = require('../utils');
-const { author, repository, version } = require('../../package.json');
-const { rootPath } = require('../../config/path.config.cjs');
-const { Release } = require('../lib/relesae.js');
-const { Logger } = require('../lib/logger.js');
+import { loadEnv, getEnvDestroy } from '../utils/env.js';
+import { rootPath } from '../../config/path.config.cjs';
+import { Release } from '../lib/relesae.js';
+import { Logger } from '../lib/logger.js';
+import { readJSON } from '../utils/files.js';
+
+const pkg = readJSON(new URL('../../package.json', import.meta.url));
+const { author, repository, version } = pkg;
+const repo = repository.url.split('/').pop();
+const log = new Logger();
 
 async function main() {
   loadEnv(rootPath);
-  const log = new Logger();
 
   if (!process.env.NPM_TOKEN) {
     log.error('NPM_TOKEN environment variable is not set.');
@@ -19,26 +23,28 @@ async function main() {
 
   const { Octokit } = await import('@octokit/rest');
 
-  const owner = author;
-  const repo = repository.url.split('/').pop();
-  const octokit = new Octokit({ auth: getEnvDestroy('GITHUB_TOKEN') });
+  const ghToken = getEnvDestroy('GITHUB_TOKEN') || '';
+
   const release = new Release({
     repo,
-    owner,
-    octokit,
+    owner: author,
+    ghToken,
     pkgVersion: version,
-    prBranch: process.env.PR_BRANCH
+    prBranch: process.env.PR_BRANCH,
+    octokit: new Octokit({ auth: ghToken })
   });
 
-  release.publish();
+  await release.publish();
 
-  const { tagName, releaseBranch } = release.createReleaseBranch();
+  const { tagName, releaseBranch } = await release.createReleaseBranch();
 
-  const prNumber = release.createReleasePR(tagName, releaseBranch);
+  const prNumber = await release.createReleasePR(tagName, releaseBranch);
 
   await release.autoMergePR(prNumber);
 
-  release.checkedPR(prNumber, releaseBranch);
+  await release.checkedPR(prNumber, releaseBranch);
+
+  log.success('Release successfully');
 }
 
 main();
