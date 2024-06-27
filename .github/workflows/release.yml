@@ -39,4 +39,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          PR_BRANCH: ${{ github.event.push.head.ref }}
