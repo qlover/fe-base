@@ -1,32 +1,36 @@
-const { runCommand } = require('../utils/runCommand');
 const {
   checkDependencyInstalled,
   getDependencyVersion
 } = require('../utils/dependency');
+const { Logger } = require('../lib/logger.js');
+const { Shell } = require('../lib/shell');
+
+const log = new Logger();
+const shell = new Shell();
 
 function checkYarn() {
   const hasYarn = checkDependencyInstalled('yarn', true);
   if (!hasYarn.global) {
-    console.log(`No Yarn found in the global environment, installing yarn`);
-    runCommand('npm i -g yarn');
+    log.log(`No Yarn found in the global environment, installing yarn`);
+    shell.exec('npm i -g yarn');
   }
   const version = getDependencyVersion('yarn');
-  console.log('Yarn version is: ', version.version);
+  log.log('Yarn version is: ', version.version);
 }
 
 function checkWithInstall(packageName) {
   const hasDeep = checkDependencyInstalled(packageName, true);
   if (!(hasDeep.local || hasDeep.global)) {
-    console.log(hasDeep);
-    console.log(`${packageName} not found, installing ${packageName}`);
-    runCommand(`npm i -g ${packageName}`);
+    log.log(hasDeep);
+    log.log(`${packageName} not found, installing ${packageName}`);
+    shell.exec(`npm i -g ${packageName}`);
   }
   const version = getDependencyVersion(packageName);
-  console.log(`${packageName} version is: `, version.version);
+  log.log(`${packageName} version is: `, version.version);
 }
 
 function main() {
-  console.log(`Current Node.js version is: ${process.version}`);
+  log.log(`Current Node.js version is: ${process.version}`);
 
   // check yarn
   checkYarn();
@@ -37,9 +41,9 @@ function main() {
   // run clean bin
   require('./clean');
 
-  runCommand('yarn --ignore-workspace-root-check');
+  shell.exec('yarn --ignore-workspace-root-check');
 
-  console.log('Initialized successfully');
+  log.log('Initialized successfully');
 }
 
 main();

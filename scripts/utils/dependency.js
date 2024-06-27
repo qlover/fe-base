@@ -1,16 +1,18 @@
-const { execSync } = require('child_process');
+const { Shell } = require('../lib/shell');
+
+const shell = new Shell();
 
 function checkDependencyInstalled(packageName, global = false) {
   const result = { local: false, global: false };
   try {
     // Check locally
-    execSync(`npm list ${packageName}`, { stdio: 'ignore' });
+    shell.exec(`npm list ${packageName}`, { stdio: 'ignore' });
     result.local = true;
   } catch (localError) {
     try {
       if (global) {
         // If not found locally, check globally
-        execSync(`npm list -g ${packageName}`, { stdio: 'ignore' });
+        shell.exec(`npm list -g ${packageName}`, { stdio: 'ignore' });
         result.global = true;
       }
     } catch (globalError) {}
@@ -22,7 +24,7 @@ function checkDependencyInstalled(packageName, global = false) {
 function getGlobalDependencyVersion(dependencyName) {
   const result = { version: '', scope: 'global' };
   try {
-    const stdioResult = execSync(
+    const stdioResult = shell.exec(
       `npm ls -g ${dependencyName} --depth=0 --json`,
       {
         encoding: 'utf8'
