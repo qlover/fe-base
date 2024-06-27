@@ -1,45 +1,25 @@
-const { runCommand } = require('../utils/runCommand');
-const {
-  checkDependencyInstalled,
-  getDependencyVersion
-} = require('../utils/dependency');
+import { checkWithInstall, checkYarn } from '../utils/dependency.js';
+import { Logger } from '../lib/logger.js';
+import { Shell } from '../lib/shell.js';
 
-function checkYarn() {
-  const hasYarn = checkDependencyInstalled('yarn', true);
-  if (!hasYarn.global) {
-    console.log(`No Yarn found in the global environment, installing yarn`);
-    runCommand('npm i -g yarn');
-  }
-  const version = getDependencyVersion('yarn');
-  console.log('Yarn version is: ', version.version);
-}
+const log = new Logger();
+const shell = new Shell();
 
-function checkWithInstall(packageName) {
-  const hasDeep = checkDependencyInstalled(packageName, true);
-  if (!(hasDeep.local || hasDeep.global)) {
-    console.log(hasDeep);
-    console.log(`${packageName} not found, installing ${packageName}`);
-    runCommand(`npm i -g ${packageName}`);
-  }
-  const version = getDependencyVersion(packageName);
-  console.log(`${packageName} version is: `, version.version);
-}
-
-function main() {
-  console.log(`Current Node.js version is: ${process.version}`);
+async function main() {
+  log.log(`Current Node.js version is: ${process.version}`);
 
   // check yarn
-  checkYarn();
+  await checkYarn();
 
   // check rimraf
-  checkWithInstall('rimraf');
+  await checkWithInstall('rimraf');
 
   // run clean bin
-  require('./clean');
+  await import('./clean.js');
 
-  runCommand('yarn --ignore-workspace-root-check');
+  await shell.exec('yarn --ignore-workspace-root-check');
 
-  console.log('Initialized successfully');
+  log.success('Initialized successfully');
 }
 
 main();

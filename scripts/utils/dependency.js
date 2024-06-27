@@ -1,16 +1,22 @@
-const { execSync } = require('child_process');
+import { Logger } from '../lib/logger.js';
+import { Shell } from '../lib/shell.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-function checkDependencyInstalled(packageName, global = false) {
+const shell = new Shell();
+const log = new Logger();
+
+async function checkDependencyInstalled(packageName, global = false) {
   const result = { local: false, global: false };
   try {
     // Check locally
-    execSync(`npm list ${packageName}`, { stdio: 'ignore' });
+    await shell.run(`npm list ${packageName}`);
     result.local = true;
   } catch (localError) {
     try {
       if (global) {
         // If not found locally, check globally
-        execSync(`npm list -g ${packageName}`, { stdio: 'ignore' });
+        await shell.run(`npm list -g ${packageName}`);
         result.global = true;
       }
     } catch (globalError) {}
@@ -19,14 +25,11 @@ function checkDependencyInstalled(packageName, global = false) {
   return result;
 }
 
-function getGlobalDependencyVersion(dependencyName) {
+async function getGlobalDependencyVersion(dependencyName) {
   const result = { version: '', scope: 'global' };
   try {
-    const stdioResult = execSync(
-      `npm ls -g ${dependencyName} --depth=0 --json`,
-      {
-        encoding: 'utf8'
-      }
+    const stdioResult = await shell.run(
+      `npm ls -g ${dependencyName} --depth=0 --json`
     );
     const jsonResult = JSON.parse(stdioResult);
     if (jsonResult.dependencies && jsonResult.dependencies[dependencyName]) {
@@ -38,8 +41,8 @@ function getGlobalDependencyVersion(dependencyName) {
   return result;
 }
 
-function getDependencyVersion(dependencyName) {
-  const has = checkDependencyInstalled(dependencyName, false);
+async function getDependencyVersion(dependencyName) {
+  const has = await checkDependencyInstalled(dependencyName, false);
   // Check local dependency
   if (has.local) {
     try {
@@ -49,16 +52,39 @@ function getDependencyVersion(dependencyName) {
       const localPackageJson = require(localPackageJsonPath);
       return { version: localPackageJson.version, scope: 'local' };
     } catch (error) {
+      log.error(error);
       // Local package.json not found, continue to global check
     }
   }
 
   // Check global dependency
-  return getGlobalDependencyVersion(dependencyName);
+  return await getGlobalDependencyVersion(dependencyName);
 }
 
-module.exports = {
+async function checkWithInstall(packageName) {
+  const hasDeep = await checkDependencyInstalled(packageName, true);
+  if (!(hasDeep.local || hasDeep.global)) {
+    log.error(`${packageName} not found, installing ${packageName}`);
+    await shell.run(`npm i -g ${packageName}`);
+  }
+  const version = await getDependencyVersion(packageName);
+  log.log(`${packageName} version is: v${version.version}`);
+}
+
+async function checkYarn() {
+  const hasYarn = await checkDependencyInstalled('yarn', true);
+  if (!hasYarn.global) {
+    log.warn(`No Yarn found in the global environment, installing yarn`);
+    await shell.run('npm i -g yarn');
+  }
+  const version = await getDependencyVersion('yarn');
+  log.log(`Yarn version is: v${version.version}`);
+}
+
+export {
   checkDependencyInstalled,
   getGlobalDependencyVersion,
-  getDependencyVersion
+  getDependencyVersion,
+  checkWithInstall,
+  checkYarn
 };

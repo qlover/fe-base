@@ -1,29 +1,33 @@
-const { join } = require('path');
-const husky = require('husky');
-const { execSync } = require('child_process');
-const { rootPath } = require('../../config/path.config.cjs');
-const pkg = require('../../package.json');
+import { join } from 'path';
+import { install, add } from 'husky';
+import { rootPath } from '../../config/path.config.cjs';
+import { Shell } from '../lib/shell.js';
+import { readJSON } from '../utils/files.js';
 
-function main() {
-  execSync(`npx rimraf ${rootPath}/.husky`);
+const pkg = readJSON(new URL('../../package.json', import.meta.url));
+const { devDependencies, dependencies } = pkg;
+
+async function main() {
+  const shell = new Shell();
+  await shell.exec(`npx rimraf ${rootPath}/.husky`);
 
   if (
     !(
-      pkg.devDependencies['cz-conventional-changelog'] ||
-      pkg.dependencies['cz-conventional-changelog']
+      devDependencies['cz-conventional-changelog'] ||
+      dependencies['cz-conventional-changelog']
     )
   ) {
-    execSync(
+    await shell.exec(
       'npx commitizen init cz-conventional-changelog --save-dev --save-exact'
     );
   }
 
-  husky.install();
+  install();
   // husky.add(
   //   join(rootPath, '.husky/pre-commit'),
   //   '#!/bin/sh\n. "$(dirname "$0")/_/husky.sh"\nnpm run lint\n'
   // )
-  husky.add(
+  add(
     join(rootPath, '.husky/commit-msg'),
     'npx --no -- commitlint --edit "$1"'
   );

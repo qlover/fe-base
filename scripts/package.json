@@ -2,7 +2,7 @@
   "name": "@qlover/fe-base-scripts",
   "version": "1.0.0",
   "description": "A frontwork scripts",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "setup:husky": "node ./bin/setup-husky.js",
@@ -10,8 +10,11 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": { 
     "@octokit/rest": "^21.0.0",
-    "commander": "^11.1.0"
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "execa": "^9.3.0",
+    "shelljs": "^0.8.5"
   }
 }
