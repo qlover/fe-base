@@ -1,8 +1,8 @@
 // const util  = require( 'node:util')
-const sh = require('shelljs');
-const { execa } = require('execa');
-const { Logger } = require('../lib/logger.js');
-const lodash = require('lodash');
+import shell from 'shelljs';
+import { execa } from 'execa';
+import { Logger } from '../lib/logger.js';
+import lodash from 'lodash';
 // const { format }  = require( './util.js')
 
 // const debug = util.debug('@qlover/fe-bae:shell');
@@ -23,7 +23,7 @@ const format = (template = '', context = {}) => {
 
 const noop = Promise.resolve();
 
-class Shell {
+export class Shell {
   constructor(container = {}) {
     this.config = container.config || {};
     this.cache = new Map();
@@ -69,7 +69,7 @@ class Shell {
 
   execStringCommand(command, options, { isExternal }) {
     return new Promise((resolve, reject) => {
-      const childProcess = sh.exec(
+      const childProcess = shell.exec(
         command,
         { async: true },
         (code, stdout, stderr) => {
@@ -109,5 +109,3 @@ class Shell {
     }
   }
 }
-
-module.exports = { Shell };

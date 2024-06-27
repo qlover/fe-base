@@ -1,7 +1,7 @@
-const { join } = require('path');
-const { rootPath } = require('../../config/path.config.cjs');
-const { bootstrap } = require('commitizen/dist/cli/git-cz');
-const { Shell } = require('../lib/shell.js');
+import { join } from 'path';
+import { rootPath } from '../../config/path.config.cjs';
+import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
+import { Shell } from '../lib/shell.js';
 
 function main() {
   const shell = new Shell();

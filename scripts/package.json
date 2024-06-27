@@ -2,7 +2,7 @@
   "name": "@qlover/fe-base-scripts",
   "version": "1.0.0",
   "description": "A frontwork scripts",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "setup:husky": "node ./bin/setup-husky.js",
