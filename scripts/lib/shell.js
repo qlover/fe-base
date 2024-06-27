@@ -31,7 +31,9 @@ export class Shell {
   }
 
   exec(command, options = {}, context = {}) {
-    if (!command || !command.length) return;
+    if (!command || !command.length) {
+      throw new Error('Command is empty');
+    }
     return typeof command === 'string'
       ? this.execFormattedCommand(format(command, context), options)
       : this.execFormattedCommand(command, options);
@@ -81,7 +83,7 @@ export class Shell {
 
   execStringCommand(command, options, { isExternal }) {
     return new Promise((resolve, reject) => {
-      const childProcess = shell.exec(
+      shell.exec(
         command,
         { async: true, ...options },
         (code, stdout, stderr) => {
@@ -94,12 +96,12 @@ export class Shell {
           }
         }
       );
-      childProcess.stdout.on('data', (stdout) =>
-        this.log.verbose(stdout.toString().trimEnd(), { isExternal })
-      );
-      childProcess.stderr.on('data', (stderr) =>
-        this.log.verbose(stderr.toString().trimEnd(), { isExternal })
-      );
+      // childProcess.stdout.on('data', (stdout) =>
+      //   this.log.verbose(stdout.toString().trimEnd(), { isExternal })
+      // );
+      // childProcess.stderr.on('data', (stderr) =>
+      //   this.log.verbose(stderr.toString().trimEnd(), { isExternal })
+      // );
     });
   }
 

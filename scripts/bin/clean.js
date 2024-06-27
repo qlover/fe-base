@@ -1,6 +1,14 @@
-import { cleanFiles } from '../config.js';
 import { Logger } from '../lib/logger.js';
 import { Shell } from '../lib/shell.js';
+
+const cleanFiles = [
+  'dist',
+  'node_modules',
+  'yarn.lock',
+  'package-lock.json',
+  '.eslintcache',
+  '*.log'
+];
 
 function main() {
   const log = new Logger();
