@@ -1,51 +1,50 @@
-const { execSync } = require('child_process');
-const { loadEnv } = require('../loadEnv');
+import { loadEnv, getEnvDestroy } from '../utils/env.js';
+import { rootPath } from '../../config/path.config.cjs';
+import { Release } from '../lib/relesae.js';
+import { Logger } from '../lib/logger.js';
+import { readJSON } from '../utils/files.js';
 
-function runCommand(command, options = {}) {
-  try {
-    execSync(command, { stdio: 'inherit', ...options });
-  } catch (error) {
-    console.error(`Error executing command: ${command}`, error);
-    process.exit(1);
-  }
-}
+const pkg = readJSON(new URL('../../package.json', import.meta.url));
+const { author, repository, version } = pkg;
+const repo = repository.url.split('/').pop();
+const log = new Logger();
 
-function main() {
-  loadEnv();
+async function main() {
+  loadEnv(rootPath);
 
   if (!process.env.NPM_TOKEN) {
-    console.error('NPM_TOKEN environment variable is not set.');
+    log.error('NPM_TOKEN environment variable is not set.');
     process.exit(1);
   }
   if (!process.env.GITHUB_TOKEN) {
-    console.error('GITHUB_TOKEN environment variable is not set.');
+    log.error('GITHUB_TOKEN environment variable is not set.');
     process.exit(1);
   }
 
-  runCommand(
-    `echo "//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}" > .npmrc`
-  );
+  const { Octokit } = await import('@octokit/rest');
 
-  // // 确保设置了上游分支
-  // try {
-  //   runCommand('git branch -a');
-  //   const branchName = execSync('git rev-parse --abbrev-ref HEAD')
-  //     .toString()
-  //     .trim();
-  //   console.log(`Current branch is ${branchName}`);
-  //   runCommand(`git push --set-upstream origin ${branchName}`);
-  // } catch (error) {
-  //   console.error('Failed to set upstream branch.');
-  //   process.exit(1);
-  // }
+  const ghToken = getEnvDestroy('GITHUB_TOKEN') || '';
 
-  console.log('Publishing to NPM and GitHub...');
-  runCommand('npx release-it --ci', {
-    env: {
-      ...process.env,
-      NPM_TOKEN: process.env.NPM_TOKEN
-    }
+  const release = new Release({
+    repo,
+    owner: author,
+    ghToken,
+    pkgVersion: version,
+    prBranch: process.env.PR_BRANCH,
+    octokit: new Octokit({ auth: ghToken })
   });
+
+  await release.publish();
+
+  const { tagName, releaseBranch } = await release.createReleaseBranch();
+
+  const prNumber = await release.createReleasePR(tagName, releaseBranch);
+
+  await release.autoMergePR(prNumber);
+
+  await release.checkedPR(prNumber, releaseBranch);
+
+  log.success('Release successfully');
 }
 
 main();

@@ -1,13 +1,13 @@
-const { program } = require('commander');
-const { join } = require('path');
-const { rootPath } = require('../../config/path.config.cjs');
-const { exec } = require('child_process');
+import { program } from 'commander';
+import { join } from 'path';
+import { rootPath } from '../../config/path.config.cjs';
+import { exec } from 'child_process';
 
 program.option('-p, --path', 'run script path');
 
 program.parse();
 
-function main() {
+async function main() {
   const path = program.args[0];
 
   if (!path) {
@@ -16,15 +16,13 @@ function main() {
   }
 
   const scriptPath = join(rootPath, path);
-  const scriptCMD = `ts-node-esm ${scriptPath}`;
-
-  // console.log('script path is', scriptPath)
+  // FIXME: (node:93152) ExperimentalWarning: --experimental-loader may be removed in the future; instead use register():
+  const scriptCMD = `node --loader ts-node/esm ${scriptPath}`;
 
   exec(scriptCMD, (error, stdout, stderr) => {
     if (error) {
       console.log('[Error]', error);
     } else {
-      console.log('[Success]');
       console.log(stdout);
     }
   });

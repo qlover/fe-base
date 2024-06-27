@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-base",
-  "version": "1.0.26",
+  "version": "1.0.106",
   "description": "A base frontwork",
   "type": "module",
   "private": false,
@@ -9,18 +9,24 @@
     "package.json",
     "REMEAD.md"
   ],
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/qlover/fe-base"
+  },
+  "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
     "build": "npx tsc",
-    "clean": "rimraf dist node_modules yarn.lock package-lock.json",
+    "clean": "node ./scripts/bin/clean.js",
     "prettier": "prettier packages --write",
-    "reinit": "npm run clean && yarn",
+    "reinit": "node ./scripts/bin/init.js",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
-    "setup:husky": "node scripts/bin/setupHusky",
+    "test": "jest",
+    "setup:husky": "node scripts/bin/setup-husky.js",
     "commit": "node ./scripts/bin/commit.js",
     "release": "node ./scripts/bin/release.js",
     "ts-run": "node ./scripts/bin/ts-run.js",
-    "test": "jest"
+    "clean:branch": "node ./scripts/bin/clean-branch.js"
   },
   "keywords": [],
   "author": "qlover",
@@ -29,7 +35,7 @@
     "access": "public"
   },
   "devEngines": {
-    "node": ">=18.18.0"
+    "node": ">=18.19.0"
   },
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
@@ -40,7 +46,7 @@
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "commander": "^12.0.0",
+    "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.0.1",
