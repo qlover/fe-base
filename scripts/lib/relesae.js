@@ -64,34 +64,25 @@ export class Release {
     this.log.log('Publishing to NPM and GitHub...');
 
     await this.shell.exec(
-      `echo "${this.ghToken}" | gh auth login --with-token`
-    );
-
-    await this.shell.exec(
       `echo "//registry.npmjs.org/:_authToken=${this.npmToken}" > .npmrc`
     );
 
-    await this.shell.exec('npx release-it --ci');
-
-    // await this.shell.exec('npx release-it --ci', {
-    //   env: {
-    //     ...process.env,
-    //     // NPM_TOKEN: this.npmToken,
-    //     // GITHUB_TOKEN: this.ghToken
-    //   }
-    // });
+    await this.shell.exec('npx release-it --ci', {
+      env: {
+        ...process.env,
+        NPM_TOKEN: this.npmToken,
+        GITHUB_TOKEN: this.ghToken
+      }
+    });
 
     this.log.success('Publishing to NPM successfully');
   }
 
   async checkTag() {
-    // .release-it git push is false, push tags
-    const tagResult = await this.shell.exec(`git tag`, { silent: true });
-
-    let tags = tagResult.toString().trim().split('\n');
-    tags = tags.map((item) => item.replace(/v/g, '')).sort();
-    // FIXME: Tagname can be modified through configuration
-    const tagName = tags.length ? tags[tags.length - 1] : this.pkgVersion;
+    const lastTag = await this.shell.exec(`git describe --tags --abbrev=0`, {
+      silent: true
+    });
+    const tagName = lastTag || this.pkgVersion;
     this.log.log('Created Tag is:', tagName);
 
     return { tagName };
@@ -119,6 +110,10 @@ export class Release {
 
   async createReleasePR(tagName, releaseBranch) {
     this.log.log('Create Release PR', tagName, releaseBranch);
+
+    await this.shell.exec(
+      `echo "${this.ghToken}" | gh auth login --with-token`
+    );
 
     const title = ContentTpl.getPRtitle(this.mainBranch, tagName, this.env);
     const body = ContentTpl.getPRBody(tagName);
