@@ -1,5 +1,13 @@
 
 
+## [1.0.102](https://github.com/qlover/fe-base/compare/1.0.99...1.0.102) (2024-06-27)
+
+
+### Bug Fixes
+
+* get release pr-branch ([7b07706](https://github.com/qlover/fe-base/commit/7b07706596a2dd18330023bc74dec55f4387916b))
+* get release pr-branch ([981276b](https://github.com/qlover/fe-base/commit/981276b95d6213486b23567b33db3bbef9401ddb))
+
 ## [1.0.99](https://github.com/qlover/fe-base/compare/1.0.98...1.0.99) (2024-06-26)
 
 ## [1.0.98](https://github.com/qlover/fe-base/compare/1.0.97...1.0.98) (2024-06-26)
