@@ -56,11 +56,6 @@ export class Release {
   }
 
   async publish() {
-    if (process.env.RELEASE === 'false') {
-      this.log.log('Skip Release');
-      return;
-    }
-
     this.log.log('Publishing to NPM and GitHub...');
 
     await this.shell.exec(
