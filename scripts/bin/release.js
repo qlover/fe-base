@@ -12,6 +12,11 @@ const log = new Logger();
 async function main() {
   loadEnv(rootPath);
 
+  if (process.env.RELEASE === 'false') {
+    log.warn('Skip Release');
+    return;
+  }
+
   if (!process.env.NPM_TOKEN) {
     log.error('NPM_TOKEN environment variable is not set.');
     process.exit(1);
