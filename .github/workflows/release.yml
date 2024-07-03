@@ -18,11 +18,6 @@ jobs:
           repository: ${{ github.event.push.head.repo.full_name }}
       - name: Install dependencies
         run: yarn install
-      - name: Install Scripts dependencies
-        run: |
-          cd scripts
-          yarn install
-          cd ..
       - name: Install dependencies
         run: yarn install
       - name: Build dist
@@ -34,7 +29,7 @@ jobs:
       # !!!open Workflow permissions setting, Actions -> general -> Workflow permissions -> Read and write permissions
       # When releasing, a commit will be created and then submitted to the branch, creating a PR to merge with the protected branch
       - name: Publishing to NPM and GitHub
-        run: npm run release
+        run: npx fe-release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
