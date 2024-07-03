@@ -29,7 +29,7 @@ jobs:
       # !!!open Workflow permissions setting, Actions -> general -> Workflow permissions -> Read and write permissions
       # When releasing, a commit will be created and then submitted to the branch, creating a PR to merge with the protected branch
       - name: Publishing to NPM and GitHub
-        run: npx fe-release
+        run: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
