@@ -19,11 +19,7 @@
     "prettier": "prettier packages --write",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
-    "test": "jest",
-    "reinit": "fe-reinit",
-    "clean": "fe-clean",
-    "commit": "fe-commit",
-    "release": "fe-relesae"
+    "test": "jest"
   },
   "keywords": [],
   "author": "qlover",
