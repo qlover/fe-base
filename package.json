@@ -35,7 +35,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
-    "@qlover/fe-scripts": "0.0.5",
+    "@qlover/fe-scripts": "^0.0.6",
     "@release-it/conventional-changelog": "^8.0.1",
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
