@@ -1,5 +1,20 @@
 
 
+## [1.0.112](https://github.com/qlover/fe-base/compare/1.0.111...1.0.112) (2024-07-04)
+
+## [1.0.111](https://github.com/qlover/fe-base/compare/1.0.110...1.0.111) (2024-07-03)
+
+## [1.0.110](https://github.com/qlover/fe-base/compare/1.0.109...1.0.110) (2024-07-03)
+
+## [1.0.109](https://github.com/qlover/fe-base/compare/1.0.108...1.0.109) (2024-07-03)
+
+
+### Reverts
+
+* Revert "build: add quick script name (#76)" (#77) ([9768385](https://github.com/qlover/fe-base/commit/9768385c4ab50446f557b1e68702183c257e1049)), closes [#76](https://github.com/qlover/fe-base/issues/76) [#77](https://github.com/qlover/fe-base/issues/77)
+
+## [1.0.108](https://github.com/qlover/fe-base/compare/1.0.107...1.0.108) (2024-07-03)
+
 ## [1.0.107](https://github.com/qlover/fe-base/compare/1.0.106...1.0.107) (2024-07-01)
 
 ## [1.0.106](https://github.com/qlover/fe-base/compare/1.0.104...1.0.106) (2024-06-27)
