@@ -7,6 +7,7 @@ on:
 
 jobs:
   check-code:
+    if: contains(github.event.head_commit.message, 'chore(tag)') == false
     runs-on: ubuntu-latest
 
     steps:
