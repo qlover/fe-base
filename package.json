@@ -23,7 +23,8 @@
     "reinit": "fe-reinit",
     "clean": "fe-clean",
     "commit": "fe-commit",
-    "release": "fe-release"
+    "release": "fe-release",
+    "update-version": "fe-update-version"
   },
   "keywords": [],
   "author": "qlover",
