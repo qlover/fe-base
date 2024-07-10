@@ -2,7 +2,7 @@ name: FE Release build/tsup
 on:
   pull_request:
     branches:
-      - build/tsup
+      - master
     types:
       - closed
 
