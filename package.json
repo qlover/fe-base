@@ -3,7 +3,7 @@
   "version": "1.0.113",
   "description": "A base frontwork",
   "type": "module",
-  "private": false,
+  "private": true,
   "files": [
     "dist",
     "package.json",
@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "npx tsc",
+    "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "prettier": "prettier packages --write",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
@@ -56,5 +56,8 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typescript": "*"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

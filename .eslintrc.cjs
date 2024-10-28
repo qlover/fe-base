@@ -35,5 +35,6 @@ module.exports = {
     sourceType: 'module',
     project: ['./tsconfig.json'],
     tsconfigRootDir: __dirname
-  }
+  },
+  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/build/**']
 };
