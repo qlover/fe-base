@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-utils",
   "description": "A utils for frontwork",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "files": [
@@ -9,6 +9,19 @@
     "package.json",
     "README.md"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./server": {
+      "require": "./dist/server/index.cjs",
+      "import": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "github",
     "url": "https://github.com/qlover/fe-base",
