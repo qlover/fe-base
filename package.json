@@ -13,7 +13,7 @@
     "type": "github",
     "url": "https://github.com/qlover/fe-base"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",
+  "homepage": "https://github.com/qlover/fe-base#readme",,
   "scripts": {
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "prettier": "prettier packages --write",
@@ -26,7 +26,7 @@
     "release": "fe-release",
     "update-version": "fe-update-version"
   },
-  "keywords": [],
+  "keywords": ["fe", "fe-base"],
   "author": "qlover",
   "license": "ISC",
   "publishConfig": {

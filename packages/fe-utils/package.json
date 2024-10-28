@@ -1,8 +1,8 @@
 {
   "name": "@qlover/fe-utils",
   "description": "A utils for frontwork",
-  "version": "0.0.1",
-  "private": true,
+  "version": "1.0.0",
+  "private": false,
   "type": "module",
   "files": [
     "dist",
@@ -23,11 +23,20 @@
     "./package.json": "./package.json"
   },
   "repository": {
-    "type": "github",
-    "url": "https://github.com/qlover/fe-base",
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/fe-utils"
   },
   "homepage": "https://github.com/qlover/fe-base/tree/main/packages/fe-utils#readme",
+  "keywords": [
+    "utils",
+    "fe-utils"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "test": "vitest run"
