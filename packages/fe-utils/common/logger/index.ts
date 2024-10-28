@@ -1,4 +1,11 @@
-import { first, last, isObject, isString, isArray } from 'lodash-es';
+import {
+  first,
+  last,
+  isPlainObject,
+  isString,
+  isArray,
+  isObject
+} from 'lodash-es';
 
 export const LEVELS = {
   LOG: 'LOG',
@@ -46,8 +53,8 @@ export class Logger {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  prefix(value: string, _level: LogLevel): string | string[] {
-    return value;
+  prefix(value: string, _level?: LogLevel): string | string[] {
+    return value + ' ';
   }
 
   log(...args: LogArgument[]): void {
@@ -55,15 +62,15 @@ export class Logger {
   }
 
   info(...args: LogArgument[]): void {
-    this.print(LEVELS.INFO, this.prefix('INFO', LEVELS.INFO), ...args);
+    this.print(LEVELS.INFO, this.prefix(LEVELS.INFO), ...args);
   }
 
   warn(...args: LogArgument[]): void {
-    this.print(LEVELS.WARN, this.prefix('WARNING', LEVELS.WARN), ...args);
+    this.print(LEVELS.WARN, this.prefix(LEVELS.WARN), ...args);
   }
 
   error(...args: LogArgument[]): void {
-    this.print(LEVELS.ERROR, this.prefix('ERROR', LEVELS.ERROR), ...args);
+    this.print(LEVELS.ERROR, this.prefix(LEVELS.ERROR), ...args);
   }
 
   debug(...args: LogArgument[]): void {
@@ -75,7 +82,7 @@ export class Logger {
 
       this.print(
         LEVELS.DEBUG,
-        this.prefix('DEBUG', LEVELS.DEBUG),
+        this.prefix(LEVELS.DEBUG),
         firstValue,
         ...args.slice(1)
       );
@@ -90,14 +97,13 @@ export class Logger {
   }
 
   exec(...args: (LogArgument | ExecOptions)[]): void {
-    const lastArg = last(args);
-    const { isDryRun, isExternal: isExecutedInDryRun } = (
-      isObject(lastArg) ? lastArg : {}
-    ) as ExecOptions;
-    if (isDryRun || this.isDryRun || isExecutedInDryRun) {
-      const prefix = isExecutedInDryRun == null ? '$' : '!';
+    const lastArg = isPlainObject(last(args)) ? last(args) : undefined;
+    const { isDryRun, isExternal } = (lastArg || {}) as ExecOptions;
+
+    if (isDryRun || this.isDryRun) {
+      const prefix = isExternal == null ? '$' : '!';
       const command = args
-        .slice(0, -1)
+        .slice(0, lastArg == null ? undefined : -1)
         .map((cmd) =>
           isString(cmd) ? cmd : isArray(cmd) ? cmd.join(' ') : String(cmd)
         )

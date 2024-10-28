@@ -7,12 +7,22 @@ export class StringZlibEncrypt implements Encryptor<string, string> {
   private ALGORITHM = 'aes-128-cbc';
   private KEY: Buffer;
   private IV_LENGTH = 16;
-
+  private KEY_LENGTH = 16;
   constructor(
     encryptionKey: string,
     private readonly encoding: BufferEncoding = 'base64'
   ) {
-    this.KEY = Buffer.from(encryptionKey, this.encoding).slice(0, 16);
+    this.KEY = this.validateKey(encryptionKey);
+  }
+
+  private validateKey(key: string): Buffer {
+    const keyBuffer = Buffer.from(key.slice(0, this.KEY_LENGTH));
+    if (keyBuffer.length !== this.KEY_LENGTH) {
+      throw new RangeError(
+        `Invalid key length. Expected ${this.KEY_LENGTH} bytes, got ${keyBuffer.length} bytes`
+      );
+    }
+    return keyBuffer;
   }
 
   encrypt(value: string): string {

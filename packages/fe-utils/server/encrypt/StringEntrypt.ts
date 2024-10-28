@@ -5,12 +5,25 @@ import { Encryptor } from './Encryptor';
 export class StringEntrypt implements Encryptor<string, string> {
   private ALGORITHM = 'aes-256-cbc';
   private KEY: Buffer;
+  private KEY_LENGTH = 32; // AES-256 needs 32 bytes key
 
   constructor(
     encryptionKey: string,
     private readonly encoding: BufferEncoding = 'base64'
   ) {
-    this.KEY = Buffer.from(encryptionKey, this.encoding);
+    this.KEY = this.validateKey(encryptionKey);
+  }
+
+  private validateKey(key: string): Buffer {
+    const keyBuffer = Buffer.from(key.slice(0, this.KEY_LENGTH));
+
+    if (keyBuffer.length !== this.KEY_LENGTH) {
+      throw new RangeError(
+        `Invalid key length. Expected ${this.KEY_LENGTH} bytes, got ${keyBuffer.length} bytes`
+      );
+    }
+
+    return keyBuffer;
   }
 
   encrypt(value: string): string {
