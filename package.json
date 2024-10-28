@@ -3,7 +3,7 @@
   "version": "1.0.113",
   "description": "A base frontwork",
   "type": "module",
-  "private": false,
+  "private": true,
   "files": [
     "dist",
     "package.json",
@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "npx tsc",
+    "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "prettier": "prettier packages --write",
     "eslint": "eslint packages --ext .js,.ts --cache --fix",
     "lint": "eslint packages --ext .js,.ts --cache --fix",
@@ -26,7 +26,10 @@
     "release": "fe-release",
     "update-version": "fe-update-version"
   },
-  "keywords": [],
+  "keywords": [
+    "fe",
+    "fe-base"
+  ],
   "author": "qlover",
   "license": "ISC",
   "publishConfig": {
@@ -37,11 +40,14 @@
   },
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.23.3",
     "@qlover/fe-scripts": "^0.0.28",
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^40.0.0",
@@ -56,5 +62,8 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typescript": "*"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
