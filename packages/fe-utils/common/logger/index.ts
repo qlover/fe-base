@@ -1,11 +1,9 @@
-import {
-  first,
-  last,
-  isPlainObject,
-  isString,
-  isArray,
-  isObject
-} from 'lodash-es';
+import first from 'lodash/first';
+import last from 'lodash/last';
+import isPlainObject from 'lodash/isPlainObject';
+import isString from 'lodash/isString';
+import isArray from 'lodash/isArray';
+import isObject from 'lodash/isObject';
 
 export const LEVELS = {
   LOG: 'LOG',

@@ -13,7 +13,7 @@
     "type": "github",
     "url": "https://github.com/qlover/fe-base"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",,
+  "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "prettier": "prettier packages --write",
@@ -26,7 +26,10 @@
     "release": "fe-release",
     "update-version": "fe-update-version"
   },
-  "keywords": ["fe", "fe-base"],
+  "keywords": [
+    "fe",
+    "fe-base"
+  ],
   "author": "qlover",
   "license": "ISC",
   "publishConfig": {
@@ -37,11 +40,14 @@
   },
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.23.3",
     "@qlover/fe-scripts": "^0.0.28",
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^40.0.0",
