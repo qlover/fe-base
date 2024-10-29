@@ -40,12 +40,8 @@
   },
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@qlover/fe-scripts": "^0.0.28",
     "@types/jest": "^29.5.11",
-    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
     "typescript": "*"
