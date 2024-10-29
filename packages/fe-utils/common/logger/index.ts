@@ -50,7 +50,6 @@ export class Logger {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prefix(value: string, _level?: LogLevel): string | string[] {
     return value + ' ';
   }

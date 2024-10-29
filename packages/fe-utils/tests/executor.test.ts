@@ -147,7 +147,7 @@ describe('ExecutorPlugin Chain', () => {
     let finalResult = '';
 
     const plugin1: ExecutorPlugin<string> = {
-      onSuccess: (): any => undefined
+      onSuccess: (): string => ''
     };
 
     const plugin2: ExecutorPlugin<string> = {

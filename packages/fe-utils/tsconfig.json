@@ -11,8 +11,5 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./"
   },
-  "include": [
-    "common/**/*",
-    "server/**/*"
-  ]
+  "include": ["common/**/*", "server/**/*"]
 }

@@ -1,44 +1,13 @@
 {
+  "extends": "./packages/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
-    // 允许
-    "allowJs": true,
-    "baseUrl": ".",
-    "rootDir": "./",
-    "target": "ESNEXT",
-    "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
-    /* Strict Type-Checking Options */
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Node",
-    "paths": {
-      "config/*": [
-        "./config/*"
-      ]
-    }
+    "rootDir": "./"
   },
-  // 保证 ts-node 执行正确
-  // https://github.com/TypeStrong/ts-node/issues/422
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
     "transpileOnly": true
   },
-  "include": [
-    "./packages",
-  ],
-  "exclude": [
-    "node_modules",
-    "**/dist",
-    "**/build"
-  ]
+  "include": ["./packages"],
+  "exclude": ["node_modules", "**/dist", "**/build"]
 }
