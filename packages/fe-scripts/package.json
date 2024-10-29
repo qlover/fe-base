@@ -7,14 +7,29 @@
     ".": {
       "require": "./lib/index.js",
       "import": "./lib/index.js",
-      "types": "./types/index.d.ts"
+      "types": "./index.d.ts"
+    },
+    "./scripts": {
+      "require": "./scripts/index.js",
+      "import": "./scripts/index.js",
+      "types": "./scripts/index.d.ts"
+    },
+    "./lib": {
+      "require": "./lib/index.js",
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
     },
     "./package.json": "./package.json"
   },
-  "types": "./types/index.d.ts",
+  "types": "./index.d.ts",
   "files": [
+    "bin",
+    "lib",
+    "scripts",
+    "container.js",
     "package.json",
     "commitlint.config.js",
+    "type.d.ts",
     ".release-it.json",
     "README.md"
   ],
