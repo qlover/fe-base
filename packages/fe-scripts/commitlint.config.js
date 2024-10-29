@@ -1,3 +1,4 @@
+import { feConfig } from './container.js';
 export default {
-  extends: ['@commitlint/config-conventional']
+  ...feConfig.config.commitlint
 };
