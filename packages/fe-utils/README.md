@@ -15,4 +15,4 @@ import { Logger } from '@qlover/fe-utils';
 
 const logger = new Logger();
 logger.info('Hello, world!');
-``` 
+```

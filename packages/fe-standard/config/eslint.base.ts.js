@@ -17,7 +17,15 @@ export default {
     prettier
   },
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': [
+      'error',
+      {
+        semi: true,
+        singleQuote: true,
+        trailingComma: 'none',
+        endOfLine: 'lf'
+      }
+    ],
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off',
     '@typescript-eslint/explicit-function-return-type': 'error',
