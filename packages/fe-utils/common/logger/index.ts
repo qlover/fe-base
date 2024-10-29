@@ -111,7 +111,7 @@ export class Logger {
     }
   }
 
-  obtrusive(...args: LogArgument[]): void {
+  obtrusive(...args: LogArgument[]) {
     if (!this.isCI) this.log();
     this.log(...args);
     if (!this.isCI) this.log();

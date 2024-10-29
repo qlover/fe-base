@@ -1,7 +1,3 @@
-// const OFF = 0;
-// const WARNING = 1;
-const ERROR = 2;
-
 module.exports = {
   env: { node: true, jest: true },
   overrides: [
@@ -12,21 +8,17 @@ module.exports = {
       }
     },
     {
-      ...require('./config/eslint/base.json'),
+      ...require('./packages/fe-standard/config/eslint.base.json'),
       files: ['packages/**/*.js']
     },
     {
-      ...require('./config/eslint/base.ts.json'),
+      ...require('./packages/fe-standard/config/eslint.base.ts.json'),
       files: ['packages/**/*.ts']
     },
     {
       files: ['**/*.test.js', '**/*.spec.js'],
-      rules: {
-        // https://github.com/jest-community/eslint-plugin-jest
-        'jest/no-focused-tests': ERROR,
-        'jest/valid-expect': ERROR,
-        'jest/valid-expect-in-promise': ERROR
-      }
+      // https://github.com/jest-community/eslint-plugin-jest
+      ...require('./packages/fe-standard/config/eslint.jest.json')
     }
   ],
   plugins: ['jest'],
