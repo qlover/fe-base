@@ -2,14 +2,11 @@ import { cosmiconfigSync } from 'cosmiconfig';
 import lodash from 'lodash';
 
 function getDefaultSearchPlaces(name) {
+  const exts = ['json', 'js', 'ts', 'cjs', 'yaml', 'yml'];
   return [
     'package.json',
-    `.${name}.json`,
-    `.${name}.js`,
-    `.${name}.ts`,
-    `.${name}.cjs`,
-    `.${name}.yaml`,
-    `.${name}.yml`
+    ...exts.map((ext) => `${name}.${ext}`),
+    ...exts.map((ext) => `.${name}.${ext}`)
   ];
 }
 

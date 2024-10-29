@@ -13,5 +13,6 @@ export const feConfig = new ConfigSearch({
   name: 'fe-config',
   defaultConfig: defaultConfig
 });
+feConfig.search();
 
 export const logger = new ScriptsLogger();

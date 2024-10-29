@@ -45,7 +45,8 @@
   "devDependencies": {
     "cosmiconfig": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "commander": "^11.0.0"
   },
   "dependencies": {
     "@qlover/fe-utils": "^1.0.2"
