@@ -9,6 +9,7 @@
     "package.json",
     "README.md"
   ],
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.cjs",

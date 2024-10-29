@@ -1,15 +1,13 @@
 import prettier from 'eslint-plugin-prettier';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import globals from 'globals';
 
 export default {
   languageOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
-    globals: {
-      browser: true,
-      node: true
-    },
+    globals: globals,
     parser: tsParser
   },
   plugins: {

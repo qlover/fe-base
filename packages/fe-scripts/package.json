@@ -1,0 +1,53 @@
+{
+  "name": "@qlover/fe-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "exports": {
+    ".": {
+      "require": "./lib/index.js",
+      "import": "./lib/index.js",
+      "types": "./types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./types/index.d.ts",
+  "files": [
+    "package.json",
+    "commitlint.config.js",
+    ".release-it.json",
+    "README.md"
+  ],
+  "bin": {
+    "fe-clean": "./bin/clean.js",
+    "fe-clean-branch": "./bin/clean-branch.js",
+    "fe-commit": "./bin/commit.js",
+    "fe-setup-husky": "./bin/setup-husky.js"
+  },
+  "scripts": {
+    "clean": "node ./bin/clean.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/fe-scripts"
+  },
+  "homepage": "https://github.com/qlover/fe-base#readme",
+  "keywords": [
+    "fe-scripts",
+    "scripts"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "cosmiconfig": "^9.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "^1.0.2"
+  }
+}
