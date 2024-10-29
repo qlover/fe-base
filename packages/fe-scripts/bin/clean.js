@@ -21,7 +21,7 @@ async function programArgs() {
       .parse(process.argv);
 
     return program.opts();
-  } catch (error) {
+  } catch {
     // if commander is not available, parse arguments manually
     const args = process.argv.slice(2);
     return {

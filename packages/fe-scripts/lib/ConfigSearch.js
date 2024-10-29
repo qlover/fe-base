@@ -22,6 +22,9 @@ export class ConfigSearch {
     this.loaders = loaders;
   }
 
+  /**
+   * @returns {import('@qlover/fe-scripts').FeConfig}
+   */
   get config() {
     return lodash.defaultsDeep({}, this.search(), this._config);
   }

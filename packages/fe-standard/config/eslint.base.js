@@ -5,7 +5,10 @@ export default {
   languageOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
-    globals: globals
+    globals: {
+      ...globals.node,
+      ...globals.browser
+    }
   },
   plugins: {
     prettier: prettier

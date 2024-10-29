@@ -3,11 +3,6 @@ declare module '@qlover/fe-scripts' {
     _default: any;
   };
 
-  export type SerachConfig = {
-    name: string;
-    config: SearchConfigType;
-  };
-
   export type FeScriptRelease = {
     /**
      * Whether to automatically merge PR when creating and publishing
@@ -64,7 +59,7 @@ declare module '@qlover/fe-scripts' {
     };
   };
 
-  export type FeScriptsConfig = {
+  export type FeConfig = {
     /**
      * Run `fe-clean-branch` to exclude branches
      *

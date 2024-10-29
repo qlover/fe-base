@@ -1,3 +1,9 @@
 {
-  "protectedBranches": ["master", "develop", "main"]
+  "protectedBranches": [
+    "master",
+    "build/tsup",
+    "merge-packages",
+    "root-src",
+    "test"
+  ]
 }

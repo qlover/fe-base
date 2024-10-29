@@ -1,4 +1,4 @@
-import { ConfigSearch, ScriptsLogger } from './lib/index.js';
+import { ConfigSearch, ScriptsLogger, Shell } from './lib/index.js';
 import path, { dirname } from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -16,3 +16,5 @@ export const feConfig = new ConfigSearch({
 feConfig.search();
 
 export const logger = new ScriptsLogger();
+
+export const shell = new Shell({ log: logger, config: { isDryRun: false } });

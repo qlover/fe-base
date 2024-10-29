@@ -20,7 +20,8 @@
     "eslint": "eslint . --fix",
     "lint": "eslint . --fix",
     "test": "jest",
-    "clean": "fe-clean"
+    "clean": "fe-clean",
+    "clean-branch": "fe-clean-branch"
   },
   "keywords": [
     "fe",
@@ -37,11 +38,17 @@
   "packageManager": "yarn@1.22.22",
   "devDependencies": {
     "@types/jest": "^29.5.11",
+    "dotenv": "^16.4.5",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
     "typescript": "*"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  }
 }
