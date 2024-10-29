@@ -33,7 +33,6 @@ export interface ExecutorConfig {
 export abstract class Executor {
   protected plugins: ExecutorPlugin[] = [];
 
-  // eslint-disable-next-line no-useless-constructor
   constructor(protected config: ExecutorConfig = { throwError: true }) {}
 
   addPlugin(plugin: ExecutorPlugin): void {

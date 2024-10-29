@@ -50,7 +50,6 @@ export class Logger {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prefix(value: string, _level?: LogLevel): string | string[] {
     return value + ' ';
   }
@@ -111,7 +110,7 @@ export class Logger {
     }
   }
 
-  obtrusive(...args: LogArgument[]) {
+  obtrusive(...args: LogArgument[]): void {
     if (!this.isCI) this.log();
     this.log(...args);
     if (!this.isCI) this.log();

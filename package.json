@@ -17,8 +17,8 @@
   "scripts": {
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "prettier": "prettier packages --write",
-    "eslint": "eslint packages --ext .js,.ts --cache --fix",
-    "lint": "eslint packages --ext .js,.ts --cache --fix",
+    "eslint": "eslint . --fix",
+    "lint": "eslint . --fix",
     "test": "jest",
     "reinit": "fe-reinit",
     "clean": "fe-clean",
