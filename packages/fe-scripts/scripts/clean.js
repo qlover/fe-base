@@ -1,7 +1,11 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import ignore from 'ignore';
-import { rimraf } from 'rimraf';
+
+async function compatRimraf(targetPath, options = {}) {
+  const rimraf = await import('rimraf');
+  return rimraf.rimraf(targetPath, options);
+}
 
 /**
  * Recursively get all ignored files and directories under the specified directory
@@ -41,6 +45,12 @@ function getIgnoredFiles(dir, rootDir, ig, recursion) {
  */
 export async function clean(options) {
   let { files = [], logger, gitignore, dryrun, recursion } = options;
+
+  // Ensure files is an array
+  if (typeof files === 'string') {
+    files = [files];
+  }
+
   let filesToClean = files;
   let ignoreToClean = [];
 
@@ -92,7 +102,7 @@ export async function clean(options) {
 
     try {
       logger.info(`Deleted: ${file}`);
-      await rimraf(targetPath);
+      await compatRimraf(targetPath);
     } catch (error) {
       logger.error(`Failed to delete ${file}:`, error.message);
     }
