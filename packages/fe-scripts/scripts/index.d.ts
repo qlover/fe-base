@@ -5,6 +5,7 @@ import { Shell } from '../lib';
 export interface ScriptContext {
   logger: Logger;
   shell: Shell;
+  feConfig: FeConfig;
 }
 export interface CleanOptions extends ScriptContext {
   /**
@@ -69,6 +70,7 @@ export interface SearchEnvOptions {
   maxDepth?: number;
 }
 
+export interface ReleaseOptions extends ScriptContext {}
 export interface Script<T = Options> {
   (options: T): Promise<void>;
 }
@@ -78,6 +80,7 @@ export declare const cleanBranch: Script<CleanBranchOptions>;
 export declare const commit: Script<CommitOptions>;
 export declare const setupHusky: Script<SetupHuskyOptions>;
 export declare const searchEnv: Script<SearchEnvOptions>;
+export declare const release: Script<ReleaseOptions>;
 
 export interface Scripts {
   clean: (options?: CleanOptions) => Promise<void>;
@@ -85,6 +88,7 @@ export interface Scripts {
   commit: (options?: CommitOptions) => Promise<void>;
   setupHusky: (options?: SetupHuskyOptions) => Promise<void>;
   searchEnv: (options?: SearchEnvOptions) => Promise<void>;
+  release: (options?: ReleaseOptions) => Promise<void>;
 }
 
 export default Scripts;

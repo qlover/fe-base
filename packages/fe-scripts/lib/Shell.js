@@ -16,6 +16,10 @@ export class Shell {
     this.log = container.log;
   }
 
+  static format(template = '', context = {}) {
+    return lodash.template(template)(context);
+  }
+
   /**
    * @private
    * @param {*} template
@@ -24,7 +28,7 @@ export class Shell {
    */
   format(template = '', context = {}) {
     try {
-      return lodash.template(template)(context);
+      return Shell.format(template, context);
     } catch (error) {
       this.log.error(
         `Unable to render template with context:\n${template}\n${JSON.stringify(context)}`
