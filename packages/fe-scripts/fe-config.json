@@ -8,8 +8,6 @@
     ".eslintcache",
     "*.log"
   ],
-  "author": "",
-  "repository": "",
   "commitlint": {
     "extends": ["@commitlint/config-conventional"]
   }

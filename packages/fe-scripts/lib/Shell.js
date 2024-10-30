@@ -54,7 +54,7 @@ export class Shell {
   }
 
   /**
-   * 默认不输出
+   * default silent
    * @param {string} command
    * @param {object} options
    * @param {object} context
