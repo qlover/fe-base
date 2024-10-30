@@ -1,0 +1,14 @@
+{
+  "protectedBranches": ["master", "develop", "main"],
+  "cleanFiles": [
+    "dist",
+    "node_modules",
+    "yarn.lock",
+    "package-lock.json",
+    ".eslintcache",
+    "*.log"
+  ],
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "name": "@qlover/fe-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "exports": {
+    ".": {
+      "require": "./lib/index.js",
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./scripts/*": "./scripts/*",
+    "./lib/*": "./lib/*",
+    "./package.json": "./package.json"
+  },
+  "types": "./index.d.ts",
+  "files": [
+    "bin",
+    "lib",
+    "scripts",
+    "container.js",
+    "package.json",
+    "commitlint.config.js",
+    "type.d.ts",
+    ".release-it.json",
+    "README.md"
+  ],
+  "bin": {
+    "fe-clean": "./bin/clean.js",
+    "fe-clean-branch": "./bin/clean-branch.js",
+    "fe-commit": "./bin/commit.js",
+    "fe-setup-husky": "./bin/setup-husky.js"
+  },
+  "scripts": {
+    "build": "node ./scripts/prebuild.js",
+    "clean": "node ./bin/clean.js",
+    "clean-branch": "node ./bin/clean-branch.js",
+    "commit": "node ./bin/commit.js",
+    "setup-husky": "node ./bin/setup-husky.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/fe-scripts"
+  },
+  "homepage": "https://github.com/qlover/fe-base#readme",
+  "keywords": [
+    "fe-scripts",
+    "scripts"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "commander": "^11.0.0",
+    "commitizen": "^4.3.1",
+    "cosmiconfig": "^9.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.0.0",
+    "rimraf": "^5.0.5",
+    "shelljs": "^0.8.5"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "^1.0.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  }
+}

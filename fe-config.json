@@ -1,0 +1,9 @@
+{
+  "protectedBranches": [
+    "master",
+    "build/tsup",
+    "merge-packages",
+    "root-src",
+    "test"
+  ]
+}

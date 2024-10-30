@@ -9,6 +9,7 @@
     "package.json",
     "README.md"
   ],
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/index.cjs",
@@ -50,9 +51,9 @@
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@types/lodash": "^4.17.12",
+    "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.24.2",
     "rollup-plugin-dts": "^6.1.1",
-    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "typescript": "^5.6.3",
     "vitest": "^2.1.3"
