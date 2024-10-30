@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { clean } from '../scripts/clean.js';
-import { logger, shell } from '../container.js';
+import { feConfig, logger, shell } from '../container.js';
 
 // parse command line arguments
 async function programArgs() {
@@ -31,8 +31,12 @@ async function programArgs() {
 
 async function main() {
   const options = await programArgs();
-
-  await clean({ ...options, logger, shell });
+  await clean({
+    ...options,
+    files: feConfig.config.cleanFiles,
+    logger,
+    shell
+  });
 }
 
 main();

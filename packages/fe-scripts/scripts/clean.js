@@ -1,17 +1,50 @@
-import { existsSync, readFileSync, readdirSync, lstatSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import ignore from 'ignore';
-import { sync as rimraf } from 'rimraf';
+import { rimraf } from 'rimraf';
 
 /**
- * clean files
+ * Recursively get all ignored files and directories under the specified directory
+ * @param {string} dir current directory
+ * @param {string} rootDir root directory
+ * @param {import('ignore').Ignore} ig ignore instance
+ * @param {boolean} recursion whether to recursion
+ * @returns {string[]} ignored files and directories list
+ */
+function getIgnoredFiles(dir, rootDir, ig, recursion) {
+  const ignoredFiles = [];
+  const items = readdirSync(dir, { withFileTypes: true });
+
+  for (const item of items) {
+    const fullPath = join(dir, item.name);
+    // Get the path relative to the root directory
+    const relativePath = relative(rootDir, fullPath);
+
+    // Check if the current file/directory is ignored
+    if (ig.ignores(relativePath)) {
+      ignoredFiles.push(relativePath);
+      continue; // If the current directory is ignored, do not continue to traverse its subdirectories
+    }
+
+    // If it is a directory, recursively process
+    if (item.isDirectory() && recursion) {
+      ignoredFiles.push(...getIgnoredFiles(fullPath, rootDir, ig, recursion));
+    }
+  }
+
+  return ignoredFiles;
+}
+
+/**
+ * Clean files
  * @param {import('@qlover/fe-scripts/scripts').CleanOptions} options
  */
 export async function clean(options) {
-  let { filesToClean = [], logger, gitignore, recursion, dryrun } = options;
+  let { files = [], logger, gitignore, dryrun, recursion } = options;
+  let filesToClean = files;
   let ignoreToClean = [];
 
-  // if config.cleanFiles is empty, try to read .gitignore
+  // If gitignore is enabled, try to read the .gitignore file
   if (gitignore) {
     try {
       const gitignorePath = join(process.cwd(), '.gitignore');
@@ -23,54 +56,49 @@ export async function clean(options) {
           .filter((line) => line && !line.startsWith('#'));
       }
     } catch (error) {
-      logger.warn('read .gitignore file failed:', error.message);
+      logger.warn('Failed to read .gitignore file:', error.message);
     }
-
-    // merge filesToClean and ignoreToClean, and remove duplicate items
-    filesToClean = Array.from(new Set([...filesToClean, ...ignoreToClean]));
   }
 
-  if (filesToClean.length === 0) {
-    logger.log('none files to clean');
+  // Merge all ignore rules
+  const allRules = [...filesToClean, ...ignoreToClean];
+
+  if (allRules.length === 0) {
+    logger.log('no files to clean');
     return;
   }
 
-  const ig = ignore().add(filesToClean);
+  const cwd = process.cwd();
 
-  if (dryrun) {
-    logger.info('preview mode - the following files will be deleted:');
+  // Create ignore instance and add rules
+  const ig = ignore().add(allRules);
+
+  // Get all ignored files and directories
+  const filesToDelete = getIgnoredFiles(cwd, cwd, ig, recursion);
+
+  if (filesToDelete.length === 0) {
+    logger.log('no files matched to clean');
+    return;
   }
 
-  const deleteFiles = (dir) => {
-    if (existsSync(dir)) {
-      const files = readdirSync(dir);
-      files.forEach((file) => {
-        const fullPath = join(dir, file);
-        const relativePath = relative(process.cwd(), fullPath);
-        const isDirectory = lstatSync(fullPath).isDirectory();
+  // Iterate to delete files
+  for (const file of filesToDelete) {
+    const targetPath = join(cwd, file);
 
-        if (ig.ignores(relativePath)) {
-          if (dryrun) {
-            logger.info(
-              `will delete ${isDirectory ? 'directory' : 'file'}: ${fullPath}`
-            );
-          } else {
-            try {
-              rimraf(fullPath);
-              logger.info(
-                `deleted ${isDirectory ? 'directory' : 'file'}: ${fullPath}`
-              );
-            } catch (error) {
-              logger.error(`failed to delete ${fullPath}: ${error.message}`);
-            }
-          }
-        } else if (isDirectory && recursion) {
-          // if it is a directory and recursion is enabled, process it recursively
-          deleteFiles(fullPath);
-        }
-      });
+    if (dryrun) {
+      logger.info(`Will delete: ${file}`);
+      continue;
     }
-  };
 
-  deleteFiles(process.cwd());
+    try {
+      logger.info(`Deleted: ${file}`);
+      await rimraf(targetPath);
+    } catch (error) {
+      logger.error(`Failed to delete ${file}:`, error.message);
+    }
+  }
+
+  if (!dryrun) {
+    logger.info('Clean completed');
+  }
 }

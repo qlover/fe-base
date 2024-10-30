@@ -14,11 +14,15 @@ export async function setupHusky(options) {
   // use husky
   await shell.exec('npx husky init');
 
-  const commitlintConfig = join(commitlintPath, 'commitlint.config.js');
+  const commitlintConfig = resolve(commitlintPath, 'commitlint.config.js');
 
   // create commit-msg hook
   const commitMsgPath = join(relativePath, '.husky/commit-msg');
-  const commitMsgContent = `npx commitlint --config ${commitlintConfig} --edit "$1"`;
+  const commitMsgContent = `#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --no -- commitlint --config "${commitlintConfig}" --edit "$1"
+`;
   fs.writeFileSync(commitMsgPath, commitMsgContent, { mode: 0o755 });
 
   // create pre-commit hook
@@ -39,4 +43,7 @@ export async function setupHusky(options) {
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
   logger.info('husky completed');
+
+  logger.debug('Commitlint config path:', commitlintConfig);
+  logger.debug('Husky commit-msg content:', commitMsgContent);
 }

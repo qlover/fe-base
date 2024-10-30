@@ -21,7 +21,8 @@
     "lint": "eslint . --fix",
     "test": "jest",
     "clean": "fe-clean",
-    "clean-branch": "fe-clean-branch"
+    "clean-branch": "fe-clean-branch",
+    "prepare": "husky"
   },
   "keywords": [
     "fe",
