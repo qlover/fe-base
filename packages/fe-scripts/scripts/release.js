@@ -1,9 +1,14 @@
 import { Release } from '../lib/Release.js';
 import { searchEnv } from './search-env.js';
 
+/**
+ * @param {Release} release
+ * @returns {number}
+ */
 function setupRelease(release) {
   const env = searchEnv({
-    logger: release.log
+    logger: release.log,
+    shell: release.shell
   });
 
   if (env.get('RELEASE') === 'false') {
@@ -15,6 +20,7 @@ function setupRelease(release) {
     release.log.error('NPM_TOKEN environment variable is not set.');
     return 1;
   }
+
   if (!env.get('GITHUB_TOKEN')) {
     release.log.error('GITHUB_TOKEN environment variable is not set.');
     return 1;
@@ -27,6 +33,8 @@ function setupRelease(release) {
 }
 
 /**
+ * release to NPM and Github
+ * @param {import('../index.d.ts').ReleaseConfig} options
  * @returns {Promise<void>}
  */
 export async function release(options) {
@@ -38,7 +46,42 @@ export async function release(options) {
     return;
   }
 
+  release.log.debug(release);
+
   await release.releaseIt();
 
-  release.log.success('Release successfully');
+  release.log.info('Release successfully');
+}
+
+/**
+ * update version and release to NPM and Github
+ * @param {import('../index.d.ts').ReleaseConfig} options
+ * @returns {Promise<void>}
+ */
+export async function updateVersion(options) {
+  const release = new Release(options);
+
+  if (setupRelease(release)) {
+    return;
+  }
+
+  release.log.log('Create Publish to NPM and Github PR ...');
+
+  release.log.debug(release);
+
+  await release.releaseIt();
+
+  const { tagName, releaseBranch } = await release.createReleaseBranch();
+
+  const prNumber = await release.createReleasePR(tagName, releaseBranch);
+
+  if (release.config.getReleaseFeConfig('autoMergeReleasePR')) {
+    release.log.log('auto mergae release PR...');
+
+    await release.autoMergePR(prNumber);
+
+    await release.checkedPR(prNumber, releaseBranch);
+  }
+
+  release.log.info(`Create Release PR(#${prNumber}) successfully`);
 }

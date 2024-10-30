@@ -47,7 +47,12 @@ class ReleaseBase {
     this.pkgVersion = pkg.version;
   }
 
-  getRelease(path, defaultValue) {
+  /**
+   * @param {keyof import('../index.d.ts').FeScriptRelease} path
+   * @param {*} defaultValue
+   * @returns
+   */
+  getReleaseFeConfig(path, defaultValue) {
     return get(this.feConfig.release, path, defaultValue);
   }
 
@@ -109,7 +114,7 @@ class ReleaseBase {
   }
 
   getReleaseBranch(tagName) {
-    return Shell.format(this.getRelease('branchName', ''), {
+    return Shell.format(this.getReleaseFeConfig('branchName', ''), {
       env: this.env,
       branch: this.branch,
       tagName
@@ -117,7 +122,7 @@ class ReleaseBase {
   }
 
   getReleasePRTitle(tagName) {
-    return Shell.format(this.getRelease('PRTitle', ''), {
+    return Shell.format(this.getReleaseFeConfig('PRTitle', ''), {
       env: this.env,
       branch: this.branch,
       tagName
@@ -125,15 +130,22 @@ class ReleaseBase {
   }
 
   getReleasePRBody(tagName) {
-    return Shell.format(this.getRelease('PRBody', ''), {
+    return Shell.format(this.getReleaseFeConfig('PRBody', ''), {
       tagName
     });
   }
 }
 
 export class Release {
+  /**
+   * @param {import('../index.d.ts').ReleaseConfig} config
+   */
   constructor(config) {
     this.config = new ReleaseBase(config);
+  }
+
+  get dryRun() {
+    return this.shell.config.isDryRun || this.log.isDryRun;
   }
 
   /**
@@ -184,6 +196,10 @@ export class Release {
       command.push('--no-increment');
     }
 
+    if (this.shell.config.isDryRun) {
+      command.push('--dry-run');
+    }
+
     if (releaseItConfig) {
       command.push(`--config ${releaseItConfig}`);
     }
@@ -206,11 +222,13 @@ export class Release {
     const lastTag = await this.shell.exec(
       `git tag --sort=-creatordate | head -n 1`,
       {
-        silent: true
+        silent: true,
+        dryRunResult: 'dry-run-tag:' + this.config.pkgVersion
       }
     );
     const tagName = lastTag || this.config.pkgVersion;
-    this.log.log('Created Tag is:', tagName);
+
+    this.log.debug('Created Tag is:', tagName);
 
     return { tagName };
   }
@@ -265,7 +283,10 @@ export class Release {
 
     let output = '';
     try {
-      output = await this.shell.run(command);
+      output = await this.shell.run(command, {
+        // TODO: use pkg repo url
+        dryRunResult: 'https://github.com/qlover/fe-base/pull/99999999'
+      });
     } catch (error) {
       if (error.toString().includes('already exists:')) {
         this.log.warn('already PR');
@@ -302,13 +323,25 @@ export class Release {
 
     this.log.log(`Merging PR #${prNumber} ...`);
 
-    const octokit = await this.config.getOctokit();
-    await octokit.pulls.merge({
-      owner: userInfo.authorName,
-      repo: userInfo.repoName,
-      pull_number: prNumber,
-      merge_method: this.config.getRelease('autoMergeType', 'merge')
-    });
+    if (!this.dryRun) {
+      const octokit = await this.config.getOctokit();
+      await octokit.pulls.merge({
+        owner: userInfo.authorName,
+        repo: userInfo.repoName,
+        pull_number: prNumber,
+        merge_method: this.config.getReleaseFeConfig('autoMergeType', 'merge')
+      });
+    } else {
+      this.log.exec(
+        Shell.format(
+          'gh pr merge --auto --repo {repo} --pull-number {prNumber}',
+          {
+            repo: userInfo.repoName,
+            prNumber
+          }
+        )
+      );
+    }
 
     this.log.info('Merged successfully');
   }

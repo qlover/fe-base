@@ -187,7 +187,17 @@ export class Env {
   set(variable: string, value: string): void;
 }
 
-export class ReleaseConfig {
+export interface ReleaseConfig {
+  /**
+   * Whether to create release
+   */
+  isCreateRelease?: boolean;
+  log: Logger;
+  shell: Shell;
+  feConfig: FeConfig;
+}
+
+export class ReleaseBase {
   constructor(config: ReleaseConfig);
 
   feConfig: FeConfig;

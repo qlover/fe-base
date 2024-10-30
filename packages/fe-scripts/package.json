@@ -31,7 +31,8 @@
     "fe-clean-branch": "./bin/clean-branch.js",
     "fe-commit": "./bin/commit.js",
     "fe-setup-husky": "./bin/setup-husky.js",
-    "fe-release": "./bin/release.js"
+    "fe-release": "./bin/release.js",
+    "fe-update-version": "./bin/update-version.js"
   },
   "scripts": {
     "build": "node ./scripts/prebuild.js",
@@ -39,7 +40,8 @@
     "clean-branch": "node ./bin/clean-branch.js",
     "commit": "node ./bin/commit.js",
     "setup-husky": "node ./bin/setup-husky.js",
-    "release": "node ./bin/release.js"
+    "release": "node ./bin/release.js",
+    "update-version": "node ./bin/update-version.js"
   },
   "repository": {
     "type": "git",
@@ -59,10 +61,12 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.5.0",
+    "@release-it/conventional-changelog": "^9.0.2",
     "commander": "^11.0.0",
     "commitizen": "^4.3.1",
     "cosmiconfig": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
+    "execa": "^9.5.1",
     "husky": "^9.1.6",
     "lint-staged": "^15.0.0",
     "rimraf": "^5.0.5",
@@ -70,7 +74,8 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.0.2",
-    "@qlover/fe-utils": "^1.0.2"
+    "@qlover/fe-utils": "^1.0.2",
+    "release-it": "^17.10.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
