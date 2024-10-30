@@ -186,3 +186,44 @@ export class Env {
    */
   set(variable: string, value: string): void;
 }
+
+export class ReleaseConfig {
+  constructor(config: ReleaseConfig);
+
+  feConfig: FeConfig;
+  log: Logger;
+  shell: Shell;
+  isCreateRelease?: boolean;
+  ghToken: string;
+  npmToken: string;
+  branch: string;
+  userInfo: import('@octokit/rest').User;
+  pkgVersion: string;
+  octokit: import('@octokit/rest').Octokit;
+
+  getRelease(path: string, defaultValue: any): any;
+  getUserInfo(): Promise<import('@octokit/rest').User>;
+  getOctokit(): Promise<import('@octokit/rest').Octokit>;
+  getReleaseItConfig(): Record<string, any>;
+  getReleaseBranch(tagName: string): string;
+  getReleasePRTitle(tagName: string): string;
+}
+
+export class Release {
+  constructor(config: ReleaseConfig);
+
+  readonly config: ReleaseConfig;
+  readonly log: Logger;
+  readonly shell: Shell;
+  readonly releaseItEnv: Record<string, string>;
+
+  getPRNumber(output: string): number;
+  componseReleaseItCommand(): string;
+  releaseIt(): Promise<void>;
+  checkTag(): Promise<void>;
+  createReleaseBranch(): Promise<void>;
+  createPRLabel(): Promise<void>;
+  createReleasePR(tagName: string, releaseBranch: string): Promise<void>;
+  autoMergePR(prNumber: number): Promise<void>;
+  checkedPR(prNumber: number, releaseBranch: string): Promise<void>;
+}

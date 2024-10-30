@@ -30,14 +30,16 @@
     "fe-clean": "./bin/clean.js",
     "fe-clean-branch": "./bin/clean-branch.js",
     "fe-commit": "./bin/commit.js",
-    "fe-setup-husky": "./bin/setup-husky.js"
+    "fe-setup-husky": "./bin/setup-husky.js",
+    "fe-release": "./bin/release.js"
   },
   "scripts": {
     "build": "node ./scripts/prebuild.js",
     "clean": "node ./bin/clean.js",
     "clean-branch": "node ./bin/clean-branch.js",
     "commit": "node ./bin/commit.js",
-    "setup-husky": "node ./bin/setup-husky.js"
+    "setup-husky": "node ./bin/setup-husky.js",
+    "release": "node ./bin/release.js"
   },
   "repository": {
     "type": "git",
@@ -67,6 +69,7 @@
     "shelljs": "^0.8.5"
   },
   "dependencies": {
+    "@octokit/rest": "^21.0.2",
     "@qlover/fe-utils": "^1.0.2"
   },
   "lint-staged": {

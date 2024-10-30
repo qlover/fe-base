@@ -22,6 +22,7 @@
     "test": "jest",
     "clean": "fe-clean",
     "commit": "fe-commit",
+    "release": "fe-release",
     "clean-branch": "fe-clean-branch",
     "prepare": "husky"
   },

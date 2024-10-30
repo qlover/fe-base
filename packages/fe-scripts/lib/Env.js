@@ -8,7 +8,7 @@ export class Env {
   /**
    * @param {object} param0
    * @param {string} param0.rootPath
-   * @param {import('pino').Logger} param0.log
+   * @param {import('@qlover/fe-utils').Logger} param0.log
    */
   constructor({ rootPath, log }) {
     this.rootPath = rootPath;
