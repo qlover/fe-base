@@ -20,7 +20,7 @@ export class Env {
    * @param {string[]} pre env file prefix
    * @returns {void}
    */
-  load({ preloadList = defaultPreloadList, rootPath }) {
+  load({ preloadList = defaultPreloadList, rootPath } = {}) {
     rootPath = rootPath || this.rootPath || resolve('./');
 
     for (const file of preloadList) {
@@ -53,6 +53,19 @@ export class Env {
   }
 
   /**
+   * get env variable
+   * @param {string} variable
+   * @returns {string | undefined}
+   */
+  get(variable) {
+    return process.env[variable];
+  }
+
+  set(variable, value) {
+    process.env[variable] = value;
+  }
+
+  /**
    * Destroy after obtaining a variable
    * @param {string} varname
    * @returns {string | undefined}
@@ -60,7 +73,7 @@ export class Env {
   getEnvDestroy(varname) {
     const value = process.env[varname];
 
-    this.clearEnvVariable(varname);
+    this.removeEnvVariable(varname);
 
     return value;
   }

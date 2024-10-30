@@ -171,4 +171,18 @@ export class Env {
    * @param varname
    */
   getEnvDestroy(varname: keyof typeof process.env): string | undefined;
+
+  /**
+   * get env variable
+   * @param {string} variable
+   * @returns {string | undefined}
+   */
+  get(variable: keyof typeof process.env): string | undefined;
+
+  /**
+   * set env variable
+   * @param {string} variable
+   * @param {string} value
+   */
+  set(variable: string, value: string): void;
 }

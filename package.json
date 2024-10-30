@@ -21,6 +21,7 @@
     "lint": "eslint . --fix",
     "test": "jest",
     "clean": "fe-clean",
+    "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "prepare": "husky"
   },

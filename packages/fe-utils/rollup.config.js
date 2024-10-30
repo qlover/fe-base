@@ -3,10 +3,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import terser from '@rollup/plugin-terser';
-// TODO: move to fe-scripts
-import '../../scripts/prebuild.js';
+import { searchEnv } from '@qlover/fe-scripts/scripts/search-env.js';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const env = searchEnv({ logger: console });
+const NODE_ENV = env.get('NODE_ENV');
+const isProduction = NODE_ENV === 'production';
+console.log('Enveronment is', NODE_ENV);
 
 /**
  * @type {import('rollup').RollupOptions[]}

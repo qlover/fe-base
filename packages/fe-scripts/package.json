@@ -10,11 +10,8 @@
       "types": "./lib/index.d.ts",
       "default": "./lib/index.js"
     },
-    "./scripts": {
-      "require": "./scripts/index.js",
-      "import": "./scripts/index.js",
-      "types": "./scripts/index.d.ts"
-    },
+    "./scripts/*": "./scripts/*",
+    "./lib/*": "./lib/*",
     "./package.json": "./package.json"
   },
   "types": "./index.d.ts",
@@ -36,6 +33,7 @@
     "fe-setup-husky": "./bin/setup-husky.js"
   },
   "scripts": {
+    "build": "node ./scripts/prebuild.js",
     "clean": "node ./bin/clean.js",
     "clean-branch": "node ./bin/clean-branch.js",
     "commit": "node ./bin/commit.js",
