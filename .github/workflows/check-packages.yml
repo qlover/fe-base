@@ -1,0 +1,56 @@
+name: Check Package Changes
+
+on:
+  pull_request:
+    branches:
+      - merge-packages-test-cicd
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check changed packages
+        id: check-packages
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          
+          # Check fe-scripts changes
+          FE_SCRIPTS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-scripts/" || true)
+          if [ ! -z "$FE_SCRIPTS_CHANGED" ]; then
+            echo "fe_scripts_changed=true" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check fe-utils changes
+          FE_UTILS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-utils/" || true)
+          if [ ! -z "$FE_UTILS_CHANGED" ]; then
+            echo "fe_utils_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Add package labels
+        if: ${{ steps.check-packages.outputs.fe_scripts_changed == 'true' || steps.check-packages.outputs.fe_utils_changed == 'true' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const feScriptsChanged = '${{ steps.check-packages.outputs.fe_scripts_changed }}' === 'true';
+            const feUtilsChanged = '${{ steps.check-packages.outputs.fe_utils_changed }}' === 'true';
+            
+            const labels = [];
+            if (feScriptsChanged) labels.push('pkg:fe-scripts');
+            if (feUtilsChanged) labels.push('pkg:fe-utils');
+            
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            } 

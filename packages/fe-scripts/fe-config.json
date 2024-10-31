@@ -20,7 +20,7 @@
     "label": {
       "color": "1A7F37",
       "description": "Release PR",
-      "name": "FE-Release"
+      "name": "CI-Release"
     }
   }
 }
