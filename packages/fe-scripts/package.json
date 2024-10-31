@@ -19,11 +19,12 @@
     "bin",
     "lib",
     "scripts",
-    "container.js",
-    "package.json",
-    "commitlint.config.js",
-    "type.d.ts",
     ".release-it.json",
+    "commitlint.config.js",
+    "container.js",
+    "fe-config.json",
+    "type.d.ts",
+    "package.json",
     "README.md"
   ],
   "bin": {
