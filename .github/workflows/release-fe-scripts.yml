@@ -40,6 +40,15 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build dist
+        run: yarn build
+
       - name: Create release PR
         run: cd packages/fe-scripts && npm run release-pr
         env:
@@ -76,6 +85,15 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build dist
+        run: yarn build
 
       - name: Create tag and publish
         run: cd packages/fe-scripts && npm run release
