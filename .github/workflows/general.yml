@@ -3,7 +3,7 @@ name: FE General
 on:
   pull_request:
     branches:
-      - master
+      - merge-packages-test-cicd
 
 jobs:
   check-code:
