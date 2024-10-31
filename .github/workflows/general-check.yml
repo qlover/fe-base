@@ -1,4 +1,4 @@
-name: FE General
+name: General check
 
 on:
   pull_request:
