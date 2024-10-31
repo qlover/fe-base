@@ -1,7 +1,6 @@
 import shell from 'shelljs';
 import { execa } from 'execa';
 import lodash from 'lodash';
-const noop = Promise.resolve();
 
 export class Shell {
   /**
@@ -44,6 +43,7 @@ export class Shell {
    * @param {object} options
    * @param {boolean} options.silent
    * @param {object} options.env
+   * @param {string} options.dryRunResult
    * @param {*} context
    * @returns
    */
@@ -78,7 +78,7 @@ export class Shell {
 
     if (isDryRun && isWrite) {
       this.log.exec(command, { isDryRun });
-      return noop;
+      return Promise.resolve(options.dryRunResult);
     }
 
     this.log.exec(command, { isExternal, isCached });

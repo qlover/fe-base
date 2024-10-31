@@ -10,5 +10,17 @@
   ],
   "commitlint": {
     "extends": ["@commitlint/config-conventional"]
+  },
+  "release": {
+    "autoMergeReleasePR": true,
+    "autoMergeType": "squash",
+    "branchName": "${env}-${branch}-${tagName}",
+    "PRTitle": "[Bot Release] Branch:${branch}, Tag:${tagName}, Env:${env}",
+    "PRBody": "This PR includes version bump to ${tagName}",
+    "label": {
+      "color": "1A7F37",
+      "description": "Label for version update PRs",
+      "name": "CI-Release"
+    }
   }
 }
