@@ -11,9 +11,14 @@ export class ScriptsLogger extends Logger {
       case 'ERROR':
         return chalk.red(value);
       case 'DEBUG':
-        return chalk.green(value);
+        return chalk.gray(value);
       default:
         return value;
     }
+  }
+
+  title(title) {
+    const header = chalk.bold(title);
+    this.obtrusive(header);
   }
 }

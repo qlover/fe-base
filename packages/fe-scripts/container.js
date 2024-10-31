@@ -17,4 +17,4 @@ feConfig.search();
 
 export const logger = new ScriptsLogger();
 
-export const shell = new Shell({ log: logger, config: { isDryRun: false } });
+export const shell = new Shell({ log: logger, isDryRun: false });

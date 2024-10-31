@@ -1,19 +1,28 @@
 import shell from 'shelljs';
 import { execa } from 'execa';
 import lodash from 'lodash';
-const noop = Promise.resolve();
 
 export class Shell {
   /**
    *
-   * @param {object} container
-   * @param {{isDryRun?: boolean}} container.config
-   * @param {import('@qlover/fe-utils').Logger} container.log
+   * @param {object} config
+   * @param {boolean} config.isDryRun
+   * @param {import('@qlover/fe-utils').Logger} config.log
    */
-  constructor(container = {}) {
-    this.config = container.config || {};
+  constructor(config = {}) {
+    this.config = config;
     this.cache = new Map();
-    this.log = container.log;
+  }
+
+  /**
+   * @returns {import('@qlover/fe-utils').Logger}
+   */
+  get log() {
+    return this.config.log;
+  }
+
+  static format(template = '', context = {}) {
+    return lodash.template(template)(context);
   }
 
   /**
@@ -24,7 +33,7 @@ export class Shell {
    */
   format(template = '', context = {}) {
     try {
-      return lodash.template(template)(context);
+      return Shell.format(template, context);
     } catch (error) {
       this.log.error(
         `Unable to render template with context:\n${template}\n${JSON.stringify(context)}`
@@ -35,49 +44,53 @@ export class Shell {
   }
 
   /**
-   *
-   * @param {*} command
-   * @param {object} options
-   * @param {boolean} options.silent
-   * @param {object} options.env
-   * @param {*} context
-   * @returns
+   * @param {string|string[]} command
+   * @param {import('@qlover/fe-scripts').ShellExecOptions} options
+   * @returns {Promise<string>}
    */
-  exec(command, options = {}, context = {}) {
-    // FIXME: Error will be reported when command is emtpy
+  exec(command, options = {}) {
     if (lodash.isEmpty(command)) {
       return;
     }
+    const { context, ...execOptions } = options;
     return typeof command === 'string'
-      ? this.execFormattedCommand(this.format(command, context), options)
-      : this.execFormattedCommand(command, options);
+      ? this.execFormattedCommand(
+          this.format(command, context || {}),
+          execOptions
+        )
+      : this.execFormattedCommand(command, execOptions);
   }
 
   /**
    * default silent
-   * @param {string} command
-   * @param {object} options
-   * @param {object} context
-   * @returns
+   * @param {string|string[]} command
+   * @param {import('@qlover/fe-scripts').ShellExecOptions} options
+   * @returns {Promise<string>}
    */
-  run(command, options = {}, context = {}) {
-    options = { silent: true, ...options };
-    return this.exec(command, options, context);
+  run(command, options = {}) {
+    return this.exec(command, { silent: true, ...options });
   }
 
+  /**
+   * @param {string|string[]} command
+   * @param {import('@qlover/fe-scripts').ShellExecOptions} options
+   * @returns {Promise<unknown | string>}
+   */
   async execFormattedCommand(command, options = {}) {
-    const { isDryRun } = this.config;
-    const isWrite = options.write !== false;
-    const isExternal = options.external === true;
+    const { dryRunResult, silent, external, dryRun } = options;
+    // if dryRun is undefined, use shell config.isDryRun
+    const isDryRun = dryRun !== undefined ? dryRun : this.config.isDryRun;
+    const isExternal = external === true;
     const cacheKey = typeof command === 'string' ? command : command.join(' ');
     const isCached = !isExternal && this.cache.has(cacheKey);
 
-    if (isDryRun && isWrite) {
-      this.log.exec(command, { isDryRun });
-      return noop;
+    if (!silent) {
+      this.log.exec(command, { isExternal, isCached });
     }
 
-    this.log.exec(command, { isExternal, isCached });
+    if (isDryRun) {
+      return Promise.resolve(dryRunResult);
+    }
 
     if (isCached) {
       return this.cache.get(cacheKey);
@@ -95,6 +108,11 @@ export class Shell {
     return result;
   }
 
+  /**
+   * @param {string} command
+   * @param {import('@qlover/fe-scripts').ShellExecOptions} options
+   * @returns {Promise<string>}
+   */
   execStringCommand(command, options) {
     return new Promise((resolve, reject) => {
       shell.exec(
@@ -102,11 +120,11 @@ export class Shell {
         { async: true, ...options },
         (code, stdout, stderr) => {
           stdout = stdout.toString().trimEnd();
-          // debug({ command, options, code, stdout, stderr });
+          // this.log.debug({ command, options, code, stdout, stderr });
           if (code === 0) {
             resolve(stdout);
           } else {
-            this.log.error(command);
+            options.silent && this.log.error(command);
             reject(new Error(stderr || stdout));
           }
         }
@@ -120,6 +138,12 @@ export class Shell {
     });
   }
 
+  /**
+   * @param {string[]} command
+   * @param {import('@qlover/fe-scripts').ShellExecOptions} options
+   * @param {{ isExternal: boolean }} meta
+   * @returns {Promise<string>}
+   */
   async execWithArguments(command, options, { isExternal }) {
     const [program, ...programArgs] = command;
 
@@ -127,13 +151,13 @@ export class Shell {
       const { stdout: out, stderr } = await execa(program, programArgs);
       const stdout = out === '""' ? '' : out;
       this.log.verbose(stdout, { isExternal });
-      // debug({ command, options, stdout, stderr });
+      // this.log.debug({ command, options, stdout, stderr });
       return Promise.resolve(stdout || stderr);
     } catch (error) {
       if (error.stdout) {
         this.log.log(`\n${error.stdout}`);
       }
-      // debug({ error });
+      // this.log.debug({ error });
       return Promise.reject(new Error(error.stderr || error.message));
     }
   }

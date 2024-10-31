@@ -5,5 +5,8 @@
     "merge-packages",
     "root-src",
     "test"
-  ]
+  ],
+  "release": {
+    "autoMergeReleasePR": true
+  }
 }

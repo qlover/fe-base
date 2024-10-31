@@ -131,18 +131,44 @@ export class ScriptsLogger extends Logger {
   prefix(value: string): string;
 }
 
+export type ShellExecOptions = {
+  /**
+   * whether to silent
+   */
+  silent?: boolean;
+
+  /**
+   * environment variables
+   */
+  env?: Record<string, string>;
+
+  /**
+   * empty run result
+   */
+  dryRunResult?: unknown;
+
+  /**
+   * whether to dry run
+   * override shell config.isDryRun
+   */
+  dryRun?: boolean;
+
+  /**
+   * whether to external command
+   */
+  external?: boolean;
+
+  /**
+   * template context
+   */
+  context?: Record<string, any>;
+};
+
 export class Shell {
   constructor(container?: { config?: { isDryRun?: boolean }; log?: Logger });
-  exec(
-    command: string,
-    options?: {
-      silent?: boolean;
-      env?: Record<string, string>;
-    },
-    context?: Record<string, any>
-  ): Promise<string>;
-  run(command: string, options?: object, context?: object): Promise<string>;
-  format(template: string, context: Record<string, any>): string;
+  exec(command: string, options?: ShellExecOptions): Promise<string>;
+  run(command: string, options?: ShellExecOptions): Promise<string>;
+  format(template: string, context: Record<string, never>): string;
 }
 
 export class Env {
@@ -185,4 +211,55 @@ export class Env {
    * @param {string} value
    */
   set(variable: string, value: string): void;
+}
+
+export interface ReleaseConfig {
+  /**
+   * Whether to create release
+   */
+  isCreateRelease?: boolean;
+  log: Logger;
+  shell: Shell;
+  feConfig: FeConfig;
+}
+
+export class ReleaseBase {
+  constructor(config: ReleaseConfig);
+
+  feConfig: FeConfig;
+  log: Logger;
+  shell: Shell;
+  isCreateRelease?: boolean;
+  ghToken: string;
+  npmToken: string;
+  branch: string;
+  userInfo: import('@octokit/rest').User;
+  pkgVersion: string;
+  octokit: import('@octokit/rest').Octokit;
+
+  getRelease(path: string, defaultValue: any): any;
+  getUserInfo(): Promise<import('@octokit/rest').User>;
+  getOctokit(): Promise<import('@octokit/rest').Octokit>;
+  getReleaseItConfig(): Record<string, any>;
+  getReleaseBranch(tagName: string): string;
+  getReleasePRTitle(tagName: string): string;
+}
+
+export class Release {
+  constructor(config: ReleaseConfig);
+
+  readonly config: ReleaseConfig;
+  readonly log: Logger;
+  readonly shell: Shell;
+  readonly releaseItEnv: Record<string, string>;
+
+  getPRNumber(output: string): number;
+  componseReleaseItCommand(): string;
+  releaseIt(): Promise<void>;
+  checkTag(): Promise<void>;
+  createReleaseBranch(): Promise<void>;
+  createPRLabel(): Promise<void>;
+  createReleasePR(tagName: string, releaseBranch: string): Promise<void>;
+  autoMergePR(prNumber: number): Promise<void>;
+  checkedPR(prNumber: number, releaseBranch: string): Promise<void>;
 }
