@@ -22,8 +22,6 @@
     "test": "jest",
     "clean": "fe-clean",
     "commit": "fe-commit",
-    "release": "fe-release",
-    "update-version": "yarn workspace @qlover/fe-scripts update-version",
     "clean-branch": "fe-clean-branch",
     "prepare": "husky"
   },

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { feConfig } from '../container.js';
-import { release } from '../scripts/release.js';
+import { createReleasePR } from '../scripts/release.js';
 import { Shell } from '../lib/Shell.js';
 import { ScriptsLogger } from '../lib/ScriptsLogger.js';
 
@@ -22,11 +22,17 @@ async function programArgs() {
   // get parsed options
   return program.opts();
 }
-
 /**
- * truly release script
+ * create a PR for release
  *
- * now, call `release-it` publish.
+ * release.js is a truly released script.
+ *
+ * create-release-pr.js is a script for creating a PR for release.
+ * before release.js, we can do some manual/automated work on the PR.
+ *
+ * 1. create a PR
+ * 2. merge the PR
+ * 3. release(release.js)
  */
 async function main() {
   const options = await programArgs();
@@ -35,7 +41,8 @@ async function main() {
     dryRun: options.dryrun
   });
 
-  await release({
+  await createReleasePR({
+    isCreateRelease: true,
     log: logger,
     shell: new Shell({ log: logger, isDryRun: options.dryrun }),
     feConfig: feConfig.config

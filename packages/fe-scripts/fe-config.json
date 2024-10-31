@@ -14,13 +14,13 @@
   "release": {
     "autoMergeReleasePR": true,
     "autoMergeType": "squash",
-    "branchName": "${env}-${branch}-${tagName}",
+    "branchName": "release-${env}-${branch}-${tagName}",
     "PRTitle": "[Bot Release] Branch:${branch}, Tag:${tagName}, Env:${env}",
-    "PRBody": "This PR includes version bump to ${tagName}",
+    "PRBody": "## Publish Details\n\n- 🏷️ Version: ${tagName}\n- 🌲 Branch: ${branch}\n- 🔧 Environment: ${env}\n\n## Changelog\n\n${changelog}\n\n## Features\n\n${features}\n\n## Notes\n\n- [ ] Please check if the version number is correct\n- [ ] Please confirm all tests have passed\n- [ ] Please confirm the documentation has been updated\n\n> This PR is auto created by release process, please contact the frontend team if there are any questions.",
     "label": {
       "color": "1A7F37",
-      "description": "Label for version update PRs",
-      "name": "CI-Release"
+      "description": "Release PR",
+      "name": "FE-Release"
     }
   }
 }

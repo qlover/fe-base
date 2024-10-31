@@ -131,18 +131,44 @@ export class ScriptsLogger extends Logger {
   prefix(value: string): string;
 }
 
+export type ShellExecOptions = {
+  /**
+   * whether to silent
+   */
+  silent?: boolean;
+
+  /**
+   * environment variables
+   */
+  env?: Record<string, string>;
+
+  /**
+   * empty run result
+   */
+  dryRunResult?: unknown;
+
+  /**
+   * whether to dry run
+   * override shell config.isDryRun
+   */
+  dryRun?: boolean;
+
+  /**
+   * whether to external command
+   */
+  external?: boolean;
+
+  /**
+   * template context
+   */
+  context?: Record<string, any>;
+};
+
 export class Shell {
   constructor(container?: { config?: { isDryRun?: boolean }; log?: Logger });
-  exec(
-    command: string,
-    options?: {
-      silent?: boolean;
-      env?: Record<string, string>;
-    },
-    context?: Record<string, any>
-  ): Promise<string>;
-  run(command: string, options?: object, context?: object): Promise<string>;
-  format(template: string, context: Record<string, any>): string;
+  exec(command: string, options?: ShellExecOptions): Promise<string>;
+  run(command: string, options?: ShellExecOptions): Promise<string>;
+  format(template: string, context: Record<string, never>): string;
 }
 
 export class Env {

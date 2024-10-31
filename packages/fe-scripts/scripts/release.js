@@ -40,17 +40,14 @@ function setupRelease(release) {
 export async function release(options) {
   const release = new Release(options);
 
-  release.log.log('Publishing to NPM and GitHub...');
-
   if (setupRelease(release)) {
     return;
   }
 
-  release.log.debug(release);
-
+  release.log.title('Release to NPM and Github ...');
   await release.releaseIt();
 
-  release.log.info('Release successfully');
+  release.log.title('Release Successfully');
 }
 
 /**
@@ -58,30 +55,31 @@ export async function release(options) {
  * @param {import('../index.d.ts').ReleaseConfig} options
  * @returns {Promise<void>}
  */
-export async function updateVersion(options) {
+export async function createReleasePR(options) {
   const release = new Release(options);
 
   if (setupRelease(release)) {
     return;
   }
 
-  release.log.log('Create Publish to NPM and Github PR ...');
+  const releaseResult = await release.releaseIt();
 
-  release.log.debug(release);
-
-  await release.releaseIt();
-
+  release.log.title('Create Release Branch ...');
   const { tagName, releaseBranch } = await release.createReleaseBranch();
 
-  const prNumber = await release.createReleasePR(tagName, releaseBranch);
+  release.log.title('Create Release PR ...');
+  const prNumber = await release.createReleasePR(
+    tagName,
+    releaseBranch,
+    releaseResult
+  );
 
   if (release.config.getReleaseFeConfig('autoMergeReleasePR')) {
-    release.log.log('auto mergae release PR...');
-
+    release.log.title('Auto Merge Release PR...');
     await release.autoMergePR(prNumber);
 
     await release.checkedPR(prNumber, releaseBranch);
   }
 
-  release.log.info(`Create Release PR(#${prNumber}) successfully`);
+  release.log.title(`Create Release PR(#${prNumber}) Successfully`);
 }

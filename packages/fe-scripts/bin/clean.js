@@ -15,21 +15,17 @@ async function programArgs() {
         '--gitignore',
         'use .gitignore file to determine files to be deleted'
       )
-      .option('-f, --files <files...>', '要清理的文件列表')
-      .action(async (options) => {
-        try {
-          await clean({
-            ...options,
-            logger: console
-          });
-        } catch (error) {
-          console.error('Clean failed:', error);
-          process.exit(1);
-        }
-      });
+      .option('-f, --files <files...>', 'clean files');
 
-    return program.opts();
+    // parse arguments
+    program.parse();
+
+    // get parsed options
+    const options = program.opts();
+    logger.info('Parsed options:', options); // add log for debugging
+    return options;
   } catch {
+    logger.info('Commander not available, falling back to manual parsing');
     // if commander is not available, parse arguments manually
     const args = process.argv.slice(2);
     const options = {
@@ -39,7 +35,6 @@ async function programArgs() {
       files: []
     };
 
-    // 遍历所有参数
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
 
@@ -56,13 +51,13 @@ async function programArgs() {
           break;
         case '-f':
         case '--files':
-          // 收集后续的非选项参数作为文件
-          i++; // 移到下一个参数
+          // collect non-option parameters as files
+          i++; // move to the next parameter
           while (i < args.length && !args[i].startsWith('-')) {
             options.files.push(args[i]);
             i++;
           }
-          i--; // 回退一个位置，因为外层循环会再加1
+          i--; // move back one position because the outer loop will add 1
           break;
       }
     }
