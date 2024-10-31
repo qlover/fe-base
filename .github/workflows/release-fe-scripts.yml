@@ -1,37 +1,45 @@
-name: FE Release
+name: Release FE Scripts
 
 on:
   pull_request:
     branches:
-      - master
+      - merge-packages-test-cicd
     types:
       - closed
+    path:
+      - packages/fe-scripts/**
 
 jobs:
-  release-pr:
-    # merged and PR label is not CI-Release
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'CI-Release') == false
+  create-release-fe-scripts-pr:
+    # 只在PR合并且有 pkg:fe-scripts 标签但没有 CI-Release 标签时运行
+    if: |
+      github.event.pull_request.merged == true && 
+      contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
+      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Print GitHub Event Information
-      #   run: echo "${{ toJson(github.event) }}" > event.json
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Config Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18.19.0'
+
       - name: Install yarn
         run: npm install -g yarn
+
       - name: Install dependencies
         run: yarn install
+
       - name: Create release PR
         run: cd packages/fe-scripts && npm run release-pr
         env:
@@ -39,30 +47,36 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
-  publish:
-    # merged and PR label is CI-Release
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'CI-Release') == true
+  release-fe-scripts:
+    # 只在PR合并且同时有 pkg:fe-scripts 和 CI-Release 标签时运行
+    if: |
+      github.event.pull_request.merged == true && 
+      contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
+      contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Print GitHub Event Information
-      #   run: echo "${{ toJson(github.event) }}" > event.json
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Config Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18.19.0'
+
       - name: Install yarn
         run: npm install -g yarn
+
       - name: Install dependencies
         run: yarn install
+
       - name: Create tag and publish
         run: cd packages/fe-scripts && npm run release
         env:
