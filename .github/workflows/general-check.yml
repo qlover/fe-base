@@ -1,4 +1,4 @@
-name: Check Package Changes
+name: FE General
 
 on:
   pull_request:
@@ -7,11 +7,42 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  check-code:
+    if: contains(github.event.head_commit.message, 'chore(tag)') == false
+    runs-on: ubuntu-latest
+
+    steps:
+      # - name: Print GitHub Event Information
+      #   run: echo "${{ toJson(github.event) }}" > event.json
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.19.0'
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build dist
+        run: yarn build
+
   check-changes:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -21,13 +52,13 @@ jobs:
         id: check-packages
         run: |
           git fetch origin ${{ github.base_ref }}
-          
+
           # Check fe-scripts changes
           FE_SCRIPTS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-scripts/" || true)
           if [ ! -z "$FE_SCRIPTS_CHANGED" ]; then
             echo "fe_scripts_changed=true" >> $GITHUB_OUTPUT
           fi
-          
+
           # Check fe-utils changes
           FE_UTILS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-utils/" || true)
           if [ ! -z "$FE_UTILS_CHANGED" ]; then
@@ -41,11 +72,11 @@ jobs:
           script: |
             const feScriptsChanged = '${{ steps.check-packages.outputs.fe_scripts_changed }}' === 'true';
             const feUtilsChanged = '${{ steps.check-packages.outputs.fe_utils_changed }}' === 'true';
-            
+
             const labels = [];
             if (feScriptsChanged) labels.push('pkg:fe-scripts');
             if (feUtilsChanged) labels.push('pkg:fe-utils');
-            
+
             if (labels.length > 0) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -53,4 +84,4 @@ jobs:
                 issue_number: context.issue.number,
                 labels: labels
               });
-            } 
+            }
