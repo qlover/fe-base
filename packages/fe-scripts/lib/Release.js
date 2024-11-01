@@ -310,9 +310,10 @@ export class Release {
       command.push('--dry-run');
     }
 
-    if (releaseItConfig) {
-      command.push(`--config ${releaseItConfig}`);
-    }
+    // because packages multiple, so not use release-it config
+    // if (releaseItConfig) {
+    //   command.push(`--config ${releaseItConfig}`);
+    // }
 
     return command.join(' ');
   }
