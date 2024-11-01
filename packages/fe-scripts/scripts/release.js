@@ -40,12 +40,14 @@ function setupRelease(release) {
 export async function release(options) {
   const release = new Release(options);
 
+  release.log.debug(options);
+
   if (setupRelease(release)) {
     return;
   }
 
   release.log.title('Release to NPM and Github ...');
-  await release.releaseIt();
+  await release.releaseIt(options.mode);
 
   release.log.title('Release Successfully');
 }
@@ -58,11 +60,13 @@ export async function release(options) {
 export async function createReleasePR(options) {
   const release = new Release(options);
 
+  release.log.debug(options);
+
   if (setupRelease(release)) {
     return;
   }
 
-  const releaseResult = await release.releaseIt();
+  const releaseResult = await release.releaseIt(options.mode);
 
   release.log.title('Create Release Branch ...');
   const { tagName, releaseBranch } = await release.createReleaseBranch();
