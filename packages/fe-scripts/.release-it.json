@@ -1,7 +1,7 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
+    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to} -- packages/fe-scripts/",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -10,14 +10,14 @@
     "commitsPath": "",
     "addUntrackedFiles": false,
     "commit": true,
-    "commitMessage": "chore(tag): release v${version}",
+    "commitMessage": "chore(tag): release-fe-scripts v${version}",
     "commitArgs": [],
     "tag": true,
     "tagExclude": null,
-    "tagName": null,
-    "tagMatch": null,
-    "getLatestTagFromAllRefs": false,
-    "tagAnnotation": "chore(tag): release v${version}",
+    "tagName": "fe-scripts-v${version}",
+    "tagMatch": "fe-scripts-v*",
+    "getLatestTagFromAllRefs": true,
+    "tagAnnotation": "chore(tag): release-fe-scripts v${version}",
     "tagArgs": [],
     "push": false,
     "pushArgs": ["--follow-tags"],
@@ -37,7 +37,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "chore(tag): release v${version}",
+    "releaseName": "chore(tag): release-fe-scripts v${version}",
     "releaseNotes": null,
     "autoGenerate": false,
     "preRelease": false,
@@ -58,10 +58,31 @@
 
   "plugins": {
     "@release-it/conventional-changelog": {
-      "preset": "angular",
       "infile": "CHANGELOG.md",
-      "ignoreRecommendedBump": true,
-      "strictSemVer": true
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "Features" },
+          { "type": "fix", "section": "Bug Fixes" },
+          { "type": "chore", "hidden": true },
+          { "type": "docs", "hidden": true },
+          { "type": "style", "hidden": true },
+          { "type": "refactor", "hidden": true },
+          { "type": "perf", "hidden": true },
+          { "type": "test", "hidden": true }
+        ]
+      },
+      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
+      "parserOpts": {
+        "headerPattern": "^(\\w*)(?:\\((fe-scripts|packages/fe-scripts)\\))?\\: (.*)$",
+        "headerCorrespondence": ["type", "scope", "subject"]
+      },
+      "writerOpts": {
+        "commitsSort": ["scope", "subject"],
+        "commitGroupsSort": "title",
+        "noteGroupsSort": "title",
+        "mainTemplate": "{{#each commitGroups}}{{#each commits}}* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}\n{{/each}}{{/each}}"
+      }
     }
   }
 }
