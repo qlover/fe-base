@@ -26,13 +26,13 @@
   "npm": {
     "publish": true,
     "publishPath": ".",
-    "publishArgs": [],
+    "versionArgs": ["--allow-same-version", "--workspaces-update=false"],
+    "publishArgs": ["--include-workspace-root"],
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
     "allowSameVersion": false,
-    "versionArgs": [],
-    "skipChecks": false,
+    "skipChecks": true,
     "timeout": 10
   },
   "github": {
