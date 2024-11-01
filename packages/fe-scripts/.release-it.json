@@ -32,7 +32,7 @@
     "ignoreVersion": false,
     "allowSameVersion": false,
     "versionArgs": [],
-    "skipChecks": false,
+    "skipChecks": true,
     "timeout": 10
   },
   "github": {
