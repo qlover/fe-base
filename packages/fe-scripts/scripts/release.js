@@ -41,6 +41,7 @@ export async function release(options) {
   const release = new Release(options);
 
   release.log.debug(options);
+  release.log.debug(release);
 
   if (setupRelease(release)) {
     return;

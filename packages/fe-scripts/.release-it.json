@@ -36,7 +36,7 @@
     "timeout": 10
   },
   "github": {
-    "release": true,
+    "release": false,
     "releaseName": "chore(tag): release-fe-scripts v${version}",
     "releaseNotes": null,
     "autoGenerate": false,
