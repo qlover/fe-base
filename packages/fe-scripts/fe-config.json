@@ -12,7 +12,7 @@
     "extends": ["@commitlint/config-conventional"]
   },
   "release": {
-    "autoMergeReleasePR": true,
+    "autoMergeReleasePR": false,
     "autoMergeType": "squash",
     "branchName": "release-${env}-${branch}-${tagName}",
     "PRTitle": "[Test Packages Release] Branch:${branch}, Tag:${tagName}, Env:${env}",

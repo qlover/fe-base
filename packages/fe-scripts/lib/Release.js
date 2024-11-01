@@ -370,11 +370,16 @@ export class Release {
   }
 
   async checkTag() {
-    const lastTag = await this.shell.run(
-      'git tag --sort=-creatordate | head -n 1'
+    // const lastTag = await this.shell.run(
+    //   'git tag --sort=-creatordate | head -n 1'
+    // );
+
+    // only use release-it output version, or current pkg version to create tag
+    const tagName = get(
+      this._releaseItOutput,
+      'version',
+      this.config.pkgVersion
     );
-    const tagName =
-      lastTag || get(this._releaseItOutput, 'version', this.config.pkgVersion);
 
     this.log.debug('Created Tag is:', tagName);
 
@@ -387,26 +392,13 @@ export class Release {
 
     this.log.debug('Create Release PR branch', releaseBranch);
 
-    try {
-      // get latest remote branch info
-      await this.shell.exec('git fetch origin');
+    await this.shell.exec(`git merge origin/${this.config.branch}`);
+    await this.shell.exec(`git checkout -b ${releaseBranch}`);
 
-      // create new release branch
-      await this.shell.exec(`git checkout -b ${releaseBranch}`);
+    await this.shell.exec(`git push origin ${releaseBranch}`);
+    // this.log.info(`PR Branch ${releaseBranch} push Successfully!`);
 
-      // merge remote branch
-      const targetBranch = `origin/${this.config.branch}`;
-      this.log.debug(`Attempting to merge from ${targetBranch}`);
-      await this.shell.exec(`git merge ${targetBranch}`);
-
-      // push new branch to remote
-      await this.shell.exec(`git push origin ${releaseBranch}`);
-
-      return { tagName, releaseBranch };
-    } catch (error) {
-      this.log.error('Failed to create release branch:', error);
-      throw error;
-    }
+    return { tagName, releaseBranch };
   }
 
   async createPRLabel() {
@@ -459,6 +451,10 @@ export class Release {
 
     let output = '';
     try {
+      if (this.dryRun) {
+        this.log.debug(command);
+      }
+
       output = await this.shell.run(command, {
         dryRunResult: await ReleaseUtil.getDryRrunPRUrl(this.shell, 999999)
       });

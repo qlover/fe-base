@@ -26,7 +26,8 @@ function setupRelease(release) {
     return 1;
   }
 
-  release.config.ghToken = env.get('GITHUB_TOKEN') || '';
+  // github cli need first clear
+  release.config.ghToken = env.getEnvDestroy('GITHUB_TOKEN') || '';
   release.config.npmToken = env.get('NPM_TOKEN');
   release.config.branch = env.get('PR_BRANCH');
   release.config.env = env.get('NODE_ENV');
@@ -84,6 +85,10 @@ export async function createReleasePR(options) {
     await release.autoMergePR(prNumber);
 
     await release.checkedPR(prNumber, releaseBranch);
+  } else {
+    release.log.info(
+      `Please manually merge PR(#${prNumber}) and complete the publishing process afterwards`
+    );
   }
 
   release.log.title(`Create Release PR(#${prNumber}) Successfully`);
