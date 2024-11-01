@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "1.0.3",
+  "version": "0.0.29",
   "type": "module",
   "private": false,
   "exports": {
@@ -71,7 +71,7 @@
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@octokit/rest": "^21.0.2",
-    "@qlover/fe-utils": "^1.0.2",
+    "@qlover/fe-utils": "^1.0.3",
     "@release-it/conventional-changelog": "^9.0.2",
     "chalk": "^5.3.0",
     "cosmiconfig": "^9.0.0",

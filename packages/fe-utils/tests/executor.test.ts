@@ -146,8 +146,8 @@ describe('ExecutorPlugin Chain', () => {
     const executor = new AsyncExecutor();
     let finalResult = '';
 
-    const plugin1: ExecutorPlugin<string> = {
-      onSuccess: (): string => ''
+    const plugin1: ExecutorPlugin = {
+      onSuccess: () => undefined
     };
 
     const plugin2: ExecutorPlugin<string> = {
