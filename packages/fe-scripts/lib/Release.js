@@ -1,7 +1,9 @@
 import loadsh from 'lodash';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
+import { cosmiconfigSync } from 'cosmiconfig';
 
 const { isString, isPlainObject, get, set } = loadsh;
 const pkg = JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
@@ -37,16 +39,6 @@ class ReleaseUtil {
     return { repoName, authorName };
   }
 
-  static async getChangelogAndFeatures(releaseItOutput) {
-    const chunk = releaseItOutput.split('### Features');
-    const changelog = get(chunk, 0, 'No changelog').trim();
-    const features = get(chunk, 1, 'No features').trim();
-    return {
-      changelog,
-      features
-    };
-  }
-
   static async getDryRrunPRUrl(shell, number) {
     const repoInfo = await shell.run('git remote get-url origin', {
       dryRun: false
@@ -63,6 +55,75 @@ class ReleaseUtil {
       '/pull/' +
       number
     );
+  }
+
+  static getReleaseItSearchPlaces() {
+    // https://github.com/release-it/release-it/blob/main/lib/config.js#L11
+    return [
+      'package.json',
+      '.release-it.json',
+      '.release-it.js',
+      '.release-it.ts',
+      '.release-it.cjs',
+      '.release-it.yaml',
+      '.release-it.yml'
+      // FIXME:
+      // '.release-it.toml'
+    ];
+  }
+}
+
+export class ReleaseItOutputParser {
+  static async getChangelogAndFeatures(releaseItOutput) {
+    const chunk = releaseItOutput.split('### Features');
+    const changelog = get(chunk, 0, 'No changelog').trim();
+    const features = get(chunk, 1, 'No features').trim();
+    return {
+      changelog,
+      features
+    };
+  }
+
+  static parse(output) {
+    const result = {
+      name: '',
+      changelog: '',
+      latestVersion: '',
+      version: ''
+    };
+
+    // 匹配版本信息和包名
+    const versionMatch = output.match(
+      /Let's release (.+?) \(([\d.]+)\.\.\.([\d.]+)\)/
+    );
+    if (versionMatch) {
+      result.name = versionMatch[1].trim();
+      result.latestVersion = versionMatch[2];
+      result.version = versionMatch[3];
+    }
+
+    // match changelog
+    const lines = output.split('\n');
+    const changelogStartIndex = lines.findIndex(
+      (line) => line.trim() === 'Changelog:'
+    );
+    if (changelogStartIndex !== -1) {
+      const changelogLines = [];
+      let i = changelogStartIndex + 1;
+
+      // collect until "! npm version" or file end
+      while (i < lines.length && !lines[i].startsWith('! npm version')) {
+        if (lines[i].trim()) {
+          // only add non-empty lines
+          changelogLines.push(lines[i]);
+        }
+        i++;
+      }
+
+      result.changelog = changelogLines.join('\n').trim();
+    }
+
+    return result;
   }
 }
 
@@ -127,14 +188,34 @@ class ReleaseBase {
     });
   }
 
-  getReleasePRBody({ tagName, changelog, features }) {
+  getReleasePRBody({ tagName, changelog }) {
     return Shell.format(this.getReleaseFeConfig('PRBody', ''), {
       branch: this.branch,
       env: this.env,
       tagName,
-      changelog,
-      features
+      changelog
     });
+  }
+
+  /**
+   * @see https://github.com/release-it/release-it/blob/main/lib/config.js#L29
+   * @returns
+   * TODO:
+   *  If the release it of the project is configured, merge it with the local default one
+   *  Directly return a config configuration file path
+   */
+  getReleaseItConfig() {
+    const searchPlaces = ReleaseUtil.getReleaseItSearchPlaces();
+    const explorer = cosmiconfigSync('release-it', { searchPlaces });
+    const result = explorer.search(resolve());
+
+    // find!
+    if (result) {
+      return;
+    }
+
+    // this json copy with release-it default json
+    return join(dirname(fileURLToPath(import.meta.url)), '../.release-it.json');
   }
 }
 
@@ -205,17 +286,19 @@ export class Release {
   }
 
   getReleaseItCommand() {
-    // search
-    const command = ['npx release-it'];
+    const releaseItConfig = this.config.getReleaseItConfig();
+    const command = ['release-it'];
 
     command.push('--ci');
+
+    // 添加 --no-npm.install 参数禁用自动安装
+    command.push('--no-npm.install');
 
     // 1. no publish npm
     // 2. no publish github/release/tag
     if (this.config.isCreateRelease) {
       command.push(
         '--no-git.tag --no-git.push --no-npm.publish --no-github.release'
-        // '--no-npm.publish --no-git.tag --no-git.push --no-github.publish --no-github.release'
       );
     }
     // use current pkg, no publish npm and publish github
@@ -227,10 +310,19 @@ export class Release {
       command.push('--dry-run');
     }
 
+    this.log.debug(
+      'getReleaseItCommand releaseItConfig is, but not use',
+      releaseItConfig
+    );
+    // because packages multiple, so not use release-it config
+    // if (releaseItConfig) {
+    //   command.push(`--config ${releaseItConfig}`);
+    // }
+
     return command.join(' ');
   }
 
-  async releaseIt() {
+  async releaseIt(mode = 0) {
     this._releaseItOutput = {
       name: '',
       changelog: '',
@@ -242,22 +334,27 @@ export class Release {
       `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
     );
 
-    // only exec release-it command in dryRun
-    if (this.dryRun) {
-      this.log.exec(this.getReleaseItCommand());
+    let output;
+    if (!mode) {
+      // only exec release-it command in dryRun
+      const command = this.getReleaseItCommand();
+      this.log.debug('Run Release-it command: ', command);
+
+      // command has dryrun options
+      output = await this.shell.exec(command, {
+        env: this.releaseItEnv,
+        dryRun: false
+      });
+      this._releaseItOutput = ReleaseItOutputParser.parse(output);
+    } else {
+      const options = this.getReleaseItOptions();
+      this.log.debug('Run release-it method', options);
+      const { default: releaseIt } = await import('release-it');
+      output = await releaseIt(options);
+      this._releaseItOutput = output;
     }
 
-    const { default: releaseIt } = await import('release-it');
-    const output = await releaseIt(this.getReleaseItOptions());
-
-    this._releaseItOutput = output;
-
-    this.log.debug(
-      'Release-it version:',
-      get(output, 'version'),
-      ' latestVersion:',
-      get(output, 'latestVersion')
-    );
+    this.log.debug('Release-it output:\n', output);
 
     return output;
   }
@@ -268,11 +365,8 @@ export class Release {
         'No release-it output found, changelog might be incomplete'
       );
     }
-    const result = await ReleaseUtil.getChangelogAndFeatures(
-      get(releaseResult, 'changelog')
-    );
 
-    return result;
+    return get(releaseResult, 'changelog', 'No changelog');
   }
 
   async checkTag() {
@@ -338,15 +432,23 @@ export class Release {
     await this.createPRLabel();
 
     // get changelog and features
-    const { changelog, features } = await this.getChangelogAndFeatures(
+    const { changelog } = await this.getChangelogAndFeatures(
       releaseResult || this._releaseItOutput
     );
 
     const title = this.config.getReleasePRTitle(tagName);
-    const body = this.config.getReleasePRBody({ tagName, changelog, features });
+    const body = this.config.getReleasePRBody({ tagName, changelog });
 
-    const label = this.config.feConfig.release.label;
-    const command = `gh pr create --title "${title}" --body "${body}" --base ${this.config.branch} --head ${releaseBranch} --label "${label.name}"`;
+    const command = Shell.format(
+      'gh pr create --title "${title}" --body "${body}" --base ${base} --head ${head} --label "${labelName}"',
+      {
+        title,
+        body,
+        base: this.config.branch,
+        head: releaseBranch,
+        labelName: this.config.feConfig.release.label.name
+      }
+    );
 
     let output = '';
     try {

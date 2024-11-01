@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "private": false,
   "exports": {
@@ -60,23 +60,26 @@
     "access": "public"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.5.0",
-    "@release-it/conventional-changelog": "^9.0.2",
+    "@types/lodash": "^4.17.12",
     "commander": "^11.0.0",
-    "commitizen": "^4.3.1",
-    "cosmiconfig": "^9.0.0",
-    "eslint-plugin-import": "^2.31.0",
+    "conventional-changelog-angular": "^8.0.0",
     "execa": "^9.5.1",
     "husky": "^9.1.6",
     "lint-staged": "^15.0.0",
-    "rimraf": "^5.0.5",
-    "shelljs": "^0.8.5"
+    "rimraf": "^5.0.5"
   },
   "dependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@octokit/rest": "^21.0.2",
-    "@qlover/fe-utils": "^1.0.2",
-    "release-it": "^17.10.0"
+    "@qlover/fe-utils": "^1.0.3",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "chalk": "^5.3.0",
+    "cosmiconfig": "^9.0.0",
+    "dotenv": "^16.4.5",
+    "lodash": "^4.17.21",
+    "release-it": "^17.10.0",
+    "shelljs": "^0.8.5"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

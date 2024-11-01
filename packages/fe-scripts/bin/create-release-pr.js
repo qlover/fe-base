@@ -14,7 +14,12 @@ async function programArgs() {
       '-d, --dryrun',
       'Do not touch or write anything, but show the commands'
     )
-    .option('-V, --verbose', 'Show more information');
+    .option('-V, --verbose', 'Show more information')
+    .option(
+      '-m, --mode <type>',
+      'Run mode, 0: use shell run npx command, 1: call release-it method',
+      '0'
+    );
 
   // parse arguments
   program.parse();
@@ -45,7 +50,8 @@ async function main() {
     isCreateRelease: true,
     log: logger,
     shell: new Shell({ log: logger, isDryRun: options.dryrun }),
-    feConfig: feConfig.config
+    feConfig: feConfig.config,
+    mode: +options.mode
   });
 }
 
