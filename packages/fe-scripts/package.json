@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "private": false,
   "exports": {
@@ -65,6 +65,7 @@
     "@release-it/conventional-changelog": "^9.0.2",
     "commander": "^11.0.0",
     "commitizen": "^4.3.1",
+    "conventional-changelog-core": "^8.0.0",
     "cosmiconfig": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
     "execa": "^9.5.1",
