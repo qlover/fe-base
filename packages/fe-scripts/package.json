@@ -24,6 +24,7 @@
     "container.js",
     "fe-config.json",
     "type.d.ts",
+    "index.d.ts",
     "package.json",
     "README.md"
   ],

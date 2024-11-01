@@ -287,7 +287,7 @@ export class Release {
 
   getReleaseItCommand() {
     const releaseItConfig = this.config.getReleaseItConfig();
-    const command = ['release-it'];
+    const command = ['npx release-it'];
 
     command.push('--ci');
 
