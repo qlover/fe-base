@@ -35,10 +35,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-package-lock.json
-yarn.lock
+/package-lock.json
+/yarn.lock
 .husky
-pnpm-lock.yaml
+/pnpm-lock.yaml
 public/robots.txt
 public/sitemap*.xml
 dist
