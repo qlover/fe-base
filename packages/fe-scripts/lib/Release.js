@@ -383,23 +383,30 @@ export class Release {
 
   async createReleaseBranch() {
     const { tagName } = await this.checkTag();
-
-    // create a release branch, use new tagName as release branch name
     const releaseBranch = this.config.getReleaseBranch(tagName);
 
-    // this.log.log('Create Release PR branch', releaseBranch);
-
-    await this.shell.exec(`git merge origin/${this.config.branch}`);
-    await this.shell.exec(`git checkout -b ${releaseBranch}`);
+    this.log.debug('Create Release PR branch', releaseBranch);
 
     try {
-      await this.shell.exec(`git push origin ${releaseBranch}`);
-      // this.log.info(`PR Branch ${releaseBranch} push Successfully!`);
-    } catch (error) {
-      this.log.error(error);
-    }
+      // get latest remote branch info
+      await this.shell.exec('git fetch origin');
 
-    return { tagName, releaseBranch };
+      // create new release branch
+      await this.shell.exec(`git checkout -b ${releaseBranch}`);
+
+      // merge remote branch
+      const targetBranch = `origin/${this.config.branch}`;
+      this.log.debug(`Attempting to merge from ${targetBranch}`);
+      await this.shell.exec(`git merge ${targetBranch}`);
+
+      // push new branch to remote
+      await this.shell.exec(`git push origin ${releaseBranch}`);
+
+      return { tagName, releaseBranch };
+    } catch (error) {
+      this.log.error('Failed to create release branch:', error);
+      throw error;
+    }
   }
 
   async createPRLabel() {
