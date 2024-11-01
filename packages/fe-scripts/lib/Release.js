@@ -370,11 +370,16 @@ export class Release {
   }
 
   async checkTag() {
-    const lastTag = await this.shell.run(
-      'git tag --sort=-creatordate | head -n 1'
+    // const lastTag = await this.shell.run(
+    //   'git tag --sort=-creatordate | head -n 1'
+    // );
+
+    // only use release-it output version, or current pkg version to create tag
+    const tagName = get(
+      this._releaseItOutput,
+      'version',
+      this.config.pkgVersion
     );
-    const tagName =
-      lastTag || get(this._releaseItOutput, 'version', this.config.pkgVersion);
 
     this.log.debug('Created Tag is:', tagName);
 
@@ -383,21 +388,15 @@ export class Release {
 
   async createReleaseBranch() {
     const { tagName } = await this.checkTag();
-
-    // create a release branch, use new tagName as release branch name
     const releaseBranch = this.config.getReleaseBranch(tagName);
 
-    // this.log.log('Create Release PR branch', releaseBranch);
+    this.log.debug('Create Release PR branch', releaseBranch);
 
     await this.shell.exec(`git merge origin/${this.config.branch}`);
     await this.shell.exec(`git checkout -b ${releaseBranch}`);
 
-    try {
-      await this.shell.exec(`git push origin ${releaseBranch}`);
-      // this.log.info(`PR Branch ${releaseBranch} push Successfully!`);
-    } catch (error) {
-      this.log.error(error);
-    }
+    await this.shell.exec(`git push origin ${releaseBranch}`);
+    // this.log.info(`PR Branch ${releaseBranch} push Successfully!`);
 
     return { tagName, releaseBranch };
   }
@@ -452,6 +451,10 @@ export class Release {
 
     let output = '';
     try {
+      if (this.dryRun) {
+        this.log.debug(command);
+      }
+
       output = await this.shell.run(command, {
         dryRunResult: await ReleaseUtil.getDryRrunPRUrl(this.shell, 999999)
       });
