@@ -44,3 +44,4 @@ public/sitemap*.xml
 dist
 .eslintcache
 .npmrc
+.secrets

@@ -1,64 +1,56 @@
 name: Release Fe-Scripts
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - merge-packages-test-cicd
-    types:
-      - closed
-    path:
-      - packages/fe-scripts/**
 
 jobs:
-  create-release-fe-scripts-pr:
-    # only run when PR merged and has pkg:fe-scripts and CI-Release labels
-    if: |
-      github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
-      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
-    runs-on: ubuntu-latest
+  # create-release-fe-scripts-pr:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Config Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+  #     - name: Config Git
+  #       run: |
+  #         git config --global user.name "github-actions[bot]"
+  #         git config --global user.email "github-actions[bot]@users.noreply.github.com"  
 
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.19.0'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '18.19.0'
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
 
-      - name: Lint
-        run: npm run lint
+  #     - name: Install dependencies
+  #       run: |
+  #         npm install -g yarn
+  #         yarn
 
-      - name: Test
-        run: npm run test
+  #     - name: Lint
+  #       run: yarn lint
 
-      - name: Build dist
-        run: npm run build
+  #     - name: Test
+  #       run: yarn test
 
-      - name: Create release PR
-        run: cd packages/fe-scripts && npm run release-pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
+  #     - name: Build dist
+  #       run: yarn build
+
+  #     - name: Create release PR
+  #       run: |
+  #         cd packages/fe-scripts
+  #         npm run release-pr -- -V --dryrun
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
+  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+  #         PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release-fe-scripts:
-    # only run when PR merged and has pkg:fe-scripts and CI-Release labels
-    if: |
-      github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
-      contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
@@ -78,19 +70,23 @@ jobs:
           node-version: '18.19.0'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install -g yarn
+          yarn
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Test
-        run: npm run test
+        run: yarn test
 
       - name: Build dist
-        run: npm run build
+        run: yarn build
 
       - name: Create tag and publish
-        run: cd packages/fe-scripts && npm run release
+        run: |
+          cd packages/fe-scripts
+          npm run release -- -V --dryrun
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
