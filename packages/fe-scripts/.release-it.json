@@ -1,7 +1,7 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
+    "changelog": "git log --pretty=format:\"* %s (%h)\" $(git describe --match \"fe-scripts-v*\" --abbrev=0)...HEAD -- packages/fe-scripts/",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -10,34 +10,34 @@
     "commitsPath": "",
     "addUntrackedFiles": false,
     "commit": true,
-    "commitMessage": "chore(tag): release v${version}",
+    "commitMessage": "chore(tag): release-fe-scripts v${version}",
     "commitArgs": [],
     "tag": true,
     "tagExclude": null,
-    "tagName": null,
-    "tagMatch": null,
-    "getLatestTagFromAllRefs": false,
-    "tagAnnotation": "chore(tag): release v${version}",
+    "tagName": "fe-scripts-v${version}",
+    "tagMatch": "fe-scripts-v*",
+    "getLatestTagFromAllRefs": true,
+    "tagAnnotation": "chore(tag): release-fe-scripts v${version}",
     "tagArgs": [],
-    "push": false,
+    "push": true,
     "pushArgs": ["--follow-tags"],
     "pushRepo": ""
   },
   "npm": {
     "publish": true,
-    "publishPath": ".",
+    "publishPath": "",
+    "versionArgs": ["--allow-same-version", "--workspaces-update=false"],
     "publishArgs": [],
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
     "allowSameVersion": false,
-    "versionArgs": [],
-    "skipChecks": false,
+    "skipChecks": true,
     "timeout": 10
   },
   "github": {
-    "release": true,
-    "releaseName": "chore(tag): release v${version}",
+    "release": false,
+    "releaseName": "chore(tag): release-fe-scripts v${version}",
     "releaseNotes": null,
     "autoGenerate": false,
     "preRelease": false,
@@ -58,10 +58,22 @@
 
   "plugins": {
     "@release-it/conventional-changelog": {
-      "preset": "angular",
       "infile": "CHANGELOG.md",
-      "ignoreRecommendedBump": true,
-      "strictSemVer": true
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "Features" },
+          { "type": "fix", "section": "Bug Fixes" },
+          { "type": "revert", "section": "Reverts" },
+          { "type": "build", "hidden": true, "section": "Build System" },
+          { "type": "chore", "hidden": true },
+          { "type": "docs", "hidden": true },
+          { "type": "style", "hidden": true },
+          { "type": "refactor", "hidden": true },
+          { "type": "perf", "hidden": true },
+          { "type": "test", "hidden": true }
+        ]
+      }
     }
   }
 }

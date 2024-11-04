@@ -221,6 +221,11 @@ export interface ReleaseConfig {
   log: Logger;
   shell: Shell;
   feConfig: FeConfig;
+  /**
+   * only `npm publish <directory>`
+   * don't release directory
+   */
+  publishPath?: string;
 }
 
 export class ReleaseBase {

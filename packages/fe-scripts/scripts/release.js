@@ -26,7 +26,8 @@ function setupRelease(release) {
     return 1;
   }
 
-  release.config.ghToken = env.get('GITHUB_TOKEN') || '';
+  // github cli need first clear
+  release.config.ghToken = env.getEnvDestroy('GITHUB_TOKEN') || '';
   release.config.npmToken = env.get('NPM_TOKEN');
   release.config.branch = env.get('PR_BRANCH');
   release.config.env = env.get('NODE_ENV');
@@ -40,12 +41,14 @@ function setupRelease(release) {
 export async function release(options) {
   const release = new Release(options);
 
+  release.log.debug(options);
+
   if (setupRelease(release)) {
     return;
   }
 
   release.log.title('Release to NPM and Github ...');
-  await release.releaseIt();
+  await release.publish();
 
   release.log.title('Release Successfully');
 }
@@ -58,11 +61,13 @@ export async function release(options) {
 export async function createReleasePR(options) {
   const release = new Release(options);
 
+  release.log.debug(options);
+
   if (setupRelease(release)) {
     return;
   }
 
-  const releaseResult = await release.releaseIt();
+  const releaseResult = await release.createChangelogAndVersion();
 
   release.log.title('Create Release Branch ...');
   const { tagName, releaseBranch } = await release.createReleaseBranch();
@@ -79,6 +84,10 @@ export async function createReleasePR(options) {
     await release.autoMergePR(prNumber);
 
     await release.checkedPR(prNumber, releaseBranch);
+  } else {
+    release.log.info(
+      `Please manually merge PR(#${prNumber}) and complete the publishing process afterwards`
+    );
   }
 
   release.log.title(`Create Release PR(#${prNumber}) Successfully`);
