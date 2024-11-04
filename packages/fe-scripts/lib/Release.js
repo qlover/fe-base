@@ -448,7 +448,7 @@ export class Release {
         throw error;
       }
     } finally {
-      // 清理临时文件
+      // clean up temp file
       try {
         unlinkSync(tempFile);
       } catch {
