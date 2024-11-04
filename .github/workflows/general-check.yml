@@ -8,7 +8,7 @@ on:
 
 jobs:
   check-code:
-    if: contains(github.event.head_commit.message, 'chore(tag)') == false
+    if: !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
@@ -39,6 +39,7 @@ jobs:
         run: yarn build
 
   check-changes:
+    if: !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
