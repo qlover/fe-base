@@ -3,7 +3,7 @@ name: General check
 on:
   pull_request:
     branches:
-      - merge-packages
+      - master
     types: [opened, synchronize, reopened]
 
 jobs:
