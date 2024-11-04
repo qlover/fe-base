@@ -289,13 +289,12 @@ export class Release {
     return this.releaseIt({
       ci: true,
       npm: {
+        publish: false,
         publishPath: this.getPublishPath()
       },
       git: {
         requireCleanWorkingDir: false,
-        requireUpstream: false,
-        // FIXME: ignore changlog.md
-        commitArgs: ['--no-verify', '--', ':!CHANGELOG.md']
+        requireUpstream: false
       },
       'dry-run': this.dryRun,
       increment: this.config.pkgVersion

@@ -57,8 +57,8 @@ jobs:
 
   release-fe-scripts:
     # only run when PR merged and has pkg:fe-scripts and CI-Release labels
-    # github.event.pull_request.merged == true && 
     if: |
+      github.event.pull_request.merged == true && 
       contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
