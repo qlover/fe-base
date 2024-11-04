@@ -15,6 +15,7 @@ async function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
+    .option('-p, --path <path>', 'The path of the package to release')
     .option(
       '-m, --mode <type>',
       'Run mode, 0: use shell run npx command, 1: call release-it method',
@@ -51,7 +52,8 @@ async function main() {
     log: logger,
     shell: new Shell({ log: logger, isDryRun: options.dryrun }),
     feConfig: feConfig.config,
-    mode: +options.mode
+    mode: +options.mode,
+    publishPath: options.path
   });
 }
 
