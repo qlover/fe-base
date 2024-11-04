@@ -283,9 +283,14 @@ export class Release {
    * 2. no changelog
    */
   async publish() {
+    // await this.shell.exec(
+    //   `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
+    // );
+
     await this.shell.exec(
-      `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
+      `npm set //registry.npmjs.org/:_authToken=${this.config.npmToken}`
     );
+
     return this.releaseIt({
       ci: true,
       npm: {
