@@ -45,7 +45,7 @@ async function main() {
     shell: new Shell({ log: logger, isDryRun: options.dryrun }),
     feConfig: feConfig.config,
     mode: +options.mode,
-    publishPath: options.path
+    path: options.path || '.'
   });
 }
 
