@@ -1,6 +1,6 @@
 import loadsh from 'lodash';
-import { readFileSync } from 'fs';
-import { resolve, join, dirname } from 'path';
+import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { resolve, join, dirname, tmpdir } from 'path';
 import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
@@ -385,7 +385,7 @@ export class Release {
     try {
       const label = this.config.feConfig.release.label;
       await this.shell.exec(
-        'gh label create "${name}" --description "${description}" --color "${color}"',
+        'gh label create "${name}" --description "${description}" --color "${color}" --force',
         {
           context: label
         }
@@ -402,15 +402,12 @@ export class Release {
    * @returns {Promise<string>}
    */
   async createReleasePR(tagName, releaseBranch, releaseResult) {
-    // this.log.log('Create Release PR', tagName, releaseBranch);
-
     await this.shell.exec(
       `echo "${this.config.ghToken}" | gh auth login --with-token`
     );
 
     await this.createPRLabel();
 
-    // get changelog and features
     const changelog = await this.getChangelogAndFeatures(
       releaseResult || this._releaseItOutput
     );
@@ -418,11 +415,15 @@ export class Release {
     const title = this.config.getReleasePRTitle(tagName);
     const body = this.config.getReleasePRBody({ tagName, changelog });
 
+    // create temp file to store PR content
+    const tempFile = join(tmpdir(), `pr-body-${Date.now()}.md`);
+    writeFileSync(tempFile, body, 'utf8');
+
     const command = Shell.format(
-      'gh pr create --title "${title}" --body "${body}" --base ${base} --head ${head} --label "${labelName}"',
+      'gh pr create --title "${title}" --body-file "${bodyFile}" --base ${base} --head ${head} --label "${labelName}"',
       {
         title,
-        body,
+        bodyFile: tempFile,
         base: this.config.branch,
         head: releaseBranch,
         labelName: this.config.feConfig.release.label.name
@@ -444,6 +445,13 @@ export class Release {
         output = error.toString();
       } else {
         throw error;
+      }
+    } finally {
+      // 清理临时文件
+      try {
+        unlinkSync(tempFile);
+      } catch {
+        this.log.warn('Failed to clean up temporary file:', tempFile);
       }
     }
 
