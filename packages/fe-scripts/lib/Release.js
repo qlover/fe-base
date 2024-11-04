@@ -289,7 +289,7 @@ export class Release {
     return this.releaseIt({
       ci: true,
       npm: {
-        publish: false,
+        publish: true,
         publishPath: this.getPublishPath()
       },
       git: {
