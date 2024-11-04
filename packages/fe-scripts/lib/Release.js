@@ -157,8 +157,7 @@ class ReleaseBase {
   }
 
   getPkg() {
-    const path = this.getPublishPath();
-    return JSON.parse(readFileSync(resolve(path, './package.json'), 'utf-8'));
+    return JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
   }
 
   initConfig(config) {
