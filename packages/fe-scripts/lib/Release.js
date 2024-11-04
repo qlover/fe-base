@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
 
-const { isString, isPlainObject, get, set } = loadsh;
+const { isString, isPlainObject, get } = loadsh;
 
 class ReleaseUtil {
   static isValidString(value) {
@@ -293,6 +293,7 @@ export class Release {
       },
       git: {
         requireCleanWorkingDir: false,
+        requireUpstream: false,
         // FIXME: ignore changlog.md
         commitArgs: ['--no-verify', '--', ':!CHANGELOG.md']
       },
