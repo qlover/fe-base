@@ -1,6 +1,7 @@
 import loadsh from 'lodash';
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { resolve, join, dirname, tmpdir } from 'path';
+import { resolve, join, dirname } from 'path';
+import { tmpdir } from 'os';
 import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
@@ -447,7 +448,7 @@ export class Release {
         throw error;
       }
     } finally {
-      // 清理临时文件
+      // clean up temp file
       try {
         unlinkSync(tempFile);
       } catch {
