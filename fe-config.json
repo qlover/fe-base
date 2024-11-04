@@ -1,0 +1,12 @@
+{
+  "protectedBranches": [
+    "master",
+    "build/tsup",
+    "master",
+    "root-src",
+    "test"
+  ],
+  "release": {
+    "autoMergeReleasePR": true
+  }
+}
