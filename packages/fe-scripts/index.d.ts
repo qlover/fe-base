@@ -221,6 +221,7 @@ export interface ReleaseConfig {
   log: Logger;
   shell: Shell;
   feConfig: FeConfig;
+  publishPath?: string;
 }
 
 export class ReleaseBase {

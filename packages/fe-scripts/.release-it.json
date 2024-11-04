@@ -1,7 +1,7 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to} -- packages/fe-scripts/",
+    "changelog": "git log --pretty=format:\"* %s (%h)\" $(git describe --match \"fe-scripts-v*\" --abbrev=0)...HEAD -- packages/fe-scripts/",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -19,7 +19,7 @@
     "getLatestTagFromAllRefs": true,
     "tagAnnotation": "chore(tag): release-fe-scripts v${version}",
     "tagArgs": [],
-    "push": false,
+    "push": true,
     "pushArgs": ["--follow-tags"],
     "pushRepo": ""
   },
@@ -27,7 +27,7 @@
     "publish": true,
     "publishPath": ".",
     "versionArgs": ["--allow-same-version", "--workspaces-update=false"],
-    "publishArgs": ["--include-workspace-root"],
+    "publishArgs": [],
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
@@ -64,6 +64,8 @@
         "types": [
           { "type": "feat", "section": "Features" },
           { "type": "fix", "section": "Bug Fixes" },
+          { "type": "revert", "section": "Reverts" },
+          { "type": "build", "hidden": true, "section": "Build System" },
           { "type": "chore", "hidden": true },
           { "type": "docs", "hidden": true },
           { "type": "style", "hidden": true },
@@ -71,17 +73,6 @@
           { "type": "perf", "hidden": true },
           { "type": "test", "hidden": true }
         ]
-      },
-      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
-      "parserOpts": {
-        "headerPattern": "^(\\w*)(?:\\((fe-scripts|packages/fe-scripts)\\))?\\: (.*)$",
-        "headerCorrespondence": ["type", "scope", "subject"]
-      },
-      "writerOpts": {
-        "commitsSort": ["scope", "subject"],
-        "commitGroupsSort": "title",
-        "noteGroupsSort": "title",
-        "mainTemplate": "{{#each commitGroups}}{{#each commits}}* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}\n{{/each}}{{/each}}"
       }
     }
   }

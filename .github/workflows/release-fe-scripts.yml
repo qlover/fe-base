@@ -8,6 +8,11 @@ on:
 
 jobs:
   # create-release-fe-scripts-pr:
+  # only run when PR merged and has pkg:fe-scripts and CI-Release labels
+  # if: |
+  #   github.event.pull_request.merged == true && 
+  #   contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
+  #   !contains(github.event.pull_request.labels.*.name, 'CI-Release')
   #   runs-on: ubuntu-latest
 
   #   steps:
@@ -51,6 +56,12 @@ jobs:
   #         PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release-fe-scripts:
+    # only run when PR merged and has pkg:fe-scripts and CI-Release labels
+    if: |
+      github.event.pull_request.merged == true && 
+      contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
+      contains(github.event.pull_request.labels.*.name, 'CI-Release')
+
     runs-on: ubuntu-latest
 
     steps:
