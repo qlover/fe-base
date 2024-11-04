@@ -5,6 +5,10 @@ on:
   pull_request:
     branches:
       - merge-packages-test-cicd
+    types:
+      - closed
+    path:
+      - packages/fe-scripts/**
 
 jobs:
   create-release-fe-scripts-pr:

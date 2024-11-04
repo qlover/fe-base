@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
 
-const { isString, isPlainObject, get } = loadsh;
+const { isString, isPlainObject, get, set, merge } = loadsh;
 
 class ReleaseUtil {
   static isValidString(value) {
@@ -30,7 +30,9 @@ class ReleaseUtil {
       throw new Error('please set .fe-config.release valid author');
     }
 
-    const repoName = feConfig.repository || repository.url.split('/').pop();
+    const repoName =
+      feConfig.repository ||
+      repository.url.split('/').pop()?.replace('.git', '');
     if (!ReleaseUtil.isValidString(repoName)) {
       throw new Error('please set .fe-config.release repository');
     }
@@ -135,11 +137,11 @@ class ReleaseBase {
    * @param {Shell} config.shell
    */
   constructor(config = {}) {
-    this.feConfig = config.feConfig || {};
+    this.feConfig = this.initConfig(config);
     this.log = config.log;
     this.shell = config.shell;
 
-    const pkg = JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+    const pkg = this.getPkg();
 
     // other config
     this.isCreateRelease = !!config.isCreateRelease;
@@ -148,6 +150,24 @@ class ReleaseBase {
     this.branch = '';
     this.userInfo = ReleaseUtil.getUserInfo(pkg, this.feConfig);
     this.pkgVersion = pkg.version;
+  }
+
+  getPublishPath() {
+    return this.getReleaseFeConfig('publishPath', process.cwd());
+  }
+
+  getPkg() {
+    return JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+  }
+
+  initConfig(config) {
+    const feConfig = merge({}, config.feConfig);
+
+    if (config.publishPath) {
+      set(feConfig, 'release.publishPath', config.publishPath);
+    }
+
+    return feConfig;
   }
 
   /**
@@ -264,12 +284,6 @@ export class Release {
     return ReleaseUtil.getPRNumber(output);
   }
 
-  getPublishPath() {
-    const cwd = process.cwd();
-    const publishPath = this.config.getReleaseFeConfig('publishPath');
-    return publishPath || cwd;
-  }
-
   async releaseIt(releaseItOptions) {
     this.log.debug('Run release-it method', releaseItOptions);
     const { default: releaseIt } = await import('release-it');
@@ -290,8 +304,7 @@ export class Release {
       ci: true,
       npm: {
         publish: true,
-        // publishPath: options.path || this.getPublishPath()
-        publishPath: this.getPublishPath()
+        publishPath: this.config.getPublishPath()
       },
       git: {
         requireCleanWorkingDir: false,
