@@ -79,7 +79,6 @@ export async function createReleasePR(options) {
     releaseResult
   );
 
-  return;
   if (release.config.getReleaseFeConfig('autoMergeReleasePR')) {
     release.log.title('Auto Merge Release PR...');
     await release.autoMergePR(prNumber);
