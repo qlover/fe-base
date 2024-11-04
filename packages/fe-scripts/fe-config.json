@@ -12,6 +12,7 @@
     "extends": ["@commitlint/config-conventional"]
   },
   "release": {
+    "publishPath": "",
     "autoMergeReleasePR": false,
     "autoMergeType": "squash",
     "branchName": "release-${env}-${branch}-${tagName}",

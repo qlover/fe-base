@@ -5,8 +5,7 @@ import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
 
-const { isString, isPlainObject, get, set } = loadsh;
-const pkg = JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+const { isString, isPlainObject, get } = loadsh;
 
 class ReleaseUtil {
   static isValidString(value) {
@@ -140,6 +139,8 @@ class ReleaseBase {
     this.log = config.log;
     this.shell = config.shell;
 
+    const pkg = JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+
     // other config
     this.isCreateRelease = !!config.isCreateRelease;
     this.ghToken = '';
@@ -263,100 +264,66 @@ export class Release {
     return ReleaseUtil.getPRNumber(output);
   }
 
-  getReleaseItOptions() {
-    const options = {
-      ci: true
-    };
-
-    if (this.config.isCreateRelease) {
-      set(options, 'git.tag', false);
-      set(options, 'git.push', false);
-      set(options, 'github.release', false);
-      set(options, 'npm.publish', false);
-      set(options, 'github.release', false);
-    } else {
-      set(options, 'increment', false);
-    }
-
-    if (this.shell.config.isDryRun) {
-      set(options, 'dry-run', true);
-    }
-
-    return options;
+  getPublishPath() {
+    const cwd = process.cwd();
+    const publishPath = this.config.getReleaseFeConfig('publishPath');
+    return publishPath || cwd;
   }
 
-  getReleaseItCommand() {
-    const releaseItConfig = this.config.getReleaseItConfig();
-    const command = ['npx release-it'];
-
-    command.push('--ci');
-
-    // 添加 --no-npm.install 参数禁用自动安装
-    command.push('--no-npm.install');
-
-    // 1. no publish npm
-    // 2. no publish github/release/tag
-    if (this.config.isCreateRelease) {
-      command.push(
-        '--no-git.tag --no-git.push --no-npm.publish --no-github.release'
-      );
-    }
-    // use current pkg, no publish npm and publish github
-    else {
-      command.push('--no-increment');
-    }
-
-    if (this.shell.config.isDryRun) {
-      command.push('--dry-run');
-    }
-
-    this.log.debug(
-      'getReleaseItCommand releaseItConfig is, but not use',
-      releaseItConfig
-    );
-    // because packages multiple, so not use release-it config
-    // if (releaseItConfig) {
-    //   command.push(`--config ${releaseItConfig}`);
-    // }
-
-    return command.join(' ');
-  }
-
-  async releaseIt(mode = 0) {
-    this._releaseItOutput = {
-      name: '',
-      changelog: '',
-      latestVersion: '',
-      version: ''
-    };
-
-    await this.shell.exec(
-      `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
-    );
-
-    let output;
-    if (!mode) {
-      // only exec release-it command in dryRun
-      const command = this.getReleaseItCommand();
-      this.log.debug('Run Release-it command: ', command);
-
-      // command has dryrun options
-      output = await this.shell.exec(command, {
-        env: this.releaseItEnv,
-        dryRun: false
-      });
-      this._releaseItOutput = ReleaseItOutputParser.parse(output);
-    } else {
-      const options = this.getReleaseItOptions();
-      this.log.debug('Run release-it method', options);
-      const { default: releaseIt } = await import('release-it');
-      output = await releaseIt(options);
-      this._releaseItOutput = output;
-    }
-
-    this.log.debug('Release-it output:\n', output);
-
+  async releaseIt(releaseItOptions) {
+    this.log.debug('Run release-it method', releaseItOptions);
+    const { default: releaseIt } = await import('release-it');
+    const output = await releaseIt(releaseItOptions);
+    this._releaseItOutput = output;
     return output;
+  }
+
+  /**
+   * 1. no incremnt
+   * 2. no changelog
+   */
+  async publish() {
+    // await this.shell.exec(
+    //   `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
+    // );
+    return this.releaseIt({
+      ci: true,
+      npm: {
+        publish: true,
+        // publishPath: options.path || this.getPublishPath()
+        publishPath: this.getPublishPath()
+      },
+      git: {
+        requireCleanWorkingDir: false,
+        requireUpstream: false
+      },
+      'dry-run': this.dryRun,
+      increment: this.config.pkgVersion
+    });
+  }
+
+  /**
+   * 1. create incrment
+   * 2. create changelog
+   * 3. no publish anything
+   */
+  async createChangelogAndVersion() {
+    return this.releaseIt({
+      ci: true,
+      increment: 'patch',
+      npm: {
+        publish: false
+      },
+      git: {
+        requireCleanWorkingDir: false,
+        tag: false,
+        push: false
+      },
+      github: {
+        release: false
+      },
+      'dry-run': this.dryRun
+    });
   }
 
   async getChangelogAndFeatures(releaseResult) {
@@ -431,7 +398,7 @@ export class Release {
     await this.createPRLabel();
 
     // get changelog and features
-    const { changelog } = await this.getChangelogAndFeatures(
+    const changelog = await this.getChangelogAndFeatures(
       releaseResult || this._releaseItOutput
     );
 

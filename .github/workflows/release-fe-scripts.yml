@@ -1,13 +1,10 @@
 name: Release Fe-Scripts
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - merge-packages-test-cicd
-    types:
-      - closed
-    path:
-      - packages/fe-scripts/**
 
 jobs:
   create-release-fe-scripts-pr:
@@ -20,15 +17,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Config Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"  
-
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
@@ -59,13 +56,15 @@ jobs:
       github.event.pull_request.merged == true && 
       contains(github.event.pull_request.labels.*.name, 'pkg:fe-scripts') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Config Git
         run: |
@@ -78,20 +77,31 @@ jobs:
           node-version: '18.19.0'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install -g yarn
+          yarn
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Test
-        run: npm run test
+        run: yarn test
 
       - name: Build dist
-        run: npm run build
+        run: yarn build
 
       - name: Create tag and publish
-        run: cd packages/fe-scripts && npm run release
+        run: |
+          node ./packages/fe-scripts/bin/check-npm-auth.js
+          cd packages/fe-scripts
+          npm run release -- -V
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Debug Git status
+        run: |
+          git status
+          git branch
+          git rev-parse --abbrev-ref HEAD
