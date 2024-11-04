@@ -1,6 +1,7 @@
 import loadsh from 'lodash';
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { resolve, join, dirname, tmpdir } from 'path';
+import { resolve, join, dirname } from 'path';
+import { tmpdir } from 'os';
 import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
