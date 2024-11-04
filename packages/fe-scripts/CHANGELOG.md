@@ -1,5 +1,7 @@
 
 
+## [0.3.3](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.2...fe-scripts-v0.3.3) (2024-11-04)
+
 ## [0.3.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.2.0...fe-scripts-v0.3.2) (2024-11-04)
 
 ## [0.3.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.2.0...fe-scripts-v0.3.2) (2024-11-04)
