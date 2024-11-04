@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
+          # ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Config Git
         run: |
@@ -48,7 +48,9 @@ jobs:
         run: npm run build
 
       - name: Create release PR
-        run: cd packages/fe-scripts && npm run release-pr
+        run: |
+          cd packages/fe-scripts
+          npm run release-pr
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -65,10 +67,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
+          # ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Config Git
         run: |
