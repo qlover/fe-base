@@ -3,7 +3,7 @@ name: General check
 on:
   pull_request:
     branches:
-      - merge-packages-test-cicd
+      - master
     types: [opened, synchronize, reopened]
 
 jobs:
