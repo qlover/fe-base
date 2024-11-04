@@ -17,7 +17,7 @@
   "scripts": {
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "build": "yarn build:fe-utils",
-    "release:fe-scripts": "yarn workspace @qlover/fe-scripts release",
+    "release:fe-scripts": "fe-release -p ./packages/fe-scripts",
     "prettier": "prettier packages --write",
     "eslint": "eslint . --fix",
     "lint": "eslint . --fix",

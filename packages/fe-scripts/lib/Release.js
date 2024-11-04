@@ -286,15 +286,11 @@ export class Release {
     // await this.shell.exec(
     //   `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
     // );
-
-    await this.shell.exec(
-      `npm set //registry.npmjs.org/:_authToken=${this.config.npmToken}`
-    );
-
     return this.releaseIt({
       ci: true,
       npm: {
         publish: true,
+        // publishPath: options.path || this.getPublishPath()
         publishPath: this.getPublishPath()
       },
       git: {
