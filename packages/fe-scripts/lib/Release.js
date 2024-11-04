@@ -93,7 +93,7 @@ export class ReleaseItOutputParser {
       version: ''
     };
 
-    // 匹配版本信息和包名
+    // match version info and package name
     const versionMatch = output.match(
       /Let's release (.+?) \(([\d.]+)\.\.\.([\d.]+)\)/
     );
