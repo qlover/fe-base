@@ -2,7 +2,7 @@
   "protectedBranches": [
     "master",
     "build/tsup",
-    "merge-packages",
+    "master",
     "root-src",
     "test"
   ],
