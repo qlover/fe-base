@@ -91,7 +91,7 @@ jobs:
 
       - name: Create tag and publish
         run: |
-          node ./packages/fe-utils/bin/check-npm-auth.js
+          node ./packages/fe-scripts/bin/check-npm-auth.js
           cd packages/fe-utils
           npm run release -- -V
         env:

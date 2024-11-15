@@ -34,7 +34,8 @@
     "fe-commit": "./bin/commit.js",
     "fe-setup-husky": "./bin/setup-husky.js",
     "fe-release-pr": "./bin/create-release-pr.js",
-    "fe-release": "./bin/release.js"
+    "fe-release": "./bin/release.js",
+    "fe-check-npm-auth": "./bin/check-npm-auth.js"
   },
   "scripts": {
     "build": "node ./scripts/prebuild.js",

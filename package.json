@@ -25,7 +25,8 @@
     "clean": "fe-clean",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check-npm": "npx fe-check-npm-auth"
   },
   "keywords": [
     "fe",
