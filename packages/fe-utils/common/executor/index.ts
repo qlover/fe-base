@@ -1,7 +1,10 @@
-type PromiseTask<T> = () => Promise<T>;
+type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
+type SyncTask<T, D = unknown> = (data: D) => T;
+type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
 
 // BasePlugin remains the same
 export abstract class ExecutorPlugin<T = unknown, R = T> {
+  onBefore?(data?: unknown): unknown | Promise<unknown>;
   onError?(error: Error): ExecutorError | void;
   onSuccess?(result: T): R | Promise<R>;
 }
@@ -9,8 +12,8 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
 // Custom Error Class
 export class ExecutorError extends Error {
   constructor(
+    public id: string,
     public message: string,
-    public code: string,
     public originalError?: Error
   ) {
     super(message);
@@ -39,20 +42,34 @@ export abstract class Executor {
     this.plugins.push(plugin);
   }
 
+  use(plugin: ExecutorPlugin): void {
+    this.addPlugin(plugin);
+  }
+
   /**
    * execute task and return result
    * @throw {ExecutorError} if task execution fails, throw ExecutorError
    * @param task task
    */
-  abstract exec<T>(task: PromiseTask<T> | (() => T)): Promise<T> | T;
+  abstract exec<T>(task: Task<T>): Promise<T> | T;
+  abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
 
   /**
    * execute task and return result without throwing error, wrap all errors as ExecutorError
    * @param task task
    */
   abstract execNoError<T>(
-    task: PromiseTask<T> | (() => T)
+    task: Task<T>
   ): Promise<T | ExecutorError> | T | ExecutorError;
+  abstract execNoError<T>(
+    data: unknown,
+    task: Task<T>
+  ): Promise<T | ExecutorError> | T | ExecutorError;
+
+  /**
+   * before chain
+   */
+  protected abstract beforeChain(data?: unknown): void | Promise<void>;
 
   /**
    * success chain
@@ -73,20 +90,42 @@ export abstract class Executor {
  * async executor
  */
 export class AsyncExecutor extends Executor {
-  async execNoError<T>(task: PromiseTask<T>): Promise<T | ExecutorError> {
+  async execNoError<T>(
+    dataOrTask: unknown | PromiseTask<T>,
+    task?: PromiseTask<T>
+  ): Promise<T | ExecutorError> {
     try {
-      return await this.exec(task);
+      return await this.exec(dataOrTask as unknown, task);
     } catch (error) {
       return error as ExecutorError;
     }
   }
 
-  async exec<T>(task: PromiseTask<T>): Promise<T> {
+  async exec<T, D = unknown>(
+    dataOrTask: D | PromiseTask<T, D>,
+    task?: PromiseTask<T, D>
+  ): Promise<T> {
     try {
-      const result = await task();
+      // Check if data is provided
+      const actualTask = (task || dataOrTask) as PromiseTask<T, D>;
+      const data = task ? dataOrTask : undefined;
+
+      if (typeof actualTask !== 'function') {
+        throw new Error('Task must be a async function!');
+      }
+
+      const beforeResult = await this.beforeChain(data);
+
+      const result = await actualTask(beforeResult as D);
       return this.successChain<T, T>(result);
     } catch (error) {
       throw await this.errorChain(error as Error);
+    }
+  }
+
+  protected async beforeChain(data?: unknown): Promise<void> {
+    for (const plugin of this.plugins) {
+      await plugin.onBefore?.(data);
     }
   }
 
@@ -120,20 +159,42 @@ export class AsyncExecutor extends Executor {
  * sync executor
  */
 export class SyncExecutor extends Executor {
-  execNoError<T>(task: () => T): T | ExecutorError {
+  execNoError<T>(
+    dataOrTask: unknown | SyncTask<T>,
+    task?: SyncTask<T>
+  ): T | ExecutorError {
     try {
-      return this.exec(task);
+      return this.exec(dataOrTask as unknown, task);
     } catch (error) {
       return error as ExecutorError;
     }
   }
 
-  exec<T>(task: () => T): T {
+  exec<T, D = unknown>(
+    dataOrTask: D | SyncTask<T, D>,
+    task?: SyncTask<T, D>
+  ): T {
     try {
-      const result = task();
+      // Check if data is provided
+      const actualTask = (task || dataOrTask) as SyncTask<T, D>;
+      const data = task ? dataOrTask : undefined;
+
+      if (typeof actualTask !== 'function') {
+        throw new Error('Task must be a function!');
+      }
+
+      const beforeResult = this.beforeChain(data);
+
+      const result = actualTask(beforeResult as D);
       return this.successChain<T, T>(result);
     } catch (error) {
       throw this.errorChain(error as Error);
+    }
+  }
+
+  protected beforeChain(data?: unknown): void {
+    for (const plugin of this.plugins) {
+      plugin.onBefore?.(data);
     }
   }
 
