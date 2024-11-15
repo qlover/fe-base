@@ -1,0 +1,46 @@
+{
+  "hooks": {},
+  "git": {
+    "changelog": "git log --pretty=format:\"* %s (%h)\" $(git describe --match \"fe-utils-v*\" --abbrev=0)...HEAD -- packages/fe-utils/",
+    "requireUpstream": true,
+    "commit": true,
+    "commitMessage": "chore(tag): release-fe-utils v${version}",
+    "tag": true,
+    "tagName": "fe-utils-v${version}",
+    "tagMatch": "fe-utils-v*",
+    "getLatestTagFromAllRefs": true,
+    "tagAnnotation": "chore(tag): release-fe-utils v${version}",
+    "push": true,
+    "pushArgs": ["--follow-tags"]
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": "",
+    "versionArgs": ["--allow-same-version", "--workspaces-update=false"]
+  },
+  "github": {
+    "release": true,
+    "releaseName": "chore(tag): release-fe-utils v${version}"
+  },
+
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "Features" },
+          { "type": "fix", "section": "Bug Fixes" },
+          { "type": "revert", "section": "Reverts" },
+          { "type": "build", "hidden": true, "section": "Build System" },
+          { "type": "chore", "hidden": true },
+          { "type": "docs", "hidden": true },
+          { "type": "style", "hidden": true },
+          { "type": "refactor", "hidden": true },
+          { "type": "perf", "hidden": true },
+          { "type": "test", "hidden": true }
+        ]
+      }
+    }
+  }
+}
