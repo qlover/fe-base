@@ -11,7 +11,7 @@ on:
       - packages/fe-utils/**
 
 jobs:
-  create-release-fe-utils-pr:
+  release-fe-utils-PR:
     # only run when PR merged and has pkg:fe-utils and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
@@ -38,16 +38,17 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build 
-        run: |
-          npm run lint
-          npm run test
-          npm run build
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build dist
+        run: npm run build
 
       - name: Create release PR
-        run: |
-          cd packages/fe-utils
-          npm run release-pr
+        run: npm run release-pr:fe-utils
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -84,16 +85,17 @@ jobs:
           npm install -g yarn
           yarn
 
-      - name: Build
-        run: |
-          cd packages/fe-utils
-          npm run build
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build dist
+        run: yarn build
 
       - name: Create tag and publish
-        run: |
-          node ./packages/fe-scripts/bin/check-npm-auth.js
-          cd packages/fe-utils
-          npm run release -- -V
+        run: npm run release:fe-utils
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
