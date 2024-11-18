@@ -1,5 +1,12 @@
 
 
+## [0.3.9](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.8...fe-scripts-v0.3.9) (2024-11-18)
+
+
+### Bug Fixes
+
+* comm commitizen ([#128](https://github.com/qlover/fe-base/issues/128)) ([042ff3a](https://github.com/qlover/fe-base/commit/042ff3a71ab6bec039ee4fa1bc3f4fc116f9dd35))
+
 ## [0.3.8](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.4...fe-scripts-v0.3.8) (2024-11-18)
 
 
