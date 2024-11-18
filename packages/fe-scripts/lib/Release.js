@@ -318,7 +318,8 @@ export class Release {
       },
       git: {
         requireCleanWorkingDir: false,
-        requireUpstream: false
+        requireUpstream: false,
+        changelog: false
       },
       'dry-run': this.dryRun,
       verbose: true,
