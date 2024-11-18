@@ -47,6 +47,11 @@ export async function release(options) {
     return;
   }
 
+  // check npm
+  await release.checkNpmAuth();
+
+  await release.checkPublishPath();
+
   release.log.title('Release to NPM and Github ...');
   await release.publish();
 
@@ -66,6 +71,11 @@ export async function createReleasePR(options) {
   if (setupRelease(release)) {
     return;
   }
+
+  // check npm
+  await release.checkNpmAuth();
+
+  await release.checkPublishPath();
 
   const releaseResult = await release.createChangelogAndVersion();
 

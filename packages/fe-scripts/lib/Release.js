@@ -1,10 +1,11 @@
 import loadsh from 'lodash';
-import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'fs';
 import { resolve, join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath } from 'url';
 import { Shell } from './Shell.js';
 import { cosmiconfigSync } from 'cosmiconfig';
+import releaseIt from 'release-it';
 
 const { isString, isPlainObject, get, set, merge } = loadsh;
 
@@ -142,23 +143,25 @@ class ReleaseBase {
     this.log = config.log;
     this.shell = config.shell;
 
-    const pkg = this.getPkg();
-
     // other config
     this.isCreateRelease = !!config.isCreateRelease;
     this.ghToken = '';
     this.npmToken = '';
     this.branch = '';
-    this.userInfo = ReleaseUtil.getUserInfo(pkg, this.feConfig);
-    this.pkgVersion = pkg.version;
+  }
+
+  get userInfo() {
+    const pkg = this.getPkg();
+    return ReleaseUtil.getUserInfo(pkg, this.feConfig);
   }
 
   getPublishPath() {
     return this.getReleaseFeConfig('publishPath', process.cwd());
   }
 
-  getPkg() {
-    return JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+  getPkg(key) {
+    const pkg = JSON.parse(readFileSync(resolve('./package.json'), 'utf-8'));
+    return key ? get(pkg, key) : pkg;
   }
 
   initConfig(config) {
@@ -277,7 +280,8 @@ export class Release {
     return {
       ...process.env,
       NPM_TOKEN: this.config.npmToken,
-      GITHUB_TOKEN: this.config.ghToken
+      GITHUB_TOKEN: this.config.ghToken,
+      PAT_TOKEN: this.config.ghToken
     };
   }
 
@@ -287,7 +291,7 @@ export class Release {
 
   async releaseIt(releaseItOptions) {
     this.log.debug('Run release-it method', releaseItOptions);
-    const { default: releaseIt } = await import('release-it');
+    // const { default: releaseIt } = await import('release-it');
     const output = await releaseIt(releaseItOptions);
     this._releaseItOutput = output;
     return output;
@@ -299,20 +303,25 @@ export class Release {
    */
   async publish() {
     // await this.shell.exec(
-    //   `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`
+    //   `npx release-it ${this.config.getPublishPath()} --ci --npm.publish --dry-run --verbose`,
+    //   {
+    //     dryRun: false,
+    //     env: this.releaseItEnv
+    //   }
     // );
     return this.releaseIt({
       ci: true,
       npm: {
-        publish: true,
-        publishPath: this.config.getPublishPath()
+        publish: true
+        // publishPath: this.config.getPublishPath()
       },
       git: {
         requireCleanWorkingDir: false,
         requireUpstream: false
       },
       'dry-run': this.dryRun,
-      increment: this.config.pkgVersion
+      verbose: true,
+      increment: this.config.getPkg('version')
     });
   }
 
@@ -336,6 +345,7 @@ export class Release {
       github: {
         release: false
       },
+      verbose: true,
       'dry-run': this.dryRun
     });
   }
@@ -359,7 +369,7 @@ export class Release {
     const tagName = get(
       this._releaseItOutput,
       'version',
-      this.config.pkgVersion
+      this.config.getPkg('version')
     );
 
     this.log.debug('Created Tag is:', tagName);
@@ -521,5 +531,43 @@ export class Release {
     await this.shell.exec(`git push origin --delete ${releaseBranch}`);
 
     // this.log.info(`Branch ${releaseBranch} has been deleted`);
+  }
+
+  /**
+   * carese npm auth
+   * tip `npm login`
+   */
+  async checkNpmAuth() {
+    await this.shell.exec(
+      `echo "//registry.npmjs.org/:_authToken=${this.config.npmToken}" > .npmrc`,
+      {
+        dryRun: false
+      }
+    );
+
+    // TODO: check npm auth
+    // const npmAuthPrefix = '//registry.npmjs.org/:_authToken';
+    // const result = await this.shell.run('npm config list', {
+    //   dryRun: false
+    // });
+    // if (!result.includes(npmAuthPrefix)) {
+    //   if (this.dryRun) {
+    //     this.log.exec(`npm config set ${npmAuthPrefix}=(Protected)`);
+    //   } else {
+    //     await this.shell.exec(
+    //       `npm config set ${npmAuthPrefix}=${this.config.npmToken}`
+    //     );
+    //   }
+    // }
+  }
+
+  async checkPublishPath() {
+    const publishPath = this.config.getPublishPath();
+    if (publishPath && existsSync(publishPath)) {
+      // switch to publish path
+      process.chdir(publishPath);
+    }
+
+    this.log.debug('Current path:', process.cwd());
   }
 }
