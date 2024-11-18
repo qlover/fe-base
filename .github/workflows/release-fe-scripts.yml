@@ -11,7 +11,7 @@ on:
       - packages/fe-scripts/**
 
 jobs:
-  create-release-fe-scripts-pr:
+  release-fe-scripts-PR:
     # only run when PR merged and has pkg:fe-scripts and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
@@ -48,9 +48,7 @@ jobs:
         run: npm run build
 
       - name: Create release PR
-        run: |
-          cd packages/fe-scripts
-          npm run release-pr
+        run: npm run release-pr:fe-scripts
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -97,10 +95,7 @@ jobs:
         run: yarn build
 
       - name: Create tag and publish
-        run: |
-          node ./packages/fe-scripts/bin/check-npm-auth.js
-          cd packages/fe-scripts
-          npm run release -- -V
+        run: npm run release:fe-scripts
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
