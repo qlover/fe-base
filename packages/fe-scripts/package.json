@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "0.3.4",
+  "version": "0.3.8",
   "type": "module",
   "private": false,
   "exports": {
@@ -44,8 +44,7 @@
     "commit": "node ./bin/commit.js",
     "setup-husky": "node ./bin/setup-husky.js",
     "release-pr": "node ./bin/create-release-pr.js",
-    "release": "node ./bin/release.js",
-    "check-npm-auth": "node ./bin/check-npm-auth.js"
+    "release": "node ./bin/release.js"
   },
   "repository": {
     "type": "git",
