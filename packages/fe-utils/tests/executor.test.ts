@@ -37,7 +37,7 @@ describe('AsyncExecutor', () => {
 
   it('should handle errors through plugins', async () => {
     const executor = new AsyncExecutor();
-    const customError = new ExecutorError('custom error', 'CUSTOM_ERROR');
+    const customError = new ExecutorError('CUSTOM_ERROR', 'custom error');
 
     const plugin: ExecutorPlugin = {
       onError: () => customError
@@ -93,7 +93,7 @@ describe('SyncExecutor', () => {
 
   it('should handle errors through plugins', () => {
     const executor = new SyncExecutor();
-    const customError = new ExecutorError('custom error', 'CUSTOM_ERROR');
+    const customError = new ExecutorError('CUSTOM_ERROR', 'custom error');
 
     const plugin: ExecutorPlugin = {
       onError: () => customError
@@ -180,7 +180,7 @@ describe('ExecutorPlugin Error', () => {
     const executor = new AsyncExecutor();
 
     const plugin: ExecutorPlugin = {
-      onError: (error) => new ExecutorError(error.message, 'PLUGIN_ERROR')
+      onError: (error) => new ExecutorError('PLUGIN_ERROR', error.message)
     };
 
     executor.addPlugin(plugin);
@@ -190,7 +190,7 @@ describe('ExecutorPlugin Error', () => {
     });
 
     await expect(promise).rejects.toBeInstanceOf(ExecutorError);
-    await expect(promise).rejects.toHaveProperty('code', 'PLUGIN_ERROR');
+    await expect(promise).rejects.toHaveProperty('id', 'PLUGIN_ERROR');
     await expect(promise).rejects.toHaveProperty(
       'message',
       'Test ExecutorPlugin Error'
