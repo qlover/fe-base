@@ -302,29 +302,30 @@ export class Release {
    * 1. no incremnt
    * 2. no changelog
    */
-  async publish() {
-    // await this.shell.exec(
-    //   `npx release-it ${this.config.getPublishPath()} --ci --npm.publish --dry-run --verbose`,
-    //   {
-    //     dryRun: false,
-    //     env: this.releaseItEnv
-    //   }
-    // );
-    return this.releaseIt({
+  async publish(releaseItOptions = {}) {
+    const publishOptions = {
       ci: true,
       npm: {
         publish: true
-        // publishPath: this.config.getPublishPath()
       },
       git: {
         requireCleanWorkingDir: false,
         requireUpstream: false,
+        // disablec defualt changelog
         changelog: false
+      },
+      // disable @release-it/conventional-changelog
+      plugins: {
+        '@release-it/conventional-changelog': {
+          infile: false
+        }
       },
       'dry-run': this.dryRun,
       verbose: true,
       increment: this.config.getPkg('version')
-    });
+    };
+
+    return this.releaseIt(merge(publishOptions, releaseItOptions));
   }
 
   /**

@@ -395,7 +395,7 @@ export class Release {
   checkedPR(prNumber: number, releaseBranch: string): Promise<void>;
 
   /** Execute complete release process */
-  publish(): Promise<{
+  publish(releaseItOptions?: Record<string, any>): Promise<{
     name: string;
     changelog: string;
     latestVersion: string;
