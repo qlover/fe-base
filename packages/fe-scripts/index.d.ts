@@ -316,7 +316,7 @@ export class ReleaseBase {
 export class Release {
   constructor(config: ReleaseConfig);
 
-  readonly config: ReleaseBase;
+  readonly config: ReleaseConfig;
   readonly log: Logger;
   readonly shell: Shell;
   /** Environment variables for release-it */
@@ -329,9 +329,6 @@ export class Release {
    * @param output Command output containing PR number
    */
   getPRNumber(output: string): number;
-
-  /** Compose release-it command with options */
-  componseReleaseItCommand(): string;
 
   /**
    * Execute release-it process
