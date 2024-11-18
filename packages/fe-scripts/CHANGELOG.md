@@ -1,5 +1,18 @@
 
 
+## [0.3.8](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.4...fe-scripts-v0.3.8) (2024-11-18)
+
+
+### Features
+
+* remove auto merge ([#121](https://github.com/qlover/fe-base/issues/121)) ([434b198](https://github.com/qlover/fe-base/commit/434b198e174963c2f683362c22cc5295173a7a63))
+
+
+### Bug Fixes
+
+* release ignore changelog ([#125](https://github.com/qlover/fe-base/issues/125)) ([d738a72](https://github.com/qlover/fe-base/commit/d738a72875020273401b1bd3b92e1f1108a1e116))
+* release push changlog.md ([#123](https://github.com/qlover/fe-base/issues/123)) ([1952ae1](https://github.com/qlover/fe-base/commit/1952ae1caad2a965ec233eca18092bb0b356987b))
+
 ## [0.3.7](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.4...fe-scripts-v0.3.7) (2024-11-18)
 
 
