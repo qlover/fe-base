@@ -27,7 +27,7 @@ export type FeScriptRelease = {
   /**
    * Create a title for publishing PR
    *
-   * @default [Bot Release] Branch:${branch}, Tag:${tagName}, Env:${env}
+   * @default [${pkgName} Release] Branch:${branch}, Tag:${tagName}, Env:${env}
    */
   PRTitle?: string;
   /**
@@ -228,6 +228,9 @@ export interface ReleaseConfig {
   publishPath?: string;
 }
 
+/**
+ * Release base class that handles common release functionality
+ */
 export class ReleaseBase {
   constructor(config: ReleaseConfig);
 
@@ -235,36 +238,167 @@ export class ReleaseBase {
   log: Logger;
   shell: Shell;
   isCreateRelease?: boolean;
+  /** GitHub access token */
   ghToken: string;
+  /** NPM access token */
   npmToken: string;
+  /** Current branch name */
   branch: string;
+  /** Current environment (e.g. 'production', 'staging') */
+  env?: string;
+  /** GitHub user information */
   userInfo: import('@octokit/rest').User;
+  /** Current package version */
   pkgVersion: string;
+  /** GitHub API client */
   octokit: import('@octokit/rest').Octokit;
 
+  /**
+   * Get release configuration value by path
+   * @param path Configuration path
+   * @param defaultValue Default value if path not found
+   */
   getRelease(path: string, defaultValue: any): any;
+
+  /** Get GitHub user information */
   getUserInfo(): Promise<import('@octokit/rest').User>;
+
+  /** Initialize GitHub API client */
   getOctokit(): Promise<import('@octokit/rest').Octokit>;
-  getReleaseItConfig(): Record<string, any>;
+
+  /** Get release-it configuration */
+  getReleaseItConfig(): Record<string, any> | undefined;
+
+  /**
+   * Get release branch name
+   * @param tagName Release tag name
+   */
   getReleaseBranch(tagName: string): string;
+
+  /**
+   * Get release PR title
+   * @param tagName Release tag name
+   */
   getReleasePRTitle(tagName: string): string;
+
+  /**
+   * Get release PR body content
+   * @param options Options containing tag name and changelog
+   */
+  getReleasePRBody(options: { tagName: string; changelog: string }): string;
+
+  /** Get package publish path */
+  getPublishPath(): string;
+
+  /**
+   * Get package.json value by key
+   * @param key Package.json key path
+   */
+  getPkg(key?: string): any;
+
+  /**
+   * Get release feature configuration
+   * @param path Configuration path
+   * @param defaultValue Default value if path not found
+   */
+  getReleaseFeConfig<T>(path: keyof FeScriptRelease, defaultValue: T): T;
+
+  /**
+   * Initialize release configuration
+   * @param config Release configuration
+   */
+  initConfig(config: ReleaseConfig): FeConfig;
 }
 
+/**
+ * Main release class that handles the release process
+ */
 export class Release {
   constructor(config: ReleaseConfig);
 
   readonly config: ReleaseConfig;
   readonly log: Logger;
   readonly shell: Shell;
+  /** Environment variables for release-it */
   readonly releaseItEnv: Record<string, string>;
+  /** Whether running in dry-run mode */
+  readonly dryRun: boolean;
 
+  /**
+   * Extract PR number from command output
+   * @param output Command output containing PR number
+   */
   getPRNumber(output: string): number;
-  componseReleaseItCommand(): string;
-  releaseIt(): Promise<void>;
+
+  /**
+   * Execute release-it process
+   * @param releaseItOptions Additional release-it options
+   */
+  releaseIt(releaseItOptions?: Record<string, any>): Promise<{
+    name: string;
+    changelog: string;
+    latestVersion: string;
+    version: string;
+  }>;
+
+  /** Check if tag already exists */
   checkTag(): Promise<void>;
-  createReleaseBranch(): Promise<void>;
+
+  /** Verify NPM authentication */
+  checkNpmAuth(): Promise<void>;
+
+  /** Verify publish path exists */
+  checkPublishPath(): Promise<void>;
+
+  /** Create changelog and determine version */
+  createChangelogAndVersion(): Promise<{
+    name: string;
+    changelog: string;
+    latestVersion: string;
+    version: string;
+  }>;
+
+  /** Create release branch */
+  createReleaseBranch(): Promise<{
+    tagName: string;
+    releaseBranch: string;
+  }>;
+
+  /** Create PR label if it doesn't exist */
   createPRLabel(): Promise<void>;
-  createReleasePR(tagName: string, releaseBranch: string): Promise<void>;
+
+  /**
+   * Create release pull request
+   * @param tagName Release tag name
+   * @param releaseBranch Release branch name
+   * @param releaseResult Release result containing changelog
+   */
+  createReleasePR(
+    tagName: string,
+    releaseBranch: string,
+    releaseResult: {
+      changelog: string;
+    }
+  ): Promise<number>;
+
+  /**
+   * Auto merge pull request
+   * @param prNumber Pull request number
+   */
   autoMergePR(prNumber: number): Promise<void>;
+
+  /**
+   * Check pull request status
+   * @param prNumber Pull request number
+   * @param releaseBranch Release branch name
+   */
   checkedPR(prNumber: number, releaseBranch: string): Promise<void>;
+
+  /** Execute complete release process */
+  publish(): Promise<{
+    name: string;
+    changelog: string;
+    latestVersion: string;
+    version: string;
+  }>;
 }

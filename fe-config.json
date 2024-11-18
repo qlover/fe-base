@@ -5,8 +5,5 @@
     "master",
     "root-src",
     "test"
-  ],
-  "release": {
-    "autoMergeReleasePR": true
-  }
+  ]
 }

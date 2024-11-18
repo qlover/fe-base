@@ -72,9 +72,6 @@ export async function createReleasePR(options) {
     return;
   }
 
-  // check npm
-  await release.checkNpmAuth();
-
   await release.checkPublishPath();
 
   const releaseResult = await release.createChangelogAndVersion();

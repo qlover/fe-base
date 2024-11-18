@@ -209,7 +209,8 @@ class ReleaseBase {
     return Shell.format(this.getReleaseFeConfig('PRTitle', ''), {
       env: this.env,
       branch: this.branch,
-      tagName
+      tagName,
+      pkgName: this.getPkg('name')
     });
   }
 
