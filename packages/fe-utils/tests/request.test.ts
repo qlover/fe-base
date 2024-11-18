@@ -4,7 +4,7 @@ import {
   FetchRequestError,
   FetchRequestErrorID,
   FetchURLPlugin
-} from '../common/request/FetchRequest';
+} from '../common/request';
 
 describe('FetchURLPlugin', () => {
   let plugin: FetchURLPlugin;
