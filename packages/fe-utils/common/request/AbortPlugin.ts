@@ -1,34 +1,61 @@
-import { ExecutorPlugin } from '../executor';
-import { FetchRequestConfig } from './FetchRequest';
+import { ExecutorError, ExecutorPlugin } from '../executor';
+import {
+  FetchRequestConfig,
+  FetchRequestError,
+  FetchRequestErrorID
+} from './FetchRequest';
 
 export class AbortPlugin implements ExecutorPlugin {
   private controllers: Map<string, AbortController> = new Map();
 
   private generateRequestKey(config: FetchRequestConfig): string {
-    return `${config.method || 'GET'}-${config.url}`;
+    const params = config.params ? JSON.stringify(config.params) : '';
+    const data = config.data ? JSON.stringify(config.data) : '';
+    return `${config.method || 'GET'}-${config.url}-${params}-${data}`;
   }
 
-  onBefore(config: FetchRequestConfig): void {
+  onBefore(config: FetchRequestConfig): FetchRequestConfig {
     const key = this.generateRequestKey(config);
 
-    // if exists same request, abort previous request
-    const prevController = this.controllers.get(key);
-    if (prevController) {
-      prevController.abort();
+    // abort previous request
+    if (this.controllers.has(key)) {
+      this.abort(config);
     }
 
-    // create new AbortController
     const controller = new AbortController();
     this.controllers.set(key, controller);
 
-    // add signal to config
     config.controller = controller;
     config.signal = controller.signal;
+    return config;
   }
 
-  onFinally(config: FetchRequestConfig): void {
-    const key = this.generateRequestKey(config);
-    this.controllers.delete(key);
+  onError(error: Error, config?: FetchRequestConfig): FetchRequestError | void {
+    // if error is a abortError (DOMException or regular AbortError)
+    if (
+      error &&
+      (error.name === 'AbortError' || error instanceof DOMException)
+    ) {
+      return new FetchRequestError(FetchRequestErrorID.ABORT_ERROR, error);
+    }
+
+    if (config && config.controller) {
+      this.controllers.delete(this.generateRequestKey(config));
+      const reason = config.controller.signal.reason;
+
+      // reason maybe a DOMException or a FetchRequestError
+      if (reason instanceof FetchRequestError) {
+        return reason;
+      }
+
+      if (reason instanceof DOMException) {
+        return new FetchRequestError(FetchRequestErrorID.ABORT_ERROR, reason);
+      }
+
+      if (config.controller.signal.aborted) {
+        return new FetchRequestError(FetchRequestErrorID.ABORT_ERROR, error);
+      }
+    }
   }
 
   /**
@@ -37,9 +64,15 @@ export class AbortPlugin implements ExecutorPlugin {
   abort(config: FetchRequestConfig): void {
     const key = this.generateRequestKey(config);
     const controller = this.controllers.get(key);
-    if (controller) {
-      controller.abort();
+    if (controller && !controller.signal.aborted) {
+      controller.abort(
+        new FetchRequestError(
+          FetchRequestErrorID.ABORT_ERROR,
+          'The operation was aborted'
+        )
+      );
       this.controllers.delete(key);
+      config.onAbort?.(config);
     }
   }
 

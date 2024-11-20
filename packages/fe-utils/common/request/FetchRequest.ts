@@ -6,16 +6,19 @@ export enum FetchRequestErrorID {
   FETCH_REQUEST_ERROR = 'FETCH_REQUEST_ERROR',
   ENV_FETCH_NOT_SUPPORT = 'ENV_FETCH_NOT_SUPPORT',
   FETCHER_NONE = 'FETCHER_NONE',
-  RESPONSE_NOT_OK = 'RESPONSE_NOT_OK'
+  RESPONSE_NOT_OK = 'RESPONSE_NOT_OK',
+  ABORT_ERROR = 'ABORT_ERROR'
 }
 
 export class FetchRequestError extends ExecutorError {
-  constructor(
-    id: string,
-    originalError?: Error,
-    public response?: Response
-  ) {
-    super(id, originalError?.message || id, originalError);
+  constructor(id: string, originalError?: string | Error) {
+    super(
+      id,
+      typeof originalError === 'string'
+        ? originalError
+        : originalError?.message || id,
+      originalError instanceof Error ? originalError : undefined
+    );
   }
 }
 
@@ -46,6 +49,12 @@ export interface FetchRequestConfig extends RequestConfig {
    * AbortController
    */
   controller?: AbortController;
+
+  /**
+   * @access AbortPlugin
+   * AbortHandler
+   */
+  onAbort?: (config: FetchRequestConfig) => void;
 }
 
 export class FetchRequest extends RequestExecutor<FetchRequestConfig> {

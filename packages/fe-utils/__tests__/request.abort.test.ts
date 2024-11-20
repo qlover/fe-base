@@ -1,12 +1,12 @@
-import { FetchRequest, AbortPlugin } from '../common/request';
+import {
+  FetchRequest,
+  AbortPlugin,
+  FetchRequestError,
+  FetchRequestErrorID
+} from '../common/request';
 
-// 辅助函数：创建一个可控的 Promise
-function createControlledPromise<T>(): [Promise<T>, (value: T) => void] {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>((res) => {
-    resolve = res;
-  });
-  return [promise, resolve];
+function sleep(mock: unknown, ms: number): Promise<unknown> {
+  return new Promise((resolve) => setTimeout(() => resolve(mock), ms));
 }
 
 describe('AbortPlugin', () => {
@@ -35,83 +35,119 @@ describe('AbortPlugin', () => {
   });
 
   it('should abort previous request when making same request', async () => {
-    // 发起第一个请求
-    const promise1 = request.request({
-      url: 'https://api.example.com/users',
-      method: 'GET'
+    const onAbortMock = jest.fn();
+
+    // mock a fetch implementation that can respond to abort
+    fetchMock.mockImplementationOnce((_url, options: RequestInit) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve(new Response('first response'));
+        }, 1000);
+
+        options.signal?.addEventListener('abort', (e) => {
+          clearTimeout(timeoutId);
+          reject(e);
+        });
+      });
     });
 
-    // 立即发起第二个相同请求
-    const promise2 = request.request({
-      url: 'https://api.example.com/users',
-      method: 'GET'
-    });
+    const firstConfig = {
+      url: '/api/test0',
+      method: 'GET',
+      onAbort: onAbortMock
+    } as const;
+
+    const firstRequest = request.request(firstConfig);
+
+    // wait for a while to ensure the request starts
+    await sleep(null, 500);
+
+    abortPlugin.abort(firstConfig);
+
+    // verify the request is aborted
+    try {
+      await firstRequest;
+      fail('Request should have been aborted');
+    } catch (error: unknown) {
+      expect(error).toMatchObject({
+        id: FetchRequestErrorID.ABORT_ERROR
+      });
+      expect(onAbortMock).toHaveBeenCalledTimes(1);
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('should abort specific request', async () => {
-    // const mockResponse = new Response(JSON.stringify({ id: 1 }));
-    // const [promiseControl, resolve] = createControlledPromise<Response>();
-
-    // fetchMock.mockImplementationOnce(() => promiseControl);
-
-    const promise = request.request({
-      url: 'https://api.example.com/users',
-      method: 'GET'
-    });
-
-    // // 确保请求已经开始
-    // await Promise.resolve();
-
-    // 中止请求
-    abortPlugin.abort({
-      url: 'https://api.example.com/users',
-      method: 'GET'
-    });
-
-    await expect(promise).rejects.toThrow('AbortError');
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/users',
-      expect.objectContaining({ signal: expect.any(AbortSignal) })
-    );
-  });
-
-  it.skip('should abort all requests', async () => {
-    const mockResponse = new Response(JSON.stringify({ id: 1 }));
-    const [promise1Control] = createControlledPromise<Response>();
-    const [promise2Control] = createControlledPromise<Response>();
+  it('should not abort different requests', async () => {
+    const firstResponse = { data: 'first' };
+    const secondResponse = { data: 'second' };
 
     fetchMock
-      .mockImplementationOnce(() => promise1Control)
-      .mockImplementationOnce(() => promise2Control);
+      .mockImplementationOnce(() =>
+        Promise.resolve(new Response(JSON.stringify(firstResponse)))
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve(new Response(JSON.stringify(secondResponse)))
+      );
 
-    const promise1 = request.request({
-      url: 'https://api.example.com/users',
+    const firstRequest = request.request({
+      url: '/api/test1',
       method: 'GET'
     });
-    const promise2 = request.request({
-      url: 'https://api.example.com/posts',
+
+    const secondRequest = request.request({
+      url: '/api/test2',
       method: 'GET'
     });
 
-    // 确保请求都已经开始
-    await Promise.resolve();
+    const [first, second] = await Promise.all([firstRequest, secondRequest]);
 
-    // 中止所有请求
-    abortPlugin.abortAll();
-
-    await expect(promise1).rejects.toThrow('AbortError');
-    await expect(promise2).rejects.toThrow('AbortError');
-
+    expect(await first.json()).toEqual(firstResponse);
+    expect(await second.json()).toEqual(secondResponse);
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      1,
-      'https://api.example.com/users',
-      expect.objectContaining({ signal: expect.any(AbortSignal) })
-    );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      'https://api.example.com/posts',
-      expect.objectContaining({ signal: expect.any(AbortSignal) })
-    );
+  });
+
+  it('should auto abort request with same URL', async () => {
+    const onAbortMock = jest.fn();
+
+    fetchMock.mockImplementation((_url, options: RequestInit) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve(new Response('response'));
+        }, 1000);
+
+        options.signal?.addEventListener('abort', (e) => {
+          clearTimeout(timeoutId);
+          reject(e);
+        });
+      });
+    });
+
+    const config = {
+      url: '/api/test4',
+      method: 'GET',
+      onAbort: onAbortMock
+    } as const;
+
+    const firstRequest = request.request(config);
+    await sleep(null, 100);
+
+    const secondRequest = request.request(config);
+
+    const results = await Promise.allSettled([firstRequest, secondRequest]);
+
+    expect(results[0].status).toBe('rejected');
+    if (results[0].status === 'rejected') {
+      expect(results[0].reason).toMatchObject({
+        id: FetchRequestErrorID.ABORT_ERROR
+      });
+    }
+
+    expect(results[1].status).toBe('fulfilled');
+    if (results[1].status === 'fulfilled') {
+      expect(results[1].value).toBeInstanceOf(Response);
+    }
+
+    expect(onAbortMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

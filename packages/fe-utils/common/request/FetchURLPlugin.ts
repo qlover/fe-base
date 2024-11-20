@@ -64,14 +64,17 @@ export class FetchURLPlugin implements ExecutorPlugin {
   }
 
   onSuccess(result: Response): Response {
+    // if response is not ok, throw error
     if (!result.ok) {
-      throw new FetchRequestError(
+      const frError = new FetchRequestError(
         FetchRequestErrorID.RESPONSE_NOT_OK,
-        new Error(
-          `Request failed with status: ${result.status} ${result.statusText}`
-        ),
-        result
+        `Request failed with status: ${result.status} ${result.statusText}`
       );
+
+      // @ts-expect-error Experimental: add response to error
+      frError.response = result;
+
+      throw frError;
     }
     return result;
   }

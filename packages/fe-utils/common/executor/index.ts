@@ -4,8 +4,20 @@ type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
 
 // BasePlugin remains the same
 export abstract class ExecutorPlugin<T = unknown, R = T> {
+  /**
+   * **has return value, not break the chain**
+   */
   onBefore?(data?: unknown): unknown | Promise<unknown>;
-  onError?(error: Error): ExecutorError | void;
+  /**
+   * - if call `exec`, onError has return value or throw any error, exec will break the chain and throw error
+   * - if call `execNoError`, onError has return value or throw any error, execNoError will return the error
+   *
+   * **as long as it is captured by the error chain, the chain will be terminated**
+   */
+  onError?(error: Error, data?: unknown): ExecutorError | void;
+  /**
+   * **has return value, break the chain**
+   */
   onSuccess?(result: T): R | Promise<R>;
 }
 
@@ -82,7 +94,8 @@ export abstract class Executor {
    * @param error
    */
   protected abstract errorChain(
-    error: Error
+    error: Error,
+    data?: unknown
   ): ExecutorError | Promise<ExecutorError>;
 }
 
@@ -105,11 +118,11 @@ export class AsyncExecutor extends Executor {
     dataOrTask: D | PromiseTask<T, D>,
     task?: PromiseTask<T, D>
   ): Promise<T> {
-    try {
-      // Check if data is provided
-      const actualTask = (task || dataOrTask) as PromiseTask<T, D>;
-      const data = task ? dataOrTask : undefined;
+    // Check if data is provided
+    const actualTask = (task || dataOrTask) as PromiseTask<T, D>;
+    const data = task ? dataOrTask : undefined;
 
+    try {
       if (typeof actualTask !== 'function') {
         throw new Error('Task must be a async function!');
       }
@@ -119,7 +132,7 @@ export class AsyncExecutor extends Executor {
       const result = await actualTask(beforeResult as D);
       return this.successChain<T, T>(result);
     } catch (error) {
-      throw await this.errorChain(error as Error);
+      throw await this.errorChain(error as Error, data);
     }
   }
 
@@ -142,9 +155,12 @@ export class AsyncExecutor extends Executor {
     return modifiedResult as R;
   }
 
-  protected async errorChain(error: Error): Promise<ExecutorError> {
+  protected async errorChain(
+    error: Error,
+    data?: unknown
+  ): Promise<ExecutorError> {
     for (const plugin of this.plugins) {
-      const handledError = await plugin.onError?.(error);
+      const handledError = await plugin.onError?.(error, data);
       if (handledError) return handledError;
     }
     return new ExecutorError(
@@ -174,11 +190,11 @@ export class SyncExecutor extends Executor {
     dataOrTask: D | SyncTask<T, D>,
     task?: SyncTask<T, D>
   ): T {
-    try {
-      // Check if data is provided
-      const actualTask = (task || dataOrTask) as SyncTask<T, D>;
-      const data = task ? dataOrTask : undefined;
+    // Check if data is provided
+    const actualTask = (task || dataOrTask) as SyncTask<T, D>;
+    const data = task ? dataOrTask : undefined;
 
+    try {
       if (typeof actualTask !== 'function') {
         throw new Error('Task must be a function!');
       }
@@ -188,7 +204,7 @@ export class SyncExecutor extends Executor {
       const result = actualTask(beforeResult as D);
       return this.successChain<T, T>(result);
     } catch (error) {
-      throw this.errorChain(error as Error);
+      throw this.errorChain(error as Error, data);
     }
   }
 
@@ -211,9 +227,9 @@ export class SyncExecutor extends Executor {
     return modifiedResult as R;
   }
 
-  protected errorChain(error: Error): ExecutorError {
+  protected errorChain(error: Error, data?: unknown): ExecutorError {
     for (const plugin of this.plugins) {
-      const handledError = plugin.onError?.(error);
+      const handledError = plugin.onError?.(error, data);
       if (handledError) return handledError;
     }
     return new ExecutorError(
