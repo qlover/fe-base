@@ -25,7 +25,7 @@ describe('AbortPlugin', () => {
     });
 
     abortPlugin = new AbortPlugin();
-    request.executor.addPlugin(abortPlugin);
+    request.executor.use(abortPlugin);
   });
 
   afterEach(() => {

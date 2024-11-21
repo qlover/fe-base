@@ -1,4 +1,4 @@
-import { ExecutorError } from '../executor';
+import { AsyncExecutor, ExecutorError } from '../executor';
 import { FetchRequestConfig } from './FetchRequestConfig';
 import { RequestExecutor } from './RequestExecutor';
 import merge from 'lodash/merge';
@@ -33,7 +33,10 @@ export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
       config.fetcher = fetch;
     }
 
-    super(config as FetchRequestConfig);
+    // use AsyncExecutor
+    const executor = config.executor || new AsyncExecutor();
+
+    super(config as FetchRequestConfig, executor);
   }
 
   /**
@@ -50,9 +53,37 @@ export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
     }
 
     return this.executor.exec(mergedConfig, () =>
-      fetcher(mergedConfig.url, {
-        signal: mergedConfig.signal
-      })
+      fetcher(mergedConfig.url, this.composeRequestInit(mergedConfig))
     );
+  }
+
+  /**
+   * pick RequestInit from FetchRequestConfig
+   * @param config
+   * @returns
+   */
+  private composeRequestInit(config: FetchRequestConfig): RequestInit {
+    // FIXME: @type/node
+    const typeNode = { dispatcher: config.dispatcher, duplex: config.duplex };
+    return {
+      body: config.body,
+      cache: config.cache,
+      credentials: config.credentials,
+      headers: config.headers,
+      integrity: config.integrity,
+      keepalive: config.keepalive,
+      method: config.method,
+      mode: config.mode,
+      priority: config.priority,
+      redirect: config.redirect,
+      referrer: config.referrer,
+      referrerPolicy: config.referrerPolicy,
+      signal: config.signal,
+
+      /** Can only be null. Used to disassociate request from any Window. */
+      window: null,
+
+      ...typeNode
+    };
   }
 }

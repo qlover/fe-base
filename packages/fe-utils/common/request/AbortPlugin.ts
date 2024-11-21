@@ -7,7 +7,7 @@ export class AbortPlugin implements ExecutorPlugin {
 
   private generateRequestKey(config: FetchRequestConfig): string {
     const params = config.params ? JSON.stringify(config.params) : '';
-    const data = config.data ? JSON.stringify(config.data) : '';
+    const data = config.body ? JSON.stringify(config.body) : '';
     return `${config.method || 'GET'}-${config.url}-${params}-${data}`;
   }
 

@@ -29,7 +29,7 @@ describe('AsyncExecutor', () => {
       onSuccess: (result) => result + ' modified'
     };
 
-    executor.addPlugin(plugin);
+    executor.use(plugin);
     const result = await executor.exec(async () => 'test');
     expect(result).toBe('test modified');
   });
@@ -42,7 +42,7 @@ describe('AsyncExecutor', () => {
       onError: () => customError
     };
 
-    executor.addPlugin(plugin);
+    executor.use(plugin);
 
     await expect(
       executor.exec(async () => {
@@ -85,7 +85,7 @@ describe('SyncExecutor', () => {
       onSuccess: (result) => result + ' modified'
     };
 
-    executor.addPlugin(plugin);
+    executor.use(plugin);
     const result = executor.exec(() => 'test');
     expect(result).toBe('test modified');
   });
@@ -98,7 +98,7 @@ describe('SyncExecutor', () => {
       onError: () => customError
     };
 
-    executor.addPlugin(plugin);
+    executor.use(plugin);
 
     expect(() => {
       executor.exec(() => {
@@ -134,8 +134,8 @@ describe('ExecutorPlugin Chain', () => {
       }
     };
 
-    executor.addPlugin(plugin1);
-    executor.addPlugin(plugin2);
+    executor.use(plugin1);
+    executor.use(plugin2);
 
     await executor.exec(async () => 'test');
     expect(steps).toEqual([1, 2]);
@@ -156,8 +156,8 @@ describe('ExecutorPlugin Chain', () => {
       }
     };
 
-    executor.addPlugin(plugin1);
-    executor.addPlugin(plugin2);
+    executor.use(plugin1);
+    executor.use(plugin2);
 
     const result = await executor.exec(async () => 'test');
     expect(result).toBe('test modified');
@@ -182,7 +182,7 @@ describe('ExecutorPlugin Error', () => {
       onError: (error) => new ExecutorError('PLUGIN_ERROR', error.message)
     };
 
-    executor.addPlugin(plugin);
+    executor.use(plugin);
 
     const promise = executor.exec(async () => {
       throw new Error('Test ExecutorPlugin Error');
