@@ -1,4 +1,5 @@
-import { AsyncExecutor, ExecutorConfig } from '../index';
+import { AsyncExecutor } from '../executor';
+import { RequestConfig } from './FetchRequestConfig';
 
 export type RequestMethod =
   | 'GET'
@@ -12,17 +13,6 @@ export type RequestMethod =
 /**
  * predefined request config
  */
-export interface RequestConfig {
-  url: string;
-  method?: RequestMethod;
-  headers?: Record<string, string>;
-  body?: unknown;
-  params?: Record<string, string>;
-  timeout?: number;
-  executor?: ExecutorConfig;
-  [key: string]: unknown;
-}
-
 export class RequestExecutor<Cfg extends RequestConfig> {
   public readonly executor: AsyncExecutor;
 

@@ -3,7 +3,7 @@ import {
   FetchRequestError,
   FetchRequestErrorID,
   FetchURLPlugin
-} from '../common/request/FetchRequest';
+} from '../common/request';
 
 describe('FetchURLPlugin', () => {
   let plugin: FetchURLPlugin;
@@ -130,7 +130,10 @@ describe('FetchRequest', () => {
     });
 
     expect(requestFetcher).toHaveBeenCalledWith(
-      'https://api.example.com/users'
+      'https://api.example.com/users',
+      expect.objectContaining({
+        signal: undefined
+      })
     );
     expect(configFetcher).not.toHaveBeenCalled();
     const result = await response.json();
@@ -154,7 +157,12 @@ describe('FetchRequest', () => {
       baseURL: 'https://api.example.com'
     });
 
-    expect(fetchMock).toHaveBeenCalledWith('https://api.example.com/users');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.example.com/users',
+      expect.objectContaining({
+        signal: undefined
+      })
+    );
   });
 
   it('should handle query parameters', async () => {
@@ -177,7 +185,10 @@ describe('FetchRequest', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/users?id=1'
+      'https://api.example.com/users?id=1',
+      expect.objectContaining({
+        signal: undefined
+      })
     );
   });
 
