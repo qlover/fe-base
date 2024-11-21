@@ -1,9 +1,5 @@
-import {
-  FetchRequestConfig,
-  FetchRequestErrorID,
-  FetchRequestError
-} from './FetchRequest';
-
+import { FetchRequestErrorID, FetchRequestError } from './FetchRequest';
+import { FetchRequestConfig } from './FetchRequestConfig';
 import { ExecutorPlugin } from '../executor';
 
 export class FetchURLPlugin implements ExecutorPlugin {

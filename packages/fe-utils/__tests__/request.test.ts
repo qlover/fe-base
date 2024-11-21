@@ -2,8 +2,7 @@ import {
   FetchRequest,
   FetchRequestError,
   FetchRequestErrorID,
-  FetchURLPlugin,
-  AbortPlugin
+  FetchURLPlugin
 } from '../common/request';
 
 describe('FetchURLPlugin', () => {

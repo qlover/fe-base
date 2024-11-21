@@ -1,9 +1,6 @@
-import { ExecutorError, ExecutorPlugin } from '../executor';
-import {
-  FetchRequestConfig,
-  FetchRequestError,
-  FetchRequestErrorID
-} from './FetchRequest';
+import { ExecutorPlugin } from '../executor';
+import { FetchRequestError, FetchRequestErrorID } from './FetchRequest';
+import { FetchRequestConfig } from './FetchRequestConfig';
 
 export class AbortPlugin implements ExecutorPlugin {
   private controllers: Map<string, AbortController> = new Map();

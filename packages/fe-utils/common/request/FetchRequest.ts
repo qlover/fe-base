@@ -1,5 +1,6 @@
-import { ExecutorError, ExecutorPlugin } from '../executor';
-import { RequestConfig, RequestExecutor } from './RequestExecutor';
+import { ExecutorError } from '../executor';
+import { FetchRequestConfig } from './FetchRequestConfig';
+import { RequestExecutor } from './RequestExecutor';
 import merge from 'lodash/merge';
 
 export enum FetchRequestErrorID {
@@ -20,41 +21,6 @@ export class FetchRequestError extends ExecutorError {
       originalError instanceof Error ? originalError : undefined
     );
   }
-}
-
-export interface FetchRequestConfig extends RequestConfig {
-  /**
-   * baseURL
-   * @example https://api.example.com
-   * @access FetchURLPlugin
-   *
-   * - url = /users/1 => https://api.example.com/users/1
-   * - url = users/1 => https://api.example.com/users/1
-   */
-  baseURL?: string;
-
-  /**
-   * fetcher
-   */
-  fetcher?: typeof fetch;
-
-  /**
-   * @access AbortPlugin
-   * AbortController signal
-   */
-  signal?: AbortSignal;
-
-  /**
-   * @access AbortPlugin
-   * AbortController
-   */
-  controller?: AbortController;
-
-  /**
-   * @access AbortPlugin
-   * AbortHandler
-   */
-  onAbort?: (config: FetchRequestConfig) => void;
 }
 
 export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
