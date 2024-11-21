@@ -58,7 +58,21 @@ export class AsyncExecutor extends Executor {
       throw new Error('Task must be a async function!');
     }
 
-    return this.run(data, actualTask);
+    let calls = 0;
+    const runner = (): Promise<T> => {
+      calls++;
+      return this.run(data, actualTask);
+    };
+
+    const findOnExec = this.plugins.find(
+      (plugin) => typeof plugin['onExec'] === 'function'
+    );
+
+    if (findOnExec) {
+      return this.runHook(this.plugins, 'onExec', runner) as Promise<T>;
+    }
+
+    return runner();
   }
 
   async run<T, D = unknown>(
@@ -83,11 +97,7 @@ export class AsyncExecutor extends Executor {
         throw handledError;
       }
 
-      throw new ExecutorError(
-        'UNKNOWN_ASYNC_ERROR',
-        'Unhandled async error',
-        handledError as Error
-      );
+      throw new ExecutorError('UNKNOWN_ASYNC_ERROR', handledError as Error);
     }
   }
 }

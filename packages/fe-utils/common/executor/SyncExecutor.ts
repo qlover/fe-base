@@ -67,11 +67,7 @@ export class SyncExecutor extends Executor {
         throw handledError;
       }
 
-      throw new ExecutorError(
-        'UNKNOWN_SYNC_ERROR',
-        'Unhandled sync error',
-        handledError as Error
-      );
+      throw new ExecutorError('UNKNOWN_SYNC_ERROR', handledError as Error);
     }
   }
 }

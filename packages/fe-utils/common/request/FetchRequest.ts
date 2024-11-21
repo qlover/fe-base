@@ -13,13 +13,7 @@ export enum FetchRequestErrorID {
 
 export class FetchRequestError extends ExecutorError {
   constructor(id: string, originalError?: string | Error) {
-    super(
-      id,
-      typeof originalError === 'string'
-        ? originalError
-        : originalError?.message || id,
-      originalError instanceof Error ? originalError : undefined
-    );
+    super(id, originalError);
   }
 }
 

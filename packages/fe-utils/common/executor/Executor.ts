@@ -6,6 +6,7 @@ export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
 export abstract class ExecutorPlugin<T = unknown, R = T> {
   /**
    * **has return value, not break the chain**
+   * @access plugin
    */
   onBefore?(data?: unknown): unknown | Promise<unknown>;
   /**
@@ -13,22 +14,40 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * - if call `execNoError`, onError has return value or throw any error, execNoError will return the error
    *
    * **as long as it is captured by the error chain, the chain will be terminated**
+   * @access plugin
    */
-  onError?(error: Error, data?: unknown): ExecutorError | void;
+  onError?(
+    error: Error,
+    data?: unknown
+  ): Promise<ExecutorError | void> | ExecutorError | void;
   /**
+   * @access plugin
    * **has return value, break the chain**
    */
   onSuccess?(result: T): R | Promise<R>;
+
+  /**
+   * can override exec run logic.
+   *
+   * **only use first bind plugin's onExec**
+   * @param data
+   * @param task
+   */
+  onExec?<T>(task: PromiseTask<T> | Task<T>): Promise<T> | T;
 }
 
 // Custom Error Class
 export class ExecutorError extends Error {
   constructor(
     public id: string,
-    public message: string,
-    public originalError?: Error
+    originalError?: string | Error
   ) {
-    super(message);
+    super(
+      typeof originalError === 'string'
+        ? originalError
+        : originalError?.message || id
+    );
+
     Object.setPrototypeOf(this, new.target.prototype); // Ensure instanceof works
   }
 }

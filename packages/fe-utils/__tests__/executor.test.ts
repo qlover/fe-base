@@ -36,7 +36,7 @@ describe('AsyncExecutor', () => {
 
   it('should handle errors through plugins', async () => {
     const executor = new AsyncExecutor();
-    const customError = new ExecutorError('CUSTOM_ERROR', 'custom error');
+    const customError = new ExecutorError('CUSTOM_ERROR');
 
     const plugin: ExecutorPlugin = {
       onError: () => customError
@@ -92,7 +92,7 @@ describe('SyncExecutor', () => {
 
   it('should handle errors through plugins', () => {
     const executor = new SyncExecutor();
-    const customError = new ExecutorError('CUSTOM_ERROR', 'custom error');
+    const customError = new ExecutorError('CUSTOM_ERROR');
 
     const plugin: ExecutorPlugin = {
       onError: () => customError
