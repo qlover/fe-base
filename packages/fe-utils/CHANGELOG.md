@@ -1,5 +1,12 @@
 
 
+## [1.0.5](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.4...fe-utils-v1.0.5) (2024-11-21)
+
+
+### Bug Fixes
+
+* comm commitizen ([#128](https://github.com/qlover/fe-base/issues/128)) ([042ff3a](https://github.com/qlover/fe-base/commit/042ff3a71ab6bec039ee4fa1bc3f4fc116f9dd35))
+
 ## 1.0.4 (2024-11-18)
 
 
