@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-utils",
   "description": "A utils for frontwork",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": false,
   "type": "module",
   "files": [

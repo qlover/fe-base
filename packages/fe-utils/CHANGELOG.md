@@ -1,5 +1,12 @@
 
 
+## [1.0.6](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.5...fe-utils-v1.0.6) (2024-11-21)
+
+
+### Bug Fixes
+
+* fetchRequest type defined ([#132](https://github.com/qlover/fe-base/issues/132)) ([de0a655](https://github.com/qlover/fe-base/commit/de0a655a9b34c39b1a8932b43c02a27787c4faad))
+
 ## [1.0.5](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.4...fe-utils-v1.0.5) (2024-11-21)
 
 
