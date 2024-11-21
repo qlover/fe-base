@@ -50,12 +50,8 @@ export abstract class Executor {
 
   constructor(protected config: ExecutorConfig = { throwError: true }) {}
 
-  addPlugin(plugin: ExecutorPlugin): void {
-    this.plugins.push(plugin);
-  }
-
   use(plugin: ExecutorPlugin): void {
-    this.addPlugin(plugin);
+    this.plugins.push(plugin);
   }
 
   /**

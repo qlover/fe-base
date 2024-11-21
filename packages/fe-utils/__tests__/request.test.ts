@@ -117,7 +117,7 @@ describe('FetchRequest', () => {
       fetcher: configFetcher
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     const responseData = { id: 1 };
     const mockResponse = new Response(JSON.stringify(responseData));
@@ -147,7 +147,7 @@ describe('FetchRequest', () => {
       fetcher: fetchMock
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     const mockResponse = new Response(JSON.stringify({ id: 1 }));
     fetchMock.mockResolvedValueOnce(mockResponse);
@@ -173,7 +173,7 @@ describe('FetchRequest', () => {
       fetcher: fetchMock
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     const mockResponse = new Response(JSON.stringify({ id: 1 }));
     fetchMock.mockResolvedValueOnce(mockResponse);
@@ -199,7 +199,7 @@ describe('FetchRequest', () => {
       fetcher: fetchMock
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     const responseData = { id: 1, name: 'test' };
     const mockResponse = new Response(JSON.stringify(responseData));
@@ -222,7 +222,7 @@ describe('FetchRequest', () => {
       fetcher: fetchMock
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     const networkError = new Error('Network error');
     fetchMock.mockRejectedValueOnce(networkError);
@@ -288,7 +288,7 @@ describe('FetchRequestError', () => {
       fetcher: fetchMock
     });
 
-    request.executor.addPlugin(new FetchURLPlugin());
+    request.executor.use(new FetchURLPlugin());
 
     // 创建一个更完整的 Response mock
     const mockResponse = {

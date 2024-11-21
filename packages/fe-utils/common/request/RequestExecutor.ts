@@ -14,11 +14,10 @@ export type RequestMethod =
  * predefined request config
  */
 export class RequestExecutor<Cfg extends RequestConfig> {
-  public readonly executor: AsyncExecutor;
-
-  constructor(readonly config: Cfg) {
-    this.executor = new AsyncExecutor(config.executor);
-  }
+  constructor(
+    protected readonly config: Cfg,
+    readonly executor: AsyncExecutor
+  ) {}
 
   getConfig(): Cfg {
     return this.config;
