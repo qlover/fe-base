@@ -2,11 +2,61 @@ import { FetchRequestErrorID, FetchRequestError } from './FetchRequest';
 import { FetchRequestConfig } from './FetchRequestConfig';
 import { ExecutorPlugin } from '../executor';
 
+/**
+ * Plugin for URL manipulation and response handling
+ * Provides URL composition and response status checking
+ *
+ * Features:
+ * - URL normalization
+ * - Base URL handling
+ * - Query parameter management
+ * - Response status validation
+ *
+ * @implements {ExecutorPlugin}
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const urlPlugin = new FetchURLPlugin();
+ * const client = new FetchRequest();
+ * client.executor.use(urlPlugin);
+ *
+ * // Request with base URL and params
+ * await client.get({
+ *   baseURL: 'https://api.example.com',
+ *   url: '/users',
+ *   params: { role: 'admin' }
+ * });
+ * ```
+ */
 export class FetchURLPlugin implements ExecutorPlugin {
+  /**
+   * Checks if URL is absolute (starts with http:// or https://)
+   *
+   * @param url - URL to check
+   * @returns Boolean indicating if URL is absolute
+   */
   isFullURL(url: string): boolean {
     return url.startsWith('http://') || url.startsWith('https://');
   }
 
+  /**
+   * Appends query parameters to URL
+   * Handles existing query parameters in URL
+   *
+   * @param url - Base URL
+   * @param params - Parameters to append
+   * @returns URL with query parameters
+   *
+   * @example
+   * ```typescript
+   * const url = plugin.appendQueryParams(
+   *   'https://api.example.com/users',
+   *   { role: 'admin', status: 'active' }
+   * );
+   * // => https://api.example.com/users?role=admin&status=active
+   * ```
+   */
   appendQueryParams(url: string, params: Record<string, string> = {}): string {
     const opt = '?';
     const link = '&';
@@ -26,10 +76,25 @@ export class FetchURLPlugin implements ExecutorPlugin {
     return [path, queryString].join(opt);
   }
 
+  /**
+   * Combines base URL with path
+   * Ensures proper slash handling
+   *
+   * @param url - URL path
+   * @param baseURL - Base URL
+   * @returns Combined URL
+   */
   connectBaseURL(url: string, baseURL: string): string {
     return `${baseURL}/${url}`;
   }
 
+  /**
+   * Builds complete URL from configuration
+   * Handles base URL, path normalization, and query parameters
+   *
+   * @param config - Request configuration
+   * @returns Complete URL
+   */
   buildUrl(config: FetchRequestConfig): string {
     let { url, baseURL = '' } = config;
 
@@ -52,13 +117,23 @@ export class FetchURLPlugin implements ExecutorPlugin {
   }
 
   /**
-   * @override
+   * Pre-request hook that builds complete URL
+   *
+   * @param config - Request configuration
    */
   onBefore(config: FetchRequestConfig): void {
     // compose url and params
     config.url = this.buildUrl(config);
   }
 
+  /**
+   * Success hook that validates response status
+   * Throws error for non-OK responses
+   *
+   * @param result - Fetch response
+   * @returns Response if OK
+   * @throws {FetchRequestError} If response is not OK
+   */
   onSuccess(result: Response): Response {
     // if response is not ok, throw error
     if (!result.ok) {
@@ -75,6 +150,13 @@ export class FetchURLPlugin implements ExecutorPlugin {
     return result;
   }
 
+  /**
+   * Error handling hook
+   * Wraps non-FetchRequestError errors
+   *
+   * @param error - Original error
+   * @returns FetchRequestError
+   */
   onError(error: Error): FetchRequestError {
     return error instanceof FetchRequestError
       ? error
