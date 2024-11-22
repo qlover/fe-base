@@ -1,27 +1,45 @@
-import { ExecutorError, ExecutorPlugin } from './Executor';
+import { ExecutorError, ExecutorPlugin, PromiseTask } from './Executor';
 
 export interface RetryOptions {
-  /** 最大重试次数 */
-  maxRetries?: number;
-  /** 重试延迟时间(ms) */
-  retryDelay?: number;
-  /** 是否使用指数退避策略 */
-  useExponentialBackoff?: boolean;
-  /** 判断错误是否需要重试的函数 */
-  shouldRetry?: (error: Error) => boolean;
+  /**
+   * max retries, from `0` start
+   * @default 3
+   */
+  maxRetries: number;
+  /**
+   * retry delay (ms)
+   * @default 1000
+   */
+  retryDelay: number;
+  /**
+   * use exponential backoff
+   * @default false
+   */
+  useExponentialBackoff: boolean;
+  /**
+   * should retry function
+   * @default always retry
+   */
+  shouldRetry: (error: Error) => boolean;
 }
 
+const SAFE_MAX_RETRIES = 16;
+const DEFAULT_MAX_RETRIES = 3;
+const defaultShouldRetry = (): boolean => true;
 export class RetryPlugin implements ExecutorPlugin {
-  private retryCount = 0;
+  readonly onlyOne = true;
   private readonly options: Required<RetryOptions>;
 
   constructor(options: Partial<RetryOptions> = {}) {
     this.options = {
-      maxRetries: 3,
       retryDelay: 1000,
-      useExponentialBackoff: true,
-      shouldRetry: (): boolean => true,
-      ...options
+      useExponentialBackoff: false,
+      shouldRetry: defaultShouldRetry,
+      ...options,
+      maxRetries: Math.min(
+        Math.max(1, options.maxRetries ?? DEFAULT_MAX_RETRIES),
+        SAFE_MAX_RETRIES
+      )
     };
   }
 
@@ -33,29 +51,60 @@ export class RetryPlugin implements ExecutorPlugin {
     return new Promise((resolve) => setTimeout(resolve, delayTime));
   }
 
-  async onError(error: Error, context: unknown): Promise<ExecutorError | void> {
-    if (
-      this.retryCount < this.options.maxRetries &&
-      this.options.shouldRetry(error)
-    ) {
-      this.retryCount++;
-
-      // 等待延迟时间
-      await this.delay(this.retryCount - 1);
-
-      // 返回 undefined 表示需要重试
-      return;
+  async onExec<T>(task: PromiseTask<T>): Promise<T | void> {
+    // no retry, just execute
+    if (this.options.maxRetries < 1) {
+      return task(null);
     }
 
-    // 重置重试计数
-    this.retryCount = 0;
-
-    // 返回 error 表示不再重试
-    return error as ExecutorError;
+    return this.retry<T>(task, this.options, this.options.maxRetries);
   }
 
-  onBefore(): void {
-    // 在每次新的执行开始时重置重试计数
-    this.retryCount = 0;
+  private shouldRetry({
+    error,
+    retryCount
+  }: {
+    error: unknown;
+    retryCount: number;
+  }): boolean {
+    return (
+      // must be greater than 0
+      retryCount > 0 &&
+      // must satisfy should retry function
+      this.options.shouldRetry(error as Error)
+    );
+  }
+
+  /**
+   * retry async function
+   * @param {Function} fn - need retry async function
+   * @returns {Promise<any>} - return async function result
+   */
+  async retry<T>(
+    fn: PromiseTask<T>,
+    options: RetryOptions,
+    retryCount: number
+  ): Promise<T | undefined> {
+    try {
+      return await fn(null);
+    } catch (error) {
+      if (!this.shouldRetry({ error, retryCount })) {
+        throw new ExecutorError(
+          'RETRY_ERROR',
+          `All ${options.maxRetries} attempts failed: ${(error as Error).message}`
+        );
+      }
+
+      console.info(
+        `Attempt ${options.maxRetries - retryCount + 1} failed. Retrying in ${options.retryDelay}ms... (${retryCount} attempts remaining)`
+      );
+
+      await this.delay(options.maxRetries - retryCount);
+
+      // decrement retry count
+      retryCount--;
+
+      return this.retry(fn, options, retryCount);
+    }
   }
 }

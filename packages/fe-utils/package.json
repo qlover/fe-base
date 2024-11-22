@@ -30,7 +30,7 @@
     "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/fe-utils"
   },
-  "homepage": "https://github.com/qlover/fe-base/tree/main/packages/fe-utils#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-utils#readme",
   "keywords": [
     "utils",
     "fe-utils"

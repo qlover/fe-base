@@ -17,6 +17,12 @@ export class AsyncExecutor extends Executor {
     // if args is not empty, use args[0] as result
     let result: unknown = args?.[0];
     for (const plugin of plugins) {
+      // skip plugin if not enabled
+      if (plugin.enabled && !plugin.enabled?.(name, ...args)) {
+        continue;
+      }
+
+      // skip plugin if not has method
       if (!plugin[name]) {
         continue;
       }

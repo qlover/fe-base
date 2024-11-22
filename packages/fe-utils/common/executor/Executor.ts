@@ -5,6 +5,18 @@ export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
 // BasePlugin remains the same
 export abstract class ExecutorPlugin<T = unknown, R = T> {
   /**
+   * only one instance of the same plugin
+   */
+  readonly onlyOne?: boolean;
+
+  /**
+   * override to enable/disable plugin.
+   *
+   * receive args from `exec` or `execNoError`
+   */
+  enabled?(name: keyof ExecutorPlugin, ...args: unknown[]): boolean;
+
+  /**
    * **has return value, not break the chain**
    * @access plugin
    */
@@ -33,7 +45,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @param data
    * @param task
    */
-  onExec?<T>(task: PromiseTask<T> | Task<T>): Promise<T> | T;
+  onExec?<T>(task: PromiseTask<T> | Task<T>): Promise<T | void> | T | void;
 }
 
 // Custom Error Class
@@ -52,24 +64,28 @@ export class ExecutorError extends Error {
   }
 }
 
-export interface ExecutorConfig {
-  /**
-   * whether throw error
-   */
-  throwError?: boolean;
-  /**
-   * retry times
-   */
-  retry?: number;
-}
+export interface ExecutorConfig {}
 
 // Simplified BaseExecutor with no generics
 export abstract class Executor {
+  /**
+   * plugins instance only
+   */
   protected plugins: ExecutorPlugin[] = [];
 
-  constructor(protected config: ExecutorConfig = { throwError: true }) {}
+  constructor(protected config: ExecutorConfig = {}) {}
 
   use(plugin: ExecutorPlugin): void {
+    if (
+      this.plugins.find((p) => p.constructor === plugin.constructor) &&
+      plugin.onlyOne
+    ) {
+      console.warn(
+        `Plugin ${plugin.constructor.name} is already used, skip adding`
+      );
+      return;
+    }
+
     this.plugins.push(plugin);
   }
 
