@@ -3,6 +3,7 @@
   "eslint.format.enable": false,
   "prettier.requireConfig": true,
   "prettier.endOfLine": "lf",
+  "files.eol": "\n",
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
