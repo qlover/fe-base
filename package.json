@@ -32,7 +32,8 @@
     "clean": "fe-clean",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build:docs": "yarn workspace @qlover/fe-utils build:docs"
   },
   "keywords": [
     "fe",
@@ -53,7 +54,8 @@
     "typescript": "*"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
