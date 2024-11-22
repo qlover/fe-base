@@ -232,10 +232,7 @@ describe('FetchRequest', () => {
         url: '/users',
         baseURL: 'https://api.example.com'
       })
-    ).rejects.toMatchObject({
-      message: 'Network error',
-      originalError: networkError
-    });
+    ).rejects.toEqual(new FetchRequestError('Network error', networkError));
   });
 });
 
