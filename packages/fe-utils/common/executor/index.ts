@@ -5,6 +5,18 @@
 export * from './Executor';
 
 /**
+ * Export executor error module
+ * @module ExecutorError
+ */
+export * from './ExecutorError';
+
+/**
+ * Export executor plugin module
+ * @module ExecutorPlugin
+ */
+export * from './ExecutorPlugin';
+
+/**
  * Export async executor module
  * @module AsyncExecutor
  */

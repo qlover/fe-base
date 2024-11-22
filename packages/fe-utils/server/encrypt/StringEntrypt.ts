@@ -3,27 +3,7 @@ import { Buffer } from 'buffer';
 import { Encryptor } from './Encryptor';
 
 /**
- * String encryption implementation using AES-256-CBC
- * Provides secure string encryption with IV support
- *
- * Features:
- * - AES-256-CBC encryption
- * - IV (Initialization Vector) for enhanced security
- * - Configurable encoding
- * - Key length validation
- *
- * @implements {Encryptor<string, string>}
- *
- * @example
- * ```typescript
- * const encryptor = new StringEntrypt('my-32-character-secret-key-here!');
- *
- * // Encrypt string
- * const encrypted = encryptor.encrypt('sensitive data');
- *
- * // Decrypt string
- * const decrypted = encryptor.decrypt(encrypted);
- * ```
+ * @category Encrypt
  */
 export class StringEntrypt implements Encryptor<string, string> {
   private ALGORITHM = 'aes-256-cbc';

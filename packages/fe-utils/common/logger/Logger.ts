@@ -32,30 +32,7 @@ export type ExecOptions = {
 };
 
 /**
- * Flexible logging utility class with support for different environments and log levels
- *
- * Features:
- * - Multiple log levels (LOG, INFO, ERROR, WARN, DEBUG)
- * - Environment-aware logging (CI, debug mode)
- * - Dry run support for command execution
- * - Silent mode for suppressing output
- * - Verbose and debug mode support
- *
- * @example
- * ```typescript
- * // Basic usage
- * const logger = new Logger();
- * logger.info('Application started');
- * logger.error('An error occurred:', error);
- *
- * // Debug mode
- * const debugLogger = new Logger({ debug: true });
- * debugLogger.debug('Debug info:', { data });
- *
- * // CI environment
- * const ciLogger = new Logger({ isCI: true });
- * ciLogger.exec('npm install', { isDryRun: true });
- * ```
+ * @category Logger
  */
 export class Logger {
   protected isCI: boolean;

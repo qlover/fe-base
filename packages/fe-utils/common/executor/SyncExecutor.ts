@@ -1,4 +1,6 @@
-import { Executor, ExecutorError, ExecutorPlugin, SyncTask } from './Executor';
+import { Executor } from './Executor';
+import { ExecutorError } from './ExecutorError';
+import { ExecutorPlugin, SyncTask } from './ExecutorPlugin';
 
 /**
  * Synchronous executor class that extends the base Executor

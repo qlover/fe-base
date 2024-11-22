@@ -39,38 +39,7 @@ export class FetchRequestError extends ExecutorError {
 }
 
 /**
- * Fetch-based implementation of RequestExecutor
- * Provides a robust HTTP client with plugin support
- *
- * Features:
- * - Built on fetch API
- * - Automatic fetch detection and fallback
- * - Plugin support through AsyncExecutor
- * - Configurable request options
- * - Error handling with custom error types
- *
- * @extends RequestExecutor
- *
- * @example
- * ```typescript
- * // Basic usage
- * const client = new FetchRequest({
- *   baseURL: 'https://api.example.com'
- * });
- *
- * // GET request with parameters
- * const users = await client.get({
- *   url: '/users',
- *   params: { role: 'admin' }
- * });
- *
- * // POST request with body
- * const newUser = await client.post({
- *   url: '/users',
- *   body: JSON.stringify({ name: 'John' }),
- *   headers: { 'Content-Type': 'application/json' }
- * });
- * ```
+ * @category Request
  */
 export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
   /**

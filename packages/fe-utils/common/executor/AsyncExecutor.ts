@@ -1,49 +1,9 @@
-import {
-  Executor,
-  ExecutorError,
-  ExecutorPlugin,
-  PromiseTask
-} from './Executor';
+import { Executor } from './Executor';
+import { ExecutorError } from './ExecutorError';
+import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
 
 /**
- * Asynchronous executor class that extends the base Executor
- * Provides asynchronous task execution with plugin support
- *
- * Key features:
- * 1. Asynchronous plugin hook execution
- * 2. Promise-based task handling
- * 3. Error handling with async plugin support
- * 4. Flexible execution flow control
- *
- * @extends Executor
- *
- * @example
- * ```typescript
- * // Create an async executor
- * const executor = new AsyncExecutor();
- *
- * // Add plugins for different purposes
- * executor.use(new RetryPlugin({ maxAttempts: 3 }));
- * executor.use(new TimeoutPlugin({ timeout: 5000 }));
- *
- * // Example 1: Basic async task execution
- * const result = await executor.exec(async (data) => {
- *   const response = await fetch('https://api.example.com/data');
- *   return response.json();
- * });
- *
- * // Example 2: Execution with input data
- * const data = { id: 123 };
- * const result = await executor.exec(data, async (input) => {
- *   const response = await fetch(`https://api.example.com/data/${input.id}`);
- *   return response.json();
- * });
- *
- * // Example 3: Error handling with execNoError
- * const result = await executor.execNoError(async () => {
- *   throw new Error('API Error');
- * }); // Returns ExecutorError instead of throwing
- * ```
+ * @category Executor
  */
 export class AsyncExecutor extends Executor {
   /**
