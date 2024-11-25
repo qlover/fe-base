@@ -1,38 +1,25 @@
-import { mkdirSync, writeFileSync, readFileSync } from 'fs';
-import { join } from 'path';
+import fsExtra from 'fs-extra';
+import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import CircularJSON from 'circular-json';
 
-// 读取并解析 JSON 数据
-const jsonData = JSON.parse(readFileSync('./typedoc-ast.json', 'utf8'));
+const main = async () => {
+  const app = await Application.bootstrap(
+    {
+      // typedoc options here
+      entryPoints: ['common/index.ts', 'server/index.ts'],
+      skipErrorChecking: true
+    },
+    [new TSConfigReader(), new TypeDocReader()]
+  );
 
-// 目标文档目录
-const docsDir = './docs';
-
-// 递归创建目录
-function createDir(path) {
-  mkdirSync(path, { recursive: true });
-}
-
-// 生成 Markdown 文件
-function generateMarkdownFile(path, content) {
-  writeFileSync(path, content, 'utf8');
-}
-
-// 生成文档
-function generateDocs(data, baseDir) {
-  if (data.children) {
-    data.children.forEach((child) => {
-      const childDir = join(baseDir, child.name);
-      createDir(childDir);
-
-      // 生成每个模块、类、接口的文档
-      const markdownContent = `# ${child.name}\n\n${child.comment?.summary?.map((s) => s.text).join('\n') || ''}`;
-      generateMarkdownFile(join(childDir, 'README.md'), markdownContent);
-
-      // 递归处理子节点
-      generateDocs(child, childDir);
-    });
+  const project = await app.convert();
+  if (project) {
+    fsExtra.writeFileSync(
+      'fe-utils.json',
+      CircularJSON.stringify(project, null, 2),
+      'utf-8'
+    );
   }
-}
+};
 
-// 开始生成文档
-generateDocs(jsonData, docsDir);
+main();

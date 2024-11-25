@@ -32,7 +32,23 @@ export type ExecOptions = {
 };
 
 /**
- * @category Logger
+ * Logger class providing various logging methods
+ *
+ * The Logger class supports multiple log levels and can be configured
+ * to operate in different environments such as CI, dry run, debug, and silent modes.
+ *
+ * @class Logger
+ * @docs logger docsxxxxxx
+ * @example
+ * ```typescript
+ * // Create a logger instance
+ * const logger = new Logger({ debug: true });
+ *
+ * // Log messages at different levels
+ * logger.info('This is an info message');
+ * logger.error('This is an error message');
+ * logger.debug('This is a debug message');
+ * ```
  */
 export class Logger {
   protected isCI: boolean;
@@ -42,6 +58,7 @@ export class Logger {
 
   /**
    * Creates a new Logger instance
+   *
    * @param options - Logger configuration options
    * @param options.isCI - Whether running in CI environment
    * @param options.dryRun - Whether to perform dry run only
