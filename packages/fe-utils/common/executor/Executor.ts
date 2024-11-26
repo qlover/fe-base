@@ -1,80 +1,52 @@
-export type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
-export type SyncTask<T, D = unknown> = (data: D) => T;
-export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
+import { ExecutorError } from './ExecutorError';
+import { ExecutorPlugin, Task } from './ExecutorPlugin';
 
-// BasePlugin remains the same
-export abstract class ExecutorPlugin<T = unknown, R = T> {
-  /**
-   * only one instance of the same plugin
-   */
-  readonly onlyOne?: boolean;
-
-  /**
-   * override to enable/disable plugin.
-   *
-   * receive args from `exec` or `execNoError`
-   */
-  enabled?(name: keyof ExecutorPlugin, ...args: unknown[]): boolean;
-
-  /**
-   * **has return value, not break the chain**
-   * @access plugin
-   */
-  onBefore?(data?: unknown): unknown | Promise<unknown>;
-  /**
-   * - if call `exec`, onError has return value or throw any error, exec will break the chain and throw error
-   * - if call `execNoError`, onError has return value or throw any error, execNoError will return the error
-   *
-   * **as long as it is captured by the error chain, the chain will be terminated**
-   * @access plugin
-   */
-  onError?(
-    error: Error,
-    data?: unknown
-  ): Promise<ExecutorError | void> | ExecutorError | void;
-  /**
-   * @access plugin
-   * **has return value, break the chain**
-   */
-  onSuccess?(result: T): R | Promise<R>;
-
-  /**
-   * can override exec run logic.
-   *
-   * **only use first bind plugin's onExec**
-   * @param data
-   * @param task
-   */
-  onExec?<T>(task: PromiseTask<T> | Task<T>): Promise<T | void> | T | void;
-}
-
-// Custom Error Class
-export class ExecutorError extends Error {
-  constructor(
-    public id: string,
-    originalError?: string | Error
-  ) {
-    super(
-      typeof originalError === 'string'
-        ? originalError
-        : originalError?.message || id
-    );
-
-    Object.setPrototypeOf(this, new.target.prototype); // Ensure instanceof works
-  }
-}
-
+/**
+ * Configuration interface for executor
+ * Currently empty but allows for future extension
+ */
 export interface ExecutorConfig {}
 
-// Simplified BaseExecutor with no generics
+/**
+ * Base executor class providing plugin management and execution pipeline
+ *
+ * The Executor pattern implements a pluggable execution pipeline that allows:
+ * 1. Pre-processing of input data
+ * 2. Post-processing of results
+ * 3. Error handling
+ * 4. Custom execution logic
+ *
+ * @abstract
+ * @class Executor
+ *
+ * @example
+ * ```typescript
+ * // Create an executor instance
+ * const executor = new AsyncExecutor();
+ *
+ * // Add plugins
+ * executor.use(new LoggerPlugin());
+ * executor.use(new RetryPlugin({ maxAttempts: 3 }));
+ *
+ * // Execute a task
+ * const result = await executor.exec(async (data) => {
+ *   return await someAsyncOperation(data);
+ * });
+ * ```
+ */
 export abstract class Executor {
   /**
-   * plugins instance only
+   * Array of active plugins
+   * Plugins are executed in the order they were added
    */
   protected plugins: ExecutorPlugin[] = [];
 
   constructor(protected config: ExecutorConfig = {}) {}
 
+  /**
+   * Add a plugin to the executor
+   * @param plugin - Plugin instance to add
+   */
   use(plugin: ExecutorPlugin): void {
     if (
       this.plugins.find((p) => p.constructor === plugin.constructor) &&
@@ -90,10 +62,11 @@ export abstract class Executor {
   }
 
   /**
-   * run hook
-   * @param plugins plugins
-   * @param name hook name
-   * @param args hook args
+   * Execute a plugin hook
+   * Must be implemented by concrete executor classes
+   * @param plugins - Plugins to execute
+   * @param name - Hook name to execute
+   * @param args - Arguments for the hook
    */
   abstract runHook(
     plugins: ExecutorPlugin[],
@@ -102,16 +75,17 @@ export abstract class Executor {
   ): void | unknown | Promise<void | unknown>;
 
   /**
-   * execute task and return result
-   * @throw {ExecutorError} if task execution fails, throw ExecutorError
-   * @param task task
+   * Execute a task with plugin pipeline
+   * @param task - Task to execute
+   * @throws {ExecutorError} If task execution fails
    */
   abstract exec<T>(task: Task<T>): Promise<T> | T;
   abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
 
   /**
-   * execute task and return result without throwing error, wrap all errors as ExecutorError
-   * @param task task
+   * Execute a task without throwing errors
+   * All errors are wrapped in ExecutorError
+   * @param task - Task to execute
    */
   abstract execNoError<T>(
     task: Task<T>
