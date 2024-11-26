@@ -1,39 +1,184 @@
 import fsExtra from 'fs-extra';
+import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import Handlebars from 'handlebars';
+import lodash from 'lodash';
 
+const { groupBy } = lodash;
 export class ProjectReflectionParser {
-  constructor({ path }) {
-    if (typeof path === 'string' && path) {
-      this.load(path);
-    }
+  constructor({ entryPoints, outputPath }) {
+    this.entryPoints = entryPoints;
+    this.outputPath = outputPath;
   }
 
-  load(path) {
-    this.project = fsExtra.readJSONSync(path);
+  async load(path) {
+    const project = fsExtra.readJSONSync(path || this.outputPath);
+
+    const app = await this.getApp();
+    const reflections = app.deserializer.reviveProject(project);
+
+    this.project = reflections;
+
     return this.project;
   }
 
-  parseClasses() {
-    const groupClassess = this.project.groups.find(
+  async writeTo(project) {
+    const app = await this.getApp();
+    fsExtra.writeFileSync(
+      this.outputPath,
+      JSON.stringify(app.serializer.projectToObject(project, './'), null, 2),
+      'utf-8'
+    );
+  }
+
+  async getApp() {
+    if (this.app) {
+      return this.app;
+    }
+
+    const app = await Application.bootstrap(
+      {
+        // typedoc options here
+        entryPoints: this.entryPoints,
+        skipErrorChecking: true
+      },
+      [new TSConfigReader(), new TypeDocReader()]
+    );
+
+    this.app = app;
+    return app;
+  }
+  async parseClasses(project) {
+    project = project || this.project;
+    if (!project) {
+      return;
+    }
+
+    const groupClassess = project.groups.find(
       (group) => group.title === 'Classes'
     );
 
-    groupClassess.children.forEach((item) => {
-      const classId = item.replace('~reflections~', '');
-      const target = this.project.reflections[classId];
+    // console.log('[groupClassess]', groupClassess);
 
-      console.log(classId, target.name);
-      const targetConstructor = target.children.find(
-        (child) => child.name === 'constructor'
-      );
-      if (targetConstructor) {
-        console.log('[constructor]', targetConstructor.id);
-      }
+    const result = this.parseClass(groupClassess.children[0]);
 
-      const targetMethods = target.children.filter(
-        (child) => child.kind === 'method'
-      );
-      console.log('[methods]', targetMethods);
+    console.log(result);
+
+    // groupClassess.children.forEach((item) => {
+    //   this.parseClass(item);
+    // });
+  }
+
+  /**
+   * 获取一个blockTags中的一个tag的内容
+   * @param {import('typedoc').CommentTag[]} blockTags
+   * @param {string} tag
+   * @returns {string|null}
+   */
+  getOneBlockTags(blockTags, tag) {
+    const target = blockTags.find((item) => item.tag === tag);
+    if (target) {
+      return target.content.map((item) => item.text).join(' ');
+    }
+    return null;
+  }
+
+  /**
+   * 处理参数类型
+   * @param {import('typedoc').Type} type
+   */
+  padParamType(type, name) {
+    name = name || type.name || '';
+    const fx = type.typeArguments
+      ? `<${type.typeArguments.map((item) => item.name).join(',')}>`
+      : '';
+    return name + fx;
+  }
+
+  /**
+   *
+   * @param {import('typedoc').DeclarationReflection} classItem
+   */
+  parseClass(classItem) {
+    // 读取模板文件
+    const templateContent = fsExtra.readFileSync('./hbs/class.hbs', 'utf-8');
+
+    // 编译模板
+    const template = Handlebars.compile(templateContent);
+
+    const groupByBlocksTags = groupBy(classItem.comment.blockTags, 'tag');
+
+    // TODO: 目前只支持一个构造函数
+    const classConstructor = [];
+
+    classItem.children
+      .find((item) => item.name === 'constructor')
+      ?.signatures?.forEach((signature) => {
+        signature.parameters.forEach((param) => {
+          const tableList = [];
+          // 如果是一个引用类型？
+          if (param.type?.declaration.children) {
+            param.type?.declaration.children.forEach((child) => {
+              const blockTags = child.comment.blockTags;
+              const summaryList = child.comment.summary.map(
+                (item) => item.text
+              );
+              const description = this.getOneBlockTags(
+                blockTags,
+                '@description'
+              );
+
+              tableList.push({
+                name: param.name + '.' + child.name,
+                type: this.padParamType(child.type, child.type?.name),
+                defaultValue: this.getOneBlockTags(blockTags, '@default'),
+                description: [...summaryList, description],
+                since: this.getOneBlockTags(blockTags, '@since'),
+                deprecated:
+                  this.getOneBlockTags(blockTags, '@deprecated') !== null
+              });
+            });
+          } else {
+            const blockTags = param.comment.blockTags;
+            const summaryList = param.comment.summary.map((item) => item.text);
+            const description = this.getOneBlockTags(blockTags, '@description');
+
+            tableList.push({
+              name: param.name,
+              type: this.padParamType(param.type),
+              defaultValue: this.getOneBlockTags(blockTags, '@default'),
+              description: [...summaryList, description],
+              since: this.getOneBlockTags(blockTags, '@since'),
+              deprecated:
+                this.getOneBlockTags(blockTags, '@deprecated') !== null
+            });
+          }
+
+          classConstructor.push({
+            name: classItem.name + '.' + param.name,
+            parametersList: tableList
+          });
+        });
+      });
+
+    const result = template({
+      name: classItem.name,
+      summaryList: classItem.comment.summary,
+      descriptionList: groupByBlocksTags['@description'].map(
+        (item) => item.content
+      ),
+      exampleList: groupByBlocksTags['@example']
+        .map((item) => item.content)
+        .flat()
+        .map((item) => ({
+          isCode: item.kind === 'code',
+          text: item.text,
+          kind: item.kind
+        })),
+      classConstructor: classConstructor
     });
+    console.log(classConstructor);
+
+    return result;
   }
 
   /**

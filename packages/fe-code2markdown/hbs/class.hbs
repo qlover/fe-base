@@ -1,0 +1,54 @@
+
+<h2>{{name}}</h2>
+
+{{!-- summary and description --}}
+{{#each summaryList}}
+<p>{{this.text}}</p>
+{{/each}}
+
+{{!-- description --}}
+<h3>Description</h3>
+{{#each descriptionList}}
+{{#each this}}
+<p>{{this.text}}</p>
+{{/each}}
+{{/each}}
+
+{{!-- examples --}}
+<h3>Examples</h3>
+{{#each exampleList}}
+{{#if this.isCode}}
+<pre><code>{{this.text}}</code></pre>
+{{else}}
+<p>{{this.text}}</p>
+{{/if}}
+{{/each}}
+
+{{!-- parameters --}}
+<h3>Parameters</h3>
+{{#each classConstructor}}
+<h4>{{this.name}}</h4>
+<table>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Since</th>
+<th>Deprecated</th>
+<th>Description</th>
+</tr>
+{{#each this.parametersList}}
+<tr>
+<td>{{this.name}}</td>
+<td>{{this.type}}</td>
+<td>{{this.defaultValue}}</td>
+<td>{{this.since}}</td>
+<td>{{this.deprecated}}</td>
+<td>{{this.description}}</td>
+</tr>
+{{/each}}
+</table>
+{{/each}}
+
+
+{{!-- Methods --}}

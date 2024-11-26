@@ -4,13 +4,11 @@ import path from 'path';
 export class ProjectReflectionGenerater {
   /**
    * @param {object} options
-   * @param {string} options.entryPoints
    * @param {import('./ProjectReflectionParser').ProjectReflectionParser} options.parser
    * @param {string} options.generatePath
    * @param {import('@qlover/fe-utils').Logger} options.logger
    */
-  constructor({ entryPoints, parser, generatePath, logger }) {
-    this.entryPoints = entryPoints;
+  constructor({ parser, generatePath, logger }) {
     this.parser = parser;
     this.generatePath = generatePath;
     this.logger = logger;
@@ -54,7 +52,7 @@ export class ProjectReflectionGenerater {
       });
     };
 
-    this.entryPoints.forEach((entryPoint) => {
+    this.parser.entryPoints.forEach((entryPoint) => {
       const stats = fs.statSync(entryPoint);
       if (stats.isFile()) {
         const directory = path.dirname(entryPoint);

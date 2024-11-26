@@ -1,29 +1,19 @@
 import fsExtra from 'fs-extra';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
-import CircularJSON from 'circular-json';
-import { ProjectReflectionParser } from './lib/ProjectReflectionParser.js';
 import { ProjectReflectionGenerater } from './lib/ProjectReflectionGenerater.js';
 import { resolve } from 'path';
-const entryPoints = [resolve('../fe-utils/common/index.ts')];
-const output = 'fe-code2markdown.output';
+import { ProjectReflectionParser } from './lib/ProjectReflectionParser.js';
+
+const parser = new ProjectReflectionParser({
+  entryPoints: [resolve('../fe-utils/common/index.ts')],
+  outputPath: 'fe-code2markdown.output'
+});
 
 const init = async () => {
-  const app = await Application.bootstrap(
-    {
-      // typedoc options here
-      entryPoints,
-      skipErrorChecking: true
-    },
-    [new TSConfigReader(), new TypeDocReader()]
-  );
+  const app = await parser.getApp();
 
   const project = await app.convert();
   if (project) {
-    fsExtra.writeFileSync(
-      output,
-      CircularJSON.stringify(project, null, 2),
-      'utf-8'
-    );
+    await parser.writeTo(project);
   }
 };
 
@@ -32,8 +22,20 @@ const main = async () => {
     await init();
   }
 
-  const parser = new ProjectReflectionParser({ path: output });
-  parser.parseClasses();
+  const parser = new ProjectReflectionParser({
+    entryPoints: [resolve('./example/example.ts')],
+    outputPath: 'fe-code2markdown.output'
+  });
+
+  // const app = await parser.getApp();
+  // const project = await app.convert();
+  // await parser.load();
+  // await parser.writeTo(project);
+  // return;
+
+  await parser.load();
+
+  await parser.parseClasses();
   return;
   const content = parser.parsePath(
     'D:\\qrj\\workspace\\fe-base\\packages\\fe-utils\\common\\request\\RequestExecutor.ts'
@@ -42,7 +44,6 @@ const main = async () => {
   return;
   const generater = new ProjectReflectionGenerater({
     parser,
-    entryPoints,
     logger: console,
     generatePath: resolve('../fe-utils/docs')
   });
