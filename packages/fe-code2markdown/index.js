@@ -1,4 +1,3 @@
-import fsExtra from 'fs-extra';
 import { ProjectReflectionGenerater } from './lib/ProjectReflectionGenerater.js';
 import { resolve } from 'path';
 import { ProjectReflectionParser } from './lib/ProjectReflectionParser.js';
@@ -41,13 +40,13 @@ const main = async () => {
 
   await parser.load();
 
-  await parser.parseClasses();
-  return;
-  // const content = parser.parsePath(
-  //   'D:\\qrj\\workspace\\fe-base\\packages\\fe-utils\\common\\request\\RequestExecutor.ts'
-  // );
-  // console.log(content);
+  // await parser.parseClasses();
   // return;
+  // // const content = parser.parsePath(
+  // //   'D:\\qrj\\workspace\\fe-base\\packages\\fe-utils\\common\\request\\RequestExecutor.ts'
+  // // );
+  // // console.log(content);
+  // // return;
 
   await generater.generate();
 };

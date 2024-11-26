@@ -29,6 +29,14 @@ export type OptionsMethosParams = {
  */
 export class ExampleClass {
   public name: string;
+  /**
+   * has debug? summary
+   * @description Example debug description
+   * @default false
+   * @since 1.0.0
+   * @type {boolean}
+   */
+  public debug: boolean = false;
 
   constructor(options: {
     /**
@@ -55,6 +63,7 @@ export class ExampleClass {
     extra?: Record<string, any>;
   }) {
     this.name = options.name;
+    this.debug = options.debug;
   }
 
   /**

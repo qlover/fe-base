@@ -14,6 +14,10 @@ export class ProjectReflectionGenerater {
     this.logger = logger;
   }
 
+  get entryPoints() {
+    return this.parser.entryPoints;
+  }
+
   async generate() {
     const physicalPaths = this.extractPhysicalPaths();
     const reflectionPaths = this.extractReflectionPaths(physicalPaths);

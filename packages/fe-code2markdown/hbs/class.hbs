@@ -3,7 +3,9 @@
 
 {{!-- summary and description --}}
 {{#each summaryList}}
+{{#if this.isText}}
 <p>{{this.text}}</p>
+{{/if}}
 {{/each}}
 
 {{!-- description --}}
@@ -26,7 +28,7 @@
 
 {{!-- parameters --}}
 <h3>Parameters</h3>
-{{#each classConstructor}}
+{{#each parameters}}
 <h4>{{this.name}}</h4>
 <table>
 <tr>
@@ -51,4 +53,32 @@
 {{/each}}
 
 
-{{!-- Methods --}}
+{{!-- Members --}}
+<h3>Members</h3>
+
+{{#each memberList}}
+
+{{!-- member name summary --}}
+<h4>{{this.name}}</h4>
+{{#each this.summaryList}}
+<p>{{this.text}}</p>
+{{/each}}
+
+{{!-- member name description --}}
+{{#each this.descriptionList}}
+{{#each this}}
+<p>{{this.text}}</p>
+{{/each}}
+{{/each}}
+
+{{!-- member examples --}}
+<h5>Examples</h5>
+{{#each this.exampleList}}
+{{#if this.isCode}}
+<pre><code>{{this.text}}</code></pre>
+{{else}}
+<p>{{this.text}}</p>
+{{/if}}
+{{/each}}
+
+{{/each}}
