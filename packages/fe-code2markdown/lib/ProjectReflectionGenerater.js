@@ -14,15 +14,18 @@ export class ProjectReflectionGenerater {
     this.logger = logger;
   }
 
-  generate() {
+  async generate() {
     const physicalPaths = this.extractPhysicalPaths();
-    // const entryPaths = this.extractEntryPaths(physicalPaths);
-    // this.logger.info('Entry paths extracted:', entryPaths);
     const reflectionPaths = this.extractReflectionPaths(physicalPaths);
     this.logger.info('Reflection paths extracted:', reflectionPaths);
-    // const documentationPaths = this.extractDocumentationPaths(entryPaths);
 
-    // this.logger.info('Documentation paths generated:', documentationPaths);
+    // 获取 app 和 project
+    const app = await this.parser.getApp();
+    const project = await app.convert();
+
+    // 写入 project
+    const result = await this.parser.parseClasses(project);
+    this.logger.info('Result:', result);
   }
 
   /**

@@ -27,6 +27,12 @@ const main = async () => {
     outputPath: 'fe-code2markdown.output'
   });
 
+  const generater = new ProjectReflectionGenerater({
+    parser,
+    logger: console,
+    generatePath: resolve('./docs.output')
+  });
+
   // const app = await parser.getApp();
   // const project = await app.convert();
   // await parser.load();
@@ -37,17 +43,13 @@ const main = async () => {
 
   await parser.parseClasses();
   return;
-  const content = parser.parsePath(
-    'D:\\qrj\\workspace\\fe-base\\packages\\fe-utils\\common\\request\\RequestExecutor.ts'
-  );
-  console.log(content);
-  return;
-  const generater = new ProjectReflectionGenerater({
-    parser,
-    logger: console,
-    generatePath: resolve('../fe-utils/docs')
-  });
-  generater.generate();
+  // const content = parser.parsePath(
+  //   'D:\\qrj\\workspace\\fe-base\\packages\\fe-utils\\common\\request\\RequestExecutor.ts'
+  // );
+  // console.log(content);
+  // return;
+
+  await generater.generate();
 };
 
 main();

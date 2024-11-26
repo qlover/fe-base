@@ -59,13 +59,20 @@ export class ProjectReflectionParser {
 
     // console.log('[groupClassess]', groupClassess);
 
-    const result = this.parseClass(groupClassess.children[0]);
+    const result = [];
+    groupClassess.children.forEach((item) => {
+      result.push(this.parseClass(item));
+    });
 
-    console.log(result);
+    // 生成模板
+    result.forEach((item) => {
+      fsExtra.writeFileSync(
+        `docs/${item.name}.html`,
+        this.composeTemplate(item)
+      );
+    });
 
-    // groupClassess.children.forEach((item) => {
-    //   this.parseClass(item);
-    // });
+    return result;
   }
 
   /**
@@ -95,16 +102,10 @@ export class ProjectReflectionParser {
   }
 
   /**
-   *
+   * 解析一个类, 返回一个模板需要的对象
    * @param {import('typedoc').DeclarationReflection} classItem
    */
   parseClass(classItem) {
-    // 读取模板文件
-    const templateContent = fsExtra.readFileSync('./hbs/class.hbs', 'utf-8');
-
-    // 编译模板
-    const template = Handlebars.compile(templateContent);
-
     const groupByBlocksTags = groupBy(classItem.comment.blockTags, 'tag');
 
     // TODO: 目前只支持一个构造函数
@@ -160,7 +161,7 @@ export class ProjectReflectionParser {
         });
       });
 
-    const result = template({
+    const templateResult = {
       name: classItem.name,
       summaryList: classItem.comment.summary,
       descriptionList: groupByBlocksTags['@description'].map(
@@ -175,10 +176,20 @@ export class ProjectReflectionParser {
           kind: item.kind
         })),
       classConstructor: classConstructor
-    });
-    console.log(classConstructor);
+    };
 
-    return result;
+    return templateResult;
+  }
+
+  composeTemplate(templateResult) {
+    // 读取模板文件
+    const templateContent = fsExtra.readFileSync('./hbs/class.hbs', 'utf-8');
+
+    // 编译模板
+    const template = Handlebars.compile(templateContent);
+
+    // 生成结果
+    return template(templateResult);
   }
 
   /**
