@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "build:docs": "typedoc --options ./typedoc.json"
+    "build:docs": "node ../fe-code2markdown/bin/code2md.js -p ./common/index.ts -o ./docs.output/common.json && node ../fe-code2markdown/bin/code2md.js -p ./server/index.ts -o ./docs.output/server.json"
   },
   "dependencies": {
     "lodash": "^4.17.21"
