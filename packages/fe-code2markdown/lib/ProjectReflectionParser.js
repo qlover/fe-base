@@ -124,6 +124,12 @@ export class ProjectReflectionParser {
 
         // 如果 rootChild 是 `type`
         if (rootChild.type && rootChild.type.type === 'reflection') {
+          this.logger.info(
+            'type:',
+            rootChild.id,
+            rootChild.name,
+            rootChild.type
+          );
           const level2Children = this.parseLevel2Children(
             rootChild.type.declaration,
             group,
@@ -137,6 +143,12 @@ export class ProjectReflectionParser {
           Array.isArray(rootChild.children) &&
           rootChild.children.length
         ) {
+          this.logger.info(
+            'children:',
+            rootChild.id,
+            rootChild.name,
+            rootChild.children.map((child) => child.name)
+          );
           // 第二层
           const level2Children = this.parseLevel2Children(
             rootChild,

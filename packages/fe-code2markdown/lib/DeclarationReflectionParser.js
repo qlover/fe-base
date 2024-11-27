@@ -148,13 +148,27 @@ export class DeclarationReflectionParser {
   }
 
   /**
-   *
-   * @param {import('typedoc').DeclarationReflection} project
-   * @returns
+   * Get the real source of a member, ensuring it belongs to the current class
+   * @param {import('typedoc').DeclarationReflection} member
+   * @param {import('typedoc').DeclarationReflection} classItem
+   * @returns {import('typedoc').SourceReference|undefined}
    */
-  getRealSource(member) {
-    // FIXME: 获取绝对路径, 目前获取第一个
-    return this.project.getReflectionById(member.id).sources?.[0];
+  getRealSource(member, classItem) {
+    const reflection = this.project.getReflectionById(member.id);
+    if (!reflection || !reflection.sources?.length) {
+      return undefined;
+    }
+
+    // Verify the source belongs to the current class
+    const source = reflection.sources[0];
+    if (classItem && classItem.sources?.length) {
+      const classSource = classItem.sources[0];
+      if (source.fileName !== classSource.fileName) {
+        return undefined;
+      }
+    }
+
+    return source;
   }
 
   /**
@@ -257,7 +271,7 @@ export class DeclarationReflectionParser {
       returnValue:
         this.is && parameters ? this.getReturnValue(member) : undefined,
       type,
-      source: this.getRealSource(member)
+      source: this.getRealSource(member, classItem)
     };
 
     return this.adjustResult(result);
@@ -272,9 +286,22 @@ export class DeclarationReflectionParser {
   classMembersToTemplateResults(reflection, classItem) {
     const { children = [] } = reflection;
     const result = [];
+    const classSource = classItem?.sources?.[0]?.fileName;
 
     children.forEach((member) => {
       const { signatures = [] } = member;
+
+      // Verify member belongs to current class
+      const memberSource = member.sources?.[0]?.fileName;
+      if (classSource && memberSource && classSource !== memberSource) {
+        console.warn(
+          `Member ${member.name} source (${memberSource}) differs from class source (${classSource})`
+        );
+        return; // Skip this member
+      }
+
+      console.info('signatures:', member.id, member.name);
+      console.info(signatures.map((item) => item.name));
 
       if (signatures.length > 0) {
         signatures.forEach((memberSignature) => {
