@@ -1,16 +1,15 @@
 import fsExtra from 'fs-extra';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
-import Handlebars from 'handlebars';
 
 class DeclarationReflectionParser {
   /**
-   *
-   * @param {import('typedoc').DeclarationReflection} reflection
-   * @param {import('typedoc').DeclarationReflection | null} parent
+   * @param {import('typedoc').ProjectReflection} project
    */
-  constructor(reflection, parent) {
-    this.reflection = reflection;
-    this.parent = parent;
+  constructor(project) {
+    /**
+     * @type {import('typedoc').ProjectReflection}
+     */
+    this.project = project;
   }
 
   /**
@@ -105,6 +104,7 @@ class DeclarationReflectionParser {
   toParametersListItem(child, parent, blockTags) {
     blockTags = blockTags || child.comment.blockTags;
     return {
+      id: child.id,
       name: parent ? parent.name + '.' + child.name : child.name,
       type: this.getParamType(child.type, child.type?.name),
       summaryList: this.getSummaryList(child.comment.summary),
@@ -119,6 +119,15 @@ class DeclarationReflectionParser {
   }
 
   /**
+   *
+   * @param {import('typedoc').DeclarationReflection} project
+   * @returns
+   */
+  getRealSource(member) {
+    // FIXME: 获取绝对路径, 目前获取第一个
+    return this.project.getReflectionById(member.id).sources[0];
+  }
+  /**
    * 将一个成员转换为模板需要的对象
    * @param {import('typedoc').DeclarationReflection} member
    * @returns {Object}
@@ -126,7 +135,8 @@ class DeclarationReflectionParser {
   toTemplateResult(member, parameters, type = 'class') {
     const { name, comment = {} } = member;
     const blockTags = comment.blockTags || [];
-    return {
+    const result = {
+      id: member.id,
       name: name,
       summaryList: this.getSummaryList(comment?.summary || []),
       descriptionList: this.getBlockTags(blockTags, '@description'),
@@ -135,7 +145,24 @@ class DeclarationReflectionParser {
         type === 'method' && parameters
           ? this.toParametersList(parameters)
           : undefined,
-      type
+      type,
+      source: this.getRealSource(member)
+    };
+
+    return this.adjustResult(result);
+  }
+
+  /**
+   * 检查结果
+   * @param {Object} result
+   */
+  adjustResult(result) {
+    return {
+      ...result,
+      showSummary: result.summaryList.length > 0,
+      showDescription: result.descriptionList.length > 0,
+      showExample: result.exampleList.length > 0,
+      showParameters: result.parameters && result.parameters.length > 0
     };
   }
 
@@ -187,7 +214,11 @@ export class ProjectReflectionParser {
   }
 
   async load(path) {
-    const project = fsExtra.readJSONSync(path || this.outputPath);
+    path = path || this.outputPath;
+    if (!fsExtra.existsSync(path)) {
+      return;
+    }
+    const project = fsExtra.readJSONSync(path);
 
     const app = await this.getApp();
     const reflections = app.deserializer.reviveProject(project);
@@ -199,6 +230,11 @@ export class ProjectReflectionParser {
 
   async writeTo(project) {
     const app = await this.getApp();
+    // 删除文件
+    fsExtra.removeSync(this.outputPath);
+    // 确保文件存在，不存在则创建
+    fsExtra.ensureFileSync(this.outputPath);
+
     fsExtra.writeFileSync(
       this.outputPath,
       JSON.stringify(app.serializer.projectToObject(project, './'), null, 2),
@@ -227,9 +263,9 @@ export class ProjectReflectionParser {
   /**
    * 解析类
    * @param {import('typedoc').ProjectReflection} project
-   * @returns {Object[]}
+   * @returns {{class: Object, members: Object[]}[]}
    */
-  async parseClasses(project) {
+  parseClasses(project) {
     project = project || this.project;
     if (!project) {
       return;
@@ -240,11 +276,9 @@ export class ProjectReflectionParser {
       .map((group) => group.children)
       .flat();
 
-    const result = classList
-      .map((classItem) => {
-        return this.parseClass(classItem);
-      })
-      .flat();
+    const result = classList.map((classItem) => {
+      return this.parseClass(classItem, project);
+    });
 
     return result;
   }
@@ -252,29 +286,19 @@ export class ProjectReflectionParser {
   /**
    * 解析一个类, 返回一个模板需要的对象
    * @param {import('typedoc').DeclarationReflection} classItem
+   * @param {import('typedoc').ProjectReflection} project
+   * @returns {{class: Object, members: Object[]}}
    */
-  parseClass(classItem) {
+  parseClass(classItem, project) {
+    const result = {};
     // 解析出 class 数据
-    const drp = new DeclarationReflectionParser(classItem);
-    let result = drp.toTemplateResult(classItem, undefined, 'class');
+    const drp = new DeclarationReflectionParser(project);
+    result.class = drp.toTemplateResult(classItem, undefined, 'class');
 
     // 解析出 class 的成员数据
-    const classMembersResults = drp.classMembersToTemplateResults(classItem);
-
-    result = [result, ...classMembersResults];
+    result.members = drp.classMembersToTemplateResults(classItem);
 
     return result;
-  }
-
-  composeTemplate(templateResult) {
-    // 读取模板文件
-    const templateContent = fsExtra.readFileSync('./hbs/class.hbs', 'utf-8');
-
-    // 编译模板
-    const template = Handlebars.compile(templateContent);
-
-    // 生成结果
-    return template(templateResult);
   }
 
   /**

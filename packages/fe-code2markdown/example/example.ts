@@ -32,7 +32,7 @@ export class ExampleClass {
   /**
    * has debug? summary
    * @description Example debug description
-   * @default false
+   * @default `false`
    * @since 1.0.0
    * @type {boolean}
    */
@@ -41,14 +41,14 @@ export class ExampleClass {
   constructor(options: {
     /**
      * @description Example name
-     * @default ''
+     * @default `''`
      * @type {string}
      */
     name: string;
     /**
      * has debug?
      * @description Example debug
-     * @default false
+     * @default `false`
      * @since 1.0.0
      * @type {boolean}
      */
@@ -58,6 +58,7 @@ export class ExampleClass {
      * extra params
      * @description Example extra
      * @type {Record<string, any>}
+     * @default `{}`
      * @deprecated
      */
     extra?: Record<string, any>;

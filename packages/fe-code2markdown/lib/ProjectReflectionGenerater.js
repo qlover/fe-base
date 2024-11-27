@@ -1,35 +1,105 @@
-import fs from 'fs';
-import path from 'path';
-
+import fsExtra from 'fs-extra';
+import path, { resolve } from 'path';
+import Handlebars from 'handlebars';
+import { fileURLToPath } from 'url';
+import { ProjectReflectionParser } from './ProjectReflectionParser.js';
 export class ProjectReflectionGenerater {
   /**
    * @param {object} options
-   * @param {import('./ProjectReflectionParser').ProjectReflectionParser} options.parser
    * @param {string} options.generatePath
    * @param {import('@qlover/fe-utils').Logger} options.logger
    */
-  constructor({ parser, generatePath, logger }) {
-    this.parser = parser;
+  constructor({ logger, entryPoints, outputJSONFilePath, generatePath }) {
+    this.parser = new ProjectReflectionParser({
+      entryPoints,
+      outputPath: outputJSONFilePath
+    });
+    this.entryPoints = entryPoints;
+    this.outputJSONFilePath = outputJSONFilePath;
     this.generatePath = generatePath;
     this.logger = logger;
+    this.classTemplate = this.getClassTemplate();
   }
 
-  get entryPoints() {
-    return this.parser.entryPoints;
+  getClassTemplate() {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const rootDir = path.resolve(__dirname, '../');
+    // 读取模板文件
+    const templateContent = fsExtra.readFileSync(
+      path.join(rootDir, 'hbs/class.hbs'),
+      'utf-8'
+    );
+
+    // 编译模板
+    return Handlebars.compile(templateContent);
+  }
+
+  async generateJson() {
+    const app = await this.parser.getApp();
+    const project = await app.convert();
+    await this.parser.writeTo(project);
   }
 
   async generate() {
-    const physicalPaths = this.extractPhysicalPaths();
-    const reflectionPaths = this.extractReflectionPaths(physicalPaths);
-    this.logger.info('Reflection paths extracted:', reflectionPaths);
+    // const physicalPaths = this.extractPhysicalPaths();
+    // this.logger.info('Physical paths extracted:', physicalPaths);
 
     // 获取 app 和 project
+    // 为了获取完整的绝对路径，用convert的数据
     const app = await this.parser.getApp();
     const project = await app.convert();
+    // const project = await this.parser.load();
 
     // 写入 project
-    const result = await this.parser.parseClasses(project);
-    this.logger.info('Result:', result);
+    const templateResults = this.parser.parseClasses(project);
+    for (const templateResult of templateResults) {
+      this.logger.debug('templateResult:', templateResult.class);
+      // this.logger.debug('templateResult:', templateResult.members);
+      templateResult.members.forEach((member) => {
+        this.logger.debug('member:', member.parameters);
+      });
+      const outputMdPath = this.getTemplateResultOutputPath(templateResult);
+      const result = this.classTemplate(templateResult);
+
+      const unescapedResult = this.unescapeHtmlEntities(result);
+
+      try {
+        fsExtra.ensureFileSync(outputMdPath);
+        fsExtra.writeFileSync(outputMdPath, unescapedResult, 'utf-8');
+        this.logger.debug(`Writing to: ${outputMdPath} success!`);
+      } catch (error) {
+        this.logger.error(`Writing to: ${outputMdPath} failed!`, error);
+      }
+    }
+  }
+
+  unescapeHtmlEntities(text) {
+    return text.replace(/&#x60;/g, '`').replace(/&#x27;/g, "'");
+  }
+
+  getTemplateResultOutputPath(templateResult) {
+    const resultSource = templateResult.class.source;
+    const docPaths = this.extractDocumentationPath(resultSource.fullFileName);
+
+    return path.join(docPaths.docDir, templateResult.class.name + '.md');
+  }
+
+  composeTemplate(templateResult) {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const rootDir = path.resolve(__dirname, '../');
+    // 读取模板文件
+    const templateContent = fsExtra.readFileSync(
+      path.join(rootDir, 'hbs/class.hbs'),
+      'utf-8'
+    );
+
+    // 编译模板
+    const template = Handlebars.compile(templateContent);
+
+    // 生成结果
+    return template(templateResult);
   }
 
   /**
@@ -40,27 +110,28 @@ export class ProjectReflectionGenerater {
     const physicalPaths = [];
 
     const exploreDirectory = (dir) => {
-      const files = fs.readdirSync(dir);
+      const files = fsExtra.readdirSync(dir);
       files.forEach((file) => {
         const fullPath = path.join(dir, file);
-        if (fs.statSync(fullPath).isDirectory()) {
+        if (fsExtra.statSync(fullPath).isDirectory()) {
           exploreDirectory(fullPath);
         } else {
           const directory = path.dirname(fullPath);
           const filename = path.basename(fullPath);
+          const relativePath = path.relative(resolve(), fullPath);
 
-          const result = { directory, filename, fullPath };
+          const result = { directory, filename, fullPath, relativePath };
 
           physicalPaths.push({
             ...result,
-            ...this.extractDocumentationPath(result)
+            ...this.extractDocumentationPath(result.fullPath)
           });
         }
       });
     };
 
     this.parser.entryPoints.forEach((entryPoint) => {
-      const stats = fs.statSync(entryPoint);
+      const stats = fsExtra.statSync(entryPoint);
       if (stats.isFile()) {
         const directory = path.dirname(entryPoint);
         exploreDirectory(directory);
@@ -70,29 +141,6 @@ export class ProjectReflectionGenerater {
     });
 
     return physicalPaths;
-  }
-
-  /**
-   * 根据 entryPoints 提取出对应的物理路径
-   * @param {string[]} physicalPaths
-   * @returns {Array<{ directory: string, filename: string, fullPath: string }>}
-   */
-  extractEntryPaths(physicalPaths) {
-    return physicalPaths.map(({ directory, filename, fullPath }) => {
-      return { directory, filename, fullPath };
-    });
-  }
-
-  /**
-   * 根据物理路径提取出对应的反射路径
-   * @param {Array<{ directory: string, filename: string, fullPath: string }>} physicalPaths
-   * @returns {string[]}
-   */
-  extractReflectionPaths(physicalPaths) {
-    for (const physicalPath of physicalPaths) {
-      const content = this.parser.parsePath(physicalPath);
-      this.logger.info('Reflection content:', content);
-    }
   }
 
   /**
@@ -125,10 +173,10 @@ export class ProjectReflectionGenerater {
 
   /**
    * 根据反射路径提取出对应的文档路径
-   * @param {{ directory: string, filename: string, fullPath: string }} entryPath
+   * @param {string} fullPath 反射路径
    * @returns {string}
    */
-  extractDocumentationPath({ fullPath }) {
+  extractDocumentationPath(fullPath) {
     // 找到 entryPoint 中的公共部分
     const commonPath = this.entryPoints.reduce((_, entryPoint) => {
       return this.getCommonPath(this.generatePath, entryPoint);
@@ -138,9 +186,12 @@ export class ProjectReflectionGenerater {
       // 计算从 entryPoint 到 fullPath 的完整相对路径
       const relativeFullPath = path.relative(this.generatePath, fullPath);
 
+      const docFullPath = path.join(this.generatePath, relativeFullPath);
+
       return {
         docPath: this.generatePath,
-        docFullPath: path.join(this.generatePath, relativeFullPath)
+        docFullPath: docFullPath,
+        docDir: path.dirname(docFullPath)
       };
     }
 
@@ -150,6 +201,10 @@ export class ProjectReflectionGenerater {
     // 生成文档路径，保留完整相对路径
     const docFullPath = path.join(this.generatePath, relativeFullPath);
 
-    return { docPath: this.generatePath, docFullPath };
+    return {
+      docPath: this.generatePath,
+      docFullPath,
+      docDir: path.dirname(docFullPath)
+    };
   }
 }

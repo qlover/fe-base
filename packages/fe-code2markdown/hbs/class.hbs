@@ -1,84 +1,49 @@
-
-<h2>{{name}}</h2>
+## {{{class.name}}} {{{class.id}}}
 
 {{!-- summary and description --}}
-{{#each summaryList}}
-{{#if this.isText}}
-<p>{{this.text}}</p>
-{{/if}}
+{{#each class.summaryList}}
+{{{this.text}}}
 {{/each}}
 
-{{!-- description --}}
-<h3>Description</h3>
-{{#each descriptionList}}
-{{#each this}}
-<p>{{this.text}}</p>
-{{/each}}
+{{#each class.descriptionList}}
+{{{this.text}}}
 {{/each}}
 
-{{!-- examples --}}
-<h3>Examples</h3>
-{{#each exampleList}}
-{{#if this.isCode}}
-<pre><code>{{this.text}}</code></pre>
-{{else}}
-<p>{{this.text}}</p>
-{{/if}}
+#### Examples
+{{#each class.exampleList}}
+{{{this.text}}}
 {{/each}}
 
-{{!-- parameters --}}
-<h3>Parameters</h3>
-{{#each parameters}}
-<h4>{{this.name}}</h4>
-<table>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Default</th>
-<th>Since</th>
-<th>Deprecated</th>
-<th>Description</th>
-</tr>
-{{#each this.parametersList}}
-<tr>
-<td>{{this.name}}</td>
-<td>{{this.type}}</td>
-<td>{{this.defaultValue}}</td>
-<td>{{this.since}}</td>
-<td>{{this.deprecated}}</td>
-<td>{{this.description}}</td>
-</tr>
-{{/each}}
-</table>
-{{/each}}
+{{!-- members --}}
+{{#each members}}
+### {{{this.name}}} {{{this.id}}}
 
-
-{{!-- Members --}}
-<h3>Members</h3>
-
-{{#each memberList}}
-
-{{!-- member name summary --}}
-<h4>{{this.name}}</h4>
+{{!-- summary and description --}}
+{{#if this.showSummary}}
 {{#each this.summaryList}}
-<p>{{this.text}}</p>
+{{{this.text}}}
 {{/each}}
-
-{{!-- member name description --}}
-{{#each this.descriptionList}}
-{{#each this}}
-<p>{{this.text}}</p>
-{{/each}}
-{{/each}}
-
-{{!-- member examples --}}
-<h5>Examples</h5>
-{{#each this.exampleList}}
-{{#if this.isCode}}
-<pre><code>{{this.text}}</code></pre>
-{{else}}
-<p>{{this.text}}</p>
 {{/if}}
-{{/each}}
 
+{{#if this.showDescription}}
+{{#each this.descriptionList}}
+{{{this.text}}}
+{{/each}}
+{{/if}}
+
+{{#if this.showExample}}
+#### Examples
+{{#each this.exampleList}}
+{{{this.text}}}
+{{/each}}
+{{/if}}
+
+{{#if this.showParameters}}
+#### Parameters
+| Name | Type | Default | Since | Deprecated | Description |
+|------|------|---------|-------|------------|-------------|
+{{#each this.parameters}}
+| {{{this.name}}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{{this.deprecated}}} | - |
+{{/each}}
+{{/if}}
 {{/each}}
