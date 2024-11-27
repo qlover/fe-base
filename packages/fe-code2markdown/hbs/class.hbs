@@ -38,12 +38,20 @@
 {{/each}}
 {{/if}}
 
+{{#if this.returnValue}}
+Returns: {{{this.returnValue}}}
+{{/if}}
+
 {{#if this.showParameters}}
 #### Parameters
-| Name | Type | Default | Since | Deprecated | Description |
-|------|------|---------|-------|------------|-------------|
+| Name | Type | Default | Since | Description |
+|------|------|---------|-------|------------|
 {{#each this.parameters}}
-| {{{this.name}}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{{this.deprecated}}} | - |
+| {{#if this.deprecated}} <del>{{{this.name}}}</del> {{else}} {{{this.name}}} {{/if}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{#each this.summaryList}}{{{this.text}}}{{/each}} {{#each this.descriptionList}}{{{this.text}}}{{/each}} |
 {{/each}}
 {{/if}}
+
+
+
 {{/each}}
+

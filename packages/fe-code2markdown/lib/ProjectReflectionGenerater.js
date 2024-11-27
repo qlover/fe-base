@@ -12,7 +12,8 @@ export class ProjectReflectionGenerater {
   constructor({ logger, entryPoints, outputJSONFilePath, generatePath }) {
     this.parser = new ProjectReflectionParser({
       entryPoints,
-      outputPath: outputJSONFilePath
+      outputPath: outputJSONFilePath,
+      logger
     });
     this.entryPoints = entryPoints;
     this.outputJSONFilePath = outputJSONFilePath;
@@ -42,34 +43,27 @@ export class ProjectReflectionGenerater {
   }
 
   async generate() {
-    // const physicalPaths = this.extractPhysicalPaths();
-    // this.logger.info('Physical paths extracted:', physicalPaths);
-
-    // 获取 app 和 project
     // 为了获取完整的绝对路径，用convert的数据
     const app = await this.parser.getApp();
     const project = await app.convert();
-    // const project = await this.parser.load();
+
+    // save to local file
+    await this.parser.writeTo(project);
 
     // 写入 project
     const templateResults = this.parser.parseClasses(project);
-    for (const templateResult of templateResults) {
-      this.logger.debug('templateResult:', templateResult.class);
-      // this.logger.debug('templateResult:', templateResult.members);
-      templateResult.members.forEach((member) => {
-        this.logger.debug('member:', member.parameters);
-      });
-      const outputMdPath = this.getTemplateResultOutputPath(templateResult);
-      const result = this.classTemplate(templateResult);
 
+    for (const templateResult of templateResults) {
+      const { output } = this.getTemplateResultOutputPath(templateResult);
+      const result = this.classTemplate(templateResult);
       const unescapedResult = this.unescapeHtmlEntities(result);
 
       try {
-        fsExtra.ensureFileSync(outputMdPath);
-        fsExtra.writeFileSync(outputMdPath, unescapedResult, 'utf-8');
-        this.logger.debug(`Writing to: ${outputMdPath} success!`);
+        fsExtra.ensureFileSync(output);
+        fsExtra.writeFileSync(output, unescapedResult, 'utf-8');
+        this.logger.info(`Success: ${output}`);
       } catch (error) {
-        this.logger.error(`Writing to: ${outputMdPath} failed!`, error);
+        this.logger.error(`Failed: ${output}`, error);
       }
     }
   }
@@ -78,11 +72,19 @@ export class ProjectReflectionGenerater {
     return text.replace(/&#x60;/g, '`').replace(/&#x27;/g, "'");
   }
 
+  /**
+   * 获取模板结果的输出路径
+   * @param {object} templateResult
+   * @returns {{docPaths: {docPath: string, docFullPath: string, docDir: string}, output: string}}
+   */
   getTemplateResultOutputPath(templateResult) {
     const resultSource = templateResult.class.source;
     const docPaths = this.extractDocumentationPath(resultSource.fullFileName);
 
-    return path.join(docPaths.docDir, templateResult.class.name + '.md');
+    return {
+      docPaths,
+      output: path.join(docPaths.docDir, templateResult.class.name + '.md')
+    };
   }
 
   composeTemplate(templateResult) {
@@ -174,7 +176,7 @@ export class ProjectReflectionGenerater {
   /**
    * 根据反射路径提取出对应的文档路径
    * @param {string} fullPath 反射路径
-   * @returns {string}
+   * @returns {{docPath: string, docFullPath: string, docDir: string}}
    */
   extractDocumentationPath(fullPath) {
     // 找到 entryPoint 中的公共部分
