@@ -34,7 +34,7 @@ export class DeclarationReflectionParser {
       .filter((item) => item.tag === tag)
       .map((item) => item.content)
       .flat();
-    return this.getSummaryList(result);
+    return this.toTemplateSummaryList(result);
   }
 
   /**
@@ -56,16 +56,25 @@ export class DeclarationReflectionParser {
    * @param {import('typedoc').CommentDisplayPart[]} summary
    * @returns {import('typedoc').CommentDisplayPart[]}
    */
-  getSummaryList(summary) {
-    return summary.map((item) => {
-      return {
-        ...item,
-        isText: item.kind === 'text',
-        isCode: item.kind === 'code',
-        isLink: item.kind === 'link',
-        isInlineTag: item.kind === 'inlineTag'
-      };
-    });
+  toTemplateSummaryList(summary) {
+    return summary.map((item) => this.toTemplateSummary(item));
+  }
+
+  /**
+   * 将一个summary转换为模板需要的对象
+   * @param {import('typedoc').CommentDisplayPart[]} summary
+   * @param {string} tag
+   * @returns {import('typedoc').CommentDisplayPart & { isText: boolean, isCode: boolean, isLink: boolean, isInlineTag: boolean, tag: string }}
+   */
+  toTemplateSummary(summary, tag) {
+    return {
+      ...summary,
+      isText: summary.kind === 'text',
+      isCode: summary.kind === 'code',
+      isLink: summary.kind === 'link',
+      isInlineTag: summary.kind === 'inlineTag',
+      tag
+    };
   }
 
   /**
@@ -105,6 +114,15 @@ export class DeclarationReflectionParser {
   }
 
   /**
+   * 获取不包含 `@returns` 和 `@param` 的 blockTags
+   * @param {import('typedoc').CommentDisplayPart[]} blockTags
+   * @returns {import('typedoc').CommentDisplayPart[]}
+   */
+  getBlockTagsNoParamAndReturn(blockTags) {
+    return this.filterBlockTagsNot(blockTags, ['@returns', '@param']);
+  }
+
+  /**
    * 将一个参数转换为模板需要的对象
    * @param {import('typedoc').ParameterReflection} child
    * @param {import('typedoc').DeclarationReflection | undefined} parent
@@ -113,11 +131,15 @@ export class DeclarationReflectionParser {
    */
   toParametersListItem(child, parent, blockTags) {
     blockTags = blockTags || child.comment?.blockTags || [];
+    // 过滤掉 @returns 和 @param
+    const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
+
     return {
       id: child.id,
       name: parent ? parent.name + '.' + child.name : child.name,
       type: this.getParamType(child.type, child.type?.name),
-      summaryList: this.getSummaryList(child.comment?.summary || []),
+      blockTagsList,
+      summaryList: this.toTemplateSummaryList(child.comment?.summary || []),
       descriptionList: this.getBlockTags(blockTags, '@description'),
       defaultValue: this.getOneBlockTags(blockTags, '@default'),
       since: this.getOneBlockTags(blockTags, '@since'),
@@ -152,39 +174,6 @@ export class DeclarationReflectionParser {
     // @returns 注释返回类型
     return this.getOneBlockTags(blockTags, '@returns')?.text;
   }
-  /**
-   * 将一个成员转换为模板需要的对象
-   * @param {Object} params
-   * @param {import('typedoc').DeclarationReflection} params.member
-   * @param {import('typedoc').ParameterReflection[]} params.parameters
-   * @param {string} params.type
-   * @param {import('typedoc').DeclarationReflection} params.classItem
-   * @returns {Object}
-   */
-  toTemplateResult({ member, parameters, type = 'class', classItem }) {
-    const { name, comment = {} } = member;
-    const blockTags = comment.blockTags || [];
-
-    const result = {
-      id: member.id,
-      name: name,
-      summaryList: this.getSummaryList(comment?.summary || []),
-      descriptionList: this.getBlockTags(blockTags, '@description'),
-      exampleList: this.getBlockTags(blockTags, '@example'),
-      parameters:
-        type === 'method' && parameters
-          ? this.toParametersList(parameters, member, classItem)
-          : undefined,
-      returnValue:
-        type === 'method' && parameters
-          ? this.getReturnValue(member)
-          : undefined,
-      type,
-      source: this.getRealSource(member)
-    };
-
-    return this.adjustResult(result);
-  }
 
   /**
    * 检查结果
@@ -198,6 +187,80 @@ export class DeclarationReflectionParser {
       showExample: result.exampleList.length > 0,
       showParameters: result.parameters && result.parameters.length > 0
     };
+  }
+
+  /**
+   * 过滤一个blockTags中的一个tag
+   * @param {import('typedoc').CommentDisplayPart[]} blockTags
+   * @param {string} tag
+   * @returns {import('typedoc').CommentDisplayPart[]}
+   */
+  filterBlockTags(blockTags, tag) {
+    return blockTags.filter((item) => item.tag == tag);
+  }
+
+  /**
+   * 过滤一个blockTags中的一个tag
+   * @param {import('typedoc').CommentDisplayPart[]} blockTags
+   * @param {string[]|string} tags
+   * @returns {import('typedoc').CommentDisplayPart[]}
+   */
+  filterBlockTagsNot(blockTags, tags) {
+    if (Array.isArray(tags)) {
+      return blockTags.filter((item) => !tags.includes(item.tag));
+    }
+    return blockTags.filter((item) => item.tag != tags);
+  }
+
+  /**
+   * 是否是方法类型
+   * @param {string} type
+   * @returns {boolean}
+   */
+  isMethodType(type) {
+    return type === 'method' || type === 'constructor';
+  }
+
+  /**
+   * 将一个成员转换为模板需要的对象
+   * @param {Object} params
+   * @param {import('typedoc').DeclarationReflection} params.member
+   * @param {import('typedoc').ParameterReflection[]} params.parameters
+   * @param {string} params.type
+   * @param {import('typedoc').DeclarationReflection} params.classItem
+   * @returns {Object}
+   */
+  toTemplateResult({ member, parameters, type = 'class', classItem }) {
+    const { name } = member;
+    const comments = this.getComments(member);
+    const { summary, blockTags } = comments;
+
+    const exampleList = this.filterBlockTags(blockTags, '@example');
+    const descriptionList = this.filterBlockTags(blockTags, '@description');
+    const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
+
+    const result = {
+      id: member.id,
+      name: name,
+      summaryList: summary,
+      blockTagsList,
+      parameters:
+        this.isMethodType(type) && parameters
+          ? this.toParametersList(parameters, member, classItem)
+          : undefined,
+
+      /** @deprecated */
+      descriptionList,
+      /** @deprecated */
+      exampleList,
+      /** @deprecated */
+      returnValue:
+        this.is && parameters ? this.getReturnValue(member) : undefined,
+      type,
+      source: this.getRealSource(member)
+    };
+
+    return this.adjustResult(result);
   }
 
   /**
@@ -240,5 +303,22 @@ export class DeclarationReflectionParser {
     });
 
     return result;
+  }
+
+  /**
+   * 获取类的注释
+   * 包含 summary, blockTags,
+   * 将格式统一成 { tag, text, kind, isText, isCode, isLink, isInlineTag }
+   * @param {import('typedoc').DeclarationReflection} classItem
+   * @returns {{summary: import('typedoc').CommentDisplayPart[], blockTags: import('typedoc').CommentDisplayPart[]}}
+   */
+  getComments(classItem) {
+    let { summary = [], blockTags = [] } = classItem.comment || {};
+
+    blockTags = blockTags.flatMap((tag) => {
+      return tag.content.map((item) => this.toTemplateSummary(item, tag.tag));
+    });
+
+    return { summary: this.toTemplateSummaryList(summary), blockTags };
   }
 }

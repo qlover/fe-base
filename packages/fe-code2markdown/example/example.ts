@@ -1,5 +1,28 @@
+/**
+ * Represents a parameter interface for options methods
+ *
+ * @purpose Provides a type-safe structure for passing options to methods
+ * @core Defines a contract for option parameters with string and boolean values
+ * @functionality Type definition for method parameters
+ * @usage Used as a parameter type in ExampleClass.optionsMethods
+ * @example
+ * ```typescript
+ * const options: OptionsMethosParams = {
+ *   optArgs1: "some string",
+ *   optArgs2: true
+ * };
+ * ```
+ */
 export type OptionsMethosParams = {
+  /**
+   * @description optArgs1 description
+   * @type {string}
+   */
   optArgs1: string;
+  /**
+   * @description optArgs2 description
+   * @type {boolean}
+   */
   optArgs2: boolean;
 };
 /**
@@ -28,13 +51,34 @@ export type OptionsMethosParams = {
  *
  */
 export class ExampleClass {
+  /**
+   * The name identifier for the class instance
+   *
+   * @purpose Uniquely identifies each class instance
+   * @core Stores the instance name as a string
+   * @functionality Provides a way to identify and reference specific instances
+   * @usage Used throughout the class methods for identification
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({ name: "myInstance" });
+   * console.log(instance.name); // "myInstance"
+   * ```
+   */
   public name: string;
   /**
-   * has debug? summary
-   * @description Example debug description
-   * @default `false`
-   * @since 1.0.0
-   * @type {boolean}
+   * Debug flag to control logging and debugging features
+   *
+   * @purpose Controls debug behavior of the class
+   * @core Toggles debug functionality on/off
+   * @functionality Enables or disables debug features and logging
+   * @usage Set during instantiation to control debug behavior
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({
+   *   name: "test",
+   *   debug: true
+   * });
+   * ```
    */
   public debug: boolean = false;
 
@@ -134,8 +178,21 @@ export class ExampleClass {
   }
 
   /**
-   * optionsMethods description
-   * @param {OptionsMethosParams} options options description
+   * Processes options with typed parameters
+   *
+   * @purpose Demonstrates handling of typed option parameters
+   * @core Processes OptionsMethosParams in a type-safe way
+   * @functionality Handles options with string and boolean parameters
+   * @usage Called when processing configuration options
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({ name: "test" });
+   * instance.optionsMethods({
+   *   optArgs1: "value",
+   *   optArgs2: true
+   * });
+   * ```
+   * @param options options description
    */
   optionsMethods(options: OptionsMethosParams): void {}
 }

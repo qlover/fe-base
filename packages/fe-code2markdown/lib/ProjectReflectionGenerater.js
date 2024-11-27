@@ -1,8 +1,32 @@
 import fsExtra from 'fs-extra';
-import path, { resolve } from 'path';
+import path from 'path';
 import Handlebars from 'handlebars';
 import { fileURLToPath } from 'url';
 import { ProjectReflectionParser } from './ProjectReflectionParser.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '../hbs');
+
+class HBSTemplate {
+  constructor(hbsPath) {
+    this.hbsPath = hbsPath.includes('.hbs') ? hbsPath : hbsPath + '.hbs';
+
+    this.templateContent = fsExtra.readFileSync(
+      path.join(rootDir, this.hbsPath),
+      'utf-8'
+    );
+  }
+
+  getTemplate() {
+    return this.templateContent;
+  }
+
+  compile(context, options) {
+    return Handlebars.compile(this.templateContent)(context, options);
+  }
+}
+
 export class ProjectReflectionGenerater {
   /**
    * @param {object} options
@@ -19,21 +43,6 @@ export class ProjectReflectionGenerater {
     this.outputJSONFilePath = outputJSONFilePath;
     this.generatePath = generatePath;
     this.logger = logger;
-    this.classTemplate = this.getClassTemplate();
-  }
-
-  getClassTemplate() {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const rootDir = path.resolve(__dirname, '../');
-    // 读取模板文件
-    const templateContent = fsExtra.readFileSync(
-      path.join(rootDir, 'hbs/class.hbs'),
-      'utf-8'
-    );
-
-    // 编译模板
-    return Handlebars.compile(templateContent);
   }
 
   async generateJson() {
@@ -50,12 +59,13 @@ export class ProjectReflectionGenerater {
     // save to local file
     await this.parser.writeTo(project);
 
-    // 写入 project
-    const templateResults = this.parser.parseClasses(project);
+    const templateResults = this.parser.parseWithGroups(project);
+
+    const classTemplate = new HBSTemplate('class');
 
     for (const templateResult of templateResults) {
       const { output } = this.getTemplateResultOutputPath(templateResult);
-      const result = this.classTemplate(templateResult);
+      const result = classTemplate.compile(templateResult);
       const unescapedResult = this.unescapeHtmlEntities(result);
 
       try {
@@ -78,71 +88,13 @@ export class ProjectReflectionGenerater {
    * @returns {{docPaths: {docPath: string, docFullPath: string, docDir: string}, output: string}}
    */
   getTemplateResultOutputPath(templateResult) {
-    const resultSource = templateResult.class.source;
+    const resultSource = templateResult.source;
     const docPaths = this.extractDocumentationPath(resultSource.fullFileName);
 
     return {
       docPaths,
-      output: path.join(docPaths.docDir, templateResult.class.name + '.md')
+      output: path.join(docPaths.docDir, templateResult.name + '.md')
     };
-  }
-
-  composeTemplate(templateResult) {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const rootDir = path.resolve(__dirname, '../');
-    // 读取模板文件
-    const templateContent = fsExtra.readFileSync(
-      path.join(rootDir, 'hbs/class.hbs'),
-      'utf-8'
-    );
-
-    // 编译模板
-    const template = Handlebars.compile(templateContent);
-
-    // 生成结果
-    return template(templateResult);
-  }
-
-  /**
-   * 提取物理目录结构, 并将结构扁平化成一个数组， 里面的 path 是全路径
-   * @returns {Array<{ directory: string, filename: string, fullPath: string, docPath: string }>}
-   */
-  extractPhysicalPaths() {
-    const physicalPaths = [];
-
-    const exploreDirectory = (dir) => {
-      const files = fsExtra.readdirSync(dir);
-      files.forEach((file) => {
-        const fullPath = path.join(dir, file);
-        if (fsExtra.statSync(fullPath).isDirectory()) {
-          exploreDirectory(fullPath);
-        } else {
-          const directory = path.dirname(fullPath);
-          const filename = path.basename(fullPath);
-          const relativePath = path.relative(resolve(), fullPath);
-
-          const result = { directory, filename, fullPath, relativePath };
-
-          physicalPaths.push({
-            ...result,
-            ...this.extractDocumentationPath(result.fullPath)
-          });
-        }
-      });
-    };
-
-    this.parser.entryPoints.forEach((entryPoint) => {
-      const stats = fsExtra.statSync(entryPoint);
-      if (stats.isFile()) {
-        const directory = path.dirname(entryPoint);
-        exploreDirectory(directory);
-      } else if (stats.isDirectory()) {
-        exploreDirectory(entryPoint);
-      }
-    });
-
-    return physicalPaths;
   }
 
   /**

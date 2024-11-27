@@ -3,7 +3,18 @@ import { ExecutorPlugin, Task } from './ExecutorPlugin';
 
 /**
  * Configuration interface for executor
- * Currently empty but allows for future extension
+ *
+ * Purpose: Provides configuration options for the Executor class
+ * Core Concept: Extensible configuration container
+ * Main Features: Currently empty but designed for future extension
+ * Primary Use: Allows customization of executor behavior
+ *
+ * @example
+ * ```typescript
+ * const config: ExecutorConfig = {
+ *   // Future configuration options will go here
+ * };
+ * ```
  */
 export interface ExecutorConfig {}
 
@@ -37,15 +48,60 @@ export interface ExecutorConfig {}
 export abstract class Executor {
   /**
    * Array of active plugins
-   * Plugins are executed in the order they were added
+   *
+   * Purpose: Stores and manages executor plugins
+   * Core Concept: Ordered plugin pipeline
+   * Main Features:
+   * - Maintains plugin execution order
+   * - Supports plugin lifecycle management
+   * Primary Use: Plugin orchestration and execution
+   *
+   * @example
+   * ```typescript
+   * protected plugins = [
+   *   new LoggerPlugin(),
+   *   new RetryPlugin()
+   * ];
+   * ```
    */
   protected plugins: ExecutorPlugin[] = [];
 
+  /**
+   * Creates a new Executor instance
+   *
+   * Purpose: Initialize executor with optional configuration
+   * Core Concept: Configurable executor setup
+   * Main Features: Configuration injection
+   * Primary Use: Executor instantiation
+   *
+   * @param config - Optional configuration object
+   *
+   * @example
+   * ```typescript
+   * const executor = new Executor({
+   *   // config options
+   * });
+   * ```
+   */
   constructor(protected config: ExecutorConfig = {}) {}
 
   /**
    * Add a plugin to the executor
+   *
+   * Purpose: Extends executor functionality through plugins
+   * Core Concept: Plugin registration and deduplication
+   * Main Features:
+   * - Prevents duplicate plugins if onlyOne is true
+   * - Maintains plugin execution order
+   * Primary Use: Adding new capabilities to executor
+   *
    * @param plugin - Plugin instance to add
+   *
+   * @example
+   * ```typescript
+   * executor.use(new LoggerPlugin());
+   * executor.use(new RetryPlugin({ maxAttempts: 3 }));
+   * ```
    */
   use(plugin: ExecutorPlugin): void {
     if (
@@ -63,10 +119,22 @@ export abstract class Executor {
 
   /**
    * Execute a plugin hook
-   * Must be implemented by concrete executor classes
+   *
+   * Purpose: Provides plugin hook execution mechanism
+   * Core Concept: Plugin lifecycle management
+   * Main Features:
+   * - Dynamic hook execution
+   * - Support for async and sync hooks
+   * Primary Use: Running plugin lifecycle methods
+   *
    * @param plugins - Plugins to execute
    * @param name - Hook name to execute
    * @param args - Arguments for the hook
+   *
+   * @example
+   * ```typescript
+   * await executor.runHook(plugins, 'beforeExec', data);
+   * ```
    */
   abstract runHook(
     plugins: ExecutorPlugin[],
@@ -76,16 +144,50 @@ export abstract class Executor {
 
   /**
    * Execute a task with plugin pipeline
+   *
+   * Purpose: Core task execution with plugin support
+   * Core Concept: Task execution pipeline
+   * Main Features:
+   * - Plugin hook integration
+   * - Error handling
+   * Primary Use: Running tasks through the executor pipeline
+   *
    * @param task - Task to execute
+   * @param data - Optional input data for task
    * @throws {ExecutorError} If task execution fails
+   *
+   * @example
+   * ```typescript
+   * const result = await executor.exec(async (data) => {
+   *   return await processData(data);
+   * });
+   * ```
    */
   abstract exec<T>(task: Task<T>): Promise<T> | T;
   abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
 
   /**
    * Execute a task without throwing errors
-   * All errors are wrapped in ExecutorError
+   *
+   * Purpose: Safe task execution with error wrapping
+   * Core Concept: Error-safe execution pipeline
+   * Main Features:
+   * - Error wrapping in ExecutorError
+   * - Non-throwing execution
+   * Primary Use: When error handling is preferred over exceptions
+   *
    * @param task - Task to execute
+   * @param data - Optional input data for task
+   *
+   * @example
+   * ```typescript
+   * const result = await executor.execNoError(async (data) => {
+   *   return await riskyOperation(data);
+   * });
+   * if (result instanceof ExecutorError) {
+   *   console.error('Task failed:', result);
+   * }
+   * ```
    */
   abstract execNoError<T>(
     task: Task<T>

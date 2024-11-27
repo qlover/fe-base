@@ -3,12 +3,40 @@ import { ExecutorError } from './ExecutorError';
 import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
 
 /**
+ * Asynchronous implementation of the Executor pattern
+ *
+ * Purpose: Provides asynchronous task execution with plugin support
+ * Core Concept: Async execution pipeline with plugin hooks
+ * Main Features:
+ * - Asynchronous plugin hook execution
+ * - Promise-based task handling
+ * - Error handling with plugin support
+ * Primary Use: Handling async operations with extensible middleware
+ *
+ * @example
+ * ```typescript
+ * const executor = new AsyncExecutor();
+ * executor.use(new LogPlugin());
+ *
+ * const result = await executor.exec(async (data) => {
+ *   const response = await fetch('https://api.example.com/data');
+ *   return response.json();
+ * });
+ * ```
+ *
  * @category Executor
  */
 export class AsyncExecutor extends Executor {
   /**
    * Execute plugin hook functions asynchronously
-   * Manages the plugin execution chain and handles results
+   *
+   * Purpose: Orchestrates asynchronous plugin hook execution
+   * Core Concept: Sequential async plugin pipeline
+   * Main Features:
+   * - Plugin enablement checking
+   * - Result chaining
+   * - Error hook special handling
+   * Primary Use: Internal plugin lifecycle management
    *
    * Plugin execution flow:
    * 1. Check if plugin is enabled for the hook
@@ -18,14 +46,13 @@ export class AsyncExecutor extends Executor {
    * @param plugins - Array of plugins to execute
    * @param name - Name of the hook function to execute
    * @param args - Arguments to pass to the hook function
-   * @returns Result of the hook function execution
+   * @returns Promise resolving to the hook execution result
    *
    * @example
    * ```typescript
-   * // Internal usage example
    * const result = await this.runHook(
    *   this.plugins,
-   *   'onBefore',
+   *   'beforeExec',
    *   { userId: 123 }
    * );
    * ```
@@ -65,29 +92,29 @@ export class AsyncExecutor extends Executor {
 
   /**
    * Execute task without throwing errors
-   * Wraps all errors in ExecutorError for safe error handling
    *
-   * Use this method when you want to handle errors in the calling code
-   * rather than using try-catch blocks
+   * Purpose: Safe execution of async tasks
+   * Core Concept: Error wrapping and handling
+   * Main Features:
+   * - Catches all execution errors
+   * - Wraps errors in ExecutorError
+   * - Returns either result or error object
+   * Primary Use: When you want to handle errors without try-catch
    *
    * @template T - Type of task return value
    * @param dataOrTask - Task data or task function
    * @param task - Task function (optional)
-   * @returns Promise that resolves to either task result or ExecutorError
+   * @returns Promise resolving to either result or ExecutorError
    *
    * @example
    * ```typescript
    * const result = await executor.execNoError(async () => {
-   *   if (Math.random() > 0.5) {
-   *     throw new Error('Random failure');
-   *   }
-   *   return 'success';
+   *   const response = await riskyOperation();
+   *   return response.data;
    * });
    *
    * if (result instanceof ExecutorError) {
-   *   console.log('Task failed:', result.message);
-   * } else {
-   *   console.log('Task succeeded:', result);
+   *   console.error('Operation failed:', result);
    * }
    * ```
    */
@@ -104,7 +131,14 @@ export class AsyncExecutor extends Executor {
 
   /**
    * Execute asynchronous task with full plugin pipeline
-   * Core method for task execution with plugin support
+   *
+   * Purpose: Primary method for executing async tasks
+   * Core Concept: Full plugin pipeline execution
+   * Main Features:
+   * - Plugin hook integration
+   * - Task validation
+   * - Custom execution support
+   * Primary Use: Running async tasks with plugin support
    *
    * Execution flow:
    * 1. Validate and prepare task
@@ -116,22 +150,19 @@ export class AsyncExecutor extends Executor {
    * @param dataOrTask - Task data or task function
    * @param task - Task function (optional)
    * @throws {Error} When task is not an async function
-   * @returns Promise that resolves to task execution result
+   * @returns Promise resolving to task result
    *
    * @example
    * ```typescript
-   * // Example with data and task separation
+   * // With separate data and task
    * const data = { userId: 123 };
-   * const task = async (input) => {
-   *   const user = await db.users.findById(input.userId);
-   *   return user.profile;
-   * };
+   * const result = await executor.exec(data, async (input) => {
+   *   return await fetchUserData(input.userId);
+   * });
    *
-   * const profile = await executor.exec(data, task);
-   *
-   * // Example with combined task
+   * // With combined task
    * const result = await executor.exec(async () => {
-   *   return await someAsyncOperation();
+   *   return await fetchData();
    * });
    * ```
    */
@@ -164,8 +195,15 @@ export class AsyncExecutor extends Executor {
   }
 
   /**
-   * Core method to run asynchronous task with plugin hooks
-   * Implements the complete execution pipeline with all plugin hooks
+   * Core task execution method with plugin hooks
+   *
+   * Purpose: Implements the complete execution pipeline
+   * Core Concept: Sequential hook execution with error handling
+   * Main Features:
+   * - Before/After hooks
+   * - Error handling hooks
+   * - Result transformation
+   * Primary Use: Internal pipeline orchestration
    *
    * Pipeline stages:
    * 1. onBefore hooks - Pre-process input data
@@ -175,28 +213,26 @@ export class AsyncExecutor extends Executor {
    *
    * @template T - Type of task return value
    * @template D - Type of task data
-   * @param data - Data to pass to the task
-   * @param actualTask - Actual task function to execute
+   * @param data - Input data for the task
+   * @param actualTask - Task function to execute
    * @throws {ExecutorError} When task execution fails
-   * @returns Promise that resolves to task execution result
+   * @returns Promise resolving to task result
    *
    * @example
    * ```typescript
-   * // Internal usage example
    * private async run(data, task) {
    *   try {
    *     const preparedData = await this.runHook(this.plugins, 'onBefore', data);
    *     const result = await task(preparedData);
    *     return await this.runHook(this.plugins, 'onSuccess', result);
    *   } catch (error) {
-   *     // Error handling with plugin support
    *     const handledError = await this.runHook(
    *       this.plugins,
    *       'onError',
    *       error,
    *       data
    *     );
-   *     // ... error handling logic ...
+   *     throw new ExecutorError('EXECUTION_FAILED', handledError);
    *   }
    * }
    * ```

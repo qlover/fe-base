@@ -12,6 +12,11 @@ export class ProjectReflectionParser {
     this.logger = logger;
   }
 
+  /**
+   * 加载项目
+   * @param {string} path
+   * @returns {import('typedoc').ProjectReflection}
+   */
   async load(path) {
     path = path || this.outputPath;
     if (!fsExtra.existsSync(path)) {
@@ -27,6 +32,10 @@ export class ProjectReflectionParser {
     return this.project;
   }
 
+  /**
+   * 写入项目
+   * @param {import('typedoc').ProjectReflection} project
+   */
   async writeTo(project) {
     const app = await this.getApp();
     // 删除文件
@@ -42,6 +51,10 @@ export class ProjectReflectionParser {
     this.logger.info('Generate JSON file success', this.outputPath);
   }
 
+  /**
+   * 获取应用
+   * @returns {import('typedoc').Application}
+   */
   async getApp() {
     if (this.app) {
       return this.app;
@@ -61,57 +74,83 @@ export class ProjectReflectionParser {
   }
 
   /**
-   * 解析类
+   * 获取类
    * @param {import('typedoc').ProjectReflection} project
-   * @returns {{class: Object, members: Object[]}[]}
+   * @returns {import('typedoc').DeclarationReflection[]}
    */
-  parseClasses(project) {
-    project = project || this.project;
-    if (!project) {
-      return;
-    }
-
-    const classList = project.groups
+  getClassess(project) {
+    return project.groups
       .filter((group) => group.title === 'Classes')
       .map((group) => group.children)
       .flat();
-
-    const result = classList.map((classItem) => {
-      return this.parseClass(classItem, project);
-    });
-
-    return result;
   }
 
   /**
-   * 解析一个类, 返回一个模板需要的对象
-   * @param {import('typedoc').DeclarationReflection} classItem
-   * @param {import('typedoc').ProjectReflection} project
-   * @returns {{class: Object, members: Object[]}}
+   * 解析二级子项
+   * @param {import('typedoc').DeclarationReflection} rootChild
+   * @param {import('typedoc').ReflectionGroup} group
+   * @param {DeclarationReflectionParser} drp
+   * @returns {Object[]}
    */
-  parseClass(classItem, project) {
-    const result = {};
-    // 解析出 class 数据
+  parseLevel2Children(rootChild, group, drp) {
+    const level2Children = [];
+    group.children.forEach((child) => {
+      const templateResults = drp.classMembersToTemplateResults(
+        child,
+        rootChild
+      );
+      level2Children.push(...templateResults);
+    });
+    return level2Children;
+  }
+
+  /**
+   * 解析类模板数据
+   * @param {import('typedoc').ProjectReflection} project
+   * @returns {Object[]}
+   */
+  parseWithGroups(project) {
     const drp = new DeclarationReflectionParser(project);
 
-    try {
-      result.class = drp.toTemplateResult({
-        member: classItem,
-        type: 'class'
-      });
-    } catch (e) {
-      this.logger.info('Get classItem Class error', classItem.name);
-      this.logger.error(e);
-    }
+    const resultFinal = [];
 
-    try {
-      // 解析出 class 的成员数据
-      result.members = drp.classMembersToTemplateResults(classItem);
-    } catch (e) {
-      this.logger.info('Get classItem Members error', classItem.name);
-      this.logger.error(e);
-    }
+    project.groups.forEach((group) => {
+      // 第一层
+      for (const rootChild of group.children) {
+        const result = drp.toTemplateResult({
+          member: rootChild,
+          type: group.title.toLowerCase()
+        });
 
-    return result;
+        // 如果 rootChild 是 `type`
+        if (rootChild.type && rootChild.type.type === 'reflection') {
+          const level2Children = this.parseLevel2Children(
+            rootChild.type.declaration,
+            group,
+            drp
+          );
+          result.members = level2Children;
+        }
+
+        // 如果存在 children
+        else if (
+          Array.isArray(rootChild.children) &&
+          rootChild.children.length
+        ) {
+          // 第二层
+          const level2Children = this.parseLevel2Children(
+            rootChild,
+            group,
+            drp
+          );
+          result.members = level2Children;
+        }
+
+        result.hasMembers = result.members && result.members.length > 0;
+        resultFinal.push(result);
+      }
+    });
+
+    return resultFinal;
   }
 }

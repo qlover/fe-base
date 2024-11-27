@@ -17,6 +17,10 @@
     "./lib/*": "./lib/*",
     "./package.json": "./package.json"
   },
+  "scripts": {
+    "build:docs": "node ./bin/code2md.js -p example/example.ts",
+    "build:docs:json": "node ./bin/code2md.js -p example/example.ts --onlyJson"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",

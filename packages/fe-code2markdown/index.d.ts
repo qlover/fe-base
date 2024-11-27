@@ -4,85 +4,182 @@ import {
   Type,
   ParameterReflection,
   DeclarationReflection,
-  ProjectReflection
+  ProjectReflection,
+  Application,
+  ReflectionGroup
 } from 'typedoc';
-import { ProjectReflection, DeclarationReflection } from 'typedoc';
 import { Logger } from '@qlover/fe-utils';
 
 declare class DeclarationReflectionParser {
   /**
-   * @param {ProjectReflection} project
+   * Creates a new DeclarationReflectionParser instance
+   *
+   * @param {ProjectReflection} project - The TypeDoc project reflection to parse
    */
   constructor(project: ProjectReflection);
-  /**
-   * @type {ProjectReflection}
-   */
   project: ProjectReflection;
+
   /**
-   * 获取一个blockTags中的一个tag的内容
-   * @param {CommentTag[]} blockTags
-   * @param {string} tag
-   * @returns {string|null}
+   * Gets the content of a specific tag from block tags
+   *
+   * @param {CommentTag[]} blockTags - Array of comment block tags
+   * @param {string} tag - The tag name to find
+   * @returns {string|null} The tag content or null if not found
    */
   getOneBlockTags(blockTags: CommentTag[], tag: string): string | null;
+
   /**
-   * 获取一个blockTags中的一个tag的内容
-   * @param {CommentTag[]} blockTags
-   * @param {string} tag
-   * @returns {CommentDisplayPart[]}
+   * Gets all contents of a specific tag from block tags
+   *
+   * @param {CommentTag[]} blockTags - Array of comment block tags
+   * @param {string} tag - The tag name to find
+   * @returns {CommentDisplayPart[]} Array of comment display parts
    */
   getBlockTags(blockTags: CommentTag[], tag: string): CommentDisplayPart[];
+
   /**
-   * 处理参数类型, 可以是一个范型
-   * @param {Type} type
-   * @param {string} name
-   * @returns {string}
+   * Processes parameter type, handling generics
+   *
+   * @param {Type} type - The parameter type
+   * @param {string} name - The parameter name
+   * @returns {string} Formatted type string
    */
   getParamType(type: Type, name: string): string;
+
   /**
-   * 获取摘要列表
-   * @param {CommentDisplayPart[]} summary
-   * @returns {CommentDisplayPart[]}
+   * Converts summary parts to template-friendly format
+   *
+   * @param {CommentDisplayPart[]} summary - Array of comment display parts
+   * @returns {CommentDisplayPart[]} Processed summary list
    */
-  getSummaryList(summary: CommentDisplayPart[]): CommentDisplayPart[];
+  toTemplateSummaryList(summary: CommentDisplayPart[]): CommentDisplayPart[];
+
   /**
-   * 将一个参数列表转换为模板需要的对象
-   * @param {ParameterReflection[]} parameters
-   * @param {DeclarationReflection} member
-   * @param {DeclarationReflection} classItem
-   * @returns {Object[]}
+   * Converts a summary part to template-friendly format
+   *
+   * @param {CommentDisplayPart} summary - The comment display part
+   * @param {string} [tag] - Optional tag name
+   * @returns {CommentDisplayPart & Object} Enhanced comment display part
+   */
+  toTemplateSummary(
+    summary: CommentDisplayPart,
+    tag?: string
+  ): CommentDisplayPart & {
+    isText: boolean;
+    isCode: boolean;
+    isLink: boolean;
+    isInlineTag: boolean;
+    tag?: string;
+  };
+
+  /**
+   * Converts parameter list to template-friendly format
+   *
+   * @param {ParameterReflection[]} parameters - Array of parameters
+   * @param {DeclarationReflection} member - The member declaration
+   * @param {DeclarationReflection} classItem - The class declaration
+   * @returns {Object[]} Processed parameter list
    */
   toParametersList(
     parameters: ParameterReflection[],
     member: DeclarationReflection,
     classItem: DeclarationReflection
   ): Object[];
+
   /**
-   * 将一个参数转换为模板需要的对象
-   * @param {ParameterReflection} child
-   * @param {DeclarationReflection | undefined} parent
-   * @param {CommentTag[] | undefined} blockTags
-   * @returns {Object}
+   * Gets block tags excluding @param and @returns tags
+   *
+   * @param {CommentDisplayPart[]} blockTags - Array of block tags
+   * @returns {CommentDisplayPart[]} Filtered block tags
+   */
+  getBlockTagsNoParamAndReturn(
+    blockTags: CommentDisplayPart[]
+  ): CommentDisplayPart[];
+
+  /**
+   * Converts a parameter to template-friendly format
+   *
+   * @param {ParameterReflection} child - The parameter reflection
+   * @param {DeclarationReflection} [parent] - Optional parent declaration
+   * @param {CommentTag[]} [blockTags] - Optional block tags
+   * @returns {Object} Processed parameter object
    */
   toParametersListItem(
     child: ParameterReflection,
     parent: DeclarationReflection | undefined,
     blockTags: CommentTag[] | undefined
   ): Object;
+
   /**
+   * Gets the real source of a member
    *
-   * @param {DeclarationReflection} member
-   * @returns
+   * @param {DeclarationReflection} member - The member declaration
+   * @returns {any} The source information
    */
   getRealSource(member: DeclarationReflection): any;
+
   /**
-   * 将一个成员转换为模板需要的对象
-   * @param {Object} params
-   * @param {DeclarationReflection} params.member
-   * @param {ParameterReflection[]} params.parameters
-   * @param {string} params.type
-   * @param {DeclarationReflection} params.classItem
-   * @returns {Object}
+   * Gets the return value type
+   *
+   * @param {DeclarationReflection} member - The member declaration
+   * @returns {string|undefined} The return type
+   */
+  getReturnValue(member: DeclarationReflection): string | undefined;
+
+  /**
+   * Adjusts the template result with visibility flags
+   *
+   * @param {Object} result - The template result
+   * @returns {Object} Adjusted result with visibility flags
+   */
+  adjustResult(result: Object): {
+    showSummary: boolean;
+    showDescription: boolean;
+    showExample: boolean;
+    showParameters: boolean;
+  };
+
+  /**
+   * Filters block tags by tag name
+   *
+   * @param {CommentDisplayPart[]} blockTags - Array of block tags
+   * @param {string} tag - Tag to filter by
+   * @returns {CommentDisplayPart[]} Filtered tags
+   */
+  filterBlockTags(
+    blockTags: CommentDisplayPart[],
+    tag: string
+  ): CommentDisplayPart[];
+
+  /**
+   * Filters out specified tags from block tags
+   *
+   * @param {CommentDisplayPart[]} blockTags - Array of block tags
+   * @param {string[]|string} tags - Tags to exclude
+   * @returns {CommentDisplayPart[]} Filtered tags
+   */
+  filterBlockTagsNot(
+    blockTags: CommentDisplayPart[],
+    tags: string[] | string
+  ): CommentDisplayPart[];
+
+  /**
+   * Checks if type is a method
+   *
+   * @param {string} type - The type to check
+   * @returns {boolean} True if type is method or constructor
+   */
+  isMethodType(type: string): boolean;
+
+  /**
+   * Converts a member to template-friendly format
+   *
+   * @param {Object} params - Parameters object
+   * @param {DeclarationReflection} params.member - The member declaration
+   * @param {ParameterReflection[]} [params.parameters] - Optional parameters
+   * @param {string} [params.type] - Optional member type
+   * @param {DeclarationReflection} [params.classItem] - Optional class declaration
+   * @returns {Object} Template-friendly object
    */
   toTemplateResult({
     member,
@@ -91,39 +188,44 @@ declare class DeclarationReflectionParser {
     classItem
   }: {
     member: DeclarationReflection;
-    parameters: ParameterReflection[];
-    type: string;
-    classItem: DeclarationReflection;
+    parameters?: ParameterReflection[];
+    type?: string;
+    classItem?: DeclarationReflection;
   }): Object;
+
   /**
-   * 检查结果
-   * @param {Object} result
-   */
-  adjustResult(result: Object): {
-    showSummary: boolean;
-    showDescription: boolean;
-    showExample: boolean;
-    showParameters: boolean;
-  };
-  /**
-   * 将一个类的成员转换为模板需要的对象
-   * @param {DeclarationReflection} reflection
-   * @param {DeclarationReflection} classItem
-   * @returns {Object[]}
+   * Converts class members to template-friendly format
+   *
+   * @param {DeclarationReflection} reflection - The class reflection
+   * @param {DeclarationReflection} classItem - The class declaration
+   * @returns {Object[]} Array of processed members
    */
   classMembersToTemplateResults(
     reflection: DeclarationReflection,
     classItem: DeclarationReflection
   ): Object[];
+
+  /**
+   * Gets comments from a class item
+   *
+   * @param {DeclarationReflection} classItem - The class declaration
+   * @returns {Object} Object containing summary and block tags
+   */
+  getComments(classItem: DeclarationReflection): {
+    summary: CommentDisplayPart[];
+    blockTags: CommentDisplayPart[];
+  };
 }
 
 declare class ProjectReflectionGenerater {
   /**
-   * @param {object} options
-   * @param {string} options.generatePath
-   * @param {Logger} options.logger
-   * @param {string[]} options.entryPoints
-   * @param {string} options.outputJSONFilePath
+   * Creates a new ProjectReflectionGenerater instance
+   *
+   * @param {Object} options - Configuration options
+   * @param {Logger} options.logger - Logger instance
+   * @param {string[]} options.entryPoints - Entry point file paths
+   * @param {string} options.outputJSONFilePath - JSON output file path
+   * @param {string} options.generatePath - Documentation generation path
    */
   constructor({
     logger,
@@ -142,14 +244,30 @@ declare class ProjectReflectionGenerater {
   generatePath: string;
   logger: Logger;
   classTemplate: any;
-  getClassTemplate(): any;
-  generateJson(): Promise<void>;
-  generate(): Promise<void>;
-  unescapeHtmlEntities(text: string): string;
+
   /**
-   * 获取模板结果的输出路径
-   * @param {object} templateResult
-   * @returns {{docPaths: {docPath: string, docFullPath: string, docDir: string}, output: string}}
+   * Generates JSON documentation
+   */
+  generateJson(): Promise<void>;
+
+  /**
+   * Generates markdown documentation
+   */
+  generate(): Promise<void>;
+
+  /**
+   * Unescapes HTML entities in text
+   *
+   * @param {string} text - Text to unescape
+   * @returns {string} Unescaped text
+   */
+  unescapeHtmlEntities(text: string): string;
+
+  /**
+   * Gets output path for template result
+   *
+   * @param {object} templateResult - Template processing result
+   * @returns {Object} Output path information
    */
   getTemplateResultOutputPath(templateResult: object): {
     docPaths: {
@@ -159,28 +277,21 @@ declare class ProjectReflectionGenerater {
     };
     output: string;
   };
-  composeTemplate(templateResult: any): any;
+
   /**
-   * 提取物理目录结构, 并将结构扁平化成一个数组， 里面的 path 是全路径
-   * @returns {Array<{ directory: string, filename: string, fullPath: string, docPath: string }>}
-   */
-  extractPhysicalPaths(): Array<{
-    directory: string;
-    filename: string;
-    fullPath: string;
-    docPath: string;
-  }>;
-  /**
-   * 获取两个路径的公共部分
-   * @param {string} fullPath 完整路径
-   * @param {string} generatePath 目标路径
-   * @returns {string} 公共路径
+   * Gets common path between two paths
+   *
+   * @param {string} fullPath - Full file path
+   * @param {string} generatePath - Generation path
+   * @returns {string} Common path
    */
   getCommonPath(fullPath: string, generatePath: string): string;
+
   /**
-   * 根据反射路径提取出对应的文档路径
-   * @param {string} fullPath 反射路径
-   * @returns {{docPath: string, docFullPath: string, docDir: string}}
+   * Extracts documentation path from reflection path
+   *
+   * @param {string} fullPath - Full reflection path
+   * @returns {Object} Documentation path information
    */
   extractDocumentationPath(fullPath: string): {
     docPath: string;
@@ -190,6 +301,14 @@ declare class ProjectReflectionGenerater {
 }
 
 declare class ProjectReflectionParser {
+  /**
+   * Creates a new ProjectReflectionParser instance
+   *
+   * @param {Object} options - Configuration options
+   * @param {string[]} options.entryPoints - Entry point file paths
+   * @param {string} options.outputPath - Output file path
+   * @param {Logger} options.logger - Logger instance
+   */
   constructor({
     entryPoints,
     outputPath,
@@ -202,31 +321,58 @@ declare class ProjectReflectionParser {
   entryPoints: string[];
   outputPath: string;
   logger: Logger;
-  load(path: string): Promise<ProjectReflection | undefined>;
-  project: ProjectReflection | undefined;
+  project?: ProjectReflection;
+  app?: Application;
+
+  /**
+   * Loads project from file
+   *
+   * @param {string} [path] - Optional path to load from
+   * @returns {Promise<ProjectReflection|undefined>} Loaded project
+   */
+  load(path?: string): Promise<ProjectReflection | undefined>;
+
+  /**
+   * Writes project to file
+   *
+   * @param {ProjectReflection} project - Project to write
+   */
   writeTo(project: ProjectReflection): Promise<void>;
-  getApp(): Promise<any>;
-  app: any;
+
   /**
-   * 解析类
-   * @param {ProjectReflection} project
-   * @returns {{class: Object, members: Object[]}[]}
+   * Gets TypeDoc application instance
+   *
+   * @returns {Promise<Application>} TypeDoc application
    */
-  parseClasses(project: ProjectReflection): {
-    class: Object;
-    members: Object[];
-  }[];
+  getApp(): Promise<Application>;
+
   /**
-   * 解析一个类, 返回一个模板需要的对象
-   * @param {DeclarationReflection} classItem
-   * @param {ProjectReflection} project
-   * @returns {{class: Object, members: Object[]}}
+   * Gets classes from project
+   *
+   * @param {ProjectReflection} project - Project reflection
+   * @returns {DeclarationReflection[]} Array of class declarations
    */
-  parseClass(
-    classItem: DeclarationReflection,
-    project: ProjectReflection
-  ): {
-    class: Object;
-    members: Object[];
-  };
+  getClassess(project: ProjectReflection): DeclarationReflection[];
+
+  /**
+   * Parses level 2 children
+   *
+   * @param {DeclarationReflection} rootChild - Root child declaration
+   * @param {ReflectionGroup} group - Reflection group
+   * @param {DeclarationReflectionParser} drp - Parser instance
+   * @returns {Object[]} Parsed children
+   */
+  parseLevel2Children(
+    rootChild: DeclarationReflection,
+    group: ReflectionGroup,
+    drp: DeclarationReflectionParser
+  ): Object[];
+
+  /**
+   * Parses project with groups
+   *
+   * @param {ProjectReflection} project - Project reflection
+   * @returns {Object[]} Parsed groups
+   */
+  parseWithGroups(project: ProjectReflection): Object[];
 }

@@ -1,47 +1,35 @@
-## {{{class.name}}} {{{class.id}}}
+## {{{name}}}
 
-{{!-- summary and description --}}
-{{#each class.summaryList}}
+{{!-- class summaryList --}}
+{{#each summaryList}}
 {{{this.text}}}
 {{/each}}
 
-{{#each class.descriptionList}}
-{{{this.text}}}
-{{/each}}
-
-#### Examples
-{{#each class.exampleList}}
+{{!-- class blockTagsList --}}
+{{#each blockTagsList}}
+{{this.tag}}
 {{{this.text}}}
 {{/each}}
 
 {{!-- members --}}
+{{#if hasMembers}}
+## Members
 {{#each members}}
-### {{{this.name}}} {{{this.id}}}
 
-{{!-- summary and description --}}
-{{#if this.showSummary}}
-{{#each this.summaryList}}
+### {{this.name}}
+{{!-- member summaryList --}}
+{{#each summaryList}}
 {{{this.text}}}
 {{/each}}
-{{/if}}
 
-{{#if this.showDescription}}
-{{#each this.descriptionList}}
+{{!-- member blockTagsList --}}
+{{#each this.blockTagsList}}
+**{{this.tag}}**
 {{{this.text}}}
+
 {{/each}}
-{{/if}}
 
-{{#if this.showExample}}
-#### Examples
-{{#each this.exampleList}}
-{{{this.text}}}
-{{/each}}
-{{/if}}
-
-{{#if this.returnValue}}
-Returns: {{{this.returnValue}}}
-{{/if}}
-
+{{!-- member parameters --}}
 {{#if this.showParameters}}
 #### Parameters
 | Name | Type | Default | Since | Description |
@@ -51,7 +39,6 @@ Returns: {{{this.returnValue}}}
 {{/each}}
 {{/if}}
 
-
-
 {{/each}}
+{{/if}}
 
