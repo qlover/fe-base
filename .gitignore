@@ -45,3 +45,6 @@ dist
 .eslintcache
 .npmrc
 .secrets
+
+# local output dir
+*.output/

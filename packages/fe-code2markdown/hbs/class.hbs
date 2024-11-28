@@ -1,0 +1,44 @@
+## {{{name}}}
+
+{{!-- class summaryList --}}
+{{#each summaryList}}
+{{{this.text}}}
+{{/each}}
+
+{{!-- class blockTagsList --}}
+{{#each blockTagsList}}
+{{this.tag}}
+{{{this.text}}}
+{{/each}}
+
+{{!-- members --}}
+{{#if hasMembers}}
+## Members
+{{#each members}}
+
+### {{this.name}}
+{{!-- member summaryList --}}
+{{#each summaryList}}
+{{{this.text}}}
+{{/each}}
+
+{{!-- member blockTagsList --}}
+{{#each this.blockTagsList}}
+**{{this.tag}}**
+{{{this.text}}}
+
+{{/each}}
+
+{{!-- member parameters --}}
+{{#if this.showParameters}}
+#### Parameters
+| Name | Type | Default | Since | Description |
+|------|------|---------|-------|------------|
+{{#each this.parameters}}
+| {{#if this.deprecated}} <del>{{{this.name}}}</del> {{else}} {{{this.name}}} {{/if}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{#each this.summaryList}}{{{this.text}}}{{/each}} {{#each this.descriptionList}}{{{this.text}}}{{/each}} |
+{{/each}}
+{{/if}}
+
+{{/each}}
+{{/if}}
+

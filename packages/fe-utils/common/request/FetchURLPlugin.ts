@@ -2,11 +2,77 @@ import { FetchRequestErrorID, FetchRequestError } from './FetchRequest';
 import { FetchRequestConfig } from './FetchRequestConfig';
 import { ExecutorPlugin } from '../executor';
 
+/**
+ * Plugin for URL manipulation and response handling
+ * Provides URL composition and response status checking
+ *
+ * Features:
+ * - URL normalization
+ * - Base URL handling
+ * - Query parameter management
+ * - Response status validation
+ *
+ * Core Idea: Simplify URL handling and response validation.
+ * Main Function: Manage URL construction and check response status.
+ * Main Purpose: Ensure correct URL formation and response handling.
+ *
+ * @implements {ExecutorPlugin}
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const urlPlugin = new FetchURLPlugin();
+ * const client = new FetchRequest();
+ * client.executor.use(urlPlugin);
+ *
+ * // Request with base URL and params
+ * await client.get({
+ *   baseURL: 'https://api.example.com',
+ *   url: '/users',
+ *   params: { role: 'admin' }
+ * });
+ * ```
+ */
 export class FetchURLPlugin implements ExecutorPlugin {
+  /**
+   * Checks if URL is absolute (starts with http:// or https://)
+   *
+   * Core Idea: Determine if a URL is fully qualified.
+   * Main Function: Identify absolute URLs.
+   * Main Purpose: Ensure correct URL handling in requests.
+   *
+   * @param url - URL to check
+   * @returns Boolean indicating if URL is absolute
+   *
+   * @example
+   * ```typescript
+   * const isAbsolute = urlPlugin.isFullURL('https://example.com');
+   * ```
+   */
   isFullURL(url: string): boolean {
     return url.startsWith('http://') || url.startsWith('https://');
   }
 
+  /**
+   * Appends query parameters to URL
+   * Handles existing query parameters in URL
+   *
+   * Core Idea: Add query parameters to URLs.
+   * Main Function: Construct URLs with appended query parameters.
+   * Main Purpose: Facilitate dynamic URL query construction.
+   *
+   * @param url - Base URL
+   * @param params - Parameters to append
+   * @returns URL with query parameters
+   *
+   * @example
+   * ```typescript
+   * const url = urlPlugin.appendQueryParams(
+   *   'https://api.example.com/users',
+   *   { role: 'admin', status: 'active' }
+   * );
+   * ```
+   */
   appendQueryParams(url: string, params: Record<string, string> = {}): string {
     const opt = '?';
     const link = '&';
@@ -26,10 +92,43 @@ export class FetchURLPlugin implements ExecutorPlugin {
     return [path, queryString].join(opt);
   }
 
+  /**
+   * Combines base URL with path
+   * Ensures proper slash handling
+   *
+   * Core Idea: Concatenate base URL and path.
+   * Main Function: Form complete URLs from base and path.
+   * Main Purpose: Simplify URL construction with base paths.
+   *
+   * @param url - URL path
+   * @param baseURL - Base URL
+   * @returns Combined URL
+   *
+   * @example
+   * ```typescript
+   * const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
+   * ```
+   */
   connectBaseURL(url: string, baseURL: string): string {
     return `${baseURL}/${url}`;
   }
 
+  /**
+   * Builds complete URL from configuration
+   * Handles base URL, path normalization, and query parameters
+   *
+   * Core Idea: Construct full URLs from configuration.
+   * Main Function: Generate complete URLs for requests.
+   * Main Purpose: Ensure accurate URL formation for HTTP requests.
+   *
+   * @param config - Request configuration
+   * @returns Complete URL
+   *
+   * @example
+   * ```typescript
+   * const completeUrl = urlPlugin.buildUrl(config);
+   * ```
+   */
   buildUrl(config: FetchRequestConfig): string {
     let { url, baseURL = '' } = config;
 
@@ -52,13 +151,41 @@ export class FetchURLPlugin implements ExecutorPlugin {
   }
 
   /**
-   * @override
+   * Pre-request hook that builds complete URL
+   *
+   * Core Idea: Prepare request URLs before execution.
+   * Main Function: Construct and set complete URLs in configuration.
+   * Main Purpose: Ensure requests are sent to the correct endpoints.
+   *
+   * @param config - Request configuration
+   *
+   * @example
+   * ```typescript
+   * urlPlugin.onBefore(config);
+   * ```
    */
   onBefore(config: FetchRequestConfig): void {
     // compose url and params
     config.url = this.buildUrl(config);
   }
 
+  /**
+   * Success hook that validates response status
+   * Throws error for non-OK responses
+   *
+   * Core Idea: Ensure response status is acceptable.
+   * Main Function: Validate response status codes.
+   * Main Purpose: Detect and handle unsuccessful HTTP responses.
+   *
+   * @param result - Fetch response
+   * @returns Response if OK
+   * @throws {FetchRequestError} If response is not OK
+   *
+   * @example
+   * ```typescript
+   * const response = urlPlugin.onSuccess(fetchResponse);
+   * ```
+   */
   onSuccess(result: Response): Response {
     // if response is not ok, throw error
     if (!result.ok) {
@@ -75,6 +202,22 @@ export class FetchURLPlugin implements ExecutorPlugin {
     return result;
   }
 
+  /**
+   * Error handling hook
+   * Wraps non-FetchRequestError errors
+   *
+   * Core Idea: Standardize error handling for requests.
+   * Main Function: Convert errors to FetchRequestError format.
+   * Main Purpose: Ensure consistent error handling across requests.
+   *
+   * @param error - Original error
+   * @returns FetchRequestError
+   *
+   * @example
+   * ```typescript
+   * const error = urlPlugin.onError(new Error('Network Error'));
+   * ```
+   */
   onError(error: Error): FetchRequestError {
     return error instanceof FetchRequestError
       ? error
