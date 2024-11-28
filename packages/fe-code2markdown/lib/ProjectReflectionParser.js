@@ -2,6 +2,73 @@ import fsExtra from 'fs-extra';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 import { DeclarationReflectionParser } from './DeclarationReflectionParser.js';
 
+class ParsedGroup {
+  /**
+   *
+   * @param {import('typedoc').ProjectReflection} project
+   * @param {import('@qlover/fe-utils').Logger} logger
+   */
+  constructor(project, logger) {
+    this.project = project;
+    this.logger = logger;
+    this.drp = new DeclarationReflectionParser(project, logger);
+  }
+
+  /**
+   * 按照分类分组
+   *
+   * @param {'groups' | 'categories'} key
+   * @param {import('typedoc').ProjectReflection} project
+   * @returns {{[key: string]: import('typedoc').DeclarationReflection[]}}
+   */
+  groupBy(project, key = 'groups') {
+    const targetGroups = project[key] || [];
+    return targetGroups.reduce((acc, group) => {
+      acc[group.title] = group.children;
+      return acc;
+    }, {});
+  }
+
+  /**
+   * 解析
+   * @returns {Object[]}
+   */
+  parse() {
+    const groups = this.groupBy(this.project, 'groups');
+    const finalResult = [];
+
+    Object.entries(groups).forEach(([type, children]) => {
+      // 第一层大类，基本是 Enumerations, Classes, Interfaces, Type Aliases, Variables ...
+      if (type === 'Classes') {
+        children.forEach((classItem) => {
+          const result = this.drp.toTemplateResult({ member: classItem, type });
+          this.logger.debug(result.type, result.name, result.id);
+
+          const members = [];
+          // 第二层， 基本是 Constructors,Properties, Methods ...
+          const groupsLevel2 = this.groupBy(classItem, 'groups');
+          Object.entries(groupsLevel2).forEach(([v2type, v2children]) => {
+            const typeResults = v2children.flatMap((v2member) => {
+              return this.drp.classMemberToTemplateResult({
+                member: v2member,
+                classItem,
+                type: v2type
+              });
+            });
+
+            members.push(...typeResults);
+          });
+
+          // 增加 hasMembers 属性，用于模板渲染
+          Object.assign(result, { members, hasMembers: members.length > 0 });
+          finalResult.push(result);
+        });
+      }
+    });
+    return finalResult;
+  }
+}
+
 export class ProjectReflectionParser {
   /**
    * @param {{entryPoints: string[], outputPath: string, logger: import('@qlover/fe-utils').Logger}} options
@@ -19,6 +86,12 @@ export class ProjectReflectionParser {
    */
   async load(path) {
     path = path || this.outputPath;
+
+    if (!path) {
+      this.logger.wain('Ouput path is empty!');
+      return;
+    }
+
     if (!fsExtra.existsSync(path)) {
       return;
     }
@@ -36,24 +109,38 @@ export class ProjectReflectionParser {
    * 写入项目
    * @param {import('typedoc').ProjectReflection} project
    */
-  async writeTo(project) {
-    const app = await this.getApp();
-    // 删除文件
-    fsExtra.removeSync(this.outputPath);
-    // 确保文件存在，不存在则创建
-    fsExtra.ensureFileSync(this.outputPath);
+  async writeTo(project, path) {
+    path = path || this.outputPath;
 
-    fsExtra.writeFileSync(
-      this.outputPath,
-      JSON.stringify(app.serializer.projectToObject(project, './'), null, 2),
-      'utf-8'
-    );
-    this.logger.info('Generate JSON file success', this.outputPath);
+    if (!path) {
+      this.logger.wain('Ouput path is empty!');
+      return;
+    }
+
+    const app = await this.getApp();
+
+    this.writeJSON(app.serializer.projectToObject(project, './'), path);
+    this.logger.info('Generate JSON file success', path);
+  }
+
+  writeJSON(value, path) {
+    if (!path) {
+      this.logger.wain('Ouput path is empty!');
+      return;
+    }
+
+    // 删除文件
+    fsExtra.removeSync(path);
+
+    // 确保文件存在，不存在则创建
+    fsExtra.ensureFileSync(path);
+
+    fsExtra.writeFileSync(path, JSON.stringify(value, null, 2), 'utf-8');
   }
 
   /**
    * 获取应用
-   * @returns {import('typedoc').Application}
+   * @returns {Promise<Application>}
    */
   async getApp() {
     if (this.app) {
@@ -74,95 +161,17 @@ export class ProjectReflectionParser {
   }
 
   /**
-   * 获取类
-   * @param {import('typedoc').ProjectReflection} project
-   * @returns {import('typedoc').DeclarationReflection[]}
-   */
-  getClassess(project) {
-    return project.groups
-      .filter((group) => group.title === 'Classes')
-      .map((group) => group.children)
-      .flat();
-  }
-
-  /**
-   * 解析二级子项
-   * @param {import('typedoc').DeclarationReflection} rootChild
-   * @param {import('typedoc').ReflectionGroup} group
-   * @param {DeclarationReflectionParser} drp
-   * @returns {Object[]}
-   */
-  parseLevel2Children(rootChild, group, drp) {
-    const level2Children = [];
-    group.children.forEach((child) => {
-      const templateResults = drp.classMembersToTemplateResults(
-        child,
-        rootChild
-      );
-      level2Children.push(...templateResults);
-    });
-    return level2Children;
-  }
-
-  /**
-   * 解析类模板数据
+   * 解析分类
+   *
+   * 默认按照 `@category`, 应用到 class, type, interface
    * @param {import('typedoc').ProjectReflection} project
    * @returns {Object[]}
    */
   parseWithGroups(project) {
-    const drp = new DeclarationReflectionParser(project);
+    // 分两种 有分类和others
+    // const parsedCategory = new ParsedCategory(project);
+    const parsed = new ParsedGroup(project, this.logger);
 
-    const resultFinal = [];
-
-    project.groups.forEach((group) => {
-      // 第一层
-      for (const rootChild of group.children) {
-        const result = drp.toTemplateResult({
-          member: rootChild,
-          type: group.title.toLowerCase()
-        });
-
-        // 如果 rootChild 是 `type`
-        if (rootChild.type && rootChild.type.type === 'reflection') {
-          this.logger.info(
-            'type:',
-            rootChild.id,
-            rootChild.name,
-            rootChild.type
-          );
-          const level2Children = this.parseLevel2Children(
-            rootChild.type.declaration,
-            group,
-            drp
-          );
-          result.members = level2Children;
-        }
-
-        // 如果存在 children
-        else if (
-          Array.isArray(rootChild.children) &&
-          rootChild.children.length
-        ) {
-          this.logger.info(
-            'children:',
-            rootChild.id,
-            rootChild.name,
-            rootChild.children.map((child) => child.name)
-          );
-          // 第二层
-          const level2Children = this.parseLevel2Children(
-            rootChild,
-            group,
-            drp
-          );
-          result.members = level2Children;
-        }
-
-        result.hasMembers = result.members && result.members.length > 0;
-        resultFinal.push(result);
-      }
-    });
-
-    return resultFinal;
+    return parsed.parse();
   }
 }

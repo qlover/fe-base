@@ -32,8 +32,17 @@ export class ProjectReflectionGenerater {
    * @param {object} options
    * @param {string} options.generatePath
    * @param {import('@qlover/fe-utils').Logger} options.logger
+   * @param {string[]} options.entryPoints
+   * @param {string} options.outputJSONFilePath
+   * @param {string} options.tplPath
    */
-  constructor({ logger, entryPoints, outputJSONFilePath, generatePath }) {
+  constructor({
+    logger,
+    entryPoints,
+    outputJSONFilePath,
+    generatePath,
+    tplPath
+  }) {
     this.parser = new ProjectReflectionParser({
       entryPoints,
       outputPath: outputJSONFilePath,
@@ -42,16 +51,11 @@ export class ProjectReflectionGenerater {
     this.entryPoints = entryPoints;
     this.outputJSONFilePath = outputJSONFilePath;
     this.generatePath = generatePath;
+    this.tplPath = tplPath;
     this.logger = logger;
   }
 
   async generateJson() {
-    const app = await this.parser.getApp();
-    const project = await app.convert();
-    await this.parser.writeTo(project);
-  }
-
-  async generate() {
     // 为了获取完整的绝对路径，用convert的数据
     const app = await this.parser.getApp();
     const project = await app.convert();
@@ -60,6 +64,24 @@ export class ProjectReflectionGenerater {
     await this.parser.writeTo(project);
 
     const templateResults = this.parser.parseWithGroups(project);
+
+    if (this.logger.debug) {
+      this.parser.writeJSON(templateResults, this.tplPath);
+      this.logger.info('Generate JSON file success', this.tplPath);
+    }
+
+    return templateResults;
+  }
+
+  /**
+   * @param {boolean} onlyJson
+   */
+  async generate(onlyJson) {
+    const templateResults = await this.generateJson();
+    if (onlyJson) {
+      this.logger.info('Only generate JSON file');
+      return;
+    }
 
     const classTemplate = new HBSTemplate('class');
 

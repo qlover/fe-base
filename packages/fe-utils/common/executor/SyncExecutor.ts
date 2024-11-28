@@ -45,6 +45,7 @@ import { ExecutorPlugin, SyncTask } from './ExecutorPlugin';
  *   throw new Error('Validation Error');
  * }); // Returns ExecutorError instead of throwing
  * ```
+ * @category SyncExecutor
  */
 export class SyncExecutor extends Executor {
   /**

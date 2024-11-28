@@ -42,7 +42,9 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "build:docs": "node ../fe-code2markdown/bin/code2md.js -p ./common/index.ts -o ./docs.output/common.json && node ../fe-code2markdown/bin/code2md.js -p ./server/index.ts -o ./docs.output/server.json"
+    "build:common:docs": "node ../fe-code2markdown/bin/code2md.js -p ./common/index.ts -g ./docs -o ./docs/.output/common.json -t ./docs/.output/common.tpl.json",
+    "build:server:docs": "node ../fe-code2markdown/bin/code2md.js -p ./server/index.ts -g ./docs -o ./docs/.output/server.json -t ./docs/.output/server.tpl.json",
+    "build:docs": "npm run build:common:docs && npm run build:server:docs"
   },
   "dependencies": {
     "lodash": "^4.17.21"

@@ -1,35 +1,35 @@
 /**
  * Export base executor module
- * @module Executor
+ * @category Executor
  */
 export * from './Executor';
 
 /**
  * Export executor error module
- * @module ExecutorError
+ * @category ExecutorError
  */
 export * from './ExecutorError';
 
 /**
  * Export executor plugin module
- * @module ExecutorPlugin
+ * @category ExecutorPlugin
  */
 export * from './ExecutorPlugin';
 
 /**
  * Export async executor module
- * @module AsyncExecutor
+ * @category AsyncExecutor
  */
 export * from './AsyncExecutor';
 
 /**
  * Export sync executor module
- * @module SyncExecutor
+ * @category SyncExecutor
  */
 export * from './SyncExecutor';
 
 /**
  * Export retry plugin module
- * @module RetryPlugin
+ * @category RetryPlugin
  */
 export * from './RetryPlugin';

@@ -1,16 +1,36 @@
+import { ReflectionKind } from 'typedoc';
+
 export class DeclarationReflectionParser {
   /**
    * @param {import('typedoc').ProjectReflection} project
+   * @param {import('@qlover/fe-utils').Logger} logger
+   * @param {number} level 1 优先ts类型 2 优先注释类型
    */
-  constructor(project) {
+  constructor(project, logger, level = 1) {
     /**
      * @type {import('typedoc').ProjectReflection}
      */
     this.project = project;
+    this.logger = logger;
+    this.level = level;
+  }
+
+  getLevelValue(tsValue, docsValue) {
+    if (this.level === 1) {
+      return tsValue;
+    }
+
+    return docsValue;
+  }
+
+  warpType(type) {
+    return `\`${type.replace(/\|/g, '\\|')}\``;
   }
 
   /**
    * 获取一个blockTags中的一个tag的内容
+   *
+   * FIXME: 未找到返回null
    * @param {import('typedoc').CommentTag[]} blockTags
    * @param {string} tag
    * @returns {string|null}
@@ -39,16 +59,14 @@ export class DeclarationReflectionParser {
 
   /**
    * 处理参数类型, 可以是一个范型
+   *
+   * 用反引号包含起来，否则会引起 模板渲染
    * @param {import('typedoc').Type} type
    * @param {string} name
    * @returns {string}
    */
-  getParamType(type, name) {
-    name = name || type.name || '';
-    const fx = type.typeArguments
-      ? `<${type.typeArguments.map((item) => item.name).join(',')}>`
-      : '';
-    return name + fx;
+  getParamType(type) {
+    return this.warpType(type.toString());
   }
 
   /**
@@ -100,14 +118,14 @@ export class DeclarationReflectionParser {
           result.push(this.toParametersListItem(param, null, blockTags));
         }
       } catch (e) {
-        console.warn(
+        this.logger.warn(
           'toParametersListItem Error:',
           `${this.project?.id} ${this.project?.name}`,
           `${classItem?.id} ${classItem?.name}`,
           `${member?.id} ${member?.name}`,
           `${param?.id} ${param?.name}`
         );
-        console.error(e.message);
+        this.logger.error(e.message);
       }
     });
     return result;
@@ -134,6 +152,15 @@ export class DeclarationReflectionParser {
     // 过滤掉 @returns 和 @param
     const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
 
+    // 参数默认值
+    const defaultValue = this.getLevelValue(
+      child.defaultValue,
+      this.getOneBlockTags(blockTags, '@default')
+    );
+
+    // getOneBlockTags 没有找到会返回 null
+    const deprecated = this.getOneBlockTags(blockTags, '@deprecated') !== null;
+
     return {
       id: child.id,
       name: parent ? parent.name + '.' + child.name : child.name,
@@ -141,9 +168,9 @@ export class DeclarationReflectionParser {
       blockTagsList,
       summaryList: this.toTemplateSummaryList(child.comment?.summary || []),
       descriptionList: this.getBlockTags(blockTags, '@description'),
-      defaultValue: this.getOneBlockTags(blockTags, '@default'),
+      defaultValue: defaultValue,
       since: this.getOneBlockTags(blockTags, '@since'),
-      deprecated: this.getOneBlockTags(blockTags, '@deprecated') !== null
+      deprecated
     };
   }
 
@@ -190,7 +217,7 @@ export class DeclarationReflectionParser {
   }
 
   /**
-   * 检查结果
+   * 检查结果, 添加一些标记, 方便模板直接渲染
    * @param {Object} result
    */
   adjustResult(result) {
@@ -228,11 +255,13 @@ export class DeclarationReflectionParser {
 
   /**
    * 是否是方法类型
-   * @param {string} type
+   * @param {string} kind
    * @returns {boolean}
    */
-  isMethodType(type) {
-    return type === 'method' || type === 'constructor';
+  isMethodType(kind) {
+    return (
+      kind === ReflectionKind.Method || kind === ReflectionKind.Constructor
+    );
   }
 
   /**
@@ -244,7 +273,7 @@ export class DeclarationReflectionParser {
    * @param {import('typedoc').DeclarationReflection} params.classItem
    * @returns {Object}
    */
-  toTemplateResult({ member, parameters, type = 'class', classItem }) {
+  toTemplateResult({ member, parameters, type = 'Classes', classItem }) {
     const { name } = member;
     const comments = this.getComments(member);
     const { summary, blockTags } = comments;
@@ -253,23 +282,22 @@ export class DeclarationReflectionParser {
     const descriptionList = this.filterBlockTags(blockTags, '@description');
     const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
 
+    const reusltParams = parameters
+      ? this.toParametersList(parameters, member, classItem)
+      : undefined;
+
     const result = {
       id: member.id,
       name: name,
       summaryList: summary,
       blockTagsList,
-      parameters:
-        this.isMethodType(type) && parameters
-          ? this.toParametersList(parameters, member, classItem)
-          : undefined,
-
+      parameters: reusltParams,
       /** @deprecated */
       descriptionList,
       /** @deprecated */
       exampleList,
       /** @deprecated */
-      returnValue:
-        this.is && parameters ? this.getReturnValue(member) : undefined,
+      returnValue: parameters ? this.getReturnValue(member) : undefined,
       type,
       source: this.getRealSource(member, classItem)
     };
@@ -279,57 +307,66 @@ export class DeclarationReflectionParser {
 
   /**
    * 将一个类的成员转换为模板需要的对象
-   * @param {import('typedoc').DeclarationReflection} reflection
-   * @param {import('typedoc').DeclarationReflection} classItem
+   * @param {Object} params
+   * @param {import('typedoc').DeclarationReflection} params.member
+   * @param {import('typedoc').DeclarationReflection} params.classItem
+   * @param {string} params.type
    * @returns {Object[]}
    */
-  classMembersToTemplateResults(reflection, classItem) {
-    const { children = [] } = reflection;
-    const result = [];
-    const classSource = classItem?.sources?.[0]?.fileName;
+  classMemberToTemplateResult({ member, classItem, type }) {
+    this.logger.debug(
+      `Crateing [${type}] ${classItem?.name}.${member?.name}`,
+      member.id
+    );
 
-    children.forEach((member) => {
-      const { signatures = [] } = member;
+    // 签名(定义)可能存在下面几种情况:
+    // 1. extends 父类, 没有签名
+    // 2. extends 父类, 有签名, 重写了父类签名
+    // 3. 没有 extends 父类有签名
+    // 4. 没有 extends 父类没有签名
+    const isInherited = !!member.inheritedFrom;
+    const isImplementation = !!member.implementationOf;
 
-      // Verify member belongs to current class
-      const memberSource = member.sources?.[0]?.fileName;
-      if (classSource && memberSource && classSource !== memberSource) {
-        console.warn(
-          `Member ${member.name} source (${memberSource}) differs from class source (${classSource})`
-        );
-        return; // Skip this member
-      }
+    this.logger.debug(
+      'Inherited:',
+      isInherited,
+      'Implementation:',
+      isImplementation
+    );
 
-      console.info('signatures:', member.id, member.name);
-      console.info(signatures.map((item) => item.name));
+    // FIMXE: 如果是构造器，且来自继承，则跳过
+    if (member.kind === ReflectionKind.Constructor && isInherited) {
+      this.logger.warn(`${classItem?.name} constructor is inherited, skip!`);
+      return [];
+    }
 
-      if (signatures.length > 0) {
-        signatures.forEach((memberSignature) => {
-          const templateResult = this.toTemplateResult({
-            member: memberSignature,
-            parameters: memberSignature.parameters,
-            type: 'method',
-            classItem
-          });
-          // 设置方法名
-          templateResult.name = member.name;
+    if (!Array.isArray(member.signatures)) {
+      this.logger.warn(
+        `${classItem?.name}.${member?.name} no signatures, skip!`
+      );
+      return [];
+    }
 
-          result.push(templateResult);
-        });
-      }
-      // 说明没有定义签名
-      else {
-        const templateResult = this.toTemplateResult({
-          member,
-          parameters: undefined,
-          type: 'properties',
-          classItem
-        });
-        result.push(templateResult);
-      }
+    // 有重载的情况, 多个方法被声明, 目前就按多个处理
+    return member.signatures.map((signature, index) => {
+      const templateResult = this.toTemplateResult({
+        member: signature,
+        parameters: signature.parameters,
+        type,
+        classItem
+      });
+
+      this.logger.debug(
+        `Created! [${type}] ${classItem?.name}.${member?.name} signature[${index}]`,
+        `Result: ${templateResult.name}`
+      );
+
+      return Object.assign(templateResult, {
+        name: member.name,
+        isInherited,
+        isImplementation
+      });
     });
-
-    return result;
   }
 
   /**

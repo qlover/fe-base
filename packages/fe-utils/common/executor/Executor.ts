@@ -9,6 +9,7 @@ import { ExecutorPlugin, Task } from './ExecutorPlugin';
  * Main Features: Currently empty but designed for future extension
  * Primary Use: Allows customization of executor behavior
  *
+ * @category Executor
  * @example
  * ```typescript
  * const config: ExecutorConfig = {
@@ -29,7 +30,7 @@ export interface ExecutorConfig {}
  *
  * @abstract
  * @class Executor
- *
+ * @category Executor
  * @example
  * ```typescript
  * // Create an executor instance
@@ -74,7 +75,7 @@ export abstract class Executor {
    * Main Features: Configuration injection
    * Primary Use: Executor instantiation
    *
-   * @param config - Optional configuration object
+   * @param {ExecutorConfig} config - Optional configuration object
    *
    * @example
    * ```typescript
@@ -164,6 +165,28 @@ export abstract class Executor {
    * ```
    */
   abstract exec<T>(task: Task<T>): Promise<T> | T;
+
+  /**
+   * Execute a task with plugin pipeline and input data
+   *
+   * Purpose: Core task execution with plugin support and input data
+   * Core Concept: Task execution pipeline with data
+   * Main Features:
+   * - Plugin hook integration
+   * - Error handling
+   * Primary Use: Running tasks with input data through the executor pipeline
+   *
+   * @param data - Input data for task
+   * @param task - Task to execute
+   * @throws {ExecutorError} If task execution fails
+   *
+   * @example
+   * ```typescript
+   * const result = await executor.exec(data, async (data) => {
+   *   return await processData(data);
+   * });
+   * ```
+   */
   abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
 
   /**
@@ -177,7 +200,6 @@ export abstract class Executor {
    * Primary Use: When error handling is preferred over exceptions
    *
    * @param task - Task to execute
-   * @param data - Optional input data for task
    *
    * @example
    * ```typescript
@@ -192,6 +214,30 @@ export abstract class Executor {
   abstract execNoError<T>(
     task: Task<T>
   ): Promise<T | ExecutorError> | T | ExecutorError;
+
+  /**
+   * Execute a task with input data without throwing errors
+   *
+   * Purpose: Safe task execution with error wrapping and input data
+   * Core Concept: Error-safe execution pipeline with data
+   * Main Features:
+   * - Error wrapping in ExecutorError
+   * - Non-throwing execution
+   * Primary Use: When error handling is preferred over exceptions with input data
+   *
+   * @param data - Input data for task
+   * @param task - Task to execute
+   *
+   * @example
+   * ```typescript
+   * const result = await executor.execNoError(data, async (data) => {
+   *   return await riskyOperation(data);
+   * });
+   * if (result instanceof ExecutorError) {
+   *   console.error('Task failed:', result);
+   * }
+   * ```
+   */
   abstract execNoError<T>(
     data: unknown,
     task: Task<T>

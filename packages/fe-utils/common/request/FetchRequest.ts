@@ -46,8 +46,17 @@ export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
    * Creates a new FetchRequest instance
    * Automatically detects and configures fetch implementation
    *
+   * Core Idea: Simplify HTTP requests with built-in fetch support.
+   * Main Function: Initialize fetch requests with optional configuration.
+   * Main Purpose: Provide a flexible and extensible HTTP request utility.
+   *
    * @param config - Request configuration options
    * @throws {FetchRequestError} When fetch is not available
+   *
+   * @example
+   * ```typescript
+   * const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
+   * ```
    */
   constructor(config: Partial<FetchRequestConfig> = {}) {
     if (!config.fetcher) {
@@ -68,10 +77,19 @@ export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
    * Core request implementation
    * Merges configurations and executes fetch request
    *
+   * Core Idea: Execute HTTP requests with merged configurations.
+   * Main Function: Perform fetch requests using provided configurations.
+   * Main Purpose: Facilitate HTTP communication with error handling.
+   *
    * @override
    * @param config - Request configuration
    * @returns Promise resolving to Response object
    * @throws {FetchRequestError} When fetcher is not available
+   *
+   * @example
+   * ```typescript
+   * const response = await fetchRequest.request({ url: '/data' });
+   * ```
    */
   async request(config: FetchRequestConfig): Promise<Response> {
     const thisConfig = this.getConfig();
@@ -91,10 +109,19 @@ export class FetchRequest extends RequestExecutor<FetchRequestConfig> {
    * Composes RequestInit object from configuration
    * Extracts and formats fetch-specific options
    *
+   * Core Idea: Convert configuration into fetch-compatible format.
+   * Main Function: Prepare RequestInit object for fetch API.
+   * Main Purpose: Ensure correct request setup for fetch execution.
+   *
    * @param config - Full request configuration
    * @returns RequestInit object for fetch API
    *
    * @internal
+   *
+   * @example
+   * ```typescript
+   * const requestInit = fetchRequest.composeRequestInit(config);
+   * ```
    */
   private composeRequestInit(config: FetchRequestConfig): RequestInit {
     // FIXME: @type/node

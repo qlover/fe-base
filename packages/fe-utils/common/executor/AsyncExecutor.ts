@@ -24,7 +24,7 @@ import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
  * });
  * ```
  *
- * @category Executor
+ * @category AsyncExecutor
  */
 export class AsyncExecutor extends Executor {
   /**

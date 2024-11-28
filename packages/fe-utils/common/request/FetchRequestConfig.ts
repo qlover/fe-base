@@ -4,7 +4,20 @@ import { AsyncExecutor, ExecutorConfig } from '../executor';
  * Base request configuration interface
  * Extends RequestInit with additional properties for enhanced functionality
  *
+ * Core Idea: Extend standard RequestInit with additional options.
+ * Main Function: Provide a comprehensive configuration for HTTP requests.
+ * Main Purpose: Allow detailed customization of request behavior.
+ *
  * @extends RequestInit
+ *
+ * @example
+ * ```typescript
+ * const config: RequestConfig = {
+ *   url: '/api/data',
+ *   method: 'GET',
+ *   headers: { 'Content-Type': 'application/json' }
+ * };
+ * ```
  */
 export interface RequestConfig extends RequestInit {
   /**
@@ -71,7 +84,20 @@ export interface RequestConfig extends RequestInit {
  * Extended configuration interface for FetchRequest
  * Adds fetch-specific options and abort control
  *
+ * Core Idea: Enhance request configuration with fetch-specific features.
+ * Main Function: Provide additional options for fetch requests.
+ * Main Purpose: Support advanced request scenarios with fetch API.
+ *
  * @extends RequestConfig
+ *
+ * @example
+ * ```typescript
+ * const fetchConfig: FetchRequestConfig = {
+ *   url: '/api/data',
+ *   fetcher: customFetchFunction,
+ *   timeout: 5000
+ * };
+ * ```
  */
 export interface FetchRequestConfig extends RequestConfig {
   /**

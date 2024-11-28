@@ -21,26 +21,31 @@ program
     './docs.output/code2md.json'
   )
   .option('-g, --generatePath <path>', 'Generate path', './docs.output')
-  .option('--onlyJson', 'Only generate JSON file');
+  .option('-t, --tplPath <path>', 'Template path')
+  .option('--onlyJson', 'Only generate JSON file')
+  .option('-d, --debug', 'Debug mode');
 
 program.parse(process.argv);
 
 const options = program.opts();
 
 const main = async () => {
+  const tplPath = options.tplPath
+    ? resolve(options.tplPath)
+    : resolve(options.generatePath, './code2md.tpl.json');
+
+  // TODO: 检验参数
   const generater = new ProjectReflectionGenerater({
     logger: new Logger({ debug: options.debug }),
     entryPoints: options.entryPoints.map((entry) => resolve(entry)),
-    outputJSONFilePath: resolve(options.outputJSONFilePath),
-    generatePath: resolve(options.generatePath)
+    outputJSONFilePath: options.outputJSONFilePath
+      ? resolve(options.outputJSONFilePath)
+      : '',
+    generatePath: resolve(options.generatePath),
+    tplPath
   });
 
-  if (options.onlyJson) {
-    await generater.generateJson();
-    return;
-  }
-
-  await generater.generate();
+  await generater.generate(options.onlyJson);
 };
 
 main();

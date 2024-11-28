@@ -10,6 +10,7 @@ import { ExecutorError } from './ExecutorError';
  *   return `Result: ${data}`;
  * };
  * ```
+ * @category ExecutorPlugin
  */
 export type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
 
@@ -23,6 +24,7 @@ export type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
  *   return `Result: ${data}`;
  * };
  * ```
+ * @category ExecutorPlugin
  */
 export type SyncTask<T, D = unknown> = (data: D) => T;
 
@@ -30,6 +32,7 @@ export type SyncTask<T, D = unknown> = (data: D) => T;
  * Union type for both promise and sync tasks
  * @template T - Return type of the task
  * @template D - Input data type for the task
+ * @category ExecutorPlugin
  */
 export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
 
@@ -64,6 +67,7 @@ export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
  *   }
  * }
  * ```
+ * @category ExecutorPlugin
  */
 export abstract class ExecutorPlugin<T = unknown, R = T> {
   /**
