@@ -10,56 +10,57 @@ import {
 } from 'typedoc';
 import { Logger } from '@qlover/fe-utils';
 
+/**
+ * Parses declaration reflections to extract and format documentation details.
+ */
 declare class DeclarationReflectionParser {
   /**
-   * Creates a new DeclarationReflectionParser instance
-   *
-   * @param {ProjectReflection} project - The TypeDoc project reflection to parse
+   * Initializes a new instance of the DeclarationReflectionParser class.
+   * @param project The TypeDoc project reflection to parse.
+   * @param logger Logger instance for logging.
+   * @param level Optional level for parsing detail.
    */
-  constructor(project: ProjectReflection);
+  constructor(project: ProjectReflection, logger: Logger, level?: number);
   project: ProjectReflection;
+  logger: Logger;
+  level: number;
 
   /**
-   * Gets the content of a specific tag from block tags
-   *
-   * @param {CommentTag[]} blockTags - Array of comment block tags
-   * @param {string} tag - The tag name to find
-   * @returns {string|null} The tag content or null if not found
+   * Retrieves the content of a specific tag from block tags.
+   * @param blockTags Array of comment block tags.
+   * @param tag The tag name to find.
+   * @returns The tag content or null if not found.
    */
   getOneBlockTags(blockTags: CommentTag[], tag: string): string | null;
 
   /**
-   * Gets all contents of a specific tag from block tags
-   *
-   * @param {CommentTag[]} blockTags - Array of comment block tags
-   * @param {string} tag - The tag name to find
-   * @returns {CommentDisplayPart[]} Array of comment display parts
+   * Retrieves all contents of a specific tag from block tags.
+   * @param blockTags Array of comment block tags.
+   * @param tag The tag name to find.
+   * @returns Array of comment display parts.
    */
   getBlockTags(blockTags: CommentTag[], tag: string): CommentDisplayPart[];
 
   /**
-   * Processes parameter type, handling generics
-   *
-   * @param {Type} type - The parameter type
-   * @param {string} name - The parameter name
-   * @returns {string} Formatted type string
+   * Processes parameter type, handling generics.
+   * @param type The parameter type.
+   * @param name The parameter name.
+   * @returns Formatted type string.
    */
   getParamType(type: Type, name: string): string;
 
   /**
-   * Converts summary parts to template-friendly format
-   *
-   * @param {CommentDisplayPart[]} summary - Array of comment display parts
-   * @returns {CommentDisplayPart[]} Processed summary list
+   * Converts summary parts to template-friendly format.
+   * @param summary Array of comment display parts.
+   * @returns Processed summary list.
    */
   toTemplateSummaryList(summary: CommentDisplayPart[]): CommentDisplayPart[];
 
   /**
-   * Converts a summary part to template-friendly format
-   *
-   * @param {CommentDisplayPart} summary - The comment display part
-   * @param {string} [tag] - Optional tag name
-   * @returns {CommentDisplayPart & Object} Enhanced comment display part
+   * Converts a summary part to template-friendly format.
+   * @param summary The comment display part.
+   * @param tag Optional tag name.
+   * @returns Enhanced comment display part.
    */
   toTemplateSummary(
     summary: CommentDisplayPart,
@@ -73,12 +74,11 @@ declare class DeclarationReflectionParser {
   };
 
   /**
-   * Converts parameter list to template-friendly format
-   *
-   * @param {ParameterReflection[]} parameters - Array of parameters
-   * @param {DeclarationReflection} member - The member declaration
-   * @param {DeclarationReflection} classItem - The class declaration
-   * @returns {Object[]} Processed parameter list
+   * Converts parameter list to template-friendly format.
+   * @param parameters Array of parameters.
+   * @param member The member declaration.
+   * @param classItem The class declaration.
+   * @returns Processed parameter list.
    */
   toParametersList(
     parameters: ParameterReflection[],
@@ -87,50 +87,45 @@ declare class DeclarationReflectionParser {
   ): Object[];
 
   /**
-   * Gets block tags excluding @param and @returns tags
-   *
-   * @param {CommentDisplayPart[]} blockTags - Array of block tags
-   * @returns {CommentDisplayPart[]} Filtered block tags
+   * Gets block tags excluding @param and @returns tags.
+   * @param blockTags Array of block tags.
+   * @returns Filtered block tags.
    */
   getBlockTagsNoParamAndReturn(
     blockTags: CommentDisplayPart[]
   ): CommentDisplayPart[];
 
   /**
-   * Converts a parameter to template-friendly format
-   *
-   * @param {ParameterReflection} child - The parameter reflection
-   * @param {DeclarationReflection} [parent] - Optional parent declaration
-   * @param {CommentTag[]} [blockTags] - Optional block tags
-   * @returns {Object} Processed parameter object
+   * Converts a parameter to template-friendly format.
+   * @param child The parameter reflection.
+   * @param parent Optional parent declaration.
+   * @param blockTags Optional block tags.
+   * @returns Processed parameter object.
    */
   toParametersListItem(
     child: ParameterReflection,
-    parent: DeclarationReflection | undefined,
-    blockTags: CommentTag[] | undefined
+    parent?: DeclarationReflection,
+    blockTags?: CommentTag[]
   ): Object;
 
   /**
-   * Gets the real source of a member
-   *
-   * @param {DeclarationReflection} member - The member declaration
-   * @returns {any} The source information
+   * Gets the real source of a member.
+   * @param member The member declaration.
+   * @returns The source information.
    */
   getRealSource(member: DeclarationReflection): any;
 
   /**
-   * Gets the return value type
-   *
-   * @param {DeclarationReflection} member - The member declaration
-   * @returns {string|undefined} The return type
+   * Gets the return value type.
+   * @param member The member declaration.
+   * @returns The return type.
    */
   getReturnValue(member: DeclarationReflection): string | undefined;
 
   /**
-   * Adjusts the template result with visibility flags
-   *
-   * @param {Object} result - The template result
-   * @returns {Object} Adjusted result with visibility flags
+   * Adjusts the template result with visibility flags.
+   * @param result The template result.
+   * @returns Adjusted result with visibility flags.
    */
   adjustResult(result: Object): {
     showSummary: boolean;
@@ -140,11 +135,10 @@ declare class DeclarationReflectionParser {
   };
 
   /**
-   * Filters block tags by tag name
-   *
-   * @param {CommentDisplayPart[]} blockTags - Array of block tags
-   * @param {string} tag - Tag to filter by
-   * @returns {CommentDisplayPart[]} Filtered tags
+   * Filters block tags by tag name.
+   * @param blockTags Array of block tags.
+   * @param tag Tag to filter by.
+   * @returns Filtered tags.
    */
   filterBlockTags(
     blockTags: CommentDisplayPart[],
@@ -152,11 +146,10 @@ declare class DeclarationReflectionParser {
   ): CommentDisplayPart[];
 
   /**
-   * Filters out specified tags from block tags
-   *
-   * @param {CommentDisplayPart[]} blockTags - Array of block tags
-   * @param {string[]|string} tags - Tags to exclude
-   * @returns {CommentDisplayPart[]} Filtered tags
+   * Filters out specified tags from block tags.
+   * @param blockTags Array of block tags.
+   * @param tags Tags to exclude.
+   * @returns Filtered tags.
    */
   filterBlockTagsNot(
     blockTags: CommentDisplayPart[],
@@ -164,22 +157,16 @@ declare class DeclarationReflectionParser {
   ): CommentDisplayPart[];
 
   /**
-   * Checks if type is a method
-   *
-   * @param {string} type - The type to check
-   * @returns {boolean} True if type is method or constructor
+   * Checks if type is a method.
+   * @param type The type to check.
+   * @returns True if type is method or constructor.
    */
   isMethodType(type: string): boolean;
 
   /**
-   * Converts a member to template-friendly format
-   *
-   * @param {Object} params - Parameters object
-   * @param {DeclarationReflection} params.member - The member declaration
-   * @param {ParameterReflection[]} [params.parameters] - Optional parameters
-   * @param {string} [params.type] - Optional member type
-   * @param {DeclarationReflection} [params.classItem] - Optional class declaration
-   * @returns {Object} Template-friendly object
+   * Converts a member to template-friendly format.
+   * @param params Parameters object.
+   * @returns Template-friendly object.
    */
   toTemplateResult({
     member,
@@ -194,11 +181,10 @@ declare class DeclarationReflectionParser {
   }): Object;
 
   /**
-   * Converts class members to template-friendly format
-   *
-   * @param {DeclarationReflection} reflection - The class reflection
-   * @param {DeclarationReflection} classItem - The class declaration
-   * @returns {Object[]} Array of processed members
+   * Converts class members to template-friendly format.
+   * @param reflection The class reflection.
+   * @param classItem The class declaration.
+   * @returns Array of processed members.
    */
   classMembersToTemplateResults(
     reflection: DeclarationReflection,
@@ -206,10 +192,9 @@ declare class DeclarationReflectionParser {
   ): Object[];
 
   /**
-   * Gets comments from a class item
-   *
-   * @param {DeclarationReflection} classItem - The class declaration
-   * @returns {Object} Object containing summary and block tags
+   * Gets comments from a class item.
+   * @param classItem The class declaration.
+   * @returns Object containing summary and block tags.
    */
   getComments(classItem: DeclarationReflection): {
     summary: CommentDisplayPart[];
@@ -217,81 +202,75 @@ declare class DeclarationReflectionParser {
   };
 }
 
+/**
+ * Generates project reflections into documentation formats.
+ */
 declare class ProjectReflectionGenerater {
   /**
-   * Creates a new ProjectReflectionGenerater instance
-   *
-   * @param {Object} options - Configuration options
-   * @param {Logger} options.logger - Logger instance
-   * @param {string[]} options.entryPoints - Entry point file paths
-   * @param {string} options.outputJSONFilePath - JSON output file path
-   * @param {string} options.generatePath - Documentation generation path
+   * Initializes a new instance of the ProjectReflectionGenerater class.
+   * @param options Configuration options.
    */
   constructor({
     logger,
     entryPoints,
     outputJSONFilePath,
-    generatePath
+    generatePath,
+    tplPath
   }: {
     logger: Logger;
     entryPoints: string[];
     outputJSONFilePath: string;
     generatePath: string;
+    tplPath: string;
   });
   parser: ProjectReflectionParser;
   entryPoints: string[];
   outputJSONFilePath: string;
   generatePath: string;
+  tplPath: string;
   logger: Logger;
-  classTemplate: any;
 
   /**
-   * Generates JSON documentation
+   * Generates JSON documentation.
+   * @returns Promise resolving to an array of template results.
    */
-  generateJson(): Promise<void>;
+  generateJson(): Promise<Object[]>;
 
   /**
-   * Generates markdown documentation
+   * Generates markdown documentation.
+   * @param onlyJson If true, only generates JSON.
    */
-  generate(): Promise<void>;
+  generate(onlyJson: boolean): Promise<void>;
 
   /**
-   * Unescapes HTML entities in text
-   *
-   * @param {string} text - Text to unescape
-   * @returns {string} Unescaped text
+   * Unescapes HTML entities in text.
+   * @param text Text to unescape.
+   * @returns Unescaped text.
    */
   unescapeHtmlEntities(text: string): string;
 
   /**
-   * Gets output path for template result
-   *
-   * @param {object} templateResult - Template processing result
-   * @returns {Object} Output path information
+   * Gets output path for template result.
+   * @param templateResult Template processing result.
+   * @returns Output path information.
    */
   getTemplateResultOutputPath(templateResult: object): {
-    docPaths: {
-      docPath: string;
-      docFullPath: string;
-      docDir: string;
-    };
+    docPaths: { docPath: string; docFullPath: string; docDir: string };
     output: string;
   };
 
   /**
-   * Gets common path between two paths
-   *
-   * @param {string} fullPath - Full file path
-   * @param {string} generatePath - Generation path
-   * @returns {string} Common path
+   * Gets common path between two paths.
+   * @param fullPath Full file path.
+   * @param generatePath Generation path.
+   * @returns Common path.
    */
   getCommonPath(fullPath: string, generatePath: string): string;
 
   /**
-   * Extracts documentation path from reflection path
-   *
-   * @param {string} fullPath - Full reflection path
-   * @returns {Object} Documentation path information
+   * Extracts documentation path from reflection path.
+   * @param fullPath Full reflection path.
+   * @returns Documentation path information.
    */
   extractDocumentationPath(fullPath: string): {
     docPath: string;
@@ -300,14 +279,13 @@ declare class ProjectReflectionGenerater {
   };
 }
 
+/**
+ * Parses project reflections to extract and format documentation details.
+ */
 declare class ProjectReflectionParser {
   /**
-   * Creates a new ProjectReflectionParser instance
-   *
-   * @param {Object} options - Configuration options
-   * @param {string[]} options.entryPoints - Entry point file paths
-   * @param {string} options.outputPath - Output file path
-   * @param {Logger} options.logger - Logger instance
+   * Initializes a new instance of the ProjectReflectionParser class.
+   * @param options Configuration options.
    */
   constructor({
     entryPoints,
@@ -325,54 +303,36 @@ declare class ProjectReflectionParser {
   app?: Application;
 
   /**
-   * Loads project from file
-   *
-   * @param {string} [path] - Optional path to load from
-   * @returns {Promise<ProjectReflection|undefined>} Loaded project
+   * Loads project from file.
+   * @param path Optional path to load from.
+   * @returns Promise resolving to the loaded project.
    */
   load(path?: string): Promise<ProjectReflection | undefined>;
 
   /**
-   * Writes project to file
-   *
-   * @param {ProjectReflection} project - Project to write
+   * Writes project to file.
+   * @param project Project to write.
+   * @param path Optional path to write to.
    */
-  writeTo(project: ProjectReflection): Promise<void>;
+  writeTo(project: ProjectReflection, path?: string): Promise<void>;
 
   /**
-   * Gets TypeDoc application instance
-   *
-   * @returns {Promise<Application>} TypeDoc application
+   * Writes JSON data to a file.
+   * @param value Data to write.
+   * @param path Path to write to.
+   */
+  writeJSON(value: any, path: string): void;
+
+  /**
+   * Gets TypeDoc application instance.
+   * @returns Promise resolving to the TypeDoc application.
    */
   getApp(): Promise<Application>;
 
   /**
-   * Gets classes from project
-   *
-   * @param {ProjectReflection} project - Project reflection
-   * @returns {DeclarationReflection[]} Array of class declarations
-   */
-  getClassess(project: ProjectReflection): DeclarationReflection[];
-
-  /**
-   * Parses level 2 children
-   *
-   * @param {DeclarationReflection} rootChild - Root child declaration
-   * @param {ReflectionGroup} group - Reflection group
-   * @param {DeclarationReflectionParser} drp - Parser instance
-   * @returns {Object[]} Parsed children
-   */
-  parseLevel2Children(
-    rootChild: DeclarationReflection,
-    group: ReflectionGroup,
-    drp: DeclarationReflectionParser
-  ): Object[];
-
-  /**
-   * Parses project with groups
-   *
-   * @param {ProjectReflection} project - Project reflection
-   * @returns {Object[]} Parsed groups
+   * Parses project with groups.
+   * @param project Project reflection.
+   * @returns Array of parsed groups.
    */
   parseWithGroups(project: ProjectReflection): Object[];
 }

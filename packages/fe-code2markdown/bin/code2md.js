@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { dirname, join, resolve } from 'path';
 import { Command } from 'commander';
 import fs from 'fs-extra';
