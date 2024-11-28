@@ -1,5 +1,12 @@
 
 
+## [1.0.8](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.7...fe-utils-v1.0.8) (2024-11-28)
+
+
+### Features
+
+* fe code to markdown ([#136](https://github.com/qlover/fe-base/issues/136)) ([f320ccb](https://github.com/qlover/fe-base/commit/f320ccb08d59caabb83357c65a09fb05732cb146))
+
 ## [1.0.7](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.6...fe-utils-v1.0.7) (2024-11-22)
 
 ## [1.0.6](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.5...fe-utils-v1.0.6) (2024-11-21)
