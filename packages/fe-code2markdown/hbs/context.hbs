@@ -1,11 +1,17 @@
-## {{{name}}}
+## {{kindName}} `{{{name}}}`
+{{!-- check special kind --}}
+{{#if isTypeAlias}}
 
-{{!-- class summaryList --}}
+{{{type}}}
+
+{{/if}}
+{{!-- check special kind --}}
+{{!-- summaryList --}}
 {{#each summaryList}}
 {{{this.text}}}
 {{/each}}
 
-{{!-- class blockTagsList --}}
+{{!-- blockTagsList --}}
 {{#each blockTagsList}}
 {{this.tag}}
 {{{this.text}}}
@@ -41,4 +47,3 @@
 
 {{/each}}
 {{/if}}
-

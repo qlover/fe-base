@@ -3,6 +3,8 @@ import path from 'path';
 import Handlebars from 'handlebars';
 import { fileURLToPath } from 'url';
 import { ProjectReflectionParser } from './ProjectReflectionParser.js';
+import { ReflectionKind } from 'typedoc';
+import { ReflectionKindName } from './DeclarationReflectionParser.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,8 +24,40 @@ class HBSTemplate {
     return this.templateContent;
   }
 
+  /**
+   * @param {import('../index.d.ts').HBSTemplateContext} context
+   * @param {object} options
+   * @returns {string}
+   */
   compile(context, options) {
     return Handlebars.compile(this.templateContent)(context, options);
+  }
+
+  /**
+   * @param {import('../index.d.ts').HBSTemplateContextMap} contextMap
+   */
+  compileSource(contextMap) {
+    const output = [];
+    // class -> interface -> type
+    const types = [
+      ReflectionKindName[ReflectionKind.Class],
+      ReflectionKindName[ReflectionKind.Interface],
+      ReflectionKindName[ReflectionKind.Type]
+    ];
+    types.forEach((type) => {
+      contextMap[type] &&
+        output.push(
+          ...contextMap[type].map((context) => this.compile(context))
+        );
+    });
+
+    // other
+    Object.entries(contextMap).forEach(([type, contexts]) => {
+      !types.includes(type) &&
+        output.push(...contexts.map((context) => this.compile(context)));
+    });
+
+    return output.join('\n');
   }
 }
 
@@ -55,6 +89,9 @@ export class ProjectReflectionGenerater {
     this.logger = logger;
   }
 
+  /**
+   * @returns {Promise<import('../index.d.ts').ParserContextMap>}
+   */
   async generateJson() {
     // 为了获取完整的绝对路径，用convert的数据
     const app = await this.parser.getApp();
@@ -63,12 +100,11 @@ export class ProjectReflectionGenerater {
     // save to local file
     await this.parser.writeTo(project);
 
-    const templateResults = this.parser.parseWithGroups(project);
+    const templateResults = this.parser.parseWithSources(project);
 
-    if (this.logger.debug) {
-      this.parser.writeJSON(templateResults, this.tplPath);
-      this.logger.info('Generate JSON file success', this.tplPath);
-    }
+    // FIXME: isDebug is protected, need to find a way to check it
+    this.parser.writeJSON(templateResults, this.tplPath);
+    this.logger.info('Generate JSON file success', this.tplPath);
 
     return templateResults;
   }
@@ -83,11 +119,11 @@ export class ProjectReflectionGenerater {
       return;
     }
 
-    const classTemplate = new HBSTemplate('class');
+    const sourceTemplate = new HBSTemplate('context');
 
-    for (const templateResult of templateResults) {
-      const { output } = this.getTemplateResultOutputPath(templateResult);
-      const result = classTemplate.compile(templateResult);
+    for (const [fileName, contextMap] of Object.entries(templateResults)) {
+      const { output } = this.getTemplateResultOutputPath(fileName);
+      const result = sourceTemplate.compileSource(contextMap);
       const unescapedResult = this.unescapeHtmlEntities(result);
 
       try {
@@ -109,13 +145,13 @@ export class ProjectReflectionGenerater {
    * @param {object} templateResult
    * @returns {{docPaths: {docPath: string, docFullPath: string, docDir: string}, output: string}}
    */
-  getTemplateResultOutputPath(templateResult) {
-    const resultSource = templateResult.source;
-    const docPaths = this.extractDocumentationPath(resultSource.fullFileName);
+  getTemplateResultOutputPath(fullFileName) {
+    const name = path.basename(fullFileName).split('.').slice(0, -1).join('.');
+    const docPaths = this.extractDocumentationPath(fullFileName);
 
     return {
       docPaths,
-      output: path.join(docPaths.docDir, templateResult.name + '.md')
+      output: path.join(docPaths.docDir, name + '.md')
     };
   }
 

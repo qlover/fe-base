@@ -1,6 +1,9 @@
 import fsExtra from 'fs-extra';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
-import { DeclarationReflectionParser } from './DeclarationReflectionParser.js';
+import {
+  DeclarationReflectionParser,
+  ReflectionKindName
+} from './DeclarationReflectionParser.js';
 
 class ParsedGroup {
   /**
@@ -30,42 +33,74 @@ class ParsedGroup {
   }
 
   /**
-   * 解析
+   * 解析 class 的 children
+   * @param {import('typedoc').DeclarationReflection} reflection
    * @returns {Object[]}
    */
-  parse() {
-    const groups = this.groupBy(this.project, 'groups');
+  parseClassItems(classItem) {
     const finalResult = [];
-
-    Object.entries(groups).forEach(([type, children]) => {
-      // 第一层大类，基本是 Enumerations, Classes, Interfaces, Type Aliases, Variables ...
-      if (type === 'Classes') {
-        children.forEach((classItem) => {
-          const result = this.drp.toTemplateResult({ member: classItem, type });
-          this.logger.debug(result.type, result.name, result.id);
-
-          const members = [];
-          // 第二层， 基本是 Constructors,Properties, Methods ...
-          const groupsLevel2 = this.groupBy(classItem, 'groups');
-          Object.entries(groupsLevel2).forEach(([v2type, v2children]) => {
-            const typeResults = v2children.flatMap((v2member) => {
-              return this.drp.classMemberToTemplateResult({
-                member: v2member,
-                classItem,
-                type: v2type
-              });
-            });
-
-            members.push(...typeResults);
-          });
-
-          // 增加 hasMembers 属性，用于模板渲染
-          Object.assign(result, { members, hasMembers: members.length > 0 });
-          finalResult.push(result);
-        });
-      }
+    const result = this.drp.toTemplateResult({
+      member: classItem,
+      kind: classItem.kind
     });
+
+    this.logger.debug(result.kindName, result.name, result.id);
+
+    const members = [];
+    // 第二层， 基本是 Constructors,Properties, Methods ...
+    const groupsLevel2 = this.groupBy(classItem, 'groups');
+    Object.entries(groupsLevel2).forEach(([v2KindName, v2children]) => {
+      const typeResults = v2children.flatMap((v2member) => {
+        return this.drp.classMemberToTemplateResult({
+          member: v2member,
+          classItem,
+          groupKindName: v2KindName
+        });
+      });
+
+      members.push(...typeResults);
+    });
+
+    // 增加 hasMembers 属性，用于模板渲染
+    Object.assign(result, { members, hasMembers: members.length > 0 });
+    finalResult.push(result);
+
     return finalResult;
+  }
+
+  /**
+   * 按 source 分组, 文件路径
+   * @returns {Map<string, {[key in ReflectionKind]: import('typedoc').DeclarationReflection[]}>}
+   */
+  parseWithSource() {
+    /**
+     * @type {Map<string, {[key in ReflectionKind]: import('typedoc').DeclarationReflection[]}>}
+     */
+    const sourceMaps = new Map();
+
+    for (const child of this.project.children) {
+      try {
+        const fullFileName =
+          this.drp.getRealSource(child).fullFileName ||
+          child.sources[0].fileName;
+
+        if (!sourceMaps.has(fullFileName)) {
+          sourceMaps.set(fullFileName, {});
+        }
+
+        const values = sourceMaps.get(fullFileName);
+
+        if (!values[child.kind]) {
+          values[child.kind] = [];
+        }
+
+        values[child.kind].push(...this.parseClassItems(child));
+      } catch {
+        this.logger.error('No sources for class', child.name);
+      }
+    }
+
+    return sourceMaps;
   }
 }
 
@@ -161,17 +196,28 @@ export class ProjectReflectionParser {
   }
 
   /**
-   * 解析分类
+   * 按 source 分组, 文件路径
    *
-   * 默认按照 `@category`, 应用到 class, type, interface
    * @param {import('typedoc').ProjectReflection} project
-   * @returns {Object[]}
+   * @returns {import('../index.d.ts').ParserContextMap}
    */
-  parseWithGroups(project) {
-    // 分两种 有分类和others
-    // const parsedCategory = new ParsedCategory(project);
+  parseWithSources(project) {
     const parsed = new ParsedGroup(project, this.logger);
 
-    return parsed.parse();
+    const sourceMaps = parsed.parseWithSource();
+
+    // 将 Map 转换为 Object
+    // 并将 kind 变成字符串
+    const result = {};
+    for (const [fileName, values] of sourceMaps.entries()) {
+      result[fileName] = Object.fromEntries(
+        Object.entries(values).map(([kind, children]) => [
+          ReflectionKindName[kind],
+          children
+        ])
+      );
+    }
+
+    return result;
   }
 }

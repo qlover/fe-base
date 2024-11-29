@@ -1,5 +1,14 @@
 import { ReflectionKind } from 'typedoc';
 
+/**
+ * @type {typeof import('../index.d.ts').ReflectionKindName}
+ */
+export const ReflectionKindName = {};
+Object.entries(ReflectionKind).reduce((acc, [key, value]) => {
+  acc[value] = key;
+  return acc;
+}, ReflectionKindName);
+
 export class DeclarationReflectionParser {
   /**
    * @param {import('typedoc').ProjectReflection} project
@@ -23,8 +32,8 @@ export class DeclarationReflectionParser {
     return docsValue;
   }
 
-  warpType(type) {
-    return `\`${type.replace(/\|/g, '\\|')}\``;
+  warpType(typeString) {
+    return `\`${typeString.replace(/\|/g, '\\|')}\``;
   }
 
   /**
@@ -218,7 +227,7 @@ export class DeclarationReflectionParser {
 
   /**
    * 检查结果, 添加一些标记, 方便模板直接渲染
-   * @param {Object} result
+   * @param {import('../index.d.ts').HBSTemplateContext} result
    */
   adjustResult(result) {
     return {
@@ -226,7 +235,8 @@ export class DeclarationReflectionParser {
       showSummary: result.summaryList.length > 0,
       showDescription: result.descriptionList.length > 0,
       showExample: result.exampleList.length > 0,
-      showParameters: result.parameters && result.parameters.length > 0
+      showParameters: result.parameters && result.parameters.length > 0,
+      ...this.getIsKindObjects(result.kind)
     };
   }
 
@@ -265,15 +275,30 @@ export class DeclarationReflectionParser {
   }
 
   /**
+   * 获取 isKind xxx name 的对象
+   * @param {ReflectionKind} targetKind
+   * @returns {import('../index.d.ts').IsKindObjects}
+   */
+  getIsKindObjects(targetKind) {
+    const kindName = ReflectionKindName[targetKind];
+    return { [`is${kindName}`]: true };
+  }
+
+  /**
    * 将一个成员转换为模板需要的对象
    * @param {Object} params
    * @param {import('typedoc').DeclarationReflection} params.member
    * @param {import('typedoc').ParameterReflection[]} params.parameters
-   * @param {string} params.type
+   * @param {ReflectionKind} params.kind
    * @param {import('typedoc').DeclarationReflection} params.classItem
    * @returns {Object}
    */
-  toTemplateResult({ member, parameters, type = 'Classes', classItem }) {
+  toTemplateResult({
+    member,
+    parameters,
+    kind = ReflectionKind.Class,
+    classItem
+  }) {
     const { name } = member;
     const comments = this.getComments(member);
     const { summary, blockTags } = comments;
@@ -288,7 +313,9 @@ export class DeclarationReflectionParser {
 
     const result = {
       id: member.id,
+      kind: kind,
       name: name,
+      type: member.type ? this.getParamType(member.type) : undefined,
       summaryList: summary,
       blockTagsList,
       parameters: reusltParams,
@@ -298,7 +325,7 @@ export class DeclarationReflectionParser {
       exampleList,
       /** @deprecated */
       returnValue: parameters ? this.getReturnValue(member) : undefined,
-      type,
+      kindName: ReflectionKindName[kind],
       source: this.getRealSource(member, classItem)
     };
 
@@ -310,12 +337,12 @@ export class DeclarationReflectionParser {
    * @param {Object} params
    * @param {import('typedoc').DeclarationReflection} params.member
    * @param {import('typedoc').DeclarationReflection} params.classItem
-   * @param {string} params.type
+   * @param {string} params.groupKindName
    * @returns {Object[]}
    */
-  classMemberToTemplateResult({ member, classItem, type }) {
+  classMemberToTemplateResult({ member, classItem, groupKindName }) {
     this.logger.debug(
-      `Crateing [${type}] ${classItem?.name}.${member?.name}`,
+      `Creating [${groupKindName}] ${classItem?.name}.${member?.name}`,
       member.id
     );
 
@@ -340,6 +367,7 @@ export class DeclarationReflectionParser {
       return [];
     }
 
+    // FIXME: interface 和 class 一样
     if (!Array.isArray(member.signatures)) {
       this.logger.warn(
         `${classItem?.name}.${member?.name} no signatures, skip!`
@@ -352,12 +380,12 @@ export class DeclarationReflectionParser {
       const templateResult = this.toTemplateResult({
         member: signature,
         parameters: signature.parameters,
-        type,
+        kind: member.kind,
         classItem
       });
 
       this.logger.debug(
-        `Created! [${type}] ${classItem?.name}.${member?.name} signature[${index}]`,
+        `Created! [${groupKindName}] ${classItem?.name}.${member?.name} signature[${index}]`,
         `Result: ${templateResult.name}`
       );
 

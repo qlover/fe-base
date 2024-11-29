@@ -6,9 +6,74 @@ import {
   DeclarationReflection,
   ProjectReflection,
   Application,
-  ReflectionGroup
+  ReflectionGroup,
+  ReflectionKind
 } from 'typedoc';
 import { Logger } from '@qlover/fe-utils';
+
+type ValueOf<T> = T[keyof T];
+/**
+ * FIXME: hbs无法识别 kind 数字类型, 手动转成字符串
+ */
+declare const ReflectionKindName = {
+  [ReflectionKind.Project]: 'Project',
+  [ReflectionKind.Module]: 'Module',
+  [ReflectionKind.Namespace]: 'Namespace',
+  [ReflectionKind.Enum]: 'Enum',
+  [ReflectionKind.EnumMember]: 'EnumMember',
+  [ReflectionKind.Variable]: 'Variable',
+  [ReflectionKind.Function]: 'Function',
+  [ReflectionKind.Class]: 'Class',
+  [ReflectionKind.Interface]: 'Interface',
+  [ReflectionKind.Constructor]: 'Constructor',
+  [ReflectionKind.Property]: 'Property',
+  [ReflectionKind.Method]: 'Method',
+  [ReflectionKind.CallSignature]: 'CallSignature',
+  [ReflectionKind.IndexSignature]: 'IndexSignature',
+  [ReflectionKind.ConstructorSignature]: 'ConstructorSignature',
+  [ReflectionKind.Parameter]: 'Parameter',
+  [ReflectionKind.TypeLiteral]: 'TypeLiteral',
+  [ReflectionKind.TypeParameter]: 'TypeParameter',
+  [ReflectionKind.Accessor]: 'Accessor',
+  [ReflectionKind.GetSignature]: 'GetSignature',
+  [ReflectionKind.SetSignature]: 'SetSignature',
+  [ReflectionKind.TypeAlias]: 'TypeAlias',
+  [ReflectionKind.Reference]: 'Reference'
+} as const;
+
+export type FileSource = string;
+export type HBSTemplateContextMap = Record<
+  ValueOf<typeof ReflectionKindName>,
+  HBSTemplateContext[]
+>;
+export type ParserContextMap = Record<FileSource, HBSTemplateContextMap>;
+export type IsKindObjects = {
+  [key in `is${keyof typeof ReflectionKind}`]: boolean | undefined;
+};
+export type HBSTemplateContext = IsKindObjects & {
+  id: number;
+  kind: number;
+  name: string;
+  kindName: string;
+  summaryList: CommentDisplayPart[];
+  blockTagsList: CommentDisplayPart[];
+  parameters: ParameterReflection[] | undefined;
+  descriptionList: CommentDisplayPart[];
+  exampleList: (CommentDisplayPart & {
+    isText: boolean;
+    isCode: boolean;
+    isLink: boolean;
+    isInlineTag: boolean;
+  })[];
+  returnValue: string | undefined;
+  source: SourceReference[];
+  showSummary: boolean;
+  showDescription: boolean;
+  showExample: boolean;
+  showParameters: boolean | undefined;
+  members: Object[];
+  hasMembers: boolean;
+};
 
 /**
  * Parses declaration reflections to extract and format documentation details.
