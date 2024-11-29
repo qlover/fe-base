@@ -1,7 +1,6 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" $(git describe --match \"fe-scripts-v*\" --abbrev=0)...HEAD -- packages/fe-scripts/",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -36,7 +35,7 @@
     "timeout": 10
   },
   "github": {
-    "release": false,
+    "release": true,
     "releaseName": "chore(tag): release-fe-scripts v${version}",
     "releaseNotes": null,
     "autoGenerate": false,
@@ -73,6 +72,9 @@
           { "type": "perf", "hidden": true },
           { "type": "test", "hidden": true }
         ]
+      },
+      "gitRawCommitsOpts": {
+        "path": "."
       }
     }
   }

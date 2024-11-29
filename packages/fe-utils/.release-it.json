@@ -1,7 +1,6 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" $(git describe --match \"fe-utils-v*\" --abbrev=0)...HEAD -- packages/fe-utils/",
     "requireUpstream": true,
     "commit": true,
     "commitMessage": "chore(tag): release-fe-utils v${version}",
@@ -40,6 +39,9 @@
           { "type": "perf", "hidden": true },
           { "type": "test", "hidden": true }
         ]
+      },
+      "gitRawCommitsOpts": {
+        "path": "."
       }
     }
   }
