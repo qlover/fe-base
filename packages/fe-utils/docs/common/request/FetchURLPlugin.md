@@ -1,5 +1,4 @@
-## FetchURLPlugin
-
+## Class `FetchURLPlugin`
 Plugin for URL manipulation and response handling
 Provides URL composition and response status checking
 
@@ -179,5 +178,4 @@ const response = urlPlugin.onSuccess(fetchResponse);
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  result  | `Response` |  |  | Fetch response  |
-
 

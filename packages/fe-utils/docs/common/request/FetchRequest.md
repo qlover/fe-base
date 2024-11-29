@@ -1,5 +1,4 @@
-## FetchRequest
-
+## Class `FetchRequest`
 
 
 ## Members
@@ -47,82 +46,6 @@ const requestInit = fetchRequest.composeRequestInit(config);
 |  config  | `FetchRequestConfig` |  |  | Full request configuration  |
 
 
-### delete
-Performs HTTP DELETE request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### get
-Performs HTTP GET request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### getConfig
-Returns the current request configuration
-
-
-
-
-### head
-Performs HTTP HEAD request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### options
-Performs HTTP OPTIONS request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### patch
-Performs HTTP PATCH request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### post
-Performs HTTP POST request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
-### put
-Performs HTTP PUT request
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  options  | `FetchRequestConfig` |  |  | Request configuration  |
-
-
 ### request
 Core request implementation
 Merges configurations and executes fetch request
@@ -144,5 +67,34 @@ const response = await fetchRequest.request({ url: '/data' });
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  config  | `FetchRequestConfig` |  |  | Request configuration  |
+
+
+## Class `FetchRequestError`
+Custom error class for fetch request failures
+Extends ExecutorError to maintain error chain compatibility
+
+@example
+```typescript
+throw new FetchRequestError(
+  FetchRequestErrorID.RESPONSE_NOT_OK,
+  'Server responded with 404'
+);
+```
+
+## Members
+
+### constructor
+
+
+#### Parameters
+| Name | Type | Default | Since | Description |
+|------|------|---------|-------|------------|
+|  id  | `string` |  |  |   |
+|  originalError  | `string \| Error` |  |  |   |
+
+
+## Enum `FetchRequestErrorID`
+Error IDs for different fetch request failure scenarios
+Used to identify specific error types in error handling
 
 

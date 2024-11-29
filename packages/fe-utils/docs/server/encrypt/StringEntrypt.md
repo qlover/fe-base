@@ -1,5 +1,4 @@
-## StringEntrypt
-
+## Class `StringEntrypt`
 
 
 ## Members
@@ -52,5 +51,4 @@ If key length is invalid
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  key  | `string` |  |  | Raw encryption key  |
-
 

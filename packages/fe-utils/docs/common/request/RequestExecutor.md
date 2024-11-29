@@ -1,5 +1,4 @@
-## RequestExecutor
-
+## Class `RequestExecutor`
 Base request executor class that provides HTTP request functionality
 Built on top of AsyncExecutor for plugin support and error handling
 
@@ -129,4 +128,14 @@ When not implemented
 |------|------|---------|-------|------------|
 |  config  | `Cfg` |  |  | Request configuration  |
 
+
+## TypeAlias `RequestMethod`
+
+`"GET" \| "POST" \| "PUT" \| "DELETE" \| "PATCH" \| "HEAD" \| "OPTIONS"`
+
+HTTP request methods supported by the executor
+Follows standard HTTP method definitions
+
+@see
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 

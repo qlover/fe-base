@@ -1,5 +1,4 @@
-## StringZlibEncrypt
-
+## Class `StringZlibEncrypt`
 String encryption implementation with Zlib compression
 Combines AES encryption with data compression
 
@@ -70,5 +69,4 @@ If key length is invalid
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  key  | `string` |  |  | Raw encryption key  |
-
 

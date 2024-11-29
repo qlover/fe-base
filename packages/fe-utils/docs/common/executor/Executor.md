@@ -1,5 +1,4 @@
-## Executor
-
+## Class `Executor`
 Base executor class providing plugin management and execution pipeline
 
 The Executor pattern implements a pluggable execution pipeline that allows:
@@ -205,4 +204,19 @@ executor.use(new RetryPlugin({ maxAttempts: 3 }));
 |------|------|---------|-------|------------|
 |  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | Plugin instance to add  |
 
+
+## Interface `ExecutorConfig`
+Configuration interface for executor
+
+Purpose: Provides configuration options for the Executor class
+Core Concept: Extensible configuration container
+Main Features: Currently empty but designed for future extension
+Primary Use: Allows customization of executor behavior
+
+@example
+```typescript
+const config: ExecutorConfig = {
+  // Future configuration options will go here
+};
+```
 
