@@ -1,5 +1,4 @@
-## AbortPlugin
-
+## Class `AbortPlugin`
 Plugin for handling request cancellation
 Provides abort functionality for fetch requests
 
@@ -138,5 +137,4 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 |------|------|---------|-------|------------|
 |  error  | `Error` |  |  | Original error  |
 |  config  | `FetchRequestConfig` |  |  | Request configuration  |
-
 

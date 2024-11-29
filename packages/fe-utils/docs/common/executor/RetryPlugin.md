@@ -1,5 +1,4 @@
-## RetryPlugin
-
+## Class `RetryPlugin`
 Plugin that implements retry logic for failed task executions
 
 This class provides a mechanism to retry failed tasks with configurable
@@ -141,5 +140,73 @@ if (this.shouldRetry({ error, retryCount })) {
 |------|------|---------|-------|------------|
 |  __namedParameters.error  | `unknown` |  |  |   |
 |  __namedParameters.retryCount  | `number` |  |  |   |
+
+
+## Interface `RetryOptions`
+Configuration options for the RetryPlugin
+
+This interface defines the configuration options for the RetryPlugin,
+which is used to control the retry behavior of task executions.
+
+Core Idea: Provide a flexible configuration for retry logic.
+Main Function: Define retry parameters such as max retries, delay, and conditions.
+Main Purpose: Allow customization of retry behavior to suit different use cases.
+
+@example
+```typescript
+const options: RetryOptions = {
+  maxRetries: 5,
+  retryDelay: 2000,
+  useExponentialBackoff: true,
+  shouldRetry: (error) => error.message !== 'Invalid credentials'
+};
+```
+
+## Members
+
+### maxRetries
+Maximum number of retry attempts (starting from 0)
+Will be clamped between 1 and SAFE_MAX_RETRIES (16)
+
+**@default**
+```ts
+3
+```
+
+
+
+
+### retryDelay
+Base delay between retry attempts in milliseconds
+Used directly for fixed delay, or as base for exponential backoff
+
+**@default**
+```ts
+1000
+```
+
+
+
+
+### shouldRetry
+Custom function to determine if a retry should be attempted
+
+**@default**
+```ts
+() => true (always retry)
+```
+
+
+
+
+### useExponentialBackoff
+When true, implements exponential backoff delay strategy
+Delay formula: retryDelay * (2 ^ attemptNumber)
+
+**@default**
+```ts
+false
+```
+
 
 

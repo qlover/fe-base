@@ -1,5 +1,4 @@
-## ExecutorError
-
+## Class `ExecutorError`
 Custom error class for executor operations.
 
 This class provides a structured way to handle errors that occur during executor operations.
@@ -31,16 +30,4 @@ if originalError is not provided, the error message will be the id.
 |  id  | `string` |  |  | A unique identifier for the error, used for categorization and tracking.  |
 |  originalError  | `string \| Error` |  |  | The original error message or Error object that triggered this error.
                        This parameter is optional.  |
-
-
-### captureStackTrace
-Create .stack property on a target object
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  targetObject  | `object` |  |  |   |
-|  constructorOpt  | `Function` |  |  |   |
-
 

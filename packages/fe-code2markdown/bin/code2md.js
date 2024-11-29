@@ -4,7 +4,7 @@ import { dirname, join, resolve } from 'path';
 import { Command } from 'commander';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
-import { ProjectReflectionGenerater } from '../lib/index.js';
+import { ReflectionGenerater } from '../lib/index.js';
 import { Logger } from '@qlover/fe-utils';
 const program = new Command();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -37,7 +37,7 @@ const main = async () => {
     : resolve(options.generatePath, './code2md.tpl.json');
 
   // TODO: 检验参数
-  const generater = new ProjectReflectionGenerater({
+  const generater = new ReflectionGenerater({
     logger: new Logger({ debug: options.debug }),
     entryPoints: options.entryPoints.map((entry) => resolve(entry)),
     outputJSONFilePath: options.outputJSONFilePath

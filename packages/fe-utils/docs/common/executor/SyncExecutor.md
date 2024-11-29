@@ -1,5 +1,4 @@
-## SyncExecutor
-
+## Class `SyncExecutor`
 Synchronous executor class that extends the base Executor
 Provides synchronous task execution with plugin support
 
@@ -197,28 +196,4 @@ const result = this.runHook(
 |  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute  |
 |  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute  |
 |  args  | `unknown[]` |  |  | Arguments to pass to the hook function  |
-
-
-### use
-Add a plugin to the executor
-
-Purpose: Extends executor functionality through plugins
-Core Concept: Plugin registration and deduplication
-Main Features:
-- Prevents duplicate plugins if onlyOne is true
-- Maintains plugin execution order
-Primary Use: Adding new capabilities to executor
-
-**@example**
-```typescript
-executor.use(new LoggerPlugin());
-executor.use(new RetryPlugin({ maxAttempts: 3 }));
-```
-
-
-#### Parameters
-| Name | Type | Default | Since | Description |
-|------|------|---------|-------|------------|
-|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | Plugin instance to add  |
-
 

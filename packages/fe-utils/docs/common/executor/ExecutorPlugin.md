@@ -1,5 +1,4 @@
-## ExecutorPlugin
-
+## Class `ExecutorPlugin`
 Base plugin class for extending executor functionality.
 Plugins provide a way to intercept and modify the execution flow at different stages:
 - Before execution (onBefore)
@@ -101,5 +100,40 @@ Can transform the task result
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  result  | `T` |  |  | Task execution result  |
+
+
+## TypeAlias `PromiseTask`
+
+`Function`
+
+Type definition for promise-based task
+
+@example
+```typescript
+const promiseTask: PromiseTask<string, number> = async (data: number) => {
+  return `Result: ${data}`;
+};
+```
+
+
+## TypeAlias `SyncTask`
+
+`Function`
+
+Type definition for synchronous task
+
+@example
+```typescript
+const syncTask: SyncTask<string, number> = (data: number) => {
+  return `Result: ${data}`;
+};
+```
+
+
+## TypeAlias `Task`
+
+`PromiseTask<T, D> \| SyncTask<T, D>`
+
+Union type for both promise and sync tasks
 
 

@@ -11,6 +11,8 @@ import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
  * Main Function: Define retry parameters such as max retries, delay, and conditions.
  * Main Purpose: Allow customization of retry behavior to suit different use cases.
  *
+ * @category RetryPlugin
+ *
  * @example
  * ```typescript
  * const options: RetryOptions = {
@@ -20,9 +22,6 @@ import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
  *   shouldRetry: (error) => error.message !== 'Invalid credentials'
  * };
  * ```
- *
- * @interface RetryOptions
- * @category RetryPlugin
  */
 export interface RetryOptions {
   /**

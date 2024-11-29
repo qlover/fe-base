@@ -13,7 +13,7 @@
  * };
  * ```
  */
-export type OptionsMethosParams = {
+export interface ExampleOptionsInterface {
   /**
    * @description optArgs1 description
    * @type {string}
@@ -24,7 +24,27 @@ export type OptionsMethosParams = {
    * @type {boolean}
    */
   optArgs2: boolean;
+
+  /**
+   * @description overloadMethod description
+   * @param {string} name
+   * @returns {Record<string, any>}
+   */
+  overloadMethod?(name: string): Record<string, any>;
+
+  /**
+   * @description overloadMethod description
+   * @param {number} name
+   * @returns {Record<number, any>}
+   */
+  overloadMethod?(name: number): Record<number, any>;
+}
+
+export type ExampleOptionsType = {
+  eoptType1: string;
+  eoptType2: boolean;
 };
+
 /**
  * This is a example class
  *
@@ -194,5 +214,5 @@ export class ExampleClass {
    * ```
    * @param options options description
    */
-  optionsMethods(options: OptionsMethosParams): void {}
+  optionsMethods(options: ExampleOptionsInterface): void {}
 }

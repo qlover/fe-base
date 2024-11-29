@@ -1,5 +1,4 @@
-## Logger
-
+## Class `Logger`
 Logger class providing various logging methods
 
 The Logger class supports multiple log levels and can be configured
@@ -248,5 +247,43 @@ logger.warn('This is a warning message');
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  args  | `unknown[]` |  |  | Values to log  |
+
+
+## Interface `ExecOptions`
+Options for execution logging
+ ExecOptions
+
+
+## Members
+
+### isDryRun
+When true, commands are only logged but not executed
+
+
+
+
+### isExternal
+When true, indicates the command is from an external source
+
+
+
+
+## Variable `LEVELS`
+Available log levels
+Used to categorize and control log output
+
+
+
+## TypeAlias `LogArgument`
+
+`unknown`
+
+
+
+
+## TypeAlias `LogLevel`
+
+`typeof LEVELS[keyof typeof LEVELS]`
+
 
 
