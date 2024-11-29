@@ -36,11 +36,11 @@
 {{/each}}
 
 {{!-- member parameters --}}
-{{#if this.showParameters}}
+{{#if this.parametersList}}
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-{{#each this.parameters}}
+{{#each this.parametersList}}
 | {{#if this.deprecated}} <del>{{{this.name}}}</del> {{else}} {{{this.name}}} {{/if}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{#each this.summaryList}}{{{this.text}}}{{/each}} {{#each this.descriptionList}}{{{this.text}}}{{/each}} |
 {{/each}}
 {{/if}}

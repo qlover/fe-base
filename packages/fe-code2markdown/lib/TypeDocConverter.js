@@ -1,7 +1,7 @@
 import { ReflectionKind } from 'typedoc';
 
 /**
- * @type {typeof import('../index.d.ts').ReflectionKindName}
+ * @type {typeof import('../index.js').ReflectionKindName}
  */
 export const ReflectionKindName = {};
 Object.entries(ReflectionKind).reduce((acc, [key, value]) => {
@@ -9,19 +9,28 @@ Object.entries(ReflectionKind).reduce((acc, [key, value]) => {
   return acc;
 }, ReflectionKindName);
 
-export class DeclarationReflectionParser {
+export class TypeDocConverter {
   /**
-   * @param {import('typedoc').ProjectReflection} project
-   * @param {import('@qlover/fe-utils').Logger} logger
-   * @param {number} level 1 优先ts类型 2 优先注释类型
+   *
+   * @param {Object} params
+   * @param {import('typedoc').ProjectReflection} params.project
+   * @param {import('@qlover/fe-utils').Logger} params.logger
+   * @param {number} params.level 1 优先ts类型 2 优先注释类型 default 1
+   * @param {boolean} params.hasSkipInherited 是否跳过继承的属性 default true
    */
-  constructor(project, logger, level = 1) {
+  constructor({ project, logger, level = 1, hasSkipInherited = true }) {
     /**
      * @type {import('typedoc').ProjectReflection}
      */
     this.project = project;
     this.logger = logger;
     this.level = level;
+
+    /**
+     * 是否跳过继承的属性
+     * @type {boolean}
+     */
+    this.hasSkipInherited = hasSkipInherited;
   }
 
   getLevelValue(tsValue, docsValue) {
@@ -186,10 +195,10 @@ export class DeclarationReflectionParser {
   /**
    * Get the real source of a member, ensuring it belongs to the current class
    * @param {import('typedoc').DeclarationReflection} member
-   * @param {import('typedoc').DeclarationReflection} classItem
+   * @param {import('typedoc').DeclarationReflection} parent
    * @returns {import('typedoc').SourceReference|undefined}
    */
-  getRealSource(member, classItem) {
+  getRealSource(member, parent) {
     const reflection = this.project.getReflectionById(member.id);
     if (!reflection || !reflection.sources?.length) {
       return undefined;
@@ -197,8 +206,8 @@ export class DeclarationReflectionParser {
 
     // Verify the source belongs to the current class
     const source = reflection.sources[0];
-    if (classItem && classItem.sources?.length) {
-      const classSource = classItem.sources[0];
+    if (parent && parent.sources?.length) {
+      const classSource = parent.sources[0];
       if (source.fileName !== classSource.fileName) {
         return undefined;
       }
@@ -218,26 +227,11 @@ export class DeclarationReflectionParser {
 
     // ts 返回类型
     if (type?.name) {
-      return type.name;
+      return type.toString();
     }
 
     // @returns 注释返回类型
     return this.getOneBlockTags(blockTags, '@returns')?.text;
-  }
-
-  /**
-   * 检查结果, 添加一些标记, 方便模板直接渲染
-   * @param {import('../index.d.ts').HBSTemplateContext} result
-   */
-  adjustResult(result) {
-    return {
-      ...result,
-      showSummary: result.summaryList.length > 0,
-      showDescription: result.descriptionList.length > 0,
-      showExample: result.exampleList.length > 0,
-      showParameters: result.parameters && result.parameters.length > 0,
-      ...this.getIsKindObjects(result.kind)
-    };
   }
 
   /**
@@ -264,140 +258,6 @@ export class DeclarationReflectionParser {
   }
 
   /**
-   * 是否是方法类型
-   * @param {string} kind
-   * @returns {boolean}
-   */
-  isMethodType(kind) {
-    return (
-      kind === ReflectionKind.Method || kind === ReflectionKind.Constructor
-    );
-  }
-
-  /**
-   * 获取 isKind xxx name 的对象
-   * @param {ReflectionKind} targetKind
-   * @returns {import('../index.d.ts').IsKindObjects}
-   */
-  getIsKindObjects(targetKind) {
-    const kindName = ReflectionKindName[targetKind];
-    return { [`is${kindName}`]: true };
-  }
-
-  /**
-   * 将一个成员转换为模板需要的对象
-   * @param {Object} params
-   * @param {import('typedoc').DeclarationReflection} params.member
-   * @param {import('typedoc').ParameterReflection[]} params.parameters
-   * @param {ReflectionKind} params.kind
-   * @param {import('typedoc').DeclarationReflection} params.classItem
-   * @returns {Object}
-   */
-  toTemplateResult({
-    member,
-    parameters,
-    kind = ReflectionKind.Class,
-    classItem
-  }) {
-    const { name } = member;
-    const comments = this.getComments(member);
-    const { summary, blockTags } = comments;
-
-    const exampleList = this.filterBlockTags(blockTags, '@example');
-    const descriptionList = this.filterBlockTags(blockTags, '@description');
-    const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
-
-    const reusltParams = parameters
-      ? this.toParametersList(parameters, member, classItem)
-      : undefined;
-
-    const result = {
-      id: member.id,
-      kind: kind,
-      name: name,
-      type: member.type ? this.getParamType(member.type) : undefined,
-      summaryList: summary,
-      blockTagsList,
-      parameters: reusltParams,
-      /** @deprecated */
-      descriptionList,
-      /** @deprecated */
-      exampleList,
-      /** @deprecated */
-      returnValue: parameters ? this.getReturnValue(member) : undefined,
-      kindName: ReflectionKindName[kind],
-      source: this.getRealSource(member, classItem)
-    };
-
-    return this.adjustResult(result);
-  }
-
-  /**
-   * 将一个类的成员转换为模板需要的对象
-   * @param {Object} params
-   * @param {import('typedoc').DeclarationReflection} params.member
-   * @param {import('typedoc').DeclarationReflection} params.classItem
-   * @param {string} params.groupKindName
-   * @returns {Object[]}
-   */
-  classMemberToTemplateResult({ member, classItem, groupKindName }) {
-    this.logger.debug(
-      `Creating [${groupKindName}] ${classItem?.name}.${member?.name}`,
-      member.id
-    );
-
-    // 签名(定义)可能存在下面几种情况:
-    // 1. extends 父类, 没有签名
-    // 2. extends 父类, 有签名, 重写了父类签名
-    // 3. 没有 extends 父类有签名
-    // 4. 没有 extends 父类没有签名
-    const isInherited = !!member.inheritedFrom;
-    const isImplementation = !!member.implementationOf;
-
-    this.logger.debug(
-      'Inherited:',
-      isInherited,
-      'Implementation:',
-      isImplementation
-    );
-
-    // FIMXE: 如果是构造器，且来自继承，则跳过
-    if (member.kind === ReflectionKind.Constructor && isInherited) {
-      this.logger.warn(`${classItem?.name} constructor is inherited, skip!`);
-      return [];
-    }
-
-    // FIXME: interface 和 class 一样
-    if (!Array.isArray(member.signatures)) {
-      this.logger.warn(
-        `${classItem?.name}.${member?.name} no signatures, skip!`
-      );
-      return [];
-    }
-
-    // 有重载的情况, 多个方法被声明, 目前就按多个处理
-    return member.signatures.map((signature, index) => {
-      const templateResult = this.toTemplateResult({
-        member: signature,
-        parameters: signature.parameters,
-        kind: member.kind,
-        classItem
-      });
-
-      this.logger.debug(
-        `Created! [${groupKindName}] ${classItem?.name}.${member?.name} signature[${index}]`,
-        `Result: ${templateResult.name}`
-      );
-
-      return Object.assign(templateResult, {
-        name: member.name,
-        isInherited,
-        isImplementation
-      });
-    });
-  }
-
-  /**
    * 获取类的注释
    * 包含 summary, blockTags,
    * 将格式统一成 { tag, text, kind, isText, isCode, isLink, isInlineTag }
@@ -412,5 +272,213 @@ export class DeclarationReflectionParser {
     });
 
     return { summary: this.toTemplateSummaryList(summary), blockTags };
+  }
+
+  /**
+   * 解析 class 的 children
+   * @param {import('typedoc').DeclarationReflection} reflection
+   * @returns {import('../index.js').HBSTemplateContext[]}
+   */
+  parseReflection(reflection) {
+    const result = this.reflectionToTemplateResult({ reflection });
+    this.logger.debug(result.kindName, result.name, result.id);
+
+    // 一般只有 class, interface 有 children
+    // 第二层， 基本是 Constructors,Properties, Methods ...
+    if (reflection.children) {
+      const members = [];
+      for (const v2member of reflection.children) {
+        const signatures = this.packSignatures(v2member, reflection);
+
+        if (Array.isArray(signatures)) {
+          members.push(...signatures);
+        } else if (signatures) {
+          members.push(signatures);
+        }
+      }
+
+      // 增加 hasMembers 属性，用于模板渲染
+      Object.assign(result, { members, hasMembers: members.length > 0 });
+    }
+
+    return result;
+  }
+
+  /**
+   * 按 source 分组, 文件路径
+   * @returns {Map<string, {[key in import('typedoc').ReflectionKind]: import('typedoc').DeclarationReflection[]}>}
+   */
+  getProjectSourceMap() {
+    const sourceMaps = new Map();
+
+    for (const child of this.project.children) {
+      // try {
+      const fullFileName =
+        this.getRealSource(child).fullFileName || child.sources[0].fileName;
+
+      if (!sourceMaps.has(fullFileName)) {
+        sourceMaps.set(fullFileName, {});
+      }
+
+      const values = sourceMaps.get(fullFileName);
+
+      if (!values[child.kind]) {
+        values[child.kind] = [];
+      }
+
+      values[child.kind].push(this.parseReflection(child));
+      // } catch {
+      //   this.logger.error('No sources for class', child.name);
+      // }
+    }
+
+    return sourceMaps;
+  }
+
+  /**
+   * 按 source 分组, 文件路径
+   *
+   * @returns {import('../index.d.ts').ParserContextMap}
+   */
+  getContextMap() {
+    const sourceMaps = this.getProjectSourceMap();
+
+    // 将 Map 转换为 Object
+    // 并将 kind 变成字符串
+    const result = {};
+    for (const [fileName, values] of sourceMaps.entries()) {
+      result[fileName] = Object.fromEntries(
+        Object.entries(values).map(([kind, children]) => [
+          ReflectionKindName[kind],
+          children
+        ])
+      );
+    }
+
+    return result;
+  }
+
+  /**
+   * 将一个反射的签名转换为模板需要的对象
+   * @param {import('typedoc').DeclarationReflection} reflection
+   * @param {import('typedoc').DeclarationReflection} parent
+   * @returns {undefined | import('../index.js').HBSTemplateContext | import('../index.js').HBSTemplateContext[]}
+   */
+  packSignatures(reflection, parent) {
+    const { inheritedFrom, implementationOf, signatures, name } = reflection;
+    // 签名(定义)可能存在下面几种情况:
+    // 1. extends 父类, 没有签名
+    // 2. extends 父类, 有签名, 重写了父类签名
+    // 3. 没有 extends 父类有签名
+    // 4. 没有 extends 父类没有签名
+    const isInherited = !!inheritedFrom;
+    const isImplementation = !!implementationOf;
+
+    this.logger.debug(
+      'Inherited:',
+      isInherited,
+      'Implementation:',
+      isImplementation
+    );
+
+    //  去掉所有来自继承的属性
+    if (this.hasSkipInherited && isInherited) {
+      this.logger.warn(`${name} is inherited, skip!`);
+      return;
+    }
+
+    // 如果是 interface, children 都没有 signatures, 那么就是自身
+    // 注意: reflection.kind 是成员， parent 才是类型
+    if (parent.kind === ReflectionKind.Interface) {
+      return this.reflectionToTemplateResult({ reflection, parent });
+    }
+
+    if (!Array.isArray(signatures)) {
+      this.logger.warn(
+        `${parent?.name}.${reflection?.name} no signatures, skip!`
+      );
+      return;
+    }
+
+    const kindName = ReflectionKindName[reflection.kind];
+
+    // 有重载的情况, 多个方法被声明, 目前就按多个处理
+    return signatures.map((signature, index) => {
+      const templateResult = this.reflectionToTemplateResult({
+        reflection: signature,
+        parent: reflection
+      });
+
+      this.logger.debug(
+        `Created signature! [${kindName}]`,
+        `${parent?.name}.${reflection?.name} signature[${index}]`,
+        `Result: ${templateResult.name}`
+      );
+
+      return Object.assign(templateResult, {
+        name: reflection.name,
+        isInherited,
+        isImplementation
+      });
+    });
+  }
+
+  /**
+   * 将一个反射转换为模板需要的对象
+   * @param {Object} params
+   * @param {import('typedoc').DeclarationReflection} params.reflection
+   * @param {import('typedoc').DeclarationReflection} params.parent
+   * @returns {import('../index.d.ts').HBSTemplateContext}
+   */
+  reflectionToTemplateResult({ reflection, parent }) {
+    const kindName = ReflectionKindName[reflection.kind];
+
+    this.logger.debug(
+      `Creating [${kindName}]`,
+      parent?.name ? `${parent?.name}.${reflection?.name}` : reflection?.name,
+      reflection.id
+    );
+
+    const { id, name, kind, type, parameters } = reflection;
+
+    const { summary, blockTags } = this.getComments(reflection);
+    const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
+    const source = this.getRealSource(reflection, parent);
+
+    const parametersList = parameters
+      ? this.toParametersList(parameters, reflection, parent)
+      : undefined;
+
+    const result = {
+      id: id,
+      kind: kind,
+      kindName: ReflectionKindName[kind],
+      name: name,
+      type: type ? this.getParamType(type) : undefined,
+      summaryList: summary,
+      blockTagsList,
+      source,
+      parametersList
+    };
+
+    this.logger.debug(
+      `Created! [${kindName}]`,
+      `${parent?.name ? `${parent?.name}.` : ''}${reflection?.name}`
+    );
+
+    return this.adjustResult(result);
+  }
+
+  /**
+   * 检查结果, 添加一些标记, 方便模板直接渲染
+   * @param {import('../index.js').HBSTemplateContext} result
+   */
+  adjustResult(result) {
+    const kindName = ReflectionKindName[result.kind];
+
+    return {
+      ...result,
+      [`is${kindName}`]: true
+    };
   }
 }

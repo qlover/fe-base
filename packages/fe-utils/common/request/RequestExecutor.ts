@@ -4,6 +4,8 @@ import { RequestConfig } from './FetchRequestConfig';
 /**
  * HTTP request methods supported by the executor
  * Follows standard HTTP method definitions
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
  */
 export type RequestMethod =
   | 'GET'
