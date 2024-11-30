@@ -45,10 +45,10 @@ const logger = new Logger({ isCI: true, debug: true });
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  options.debug  | `undefined \| boolean` | false |  | Whether to enable debug output  |
-|  options.dryRun  | `undefined \| boolean` | false |  | Whether to perform dry run only  |
-|  options.isCI  | `undefined \| boolean` | false |  | Whether running in CI environment  |
-|  options.silent  | `undefined \| boolean` | false |  | Whether to suppress all output  |
+|  options.debug  | `undefined \| boolean` | false |  | Whether to enable debug output |
+|  options.dryRun  | `undefined \| boolean` | false |  | Whether to perform dry run only |
+|  options.isCI  | `undefined \| boolean` | false |  | Whether running in CI environment |
+|  options.silent  | `undefined \| boolean` | false |  | Whether to suppress all output |
 
 
 ### debug
@@ -70,7 +70,7 @@ logger.debug('This is a debug message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### error
@@ -90,7 +90,7 @@ logger.error('This is an error message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### exec
@@ -112,7 +112,7 @@ logger.exec(['git', 'commit', '-m', 'feat: update'], { isExternal: true });
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Command arguments and options  |
+|  args  | `unknown[]` |  |  | Command arguments and options |
 
 
 ### info
@@ -132,7 +132,7 @@ logger.info('This is an info message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### log
@@ -152,7 +152,7 @@ logger.log('This is a log message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### obtrusive
@@ -173,7 +173,7 @@ logger.obtrusive('This is an important message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### prefix
@@ -194,8 +194,8 @@ const prefix = this.prefix('INFO');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  value  | `string` |  |  | The prefix value  |
-|  _level  | `LogLevel` |  |  | Log level (optional)  |
+|  value  | `string` |  |  | The prefix value |
+|  _level  | `LogLevel` |  |  | Log level (optional) |
 
 
 ### print
@@ -216,8 +216,8 @@ this.print(LEVELS.INFO, 'Information message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  level  | `LogLevel` |  |  | Log level for the message  |
-|  args  | `unknown[]` |  |  | Arguments to log  |
+|  level  | `LogLevel` |  |  | Log level for the message |
+|  args  | `unknown[]` |  |  | Arguments to log |
 
 
 ### verbose
@@ -239,7 +239,7 @@ logger.verbose('This is a verbose message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ### warn
@@ -259,7 +259,7 @@ logger.warn('This is a warning message');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  args  | `unknown[]` |  |  | Values to log  |
+|  args  | `unknown[]` |  |  | Values to log |
 
 
 ## Interface `ExecOptions`

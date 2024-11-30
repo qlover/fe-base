@@ -54,8 +54,8 @@ enabled(name: keyof ExecutorPlugin, ...args: unknown[]) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook being executed  |
-|  args  | `unknown[]` |  |  | Arguments passed to the hook  |
+|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook being executed |
+|  args  | `unknown[]` |  |  | Arguments passed to the hook |
 
 
 ### onBefore
@@ -66,7 +66,7 @@ Can modify the input data before it reaches the task
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data  |
+|  data  | `unknown` |  |  | Input data |
 
 
 ### onError
@@ -82,8 +82,8 @@ Error handling hook
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  error  | `Error` |  |  | Error that occurred  |
-|  data  | `unknown` |  |  | Original input data  |
+|  error  | `Error` |  |  | Error that occurred |
+|  data  | `unknown` |  |  | Original input data |
 
 
 ### onExec
@@ -94,7 +94,7 @@ Only the first plugin with onExec will be used
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `Task<T, unknown>` |  |  | Task to be executed  |
+|  task  | `Task<T, unknown>` |  |  | Task to be executed |
 
 
 ### onSuccess
@@ -105,7 +105,7 @@ Can transform the task result
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  result  | `T` |  |  | Task execution result  |
+|  result  | `T` |  |  | Task execution result |
 
 
 ## TypeAlias `PromiseTask`

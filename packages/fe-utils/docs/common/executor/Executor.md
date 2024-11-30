@@ -50,7 +50,7 @@ const executor = new Executor({
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `ExecutorConfig` | {} |  | Optional configuration object  |
+|  config  | `ExecutorConfig` | {} |  | Optional configuration object |
 
 
 ### exec
@@ -79,7 +79,7 @@ const result = await executor.exec(async (data) => {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `Task<T>` |  |  | Task to execute  |
+|  task  | `Task<T>` |  |  | Task to execute |
 
 
 ### exec
@@ -108,8 +108,8 @@ const result = await executor.exec(data, async (data) => {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data for task  |
-|  task  | `Task<T>` |  |  | Task to execute  |
+|  data  | `unknown` |  |  | Input data for task |
+|  task  | `Task<T>` |  |  | Task to execute |
 
 
 ### execNoError
@@ -137,7 +137,7 @@ if (result instanceof ExecutorError) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `Task<T>` |  |  | Task to execute  |
+|  task  | `Task<T>` |  |  | Task to execute |
 
 
 ### execNoError
@@ -165,8 +165,8 @@ if (result instanceof ExecutorError) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data for task  |
-|  task  | `Task<T>` |  |  | Task to execute  |
+|  data  | `unknown` |  |  | Input data for task |
+|  task  | `Task<T>` |  |  | Task to execute |
 
 
 ### runHook
@@ -189,9 +189,9 @@ await executor.runHook(plugins, 'beforeExec', data);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Plugins to execute  |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Hook name to execute  |
-|  args  | `unknown[]` |  |  | Arguments for the hook  |
+|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Plugins to execute |
+|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Hook name to execute |
+|  args  | `unknown[]` |  |  | Arguments for the hook |
 
 
 ### use
@@ -215,7 +215,7 @@ executor.use(new RetryPlugin({ maxAttempts: 3 }));
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | Plugin instance to add  |
+|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | Plugin instance to add |
 
 
 ## Interface `ExecutorConfig`

@@ -86,8 +86,8 @@ const result = executor.exec((data) => {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `unknown` |  |  | Task data or task function  |
-|  task  | `SyncTask<T, D>` |  |  | Task function (optional)  |
+|  dataOrTask  | `unknown` |  |  | Task data or task function |
+|  task  | `SyncTask<T, D>` |  |  | Task function (optional) |
 
 
 ### execNoError
@@ -120,8 +120,8 @@ if (result instanceof ExecutorError) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `unknown` |  |  | Task data or task function  |
-|  task  | `SyncTask<T>` |  |  | Task function (optional)  |
+|  dataOrTask  | `unknown` |  |  | Task data or task function |
+|  task  | `SyncTask<T>` |  |  | Task function (optional) |
 
 
 ### run
@@ -168,8 +168,8 @@ private run(data, task) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `D` |  |  | Data to pass to the task  |
-|  actualTask  | `SyncTask<T, D>` |  |  | Actual task function to execute  |
+|  data  | `D` |  |  | Data to pass to the task |
+|  actualTask  | `SyncTask<T, D>` |  |  | Actual task function to execute |
 
 
 ### runHook
@@ -201,7 +201,7 @@ const result = this.runHook(
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute  |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute  |
-|  args  | `unknown[]` |  |  | Arguments to pass to the hook function  |
+|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute |
+|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute |
+|  args  | `unknown[]` |  |  | Arguments to pass to the hook function |
 

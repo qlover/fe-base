@@ -37,8 +37,8 @@ Deserializes data from target format back to original form
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `R` |  |  | Data to deserialize  |
-|  defaultValue  | `T` |  |  | Optional default value to return if deserialization fails  |
+|  data  | `R` |  |  | Data to deserialize |
+|  defaultValue  | `T` |  |  | Optional default value to return if deserialization fails |
 
 
 ### serialize
@@ -52,5 +52,5 @@ Serializes data into a target format
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `T` |  |  | Data to serialize  |
+|  data  | `T` |  |  | Data to serialize |
 
