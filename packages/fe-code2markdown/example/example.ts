@@ -12,6 +12,16 @@
  *   optArgs2: true
  * };
  * ```
+ *
+ * @example
+ * this is example 2
+ *
+ * ```typescript
+ * const options: OptionsMethosParams = {
+ *   optArgs1: "some string",
+ *   optArgs2: true
+ * };
+ * ```
  */
 export interface ExampleOptionsInterface {
   /**
@@ -47,8 +57,10 @@ export type ExampleOptionsType = {
 
 /**
  * This is a example class
- *
- * Only use for test
+ * summary line1
+ * summary line2
+ * - Only use for test
+ * - summary line3
  *
  * @description Only Description
  * @class
@@ -152,7 +164,9 @@ export class ExampleClass {
    * })
    * example.publicExampleMethod('example', 'publicParam')
    * ```
-   * @example public ExampleMethod example2
+   * @example
+   * public ExampleMethod example2
+   *
    * this is example 2
    * ```typescript
    * const example = new ExampleClass({

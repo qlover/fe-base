@@ -13,8 +13,12 @@
 
 {{!-- blockTagsList --}}
 {{#each blockTagsList}}
-{{this.tag}}
+{{this.tag}} {{{this.name}}}
+
+{{#each this.content}}
 {{{this.text}}}
+
+{{/each}}
 {{/each}}
 
 {{!-- members --}}
@@ -30,9 +34,12 @@
 
 {{!-- member blockTagsList --}}
 {{#each this.blockTagsList}}
-**{{this.tag}}**
+**{{this.tag}}** {{{this.name}}}
+
+{{#each this.content}}
 {{{this.text}}}
 
+{{/each}}
 {{/each}}
 
 {{!-- member parameters --}}
