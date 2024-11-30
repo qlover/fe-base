@@ -26,8 +26,9 @@ function setupRelease(release) {
     return 1;
   }
 
-  // github cli need first clear
-  release.config.ghToken = env.getEnvDestroy('GITHUB_TOKEN') || '';
+  // github cli need first clear, but release-it will get it
+  // FIXME: octokit will warn if token is not clear
+  release.config.ghToken = env.get('GITHUB_TOKEN') || '';
   release.config.npmToken = env.get('NPM_TOKEN');
   release.config.branch = env.get('PR_BRANCH');
   release.config.env = env.get('NODE_ENV');
