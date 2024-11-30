@@ -1,5 +1,12 @@
 
 
+## [1.0.12](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.11...fe-utils-v1.0.12) (2024-11-30)
+
+
+### Bug Fixes
+
+* code2markdown table decription ([#146](https://github.com/qlover/fe-base/issues/146)) ([39db11e](https://github.com/qlover/fe-base/commit/39db11e56f225a4364398f090db299840f6a2ac5))
+
 ## [1.0.11](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.10...fe-utils-v1.0.11) (2024-11-30)
 
 ### Features
