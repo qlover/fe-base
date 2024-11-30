@@ -12,7 +12,11 @@ Core Idea: Simplify URL handling and response validation.
 Main Function: Manage URL construction and check response status.
 Main Purpose: Ensure correct URL formation and response handling.
 
-@example
+@implements 
+
+
+@example 
+
 ```typescript
 // Basic usage
 const urlPlugin = new FetchURLPlugin();
@@ -26,6 +30,7 @@ await client.get({
   params: { role: 'admin' }
 });
 ```
+
 
 ## Members
 
@@ -42,7 +47,8 @@ Core Idea: Add query parameters to URLs.
 Main Function: Construct URLs with appended query parameters.
 Main Purpose: Facilitate dynamic URL query construction.
 
-**@example**
+**@example** 
+
 ```typescript
 const url = urlPlugin.appendQueryParams(
   'https://api.example.com/users',
@@ -66,7 +72,8 @@ Core Idea: Construct full URLs from configuration.
 Main Function: Generate complete URLs for requests.
 Main Purpose: Ensure accurate URL formation for HTTP requests.
 
-**@example**
+**@example** 
+
 ```typescript
 const completeUrl = urlPlugin.buildUrl(config);
 ```
@@ -86,7 +93,8 @@ Core Idea: Concatenate base URL and path.
 Main Function: Form complete URLs from base and path.
 Main Purpose: Simplify URL construction with base paths.
 
-**@example**
+**@example** 
+
 ```typescript
 const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
 ```
@@ -106,7 +114,8 @@ Core Idea: Determine if a URL is fully qualified.
 Main Function: Identify absolute URLs.
 Main Purpose: Ensure correct URL handling in requests.
 
-**@example**
+**@example** 
+
 ```typescript
 const isAbsolute = urlPlugin.isFullURL('https://example.com');
 ```
@@ -125,7 +134,8 @@ Core Idea: Prepare request URLs before execution.
 Main Function: Construct and set complete URLs in configuration.
 Main Purpose: Ensure requests are sent to the correct endpoints.
 
-**@example**
+**@example** 
+
 ```typescript
 urlPlugin.onBefore(config);
 ```
@@ -145,7 +155,8 @@ Core Idea: Standardize error handling for requests.
 Main Function: Convert errors to FetchRequestError format.
 Main Purpose: Ensure consistent error handling across requests.
 
-**@example**
+**@example** 
+
 ```typescript
 const error = urlPlugin.onError(new Error('Network Error'));
 ```
@@ -165,10 +176,12 @@ Core Idea: Ensure response status is acceptable.
 Main Function: Validate response status codes.
 Main Purpose: Detect and handle unsuccessful HTTP responses.
 
-**@throws**
+**@throws** 
+
 If response is not OK
 
-**@example**
+**@example** 
+
 ```typescript
 const response = urlPlugin.onSuccess(fetchResponse);
 ```

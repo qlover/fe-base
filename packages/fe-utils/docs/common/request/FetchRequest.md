@@ -11,10 +11,12 @@ Core Idea: Simplify HTTP requests with built-in fetch support.
 Main Function: Initialize fetch requests with optional configuration.
 Main Purpose: Provide a flexible and extensible HTTP request utility.
 
-**@throws**
+**@throws** 
+
 When fetch is not available
 
-**@example**
+**@example** 
+
 ```typescript
 const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 ```
@@ -34,7 +36,8 @@ Core Idea: Convert configuration into fetch-compatible format.
 Main Function: Prepare RequestInit object for fetch API.
 Main Purpose: Ensure correct request setup for fetch execution.
 
-**@example**
+**@example** 
+
 ```typescript
 const requestInit = fetchRequest.composeRequestInit(config);
 ```
@@ -54,10 +57,12 @@ Core Idea: Execute HTTP requests with merged configurations.
 Main Function: Perform fetch requests using provided configurations.
 Main Purpose: Facilitate HTTP communication with error handling.
 
-**@throws**
+**@throws** 
+
 When fetcher is not available
 
-**@example**
+**@example** 
+
 ```typescript
 const response = await fetchRequest.request({ url: '/data' });
 ```
@@ -73,13 +78,15 @@ const response = await fetchRequest.request({ url: '/data' });
 Custom error class for fetch request failures
 Extends ExecutorError to maintain error chain compatibility
 
-@example
+@example 
+
 ```typescript
 throw new FetchRequestError(
   FetchRequestErrorID.RESPONSE_NOT_OK,
   'Server responded with 404'
 );
 ```
+
 
 ## Members
 

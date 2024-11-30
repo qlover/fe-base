@@ -7,9 +7,12 @@ The Executor pattern implements a pluggable execution pipeline that allows:
 3. Error handling
 4. Custom execution logic
 
-@abstract
+@abstract 
+
 Executor
-@example
+
+@example 
+
 ```typescript
 // Create an executor instance
 const executor = new AsyncExecutor();
@@ -24,6 +27,7 @@ const result = await executor.exec(async (data) => {
 });
 ```
 
+
 ## Members
 
 ### constructor
@@ -34,7 +38,8 @@ Core Concept: Configurable executor setup
 Main Features: Configuration injection
 Primary Use: Executor instantiation
 
-**@example**
+**@example** 
+
 ```typescript
 const executor = new Executor({
   // config options
@@ -58,10 +63,12 @@ Main Features:
 - Error handling
 Primary Use: Running tasks through the executor pipeline
 
-**@throws**
+**@throws** 
+
 If task execution fails
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await executor.exec(async (data) => {
   return await processData(data);
@@ -85,10 +92,12 @@ Main Features:
 - Error handling
 Primary Use: Running tasks with input data through the executor pipeline
 
-**@throws**
+**@throws** 
+
 If task execution fails
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await executor.exec(data, async (data) => {
   return await processData(data);
@@ -113,7 +122,8 @@ Main Features:
 - Non-throwing execution
 Primary Use: When error handling is preferred over exceptions
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await executor.execNoError(async (data) => {
   return await riskyOperation(data);
@@ -140,7 +150,8 @@ Main Features:
 - Non-throwing execution
 Primary Use: When error handling is preferred over exceptions with input data
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await executor.execNoError(data, async (data) => {
   return await riskyOperation(data);
@@ -168,7 +179,8 @@ Main Features:
 - Support for async and sync hooks
 Primary Use: Running plugin lifecycle methods
 
-**@example**
+**@example** 
+
 ```typescript
 await executor.runHook(plugins, 'beforeExec', data);
 ```
@@ -192,7 +204,8 @@ Main Features:
 - Maintains plugin execution order
 Primary Use: Adding new capabilities to executor
 
-**@example**
+**@example** 
+
 ```typescript
 executor.use(new LoggerPlugin());
 executor.use(new RetryPlugin({ maxAttempts: 3 }));
@@ -213,10 +226,12 @@ Core Concept: Extensible configuration container
 Main Features: Currently empty but designed for future extension
 Primary Use: Allows customization of executor behavior
 
-@example
+@example 
+
 ```typescript
 const config: ExecutorConfig = {
   // Future configuration options will go here
 };
 ```
+
 

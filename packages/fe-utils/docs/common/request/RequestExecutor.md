@@ -8,7 +8,8 @@ Features:
 - Configurable request options
 - Type-safe request configuration
 
-@example
+@example 
+
 ```typescript
 // Basic usage
 const executor = new RequestExecutor(config, new AsyncExecutor());
@@ -25,6 +26,7 @@ const result = await executor.post({
   body: JSON.stringify({ name: 'John' })
 });
 ```
+
 
 ## Members
 
@@ -119,7 +121,8 @@ Performs HTTP PUT request
 Core request method that handles all HTTP requests
 Should be implemented by concrete classes
 
-**@throws**
+**@throws** 
+
 When not implemented
 
 
@@ -136,6 +139,8 @@ When not implemented
 HTTP request methods supported by the executor
 Follows standard HTTP method definitions
 
-@see
+@see 
+
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+
 

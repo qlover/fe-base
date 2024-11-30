@@ -9,7 +9,8 @@ Main Features:
 - Error handling with plugin support
 Primary Use: Handling async operations with extensible middleware
 
-@example
+@example 
+
 ```typescript
 const executor = new AsyncExecutor();
 executor.use(new LogPlugin());
@@ -19,6 +20,7 @@ const result = await executor.exec(async (data) => {
   return response.json();
 });
 ```
+
 
 ## Members
 
@@ -38,10 +40,12 @@ Execution flow:
 2. Check for custom execution plugins
 3. Execute task with plugin pipeline
 
-**@throws**
+**@throws** 
+
 When task is not an async function
 
-**@example**
+**@example** 
+
 ```typescript
 // With separate data and task
 const data = { userId: 123 };
@@ -74,7 +78,8 @@ Main Features:
 - Returns either result or error object
 Primary Use: When you want to handle errors without try-catch
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await executor.execNoError(async () => {
   const response = await riskyOperation();
@@ -111,10 +116,12 @@ Pipeline stages:
 3. onSuccess hooks - Post-process results
 4. onError hooks - Handle any errors
 
-**@throws**
+**@throws** 
+
 When task execution fails
 
-**@example**
+**@example** 
+
 ```typescript
 private async run(data, task) {
   try {
@@ -157,7 +164,8 @@ Plugin execution flow:
 2. Execute plugin hook if available
 3. Handle plugin results and chain breaking conditions
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await this.runHook(
   this.plugins,

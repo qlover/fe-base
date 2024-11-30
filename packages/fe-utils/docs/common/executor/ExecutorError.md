@@ -5,7 +5,8 @@ This class provides a structured way to handle errors that occur during executor
 It extends the standard Error class to include an error identification string, which can be used
 to categorize and manage errors more effectively.
 
-@example
+@example 
+
 ```typescript
 try {
   // some executor operation
@@ -13,6 +14,7 @@ try {
   throw new ExecutorError('EXECUTOR_ERROR', error);
 }
 ```
+
 
 ## Members
 

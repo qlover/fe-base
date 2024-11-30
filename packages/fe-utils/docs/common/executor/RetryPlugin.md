@@ -8,7 +8,11 @@ Core Idea: Enhance task execution reliability through retries.
 Main Function: Retry failed tasks based on specified conditions and strategies.
 Main Purpose: Improve success rates of task executions by handling transient errors.
 
-@example
+@implements 
+
+
+@example 
+
 ```typescript
 const retryPlugin = new RetryPlugin({
   maxRetries: 5,
@@ -17,6 +21,7 @@ const retryPlugin = new RetryPlugin({
   shouldRetry: (error) => error.message !== 'Invalid credentials'
 });
 ```
+
 
 ## Members
 
@@ -30,7 +35,8 @@ Core Idea: Initialize retry plugin with user-defined and default settings.
 Main Function: Set up retry configuration for task execution.
 Main Purpose: Prepare the plugin to handle retries according to specified logic.
 
-**@example**
+**@example** 
+
 ```typescript
 const retryPlugin = new RetryPlugin({
   maxRetries: 5,
@@ -56,7 +62,8 @@ Core Idea: Control the timing of retry attempts.
 Main Function: Calculate and apply delay based on retry strategy.
 Main Purpose: Prevent immediate consecutive retries, allowing time for transient issues to resolve.
 
-**@example**
+**@example** 
+
 ```typescript
 await this.delay(2); // Applies delay for the third attempt
 ```
@@ -78,7 +85,8 @@ Core Idea: Integrate retry logic into task execution.
 Main Function: Execute tasks with retry support.
 Main Purpose: Enhance task execution robustness by handling failures.
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await retryPlugin.onExec(() => fetchData());
 ```
@@ -100,10 +108,12 @@ Core Idea: Implement a robust retry mechanism for task execution.
 Main Function: Execute tasks with retries and handle failures.
 Main Purpose: Increase task success rates by retrying on failure.
 
-**@throws**
+**@throws** 
+
 When all retry attempts fail
 
-**@example**
+**@example** 
+
 ```typescript
 const result = await this.retry(fetchData, options, 3);
 ```
@@ -127,7 +137,8 @@ Core Idea: Decide on retry attempts based on conditions.
 Main Function: Evaluate retry conditions and remaining attempts.
 Main Purpose: Prevent unnecessary retries and optimize execution flow.
 
-**@example**
+**@example** 
+
 ```typescript
 if (this.shouldRetry({ error, retryCount })) {
   // Proceed with retry
@@ -152,7 +163,8 @@ Core Idea: Provide a flexible configuration for retry logic.
 Main Function: Define retry parameters such as max retries, delay, and conditions.
 Main Purpose: Allow customization of retry behavior to suit different use cases.
 
-@example
+@example 
+
 ```typescript
 const options: RetryOptions = {
   maxRetries: 5,
@@ -162,13 +174,15 @@ const options: RetryOptions = {
 };
 ```
 
+
 ## Members
 
 ### maxRetries
 Maximum number of retry attempts (starting from 0)
 Will be clamped between 1 and SAFE_MAX_RETRIES (16)
 
-**@default**
+**@default** 
+
 ```ts
 3
 ```
@@ -180,7 +194,8 @@ Will be clamped between 1 and SAFE_MAX_RETRIES (16)
 Base delay between retry attempts in milliseconds
 Used directly for fixed delay, or as base for exponential backoff
 
-**@default**
+**@default** 
+
 ```ts
 1000
 ```
@@ -191,7 +206,8 @@ Used directly for fixed delay, or as base for exponential backoff
 ### shouldRetry
 Custom function to determine if a retry should be attempted
 
-**@default**
+**@default** 
+
 ```ts
 () => true (always retry)
 ```
@@ -203,7 +219,8 @@ Custom function to determine if a retry should be attempted
 When true, implements exponential backoff delay strategy
 Delay formula: retryDelay * (2 ^ attemptNumber)
 
-**@default**
+**@default** 
+
 ```ts
 false
 ```

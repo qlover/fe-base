@@ -10,7 +10,8 @@ Main Purpose: Facilitate debugging and monitoring by providing structured log ou
 
  Logger
 
-@example
+@example 
+
 ```typescript
 // Create a logger instance
 const logger = new Logger({ debug: true });
@@ -20,6 +21,7 @@ logger.info('This is an info message');
 logger.error('This is an error message');
 logger.debug('This is a debug message');
 ```
+
 
 ## Members
 
@@ -33,7 +35,8 @@ Core Idea: Initialize logger with environment-specific settings.
 Main Function: Set up logging configuration based on provided options.
 Main Purpose: Customize logging behavior to suit different operational contexts.
 
-**@example**
+**@example** 
+
 ```typescript
 const logger = new Logger({ isCI: true, debug: true });
 ```
@@ -57,7 +60,8 @@ Core Idea: Provide detailed debug information.
 Main Function: Output debug messages to the console.
 Main Purpose: Assist in debugging by providing detailed information.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.debug('This is a debug message');
 ```
@@ -76,7 +80,8 @@ Core Idea: Log error messages.
 Main Function: Output error messages to the console.
 Main Purpose: Report errors and exceptions in the application.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.error('This is an error message');
 ```
@@ -96,7 +101,8 @@ Core Idea: Log command execution details.
 Main Function: Output command execution information.
 Main Purpose: Track command execution for auditing and debugging.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.exec('npm', 'install', { isDryRun: true });
 logger.exec(['git', 'commit', '-m', 'feat: update'], { isExternal: true });
@@ -116,7 +122,8 @@ Core Idea: Log informational messages.
 Main Function: Output informational messages to the console.
 Main Purpose: Provide insights into the application's operation.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.info('This is an info message');
 ```
@@ -135,7 +142,8 @@ Core Idea: Provide a simple logging method.
 Main Function: Log messages at the basic level.
 Main Purpose: Output general information to the console.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.log('This is a log message');
 ```
@@ -155,7 +163,8 @@ Core Idea: Provide obtrusive logging for emphasis.
 Main Function: Output messages with additional spacing.
 Main Purpose: Highlight important messages in the log.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.obtrusive('This is an important message');
 ```
@@ -175,7 +184,8 @@ Core Idea: Enhance log messages with contextual prefixes.
 Main Function: Format log messages with a prefix.
 Main Purpose: Improve log readability and context.
 
-**@example**
+**@example** 
+
 ```typescript
 const prefix = this.prefix('INFO');
 ```
@@ -196,7 +206,8 @@ Core Idea: Centralize log output handling.
 Main Function: Output log messages to the console.
 Main Purpose: Provide a single point of control for log output.
 
-**@example**
+**@example** 
+
 ```typescript
 this.print(LEVELS.INFO, 'Information message');
 ```
@@ -218,7 +229,8 @@ Core Idea: Provide verbose logging for detailed output.
 Main Function: Output verbose messages to the console.
 Main Purpose: Offer additional insights during debugging.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.verbose('This is a verbose message');
 ```
@@ -237,7 +249,8 @@ Core Idea: Log warning messages.
 Main Function: Output warning messages to the console.
 Main Purpose: Alert about potential issues or important notices.
 
-**@example**
+**@example** 
+
 ```typescript
 logger.warn('This is a warning message');
 ```

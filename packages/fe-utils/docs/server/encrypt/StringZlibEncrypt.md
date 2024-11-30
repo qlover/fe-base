@@ -8,7 +8,11 @@ Features:
 - IV support
 - Configurable encoding
 
-@example
+@implements 
+
+
+@example 
+
 ```typescript
 const encryptor = new StringZlibEncrypt('my-16-char-key!!');
 
@@ -19,12 +23,14 @@ const encrypted = encryptor.encrypt('large text data');
 const decrypted = encryptor.decrypt(encrypted);
 ```
 
+
 ## Members
 
 ### constructor
 Creates a new StringZlibEncrypt instance
 
-**@throws**
+**@throws** 
+
 If key length is invalid
 
 
@@ -61,7 +67,8 @@ Applies compression before encryption
 Validates and processes encryption key
 Ensures key meets length requirements
 
-**@throws**
+**@throws** 
+
 If key length is invalid
 
 
