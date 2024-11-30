@@ -9,6 +9,12 @@ Object.entries(ReflectionKind).reduce((acc, [key, value]) => {
   return acc;
 }, ReflectionKindName);
 
+const DisplayPartsKindName = {
+  text: 'Text',
+  code: 'Code',
+  inlineTag: 'InlineTag'
+};
+
 export class TypeDocConverter {
   /**
    *
@@ -98,18 +104,16 @@ export class TypeDocConverter {
 
   /**
    * 将一个summary转换为模板需要的对象
-   * @param {import('typedoc').CommentDisplayPart[]} summary
+   * @param {import('typedoc').CommentDisplayPart} summary
    * @param {string} tag
-   * @returns {import('typedoc').CommentDisplayPart & { isText: boolean, isCode: boolean, isLink: boolean, isInlineTag: boolean, tag: string }}
+   * @returns {import('typedoc').CommentDisplayPart & { isText?: boolean, isCode?: boolean, isInlineTag?: boolean, tag: string }}
    */
   toTemplateSummary(summary, tag) {
     return {
       ...summary,
-      isText: summary.kind === 'text',
-      isCode: summary.kind === 'code',
-      isLink: summary.kind === 'link',
-      isInlineTag: summary.kind === 'inlineTag',
-      tag
+      [`is${DisplayPartsKindName[summary.kind]}`]: true,
+      tag,
+      title: tag?.replace('@', '')
     };
   }
 
@@ -262,13 +266,17 @@ export class TypeDocConverter {
    * 包含 summary, blockTags,
    * 将格式统一成 { tag, text, kind, isText, isCode, isLink, isInlineTag }
    * @param {import('typedoc').DeclarationReflection} classItem
-   * @returns {{summary: import('typedoc').CommentDisplayPart[], blockTags: import('typedoc').CommentDisplayPart[]}}
+   * @returns {{summary: import('typedoc').Comment[], blockTags: import('typedoc').Comment[]}}
    */
   getComments(classItem) {
     let { summary = [], blockTags = [] } = classItem.comment || {};
 
-    blockTags = blockTags.flatMap((tag) => {
-      return tag.content.map((item) => this.toTemplateSummary(item, tag.tag));
+    blockTags = blockTags.map((tag) => {
+      const content = tag.content.map((item) =>
+        this.toTemplateSummary(item, tag.tag)
+      );
+      // 如果 content 为空, 则不返回 content
+      return { ...tag, content: content.length > 0 ? content : undefined };
     });
 
     return { summary: this.toTemplateSummaryList(summary), blockTags };

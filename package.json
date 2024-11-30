@@ -33,7 +33,9 @@
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "prepare": "husky",
-    "build:docs": "yarn workspace @qlover/fe-utils build:docs"
+    "build:fe-utils:docs": "yarn workspace @qlover/fe-utils build:docs",
+    "build:fe-code2md:docs": "yarn workspace @qlover/fe-code2markdown build:docs",
+    "build:docs": "yarn build:fe-utils:docs && yarn build:fe-code2md:docs"
   },
   "keywords": [
     "fe",
