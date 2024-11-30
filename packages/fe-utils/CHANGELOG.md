@@ -2,6 +2,14 @@
 
 ## [1.0.11](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.10...fe-utils-v1.0.11) (2024-11-30)
 
+### Features
+
+* Serializer JSON and Base64 ([#144](https://github.com/qlover/fe-base/issues/144)) ([9fcfa1a](https://github.com/qlover/fe-base/pull/144/commits/9fcfa1adc336a75851b5d057540262af7514b2a3))
+
+### Documentation
+
+* new fe-utils docs ([#144](https://github.com/qlover/fe-base/issues/144)) ([2636773](https://github.com/qlover/fe-base/pull/144/commits/263677347edcffb44651d6663fdda53d39e109d9))
+
 ## [1.0.10](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.9...fe-utils-v1.0.10) (2024-11-29)
 
 ## [1.0.9](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.7...fe-utils-v1.0.9) (2024-11-29)
