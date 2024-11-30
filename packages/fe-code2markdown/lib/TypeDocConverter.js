@@ -52,6 +52,23 @@ export class TypeDocConverter {
   }
 
   /**
+   * 将 summaryList 转换为 markdown table
+   *
+   * 只处理 text 类型的 summary, table 中不支持显示 code 类型
+   * 将换行符转换为 <br>
+   *
+   * @param {import('typedoc').CommentDisplayPart[]} summaryList
+   * @returns {string}
+   */
+  summaryListToMarkdownTable(summaryList) {
+    return summaryList
+      .filter((summary) => summary.kind === 'text')
+      .map((summary) => summary.text)
+      .join('')
+      .replace(/\n/g, '<br>');
+  }
+
+  /**
    * 获取一个blockTags中的一个tag的内容
    *
    * FIXME: 未找到返回null
@@ -132,12 +149,10 @@ export class TypeDocConverter {
         // 如果是一个引用类型？
         if (decChildren.length > 0) {
           decChildren.forEach((child) => {
-            const { blockTags = [] } = child.comment || {};
-            result.push(this.toParametersListItem(child, param, blockTags));
+            result.push(this.toParametersListItem(child, param));
           });
         } else {
-          const { blockTags = [] } = param.comment || {};
-          result.push(this.toParametersListItem(param, null, blockTags));
+          result.push(this.toParametersListItem(param));
         }
       } catch (e) {
         this.logger.warn(
@@ -169,8 +184,8 @@ export class TypeDocConverter {
    * @param {import('typedoc').CommentTag[] | undefined} blockTags
    * @returns {Object}
    */
-  toParametersListItem(child, parent, blockTags) {
-    blockTags = blockTags || child.comment?.blockTags || [];
+  toParametersListItem(child, parent) {
+    const { summary = [], blockTags = [] } = child.comment || {};
     // 过滤掉 @returns 和 @param
     const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
 
@@ -183,16 +198,24 @@ export class TypeDocConverter {
     // getOneBlockTags 没有找到会返回 null
     const deprecated = this.getOneBlockTags(blockTags, '@deprecated') !== null;
 
+    const summaryList = this.toTemplateSummaryList(summary);
+    const descriptionList = this.getBlockTags(blockTags, '@description');
+    // 用于markdown table, 将 summary 和 @descripts 拼接
+    const summaryString = this.summaryListToMarkdownTable(summaryList);
+    const descriptionString = this.summaryListToMarkdownTable(descriptionList);
+    const description = summaryString + descriptionString;
+
     return {
       id: child.id,
       name: parent ? parent.name + '.' + child.name : child.name,
       type: this.getParamType(child.type, child.type?.name),
       blockTagsList,
-      summaryList: this.toTemplateSummaryList(child.comment?.summary || []),
-      descriptionList: this.getBlockTags(blockTags, '@description'),
+      summaryList,
+      descriptionList,
       defaultValue: defaultValue,
       since: this.getOneBlockTags(blockTags, '@since'),
-      deprecated
+      deprecated,
+      description
     };
   }
 
