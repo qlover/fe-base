@@ -40,6 +40,7 @@ import { Serializer } from './Serializer';
  * ```
  *
  * @example
+ *
  * `JSON.parse` may encounter errors, so we use `deserialize` method to handle them, set default value if needed
  *
  * ```typescript

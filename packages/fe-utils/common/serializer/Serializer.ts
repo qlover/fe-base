@@ -26,6 +26,7 @@
 export interface Serializer<T = any, R = string> {
   /**
    * Serializes data into a target format
+   * @since 1.0.10
    * @param data - Data to serialize
    * @returns Serialized representation
    */
@@ -33,6 +34,7 @@ export interface Serializer<T = any, R = string> {
 
   /**
    * Deserializes data from target format back to original form
+   * @since 1.0.10
    * @param data - Data to deserialize
    * @param defaultValue - Optional default value to return if deserialization fails
    * @returns Original data structure

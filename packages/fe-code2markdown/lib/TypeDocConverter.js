@@ -397,7 +397,10 @@ export class TypeDocConverter {
 
     // 如果是 interface, children 都没有 signatures, 那么就是自身
     // 注意: reflection.kind 是成员， parent 才是类型
-    if (parent.kind === ReflectionKind.Interface) {
+    if (
+      parent.kind === ReflectionKind.Interface &&
+      !Array.isArray(signatures)
+    ) {
       return this.reflectionToTemplateResult({ reflection, parent });
     }
 
