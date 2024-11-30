@@ -62,7 +62,7 @@ abortPlugin.abort({
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Configuration of request to abort  |
+|  config  | `FetchRequestConfig` |  |  | Configuration of request to abort |
 
 
 ### abortAll
@@ -103,7 +103,7 @@ const key = abortPlugin.generateRequestKey(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 
 
 ### onBefore
@@ -124,7 +124,7 @@ const modifiedConfig = abortPlugin.onBefore(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 
 
 ### onError
@@ -145,6 +145,6 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  error  | `Error` |  |  | Original error  |
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  error  | `Error` |  |  | Original error |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 

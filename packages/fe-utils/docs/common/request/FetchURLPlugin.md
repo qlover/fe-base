@@ -60,8 +60,8 @@ const url = urlPlugin.appendQueryParams(
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | Base URL  |
-|  params  | `Record<string, string>` | {} |  | Parameters to append  |
+|  url  | `string` |  |  | Base URL |
+|  params  | `Record<string, string>` | {} |  | Parameters to append |
 
 
 ### buildUrl
@@ -82,7 +82,7 @@ const completeUrl = urlPlugin.buildUrl(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 
 
 ### connectBaseURL
@@ -103,8 +103,8 @@ const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | URL path  |
-|  baseURL  | `string` |  |  | Base URL  |
+|  url  | `string` |  |  | URL path |
+|  baseURL  | `string` |  |  | Base URL |
 
 
 ### isFullURL
@@ -124,7 +124,7 @@ const isAbsolute = urlPlugin.isFullURL('https://example.com');
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | URL to check  |
+|  url  | `string` |  |  | URL to check |
 
 
 ### onBefore
@@ -144,7 +144,7 @@ urlPlugin.onBefore(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 
 
 ### onError
@@ -165,7 +165,7 @@ const error = urlPlugin.onError(new Error('Network Error'));
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  error  | `Error` |  |  | Original error  |
+|  error  | `Error` |  |  | Original error |
 
 
 ### onSuccess
@@ -190,5 +190,5 @@ const response = urlPlugin.onSuccess(fetchResponse);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  result  | `Response` |  |  | Fetch response  |
+|  result  | `Response` |  |  | Fetch response |
 

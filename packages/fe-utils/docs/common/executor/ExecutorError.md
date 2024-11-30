@@ -29,7 +29,6 @@ if originalError is not provided, the error message will be the id.
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  id  | `string` |  |  | A unique identifier for the error, used for categorization and tracking.  |
-|  originalError  | `string \| Error` |  |  | The original error message or Error object that triggered this error.
-                       This parameter is optional.  |
+|  id  | `string` |  |  | A unique identifier for the error, used for categorization and tracking. |
+|  originalError  | `string \| Error` |  |  | The original error message or Error object that triggered this error.<br>                       This parameter is optional. |
 

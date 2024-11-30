@@ -14,8 +14,8 @@ If key length is invalid
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  encryptionKey  | `string` |  |  | Key used for encryption/decryption  |
-|  encoding  | `BufferEncoding` | 'base64' |  | Output encoding format  |
+|  encryptionKey  | `string` |  |  | Key used for encryption/decryption |
+|  encoding  | `BufferEncoding` | 'base64' |  | Output encoding format |
 
 
 ### decrypt
@@ -26,7 +26,7 @@ Extracts IV from encrypted data
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  encryptedData  | `string` |  |  | Encrypted string with IV  |
+|  encryptedData  | `string` |  |  | Encrypted string with IV |
 
 
 ### encrypt
@@ -37,7 +37,7 @@ Uses random IV for each encryption
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  value  | `string` |  |  | String to encrypt  |
+|  value  | `string` |  |  | String to encrypt |
 
 
 ### validateKey
@@ -52,5 +52,5 @@ If key length is invalid
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  key  | `string` |  |  | Raw encryption key  |
+|  key  | `string` |  |  | Raw encryption key |
 

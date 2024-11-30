@@ -37,8 +37,8 @@ If key length is invalid
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  encryptionKey  | `string` |  |  | Key used for encryption/decryption  |
-|  encoding  | `BufferEncoding` | 'base64' |  | Output encoding format  |
+|  encryptionKey  | `string` |  |  | Key used for encryption/decryption |
+|  encoding  | `BufferEncoding` | 'base64' |  | Output encoding format |
 
 
 ### decrypt
@@ -49,7 +49,7 @@ Applies decryption before decompression
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  encryptedData  | `string` |  |  | Encrypted string with IV  |
+|  encryptedData  | `string` |  |  | Encrypted string with IV |
 
 
 ### encrypt
@@ -60,7 +60,7 @@ Applies compression before encryption
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  value  | `string` |  |  | String to encrypt  |
+|  value  | `string` |  |  | String to encrypt |
 
 
 ### validateKey
@@ -75,5 +75,5 @@ If key length is invalid
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  key  | `string` |  |  | Raw encryption key  |
+|  key  | `string` |  |  | Raw encryption key |
 

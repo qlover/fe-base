@@ -49,7 +49,7 @@ const retryPlugin = new RetryPlugin({
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  options  | `Partial<RetryOptions>` | {} |  | Partial configuration options for retry behavior  |
+|  options  | `Partial<RetryOptions>` | {} |  | Partial configuration options for retry behavior |
 
 
 ### delay
@@ -72,7 +72,7 @@ await this.delay(2); // Applies delay for the third attempt
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  attempt  | `number` |  |  | Current attempt number  |
+|  attempt  | `number` |  |  | Current attempt number |
 
 
 ### onExec
@@ -95,7 +95,7 @@ const result = await retryPlugin.onExec(() => fetchData());
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `PromiseTask<T>` |  |  | Task to be executed with retry support  |
+|  task  | `PromiseTask<T>` |  |  | Task to be executed with retry support |
 
 
 ### retry
@@ -122,9 +122,9 @@ const result = await this.retry(fetchData, options, 3);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  fn  | `PromiseTask<T>` |  |  | Function to retry  |
-|  options  | `RetryOptions` |  |  | Retry configuration options  |
-|  retryCount  | `number` |  |  | Number of retries remaining  |
+|  fn  | `PromiseTask<T>` |  |  | Function to retry |
+|  options  | `RetryOptions` |  |  | Retry configuration options |
+|  retryCount  | `number` |  |  | Number of retries remaining |
 
 
 ### shouldRetry
@@ -149,8 +149,8 @@ if (this.shouldRetry({ error, retryCount })) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  __namedParameters.error  | `unknown` |  |  |   |
-|  __namedParameters.retryCount  | `number` |  |  |   |
+|  __namedParameters.error  | `unknown` |  |  |  |
+|  __namedParameters.retryCount  | `number` |  |  |  |
 
 
 ## Interface `RetryOptions`

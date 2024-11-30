@@ -25,7 +25,7 @@ const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `Partial<FetchRequestConfig>` | {} |  | Request configuration options  |
+|  config  | `Partial<FetchRequestConfig>` | {} |  | Request configuration options |
 
 
 ### composeRequestInit
@@ -46,7 +46,7 @@ const requestInit = fetchRequest.composeRequestInit(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Full request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Full request configuration |
 
 
 ### request
@@ -71,7 +71,7 @@ const response = await fetchRequest.request({ url: '/data' });
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration  |
+|  config  | `FetchRequestConfig` |  |  | Request configuration |
 
 
 ## Class `FetchRequestError`
@@ -96,8 +96,8 @@ throw new FetchRequestError(
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  id  | `string` |  |  |   |
-|  originalError  | `string \| Error` |  |  |   |
+|  id  | `string` |  |  |  |
+|  originalError  | `string \| Error` |  |  |  |
 
 
 ## Enum `FetchRequestErrorID`

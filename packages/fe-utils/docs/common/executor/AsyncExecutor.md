@@ -63,8 +63,8 @@ const result = await executor.exec(async () => {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `unknown` |  |  | Task data or task function  |
-|  task  | `PromiseTask<T, D>` |  |  | Task function (optional)  |
+|  dataOrTask  | `unknown` |  |  | Task data or task function |
+|  task  | `PromiseTask<T, D>` |  |  | Task function (optional) |
 
 
 ### execNoError
@@ -95,8 +95,8 @@ if (result instanceof ExecutorError) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `unknown` |  |  | Task data or task function  |
-|  task  | `PromiseTask<T>` |  |  | Task function (optional)  |
+|  dataOrTask  | `unknown` |  |  | Task data or task function |
+|  task  | `PromiseTask<T>` |  |  | Task function (optional) |
 
 
 ### run
@@ -144,8 +144,8 @@ private async run(data, task) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  data  | `D` |  |  | Input data for the task  |
-|  actualTask  | `PromiseTask<T, D>` |  |  | Task function to execute  |
+|  data  | `D` |  |  | Input data for the task |
+|  actualTask  | `PromiseTask<T, D>` |  |  | Task function to execute |
 
 
 ### runHook
@@ -178,7 +178,7 @@ const result = await this.runHook(
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute  |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute  |
-|  args  | `unknown[]` |  |  | Arguments to pass to the hook function  |
+|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute |
+|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute |
+|  args  | `unknown[]` |  |  | Arguments to pass to the hook function |
 
