@@ -6,7 +6,11 @@ Plugins provide a way to intercept and modify the execution flow at different st
 - On error (onError)
 - Custom execution logic (onExec)
 
-@example
+@abstract 
+
+
+@example 
+
 ```typescript
 class LoggerPlugin extends ExecutorPlugin {
   onBefore(data: unknown) {
@@ -26,6 +30,7 @@ class LoggerPlugin extends ExecutorPlugin {
 }
 ```
 
+
 ## Members
 
 ### constructor
@@ -36,7 +41,8 @@ class LoggerPlugin extends ExecutorPlugin {
 ### enabled
 Controls whether the plugin is active for specific hook executions
 
-**@example**
+**@example** 
+
 ```typescript
 enabled(name: keyof ExecutorPlugin, ...args: unknown[]) {
   // Only enable for error handling
@@ -108,12 +114,14 @@ Can transform the task result
 
 Type definition for promise-based task
 
-@example
+@example 
+
 ```typescript
 const promiseTask: PromiseTask<string, number> = async (data: number) => {
   return `Result: ${data}`;
 };
 ```
+
 
 
 ## TypeAlias `SyncTask`
@@ -122,12 +130,14 @@ const promiseTask: PromiseTask<string, number> = async (data: number) => {
 
 Type definition for synchronous task
 
-@example
+@example 
+
 ```typescript
 const syncTask: SyncTask<string, number> = (data: number) => {
   return `Result: ${data}`;
 };
 ```
+
 
 
 ## TypeAlias `Task`

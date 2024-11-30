@@ -6,7 +6,8 @@
 ### constructor
 Creates a new StringEntrypt instance
 
-**@throws**
+**@throws** 
+
 If key length is invalid
 
 
@@ -43,7 +44,8 @@ Uses random IV for each encryption
 Validates and processes encryption key
 Ensures key meets length requirements
 
-**@throws**
+**@throws** 
+
 If key length is invalid
 
 

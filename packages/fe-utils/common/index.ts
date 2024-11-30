@@ -15,3 +15,9 @@ export * from './logger';
  * @module request
  */
 export * from './request';
+
+/**
+ * Export serializer related modules
+ * @module serializer
+ */
+export * from './serializer';

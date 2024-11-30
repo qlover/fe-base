@@ -6,7 +6,8 @@ Core Idea: Enhance request configuration with fetch-specific features.
 Main Function: Provide additional options for fetch requests.
 Main Purpose: Support advanced request scenarios with fetch API.
 
-@example
+@example 
+
 ```typescript
 const fetchConfig: FetchRequestConfig = {
   url: '/api/data',
@@ -15,12 +16,14 @@ const fetchConfig: FetchRequestConfig = {
 };
 ```
 
+
 ## Members
 
 ### controller
 AbortController instance
 
-**@access**
+**@access** 
+
 AbortPlugin
 Added by AbortPlugin for request cancellation control
 
@@ -31,7 +34,8 @@ Added by AbortPlugin for request cancellation control
 Custom fetch implementation
 Allows overriding the default fetch function
 
-**@access**
+**@access** 
+
 FetchRequest
 Used by FetchRequest to make HTTP requests
 
@@ -41,7 +45,8 @@ Used by FetchRequest to make HTTP requests
 ### onAbort
 Callback function for abort events
 
-**@access**
+**@access** 
+
 AbortPlugin
 Called by AbortPlugin when request is cancelled
 
@@ -51,7 +56,8 @@ Called by AbortPlugin when request is cancelled
 ### signal
 AbortSignal for request cancellation
 
-**@access**
+**@access** 
+
 AbortPlugin
 Added by AbortPlugin for request cancellation support
 
@@ -66,7 +72,8 @@ Core Idea: Extend standard RequestInit with additional options.
 Main Function: Provide a comprehensive configuration for HTTP requests.
 Main Purpose: Allow detailed customization of request behavior.
 
-@example
+@example 
+
 ```typescript
 const config: RequestConfig = {
   url: '/api/data',
@@ -75,17 +82,20 @@ const config: RequestConfig = {
 };
 ```
 
+
 ## Members
 
 ### baseURL
 Base URL for all requests
 Will be prepended to the request URL
 
-**@access**
+**@access** 
+
 FetchURLPlugin
 Processed by FetchURLPlugin during request
 
-**@example**
+**@example** 
+
 ```typescript
 baseURL: 'https://api.example.com'
 // url = /users/1 => https://api.example.com/users/1
@@ -99,7 +109,8 @@ baseURL: 'https://api.example.com'
 AsyncExecutor instance for request handling
 Can be overridden when creating FetchRequest instance
 
-**@access**
+**@access** 
+
 FetchRequest
 Added by FetchRequest during initialization
 
@@ -110,7 +121,8 @@ Added by FetchRequest during initialization
 URL query parameters
 Will be serialized and appended to the URL
 
-**@access**
+**@access** 
+
 FetchURLPlugin
 Processed by FetchURLPlugin during request
 
@@ -120,7 +132,8 @@ Processed by FetchURLPlugin during request
 ### timeout
 Request timeout in milliseconds
 
-**@access**
+**@access** 
+
 FetchRequest
 Added by FetchRequest for timeout control
 
@@ -131,14 +144,14 @@ Added by FetchRequest for timeout control
 Request URL path
 Will be combined with baseURL if provided
 
-**@access**
+**@access** 
+
 FetchURLPlugin
 Processed by FetchURLPlugin during request
 
-**@todo**
-Change to URL | Request, add attribute 
+**@todo** 
 
-**@todo**
+Change to URL | Request, add attribute 
 `input`
 
 

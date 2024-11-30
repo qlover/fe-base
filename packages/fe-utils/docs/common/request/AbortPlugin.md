@@ -12,7 +12,11 @@ Core Idea: Enhance request management with cancellation capabilities.
 Main Function: Allow requests to be aborted programmatically.
 Main Purpose: Improve control over network requests and resource management.
 
-@example
+@implements 
+
+
+@example 
+
 ```typescript
 // Basic usage
 const abortPlugin = new AbortPlugin();
@@ -26,6 +30,7 @@ abortPlugin.abort(config);
 // Abort all pending requests
 abortPlugin.abortAll();
 ```
+
 
 ## Members
 
@@ -42,7 +47,8 @@ Core Idea: Provide a mechanism to cancel specific requests.
 Main Function: Abort a request and execute any associated callbacks.
 Main Purpose: Allow precise control over individual request lifecycles.
 
-**@example**
+**@example** 
+
 ```typescript
 abortPlugin.abort({
   url: '/api/data',
@@ -67,7 +73,8 @@ Core Idea: Provide a mechanism to cancel all active requests.
 Main Function: Abort all requests and clear associated resources.
 Main Purpose: Allow bulk cancellation of requests, useful in cleanup scenarios.
 
-**@example**
+**@example** 
+
 ```typescript
 // Cancel all requests when component unmounts
 useEffect(() => {
@@ -86,7 +93,8 @@ Core Idea: Uniquely identify requests for management.
 Main Function: Generate a consistent key for each request.
 Main Purpose: Facilitate request tracking and cancellation.
 
-**@example**
+**@example** 
+
 ```typescript
 const key = abortPlugin.generateRequestKey(config);
 ```
@@ -106,7 +114,8 @@ Core Idea: Prepare requests for potential cancellation.
 Main Function: Attach abort controllers to requests.
 Main Purpose: Enable request cancellation and resource cleanup.
 
-**@example**
+**@example** 
+
 ```typescript
 const modifiedConfig = abortPlugin.onBefore(config);
 ```
@@ -126,7 +135,8 @@ Core Idea: Handle errors resulting from request cancellation.
 Main Function: Identify and process abort-related errors.
 Main Purpose: Ensure proper error handling and resource cleanup.
 
-**@example**
+**@example** 
+
 ```typescript
 const error = abortPlugin.onError(new Error('AbortError'), config);
 ```

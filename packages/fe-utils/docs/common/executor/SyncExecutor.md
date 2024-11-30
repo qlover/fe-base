@@ -14,7 +14,8 @@ Use this executor when:
 3. Performance is critical
 4. No async operations are involved
 
-@example
+@example 
+
 ```typescript
 // Create a sync executor
 const executor = new SyncExecutor();
@@ -40,6 +41,7 @@ const result = executor.execNoError(() => {
 }); // Returns ExecutorError instead of throwing
 ```
 
+
 ## Members
 
 ### exec
@@ -56,10 +58,12 @@ Performance considerations:
 - Direct execution path
 - Immediate results
 
-**@throws**
+**@throws** 
+
 When task is not a function
 
-**@example**
+**@example** 
+
 ```typescript
 // Example with data transformation
 const data = { numbers: [1, 2, 3] };
@@ -95,7 +99,8 @@ Advantages over try-catch:
 2. No exception propagation
 3. Consistent error types
 
-**@example**
+**@example** 
+
 ```typescript
 const result = executor.execNoError((data) => {
   if (!data.isValid) {
@@ -134,10 +139,12 @@ Error handling strategy:
 - Passes errors through plugin chain
 - Wraps unhandled errors in ExecutorError
 
-**@throws**
+**@throws** 
+
 When task execution fails
 
-**@example**
+**@example** 
+
 ```typescript
 // Internal implementation example
 private run(data, task) {
@@ -179,7 +186,8 @@ Key differences from AsyncExecutor:
 - Results are immediately available
 - No await statements needed
 
-**@example**
+**@example** 
+
 ```typescript
 // Internal usage example
 const result = this.runHook(
