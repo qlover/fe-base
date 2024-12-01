@@ -4,6 +4,28 @@ export type SearchConfigType = import('cosmiconfig').OptionsSync & {
   _default: any;
 };
 
+export interface ScriptContext<T> {
+  logger: ScriptsLogger;
+  shell: Shell;
+  feConfig: FeConfig;
+  env: Env;
+  dryRun: boolean;
+  verbose: boolean;
+  options: T;
+}
+
+export type LibReleaseOptions = ScriptContext<{
+  path?: string;
+  mode?: string;
+  releaseBranch?: string;
+  releaseEnv?: string;
+}>;
+
+export type ReleaseContext = {
+  feConfig: FeConfig;
+  options: ReleaseConfig;
+};
+
 export type FeScriptRelease = {
   /**
    * Whether to automatically merge PR when creating and publishing
@@ -214,10 +236,6 @@ export class Env {
 }
 
 export interface ReleaseConfig {
-  /**
-   * Whether to create release
-   */
-  isCreateRelease?: boolean;
   log: Logger;
   shell: Shell;
   feConfig: FeConfig;
@@ -237,7 +255,6 @@ export class ReleaseBase {
   feConfig: FeConfig;
   log: Logger;
   shell: Shell;
-  isCreateRelease?: boolean;
   /** GitHub access token */
   ghToken: string;
   /** NPM access token */

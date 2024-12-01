@@ -1,37 +1,35 @@
+import { FeScriptContext } from '../FeScriptContext.js';
 import { Release } from '../lib/Release.js';
-import { searchEnv } from './search-env.js';
 
-/**
- * @param {Release} release
- * @returns {number}
- */
-function setupRelease(release) {
-  const env = searchEnv({
-    logger: release.log,
-    shell: release.shell
-  });
+function createRelease(scriptsOptions) {
+  const context = new FeScriptContext(scriptsOptions);
 
-  if (env.get('RELEASE') === 'false') {
-    release.log.warn('Skip Release');
-    return 1;
+  if (context.env.get('FE_RELEASE') === 'false') {
+    context.logger.warn('Skip Release');
+    return;
   }
 
-  if (!env.get('NPM_TOKEN')) {
-    release.log.error('NPM_TOKEN environment variable is not set.');
-    return 1;
+  const token = context.env.get('GITHUB_TOKEN') || context.env.get('PAT_TOKEN');
+  if (!token) {
+    context.logger.error(
+      'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
+    );
+    return;
   }
 
-  if (!env.get('GITHUB_TOKEN')) {
-    release.log.error('GITHUB_TOKEN environment variable is not set.');
-    return 1;
-  }
+  const release = new Release(context);
 
-  // github cli need first clear, but release-it will get it
-  // FIXME: octokit will warn if token is not clear
-  release.config.ghToken = env.get('GITHUB_TOKEN') || '';
-  release.config.npmToken = env.get('NPM_TOKEN');
-  release.config.branch = env.get('PR_BRANCH');
-  release.config.env = env.get('NODE_ENV');
+  release.setGithubToken(token);
+
+  // adjust env args
+  const releaseBranch = context.env.get('FE_RELEASE_BRANCH') || 'master';
+  const releaseEnv =
+    context.env.get('FE_RELEASE_ENV') || context.env.get('NODE_ENV');
+
+  release.options.releaseBranch = releaseBranch;
+  release.options.releaseEnv = releaseEnv;
+
+  return release;
 }
 
 /**
@@ -40,23 +38,18 @@ function setupRelease(release) {
  * @returns {Promise<void>}
  */
 export async function release(options) {
-  const release = new Release(options);
+  const release = createRelease(options);
 
-  release.log.debug(options);
-
-  if (setupRelease(release)) {
-    return;
-  }
+  release.logger.debug(release.options);
 
   // check npm
   await release.checkNpmAuth();
 
   await release.checkPublishPath();
-
-  release.log.title('Release to NPM and Github ...');
+  release.logger.title('Release to NPM and Github ...');
   await release.publish();
 
-  release.log.title('Release Successfully');
+  release.logger.title('Release Successfully');
 }
 
 /**
@@ -65,11 +58,13 @@ export async function release(options) {
  * @returns {Promise<void>}
  */
 export async function createReleasePR(options) {
-  const release = new Release(options);
+  const release = createRelease(options);
 
-  release.log.debug(options);
+  release.logger.debug(release.options);
 
-  if (setupRelease(release)) {
+  // npm_token is required
+  if (!release.env.get('NPM_TOKEN')) {
+    release.logger.error('NPM_TOKEN environment variable is not set.');
     return;
   }
 
@@ -77,26 +72,26 @@ export async function createReleasePR(options) {
 
   const releaseResult = await release.createChangelogAndVersion();
 
-  release.log.title('Create Release Branch ...');
+  release.logger.title('Create Release Branch ...');
   const { tagName, releaseBranch } = await release.createReleaseBranch();
 
-  release.log.title('Create Release PR ...');
+  release.logger.title('Create Release PR ...');
   const prNumber = await release.createReleasePR(
     tagName,
     releaseBranch,
     releaseResult
   );
 
-  if (release.config.getReleaseFeConfig('autoMergeReleasePR')) {
-    release.log.title('Auto Merge Release PR...');
+  if (release.autoMergeReleasePR) {
+    release.logger.title('Auto Merge Release PR...');
     await release.autoMergePR(prNumber);
 
     await release.checkedPR(prNumber, releaseBranch);
   } else {
-    release.log.info(
+    release.logger.info(
       `Please manually merge PR(#${prNumber}) and complete the publishing process afterwards`
     );
   }
 
-  release.log.title(`Create Release PR(#${prNumber}) Successfully`);
+  release.logger.title(`Create Release PR(#${prNumber}) Successfully`);
 }
