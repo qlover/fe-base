@@ -118,11 +118,12 @@ export class Release {
    * tip `npm login`
    */
   async checkNpmAuth() {
+    if (!this.npmToken) {
+      throw new Error('NPM_TOKEN is not set.');
+    }
+
     await this.shell.exec(
-      `echo "//registry.npmjs.org/:_authToken=${this.npmToken}" > .npmrc`,
-      {
-        dryRun: false
-      }
+      `echo "//registry.npmjs.org/:_authToken=${this.npmToken}" > .npmrc`
     );
   }
 
@@ -134,5 +135,9 @@ export class Release {
     }
 
     this.logger.debug('Current path:', process.cwd());
+  }
+
+  setNPMToken(npmToken) {
+    this.npmToken = npmToken;
   }
 }
