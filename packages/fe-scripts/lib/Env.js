@@ -2,17 +2,15 @@ import dotenv from 'dotenv';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 
-const defaultPreloadList = ['.env.local', '.env'];
-
 export class Env {
   /**
    * @param {object} param0
    * @param {string} param0.rootPath
-   * @param {import('@qlover/fe-utils').Logger} param0.log
+   * @param {import('@qlover/fe-utils').Logger} param0.logger
    */
-  constructor({ rootPath, log }) {
+  constructor({ rootPath, logger }) {
     this.rootPath = rootPath;
-    this.log = log;
+    this.logger = logger;
   }
 
   /**
@@ -20,7 +18,12 @@ export class Env {
    * @param {string[]} pre env file prefix
    * @returns {void}
    */
-  load({ preloadList = defaultPreloadList, rootPath } = {}) {
+  load({ preloadList, rootPath } = {}) {
+    if (!preloadList.length) {
+      this.logger.warn('Env load preloadList is empty!');
+      return;
+    }
+
     rootPath = rootPath || this.rootPath || resolve('./');
 
     for (const file of preloadList) {
@@ -28,16 +31,16 @@ export class Env {
       if (existsSync(envLocalPath)) {
         dotenv.config({ path: envLocalPath });
 
-        if (this.log && this.log.debug) {
-          this.log.debug(`Loaded \`${envLocalPath}\` file`);
+        if (this.logger) {
+          this.logger.debug(`Loaded \`${envLocalPath}\` file`);
         }
 
         return;
       }
     }
 
-    if (this.log && this.log.warn) {
-      this.log.warn('No .env file found');
+    if (this.logger && this.logger.warn) {
+      this.logger.warn('No .env file found');
     }
   }
 
@@ -46,7 +49,7 @@ export class Env {
    * @param {string} variable
    * @returns {void}
    */
-  removeEnvVariable(variable) {
+  remove(variable) {
     if (process.env[variable]) {
       delete process.env[variable];
     }
@@ -70,10 +73,10 @@ export class Env {
    * @param {string} varname
    * @returns {string | undefined}
    */
-  getEnvDestroy(varname) {
+  getDestroy(varname) {
     const value = process.env[varname];
 
-    this.removeEnvVariable(varname);
+    this.remove(varname);
 
     return value;
   }

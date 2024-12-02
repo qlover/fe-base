@@ -1,7 +1,6 @@
 import { ConfigSearch } from './ConfigSearch.js';
 import { ScriptsLogger } from './ScriptsLogger.js';
 import { Shell } from './Shell.js';
-import { searchEnv } from '../scripts/search-env.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
@@ -16,7 +15,7 @@ function getDefaultConfig() {
   );
 }
 
-function getFeConfigSearch(feConfig) {
+export function getFeConfigSearch(feConfig) {
   return new ConfigSearch({
     name: 'fe-config',
     defaultConfig: loadsh.merge(getDefaultConfig(), feConfig)
@@ -46,14 +45,9 @@ export class FeScriptContext {
 
     const feConfigSearch = getFeConfigSearch(feConfig);
     /**
-     * @type {import('../index.js').FeConfig}
+     * @type {import('../types/feConfig.d.ts').FeConfig}
      */
     this.feConfig = feConfigSearch.config;
-
-    /**
-     * @type {import('./Env.js').Env}
-     */
-    this.env = searchEnv({ logger: this.logger });
 
     /**
      * @type {boolean}

@@ -4,8 +4,11 @@ import { exec } from 'child_process';
 const require = createRequire(import.meta.url);
 
 export class Dependencie {
-  constructor({ log, shell }) {
-    this.log = log || console;
+  /**
+   * @param {Partial<import('./FeScriptContext.js').FeScriptContext>} context
+   */
+  constructor({ logger, shell }) {
+    this.logger = logger;
     this.shell = shell || { run: this.execPromise };
   }
 
@@ -26,7 +29,7 @@ export class Dependencie {
       });
 
       if (silent) {
-        const log = this.log;
+        const log = this.logger;
         // Optional: Log the stdout as it becomes available
         childProcess.stdout.on('data', (data) => {
           log.log(data.toString().trim());
@@ -70,7 +73,7 @@ export class Dependencie {
         result.version = jsonResult.dependencies[dependencyName].version;
       }
     } catch (error) {
-      this.log.error(error);
+      this.logger.error(error);
       // Ignore errors, assume dependency is not installed globally
     }
     return result;
@@ -87,7 +90,7 @@ export class Dependencie {
         const localPackageJson = require(localPackageJsonPath);
         return { version: localPackageJson.version, scope: 'local' };
       } catch (error) {
-        this.log.error(error);
+        this.logger.error(error);
         // Local package.json not found, continue to global check
       }
     }
@@ -99,11 +102,11 @@ export class Dependencie {
   async checkWithInstall(packageName, global = false) {
     const hasDeep = await this.checkDependencyInstalled(packageName, global);
     if (!(hasDeep.local || hasDeep.global)) {
-      this.log.error(`${packageName} not found, installing ${packageName}`);
+      this.logger.error(`${packageName} not found, installing ${packageName}`);
       await this.install(packageName, global);
     }
     const version = await this.getDependencyVersion(packageName);
-    this.log.log(`${packageName} version is: v${version.version}`);
+    this.logger.log(`${packageName} version is: v${version.version}`);
   }
 
   async install(packageName, global = false) {

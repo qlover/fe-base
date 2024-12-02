@@ -23,5 +23,6 @@
       "description": "Release PR",
       "name": "CI-Release"
     }
-  }
+  },
+  "envOrder": [".env.local", ".env.production", ".env"]
 }

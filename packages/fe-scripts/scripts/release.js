@@ -1,20 +1,22 @@
 import { FeScriptContext } from '../lib/FeScriptContext.js';
 import { Release } from '../lib/Release.js';
+import { searchEnv } from './search-env.js';
 
 /**
  * create release instance
  * @param {import('@qlover/fe-scripts').ReleaseContext} scriptsOptions
- * @returns {Release}
+ * @returns {{release: Release, env: import('@qlover/fe-scripts').Env}}
  */
 function createRelease(scriptsOptions) {
   const context = new FeScriptContext(scriptsOptions);
+  const env = searchEnv({ logger: context.logger });
 
-  if (context.env.get('FE_RELEASE') === 'false') {
+  if (env.get('FE_RELEASE') === 'false') {
     context.logger.warn('Skip Release');
     return;
   }
 
-  const token = context.env.get('GITHUB_TOKEN') || context.env.get('PAT_TOKEN');
+  const token = env.get('GITHUB_TOKEN') || env.get('PAT_TOKEN');
   if (!token) {
     context.logger.error(
       'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
@@ -27,14 +29,13 @@ function createRelease(scriptsOptions) {
   release.setGithubToken(token);
 
   // adjust env args
-  const releaseBranch = context.env.get('FE_RELEASE_BRANCH') || 'master';
-  const releaseEnv =
-    context.env.get('FE_RELEASE_ENV') || context.env.get('NODE_ENV');
+  const releaseBranch = env.get('FE_RELEASE_BRANCH') || 'master';
+  const releaseEnv = env.get('FE_RELEASE_ENV') || env.get('NODE_ENV');
 
   release.options.releaseBranch = releaseBranch;
   release.options.releaseEnv = releaseEnv;
 
-  return release;
+  return { release, env };
 }
 
 /**
@@ -43,7 +44,7 @@ function createRelease(scriptsOptions) {
  * @returns {Promise<void>}
  */
 export async function release(options) {
-  const release = createRelease(options);
+  const { release } = createRelease(options);
 
   release.logger.debug(release.options);
 
@@ -63,12 +64,12 @@ export async function release(options) {
  * @returns {Promise<void>}
  */
 export async function createReleasePR(options) {
-  const release = createRelease(options);
+  const { release, env } = createRelease(options);
 
   release.logger.debug(release.options);
 
   // npm_token is required
-  if (!release.env.get('NPM_TOKEN')) {
+  if (!env.get('NPM_TOKEN')) {
     release.logger.error('NPM_TOKEN environment variable is not set.');
     return;
   }

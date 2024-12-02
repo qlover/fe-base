@@ -23,10 +23,7 @@ export function searchEnv({
   maxDepth = Math.min(maxDepth, 8);
 
   // create Env instance
-  const env = new Env({
-    rootPath: cwd,
-    log: logger
-  });
+  const env = new Env({ rootPath: cwd, logger });
 
   // recursive search up, until find .env file or reach root directory
   let currentDir = cwd;

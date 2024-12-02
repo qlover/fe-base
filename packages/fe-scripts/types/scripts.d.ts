@@ -77,25 +77,14 @@ export interface SearchEnvOptions {
   maxDepth?: number;
 }
 
-export interface ReleaseOptions extends ScriptContext {}
 export interface Script<T = Options> {
-  (options: T): Promise<void>;
+  (options?: FeScriptContext<T>): Promise<void>;
 }
 
-export declare const clean: Script<CleanOptions>;
 export declare const cleanBranch: Script<CleanBranchOptions>;
+export declare const clean: Script<CleanOptions>;
 export declare const commit: Script<CommitOptions>;
-export declare const setupHusky: Script<SetupHuskyOptions>;
-export declare const searchEnv: Script<SearchEnvOptions>;
 export declare const release: Script<ReleaseOptions>;
-
-export interface Scripts {
-  clean: (options?: CleanOptions) => Promise<void>;
-  cleanBranch: (options?: CleanBranchOptions) => Promise<void>;
-  commit: (options?: CommitOptions) => Promise<void>;
-  setupHusky: (options?: SetupHuskyOptions) => Promise<void>;
-  searchEnv: (options?: SearchEnvOptions) => Promise<void>;
-  release: (options?: ReleaseOptions) => Promise<void>;
-}
-
-export default Scripts;
+export declare const createReleasePR: Script<ReleaseOptions>;
+export declare const searchEnv: Script<SearchEnvOptions>;
+export declare const setupHusky: Script<SetupHuskyOptions>;

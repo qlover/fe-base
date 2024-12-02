@@ -91,7 +91,7 @@ function initFEConfig(feConfig, context) {
 
 export class Release {
   /**
-   * @param {import('../index.d.ts').ReleaseContext} context
+   * @param {import('../types/lib.js').ReleaseContext} context
    */
   constructor(context) {
     this.feConfig = initFEConfig(context.feConfig, context);
@@ -162,7 +162,7 @@ export class Release {
   }
 
   /**
-   * @param {keyof import('../index.d.ts').FeScriptRelease} path
+   * @param {keyof import('@qlover/fe-scripts').FeReleaseConfig} path
    * @param {*} defaultValue
    * @returns
    */

@@ -1,4 +1,6 @@
-import { feConfig } from './container.js';
+import { getFeConfigSearch } from './lib/FeScriptContext.js';
+
+const feConfig = getFeConfigSearch();
 
 export default {
   ...feConfig.config.commitlint
