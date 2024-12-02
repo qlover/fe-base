@@ -7,14 +7,14 @@
     ".": {
       "require": "./lib/index.js",
       "import": "./lib/index.js",
-      "types": "./lib/index.d.ts",
+      "types": "./lib/types/lib.d.ts",
       "default": "./lib/index.js"
     },
     "./scripts/*": "./scripts/*",
     "./lib/*": "./lib/*",
     "./package.json": "./package.json"
   },
-  "types": "./index.d.ts",
+  "types": "./types/index.d.ts",
   "files": [
     "bin",
     "lib",

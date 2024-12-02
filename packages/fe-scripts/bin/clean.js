@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { clean } from '../scripts/clean.js';
-import { feConfig, logger } from '../container.js';
 
 // parse command line arguments
 async function programArgs() {
@@ -10,7 +9,7 @@ async function programArgs() {
     const program = new commander.Command();
     program
       .option('-r, --recursion', 'recursion delete')
-      .option('--dryrun', 'preview files to be deleted (will not delete)')
+      .option('--dry-run', 'preview files to be deleted (will not delete)')
       .option(
         '--gitignore',
         'use .gitignore file to determine files to be deleted'
@@ -22,10 +21,10 @@ async function programArgs() {
 
     // get parsed options
     const options = program.opts();
-    logger.info('Parsed options:', options); // add log for debugging
+    console.info('Parsed options:', options); // add log for debugging
     return options;
   } catch {
-    logger.info('Commander not available, falling back to manual parsing');
+    console.info('Commander not available, falling back to manual parsing');
     // if commander is not available, parse arguments manually
     const args = process.argv.slice(2);
     const options = {
@@ -67,12 +66,8 @@ async function programArgs() {
 }
 
 async function main() {
-  const options = await programArgs();
-  await clean({
-    ...options,
-    files: options.files?.length ? options.files : feConfig.config.cleanFiles,
-    logger
-  });
+  const { dryRun, verbose, ...options } = await programArgs();
+  await clean({ options, dryRun, verbose });
 }
 
 main();

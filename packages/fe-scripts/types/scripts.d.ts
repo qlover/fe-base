@@ -1,45 +1,52 @@
 import { Logger } from '@qlover/fe-utils';
 import { FeConfig } from '../index';
-import { Shell } from '../lib';
+import { FeScriptContext, Shell } from '../lib';
 
 export interface ScriptContext {
   logger: Logger;
   shell: Shell;
   feConfig: FeConfig;
 }
-export interface CleanOptions extends ScriptContext {
+export interface ReleaseOptions {
+  path?: string;
+  mode?: string;
+  releaseBranch?: string;
+  releaseEnv?: string;
+}
+export interface CleanOptions {
   /**
    * Files to be cleaned
-   * @default from fe-config.cleanFiles
+   * @default `fe-config.cleanFiles`
    */
   files?: string[];
+  /**
+   * Whether to recursively clean files
+   * @default `false`
+   */
   recursion?: boolean;
   /**
    * Whether to use .gitignore file to determine files to be deleted
+   * @default `false`
    */
   gitignore?: boolean;
-  /**
-   * Whether to run in dry mode (no actual deletion)
-   */
-  dryrun?: boolean;
 }
 
-export interface CleanBranchOptions extends ScriptContext {
+export interface CleanBranchOptions {
   /**
    * Protected branches that should not be deleted
-   * @default from fe-config.protectedBranches
+   * @default `fe-config.protectedBranches``
    */
   protectedBranches?: string[];
 }
 
-export interface CommitOptions extends ScriptContext {
+export interface CommitOptions {
   /**
    * Absolute path to cz-conventional-changelog
    */
   defaultCzPath?: string;
 }
 
-export interface SetupHuskyOptions extends ScriptContext {
+export interface SetupHuskyOptions {
   /**
    * Path to commitlint config
    */
@@ -70,25 +77,14 @@ export interface SearchEnvOptions {
   maxDepth?: number;
 }
 
-export interface ReleaseOptions extends ScriptContext {}
 export interface Script<T = Options> {
-  (options: T): Promise<void>;
+  (options?: FeScriptContext<T>): Promise<void>;
 }
 
-export declare const clean: Script<CleanOptions>;
 export declare const cleanBranch: Script<CleanBranchOptions>;
+export declare const clean: Script<CleanOptions>;
 export declare const commit: Script<CommitOptions>;
-export declare const setupHusky: Script<SetupHuskyOptions>;
-export declare const searchEnv: Script<SearchEnvOptions>;
 export declare const release: Script<ReleaseOptions>;
-
-export interface Scripts {
-  clean: (options?: CleanOptions) => Promise<void>;
-  cleanBranch: (options?: CleanBranchOptions) => Promise<void>;
-  commit: (options?: CommitOptions) => Promise<void>;
-  setupHusky: (options?: SetupHuskyOptions) => Promise<void>;
-  searchEnv: (options?: SearchEnvOptions) => Promise<void>;
-  release: (options?: ReleaseOptions) => Promise<void>;
-}
-
-export default Scripts;
+export declare const createReleasePR: Script<ReleaseOptions>;
+export declare const searchEnv: Script<SearchEnvOptions>;
+export declare const setupHusky: Script<SetupHuskyOptions>;

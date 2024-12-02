@@ -1,12 +1,16 @@
 import { resolve } from 'path';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'fs';
+import { FeScriptContext } from '../lib/index.js';
 
 /**
- * @param {import('@qlover/fe-scripts/scripts').CommitOptions} options
+ * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CommitOptions>} options
  */
 export function commit(options) {
-  const { defaultCzPath, logger, shell } = options;
+  const context = new FeScriptContext(options);
+  const { logger, shell } = context;
+  const { defaultCzPath } = context.options;
+
   // git add
   shell.exec('git add .');
 

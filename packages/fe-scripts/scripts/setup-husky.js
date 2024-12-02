@@ -1,11 +1,14 @@
 import { resolve, join } from 'path';
 import fs from 'fs';
+import { FeScriptContext } from '../lib';
 
 /**
- * @param {import('@qlover/fe-scripts/scripts').SetupHuskyOptions} options
+ * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').SetupHuskyOptions>} options
  */
 export async function setupHusky(options) {
-  const { commitlintPath, logger, shell } = options;
+  const context = new FeScriptContext(options);
+  const { logger, shell } = context;
+  const { commitlintPath } = context.options;
   const relativePath = resolve('./');
 
   // clear husky config

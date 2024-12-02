@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import ignore from 'ignore';
+import { FeScriptContext } from '../lib/index.js';
 
 async function compatRimraf(targetPath, options = {}) {
   const rimraf = await import('rimraf');
@@ -41,10 +42,14 @@ function getIgnoredFiles(dir, rootDir, ig, recursion) {
 
 /**
  * Clean files
- * @param {import('@qlover/fe-scripts/scripts').CleanOptions} options
+ * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanOptions>} options
  */
 export async function clean(options) {
-  let { files = [], logger, gitignore, dryrun, recursion } = options;
+  const context = new FeScriptContext(options);
+  const { logger, feConfig, dryRun } = context;
+  let { files, gitignore, recursion } = context.options;
+
+  files = files?.length ? files : feConfig.cleanFiles;
 
   // Ensure files is an array
   if (typeof files === 'string') {
@@ -95,7 +100,7 @@ export async function clean(options) {
   for (const file of filesToDelete) {
     const targetPath = join(cwd, file);
 
-    if (dryrun) {
+    if (dryRun) {
       logger.info(`Will delete: ${file}`);
       continue;
     }
@@ -108,7 +113,7 @@ export async function clean(options) {
     }
   }
 
-  if (!dryrun) {
+  if (!dryRun) {
     logger.info('Clean completed');
   }
 }
