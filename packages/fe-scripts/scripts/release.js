@@ -9,7 +9,10 @@ import { searchEnv } from './search-env.js';
  */
 function createRelease(scriptsOptions) {
   const context = new FeScriptContext(scriptsOptions);
-  const env = searchEnv({ logger: context.logger });
+  const env = searchEnv({
+    logger: context.logger,
+    preloadList: context.feConfig.envOrder
+  });
 
   if (env.get('FE_RELEASE') === 'false') {
     context.logger.warn('Skip Release');
@@ -26,14 +29,13 @@ function createRelease(scriptsOptions) {
 
   const release = new Release(context);
 
-  release.setGithubToken(token);
+  release.prManager.setGithubToken(token);
 
   // adjust env args
   const releaseBranch = env.get('FE_RELEASE_BRANCH') || 'master';
   const releaseEnv = env.get('FE_RELEASE_ENV') || env.get('NODE_ENV');
 
-  release.options.releaseBranch = releaseBranch;
-  release.options.releaseEnv = releaseEnv;
+  release.configer.setOptionsFromEnv({ releaseBranch, releaseEnv });
 
   return { release, env };
 }
@@ -90,7 +92,7 @@ export async function createReleasePR(options) {
 
   if (release.autoMergeReleasePR) {
     release.logger.title('Auto Merge Release PR...');
-    await release.autoMergePR(prNumber);
+    await release.autoMergePR(prNumber, releaseBranch);
 
     await release.checkedPR(prNumber, releaseBranch);
   } else {

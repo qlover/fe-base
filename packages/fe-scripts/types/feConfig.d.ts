@@ -46,6 +46,11 @@ export type FeConfig = {
    * scripts release
    */
   release?: FeReleaseConfig;
+
+  /**
+   * @default ['.env.local', '.env']
+   */
+  envOrder?: string[];
 };
 
 export type FeReleaseConfig = {
@@ -88,17 +93,17 @@ export type FeReleaseConfig = {
     /**
      * hex color string
      *
-     * @default 1A7F37
+     * @default `1A7F37`
      */
     color?: string;
 
     /**
-     * @default Label for version update PRs
+     * @default `Label for version update PRs`
      */
     description?: string;
 
     /**
-     * @default CI-Release
+     * @default `CI-Release`
      */
     name?: string;
   };
