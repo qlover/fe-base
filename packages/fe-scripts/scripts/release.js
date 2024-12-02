@@ -46,9 +46,17 @@ function createRelease(scriptsOptions) {
  * @returns {Promise<void>}
  */
 export async function release(options) {
-  const { release } = createRelease(options);
+  const { release, env } = createRelease(options);
 
-  release.logger.debug(release.options);
+  release.logger.debug(release.configer.context);
+
+  // npm_token is required
+  if (!env.get('NPM_TOKEN')) {
+    release.logger.error('NPM_TOKEN environment variable is not set.');
+    return;
+  }
+
+  release.setNPMToken(env.get('NPM_TOKEN'));
 
   // check npm
   await release.checkNpmAuth();
@@ -66,15 +74,9 @@ export async function release(options) {
  * @returns {Promise<void>}
  */
 export async function createReleasePR(options) {
-  const { release, env } = createRelease(options);
+  const { release } = createRelease(options);
 
-  release.logger.debug(release.options);
-
-  // npm_token is required
-  if (!env.get('NPM_TOKEN')) {
-    release.logger.error('NPM_TOKEN environment variable is not set.');
-    return;
-  }
+  release.logger.debug(release.configer.context);
 
   await release.checkPublishPath();
 
