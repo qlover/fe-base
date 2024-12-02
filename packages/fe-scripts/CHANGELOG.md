@@ -1,5 +1,17 @@
 
 
+## [0.3.11](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.10...fe-scripts-v0.3.11) (2024-12-02)
+
+
+### Features
+
+* fe scripts context ([#150](https://github.com/qlover/fe-base/issues/150)) ([64ef1a0](https://github.com/qlover/fe-base/commit/64ef1a05b170deefd3f7dc03625a03510ae2599e))
+
+
+### Bug Fixes
+
+* **fe-scripts/scripts/release.js:** not clear github_token var ([#148](https://github.com/qlover/fe-base/issues/148)) ([1538ae1](https://github.com/qlover/fe-base/commit/1538ae15c1af038702897b47ce01a148dbf0e8d4))
+
 ## [0.3.10](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.9...fe-scripts-v0.3.10) (2024-11-29)
 
 ## [0.3.9](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.8...fe-scripts-v0.3.9) (2024-11-18)
