@@ -1,6 +1,11 @@
-import { FeScriptContext } from '../FeScriptContext.js';
+import { FeScriptContext } from '../lib/FeScriptContext.js';
 import { Release } from '../lib/Release.js';
 
+/**
+ * create release instance
+ * @param {import('@qlover/fe-scripts').ReleaseContext} scriptsOptions
+ * @returns {Release}
+ */
 function createRelease(scriptsOptions) {
   const context = new FeScriptContext(scriptsOptions);
 
@@ -34,7 +39,7 @@ function createRelease(scriptsOptions) {
 
 /**
  * release to NPM and Github
- * @param {import('../index.d.ts').ReleaseConfig} options
+ * @param {import('@qlover/fe-scripts').ReleaseContext} options
  * @returns {Promise<void>}
  */
 export async function release(options) {
@@ -54,7 +59,7 @@ export async function release(options) {
 
 /**
  * update version and release to NPM and Github
- * @param {import('../index.d.ts').ReleaseConfig} options
+ * @param {import('@qlover/fe-scripts').ReleaseContext} options
  * @returns {Promise<void>}
  */
 export async function createReleasePR(options) {

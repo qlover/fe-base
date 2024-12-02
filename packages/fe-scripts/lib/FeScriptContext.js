@@ -1,55 +1,57 @@
-import { ConfigSearch } from './lib/ConfigSearch.js';
-import { ScriptsLogger } from './lib/ScriptsLogger.js';
-import { Shell } from './lib/Shell.js';
-import { searchEnv } from './scripts/search-env.js';
+import { ConfigSearch } from './ConfigSearch.js';
+import { ScriptsLogger } from './ScriptsLogger.js';
+import { Shell } from './Shell.js';
+import { searchEnv } from '../scripts/search-env.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import path from 'path';
+import loadsh from 'lodash';
 
 function getDefaultConfig() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   return JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, './fe-config.json'), 'utf8')
+    fs.readFileSync(path.resolve(__dirname, '../fe-config.json'), 'utf8')
   );
 }
 
 function getFeConfigSearch(feConfig) {
   return new ConfigSearch({
     name: 'fe-config',
-    defaultConfig: feConfig || getDefaultConfig()
+    defaultConfig: loadsh.merge(getDefaultConfig(), feConfig)
   });
 }
 
 /**
+ * A factory for creating a context object that can be used to pass options to scripts.
  * @template T
  */
 export class FeScriptContext {
   /**
-   * @param {T} scriptsOptions
+   * @param {Partial<FeScriptContext<T>>} scriptsOptions
    */
   constructor(scriptsOptions) {
     const { logger, shell, feConfig, dryRun, verbose, options } =
-      scriptsOptions;
+      scriptsOptions || {};
 
     /**
-     * @type {import('./lib/ScriptsLogger.js').ScriptsLogger}
+     * @type {import('./ScriptsLogger.js').ScriptsLogger}
      */
     this.logger = logger || new ScriptsLogger({ debug: verbose, dryRun });
     /**
-     * @type {import('./lib/Shell.js').Shell}
+     * @type {import('./Shell.js').Shell}
      */
     this.shell = shell || new Shell({ log: this.logger, isDryRun: dryRun });
 
     const feConfigSearch = getFeConfigSearch(feConfig);
     /**
-     * @type {import('./index.js').FeConfig}
+     * @type {import('../index.js').FeConfig}
      */
     this.feConfig = feConfigSearch.config;
 
     /**
-     * @type {import('./lib/Env.js').Env}
+     * @type {import('./Env.js').Env}
      */
     this.env = searchEnv({ logger: this.logger });
 

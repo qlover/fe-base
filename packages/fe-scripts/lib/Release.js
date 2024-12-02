@@ -75,9 +75,9 @@ class ReleaseUtil {
 }
 
 /**
- * @param {import('../index.d.ts').FeConfig} feConfig
- * @param {import('../index.d.ts').LibReleaseOptions} context
- * @returns {import('../index.d.ts').FeConfig}
+ * @param {import('@qlover/fe-scripts').FeConfig} feConfig
+ * @param {import('@qlover/fe-scripts').ReleaseContext} context
+ * @returns {import('@qlover/fe-scripts').FeConfig}
  */
 function initFEConfig(feConfig, context) {
   feConfig = merge({}, context.feConfig);
@@ -91,7 +91,7 @@ function initFEConfig(feConfig, context) {
 
 export class Release {
   /**
-   * @param {import('../index.d.ts').LibReleaseOptions} context
+   * @param {import('../index.d.ts').ReleaseContext} context
    */
   constructor(context) {
     this.feConfig = initFEConfig(context.feConfig, context);

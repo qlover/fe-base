@@ -1,11 +1,23 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
+import { FeScriptContext } from '../lib';
 
 /**
- * @param {import('@qlover/fe-scripts/scripts').CleanBranchOptions} options
+ * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} options
  */
 export function cleanBranch(options) {
-  const { protectedBranches = [], logger } = options;
+  const context = new FeScriptContext(options);
+  const { logger } = context;
+  const protectedBranches =
+    context.options.protectedBranches ||
+    context.feConfig.protectedBranches ||
+    [];
+
+  if (protectedBranches.length === 0) {
+    logger.warn(
+      'No protected branches found, important branches may be deleted!'
+    );
+  }
 
   // Fetch and prune remote branches
   execSync('git fetch -p', { stdio: 'inherit' });
