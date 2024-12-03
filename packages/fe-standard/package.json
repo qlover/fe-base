@@ -4,16 +4,17 @@
   "private": false,
   "type": "module",
   "files": [
-    "eslint"
+    "config"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/fe-standard"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",
+  "homepage": "https://github.com/qlover/fe-base/blob/master/packages/fe-standard/README.md",
   "keywords": [
     "config",
+    "standard",
     "fe-standard",
     "eslint-config"
   ],
