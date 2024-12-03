@@ -1,6 +1,5 @@
 import { Logger } from '@qlover/fe-utils';
-import { FeConfig } from './feConfig';
-import { ReleaseOptions } from './scripts';
+import { FeConfig, ReleaseOptions } from '@qlover/fe-scripts';
 
 export type SearchConfigType = import('cosmiconfig').OptionsSync & {
   _default: any;
@@ -71,7 +70,6 @@ export class Env {
 
   /**
    * load env file
-   * @param param0
    */
   load({
     preloadList,
@@ -91,14 +89,14 @@ export class Env {
    * Destroy after obtaining a variable
    * @param varname
    */
-  getDestroy(varname: keyof typeof process.env): string | undefined;
+  getDestroy(varname: string): string | undefined;
 
   /**
    * get env variable
    * @param {string} variable
    * @returns {string | undefined}
    */
-  get(variable: keyof typeof process.env): string | undefined;
+  get(variable: string): string | undefined;
 
   /**
    * set env variable

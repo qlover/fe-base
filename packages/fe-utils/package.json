@@ -51,12 +51,10 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@microsoft/tsdoc": "^0.15.0",
-    "@qlover/fe-scripts": "^0.3.4",
+    "@qlover/fe-scripts": "latest",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.12",
     "rollup": "^4.24.2",
     "rollup-plugin-dts": "^6.1.1",

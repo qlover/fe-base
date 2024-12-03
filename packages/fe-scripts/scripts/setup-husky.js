@@ -1,9 +1,9 @@
 import { resolve, join } from 'path';
 import fs from 'fs';
-import { FeScriptContext } from '../lib';
+import { FeScriptContext } from '../lib/index.js';
 
 /**
- * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').SetupHuskyOptions>} options
+ * @param {FeScriptContext<import('@qlover/fe-scripts').SetupHuskyOptions>} options
  */
 export async function setupHusky(options) {
   const context = new FeScriptContext(options);

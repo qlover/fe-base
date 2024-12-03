@@ -15,7 +15,9 @@ export class Env {
 
   /**
    * load env
-   * @param {string[]} pre env file prefix
+   * @param {object} param0
+   * @param {string[]} param0.preloadList
+   * @param {string} param0.rootPath
    * @returns {void}
    */
   load({ preloadList, rootPath } = {}) {
