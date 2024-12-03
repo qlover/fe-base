@@ -1,5 +1,5 @@
 declare module '@qlover/fe-scripts';
 
-export * from './lib.d';
+export * from '../lib/index.d';
 export * from './feConfig.d';
-export * from './scripts.d';
+export * from '../scripts/index.d';

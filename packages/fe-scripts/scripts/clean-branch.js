@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
-import { FeScriptContext } from '../lib';
+import { FeScriptContext } from '../lib/index.js';
 
 /**
  * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} options

@@ -5,10 +5,10 @@
   "private": false,
   "exports": {
     ".": {
-      "require": "./lib/index.js",
-      "import": "./lib/index.js",
-      "types": "./lib/types/lib.d.ts",
-      "default": "./lib/index.js"
+      "require": "./index.js",
+      "import": "./index.js",
+      "types": "./types/index.d.ts",
+      "default": "./index.js"
     },
     "./scripts/*": "./scripts/*",
     "./lib/*": "./lib/*",

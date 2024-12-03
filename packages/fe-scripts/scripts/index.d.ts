@@ -1,6 +1,5 @@
 import { Logger } from '@qlover/fe-utils';
-import { FeConfig } from '../index';
-import { FeScriptContext, Shell } from '../lib';
+import { FeConfig, FeScriptContext, Shell } from '@qlover/fe-scripts';
 
 export interface ScriptContext {
   logger: Logger;
@@ -77,7 +76,7 @@ export interface SearchEnvOptions {
   maxDepth?: number;
 }
 
-export interface Script<T = Options> {
+export interface Script<T> {
   (options?: FeScriptContext<T>): Promise<void>;
 }
 

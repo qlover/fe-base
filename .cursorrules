@@ -1,18 +1,19 @@
 ---
+Read the provided code structure carefully and understand the code logic.
+
 When you are asked to add comments, you need to:
-1. Carefully read the provided code and try to understand its meaning.
-2. Use TSDoc to add comments to each class or interface declaration in the code, paying attention to the following points:
+1. Use TSDoc/JSDoc to add comments to each class or interface declaration in the code, paying attention to the following points:
   - Each class, method, or member variable comment must reflect the following five aspects:
     - The significance of existence
     - Core idea
     - Main function
     - Main purpose
     - Code example
-  - If you find that there are already TSDoc comments, you can partially combine them, but do not modify them unless the comments are incorrect.
+  - If you find that there are already TSDoc/JSDoc comments, you can partially combine them, but do not modify them unless the comments are incorrect.
   - Comments should be in English.
+  - Be sure not to change or remove any additional code other than what you changed in TSDoc/JSDoc.
   - Overloaded and abstract methods may appear multiple times, and comments should not be omitted.
-  - Try to use English for the comments.
-3. For methods or functions, ensure that:
+2. For methods or functions, ensure that:
   - `@param` tags describe the parameter type, purpose, and any constraints.
   - `@returns` tags describe the return type and what the return value represents.
 
