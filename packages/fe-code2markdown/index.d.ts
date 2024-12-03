@@ -10,6 +10,7 @@ import {
   ReflectionKind
 } from 'typedoc';
 import { Logger } from '@qlover/fe-utils';
+import { FeScriptContext } from '@qlover/fe-scripts';
 
 type ValueOf<T> = T[keyof T];
 /**
@@ -167,6 +168,16 @@ declare class ProjectReader {
   getApp(): Promise<Application>;
 }
 
+export type ReflectionGeneraterOptions = {
+  entryPoints: string[];
+  outputJSONFilePath: string;
+  generatePath: string;
+  tplPath: string;
+};
+
+export type ReflectionGeneraterContext =
+  FeScriptContext<ReflectionGeneraterOptions>;
+
 /**
  * Generates reflections for documentation.
  *
@@ -183,15 +194,9 @@ declare class ReflectionGenerater {
   /**
    * Creates an instance of ReflectionGenerater.
    *
-   * @param options - Configuration options for the generator.
+   * @param context - Configuration options for the generator.
    */
-  constructor(options: {
-    logger: Logger;
-    entryPoints: string[];
-    outputJSONFilePath: string;
-    generatePath: string;
-    tplPath: string;
-  });
+  constructor(context: ReflectionGeneraterContext);
 
   /**
    * Generates documentation reflections.
