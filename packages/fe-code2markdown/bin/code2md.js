@@ -37,14 +37,18 @@ const main = async () => {
     : resolve(options.generatePath, './code2md.tpl.json');
 
   // TODO: 检验参数
-  const generater = new ReflectionGenerater({
-    logger: new Logger({ debug: options.debug }),
+  const generaterOptions = {
     entryPoints: options.entryPoints.map((entry) => resolve(entry)),
     outputJSONFilePath: options.outputJSONFilePath
       ? resolve(options.outputJSONFilePath)
       : '',
     generatePath: resolve(options.generatePath),
     tplPath
+  };
+
+  const generater = new ReflectionGenerater({
+    logger: new Logger({ debug: options.debug }),
+    options: generaterOptions
   });
 
   await generater.generate(options.onlyJson);

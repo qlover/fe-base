@@ -3,12 +3,14 @@ import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
 export class ProjectReader {
   /**
-   * @param {{entryPoints: string[], outputPath: string, logger: import('@qlover/fe-utils').Logger}} options
+   * @param {import('../index.d.ts').ReflectionGeneraterContext} context
    */
-  constructor({ entryPoints, outputPath, logger }) {
-    this.entryPoints = entryPoints;
-    this.outputPath = outputPath;
-    this.logger = logger;
+  constructor(context) {
+    this.context = context;
+  }
+
+  get logger() {
+    return this.context.logger;
   }
 
   /**
@@ -17,10 +19,10 @@ export class ProjectReader {
    * @returns {import('typedoc').ProjectReflection}
    */
   async load(path) {
-    path = path || this.outputPath;
+    path = path || this.context.options.outputJSONFilePath;
 
     if (!path) {
-      this.logger.wain('Ouput path is empty!');
+      this.logger.warn('Ouput path is empty!');
       return;
     }
 
@@ -45,7 +47,7 @@ export class ProjectReader {
     path = path || this.outputPath;
 
     if (!path) {
-      this.logger.wain('Ouput path is empty!');
+      this.logger.warn('Ouput path is empty!');
       return;
     }
 
@@ -57,7 +59,7 @@ export class ProjectReader {
 
   writeJSON(value, path) {
     if (!path) {
-      this.logger.wain('Ouput path is empty!');
+      this.logger.warn('Ouput path is empty!');
       return;
     }
 
@@ -82,7 +84,7 @@ export class ProjectReader {
     const app = await Application.bootstrap(
       {
         // typedoc options here
-        entryPoints: this.entryPoints,
+        entryPoints: this.context.options.entryPoints,
         skipErrorChecking: true
       },
       [new TSConfigReader(), new TypeDocReader()]

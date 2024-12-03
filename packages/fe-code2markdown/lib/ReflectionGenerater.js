@@ -7,32 +7,16 @@ import { TypeDocConverter } from './TypeDocConverter.js';
 
 export class ReflectionGenerater {
   /**
-   * @param {object} options
-   * @param {string} options.generatePath
-   * @param {import('@qlover/fe-utils').Logger} options.logger
-   * @param {string[]} options.entryPoints
-   * @param {string} options.outputJSONFilePath
-   * @param {string} options.tplPath
+   * @param {Partial<import('../index.d.ts').ReflectionGeneraterContext>} context
    */
-  constructor({
-    logger,
-    entryPoints,
-    outputJSONFilePath,
-    generatePath,
-    tplPath
-  }) {
-    this.reader = new ProjectReader({
-      entryPoints,
-      outputPath: outputJSONFilePath,
-      logger
-    });
-
-    this.entryPoints = entryPoints;
-    this.outputJSONFilePath = outputJSONFilePath;
-    this.generatePath = generatePath;
-    this.tplPath = tplPath;
-    this.logger = logger;
+  constructor(context) {
+    this.context = context;
+    this.reader = new ProjectReader(context);
     this.sourceTemplate = new HBSTemplate('context');
+  }
+
+  get logger() {
+    return this.context.logger;
   }
 
   /**
@@ -53,8 +37,9 @@ export class ReflectionGenerater {
     const templateResults = typeDocConverter.getContextMap();
 
     // FIXME: isDebug is protected, need to find a way to check it
-    this.reader.writeJSON(templateResults, this.tplPath);
-    this.logger.info('Generate JSON file success', this.tplPath);
+    const tplPath = this.context.options.tplPath;
+    this.reader.writeJSON(templateResults, tplPath);
+    this.logger.info('Generate JSON file success', tplPath);
 
     return templateResults;
   }
@@ -92,8 +77,8 @@ export class ReflectionGenerater {
   getTemplateResultOutputPath(fullFileName) {
     const name = path.basename(fullFileName).split('.').slice(0, -1).join('.');
     const docPaths = Utils.extractDocumentationPath(
-      this.entryPoints,
-      this.generatePath,
+      this.context.options.entryPoints,
+      this.context.options.generatePath,
       fullFileName
     );
 
