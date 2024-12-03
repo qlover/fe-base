@@ -1,5 +1,12 @@
 
 
+## [0.4.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.0...fe-scripts-v0.4.1) (2024-12-03)
+
+
+### Bug Fixes
+
+* fe-scripts type ([#153](https://github.com/qlover/fe-base/issues/153)) ([99da575](https://github.com/qlover/fe-base/commit/99da575a75eb13cdbc2e7546e13a851cb1329abc))
+
 ## [0.3.11](https://github.com/qlover/fe-base/compare/fe-scripts-v0.3.10...fe-scripts-v0.3.11) (2024-12-02)
 
 
