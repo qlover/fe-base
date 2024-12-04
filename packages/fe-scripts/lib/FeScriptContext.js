@@ -43,11 +43,10 @@ export class FeScriptContext {
      */
     this.shell = shell || new Shell({ log: this.logger, isDryRun: dryRun });
 
-    const feConfigSearch = getFeConfigSearch(feConfig);
     /**
      * @type {import('../types/feConfig.d.ts').FeConfig}
      */
-    this.feConfig = feConfigSearch.config;
+    this.feConfig = getFeConfigSearch(feConfig).config;
 
     /**
      * @type {boolean}
@@ -61,6 +60,6 @@ export class FeScriptContext {
     /**
      * @type {T}
      */
-    this.options = options;
+    this.options = options || {};
   }
 }

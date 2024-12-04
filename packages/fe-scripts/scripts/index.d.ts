@@ -36,6 +36,12 @@ export interface CleanBranchOptions {
    * @default `fe-config.protectedBranches``
    */
   protectedBranches?: string[];
+
+  /**
+   * Whether to merge default protected branches
+   * @default `false`
+   */
+  merge?: boolean;
 }
 
 export interface CommitOptions {
