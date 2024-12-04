@@ -2,16 +2,37 @@ import { execSync } from 'child_process';
 import { createInterface } from 'readline';
 import { FeScriptContext } from '../lib/index.js';
 
+function union(a) {
+  return [...new Set(a)];
+}
+
+/**
+ * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} context
+ */
+function composeBranches(context) {
+  const defaultBranchs = context.feConfig.protectedBranches || [];
+  const { protectedBranches, merge } = context.options;
+  if (protectedBranches) {
+    return merge
+      ? union([...protectedBranches, ...defaultBranchs])
+      : protectedBranches;
+  }
+  return defaultBranchs;
+}
+
 /**
  * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} options
  */
 export function cleanBranch(options) {
   const context = new FeScriptContext(options);
-  const { logger } = context;
-  const protectedBranches =
-    context.options.protectedBranches ||
-    context.feConfig.protectedBranches ||
-    [];
+  const { logger, verbose, dryRun } = context;
+
+  const protectedBranches = composeBranches(context);
+
+  if (verbose) {
+    logger.info(`Will delete branches, if exist:`);
+    logger.info(protectedBranches);
+  }
 
   if (protectedBranches.length === 0) {
     logger.warn(
@@ -66,16 +87,25 @@ export function cleanBranch(options) {
           // Delete the local branches that are gone from the remote
           branchesToDelete.forEach((branch) => {
             try {
-              execSync(`git branch -d ${branch}`, { stdio: 'inherit' });
-              logger.log(`Deleted branch ${branch}`);
+              if (dryRun) {
+                logger.info(`Would delete branch ${branch}`);
+              } else {
+                execSync(`git branch -d ${branch}`, { stdio: 'inherit' });
+                logger.info(`Deleted branch ${branch}`);
+              }
             } catch {
               // if branch is not fully merged, attempt to force delete
               try {
                 logger.warn(
                   `Branch ${branch} is not fully merged, attempting force delete...`
                 );
-                execSync(`git branch -D ${branch}`, { stdio: 'inherit' });
-                logger.log(`Force deleted branch ${branch}`);
+
+                if (dryRun) {
+                  logger.info(`Would force delete branch ${branch}`);
+                } else {
+                  execSync(`git branch -D ${branch}`, { stdio: 'inherit' });
+                  logger.info(`Force deleted branch ${branch}`);
+                }
               } catch (forceError) {
                 logger.error(
                   `Failed to delete branch ${branch}:`,
@@ -85,7 +115,7 @@ export function cleanBranch(options) {
             }
           });
         } else {
-          logger.log('Branch deletion aborted.');
+          logger.info('Branch deletion aborted.');
         }
         rl.close();
       }
