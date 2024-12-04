@@ -1,5 +1,12 @@
 
 
+## [0.4.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.1...fe-scripts-v0.4.2) (2024-12-04)
+
+
+### Features
+
+* clean branch command options ([#158](https://github.com/qlover/fe-base/issues/158)) ([387e3c7](https://github.com/qlover/fe-base/commit/387e3c7aba1303b4caaef0053683d9e67ba981fa))
+
 ## [0.4.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.0...fe-scripts-v0.4.1) (2024-12-03)
 
 
