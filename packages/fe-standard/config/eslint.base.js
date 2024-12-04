@@ -1,6 +1,8 @@
 import prettier from 'eslint-plugin-prettier';
 import globals from 'globals';
+import prettierConfig from './prettierrc.js';
 
+/** @type {import('eslint').Linter.Config} */
 export default {
   languageOptions: {
     ecmaVersion: 12,
@@ -14,15 +16,7 @@ export default {
     prettier: prettier
   },
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        semi: true,
-        singleQuote: true,
-        trailingComma: 'none',
-        endOfLine: 'lf'
-      }
-    ],
+    'prettier/prettier': ['error', prettierConfig],
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off',
     'no-undef': 'error',

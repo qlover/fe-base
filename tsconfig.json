@@ -1,5 +1,5 @@
 {
-  "extends": "./packages/fe-standard/config/tsconfig.base.json",
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "./"
   },

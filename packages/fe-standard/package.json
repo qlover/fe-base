@@ -6,6 +6,10 @@
   "files": [
     "config"
   ],
+  "exports": {
+    "./config/*": "./config/*",
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",

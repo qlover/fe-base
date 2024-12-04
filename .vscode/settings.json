@@ -1,11 +1,10 @@
 {
   "eslint.enable": true,
   "eslint.format.enable": false,
-  "prettier.requireConfig": true,
-  "prettier.endOfLine": "lf",
+  "prettier.configPath": "./packages/fe-standard/config/prettierrc.js",
   "files.eol": "\n",
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  },
+  }
 }

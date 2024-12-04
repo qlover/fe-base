@@ -1,17 +1,22 @@
 # fe-base
 
-- typescript + eslint + prettier 控制代码格式
-- commitlint 规范提交格式
-- jtest 测试
-- rimraf 文件目录清理工具
-- CI/CD 自动化 github workfolw
-  - release-it 发布到 npm, github
-- ts-node node 环境支持 typescript
-- dotenv 环境变量加载
-- coress-env TODO: 增加跨平台全局变量工具
+This project serves as a foundational setup for frontend development, incorporating various tools and configurations to streamline the development process.
 
-# scripts
+## Features
 
-```
+- **TypeScript + ESLint + Prettier**: Ensures consistent code formatting and quality.
+- **Commitlint**: Enforces commit message conventions.
+- **Jest**: Provides a robust testing framework.
+- **Rimraf**: A tool for cleaning up file directories.
+- **CI/CD Automation**: Utilizes GitHub workflows for continuous integration and deployment.
+  - **Release-it**: Automates the release process to npm and GitHub.
+- **TS-Node**: Enables TypeScript support in Node.js environments.
+- **Dotenv**: Loads environment variables from `.env` files.
+
+## Scripts
+
+To add development scripts, run the following command:
+
+```bash
 yarn add @qlover/fe-scripts --dev
 ```
