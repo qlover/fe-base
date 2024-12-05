@@ -263,7 +263,7 @@ export class SyncExecutor extends Executor {
 
       const result = actualTask(beforeResult as D);
 
-      return this.runHook(this.plugins, 'onSuccess', result) as T;
+      return this.runHook(this.plugins, 'onSuccess', result, data) as T;
     } catch (error) {
       const handledError = this.runHook(
         this.plugins,

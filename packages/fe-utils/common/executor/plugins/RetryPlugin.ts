@@ -1,5 +1,5 @@
-import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
+import { ExecutorError } from '../ExecutorError';
+import { ExecutorPlugin, PromiseTask } from '../ExecutorPlugin';
 
 /**
  * Configuration options for the RetryPlugin

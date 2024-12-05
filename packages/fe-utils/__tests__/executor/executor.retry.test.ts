@@ -1,4 +1,4 @@
-import { AsyncExecutor, RetryPlugin } from '../common';
+import { AsyncExecutor, RetryPlugin } from '../../common';
 
 describe('RetryPlugin', () => {
   it('should retry 2 times', async () => {

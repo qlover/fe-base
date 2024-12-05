@@ -120,7 +120,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @param result - Task execution result
    * @returns Modified result or Promise of modified result
    */
-  onSuccess?(result: T): R | Promise<R>;
+  onSuccess?(result: T, data?: unknown): R | Promise<R>;
 
   /**
    * Custom execution logic hook

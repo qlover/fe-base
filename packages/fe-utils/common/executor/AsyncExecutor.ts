@@ -246,7 +246,7 @@ export class AsyncExecutor extends Executor {
 
       const result = await actualTask(beforeResult as D);
 
-      return this.runHook(this.plugins, 'onSuccess', result) as T;
+      return this.runHook(this.plugins, 'onSuccess', result, data) as T;
     } catch (error) {
       const handledError = await this.runHook(
         this.plugins,

@@ -29,7 +29,6 @@ export * from './AsyncExecutor';
 export * from './SyncExecutor';
 
 /**
- * Export retry plugin module
- * @category RetryPlugin
+ * Export plugins
  */
-export * from './RetryPlugin';
+export * from './plugins';

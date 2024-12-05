@@ -3,7 +3,7 @@ import {
   SyncExecutor,
   ExecutorError,
   ExecutorPlugin
-} from '../common';
+} from '../../common';
 
 describe('AsyncExecutor', () => {
   it('should successfully execute an asynchronous task', async () => {

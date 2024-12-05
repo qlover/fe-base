@@ -1,6 +1,6 @@
-import { FetchRequestErrorID, FetchRequestError } from './FetchRequest';
-import { FetchRequestConfig } from './FetchRequestConfig';
-import { ExecutorPlugin } from '../executor';
+import { RequestAdpaterConfig } from '../../interface';
+import { ExecutorPlugin } from '../../executor';
+import { RequestError, RequestErrorID } from '../RequestError';
 
 /**
  * Plugin for URL manipulation and response handling
@@ -73,7 +73,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * );
    * ```
    */
-  appendQueryParams(url: string, params: Record<string, string> = {}): string {
+  appendQueryParams(url: string, params: Record<string, unknown> = {}): string {
     const opt = '?';
     const link = '&';
     let [path, search = ''] = url.split(opt);
@@ -129,8 +129,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const completeUrl = urlPlugin.buildUrl(config);
    * ```
    */
-  buildUrl(config: FetchRequestConfig): string {
-    let { url, baseURL = '' } = config;
+  buildUrl(config: RequestAdpaterConfig): string {
+    let { url = '', baseURL = '', params } = config;
 
     // has full url
     if (!this.isFullURL(url)) {
@@ -143,8 +143,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
     }
 
     // handle params
-    if (config.params && Object.keys(config.params).length > 0) {
-      url = this.appendQueryParams(url, config.params);
+    if (params && Object.keys(params).length > 0) {
+      url = this.appendQueryParams(url, params);
     }
 
     return url;
@@ -164,7 +164,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore(config: FetchRequestConfig): void {
+  onBefore(config: RequestAdpaterConfig): void {
     // compose url and params
     config.url = this.buildUrl(config);
   }
@@ -179,7 +179,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    *
    * @param result - Fetch response
    * @returns Response if OK
-   * @throws {FetchRequestError} If response is not OK
+   * @throws {RequestError} If response is not OK
    *
    * @example
    * ```typescript
@@ -189,38 +189,39 @@ export class FetchURLPlugin implements ExecutorPlugin {
   onSuccess(result: Response): Response {
     // if response is not ok, throw error
     if (!result.ok) {
-      const frError = new FetchRequestError(
-        FetchRequestErrorID.RESPONSE_NOT_OK,
+      const requestError = new RequestError(
+        RequestErrorID.RESPONSE_NOT_OK,
         `Request failed with status: ${result.status} ${result.statusText}`
       );
 
       // @ts-expect-error Experimental: add response to error
-      frError.response = result;
+      requestError.response = result;
 
-      throw frError;
+      throw requestError;
     }
+
     return result;
   }
 
   /**
    * Error handling hook
-   * Wraps non-FetchRequestError errors
+   * Wraps non-RequestError errors
    *
    * Core Idea: Standardize error handling for requests.
-   * Main Function: Convert errors to FetchRequestError format.
+   * Main Function: Convert errors to RequestError format.
    * Main Purpose: Ensure consistent error handling across requests.
    *
    * @param error - Original error
-   * @returns FetchRequestError
+   * @returns RequestError
    *
    * @example
    * ```typescript
    * const error = urlPlugin.onError(new Error('Network Error'));
    * ```
    */
-  onError(error: Error): FetchRequestError {
-    return error instanceof FetchRequestError
+  onError(error: Error): RequestError {
+    return error instanceof RequestError
       ? error
-      : new FetchRequestError(FetchRequestErrorID.FETCH_REQUEST_ERROR, error);
+      : new RequestError(RequestErrorID.REQUEST_ERROR, error);
   }
 }

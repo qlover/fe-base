@@ -38,6 +38,14 @@ export class ExecutorError extends Error {
         : originalError?.message || id
     );
 
+    if (
+      originalError &&
+      typeof originalError === 'object' &&
+      'stack' in originalError
+    ) {
+      this.stack = originalError.stack + '\n' + this.stack;
+    }
+
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
