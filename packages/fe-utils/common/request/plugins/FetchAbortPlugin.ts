@@ -1,7 +1,7 @@
 import { ExecutorPlugin } from '../../executor';
 import { RequestAdapterFetchConfig } from '../RequestAdapterFetch';
-import { RequestError } from '../RequestError';
 import { RequestErrorID } from '../RequestError';
+import { RequestError } from '../RequestError';
 
 /**
  * Plugin for handling request cancellation
@@ -16,6 +16,9 @@ import { RequestErrorID } from '../RequestError';
  * Core Idea: Enhance request management with cancellation capabilities.
  * Main Function: Allow requests to be aborted programmatically.
  * Main Purpose: Improve control over network requests and resource management.
+ *
+ * **Not Support**
+ * - Abort signal from outside
  *
  * @implements {ExecutorPlugin}
  *
@@ -35,6 +38,8 @@ import { RequestErrorID } from '../RequestError';
  * ```
  */
 export class FetchAbortPlugin implements ExecutorPlugin {
+  readonly onlyOne = true;
+
   /**
    * Map to store active AbortControllers
    * Keys are generated from request config
@@ -58,18 +63,9 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * ```
    */
   private generateRequestKey(config: RequestAdapterFetchConfig): string {
-    const data = config?.data || config?.body || null;
-    const params = config?.params ? JSON.stringify(config.params) : '';
-    const dataString = data ? JSON.stringify(data) : '';
-    return `${config?.method || 'GET'}-${config?.url}-${params}-${dataString}`;
-  }
-
-  getController(
-    config: RequestAdapterFetchConfig
-  ): [string | undefined, AbortController | undefined] {
-    const key = this.generateRequestKey(config);
-    const controller = this.controllers.get(key);
-    return [key, controller];
+    const params = config.params ? JSON.stringify(config.params) : '';
+    const data = config.body ? JSON.stringify(config.body) : '';
+    return `${config.method || 'GET'}-${config.url}-${params}-${data}`;
   }
 
   /**
@@ -96,12 +92,21 @@ export class FetchAbortPlugin implements ExecutorPlugin {
       this.abort(config);
     }
 
-    const controller = new AbortController();
-    this.controllers.set(key, controller);
+    // Check if config already has a signal
+    if (!config.signal) {
+      const controller = new AbortController();
+      this.controllers.set(key, controller);
 
-    config.controller = controller;
-    config.signal = controller.signal;
+      // extends config with abort signal
+      config.signal = controller.signal;
+    }
+
     return config;
+  }
+
+  onSuccess(_: unknown, config?: RequestAdapterFetchConfig): void {
+    // delete controller
+    config && this.controllers.delete(this.generateRequestKey(config));
   }
 
   /**
@@ -114,7 +119,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    *
    * @param error - Original error
    * @param config - Request configuration
-   * @returns {RequestError | void}
+   * @returns RequestError or void
    *
    * @example
    * ```typescript
@@ -125,32 +130,54 @@ export class FetchAbortPlugin implements ExecutorPlugin {
     error: Error,
     config?: RequestAdapterFetchConfig
   ): RequestError | void {
-    // if error is a abortError (DOMException or regular AbortError)
-    if (
-      error &&
-      (error.name === 'AbortError' || error instanceof DOMException)
-    ) {
-      return new RequestError(RequestErrorID.ABORT_ERROR, error);
-    }
+    // only handle plugin related error，other error should be handled by other plugins
+    if (this.isSameAbortError(error)) {
+      if (config) {
+        // controller may be deleted in .abort, this is will be undefined
+        const key = this.generateRequestKey(config);
+        const controller = this.controllers.get(key);
+        this.controllers.delete(key);
 
-    const [key, controller] = config ? this.getController(config) : [];
-    if (key && controller) {
-      this.controllers.delete(key);
-      const reason = controller.signal.reason;
-
-      // reason maybe a DOMException or a RequestError
-      if (reason instanceof RequestError) {
-        return reason;
-      }
-
-      if (reason instanceof DOMException) {
-        return new RequestError(RequestErrorID.ABORT_ERROR, reason);
-      }
-
-      if (controller.signal.aborted) {
-        return new RequestError(RequestErrorID.ABORT_ERROR, error);
+        return new RequestError(
+          RequestErrorID.ABORT_ERROR,
+          controller?.signal.reason || error
+        );
       }
     }
+  }
+
+  /**
+   * Determines if the given error is an abort error.
+   *
+   * - Identify errors that are related to request abortion.
+   * - Check error properties to determine if it's an abort error.
+   * - Provide a unified method to recognize abort errors.
+   *
+   * @param error - The error to check
+   * @returns True if the error is an abort error, false otherwise
+   *
+   */
+  isSameAbortError(error: Error): boolean {
+    // Check if the error is an instance of AbortError
+    if (error instanceof Error && error.name === 'AbortError') {
+      return true;
+    }
+
+    // Check for DOMException with abort-related message
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return true;
+    }
+
+    // Check for Event with auto trigger abort
+    // use: signal.addEventListener('abort')
+    if (error instanceof Event && error.type === 'abort') {
+      return true;
+    }
+
+    // Add any additional conditions that signify an abort error
+    // For example, custom error types or specific error codes
+
+    return false;
   }
 
   /**
@@ -174,16 +201,16 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * ```
    */
   abort(config: RequestAdapterFetchConfig): void {
-    const [key, controller] = this.getController(config);
-
-    if (key && controller && !controller.signal.aborted) {
-      console.log('abort=======', key, controller);
+    const key = this.generateRequestKey(config);
+    const controller = this.controllers.get(key);
+    if (controller) {
       controller.abort(
         new RequestError(
           RequestErrorID.ABORT_ERROR,
           'The operation was aborted'
         )
       );
+      // delete controller
       this.controllers.delete(key);
       config.onAbort?.(config);
     }

@@ -1,6 +1,6 @@
 import { Executor } from './Executor';
 import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, SyncTask } from './ExecutorPlugin';
+import { ExecutorPlugin, SyncTask, Task } from './ExecutorPlugin';
 
 /**
  * Synchronous executor class that extends the base Executor
@@ -87,13 +87,20 @@ export class SyncExecutor extends Executor {
       if (plugin.enabled && !plugin.enabled?.(name, ...args)) {
         continue;
       }
+      const method = plugin[name];
 
-      if (!plugin[name]) {
+      if (!method) {
         continue;
       }
 
-      // @ts-expect-error TODO: fix this type
-      const pluginResult = plugin[name](...args);
+      let pluginResult;
+      if (name === 'onSuccess' || name === 'onBefore') {
+        // @ts-expect-error
+        pluginResult = plugin[name](result, ...args.slice(1));
+      } else {
+        // @ts-expect-error
+        pluginResult = plugin[name](...args);
+      }
 
       if (pluginResult !== undefined) {
         if (name === 'onError') {
@@ -143,7 +150,11 @@ export class SyncExecutor extends Executor {
     try {
       return this.exec(dataOrTask as unknown, task);
     } catch (error) {
-      return error as ExecutorError;
+      if (error instanceof ExecutorError) {
+        return error;
+      }
+
+      return new ExecutorError('UNKNOWN_SYNC_ERROR', error as Error);
     }
   }
 
@@ -209,7 +220,7 @@ export class SyncExecutor extends Executor {
     );
 
     if (findOnExec) {
-      return this.runHook(this.plugins, 'onExec', runner) as T;
+      return this.runHook([findOnExec], 'onExec', runner) as T;
     }
 
     return runner();

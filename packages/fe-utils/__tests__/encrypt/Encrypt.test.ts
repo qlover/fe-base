@@ -1,4 +1,4 @@
-import { StringEntrypt, StringZlibEncrypt } from '../server/encrypt';
+import { StringEntrypt, StringZlibEncrypt } from '../../server/encrypt';
 
 describe('StringEntrypt', () => {
   // AES-256-CBC needs 32 bytes key

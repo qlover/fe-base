@@ -28,6 +28,8 @@ export interface ExecutorConfig {}
  * 3. Error handling
  * 4. Custom execution logic
  *
+ * execNoError returns all errors as they are., and if there is a plugin onerror handler chain in which an error occurs, it will also return the error instead of throwing it.
+ *
  * @abstract
  * @class Executor
  * @category Executor
@@ -102,6 +104,15 @@ export abstract class Executor {
    * ```typescript
    * executor.use(new LoggerPlugin());
    * executor.use(new RetryPlugin({ maxAttempts: 3 }));
+   * ```
+   *
+   * @example
+   *
+   * Use a plain object as a plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (data) => ({ ...data, modified: true })
+   * });
    * ```
    */
   use(plugin: ExecutorPlugin): void {

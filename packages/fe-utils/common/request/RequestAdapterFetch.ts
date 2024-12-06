@@ -16,9 +16,9 @@ export type RequestAdapterFetchConfig<Request = any> = RequestInit &
      */
     onStreamChunk?: (chunk: string) => string;
 
-    controller?: AbortController;
+    signal?: AbortSignal;
+
     onAbort?(config: RequestAdapterFetchConfig): void;
-    [key: string]: unknown;
   };
 
 export class RequestAdapterFetch
@@ -89,7 +89,7 @@ export class RequestAdapterFetch
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const thisConfig = this.getConfig();
     const mergedConfig = merge({}, thisConfig, config);
-    const { fetcher, url, method, headers, data, ...rest } = mergedConfig;
+    const { fetcher, url } = mergedConfig;
 
     if (typeof fetcher !== 'function') {
       throw new ExecutorError(RequestErrorID.FETCHER_NONE);
@@ -99,30 +99,8 @@ export class RequestAdapterFetch
       throw new ExecutorError(RequestErrorID.URL_NONE);
     }
 
-    const requestInit = this.toRequestInit(mergedConfig);
     return this.executor.exec(mergedConfig, () =>
-      fetcher(url, requestInit)
+      fetcher(url, mergedConfig)
     ) as unknown as Promise<RequestAdapterResponse<Request, Response>>;
-  }
-
-  toRequestInit(config: RequestAdapterFetchConfig): RequestInit {
-    return {
-      body: config.data,
-      cache: config.cache,
-      credentials: config.credentials,
-      headers: config.headers,
-      integrity: config.integrity,
-      keepalive: config.keepalive,
-      method: config.method,
-      mode: config.mode,
-      priority: config.priority,
-      redirect: config.redirect,
-      referrer: config.referrer,
-      referrerPolicy: config.referrerPolicy,
-      signal: config.signal,
-
-      /** Can only be null. Used to disassociate request from any Window. */
-      window: null
-    };
   }
 }

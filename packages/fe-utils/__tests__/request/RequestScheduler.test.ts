@@ -79,45 +79,52 @@ describe('RequestScheduler', () => {
   it('should support shortcut method', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
-    const response = await scheduler.get<string, string>({ url: '/test' });
+    const response = await scheduler.get<string, string>({
+      url: '/test',
+      data: 'string type data'
+    });
     expect(typeof response.data === 'string').toBe(true);
   });
 
   it('should support use plugin', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
+    const shouldRetry = jest.fn();
+
+    shouldRetry.mockImplementationOnce(() => {
+      return true;
+    });
 
     let retryCalls = 0;
     scheduler.usePlugin(
       new RetryPlugin({
         maxRetries: 2,
         retryDelay: 100,
-        shouldRetry: (): boolean => {
-          retryCalls++;
-          return true;
-        }
+        shouldRetry: shouldRetry
       })
     );
 
     await expect(scheduler.request({ url: '/test/fail' })).rejects.toThrow();
-    expect(retryCalls).toBe(2);
+    expect(shouldRetry).toHaveBeenCalledTimes(2);
   });
 
   it('should support use plugin with shortcut method', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
-    let retryCalls = 0;
+    const shouldRetry = jest.fn();
+
+    shouldRetry.mockImplementationOnce(() => {
+      return true;
+    });
+
     scheduler.usePlugin(
       new RetryPlugin({
         maxRetries: 2,
         retryDelay: 100,
-        shouldRetry: (): boolean => {
-          retryCalls++;
-          return true;
-        }
+        shouldRetry: shouldRetry
       })
     );
     await expect(scheduler.get({ url: '/test/fail' })).rejects.toThrow();
-    expect(retryCalls).toBe(2);
+    expect(shouldRetry).toHaveBeenCalledTimes(2);
   });
 });

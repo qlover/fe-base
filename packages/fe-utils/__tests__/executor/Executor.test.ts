@@ -195,6 +195,139 @@ describe('ExecutorPlugin Error', () => {
       'Test ExecutorPlugin Error'
     );
   });
+
+  it('should handle error break the chain, return the error', async () => {
+    const executor = new SyncExecutor();
+
+    const onError1 = jest.fn();
+    const onError2 = jest.fn();
+    const onError3 = jest.fn();
+    const execTask = jest.fn();
+
+    let count = 0;
+    execTask.mockImplementationOnce(() => {
+      throw new Error('Task Error');
+    });
+
+    onError1.mockImplementationOnce((e) => {
+      return e;
+    });
+
+    onError2.mockImplementationOnce(() => {
+      count++;
+    });
+
+    onError3.mockImplementationOnce(() => {
+      count++;
+    });
+
+    executor.use({ onError: onError1 });
+    executor.use({ onError: onError2 });
+    executor.use({ onError: onError3 });
+
+    try {
+      executor.exec(execTask);
+    } catch (error) {
+      expect(error).toMatchObject({
+        message: 'Task Error'
+      });
+    }
+
+    expect(onError1).toHaveBeenCalledTimes(1);
+    expect(onError2).toHaveBeenCalledTimes(0);
+    expect(onError3).toHaveBeenCalledTimes(0);
+  });
+
+  it('should handle error break the chain, throw  error', async () => {
+    const executor = new SyncExecutor();
+
+    const onError1 = jest.fn();
+    const onError2 = jest.fn();
+    const onError3 = jest.fn();
+    const execTask = jest.fn();
+
+    let count = 0;
+    execTask.mockImplementationOnce(() => {
+      throw new Error('Task Error');
+    });
+
+    onError1.mockImplementationOnce((e) => {
+      throw e;
+    });
+
+    onError2.mockImplementationOnce(() => {
+      count++;
+    });
+
+    onError3.mockImplementationOnce(() => {
+      count++;
+    });
+
+    executor.use({ onError: onError1 });
+    executor.use({ onError: onError2 });
+    executor.use({ onError: onError3 });
+
+    try {
+      executor.exec(execTask);
+    } catch (error) {
+      expect(error).toMatchObject({
+        message: 'Task Error'
+      });
+    }
+
+    expect(onError1).toHaveBeenCalledTimes(1);
+    expect(onError2).toHaveBeenCalledTimes(0);
+    expect(onError3).toHaveBeenCalledTimes(0);
+  });
+
+  // if all plugins not return error, the error will be thrown
+  it('should handle error all plugins not return error', async () => {
+    const executor = new SyncExecutor();
+
+    const onError1 = jest.fn();
+    const onError2 = jest.fn();
+    const onError3 = jest.fn();
+    const execTask = jest.fn();
+
+    let count = 0;
+    execTask.mockImplementationOnce(() => {
+      throw new Error('Task Error');
+    });
+
+    onError1.mockImplementationOnce((e) => {
+      if (e instanceof Error) {
+        e.message = e.message + ' Task Error1';
+      }
+    });
+
+    onError2.mockImplementationOnce((e) => {
+      if (e instanceof Error) {
+        e.message = e.message + ' Task Error2';
+      }
+    });
+
+    onError3.mockImplementationOnce((e) => {
+      if (e instanceof Error) {
+        e.message = e.message + ' Task Error3';
+      }
+    });
+
+    executor.use({ onError: onError1 });
+    executor.use({ onError: onError2 });
+    executor.use({ onError: onError3 });
+
+    try {
+      executor.exec(execTask);
+    } catch (error) {
+      expect(error).toMatchObject({
+        message: 'Task Error Task Error1 Task Error2 Task Error3'
+      });
+    }
+
+    expect(onError1).toHaveBeenCalledTimes(1);
+    expect(onError2).toHaveBeenCalledTimes(1);
+    expect(onError3).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('ExecutorPlugin no throw error', () => {

@@ -1,4 +1,4 @@
-import { Logger } from '../common';
+import { Logger } from '../../common';
 
 function mockLogStdIo(log?: Logger): {
   log: Logger;

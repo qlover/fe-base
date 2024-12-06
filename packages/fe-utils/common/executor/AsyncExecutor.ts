@@ -75,8 +75,14 @@ export class AsyncExecutor extends Executor {
         continue;
       }
 
-      // @ts-expect-error TODO: fix this type
-      const pluginResult = await plugin[name](...args);
+      let pluginResult;
+      if (name === 'onSuccess' || name === 'onBefore') {
+        // @ts-expect-error
+        pluginResult = await plugin[name](result, ...args.slice(1));
+      } else {
+        // @ts-expect-error
+        pluginResult = await plugin[name](...args);
+      }
 
       if (pluginResult !== undefined) {
         // if is onError, break chain
@@ -125,7 +131,11 @@ export class AsyncExecutor extends Executor {
     try {
       return await this.exec(dataOrTask as unknown, task);
     } catch (error) {
-      return error as ExecutorError;
+      if (error instanceof ExecutorError) {
+        return error;
+      }
+
+      return new ExecutorError('UNKNOWN_ASYNC_ERROR', error as Error);
     }
   }
 
@@ -188,7 +198,7 @@ export class AsyncExecutor extends Executor {
     );
 
     if (findOnExec) {
-      return this.runHook(this.plugins, 'onExec', runner) as Promise<T>;
+      return this.runHook([findOnExec], 'onExec', runner) as Promise<T>;
     }
 
     return runner();
