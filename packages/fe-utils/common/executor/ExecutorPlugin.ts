@@ -1,3 +1,4 @@
+import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import { ExecutorError } from './ExecutorError';
 
 /**
@@ -12,11 +13,13 @@ import { ExecutorError } from './ExecutorError';
  * ```
  * @category ExecutorPlugin
  */
-export type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
+export type PromiseTask<Result, Params> = (
+  context: ExecutorContextInterface<Params>
+) => Promise<Result>;
 
 /**
  * Type definition for synchronous task
- * @template T - Return type of the task
+ * @template Result - Return type of the task
  * @template D - Input data type for the task
  * @example
  * ```typescript
@@ -26,7 +29,9 @@ export type PromiseTask<T, D = unknown> = (data: D) => Promise<T>;
  * ```
  * @category ExecutorPlugin
  */
-export type SyncTask<T, D = unknown> = (data: D) => T;
+export type SyncTask<Result, Params> = (
+  context: ExecutorContextInterface<Params>
+) => Result;
 
 /**
  * Union type for both promise and sync tasks
@@ -34,7 +39,9 @@ export type SyncTask<T, D = unknown> = (data: D) => T;
  * @template D - Input data type for the task
  * @category ExecutorPlugin
  */
-export type Task<T, D = unknown> = PromiseTask<T, D> | SyncTask<T, D>;
+export type Task<Result, Params> =
+  | PromiseTask<Result, Params>
+  | SyncTask<Result, Params>;
 
 /**
  * Base plugin class for extending executor functionality.
@@ -124,7 +131,10 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * }
    * ```
    */
-  enabled?(name: keyof ExecutorPlugin, ...args: unknown[]): boolean;
+  enabled?(
+    name: keyof ExecutorPlugin,
+    context: ExecutorContextInterface<T>
+  ): boolean;
 
   /**
    * Hook executed before the main task
@@ -132,7 +142,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @param data - Input data
    * @returns Modified data or Promise of modified data
    */
-  onBefore?(data?: unknown): unknown | Promise<unknown>;
+  onBefore?(context: ExecutorContextInterface<T>): unknown | Promise<unknown>;
 
   /**
    * Error handling hook
@@ -146,8 +156,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @returns ExecutorError, void, or Promise of either
    */
   onError?(
-    error: Error,
-    data?: unknown
+    context: ExecutorContextInterface<T>
   ): Promise<ExecutorError | Error | void> | ExecutorError | Error | void;
 
   /**
@@ -156,7 +165,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @param result - Task execution result
    * @returns Modified result or Promise of modified result
    */
-  onSuccess?(result: T, data?: unknown): R | Promise<R>;
+  onSuccess?(context: ExecutorContextInterface<T>): R | Promise<R>;
 
   /**
    * Custom execution logic hook
@@ -164,5 +173,7 @@ export abstract class ExecutorPlugin<T = unknown, R = T> {
    * @param task - Task to be executed
    * @returns Task result or Promise of result
    */
-  onExec?<T>(task: PromiseTask<T> | Task<T>): Promise<T | void> | T | void;
+  onExec?<Result, Params>(
+    task: PromiseTask<Result, Params> | Task<Result, Params>
+  ): Promise<Result | void> | Result | void;
 }

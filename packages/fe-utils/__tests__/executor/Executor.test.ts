@@ -26,7 +26,7 @@ describe('AsyncExecutor', () => {
   it('should modify the execution result through plugins', async () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified'
+      onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
     executor.use(plugin);
@@ -82,7 +82,7 @@ describe('SyncExecutor', () => {
   it('should modify the execution result through plugins', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified'
+      onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
     executor.use(plugin);
@@ -150,8 +150,8 @@ describe('ExecutorPlugin Chain', () => {
     };
 
     const plugin2: ExecutorPlugin = {
-      onSuccess: (result) => {
-        finalResult = result + ' modified';
+      onSuccess: ({ returnValue }) => {
+        finalResult = returnValue + ' modified';
         return finalResult;
       }
     };
@@ -179,7 +179,7 @@ describe('ExecutorPlugin Error', () => {
     const executor = new AsyncExecutor();
 
     const plugin: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('PLUGIN_ERROR', error.message)
+      onError: ({ error }) => new ExecutorError('PLUGIN_ERROR', error?.message)
     };
 
     executor.use(plugin);
@@ -209,8 +209,8 @@ describe('ExecutorPlugin Error', () => {
       throw new Error('Task Error');
     });
 
-    onError1.mockImplementationOnce((e) => {
-      return e;
+    onError1.mockImplementationOnce(({ error }) => {
+      return error;
     });
 
     onError2.mockImplementationOnce(() => {
@@ -226,7 +226,7 @@ describe('ExecutorPlugin Error', () => {
     executor.use({ onError: onError3 });
 
     try {
-      executor.exec(execTask);
+      await executor.exec(execTask);
     } catch (error) {
       expect(error).toMatchObject({
         message: 'Task Error'
@@ -251,8 +251,8 @@ describe('ExecutorPlugin Error', () => {
       throw new Error('Task Error');
     });
 
-    onError1.mockImplementationOnce((e) => {
-      throw e;
+    onError1.mockImplementationOnce(({ error }) => {
+      throw error;
     });
 
     onError2.mockImplementationOnce(() => {
@@ -294,21 +294,21 @@ describe('ExecutorPlugin Error', () => {
       throw new Error('Task Error');
     });
 
-    onError1.mockImplementationOnce((e) => {
-      if (e instanceof Error) {
-        e.message = e.message + ' Task Error1';
+    onError1.mockImplementationOnce(({ error }) => {
+      if (error instanceof Error) {
+        error.message = error.message + ' Task Error1';
       }
     });
 
-    onError2.mockImplementationOnce((e) => {
-      if (e instanceof Error) {
-        e.message = e.message + ' Task Error2';
+    onError2.mockImplementationOnce(({ error }) => {
+      if (error instanceof Error) {
+        error.message = error.message + ' Task Error2';
       }
     });
 
-    onError3.mockImplementationOnce((e) => {
-      if (e instanceof Error) {
-        e.message = e.message + ' Task Error3';
+    onError3.mockImplementationOnce(({ error }) => {
+      if (error instanceof Error) {
+        error.message = error.message + ' Task Error3';
       }
     });
 

@@ -2,6 +2,7 @@ import { ExecutorPlugin } from '../../executor';
 import { RequestAdapterFetchConfig } from '../RequestAdapterFetch';
 import { RequestAdapterResponse } from '../../interface/RequestAdapterInterface';
 import { FetchStreamPlugin } from './FetchStreamPlugin';
+import { ExecutorContextInterface } from '../../interface/ExecutorContextInterface';
 
 export class FetchResponseTypePlugin implements ExecutorPlugin {
   toAdapterResponse(
@@ -28,9 +29,10 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
   }
 
   async onSuccess(
-    response: Response,
-    config: RequestAdapterFetchConfig
+    context: ExecutorContextInterface
   ): Promise<RequestAdapterResponse> {
+    const response = context.data as Response;
+    const config = context.parameters as RequestAdapterFetchConfig;
     switch (config.responseType) {
       case 'json':
         return this.toAdapterResponse(await response.json(), response, config);
@@ -55,7 +57,7 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
       case 'stream': {
         const streamPlugin = new FetchStreamPlugin();
         return this.toAdapterResponse(
-          await streamPlugin.onSuccess(response, config),
+          await streamPlugin.onSuccess(context),
           response,
           config
         ); // Assuming stream is the body

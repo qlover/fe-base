@@ -89,18 +89,19 @@ export class RequestAdapterFetch
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const thisConfig = this.getConfig();
     const mergedConfig = merge({}, thisConfig, config);
-    const { fetcher, url } = mergedConfig;
+    const { fetcher, ...rest } = mergedConfig;
 
     if (typeof fetcher !== 'function') {
       throw new ExecutorError(RequestErrorID.FETCHER_NONE);
     }
 
-    if (!url) {
+    if (!rest.url) {
       throw new ExecutorError(RequestErrorID.URL_NONE);
     }
 
-    return this.executor.exec(mergedConfig, () =>
-      fetcher(url, mergedConfig)
+    return this.executor.exec(rest, (context) =>
+      // TODO: fix fetcher second parameter type
+      fetcher(context.parameters.url as string, context.parameters)
     ) as unknown as Promise<RequestAdapterResponse<Request, Response>>;
   }
 }

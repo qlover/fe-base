@@ -1,6 +1,7 @@
 import { RequestAdpaterConfig } from '../../interface';
 import { ExecutorPlugin } from '../../executor';
 import { RequestError, RequestErrorID } from '../RequestError';
+import { ExecutorContextInterface } from '../../interface/ExecutorContextInterface';
 
 /**
  * Plugin for URL manipulation and response handling
@@ -164,9 +165,9 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore(config: RequestAdpaterConfig): void {
+  onBefore(context: ExecutorContextInterface<RequestAdpaterConfig>): void {
     // compose url and params
-    config.url = this.buildUrl(config);
+    context.parameters.url = this.buildUrl(context.parameters);
   }
 
   /**
@@ -186,7 +187,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const response = urlPlugin.onSuccess(fetchResponse);
    * ```
    */
-  onSuccess(result: Response): Response {
+  onSuccess(context: ExecutorContextInterface): Response {
+    const result = context.returnValue as Response;
     // if response is not ok, throw error
     if (!result.ok) {
       const requestError = new RequestError(
@@ -219,7 +221,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const error = urlPlugin.onError(new Error('Network Error'));
    * ```
    */
-  onError(error: Error): RequestError {
+  onError(context: ExecutorContextInterface): RequestError {
+    const error = context.error as Error;
     return error instanceof RequestError
       ? error
       : new RequestError(RequestErrorID.REQUEST_ERROR, error);

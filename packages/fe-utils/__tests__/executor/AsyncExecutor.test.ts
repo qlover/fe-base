@@ -8,36 +8,33 @@ import {
 describe('AsyncExecutor onBefore Lifecycle', () => {
   it('should modify input data through onBefore hooks', async () => {
     const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      onBefore: async (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin1'
-      })
+    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: async (context) => {
+        context.parameters.modifiedBy = 'plugin1';
+      }
     };
-    const plugin2: ExecutorPlugin = {
-      onBefore: async (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin2'
-      })
+    const plugin2: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: async (context) => {
+        context.parameters.modifiedBy = 'plugin2';
+      }
     };
 
     executor.use(plugin1);
     executor.use(plugin2);
 
-    const result = await executor.exec(
+    const result = await executor.exec<string, Record<string, unknown>>(
       { value: 'test' },
-      async (data: Record<string, unknown>) => data.modifiedBy
+      async (context) => context.parameters.modifiedBy as string
     );
     expect(result).toBe('plugin2');
   });
 
   it("should use the first plugin's onBefore return value if no subsequent plugin returns a value", async () => {
     const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      onBefore: async (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin1'
-      })
+    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: async (context) => {
+        context.parameters.modifiedBy = 'plugin1';
+      }
     };
     const plugin2: ExecutorPlugin = {
       onBefore: jest.fn()
@@ -46,9 +43,9 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
     executor.use(plugin1);
     executor.use(plugin2);
 
-    const result = await executor.exec(
+    const result = await executor.exec<string, Record<string, unknown>>(
       { value: 'test' },
-      async (data: Record<string, unknown>) => data.modifiedBy
+      async (context) => context.parameters.modifiedBy as string
     );
     expect(result).toBe('plugin1');
   });
@@ -82,8 +79,7 @@ describe('AsyncExecutor onExec Lifecycle', () => {
   it('should modify the task through onExec hook', async () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
-      onExec: async <T>(task: PromiseTask<T>): Promise<T> =>
-        'modified task' as T
+      onExec: async <T>(): Promise<T> => 'modified task' as T
     };
 
     executor.use(plugin);
@@ -95,10 +91,10 @@ describe('AsyncExecutor onExec Lifecycle', () => {
   it("should only use the first plugin's onExec hook", async () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onExec: async <T>(task: PromiseTask<T>) => 'modified by plugin1' as T
+      onExec: async <T>() => 'modified by plugin1' as T
     };
     const plugin2: ExecutorPlugin = {
-      onExec: async <T>(task: PromiseTask<T>) => 'modified by plugin2' as T
+      onExec: async <T>() => 'modified by plugin2' as T
     };
 
     executor.use(plugin1);
@@ -138,10 +134,12 @@ describe('AsyncExecutor onError Lifecycle', () => {
   it('should handle errors through onError hooks', async () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onError: async (error) => new ExecutorError('Handled by plugin1', error)
+      onError: async ({ error }) =>
+        new ExecutorError('Handled by plugin1', error)
     };
     const plugin2: ExecutorPlugin = {
-      onError: async (error) => new ExecutorError('Handled by plugin2', error)
+      onError: async ({ error }) =>
+        new ExecutorError('Handled by plugin2', error)
     };
 
     executor.use(plugin1);
@@ -201,7 +199,7 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
   it('should execute onSuccess hook', async () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: async (result) => result + ' success'
+      onSuccess: async ({ returnValue }) => returnValue + ' success'
     };
 
     executor.use(plugin);
@@ -212,10 +210,10 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
   it('should modify the result through onSuccess hooks', async () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onSuccess: async (result) => result + ' modified by plugin1'
+      onSuccess: async ({ returnValue }) => returnValue + ' modified by plugin1'
     };
     const plugin2: ExecutorPlugin = {
-      onSuccess: async (result) => result + ' modified by plugin2'
+      onSuccess: async ({ returnValue }) => returnValue + ' modified by plugin2'
     };
 
     executor.use(plugin1);
@@ -244,11 +242,13 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
     try {
       await executor.exec(async () => 'test');
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(ExecutorError);
+      expect((error as ExecutorError).id).toBe('UNKNOWN_ASYNC_ERROR');
+      expect((error as ExecutorError).message).toBe('Error in onSuccess');
     }
 
     expect(plugin2.onSuccess).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalledTimes(0);
+    expect(onError).toHaveBeenCalledTimes(1);
   });
 
   it('should not execute onSuccess hook if task throws an error', async () => {
@@ -291,7 +291,8 @@ describe('AsyncExecutor execNoError Method', () => {
   it('should handle errors through onError hooks and return the first error', async () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onError: async (error) => new ExecutorError('Handled by plugin1', error)
+      onError: async ({ error }) =>
+        new ExecutorError('Handled by plugin1', error)
     };
     const plugin2: ExecutorPlugin = {
       onError: jest.fn()
@@ -376,26 +377,25 @@ describe('AsyncExecutor Additional Tests', () => {
 
   it('should handle plugin that modifies data in onBefore hook', async () => {
     const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      onBefore: async (data: Record<string, unknown>) => ({
-        ...data,
-        added: true
-      })
+    const plugin: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: async (context) => {
+        context.parameters.added = true;
+      }
     };
 
     executor.use(plugin);
 
-    const result = await executor.exec(
+    const result = await executor.exec<boolean, Record<string, unknown>>(
       { value: 'test' },
-      async (data: Record<string, unknown>) => data.added
+      async (context) => context.parameters.added as boolean
     );
     expect(result).toBe(true);
   });
 
   it('should handle plugin that modifies result in onSuccess hook', async () => {
     const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      onSuccess: async (result) => result + ' modified'
+    const plugin: ExecutorPlugin<string> = {
+      onSuccess: async ({ returnValue }) => returnValue + ' modified'
     };
 
     executor.use(plugin);

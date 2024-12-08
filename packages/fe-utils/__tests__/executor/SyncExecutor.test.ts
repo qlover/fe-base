@@ -1,5 +1,10 @@
-import { PromiseTask, SyncExecutor, Task } from '../../common';
-import { ExecutorError, ExecutorPlugin } from '../../common';
+import {
+  SyncExecutor,
+  Task,
+  ExecutorError,
+  ExecutorPlugin
+} from '../../common';
+import { ExecutorContextInterface } from '../../common/interface/ExecutorContextInterface';
 
 describe('SyncExecutor', () => {
   it('should execute a synchronous task successfully', () => {
@@ -22,7 +27,7 @@ describe('SyncExecutor', () => {
   it('should modify the execution result through plugins', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified'
+      onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
     executor.use(plugin);
@@ -58,14 +63,17 @@ describe('SyncExecutor', () => {
 
   it('should execute onBefore hook', () => {
     const executor = new SyncExecutor();
-    const plugin: ExecutorPlugin = {
-      onBefore: (data: Record<string, unknown>) => ({ ...data, modified: true })
+    const plugin: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: ({ parameters }) => {
+        parameters.modified = true;
+      }
     };
 
     executor.use(plugin);
     const result = executor.exec(
       { value: 'test' },
-      (data: Record<string, unknown>) => data.modified
+      ({ parameters }: ExecutorContextInterface<Record<string, unknown>>) =>
+        parameters.modified as boolean
     );
     expect(result).toBe(true);
   });
@@ -73,7 +81,7 @@ describe('SyncExecutor', () => {
   it('should execute onSuccess hook', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' success'
+      onSuccess: ({ returnValue }) => returnValue + ' success'
     };
 
     executor.use(plugin);
@@ -84,7 +92,7 @@ describe('SyncExecutor', () => {
   it('should execute onError hook', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('Handled Error', error)
+      onError: ({ error }) => new ExecutorError('Handled Error', error)
     };
 
     executor.use(plugin);
@@ -153,15 +161,18 @@ describe('SyncExecutor', () => {
 
   it('should handle plugin that modifies data in onBefore hook', () => {
     const executor = new SyncExecutor();
-    const plugin: ExecutorPlugin = {
-      onBefore: (data: Record<string, unknown>) => ({ ...data, added: true })
+    const plugin: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: ({ parameters }) => {
+        parameters.added = true;
+      }
     };
 
     executor.use(plugin);
 
     const result = executor.exec(
       { value: 'test' },
-      (data: Record<string, unknown>) => data.added
+      ({ parameters }: ExecutorContextInterface<Record<string, unknown>>) =>
+        parameters.added
     );
     expect(result).toBe(true);
   });
@@ -169,7 +180,7 @@ describe('SyncExecutor', () => {
   it('should handle plugin that modifies result in onSuccess hook', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified'
+      onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
     executor.use(plugin);
@@ -316,17 +327,15 @@ describe('SyncExecutor has Error', () => {
 describe('SyncExecutor onBefore Lifecycle', () => {
   it('should modify input data through onBefore hooks', () => {
     const executor = new SyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      onBefore: (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin1'
-      })
+    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: ({ parameters }) => {
+        parameters.modifiedBy = 'plugin1';
+      }
     };
-    const plugin2: ExecutorPlugin = {
-      onBefore: (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin2'
-      })
+    const plugin2: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: ({ parameters }) => {
+        parameters.modifiedBy = 'plugin2';
+      }
     };
 
     executor.use(plugin1);
@@ -334,20 +343,20 @@ describe('SyncExecutor onBefore Lifecycle', () => {
 
     const result = executor.exec(
       { value: 'test' },
-      (data: Record<string, unknown>) => data.modifiedBy
+      ({ parameters }: ExecutorContextInterface<Record<string, unknown>>) =>
+        parameters.modifiedBy
     );
     expect(result).toBe('plugin2');
   });
 
   it("should use the first plugin's onBefore return value if no subsequent plugin returns a value", () => {
     const executor = new SyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      onBefore: (data: Record<string, unknown>) => ({
-        ...data,
-        modifiedBy: 'plugin1'
-      })
+    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+      onBefore: ({ parameters }) => {
+        parameters.modifiedBy = 'plugin1';
+      }
     };
-    const plugin2: ExecutorPlugin = {
+    const plugin2: ExecutorPlugin<Record<string, unknown>> = {
       onBefore: jest.fn()
     };
 
@@ -356,7 +365,8 @@ describe('SyncExecutor onBefore Lifecycle', () => {
 
     const result = executor.exec(
       { value: 'test' },
-      (data: Record<string, unknown>) => data.modifiedBy
+      ({ parameters }: ExecutorContextInterface<Record<string, unknown>>) =>
+        parameters.modifiedBy
     );
     expect(result).toBe('plugin1');
   });
@@ -378,7 +388,7 @@ describe('SyncExecutor onBefore Lifecycle', () => {
     executor.use({ onError });
 
     expect(() => {
-      executor.exec({ value: 'test' }, (data: Record<string, unknown>) => data);
+      executor.exec({ value: 'test' }, (data) => data);
     }).toThrow(ExecutorError);
 
     expect(plugin2.onBefore).not.toHaveBeenCalled();
@@ -398,7 +408,7 @@ describe('SyncExecutor onBefore Lifecycle', () => {
     executor.use({ onError });
 
     expect(() => {
-      executor.exec({ value: 'test' }, (data: Record<string, unknown>) => data);
+      executor.exec({ value: 'test' }, (data) => data);
     }).toThrow(ExecutorError);
 
     expect(onError).toHaveBeenCalled();
@@ -408,7 +418,7 @@ describe('SyncExecutor onBefore Lifecycle', () => {
     const executor = new SyncExecutor();
     const result = executor.exec(
       { value: 'test' },
-      (data: Record<string, unknown>) => data.value
+      ({ parameters }) => parameters.value
     );
     expect(result).toBe('test');
   });
@@ -417,8 +427,8 @@ describe('SyncExecutor onBefore Lifecycle', () => {
 describe('SyncExecutor onExec Lifecycle', () => {
   it('should modify the task through onExec hook', () => {
     const executor = new SyncExecutor();
-    const plugin: ExecutorPlugin = {
-      onExec<T>(task: Task<T>): T {
+    const plugin: ExecutorPlugin<Record<string, unknown>> = {
+      onExec<T>(): T {
         return 'modified task' as T;
       }
     };
@@ -432,12 +442,12 @@ describe('SyncExecutor onExec Lifecycle', () => {
   it("should only use the first plugin's onExec hook", () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onExec<T>(task: Task<T>): T {
+      onExec<T>(): T {
         return 'modified by plugin1' as T;
       }
     };
     const plugin2: ExecutorPlugin = {
-      onExec<T>(task: Task<T>): T {
+      onExec<T>(): T {
         return 'modified by plugin2' as T;
       }
     };
@@ -481,10 +491,10 @@ describe('SyncExecutor onError Lifecycle', () => {
   it('should handle errors through onError hooks', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('Handled by plugin1', error)
+      onError: ({ error }) => new ExecutorError('Handled by plugin1', error)
     };
     const plugin2: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('Handled by plugin2', error)
+      onError: ({ error }) => new ExecutorError('Handled by plugin2', error)
     };
 
     executor.use(plugin1);
@@ -542,7 +552,7 @@ describe('SyncExecutor onError Lifecycle', () => {
   it('should return the first error encountered in execNoError', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('Handled by plugin1', error)
+      onError: ({ error }) => new ExecutorError('Handled by plugin1', error)
     };
     const plugin2: ExecutorPlugin = {
       onError: jest.fn()
@@ -567,7 +577,7 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
   it('should execute onSuccess hook', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
-      onSuccess: (result) => result + ' success'
+      onSuccess: ({ returnValue }) => returnValue + ' success'
     };
 
     executor.use(plugin);
@@ -578,10 +588,10 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
   it('should modify the result through onSuccess hooks', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified by plugin1'
+      onSuccess: ({ returnValue }) => returnValue + ' modified by plugin1'
     };
     const plugin2: ExecutorPlugin = {
-      onSuccess: (result) => result + ' modified by plugin2'
+      onSuccess: ({ returnValue }) => returnValue + ' modified by plugin2'
     };
 
     executor.use(plugin1);
@@ -655,7 +665,7 @@ describe('SyncExecutor execNoError Method', () => {
   it('should handle errors through onError hooks and return the first error', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
-      onError: (error) => new ExecutorError('Handled by plugin1', error)
+      onError: ({ error }) => new ExecutorError('Handled by plugin1', error)
     };
     const plugin2: ExecutorPlugin = {
       onError: jest.fn()

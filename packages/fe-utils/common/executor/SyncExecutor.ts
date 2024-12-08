@@ -1,6 +1,7 @@
 import { Executor } from './Executor';
 import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, SyncTask, Task } from './ExecutorPlugin';
+import { ExecutorPlugin, SyncTask } from './ExecutorPlugin';
+import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 
 /**
  * Synchronous executor class that extends the base Executor
@@ -77,40 +78,35 @@ export class SyncExecutor extends Executor {
    * );
    * ```
    */
-  runHook(
+  runHooks<Params>(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
-    ...args: unknown[]
-  ): unknown {
-    let result: unknown = args?.[0];
+    context: ExecutorContextInterface<Params>
+  ): ExecutorContextInterface<Params> {
     for (const plugin of plugins) {
-      if (plugin.enabled && !plugin.enabled?.(name, ...args)) {
-        continue;
-      }
-      const method = plugin[name];
-
-      if (!method) {
+      if (plugin.enabled && !plugin.enabled?.(name, context)) {
         continue;
       }
 
-      let pluginResult;
-      if (name === 'onSuccess' || name === 'onBefore') {
-        // @ts-expect-error
-        pluginResult = plugin[name](result, ...args.slice(1));
-      } else {
-        // @ts-expect-error
-        pluginResult = plugin[name](...args);
+      if (!plugin[name]) {
+        continue;
       }
+
+      // @ts-expect-error
+      const pluginResult = plugin[name](context);
+      // TODO: record the result of the lifecycle hooks
 
       if (pluginResult !== undefined) {
         if (name === 'onError') {
-          return pluginResult;
+          context.error = pluginResult;
+          return context;
         }
 
-        result = pluginResult;
+        context.returnValue = pluginResult;
       }
     }
-    return result;
+
+    return context;
   }
 
   /**
@@ -143,12 +139,12 @@ export class SyncExecutor extends Executor {
    * }
    * ```
    */
-  execNoError<T>(
-    dataOrTask: unknown | SyncTask<T>,
-    task?: SyncTask<T>
-  ): T | ExecutorError {
+  execNoError<Result, Params = unknown>(
+    dataOrTask: Params | SyncTask<Result, Params>,
+    task?: SyncTask<Result, Params>
+  ): Result | ExecutorError {
     try {
-      return this.exec(dataOrTask as unknown, task);
+      return this.exec(dataOrTask as Params, task);
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;
@@ -198,19 +194,19 @@ export class SyncExecutor extends Executor {
    * });
    * ```
    */
-  exec<T, D = unknown>(
-    dataOrTask: unknown | SyncTask<T, D>,
-    task?: SyncTask<T, D>
-  ): T {
-    const actualTask = (task || dataOrTask) as SyncTask<T, D>;
-    const data = (task ? dataOrTask : undefined) as D;
+  exec<Result, Params = unknown>(
+    dataOrTask: Params | SyncTask<Result, Params>,
+    task?: SyncTask<Result, Params>
+  ): Result {
+    const actualTask = (task || dataOrTask) as SyncTask<Result, Params>;
+    const data = (task ? dataOrTask : undefined) as Params;
 
     if (typeof actualTask !== 'function') {
       throw new Error('Task must be a function!');
     }
 
     let calls = 0;
-    const runner = (): T => {
+    const runner = (): Result => {
       calls++;
       return this.run(data, actualTask);
     };
@@ -219,8 +215,9 @@ export class SyncExecutor extends Executor {
       (plugin) => typeof plugin['onExec'] === 'function'
     );
 
+    // If the plugin has the onExec hook, execute it
     if (findOnExec) {
-      return this.runHook([findOnExec], 'onExec', runner) as T;
+      return findOnExec.onExec!(runner) as Result;
     }
 
     return runner();
@@ -268,26 +265,34 @@ export class SyncExecutor extends Executor {
    * }
    * ```
    */
-  run<T, D = unknown>(data: D, actualTask: SyncTask<T, D>): T {
+  run<Result, Params = unknown>(
+    data: unknown,
+    actualTask: SyncTask<Result, Params>
+  ): Result {
+    const context: ExecutorContextInterface<Params> = {
+      parameters: data as Params,
+      returnValue: undefined,
+      error: undefined
+    };
+
     try {
-      const beforeResult = this.runHook(this.plugins, 'onBefore', data);
+      const beforeResult = this.runHooks(this.plugins, 'onBefore', context);
 
-      const result = actualTask(beforeResult as D);
+      context.returnValue = actualTask(beforeResult);
 
-      return this.runHook(this.plugins, 'onSuccess', result, data) as T;
+      this.runHooks(this.plugins, 'onSuccess', context);
+
+      return context.returnValue as Result;
     } catch (error) {
-      const handledError = this.runHook(
-        this.plugins,
-        'onError',
-        error as Error,
-        data
-      );
+      context.error = error as Error;
 
-      if (handledError instanceof ExecutorError) {
-        throw handledError;
+      this.runHooks(this.plugins, 'onError', context);
+
+      if (context.error instanceof ExecutorError) {
+        throw context.error;
       }
 
-      throw new ExecutorError('UNKNOWN_SYNC_ERROR', handledError as Error);
+      throw new ExecutorError('UNKNOWN_SYNC_ERROR', context.error);
     }
   }
 }

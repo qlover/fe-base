@@ -187,13 +187,15 @@ export class RetryPlugin implements ExecutorPlugin {
    * const result = await retryPlugin.onExec(() => fetchData());
    * ```
    */
-  async onExec<T>(task: PromiseTask<T>): Promise<T | void> {
+  async onExec<Result, Params = unknown>(
+    task: PromiseTask<Result, Params>
+  ): Promise<Result | void> {
     // no retry, just execute
     if (this.options.maxRetries < 1) {
-      return task(null);
+      return task({ parameters: {} as Params });
     }
 
-    return this.retry<T>(task, this.options, this.options.maxRetries);
+    return this.retry(task, this.options, this.options.maxRetries);
   }
 
   /**
@@ -254,13 +256,13 @@ export class RetryPlugin implements ExecutorPlugin {
    * const result = await this.retry(fetchData, options, 3);
    * ```
    */
-  async retry<T>(
-    fn: PromiseTask<T>,
+  async retry<Result, Params = unknown>(
+    fn: PromiseTask<Result, Params>,
     options: RetryOptions,
     retryCount: number
-  ): Promise<T | undefined> {
+  ): Promise<Result | undefined> {
     try {
-      return await fn(null);
+      return await fn({ parameters: {} as Params });
     } catch (error) {
       if (!this.shouldRetry({ error, retryCount })) {
         throw new ExecutorError(

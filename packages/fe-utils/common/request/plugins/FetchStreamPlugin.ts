@@ -1,3 +1,4 @@
+import { ExecutorContextInterface } from '../../interface/ExecutorContextInterface';
 import { ExecutorPlugin } from '../../executor';
 import { RequestAdapterFetchConfig } from '../RequestAdapterFetch';
 
@@ -14,9 +15,10 @@ export class FetchStreamPlugin implements ExecutorPlugin {
   }
 
   async onSuccess(
-    response: Response,
-    config: RequestAdapterFetchConfig
+    context: ExecutorContextInterface
   ): Promise<StreamApiProcessorType> {
+    const response = context.data as Response;
+    const config = context.parameters as RequestAdapterFetchConfig;
     return this.processStream(response, config);
   }
 

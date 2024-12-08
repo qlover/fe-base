@@ -148,7 +148,7 @@ export abstract class Executor {
    * await executor.runHook(plugins, 'beforeExec', data);
    * ```
    */
-  abstract runHook(
+  abstract runHooks(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
     ...args: unknown[]
@@ -175,7 +175,9 @@ export abstract class Executor {
    * });
    * ```
    */
-  abstract exec<T>(task: Task<T>): Promise<T> | T;
+  abstract exec<Result, Params = unknown>(
+    task: Task<Result, Params>
+  ): Promise<Result> | Result;
 
   /**
    * Execute a task with plugin pipeline and input data
@@ -198,7 +200,10 @@ export abstract class Executor {
    * });
    * ```
    */
-  abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
+  abstract exec<Result, Params = unknown>(
+    data: unknown,
+    task: Task<Result, Params>
+  ): Promise<Result> | Result;
 
   /**
    * Execute a task without throwing errors
@@ -222,9 +227,9 @@ export abstract class Executor {
    * }
    * ```
    */
-  abstract execNoError<T>(
-    task: Task<T>
-  ): Promise<T | ExecutorError> | T | ExecutorError;
+  abstract execNoError<Result, Params = unknown>(
+    task: Task<Result, Params>
+  ): Promise<Result | ExecutorError> | Result | ExecutorError;
 
   /**
    * Execute a task with input data without throwing errors
@@ -249,8 +254,8 @@ export abstract class Executor {
    * }
    * ```
    */
-  abstract execNoError<T>(
+  abstract execNoError<Result, Params = unknown>(
     data: unknown,
-    task: Task<T>
-  ): Promise<T | ExecutorError> | T | ExecutorError;
+    task: Task<Result, Params>
+  ): Promise<Result | ExecutorError> | Result | ExecutorError;
 }

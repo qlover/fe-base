@@ -1,6 +1,7 @@
 import { Executor } from './Executor';
 import { ExecutorError } from './ExecutorError';
 import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
+import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 
 /**
  * Asynchronous implementation of the Executor pattern
@@ -57,43 +58,35 @@ export class AsyncExecutor extends Executor {
    * );
    * ```
    */
-  async runHook(
+  async runHooks<Params>(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
-    ...args: unknown[]
-  ): Promise<void | unknown> {
-    // if args is not empty, use args[0] as result
-    let result: unknown = args?.[0];
+    context: ExecutorContextInterface<Params>
+  ): Promise<ExecutorContextInterface<Params>> {
     for (const plugin of plugins) {
-      // skip plugin if not enabled
-      if (plugin.enabled && !plugin.enabled?.(name, ...args)) {
+      if (plugin.enabled && !plugin.enabled?.(name, context)) {
         continue;
       }
 
-      // skip plugin if not has method
       if (!plugin[name]) {
         continue;
       }
 
-      let pluginResult;
-      if (name === 'onSuccess' || name === 'onBefore') {
-        // @ts-expect-error
-        pluginResult = await plugin[name](result, ...args.slice(1));
-      } else {
-        // @ts-expect-error
-        pluginResult = await plugin[name](...args);
-      }
+      // @ts-expect-error
+      const pluginResult = await plugin[name](context);
+      // TODO: record the result of the lifecycle hooks
 
       if (pluginResult !== undefined) {
-        // if is onError, break chain
         if (name === 'onError') {
-          return pluginResult;
+          context.error = pluginResult;
+          return context;
         }
 
-        result = pluginResult;
+        context.returnValue = pluginResult;
       }
     }
-    return result;
+
+    return context;
   }
 
   /**
@@ -124,12 +117,12 @@ export class AsyncExecutor extends Executor {
    * }
    * ```
    */
-  async execNoError<T>(
-    dataOrTask: unknown | PromiseTask<T>,
-    task?: PromiseTask<T>
-  ): Promise<T | ExecutorError> {
+  async execNoError<Result, Params = unknown>(
+    dataOrTask: unknown | PromiseTask<Result, Params>,
+    task?: PromiseTask<Result, Params>
+  ): Promise<Result | ExecutorError> {
     try {
-      return await this.exec(dataOrTask as unknown, task);
+      return await this.exec(dataOrTask as Params, task);
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;
@@ -176,19 +169,19 @@ export class AsyncExecutor extends Executor {
    * });
    * ```
    */
-  exec<T, D = unknown>(
-    dataOrTask: unknown | PromiseTask<T, D>,
-    task?: PromiseTask<T, D>
-  ): Promise<T> {
-    // Check if data is provided
-    const actualTask = (task || dataOrTask) as PromiseTask<T, D>;
-    const data = (task ? dataOrTask : undefined) as D;
+  exec<Result, Params = unknown>(
+    dataOrTask: Params | PromiseTask<Result, Params>,
+    task?: PromiseTask<Result, Params>
+  ): Promise<Result> {
+    const actualTask = (task || dataOrTask) as PromiseTask<Result, Params>;
+    const data = (task ? dataOrTask : undefined) as Params;
+
     if (typeof actualTask !== 'function') {
       throw new Error('Task must be a async function!');
     }
 
     let calls = 0;
-    const runner = (): Promise<T> => {
+    const runner = (): Promise<Result> => {
       calls++;
       return this.run(data, actualTask);
     };
@@ -197,8 +190,9 @@ export class AsyncExecutor extends Executor {
       (plugin) => typeof plugin['onExec'] === 'function'
     );
 
+    // If the plugin has the onExec hook, execute it
     if (findOnExec) {
-      return this.runHook([findOnExec], 'onExec', runner) as Promise<T>;
+      return findOnExec.onExec!(runner) as Promise<Result>;
     }
 
     return runner();
@@ -247,29 +241,38 @@ export class AsyncExecutor extends Executor {
    * }
    * ```
    */
-  async run<T, D = unknown>(
-    data: D,
-    actualTask: PromiseTask<T, D>
-  ): Promise<T> {
+  async run<Result, Params = unknown>(
+    data: unknown,
+    actualTask: PromiseTask<Result, Params>
+  ): Promise<Result> {
+    const context: ExecutorContextInterface<Params> = {
+      parameters: data as Params,
+      returnValue: undefined,
+      error: undefined
+    };
+
     try {
-      const beforeResult = await this.runHook(this.plugins, 'onBefore', data);
-
-      const result = await actualTask(beforeResult as D);
-
-      return this.runHook(this.plugins, 'onSuccess', result, data) as T;
-    } catch (error) {
-      const handledError = await this.runHook(
+      const beforeResult = await this.runHooks(
         this.plugins,
-        'onError',
-        error as Error,
-        data
+        'onBefore',
+        context
       );
 
-      if (handledError instanceof ExecutorError) {
-        throw handledError;
+      context.returnValue = await actualTask(beforeResult);
+
+      await this.runHooks(this.plugins, 'onSuccess', context);
+
+      return context.returnValue as Result;
+    } catch (error) {
+      context.error = error as Error;
+
+      await this.runHooks(this.plugins, 'onError', context);
+
+      if (context.error instanceof ExecutorError) {
+        throw context.error;
       }
 
-      throw new ExecutorError('UNKNOWN_ASYNC_ERROR', handledError as Error);
+      throw new ExecutorError('UNKNOWN_ASYNC_ERROR', context.error);
     }
   }
 }
