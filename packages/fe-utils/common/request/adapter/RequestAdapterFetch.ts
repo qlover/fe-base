@@ -2,19 +2,16 @@ import {
   RequestAdapterInterface,
   RequestAdapterResponse,
   RequestAdpaterConfig
-} from '../interface/RequestAdapterInterface';
+} from './RequestAdapter';
+import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../../executor';
+import { RequestErrorID } from '../RequestError';
 import merge from 'lodash/merge';
-import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../executor';
-import { RequestErrorID } from './RequestError';
 
 export type RequestAdapterFetchConfig<Request = any> = RequestInit &
   RequestAdpaterConfig<Request> & {
     fetcher?: typeof fetch;
 
-    /**
-     * @description 流式响应处理
-     */
-    onStreamChunk?: (chunk: string) => string;
+    onStreamProgress?: (progress: number) => void;
 
     signal?: AbortSignal;
 

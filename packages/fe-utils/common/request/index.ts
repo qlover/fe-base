@@ -1,5 +1,4 @@
-export * from './RequestAdapterFetch';
-export * from './RequestAdapterAxios';
+export * from './adapter';
 export * from './RequestError';
 export * from './RequestScheduler';
 export * from './plugins';

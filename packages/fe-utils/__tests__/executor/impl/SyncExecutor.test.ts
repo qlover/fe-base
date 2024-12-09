@@ -3,8 +3,8 @@ import {
   Task,
   ExecutorError,
   ExecutorPlugin
-} from '../../common';
-import { ExecutorContextInterface } from '../../common/interface/ExecutorContextInterface';
+} from '../../../common';
+import { ExecutorContextInterface } from '../../../common/executor/ExecutorContextInterface';
 
 describe('SyncExecutor', () => {
   it('should execute a synchronous task successfully', () => {

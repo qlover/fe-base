@@ -1,6 +1,5 @@
-import { ExecutorContextInterface } from '../../interface/ExecutorContextInterface';
-import { ExecutorPlugin } from '../../executor';
-import { RequestAdapterFetchConfig } from '../RequestAdapterFetch';
+import { ExecutorPlugin, ExecutorContextInterface } from '../../executor';
+import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
 import { RequestErrorID } from '../RequestError';
 import { RequestError } from '../RequestError';
 
@@ -39,6 +38,7 @@ import { RequestError } from '../RequestError';
  * ```
  */
 export class FetchAbortPlugin implements ExecutorPlugin {
+  readonly pluginName = 'FetchAbortPlugin';
   readonly onlyOne = true;
 
   /**

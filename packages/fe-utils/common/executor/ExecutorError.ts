@@ -38,14 +38,28 @@ export class ExecutorError extends Error {
         : originalError?.message || id
     );
 
-    if (
-      originalError &&
-      typeof originalError === 'object' &&
-      'stack' in originalError
-    ) {
-      this.stack = originalError.stack + '\n' + this.stack;
+    if (originalError instanceof Error && 'stack' in originalError) {
+      // TODO: merge stacks
+      // this.stack = this.getMergedStack(originalError.stack!, this.stack!);
     }
 
     Object.setPrototypeOf(this, new.target.prototype);
+  }
+
+  getMergedStack(originalStack: string, newStack: string): string {
+    const originalLines = originalStack.split('\n');
+    const newLines = newStack.split('\n');
+
+    // Find the index where the new stack starts to repeat the original stack
+    let startIndex = newLines.length;
+    for (let i = 0; i < newLines.length; i++) {
+      if (originalLines.includes(newLines[i])) {
+        startIndex = i;
+        break;
+      }
+    }
+
+    // Merge stacks, avoiding repetition
+    return [...originalLines, ...newLines.slice(startIndex)].join('\n');
   }
 }

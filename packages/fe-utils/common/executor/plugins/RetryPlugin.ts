@@ -1,5 +1,5 @@
 import { ExecutorError } from '../ExecutorError';
-import { ExecutorPlugin, PromiseTask } from '../ExecutorPlugin';
+import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
 
 /**
  * Configuration options for the RetryPlugin
@@ -97,6 +97,11 @@ const defaultShouldRetry = (): boolean => true;
  * @category RetryPlugin
  */
 export class RetryPlugin implements ExecutorPlugin {
+  /**
+   * The pluginName of the plugin
+   */
+  readonly pluginName = 'RetryPlugin';
+
   /**
    * Ensures only one instance of RetryPlugin is used per executor
    */

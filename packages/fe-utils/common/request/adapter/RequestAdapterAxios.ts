@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
   RequestAdapterInterface,
   RequestAdapterResponse
-} from '../interface/RequestAdapterInterface';
+} from './RequestAdapter';
 
 export class RequestAdapterAxios
   implements RequestAdapterInterface<AxiosRequestConfig>

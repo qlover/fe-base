@@ -1,5 +1,5 @@
-import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
-import { ExecutorError } from './ExecutorError';
+import { ExecutorContextInterface } from '../ExecutorContextInterface';
+import { ExecutorError } from '../ExecutorError';
 
 /**
  * Type definition for promise-based task
@@ -110,7 +110,14 @@ export type Task<Result, Params> =
  * ```
  * @category ExecutorPlugin
  */
-export abstract class ExecutorPlugin<T = unknown, R = T> {
+export interface ExecutorPlugin<T = unknown, R = T> {
+  /**
+   * The pluginName of the plugin.
+   *
+   * Plugins with the same pluginName will be merged.
+   */
+  readonly pluginName: string;
+
   /**
    * Indicates if only one instance of this plugin should exist in the executor
    * When true, attempting to add duplicate plugins will result in a warning

@@ -1,5 +1,5 @@
 import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, Task } from './ExecutorPlugin';
+import { ExecutorPlugin, Task } from './plugins/ExecutorPlugin';
 
 /**
  * Configuration interface for executor
@@ -117,7 +117,12 @@ export abstract class Executor {
    */
   use(plugin: ExecutorPlugin): void {
     if (
-      this.plugins.find((p) => p.constructor === plugin.constructor) &&
+      this.plugins.find(
+        (p) =>
+          p === plugin ||
+          p.pluginName === plugin.pluginName ||
+          p.constructor === plugin.constructor
+      ) &&
       plugin.onlyOne
     ) {
       console.warn(

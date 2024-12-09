@@ -1,8 +1,5 @@
-import {
-  FetchURLPlugin,
-  RequestAdapterFetch,
-  RequestError
-} from '../../common';
+import { RequestAdapterFetch, RequestError } from '../../../common/request';
+import { FetchURLPlugin } from '../../../common/request/plugins';
 
 describe('RequestAdapterFetch', () => {
   let fetchMock: jest.Mock;

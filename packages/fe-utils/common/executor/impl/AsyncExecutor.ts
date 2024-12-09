@@ -1,7 +1,7 @@
-import { Executor } from './Executor';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
-import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
+import { Executor } from '../Executor';
+import { ExecutorError } from '../ExecutorError';
+import { ExecutorPlugin, PromiseTask } from '../plugins/ExecutorPlugin';
+import { ExecutorContextInterface } from '../ExecutorContextInterface';
 
 /**
  * Asynchronous implementation of the Executor pattern

@@ -158,6 +158,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     });
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
+      pluginName: 'TestErrorPlugin',
       onError: jest.fn((error: unknown): RequestError => {
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
@@ -218,6 +219,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     });
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
+      pluginName: 'TestErrorPlugin',
       onError: jest.fn((error: unknown): RequestError => {
         return new RequestError(
           RequestErrorID.ABORT_ERROR,

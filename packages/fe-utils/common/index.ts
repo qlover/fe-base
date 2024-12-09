@@ -1,5 +1,3 @@
-export * from './interface';
-
 /**
  * Export executor related modules
  * @module executor

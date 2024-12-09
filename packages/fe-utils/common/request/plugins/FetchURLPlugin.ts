@@ -1,7 +1,6 @@
-import { RequestAdpaterConfig } from '../../interface';
-import { ExecutorPlugin } from '../../executor';
+import { ExecutorPlugin, ExecutorContextInterface } from '../../executor';
 import { RequestError, RequestErrorID } from '../RequestError';
-import { ExecutorContextInterface } from '../../interface/ExecutorContextInterface';
+import { RequestAdpaterConfig } from '../adapter';
 
 /**
  * Plugin for URL manipulation and response handling
@@ -35,6 +34,7 @@ import { ExecutorContextInterface } from '../../interface/ExecutorContextInterfa
  * ```
  */
 export class FetchURLPlugin implements ExecutorPlugin {
+  readonly pluginName = 'FetchURLPlugin';
   /**
    * Checks if URL is absolute (starts with http:// or https://)
    *

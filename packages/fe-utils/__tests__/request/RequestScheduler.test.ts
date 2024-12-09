@@ -1,10 +1,9 @@
+import { RetryPlugin } from '../../common/executor/plugins';
+import { RequestScheduler, RequestError } from '../../common/request';
 import {
-  RequestScheduler,
   RequestAdapterInterface,
-  RequestAdapterResponse,
-  RequestError,
-  RetryPlugin
-} from '../../common';
+  RequestAdapterResponse
+} from '../../common/request/adapter';
 
 class MockRequestAdapter implements RequestAdapterInterface<any> {
   config: any;

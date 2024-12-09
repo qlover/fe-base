@@ -1,7 +1,7 @@
-import { Executor } from './Executor';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, SyncTask } from './ExecutorPlugin';
-import { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
+import { Executor } from '../Executor';
+import { ExecutorError } from '../ExecutorError';
+import { ExecutorPlugin, SyncTask } from '../plugins/ExecutorPlugin';
+import { ExecutorContextInterface } from '../ExecutorContextInterface';
 
 /**
  * Synchronous executor class that extends the base Executor
