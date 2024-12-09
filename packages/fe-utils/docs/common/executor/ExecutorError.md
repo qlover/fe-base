@@ -15,6 +15,18 @@ try {
 }
 ```
 
+@example 
+
+create an error with a message from a string
+
+
+```typescript
+const error = new ExecutorError('ERROR_ID', 'This is an error message');
+
+// => error.message is 'This is an error message'
+// => error.id is 'ERROR_ID'
+```
+
 
 ## Members
 

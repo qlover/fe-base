@@ -95,7 +95,7 @@ const result = await retryPlugin.onExec(() => fetchData());
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `PromiseTask<T>` |  |  | Task to be executed with retry support |
+|  task  | `PromiseTask<Result, Params>` |  |  | Task to be executed with retry support |
 
 
 ### retry
@@ -122,7 +122,7 @@ const result = await this.retry(fetchData, options, 3);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  fn  | `PromiseTask<T>` |  |  | Function to retry |
+|  fn  | `PromiseTask<Result, Params>` |  |  | Function to retry |
 |  options  | `RetryOptions` |  |  | Retry configuration options |
 |  retryCount  | `number` |  |  | Number of retries remaining |
 

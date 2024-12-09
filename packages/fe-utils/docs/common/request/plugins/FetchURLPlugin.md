@@ -2,15 +2,15 @@
 Plugin for URL manipulation and response handling
 Provides URL composition and response status checking
 
+- Core Idea: Simplify URL handling and response validation.
+- Main Function: Manage URL construction and check response status.
+- Main Purpose: Ensure correct URL formation and response handling.
+
 Features:
 - URL normalization
 - Base URL handling
 - Query parameter management
 - Response status validation
-
-Core Idea: Simplify URL handling and response validation.
-Main Function: Manage URL construction and check response status.
-Main Purpose: Ensure correct URL formation and response handling.
 
 @implements 
 
@@ -61,7 +61,7 @@ const url = urlPlugin.appendQueryParams(
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  url  | `string` |  |  | Base URL |
-|  params  | `Record<string, string>` | {} |  | Parameters to append |
+|  params  | `Record<string, unknown>` | {} |  | Parameters to append |
 
 
 ### buildUrl
@@ -82,7 +82,7 @@ const completeUrl = urlPlugin.buildUrl(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration |
+|  config  | `RequestAdpaterConfig` |  |  | Request configuration |
 
 
 ### connectBaseURL
@@ -144,15 +144,15 @@ urlPlugin.onBefore(config);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  config  | `FetchRequestConfig` |  |  | Request configuration |
+|  context  | `ExecutorContextInterface<RequestAdpaterConfig>` |  |  |  |
 
 
 ### onError
 Error handling hook
-Wraps non-FetchRequestError errors
+Wraps non-RequestError errors
 
 Core Idea: Standardize error handling for requests.
-Main Function: Convert errors to FetchRequestError format.
+Main Function: Convert errors to RequestError format.
 Main Purpose: Ensure consistent error handling across requests.
 
 **@example** 
@@ -165,7 +165,7 @@ const error = urlPlugin.onError(new Error('Network Error'));
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  error  | `Error` |  |  | Original error |
+|  context  | `ExecutorContextInterface<unknown>` |  |  |  |
 
 
 ### onSuccess
@@ -190,5 +190,5 @@ const response = urlPlugin.onSuccess(fetchResponse);
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  result  | `Response` |  |  | Fetch response |
+|  context  | `ExecutorContextInterface<unknown>` |  |  |  |
 

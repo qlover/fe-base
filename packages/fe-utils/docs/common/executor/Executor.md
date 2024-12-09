@@ -7,6 +7,8 @@ The Executor pattern implements a pluggable execution pipeline that allows:
 3. Error handling
 4. Custom execution logic
 
+execNoError returns all errors as they are., and if there is a plugin onerror handler chain in which an error occurs, it will also return the error instead of throwing it.
+
 @abstract 
 
 Executor
@@ -79,7 +81,7 @@ const result = await executor.exec(async (data) => {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `Task<T>` |  |  | Task to execute |
+|  task  | `Task<Result, Params>` |  |  | Task to execute |
 
 
 ### exec
@@ -109,7 +111,7 @@ const result = await executor.exec(data, async (data) => {
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  data  | `unknown` |  |  | Input data for task |
-|  task  | `Task<T>` |  |  | Task to execute |
+|  task  | `Task<Result, Params>` |  |  | Task to execute |
 
 
 ### execNoError
@@ -137,7 +139,7 @@ if (result instanceof ExecutorError) {
 #### Parameters
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
-|  task  | `Task<T>` |  |  | Task to execute |
+|  task  | `Task<Result, Params>` |  |  | Task to execute |
 
 
 ### execNoError
@@ -166,10 +168,10 @@ if (result instanceof ExecutorError) {
 | Name | Type | Default | Since | Description |
 |------|------|---------|-------|------------|
 |  data  | `unknown` |  |  | Input data for task |
-|  task  | `Task<T>` |  |  | Task to execute |
+|  task  | `Task<Result, Params>` |  |  | Task to execute |
 
 
-### runHook
+### runHooks
 Execute a plugin hook
 
 Purpose: Provides plugin hook execution mechanism
@@ -211,6 +213,16 @@ executor.use(new LoggerPlugin());
 executor.use(new RetryPlugin({ maxAttempts: 3 }));
 ```
 
+**@example** 
+
+Use a plain object as a plugin
+
+```typescript
+executor.use({
+  onBefore: (data) => ({ ...data, modified: true })
+});
+```
+
 
 #### Parameters
 | Name | Type | Default | Since | Description |
@@ -221,17 +233,82 @@ executor.use(new RetryPlugin({ maxAttempts: 3 }));
 ## Interface `ExecutorConfig`
 Configuration interface for executor
 
-Purpose: Provides configuration options for the Executor class
-Core Concept: Extensible configuration container
-Main Features: Currently empty but designed for future extension
-Primary Use: Allows customization of executor behavior
+- Purpose: Provides configuration options for the Executor class
+- Core Concept: Extensible configuration container
+- Main Features: Currently empty but designed for future extension
+- Primary Use: Allows customization of executor behavior
 
 @example 
 
+Successfully execute an asynchronous task
+
+
 ```typescript
-const config: ExecutorConfig = {
-  // Future configuration options will go here
+const executor = new AsyncExecutor();
+const result = await executor.exec(async () => 'success');
+
+// => result is 'success'
+```
+
+@example 
+
+Execute multiple plugins in order
+
+
+```typescript
+const executor = new AsyncExecutor();
+const steps: number[] = [];
+
+const plugin1: ExecutorPlugin = {
+  pluginName: 'test1',
+  onSuccess: () => {
+    steps.push(1);
+  }
 };
+
+ const plugin2: ExecutorPlugin = {
+   pluginName: 'test2',
+   onSuccess: () => {
+     steps.push(2);
+   }
+ };
+
+ executor.use(plugin1);
+ executor.use(plugin2);
+
+ await executor.exec(async () => 'test');
+
+ // => steps is [1, 2]
+```
+
+@example 
+
+If a plugin returns undefined, the chain should continue
+
+
+```typescript
+const executor = new AsyncExecutor();
+let finalResult = '';
+
+const plugin1: ExecutorPlugin = {
+  pluginName: 'test1',
+  onSuccess: (): undefined => undefined
+};
+
+const plugin2: ExecutorPlugin = {
+  pluginName: 'test2',
+  onSuccess: ({ returnValue }) => {
+    finalResult = returnValue + ' modified';
+    return finalResult;
+  }
+};
+
+executor.use(plugin1);
+executor.use(plugin2);
+
+const result = await executor.exec(async () => 'test');
+
+// => result is 'test modified'
 ```
 
 
