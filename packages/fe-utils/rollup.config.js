@@ -10,6 +10,9 @@ const NODE_ENV = env.get('NODE_ENV');
 const isProduction = NODE_ENV === 'production';
 console.log('Enveronment is', NODE_ENV);
 
+const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
+const commonExternal = ['axios'];
+
 /**
  * @type {import('rollup').RollupOptions[]}
  */
@@ -42,7 +45,7 @@ export default [
       typescript({ tsconfig: './tsconfig.json' }),
       isProduction && terser()
     ],
-    external: ['crypto', 'buffer', 'zlib']
+    external: commonExternal
   },
   {
     input: 'server/index.ts',
@@ -66,7 +69,7 @@ export default [
       typescript({ tsconfig: './tsconfig.json' }),
       isProduction && terser()
     ],
-    external: ['crypto', 'buffer', 'zlib']
+    external: serverExternal
   },
   {
     input: 'common/index.ts',
