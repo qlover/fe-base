@@ -125,9 +125,7 @@ export abstract class Executor {
       ) &&
       plugin.onlyOne
     ) {
-      console.warn(
-        `Plugin ${plugin.constructor.name} is already used, skip adding`
-      );
+      console.warn(`Plugin ${plugin.pluginName} is already used, skip adding`);
       return;
     }
 

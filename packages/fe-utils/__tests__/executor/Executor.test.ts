@@ -26,6 +26,7 @@ describe('AsyncExecutor', () => {
   it('should modify the execution result through plugins', async () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
+      pluginName: 'test',
       onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
@@ -39,6 +40,7 @@ describe('AsyncExecutor', () => {
     const customError = new ExecutorError('CUSTOM_ERROR');
 
     const plugin: ExecutorPlugin = {
+      pluginName: 'test',
       onError: () => customError
     };
 
@@ -82,6 +84,7 @@ describe('SyncExecutor', () => {
   it('should modify the execution result through plugins', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
+      pluginName: 'test',
       onSuccess: ({ returnValue }) => returnValue + ' modified'
     };
 
@@ -95,6 +98,7 @@ describe('SyncExecutor', () => {
     const customError = new ExecutorError('CUSTOM_ERROR');
 
     const plugin: ExecutorPlugin = {
+      pluginName: 'test',
       onError: () => customError
     };
 
@@ -123,12 +127,14 @@ describe('ExecutorPlugin Chain', () => {
     const steps: number[] = [];
 
     const plugin1: ExecutorPlugin = {
+      pluginName: 'test1',
       onSuccess: () => {
         steps.push(1);
       }
     };
 
     const plugin2: ExecutorPlugin = {
+      pluginName: 'test2',
       onSuccess: () => {
         steps.push(2);
       }
@@ -146,10 +152,12 @@ describe('ExecutorPlugin Chain', () => {
     let finalResult = '';
 
     const plugin1: ExecutorPlugin = {
+      pluginName: 'test1',
       onSuccess: (): undefined => undefined
     };
 
     const plugin2: ExecutorPlugin = {
+      pluginName: 'test2',
       onSuccess: ({ returnValue }) => {
         finalResult = returnValue + ' modified';
         return finalResult;
@@ -179,6 +187,7 @@ describe('ExecutorPlugin Error', () => {
     const executor = new AsyncExecutor();
 
     const plugin: ExecutorPlugin = {
+      pluginName: 'test',
       onError: ({ error }) => new ExecutorError('PLUGIN_ERROR', error?.message)
     };
 
@@ -221,9 +230,9 @@ describe('ExecutorPlugin Error', () => {
       count++;
     });
 
-    executor.use({ onError: onError1 });
-    executor.use({ onError: onError2 });
-    executor.use({ onError: onError3 });
+    executor.use({ pluginName: 'test1', onError: onError1 });
+    executor.use({ pluginName: 'test2', onError: onError2 });
+    executor.use({ pluginName: 'test3', onError: onError3 });
 
     try {
       await executor.exec(execTask);
@@ -263,9 +272,9 @@ describe('ExecutorPlugin Error', () => {
       count++;
     });
 
-    executor.use({ onError: onError1 });
-    executor.use({ onError: onError2 });
-    executor.use({ onError: onError3 });
+    executor.use({ pluginName: 'test1', onError: onError1 });
+    executor.use({ pluginName: 'test2', onError: onError2 });
+    executor.use({ pluginName: 'test3', onError: onError3 });
 
     try {
       executor.exec(execTask);
@@ -312,9 +321,9 @@ describe('ExecutorPlugin Error', () => {
       }
     });
 
-    executor.use({ onError: onError1 });
-    executor.use({ onError: onError2 });
-    executor.use({ onError: onError3 });
+    executor.use({ pluginName: 'test1', onError: onError1 });
+    executor.use({ pluginName: 'test2', onError: onError2 });
+    executor.use({ pluginName: 'test3', onError: onError3 });
 
     try {
       executor.exec(execTask);

@@ -74,9 +74,7 @@ describe('ExecutorPlugin', () => {
           ) &&
           p.onlyOne
         ) {
-          console.warn(
-            `Plugin ${p.constructor.name} is already used, skip adding`
-          );
+          console.warn(`Plugin ${p.pluginName} is already used, skip adding`);
           return;
         }
         this.plugins.push(p);
@@ -86,7 +84,7 @@ describe('ExecutorPlugin', () => {
     const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
     executor.use(plugin);
     expect(consoleSpy).toHaveBeenCalledWith(
-      `Plugin ${plugin.constructor.name} is already used, skip adding`
+      `Plugin ${plugin.pluginName} is already used, skip adding`
     );
     consoleSpy.mockRestore();
   });
