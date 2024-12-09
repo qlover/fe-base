@@ -6,15 +6,15 @@ import { RequestAdpaterConfig } from '../adapter';
  * Plugin for URL manipulation and response handling
  * Provides URL composition and response status checking
  *
+ * - Core Idea: Simplify URL handling and response validation.
+ * - Main Function: Manage URL construction and check response status.
+ * - Main Purpose: Ensure correct URL formation and response handling.
+ *
  * Features:
  * - URL normalization
  * - Base URL handling
  * - Query parameter management
  * - Response status validation
- *
- * Core Idea: Simplify URL handling and response validation.
- * Main Function: Manage URL construction and check response status.
- * Main Purpose: Ensure correct URL formation and response handling.
  *
  * @implements {ExecutorPlugin}
  *

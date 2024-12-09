@@ -1,6 +1,8 @@
 /**
  * Get the value type of an object
  *
+ * @since 1.0.14
+ *
  * @example
  * ```ts
  * type T = { a: number; b: string };
@@ -11,6 +13,8 @@ export type ValueOf<T> = T[keyof T];
 
 /**
  * Get the intersection type of two types
+ *
+ * @since 1.0.14
  *
  * @example
  * ```ts

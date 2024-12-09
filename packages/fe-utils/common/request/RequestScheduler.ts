@@ -13,10 +13,50 @@ import merge from 'lodash/merge';
  * streaming responses, and request cancellation. Future enhancements may include caching,
  * upload/download progress, retries, timeouts, and mock data.
  *
+ * @since 1.0.14
  * @example
- * const scheduler = new RequestScheduler(adapter);
- * scheduler.usePlugin(plugin);
- * const response = await scheduler.get({ url: '/api/data' });
+ *
+ * Create a Adapter
+ *
+ * ```typescript
+ * class MockRequestAdapter implements RequestAdapterInterface<any> {
+ * config: any;
+ *
+ * constructor(config: any = {}) {
+ *   this.config = config;
+ * }
+ *
+ * getConfig(): any {
+ *   return this.config;
+ * }
+ * async request<Request, Response>(
+ *   config: any
+ * ): Promise<RequestAdapterResponse<Response, Request>> {
+ *   const sendConfig = { ...this.config, ...config };
+ *   await new Promise((resolve) => setTimeout(resolve, 1000));
+ *
+ *   return {
+ *     status: 200,
+ *     statusText: 'ok',
+ *     headers: {},
+ *     data: sendConfig.data,
+ *     config: sendConfig
+ *   };
+ * }
+ *
+ * ```
+ *
+ * @example
+ *
+ * Execute a request using the adapter
+ *
+ * ```typescript
+ * const adapter = new MockRequestAdapter();
+ * const scheduler = new RequestScheduler();
+ * const reqData = 'mock response';
+ * const response = await scheduler.request({ url: '/test', data: reqData });
+ * // => response.data is 'mock response'
+ * ```
  *
  * @template Config - The configuration type extending RequestAdpaterConfig.
  */
@@ -26,6 +66,8 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
   /**
    * Initializes a new instance of the RequestScheduler class.
    *
+   * @since 1.0.14
+   *
    * @param adapter - The request adapter interface to be used for making requests.
    */
   constructor(readonly adapter: RequestAdapterInterface<Config>) {
@@ -34,6 +76,8 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
 
   /**
    * Adds a plugin to the request execution process.
+   *
+   * @since 1.0.14
    *
    * @param plugin - The plugin to be used by the executor.
    * @returns The current instance of RequestScheduler for chaining.
@@ -45,6 +89,8 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
 
   /**
    * Executes a request with the given configuration.
+   *
+   * @since 1.0.14
    *
    * @param config - The configuration for the request.
    * @returns A promise that resolves to the response of the request.

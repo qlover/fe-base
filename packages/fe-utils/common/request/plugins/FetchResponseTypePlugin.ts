@@ -1,9 +1,52 @@
 import { ExecutorPlugin, ExecutorContextInterface } from '../../executor';
 import { RequestAdapterResponse, RequestAdapterFetchConfig } from '../adapter';
 
+/**
+ * FetchResponseTypePlugin is responsible for handling different response types
+ * from fetch requests and converting them into a standardized adapter response.
+ *
+ * The core idea is to provide a flexible mechanism to process various response
+ * types such as JSON, text, blob, etc., and return a consistent response format.
+ *
+ * Main function: Convert fetch responses into a RequestAdapterResponse based on
+ * the specified response type in the configuration.
+ *
+ * Main purpose: To ensure that different response types are handled correctly
+ * and consistently across the application.
+ *
+ * @since 1.0.14
+ *
+ * @example
+ *
+ * ```typescript
+ * const plugin = new FetchResponseTypePlugin();
+ * const mockResponse = new Response(JSON.stringify({ key: 'value' }), {
+ *   status: 200,
+ *   headers: { 'Content-Type': 'application/json' }
+ * });
+ *
+ * const context: ExecutorContextInterface<RequestAdapterFetchConfig> = {
+ *   returnValue: mockResponse,
+ *   parameters: { responseType: 'json' }
+ * };
+ * const result = await plugin.onSuccess(context);
+ *
+ * // => result.data is { key: 'value' }
+ * // => result.status is 200
+ * // => result.headers['content-type'] is 'application/json'
+ * ```
+ */
 export class FetchResponseTypePlugin implements ExecutorPlugin {
   readonly pluginName = 'FetchResponseTypePlugin';
 
+  /**
+   * Converts the raw fetch response into a standardized adapter response.
+   *
+   * @param data The data extracted from the response based on the response type.
+   * @param response The original fetch Response object.
+   * @param config The configuration used for the fetch request.
+   * @returns A RequestAdapterResponse containing the processed response data.
+   */
   toAdapterResponse(
     data: unknown,
     response: Response,
@@ -19,6 +62,12 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
     };
   }
 
+  /**
+   * Extracts headers from the fetch Response object and returns them as a record.
+   *
+   * @param response The fetch Response object from which headers are extracted.
+   * @returns A record of headers with header names as keys and header values as values.
+   */
   getResponseHeaders(response: Response): Record<string, string> {
     const headersObj: Record<string, string> = {};
     response.headers.forEach((value, key) => {
@@ -27,6 +76,12 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
     return headersObj;
   }
 
+  /**
+   * Processes the successful fetch response based on the specified response type.
+   *
+   * @param context The execution context containing the fetch response and configuration.
+   * @returns A promise that resolves to a RequestAdapterResponse.
+   */
   async onSuccess(
     context: ExecutorContextInterface<RequestAdapterFetchConfig>
   ): Promise<RequestAdapterResponse> {

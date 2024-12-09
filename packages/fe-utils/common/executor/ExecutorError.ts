@@ -15,6 +15,17 @@
  *   throw new ExecutorError('EXECUTOR_ERROR', error);
  * }
  * ```
+ *
+ * @example
+ *
+ * create an error with a message from a string
+ *
+ * ```typescript
+ * const error = new ExecutorError('ERROR_ID', 'This is an error message');
+ *
+ * // => error.message is 'This is an error message'
+ * // => error.id is 'ERROR_ID'
+ * ```
  */
 export class ExecutorError extends Error {
   /**
@@ -44,22 +55,5 @@ export class ExecutorError extends Error {
     }
 
     Object.setPrototypeOf(this, new.target.prototype);
-  }
-
-  getMergedStack(originalStack: string, newStack: string): string {
-    const originalLines = originalStack.split('\n');
-    const newLines = newStack.split('\n');
-
-    // Find the index where the new stack starts to repeat the original stack
-    let startIndex = newLines.length;
-    for (let i = 0; i < newLines.length; i++) {
-      if (originalLines.includes(newLines[i])) {
-        startIndex = i;
-        break;
-      }
-    }
-
-    // Merge stacks, avoiding repetition
-    return [...originalLines, ...newLines.slice(startIndex)].join('\n');
   }
 }

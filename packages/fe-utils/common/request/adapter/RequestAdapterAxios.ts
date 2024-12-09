@@ -4,6 +4,13 @@ import {
   RequestAdapterResponse
 } from './RequestAdapter';
 
+/**
+ * Axios request adapter
+ *
+ * Only base config is supported
+ *
+ * @since 1.0.14
+ */
 export class RequestAdapterAxios
   implements RequestAdapterInterface<AxiosRequestConfig>
 {

@@ -8,6 +8,8 @@
  *
  * @template Params - The type of parameters that the task accepts.
  *
+ * @since 1.0.14
+ *
  * @example
  * ```typescript
  * const context: ExecutorContextInterface<MyParams> = {

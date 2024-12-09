@@ -7,6 +7,15 @@ import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../../executor';
 import { RequestErrorID } from '../RequestError';
 import merge from 'lodash/merge';
 
+/**
+ * Request adapter fetch configuration
+ *
+ * This type defines the configuration options for a request adapter.
+ * It includes properties for URL, method, headers, and other request details.
+ * The main purpose is to provide a flexible structure for configuring HTTP requests.
+ *
+ * @since 1.0.14
+ */
 export type RequestAdapterFetchConfig<Request = any> = RequestInit &
   RequestAdpaterConfig<Request> & {
     fetcher?: typeof fetch;

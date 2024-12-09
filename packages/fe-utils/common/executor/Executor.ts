@@ -4,17 +4,80 @@ import { ExecutorPlugin, Task } from './plugins/ExecutorPlugin';
 /**
  * Configuration interface for executor
  *
- * Purpose: Provides configuration options for the Executor class
- * Core Concept: Extensible configuration container
- * Main Features: Currently empty but designed for future extension
- * Primary Use: Allows customization of executor behavior
+ * - Purpose: Provides configuration options for the Executor class
+ * - Core Concept: Extensible configuration container
+ * - Main Features: Currently empty but designed for future extension
+ * - Primary Use: Allows customization of executor behavior
  *
  * @category Executor
  * @example
+ *
+ * Successfully execute an asynchronous task
+ *
  * ```typescript
- * const config: ExecutorConfig = {
- *   // Future configuration options will go here
+ * const executor = new AsyncExecutor();
+ * const result = await executor.exec(async () => 'success');
+ *
+ * // => result is 'success'
+ * ```
+ *
+ * @example
+ *
+ * Execute multiple plugins in order
+ *
+ * ```typescript
+ * const executor = new AsyncExecutor();
+ * const steps: number[] = [];
+ *
+ * const plugin1: ExecutorPlugin = {
+ *   pluginName: 'test1',
+ *   onSuccess: () => {
+ *     steps.push(1);
+ *   }
  * };
+ *
+ *  const plugin2: ExecutorPlugin = {
+ *    pluginName: 'test2',
+ *    onSuccess: () => {
+ *      steps.push(2);
+ *    }
+ *  };
+ *
+ *  executor.use(plugin1);
+ *  executor.use(plugin2);
+ *
+ *  await executor.exec(async () => 'test');
+ *
+ *  // => steps is [1, 2]
+ * ```
+ *
+ * @example
+ *
+ * If a plugin returns undefined, the chain should continue
+ *
+ * ```typescript
+ * const executor = new AsyncExecutor();
+ * let finalResult = '';
+ *
+ * const plugin1: ExecutorPlugin = {
+ *   pluginName: 'test1',
+ *   onSuccess: (): undefined => undefined
+ * };
+ *
+ * const plugin2: ExecutorPlugin = {
+ *   pluginName: 'test2',
+ *   onSuccess: ({ returnValue }) => {
+ *     finalResult = returnValue + ' modified';
+ *     return finalResult;
+ *   }
+ * };
+ *
+ * executor.use(plugin1);
+ * executor.use(plugin2);
+ *
+ * const result = await executor.exec(async () => 'test');
+ *
+ * // => result is 'test modified'
  * ```
  */
 export interface ExecutorConfig {}
