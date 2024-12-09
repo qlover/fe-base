@@ -1,6 +1,12 @@
 import { RetryPlugin } from '../../common/executor/plugins';
-import { RequestScheduler, RequestError } from '../../common/request';
 import {
+  RequestScheduler,
+  RequestError,
+  FetchResponseTypePlugin
+} from '../../common/request';
+import {
+  RequestAdapterAxios,
+  RequestAdapterFetch,
   RequestAdapterInterface,
   RequestAdapterResponse
 } from '../../common/request/adapter';

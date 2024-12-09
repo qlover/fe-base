@@ -94,6 +94,8 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
         const totalLength = parseInt(contentLength, 10);
         const progress = (receivedLength / totalLength) * 100;
         onProgress(progress);
+      } else {
+        onProgress?.(receivedLength);
       }
     }
 

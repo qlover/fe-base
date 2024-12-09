@@ -56,6 +56,8 @@ export type RequestAdpaterConfig<D = any> = {
     | 'text'
     | 'stream'
     | 'formdata';
+
+  [key: string]: any;
 };
 
 export type RequestAdapterResponse<Req = any, Res = unknown> = {
