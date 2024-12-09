@@ -1,20 +1,83 @@
 import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, Task } from './ExecutorPlugin';
+import { ExecutorPlugin, Task } from './plugins/ExecutorPlugin';
 
 /**
  * Configuration interface for executor
  *
- * Purpose: Provides configuration options for the Executor class
- * Core Concept: Extensible configuration container
- * Main Features: Currently empty but designed for future extension
- * Primary Use: Allows customization of executor behavior
+ * - Purpose: Provides configuration options for the Executor class
+ * - Core Concept: Extensible configuration container
+ * - Main Features: Currently empty but designed for future extension
+ * - Primary Use: Allows customization of executor behavior
  *
  * @category Executor
  * @example
+ *
+ * Successfully execute an asynchronous task
+ *
  * ```typescript
- * const config: ExecutorConfig = {
- *   // Future configuration options will go here
+ * const executor = new AsyncExecutor();
+ * const result = await executor.exec(async () => 'success');
+ *
+ * // => result is 'success'
+ * ```
+ *
+ * @example
+ *
+ * Execute multiple plugins in order
+ *
+ * ```typescript
+ * const executor = new AsyncExecutor();
+ * const steps: number[] = [];
+ *
+ * const plugin1: ExecutorPlugin = {
+ *   pluginName: 'test1',
+ *   onSuccess: () => {
+ *     steps.push(1);
+ *   }
  * };
+ *
+ *  const plugin2: ExecutorPlugin = {
+ *    pluginName: 'test2',
+ *    onSuccess: () => {
+ *      steps.push(2);
+ *    }
+ *  };
+ *
+ *  executor.use(plugin1);
+ *  executor.use(plugin2);
+ *
+ *  await executor.exec(async () => 'test');
+ *
+ *  // => steps is [1, 2]
+ * ```
+ *
+ * @example
+ *
+ * If a plugin returns undefined, the chain should continue
+ *
+ * ```typescript
+ * const executor = new AsyncExecutor();
+ * let finalResult = '';
+ *
+ * const plugin1: ExecutorPlugin = {
+ *   pluginName: 'test1',
+ *   onSuccess: (): undefined => undefined
+ * };
+ *
+ * const plugin2: ExecutorPlugin = {
+ *   pluginName: 'test2',
+ *   onSuccess: ({ returnValue }) => {
+ *     finalResult = returnValue + ' modified';
+ *     return finalResult;
+ *   }
+ * };
+ *
+ * executor.use(plugin1);
+ * executor.use(plugin2);
+ *
+ * const result = await executor.exec(async () => 'test');
+ *
+ * // => result is 'test modified'
  * ```
  */
 export interface ExecutorConfig {}
@@ -27,6 +90,8 @@ export interface ExecutorConfig {}
  * 2. Post-processing of results
  * 3. Error handling
  * 4. Custom execution logic
+ *
+ * execNoError returns all errors as they are., and if there is a plugin onerror handler chain in which an error occurs, it will also return the error instead of throwing it.
  *
  * @abstract
  * @class Executor
@@ -103,15 +168,27 @@ export abstract class Executor {
    * executor.use(new LoggerPlugin());
    * executor.use(new RetryPlugin({ maxAttempts: 3 }));
    * ```
+   *
+   * @example
+   *
+   * Use a plain object as a plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (data) => ({ ...data, modified: true })
+   * });
+   * ```
    */
   use(plugin: ExecutorPlugin): void {
     if (
-      this.plugins.find((p) => p.constructor === plugin.constructor) &&
+      this.plugins.find(
+        (p) =>
+          p === plugin ||
+          p.pluginName === plugin.pluginName ||
+          p.constructor === plugin.constructor
+      ) &&
       plugin.onlyOne
     ) {
-      console.warn(
-        `Plugin ${plugin.constructor.name} is already used, skip adding`
-      );
+      console.warn(`Plugin ${plugin.pluginName} is already used, skip adding`);
       return;
     }
 
@@ -137,7 +214,7 @@ export abstract class Executor {
    * await executor.runHook(plugins, 'beforeExec', data);
    * ```
    */
-  abstract runHook(
+  abstract runHooks(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
     ...args: unknown[]
@@ -164,7 +241,9 @@ export abstract class Executor {
    * });
    * ```
    */
-  abstract exec<T>(task: Task<T>): Promise<T> | T;
+  abstract exec<Result, Params = unknown>(
+    task: Task<Result, Params>
+  ): Promise<Result> | Result;
 
   /**
    * Execute a task with plugin pipeline and input data
@@ -187,7 +266,10 @@ export abstract class Executor {
    * });
    * ```
    */
-  abstract exec<T>(data: unknown, task: Task<T>): Promise<T> | T;
+  abstract exec<Result, Params = unknown>(
+    data: unknown,
+    task: Task<Result, Params>
+  ): Promise<Result> | Result;
 
   /**
    * Execute a task without throwing errors
@@ -211,9 +293,9 @@ export abstract class Executor {
    * }
    * ```
    */
-  abstract execNoError<T>(
-    task: Task<T>
-  ): Promise<T | ExecutorError> | T | ExecutorError;
+  abstract execNoError<Result, Params = unknown>(
+    task: Task<Result, Params>
+  ): Promise<Result | ExecutorError> | Result | ExecutorError;
 
   /**
    * Execute a task with input data without throwing errors
@@ -238,8 +320,8 @@ export abstract class Executor {
    * }
    * ```
    */
-  abstract execNoError<T>(
+  abstract execNoError<Result, Params = unknown>(
     data: unknown,
-    task: Task<T>
-  ): Promise<T | ExecutorError> | T | ExecutorError;
+    task: Task<Result, Params>
+  ): Promise<Result | ExecutorError> | Result | ExecutorError;
 }

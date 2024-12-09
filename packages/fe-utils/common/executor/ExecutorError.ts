@@ -15,6 +15,17 @@
  *   throw new ExecutorError('EXECUTOR_ERROR', error);
  * }
  * ```
+ *
+ * @example
+ *
+ * create an error with a message from a string
+ *
+ * ```typescript
+ * const error = new ExecutorError('ERROR_ID', 'This is an error message');
+ *
+ * // => error.message is 'This is an error message'
+ * // => error.id is 'ERROR_ID'
+ * ```
  */
 export class ExecutorError extends Error {
   /**
@@ -37,6 +48,11 @@ export class ExecutorError extends Error {
         ? originalError
         : originalError?.message || id
     );
+
+    if (originalError instanceof Error && 'stack' in originalError) {
+      // TODO: merge stacks
+      // this.stack = this.getMergedStack(originalError.stack!, this.stack!);
+    }
 
     Object.setPrototypeOf(this, new.target.prototype);
   }
