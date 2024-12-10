@@ -1,5 +1,12 @@
 
 
+## [1.0.17](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.16...fe-utils-v1.0.17) (2024-12-10)
+
+
+### Features
+
+* Storage interface, and JSONStorage ([#167](https://github.com/qlover/fe-base/issues/167)) ([7313aad](https://github.com/qlover/fe-base/commit/7313aad85682e6f5f3429e7a86f2c44f702abc5e))
+
 ## [1.0.16](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.15...fe-utils-v1.0.16) (2024-12-10)
 
 ## [1.0.15](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.14...fe-utils-v1.0.15) (2024-12-10)
