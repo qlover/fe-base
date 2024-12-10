@@ -30,7 +30,7 @@ const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration options | `Partial<RequestAdapterFetchConfig<any>>` | {} |  |
+|  config  | Request configuration options | `Partial<RequestAdapterFetchConfig<unknown>>` | {} |  |
 
 
 ### getConfig
@@ -74,7 +74,7 @@ const response = await fetchRequest.request({ url: '/data' });
 
 ## TypeAlias `RequestAdapterFetchConfig`
 
-`RequestInit & RequestAdpaterConfig<Request> & Object`
+`globalThis.RequestInit & RequestAdpaterConfig<Request> & Object`
 
 Request adapter fetch configuration
 

@@ -206,7 +206,7 @@ Enhancements:
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  value  |  | `any` |  |  |
+|  value  |  | `unknown` |  |  |
 |  replacer  |  | `null \| (string \| number)[] \| Function` |  |  |
 |  space  |  | `string \| number` |  |  |
 
