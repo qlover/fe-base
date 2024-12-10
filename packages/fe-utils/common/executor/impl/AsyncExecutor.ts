@@ -6,13 +6,13 @@ import { ExecutorContextInterface } from '../ExecutorContextInterface';
 /**
  * Asynchronous implementation of the Executor pattern
  *
- * Purpose: Provides asynchronous task execution with plugin support
- * Core Concept: Async execution pipeline with plugin hooks
- * Main Features:
- * - Asynchronous plugin hook execution
- * - Promise-based task handling
- * - Error handling with plugin support
- * Primary Use: Handling async operations with extensible middleware
+ * - Purpose: Provides asynchronous task execution with plugin support
+ * - Core Concept: Async execution pipeline with plugin hooks
+ * - Main Features:
+ *  - Asynchronous plugin hook execution
+ *  - Promise-based task handling
+ *  - Error handling with plugin support
+ * - Primary Use: Handling async operations with extensible middleware
  *
  * @example
  * ```typescript
@@ -31,13 +31,13 @@ export class AsyncExecutor extends Executor {
   /**
    * Execute plugin hook functions asynchronously
    *
-   * Purpose: Orchestrates asynchronous plugin hook execution
-   * Core Concept: Sequential async plugin pipeline
-   * Main Features:
-   * - Plugin enablement checking
-   * - Result chaining
-   * - Error hook special handling
-   * Primary Use: Internal plugin lifecycle management
+   * - Purpose: Orchestrates asynchronous plugin hook execution
+   * - Core Concept: Sequential async plugin pipeline
+   * - Main Features:
+   *  - Plugin enablement checking
+   *  - Result chaining
+   *  - Error hook special handling
+   * - Primary Use: Internal plugin lifecycle management
    *
    * Plugin execution flow:
    * 1. Check if plugin is enabled for the hook
@@ -92,13 +92,13 @@ export class AsyncExecutor extends Executor {
   /**
    * Execute task without throwing errors
    *
-   * Purpose: Safe execution of async tasks
-   * Core Concept: Error wrapping and handling
-   * Main Features:
-   * - Catches all execution errors
-   * - Wraps errors in ExecutorError
-   * - Returns either result or error object
-   * Primary Use: When you want to handle errors without try-catch
+   * - Purpose: Safe execution of async tasks
+   * - Core Concept: Error wrapping and handling
+   * - Main Features:
+   *  - Catches all execution errors
+   *  - Wraps errors in ExecutorError
+   *  - Returns either result or error object
+   * - Primary Use: When you want to handle errors without try-catch
    *
    * @template T - Type of task return value
    * @param dataOrTask - Task data or task function
@@ -135,13 +135,13 @@ export class AsyncExecutor extends Executor {
   /**
    * Execute asynchronous task with full plugin pipeline
    *
-   * Purpose: Primary method for executing async tasks
-   * Core Concept: Full plugin pipeline execution
-   * Main Features:
-   * - Plugin hook integration
-   * - Task validation
-   * - Custom execution support
-   * Primary Use: Running async tasks with plugin support
+   * - Purpose: Primary method for executing async tasks
+   * - Core Concept: Full plugin pipeline execution
+   * - Main Features:
+   *  - Plugin hook integration
+   *  - Task validation
+   *  - Custom execution support
+   * - Primary Use: Running async tasks with plugin support
    *
    * Execution flow:
    * 1. Validate and prepare task
@@ -201,13 +201,13 @@ export class AsyncExecutor extends Executor {
   /**
    * Core task execution method with plugin hooks
    *
-   * Purpose: Implements the complete execution pipeline
-   * Core Concept: Sequential hook execution with error handling
-   * Main Features:
-   * - Before/After hooks
-   * - Error handling hooks
-   * - Result transformation
-   * Primary Use: Internal pipeline orchestration
+   * - Purpose: Implements the complete execution pipeline
+   * - Core Concept: Sequential hook execution with error handling
+   * - Main Features:
+   *  - Before/After hooks
+   *  - Error handling hooks
+   *  - Result transformation
+   * - Primary Use: Internal pipeline orchestration
    *
    * Pipeline stages:
    * 1. onBefore hooks - Pre-process input data

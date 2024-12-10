@@ -37,9 +37,9 @@ export type ExecOptions = {
  * The Logger class supports multiple log levels and can be configured
  * to operate in different environments such as CI, dry run, debug, and silent modes.
  *
- * Core Idea: Provide a flexible and configurable logging utility.
- * Main Function: Log messages at different levels with optional environment-specific behavior.
- * Main Purpose: Facilitate debugging and monitoring by providing structured log output.
+ * - Core Idea: Provide a flexible and configurable logging utility.
+ * - Main Function: Log messages at different levels with optional environment-specific behavior.
+ * - Main Purpose: Facilitate debugging and monitoring by providing structured log output.
  *
  * @class Logger
  * @example
@@ -64,10 +64,6 @@ export class Logger {
    *
    * This constructor initializes the Logger with configuration options
    * that determine its behavior in different environments.
-   *
-   * Core Idea: Initialize logger with environment-specific settings.
-   * Main Function: Set up logging configuration based on provided options.
-   * Main Purpose: Customize logging behavior to suit different operational contexts.
    *
    * @param options - Logger configuration options
    * @param {boolean} options.isCI  - Whether running in CI environment
@@ -96,10 +92,6 @@ export class Logger {
    * Core logging method
    * Handles actual console output based on configuration
    *
-   * Core Idea: Centralize log output handling.
-   * Main Function: Output log messages to the console.
-   * Main Purpose: Provide a single point of control for log output.
-   *
    * @param level - Log level for the message
    * @param args - Arguments to log
    *
@@ -118,10 +110,6 @@ export class Logger {
    * Adds prefix to log messages
    * Can be overridden to customize log format
    *
-   * Core Idea: Enhance log messages with contextual prefixes.
-   * Main Function: Format log messages with a prefix.
-   * Main Purpose: Improve log readability and context.
-   *
    * @param value - The prefix value
    * @param _level - Log level (optional)
    * @returns Formatted prefix string or array
@@ -138,10 +126,6 @@ export class Logger {
   /**
    * Basic log output
    *
-   * Core Idea: Provide a simple logging method.
-   * Main Function: Log messages at the basic level.
-   * Main Purpose: Output general information to the console.
-   *
    * @param args - Values to log
    *
    * @example
@@ -155,10 +139,6 @@ export class Logger {
 
   /**
    * Informational log output
-   *
-   * Core Idea: Log informational messages.
-   * Main Function: Output informational messages to the console.
-   * Main Purpose: Provide insights into the application's operation.
    *
    * @param args - Values to log
    *
@@ -174,10 +154,6 @@ export class Logger {
   /**
    * Warning log output
    *
-   * Core Idea: Log warning messages.
-   * Main Function: Output warning messages to the console.
-   * Main Purpose: Alert about potential issues or important notices.
-   *
    * @param args - Values to log
    *
    * @example
@@ -192,10 +168,6 @@ export class Logger {
   /**
    * Error log output
    *
-   * Core Idea: Log error messages.
-   * Main Function: Output error messages to the console.
-   * Main Purpose: Report errors and exceptions in the application.
-   *
    * @param args - Values to log
    *
    * @example
@@ -209,12 +181,9 @@ export class Logger {
 
   /**
    * Debug log output
-   * Only active when debug mode is enabled
-   * Formats objects as JSON strings
    *
-   * Core Idea: Provide detailed debug information.
-   * Main Function: Output debug messages to the console.
-   * Main Purpose: Assist in debugging by providing detailed information.
+   * - Only active when debug mode is enabled
+   * - Formats objects as JSON strings
    *
    * @param args - Values to log
    *
@@ -241,12 +210,9 @@ export class Logger {
 
   /**
    * Verbose log output
-   * Only active when debug mode is enabled
-   * Uses purple color for output
    *
-   * Core Idea: Provide verbose logging for detailed output.
-   * Main Function: Output verbose messages to the console.
-   * Main Purpose: Offer additional insights during debugging.
+   * - Only active when debug mode is enabled
+   * - Uses purple color for output
    *
    * @param args - Values to log
    *
@@ -264,10 +230,6 @@ export class Logger {
   /**
    * Command execution logging
    * Supports dry run mode and external command indication
-   *
-   * Core Idea: Log command execution details.
-   * Main Function: Output command execution information.
-   * Main Purpose: Track command execution for auditing and debugging.
    *
    * @param args - Command arguments and options
    *
@@ -297,10 +259,6 @@ export class Logger {
   /**
    * Obtrusive log output
    * Adds extra line breaks in non-CI environments
-   *
-   * Core Idea: Provide obtrusive logging for emphasis.
-   * Main Function: Output messages with additional spacing.
-   * Main Purpose: Highlight important messages in the log.
    *
    * @param args - Values to log
    *

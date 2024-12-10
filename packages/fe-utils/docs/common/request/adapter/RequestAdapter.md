@@ -37,9 +37,9 @@ adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(r
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  options  | `RequestAdpaterConfig<Request>` |  |  | The configuration options for the request. |
+|  options  | The configuration options for the request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ## TypeAlias `RequestAdapterResponse`

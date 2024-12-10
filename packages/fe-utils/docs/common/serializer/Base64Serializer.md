@@ -33,9 +33,9 @@ const decoded = serializer.parse(encoded);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  options.urlSafe  | `boolean` |  | 1.0.10 | Use URL-safe base64 encoding |
+|  options.urlSafe  | Use URL-safe base64 encoding | `boolean` |  | 1.0.10 |
 
 
 ### deserialize
@@ -47,10 +47,10 @@ Deserializes base64 string back to original
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `string` |  |  | Base64 string to decode |
-|  defaultValue  | `string` |  |  | Optional default value if decoding fails |
+|  data  | Base64 string to decode | `string` |  |  |
+|  defaultValue  | Optional default value if decoding fails | `string` |  |  |
 
 
 ### makeUrlSafe
@@ -62,9 +62,9 @@ Converts standard base64 to URL-safe base64
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  base64  | `string` |  |  | Standard base64 string |
+|  base64  | Standard base64 string | `string` |  |  |
 
 
 ### makeUrlUnsafe
@@ -76,9 +76,9 @@ Converts URL-safe base64 back to standard base64
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  safe  | `string` |  |  | URL-safe base64 string |
+|  safe  | URL-safe base64 string | `string` |  |  |
 
 
 ### serialize
@@ -90,7 +90,7 @@ Serializes string to base64
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `string` |  |  | String to encode |
+|  data  | String to encode | `string` |  |  |
 

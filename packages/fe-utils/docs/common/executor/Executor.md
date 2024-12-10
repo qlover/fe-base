@@ -35,10 +35,10 @@ const result = await executor.exec(async (data) => {
 ### constructor
 Creates a new Executor instance
 
-Purpose: Initialize executor with optional configuration
-Core Concept: Configurable executor setup
-Main Features: Configuration injection
-Primary Use: Executor instantiation
+- Purpose: Initialize executor with optional configuration
+- Core Concept: Configurable executor setup
+- Main Features: Configuration injection
+- Primary Use: Executor instantiation
 
 **@example** 
 
@@ -50,20 +50,20 @@ const executor = new Executor({
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `ExecutorConfig` | {} |  | Optional configuration object |
+|  config  | Optional configuration object | `ExecutorConfig` | {} |  |
 
 
 ### exec
 Execute a task with plugin pipeline
 
-Purpose: Core task execution with plugin support
-Core Concept: Task execution pipeline
-Main Features:
-- Plugin hook integration
-- Error handling
-Primary Use: Running tasks through the executor pipeline
+- Purpose: Core task execution with plugin support
+- Core Concept: Task execution pipeline
+- Main Features:
+ - Plugin hook integration
+ - Error handling
+- Primary Use: Running tasks through the executor pipeline
 
 **@throws** 
 
@@ -79,20 +79,20 @@ const result = await executor.exec(async (data) => {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  task  | `Task<Result, Params>` |  |  | Task to execute |
+|  task  | Task to execute | `Task<Result, Params>` |  |  |
 
 
 ### exec
 Execute a task with plugin pipeline and input data
 
-Purpose: Core task execution with plugin support and input data
-Core Concept: Task execution pipeline with data
-Main Features:
-- Plugin hook integration
-- Error handling
-Primary Use: Running tasks with input data through the executor pipeline
+- Purpose: Core task execution with plugin support and input data
+- Core Concept: Task execution pipeline with data
+- Main Features:
+ - Plugin hook integration
+ - Error handling
+- Primary Use: Running tasks with input data through the executor pipeline
 
 **@throws** 
 
@@ -108,21 +108,21 @@ const result = await executor.exec(data, async (data) => {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data for task |
-|  task  | `Task<Result, Params>` |  |  | Task to execute |
+|  data  | Input data for task | `unknown` |  |  |
+|  task  | Task to execute | `Task<Result, Params>` |  |  |
 
 
 ### execNoError
 Execute a task without throwing errors
 
-Purpose: Safe task execution with error wrapping
-Core Concept: Error-safe execution pipeline
-Main Features:
-- Error wrapping in ExecutorError
-- Non-throwing execution
-Primary Use: When error handling is preferred over exceptions
+- Purpose: Safe task execution with error wrapping
+- Core Concept: Error-safe execution pipeline
+- Main Features:
+ - Error wrapping in ExecutorError
+ - Non-throwing execution
+- Primary Use: When error handling is preferred over exceptions
 
 **@example** 
 
@@ -137,20 +137,20 @@ if (result instanceof ExecutorError) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  task  | `Task<Result, Params>` |  |  | Task to execute |
+|  task  | Task to execute | `Task<Result, Params>` |  |  |
 
 
 ### execNoError
 Execute a task with input data without throwing errors
 
-Purpose: Safe task execution with error wrapping and input data
-Core Concept: Error-safe execution pipeline with data
-Main Features:
-- Error wrapping in ExecutorError
-- Non-throwing execution
-Primary Use: When error handling is preferred over exceptions with input data
+- Purpose: Safe task execution with error wrapping and input data
+- Core Concept: Error-safe execution pipeline with data
+- Main Features:
+ - Error wrapping in ExecutorError
+ - Non-throwing execution
+- Primary Use: When error handling is preferred over exceptions with input data
 
 **@example** 
 
@@ -165,21 +165,21 @@ if (result instanceof ExecutorError) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data for task |
-|  task  | `Task<Result, Params>` |  |  | Task to execute |
+|  data  | Input data for task | `unknown` |  |  |
+|  task  | Task to execute | `Task<Result, Params>` |  |  |
 
 
 ### runHooks
 Execute a plugin hook
 
-Purpose: Provides plugin hook execution mechanism
-Core Concept: Plugin lifecycle management
-Main Features:
-- Dynamic hook execution
-- Support for async and sync hooks
-Primary Use: Running plugin lifecycle methods
+- Purpose: Provides plugin hook execution mechanism
+- Core Concept: Plugin lifecycle management
+- Main Features:
+ - Dynamic hook execution
+ - Support for async and sync hooks
+- Primary Use: Running plugin lifecycle methods
 
 **@example** 
 
@@ -189,22 +189,22 @@ await executor.runHook(plugins, 'beforeExec', data);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Plugins to execute |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Hook name to execute |
-|  args  | `unknown[]` |  |  | Arguments for the hook |
+|  plugins  | Plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
+|  name  | Hook name to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  args  | Arguments for the hook | `unknown[]` |  |  |
 
 
 ### use
 Add a plugin to the executor
 
-Purpose: Extends executor functionality through plugins
-Core Concept: Plugin registration and deduplication
-Main Features:
-- Prevents duplicate plugins if onlyOne is true
-- Maintains plugin execution order
-Primary Use: Adding new capabilities to executor
+- Purpose: Extends executor functionality through plugins
+- Core Concept: Plugin registration and deduplication
+- Main Features:
+ - Prevents duplicate plugins if onlyOne is true
+ - Maintains plugin execution order
+- Primary Use: Adding new capabilities to executor
 
 **@example** 
 
@@ -225,9 +225,9 @@ executor.use({
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | Plugin instance to add |
+|  plugin  | Plugin instance to add | `ExecutorPlugin<unknown, unknown>` |  |  |
 
 
 ## Interface `ExecutorConfig`

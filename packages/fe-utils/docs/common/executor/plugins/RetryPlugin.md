@@ -4,9 +4,9 @@ Plugin that implements retry logic for failed task executions
 This class provides a mechanism to retry failed tasks with configurable
 options such as maximum retries, delay strategies, and custom retry conditions.
 
-Core Idea: Enhance task execution reliability through retries.
-Main Function: Retry failed tasks based on specified conditions and strategies.
-Main Purpose: Improve success rates of task executions by handling transient errors.
+- Core Idea: Enhance task execution reliability through retries.
+- Main Function: Retry failed tasks based on specified conditions and strategies.
+- Main Purpose: Improve success rates of task executions by handling transient errors.
 
 @implements 
 
@@ -31,10 +31,6 @@ Constructs a new instance of RetryPlugin with specified options.
 This constructor initializes the RetryPlugin with user-defined options,
 applying default values where necessary and clamping the maxRetries value.
 
-Core Idea: Initialize retry plugin with user-defined and default settings.
-Main Function: Set up retry configuration for task execution.
-Main Purpose: Prepare the plugin to handle retries according to specified logic.
-
 **@example** 
 
 ```typescript
@@ -47,9 +43,9 @@ const retryPlugin = new RetryPlugin({
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  options  | `Partial<RetryOptions>` | {} |  | Partial configuration options for retry behavior |
+|  options  | Partial configuration options for retry behavior | `Partial<RetryOptions>` | {} |  |
 
 
 ### delay
@@ -57,10 +53,6 @@ Implements delay between retry attempts
 
 This method calculates and applies a delay between retry attempts,
 using either a fixed delay or an exponential backoff strategy.
-
-Core Idea: Control the timing of retry attempts.
-Main Function: Calculate and apply delay based on retry strategy.
-Main Purpose: Prevent immediate consecutive retries, allowing time for transient issues to resolve.
 
 **@example** 
 
@@ -70,9 +62,9 @@ await this.delay(2); // Applies delay for the third attempt
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  attempt  | `number` |  |  | Current attempt number |
+|  attempt  | Current attempt number | `number` |  |  |
 
 
 ### onExec
@@ -80,10 +72,6 @@ Custom execution hook that implements retry logic
 
 This method intercepts task execution to add retry capability,
 executing the task with the configured retry logic.
-
-Core Idea: Integrate retry logic into task execution.
-Main Function: Execute tasks with retry support.
-Main Purpose: Enhance task execution robustness by handling failures.
 
 **@example** 
 
@@ -93,9 +81,9 @@ const result = await retryPlugin.onExec(() => fetchData());
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  task  | `PromiseTask<Result, Params>` |  |  | Task to be executed with retry support |
+|  task  | Task to be executed with retry support | `PromiseTask<Result, Params>` |  |  |
 
 
 ### retry
@@ -103,10 +91,6 @@ Core retry implementation
 
 This method recursively attempts to execute the task until it succeeds
 or the maximum number of retries is reached, applying the configured delay strategy.
-
-Core Idea: Implement a robust retry mechanism for task execution.
-Main Function: Execute tasks with retries and handle failures.
-Main Purpose: Increase task success rates by retrying on failure.
 
 **@throws** 
 
@@ -120,11 +104,11 @@ const result = await this.retry(fetchData, options, 3);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  fn  | `PromiseTask<Result, Params>` |  |  | Function to retry |
-|  options  | `RetryOptions` |  |  | Retry configuration options |
-|  retryCount  | `number` |  |  | Number of retries remaining |
+|  fn  | Function to retry | `PromiseTask<Result, Params>` |  |  |
+|  options  | Retry configuration options | `RetryOptions` |  |  |
+|  retryCount  | Number of retries remaining | `number` |  |  |
 
 
 ### shouldRetry
@@ -132,10 +116,6 @@ Determines if another retry attempt should be made
 
 This method checks if a retry should be attempted based on the
 remaining retry count and a custom retry condition function.
-
-Core Idea: Decide on retry attempts based on conditions.
-Main Function: Evaluate retry conditions and remaining attempts.
-Main Purpose: Prevent unnecessary retries and optimize execution flow.
 
 **@example** 
 
@@ -147,10 +127,10 @@ if (this.shouldRetry({ error, retryCount })) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  __namedParameters.error  | `unknown` |  |  |  |
-|  __namedParameters.retryCount  | `number` |  |  |  |
+|  __namedParameters.error  |  | `unknown` |  |  |
+|  __namedParameters.retryCount  |  | `number` |  |  |
 
 
 ## Interface `RetryOptions`
@@ -159,9 +139,9 @@ Configuration options for the RetryPlugin
 This interface defines the configuration options for the RetryPlugin,
 which is used to control the retry behavior of task executions.
 
-Core Idea: Provide a flexible configuration for retry logic.
-Main Function: Define retry parameters such as max retries, delay, and conditions.
-Main Purpose: Allow customization of retry behavior to suit different use cases.
+- Core Idea: Provide a flexible configuration for retry logic.
+- Main Function: Define retry parameters such as max retries, delay, and conditions.
+- Main Purpose: Allow customization of retry behavior to suit different use cases.
 
 @example 
 

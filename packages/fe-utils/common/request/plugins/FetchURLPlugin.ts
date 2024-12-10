@@ -38,10 +38,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Checks if URL is absolute (starts with http:// or https://)
    *
-   * Core Idea: Determine if a URL is fully qualified.
-   * Main Function: Identify absolute URLs.
-   * Main Purpose: Ensure correct URL handling in requests.
-   *
    * @param url - URL to check
    * @returns Boolean indicating if URL is absolute
    *
@@ -57,10 +53,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Appends query parameters to URL
    * Handles existing query parameters in URL
-   *
-   * Core Idea: Add query parameters to URLs.
-   * Main Function: Construct URLs with appended query parameters.
-   * Main Purpose: Facilitate dynamic URL query construction.
    *
    * @param url - Base URL
    * @param params - Parameters to append
@@ -94,12 +86,9 @@ export class FetchURLPlugin implements ExecutorPlugin {
   }
 
   /**
-   * Combines base URL with path
-   * Ensures proper slash handling
+   * Combines base URL with path.
    *
-   * Core Idea: Concatenate base URL and path.
-   * Main Function: Form complete URLs from base and path.
-   * Main Purpose: Simplify URL construction with base paths.
+   * Ensures proper slash handling
    *
    * @param url - URL path
    * @param baseURL - Base URL
@@ -115,12 +104,9 @@ export class FetchURLPlugin implements ExecutorPlugin {
   }
 
   /**
-   * Builds complete URL from configuration
-   * Handles base URL, path normalization, and query parameters
+   * Builds complete URL from configuration.
    *
-   * Core Idea: Construct full URLs from configuration.
-   * Main Function: Generate complete URLs for requests.
-   * Main Purpose: Ensure accurate URL formation for HTTP requests.
+   * Handles base URL, path normalization, and query parameters.
    *
    * @param config - Request configuration
    * @returns Complete URL
@@ -154,10 +140,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Pre-request hook that builds complete URL
    *
-   * Core Idea: Prepare request URLs before execution.
-   * Main Function: Construct and set complete URLs in configuration.
-   * Main Purpose: Ensure requests are sent to the correct endpoints.
-   *
    * @param config - Request configuration
    *
    * @example
@@ -173,10 +155,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Success hook that validates response status
    * Throws error for non-OK responses
-   *
-   * Core Idea: Ensure response status is acceptable.
-   * Main Function: Validate response status codes.
-   * Main Purpose: Detect and handle unsuccessful HTTP responses.
    *
    * @param result - Fetch response
    * @returns Response if OK
@@ -208,10 +186,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Error handling hook
    * Wraps non-RequestError errors
-   *
-   * Core Idea: Standardize error handling for requests.
-   * Main Function: Convert errors to RequestError format.
-   * Main Purpose: Ensure consistent error handling across requests.
    *
    * @param error - Original error
    * @returns RequestError

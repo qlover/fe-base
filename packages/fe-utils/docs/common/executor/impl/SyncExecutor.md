@@ -84,10 +84,10 @@ const result = executor.exec((data) => {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `Params \| SyncTask<Result, Params>` |  |  | Task data or task function |
-|  task  | `SyncTask<Result, Params>` |  |  | Task function (optional) |
+|  dataOrTask  | Task data or task function | `Params \| SyncTask<Result, Params>` |  |  |
+|  task  | Task function (optional) | `SyncTask<Result, Params>` |  |  |
 
 
 ### execNoError
@@ -118,10 +118,10 @@ if (result instanceof ExecutorError) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `Params \| SyncTask<Result, Params>` |  |  | Task data or task function |
-|  task  | `SyncTask<Result, Params>` |  |  | Task function (optional) |
+|  dataOrTask  | Task data or task function | `Params \| SyncTask<Result, Params>` |  |  |
+|  task  | Task function (optional) | `SyncTask<Result, Params>` |  |  |
 
 
 ### run
@@ -166,10 +166,10 @@ private run(data, task) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Data to pass to the task |
-|  actualTask  | `SyncTask<Result, Params>` |  |  | Actual task function to execute |
+|  data  | Data to pass to the task | `unknown` |  |  |
+|  actualTask  | Actual task function to execute | `SyncTask<Result, Params>` |  |  |
 
 
 ### runHooks
@@ -199,9 +199,9 @@ const result = this.runHook(
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute |
-|  context  | `ExecutorContextInterface<Params>` |  |  |  |
+|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
+|  name  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  context  |  | `ExecutorContextInterface<Params>` |  |  |
 

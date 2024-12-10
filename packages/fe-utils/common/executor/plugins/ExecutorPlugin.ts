@@ -52,40 +52,40 @@ export type Task<Result, Params> =
  * - On error (onError)
  * - Custom execution logic (onExec)
  *
- * lifeCycle:
- * - onBefore
- *   onBefore can modify the input data before it reaches the task, before exec is called.
- *   The parameter of the first plugin's onBefore is the input data of exec.
- *   The parameter of other plugins' onBefore is the return value of previous plugin's onBefore.
- *   Also, not return value, will use first plugin's onBefore return value or exec's input data.
- *   The parameter of the first plugin's onBefore is the input data of exec.
- *   If any plugin's onBefore throws an error, it immediately stops the onBefore chain and enters the onError chain.
+ * LifeCycle:
  *
- * - onExec
- *   onExec can modify the task before it is executed.
- *   Use first plugin's onExec return value or exec's task.
- *   The exec execution is only allowed to be modified once, so only the first onExec lifecycle method registered in the plugins list will be used.
+ * **onBefore**
+ *   - onBefore can modify the input data before it reaches the task, before exec is called.
+ *   - The parameter of the first plugin's onBefore is the input data of exec.
+ *   - The parameter of other plugins' onBefore is the return value of previous plugin's onBefore.
+ *   - Also, not return value, will use first plugin's onBefore return value or exec's input data.
+ *   - The parameter of the first plugin's onBefore is the input data of exec.
+ *   - If any plugin's onBefore throws an error, it immediately stops the onBefore chain and enters the onError chain.
  *
- * - onSuccess
- *   When call exec, onSuccess will be executed after onExec.
- *   onSuccess accept the result of previous plugin's onSuccess, and can return a new result to the next plugin's onSuccess.
- *   That means, if any plugin's onSuccess returns a new value, the next plugin's onSuccess will accept the value of previous plugin's onSuccess as parameter,
- *   and can continue to return a new value, until the last plugin's onSuccess. The entire chain will not stop.
- *   The parameter of the first plugin's onSuccess is the result of exec.
- *   If any plugin's onSuccess throws an error, it immediately stops the onSuccess chain and enters the onError chain.
+ * **onExec**
+ *   - onExec can modify the task before it is executed.
+ *   - Use first plugin's onExec return value or exec's task.
+ *   - The exec execution is only allowed to be modified once, so only the first onExec lifecycle method registered in the plugins list will be used.
  *
- * - onError
- *   When an error occurs during call exec, all plugins' onError will be ordered executed.
- *   After exec, all errors will be wrapped with ExecutorError.
- *   If onError of any of the plugins returns an error, the error is thrown and the entire chain is stopped, but execNoError only return the error.
- *   If any plugin's onError throws an error, it immediately stops the entire chain and throws the error, since errors in the error chain cannot be caught. Whether exec or execNoError.
- *   If all plugins' onError neither return nor throw an error, wrapping raw Errors with ExecutorError and throw.
- *   If execNoError is called, the first error encountered is returned, and the entire lifecycle is terminated.
+ * **onSuccess**
+ *   - When call exec, onSuccess will be executed after onExec.
+ *   - onSuccess accept the result of previous plugin's onSuccess, and can return a new result to the next plugin's onSuccess.
+ *   - That means, if any plugin's onSuccess returns a new value, the next plugin's onSuccess will accept the value of previous plugin's onSuccess as parameter,
+ *   - and can continue to return a new value, until the last plugin's onSuccess. The entire chain will not stop.
+ *   - The parameter of the first plugin's onSuccess is the result of exec.
+ *   - If any plugin's onSuccess throws an error, it immediately stops the onSuccess chain and enters the onError chain.
+ *
+ * **onError**
+ *   - When an error occurs during call exec, all plugins' onError will be ordered executed.
+ *   - After exec, all errors will be wrapped with ExecutorError.
+ *   - If onError of any of the plugins returns an error, the error is thrown and the entire chain is stopped, but execNoError only return the error.
+ *   - If any plugin's onError throws an error, it immediately stops the entire chain and throws the error, since errors in the error chain cannot be caught. Whether exec or execNoError.
+ *   - If all plugins' onError neither return nor throw an error, wrapping raw Errors with ExecutorError and throw.
+ *   - If execNoError is called, the first error encountered is returned, and the entire lifecycle is terminated.
  *
  *
  * **execNoError returns all errors as they are.**
  *
- * @abstract
  * @template T - Type of data being processed
  * @template R - Type of result after processing
  *
@@ -132,7 +132,7 @@ export interface ExecutorPlugin<T = unknown, R = T> {
    *
    * @example
    * ```typescript
-   * enabled(name: keyof ExecutorPlugin, ...args: unknown[]) {
+   * enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
    *   // Only enable for error handling
    *   return name === 'onError';
    * }

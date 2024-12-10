@@ -7,9 +7,9 @@ import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
  * This interface defines the configuration options for the RetryPlugin,
  * which is used to control the retry behavior of task executions.
  *
- * Core Idea: Provide a flexible configuration for retry logic.
- * Main Function: Define retry parameters such as max retries, delay, and conditions.
- * Main Purpose: Allow customization of retry behavior to suit different use cases.
+ * - Core Idea: Provide a flexible configuration for retry logic.
+ * - Main Function: Define retry parameters such as max retries, delay, and conditions.
+ * - Main Purpose: Allow customization of retry behavior to suit different use cases.
  *
  * @category RetryPlugin
  *
@@ -78,9 +78,9 @@ const defaultShouldRetry = (): boolean => true;
  * This class provides a mechanism to retry failed tasks with configurable
  * options such as maximum retries, delay strategies, and custom retry conditions.
  *
- * Core Idea: Enhance task execution reliability through retries.
- * Main Function: Retry failed tasks based on specified conditions and strategies.
- * Main Purpose: Improve success rates of task executions by handling transient errors.
+ * - Core Idea: Enhance task execution reliability through retries.
+ * - Main Function: Retry failed tasks based on specified conditions and strategies.
+ * - Main Purpose: Improve success rates of task executions by handling transient errors.
  *
  * @implements {ExecutorPlugin}
  *
@@ -118,10 +118,6 @@ export class RetryPlugin implements ExecutorPlugin {
    * This constructor initializes the RetryPlugin with user-defined options,
    * applying default values where necessary and clamping the maxRetries value.
    *
-   * Core Idea: Initialize retry plugin with user-defined and default settings.
-   * Main Function: Set up retry configuration for task execution.
-   * Main Purpose: Prepare the plugin to handle retries according to specified logic.
-   *
    * @param options - Partial configuration options for retry behavior
    *
    * @example
@@ -153,10 +149,6 @@ export class RetryPlugin implements ExecutorPlugin {
    * This method calculates and applies a delay between retry attempts,
    * using either a fixed delay or an exponential backoff strategy.
    *
-   * Core Idea: Control the timing of retry attempts.
-   * Main Function: Calculate and apply delay based on retry strategy.
-   * Main Purpose: Prevent immediate consecutive retries, allowing time for transient issues to resolve.
-   *
    * @param attempt - Current attempt number
    * @returns Promise that resolves after the delay
    *
@@ -178,10 +170,6 @@ export class RetryPlugin implements ExecutorPlugin {
    *
    * This method intercepts task execution to add retry capability,
    * executing the task with the configured retry logic.
-   *
-   * Core Idea: Integrate retry logic into task execution.
-   * Main Function: Execute tasks with retry support.
-   * Main Purpose: Enhance task execution robustness by handling failures.
    *
    * @template T - Type of task return value
    * @param task - Task to be executed with retry support
@@ -208,10 +196,6 @@ export class RetryPlugin implements ExecutorPlugin {
    *
    * This method checks if a retry should be attempted based on the
    * remaining retry count and a custom retry condition function.
-   *
-   * Core Idea: Decide on retry attempts based on conditions.
-   * Main Function: Evaluate retry conditions and remaining attempts.
-   * Main Purpose: Prevent unnecessary retries and optimize execution flow.
    *
    * @param error - Error from failed attempt
    * @param retryCount - Number of retries remaining
@@ -244,10 +228,6 @@ export class RetryPlugin implements ExecutorPlugin {
    *
    * This method recursively attempts to execute the task until it succeeds
    * or the maximum number of retries is reached, applying the configured delay strategy.
-   *
-   * Core Idea: Implement a robust retry mechanism for task execution.
-   * Main Function: Execute tasks with retries and handle failures.
-   * Main Purpose: Increase task success rates by retrying on failure.
    *
    * @template T - Type of task return value
    * @param fn - Function to retry

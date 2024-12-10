@@ -48,9 +48,9 @@ Extracts headers from the fetch Response object and returns them as a record.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  response  | `Response` |  |  | The fetch Response object from which headers are extracted. |
+|  response  | The fetch Response object from which headers are extracted. | `Response` |  |  |
 
 
 ### handleStreamResponse
@@ -60,10 +60,10 @@ FIXME: if the content length is not available, the progress will not be accurate
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  response  | `Response` |  |  | The Response object containing the stream. |
-|  config  | `RequestAdapterFetchConfig` |  |  | The configuration for the request adapter, which may include an onProgress callback. |
+|  response  | The Response object containing the stream. | `Response` |  |  |
+|  config  | The configuration for the request adapter, which may include an onProgress callback. | `RequestAdapterFetchConfig` |  |  |
 
 
 ### onSuccess
@@ -71,9 +71,9 @@ Processes the successful fetch response based on the specified response type.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  | `ExecutorContextInterface<RequestAdapterFetchConfig>` |  |  | The execution context containing the fetch response and configuration. |
+|  context  | The execution context containing the fetch response and configuration. | `ExecutorContextInterface<RequestAdapterFetchConfig>` |  |  |
 
 
 ### toAdapterResponse
@@ -81,9 +81,9 @@ Converts the raw fetch response into a standardized adapter response.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | The data extracted from the response based on the response type. |
-|  response  | `Response` |  |  | The original fetch Response object. |
-|  config  | `RequestAdapterFetchConfig` |  |  | The configuration used for the fetch request. |
+|  data  | The data extracted from the response based on the response type. | `unknown` |  |  |
+|  response  | The original fetch Response object. | `Response` |  |  |
+|  config  | The configuration used for the fetch request. | `RequestAdapterFetchConfig` |  |  |
 

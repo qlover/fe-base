@@ -45,10 +45,10 @@
 {{!-- member parameters --}}
 {{#if this.parametersList}}
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 {{#each this.parametersList}}
-| {{#if this.deprecated}} <del>{{{this.name}}}</del> {{else}} {{{this.name}}} {{/if}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} | {{{this.description}}} |
+| {{#if this.deprecated}} <del>{{{this.name}}}</del> {{else}} {{{this.name}}} {{/if}} | {{{this.description}}} | {{{this.type}}} | {{this.defaultValue}} | {{{this.since}}} |
 {{/each}}
 {{/if}}
 
