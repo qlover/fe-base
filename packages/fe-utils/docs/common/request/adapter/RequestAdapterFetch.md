@@ -12,9 +12,9 @@ such as URL construction, headers, and response handling.
 Creates a new FetchRequest instance
 Automatically detects and configures fetch implementation
 
-Core Idea: Simplify HTTP requests with built-in fetch support.
-Main Function: Initialize fetch requests with optional configuration.
-Main Purpose: Provide a flexible and extensible HTTP request utility.
+- Core Idea: Simplify HTTP requests with built-in fetch support.
+- Main Function: Initialize fetch requests with optional configuration.
+- Main Purpose: Provide a flexible and extensible HTTP request utility.
 
 **@throws** 
 
@@ -28,9 +28,9 @@ const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `Partial<RequestAdapterFetchConfig<any>>` | {} |  | Request configuration options |
+|  config  | Request configuration options | `Partial<RequestAdapterFetchConfig<any>>` | {} |  |
 
 
 ### getConfig
@@ -42,9 +42,9 @@ const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 Core request implementation
 Merges configurations and executes fetch request
 
-Core Idea: Execute HTTP requests with merged configurations.
-Main Function: Perform fetch requests using provided configurations.
-Main Purpose: Facilitate HTTP communication with error handling.
+- Core Idea: Execute HTTP requests with merged configurations.
+- Main Function: Perform fetch requests using provided configurations.
+- Main Purpose: Facilitate HTTP communication with error handling.
 
 **@throws** 
 
@@ -58,18 +58,18 @@ const response = await fetchRequest.request({ url: '/data' });
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdapterFetchConfig<Request>` |  |  | Request configuration |
+|  config  | Request configuration | `RequestAdapterFetchConfig<Request>` |  |  |
 
 
 ### usePlugin
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  |  |
+|  plugin  |  | `ExecutorPlugin<unknown, unknown>` |  |  |
 
 
 ## TypeAlias `RequestAdapterFetchConfig`

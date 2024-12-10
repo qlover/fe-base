@@ -115,12 +115,12 @@ export abstract class Executor {
   /**
    * Array of active plugins
    *
-   * Purpose: Stores and manages executor plugins
-   * Core Concept: Ordered plugin pipeline
-   * Main Features:
-   * - Maintains plugin execution order
-   * - Supports plugin lifecycle management
-   * Primary Use: Plugin orchestration and execution
+   * - Purpose: Stores and manages executor plugins
+   * - Core Concept: Ordered plugin pipeline
+   * - Main Features:
+   *  - Maintains plugin execution order
+   *  - Supports plugin lifecycle management
+   * - Primary Use: Plugin orchestration and execution
    *
    * @example
    * ```typescript
@@ -135,10 +135,10 @@ export abstract class Executor {
   /**
    * Creates a new Executor instance
    *
-   * Purpose: Initialize executor with optional configuration
-   * Core Concept: Configurable executor setup
-   * Main Features: Configuration injection
-   * Primary Use: Executor instantiation
+   * - Purpose: Initialize executor with optional configuration
+   * - Core Concept: Configurable executor setup
+   * - Main Features: Configuration injection
+   * - Primary Use: Executor instantiation
    *
    * @param {ExecutorConfig} config - Optional configuration object
    *
@@ -154,12 +154,12 @@ export abstract class Executor {
   /**
    * Add a plugin to the executor
    *
-   * Purpose: Extends executor functionality through plugins
-   * Core Concept: Plugin registration and deduplication
-   * Main Features:
-   * - Prevents duplicate plugins if onlyOne is true
-   * - Maintains plugin execution order
-   * Primary Use: Adding new capabilities to executor
+   * - Purpose: Extends executor functionality through plugins
+   * - Core Concept: Plugin registration and deduplication
+   * - Main Features:
+   *  - Prevents duplicate plugins if onlyOne is true
+   *  - Maintains plugin execution order
+   * - Primary Use: Adding new capabilities to executor
    *
    * @param plugin - Plugin instance to add
    *
@@ -198,12 +198,12 @@ export abstract class Executor {
   /**
    * Execute a plugin hook
    *
-   * Purpose: Provides plugin hook execution mechanism
-   * Core Concept: Plugin lifecycle management
-   * Main Features:
-   * - Dynamic hook execution
-   * - Support for async and sync hooks
-   * Primary Use: Running plugin lifecycle methods
+   * - Purpose: Provides plugin hook execution mechanism
+   * - Core Concept: Plugin lifecycle management
+   * - Main Features:
+   *  - Dynamic hook execution
+   *  - Support for async and sync hooks
+   * - Primary Use: Running plugin lifecycle methods
    *
    * @param plugins - Plugins to execute
    * @param name - Hook name to execute
@@ -223,12 +223,12 @@ export abstract class Executor {
   /**
    * Execute a task with plugin pipeline
    *
-   * Purpose: Core task execution with plugin support
-   * Core Concept: Task execution pipeline
-   * Main Features:
-   * - Plugin hook integration
-   * - Error handling
-   * Primary Use: Running tasks through the executor pipeline
+   * - Purpose: Core task execution with plugin support
+   * - Core Concept: Task execution pipeline
+   * - Main Features:
+   *  - Plugin hook integration
+   *  - Error handling
+   * - Primary Use: Running tasks through the executor pipeline
    *
    * @param task - Task to execute
    * @param data - Optional input data for task
@@ -248,12 +248,12 @@ export abstract class Executor {
   /**
    * Execute a task with plugin pipeline and input data
    *
-   * Purpose: Core task execution with plugin support and input data
-   * Core Concept: Task execution pipeline with data
-   * Main Features:
-   * - Plugin hook integration
-   * - Error handling
-   * Primary Use: Running tasks with input data through the executor pipeline
+   * - Purpose: Core task execution with plugin support and input data
+   * - Core Concept: Task execution pipeline with data
+   * - Main Features:
+   *  - Plugin hook integration
+   *  - Error handling
+   * - Primary Use: Running tasks with input data through the executor pipeline
    *
    * @param data - Input data for task
    * @param task - Task to execute
@@ -274,12 +274,12 @@ export abstract class Executor {
   /**
    * Execute a task without throwing errors
    *
-   * Purpose: Safe task execution with error wrapping
-   * Core Concept: Error-safe execution pipeline
-   * Main Features:
-   * - Error wrapping in ExecutorError
-   * - Non-throwing execution
-   * Primary Use: When error handling is preferred over exceptions
+   * - Purpose: Safe task execution with error wrapping
+   * - Core Concept: Error-safe execution pipeline
+   * - Main Features:
+   *  - Error wrapping in ExecutorError
+   *  - Non-throwing execution
+   * - Primary Use: When error handling is preferred over exceptions
    *
    * @param task - Task to execute
    *
@@ -300,12 +300,12 @@ export abstract class Executor {
   /**
    * Execute a task with input data without throwing errors
    *
-   * Purpose: Safe task execution with error wrapping and input data
-   * Core Concept: Error-safe execution pipeline with data
-   * Main Features:
-   * - Error wrapping in ExecutorError
-   * - Non-throwing execution
-   * Primary Use: When error handling is preferred over exceptions with input data
+   * - Purpose: Safe task execution with error wrapping and input data
+   * - Core Concept: Error-safe execution pipeline with data
+   * - Main Features:
+   *  - Error wrapping in ExecutorError
+   *  - Non-throwing execution
+   * - Primary Use: When error handling is preferred over exceptions with input data
    *
    * @param data - Input data for task
    * @param task - Task to execute

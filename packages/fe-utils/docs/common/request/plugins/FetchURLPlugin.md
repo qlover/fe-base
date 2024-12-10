@@ -43,10 +43,6 @@ await client.get({
 Appends query parameters to URL
 Handles existing query parameters in URL
 
-Core Idea: Add query parameters to URLs.
-Main Function: Construct URLs with appended query parameters.
-Main Purpose: Facilitate dynamic URL query construction.
-
 **@example** 
 
 ```typescript
@@ -58,19 +54,16 @@ const url = urlPlugin.appendQueryParams(
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | Base URL |
-|  params  | `Record<string, unknown>` | {} |  | Parameters to append |
+|  url  | Base URL | `string` |  |  |
+|  params  | Parameters to append | `Record<string, unknown>` | {} |  |
 
 
 ### buildUrl
-Builds complete URL from configuration
-Handles base URL, path normalization, and query parameters
+Builds complete URL from configuration.
 
-Core Idea: Construct full URLs from configuration.
-Main Function: Generate complete URLs for requests.
-Main Purpose: Ensure accurate URL formation for HTTP requests.
+Handles base URL, path normalization, and query parameters.
 
 **@example** 
 
@@ -80,18 +73,15 @@ const completeUrl = urlPlugin.buildUrl(config);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig` |  |  | Request configuration |
+|  config  | Request configuration | `RequestAdpaterConfig` |  |  |
 
 
 ### connectBaseURL
-Combines base URL with path
-Ensures proper slash handling
+Combines base URL with path.
 
-Core Idea: Concatenate base URL and path.
-Main Function: Form complete URLs from base and path.
-Main Purpose: Simplify URL construction with base paths.
+Ensures proper slash handling
 
 **@example** 
 
@@ -101,18 +91,14 @@ const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | URL path |
-|  baseURL  | `string` |  |  | Base URL |
+|  url  | URL path | `string` |  |  |
+|  baseURL  | Base URL | `string` |  |  |
 
 
 ### isFullURL
 Checks if URL is absolute (starts with http:// or https://)
-
-Core Idea: Determine if a URL is fully qualified.
-Main Function: Identify absolute URLs.
-Main Purpose: Ensure correct URL handling in requests.
 
 **@example** 
 
@@ -122,17 +108,13 @@ const isAbsolute = urlPlugin.isFullURL('https://example.com');
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  url  | `string` |  |  | URL to check |
+|  url  | URL to check | `string` |  |  |
 
 
 ### onBefore
 Pre-request hook that builds complete URL
-
-Core Idea: Prepare request URLs before execution.
-Main Function: Construct and set complete URLs in configuration.
-Main Purpose: Ensure requests are sent to the correct endpoints.
 
 **@example** 
 
@@ -142,18 +124,14 @@ urlPlugin.onBefore(config);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  | `ExecutorContextInterface<RequestAdpaterConfig>` |  |  |  |
+|  context  |  | `ExecutorContextInterface<RequestAdpaterConfig>` |  |  |
 
 
 ### onError
 Error handling hook
 Wraps non-RequestError errors
-
-Core Idea: Standardize error handling for requests.
-Main Function: Convert errors to RequestError format.
-Main Purpose: Ensure consistent error handling across requests.
 
 **@example** 
 
@@ -163,18 +141,14 @@ const error = urlPlugin.onError(new Error('Network Error'));
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  | `ExecutorContextInterface<unknown>` |  |  |  |
+|  context  |  | `ExecutorContextInterface<unknown>` |  |  |
 
 
 ### onSuccess
 Success hook that validates response status
 Throws error for non-OK responses
-
-Core Idea: Ensure response status is acceptable.
-Main Function: Validate response status codes.
-Main Purpose: Detect and handle unsuccessful HTTP responses.
 
 **@throws** 
 
@@ -188,7 +162,7 @@ const response = urlPlugin.onSuccess(fetchResponse);
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  | `ExecutorContextInterface<unknown>` |  |  |  |
+|  context  |  | `ExecutorContextInterface<unknown>` |  |  |
 

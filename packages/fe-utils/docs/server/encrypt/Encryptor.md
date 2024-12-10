@@ -25,9 +25,9 @@ Decrypts the encrypted data
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  encryptedData  | `EncryptResult` |  |  | Data to decrypt |
+|  encryptedData  | Data to decrypt | `EncryptResult` |  |  |
 
 
 ### encrypt
@@ -35,7 +35,7 @@ Encrypts the provided value
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  value  | `ValueType` |  |  | Value to encrypt |
+|  value  | Value to encrypt | `ValueType` |  |  |
 

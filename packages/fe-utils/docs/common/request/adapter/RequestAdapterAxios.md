@@ -14,9 +14,9 @@ Only base config is supported
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `Partial<AxiosRequestConfig<any>>` | {} |  |  |
+|  config  |  | `Partial<AxiosRequestConfig<any>>` | {} |  |
 
 
 ### getConfig
@@ -35,7 +35,7 @@ adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(r
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `AxiosRequestConfig<Request>` |  |  | The configuration options for the request. |
+|  config  | The configuration options for the request. | `AxiosRequestConfig<Request>` |  |  |
 

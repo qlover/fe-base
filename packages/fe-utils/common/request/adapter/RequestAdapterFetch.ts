@@ -37,9 +37,9 @@ export class RequestAdapterFetch
    * Creates a new FetchRequest instance
    * Automatically detects and configures fetch implementation
    *
-   * Core Idea: Simplify HTTP requests with built-in fetch support.
-   * Main Function: Initialize fetch requests with optional configuration.
-   * Main Purpose: Provide a flexible and extensible HTTP request utility.
+   * - Core Idea: Simplify HTTP requests with built-in fetch support.
+   * - Main Function: Initialize fetch requests with optional configuration.
+   * - Main Purpose: Provide a flexible and extensible HTTP request utility.
    *
    * @param config - Request configuration options
    * @throws {FetchRequestError} When fetch is not available
@@ -76,9 +76,9 @@ export class RequestAdapterFetch
    * Core request implementation
    * Merges configurations and executes fetch request
    *
-   * Core Idea: Execute HTTP requests with merged configurations.
-   * Main Function: Perform fetch requests using provided configurations.
-   * Main Purpose: Facilitate HTTP communication with error handling.
+   * - Core Idea: Execute HTTP requests with merged configurations.
+   * - Main Function: Perform fetch requests using provided configurations.
+   * - Main Purpose: Facilitate HTTP communication with error handling.
    *
    * @override
    * @param config - Request configuration

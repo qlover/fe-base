@@ -67,9 +67,9 @@ Initializes a new instance of the RequestScheduler class.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  adapter  | `RequestAdapterInterface<Config>` |  |  | The request adapter interface to be used for making requests. |
+|  adapter  | The request adapter interface to be used for making requests. | `RequestAdapterInterface<Config>` |  |  |
 
 
 ### connect
@@ -77,9 +77,9 @@ Executes a CONNECT request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the CONNECT request. |
+|  config  | The configuration for the CONNECT request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### delete
@@ -87,9 +87,9 @@ Executes a DELETE request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the DELETE request. |
+|  config  | The configuration for the DELETE request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### get
@@ -97,9 +97,9 @@ Executes a GET request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the GET request. |
+|  config  | The configuration for the GET request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### head
@@ -107,9 +107,9 @@ Executes a HEAD request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the HEAD request. |
+|  config  | The configuration for the HEAD request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### options
@@ -117,9 +117,9 @@ Executes an OPTIONS request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the OPTIONS request. |
+|  config  | The configuration for the OPTIONS request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### patch
@@ -127,9 +127,9 @@ Executes a PATCH request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the PATCH request. |
+|  config  | The configuration for the PATCH request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### post
@@ -137,9 +137,9 @@ Executes a POST request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the POST request. |
+|  config  | The configuration for the POST request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### put
@@ -147,9 +147,9 @@ Executes a PUT request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the PUT request. |
+|  config  | The configuration for the PUT request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### request
@@ -161,9 +161,9 @@ Executes a request with the given configuration.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the request. |
+|  config  | The configuration for the request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### trace
@@ -171,9 +171,9 @@ Executes a TRACE request.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | `RequestAdpaterConfig<Request>` |  |  | The configuration for the TRACE request. |
+|  config  | The configuration for the TRACE request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
 ### usePlugin
@@ -185,7 +185,7 @@ Adds a plugin to the request execution process.
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  | `ExecutorPlugin<unknown, unknown>` |  |  | The plugin to be used by the executor. |
+|  plugin  | The plugin to be used by the executor. | `ExecutorPlugin<unknown, unknown>` |  |  |
 

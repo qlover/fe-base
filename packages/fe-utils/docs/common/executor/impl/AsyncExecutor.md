@@ -1,13 +1,13 @@
 ## Class `AsyncExecutor`
 Asynchronous implementation of the Executor pattern
 
-Purpose: Provides asynchronous task execution with plugin support
-Core Concept: Async execution pipeline with plugin hooks
-Main Features:
-- Asynchronous plugin hook execution
-- Promise-based task handling
-- Error handling with plugin support
-Primary Use: Handling async operations with extensible middleware
+- Purpose: Provides asynchronous task execution with plugin support
+- Core Concept: Async execution pipeline with plugin hooks
+- Main Features:
+ - Asynchronous plugin hook execution
+ - Promise-based task handling
+ - Error handling with plugin support
+- Primary Use: Handling async operations with extensible middleware
 
 @example 
 
@@ -27,13 +27,13 @@ const result = await executor.exec(async (data) => {
 ### exec
 Execute asynchronous task with full plugin pipeline
 
-Purpose: Primary method for executing async tasks
-Core Concept: Full plugin pipeline execution
-Main Features:
-- Plugin hook integration
-- Task validation
-- Custom execution support
-Primary Use: Running async tasks with plugin support
+- Purpose: Primary method for executing async tasks
+- Core Concept: Full plugin pipeline execution
+- Main Features:
+ - Plugin hook integration
+ - Task validation
+ - Custom execution support
+- Primary Use: Running async tasks with plugin support
 
 Execution flow:
 1. Validate and prepare task
@@ -61,22 +61,22 @@ const result = await executor.exec(async () => {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `Params \| PromiseTask<Result, Params>` |  |  | Task data or task function |
-|  task  | `PromiseTask<Result, Params>` |  |  | Task function (optional) |
+|  dataOrTask  | Task data or task function | `Params \| PromiseTask<Result, Params>` |  |  |
+|  task  | Task function (optional) | `PromiseTask<Result, Params>` |  |  |
 
 
 ### execNoError
 Execute task without throwing errors
 
-Purpose: Safe execution of async tasks
-Core Concept: Error wrapping and handling
-Main Features:
-- Catches all execution errors
-- Wraps errors in ExecutorError
-- Returns either result or error object
-Primary Use: When you want to handle errors without try-catch
+- Purpose: Safe execution of async tasks
+- Core Concept: Error wrapping and handling
+- Main Features:
+ - Catches all execution errors
+ - Wraps errors in ExecutorError
+ - Returns either result or error object
+- Primary Use: When you want to handle errors without try-catch
 
 **@example** 
 
@@ -93,22 +93,22 @@ if (result instanceof ExecutorError) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  dataOrTask  | `unknown` |  |  | Task data or task function |
-|  task  | `PromiseTask<Result, Params>` |  |  | Task function (optional) |
+|  dataOrTask  | Task data or task function | `unknown` |  |  |
+|  task  | Task function (optional) | `PromiseTask<Result, Params>` |  |  |
 
 
 ### run
 Core task execution method with plugin hooks
 
-Purpose: Implements the complete execution pipeline
-Core Concept: Sequential hook execution with error handling
-Main Features:
-- Before/After hooks
-- Error handling hooks
-- Result transformation
-Primary Use: Internal pipeline orchestration
+- Purpose: Implements the complete execution pipeline
+- Core Concept: Sequential hook execution with error handling
+- Main Features:
+ - Before/After hooks
+ - Error handling hooks
+ - Result transformation
+- Primary Use: Internal pipeline orchestration
 
 Pipeline stages:
 1. onBefore hooks - Pre-process input data
@@ -142,22 +142,22 @@ private async run(data, task) {
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  | Input data for the task |
-|  actualTask  | `PromiseTask<Result, Params>` |  |  | Task function to execute |
+|  data  | Input data for the task | `unknown` |  |  |
+|  actualTask  | Task function to execute | `PromiseTask<Result, Params>` |  |  |
 
 
 ### runHooks
 Execute plugin hook functions asynchronously
 
-Purpose: Orchestrates asynchronous plugin hook execution
-Core Concept: Sequential async plugin pipeline
-Main Features:
-- Plugin enablement checking
-- Result chaining
-- Error hook special handling
-Primary Use: Internal plugin lifecycle management
+- Purpose: Orchestrates asynchronous plugin hook execution
+- Core Concept: Sequential async plugin pipeline
+- Main Features:
+ - Plugin enablement checking
+ - Result chaining
+ - Error hook special handling
+- Primary Use: Internal plugin lifecycle management
 
 Plugin execution flow:
 1. Check if plugin is enabled for the hook
@@ -176,9 +176,9 @@ const result = await this.runHook(
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | `ExecutorPlugin<unknown, unknown>[]` |  |  | Array of plugins to execute |
-|  name  | `keyof ExecutorPlugin<unknown, unknown>` |  |  | Name of the hook function to execute |
-|  context  | `ExecutorContextInterface<Params>` |  |  |  |
+|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
+|  name  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  context  |  | `ExecutorContextInterface<Params>` |  |  |
 

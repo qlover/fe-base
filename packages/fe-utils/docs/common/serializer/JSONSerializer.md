@@ -85,11 +85,11 @@ JSON.parse('{ "name": "test" }'); // same as JSON.parse('{ "name": "test" }')
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  options.indent  | `number` |  | 1.0.10 | Number of spaces to use for indentation when pretty printing<br>Only used when pretty is true |
-|  options.pretty  | `boolean` |  | 1.0.10 | Enable pretty printing of JSON output<br>Adds automatic indentation and line breaks for better readability |
-|  options.replacer  | `Function` |  | 1.0.10 | Custom replacer function for JSON.stringify<br>Allows custom transformation during serialization<br>Note: Will be wrapped to handle line endings |
+|  options.indent  | Number of spaces to use for indentation when pretty printing<br>Only used when pretty is true | `number` |  | 1.0.10 |
+|  options.pretty  | Enable pretty printing of JSON output<br>Adds automatic indentation and line breaks for better readability | `boolean` |  | 1.0.10 |
+|  options.replacer  | Custom replacer function for JSON.stringify<br>Allows custom transformation during serialization<br>Note: Will be wrapped to handle line endings | `Function` |  | 1.0.10 |
 
 
 ### createReplacer
@@ -111,9 +111,9 @@ Handles three cases:
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  replacer  | `null \| Function \| (string \| number)[]` |  |  | Custom replacer function or array of properties to include |
+|  replacer  | Custom replacer function or array of properties to include | `null \| Function \| (string \| number)[]` |  |  |
 
 
 ### deserialize
@@ -130,10 +130,10 @@ Benefits:
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `string` |  |  |  |
-|  defaultValue  | `unknown` |  |  |  |
+|  data  |  | `string` |  |  |
+|  defaultValue  |  | `unknown` |  |  |
 
 
 ### parse
@@ -146,10 +146,10 @@ Note: Error handling is done in deserialize method
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  text  | `string` |  |  |  |
-|  reviver  | `Function` |  |  |  |
+|  text  |  | `string` |  |  |
+|  reviver  |  | `Function` |  |  |
 
 
 ### serialize
@@ -167,9 +167,9 @@ Benefits:
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | `unknown` |  |  |  |
+|  data  |  | `unknown` |  |  |
 
 
 ### serializeArray
@@ -182,9 +182,9 @@ Avoids object property enumeration
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  arr  | `(string \| number \| boolean)[]` |  |  | Array of primitive values to serialize |
+|  arr  | Array of primitive values to serialize | `(string \| number \| boolean)[]` |  |  |
 
 
 ### stringify
@@ -204,9 +204,9 @@ Enhancements:
 
 
 #### Parameters
-| Name | Type | Default | Since | Description |
+| Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  value  | `any` |  |  |  |
-|  replacer  | `null \| (string \| number)[] \| Function` |  |  |  |
-|  space  | `string \| number` |  |  |  |
+|  value  |  | `any` |  |  |
+|  replacer  |  | `null \| (string \| number)[] \| Function` |  |  |
+|  space  |  | `string \| number` |  |  |
 
