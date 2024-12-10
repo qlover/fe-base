@@ -1,5 +1,12 @@
 
 
+## [1.0.15](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.14...fe-utils-v1.0.15) (2024-12-10)
+
+
+### Documentation
+
+* update fe-utils ([#162](https://github.com/qlover/fe-base/issues/162)) ([10c7144](https://github.com/qlover/fe-base/commit/10c71442672066e243591ab1d0fd923ef97dd2a6))
+
 ## [1.0.14](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.13...fe-utils-v1.0.14) (2024-12-09)
 
 ## [1.0.13](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.12...fe-utils-v1.0.13) (2024-12-03)
