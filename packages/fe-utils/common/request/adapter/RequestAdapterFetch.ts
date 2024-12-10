@@ -16,16 +16,17 @@ import merge from 'lodash/merge';
  *
  * @since 1.0.14
  */
-export type RequestAdapterFetchConfig<Request = any> = RequestInit &
-  RequestAdpaterConfig<Request> & {
-    fetcher?: typeof fetch;
+export type RequestAdapterFetchConfig<Request = unknown> =
+  globalThis.RequestInit &
+    RequestAdpaterConfig<Request> & {
+      fetcher?: typeof fetch;
 
-    onStreamProgress?: (progress: number) => void;
+      onStreamProgress?: (progress: number) => void;
 
-    signal?: AbortSignal;
+      signal?: AbortSignal;
 
-    onAbort?(config: RequestAdapterFetchConfig): void;
-  };
+      onAbort?(config: RequestAdapterFetchConfig): void;
+    };
 
 export class RequestAdapterFetch
   implements RequestAdapterInterface<RequestAdapterFetchConfig>

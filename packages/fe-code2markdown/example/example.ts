@@ -38,16 +38,16 @@ export interface ExampleOptionsInterface {
   /**
    * @description overloadMethod description
    * @param {string} name
-   * @returns {Record<string, any>}
+   * @returns {Record<string, unknown>}
    */
-  overloadMethod?(name: string): Record<string, any>;
+  overloadMethod?(name: string): Record<string, unknown>;
 
   /**
    * @description overloadMethod description
    * @param {number} name
-   * @returns {Record<number, any>}
+   * @returns {Record<number, unknown>}
    */
-  overloadMethod?(name: number): Record<number, any>;
+  overloadMethod?(name: number): Record<number, unknown>;
 }
 
 export type ExampleOptionsType = {
@@ -133,11 +133,11 @@ export class ExampleClass {
     /**
      * extra params
      * @description Example extra
-     * @type {Record<string, any>}
+     * @type {Record<string, unknown>}
      * @default `{}`
      * @deprecated
      */
-    extra?: Record<string, any>;
+    extra?: Record<string, unknown>;
   }) {
     this.name = options.name;
     this.debug = options.debug;

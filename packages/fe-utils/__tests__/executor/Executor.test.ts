@@ -245,6 +245,7 @@ describe('ExecutorPlugin Error', () => {
     expect(onError1).toHaveBeenCalledTimes(1);
     expect(onError2).toHaveBeenCalledTimes(0);
     expect(onError3).toHaveBeenCalledTimes(0);
+    expect(count).toBe(0);
   });
 
   it('should handle error break the chain, throw  error', async () => {
@@ -287,6 +288,7 @@ describe('ExecutorPlugin Error', () => {
     expect(onError1).toHaveBeenCalledTimes(1);
     expect(onError2).toHaveBeenCalledTimes(0);
     expect(onError3).toHaveBeenCalledTimes(0);
+    expect(count).toBe(0);
   });
 
   // if all plugins not return error, the error will be thrown
@@ -298,7 +300,6 @@ describe('ExecutorPlugin Error', () => {
     const onError3 = jest.fn();
     const execTask = jest.fn();
 
-    let count = 0;
     execTask.mockImplementationOnce(() => {
       throw new Error('Task Error');
     });

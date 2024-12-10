@@ -7,7 +7,7 @@
  *
  * @since 1.0.14
  */
-export type RequestAdpaterConfig<RequestData = any> = {
+export type RequestAdpaterConfig<RequestData = unknown> = {
   /**
    * Request URL path
    * Will be combined with baseURL if provided
@@ -98,6 +98,7 @@ export type RequestAdpaterConfig<RequestData = any> = {
     | 'stream'
     | 'formdata';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
 
@@ -110,7 +111,7 @@ export type RequestAdpaterConfig<RequestData = any> = {
  * @typeParam Req - The type of the request data.
  * @typeParam Res - The type of the response data.
  */
-export type RequestAdapterResponse<Req = any, Res = unknown> = {
+export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
   data: Res;
   status: number;
   statusText: string;

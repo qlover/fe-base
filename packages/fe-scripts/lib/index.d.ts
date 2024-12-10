@@ -2,7 +2,7 @@ import { Logger } from '@qlover/fe-utils';
 import { FeConfig, ReleaseOptions } from '@qlover/fe-scripts';
 
 export type SearchConfigType = import('cosmiconfig').OptionsSync & {
-  _default: any;
+  _default: unknown;
 };
 
 export class FeScriptContext<T> {
@@ -38,7 +38,7 @@ export class ConfigSearch<T = FeConfig> {
 }
 
 export class Dependencie {
-  constructor(context: Partial<FeScriptContext<any>>);
+  constructor(context: Partial<FeScriptContext<unknown>>);
 
   execPromise(command: string, silent?: boolean): Promise<string>;
 
@@ -151,7 +151,7 @@ export type ShellExecOptions = {
   /**
    * template context
    */
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 };
 
 export class Shell {
@@ -181,7 +181,7 @@ export class ReleaseConfiger {
    * @param key - The key to retrieve specific package information.
    * @returns The package information associated with the key.
    */
-  getPkg(key?: string): any;
+  getPkg(key?: string): unknown;
 
   /**
    * Retrieves the release branch name.
@@ -194,8 +194,7 @@ export class ReleaseConfiger {
    * Retrieves the release changelog options.
    * @returns The options for generating the release changelog.
    */
-  getReleaseItChangelogOptions(): any;
-  // 其他方法和属性
+  getReleaseItChangelogOptions(): unknown;
 }
 
 export class ReleasePRManager {
@@ -253,7 +252,7 @@ export class ReleaseUtil {
    * @param value - The value to validate.
    * @returns True if the value is a valid string, otherwise false.
    */
-  static isValidString(value: any): boolean;
+  static isValidString(value: unknown): boolean;
 
   /**
    * Parses the pull request number from the output string.
@@ -269,7 +268,7 @@ export class ReleaseUtil {
    * @returns An object containing the repository name and author name.
    */
   static getUserInfo(
-    pkg: any,
+    pkg: unknown,
     feConfig: FeConfig
   ): { repoName: string; authorName: string };
 
@@ -287,5 +286,5 @@ export class ReleaseUtil {
    * @param source - The source object.
    * @returns The merged object.
    */
-  static deepMerge(target: any, source: any): any;
+  static deepMerge(target: unknown, source: unknown): unknown;
 }

@@ -23,7 +23,7 @@
  * }
  * ```
  */
-export interface Serializer<T = any, R = string> {
+export interface Serializer<T = unknown, R = string> {
   /**
    * Serializes data into a target format
    * @since 1.0.10

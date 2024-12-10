@@ -180,9 +180,7 @@ export class AsyncExecutor extends Executor {
       throw new Error('Task must be a async function!');
     }
 
-    let calls = 0;
     const runner = (): Promise<Result> => {
-      calls++;
       return this.run(data, actualTask);
     };
 
