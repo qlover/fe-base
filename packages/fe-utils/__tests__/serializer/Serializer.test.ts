@@ -69,7 +69,7 @@ describe('JSONSerializer', () => {
       expect(json).toContain('\\n');
 
       const obj = serializer.parse(json);
-      expect(obj.text).toBe('line1\nline2\nline3');
+      expect((obj as typeof data).text).toBe('line1\nline2\nline3');
     });
   });
 

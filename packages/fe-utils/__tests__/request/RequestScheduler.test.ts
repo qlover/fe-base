@@ -94,7 +94,6 @@ describe('RequestScheduler', () => {
       return true;
     });
 
-    let retryCalls = 0;
     scheduler.usePlugin(
       new RetryPlugin({
         maxRetries: 2,

@@ -6,8 +6,8 @@ import {
   DeclarationReflection,
   ProjectReflection,
   Application,
-  ReflectionGroup,
-  ReflectionKind
+  ReflectionKind,
+  SourceReference
 } from 'typedoc';
 import { Logger } from '@qlover/fe-utils';
 import { FeScriptContext } from '@qlover/fe-scripts';
@@ -158,7 +158,7 @@ declare class ProjectReader {
    * @param value - The JSON value to write.
    * @param path - The path to write the JSON to.
    */
-  writeJSON(value: any, path: string): void;
+  writeJSON(value: unknown, path: string): void;
 
   /**
    * Retrieves the application instance.
@@ -250,7 +250,7 @@ declare class TypeDocConverter {
    * @param docsValue - The documentation value.
    * @returns The level value.
    */
-  getLevelValue(tsValue: any, docsValue: any): any;
+  getLevelValue(tsValue: unknown, docsValue: unknown): unknown;
 
   /**
    * Wraps a type string for template use.

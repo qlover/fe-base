@@ -205,9 +205,7 @@ export class SyncExecutor extends Executor {
       throw new Error('Task must be a function!');
     }
 
-    let calls = 0;
     const runner = (): Result => {
-      calls++;
       return this.run(data, actualTask);
     };
 

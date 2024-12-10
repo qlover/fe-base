@@ -45,18 +45,20 @@ describe('FetchAbortPlugin', () => {
     } as const;
 
     // mock a fetch implementation that can respond to abort
-    fetchMock.mockImplementationOnce((_url, options: RequestInit) => {
-      return new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          resolve(new Response('first response'));
-        }, 1000);
+    fetchMock.mockImplementationOnce(
+      (_url, options: globalThis.RequestInit) => {
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            resolve(new Response('first response'));
+          }, 1000);
 
-        options.signal?.addEventListener('abort', (e) => {
-          clearTimeout(timeoutId);
-          reject(e);
+          options.signal?.addEventListener('abort', (e) => {
+            clearTimeout(timeoutId);
+            reject(e);
+          });
         });
-      });
-    });
+      }
+    );
 
     const firstRequest = request.request(firstConfig);
 
@@ -68,6 +70,7 @@ describe('FetchAbortPlugin', () => {
     // verify the request is aborted
     try {
       await firstRequest;
+      // eslint-disable-next-line
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect(error).toMatchObject({
@@ -107,7 +110,7 @@ describe('FetchAbortPlugin', () => {
   it('should auto abort request with same URL', async () => {
     const onAbortMock = jest.fn();
 
-    fetchMock.mockImplementation((_url, options: RequestInit) => {
+    fetchMock.mockImplementation((_url, options: globalThis.RequestInit) => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('response'));
@@ -177,18 +180,20 @@ describe('FetchAbortPlugin with multiple plugins', () => {
       onAbort: onAbortMock
     } as const;
 
-    fetchMock.mockImplementationOnce((_url, options: RequestInit) => {
-      return new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          resolve(new Response('response'));
-        }, 1000);
+    fetchMock.mockImplementationOnce(
+      (_url, options: globalThis.RequestInit) => {
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            resolve(new Response('response'));
+          }, 1000);
 
-        options.signal?.addEventListener('abort', (e) => {
-          clearTimeout(timeoutId);
-          reject(e);
+          options.signal?.addEventListener('abort', (e) => {
+            clearTimeout(timeoutId);
+            reject(e);
+          });
         });
-      });
-    });
+      }
+    );
 
     const requestPromise = request.request(config);
 
@@ -201,6 +206,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     // Verify the request is aborted and custom plugin handles the error
     try {
       await requestPromise;
+      // eslint-disable-next-line
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
@@ -239,18 +245,20 @@ describe('FetchAbortPlugin with multiple plugins', () => {
       onAbort: onAbortMock
     } as const;
 
-    fetchMock.mockImplementationOnce((_url, options: RequestInit) => {
-      return new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          resolve(new Response('response'));
-        }, 1000);
+    fetchMock.mockImplementationOnce(
+      (_url, options: globalThis.RequestInit) => {
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            resolve(new Response('response'));
+          }, 1000);
 
-        options.signal?.addEventListener('abort', (e) => {
-          clearTimeout(timeoutId);
-          reject(e);
+          options.signal?.addEventListener('abort', (e: unknown) => {
+            clearTimeout(timeoutId);
+            reject(e);
+          });
         });
-      });
-    });
+      }
+    );
 
     const requestPromise = request.request(config);
 
@@ -263,6 +271,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     // Verify the request is aborted and custom plugin handles the error
     try {
       await requestPromise;
+      // eslint-disable-next-line
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
@@ -271,15 +280,5 @@ describe('FetchAbortPlugin with multiple plugins', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(TestErrorPlugin.onError).toHaveBeenCalledTimes(0);
-  });
-});
-
-describe('FetchAbortPlugin Stand alone', () => {
-  it('should abort request with manual signal', async () => {
-    const abortPlugin = new FetchAbortPlugin();
-    const fetchMock = jest.fn();
-    const request = new RequestAdapterFetch({
-      fetcher: fetchMock
-    });
   });
 });

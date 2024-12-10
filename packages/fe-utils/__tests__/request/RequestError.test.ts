@@ -63,7 +63,7 @@ describe('RequestError', () => {
       body: null,
       bodyUsed: false,
       url: 'https://api.example.com/users',
-      type: 'default' as ResponseType,
+      type: 'default',
       redirected: false,
       json: () => Promise.resolve({ error: 'Not Found' }),
       text: () => Promise.resolve('Not Found'),

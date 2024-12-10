@@ -92,7 +92,7 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
        *
        * @since 1.0.10
        */
-      replacer?: (this: any, key: string, value: any) => any;
+      replacer?: (this: unknown, key: string, value: unknown) => unknown;
     } = {}
   ) {}
 
@@ -116,11 +116,11 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
    */
   private createReplacer(
     replacer?:
-      | ((this: any, key: string, value: any) => any)
+      | ((this: unknown, key: string, value: unknown) => unknown)
       | (number | string)[]
       | null
   ):
-    | ((this: any, key: string, value: any) => any)
+    | ((this: unknown, key: string, value: unknown) => unknown)
     | (number | string)[]
     | null {
     // If it is an array type replacer, return it directly for property filtering
@@ -130,14 +130,14 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
 
     // If it is null, return the basic function that only handles line endings
     if (replacer === null) {
-      return function (_key: string, val: any): any {
+      return function (_key: string, val: unknown): unknown {
         return typeof val === 'string' ? val.replace(/\r\n/g, '\n') : val;
       };
     }
 
     // If it is a function, wrap it to add line ending processing capability
     if (typeof replacer === 'function') {
-      return function (this: any, key: string, val: any): any {
+      return function (this: unknown, key: string, val: unknown): unknown {
         const normalized =
           typeof val === 'string' ? val.replace(/\r\n/g, '\n') : val;
         return replacer.call(this, key, normalized);
@@ -145,7 +145,7 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
     }
 
     // Default return the basic function that only handles line endings
-    return function (_key: string, val: any): any {
+    return function (_key: string, val: unknown): unknown {
       return typeof val === 'string' ? val.replace(/\r\n/g, '\n') : val;
     };
   }
@@ -166,9 +166,9 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
    * @returns Serialized string
    */
   stringify(
-    value: any,
+    value: unknown,
     replacer?:
-      | ((this: any, key: string, value: any) => any)
+      | ((this: unknown, key: string, value: unknown) => unknown)
       | (number | string)[]
       | null,
     space?: string | number
@@ -184,7 +184,7 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
       return JSON.stringify(
         value,
         customReplacer as
-          | ((this: any, key: string, value: any) => any)
+          | ((this: unknown, key: string, value: unknown) => unknown)
           | undefined,
         space ?? (this.options.pretty ? this.options.indent || 2 : undefined)
       );
@@ -206,8 +206,8 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
    */
   parse(
     text: string,
-    reviver?: (this: any, key: string, value: any) => any
-  ): any {
+    reviver?: (this: unknown, key: string, value: unknown) => unknown
+  ): unknown {
     return JSON.parse(text, reviver);
   }
 

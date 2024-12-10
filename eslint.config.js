@@ -19,6 +19,6 @@ export default [
   },
   {
     ...eslintJest,
-    files: ['**/*.test.js', '**/*.spec.js']
+    files: ['**/*.test.js', '**/*.test.ts', '**/*.spec.js', '**/*.spec.ts']
   }
 ];

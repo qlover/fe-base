@@ -32,12 +32,11 @@ describe('RequestAdapterFetch', () => {
     const mockResponse = new Response(JSON.stringify(responseData));
     requestFetcher.mockResolvedValue(mockResponse);
 
-    const response = await request.request({
+    const result = await request.request({
       url: '/users',
       baseURL: 'https://api.example.com',
       fetcher: requestFetcher
     });
-
     expect(requestFetcher).toHaveBeenCalledWith(
       'https://api.example.com/users',
       expect.objectContaining({
@@ -46,8 +45,9 @@ describe('RequestAdapterFetch', () => {
       })
     );
     expect(configFetcher).not.toHaveBeenCalled();
-    // const result = await response.json();
-    // expect(result).toEqual(responseData);
+    await expect((result as unknown as Response).json()).resolves.toEqual(
+      responseData
+    );
   });
 
   it('should execute request with correct URL', async () => {

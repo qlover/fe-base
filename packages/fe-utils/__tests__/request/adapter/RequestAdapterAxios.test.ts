@@ -16,6 +16,7 @@ describe('RequestAdapterAxios', () => {
     const adapter = new RequestAdapterAxios(config);
 
     expect(axiosMock.create).toHaveBeenCalledWith(config);
+    expect(adapter.getConfig()).toEqual(config);
   });
 
   it('should return the correct config', () => {

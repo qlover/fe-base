@@ -18,7 +18,7 @@ export class StringEntrypt implements Encryptor<string, string> {
    */
   constructor(
     encryptionKey: string,
-    private readonly encoding: BufferEncoding = 'base64'
+    private readonly encoding: globalThis.BufferEncoding = 'base64'
   ) {
     this.KEY = this.validateKey(encryptionKey);
   }

@@ -1,8 +1,7 @@
 import {
   AsyncExecutor,
   ExecutorError,
-  ExecutorPlugin,
-  PromiseTask
+  ExecutorPlugin
 } from '../../../common/executor';
 
 describe('AsyncExecutor onBefore Lifecycle', () => {
