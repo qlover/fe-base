@@ -48,7 +48,8 @@
     "build:docs:debug": "npm run build:common:docs -- --debug && npm run build:server:docs -- --debug"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "merge": "^2.1.1"
   },
   "devDependencies": {
     "@qlover/fe-scripts": "latest",

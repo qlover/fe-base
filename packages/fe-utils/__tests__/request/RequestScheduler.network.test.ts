@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { RequestAdapterAxios } from '../../common/request/adapter';
 import { RequestAdapterFetch } from '../../common/request/adapter';
 import { FetchResponseTypePlugin } from '../../common/request/plugins';
@@ -46,7 +47,7 @@ describe.skip('Use RequestScheduler with network', () => {
       return;
     }
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axios);
     const scheduler = new RequestScheduler(adapter);
 
     const response = await scheduler.request({
@@ -83,7 +84,7 @@ describe.skip('Use RequestScheduler with network', () => {
       return;
     }
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axios);
     const scheduler = new RequestScheduler(adapter);
 
     const response = await scheduler.request({

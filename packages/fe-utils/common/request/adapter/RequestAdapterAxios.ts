@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
 import {
   RequestAdapterInterface,
   RequestAdapterResponse
@@ -14,13 +14,12 @@ import {
 export class RequestAdapterAxios
   implements RequestAdapterInterface<AxiosRequestConfig>
 {
-  readonly config: AxiosRequestConfig;
   private axiosInstance: AxiosInstance;
-
-  constructor(config: Partial<AxiosRequestConfig> = {}) {
+  constructor(
+    axios: AxiosStatic,
+    readonly config: AxiosRequestConfig = {}
+  ) {
     this.axiosInstance = axios.create(config);
-
-    this.config = config as AxiosRequestConfig;
   }
 
   getConfig(): AxiosRequestConfig {

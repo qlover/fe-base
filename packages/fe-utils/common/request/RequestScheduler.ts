@@ -4,7 +4,7 @@ import {
   RequestAdapterResponse,
   RequestAdpaterConfig
 } from './adapter';
-import merge from 'lodash/merge';
+import merge from 'merge';
 
 /**
  * Represents a scheduler for managing HTTP requests.
