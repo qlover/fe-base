@@ -1,5 +1,7 @@
 
 
+## [1.0.18](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.17...fe-utils-v1.0.18) (2024-12-11)
+
 ## [1.0.17](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.16...fe-utils-v1.0.17) (2024-12-10)
 
 
