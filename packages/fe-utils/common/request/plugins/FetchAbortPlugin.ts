@@ -1,7 +1,10 @@
-import { ExecutorPlugin, ExecutorContextInterface } from '../../executor';
+import {
+  ExecutorPlugin,
+  RequestErrorID,
+  RequestError,
+  ExecutorContext
+} from '../../../interface';
 import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
-import { RequestErrorID } from '../RequestError';
-import { RequestError } from '../RequestError';
 
 /**
  * Plugin for handling request cancellation
@@ -77,7 +80,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const modifiedConfig = abortPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContextInterface): RequestAdapterFetchConfig {
+  onBefore(context: ExecutorContext): RequestAdapterFetchConfig {
     const config = context.parameters as RequestAdapterFetchConfig;
     const key = this.generateRequestKey(config);
 
@@ -116,7 +119,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const error = abortPlugin.onError(new Error('AbortError'), config);
    * ```
    */
-  onError(context: ExecutorContextInterface): RequestError | void {
+  onError(context: ExecutorContext): RequestError | void {
     const error = context.error as Error;
     const config = context.parameters as RequestAdapterFetchConfig;
     // only handle plugin related error，other error should be handled by other plugins

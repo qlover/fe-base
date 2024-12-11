@@ -1,7 +1,10 @@
-import { Executor } from '../Executor';
-import { ExecutorError } from '../ExecutorError';
-import { ExecutorPlugin, PromiseTask } from '../plugins/ExecutorPlugin';
-import { ExecutorContextInterface } from '../ExecutorContextInterface';
+import {
+  Executor,
+  ExecutorContext,
+  ExecutorError,
+  ExecutorPlugin,
+  PromiseTask
+} from '../../../interface';
 
 /**
  * Asynchronous implementation of the Executor pattern
@@ -61,8 +64,8 @@ export class AsyncExecutor extends Executor {
   async runHooks<Params>(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
-    context: ExecutorContextInterface<Params>
-  ): Promise<ExecutorContextInterface<Params>> {
+    context: ExecutorContext<Params>
+  ): Promise<ExecutorContext<Params>> {
     for (const plugin of plugins) {
       if (plugin.enabled && !plugin.enabled?.(name, context)) {
         continue;
@@ -243,7 +246,7 @@ export class AsyncExecutor extends Executor {
     data: unknown,
     actualTask: PromiseTask<Result, Params>
   ): Promise<Result> {
-    const context: ExecutorContextInterface<Params> = {
+    const context: ExecutorContext<Params> = {
       parameters: data as Params,
       returnValue: undefined,
       error: undefined

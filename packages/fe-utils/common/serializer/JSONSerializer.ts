@@ -1,4 +1,4 @@
-import { Serializer } from './Serializer';
+import { Serializer } from '../../interface';
 
 /**
  * Enhanced JSON serialization implementation that combines standard JSON API with additional features

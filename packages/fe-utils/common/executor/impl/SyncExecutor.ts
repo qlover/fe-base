@@ -1,7 +1,10 @@
-import { Executor } from '../Executor';
-import { ExecutorError } from '../ExecutorError';
-import { ExecutorPlugin, SyncTask } from '../plugins/ExecutorPlugin';
-import { ExecutorContextInterface } from '../ExecutorContextInterface';
+import {
+  Executor,
+  ExecutorContext,
+  ExecutorError,
+  ExecutorPlugin,
+  SyncTask
+} from '../../../interface';
 
 /**
  * Synchronous executor class that extends the base Executor
@@ -81,8 +84,8 @@ export class SyncExecutor extends Executor {
   runHooks<Params>(
     plugins: ExecutorPlugin[],
     name: keyof ExecutorPlugin,
-    context: ExecutorContextInterface<Params>
-  ): ExecutorContextInterface<Params> {
+    context: ExecutorContext<Params>
+  ): ExecutorContext<Params> {
     for (const plugin of plugins) {
       if (plugin.enabled && !plugin.enabled?.(name, context)) {
         continue;
@@ -267,7 +270,7 @@ export class SyncExecutor extends Executor {
     data: unknown,
     actualTask: SyncTask<Result, Params>
   ): Result {
-    const context: ExecutorContextInterface<Params> = {
+    const context: ExecutorContext<Params> = {
       parameters: data as Params,
       returnValue: undefined,
       error: undefined

@@ -1,5 +1,5 @@
-import { JSONSerializer, Serializer } from '../../serializer';
-import { SyncStorage } from '../Storage';
+import { Serializer, SyncStorage } from '../../../interface';
+import { JSONSerializer } from '../../serializer';
 
 type JSONStorageValue<T> = {
   key: string;

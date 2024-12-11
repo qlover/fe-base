@@ -13,78 +13,54 @@ console.log('Enveronment is', NODE_ENV);
 const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
 const commonExternal = ['axios'];
 
+function createBuilder(entry, external) {
+  return [
+    {
+      input: `${entry}/index.ts`,
+      output: [
+        {
+          file: `dist/${entry}/index.cjs`,
+          format: 'cjs',
+          sourcemap: !isProduction
+        },
+        {
+          file: `dist/${entry}/index.esm.js`,
+          format: 'esm',
+          sourcemap: !isProduction
+        },
+        {
+          file: `dist/${entry}/index.js`,
+          format: 'umd',
+          name: `FeUtils${entry.charAt(0).toUpperCase() + entry.slice(1)}`,
+          sourcemap: !isProduction
+        }
+      ],
+      plugins: [
+        resolve({
+          preferBuiltins: false
+        }),
+        commonjs(),
+        typescript({ tsconfig: './tsconfig.json' }),
+        isProduction && terser()
+      ],
+      external: external
+    },
+    {
+      input: `${entry}/index.ts`,
+      output: {
+        file: `dist/${entry}/index.d.ts`,
+        format: 'es'
+      },
+      plugins: [dts()]
+    }
+  ];
+}
+
 /**
  * @type {import('rollup').RollupOptions[]}
  */
 export default [
-  {
-    input: 'common/index.ts',
-    output: [
-      {
-        file: 'dist/index.cjs',
-        format: 'cjs',
-        sourcemap: !isProduction
-      },
-      {
-        file: 'dist/index.esm.js',
-        format: 'esm',
-        sourcemap: !isProduction
-      },
-      {
-        file: 'dist/index.js',
-        format: 'umd',
-        name: 'FeUtils',
-        sourcemap: !isProduction
-      }
-    ],
-    plugins: [
-      resolve({
-        preferBuiltins: false
-      }),
-      commonjs(),
-      typescript({ tsconfig: './tsconfig.json' }),
-      isProduction && terser()
-    ],
-    external: commonExternal
-  },
-  {
-    input: 'server/index.ts',
-    output: [
-      {
-        file: 'dist/server/index.js',
-        format: 'cjs',
-        sourcemap: !isProduction
-      },
-      {
-        file: 'dist/server/index.esm.js',
-        format: 'esm',
-        sourcemap: !isProduction
-      }
-    ],
-    plugins: [
-      resolve({
-        preferBuiltins: false
-      }),
-      commonjs(),
-      typescript({ tsconfig: './tsconfig.json' }),
-      isProduction && terser()
-    ],
-    external: serverExternal
-  },
-  {
-    input: 'common/index.ts',
-    output: {
-      file: 'dist/index.d.ts',
-      format: 'es'
-    },
-    plugins: [dts()]
-  },
-  {
-    input: 'server/index.ts',
-    output: {
-      file: 'dist/server/index.d.ts',
-      format: 'es'
-    },
-    plugins: [dts()]
-  }
+  // ...createBuilder('interface', []),
+  // ...createBuilder('common', commonExternal),
+  ...createBuilder('server', serverExternal)
 ];

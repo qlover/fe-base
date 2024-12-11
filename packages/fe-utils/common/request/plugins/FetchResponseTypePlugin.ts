@@ -1,5 +1,9 @@
-import { ExecutorPlugin, ExecutorContextInterface } from '../../executor';
-import { RequestAdapterResponse, RequestAdapterFetchConfig } from '../adapter';
+import {
+  ExecutorPlugin,
+  ExecutorContext,
+  RequestAdapterResponse
+} from '../../../interface';
+import { RequestAdapterFetchConfig } from '../adapter';
 
 /**
  * FetchResponseTypePlugin is responsible for handling different response types
@@ -25,7 +29,7 @@ import { RequestAdapterResponse, RequestAdapterFetchConfig } from '../adapter';
  *   headers: { 'Content-Type': 'application/json' }
  * });
  *
- * const context: ExecutorContextInterface<RequestAdapterFetchConfig> = {
+ * const context: ExecutorContext<RequestAdapterFetchConfig> = {
  *   returnValue: mockResponse,
  *   parameters: { responseType: 'json' }
  * };
@@ -83,7 +87,7 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
    * @returns A promise that resolves to a RequestAdapterResponse.
    */
   async onSuccess(
-    context: ExecutorContextInterface<RequestAdapterFetchConfig>
+    context: ExecutorContext<RequestAdapterFetchConfig>
   ): Promise<RequestAdapterResponse> {
     const response = context.returnValue as Response;
     const config = context.parameters;

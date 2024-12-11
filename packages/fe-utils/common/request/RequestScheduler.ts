@@ -1,9 +1,10 @@
-import { AsyncExecutor, ExecutorPlugin } from '../executor';
 import {
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdpaterConfig
-} from './adapter';
+  RequestAdpaterConfig,
+  ExecutorPlugin
+} from '../../interface';
+import { AsyncExecutor } from '../executor';
 import merge from 'merge';
 
 /**
