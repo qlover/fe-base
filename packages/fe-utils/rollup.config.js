@@ -13,28 +13,21 @@ console.log('Enveronment is', NODE_ENV);
 const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
 const commonExternal = ['axios'];
 
-function createBuilder(entry, external) {
+function createBuilder(entry, formats, external) {
+  const outputs = formats.map((format) => ({
+    file: `dist/${entry}/index.${format}`,
+    format,
+    name:
+      format === 'umd'
+        ? `FeUtils${entry.charAt(0).toUpperCase() + entry.slice(1)}`
+        : undefined,
+    sourcemap: !isProduction
+  }));
+
   return [
     {
       input: `${entry}/index.ts`,
-      output: [
-        {
-          file: `dist/${entry}/index.cjs`,
-          format: 'cjs',
-          sourcemap: !isProduction
-        },
-        {
-          file: `dist/${entry}/index.esm.js`,
-          format: 'esm',
-          sourcemap: !isProduction
-        },
-        {
-          file: `dist/${entry}/index.js`,
-          format: 'umd',
-          name: `FeUtils${entry.charAt(0).toUpperCase() + entry.slice(1)}`,
-          sourcemap: !isProduction
-        }
-      ],
+      output: outputs,
       plugins: [
         resolve({
           preferBuiltins: false
@@ -60,7 +53,7 @@ function createBuilder(entry, external) {
  * @type {import('rollup').RollupOptions[]}
  */
 export default [
-  // ...createBuilder('interface', []),
-  // ...createBuilder('common', commonExternal),
-  ...createBuilder('server', serverExternal)
+  ...createBuilder('interface', ['cjs', 'esm', 'umd'], []),
+  ...createBuilder('common', ['cjs', 'esm', 'umd'], commonExternal),
+  ...createBuilder('server', ['cjs', 'esm'], serverExternal)
 ];
