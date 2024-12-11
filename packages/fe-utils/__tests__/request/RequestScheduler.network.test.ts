@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { RequestAdapterAxios } from '../../common/request/adapter';
 import { RequestAdapterFetch } from '../../common/request/adapter';
 import { FetchResponseTypePlugin } from '../../common/request/plugins';
