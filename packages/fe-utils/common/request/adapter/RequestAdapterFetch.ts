@@ -5,7 +5,7 @@ import {
 } from './RequestAdapter';
 import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../../executor';
 import { RequestErrorID } from '../RequestError';
-import merge from 'lodash/merge';
+import { merge } from 'merge';
 
 /**
  * Request adapter fetch configuration

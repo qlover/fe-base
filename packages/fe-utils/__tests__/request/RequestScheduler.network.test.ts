@@ -1,3 +1,4 @@
+import axios, { AxiosInstance } from 'axios';
 import { RequestAdapterAxios } from '../../common/request/adapter';
 import { RequestAdapterFetch } from '../../common/request/adapter';
 import { FetchResponseTypePlugin } from '../../common/request/plugins';
@@ -14,9 +15,11 @@ async function checkNetworkConnection(): Promise<boolean> {
 
 describe.skip('Use RequestScheduler with network', () => {
   let hasNetwork: boolean;
+  let axiosInstance: AxiosInstance;
 
   beforeAll(async () => {
     hasNetwork = await checkNetworkConnection();
+    axiosInstance = axios.create();
     if (!hasNetwork) {
       console.warn('No network connection available, skipping network tests');
     }
@@ -46,7 +49,7 @@ describe.skip('Use RequestScheduler with network', () => {
       return;
     }
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axiosInstance);
     const scheduler = new RequestScheduler(adapter);
 
     const response = await scheduler.request({
@@ -83,7 +86,7 @@ describe.skip('Use RequestScheduler with network', () => {
       return;
     }
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axiosInstance);
     const scheduler = new RequestScheduler(adapter);
 
     const response = await scheduler.request({

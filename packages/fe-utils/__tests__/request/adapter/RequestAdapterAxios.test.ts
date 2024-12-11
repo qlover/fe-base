@@ -13,7 +13,7 @@ describe('RequestAdapterAxios', () => {
 
   it('should create an axios instance with given config', () => {
     const config = { baseURL: 'https://api.example.com' };
-    const adapter = new RequestAdapterAxios(config);
+    const adapter = new RequestAdapterAxios(axios, config);
 
     expect(axiosMock.create).toHaveBeenCalledWith(config);
     expect(adapter.getConfig()).toEqual(config);
@@ -21,7 +21,7 @@ describe('RequestAdapterAxios', () => {
 
   it('should return the correct config', () => {
     const config = { baseURL: 'https://api.example.com' };
-    const adapter = new RequestAdapterAxios(config);
+    const adapter = new RequestAdapterAxios(axios, config);
 
     expect(adapter.getConfig()).toEqual(config);
   });
@@ -30,7 +30,7 @@ describe('RequestAdapterAxios', () => {
     const responseData = { data: { id: 1 } };
     axiosMock.request.mockResolvedValue(responseData);
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axios);
     const response = await adapter.request({ url: '/users' });
 
     expect(axiosMock.request).toHaveBeenCalledWith({ url: '/users' });
@@ -41,7 +41,7 @@ describe('RequestAdapterAxios', () => {
     const error = new Error('Network Error');
     axiosMock.request.mockRejectedValue(error);
 
-    const adapter = new RequestAdapterAxios();
+    const adapter = new RequestAdapterAxios(axios);
 
     await expect(adapter.request({ url: '/users' })).rejects.toThrow(
       'Network Error'
