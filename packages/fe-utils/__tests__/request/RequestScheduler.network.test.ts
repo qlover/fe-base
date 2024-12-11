@@ -12,7 +12,7 @@ async function checkNetworkConnection(): Promise<boolean> {
   }
 }
 
-describe('Use RequestScheduler with network', () => {
+describe.skip('Use RequestScheduler with network', () => {
   let hasNetwork: boolean;
 
   beforeAll(async () => {
