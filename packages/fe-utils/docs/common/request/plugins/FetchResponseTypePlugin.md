@@ -24,7 +24,7 @@ const mockResponse = new Response(JSON.stringify({ key: 'value' }), {
   headers: { 'Content-Type': 'application/json' }
 });
 
-const context: ExecutorContextInterface<RequestAdapterFetchConfig> = {
+const context: ExecutorContext<RequestAdapterFetchConfig> = {
   returnValue: mockResponse,
   parameters: { responseType: 'json' }
 };
@@ -73,7 +73,7 @@ Processes the successful fetch response based on the specified response type.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  | The execution context containing the fetch response and configuration. | `ExecutorContextInterface<RequestAdapterFetchConfig>` |  |  |
+|  context  | The execution context containing the fetch response and configuration. | `ExecutorContext<RequestAdapterFetchConfig>` |  |  |
 
 
 ### toAdapterResponse

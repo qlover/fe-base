@@ -2,7 +2,7 @@ import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
 import {
   RequestAdapterInterface,
   RequestAdapterResponse
-} from './RequestAdapter';
+} from '../../../interface';
 
 /**
  * Axios request adapter

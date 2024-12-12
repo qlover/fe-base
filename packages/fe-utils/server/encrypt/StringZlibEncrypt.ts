@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Buffer } from 'buffer';
 import zlib from 'zlib';
-import { Encryptor } from './Encryptor';
+import { Encryptor } from '../../interface';
 
 /**
  * String encryption implementation with Zlib compression

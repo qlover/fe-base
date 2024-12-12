@@ -15,8 +15,8 @@ function createFeUtilsConfig() {
     files: ['packages/fe-utils/**/*.ts'],
     languageOptions: {
       globals: {
-        ...globals.node,
-        console: null
+        ...globals.node
+        // console: null
       }
     }
   });

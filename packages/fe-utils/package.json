@@ -17,6 +17,12 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./interface": {
+      "require": "./dist/interface/index.cjs",
+      "import": "./dist/interface/index.esm.js",
+      "types": "./dist/interface/index.d.ts",
+      "default": "./dist/interface/index.js"
+    },
     "./server": {
       "require": "./dist/server/index.cjs",
       "import": "./dist/server/index.esm.js",
@@ -59,6 +65,7 @@
     "@types/lodash": "^4.17.12",
     "axios": "^1.7.9",
     "rollup": "^4.24.2",
+    "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript2": "^0.36.0"
   }

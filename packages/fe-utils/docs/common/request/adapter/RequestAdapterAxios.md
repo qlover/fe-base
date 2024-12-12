@@ -16,7 +16,8 @@ Only base config is supported
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  |  | `Partial<AxiosRequestConfig<any>>` | {} |  |
+|  axios  |  | `AxiosStatic` |  |  |
+|  config  |  | `AxiosRequestConfig<any>` | {} |  |
 
 
 ### getConfig

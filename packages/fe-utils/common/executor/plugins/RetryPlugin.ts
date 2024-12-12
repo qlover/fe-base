@@ -1,5 +1,4 @@
-import { ExecutorError } from '../ExecutorError';
-import { ExecutorPlugin, PromiseTask } from './ExecutorPlugin';
+import { ExecutorPlugin, PromiseTask, ExecutorError } from '../../../interface';
 
 /**
  * Configuration options for the RetryPlugin
@@ -256,9 +255,9 @@ export class RetryPlugin implements ExecutorPlugin {
         );
       }
 
-      console.info(
-        `Attempt ${options.maxRetries - retryCount + 1} failed. Retrying in ${options.retryDelay}ms... (${retryCount} attempts remaining)`
-      );
+      // console.info(
+      //   `Attempt ${options.maxRetries - retryCount + 1} failed. Retrying in ${options.retryDelay}ms... (${retryCount} attempts remaining)`
+      // );
 
       await this.delay(options.maxRetries - retryCount);
 
