@@ -56,7 +56,9 @@ export class Dependencie {
           await this.shell.run(`npm list -g ${packageName}`);
           result.global = true;
         }
-      } catch {}
+      } catch {
+        // Ignore errors, assume dependency is not installed globally
+      }
     }
 
     return result;

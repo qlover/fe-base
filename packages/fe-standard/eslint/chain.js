@@ -4,7 +4,6 @@ import lodash from 'lodash';
 import tsRules from './ts.rules.js';
 import js from '@eslint/js';
 import prettierConfig from '../config/prettierrc.js';
-
 const { merge } = lodash;
 
 /**
@@ -56,7 +55,8 @@ export function createCommon(files) {
     rules: {
       // TODO: import
       ...js.configs.recommended.rules,
-      'prettier/prettier': ['error', prettierConfig]
+      'prettier/prettier': ['error', prettierConfig],
+      'spaced-comment': 'error'
     }
   };
 }
@@ -64,16 +64,19 @@ export function createCommon(files) {
 /**
  * Add no-restricted-globals rule for browser environment.
  *
- * @param {import('eslint').Linter.Config} config
+ * @param {import('eslint').Linter.Config} options
  * @returns {import('eslint').Linter.Config}
  */
-export function chainEnv(config) {
-  const globals = config.languageOptions.globals || config.globals;
+export function chainEnv(options) {
+  const { allGlobals, ...config } = options;
+  const globals = config.languageOptions.globals;
 
-  if (globals && config.rules && config.rules['no-restricted-globals']) {
-    notAllowedGlobals = Object.keys(globals).filter(
-      (key) => !Object.keys(globals.browser).includes(key)
-    );
+  if (globals) {
+    const allGlobalKeys = new Set([...Object.keys(allGlobals)]);
+    const notAllowedGlobals = Array.from(allGlobalKeys).filter((key) => {
+      return !(key in globals);
+    });
+
     return {
       ...config,
       rules: {

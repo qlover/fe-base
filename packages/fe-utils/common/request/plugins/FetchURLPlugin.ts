@@ -117,7 +117,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * ```
    */
   buildUrl(config: RequestAdpaterConfig): string {
-    let { url = '', baseURL = '', params } = config;
+    let { url = '' } = config;
+    const { baseURL = '', params } = config;
 
     // has full url
     if (!this.isFullURL(url)) {
