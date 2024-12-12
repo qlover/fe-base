@@ -203,5 +203,5 @@ const result = this.runHook(
 |------|------|---------|-------|------------|
 |  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
 |  name  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
-|  context  |  | `ExecutorContextInterface<Params>` |  |  |
+|  context  |  | `ExecutorContext<Params>` |  |  |
 

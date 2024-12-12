@@ -125,7 +125,7 @@ const modifiedConfig = abortPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContextInterface<unknown>` |  |  |
+|  context  |  | `ExecutorContext<unknown>` |  |  |
 
 
 ### onError
@@ -142,7 +142,7 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContextInterface<unknown>` |  |  |
+|  context  |  | `ExecutorContext<unknown>` |  |  |
 
 
 ### onSuccess

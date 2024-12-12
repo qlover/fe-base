@@ -97,7 +97,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  name  | Name of the hook being executed | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
-|  context  |  | `ExecutorContextInterface<T>` |  |  |
+|  context  |  | `ExecutorContext<T>` |  |  |
 
 
 ### onBefore
@@ -108,7 +108,7 @@ Can modify the input data before it reaches the task
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContextInterface<T>` |  |  |
+|  context  |  | `ExecutorContext<T>` |  |  |
 
 
 ### onError
@@ -128,7 +128,7 @@ Because
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContextInterface<T>` |  |  |
+|  context  |  | `ExecutorContext<T>` |  |  |
 
 
 ### onExec
@@ -150,7 +150,7 @@ Can transform the task result
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContextInterface<T>` |  |  |
+|  context  |  | `ExecutorContext<T>` |  |  |
 
 
 ## TypeAlias `PromiseTask`

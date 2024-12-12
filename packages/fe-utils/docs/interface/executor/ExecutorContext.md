@@ -1,4 +1,4 @@
-## Interface `ExecutorContextInterface`
+## Interface `ExecutorContext`
 Represents the context in which a task is executed.
 
 This interface is designed to encapsulate the necessary information
