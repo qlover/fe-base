@@ -457,7 +457,7 @@ describe('AsyncExecutor Additional Tests', () => {
   it('should throw error if task is not a function', async () => {
     const executor = new AsyncExecutor();
     try {
-      await executor.exec('not a function' as any);
+      await executor.exec('not a function' as unknown as () => unknown);
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toBe('Task must be a async function!');

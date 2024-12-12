@@ -2,28 +2,31 @@ import { RetryPlugin } from '../../executor/plugins';
 import {
   RequestError,
   RequestAdapterInterface,
-  RequestAdapterResponse
+  RequestAdapterResponse,
+  RequestAdpaterConfig
 } from '../../../interface';
 import { RequestScheduler } from '../../request';
 
-class MockRequestAdapter implements RequestAdapterInterface<any> {
-  config: any;
+class MockRequestAdapter
+  implements RequestAdapterInterface<RequestAdpaterConfig>
+{
+  config: RequestAdpaterConfig;
 
-  constructor(config: any = {}) {
+  constructor(config: RequestAdpaterConfig = {}) {
     this.config = config;
   }
 
-  getConfig(): any {
+  getConfig(): RequestAdpaterConfig {
     return this.config;
   }
 
   async request<Request, Response>(
-    config: any
+    config: RequestAdpaterConfig<Response>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     const sendConfig = { ...this.config, ...config };
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    if (sendConfig.url.includes('/test/fail')) {
+    if (sendConfig.url?.includes('/test/fail')) {
       throw new RequestError('Request failed');
     }
 
@@ -31,8 +34,11 @@ class MockRequestAdapter implements RequestAdapterInterface<any> {
       status: 200,
       statusText: 'ok',
       headers: {},
-      data: sendConfig.data,
-      config: sendConfig
+      data: sendConfig.data as RequestAdapterResponse<
+        Response,
+        Request
+      >['data'],
+      config: sendConfig as RequestAdpaterConfig<Response>
     };
   }
 }

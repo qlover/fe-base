@@ -38,7 +38,11 @@ describe('JSONSerializer', () => {
       const serializer = new JSONSerializer();
       const data = { a: 1, b: 2 };
 
-      const replacer = function (this: any, key: string, value: any): any {
+      const replacer = function (
+        this: unknown,
+        key: string,
+        value: unknown
+      ): unknown {
         return typeof value === 'number' ? value * 2 : value;
       };
 
@@ -84,7 +88,7 @@ describe('JSONSerializer', () => {
 
   it('should throw on circular references', () => {
     const serializer = new JSONSerializer();
-    const circular: any = { prop: 'value' };
+    const circular: Record<string, unknown> = { prop: 'value' };
     circular.self = circular;
 
     expect(() => serializer.serialize(circular)).toThrow('circular');

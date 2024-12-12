@@ -62,7 +62,7 @@ export type HBSTemplateContext = IsKindObjects & {
   descriptionList: CommentDisplayPart[];
   returnValue: string | undefined;
   source: SourceReference[];
-  members: Object[];
+  members: object[];
   hasMembers: boolean;
 };
 
@@ -324,7 +324,7 @@ declare class TypeDocConverter {
     parameters: ParameterReflection[],
     member: DeclarationReflection,
     classItem: DeclarationReflection
-  ): Object[];
+  ): object[];
 
   /**
    * Retrieves block tags excluding parameter and return tags.
@@ -348,7 +348,7 @@ declare class TypeDocConverter {
     child: ParameterReflection,
     parent: DeclarationReflection | undefined,
     blockTags: CommentTag[] | undefined
-  ): Object;
+  ): object;
 
   /**
    * Retrieves the real source reference for a member.

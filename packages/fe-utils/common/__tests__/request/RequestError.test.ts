@@ -18,7 +18,7 @@ describe('RequestError', () => {
 
   it('should throw error if no fetcher provided and no global fetch', () => {
     const tempFetch = global.fetch;
-    delete (global as any).fetch;
+    delete (global as Record<string, unknown>).fetch;
 
     expect(
       () =>

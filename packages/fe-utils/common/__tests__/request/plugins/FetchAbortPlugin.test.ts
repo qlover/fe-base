@@ -69,7 +69,7 @@ describe('FetchAbortPlugin', () => {
     // verify the request is aborted
     try {
       await firstRequest;
-      // eslint-disable-next-line
+
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect(error).toMatchObject({
@@ -205,7 +205,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     // Verify the request is aborted and custom plugin handles the error
     try {
       await requestPromise;
-      // eslint-disable-next-line
+
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
@@ -270,7 +270,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     // Verify the request is aborted and custom plugin handles the error
     try {
       await requestPromise;
-      // eslint-disable-next-line
+
       fail('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);

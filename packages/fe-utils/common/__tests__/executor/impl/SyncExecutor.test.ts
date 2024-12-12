@@ -226,7 +226,7 @@ describe('SyncExecutor', () => {
   it('should throw error if task is not a function', () => {
     const executor = new SyncExecutor();
     expect(() => {
-      executor.exec('not a function' as any);
+      executor.exec('not a function' as unknown as () => unknown);
     }).toThrow('Task must be a function!');
   });
 });
