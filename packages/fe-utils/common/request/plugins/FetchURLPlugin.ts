@@ -69,7 +69,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
   appendQueryParams(url: string, params: Record<string, unknown> = {}): string {
     const opt = '?';
     const link = '&';
-    let [path, search = ''] = url.split(opt);
+    const [path, search = ''] = url.split(opt);
 
     search.split(link).forEach((item) => {
       const [key, value] = item.split('=');
