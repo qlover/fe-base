@@ -74,7 +74,7 @@ export function chainEnv(options) {
   if (globals) {
     const allGlobalKeys = new Set([...Object.keys(allGlobals)]);
     const notAllowedGlobals = Array.from(allGlobalKeys).filter((key) => {
-      return !(key in globals);
+      return !(key in globals) || globals[key] == null;
     });
 
     return {

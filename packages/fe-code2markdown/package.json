@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@microsoft/tsdoc": "^0.15.0",
-    "@qlover/fe-utils": "^1.0.7",
+    "@qlover/fe-utils": "latest",
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
     "commander": "^11.0.0"
