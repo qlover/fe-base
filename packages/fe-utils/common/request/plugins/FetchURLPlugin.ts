@@ -69,7 +69,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
   appendQueryParams(url: string, params: Record<string, unknown> = {}): string {
     const opt = '?';
     const link = '&';
-    let [path, search = ''] = url.split(opt);
+    const [path, search = ''] = url.split(opt);
 
     search.split(link).forEach((item) => {
       const [key, value] = item.split('=');
@@ -117,7 +117,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * ```
    */
   buildUrl(config: RequestAdpaterConfig): string {
-    let { url = '', baseURL = '', params } = config;
+    let { url = '' } = config;
+    const { baseURL = '', params } = config;
 
     // has full url
     if (!this.isFullURL(url)) {

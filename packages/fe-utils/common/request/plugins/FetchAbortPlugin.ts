@@ -100,7 +100,9 @@ export class FetchAbortPlugin implements ExecutorPlugin {
 
   onSuccess(_: unknown, config?: RequestAdapterFetchConfig): void {
     // delete controller
-    config && this.controllers.delete(this.generateRequestKey(config));
+    if (config) {
+      this.controllers.delete(this.generateRequestKey(config));
+    }
   }
 
   /**
