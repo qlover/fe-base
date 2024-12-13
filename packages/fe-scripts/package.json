@@ -62,6 +62,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.12",
+    "@types/shelljs": "^0.8.15",
     "commander": "^11.0.0",
     "commitizen": "^4.3.1",
     "conventional-changelog-angular": "^8.0.0",
