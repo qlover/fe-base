@@ -1,5 +1,18 @@
 
 
+## [1.0.19](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.18...fe-utils-v1.0.19) (2024-12-13)
+
+
+### Features
+
+* fe utils interface ([#172](https://github.com/qlover/fe-base/issues/172)) ([ad32dd8](https://github.com/qlover/fe-base/commit/ad32dd815d80cf839103ae08ee5174ad73522624))
+
+
+### Bug Fixes
+
+* eslint config ([#171](https://github.com/qlover/fe-base/issues/171)) ([fc14f4b](https://github.com/qlover/fe-base/commit/fc14f4b2fb3196394d3b470eaa25bcfb428c7861))
+* test file use browser globals ([#173](https://github.com/qlover/fe-base/issues/173)) ([acaa0a4](https://github.com/qlover/fe-base/commit/acaa0a4417ee0c4f40982fe7c995744be3338a23))
+
 ## [1.0.18](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.17...fe-utils-v1.0.18) (2024-12-11)
 
 ## [1.0.17](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.16...fe-utils-v1.0.17) (2024-12-10)
