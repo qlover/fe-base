@@ -8,7 +8,9 @@ on:
 
 jobs:
   check-code:
-    if: "!contains(github.event.pull_request.title, 'chore(tag):') && !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')"
+    if: |
+      !contains(github.event.pull_request.title, 'chore(tag):') && 
+      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +41,9 @@ jobs:
         run: yarn build
 
   check-changes:
-    if: "!contains(github.event.pull_request.title, 'chore(tag):') && !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')"
+    if: |
+      !contains(github.event.pull_request.title, 'chore(tag):') && 
+      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
