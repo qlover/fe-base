@@ -7,7 +7,7 @@ on:
       - master
     types:
       - closed
-    path:
+    paths:
       - packages/fe-utils/**
 
 jobs:
