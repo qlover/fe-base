@@ -31,7 +31,7 @@ export type FeConfig = {
     | string
     | {
         url?: string;
-        [key: string]: string;
+        [key: string]: unknown;
       };
   /**
    * commitlint config
