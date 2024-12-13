@@ -38,6 +38,24 @@ function createFeUtilsConfig() {
   return [feUtilsCommon, feUtilsServer, feUtilsBrowser];
 }
 
+function createJESTConfig() {
+  const config = chainEnv({
+    allGlobals,
+    files: ['packages/**/*.test.ts', 'packages/**/*.test.js'],
+    plugins: {
+      jest
+    },
+    languageOptions: {
+      globals: {
+        // ...globals.browser,
+        ...globals.node,
+        ...globals.jest
+      }
+    }
+  });
+  return config;
+}
+
 /**
  * @type {import('eslint').Linter.Config[]}
  */
@@ -53,17 +71,5 @@ export default [
   ...createFeUtilsConfig(),
 
   // jest
-  chainEnv({
-    allGlobals,
-    files: ['packages/**/*.test.ts', 'packages/**/*.test.js'],
-    plugins: {
-      jest
-    },
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-        ...globals.node
-      }
-    }
-  })
+  createJESTConfig()
 ];

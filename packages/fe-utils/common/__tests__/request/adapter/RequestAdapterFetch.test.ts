@@ -4,16 +4,16 @@ import { FetchURLPlugin } from '../../../request/plugins';
 
 describe('RequestAdapterFetch', () => {
   let fetchMock: jest.Mock;
-  let originalFetch: typeof global.fetch;
+  let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
-    originalFetch = global.fetch;
+    originalFetch = globalThis.fetch;
     fetchMock = jest.fn();
-    global.fetch = fetchMock;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     jest.clearAllMocks();
   });
 

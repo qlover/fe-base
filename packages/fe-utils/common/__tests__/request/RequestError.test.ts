@@ -3,22 +3,22 @@ import { FetchURLPlugin, RequestAdapterFetch } from '../..';
 
 describe('RequestError', () => {
   let fetchMock: jest.Mock;
-  let originalFetch: typeof global.fetch;
+  let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
-    originalFetch = global.fetch;
+    originalFetch = globalThis.fetch;
     fetchMock = jest.fn();
-    global.fetch = fetchMock;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     jest.clearAllMocks();
   });
 
   it('should throw error if no fetcher provided and no global fetch', () => {
-    const tempFetch = global.fetch;
-    delete (global as Record<string, unknown>).fetch;
+    const tempFetch = globalThis.fetch;
+    delete (globalThis as Record<string, unknown>).fetch;
 
     expect(
       () =>
@@ -28,7 +28,7 @@ describe('RequestError', () => {
         })
     ).toThrow('ENV_FETCH_NOT_SUPPORT');
 
-    global.fetch = tempFetch;
+    globalThis.fetch = tempFetch;
   });
 
   it('should throw network error', () => {

@@ -11,14 +11,14 @@ function sleep(mock: unknown, ms: number): Promise<unknown> {
 
 describe('FetchAbortPlugin', () => {
   let fetchMock: jest.Mock;
-  let originalFetch: typeof global.fetch;
+  let originalFetch: typeof globalThis.fetch;
   let request: RequestAdapterFetch;
   let abortPlugin: FetchAbortPlugin;
 
   beforeEach(() => {
-    originalFetch = global.fetch;
+    originalFetch = globalThis.fetch;
     fetchMock = jest.fn();
-    global.fetch = fetchMock;
+    globalThis.fetch = fetchMock;
 
     request = new RequestAdapterFetch({
       fetcher: fetchMock
@@ -29,7 +29,7 @@ describe('FetchAbortPlugin', () => {
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     jest.clearAllMocks();
     abortPlugin.abortAll();
   });
