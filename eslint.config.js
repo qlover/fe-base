@@ -62,7 +62,8 @@ export default [
     languageOptions: {
       globals: {
         ...globals.jest,
-        ...globals.node
+        ...globals.node,
+        ...globals.browser
       }
     }
   })
