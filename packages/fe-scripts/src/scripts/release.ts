@@ -1,13 +1,11 @@
-import { FeScriptContext } from '../lib/FeScriptContext.js';
-import { Release } from '../lib/Release.js';
-import { searchEnv } from './search-env.js';
+import { Env } from '../lib';
+import { FeScriptContext } from '../lib/FeScriptContext';
+import { Release, ReleaseOptions } from '../lib/Release';
+import { searchEnv } from './search-env';
 
-/**
- * create release instance
- * @param {import('@qlover/fe-scripts').ReleaseContext} scriptsOptions
- * @returns {{release: Release, env: import('@qlover/fe-scripts').Env}}
- */
-function createRelease(scriptsOptions) {
+function createRelease(
+  scriptsOptions: Partial<FeScriptContext<ReleaseOptions>>
+): { release: Release; env: Env } | undefined {
   const context = new FeScriptContext(scriptsOptions);
   const env = searchEnv({
     logger: context.logger,
@@ -35,18 +33,21 @@ function createRelease(scriptsOptions) {
   const releaseBranch = env.get('FE_RELEASE_BRANCH') || 'master';
   const releaseEnv = env.get('FE_RELEASE_ENV') || env.get('NODE_ENV');
 
+  // @ts-expect-error
   release.configer.setOptionsFromEnv({ releaseBranch, releaseEnv });
 
   return { release, env };
 }
 
-/**
- * release to NPM and Github
- * @param {import('@qlover/fe-scripts').ReleaseContext} options
- * @returns {Promise<void>}
- */
-export async function release(options) {
-  const { release, env } = createRelease(options);
+export async function release(
+  options: Partial<FeScriptContext<ReleaseOptions>>
+): Promise<void> {
+  const results = createRelease(options);
+  if (!results) {
+    return;
+  }
+
+  const { release, env } = results;
 
   release.logger.debug(release.configer.context);
 
@@ -56,25 +57,27 @@ export async function release(options) {
     return;
   }
 
-  release.setNPMToken(env.get('NPM_TOKEN'));
+  release.setNPMToken(env.get('NPM_TOKEN') || '');
 
   // check npm
   await release.checkNpmAuth();
 
   await release.checkPublishPath();
-  release.logger.title('Release to NPM and Github ...');
+  release.logger.obtrusive('Release to NPM and Github ...');
   await release.publish();
 
-  release.logger.title('Release Successfully');
+  release.logger.obtrusive('Release Successfully');
 }
 
-/**
- * update version and release to NPM and Github
- * @param {import('@qlover/fe-scripts').ReleaseContext} options
- * @returns {Promise<void>}
- */
-export async function createReleasePR(options) {
-  const { release } = createRelease(options);
+export async function createReleasePR(
+  options: Partial<FeScriptContext<ReleaseOptions>>
+): Promise<void> {
+  const results = createRelease(options);
+  if (!results) {
+    return;
+  }
+
+  const { release } = results;
 
   release.logger.debug(release.configer.context);
 
@@ -82,10 +85,10 @@ export async function createReleasePR(options) {
 
   const releaseResult = await release.createChangelogAndVersion();
 
-  release.logger.title('Create Release Branch ...');
+  release.logger.obtrusive('Create Release Branch ...');
   const { tagName, releaseBranch } = await release.createReleaseBranch();
 
-  release.logger.title('Create Release PR ...');
+  release.logger.obtrusive('Create Release PR ...');
   const prNumber = await release.createReleasePR(
     tagName,
     releaseBranch,
@@ -93,7 +96,7 @@ export async function createReleasePR(options) {
   );
 
   if (release.autoMergeReleasePR) {
-    release.logger.title('Auto Merge Release PR...');
+    release.logger.obtrusive('Auto Merge Release PR...');
     await release.autoMergePR(prNumber, releaseBranch);
 
     await release.checkedPR(prNumber, releaseBranch);
@@ -103,5 +106,5 @@ export async function createReleasePR(options) {
     );
   }
 
-  release.logger.title(`Create Release PR(#${prNumber}) Successfully`);
+  release.logger.obtrusive(`Create Release PR(#${prNumber}) Successfully`);
 }

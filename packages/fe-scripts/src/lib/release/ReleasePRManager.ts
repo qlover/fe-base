@@ -1,32 +1,66 @@
-import { ReleaseUtil } from './ReleaseUtil.js';
+import { ReleaseUtil } from './ReleaseUtil';
+import { ReleaseConfiger } from './ReleaseConfiguter';
+import { Octokit } from '@octokit/rest';
+import { Logger } from '@qlover/fe-utils';
+import { FeReleaseConfig } from '../../feConfig';
 
+/**
+ * Manages the creation and handling of release pull requests.
+ *
+ * @class ReleasePRManager
+ * @example
+ * const manager = new ReleasePRManager(configer);
+ */
 export class ReleasePRManager {
-  /**
-   * @param {import('./ReleaseConfiguter.js').ReleaseConfiger} configer
-   */
-  constructor(configer) {
-    this.configer = configer;
+  private configer: ReleaseConfiger;
+  private octokit: Octokit | null;
+  private ghToken: string | null;
 
-    /**
-     * @type {import('@octokit/rest').Octokit | null}
-     */
+  /**
+   * Creates an instance of ReleasePRManager.
+   *
+   * @param configer - The configuration object for managing releases.
+   */
+  constructor(configer: ReleaseConfiger) {
+    this.configer = configer;
     this.octokit = null;
     this.ghToken = null;
   }
 
-  get dryRun() {
+  /**
+   * Gets the dry run status from the configuration.
+   *
+   * @returns Indicates if the operation is a dry run.
+   */
+  get dryRun(): boolean {
     return this.configer.context.dryRun;
   }
 
-  get logger() {
+  /**
+   * Gets the logger instance from the configuration.
+   *
+   * @returns The logger instance.
+   */
+  get logger(): Logger {
     return this.configer.logger;
   }
 
-  setGithubToken(token) {
+  /**
+   * Sets the GitHub token for authentication.
+   *
+   * @param token - The GitHub token to set.
+   */
+  setGithubToken(token: string): void {
     this.ghToken = token;
   }
 
-  async getOctokit() {
+  /**
+   * Retrieves the Octokit instance, creating it if necessary.
+   *
+   * @returns The Octokit instance for GitHub API interactions.
+   * @throws If the GitHub token is not set.
+   */
+  async getOctokit(): Promise<Octokit> {
     if (this.octokit) {
       return this.octokit;
     }
@@ -44,15 +78,24 @@ export class ReleasePRManager {
     return octokit;
   }
 
-  getPRNumber(output) {
+  /**
+   * Extracts the pull request number from the output.
+   *
+   * @param output - The output string containing the pull request information.
+   * @returns The extracted pull request number.
+   */
+  getPRNumber(output: string): string {
     return ReleaseUtil.parserPRNumber(output);
   }
 
   /**
-   * @returns {Promise<import('@qlover/fe-scripts').FeReleaseConfig['label']>}
+   * Creates a release pull request label.
+   *
+   * @returns The created label.
+   * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel() {
-    const label = this.configer.feConfig.release.label;
+  async createReleasePRLabel(): Promise<FeReleaseConfig['label']> {
+    const label = this.configer.feConfig.release?.label;
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
     }
@@ -78,7 +121,7 @@ export class ReleasePRManager {
 
       return label;
     } catch (error) {
-      if (error.status === 422) {
+      if ((error as { status: number }).status === 422) {
         this.logger.warn(`Label ${label.name} already exists, skipping!`);
         return label;
       }
@@ -88,15 +131,22 @@ export class ReleasePRManager {
   }
 
   /**
-   * create Release PR
-   * @param {{tagName: string, releaseBranch: string, changelog: string, label: import('@qlover/fe-scripts').FeReleaseConfig['label']}} options
-   * @returns {Promise<string>}
+   * Creates a release pull request.
+   *
+   * @param options - The options for creating the pull request.
+   * @returns The created pull request number.
+   * @throws If the creation fails or if the pull request already exists.
    */
-  async createReleasePR({ tagName, releaseBranch, changelog, label }) {
+  async createReleasePR(options: {
+    tagName: string;
+    releaseBranch: string;
+    changelog: string;
+    label: FeReleaseConfig['label'];
+  }): Promise<string> {
     const prOptions = this.configer.getCreateReleasePROptions(
-      tagName,
-      releaseBranch,
-      changelog
+      options.tagName,
+      options.releaseBranch,
+      options.changelog
     );
 
     const { repoName, authorName } = this.configer.getUserInfo();
@@ -104,7 +154,7 @@ export class ReleasePRManager {
     if (this.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
         ...prOptions,
-        labels: [label.name]
+        labels: [options.label?.name]
       });
       return this.configer.dryRunPRNumber;
     }
@@ -122,29 +172,41 @@ export class ReleasePRManager {
       this.logger.debug('Create PR Success', response.data);
 
       // add label
-      if (label?.name) {
+      if (options.label?.name) {
         const result = await octokit.rest.issues.addLabels({
           owner: authorName,
           repo: repoName,
           issue_number,
-          labels: [label.name]
+          labels: [options.label.name]
         });
         this.logger.debug('Add PR label Success', result);
       }
 
       return issue_number.toString();
     } catch (error) {
-      if (error.status === 422 && error.message.includes('already exists')) {
+      if (
+        (error as { status: number }).status === 422 &&
+        (error as { message: string }).message.includes('already exists')
+      ) {
         this.logger.warn('PR already exists');
-        const match = error.message.match(/pull request #(\d+)/);
-        return match ? match[1] : undefined;
+        const match = (error as { message: string }).message.match(
+          /pull request #(\d+)/
+        );
+        return match ? match[1] : '';
       }
       this.logger.error('Failed to create PR', error);
       throw error;
     }
   }
 
-  async autoMergePR(prNumber, releaseBranch) {
+  /**
+   * Automatically merges a pull request.
+   *
+   * @param prNumber - The pull request number to merge.
+   * @param releaseBranch - The branch to merge into.
+   * @throws If the pull request number is invalid or if the merge fails.
+   */
+  async autoMergePR(prNumber: string, releaseBranch: string): Promise<void> {
     if (!prNumber) {
       this.logger.error('Failed to create Pull Request.', prNumber);
       return;
@@ -167,24 +229,31 @@ export class ReleasePRManager {
     await octokit.pulls.merge({
       owner: authorName,
       repo: repoName,
-      pull_number: prNumber,
-      merge_method: mergeMethod
+      pull_number: Number(prNumber),
+      merge_method: mergeMethod as 'squash' | 'merge' | 'rebase'
     });
   }
 
-  async checkedPR(prNumber, releaseBranch) {
+  /**
+   * Checks the status of a pull request and deletes the associated branch.
+   *
+   * @param prNumber - The pull request number to check.
+   * @param releaseBranch - The branch to delete.
+   * @throws If the pull request or branch is not found or if the check fails.
+   */
+  async checkedPR(prNumber: string, releaseBranch: string): Promise<void> {
     try {
       const { repoName, authorName } = this.configer.getUserInfo();
       const octokit = await this.getOctokit();
 
-      // 获取 PR 信息
+      // Get PR information
       await octokit.rest.pulls.get({
         owner: authorName,
         repo: repoName,
-        pull_number: prNumber
+        pull_number: Number(prNumber)
       });
 
-      // 删除远程分支
+      // Delete remote branch
       await octokit.rest.git.deleteRef({
         owner: authorName,
         repo: repoName,
@@ -193,7 +262,7 @@ export class ReleasePRManager {
 
       this.logger.info(`Branch ${releaseBranch} has been deleted`);
     } catch (error) {
-      if (error.status === 404) {
+      if ((error as { status: number }).status === 404) {
         this.logger.warn(
           `PR #${prNumber} or branch ${releaseBranch} not found`
         );

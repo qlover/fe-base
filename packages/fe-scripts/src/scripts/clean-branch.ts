@@ -1,29 +1,40 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
-import { FeScriptContext } from '../lib/index.js';
+import { FeScriptContext } from '../lib/FeScriptContext';
+import lodash from 'lodash';
 
-function union(a) {
-  return [...new Set(a)];
+const { union } = lodash;
+
+export interface CleanBranchOptions {
+  /**
+   * Protected branches that should not be deleted
+   * @default `fe-config.protectedBranches``
+   */
+  protectedBranches?: string[];
+
+  /**
+   * Whether to merge default protected branches
+   * @default `false`
+   */
+  merge?: boolean;
 }
 
-/**
- * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} context
- */
-function composeBranches(context) {
-  const defaultBranchs = context.feConfig.protectedBranches || [];
-  const { protectedBranches, merge } = context.options;
-  if (protectedBranches) {
+function composeBranches(
+  context: FeScriptContext<CleanBranchOptions>
+): string[] {
+  const defaultBranches = context.feConfig?.protectedBranches || [];
+  const { protectedBranches = [], merge = false } = context.options || {};
+  if (protectedBranches && protectedBranches.length) {
     return merge
-      ? union([...protectedBranches, ...defaultBranchs])
+      ? union([...protectedBranches, ...defaultBranches])
       : protectedBranches;
   }
-  return defaultBranchs;
+  return defaultBranches;
 }
 
-/**
- * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanBranchOptions>} options
- */
-export function cleanBranch(options) {
+export function cleanBranch(
+  options: Partial<FeScriptContext<CleanBranchOptions>>
+): void {
   const context = new FeScriptContext(options);
   const { logger, verbose, dryRun } = context;
 
@@ -71,7 +82,7 @@ export function cleanBranch(options) {
     );
 
   // Function to ask for user confirmation
-  const askUserConfirmation = (branchesToDelete) => {
+  const askUserConfirmation = (branchesToDelete: string[]): void => {
     const rl = createInterface({
       input: process.stdin,
       output: process.stdout
@@ -109,7 +120,7 @@ export function cleanBranch(options) {
               } catch (forceError) {
                 logger.error(
                   `Failed to delete branch ${branch}:`,
-                  forceError.message
+                  (forceError as Error).message
                 );
               }
             }

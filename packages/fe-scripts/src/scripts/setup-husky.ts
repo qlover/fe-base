@@ -1,14 +1,25 @@
-import { resolve, join } from 'path';
-import fs from 'fs';
-import { FeScriptContext } from '../lib/index.js';
+import { resolve, join } from 'node:path';
+import { writeFileSync, readFileSync } from 'node:fs';
+import { FeScriptContext } from '../lib/FeScriptContext';
 
-/**
- * @param {FeScriptContext<import('@qlover/fe-scripts').SetupHuskyOptions>} options
- */
-export async function setupHusky(options) {
+export interface SetupHuskyOptions {
+  /**
+   * Path to commitlint config
+   */
+  commitlintPath?: string;
+  /**
+   * Whether to force setup even if husky is already installed
+   * @default false
+   */
+  force?: boolean;
+}
+
+export async function setupHusky(
+  options: Partial<FeScriptContext<SetupHuskyOptions>>
+): Promise<void> {
   const context = new FeScriptContext(options);
   const { logger, shell } = context;
-  const { commitlintPath } = context.options;
+  const { commitlintPath = '' } = context.options;
   const relativePath = resolve('./');
 
   // clear husky config
@@ -26,16 +37,16 @@ export async function setupHusky(options) {
 
 npx --no -- commitlint --config "${commitlintConfig}" --edit "$1"
 `;
-  fs.writeFileSync(commitMsgPath, commitMsgContent, { mode: 0o755 });
+  writeFileSync(commitMsgPath, commitMsgContent, { mode: 0o755 });
 
   // create pre-commit hook
   const preCommitPath = join(relativePath, '.husky/pre-commit');
   const preCommitContent = `npx lint-staged`;
-  fs.writeFileSync(preCommitPath, preCommitContent, { mode: 0o755 });
+  writeFileSync(preCommitPath, preCommitContent, { mode: 0o755 });
 
   // read existing package.json
   const pkgPath = join(relativePath, 'package.json');
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
 
   // add lint-staged config
   pkg['lint-staged'] = {
@@ -43,7 +54,7 @@ npx --no -- commitlint --config "${commitlintConfig}" --edit "$1"
   };
 
   // write back package.json
-  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
   logger.info('husky completed');
 

@@ -2,7 +2,12 @@ import { Logger } from '@qlover/fe-utils';
 import chalk from 'chalk';
 
 export class ScriptsLogger extends Logger {
-  prefix(value) {
+  /**
+   * @override
+   * @param {string} value
+   * @returns {string}
+   */
+  prefix(value: string): string {
     switch (value) {
       case 'INFO':
         return chalk.blue(value);
@@ -17,8 +22,8 @@ export class ScriptsLogger extends Logger {
     }
   }
 
-  title(title) {
+  obtrusive(title: string): void {
     const header = chalk.bold(title);
-    this.obtrusive(header);
+    super.obtrusive(header);
   }
 }

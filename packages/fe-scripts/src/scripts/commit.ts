@@ -1,12 +1,18 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
-import { existsSync } from 'fs';
-import { FeScriptContext } from '../lib/index.js';
+import { existsSync } from 'node:fs';
+import {
+  FeScriptContext,
+  FeScriptContextOptions
+} from '../lib/FeScriptContext';
 
-/**
- * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CommitOptions>} options
- */
-export function commit(options) {
+export interface CommitOptions {
+  /**
+   * Absolute path to cz-conventional-changelog
+   */
+  defaultCzPath?: string;
+}
+export function commit(options: FeScriptContextOptions<CommitOptions>): void {
   const context = new FeScriptContext(options);
   const { logger, shell } = context;
   const { defaultCzPath } = context.options;

@@ -1,9 +1,10 @@
-import { dirname } from 'path';
-import { Env } from '../lib/Env.js';
-import { existsSync } from 'fs';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { Env } from '../lib/Env';
+import { existsSync } from 'node:fs';
+import { Logger } from '@qlover/fe-utils';
 
 /**
+ * TODO: move to @qlover/fe-env-loader
  * from current directory to root directory, search and load .env file
  * @param {object} options
  * @param {string} [options.cwd] start search directory, default is process.cwd()
@@ -17,13 +18,18 @@ export function searchEnv({
   preloadList = ['.env.local', '.env'],
   logger,
   maxDepth = 5
-} = {}) {
+}: {
+  cwd?: string;
+  preloadList?: string[];
+  logger?: Logger;
+  maxDepth?: number;
+}): Env {
   // limit max search depth to 10
   // don't override maxDepth if it's not set
   maxDepth = Math.min(maxDepth, 8);
 
   // create Env instance
-  const env = new Env({ rootPath: cwd, logger });
+  const env = new Env({ rootPath: cwd, logger: logger as Logger });
 
   // recursive search up, until find .env file or reach root directory
   let currentDir = cwd;

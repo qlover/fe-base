@@ -1,22 +1,42 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
-import ignore from 'ignore';
-import { FeScriptContext } from '../lib/index.js';
+import ignore, { Ignore } from 'ignore';
+import {
+  FeScriptContext,
+  FeScriptContextOptions
+} from '../lib/FeScriptContext';
+export interface CleanOptions {
+  /**
+   * Files to be cleaned
+   * @default `fe-config.cleanFiles`
+   */
+  files?: string[];
+  /**
+   * Whether to recursively clean files
+   * @default `false`
+   */
+  recursion?: boolean;
+  /**
+   * Whether to use .gitignore file to determine files to be deleted
+   * @default `false`
+   */
+  gitignore?: boolean;
+}
 
-async function compatRimraf(targetPath, options = {}) {
+async function compatRimraf(
+  targetPath: string,
+  options = {}
+): Promise<boolean> {
   const rimraf = await import('rimraf');
   return rimraf.rimraf(targetPath, options);
 }
 
-/**
- * Recursively get all ignored files and directories under the specified directory
- * @param {string} dir current directory
- * @param {string} rootDir root directory
- * @param {import('ignore').Ignore} ig ignore instance
- * @param {boolean} recursion whether to recursion
- * @returns {string[]} ignored files and directories list
- */
-function getIgnoredFiles(dir, rootDir, ig, recursion) {
+function getIgnoredFiles(
+  dir: string,
+  rootDir: string,
+  ig: Ignore,
+  recursion: boolean
+): string[] {
   const ignoredFiles = [];
   const items = readdirSync(dir, { withFileTypes: true });
 
@@ -40,24 +60,23 @@ function getIgnoredFiles(dir, rootDir, ig, recursion) {
   return ignoredFiles;
 }
 
-/**
- * Clean files
- * @param {FeScriptContext<import('@qlover/fe-scripts/scripts').CleanOptions>} options
- */
-export async function clean(options) {
+export async function clean(
+  options: FeScriptContextOptions<CleanOptions>
+): Promise<void> {
   const context = new FeScriptContext(options);
   const { logger, feConfig, dryRun } = context;
-  let { files, gitignore, recursion } = context.options;
+  const { gitignore, recursion = false } = context.options;
+  let files = context.options.files || [];
 
-  files = files?.length ? files : feConfig.cleanFiles;
+  files = files?.length ? files : feConfig.cleanFiles || [];
 
   // Ensure files is an array
   if (typeof files === 'string') {
     files = [files];
   }
 
-  let filesToClean = files;
-  let ignoreToClean = [];
+  const filesToClean = files;
+  let ignoreToClean: string[] = [];
 
   // If gitignore is enabled, try to read the .gitignore file
   if (gitignore) {
@@ -71,7 +90,7 @@ export async function clean(options) {
           .filter((line) => line && !line.startsWith('#'));
       }
     } catch (error) {
-      logger.warn('Failed to read .gitignore file:', error.message);
+      logger.warn('Failed to read .gitignore file:', (error as Error).message);
     }
   }
 
@@ -109,7 +128,7 @@ export async function clean(options) {
       logger.info(`Deleted: ${file}`);
       await compatRimraf(targetPath);
     } catch (error) {
-      logger.error(`Failed to delete ${file}:`, error.message);
+      logger.error(`Failed to delete ${file}:`, (error as Error).message);
     }
   }
 

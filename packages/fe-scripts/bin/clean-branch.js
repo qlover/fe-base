@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cleanBranch } from '../scripts/clean-branch.js';
+import { cleanBranch } from '../dist/es/scripts/clean-branch.js';
 
 // parse command line arguments
 async function programArgs() {

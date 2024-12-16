@@ -2,7 +2,7 @@
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { commit } from '../scripts/commit.js';
+import { commit } from '../dist/es/scripts/commit.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
