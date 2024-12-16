@@ -2,12 +2,10 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "ES2022",
-      "ESNext.Disposable",
-      "DOM"
-    ],
+    "lib": ["ES2022", "ESNext.Disposable", "DOM"],
     "module": "ESNext",
+    "baseUrl": "./src",
+    "outDir": "dist",
     "moduleResolution": "Bundler",
     "noEmitOnError": true,
     "noUnusedParameters": true,
@@ -17,13 +15,8 @@
     "strict": true,
     "target": "ES2022",
     "useDefineForClassFields": false,
+    "declaration": true
   },
-  "include": [
-    "src",
-    "rollup.config.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

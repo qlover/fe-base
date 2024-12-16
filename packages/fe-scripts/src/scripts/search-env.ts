@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { Logger } from '@qlover/fe-utils';
 
 /**
+ * TODO: move to @qlover/fe-env-loader
  * from current directory to root directory, search and load .env file
  * @param {object} options
  * @param {string} [options.cwd] start search directory, default is process.cwd()

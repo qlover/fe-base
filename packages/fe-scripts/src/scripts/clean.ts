@@ -1,7 +1,10 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import ignore, { Ignore } from 'ignore';
-import { FeScriptContext } from '../lib/FeScriptContext';
+import {
+  FeScriptContext,
+  FeScriptContextOptions
+} from '../lib/FeScriptContext';
 export interface CleanOptions {
   /**
    * Files to be cleaned
@@ -58,7 +61,7 @@ function getIgnoredFiles(
 }
 
 export async function clean(
-  options: Partial<FeScriptContext<CleanOptions>>
+  options: FeScriptContextOptions<CleanOptions>
 ): Promise<void> {
   const context = new FeScriptContext(options);
   const { logger, feConfig, dryRun } = context;

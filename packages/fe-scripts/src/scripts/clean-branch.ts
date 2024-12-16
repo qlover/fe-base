@@ -1,7 +1,10 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
 import { FeScriptContext } from '../lib/FeScriptContext';
-import { union } from 'lodash';
+import lodash from 'lodash';
+
+const { union } = lodash;
+
 export interface CleanBranchOptions {
   /**
    * Protected branches that should not be deleted
@@ -21,7 +24,7 @@ function composeBranches(
 ): string[] {
   const defaultBranches = context.feConfig?.protectedBranches || [];
   const { protectedBranches = [], merge = false } = context.options || {};
-  if (protectedBranches) {
+  if (protectedBranches && protectedBranches.length) {
     return merge
       ? union([...protectedBranches, ...defaultBranches])
       : protectedBranches;

@@ -1,5 +1,7 @@
-import { isString, isPlainObject, get } from 'lodash';
 import { FeConfig } from '../../feConfig';
+import lodash from 'lodash';
+
+const { isString, isPlainObject, get } = lodash;
 
 /**
  * Utility class for handling release-related operations.

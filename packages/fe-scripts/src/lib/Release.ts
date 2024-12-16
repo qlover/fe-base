@@ -4,8 +4,10 @@ import { ReleaseConfiger } from './release/ReleaseConfiguter';
 import { ReleasePRManager } from './release/ReleasePRManager';
 import { Shell } from './Shell';
 import { Logger } from '@qlover/fe-utils';
-import { get, merge } from 'lodash';
 import { FeScriptContext } from './FeScriptContext';
+import lodash from 'lodash';
+
+const { merge, get } = lodash;
 
 export interface ReleaseOptions {
   path?: string;

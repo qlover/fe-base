@@ -1,7 +1,9 @@
 import shell from 'shelljs';
 import { execa } from 'execa';
-import { isEmpty, template as lodashTemplate } from 'lodash';
 import { Logger } from '@qlover/fe-utils';
+import lodash from 'lodash';
+
+const { isEmpty, template: lodashTemplate } = lodash;
 
 /**
  * Configuration interface for Shell class

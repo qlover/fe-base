@@ -1,5 +1,7 @@
 import { cosmiconfigSync } from 'cosmiconfig';
-import { cloneDeep, defaultsDeep, isPlainObject } from 'lodash';
+import lodash from 'lodash';
+
+const { cloneDeep, defaultsDeep, isPlainObject } = lodash;
 
 /**
  * Configuration search options interface

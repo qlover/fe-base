@@ -1,7 +1,10 @@
 import { resolve } from 'node:path';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'node:fs';
-import { FeScriptContext } from '../lib/FeScriptContext.js';
+import {
+  FeScriptContext,
+  FeScriptContextOptions
+} from '../lib/FeScriptContext';
 
 export interface CommitOptions {
   /**
@@ -9,7 +12,7 @@ export interface CommitOptions {
    */
   defaultCzPath?: string;
 }
-export function commit(options: Partial<FeScriptContext<CommitOptions>>): void {
+export function commit(options: FeScriptContextOptions<CommitOptions>): void {
   const context = new FeScriptContext(options);
   const { logger, shell } = context;
   const { defaultCzPath } = context.options;

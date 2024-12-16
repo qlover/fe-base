@@ -5,8 +5,10 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'path';
-import { merge } from 'lodash';
 import { FeConfig } from '../feConfig';
+import lodash from 'lodash';
+
+const { merge } = lodash;
 
 /**
  * Get default configuration from fe-config.json
@@ -27,7 +29,7 @@ function getDefaultConfig(): Record<string, unknown> {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   return JSON.parse(
-    readFileSync(resolve(__dirname, '../fe-config.json'), 'utf8')
+    readFileSync(resolve(__dirname, '../../../fe-config.json'), 'utf8')
   );
 }
 
@@ -72,7 +74,7 @@ export function getFeConfigSearch(
  * };
  * ```
  */
-interface FeScriptContextOptions<T> {
+export interface FeScriptContextOptions<T> {
   /** Custom logger instance */
   logger?: ScriptsLogger;
   /** Shell instance for command execution */

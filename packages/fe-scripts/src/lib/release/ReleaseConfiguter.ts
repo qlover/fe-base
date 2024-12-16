@@ -1,11 +1,13 @@
 import { Shell } from '../Shell';
 import { ReleaseUtil } from './ReleaseUtil';
-import { merge, set, get } from 'lodash';
+import lodash from 'lodash';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { FeConfig, FeReleaseConfig } from '../../feConfig';
 import { Logger } from '@qlover/fe-utils';
 import { ReleaseContext } from '../Release';
+
+const { merge, set, get } = lodash;
 
 /**
  * Configures the release process by managing the release configuration.
