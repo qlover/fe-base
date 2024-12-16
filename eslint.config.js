@@ -67,16 +67,6 @@ export default [
   createCommon(),
   createTslintRecommended(['packages/**/*.ts']),
 
-  // {
-  //   name: 'fe-scripts',
-  //   files: ['packages/fe-scripts/**/*.ts'],
-  //   languageOptions: {
-  //     globals: {
-  //       ...globals.node
-  //     }
-  //   }
-  // },
-
   // fe-utils
   ...createFeUtilsConfig(),
 
