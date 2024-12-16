@@ -3,9 +3,10 @@ import { ScriptsLogger } from './ScriptsLogger';
 import { Shell } from './Shell';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import fs from 'fs';
-import path from 'path';
-import lodash from 'lodash';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'path';
+import { merge } from 'lodash';
+import { FeConfig } from '../feConfig';
 
 /**
  * Get default configuration from fe-config.json
@@ -26,7 +27,7 @@ function getDefaultConfig(): Record<string, unknown> {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   return JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, '../fe-config.json'), 'utf8')
+    readFileSync(resolve(__dirname, '../fe-config.json'), 'utf8')
   );
 }
 
@@ -50,7 +51,7 @@ export function getFeConfigSearch(
 ): ConfigSearch {
   return new ConfigSearch({
     name: 'fe-config',
-    defaultConfig: lodash.merge(getDefaultConfig(), feConfig)
+    defaultConfig: merge(getDefaultConfig(), feConfig)
   });
 }
 
@@ -109,17 +110,17 @@ export class FeScriptContext<T = unknown> {
   /** Shell instance */
   public readonly shell: Shell;
   /** Fe configuration */
-  public readonly feConfig: Record<string, unknown>;
+  public readonly feConfig: FeConfig;
   /** Dry run flag */
   public readonly dryRun: boolean;
   /** Verbose logging flag */
   public readonly verbose: boolean;
   /** Script-specific options */
-  public readonly options: T;
+  public options: T;
 
   /**
    * Creates a FeScriptContext instance
-   * @param scriptsOptions - Context initialization options
+   *
    * @description
    * Significance: Initializes script execution context
    * Core idea: Setup execution environment

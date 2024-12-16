@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-import { existsSync } from 'fs';
+import { config } from 'dotenv';
+import { existsSync } from 'node:fs';
 import { resolve } from 'path';
 import { Logger } from '@qlover/fe-utils';
 
@@ -121,7 +121,7 @@ export class Env {
     for (const file of preloadList) {
       const envLocalPath = resolve(resolvedRootPath, file);
       if (existsSync(envLocalPath)) {
-        dotenv.config({ path: envLocalPath });
+        config({ path: envLocalPath });
         this.logger?.debug?.(`Loaded \`${envLocalPath}\` file`);
         return;
       }

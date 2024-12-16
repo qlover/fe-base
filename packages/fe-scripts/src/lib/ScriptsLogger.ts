@@ -22,8 +22,8 @@ export class ScriptsLogger extends Logger {
     }
   }
 
-  title(title: string): void {
+  obtrusive(title: string): void {
     const header = chalk.bold(title);
-    this.obtrusive(header);
+    super.obtrusive(header);
   }
 }

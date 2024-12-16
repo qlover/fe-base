@@ -1,6 +1,6 @@
 import shell from 'shelljs';
 import { execa } from 'execa';
-import lodash from 'lodash';
+import { isEmpty, template as lodashTemplate } from 'lodash';
 import { Logger } from '@qlover/fe-utils';
 
 /**
@@ -110,7 +110,7 @@ export class Shell {
     template: string = '',
     context: Record<string, unknown> = {}
   ): string {
-    return lodash.template(template)(context);
+    return lodashTemplate(template)(context);
   }
 
   /**
@@ -142,7 +142,7 @@ export class Shell {
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
-    if (lodash.isEmpty(command)) {
+    if (isEmpty(command)) {
       return Promise.resolve('');
     }
     const { context, ...execOptions } = options;
@@ -245,7 +245,7 @@ export class Shell {
    */
   async execWithArguments(
     command: string[],
-    options: ShellExecOptions,
+    _: ShellExecOptions,
     meta: ExecMeta
   ): Promise<string> {
     const [program, ...programArgs] = command;

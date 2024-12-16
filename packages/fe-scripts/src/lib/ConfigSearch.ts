@@ -1,5 +1,5 @@
 import { cosmiconfigSync } from 'cosmiconfig';
-import lodash from 'lodash';
+import { cloneDeep, defaultsDeep, isPlainObject } from 'lodash';
 
 /**
  * Configuration search options interface
@@ -126,7 +126,7 @@ export class ConfigSearch {
 
     this.name = name;
     this.searchPlaces = searchPlaces || getDefaultSearchPlaces(name);
-    this._config = lodash.cloneDeep(defaultConfig || {});
+    this._config = cloneDeep(defaultConfig || {});
     this.loaders = loaders;
   }
 
@@ -145,7 +145,7 @@ export class ConfigSearch {
    * ```
    */
   get config(): Record<string, unknown> {
-    return lodash.defaultsDeep({}, this.search(), this._config);
+    return defaultsDeep({}, this.search(), this._config);
   }
 
   /**
@@ -201,9 +201,7 @@ export class ConfigSearch {
       throw new Error(`Invalid configuration file at ${result.filepath}`);
     }
 
-    return result && lodash.isPlainObject(result.config)
-      ? result.config
-      : localConfig;
+    return result && isPlainObject(result.config) ? result.config : localConfig;
   }
 
   /**
