@@ -15,8 +15,9 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "yarn build:fe-utils",
+    "build": "yarn build:fe-utils && yarn build:fe-scripts",
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
+    "build:fe-scripts": "yarn workspace @qlover/fe-scripts build",
     "release-pr:fe-utils": "fe-release-pr -p ./packages/fe-utils -V",
     "release:fe-utils": "fe-release -p ./packages/fe-utils -V",
     "release-pr:fe-scripts": "fe-release-pr -p ./packages/fe-scripts -V",
