@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import terser from '@rollup/plugin-terser';
-import { searchEnv } from '@qlover/fe-scripts/scripts/search-env.js';
+import { searchEnv } from '@qlover/fe-scripts';
 import del from 'rollup-plugin-delete';
 
 const env = searchEnv({ logger: console });
@@ -19,17 +19,14 @@ const buildDir = 'dist';
  * @param {{ entry: string, formats: string[], external: string[], target: string, clean: boolean }} options
  * @returns {import('rollup').RollupOptions[]}
  */
-function createBuilder({ target, entry, formats, external, clean }) {
+function createBuilder({ target, entry, formats, external, clean, umdName }) {
   target = target || `${buildDir}/${entry}`;
 
   /** @type {import('rollup').OutputOptions[]} */
   const outputs = formats.map((format) => ({
     file: `${target}/index.${format}.js`,
     format,
-    name:
-      format === 'umd'
-        ? `FeUtils${entry.charAt(0).toUpperCase() + entry.slice(1)}`
-        : undefined,
+    name: umdName,
     sourcemap: !isProduction
   }));
 
@@ -65,18 +62,21 @@ function createBuilder({ target, entry, formats, external, clean }) {
 export default [
   ...createBuilder({
     entry: 'interface',
-    formats: ['cjs', 'esm', 'umd'],
+    formats: ['es', 'umd'],
+    umdName: 'FeUtilsInterface',
     clean: true
   }),
   ...createBuilder({
     entry: 'common',
     target: buildDir,
-    formats: ['cjs', 'esm', 'umd'],
+    formats: ['es', 'umd'],
+    umdName: 'FeUtilsCommon',
     external: commonExternal
   }),
   ...createBuilder({
     entry: 'server',
-    formats: ['cjs', 'esm'],
+    formats: ['es', 'cjs'],
+    umdName: 'FeUtilsServer',
     external: serverExternal
   })
 ];

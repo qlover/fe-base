@@ -12,22 +12,22 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.esm.js",
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.es.js",
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.umd.js"
     },
     "./interface": {
-      "require": "./dist/interface/index.cjs",
-      "import": "./dist/interface/index.esm.js",
+      "require": "./dist/interface/index.umd.js",
+      "import": "./dist/interface/index.es.js",
       "types": "./dist/interface/index.d.ts",
-      "default": "./dist/interface/index.js"
+      "default": "./dist/interface/index.umd.js"
     },
     "./server": {
-      "require": "./dist/server/index.cjs",
-      "import": "./dist/server/index.esm.js",
+      "require": "./dist/server/index.cjs.js",
+      "import": "./dist/server/index.es.js",
       "types": "./dist/server/index.d.ts",
-      "default": "./dist/server/index.js"
+      "default": "./dist/server/index.cjs.js"
     },
     "./package.json": "./package.json"
   },
@@ -58,7 +58,6 @@
     "merge": "^2.1.1"
   },
   "devDependencies": {
-    "@qlover/fe-scripts": "latest",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
