@@ -14,17 +14,12 @@
     }
   },
   "files": [
+    "dist",
     "bin",
-    "lib",
-    "scripts",
     ".release-it.json",
     "commitlint.config.js",
-    "container.js",
     "fe-config.json",
-    "type.d.ts",
-    "index.d.ts",
-    "package.json",
-    "README.md"
+    "package.json"
   ],
   "bin": {
     "fe-clean": "./bin/clean.js",
