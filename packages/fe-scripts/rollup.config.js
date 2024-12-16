@@ -4,7 +4,6 @@ import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
 import dts from 'rollup-plugin-dts';
 import typescript from 'rollup-plugin-typescript2';
-// import { searchEnv } from './dist/es/scripts/search-env.js';
 import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
 import { join } from 'path';
@@ -12,10 +11,8 @@ import { join } from 'path';
 const pkg = JSON.parse(
   readFileSync(join(process.cwd(), 'package.json'), 'utf-8')
 );
-// const env = searchEnv({});
-// const NODE_ENV = env.get('NODE_ENV');
-// console.log('Environment is', NODE_ENV);
-const isProduction = false;
+
+const isProduction = true;
 const buildDir = 'dist';
 
 const treeshake = {
