@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { release } from '../scripts/release.js';
+import { release } from '../dist/es/scripts/release.js';
 
 // parse command line arguments
 async function programArgs() {

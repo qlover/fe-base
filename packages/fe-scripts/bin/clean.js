@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { clean } from '../scripts/clean.js';
+import { clean } from '../dist/es/scripts/clean.js';
 
 // parse command line arguments
 async function programArgs() {
