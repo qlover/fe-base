@@ -12,10 +12,14 @@ export class ReflectionGenerater {
   private reader: ProjectReader;
   private sourceTemplate: HBSTemplate;
 
-  constructor(context: Partial<ReflectionGeneraterContext>) {
-    this.context = context as ReflectionGeneraterContext;
-    this.reader = new ProjectReader(context as ReflectionGeneraterContext);
-    this.sourceTemplate = new HBSTemplate('context');
+  constructor(context: ReflectionGeneraterContext) {
+    // this.context = new FeScriptContext(context);
+    this.context = context;
+    this.reader = new ProjectReader(context);
+    this.sourceTemplate = new HBSTemplate({
+      name: 'context',
+      hbsRootDir: this.context.options.hbsRootDir
+    });
   }
 
   get logger(): Logger {
@@ -40,7 +44,6 @@ export class ReflectionGenerater {
     });
     const templateResults = typeDocConverter.getContextMap();
 
-    // FIXME: isDebug is protected, need to find a way to check it
     const tplPath = this.context.options.tplPath;
     this.reader.writeJSON(templateResults, tplPath);
     this.logger.info('Generate JSON file success', tplPath);

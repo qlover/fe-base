@@ -32,29 +32,38 @@ program.parse(process.argv);
 const options = program.opts();
 
 const main = async () => {
-  const tplPath = options.tplPath
-    ? resolve(options.tplPath)
-    : resolve(options.generatePath, './code2md.tpl.json');
+  const { dryRun, verbose, ...opts } = options;
+  const tplPath = opts.tplPath
+    ? resolve(opts.tplPath)
+    : resolve(opts.generatePath, './code2md.tpl.json');
+
+  // fixed hbs root dir
+  const hbsRootDir = resolve(join(__dirname, '../hbs'));
 
   // TODO: 检验参数
   const generaterOptions = {
-    entryPoints: options.entryPoints.map((entry) => resolve(entry)),
-    outputJSONFilePath: options.outputJSONFilePath
-      ? resolve(options.outputJSONFilePath)
+    entryPoints: opts.entryPoints.map((entry) => resolve(entry)),
+    outputJSONFilePath: opts.outputJSONFilePath
+      ? resolve(opts.outputJSONFilePath)
       : '',
-    generatePath: resolve(options.generatePath),
+    generatePath: resolve(opts.generatePath),
     tplPath,
-    basePath: process.cwd()
+    basePath: process.cwd(),
+    hbsRootDir
   };
 
-  console.log('generaterOptions:', generaterOptions);
-
   const generater = new ReflectionGenerater({
-    logger: new Logger({ debug: options.debug }),
+    logger: new Logger({ debug: opts.debug ?? verbose }),
+    // not used
+    shell: {},
+    // not used
+    feConfig: {},
+    verbose: opts.debug ?? verbose,
+    dryRun: dryRun,
     options: generaterOptions
   });
 
-  await generater.generate(options.onlyJson);
+  await generater.generate(opts.onlyJson);
 };
 
 main();

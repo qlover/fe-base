@@ -65,8 +65,16 @@ export type ReflectionGeneraterOptions = {
   entryPoints: string[];
   outputJSONFilePath: string;
   generatePath: string;
+  /**
+   * typedoc parse base path
+   */
   basePath?: string;
   tplPath: string;
+
+  /**
+   * hbs template root dir
+   */
+  hbsRootDir: string;
 };
 
 export type ReflectionGeneraterContext =

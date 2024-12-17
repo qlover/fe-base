@@ -37,14 +37,7 @@ function createPlugin(minify) {
     typescript({
       tsconfig: './tsconfig.json',
       tsconfigOverride: {
-        compilerOptions: {
-          declaration: true,
-          sourceMap: true,
-          inlineSourceMap: false,
-          inlineSources: false,
-          importHelpers: false,
-          noEmitHelpers: true
-        }
+        include: ['src']
       }
     }),
     minify && terser()
@@ -63,22 +56,16 @@ cleanBuildDir();
  */
 const config = [
   {
-    input: {
-      index: 'src/index.ts'
-    },
+    input: 'src/index.ts',
     external: defaultExternal,
     output: [
       {
-        dir: 'dist/cjs',
-        format: 'cjs',
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        file: 'dist/cjs/index.js',
+        format: 'cjs'
       },
       {
-        dir: 'dist/es',
-        format: 'es',
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        file: 'dist/es/index.js',
+        format: 'es'
       }
     ],
     plugins: createPlugin(isProduction),
@@ -88,16 +75,12 @@ const config = [
     input: './src/index.ts',
     output: [
       {
-        dir: 'dist/cjs',
-        format: 'es',
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        file: 'dist/cjs/index.d.ts',
+        format: 'cjs'
       },
       {
-        dir: 'dist/es',
-        format: 'es',
-        preserveModules: true,
-        preserveModulesRoot: 'src'
+        file: 'dist/es/index.d.ts',
+        format: 'es'
       }
     ],
     plugins: [dts()],

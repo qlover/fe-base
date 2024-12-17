@@ -4,20 +4,16 @@
   "description": "A base frontwork",
   "type": "module",
   "private": true,
-  "files": [
-    "dist",
-    "package.json",
-    "REMEAD.md"
-  ],
   "repository": {
     "type": "github",
     "url": "https://github.com/qlover/fe-base"
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "yarn build:fe-utils && yarn build:fe-scripts",
+    "build": "yarn build:fe-utils && yarn build:fe-scripts && yarn build:fe-code2markdown",
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "build:fe-scripts": "yarn workspace @qlover/fe-scripts build",
+    "build:fe-code2markdown": "yarn workspace @qlover/fe-code2markdown build",
     "release-pr:fe-utils": "fe-release-pr -p ./packages/fe-utils -V",
     "release:fe-utils": "fe-release -p ./packages/fe-utils -V",
     "release-pr:fe-scripts": "fe-release-pr -p ./packages/fe-scripts -V",
@@ -30,6 +26,7 @@
     "lint": "eslint . --fix",
     "test": "jest",
     "clean": "fe-clean",
+    "clean:build": "fe-clean -f packages/*/dist -r",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "prepare": "husky",
@@ -43,21 +40,26 @@
   ],
   "author": "qlover",
   "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
   "devEngines": {
     "node": ">=18.19.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.1",
     "@types/jest": "^29.5.11",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "~5.4.0"
+    "typescript": "~5.4.0",
+    "rollup": "^4.24.2",
+    "rollup-plugin-delete": "^2.1.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-typescript2": "^0.36.0"
   },
   "workspaces": [
-    "packages/*",
-    "docs"
+    "packages/*"
   ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

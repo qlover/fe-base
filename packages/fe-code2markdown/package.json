@@ -6,9 +6,9 @@
   "type": "module",
   "files": [
     "bin",
-    "hbs",
-    "lib",
+    "dist",
     "example",
+    "hbs",
     "package.json",
     "README.md"
   ],
@@ -21,8 +21,6 @@
       "require": "./dist/cjs/index.js",
       "types": "./dist/es/index.d.ts"
     },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -50,9 +48,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
     "fs-extra": "^11.2.0",
-    "typedoc": "~0.25.0",
     "typescript": "~5.4.0"
   },
   "dependencies": {
@@ -60,6 +56,7 @@
     "@qlover/fe-utils": "latest",
     "commander": "^11.0.0",
     "handlebars": "^4.7.8",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "typedoc": "~0.25.0"
   }
 }
