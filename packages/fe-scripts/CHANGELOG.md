@@ -1,5 +1,12 @@
 
 
+## [0.5.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.4...fe-scripts-v0.5.1) (2024-12-17)
+
+
+### Features
+
+* fe code2md use typescript ([#180](https://github.com/qlover/fe-base/issues/180)) ([5f086b1](https://github.com/qlover/fe-base/commit/5f086b11fbe98aa410996ce95f8c0b5b5f06b6e5))
+
 ## [0.4.4](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.3...fe-scripts-v0.4.4) (2024-12-16)
 
 
