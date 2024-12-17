@@ -59,14 +59,7 @@
   },
   "devDependencies": {
     "@qlover/fe-scripts": "latest",
-    "@rollup/plugin-commonjs": "^28.0.1",
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-terser": "^0.4.4",
     "@types/lodash": "^4.17.12",
-    "axios": "^1.7.9",
-    "rollup": "^4.24.2",
-    "rollup-plugin-delete": "^2.1.0",
-    "rollup-plugin-dts": "^6.1.1",
-    "rollup-plugin-typescript2": "^0.36.0"
+    "axios": "^1.7.9"
   }
 }

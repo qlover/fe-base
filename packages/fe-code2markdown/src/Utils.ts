@@ -6,7 +6,7 @@ export class Utils {
    * @param {string} text
    * @returns {string}
    */
-  static unescapeHtmlEntities(text) {
+  static unescapeHtmlEntities(text: string): string {
     return text.replace(/&#x60;/g, '`').replace(/&#x27;/g, "'");
   }
 
@@ -16,7 +16,7 @@ export class Utils {
    * @param {string} generatePath 目标路径
    * @returns {string} 公共路径
    */
-  static getCommonPath(fullPath, generatePath) {
+  static getCommonPath(fullPath: string, generatePath: string): string {
     const fullSegments = fullPath.split(path.sep);
     const generateSegments = generatePath.split(path.sep);
 
@@ -46,14 +46,21 @@ export class Utils {
    * @param {string} fullPath 反射路径
    * @returns {{docPath: string, docFullPath: string, docDir: string}}
    */
-  static extractDocumentationPath(entryPoints, generatePath, fullPath) {
+  static extractDocumentationPath(
+    entryPoints: string[],
+    generatePath: string,
+    fullPath: string
+  ): { docPath: string; docFullPath: string; docDir: string } {
     // 找到 entryPoint 中的公共部分
-    const commonPath = entryPoints.reduce((_, entryPoint) => {
-      return this.getCommonPath(generatePath, entryPoint);
+    const commonPath = entryPoints.reduce((common, entryPoint) => {
+      const currentCommonPath = this.getCommonPath(generatePath, entryPoint);
+      return currentCommonPath.length > common.length
+        ? currentCommonPath
+        : common;
     }, '');
 
     if (!commonPath) {
-      // 计算从 entryPoint 到 fullPath 的完整相对路径
+      // 计算从 generatePath 到 absoluteFullPath 的完整相对路径
       const relativeFullPath = path.relative(generatePath, fullPath);
 
       const docFullPath = path.join(generatePath, relativeFullPath);

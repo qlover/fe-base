@@ -1,13 +1,19 @@
-import { ReflectionKind } from 'typedoc';
-
-/**
- * @type {typeof import('../index.js').ReflectionKindName}
- */
-export const ReflectionKindName = {};
-Object.entries(ReflectionKind).reduce((acc, [key, value]) => {
-  acc[value] = key;
-  return acc;
-}, ReflectionKindName);
+import {
+  CommentDisplayPart,
+  CommentTag,
+  DeclarationReflection,
+  ParameterReflection,
+  ProjectReflection,
+  ReflectionKind,
+  SomeType,
+  SourceReference
+} from 'typedoc';
+import {
+  HBSTemplateContext,
+  ParserContextMap,
+  ReflectionKindName
+} from './type';
+import { Logger } from '@qlover/fe-utils';
 
 const DisplayPartsKindName = {
   text: 'Text',
@@ -15,31 +21,60 @@ const DisplayPartsKindName = {
   inlineTag: 'InlineTag'
 };
 
-export class TypeDocConverter {
+type ParameterListItem = {
+  id: number;
+  name: string;
+  type: string;
+  blockTagsList: CommentDisplayPart[];
+  summaryList: CommentDisplayPart[];
+  descriptionList: CommentDisplayPart[];
+  defaultValue: string;
+  since: string;
+  deprecated: boolean;
+  description: string;
+};
+
+type TemplateSummary = CommentDisplayPart & {
+  isText?: boolean;
+  isCode?: boolean;
+  isInlineTag?: boolean;
+  tag?: string;
+  title?: string;
+};
+
+type TypeDocConverterOptions = {
+  project: ProjectReflection;
+  logger: Logger;
+
   /**
-   *
-   * @param {Object} params
-   * @param {import('typedoc').ProjectReflection} params.project
-   * @param {import('@qlover/fe-utils').Logger} params.logger
-   * @param {number} params.level 1 优先ts类型 2 优先注释类型 default 1
-   * @param {boolean} params.hasSkipInherited 是否跳过继承的属性 default true
+   * 1 优先 ts 类型 2 优先注释类型 default 1
    */
-  constructor({ project, logger, level = 1, hasSkipInherited = true }) {
-    /**
-     * @type {import('typedoc').ProjectReflection}
-     */
+  level?: number;
+  /**
+   * Whether to skip inherited properties
+   */
+  hasSkipInherited?: boolean;
+};
+
+export class TypeDocConverter {
+  private project: ProjectReflection;
+  private logger: Logger;
+  private level: number;
+  private hasSkipInherited: boolean;
+
+  constructor({
+    project,
+    logger,
+    level = 1,
+    hasSkipInherited = true
+  }: TypeDocConverterOptions) {
     this.project = project;
     this.logger = logger;
     this.level = level;
-
-    /**
-     * 是否跳过继承的属性
-     * @type {boolean}
-     */
     this.hasSkipInherited = hasSkipInherited;
   }
 
-  getLevelValue(tsValue, docsValue) {
+  getLevelValue(tsValue: string, docsValue: string): string {
     if (this.level === 1) {
       return tsValue;
     }
@@ -47,7 +82,7 @@ export class TypeDocConverter {
     return docsValue;
   }
 
-  warpType(typeString) {
+  warpType(typeString: string): string {
     return `\`${typeString.replace(/\|/g, '\\|')}\``;
   }
 
@@ -60,7 +95,7 @@ export class TypeDocConverter {
    * @param {import('typedoc').CommentDisplayPart[]} summaryList
    * @returns {string}
    */
-  summaryListToMarkdownTable(summaryList) {
+  summaryListToMarkdownTable(summaryList: CommentDisplayPart[]): string {
     return summaryList
       .filter((summary) => summary.kind === 'text')
       .map((summary) => summary.text)
@@ -74,9 +109,8 @@ export class TypeDocConverter {
    * FIXME: 未找到返回null
    * @param {import('typedoc').CommentTag[]} blockTags
    * @param {string} tag
-   * @returns {string|null}
    */
-  getOneBlockTags(blockTags, tag) {
+  getOneBlockTags(blockTags: CommentTag[], tag: string): string | null {
     const target = blockTags.find((item) => item.tag === tag);
     if (target) {
       return target.content.map((item) => item.text).join(' ');
@@ -90,7 +124,7 @@ export class TypeDocConverter {
    * @param {string} tag
    * @returns {import('typedoc').CommentDisplayPart[]}
    */
-  getBlockTags(blockTags, tag) {
+  getBlockTags(blockTags: CommentTag[], tag: string): CommentDisplayPart[] {
     const result = blockTags
       .filter((item) => item.tag === tag)
       .map((item) => item.content)
@@ -102,12 +136,9 @@ export class TypeDocConverter {
    * 处理参数类型, 可以是一个范型
    *
    * 用反引号包含起来，否则会引起 模板渲染
-   * @param {import('typedoc').Type} type
-   * @param {string} name
-   * @returns {string}
    */
-  getParamType(type) {
-    return this.warpType(type.toString());
+  getParamType(type?: SomeType): string {
+    return type ? this.warpType(type.toString()) : '';
   }
 
   /**
@@ -115,7 +146,7 @@ export class TypeDocConverter {
    * @param {import('typedoc').CommentDisplayPart[]} summary
    * @returns {import('typedoc').CommentDisplayPart[]}
    */
-  toTemplateSummaryList(summary) {
+  toTemplateSummaryList(summary: CommentDisplayPart[]): CommentDisplayPart[] {
     return summary.map((item) => this.toTemplateSummary(item));
   }
 
@@ -125,13 +156,17 @@ export class TypeDocConverter {
    * @param {string} tag
    * @returns {import('typedoc').CommentDisplayPart & { isText?: boolean, isCode?: boolean, isInlineTag?: boolean, tag: string }}
    */
-  toTemplateSummary(summary, tag) {
+  toTemplateSummary(
+    summary: CommentDisplayPart,
+    tag?: string
+  ): TemplateSummary {
     return {
       ...summary,
-      [`is${DisplayPartsKindName[summary.kind]}`]: true,
+      [`is${DisplayPartsKindName[summary.kind as keyof typeof DisplayPartsKindName]}`]:
+        true,
       tag,
-      title: tag?.replace('@', '')
-    };
+      title: tag?.replace('@', '') || ''
+    } as TemplateSummary;
   }
 
   /**
@@ -141,10 +176,16 @@ export class TypeDocConverter {
    * @param {import('typedoc').DeclarationReflection} classItem
    * @returns {Object[]}
    */
-  toParametersList(parameters, member, classItem) {
-    const result = [];
+  toParametersList(
+    parameters: ParameterReflection[],
+    member: DeclarationReflection,
+    classItem: DeclarationReflection
+  ): object[] {
+    const result: object[] = [];
     parameters.forEach((param) => {
-      const decChildren = param.type?.declaration?.children || [];
+      // @ts-expect-error
+      const decChildren = (param.type?.declaration?.children ||
+        []) as ParameterReflection[];
       try {
         // 如果是一个引用类型？
         if (decChildren.length > 0) {
@@ -162,7 +203,7 @@ export class TypeDocConverter {
           `${member?.id} ${member?.name}`,
           `${param?.id} ${param?.name}`
         );
-        this.logger.error(e.message);
+        this.logger.error((e as Error).message);
       }
     });
     return result;
@@ -170,10 +211,9 @@ export class TypeDocConverter {
 
   /**
    * 获取不包含 `@returns` 和 `@param` 的 blockTags
-   * @param {import('typedoc').CommentDisplayPart[]} blockTags
-   * @returns {import('typedoc').CommentDisplayPart[]}
+   *
    */
-  getBlockTagsNoParamAndReturn(blockTags) {
+  getBlockTagsNoParamAndReturn(blockTags: CommentTag[]): CommentTag[] {
     return this.filterBlockTagsNot(blockTags, ['@returns', '@param']);
   }
 
@@ -181,18 +221,20 @@ export class TypeDocConverter {
    * 将一个参数转换为模板需要的对象
    * @param {import('typedoc').ParameterReflection} child
    * @param {import('typedoc').DeclarationReflection | undefined} parent
-   * @param {import('typedoc').CommentTag[] | undefined} blockTags
-   * @returns {Object}
+   * @returns {ParameterListItem}
    */
-  toParametersListItem(child, parent) {
+  toParametersListItem(
+    child: ParameterReflection,
+    parent?: ParameterReflection
+  ): ParameterListItem {
     const { summary = [], blockTags = [] } = child.comment || {};
     // 过滤掉 @returns 和 @param
     const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
 
     // 参数默认值
     const defaultValue = this.getLevelValue(
-      child.defaultValue,
-      this.getOneBlockTags(blockTags, '@default')
+      child.defaultValue || '',
+      this.getOneBlockTags(blockTags, '@default') || ''
     );
 
     // getOneBlockTags 没有找到会返回 null
@@ -208,12 +250,12 @@ export class TypeDocConverter {
     return {
       id: child.id,
       name: parent ? parent.name + '.' + child.name : child.name,
-      type: this.getParamType(child.type, child.type?.name),
-      blockTagsList,
+      type: this.getParamType(child.type),
+      blockTagsList: blockTagsList as unknown as CommentDisplayPart[],
       summaryList,
       descriptionList,
       defaultValue: defaultValue,
-      since: this.getOneBlockTags(blockTags, '@since'),
+      since: this.getOneBlockTags(blockTags, '@since') || '',
       deprecated,
       description
     };
@@ -221,18 +263,20 @@ export class TypeDocConverter {
 
   /**
    * Get the real source of a member, ensuring it belongs to the current class
-   * @param {import('typedoc').DeclarationReflection} member
-   * @param {import('typedoc').DeclarationReflection} parent
-   * @returns {import('typedoc').SourceReference|undefined}
    */
-  getRealSource(member, parent) {
+  getRealSource(
+    member: DeclarationReflection,
+    parent?: DeclarationReflection
+  ): SourceReference | undefined {
     const reflection = this.project.getReflectionById(member.id);
+    // @ts-expect-error
     if (!reflection || !reflection.sources?.length) {
       return undefined;
     }
 
     // Verify the source belongs to the current class
-    const source = reflection.sources[0];
+    // @ts-expect-error
+    const source = reflection.sources[0] as SourceReference;
     if (parent && parent.sources?.length) {
       const classSource = parent.sources[0];
       if (source.fileName !== classSource.fileName) {
@@ -245,20 +289,21 @@ export class TypeDocConverter {
 
   /**
    * 获取返回值
-   * @param {import('typedoc').DeclarationReflection} member
    * @returns {string}
    */
-  getReturnValue(member) {
-    const { comment = {}, type } = member;
-    const blockTags = comment.blockTags || [];
+  getReturnValue(member: DeclarationReflection): string {
+    const { comment, type } = member;
+    const blockTags = comment?.blockTags || [];
 
     // ts 返回类型
+    // @ts-expect-error
     if (type?.name) {
       return type.toString();
     }
 
     // @returns 注释返回类型
-    return this.getOneBlockTags(blockTags, '@returns')?.text;
+    // return this.getOneBlockTags(blockTags, '@returns')?.text;
+    return this.getOneBlockTags(blockTags, '@returns') || '';
   }
 
   /**
@@ -267,7 +312,7 @@ export class TypeDocConverter {
    * @param {string} tag
    * @returns {import('typedoc').CommentDisplayPart[]}
    */
-  filterBlockTags(blockTags, tag) {
+  filterBlockTags(blockTags: CommentTag[], tag: string): CommentTag[] {
     return blockTags.filter((item) => item.tag == tag);
   }
 
@@ -277,7 +322,10 @@ export class TypeDocConverter {
    * @param {string[]|string} tags
    * @returns {import('typedoc').CommentDisplayPart[]}
    */
-  filterBlockTagsNot(blockTags, tags) {
+  filterBlockTagsNot(
+    blockTags: CommentTag[],
+    tags: string | string[]
+  ): CommentTag[] {
     if (Array.isArray(tags)) {
       return blockTags.filter((item) => !tags.includes(item.tag));
     }
@@ -291,26 +339,33 @@ export class TypeDocConverter {
    * @param {import('typedoc').DeclarationReflection} classItem
    * @returns {{summary: import('typedoc').Comment[], blockTags: import('typedoc').Comment[]}}
    */
-  getComments(classItem) {
-    let { summary = [], blockTags = [] } = classItem.comment || {};
+  getComments(classItem: DeclarationReflection): {
+    summary: CommentDisplayPart[];
+    blockTags: CommentTag[];
+  } {
+    const { summary, blockTags } = classItem.comment || {};
 
-    blockTags = blockTags.map((tag) => {
+    const blockTagsList = blockTags?.map((tag) => {
       const content = tag.content.map((item) =>
         this.toTemplateSummary(item, tag.tag)
       );
       // 如果 content 为空, 则不返回 content
-      return { ...tag, content: content.length > 0 ? content : undefined };
+      return {
+        ...tag,
+        content: content.length > 0 ? content : undefined
+      } as CommentTag;
     });
 
-    return { summary: this.toTemplateSummaryList(summary), blockTags };
+    return {
+      summary: this.toTemplateSummaryList(summary || []),
+      blockTags: blockTagsList || []
+    };
   }
 
   /**
    * 解析 class 的 children
-   * @param {import('typedoc').DeclarationReflection} reflection
-   * @returns {import('../index.js').HBSTemplateContext[]}
    */
-  parseReflection(reflection) {
+  parseReflection(reflection: DeclarationReflection): HBSTemplateContext {
     const result = this.reflectionToTemplateResult({ reflection });
     this.logger.debug(result.kindName, result.name, result.id);
 
@@ -339,13 +394,19 @@ export class TypeDocConverter {
    * 按 source 分组, 文件路径
    * @returns {Map<string, {[key in import('typedoc').ReflectionKind]: import('typedoc').DeclarationReflection[]}>}
    */
-  getProjectSourceMap() {
+  getProjectSourceMap(): Map<
+    string,
+    { [key in ReflectionKind]: DeclarationReflection[] }
+  > {
     const sourceMaps = new Map();
 
-    for (const child of this.project.children) {
+    for (const child of this.project?.children || []) {
       // try {
       const fullFileName =
-        this.getRealSource(child).fullFileName || child.sources[0].fileName;
+        this.getRealSource(
+          child,
+          this.project as unknown as DeclarationReflection
+        )?.fullFileName || child.sources?.[0]?.fileName;
 
       if (!sourceMaps.has(fullFileName)) {
         sourceMaps.set(fullFileName, {});
@@ -369,17 +430,17 @@ export class TypeDocConverter {
   /**
    * 按 source 分组, 文件路径
    *
-   * @returns {import('../index.d.ts').ParserContextMap}
    */
-  getContextMap() {
+  getContextMap(): ParserContextMap {
     const sourceMaps = this.getProjectSourceMap();
 
     // 将 Map 转换为 Object
     // 并将 kind 变成字符串
-    const result = {};
+    const result: ParserContextMap = {};
     for (const [fileName, values] of sourceMaps.entries()) {
       result[fileName] = Object.fromEntries(
         Object.entries(values).map(([kind, children]) => [
+          // @ts-expect-error
           ReflectionKindName[kind],
           children
         ])
@@ -393,9 +454,12 @@ export class TypeDocConverter {
    * 将一个反射的签名转换为模板需要的对象
    * @param {import('typedoc').DeclarationReflection} reflection
    * @param {import('typedoc').DeclarationReflection} parent
-   * @returns {undefined | import('../index.js').HBSTemplateContext | import('../index.js').HBSTemplateContext[]}
+   * @returns {undefined | import('../../index.js').HBSTemplateContext | import('../../index.js').HBSTemplateContext[]}
    */
-  packSignatures(reflection, parent) {
+  packSignatures(
+    reflection: DeclarationReflection,
+    parent: DeclarationReflection
+  ): undefined | HBSTemplateContext | HBSTemplateContext[] {
     const { inheritedFrom, implementationOf, signatures, name } = reflection;
     // 签名(定义)可能存在下面几种情况:
     // 1. extends 父类, 没有签名
@@ -439,7 +503,7 @@ export class TypeDocConverter {
     // 有重载的情况, 多个方法被声明, 目前就按多个处理
     return signatures.map((signature, index) => {
       const templateResult = this.reflectionToTemplateResult({
-        reflection: signature,
+        reflection: signature as unknown as DeclarationReflection,
         parent: reflection
       });
 
@@ -459,12 +523,14 @@ export class TypeDocConverter {
 
   /**
    * 将一个反射转换为模板需要的对象
-   * @param {Object} params
-   * @param {import('typedoc').DeclarationReflection} params.reflection
-   * @param {import('typedoc').DeclarationReflection} params.parent
-   * @returns {import('../index.d.ts').HBSTemplateContext}
    */
-  reflectionToTemplateResult({ reflection, parent }) {
+  reflectionToTemplateResult({
+    reflection,
+    parent
+  }: {
+    reflection: DeclarationReflection;
+    parent?: DeclarationReflection;
+  }): HBSTemplateContext {
     const kindName = ReflectionKindName[reflection.kind];
 
     this.logger.debug(
@@ -473,14 +539,24 @@ export class TypeDocConverter {
       reflection.id
     );
 
-    const { id, name, kind, type, parameters } = reflection;
+    const { id, name, kind, type, parameters } = reflection as unknown as {
+      id: number;
+      name: string;
+      kind: ReflectionKind;
+      type: SomeType;
+      parameters: ParameterReflection[];
+    };
 
     const { summary, blockTags } = this.getComments(reflection);
     const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
     const source = this.getRealSource(reflection, parent);
 
     const parametersList = parameters
-      ? this.toParametersList(parameters, reflection, parent)
+      ? this.toParametersList(
+          parameters,
+          reflection,
+          parent as unknown as DeclarationReflection
+        )
       : undefined;
 
     const result = {
@@ -491,9 +567,13 @@ export class TypeDocConverter {
       type: type ? this.getParamType(type) : undefined,
       summaryList: summary,
       blockTagsList,
-      source,
-      parametersList
-    };
+      returnValue: undefined,
+      parametersList: parametersList as unknown as ParameterReflection[],
+      source: source as unknown as SourceReference,
+      descriptionList: [],
+      members: [],
+      hasMembers: false
+    } as unknown as HBSTemplateContext;
 
     this.logger.debug(
       `Created! [${kindName}]`,
@@ -505,10 +585,11 @@ export class TypeDocConverter {
 
   /**
    * 检查结果, 添加一些标记, 方便模板直接渲染
-   * @param {import('../index.js').HBSTemplateContext} result
+   * @param {import('../../index.js').HBSTemplateContext} result
    */
-  adjustResult(result) {
-    const kindName = ReflectionKindName[result.kind];
+  adjustResult(result: HBSTemplateContext): HBSTemplateContext {
+    const kindName =
+      ReflectionKindName[result.kind as keyof typeof ReflectionKindName];
 
     return {
       ...result,
