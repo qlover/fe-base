@@ -4,7 +4,7 @@ import { dirname, join, resolve } from 'path';
 import { Command } from 'commander';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
-import { ReflectionGenerater } from '../lib/index.js';
+import { ReflectionGenerater } from '../dist/es/index.js';
 import { Logger } from '@qlover/fe-utils';
 const program = new Command();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,8 +43,11 @@ const main = async () => {
       ? resolve(options.outputJSONFilePath)
       : '',
     generatePath: resolve(options.generatePath),
-    tplPath
+    tplPath,
+    basePath: process.cwd()
   };
+
+  console.log('generaterOptions:', generaterOptions);
 
   const generater = new ReflectionGenerater({
     logger: new Logger({ debug: options.debug }),

@@ -239,12 +239,6 @@ When true, indicates the command is from an external source
 
 
 
-## Variable `LEVELS`
-Available log levels
-Used to categorize and control log output
-
-
-
 ## TypeAlias `LogArgument`
 
 `unknown`
@@ -256,5 +250,11 @@ Used to categorize and control log output
 
 `typeof LEVELS[keyof typeof LEVELS]`
 
+
+
+
+## Variable `LEVELS`
+Available log levels
+Used to categorize and control log output
 
 

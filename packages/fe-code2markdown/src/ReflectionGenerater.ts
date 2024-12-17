@@ -4,28 +4,32 @@ import { HBSTemplate } from './HBSTemplate.js';
 import { Utils } from './Utils.js';
 import { ProjectReader } from './ProjectReader.js';
 import { TypeDocConverter } from './TypeDocConverter.js';
+import { ParserContextMap, ReflectionGeneraterContext } from './type';
+import { Logger } from '@qlover/fe-utils';
 
 export class ReflectionGenerater {
-  /**
-   * @param {Partial<import('../index.d.ts').ReflectionGeneraterContext>} context
-   */
-  constructor(context) {
-    this.context = context;
-    this.reader = new ProjectReader(context);
+  private context: ReflectionGeneraterContext;
+  private reader: ProjectReader;
+  private sourceTemplate: HBSTemplate;
+
+  constructor(context: Partial<ReflectionGeneraterContext>) {
+    this.context = context as ReflectionGeneraterContext;
+    this.reader = new ProjectReader(context as ReflectionGeneraterContext);
     this.sourceTemplate = new HBSTemplate('context');
   }
 
-  get logger() {
+  get logger(): Logger {
     return this.context.logger;
   }
 
-  /**
-   * @returns {Promise<import('../index').ParserContextMap>}
-   */
-  async generateJson() {
+  async generateJson(): Promise<ParserContextMap> {
     // 为了获取完整的绝对路径，用convert的数据
     const app = await this.reader.getApp();
     const project = await app.convert();
+
+    if (!project) {
+      throw new Error('Failed to convert project');
+    }
 
     // save to local file
     await this.reader.writeTo(project);
@@ -44,10 +48,7 @@ export class ReflectionGenerater {
     return templateResults;
   }
 
-  /**
-   * @param {boolean} onlyJson
-   */
-  async generate(onlyJson) {
+  async generate(onlyJson: boolean): Promise<void> {
     const templateResults = await this.generateJson();
     if (onlyJson) {
       this.logger.info('Only generate JSON file');
@@ -71,10 +72,11 @@ export class ReflectionGenerater {
 
   /**
    * 获取模板结果的输出路径
-   * @param {string} fullFileName
-   * @returns {{docPaths: {docPath: string, docFullPath: string, docDir: string}, output: string}}
    */
-  getTemplateResultOutputPath(fullFileName) {
+  getTemplateResultOutputPath(fullFileName: string): {
+    docPaths: { docPath: string; docFullPath: string; docDir: string };
+    output: string;
+  } {
     const name = path.basename(fullFileName).split('.').slice(0, -1).join('.');
     const docPaths = Utils.extractDocumentationPath(
       this.context.options.entryPoints,

@@ -1,15 +1,21 @@
+import { Logger } from '@qlover/fe-utils';
 import fsExtra from 'fs-extra';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import {
+  Application,
+  JSONOutput,
+  ProjectReflection,
+  TSConfigReader,
+  TypeDocReader
+} from 'typedoc';
+import { ReflectionGeneraterContext } from './type';
 
 export class ProjectReader {
-  /**
-   * @param {import('../index.d.ts').ReflectionGeneraterContext} context
-   */
-  constructor(context) {
-    this.context = context;
-  }
+  private app?: Application;
+  private project?: ProjectReflection;
 
-  get logger() {
+  constructor(private context: ReflectionGeneraterContext) {}
+
+  get logger(): Logger {
     return this.context.logger;
   }
 
@@ -18,18 +24,20 @@ export class ProjectReader {
    * @param {string} path
    * @returns {import('typedoc').ProjectReflection}
    */
-  async load(path) {
+  async load(path: string): Promise<ProjectReflection | undefined> {
     path = path || this.context.options.outputJSONFilePath;
 
     if (!path) {
-      this.logger.warn('Ouput path is empty!');
+      this.logger.warn('ProjectReader load Ouput path is empty!');
       return;
     }
 
     if (!fsExtra.existsSync(path)) {
       return;
     }
-    const project = fsExtra.readJSONSync(path);
+    const project = fsExtra.readJSONSync(
+      path
+    ) as unknown as JSONOutput.ProjectReflection;
 
     const app = await this.getApp();
     const reflections = app.deserializer.reviveProject(project);
@@ -39,15 +47,11 @@ export class ProjectReader {
     return this.project;
   }
 
-  /**
-   * 写入项目
-   * @param {import('typedoc').ProjectReflection} project
-   */
-  async writeTo(project, path) {
-    path = path || this.outputPath;
+  async writeTo(project: ProjectReflection, path?: string): Promise<void> {
+    path = path || this.context.options.outputJSONFilePath;
 
     if (!path) {
-      this.logger.warn('Ouput path is empty!');
+      this.logger.warn('ProjectReader writeTo Ouput path is empty!');
       return;
     }
 
@@ -57,9 +61,9 @@ export class ProjectReader {
     this.logger.info('Generate JSON file success', path);
   }
 
-  writeJSON(value, path) {
+  writeJSON(value: unknown, path: string): void {
     if (!path) {
-      this.logger.warn('Ouput path is empty!');
+      this.logger.warn('ProjectReader writeJSON Ouput path is empty!');
       return;
     }
 
@@ -76,7 +80,7 @@ export class ProjectReader {
    * 获取应用
    * @returns {Promise<Application>}
    */
-  async getApp() {
+  async getApp(): Promise<Application> {
     if (this.app) {
       return this.app;
     }
@@ -84,6 +88,7 @@ export class ProjectReader {
     const app = await Application.bootstrap(
       {
         // typedoc options here
+        basePath: this.context.options.basePath,
         entryPoints: this.context.options.entryPoints,
         skipErrorChecking: true
       },

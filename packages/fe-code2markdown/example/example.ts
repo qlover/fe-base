@@ -228,5 +228,6 @@ export class ExampleClass {
    * ```
    * @param options options description
    */
+  // @ts-expect-error
   optionsMethods(options: ExampleOptionsInterface): void {}
 }
