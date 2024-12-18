@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createReleasePR } from '../scripts/release.js';
+import { createReleasePR } from '../dist/es/scripts/release.js';
 
 // parse command line arguments
 async function programArgs() {

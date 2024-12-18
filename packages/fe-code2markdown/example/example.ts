@@ -207,6 +207,7 @@ export class ExampleClass {
    * @param {string} privateParam Example param privateParam
    * @returns {string} Example return name + privateParam
    */
+  // @ts-expect-error
   private privateExampleMethod(name: string, privateParam: string): string {
     return name + privateParam;
   }
@@ -228,5 +229,6 @@ export class ExampleClass {
    * ```
    * @param options options description
    */
+  // @ts-expect-error
   optionsMethods(options: ExampleOptionsInterface): void {}
 }

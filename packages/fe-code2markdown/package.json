@@ -6,18 +6,25 @@
   "type": "module",
   "files": [
     "bin",
-    "hbs",
-    "lib",
+    "dist",
     "example",
+    "hbs",
     "package.json",
     "README.md"
   ],
-  "types": "./index.d.ts",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
   "exports": {
-    "./lib/*": "./lib/*",
+    ".": {
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/es/index.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
+    "build": "rollup -c",
     "build:docs": "node ./bin/code2md.js -p example/example.ts",
     "build:docs:json": "node ./bin/code2md.js -p example/example.ts --onlyJson"
   },
@@ -42,14 +49,14 @@
   },
   "devDependencies": {
     "fs-extra": "^11.2.0",
-    "typedoc": "~0.25.0",
     "typescript": "~5.4.0"
   },
   "dependencies": {
     "@microsoft/tsdoc": "^0.15.0",
     "@qlover/fe-utils": "latest",
+    "commander": "^11.0.0",
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
-    "commander": "^11.0.0"
+    "typedoc": "~0.25.0"
   }
 }
