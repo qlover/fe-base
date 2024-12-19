@@ -10,6 +10,7 @@ const pagesMaps: Record<string, () => LazyExoticComponent<any>> = {
   'base/Home': () => lazy(() => import('./base/Home')),
   'base/About': () => lazy(() => import('./base/About')),
   'base/JSONStorage': () => lazy(() => import('./base/JSONStorage')),
+  'base/Request': () => lazy(() => import('./base/Request')),
   '404': () => lazy(() => import('./404'))
 };
 

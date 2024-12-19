@@ -1,5 +1,9 @@
+import { OpenAIClient } from './../lib/aiApi/OpenAIClient';
 import { JSONStorage, SyncStorage } from '@qlover/fe-utils';
 
-export const localJsonStorage = new JSONStorage(
-  localStorage as unknown as SyncStorage<string>
-);
+const storage = localStorage as SyncStorage<string, string>;
+export const localJsonStorage = new JSONStorage(storage);
+
+export const openAIClient = new OpenAIClient({
+  baseURL: import.meta.env.VITE_OPENAI_API_URL
+});

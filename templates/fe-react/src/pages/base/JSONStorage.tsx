@@ -1,15 +1,11 @@
 import { useSliceStore } from '@qlover/slice-store-react';
 import { localJsonStorage } from '../../container';
-import { JSONStoragePageStore } from '../../store/pages/JSONStoragePageStore';
+import { JSONStoragePageStore } from '../../store';
 import { useMemo } from 'react';
 
 export default function JSONStorage() {
   const jsonStoragePageStore = useMemo(
-    () => {
-      const store = new JSONStoragePageStore(localJsonStorage);
-      console.log('store', store);
-      return store;
-    },
+    () => new JSONStoragePageStore(localJsonStorage),
     [localJsonStorage]
   );
   const jsonStoragePageState = useSliceStore(jsonStoragePageStore);
@@ -74,9 +70,7 @@ export default function JSONStorage() {
                 </div>
 
                 <button
-                  onClick={() =>
-                    jsonStoragePageStore.changeRandomTestKey2()
-                  }
+                  onClick={() => jsonStoragePageStore.changeRandomTestKey2()}
                   className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
                 >
                   设置随机值(带过期时间)
