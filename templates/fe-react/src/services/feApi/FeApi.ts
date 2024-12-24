@@ -3,11 +3,12 @@ import {
   FetchURLPlugin,
   RequestAdapterFetch,
   RequestAdpaterConfig,
-  RequestScheduler
+  RequestScheduler,
+  FetchAbortPlugin
 } from 'packages/fe-utils/common';
 
 export class FeApi extends RequestScheduler<RequestAdpaterConfig> {
-  constructor() {
+  constructor(private abortPlugin: FetchAbortPlugin) {
     super(
       new RequestAdapterFetch({
         responseType: 'json'
@@ -16,6 +17,10 @@ export class FeApi extends RequestScheduler<RequestAdpaterConfig> {
 
     this.usePlugin(new FetchURLPlugin());
     this.usePlugin(new ApiCommonPlugin());
+  }
+
+  stop(config: RequestAdpaterConfig) {
+    this.abortPlugin.abort(config);
   }
 
   async getIpInfo() {

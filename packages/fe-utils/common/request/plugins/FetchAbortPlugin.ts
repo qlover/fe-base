@@ -23,6 +23,11 @@ import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
  * **Not Support**
  * - Abort signal from outside
  *
+ * Request parameters serialized to be used as unique identifiers.
+ * Or you can pass in a specific requestid.
+ *
+ * You can also manually specify an onAbort callback that will be executed after termination.
+ *
  * @implements {ExecutorPlugin}
  *
  * @example
@@ -38,6 +43,22 @@ import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
  *
  * // Abort all pending requests
  * abortPlugin.abortAll();
+ * ```
+ *
+ * @example
+ *
+ * Use RequestId to identify the request
+ *
+ * ```typescript
+ * const abortPlugin = new AbortPlugin();
+ * const client = new FetchRequest();
+ * client.executor.use(abortPlugin);
+ *
+ * // Abort specific request
+ * const config = { url: '/api/data', requestId: '123' };
+ * abortPlugin.abort(config);
+ * // or
+ * abortPlugin.abort('123');
  * ```
  */
 export class FetchAbortPlugin implements ExecutorPlugin {
@@ -63,6 +84,10 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * ```
    */
   private generateRequestKey(config: RequestAdapterFetchConfig): string {
+    if (config.requestId) {
+      return config.requestId;
+    }
+
     const params = config.params ? JSON.stringify(config.params) : '';
     const data = config.body ? JSON.stringify(config.body) : '';
     return `${config.method || 'GET'}-${config.url}-${params}-${data}`;
@@ -192,8 +217,9 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * });
    * ```
    */
-  abort(config: RequestAdapterFetchConfig): void {
-    const key = this.generateRequestKey(config);
+  abort(config: RequestAdapterFetchConfig | string): void {
+    const key =
+      typeof config === 'string' ? config : this.generateRequestKey(config);
     const controller = this.controllers.get(key);
     if (controller) {
       controller.abort(
@@ -204,7 +230,10 @@ export class FetchAbortPlugin implements ExecutorPlugin {
       );
       // delete controller
       this.controllers.delete(key);
-      config.onAbort?.(config);
+
+      if (typeof config !== 'string' && typeof config.onAbort === 'function') {
+        config.onAbort.call(config, config);
+      }
     }
   }
 

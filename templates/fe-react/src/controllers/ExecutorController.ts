@@ -1,6 +1,4 @@
-import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
 import { BaseController } from './BaseController';
-import { logger } from '@/container';
 import { FeApi } from '@/services';
 import { cloneDeep } from 'lodash';
 import {

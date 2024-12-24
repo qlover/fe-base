@@ -14,7 +14,7 @@ export class RequestLogger
 
   onBefore({ parameters }: ExecutorContext<RequestAdapterFetchConfig>): void {
     this.logger.info(
-      `RequestLogger ${parameters.method} ${parameters.url}`,
+      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url}`,
       parameters
     );
   }
@@ -24,8 +24,18 @@ export class RequestLogger
     returnValue
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<void> {
     this.logger.info(
-      `RequestLogger ${parameters.method} ${parameters.url} [success] `,
+      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url} [success] `,
       returnValue
+    );
+  }
+
+  onError({
+    parameters,
+    error
+  }: ExecutorContext<RequestAdapterFetchConfig>): void {
+    this.logger.error(
+      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url} [error] `,
+      error
     );
   }
 }

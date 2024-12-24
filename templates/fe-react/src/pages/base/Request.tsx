@@ -59,6 +59,29 @@ export default function Request() {
           {JSON.stringify(requestControllerState.randomUserState.error)}
         </div>
       </div>
+
+      <div className="bg-white shadow-lg rounded-lg px-8 py-6">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          onClick={requestController.onTriggerAbortRequest}
+        >
+          {requestControllerState.abortState.loading
+            ? 'StopAbortRequest'
+            : 'TriggerAbortRequest'}
+          <span className="text-xs">
+            {requestControllerState.abortState.loading ? 'Loading...' : ''}
+          </span>
+        </button>
+
+        <div className="mt-4">
+          AbortRequest result is:{' '}
+          {JSON.stringify(requestControllerState.abortState.result)}
+        </div>
+        <div className="mt-4">
+          AbortRequest error is:{' '}
+          {JSON.stringify(requestControllerState.abortState.error)}
+        </div>
+      </div>
     </div>
   );
 }

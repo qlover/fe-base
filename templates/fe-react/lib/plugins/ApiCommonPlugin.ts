@@ -1,7 +1,7 @@
 import { get, isUndefined, set } from 'lodash';
 import {
   ExecutorPlugin,
-  RequestAdapterFetchConfig,
+  RequestAdpaterConfig,
   ExecutorContext,
   RequestAdapterResponse
 } from 'packages/fe-utils/common';
@@ -19,12 +19,12 @@ export type ApiCommonPluginConfig = {
 
   requestDataSerializer?: (
     data: unknown,
-    context: ExecutorContext<RequestAdapterFetchConfig>
+    context: ExecutorContext<RequestAdpaterConfig>
   ) => unknown;
 };
 
 export class ApiCommonPlugin
-  implements ExecutorPlugin<RequestAdapterFetchConfig, void>
+  implements ExecutorPlugin<RequestAdpaterConfig, void>
 {
   readonly pluginName = 'ApiCommonPlugin';
 
@@ -34,7 +34,7 @@ export class ApiCommonPlugin
     }
   }
 
-  onBefore(context: ExecutorContext<RequestAdapterFetchConfig>): void {
+  onBefore(context: ExecutorContext<RequestAdpaterConfig>): void {
     const {
       token,
       tokenPrefix,
@@ -78,16 +78,16 @@ export class ApiCommonPlugin
     }
   }
 
-  async onSuccess(
-    context: ExecutorContext<RequestAdapterFetchConfig>
-  ): Promise<void> {
-    const response = (
-      context.returnValue as RequestAdapterResponse<unknown, Response>
-    ).data;
+  async onSuccess({
+    returnValue,
+    parameters
+  }: ExecutorContext<RequestAdpaterConfig>): Promise<void> {
+    const response = (returnValue as RequestAdapterResponse<unknown, Response>)
+      .data;
 
     if (response instanceof Response) {
-      if (context.parameters.responseType === 'json') {
-        context.returnValue = await response.json();
+      if (parameters.responseType === 'json') {
+        returnValue = await response.json();
       }
     }
   }

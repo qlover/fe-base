@@ -18,12 +18,6 @@ export interface ApiMessage {
   role: 'user' | 'system' | 'assistant';
 }
 
-export interface OpenAIError extends Error {
-  response?: {
-    status: number;
-  };
-}
-
 export interface OpenAIChatParmas {
   model?: string;
   messages: ApiMessage[];
@@ -34,8 +28,11 @@ export type OpenAIAargs = {
   apiCommon: ApiCommonPluginConfig;
 };
 
+export type OpenAIClientConfig = Partial<RequestAdapterFetchConfig> &
+  OpenAIAargs;
+
 export class OpenAIClient extends RequestScheduler<RequestAdpaterConfig> {
-  constructor(config: Partial<RequestAdapterFetchConfig> & OpenAIAargs) {
+  constructor(config: OpenAIClientConfig) {
     const { apiCommon, ...rest } = config;
     super(new RequestAdapterFetch(rest));
 

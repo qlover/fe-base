@@ -100,6 +100,11 @@ export type RequestAdpaterConfig<RequestData = unknown> = {
     | 'stream'
     | 'formdata';
 
+  /**
+   * Request ID, used to identify the request in the abort plugin.
+   */
+  requestId?: string;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };

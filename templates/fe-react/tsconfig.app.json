@@ -21,8 +21,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@lib/*": ["./lib/*"],
+      "@config/*": ["./config/*"],
       "packages/*": ["../../packages/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "config", "lib"]
 }

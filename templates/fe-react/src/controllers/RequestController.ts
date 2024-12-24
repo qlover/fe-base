@@ -19,6 +19,11 @@ function createDefaultState() {
       loading: false,
       result: null as unknown,
       error: null as unknown
+    },
+    abortState: {
+      loading: false,
+      result: null as unknown,
+      error: null as unknown
     }
   };
 }
@@ -75,5 +80,26 @@ export class RequestController extends BaseController<RequestControllerState> {
         randomUserState: { loading: false, result: null, error }
       });
     }
+  };
+
+  onTriggerAbortRequest = async () => {
+    if (this.state.abortState.loading) {
+      this.stopAbortRequest();
+      return;
+    }
+
+    this.setState({ abortState: { loading: true, result: null, error: null } });
+    try {
+      await this.feApi.request({
+        method: 'GET',
+        url: 'https://api.example.com/users'
+      });
+    } catch (error) {
+      this.setState({ abortState: { loading: false, result: null, error } });
+    }
+  };
+
+  stopAbortRequest = async () => {
+    this.feApi.stop({ method: 'GET', url: 'https://api.example.com/users' });
   };
 }
