@@ -26,6 +26,14 @@
           "title": "FE-Utils JSONStorage",
           "icon": "info"
         }
+      },
+      {
+        "path": "request",
+        "element": "base/Request",
+        "meta": {
+          "title": "FE-Utils Request",
+          "icon": "info"
+        }
       }
     ]
   },

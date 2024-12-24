@@ -50,6 +50,8 @@ export type RequestAdpaterConfig<RequestData = unknown> = {
   /**
    * Request body data
    *
+   * Mapping fetch `body`
+   *
    * @typeParam RequestData - The type of the request body data.
    * @example
    * ```typescript
@@ -117,6 +119,7 @@ export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
   statusText: string;
   headers: { [key: string]: unknown };
   config: RequestAdpaterConfig<Req>;
+  response: Response;
 
   [key: string]: unknown;
 };

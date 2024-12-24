@@ -3,7 +3,8 @@ import {
   ExecutorContext,
   RequestError,
   RequestErrorID,
-  RequestAdpaterConfig
+  RequestAdpaterConfig,
+  RequestAdapterResponse
 } from '../../../interface';
 
 /**
@@ -170,10 +171,13 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const response = urlPlugin.onSuccess(fetchResponse);
    * ```
    */
-  onSuccess(context: ExecutorContext): Response {
-    const result = context.returnValue as Response;
+  onSuccess(context: ExecutorContext): void {
+    const result = context.returnValue as RequestAdapterResponse<
+      unknown,
+      Response
+    >;
     // if response is not ok, throw error
-    if (!result.ok) {
+    if (!result.response.ok) {
       const requestError = new RequestError(
         RequestErrorID.RESPONSE_NOT_OK,
         `Request failed with status: ${result.status} ${result.statusText}`
@@ -184,8 +188,6 @@ export class FetchURLPlugin implements ExecutorPlugin {
 
       throw requestError;
     }
-
-    return result;
   }
 
   /**

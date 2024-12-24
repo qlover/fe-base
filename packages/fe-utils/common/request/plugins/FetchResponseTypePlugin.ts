@@ -144,6 +144,7 @@ export class FetchResponseTypePlugin implements ExecutorPlugin {
 
     while (true) {
       const { done, value } = await reader!.read();
+      console.log('done', done, value);
       if (done) break;
       chunks.push(value);
       receivedLength += value.length;

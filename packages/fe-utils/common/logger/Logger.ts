@@ -120,7 +120,7 @@ export class Logger {
    * ```
    */
   prefix(value: string, _level?: LogLevel): string | string[] {
-    return value + ' ';
+    return value;
   }
 
   /**

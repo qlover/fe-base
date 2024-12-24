@@ -4,10 +4,12 @@ import {
   RequestAdpaterConfig,
   ExecutorError,
   ExecutorPlugin,
-  RequestErrorID
+  RequestErrorID,
+  PromiseTask
 } from '../../../interface';
 import { AsyncExecutor } from '../../executor';
 import { merge } from 'merge';
+import pick from 'lodash/pick';
 
 /**
  * Request adapter fetch configuration
@@ -18,18 +20,33 @@ import { merge } from 'merge';
  *
  * @since 1.0.14
  */
-export type RequestAdapterFetchConfig<Request = unknown> =
-  globalThis.RequestInit &
-    RequestAdpaterConfig<Request> & {
-      fetcher?: typeof fetch;
+export type RequestAdapterFetchConfig<Request = unknown> = Omit<
+  globalThis.RequestInit,
+  'headers'
+> &
+  RequestAdpaterConfig<Request> & {
+    fetcher?: typeof fetch;
 
-      onStreamProgress?: (progress: number) => void;
+    onStreamProgress?: (progress: number) => void;
 
-      signal?: AbortSignal;
+    signal?: AbortSignal;
 
-      onAbort?(config: RequestAdapterFetchConfig): void;
-    };
+    onAbort?(config: RequestAdapterFetchConfig): void;
+  };
 
+const reqInitAttrs = [
+  'cache',
+  'credentials',
+  'headers',
+  'integrity',
+  'keepalive',
+  'mode',
+  'priority',
+  'redirect',
+  'referrer',
+  'referrerPolicy',
+  'signal'
+];
 export class RequestAdapterFetch
   implements RequestAdapterInterface<RequestAdapterFetchConfig>
 {
@@ -97,7 +114,11 @@ export class RequestAdapterFetch
     config: RequestAdapterFetchConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const thisConfig = this.getConfig();
-    const mergedConfig = merge({}, thisConfig, config);
+    const mergedConfig = merge(
+      {},
+      thisConfig,
+      config
+    ) as RequestAdapterFetchConfig<Request>;
     const { fetcher, ...rest } = mergedConfig;
 
     if (typeof fetcher !== 'function') {
@@ -108,9 +129,73 @@ export class RequestAdapterFetch
       throw new ExecutorError(RequestErrorID.URL_NONE);
     }
 
-    return this.executor.exec(rest, (context) =>
-      // TODO: fix fetcher second parameter type
-      fetcher(context.parameters.url as string, context.parameters)
-    ) as unknown as Promise<RequestAdapterResponse<Request, Response>>;
+    const task: PromiseTask<
+      RequestAdapterResponse<Request, Response>,
+      RequestAdapterFetchConfig<Request>
+    > = async (context) => {
+      const response = await fetcher(
+        this.parametersToRequest(context.parameters)
+      );
+
+      const result = this.toAdapterResponse(
+        response,
+        response,
+        context.parameters
+      );
+
+      return result as RequestAdapterResponse<Request, Response>;
+    };
+
+    return this.executor.exec(rest, task);
+  }
+
+  parametersToRequest(parameters: RequestAdapterFetchConfig): Request {
+    const { url = '/', method = 'GET', data } = parameters;
+    const init = pick(parameters, reqInitAttrs);
+    return new Request(
+      url,
+      Object.assign(init, {
+        // FIXME: data is unknown type
+        body: data as BodyInit,
+        method: method.toUpperCase()
+      })
+    );
+  }
+
+  /**
+   * Converts the raw fetch response into a standardized adapter response.
+   *
+   * @param data The data extracted from the response based on the response type.
+   * @param response The original fetch Response object.
+   * @param config The configuration used for the fetch request.
+   * @returns A RequestAdapterResponse containing the processed response data.
+   */
+  toAdapterResponse<Request>(
+    data: unknown,
+    response: Response,
+    config: RequestAdapterFetchConfig<Request>
+  ): RequestAdapterResponse<Request> {
+    return {
+      data,
+      status: response.status,
+      statusText: response.statusText,
+      headers: this.getResponseHeaders(response),
+      config,
+      response
+    };
+  }
+
+  /**
+   * Extracts headers from the fetch Response object and returns them as a record.
+   *
+   * @param response The fetch Response object from which headers are extracted.
+   * @returns A record of headers with header names as keys and header values as values.
+   */
+  getResponseHeaders(response: Response): Record<string, string> {
+    const headersObj: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      headersObj[key] = value;
+    });
+    return headersObj;
   }
 }
