@@ -6,7 +6,11 @@ import {
   Logger,
   SyncStorage
 } from 'packages/fe-utils/common';
-import { JSONStorageController, RequestController } from './controllers';
+import {
+  ExecutorController,
+  JSONStorageController,
+  RequestController
+} from './controllers';
 import { FeApi } from './services';
 
 // common api
@@ -18,6 +22,9 @@ export const localJsonStorage = new JSONStorage(
   localStorage as SyncStorage<string, string>,
   JSON
 );
+
+// common plugins
+const requestLogger = new RequestLogger(logger);
 
 // open ai api
 export const openAiApi = new OpenAIClient({
@@ -37,12 +44,9 @@ export const openAiApi = new OpenAIClient({
       return JSON.stringify(data);
     }
   }
-});
-const requestLogger = new RequestLogger(logger);
-openAiApi.usePlugin(requestLogger);
+}).usePlugin(requestLogger);
 
-export const feApi = new FeApi();
-feApi.usePlugin(requestLogger);
+export const feApi = new FeApi().usePlugin(requestLogger);
 
 // ui layer controller
 export const jsonStorageController = new JSONStorageController(
@@ -50,3 +54,4 @@ export const jsonStorageController = new JSONStorageController(
 );
 
 export const requestController = new RequestController(openAiApi, feApi);
+export const executorController = new ExecutorController(feApi);

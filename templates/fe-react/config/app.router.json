@@ -34,6 +34,14 @@
           "title": "FE-Utils Request",
           "icon": "info"
         }
+      },
+      {
+        "path": "executor",
+        "element": "base/Executor",
+        "meta": {
+          "title": "FE-Utils Executor",
+          "icon": "info"
+        }
       }
     ]
   },

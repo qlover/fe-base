@@ -84,6 +84,7 @@ export class AsyncExecutor extends Executor {
       if (pluginResult !== undefined) {
         if (hookName === 'onError') {
           context.error = pluginResult;
+          context.runtimes = undefined;
           return context;
         }
 
