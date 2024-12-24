@@ -153,9 +153,9 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContext<RequestAdpaterConfig>): void {
+  onBefore({ parameters }: ExecutorContext<RequestAdpaterConfig>): void {
     // compose url and params
-    context.parameters.url = this.buildUrl(context.parameters);
+    parameters.url = this.buildUrl(parameters);
   }
 
   /**
@@ -171,11 +171,8 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const response = urlPlugin.onSuccess(fetchResponse);
    * ```
    */
-  onSuccess(context: ExecutorContext): void {
-    const result = context.returnValue as RequestAdapterResponse<
-      unknown,
-      Response
-    >;
+  onSuccess({ returnValue }: ExecutorContext): void {
+    const result = returnValue as RequestAdapterResponse<unknown, Response>;
     // if response is not ok, throw error
     if (!result.response.ok) {
       const requestError = new RequestError(
@@ -184,7 +181,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
       );
 
       // @ts-expect-error Experimental: add response to error
-      requestError.response = result;
+      requestError.response = result.response;
 
       throw requestError;
     }
@@ -202,8 +199,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const error = urlPlugin.onError(new Error('Network Error'));
    * ```
    */
-  onError(context: ExecutorContext): RequestError {
-    const error = context.error as Error;
+  onError({ error }: ExecutorContext): RequestError {
     return error instanceof RequestError
       ? error
       : new RequestError(RequestErrorID.REQUEST_ERROR, error);

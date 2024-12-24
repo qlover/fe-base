@@ -16,9 +16,10 @@ describe('ExecutorError', () => {
   });
 
   it('should create an error with the id as the message if no originalError is provided', () => {
-    const error = new ExecutorError('ERROR_ID');
-    expect(error.message).toBe('ERROR_ID');
-    expect(error.id).toBe('ERROR_ID');
+    const errorId = 'ERROR_ID';
+    const error = new ExecutorError(errorId);
+    expect(error.message).toBe(errorId);
+    expect(error.id).toBe(errorId);
   });
 
   it('should maintain the prototype chain', () => {

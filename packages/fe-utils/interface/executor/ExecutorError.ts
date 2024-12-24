@@ -44,7 +44,9 @@ export class ExecutorError extends Error {
     originalError?: string | Error
   ) {
     super(
-      originalError instanceof Error ? originalError.message : originalError
+      originalError instanceof Error
+        ? originalError.message
+        : originalError || id
     );
 
     // if originalError is an Error object, use its stack

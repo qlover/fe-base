@@ -193,6 +193,7 @@ export class RequestAdapterFetch
    */
   getResponseHeaders(response: Response): Record<string, string> {
     const headersObj: Record<string, string> = {};
+
     response.headers.forEach((value, key) => {
       headersObj[key] = value;
     });

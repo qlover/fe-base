@@ -49,7 +49,7 @@ describe('Logger', () => {
 
     log.error('foo');
 
-    expect(lastStdout()).toBe('ERROR foo');
+    expect(lastStdout()).toBe('ERRORfoo');
 
     end();
   });
@@ -59,7 +59,7 @@ describe('Logger', () => {
 
     log.warn('foo');
 
-    expect(lastStdout()).toBe('WARN foo');
+    expect(lastStdout()).toBe('WARNfoo');
 
     end();
   });
@@ -68,7 +68,7 @@ describe('Logger', () => {
     const { log, lastStdout, end } = mockLogStdIo(new Logger({ debug: true }));
 
     log.debug('foo');
-    expect(lastStdout()).toBe('DEBUG foo');
+    expect(lastStdout()).toBe('DEBUGfoo');
 
     end();
   });
@@ -77,7 +77,7 @@ describe('Logger', () => {
     const { log, lastStdout, end } = mockLogStdIo(new Logger({ debug: true }));
 
     log.debug({ foo: 'bar' });
-    expect(lastStdout()).toBe('DEBUG {"foo":"bar"}');
+    expect(lastStdout()).toBe('DEBUG{"foo":"bar"}');
 
     end();
   });
@@ -86,7 +86,7 @@ describe('Logger', () => {
     const { log, lastStdout, end } = mockLogStdIo(new Logger({ debug: true }));
 
     log.debug(['foo', 'bar']);
-    expect(lastStdout()).toBe('DEBUG ["foo","bar"]');
+    expect(lastStdout()).toBe('DEBUG["foo","bar"]');
 
     end();
   });

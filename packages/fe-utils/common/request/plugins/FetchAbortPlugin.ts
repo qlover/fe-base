@@ -80,31 +80,32 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const modifiedConfig = abortPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContext): RequestAdapterFetchConfig {
-    const config = context.parameters as RequestAdapterFetchConfig;
-    const key = this.generateRequestKey(config);
+  onBefore({
+    parameters
+  }: ExecutorContext<RequestAdapterFetchConfig>): RequestAdapterFetchConfig {
+    const key = this.generateRequestKey(parameters);
 
     // abort previous request
     if (this.controllers.has(key)) {
-      this.abort(config);
+      this.abort(parameters);
     }
 
     // Check if config already has a signal
-    if (!config.signal) {
+    if (!parameters.signal) {
       const controller = new AbortController();
       this.controllers.set(key, controller);
 
       // extends config with abort signal
-      config.signal = controller.signal;
+      parameters.signal = controller.signal;
     }
 
-    return config;
+    return parameters;
   }
 
-  onSuccess(_: unknown, config?: RequestAdapterFetchConfig): void {
+  onSuccess({ parameters }: ExecutorContext<RequestAdapterFetchConfig>): void {
     // delete controller
-    if (config) {
-      this.controllers.delete(this.generateRequestKey(config));
+    if (parameters) {
+      this.controllers.delete(this.generateRequestKey(parameters));
     }
   }
 
@@ -121,14 +122,15 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const error = abortPlugin.onError(new Error('AbortError'), config);
    * ```
    */
-  onError(context: ExecutorContext): RequestError | void {
-    const error = context.error as Error;
-    const config = context.parameters as RequestAdapterFetchConfig;
+  onError({
+    error,
+    parameters
+  }: ExecutorContext<RequestAdapterFetchConfig>): RequestError | void {
     // only handle plugin related error，other error should be handled by other plugins
     if (this.isSameAbortError(error)) {
-      if (config) {
+      if (parameters) {
         // controller may be deleted in .abort, this is will be undefined
-        const key = this.generateRequestKey(config);
+        const key = this.generateRequestKey(parameters);
         const controller = this.controllers.get(key);
         this.controllers.delete(key);
 
@@ -151,7 +153,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * @returns True if the error is an abort error, false otherwise
    *
    */
-  isSameAbortError(error: Error): boolean {
+  isSameAbortError(error?: Error): boolean {
     // Check if the error is an instance of AbortError
     if (error instanceof Error && error.name === 'AbortError') {
       return true;
