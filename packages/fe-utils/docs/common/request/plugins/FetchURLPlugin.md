@@ -126,7 +126,7 @@ urlPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<RequestAdpaterConfig>` |  |  |
+|  config  | Request configuration | `ExecutorContext<RequestAdpaterConfig>` |  |  |
 
 
 ### onError
@@ -143,7 +143,7 @@ const error = urlPlugin.onError(new Error('Network Error'));
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<unknown>` |  |  |
+|  error  | Original error | `ExecutorContext<unknown>` |  |  |
 
 
 ### onSuccess
@@ -164,5 +164,5 @@ const response = urlPlugin.onSuccess(fetchResponse);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<unknown>` |  |  |
+|  result  | Fetch response | `ExecutorContext<unknown>` |  |  |
 

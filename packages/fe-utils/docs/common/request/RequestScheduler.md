@@ -79,6 +79,7 @@ Executes a CONNECT request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the CONNECT request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -89,6 +90,7 @@ Executes a DELETE request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the DELETE request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -99,6 +101,7 @@ Executes a GET request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the GET request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -109,6 +112,7 @@ Executes a HEAD request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the HEAD request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -119,6 +123,7 @@ Executes an OPTIONS request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the OPTIONS request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -129,6 +134,7 @@ Executes a PATCH request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the PATCH request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -139,6 +145,7 @@ Executes a POST request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the POST request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -149,6 +156,7 @@ Executes a PUT request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the PUT request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
@@ -173,6 +181,7 @@ Executes a TRACE request.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
+|  url  |  | `string` |  |  |
 |  config  | The configuration for the TRACE request. | `RequestAdpaterConfig<Request>` |  |  |
 
 
