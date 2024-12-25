@@ -80,7 +80,7 @@ Executes a CONNECT request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the CONNECT request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the CONNECT request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### delete
@@ -91,7 +91,7 @@ Executes a DELETE request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the DELETE request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the DELETE request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### get
@@ -102,7 +102,7 @@ Executes a GET request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the GET request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the GET request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### head
@@ -113,7 +113,7 @@ Executes a HEAD request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the HEAD request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the HEAD request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### options
@@ -124,7 +124,7 @@ Executes an OPTIONS request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the OPTIONS request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the OPTIONS request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### patch
@@ -135,7 +135,7 @@ Executes a PATCH request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the PATCH request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the PATCH request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### post
@@ -146,7 +146,7 @@ Executes a POST request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the POST request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the POST request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### put
@@ -157,7 +157,7 @@ Executes a PUT request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the PUT request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the PUT request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### request
@@ -171,7 +171,7 @@ Executes a request with the given configuration.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | The configuration for the request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### trace
@@ -182,7 +182,7 @@ Executes a TRACE request.
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
-|  config  | The configuration for the TRACE request. | `RequestAdpaterConfig<Request>` |  |  |
+|  config  | The configuration for the TRACE request. | `RequestAdapterConfig<Request>` |  |  |
 
 
 ### usePlugin

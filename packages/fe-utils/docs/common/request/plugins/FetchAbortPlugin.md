@@ -83,7 +83,7 @@ abortPlugin.abort({
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Configuration of request to abort | `string \| RequestAdapterFetchConfig` |  |  |
+|  config  | Configuration of request to abort | `string \| RequestAdapterConfig` |  |  |
 
 
 ### abortAll
@@ -116,7 +116,7 @@ const key = abortPlugin.generateRequestKey(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterFetchConfig` |  |  |
+|  config  | Request configuration | `RequestAdapterConfig` |  |  |
 
 
 ### isSameAbortError
@@ -147,7 +147,7 @@ const modifiedConfig = abortPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `ExecutorContext<RequestAdapterFetchConfig>` |  |  |
+|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig>` |  |  |
 
 
 ### onError
@@ -164,7 +164,7 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  __namedParameters  |  | `ExecutorContext<RequestAdapterFetchConfig>` |  |  |
+|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig>` |  |  |
 
 
 ### onSuccess
@@ -175,5 +175,5 @@ Can transform the task result
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  __namedParameters  |  | `ExecutorContext<RequestAdapterFetchConfig>` |  |  |
+|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig>` |  |  |
 

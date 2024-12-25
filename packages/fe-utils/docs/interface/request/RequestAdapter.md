@@ -39,21 +39,10 @@ adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(r
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  options  | The configuration options for the request. | `RequestAdpaterConfig<Request>` |  |  |
+|  options  | The configuration options for the request. | `RequestAdapterConfig<Request>` |  |  |
 
 
-## TypeAlias `RequestAdapterResponse`
-
-`Object`
-
-Request adapter response
-
-This type defines the structure of a response from a request adapter.
-It includes the response data, status, headers, and the original request configuration.
-
-
-
-## TypeAlias `RequestAdpaterConfig`
+## TypeAlias `RequestAdapterConfig`
 
 `Object`
 
@@ -66,5 +55,16 @@ The main purpose is to provide a flexible structure for configuring HTTP request
 @since 
 
 1.0.14
+
+
+
+## TypeAlias `RequestAdapterResponse`
+
+`Object`
+
+Request adapter response
+
+This type defines the structure of a response from a request adapter.
+It includes the response data, status, headers, and the original request configuration.
 
 

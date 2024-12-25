@@ -105,7 +105,7 @@ Converts the raw fetch response into a standardized adapter response.
 
 ## TypeAlias `RequestAdapterFetchConfig`
 
-`Omit<globalThis.RequestInit, "headers"> & RequestAdpaterConfig<Request> & Object`
+`Omit<globalThis.RequestInit, "headers"> & RequestAdapterConfig<Request> & Object`
 
 Request adapter fetch configuration
 
