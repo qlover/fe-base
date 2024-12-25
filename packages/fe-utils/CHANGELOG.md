@@ -1,5 +1,12 @@
 
 
+## [1.1.2](https://github.com/qlover/fe-base/compare/fe-utils-v1.1.1...fe-utils-v1.1.2) (2024-12-25)
+
+
+### Features
+
+* Template fe react ([#183](https://github.com/qlover/fe-base/issues/183)) ([d044a49](https://github.com/qlover/fe-base/commit/d044a49917f647179eb4d8c391a13a785627e02c))
+
 ## [1.1.1](https://github.com/qlover/fe-base/compare/fe-utils-v1.0.19...fe-utils-v1.1.1) (2024-12-17)
 
 
