@@ -1,3 +1,5 @@
+import { ExecutorPlugin } from './ExecutorPlugin';
+
 /**
  * Represents the context in which a task is executed.
  *
@@ -50,4 +52,27 @@ export interface ExecutorContext<Params = unknown> {
    * @type {unknown | undefined}
    */
   returnValue?: unknown;
+
+  /**
+   * The runtime information of the task.
+   *
+   * This property is optional and will contain the runtime information
+   * of the task if it is executed.
+   *
+   * property is read-only
+   *
+   * will return a frozen object that will be cleared after the chain execution is complete.
+   *
+   * @type {{
+   *   readonly plugin: ExecutorPlugin;
+   *   readonly hookName: string;
+   * }}
+   */
+  runtimes?: {
+    readonly plugin: ExecutorPlugin;
+    readonly hookName: string;
+
+    // additional runtime information, or custom information
+    [key: string]: unknown;
+  };
 }

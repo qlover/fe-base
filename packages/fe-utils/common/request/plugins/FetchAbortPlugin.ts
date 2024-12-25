@@ -2,9 +2,9 @@ import {
   ExecutorPlugin,
   RequestErrorID,
   RequestError,
-  ExecutorContext
+  ExecutorContext,
+  RequestAdapterConfig
 } from '../../../interface';
-import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
 
 /**
  * Plugin for handling request cancellation
@@ -23,6 +23,11 @@ import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
  * **Not Support**
  * - Abort signal from outside
  *
+ * Request parameters serialized to be used as unique identifiers.
+ * Or you can pass in a specific requestid.
+ *
+ * You can also manually specify an onAbort callback that will be executed after termination.
+ *
  * @implements {ExecutorPlugin}
  *
  * @example
@@ -38,6 +43,22 @@ import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
  *
  * // Abort all pending requests
  * abortPlugin.abortAll();
+ * ```
+ *
+ * @example
+ *
+ * Use RequestId to identify the request
+ *
+ * ```typescript
+ * const abortPlugin = new AbortPlugin();
+ * const client = new FetchRequest();
+ * client.executor.use(abortPlugin);
+ *
+ * // Abort specific request
+ * const config = { url: '/api/data', requestId: '123' };
+ * abortPlugin.abort(config);
+ * // or
+ * abortPlugin.abort('123');
  * ```
  */
 export class FetchAbortPlugin implements ExecutorPlugin {
@@ -62,7 +83,11 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const key = abortPlugin.generateRequestKey(config);
    * ```
    */
-  private generateRequestKey(config: RequestAdapterFetchConfig): string {
+  private generateRequestKey(config: RequestAdapterConfig): string {
+    if (config.requestId) {
+      return config.requestId;
+    }
+
     const params = config.params ? JSON.stringify(config.params) : '';
     const data = config.body ? JSON.stringify(config.body) : '';
     return `${config.method || 'GET'}-${config.url}-${params}-${data}`;
@@ -80,31 +105,32 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const modifiedConfig = abortPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContext): RequestAdapterFetchConfig {
-    const config = context.parameters as RequestAdapterFetchConfig;
-    const key = this.generateRequestKey(config);
+  onBefore({
+    parameters
+  }: ExecutorContext<RequestAdapterConfig>): RequestAdapterConfig {
+    const key = this.generateRequestKey(parameters);
 
     // abort previous request
     if (this.controllers.has(key)) {
-      this.abort(config);
+      this.abort(parameters);
     }
 
     // Check if config already has a signal
-    if (!config.signal) {
+    if (!parameters.signal) {
       const controller = new AbortController();
       this.controllers.set(key, controller);
 
       // extends config with abort signal
-      config.signal = controller.signal;
+      parameters.signal = controller.signal;
     }
 
-    return config;
+    return parameters;
   }
 
-  onSuccess(_: unknown, config?: RequestAdapterFetchConfig): void {
+  onSuccess({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
     // delete controller
-    if (config) {
-      this.controllers.delete(this.generateRequestKey(config));
+    if (parameters) {
+      this.controllers.delete(this.generateRequestKey(parameters));
     }
   }
 
@@ -121,14 +147,15 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const error = abortPlugin.onError(new Error('AbortError'), config);
    * ```
    */
-  onError(context: ExecutorContext): RequestError | void {
-    const error = context.error as Error;
-    const config = context.parameters as RequestAdapterFetchConfig;
+  onError({
+    error,
+    parameters
+  }: ExecutorContext<RequestAdapterConfig>): RequestError | void {
     // only handle plugin related error，other error should be handled by other plugins
     if (this.isSameAbortError(error)) {
-      if (config) {
+      if (parameters) {
         // controller may be deleted in .abort, this is will be undefined
-        const key = this.generateRequestKey(config);
+        const key = this.generateRequestKey(parameters);
         const controller = this.controllers.get(key);
         this.controllers.delete(key);
 
@@ -151,7 +178,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * @returns True if the error is an abort error, false otherwise
    *
    */
-  isSameAbortError(error: Error): boolean {
+  isSameAbortError(error?: Error): boolean {
     // Check if the error is an instance of AbortError
     if (error instanceof Error && error.name === 'AbortError') {
       return true;
@@ -190,8 +217,9 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * });
    * ```
    */
-  abort(config: RequestAdapterFetchConfig): void {
-    const key = this.generateRequestKey(config);
+  abort(config: RequestAdapterConfig | string): void {
+    const key =
+      typeof config === 'string' ? config : this.generateRequestKey(config);
     const controller = this.controllers.get(key);
     if (controller) {
       controller.abort(
@@ -202,7 +230,10 @@ export class FetchAbortPlugin implements ExecutorPlugin {
       );
       // delete controller
       this.controllers.delete(key);
-      config.onAbort?.(config);
+
+      if (typeof config !== 'string' && typeof config.onAbort === 'function') {
+        config.onAbort.call(config, config);
+      }
     }
   }
 

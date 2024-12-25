@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { RequestAdapterAxios } from '../../request/adapter';
 import { RequestAdapterFetch } from '../../request/adapter';
-import { FetchResponseTypePlugin } from '../../request/plugins';
 import { RequestScheduler } from '../../request/RequestScheduler';
 
 async function checkNetworkConnection(): Promise<boolean> {
@@ -31,8 +30,6 @@ describe.skip('Use RequestScheduler with network', () => {
     const adapter = new RequestAdapterFetch();
     const scheduler = new RequestScheduler(adapter);
 
-    scheduler.usePlugin(new FetchResponseTypePlugin());
-
     const response = await scheduler.request({
       url: 'https://api.github.com/users/octocat'
     });
@@ -52,26 +49,6 @@ describe.skip('Use RequestScheduler with network', () => {
 
     const response = await scheduler.request({
       url: 'https://api.github.com/users/octocat'
-    });
-
-    expect(response.status).toBe(200);
-    expect(response.statusText).toBe('OK');
-    expect(response.data).toBeDefined();
-  });
-
-  it('should handle fetch response stream type', async () => {
-    if (!hasNetwork) {
-      return;
-    }
-
-    const adapter = new RequestAdapterFetch();
-    const scheduler = new RequestScheduler(adapter);
-
-    scheduler.usePlugin(new FetchResponseTypePlugin());
-
-    const response = await scheduler.request({
-      url: 'https://httpbin.org/stream/2',
-      responseType: 'stream'
     });
 
     expect(response.status).toBe(200);

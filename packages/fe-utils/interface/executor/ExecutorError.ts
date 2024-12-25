@@ -44,14 +44,14 @@ export class ExecutorError extends Error {
     originalError?: string | Error
   ) {
     super(
-      typeof originalError === 'string'
-        ? originalError
-        : originalError?.message || id
+      originalError instanceof Error
+        ? originalError.message
+        : originalError || id
     );
 
+    // if originalError is an Error object, use its stack
     if (originalError instanceof Error && 'stack' in originalError) {
-      // TODO: merge stacks
-      // this.stack = this.getMergedStack(originalError.stack!, this.stack!);
+      this.stack = originalError.stack;
     }
 
     Object.setPrototypeOf(this, new.target.prototype);

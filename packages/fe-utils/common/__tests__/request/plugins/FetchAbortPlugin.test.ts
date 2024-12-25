@@ -38,26 +38,24 @@ describe('FetchAbortPlugin', () => {
     const onAbortMock = jest.fn();
 
     const firstConfig = {
-      url: '/api/test0',
+      url: 'https://api.example.com/api/test0',
       method: 'GET',
       onAbort: onAbortMock
     } as const;
 
     // mock a fetch implementation that can respond to abort
-    fetchMock.mockImplementationOnce(
-      (_url, options: globalThis.RequestInit) => {
-        return new Promise((resolve, reject) => {
-          const timeoutId = setTimeout(() => {
-            resolve(new Response('first response'));
-          }, 1000);
+    fetchMock.mockImplementationOnce((request: Request) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve(new Response('first response'));
+        }, 1000);
 
-          options.signal?.addEventListener('abort', (e) => {
-            clearTimeout(timeoutId);
-            reject(e);
-          });
+        request.signal?.addEventListener('abort', (e) => {
+          clearTimeout(timeoutId);
+          reject(e);
         });
-      }
-    );
+      });
+    });
 
     const firstRequest = request.request(firstConfig);
 
@@ -86,36 +84,48 @@ describe('FetchAbortPlugin', () => {
 
     // mock `RequestAdapterResponse` type
     fetchMock
-      .mockImplementationOnce(() => Promise.resolve({ data: firstResponse }))
-      .mockImplementationOnce(() => Promise.resolve({ data: secondResponse }));
+      .mockImplementationOnce(() =>
+        Promise.resolve(
+          new Response(firstResponse, {
+            status: 200
+          })
+        )
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve(
+          new Response(secondResponse, {
+            status: 200
+          })
+        )
+      );
 
     const firstRequest = request.request({
-      url: '/api/test1',
+      url: 'https://api.example.com/api/test1',
       method: 'GET'
     });
 
     const secondRequest = request.request({
-      url: '/api/test2',
+      url: 'https://api.example.com/api/test2',
       method: 'GET'
     });
 
     const [first, second] = await Promise.all([firstRequest, secondRequest]);
 
-    expect(first.data).toEqual(firstResponse);
-    expect(second.data).toEqual(secondResponse);
+    await expect(first.response.text()).resolves.toEqual(firstResponse);
+    await expect(second.response.text()).resolves.toEqual(secondResponse);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('should auto abort request with same URL', async () => {
     const onAbortMock = jest.fn();
 
-    fetchMock.mockImplementation((_url, options: globalThis.RequestInit) => {
+    fetchMock.mockImplementation((request: Request) => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('response'));
         }, 1000);
 
-        options.signal?.addEventListener('abort', (e) => {
+        request.signal?.addEventListener('abort', (e) => {
           clearTimeout(timeoutId);
           reject(e);
         });
@@ -123,7 +133,7 @@ describe('FetchAbortPlugin', () => {
     });
 
     const config = {
-      url: '/api/test4',
+      url: 'https://api.example.com/api/test4',
       method: 'GET',
       onAbort: onAbortMock
     } as const;
@@ -144,7 +154,8 @@ describe('FetchAbortPlugin', () => {
 
     expect(results[1].status).toBe('fulfilled');
     if (results[1].status === 'fulfilled') {
-      expect(results[1].value).toBeInstanceOf(Response);
+      expect(results[1].value.data).toBeInstanceOf(Response);
+      expect(results[1].value.response).toBeInstanceOf(Response);
     }
 
     expect(onAbortMock).toHaveBeenCalledTimes(1);
@@ -174,25 +185,23 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const onAbortMock = jest.fn();
 
     const config = {
-      url: '/api/test-multi-plugin',
+      url: 'https://api.example.com/api/test-multi-plugin',
       method: 'GET',
       onAbort: onAbortMock
     } as const;
 
-    fetchMock.mockImplementationOnce(
-      (_url, options: globalThis.RequestInit) => {
-        return new Promise((resolve, reject) => {
-          const timeoutId = setTimeout(() => {
-            resolve(new Response('response'));
-          }, 1000);
+    fetchMock.mockImplementationOnce((request: Request) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve(new Response('response'));
+        }, 1000);
 
-          options.signal?.addEventListener('abort', (e) => {
-            clearTimeout(timeoutId);
-            reject(e);
-          });
+        request.signal?.addEventListener('abort', (e) => {
+          clearTimeout(timeoutId);
+          reject(e);
         });
-      }
-    );
+      });
+    });
 
     const requestPromise = request.request(config);
 
@@ -239,25 +248,23 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const onAbortMock = jest.fn();
 
     const config = {
-      url: '/api/test-multi-plugin',
+      url: 'https://api.example.com/api/test-multi-plugin',
       method: 'GET',
       onAbort: onAbortMock
     } as const;
 
-    fetchMock.mockImplementationOnce(
-      (_url, options: globalThis.RequestInit) => {
-        return new Promise((resolve, reject) => {
-          const timeoutId = setTimeout(() => {
-            resolve(new Response('response'));
-          }, 1000);
+    fetchMock.mockImplementationOnce((request: Request) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve(new Response('response'));
+        }, 1000);
 
-          options.signal?.addEventListener('abort', (e: unknown) => {
-            clearTimeout(timeoutId);
-            reject(e);
-          });
+        request.signal?.addEventListener('abort', (e: unknown) => {
+          clearTimeout(timeoutId);
+          reject(e);
         });
-      }
-    );
+      });
+    });
 
     const requestPromise = request.request(config);
 

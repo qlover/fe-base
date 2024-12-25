@@ -179,6 +179,6 @@ const result = await this.runHook(
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
 |  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
-|  name  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  hookName  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
 |  context  |  | `ExecutorContext<Params>` |  |  |
 

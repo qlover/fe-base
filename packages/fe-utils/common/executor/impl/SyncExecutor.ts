@@ -67,7 +67,7 @@ export class SyncExecutor extends Executor {
    * - No await statements needed
    *
    * @param plugins - Array of plugins to execute
-   * @param name - Name of the hook function to execute
+   * @param hookName - Name of the hook function to execute
    * @param args - Arguments to pass to the hook function
    * @returns Result of the hook function execution
    *
@@ -83,24 +83,26 @@ export class SyncExecutor extends Executor {
    */
   runHooks<Params>(
     plugins: ExecutorPlugin[],
-    name: keyof ExecutorPlugin,
+    hookName: keyof ExecutorPlugin,
     context: ExecutorContext<Params>
   ): ExecutorContext<Params> {
     for (const plugin of plugins) {
-      if (plugin.enabled && !plugin.enabled?.(name, context)) {
+      if (plugin.enabled && !plugin.enabled?.(hookName, context)) {
         continue;
       }
 
-      if (!plugin[name]) {
+      if (!plugin[hookName]) {
         continue;
       }
+
+      context.runtimes = Object.freeze({ plugin, hookName });
 
       // @ts-expect-error
-      const pluginResult = plugin[name](context);
+      const pluginResult = plugin[hookName](context);
       // TODO: record the result of the lifecycle hooks
 
       if (pluginResult !== undefined) {
-        if (name === 'onError') {
+        if (hookName === 'onError') {
           context.error = pluginResult;
           return context;
         }
@@ -108,6 +110,9 @@ export class SyncExecutor extends Executor {
         context.returnValue = pluginResult;
       }
     }
+
+    // clear the runtimes after the chain execution is complete
+    context.runtimes = undefined;
 
     return context;
   }

@@ -1,0 +1,57 @@
+[
+  {
+    "path": "/",
+    "element": "base/BasicLayout",
+    "children": [
+      {
+        "index": true,
+        "element": "base/Home",
+        "meta": {
+          "title": "fe-utils/home",
+          "icon": "home"
+        }
+      },
+      {
+        "path": "about",
+        "element": "base/About",
+        "meta": {
+          "title": "关于",
+          "icon": "info"
+        }
+      },
+      {
+        "path": "jsonStorage",
+        "element": "base/JSONStorage",
+        "meta": {
+          "title": "FE-Utils JSONStorage",
+          "icon": "info"
+        }
+      },
+      {
+        "path": "request",
+        "element": "base/Request",
+        "meta": {
+          "title": "FE-Utils Request",
+          "icon": "info"
+        }
+      },
+      {
+        "path": "executor",
+        "element": "base/Executor",
+        "meta": {
+          "title": "FE-Utils Executor",
+          "icon": "info"
+        }
+      }
+    ]
+  },
+
+  {
+    "path": "*",
+    "element": "404",
+    "meta": {
+      "title": "404",
+      "layout": "blank"
+    }
+  }
+]

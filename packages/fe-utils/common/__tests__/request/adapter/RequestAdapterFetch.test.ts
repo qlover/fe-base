@@ -33,22 +33,16 @@ describe('RequestAdapterFetch', () => {
     const mockResponse = new Response(JSON.stringify(responseData));
     requestFetcher.mockResolvedValue(mockResponse);
 
-    const result = await request.request({
+    const result = await request.request<Request, Response>({
       url: '/users',
       baseURL: 'https://api.example.com',
       fetcher: requestFetcher
     });
     expect(requestFetcher).toHaveBeenCalledWith(
-      'https://api.example.com/users',
-      expect.objectContaining({
-        baseURL: 'https://api.example.com',
-        url: 'https://api.example.com/users'
-      })
+      new Request('https://api.example.com/users')
     );
     expect(configFetcher).not.toHaveBeenCalled();
-    await expect((result as unknown as Response).json()).resolves.toEqual(
-      responseData
-    );
+    await expect(result.data.json()).resolves.toEqual(responseData);
   });
 
   it('should execute request with correct URL', async () => {
@@ -69,11 +63,7 @@ describe('RequestAdapterFetch', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/users',
-      expect.objectContaining({
-        baseURL: 'https://api.example.com',
-        url: 'https://api.example.com/users'
-      })
+      new Request('https://api.example.com/users')
     );
   });
 
@@ -97,11 +87,7 @@ describe('RequestAdapterFetch', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/users?id=1',
-      expect.objectContaining({
-        baseURL: 'https://api.example.com',
-        url: 'https://api.example.com/users?id=1'
-      })
+      new Request('https://api.example.com/users?id=1')
     );
   });
 
@@ -118,12 +104,12 @@ describe('RequestAdapterFetch', () => {
     const mockResponse = new Response(JSON.stringify(responseData));
     fetchMock.mockResolvedValueOnce(mockResponse);
 
-    const response = await request.request<Response, Record<string, unknown>>({
+    const result = await request.request<Response, Record<string, unknown>>({
       url: '/users',
       baseURL: 'https://api.example.com'
     });
 
-    expect(response).toBeInstanceOf(Response);
+    expect(result.data).toBeInstanceOf(Response);
     // const result = await response.json();
     // expect(result).toEqual(responseData);
   });

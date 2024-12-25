@@ -15,6 +15,11 @@ Features:
 **Not Support**
 - Abort signal from outside
 
+Request parameters serialized to be used as unique identifiers.
+Or you can pass in a specific requestid.
+
+You can also manually specify an onAbort callback that will be executed after termination.
+
 @implements 
 
 
@@ -32,6 +37,23 @@ abortPlugin.abort(config);
 
 // Abort all pending requests
 abortPlugin.abortAll();
+```
+
+@example 
+
+Use RequestId to identify the request
+
+
+```typescript
+const abortPlugin = new AbortPlugin();
+const client = new FetchRequest();
+client.executor.use(abortPlugin);
+
+// Abort specific request
+const config = { url: '/api/data', requestId: '123' };
+abortPlugin.abort(config);
+// or
+abortPlugin.abort('123');
 ```
 
 
@@ -61,7 +83,7 @@ abortPlugin.abort({
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Configuration of request to abort | `RequestAdapterFetchConfig` |  |  |
+|  config  | Configuration of request to abort | `string \| RequestAdapterConfig` |  |  |
 
 
 ### abortAll
@@ -94,7 +116,7 @@ const key = abortPlugin.generateRequestKey(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterFetchConfig` |  |  |
+|  config  | Request configuration | `RequestAdapterConfig` |  |  |
 
 
 ### isSameAbortError
@@ -125,7 +147,7 @@ const modifiedConfig = abortPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<unknown>` |  |  |
+|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig>` |  |  |
 
 
 ### onError
@@ -142,7 +164,7 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<unknown>` |  |  |
+|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig>` |  |  |
 
 
 ### onSuccess
@@ -153,6 +175,5 @@ Can transform the task result
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  _  |  | `unknown` |  |  |
-|  config  |  | `RequestAdapterFetchConfig` |  |  |
+|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig>` |  |  |
 

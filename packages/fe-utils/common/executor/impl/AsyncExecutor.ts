@@ -48,7 +48,7 @@ export class AsyncExecutor extends Executor {
    * 3. Handle plugin results and chain breaking conditions
    *
    * @param plugins - Array of plugins to execute
-   * @param name - Name of the hook function to execute
+   * @param hookName - Name of the hook function to execute
    * @param args - Arguments to pass to the hook function
    * @returns Promise resolving to the hook execution result
    *
@@ -63,31 +63,37 @@ export class AsyncExecutor extends Executor {
    */
   async runHooks<Params>(
     plugins: ExecutorPlugin[],
-    name: keyof ExecutorPlugin,
+    hookName: keyof ExecutorPlugin,
     context: ExecutorContext<Params>
   ): Promise<ExecutorContext<Params>> {
     for (const plugin of plugins) {
-      if (plugin.enabled && !plugin.enabled?.(name, context)) {
+      if (plugin.enabled && !plugin.enabled?.(hookName, context)) {
         continue;
       }
 
-      if (!plugin[name]) {
+      if (!plugin[hookName]) {
         continue;
       }
+
+      context.runtimes = Object.freeze({ plugin, hookName });
 
       // @ts-expect-error
-      const pluginResult = await plugin[name](context);
+      const pluginResult = await plugin[hookName](context);
       // TODO: record the result of the lifecycle hooks
 
       if (pluginResult !== undefined) {
-        if (name === 'onError') {
+        if (hookName === 'onError') {
           context.error = pluginResult;
+          context.runtimes = undefined;
           return context;
         }
 
         context.returnValue = pluginResult;
       }
     }
+
+    // clear the runtimes after the chain execution is complete
+    context.runtimes = undefined;
 
     return context;
   }

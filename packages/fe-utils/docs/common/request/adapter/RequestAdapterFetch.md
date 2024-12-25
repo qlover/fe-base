@@ -38,6 +38,25 @@ const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
 
 
 
+### getResponseHeaders
+Extracts headers from the fetch Response object and returns them as a record.
+
+
+#### Parameters
+| Name | Description | Type | Default | Since |
+|------|------|---------|-------|------------|
+|  response  | The fetch Response object from which headers are extracted. | `Response` |  |  |
+
+
+### parametersToRequest
+
+
+#### Parameters
+| Name | Description | Type | Default | Since |
+|------|------|---------|-------|------------|
+|  parameters  |  | `RequestAdapterFetchConfig<unknown>` |  |  |
+
+
 ### request
 Core request implementation
 Merges configurations and executes fetch request
@@ -63,6 +82,18 @@ const response = await fetchRequest.request({ url: '/data' });
 |  config  | Request configuration | `RequestAdapterFetchConfig<Request>` |  |  |
 
 
+### toAdapterResponse
+Converts the raw fetch response into a standardized adapter response.
+
+
+#### Parameters
+| Name | Description | Type | Default | Since |
+|------|------|---------|-------|------------|
+|  data  | The data extracted from the response based on the response type. | `unknown` |  |  |
+|  response  | The original fetch Response object. | `Response` |  |  |
+|  config  | The configuration used for the fetch request. | `RequestAdapterFetchConfig<Request>` |  |  |
+
+
 ### usePlugin
 
 
@@ -74,7 +105,7 @@ const response = await fetchRequest.request({ url: '/data' });
 
 ## TypeAlias `RequestAdapterFetchConfig`
 
-`globalThis.RequestInit & RequestAdpaterConfig<Request> & Object`
+`Omit<globalThis.RequestInit, "headers"> & RequestAdapterConfig<Request> & Object`
 
 Request adapter fetch configuration
 

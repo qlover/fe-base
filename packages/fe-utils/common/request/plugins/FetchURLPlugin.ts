@@ -3,7 +3,8 @@ import {
   ExecutorContext,
   RequestError,
   RequestErrorID,
-  RequestAdpaterConfig
+  RequestAdapterConfig,
+  RequestAdapterResponse
 } from '../../../interface';
 
 /**
@@ -120,7 +121,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const completeUrl = urlPlugin.buildUrl(config);
    * ```
    */
-  buildUrl(config: RequestAdpaterConfig): string {
+  buildUrl(config: RequestAdapterConfig): string {
     let { url = '' } = config;
     const { baseURL = '', params } = config;
 
@@ -152,9 +153,9 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContext<RequestAdpaterConfig>): void {
+  onBefore({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
     // compose url and params
-    context.parameters.url = this.buildUrl(context.parameters);
+    parameters.url = this.buildUrl(parameters);
   }
 
   /**
@@ -170,22 +171,20 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const response = urlPlugin.onSuccess(fetchResponse);
    * ```
    */
-  onSuccess(context: ExecutorContext): Response {
-    const result = context.returnValue as Response;
+  onSuccess({ returnValue }: ExecutorContext): void {
+    const result = returnValue as RequestAdapterResponse<unknown, Response>;
     // if response is not ok, throw error
-    if (!result.ok) {
+    if (!result.response.ok) {
       const requestError = new RequestError(
         RequestErrorID.RESPONSE_NOT_OK,
         `Request failed with status: ${result.status} ${result.statusText}`
       );
 
       // @ts-expect-error Experimental: add response to error
-      requestError.response = result;
+      requestError.response = result.response;
 
       throw requestError;
     }
-
-    return result;
   }
 
   /**
@@ -200,8 +199,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const error = urlPlugin.onError(new Error('Network Error'));
    * ```
    */
-  onError(context: ExecutorContext): RequestError {
-    const error = context.error as Error;
+  onError({ error }: ExecutorContext): RequestError {
     return error instanceof RequestError
       ? error
       : new RequestError(RequestErrorID.REQUEST_ERROR, error);
