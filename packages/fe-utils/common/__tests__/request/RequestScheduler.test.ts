@@ -3,25 +3,25 @@ import {
   RequestError,
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdpaterConfig
+  RequestAdapterConfig
 } from '../../../interface';
 import { RequestScheduler } from '../../request';
 
 class MockRequestAdapter
-  implements RequestAdapterInterface<RequestAdpaterConfig>
+  implements RequestAdapterInterface<RequestAdapterConfig>
 {
-  config: RequestAdpaterConfig;
+  config: RequestAdapterConfig;
 
-  constructor(config: RequestAdpaterConfig = {}) {
+  constructor(config: RequestAdapterConfig = {}) {
     this.config = config;
   }
 
-  getConfig(): RequestAdpaterConfig {
+  getConfig(): RequestAdapterConfig {
     return this.config;
   }
 
   async request<Request, Response>(
-    config: RequestAdpaterConfig<Response>
+    config: RequestAdapterConfig<Response>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     const sendConfig = { ...this.config, ...config };
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -38,7 +38,7 @@ class MockRequestAdapter
         Response,
         Request
       >['data'],
-      config: sendConfig as RequestAdpaterConfig<Response>,
+      config: sendConfig as RequestAdapterConfig<Response>,
       response: new Response()
     };
   }

@@ -3,7 +3,7 @@ import {
   ExecutorContext,
   RequestError,
   RequestErrorID,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   RequestAdapterResponse
 } from '../../../interface';
 
@@ -121,7 +121,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const completeUrl = urlPlugin.buildUrl(config);
    * ```
    */
-  buildUrl(config: RequestAdpaterConfig): string {
+  buildUrl(config: RequestAdapterConfig): string {
     let { url = '' } = config;
     const { baseURL = '', params } = config;
 
@@ -153,7 +153,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore({ parameters }: ExecutorContext<RequestAdpaterConfig>): void {
+  onBefore({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
     // compose url and params
     parameters.url = this.buildUrl(parameters);
   }

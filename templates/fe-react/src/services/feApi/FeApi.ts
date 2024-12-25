@@ -2,12 +2,12 @@ import { ApiCommonPlugin } from '@lib/plugins/ApiCommonPlugin';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   RequestScheduler,
   FetchAbortPlugin
 } from 'packages/fe-utils/common';
 
-export class FeApi extends RequestScheduler<RequestAdpaterConfig> {
+export class FeApi extends RequestScheduler<RequestAdapterConfig> {
   constructor(private abortPlugin: FetchAbortPlugin) {
     super(
       new RequestAdapterFetch({
@@ -19,7 +19,7 @@ export class FeApi extends RequestScheduler<RequestAdpaterConfig> {
     this.usePlugin(new ApiCommonPlugin());
   }
 
-  stop(config: RequestAdpaterConfig) {
+  stop(config: RequestAdapterConfig) {
     this.abortPlugin.abort(config);
   }
 

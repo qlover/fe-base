@@ -1,6 +1,6 @@
 import {
   RequestScheduler,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   RequestAdapterFetch,
   RequestAdapterFetchConfig,
   FetchURLPlugin,
@@ -31,7 +31,7 @@ export type OpenAIAargs = {
 export type OpenAIClientConfig = Partial<RequestAdapterFetchConfig> &
   OpenAIAargs;
 
-export class OpenAIClient extends RequestScheduler<RequestAdpaterConfig> {
+export class OpenAIClient extends RequestScheduler<RequestAdapterConfig> {
   constructor(config: OpenAIClientConfig) {
     const { apiCommon, ...rest } = config;
     super(new RequestAdapterFetch(rest));

@@ -1,7 +1,7 @@
 import {
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   ExecutorPlugin
 } from '../../interface';
 import { AsyncExecutor } from '../executor';
@@ -59,9 +59,9 @@ import merge from 'merge';
  * // => response.data is 'mock response'
  * ```
  *
- * @template Config - The configuration type extending RequestAdpaterConfig.
+ * @template Config - The configuration type extending RequestAdapterConfig.
  */
-export class RequestScheduler<Config extends RequestAdpaterConfig> {
+export class RequestScheduler<Config extends RequestAdapterConfig> {
   readonly executor: AsyncExecutor;
 
   /**
@@ -97,7 +97,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    * @returns A promise that resolves to the response of the request.
    */
   async request<Request, Response>(
-    config: RequestAdpaterConfig<Request>
+    config: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     const thisConfig = this.adapter.getConfig();
     const mergedConfig = merge({}, thisConfig, config);
@@ -118,7 +118,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async get<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({ url, ...config, method: 'GET' });
   }
@@ -131,7 +131,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async post<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({ url, ...config, method: 'POST' });
   }
@@ -144,7 +144,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async put<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({ url, ...config, method: 'PUT' });
   }
@@ -157,7 +157,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async delete<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({
       url,
@@ -174,7 +174,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async patch<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({ url, ...config, method: 'PATCH' });
   }
@@ -187,7 +187,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async head<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({ url, ...config, method: 'HEAD' });
   }
@@ -200,7 +200,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async options<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({
       url,
@@ -217,7 +217,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async trace<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({
       url,
@@ -234,7 +234,7 @@ export class RequestScheduler<Config extends RequestAdpaterConfig> {
    */
   async connect<Request, Response>(
     url: string,
-    config?: RequestAdpaterConfig<Request>
+    config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
     return this.request<Request, Response>({
       url,

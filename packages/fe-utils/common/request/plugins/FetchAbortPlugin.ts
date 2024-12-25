@@ -2,9 +2,9 @@ import {
   ExecutorPlugin,
   RequestErrorID,
   RequestError,
-  ExecutorContext
+  ExecutorContext,
+  RequestAdapterConfig
 } from '../../../interface';
-import { RequestAdapterFetchConfig } from '../adapter/RequestAdapterFetch';
 
 /**
  * Plugin for handling request cancellation
@@ -83,7 +83,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const key = abortPlugin.generateRequestKey(config);
    * ```
    */
-  private generateRequestKey(config: RequestAdapterFetchConfig): string {
+  private generateRequestKey(config: RequestAdapterConfig): string {
     if (config.requestId) {
       return config.requestId;
     }
@@ -107,7 +107,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    */
   onBefore({
     parameters
-  }: ExecutorContext<RequestAdapterFetchConfig>): RequestAdapterFetchConfig {
+  }: ExecutorContext<RequestAdapterConfig>): RequestAdapterConfig {
     const key = this.generateRequestKey(parameters);
 
     // abort previous request
@@ -127,7 +127,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
     return parameters;
   }
 
-  onSuccess({ parameters }: ExecutorContext<RequestAdapterFetchConfig>): void {
+  onSuccess({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
     // delete controller
     if (parameters) {
       this.controllers.delete(this.generateRequestKey(parameters));
@@ -150,7 +150,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
   onError({
     error,
     parameters
-  }: ExecutorContext<RequestAdapterFetchConfig>): RequestError | void {
+  }: ExecutorContext<RequestAdapterConfig>): RequestError | void {
     // only handle plugin related error，other error should be handled by other plugins
     if (this.isSameAbortError(error)) {
       if (parameters) {
@@ -217,7 +217,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * });
    * ```
    */
-  abort(config: RequestAdapterFetchConfig | string): void {
+  abort(config: RequestAdapterConfig | string): void {
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
     const controller = this.controllers.get(key);

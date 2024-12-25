@@ -1,7 +1,7 @@
 import { get, isUndefined, set } from 'lodash';
 import {
   ExecutorPlugin,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   ExecutorContext,
   RequestAdapterResponse
 } from 'packages/fe-utils/common';
@@ -19,12 +19,12 @@ export type ApiCommonPluginConfig = {
 
   requestDataSerializer?: (
     data: unknown,
-    context: ExecutorContext<RequestAdpaterConfig>
+    context: ExecutorContext<RequestAdapterConfig>
   ) => unknown;
 };
 
 export class ApiCommonPlugin
-  implements ExecutorPlugin<RequestAdpaterConfig, void>
+  implements ExecutorPlugin<RequestAdapterConfig, void>
 {
   readonly pluginName = 'ApiCommonPlugin';
 
@@ -34,7 +34,7 @@ export class ApiCommonPlugin
     }
   }
 
-  onBefore(context: ExecutorContext<RequestAdpaterConfig>): void {
+  onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const {
       token,
       tokenPrefix,
@@ -81,7 +81,7 @@ export class ApiCommonPlugin
   async onSuccess({
     returnValue,
     parameters
-  }: ExecutorContext<RequestAdpaterConfig>): Promise<void> {
+  }: ExecutorContext<RequestAdapterConfig>): Promise<void> {
     const response = (returnValue as RequestAdapterResponse<unknown, Response>)
       .data;
 

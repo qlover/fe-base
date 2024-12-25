@@ -7,7 +7,7 @@
  *
  * @since 1.0.14
  */
-export type RequestAdpaterConfig<RequestData = unknown> = {
+export type RequestAdapterConfig<RequestData = unknown> = {
   /**
    * Request URL path
    * Will be combined with baseURL if provided
@@ -123,7 +123,7 @@ export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
   status: number;
   statusText: string;
   headers: { [key: string]: unknown };
-  config: RequestAdpaterConfig<Req>;
+  config: RequestAdapterConfig<Req>;
   response: Response;
 
   [key: string]: unknown;
@@ -137,7 +137,7 @@ export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
  * such as URL construction, headers, and response handling.
  *
  */
-export interface RequestAdapterInterface<Config extends RequestAdpaterConfig> {
+export interface RequestAdapterInterface<Config extends RequestAdapterConfig> {
   /**
    * The configuration for the request adapter.
    *
@@ -158,7 +158,7 @@ export interface RequestAdapterInterface<Config extends RequestAdpaterConfig> {
    * ```
    */
   request<Request, Response>(
-    options: RequestAdpaterConfig<Request>
+    options: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>>;
 
   /**

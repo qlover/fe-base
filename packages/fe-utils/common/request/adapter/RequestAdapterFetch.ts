@@ -1,7 +1,7 @@
 import {
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdpaterConfig,
+  RequestAdapterConfig,
   ExecutorError,
   ExecutorPlugin,
   RequestErrorID,
@@ -24,7 +24,7 @@ export type RequestAdapterFetchConfig<Request = unknown> = Omit<
   globalThis.RequestInit,
   'headers'
 > &
-  RequestAdpaterConfig<Request> & {
+  RequestAdapterConfig<Request> & {
     fetcher?: typeof fetch;
 
     onStreamProgress?: (progress: number) => void;
