@@ -1,5 +1,3 @@
-import { ExecutorPlugin } from './ExecutorPlugin';
-
 /**
  * Represents the context in which a task is executed.
  *
@@ -56,6 +54,8 @@ export interface ExecutorContext<Params = unknown> {
   /**
    * The runtime information of the task.
    *
+   * The current runtime of each hook.
+   *
    * This property is optional and will contain the runtime information
    * of the task if it is executed.
    *
@@ -63,16 +63,37 @@ export interface ExecutorContext<Params = unknown> {
    *
    * will return a frozen object that will be cleared after the chain execution is complete.
    *
-   * @type {{
-   *   readonly plugin: ExecutorPlugin;
-   *   readonly hookName: string;
-   * }}
    */
-  runtimes?: {
-    readonly plugin: ExecutorPlugin;
-    readonly hookName: string;
+  hooksRuntimes: HookRuntimes;
+}
 
-    // additional runtime information, or custom information
-    [key: string]: unknown;
-  };
+export interface HookRuntimes {
+  // readonly plugin: ExecutorPlugin;
+  hookName?: string;
+
+  /**
+   * The return value of the task.
+   *
+   * Readonly
+   */
+  returnValue?: unknown;
+
+  /**
+   * 执行次数
+   */
+  times: number;
+
+  /**
+   * 是否中断链
+   */
+  breakChain?: boolean;
+
+  /**
+   * 如果有返回值，是否中断链
+   *
+   * 一般常用于需要返回一个值时中断链,比如 onError 声明周期
+   */
+  readonly returnBreakChain: boolean;
+
+  [key: string]: unknown;
 }

@@ -27,7 +27,9 @@ describe('SyncExecutor', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' modified'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
     };
 
     executor.use(plugin);
@@ -84,7 +86,9 @@ describe('SyncExecutor', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' success'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' success';
+      }
     };
 
     executor.use(plugin);
@@ -189,7 +193,9 @@ describe('SyncExecutor', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' modified'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
     };
 
     executor.use(plugin);
@@ -290,7 +296,6 @@ describe('SyncExecutor has Error', () => {
         if (context.parameters.shouldThrow) {
           throw new Error('Error in onBefore');
         }
-        return context.parameters;
       }
     };
 
@@ -467,14 +472,15 @@ describe('SyncExecutor onExec Lifecycle', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'test',
-      onExec<T>(): T {
-        return 'modified by plugin1' as T;
+      onExec() {
+        return 'modified by plugin1';
       }
     };
     const plugin2: ExecutorPlugin = {
+      enabled: () => false,
       pluginName: 'test2',
-      onExec<T>(): T {
-        return 'modified by plugin2' as T;
+      onExec() {
+        return 'modified by plugin2';
       }
     };
 
@@ -493,23 +499,24 @@ describe('SyncExecutor onExec Lifecycle', () => {
 
   it('should stop execution and enter onError if onExec throws an error', () => {
     const executor = new SyncExecutor();
-    const plugin: ExecutorPlugin = {
+    const onError = jest.fn();
+    const onSuccess = jest.fn();
+
+    executor.use({
       pluginName: 'test',
       onExec: () => {
         throw new Error('Error in onExec');
       }
-    };
-    const onError = jest.fn();
-
-    executor.use(plugin);
-    executor.use({ pluginName: 'test2', onError });
+    });
+    executor.use({ pluginName: 'test2', onError, onSuccess });
 
     try {
       executor.exec(() => 'original task');
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toBe('Error in onExec');
-      expect(onError).toHaveBeenCalledTimes(0);
+      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onSuccess).toHaveBeenCalledTimes(0);
     }
   });
 });
@@ -613,7 +620,9 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test2',
-      onSuccess: ({ returnValue }) => returnValue + ' success'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' success';
+      }
     };
 
     executor.use(plugin);
@@ -625,11 +634,15 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' modified by plugin1'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified by plugin1';
+      }
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onSuccess: ({ returnValue }) => returnValue + ' modified by plugin2'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified by plugin2';
+      }
     };
 
     executor.use(plugin1);

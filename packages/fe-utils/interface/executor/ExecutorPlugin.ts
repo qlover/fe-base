@@ -110,7 +110,7 @@ export type Task<Result, Params> =
  * ```
  * @category ExecutorPlugin
  */
-export interface ExecutorPlugin<T = unknown, R = T> {
+export interface ExecutorPlugin<T = unknown> {
   /**
    * The pluginName of the plugin.
    *
@@ -146,7 +146,7 @@ export interface ExecutorPlugin<T = unknown, R = T> {
    * @param data - Input data
    * @returns Modified data or Promise of modified data
    */
-  onBefore?(context: ExecutorContext<T>): unknown | Promise<unknown>;
+  onBefore?(context: ExecutorContext<T>): void | Promise<void>;
 
   /**
    * Error handling hook
@@ -169,7 +169,7 @@ export interface ExecutorPlugin<T = unknown, R = T> {
    * @param result - Task execution result
    * @returns Modified result or Promise of modified result
    */
-  onSuccess?(context: ExecutorContext<T>): R | Promise<R>;
+  onSuccess?(context: ExecutorContext<T>): void | Promise<void>;
 
   /**
    * Custom execution logic hook
@@ -177,7 +177,8 @@ export interface ExecutorPlugin<T = unknown, R = T> {
    * @param task - Task to be executed
    * @returns Task result or Promise of result
    */
-  onExec?<Result, Params>(
-    task: PromiseTask<Result, Params> | Task<Result, Params>
-  ): Promise<Result | void> | Result | void;
+  onExec?(
+    context: ExecutorContext<unknown>,
+    task: Task<unknown, unknown>
+  ): Promise<unknown> | unknown;
 }

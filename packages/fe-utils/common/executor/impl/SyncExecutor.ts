@@ -84,37 +84,53 @@ export class SyncExecutor extends Executor {
   runHooks<Params>(
     plugins: ExecutorPlugin[],
     hookName: keyof ExecutorPlugin,
-    context: ExecutorContext<Params>
-  ): ExecutorContext<Params> {
+    context: ExecutorContext<Params>,
+    ...args: unknown[]
+  ): Params {
+    let _index = -1;
+    let returnValue: Params | undefined;
+
+    // reset hooksRuntimes times and index
+    context.hooksRuntimes.times = 0;
+    context.hooksRuntimes.index = undefined;
+
     for (const plugin of plugins) {
-      if (plugin.enabled && !plugin.enabled?.(hookName, context)) {
+      _index++;
+
+      if (
+        typeof plugin[hookName] !== 'function' ||
+        (typeof plugin.enabled == 'function' &&
+          !plugin.enabled(hookName, context))
+      ) {
         continue;
       }
 
-      if (!plugin[hookName]) {
-        continue;
+      // if breakChain is true, stop the chain
+      if (context.hooksRuntimes?.breakChain) {
+        break;
       }
 
-      context.runtimes = Object.freeze({ plugin, hookName });
+      context.hooksRuntimes.pluginName = plugin.pluginName;
+      context.hooksRuntimes.hookName = hookName;
+      context.hooksRuntimes.times++;
+      context.hooksRuntimes.index = _index;
 
       // @ts-expect-error
-      const pluginResult = plugin[hookName](context);
-      // TODO: record the result of the lifecycle hooks
+      const pluginReturn = plugin[hookName](context, ...args);
 
-      if (pluginResult !== undefined) {
-        if (hookName === 'onError') {
-          context.error = pluginResult;
-          return context;
+      if (pluginReturn !== undefined) {
+        returnValue = pluginReturn as Params;
+        // set runtimes returnValue
+        context.hooksRuntimes.returnValue = pluginReturn;
+
+        // When returnBreakChain is true, stop the chain
+        if (context.hooksRuntimes.returnBreakChain) {
+          return returnValue;
         }
-
-        context.returnValue = pluginResult;
       }
     }
 
-    // clear the runtimes after the chain execution is complete
-    context.runtimes = undefined;
-
-    return context;
+    return returnValue as Params;
   }
 
   /**
@@ -213,20 +229,7 @@ export class SyncExecutor extends Executor {
       throw new Error('Task must be a function!');
     }
 
-    const runner = (): Result => {
-      return this.run(data, actualTask);
-    };
-
-    const findOnExec = this.plugins.find(
-      (plugin) => typeof plugin['onExec'] === 'function'
-    );
-
-    // If the plugin has the onExec hook, execute it
-    if (findOnExec) {
-      return findOnExec.onExec!(runner) as Result;
-    }
-
-    return runner();
+    return this.run(data, actualTask);
   }
 
   /**
@@ -272,19 +275,35 @@ export class SyncExecutor extends Executor {
    * ```
    */
   run<Result, Params = unknown>(
-    data: unknown,
+    data: Params,
     actualTask: SyncTask<Result, Params>
   ): Result {
     const context: ExecutorContext<Params> = {
-      parameters: data as Params,
+      parameters: data,
       returnValue: undefined,
-      error: undefined
+      error: undefined,
+      hooksRuntimes: {
+        pluginName: '',
+        hookName: '',
+        returnValue: undefined,
+        returnBreakChain: false,
+        times: 0
+      }
+    };
+
+    const runExec = (ctx: ExecutorContext<Params>): void => {
+      this.runHooks(this.plugins, 'onExec', ctx, actualTask);
+
+      // if exec times is 0, then execute task, otherwise return the result of the last hook
+      ctx.returnValue = !ctx.hooksRuntimes.times
+        ? actualTask(ctx)
+        : ctx.hooksRuntimes.returnValue;
     };
 
     try {
-      const beforeResult = this.runHooks(this.plugins, 'onBefore', context);
+      this.runHooks(this.plugins, 'onBefore', context);
 
-      context.returnValue = actualTask(beforeResult);
+      runExec(context);
 
       this.runHooks(this.plugins, 'onSuccess', context);
 
@@ -292,13 +311,30 @@ export class SyncExecutor extends Executor {
     } catch (error) {
       context.error = error as Error;
 
+      // if onError hook return a Error, then break the chain
+      Object.assign(context.hooksRuntimes, { returnBreakChain: true });
+
       this.runHooks(this.plugins, 'onError', context);
+
+      // if onError hook return a ExecutorError, then throw it
+      if (context.hooksRuntimes.returnValue) {
+        context.error = context.hooksRuntimes.returnValue as Error;
+      }
 
       if (context.error instanceof ExecutorError) {
         throw context.error;
       }
 
       throw new ExecutorError('UNKNOWN_SYNC_ERROR', context.error);
+    } finally {
+      // reset hooksRuntimes
+      context.hooksRuntimes = {
+        pluginName: '',
+        hookName: '',
+        returnValue: undefined,
+        returnBreakChain: false,
+        times: 0
+      };
     }
   }
 }

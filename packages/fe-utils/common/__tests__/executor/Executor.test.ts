@@ -8,6 +8,18 @@ describe('AsyncExecutor', () => {
     expect(result).toBe('success');
   });
 
+  it('should fail to execute an asynchronous task', async () => {
+    const executor = new AsyncExecutor();
+
+    try {
+      await executor.exec(async () => {
+        throw new Error('test error');
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExecutorError);
+    }
+  });
+
   it('should handle errors in asynchronous tasks', async () => {
     const executor = new AsyncExecutor();
     const error = new Error('test error');
@@ -23,7 +35,9 @@ describe('AsyncExecutor', () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' modified'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
     };
 
     executor.use(plugin);
@@ -81,7 +95,9 @@ describe('SyncExecutor', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' modified'
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
     };
 
     executor.use(plugin);
@@ -145,7 +161,6 @@ describe('ExecutorPlugin Chain', () => {
 
   it('if a plugin returns undefined, the chain should continue', async () => {
     const executor = new AsyncExecutor();
-    let finalResult = '';
 
     const plugin1: ExecutorPlugin = {
       pluginName: 'test1',
@@ -154,9 +169,8 @@ describe('ExecutorPlugin Chain', () => {
 
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onSuccess: ({ returnValue }) => {
-        finalResult = returnValue + ' modified';
-        return finalResult;
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
       }
     };
 
