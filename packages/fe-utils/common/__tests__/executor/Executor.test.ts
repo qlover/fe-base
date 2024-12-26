@@ -93,7 +93,7 @@ describe('Defined a simple executor implement, reference SyncExecutor', () => {
   });
 
   it('should handle errors in exec method', () => {
-    const task = () => {
+    const task = (): void => {
       throw new Error('Task failed');
     };
     expect(() => myExecutor.exec(task)).toThrow('Task failed');
@@ -101,7 +101,7 @@ describe('Defined a simple executor implement, reference SyncExecutor', () => {
   });
 
   it('should return ExecutorError in execNoError method', () => {
-    const task = () => {
+    const task = (): void => {
       throw new Error('Task failed');
     };
     const result = myExecutor.execNoError(task);
@@ -123,7 +123,7 @@ describe('Defined a simple executor implement, reference SyncExecutor', () => {
 
   it('should handle execNoError without plugins', () => {
     const myExecutor = new MyExecutor(); // Reset without plugins
-    const task = () => {
+    const task = (): void => {
       throw new Error('No plugins error');
     };
     const result = myExecutor.execNoError(task);
