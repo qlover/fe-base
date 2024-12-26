@@ -63,7 +63,13 @@ export class AsyncExecutor extends Executor {
    */
   async runHooks<Params>(
     plugins: ExecutorPlugin[],
-    hookName: keyof ExecutorPlugin,
+    /**
+     * allow any string as hook name.
+     * if the hook name is not a function, it will be skipped
+     *
+     * @since 1.1.3
+     */
+    hookName: string,
     context: ExecutorContext<Params>,
     ...args: unknown[]
   ): Promise<unknown> {
@@ -78,9 +84,9 @@ export class AsyncExecutor extends Executor {
       _index++;
 
       if (
-        typeof plugin[hookName] !== 'function' ||
+        typeof plugin[hookName as keyof ExecutorPlugin] !== 'function' ||
         (typeof plugin.enabled == 'function' &&
-          !plugin.enabled(hookName, context))
+          !plugin.enabled(hookName as keyof ExecutorPlugin, context))
       ) {
         continue;
       }
