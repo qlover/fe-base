@@ -81,7 +81,7 @@ export interface HookRuntimes {
   /**
    * 执行次数
    */
-  times: number;
+  times?: number;
 
   /**
    * 是否中断链
@@ -93,7 +93,7 @@ export interface HookRuntimes {
    *
    * 一般常用于需要返回一个值时中断链,比如 onError 声明周期
    */
-  readonly returnBreakChain: boolean;
+  returnBreakChain?: boolean;
 
   [key: string]: unknown;
 }

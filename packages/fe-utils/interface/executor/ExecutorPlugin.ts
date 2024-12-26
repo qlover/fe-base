@@ -138,7 +138,7 @@ export interface ExecutorPlugin<T = unknown> {
    * }
    * ```
    */
-  enabled?(name: keyof ExecutorPlugin, context: ExecutorContext<T>): boolean;
+  enabled?(name: keyof ExecutorPlugin, context?: ExecutorContext<T>): boolean;
 
   /**
    * Hook executed before the main task

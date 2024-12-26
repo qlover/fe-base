@@ -1,361 +1,215 @@
-import { ExecutorError, ExecutorPlugin } from '../../../interface';
-import { AsyncExecutor, SyncExecutor } from '../..';
+import { Executor, ExecutorError, ExecutorPlugin } from '../../../interface';
 
-describe('AsyncExecutor', () => {
-  it('should successfully execute an asynchronous task', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.exec(async () => 'success');
-    expect(result).toBe('success');
-  });
+function mockLogStdIo(): {
+  spy: jest.SpyInstance;
+  lastStdout: () => string;
+  stdouts: () => string;
+  end: () => void;
+} {
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  it('should fail to execute an asynchronous task', async () => {
-    const executor = new AsyncExecutor();
+  const end = (): void => {
+    spy.mockRestore();
+  };
 
-    try {
-      await executor.exec(async () => {
-        throw new Error('test error');
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(ExecutorError);
+  const lastStdout = (): string => {
+    if (spy.mock.calls.length === 0) {
+      return '';
     }
-  });
+    return spy.mock.calls[spy.mock.calls.length - 1].join('');
+  };
 
-  it('should handle errors in asynchronous tasks', async () => {
-    const executor = new AsyncExecutor();
-    const error = new Error('test error');
+  const allStdout = (): string => {
+    return spy.mock.calls.map((call) => call.join('')).join('');
+  };
 
-    await expect(
-      executor.exec(async () => {
-        throw error;
-      })
-    ).rejects.toBeInstanceOf(ExecutorError);
-  });
+  return { spy, end, lastStdout, stdouts: allStdout };
+}
 
-  it('should modify the execution result through plugins', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onSuccess: (context) => {
-        context.returnValue = context.returnValue + ' modified';
+class MyExecutor extends Executor {
+  constructor() {
+    super();
+  }
+
+  getPlugins(): ExecutorPlugin[] {
+    return this.plugins;
+  }
+
+  runHooks(plugins: ExecutorPlugin[], hookName: string): void {
+    const context = {
+      parameters: undefined,
+      hooksRuntimes: {}
+    };
+    for (const plugin of plugins) {
+      if (plugin.enabled?.(hookName as keyof ExecutorPlugin) !== false) {
+        // @ts-expect-error
+        plugin[hookName]?.(context);
       }
-    };
-
-    executor.use(plugin);
-    const result = await executor.exec(async () => 'test');
-    expect(result).toBe('test modified');
-  });
-
-  it('should handle errors through plugins', async () => {
-    const executor = new AsyncExecutor();
-    const customError = new ExecutorError('CUSTOM_ERROR');
-
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onError: () => customError
-    };
-
-    executor.use(plugin);
-
-    await expect(
-      executor.exec(async () => {
-        throw new Error('original error');
-      })
-    ).rejects.toBe(customError);
-  });
-
-  it('execNoError should return ExecutorError instead of throwing an error', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.execNoError(async () => {
-      throw new Error('test error');
-    });
-
-    expect(result).toBeInstanceOf(ExecutorError);
-  });
-});
-
-describe('SyncExecutor', () => {
-  it('should successfully execute a synchronous task', () => {
-    const executor = new SyncExecutor();
-    const result = executor.exec(() => 'success');
-    expect(result).toBe('success');
-  });
-
-  it('should handle errors in synchronous tasks', () => {
-    const executor = new SyncExecutor();
-    const error = new Error('test error');
-
-    expect(() => {
-      executor.exec(() => {
-        throw error;
-      });
-    }).toThrow(ExecutorError);
-  });
-
-  it('should modify the execution result through plugins', () => {
-    const executor = new SyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onSuccess: (context) => {
-        context.returnValue = context.returnValue + ' modified';
-      }
-    };
-
-    executor.use(plugin);
-    const result = executor.exec(() => 'test');
-    expect(result).toBe('test modified');
-  });
-
-  it('should handle errors through plugins', () => {
-    const executor = new SyncExecutor();
-    const customError = new ExecutorError('CUSTOM_ERROR');
-
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onError: () => customError
-    };
-
-    executor.use(plugin);
-
-    expect(() => {
-      executor.exec(() => {
-        throw new Error('original error');
-      });
-    }).toThrow(customError);
-  });
-
-  it('execNoError should return ExecutorError instead of throwing an error', () => {
-    const executor = new SyncExecutor();
-    const result = executor.execNoError(() => {
-      throw new Error('test error');
-    });
-
-    expect(result).toBeInstanceOf(ExecutorError);
-  });
-});
-
-describe('ExecutorPlugin Chain', () => {
-  it('should execute multiple plugins in order', async () => {
-    const executor = new AsyncExecutor();
-    const steps: number[] = [];
-
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'test1',
-      onSuccess: () => {
-        steps.push(1);
-      }
-    };
-
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'test2',
-      onSuccess: () => {
-        steps.push(2);
-      }
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    await executor.exec(async () => 'test');
-    expect(steps).toEqual([1, 2]);
-  });
-
-  it('if a plugin returns undefined, the chain should continue', async () => {
-    const executor = new AsyncExecutor();
-
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'test1',
-      onSuccess: (): undefined => undefined
-    };
-
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'test2',
-      onSuccess: (context) => {
-        context.returnValue = context.returnValue + ' modified';
-      }
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.exec(async () => 'test');
-    expect(result).toBe('test modified');
-  });
-});
-
-describe('ExecutorPlugin Error', () => {
-  it('should handle error in executor', async () => {
-    const executor = new AsyncExecutor();
-
-    await expect(
-      executor.exec(async () => {
-        throw new Error('Test ExecutorPlugin Error');
-      })
-    ).rejects.toBeInstanceOf(ExecutorError);
-  });
-
-  it('should handle plugin error', async () => {
-    const executor = new AsyncExecutor();
-
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onError: ({ error }) => new ExecutorError('PLUGIN_ERROR', error?.message)
-    };
-
-    executor.use(plugin);
-
-    const promise = executor.exec(async () => {
-      throw new Error('Test ExecutorPlugin Error');
-    });
-
-    await expect(promise).rejects.toBeInstanceOf(ExecutorError);
-    await expect(promise).rejects.toHaveProperty('id', 'PLUGIN_ERROR');
-    await expect(promise).rejects.toHaveProperty(
-      'message',
-      'Test ExecutorPlugin Error'
-    );
-  });
-
-  it('should handle error break the chain, return the error', async () => {
-    const executor = new SyncExecutor();
-
-    const onError1 = jest.fn();
-    const onError2 = jest.fn();
-    const onError3 = jest.fn();
-    const execTask = jest.fn();
-
-    let count = 0;
-    execTask.mockImplementationOnce(() => {
-      throw new Error('Task Error');
-    });
-
-    onError1.mockImplementationOnce(({ error }) => {
-      return error;
-    });
-
-    onError2.mockImplementationOnce(() => {
-      count++;
-    });
-
-    onError3.mockImplementationOnce(() => {
-      count++;
-    });
-
-    executor.use({ pluginName: 'test1', onError: onError1 });
-    executor.use({ pluginName: 'test2', onError: onError2 });
-    executor.use({ pluginName: 'test3', onError: onError3 });
-
-    try {
-      await executor.exec(execTask);
-    } catch (error) {
-      expect(error).toMatchObject({
-        message: 'Task Error'
-      });
     }
+  }
 
-    expect(onError1).toHaveBeenCalledTimes(1);
-    expect(onError2).toHaveBeenCalledTimes(0);
-    expect(onError3).toHaveBeenCalledTimes(0);
-    expect(count).toBe(0);
-  });
-
-  it('should handle error break the chain, throw  error', async () => {
-    const executor = new SyncExecutor();
-
-    const onError1 = jest.fn();
-    const onError2 = jest.fn();
-    const onError3 = jest.fn();
-    const execTask = jest.fn();
-
-    let count = 0;
-    execTask.mockImplementationOnce(() => {
-      throw new Error('Task Error');
-    });
-
-    onError1.mockImplementationOnce(({ error }) => {
+  exec(task: () => unknown): unknown {
+    try {
+      this.runHooks(this.plugins, 'onBefore');
+      const result = task();
+      this.runHooks(this.plugins, 'onSuccess');
+      return result;
+    } catch (error) {
+      this.runHooks(this.plugins, 'onError');
       throw error;
-    });
-
-    onError2.mockImplementationOnce(() => {
-      count++;
-    });
-
-    onError3.mockImplementationOnce(() => {
-      count++;
-    });
-
-    executor.use({ pluginName: 'test1', onError: onError1 });
-    executor.use({ pluginName: 'test2', onError: onError2 });
-    executor.use({ pluginName: 'test3', onError: onError3 });
-
-    try {
-      executor.exec(execTask);
-    } catch (error) {
-      expect(error).toMatchObject({
-        message: 'Task Error'
-      });
     }
+  }
 
-    expect(onError1).toHaveBeenCalledTimes(1);
-    expect(onError2).toHaveBeenCalledTimes(0);
-    expect(onError3).toHaveBeenCalledTimes(0);
-    expect(count).toBe(0);
+  execNoError(task: () => unknown): unknown {
+    try {
+      return this.exec(task);
+    } catch (error) {
+      return new ExecutorError('EXEC_ERROR', (error as Error)?.message);
+    }
+  }
+}
+
+describe('Defined a simple executor implement, reference SyncExecutor', () => {
+  let myExecutor: MyExecutor;
+  let mockPlugin: ExecutorPlugin;
+
+  beforeEach(() => {
+    myExecutor = new MyExecutor();
+    mockPlugin = {
+      pluginName: 'mockPlugin',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn(),
+      enabled: jest.fn().mockReturnValue(true)
+    };
+    myExecutor.use(mockPlugin);
   });
 
-  // if all plugins not return error, the error will be thrown
-  it('should handle error all plugins not return error', async () => {
-    const executor = new SyncExecutor();
+  it('should successfully run exec method', () => {
+    const result = myExecutor.exec(() => 'success');
+    expect(result).toBe('success');
+    expect(mockPlugin.onBefore).toHaveBeenCalled();
+    expect(mockPlugin.onSuccess).toHaveBeenCalled();
+  });
 
-    const onError1 = jest.fn();
-    const onError2 = jest.fn();
-    const onError3 = jest.fn();
-    const execTask = jest.fn();
+  it('should handle errors in exec method', () => {
+    const task = () => {
+      throw new Error('Task failed');
+    };
+    expect(() => myExecutor.exec(task)).toThrow('Task failed');
+    expect(mockPlugin.onError).toHaveBeenCalled();
+  });
 
-    execTask.mockImplementationOnce(() => {
-      throw new Error('Task Error');
-    });
+  it('should return ExecutorError in execNoError method', () => {
+    const task = () => {
+      throw new Error('Task failed');
+    };
+    const result = myExecutor.execNoError(task);
+    expect(result).toBeInstanceOf(ExecutorError);
+    expect((result as ExecutorError).message).toBe('Task failed');
+    expect(mockPlugin.onError).toHaveBeenCalled();
+  });
 
-    onError1.mockImplementationOnce(({ error }) => {
-      if (error instanceof Error) {
-        error.message = error.message + ' Task Error1';
-      }
-    });
+  it('should run hooks correctly', () => {
+    myExecutor.runHooks([mockPlugin], 'onBefore');
+    expect(mockPlugin.onBefore).toHaveBeenCalled();
+  });
 
-    onError2.mockImplementationOnce(({ error }) => {
-      if (error instanceof Error) {
-        error.message = error.message + ' Task Error2';
-      }
-    });
+  it('should not call hooks if plugin is disabled', () => {
+    mockPlugin.enabled = jest.fn().mockReturnValue(false);
+    myExecutor.runHooks([mockPlugin], 'onBefore');
+    expect(mockPlugin.onBefore).not.toHaveBeenCalled();
+  });
 
-    onError3.mockImplementationOnce(({ error }) => {
-      if (error instanceof Error) {
-        error.message = error.message + ' Task Error3';
-      }
-    });
-
-    executor.use({ pluginName: 'test1', onError: onError1 });
-    executor.use({ pluginName: 'test2', onError: onError2 });
-    executor.use({ pluginName: 'test3', onError: onError3 });
-
-    try {
-      executor.exec(execTask);
-    } catch (error) {
-      expect(error).toMatchObject({
-        message: 'Task Error Task Error1 Task Error2 Task Error3'
-      });
-    }
-
-    expect(onError1).toHaveBeenCalledTimes(1);
-    expect(onError2).toHaveBeenCalledTimes(1);
-    expect(onError3).toHaveBeenCalledTimes(1);
+  it('should handle execNoError without plugins', () => {
+    const myExecutor = new MyExecutor(); // Reset without plugins
+    const task = () => {
+      throw new Error('No plugins error');
+    };
+    const result = myExecutor.execNoError(task);
+    expect(result).toBeInstanceOf(ExecutorError);
+    expect((result as ExecutorError).message).toBe('No plugins error');
   });
 });
 
-describe('ExecutorPlugin no throw error', () => {
-  it('should handle no error in executor', async () => {
-    const executor = new AsyncExecutor();
-    const promise = executor.execNoError(async () => {
-      throw new Error('Test ExecutorPlugin No Error');
-    });
-    await expect(promise).resolves.toBeInstanceOf(ExecutorError);
+describe('Plugin method test', () => {
+  it('should execute task without plugins', () => {
+    const myExecutor = new MyExecutor(); // Reset without plugins
+    const result = myExecutor.exec(() => 'no plugins');
+    expect(result).toBe('no plugins');
+  });
+
+  it('should add and use multiple plugins', () => {
+    const myExecutor = new MyExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn(),
+      enabled: jest.fn().mockReturnValue(true)
+    };
+    const mockPlugin = {
+      pluginName: 'mockPlugin',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn(),
+      enabled: jest.fn().mockReturnValue(true)
+    };
+
+    myExecutor.use(anotherPlugin);
+    myExecutor.exec(() => 'test');
+    expect(mockPlugin.onBefore).not.toHaveBeenCalled();
+    expect(anotherPlugin.onBefore).toHaveBeenCalled();
+    expect(mockPlugin.onSuccess).not.toHaveBeenCalled();
+    expect(anotherPlugin.onSuccess).toHaveBeenCalled();
+  });
+
+  it('should get plugins', () => {
+    const myExecutor = new MyExecutor();
+    const plugins = myExecutor.getPlugins();
+    expect(plugins.length).toBe(0);
+  });
+
+  it('should warn plugin already used, set onlyOne to true', () => {
+    const { lastStdout, end } = mockLogStdIo();
+
+    const myExecutor = new MyExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onlyOne: true,
+      onBefore: jest.fn()
+    };
+    myExecutor.use(anotherPlugin);
+    // repeat use, and only one plugin
+    myExecutor.use(anotherPlugin);
+
+    expect(lastStdout()).toBe(
+      `Plugin ${anotherPlugin.pluginName} is already used, skip adding`
+    );
+    expect(myExecutor.getPlugins().length).toBe(1);
+
+    end();
+  });
+
+  it('should skip lifecycle name not correct', () => {
+    const myExecutor = new MyExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore2: jest.fn()
+    };
+    myExecutor.use(anotherPlugin);
+    myExecutor.runHooks([anotherPlugin], 'onBefore');
+    expect(anotherPlugin.onBefore2).not.toHaveBeenCalled();
+  });
+
+  it('should can custom lifecycle method name', () => {
+    const myExecutor = new MyExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore2: jest.fn()
+    };
+    myExecutor.use(anotherPlugin);
+    myExecutor.runHooks([anotherPlugin], 'onBefore2');
+    expect(anotherPlugin.onBefore2).toHaveBeenCalled();
   });
 });

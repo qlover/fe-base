@@ -23,8 +23,6 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
     const result = await executor.exec<string, Record<string, unknown>>(
       { value: 'test' },
       async (context) => {
-        console.log(context);
-
         return context.parameters.modifiedBy as string;
       }
     );
