@@ -1,6 +1,6 @@
 'use strict';
 
-import TsClassMethodReturn from './TsClassMethodReturn';
+import TsClassMethodReturn from './TsClassMethodReturn.js';
 
 export const configs = {
   recommended: {
