@@ -144,7 +144,7 @@ private async run(data, task) {
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | Input data for the task | `unknown` |  |  |
+|  data  | Input data for the task | `Params` |  |  |
 |  actualTask  | Task function to execute | `PromiseTask<Result, Params>` |  |  |
 
 
@@ -178,7 +178,8 @@ const result = await this.runHook(
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
-|  hookName  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown>[]` |  |  |
+|  hookName  | Name of the hook function to execute | `string` |  |  |
 |  context  |  | `ExecutorContext<Params>` |  |  |
+|  args  | Arguments to pass to the hook function | `unknown[]` |  |  |
 

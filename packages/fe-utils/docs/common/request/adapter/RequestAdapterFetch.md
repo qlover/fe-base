@@ -100,7 +100,7 @@ Converts the raw fetch response into a standardized adapter response.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  |  | `ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugin  |  | `ExecutorPlugin<unknown>` |  |  |
 
 
 ## TypeAlias `RequestAdapterFetchConfig`

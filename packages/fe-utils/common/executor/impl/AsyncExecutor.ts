@@ -63,39 +63,65 @@ export class AsyncExecutor extends Executor {
    */
   async runHooks<Params>(
     plugins: ExecutorPlugin[],
-    hookName: keyof ExecutorPlugin,
-    context: ExecutorContext<Params>
-  ): Promise<ExecutorContext<Params>> {
+    /**
+     * allow any string as hook name.
+     * if the hook name is not a function, it will be skipped
+     *
+     * @since 1.1.3
+     */
+    hookName: string,
+    context?: ExecutorContext<Params>,
+    ...args: unknown[]
+  ): Promise<unknown> {
+    let _index = -1;
+    let returnValue: unknown;
+
+    const _context: ExecutorContext<Params> = context || {
+      parameters: undefined as Params,
+      hooksRuntimes: {}
+    };
+
+    // reset hooksRuntimes times and index
+    _context.hooksRuntimes.times = 0;
+    _context.hooksRuntimes.index = undefined;
+
     for (const plugin of plugins) {
-      if (plugin.enabled && !plugin.enabled?.(hookName, context)) {
+      _index++;
+
+      if (
+        typeof plugin[hookName as keyof ExecutorPlugin] !== 'function' ||
+        (typeof plugin.enabled == 'function' &&
+          !plugin.enabled(hookName as keyof ExecutorPlugin, context))
+      ) {
         continue;
       }
 
-      if (!plugin[hookName]) {
-        continue;
+      // if breakChain is true, stop the chain
+      if (_context.hooksRuntimes?.breakChain) {
+        break;
       }
 
-      context.runtimes = Object.freeze({ plugin, hookName });
+      _context.hooksRuntimes.pluginName = plugin.pluginName;
+      _context.hooksRuntimes.hookName = hookName;
+      _context.hooksRuntimes.times++;
+      _context.hooksRuntimes.index = _index;
 
       // @ts-expect-error
-      const pluginResult = await plugin[hookName](context);
-      // TODO: record the result of the lifecycle hooks
+      const pluginReturn = await plugin[hookName](context, ...args);
 
-      if (pluginResult !== undefined) {
-        if (hookName === 'onError') {
-          context.error = pluginResult;
-          context.runtimes = undefined;
-          return context;
+      if (pluginReturn !== undefined) {
+        returnValue = pluginReturn;
+        // set runtimes returnValue
+        _context.hooksRuntimes.returnValue = pluginReturn;
+
+        // When returnBreakChain is true, stop the chain
+        if (_context.hooksRuntimes.returnBreakChain) {
+          return returnValue;
         }
-
-        context.returnValue = pluginResult;
       }
     }
 
-    // clear the runtimes after the chain execution is complete
-    context.runtimes = undefined;
-
-    return context;
+    return returnValue;
   }
 
   /**
@@ -189,20 +215,7 @@ export class AsyncExecutor extends Executor {
       throw new Error('Task must be a async function!');
     }
 
-    const runner = (): Promise<Result> => {
-      return this.run(data, actualTask);
-    };
-
-    const findOnExec = this.plugins.find(
-      (plugin) => typeof plugin['onExec'] === 'function'
-    );
-
-    // If the plugin has the onExec hook, execute it
-    if (findOnExec) {
-      return findOnExec.onExec!(runner) as Promise<Result>;
-    }
-
-    return runner();
+    return this.run(data, actualTask);
   }
 
   /**
@@ -227,7 +240,7 @@ export class AsyncExecutor extends Executor {
    * @param data - Input data for the task
    * @param actualTask - Task function to execute
    * @throws {ExecutorError} When task execution fails
-   * @returns Promise resolving to task result
+   * @returns Promise resolving to task result(context.returnValue)
    *
    * @example
    * ```typescript
@@ -249,23 +262,38 @@ export class AsyncExecutor extends Executor {
    * ```
    */
   async run<Result, Params = unknown>(
-    data: unknown,
+    data: Params,
     actualTask: PromiseTask<Result, Params>
   ): Promise<Result> {
     const context: ExecutorContext<Params> = {
-      parameters: data as Params,
+      parameters: data,
       returnValue: undefined,
-      error: undefined
+      error: undefined,
+      hooksRuntimes: {
+        pluginName: '',
+        hookName: '',
+        returnValue: undefined,
+        returnBreakChain: false,
+        times: 0
+      }
+    };
+
+    const runExec = async (ctx: ExecutorContext<Params>): Promise<void> => {
+      await this.runHooks(this.plugins, 'onExec', ctx, actualTask);
+
+      // if exec times is 0, then execute task, otherwise return the result of the last hook
+      if (ctx.hooksRuntimes.times === 0) {
+        ctx.returnValue = await actualTask(ctx);
+        return;
+      }
+
+      ctx.returnValue = ctx.hooksRuntimes.returnValue;
     };
 
     try {
-      const beforeResult = await this.runHooks(
-        this.plugins,
-        'onBefore',
-        context
-      );
+      await this.runHooks(this.plugins, 'onBefore', context);
 
-      context.returnValue = await actualTask(beforeResult);
+      await runExec(context);
 
       await this.runHooks(this.plugins, 'onSuccess', context);
 
@@ -273,13 +301,30 @@ export class AsyncExecutor extends Executor {
     } catch (error) {
       context.error = error as Error;
 
+      // if onError hook return a Error, then break the chain
+      Object.assign(context.hooksRuntimes, { returnBreakChain: true });
+
       await this.runHooks(this.plugins, 'onError', context);
+
+      // if onError hook return a ExecutorError, then throw it
+      if (context.hooksRuntimes.returnValue) {
+        context.error = context.hooksRuntimes.returnValue as Error;
+      }
 
       if (context.error instanceof ExecutorError) {
         throw context.error;
       }
 
       throw new ExecutorError('UNKNOWN_ASYNC_ERROR', context.error);
+    } finally {
+      // reset hooksRuntimes
+      context.hooksRuntimes = {
+        pluginName: '',
+        hookName: '',
+        returnValue: undefined,
+        returnBreakChain: false,
+        times: 0
+      };
     }
   }
 }

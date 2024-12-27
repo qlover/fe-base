@@ -105,26 +105,22 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const modifiedConfig = abortPlugin.onBefore(config);
    * ```
    */
-  onBefore({
-    parameters
-  }: ExecutorContext<RequestAdapterConfig>): RequestAdapterConfig {
-    const key = this.generateRequestKey(parameters);
+  onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
+    const key = this.generateRequestKey(context.parameters);
 
     // abort previous request
     if (this.controllers.has(key)) {
-      this.abort(parameters);
+      this.abort(context.parameters);
     }
 
     // Check if config already has a signal
-    if (!parameters.signal) {
+    if (!context.parameters.signal) {
       const controller = new AbortController();
       this.controllers.set(key, controller);
 
       // extends config with abort signal
-      parameters.signal = controller.signal;
+      context.parameters.signal = controller.signal;
     }
-
-    return parameters;
   }
 
   onSuccess({ parameters }: ExecutorContext<RequestAdapterConfig>): void {

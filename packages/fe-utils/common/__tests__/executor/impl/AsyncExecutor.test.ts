@@ -1,7 +1,196 @@
 import { ExecutorError, ExecutorPlugin } from '../../../../interface';
 import { AsyncExecutor } from '../../..';
 
+function mockLogStdIo(): {
+  spy: jest.SpyInstance;
+  lastStdout: () => string;
+  stdouts: () => string;
+  end: () => void;
+} {
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  const end = (): void => {
+    spy.mockRestore();
+  };
+
+  const lastStdout = (): string => {
+    if (spy.mock.calls.length === 0) {
+      return '';
+    }
+    return spy.mock.calls[spy.mock.calls.length - 1].join('');
+  };
+
+  const allStdout = (): string => {
+    return spy.mock.calls.map((call) => call.join('')).join('');
+  };
+
+  return { spy, end, lastStdout, stdouts: allStdout };
+}
+
+describe('Executor Async implmentation', () => {
+  it('should successfully run exec method', async () => {
+    const executor = new AsyncExecutor();
+    const result = await executor.exec(() => 'success');
+    expect(result).toBe('success');
+  });
+
+  it('should handle errors in synchronous tasks', async () => {
+    const executor = new AsyncExecutor();
+    const error = new Error('test error');
+
+    await expect(
+      executor.exec(() => {
+        throw error;
+      })
+    ).rejects.toThrow(error);
+  });
+
+  it('should return ExecutorError in execNoError method', async () => {
+    const executor = new AsyncExecutor();
+    const task = (): unknown => {
+      throw new Error('Task failed');
+    };
+    const result = await executor.execNoError(task);
+    expect(result).toBeInstanceOf(ExecutorError);
+    expect((result as ExecutorError).message).toBe('Task failed');
+  });
+
+  it('should run hooks correctly', async () => {
+    const executor = new AsyncExecutor();
+    const plugin: ExecutorPlugin = {
+      pluginName: 'test',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn()
+    };
+    executor.use(plugin);
+    await executor.runHooks([plugin], 'onBefore');
+    expect(plugin.onBefore).toHaveBeenCalled();
+  });
+
+  it('should not call hooks if plugin is disabled', async () => {
+    const executor = new AsyncExecutor();
+    const plugin: ExecutorPlugin = {
+      pluginName: 'test',
+      enabled: () => false,
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn()
+    };
+    executor.use(plugin);
+    await executor.runHooks([plugin], 'onBefore');
+    expect(plugin.onBefore).not.toHaveBeenCalled();
+  });
+
+  it('should handle execNoError without plugins', async () => {
+    const executor = new AsyncExecutor();
+    const task = (): unknown => {
+      throw new Error('No plugins error');
+    };
+    const result = await executor.execNoError(task);
+    expect(result).toBeInstanceOf(ExecutorError);
+    expect((result as ExecutorError).message).toBe('No plugins error');
+  });
+});
+
+describe('AsyncExecutor plugin test', () => {
+  it('should execute task without plugins', async () => {
+    const executor = new AsyncExecutor();
+    const result = await executor.exec(() => 'no plugins');
+    expect(result).toBe('no plugins');
+  });
+
+  it('should add and use multiple plugins', async () => {
+    const executor = new AsyncExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn(),
+      enabled: jest.fn().mockReturnValue(true)
+    };
+    const mockPlugin = {
+      pluginName: 'mockPlugin',
+      onBefore: jest.fn(),
+      onSuccess: jest.fn(),
+      onError: jest.fn(),
+      enabled: jest.fn().mockReturnValue(true)
+    };
+
+    executor.use(anotherPlugin);
+    await executor.exec(() => 'test');
+    expect(mockPlugin.onBefore).not.toHaveBeenCalled();
+    expect(anotherPlugin.onBefore).toHaveBeenCalled();
+    expect(mockPlugin.onSuccess).not.toHaveBeenCalled();
+    expect(anotherPlugin.onSuccess).toHaveBeenCalled();
+  });
+
+  it('should warn plugin already used, set onlyOne to true', async () => {
+    const { lastStdout, end } = mockLogStdIo();
+
+    const executor = new AsyncExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onlyOne: true,
+      onBefore: jest.fn()
+    };
+    executor.use(anotherPlugin);
+    // repeat use, and only one plugin
+    executor.use(anotherPlugin);
+
+    expect(lastStdout()).toBe(
+      `Plugin ${anotherPlugin.pluginName} is already used, skip adding`
+    );
+
+    end();
+  });
+
+  it('should skip lifecycle name not correct', async () => {
+    const executor = new AsyncExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore2: jest.fn()
+    };
+    executor.use(anotherPlugin);
+    await executor.runHooks([anotherPlugin], 'onBefore');
+    expect(anotherPlugin.onBefore2).not.toHaveBeenCalled();
+  });
+
+  it('should can custom lifecycle method name', async () => {
+    const executor = new AsyncExecutor();
+    const anotherPlugin = {
+      pluginName: 'anotherPlugin',
+      onBefore2: jest.fn()
+    };
+    executor.use(anotherPlugin);
+    await executor.runHooks([anotherPlugin], 'onBefore2');
+    expect(anotherPlugin.onBefore2).toHaveBeenCalled();
+  });
+});
+
 describe('AsyncExecutor onBefore Lifecycle', () => {
+  it('should not support return value onBefore chain', async () => {
+    const executor = new AsyncExecutor();
+    executor.use({
+      pluginName: 'test1',
+      // not support return
+      onBefore({ returnValue }) {
+        return (returnValue + '123') as unknown as void;
+      }
+    });
+
+    executor.use({
+      pluginName: 'test2',
+      onBefore({ returnValue }) {
+        expect(returnValue).not.toBeDefined();
+      }
+    });
+
+    const result = await executor.exec(() => 'test');
+    expect(result).not.toBe('test123');
+    expect(result).toBe('test');
+  });
+
   it('should modify input data through onBefore hooks', async () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin<Record<string, unknown>> = {
@@ -22,7 +211,9 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
 
     const result = await executor.exec<string, Record<string, unknown>>(
       { value: 'test' },
-      async (context) => context.parameters.modifiedBy as string
+      async (context) => {
+        return context.parameters.modifiedBy as string;
+      }
     );
     expect(result).toBe('plugin2');
   });
@@ -75,6 +266,43 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
     expect(plugin2.onBefore).not.toHaveBeenCalled();
     expect(onError).toHaveBeenCalled();
   });
+
+  it('should stop onBefore chain if breakChain is true', async () => {
+    const executor = new AsyncExecutor();
+
+    const onBefore1 = jest.fn();
+    const onBefore2 = jest.fn();
+    const onBefore3 = jest.fn();
+
+    onBefore1.mockImplementationOnce(async ({ hooksRuntimes }) => {
+      expect(hooksRuntimes.times).toBe(1);
+    });
+
+    onBefore2.mockImplementationOnce(async ({ hooksRuntimes }) => {
+      expect(hooksRuntimes.times).toBe(2);
+      hooksRuntimes.breakChain = true;
+    });
+
+    executor.use({
+      pluginName: 'plugin1',
+      onBefore: onBefore1
+    });
+    executor.use({
+      pluginName: 'plugin2',
+      onBefore: onBefore2
+    });
+
+    executor.use({
+      pluginName: 'plugin3',
+      onBefore: onBefore3
+    });
+
+    const result = await executor.exec({ data: 'test' }, async () => 'test');
+    expect(result).toBe('test');
+    expect(onBefore1).toHaveBeenCalled();
+    expect(onBefore2).toHaveBeenCalled();
+    expect(onBefore3).not.toHaveBeenCalled();
+  });
 });
 
 describe('AsyncExecutor onExec Lifecycle', () => {
@@ -95,11 +323,14 @@ describe('AsyncExecutor onExec Lifecycle', () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'plugin1',
-      onExec: async <T>() => 'modified by plugin1' as T
+      onExec: async ({ hooksRuntimes }) => {
+        hooksRuntimes.breakChain = true;
+        return 'modified by plugin1';
+      }
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onExec: async <T>() => 'modified by plugin2' as T
+      onExec: async () => 'modified by plugin2'
     };
 
     executor.use(plugin1);
@@ -130,9 +361,122 @@ describe('AsyncExecutor onExec Lifecycle', () => {
 
     await expect(
       executor.exec(async () => 'original task')
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toMatchObject({
+      id: 'UNKNOWN_ASYNC_ERROR',
+      message: 'Error in onExec'
+    });
 
-    expect(onError).toHaveBeenCalledTimes(0);
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it('should overwrite the task and return the contents of onexec', async () => {
+    const executor = new AsyncExecutor();
+    const executor2 = new AsyncExecutor();
+
+    executor.use({
+      pluginName: 'plugin1',
+      onExec: async () => {
+        return 'exec value';
+      }
+    });
+    executor2.use({
+      pluginName: 'plugin1',
+      onExec: async () => {
+        return;
+      }
+    });
+
+    const result = await executor.exec(async () => 'original task');
+    expect(result).toBe('exec value');
+
+    const result2 = await executor2.exec(async () => 'original task');
+    expect(result2).toBe(undefined);
+  });
+
+  it('should splice all previous exec returns.', async () => {
+    const executor = new AsyncExecutor();
+
+    executor.use({
+      pluginName: 'plugin1',
+      onExec: async () => {
+        return 'exec1';
+      }
+    });
+
+    executor.use({
+      pluginName: 'plugin2',
+      onExec: async () => {
+        return;
+      }
+    });
+    executor.use({
+      pluginName: 'plugin3',
+      onExec: async ({ hooksRuntimes }) => {
+        return hooksRuntimes.returnValue + 'exec3';
+      }
+    });
+
+    const result = await executor.exec(async () => 0);
+    expect(result).toBe('exec1exec3');
+  });
+
+  it('should break chain if onExec runtimes.breakChain is true', async () => {
+    const executor = new AsyncExecutor();
+
+    executor.use({
+      pluginName: 'plugin1',
+      onExec: async ({ hooksRuntimes }) => {
+        return 'exec1';
+      }
+    });
+
+    executor.use({
+      pluginName: 'plugin2',
+      onExec: async ({ hooksRuntimes }) => {
+        hooksRuntimes.breakChain = true;
+        return;
+      }
+    });
+    executor.use({
+      pluginName: 'plugin3',
+      onExec: async ({ hooksRuntimes }) => {
+        return hooksRuntimes.returnValue + 'exec3';
+      }
+    });
+
+    const result = await executor.exec(async () => 0);
+    expect(result).toBe('exec1');
+  });
+
+  it('should return the original task return value, when enable is false.', async () => {
+    const executor = new AsyncExecutor();
+
+    executor.use({
+      pluginName: 'plugin1',
+      enabled: () => false,
+      onExec: async ({ hooksRuntimes }) => {
+        return 'exec1';
+      }
+    });
+
+    executor.use({
+      pluginName: 'plugin2',
+      enabled: () => false,
+      onExec: async ({ hooksRuntimes }) => {
+        hooksRuntimes.breakChain = true;
+        return;
+      }
+    });
+    executor.use({
+      pluginName: 'plugin3',
+      enabled: () => false,
+      onExec: async ({ hooksRuntimes }) => {
+        return hooksRuntimes.returnValue + 'exec3';
+      }
+    });
+
+    const result = await executor.exec(async () => 0);
+    expect(result).toBe(0);
   });
 });
 
@@ -212,7 +556,9 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'plugin1',
-      onSuccess: async ({ returnValue }) => returnValue + ' success'
+      onSuccess: async (context) => {
+        context.returnValue = context.returnValue + ' success';
+      }
     };
 
     executor.use(plugin);
@@ -224,11 +570,15 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'plugin1',
-      onSuccess: async ({ returnValue }) => returnValue + ' modified by plugin1'
+      onSuccess: async (context) => {
+        context.returnValue = context.returnValue + ' modified by plugin1';
+      }
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onSuccess: async ({ returnValue }) => returnValue + ' modified by plugin2'
+      onSuccess: async (context) => {
+        context.returnValue = context.returnValue + ' modified by plugin2';
+      }
     };
 
     executor.use(plugin1);
@@ -420,7 +770,9 @@ describe('AsyncExecutor Additional Tests', () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin<string> = {
       pluginName: 'plugin1',
-      onSuccess: async ({ returnValue }) => returnValue + ' modified'
+      onSuccess: async (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
     };
 
     executor.use(plugin);

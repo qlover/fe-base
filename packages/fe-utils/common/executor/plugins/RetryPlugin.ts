@@ -1,4 +1,9 @@
-import { ExecutorPlugin, PromiseTask, ExecutorError } from '../../../interface';
+import {
+  ExecutorPlugin,
+  PromiseTask,
+  ExecutorError,
+  ExecutorContext
+} from '../../../interface';
 
 /**
  * Configuration options for the RetryPlugin
@@ -179,15 +184,16 @@ export class RetryPlugin implements ExecutorPlugin {
    * const result = await retryPlugin.onExec(() => fetchData());
    * ```
    */
-  async onExec<Result, Params = unknown>(
-    task: PromiseTask<Result, Params>
-  ): Promise<Result | void> {
+  async onExec(
+    context: ExecutorContext<unknown>,
+    task: PromiseTask<unknown, unknown>
+  ): Promise<unknown> {
     // no retry, just execute
     if (this.options.maxRetries < 1) {
-      return task({ parameters: {} as Params });
+      return task(context);
     }
 
-    return this.retry(task, this.options, this.options.maxRetries);
+    return this.retry(task, context, this.options, this.options.maxRetries);
   }
 
   /**
@@ -242,11 +248,12 @@ export class RetryPlugin implements ExecutorPlugin {
    */
   async retry<Result, Params = unknown>(
     fn: PromiseTask<Result, Params>,
+    context: ExecutorContext<Params>,
     options: RetryOptions,
     retryCount: number
   ): Promise<Result | undefined> {
     try {
-      return await fn({ parameters: {} as Params });
+      return await fn(context);
     } catch (error) {
       if (!this.shouldRetry({ error, retryCount })) {
         throw new ExecutorError(
@@ -264,7 +271,7 @@ export class RetryPlugin implements ExecutorPlugin {
       // decrement retry count
       retryCount--;
 
-      return this.retry(fn, options, retryCount);
+      return this.retry(fn, context, options, retryCount);
     }
   }
 }
