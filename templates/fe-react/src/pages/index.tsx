@@ -5,19 +5,26 @@ import { lazy } from 'react';
 import { isString } from 'lodash';
 import NotFound from './404';
 
-const pagesMaps: Record<string, () => LazyExoticComponent<any>> = {
+const pagesMaps: Record<
+  string,
+  () => LazyExoticComponent<React.ComponentType<unknown>>
+> = {
   'base/BasicLayout': () => lazy(() => import('./base/BasicLayout')),
   'base/Home': () => lazy(() => import('./base/Home')),
   'base/About': () => lazy(() => import('./base/About')),
   'base/JSONStorage': () => lazy(() => import('./base/JSONStorage')),
   'base/Request': () => lazy(() => import('./base/Request')),
   'base/Executor': () => lazy(() => import('./base/Executor')),
-  '404': () => lazy(() => import('./404'))
+  '404': () =>
+    lazy(
+      () =>
+        import('./404') as Promise<{ default: React.ComponentType<unknown> }>
+    )
 };
 
 // 懒加载组件
 const lazyLoad = (componentPath: string) => {
-  let loadedComponent = pagesMaps[componentPath];
+  const loadedComponent = pagesMaps[componentPath];
 
   if (!loadedComponent) {
     console.warn(`Route ${componentPath} not found`);

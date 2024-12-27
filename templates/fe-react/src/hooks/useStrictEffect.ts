@@ -24,5 +24,6 @@ export const useStrictEffect = (
       mountedRef.current = true;
       return effect();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }; 

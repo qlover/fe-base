@@ -20,7 +20,7 @@ export class FeApi extends RequestScheduler<RequestAdapterConfig> {
     this.usePlugin(new ApiCommonPlugin());
   }
 
-  stop(config: RequestAdapterConfig) {
+  stop(config: RequestAdapterConfig): void {
     this.abortPlugin.abort(config);
   }
 

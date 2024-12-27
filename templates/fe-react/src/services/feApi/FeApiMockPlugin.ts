@@ -7,7 +7,7 @@ import {
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';
 
-  onBefore({ parameters }: ExecutorContext<RequestAdapterFetchConfig>) {
+  onBefore({ parameters }: ExecutorContext<RequestAdapterFetchConfig>): void {
     console.log('FeApiMockPlugin onBefore', parameters);
   }
 }
