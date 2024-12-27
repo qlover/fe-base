@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import * as feDev from '@qlover/eslint-plugin-fe-dev';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'node_modules'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['src/**/*.{ts,tsx}'],
