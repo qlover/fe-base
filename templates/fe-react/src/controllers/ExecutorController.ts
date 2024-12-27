@@ -5,7 +5,7 @@ import {
   ExecutorPlugin,
   RequestAdapterResponse
 } from 'packages/fe-utils/interface';
-import { RequestAdapterFetchConfig } from 'packages/fe-utils/common';
+import { RequestAdapterFetchConfig } from '@qlover/fe-utils';
 
 function createDefaultState() {
   return {
@@ -26,8 +26,8 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
       parameters.responseType === 'text' &&
       (returnValue as RequestAdapterResponse).data instanceof Response
     ) {
-      (returnValue as RequestAdapterResponse<any, string>).data = await (
-        returnValue as RequestAdapterResponse<any, Response>
+      (returnValue as RequestAdapterResponse<unknown, string>).data = await (
+        returnValue as RequestAdapterResponse<unknown, Response>
       ).data.text();
     }
   }

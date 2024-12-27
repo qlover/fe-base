@@ -5,11 +5,11 @@ export class BaseController<T> extends SliceStore<T> {
     super(() => initialState);
   }
 
-  getState() {
+  getState(): T {
     return this.state;
   }
 
-  setState(state: Partial<T>) {
+  setState(state: Partial<T>): void {
     this.emit({ ...this.state, ...state });
   }
 }

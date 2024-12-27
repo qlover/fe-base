@@ -5,7 +5,8 @@ import {
   RequestAdapterConfig,
   RequestScheduler,
   FetchAbortPlugin
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
+import { FeApiGetIpInfo, FeApiGetRandomUser } from './FeApiType';
 
 export class FeApi extends RequestScheduler<RequestAdapterConfig> {
   constructor(private abortPlugin: FetchAbortPlugin) {
@@ -19,15 +20,15 @@ export class FeApi extends RequestScheduler<RequestAdapterConfig> {
     this.usePlugin(new ApiCommonPlugin());
   }
 
-  stop(config: RequestAdapterConfig) {
+  stop(config: RequestAdapterConfig): void {
     this.abortPlugin.abort(config);
   }
 
-  async getIpInfo() {
+  async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
     return this.get('http://ip-api.com/json/');
   }
 
-  async getRandomUser() {
+  async getRandomUser(): Promise<FeApiGetRandomUser['response']> {
     return this.get('https://randomuser.me/api/');
   }
 }

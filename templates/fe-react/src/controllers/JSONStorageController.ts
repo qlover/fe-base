@@ -1,4 +1,4 @@
-import { JSONStorage } from 'packages/fe-utils/common';
+import { JSONStorage } from '@qlover/fe-utils';
 import { BaseController } from './BaseController';
 import { random } from 'lodash';
 

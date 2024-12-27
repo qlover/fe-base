@@ -3,7 +3,7 @@ import {
   ExecutorPlugin,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 import { StreamProcessor } from './StreamProcessor';
 
 export class OpenAIAuthPlugin

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
  * @param createController Factory function that creates a controller instance or controller instance
  * @returns Controller instance with precise type inference
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useController<C extends BaseController<any>>(
   createController: (() => C) | C
 ): C {
@@ -47,7 +48,7 @@ export function useController<C extends BaseController<any>>(
 export function useCreateController<
   T,
   Ctrl extends BaseController<T>,
-  Args extends any[]
+  Args extends unknown[]
 >(Controller: new (...args: Args) => Ctrl, ...args: Args): Ctrl {
   const { current } = useRef({
     target: undefined as undefined | Ctrl,

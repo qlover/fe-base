@@ -5,7 +5,7 @@ import {
   RequestAdapterFetchConfig,
   FetchURLPlugin,
   RequestAdapterResponse
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 import {
   ApiCommonPlugin,
   ApiCommonPluginConfig
