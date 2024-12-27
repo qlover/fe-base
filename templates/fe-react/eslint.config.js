@@ -25,6 +25,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true }
       ],
+      'fe-dev/ts-class-method-return': 'error'
     }
   }
 );
