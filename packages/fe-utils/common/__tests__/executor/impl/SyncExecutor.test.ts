@@ -754,3 +754,111 @@ describe('SyncExecutor execNoError Method', () => {
     expect(onSuccess).not.toHaveBeenCalled();
   });
 });
+
+describe('SyncExecutor Additional Tests', () => {
+  it('should execute multiple plugins in sequence', () => {
+    const executor = new SyncExecutor();
+    const results: string[] = [];
+
+    const plugin1: ExecutorPlugin = {
+      pluginName: 'plugin1',
+      onBefore: () => {
+        results.push('before1');
+      },
+      onSuccess: () => {
+        results.push('success1');
+      },
+      onError: () => {
+        results.push('error1');
+      }
+    };
+
+    const plugin2: ExecutorPlugin = {
+      pluginName: 'plugin2',
+      onBefore: () => {
+        results.push('before2');
+      },
+      onSuccess: () => {
+        results.push('success2');
+      },
+      onError: () => {
+        results.push('error2');
+      }
+    };
+
+    executor.use(plugin1);
+    executor.use(plugin2);
+
+    executor.exec(() => 'test');
+
+    expect(results).toEqual(['before1', 'before2', 'success1', 'success2']);
+  });
+
+  it('should handle plugin that modifies data in onBefore hook', () => {
+    const executor = new SyncExecutor();
+    const plugin: ExecutorPlugin<Record<string, unknown>> = {
+      pluginName: 'plugin1',
+      onBefore: (context) => {
+        context.parameters.added = true;
+      }
+    };
+
+    executor.use(plugin);
+
+    const result = executor.exec<boolean, Record<string, unknown>>(
+      { value: 'test' },
+      (context) => context.parameters.added as boolean
+    );
+    expect(result).toBe(true);
+  });
+
+  it('should handle plugin that modifies result in onSuccess hook', () => {
+    const executor = new SyncExecutor();
+    const plugin: ExecutorPlugin<string> = {
+      pluginName: 'plugin1',
+      onSuccess: (context) => {
+        context.returnValue = context.returnValue + ' modified';
+      }
+    };
+
+    executor.use(plugin);
+
+    const result = executor.exec(() => 'test');
+    expect(result).toBe('test modified');
+  });
+
+  it('should handle plugin that suppresses error in onError hook', () => {
+    const executor = new SyncExecutor();
+    const plugin: ExecutorPlugin = {
+      pluginName: 'plugin1',
+      onError: () => {
+        return new ExecutorError('Handled Error');
+      }
+    };
+
+    executor.use(plugin);
+
+    const result = executor.execNoError(() => {
+      throw new Error('test error');
+    });
+
+    expect(result).toBeInstanceOf(ExecutorError);
+    expect((result as ExecutorError).message).toBe('Handled Error');
+  });
+
+  it('should execute task with no plugins', () => {
+    const executor = new SyncExecutor();
+    const result = executor.exec(() => 'no plugins');
+    expect(result).toBe('no plugins');
+  });
+
+  it('should throw error if task is not a function', () => {
+    const executor = new SyncExecutor();
+    try {
+      executor.exec('not a function' as unknown as () => unknown);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toBe('Task must be a function!');
+    }
+  });
+});

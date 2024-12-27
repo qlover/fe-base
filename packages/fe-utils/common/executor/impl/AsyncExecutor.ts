@@ -70,15 +70,20 @@ export class AsyncExecutor extends Executor {
      * @since 1.1.3
      */
     hookName: string,
-    context: ExecutorContext<Params>,
+    context?: ExecutorContext<Params>,
     ...args: unknown[]
   ): Promise<unknown> {
     let _index = -1;
     let returnValue: unknown;
 
+    const _context: ExecutorContext<Params> = context || {
+      parameters: undefined as Params,
+      hooksRuntimes: {}
+    };
+
     // reset hooksRuntimes times and index
-    context.hooksRuntimes.times = 0;
-    context.hooksRuntimes.index = undefined;
+    _context.hooksRuntimes.times = 0;
+    _context.hooksRuntimes.index = undefined;
 
     for (const plugin of plugins) {
       _index++;
@@ -92,14 +97,14 @@ export class AsyncExecutor extends Executor {
       }
 
       // if breakChain is true, stop the chain
-      if (context.hooksRuntimes?.breakChain) {
+      if (_context.hooksRuntimes?.breakChain) {
         break;
       }
 
-      context.hooksRuntimes.pluginName = plugin.pluginName;
-      context.hooksRuntimes.hookName = hookName;
-      context.hooksRuntimes.times++;
-      context.hooksRuntimes.index = _index;
+      _context.hooksRuntimes.pluginName = plugin.pluginName;
+      _context.hooksRuntimes.hookName = hookName;
+      _context.hooksRuntimes.times++;
+      _context.hooksRuntimes.index = _index;
 
       // @ts-expect-error
       const pluginReturn = await plugin[hookName](context, ...args);
@@ -107,10 +112,10 @@ export class AsyncExecutor extends Executor {
       if (pluginReturn !== undefined) {
         returnValue = pluginReturn;
         // set runtimes returnValue
-        context.hooksRuntimes.returnValue = pluginReturn;
+        _context.hooksRuntimes.returnValue = pluginReturn;
 
         // When returnBreakChain is true, stop the chain
-        if (context.hooksRuntimes.returnBreakChain) {
+        if (_context.hooksRuntimes.returnBreakChain) {
           return returnValue;
         }
       }

@@ -1,6 +1,74 @@
-import { RequestError } from '../../../../interface';
+import { RequestError, RequestErrorID } from '../../../../interface';
 import { RequestAdapterFetch } from '../../../request';
 import { FetchURLPlugin } from '../../../request/plugins';
+
+describe('create a base requestAdapterFetch', () => {
+  let fetchMock: jest.Mock;
+  let originalFetch: typeof globalThis.fetch;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+    fetchMock = jest.fn();
+    fetchMock.mockReturnValue(
+      new Response('Mock Response', { status: 200, statusText: 'OK' })
+    );
+    globalThis.fetch = fetchMock;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it('should create a and use native fetch', () => {
+    const adapter = new RequestAdapterFetch({
+      baseURL: 'https://api.example.com'
+    });
+
+    expect(adapter.getConfig().fetcher).toBe(fetchMock);
+    expect(adapter.getConfig().baseURL).toBe('https://api.example.com');
+  });
+
+  it('should get the adapterResponse type', async () => {
+    const adapter = new RequestAdapterFetch();
+
+    const result = await adapter.request({
+      url: 'https://api.example.com/users'
+    });
+
+    expect(result).toMatchObject({
+      status: 200,
+      statusText: 'OK',
+      config: {
+        url: 'https://api.example.com/users'
+      }
+    });
+  });
+
+  it('should parse the response data', async () => {
+    const adapter = new RequestAdapterFetch();
+
+    const result = await adapter.request({
+      url: 'https://api.example.com/users'
+    });
+
+    const text = await (result.data as Response).text();
+
+    expect(text).toBe('Mock Response');
+  });
+
+  it('should throw error when fetcher is not a function', () => {
+    try {
+      new RequestAdapterFetch({
+        fetcher: null as unknown as typeof globalThis.fetch
+      });
+    } catch (error) {
+      expect(error).toMatchObject({
+        id: RequestErrorID.ENV_FETCH_NOT_SUPPORT
+      });
+    }
+  });
+});
 
 describe('RequestAdapterFetch', () => {
   let fetchMock: jest.Mock;
