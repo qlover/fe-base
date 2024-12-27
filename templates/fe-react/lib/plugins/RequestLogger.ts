@@ -3,7 +3,7 @@ import {
   ExecutorContext,
   RequestAdapterFetchConfig,
   Logger
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 
 export class RequestLogger
   implements ExecutorPlugin<RequestAdapterFetchConfig>

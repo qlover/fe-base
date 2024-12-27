@@ -2,7 +2,7 @@ import {
   ExecutorContext,
   ExecutorPlugin,
   RequestAdapterFetchConfig
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';

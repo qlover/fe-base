@@ -4,7 +4,7 @@ import {
   RequestAdapterConfig,
   ExecutorContext,
   RequestAdapterResponse
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 
 export type ApiCommonPluginConfig = {
   token?: string;
@@ -23,9 +23,7 @@ export type ApiCommonPluginConfig = {
   ) => unknown;
 };
 
-export class ApiCommonPlugin
-  implements ExecutorPlugin<RequestAdapterConfig, void>
-{
+export class ApiCommonPlugin implements ExecutorPlugin<RequestAdapterConfig> {
   readonly pluginName = 'ApiCommonPlugin';
 
   constructor(readonly config: ApiCommonPluginConfig = {}) {
@@ -78,16 +76,14 @@ export class ApiCommonPlugin
     }
   }
 
-  async onSuccess({
-    returnValue,
-    parameters
-  }: ExecutorContext<RequestAdapterConfig>): Promise<void> {
+  async onSuccess(context: ExecutorContext<RequestAdapterConfig>): Promise<void> {
+    const { parameters, returnValue } = context;
     const response = (returnValue as RequestAdapterResponse<unknown, Response>)
       .data;
 
     if (response instanceof Response) {
       if (parameters.responseType === 'json') {
-        returnValue = await response.json();
+        context.returnValue = await response.json();
       }
     }
   }

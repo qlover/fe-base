@@ -6,7 +6,7 @@ import {
   JSONStorage,
   Logger,
   SyncStorage
-} from 'packages/fe-utils/common';
+} from '@qlover/fe-utils';
 import {
   ExecutorController,
   JSONStorageController,

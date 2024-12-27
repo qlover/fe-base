@@ -5,7 +5,7 @@ import {
   ExecutorPlugin,
   RequestAdapterResponse
 } from 'packages/fe-utils/interface';
-import { RequestAdapterFetchConfig } from 'packages/fe-utils/common';
+import { RequestAdapterFetchConfig } from '@qlover/fe-utils';
 
 function createDefaultState() {
   return {
