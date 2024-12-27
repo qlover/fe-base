@@ -14,7 +14,8 @@ describe('ExecutorPlugin', () => {
     };
 
     const context: ExecutorContext<Record<string, unknown>> = {
-      parameters: { value: 'test' }
+      parameters: { value: 'test' },
+      hooksRuntimes: {}
     };
 
     await plugin.onBefore?.(context);
@@ -29,7 +30,8 @@ describe('ExecutorPlugin', () => {
 
     const context: ExecutorContext = {
       error: new Error('original error'),
-      parameters: undefined
+      parameters: undefined,
+      hooksRuntimes: {}
     };
 
     const result = await plugin.onError?.(context);
@@ -38,27 +40,29 @@ describe('ExecutorPlugin', () => {
   });
 
   it('should execute onSuccess hook and modify result', async () => {
-    const plugin: ExecutorPlugin<string> = {
+    const plugin = {
       pluginName: 'test',
-      onSuccess: ({ returnValue }) => returnValue + ' success'
+      onSuccess: ({ returnValue }: ExecutorContext<string>): string =>
+        returnValue + ' success'
     };
 
     const context: ExecutorContext<string> = {
       returnValue: 'test',
-      parameters: 'test'
+      parameters: 'test',
+      hooksRuntimes: {}
     };
 
-    const result = await plugin.onSuccess?.(context);
+    const result = plugin.onSuccess?.(context);
     expect(result).toBe('test success');
   });
 
   it('should execute onExec hook and modify task', async () => {
-    const plugin: ExecutorPlugin = {
+    const plugin = {
       pluginName: 'test',
-      onExec: async <T>() => 'modified task' as T
+      onExec: async (): Promise<string> => 'modified task'
     };
 
-    const result = await plugin.onExec?.(() => 'original task');
+    const result = await plugin.onExec();
     expect(result).toBe('modified task');
   });
 
