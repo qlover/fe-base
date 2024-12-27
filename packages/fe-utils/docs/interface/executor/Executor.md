@@ -191,8 +191,8 @@ await executor.runHook(plugins, 'beforeExec', data);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | Plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
-|  name  | Hook name to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugins  | Plugins to execute | `ExecutorPlugin<unknown>[]` |  |  |
+|  name  | Hook name to execute | `keyof ExecutorPlugin<unknown>` |  |  |
 |  args  | Arguments for the hook | `unknown[]` |  |  |
 
 
@@ -227,7 +227,7 @@ executor.use({
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  | Plugin instance to add | `ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugin  | Plugin instance to add | `ExecutorPlugin<unknown>` |  |  |
 
 
 ## Interface `ExecutorConfig`

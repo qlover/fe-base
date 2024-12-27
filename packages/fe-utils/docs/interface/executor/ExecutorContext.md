@@ -32,6 +32,21 @@ occurs during task execution.
 
 
 
+### hooksRuntimes
+The runtime information of the task.
+
+The current runtime of each hook.
+
+This property is optional and will contain the runtime information
+of the task if it is executed.
+
+property is read-only
+
+will return a frozen object that will be cleared after the chain execution is complete.
+
+
+
+
 ### parameters
 The parameters passed to the task.
 
@@ -51,15 +66,40 @@ execution if it completes successfully.
 
 
 
-### runtimes
-The runtime information of the task.
+## Interface `HookRuntimes`
 
-This property is optional and will contain the runtime information
-of the task if it is executed.
 
-property is read-only
+## Members
 
-will return a frozen object that will be cleared after the chain execution is complete.
+### breakChain
+是否中断链
+
+
+
+
+### hookName
+
+
+
+
+### returnBreakChain
+如果有返回值，是否中断链
+
+一般常用于需要返回一个值时中断链,比如 onError 声明周期
+
+
+
+
+### returnValue
+The return value of the task.
+
+Readonly
+
+
+
+
+### times
+执行次数
 
 
 

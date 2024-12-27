@@ -147,7 +147,7 @@ const modifiedConfig = abortPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig>` |  |  |
+|  context  |  | `ExecutorContext<RequestAdapterConfig>` |  |  |
 
 
 ### onError

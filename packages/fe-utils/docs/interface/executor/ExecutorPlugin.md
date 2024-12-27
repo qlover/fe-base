@@ -41,6 +41,10 @@ LifeCycle:
 
 **execNoError returns all errors as they are.**
 
+@template R
+
+Type of result after processing
+
 @example 
 
 ```typescript
@@ -96,7 +100,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  name  | Name of the hook being executed | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  name  | Name of the hook being executed | `keyof ExecutorPlugin<unknown>` |  |  |
 |  context  |  | `ExecutorContext<T>` |  |  |
 
 
@@ -139,7 +143,8 @@ Only the first plugin with onExec will be used
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  task  | Task to be executed | `Task<Result, Params>` |  |  |
+|  context  |  | `ExecutorContext<unknown>` |  |  |
+|  task  | Task to be executed | `Task<unknown, unknown>` |  |  |
 
 
 ### onSuccess

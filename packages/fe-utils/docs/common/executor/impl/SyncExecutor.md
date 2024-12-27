@@ -168,7 +168,7 @@ private run(data, task) {
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | Data to pass to the task | `unknown` |  |  |
+|  data  | Data to pass to the task | `Params` |  |  |
 |  actualTask  | Actual task function to execute | `SyncTask<Result, Params>` |  |  |
 
 
@@ -201,7 +201,8 @@ const result = this.runHook(
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown, unknown>[]` |  |  |
-|  hookName  | Name of the hook function to execute | `keyof ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugins  | Array of plugins to execute | `ExecutorPlugin<unknown>[]` |  |  |
+|  hookName  | Name of the hook function to execute | `string` |  |  |
 |  context  |  | `ExecutorContext<Params>` |  |  |
+|  args  | Arguments to pass to the hook function | `unknown[]` |  |  |
 

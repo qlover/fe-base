@@ -196,5 +196,5 @@ Adds a plugin to the request execution process.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  plugin  | The plugin to be used by the executor. | `ExecutorPlugin<unknown, unknown>` |  |  |
+|  plugin  | The plugin to be used by the executor. | `ExecutorPlugin<unknown>` |  |  |
 
