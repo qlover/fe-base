@@ -3,7 +3,7 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
-import feEslint from './lib/fe-eslint/index.js';
+import * as feDev from '@qlover/eslint-plugin-fe-dev';
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -17,7 +17,7 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'fe-eslint': feEslint
+      'fe-dev': feDev
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -25,8 +25,6 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true }
       ],
-      // fe-eslint class method return type
-      'fe-eslint/ts-class-method-return': 'error'
     }
   }
 );
