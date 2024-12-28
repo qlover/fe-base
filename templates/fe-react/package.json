@@ -12,9 +12,13 @@
   "dependencies": {
     "@qlover/fe-utils": "^1.0.19",
     "@qlover/slice-store-react": "^1.0.8",
+    "i18next": "^24.2.0",
+    "i18next-browser-languagedetector": "^8.0.2",
+    "i18next-http-backend": "^3.0.1",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.2.0",
     "react-router-dom": "6"
   },
   "devDependencies": {

@@ -18,3 +18,10 @@ export const openAiConfig: OpenAIClientConfig = {
   baseURL: import.meta.env.VITE_OPENAI_API_URL,
   apiCommon: apiCommonPluginConfig
 };
+
+
+export const i18nConfig = {
+  defaultLanguage: 'en',
+  fallbackLanguage: 'en',
+  supportedLanguages: ['en', 'zh']
+} as const;
