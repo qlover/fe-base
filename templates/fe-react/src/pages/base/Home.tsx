@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { LocaleLink } from '../../components';
+import { LocaleLink } from '@/components';
+import { useBaseRoutePage } from './PageProvider';
 
 export default function Home() {
-  const { t } = useTranslation('home');
+  const { t } = useBaseRoutePage();
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">

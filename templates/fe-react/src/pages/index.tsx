@@ -5,6 +5,7 @@ import { lazy } from 'react';
 import { isString } from 'lodash';
 import NotFound from './404';
 import { RoutePageProps } from './base/type';
+import PageProvider from './base/PageProvider';
 
 export type RouteType = RouteObject & RoutePageProps;
 
@@ -22,7 +23,9 @@ const pagesMaps: Record<
   '404': () =>
     lazy(
       () =>
-        import('./404') as Promise<{ default: React.ComponentType<unknown> }>
+        import('./404') as Promise<{
+          default: React.ComponentType<RoutePageProps>;
+        }>
     )
 };
 
@@ -39,8 +42,9 @@ const lazyLoad = (componentPath: string, route: RouteType) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      {/* TODO: add Provider */}
-      <Component pageProps={route.pageProps} />
+      <PageProvider pageProps={route.pageProps || {}}>
+        <Component pageProps={route.pageProps} />
+      </PageProvider>
     </Suspense>
   );
 };

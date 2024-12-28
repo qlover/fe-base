@@ -12,7 +12,8 @@
         "element": "base/Home",
         "pageProps": {
           "title": "fe-utils/home",
-          "icon": "home"
+          "icon": "home",
+          "localNamespace": "home"
         }
       },
       {
@@ -20,7 +21,8 @@
         "element": "base/About",
         "pageProps": {
           "title": "关于",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "about"
         }
       },
       {
@@ -28,7 +30,8 @@
         "element": "base/JSONStorage",
         "pageProps": {
           "title": "FE-Utils JSONStorage",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "jsonStorage"
         }
       },
       {
@@ -36,7 +39,8 @@
         "element": "base/Request",
         "pageProps": {
           "title": "FE-Utils Request",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "request"
         }
       },
       {
@@ -44,7 +48,8 @@
         "element": "base/Executor",
         "pageProps": {
           "title": "FE-Utils Executor",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "executor"
         }
       }
     ]
@@ -54,7 +59,8 @@
     "element": "404",
     "pageProps": {
       "title": "404",
-      "layout": "blank"
+      "layout": "blank",
+      "localNamespace": "404" 
     }
   },
   {
@@ -62,7 +68,8 @@
     "element": "404",
     "pageProps": {
       "title": "404",
-      "layout": "blank"
+      "layout": "blank",
+      "localNamespace": "common"
     }
   }
 ]

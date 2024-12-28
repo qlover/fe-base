@@ -1,3 +1,4 @@
+import { RoutePageProps } from '@/pages/base/type';
 import { OpenAIClientConfig } from '@lib/openAiApi';
 import { ApiCommonPluginConfig } from '@lib/plugins';
 
@@ -19,9 +20,15 @@ export const openAiConfig: OpenAIClientConfig = {
   apiCommon: apiCommonPluginConfig
 };
 
-
 export const i18nConfig = {
   defaultLanguage: 'en',
   fallbackLanguage: 'en',
-  supportedLanguages: ['en', 'zh']
+  supportedLanguages: ['en', 'zh'],
+  commonNamespace: 'common'
 } as const;
+export type I18nLocale = (typeof i18nConfig.supportedLanguages)[number];
+
+export const defaultBaseRoutePageProps: RoutePageProps = {
+  localNamespace: 'common',
+  
+};
