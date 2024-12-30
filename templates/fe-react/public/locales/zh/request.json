@@ -1,0 +1,15 @@
+{
+  "requestTimeout": "请求超时",
+  "helloResult": "Hello 结果是",
+  "helloError": "Hello 错误是",
+  "ipInfoResult": "IpInfo 结果是",
+  "ipInfo": "IpInfo",
+  "randomUser": "随机用户",
+  "loading": "加载中...",
+  "randomUserResult": "随机用户 结果是",
+  "randomUserError": "随机用户 错误是",
+  "triggerAbortRequest": "触发中止请求",
+  "stopAbortRequest": "停止中止请求",
+  "abortRequestResult": "中止请求 结果是",
+  "abortRequestError": "中止请求 错误是"
+}

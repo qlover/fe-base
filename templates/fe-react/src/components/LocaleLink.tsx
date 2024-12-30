@@ -1,4 +1,4 @@
-import { LinkProps, Link as RouterLink, To } from 'react-router-dom';
+import { LinkProps, Link as RouterLink, To, useParams } from 'react-router-dom';
 import { ReactNode } from 'react';
 
 interface LocaleLinkProps extends Omit<LinkProps, 'href' | 'to'> {
@@ -16,6 +16,10 @@ const LocaleLink: React.FC<LocaleLinkProps> = ({
   defaultLocale,
   ...props
 }) => {
+  const { lng } = useParams<{ lng: string }>();
+
+  locale = locale || lng;
+
   const isDefaultLocale = locale === defaultLocale;
 
   let localizedHref: string | To;

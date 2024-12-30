@@ -1,57 +1,75 @@
 [
   {
     "path": "/",
+    "element": "base/RedirectPathname"
+  },
+  {
+    "path": "/:lng",
     "element": "base/BasicLayout",
     "children": [
       {
         "index": true,
         "element": "base/Home",
-        "meta": {
+        "pageProps": {
           "title": "fe-utils/home",
-          "icon": "home"
+          "icon": "home",
+          "localNamespace": "home"
         }
       },
       {
         "path": "about",
         "element": "base/About",
-        "meta": {
+        "pageProps": {
           "title": "关于",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "about"
         }
       },
       {
         "path": "jsonStorage",
         "element": "base/JSONStorage",
-        "meta": {
+        "pageProps": {
           "title": "FE-Utils JSONStorage",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "jsonStorage"
         }
       },
       {
         "path": "request",
         "element": "base/Request",
-        "meta": {
+        "pageProps": {
           "title": "FE-Utils Request",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "request"
         }
       },
       {
         "path": "executor",
         "element": "base/Executor",
-        "meta": {
+        "pageProps": {
           "title": "FE-Utils Executor",
-          "icon": "info"
+          "icon": "info",
+          "localNamespace": "executor"
         }
       }
     ]
   },
-
+  {
+    "path": "/404",
+    "element": "404",
+    "pageProps": {
+      "title": "404",
+      "layout": "blank",
+      "localNamespace": "404" 
+    }
+  },
   {
     "path": "*",
     "element": "404",
-    "meta": {
+    "pageProps": {
       "title": "404",
-      "layout": "blank"
+      "layout": "blank",
+      "localNamespace": "common"
     }
   }
 ]
