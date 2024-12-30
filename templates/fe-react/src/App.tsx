@@ -6,9 +6,8 @@ import initI18n from './services/i18n';
 initI18n();
 
 function App() {
-  return (
-    <RouterProvider router={routerBase} />
-  );
+
+  return <RouterProvider router={routerBase} />;
 }
 
 export default App;
