@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
-import appRouterConfig from '../../config/app.router.json';
+import appRouterConfig from '@config/app.router.json';
 import { LazyExoticComponent, Suspense } from 'react';
 import { lazy } from 'react';
 import { isString } from 'lodash';
@@ -7,11 +7,13 @@ import NotFound from './404';
 import { RoutePageProps } from './base/type';
 import PageProvider from './base/PageProvider';
 
-export type RouteType = RouteObject & RoutePageProps;
+export type RouteType = RouteObject & {
+  pageProps?: RoutePageProps;
+};
 
 const pagesMaps: Record<
   string,
-  () => LazyExoticComponent<React.ComponentType<RoutePageProps>>
+  () => LazyExoticComponent<React.ComponentType<unknown>>
 > = {
   'base/BasicLayout': () => lazy(() => import('./base/BasicLayout')),
   'base/Home': () => lazy(() => import('./base/Home')),
@@ -24,7 +26,7 @@ const pagesMaps: Record<
     lazy(
       () =>
         import('./404') as Promise<{
-          default: React.ComponentType<RoutePageProps>;
+          default: React.ComponentType<unknown>;
         }>
     )
 };
@@ -42,8 +44,8 @@ const lazyLoad = (componentPath: string, route: RouteType) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <PageProvider pageProps={route.pageProps || {}}>
-        <Component pageProps={route.pageProps} />
+      <PageProvider {...route.pageProps}>
+        <Component />
       </PageProvider>
     </Suspense>
   );

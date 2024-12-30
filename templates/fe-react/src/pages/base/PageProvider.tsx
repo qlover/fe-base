@@ -1,11 +1,10 @@
-import { createContext, useContext } from 'react';
+import { createContext, PropsWithChildren, useContext } from 'react';
 import { BasePageProvider, RoutePageProps } from './type';
 import { useTranslation } from 'react-i18next';
 import { defaultBaseRoutePageProps } from '@config/app.common';
+import { merge } from 'lodash';
 
-const BaseRoutePageContext = createContext<RoutePageProps>({
-  ...defaultBaseRoutePageProps
-});
+const BaseRoutePageContext = createContext<RoutePageProps>({});
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useBaseRoutePage(): BasePageProvider {
@@ -15,18 +14,18 @@ export function useBaseRoutePage(): BasePageProvider {
     throw new Error('useBaseRoutePage must be used within a PageProvider');
   }
 
-  const i18n = useTranslation(pageProps.localNamespace);
+  const _pageProps = merge({}, defaultBaseRoutePageProps, pageProps);
+
+  const i18n = useTranslation(_pageProps.localNamespace);
 
   return {
-    pageProps,
+    pageProps: _pageProps,
     i18n,
     t: i18n.t
   };
 }
 
-export default function PageProvider(
-  props: RoutePageProps & { children: React.ReactNode }
-) {
+export default function PageProvider(props: PropsWithChildren<RoutePageProps>) {
   return (
     <BaseRoutePageContext.Provider value={props}>
       {props.children}

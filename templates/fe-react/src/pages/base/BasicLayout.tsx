@@ -9,7 +9,7 @@ function useLanguageGuard() {
   useEffect(() => {
     if (!lng) {
       navigate('/404', { replace: true });
-    } else if (!i18nConfig.supportedLanguages.includes(lng)) {
+    } else if (!i18nConfig.supportedLngs.includes(lng)) {
       navigate('/404', { replace: true });
     }
   }, [lng, navigate]);

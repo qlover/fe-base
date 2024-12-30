@@ -1,6 +1,7 @@
 import { RoutePageProps } from '@/pages/base/type';
 import { OpenAIClientConfig } from '@lib/openAiApi';
 import { ApiCommonPluginConfig } from '@lib/plugins';
+import { InitOptions } from 'i18next';
 
 export const apiCommonPluginConfig: ApiCommonPluginConfig = {
   tokenPrefix: 'Bearer',
@@ -20,15 +21,27 @@ export const openAiConfig: OpenAIClientConfig = {
   apiCommon: apiCommonPluginConfig
 };
 
+/** @type {import('i18next').InitOptions} */
 export const i18nConfig = {
-  defaultLanguage: 'en',
-  fallbackLanguage: 'en',
-  supportedLanguages: ['en', 'zh'],
-  commonNamespace: 'common'
+  /**
+   * default language
+   */
+  fallbackLng: 'en',
+  debug: process.env.NODE_ENV === 'development',
+  interpolation: {
+    escapeValue: false // React already does escaping
+  },
+  ns: ['common'],
+  defaultNS: 'common',
+  backend: {
+    loadPath: '/locales/{{lng}}/{{ns}}.json'
+  },
+  supportedLngs: ['en', 'zh']
 } as const;
-export type I18nLocale = (typeof i18nConfig.supportedLanguages)[number];
+export type I18nLocale = (typeof i18nConfig.supportedLngs)[number];
 
-export const defaultBaseRoutePageProps: RoutePageProps = {
-  localNamespace: 'common',
-  
-};
+export const defaultBaseRoutePageProps = {
+  localNamespace: i18nConfig.defaultNS,
+  title: '',
+  icon: ''
+} as const;

@@ -1,14 +1,16 @@
 import { JSON, jsonStorageController, requestController } from '@/container';
 import { useControllerState } from '@/hooks';
+import { useBaseRoutePage } from './PageProvider';
 
 export default function Request() {
   const requestControllerState = useControllerState(requestController);
   const jsonStorageControllerState = useControllerState(jsonStorageController);
+  const { t } = useBaseRoutePage();
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col sm:py-12">
       <div className="bg-white shadow-lg rounded-lg px-8 py-6">
-        请求超时时间: {jsonStorageControllerState.requestTimeout}
+        {t('requestTimeout')}: {jsonStorageControllerState.requestTimeout}
       </div>
 
       <div className="bg-white shadow-lg rounded-lg px-8 py-6">
@@ -19,11 +21,11 @@ export default function Request() {
           {requestControllerState.helloState.loading ? 'Loading...' : 'Hello'}
         </button>
         <div className="mt-4">
-          Hello result is:{' '}
+          {t('helloResult')}:{' '}
           {JSON.stringify(requestControllerState.helloState.result)}
         </div>
         <div className="mt-4">
-          Hello error is:{' '}
+          {t('helloError')}:{' '}
           {JSON.stringify(requestControllerState.helloState.error)}
         </div>
       </div>
@@ -33,10 +35,12 @@ export default function Request() {
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
           onClick={requestController.onIpInfo}
         >
-          {requestControllerState.ipInfoState.loading ? 'Loading...' : 'IpInfo'}
+          {requestControllerState.ipInfoState.loading
+            ? t('loading')
+            : t('ipInfo')}
         </button>
         <div className="mt-4">
-          IpInfo result is:{' '}
+          {t('ipInfoResult')}:{' '}
           {JSON.stringify(requestControllerState.ipInfoState.result)}
         </div>
       </div>
@@ -47,15 +51,15 @@ export default function Request() {
           onClick={requestController.onRandomUser}
         >
           {requestControllerState.randomUserState.loading
-            ? 'Loading...'
-            : 'RandomUser'}
+            ? t('loading')
+            : t('randomUser')}
         </button>
         <div className="mt-4">
-          RandomUser result is:{' '}
+          {t('randomUserResult')}:{' '}
           {JSON.stringify(requestControllerState.randomUserState.result)}
         </div>
         <div className="mt-4">
-          RandomUser error is:{' '}
+          {t('randomUserError')}:{' '}
           {JSON.stringify(requestControllerState.randomUserState.error)}
         </div>
       </div>
@@ -66,19 +70,19 @@ export default function Request() {
           onClick={requestController.onTriggerAbortRequest}
         >
           {requestControllerState.abortState.loading
-            ? 'StopAbortRequest'
-            : 'TriggerAbortRequest'}
+            ? t('stopAbortRequest')
+            : t('triggerAbortRequest')}
           <span className="text-xs">
-            {requestControllerState.abortState.loading ? 'Loading...' : ''}
+            {requestControllerState.abortState.loading ? t('loading') : ''}
           </span>
         </button>
 
         <div className="mt-4">
-          AbortRequest result is:{' '}
+          {t('abortRequestResult')}:{' '}
           {JSON.stringify(requestControllerState.abortState.result)}
         </div>
         <div className="mt-4">
-          AbortRequest error is:{' '}
+          {t('abortRequestError')}:{' '}
           {JSON.stringify(requestControllerState.abortState.error)}
         </div>
       </div>

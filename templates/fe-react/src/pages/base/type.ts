@@ -6,6 +6,7 @@ export interface BasePageProvider {
   i18n: UseTranslationResponse<string, string>;
   t: TFunction<string, string>;
 }
+
 export interface RoutePageProps {
   /**
    * from app.router.json
@@ -14,6 +15,8 @@ export interface RoutePageProps {
   icon?: string;
   /**
    * from app.router.json
+   *
+   * @default 'common'
    */
   localNamespace?: string;
 }
