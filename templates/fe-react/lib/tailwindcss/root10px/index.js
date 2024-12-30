@@ -175,4 +175,4 @@ const root10pxPlugin = plugin(({ addBase }) => {
   });
 });
 
-export default { root10pxThemes, root10pxPlugin };
+export default { themes: root10pxThemes, plugin: root10pxPlugin };

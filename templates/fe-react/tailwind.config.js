@@ -1,19 +1,19 @@
-import root10pxConfig from './lib/tailwindcss/root10px';
+import root10px from './lib/tailwindcss/root10px';
+import themeCreate from './lib/tailwindcss/theme';
+import themeConfig from './config/theme.json';
+
+const theme = themeCreate(themeConfig.base);
+console.log('theme', theme);
+
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      ...root10pxConfig.root10pxThemes,
-      colors: {
-        primary: 'var(--color-primary)',
-        secondary: 'var(--color-secondary)',
-        text: 'var(--color-text)',
-        background: 'var(--color-background)'
-      }
+      ...root10px.themes,
+      colors: theme.colors,
     }
   },
-  plugins: [root10pxConfig.root10pxPlugin]
+  plugins: [root10px.plugin, theme.plugin]
 };

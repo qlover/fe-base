@@ -1,0 +1,27 @@
+{
+  "base": {
+    "domAttribute": "data-theme",
+    "defaultTheme": "light",
+    "selectorTemplate": "[data-theme='${theme}']",
+    "colors": {
+      "light": {
+        "primary": "#00f",
+        "secondary": "#fff",
+        "text": "#000",
+        "background": "#fff"
+      },
+      "dark": {
+        "primary": "#f00",
+        "secondary": "#000",
+        "text": "#fff",
+        "background": "#000"
+      },
+      "pink": {
+        "primary": "#f0f",
+        "secondary": "#aaa",
+        "text": "#ddd",
+        "background": "#e0e0e0"
+      }
+    }
+  }
+}
