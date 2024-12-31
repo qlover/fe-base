@@ -1,8 +1,13 @@
 {
   "base": {
     "domAttribute": "data-theme",
-    "defaultTheme": "light",
+    "defaultTheme": "system",
+    "target": "",
     "selectorTemplate": "[data-theme='${theme}']",
+    "supportedThemes": ["light", "dark", "pink"],
+    "storageKey": "fe_theme",
+    "prefix": "fe-color",
+    "useCssVar": true,
     "colors": {
       "light": {
         "primary": "#00f",
@@ -21,6 +26,33 @@
         "secondary": "#aaa",
         "text": "#ddd",
         "background": "#e0e0e0"
+      }
+    }
+  },
+  "overrides": {
+    "domAttribute": "data-theme",
+    "defaultTheme": "system",
+    "target": "",
+    "selectorTemplate": "[data-theme='${theme}']",
+    "supportedThemes": ["light", "dark", "pink"],
+    "storageKey": "fe_theme",
+    "prefix": "fe-color",
+    "useCssVar": true,
+    "colors": {
+      "light": {
+        "white": "#fff",
+        "black": "#000",
+        "gray": { "500": "#f3f4f6", "600": "#e5e7eb" }
+      },
+      "dark": {
+        "white": "#000",
+        "black": "#fff",
+        "gray": { "500": "#737373", "600": "#354" }
+      },
+      "pink": {
+        "white": "#0df",
+        "black": "#ddd",
+        "gray": { "500": "#00f", "600": "#000" }
       }
     }
   }

@@ -3,36 +3,49 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import { merge } from 'lodash';
-import { i18nConfig, I18nLocale } from '@config/app.common';
+import { i18nConfig, I18nServiceLocale } from './config';
 
-// 自定义语言检测器
+export * from './config';
+// custom language detector
 const pathLanguageDetector = {
   name: 'pathLanguageDetector',
   lookup() {
     const path = window.location.pathname.split('/');
     const language = path[1];
-    return i18nConfig.supportedLngs.includes(language as I18nLocale)
+    return I18nService.isValidLanguage(language)
       ? language
       : i18nConfig.fallbackLng;
   },
   cacheUserLanguage() {
-    // 不需要缓存，因为我们从 URL 中获取语言
+    // no cache, because we get language from URL
   }
 };
 
-export default function initI18n() {
-  i18n
-    .use(HttpApi)
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init(
-      merge({}, i18nConfig, {
-        detection: {
-          order: ['pathLanguageDetector', 'navigator'], // 使用自定义检测器
-          caches: [] // 不缓存语言
-        }
-      })
-    );
-  // 添加自定义检测器
-  i18n.services.languageDetector.addDetector(pathLanguageDetector);
+export class I18nService {
+  static init(): void {
+    i18n
+      .use(HttpApi)
+      .use(LanguageDetector)
+      .use(initReactI18next)
+      .init(
+        merge({}, i18nConfig, {
+          detection: {
+            order: ['pathLanguageDetector', 'navigator'], // use custom detector
+            caches: []
+          }
+        })
+      );
+
+    // add custom detector
+    i18n.services.languageDetector.addDetector(pathLanguageDetector);
+  }
+
+  /**
+   * check if the language is supported
+   * @param language - language to check
+   * @returns true if the language is supported, false otherwise
+   */
+  static isValidLanguage(language: string): language is I18nServiceLocale {
+    return i18nConfig.supportedLngs.includes(language as I18nServiceLocale);
+  }
 }
