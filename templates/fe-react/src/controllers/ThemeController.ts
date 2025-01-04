@@ -1,6 +1,7 @@
 import { JSONStorage } from '@qlover/fe-utils';
 import { BaseController } from './BaseController';
 import { logger } from '@/container';
+import { isString } from 'lodash';
 
 export type ThemeControllerState = {
   theme: string;
@@ -56,6 +57,10 @@ class ThemeStateGetter {
     // Trying to use local storage
     if (storage && storageKey) {
       theme = storage.getItem(storageKey);
+
+      if (isString(theme) && props.supportedThemes.includes(theme)) {
+        return theme;
+      }
     }
 
     if (theme === ThemeStateGetter.SYSTEM_THEME) {

@@ -2,49 +2,179 @@ import plugin from 'tailwindcss/plugin';
 import template from 'lodash/template';
 import isPlainObject from 'lodash/isPlainObject';
 import isString from 'lodash/isString';
+class KeyTemplate {
+  constructor(options) {
+    this.options = options;
+  }
 
-function toCssVarName(prefix, key) {
-  return prefix ? `--${prefix}-${key}` : `--${key}`;
+  /**
+   * Get the colors value
+   *
+   * @example
+   * ```
+   * colors: {
+   *  primary: {
+   *    "500": getColorsValue()
+   *  },
+   *  secondary: getColorsValue()
+   * }
+   * ```
+   *
+   * @param {string} colorKey - The color key
+   * @param {string} value - The color value
+   * @returns {string} - The colors value
+   */
+  getColorsValue({ key, parentKey = '', value }) {
+    const { colorsValueTemplate, ...rest } = this.options;
+
+    let colorKey = key;
+    if (parentKey) {
+      colorKey = this.composeKey(key, parentKey);
+    }
+
+    // if colorsValueTemplate is provided, use it to generate the colors value
+    if (colorsValueTemplate) {
+      const styleKey = this.getStyleKey(colorKey);
+      return template(colorsValueTemplate)({
+        styleKey,
+        key,
+        parentKey,
+        value,
+        ...rest
+      });
+    }
+
+    return value;
+  }
+
+  /**
+   * Get the style theme key
+   *
+   * ```
+   * <style>
+   * [getStyleThemeKey()] {
+   *  primary: #000;
+   * }
+   * </style>
+   * ```
+   *
+   * @param {string} theme - The theme name
+   * @returns {string} - The style theme key
+   */
+  getStyleThemeKey(theme) {
+    const { styleThemeKeyTemplate, target, ...rest } = this.options;
+
+    // if styleThemeKeyTemplate is provided, use it to generate the style theme key
+    if (styleThemeKeyTemplate) {
+      return template(styleThemeKeyTemplate)({ theme, target, ...rest });
+    }
+
+    return `${target}.${theme}`;
+  }
+
+  /**
+   * Get the style key template
+   *
+   * @example
+   *
+   * ```
+   * <style>
+   * [getStyleThemeKey()] {
+   *  [getStyleKeyTemplate()]: #000;
+   * }
+   * </style>
+   * ```
+   *
+   * @param {string} key - The key name
+   * @param {string | undefined} parentKey - The parent key name
+   * @returns {string} - The style key template
+   */
+  getStyleKey(key, parentKey) {
+    const { styleKeyTemplate, ...rest } = this.options;
+
+    // if parentKey is provided, compose the key
+    let colorKey = key;
+    if (parentKey) {
+      colorKey = this.composeKey(key, parentKey);
+    }
+
+    // if styleKeyTemplate is provided, use it to generate the style key
+    if (styleKeyTemplate) {
+      return template(styleKeyTemplate)({ colorKey, parentKey, ...rest });
+    }
+
+    return key;
+  }
+
+  composeKey(key, parentKey) {
+    return parentKey ? `${parentKey}-${key}` : key;
+  }
 }
 
 class Generator {
   constructor(options) {
     this.options = options;
+    this.keyTemplate = new KeyTemplate(options);
   }
 
   generateBaseStyles() {
-    const { colors, useCssVar } = this.options;
+    const { colors, defaultTheme } = this.options;
 
     const baseStyles = {};
 
-    // if not use css var, return empty object
-    // because we don't need to generate base styles
-    if (!useCssVar) {
-      return {};
-    }
-
     Object.entries(colors).forEach(([theme, themeColors]) => {
-      const themeStylesKey = this.getBaseStylesKey(theme);
+      const styleThemeKey = this.keyTemplate.getStyleThemeKey(theme);
 
-      baseStyles[themeStylesKey] = {};
+      baseStyles[styleThemeKey] = {};
 
       Object.entries(themeColors).forEach(([colorKey, value]) => {
         if (isPlainObject(value)) {
           Object.entries(value).forEach(([key, colorValue]) => {
-            baseStyles[themeStylesKey][
-              this.getBaseStyleValueKey(key, colorKey)
+            baseStyles[styleThemeKey][
+              this.keyTemplate.getStyleKey(key, colorKey)
             ] = colorValue;
           });
         }
         // if value is string, it means it's a color value
         else if (isString(value)) {
-          baseStyles[themeStylesKey][this.getBaseStyleValueKey(colorKey)] =
+          baseStyles[styleThemeKey][this.keyTemplate.getStyleKey(colorKey)] =
             value;
         }
       });
     });
 
-    return baseStyles;
+    return this.setDefaultStyleThemeKey(baseStyles);
+  }
+
+  setDefaultStyleThemeKey(baseStyles) {
+    const { defaultTheme, colors } = this.options;
+
+    // set default style theme key
+    let _defaultTheme = defaultTheme;
+    if (
+      // if default theme is not provided, set it to the first theme
+      !defaultTheme ||
+      // if default theme is system, set it to the first theme
+      defaultTheme === 'system' ||
+      // if default theme is not in colors, set it to the first theme
+      !Object.keys(colors).includes(defaultTheme)
+    ) {
+      _defaultTheme = Object.keys(colors)?.[0];
+    }
+
+    const defaultStyleThemeKey =
+      this.keyTemplate.getStyleThemeKey(_defaultTheme);
+
+    const result = {};
+    Object.entries(baseStyles).forEach(([key, value]) => {
+      if (key === defaultStyleThemeKey) {
+        result[':root'] = value;
+      } else {
+        result[key] = value;
+      }
+    });
+
+    return result;
   }
 
   generateThemeColors() {
@@ -59,78 +189,25 @@ class Generator {
         if (isPlainObject(value)) {
           Object.entries(value).forEach(([key, colorValue]) => {
             const numberKey = Number(key);
-            themeResultColors[colorKey][numberKey] = this.toCssValue(
-              this.composeKey(key, colorKey),
-              colorValue
-            );
+            themeResultColors[colorKey][numberKey] =
+              this.keyTemplate.getColorsValue({
+                key,
+                parentKey: colorKey,
+                value: colorValue
+              });
           });
         }
         // if value is string, it means it's a color value
         else if (isString(value)) {
-          themeResultColors[colorKey] = this.toCssValue(colorKey, value);
+          themeResultColors[colorKey] = this.keyTemplate.getColorsValue({
+            key: colorKey,
+            value
+          });
         }
       });
     });
 
     return themeResultColors;
-  }
-
-  toCssValue(colorKey, value) {
-    const { useCssVar } = this.options;
-
-    if (useCssVar) {
-      return `var(${this.getBaseStyleValueKey(colorKey)})`;
-    }
-
-    return value;
-  }
-
-  hasDefaultTheme(theme) {
-    const { defaultTheme, colors } = this.options;
-
-    if (!defaultTheme || defaultTheme === 'system') {
-      return theme === Object.keys(colors)?.[0];
-    }
-
-    return theme === defaultTheme;
-  }
-
-  getBaseStylesKey(theme) {
-    const { selectorTemplate, target, defaultTheme } = this.options;
-
-    if (this.hasDefaultTheme(theme)) {
-      return ':root';
-    }
-
-    if (selectorTemplate) {
-      return template(selectorTemplate)({ theme, target });
-    }
-
-    return `${target}.${theme}`;
-  }
-
-  getBaseStyleValueKey(key, parentKey) {
-    const { useCssVar, prefix } = this.options;
-
-    let resultKey = key;
-    if (parentKey) {
-      resultKey = this.composeKey(key, parentKey);
-    }
-
-    if (useCssVar) {
-      return toCssVarName(prefix, resultKey);
-    }
-
-    return prefix ? this.composeKey(resultKey, prefix) : resultKey;
-  }
-
-  composeKey(key, parentKey) {
-    return parentKey ? `${parentKey}-${key}` : key;
-  }
-
-  getCSSSelector(name) {
-    const { selectorTemplate, target } = this.options;
-    return template(selectorTemplate)({ name, target });
   }
 }
 

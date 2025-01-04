@@ -4,6 +4,7 @@ import themeConfig from './config/theme.json';
 
 const theme = themeCreate(themeConfig.overrides);
 
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',

@@ -2,12 +2,10 @@
   "base": {
     "domAttribute": "data-theme",
     "defaultTheme": "system",
-    "target": "",
-    "selectorTemplate": "[data-theme='${theme}']",
-    "supportedThemes": ["light", "dark", "pink"],
+    "target": "html",
     "storageKey": "fe_theme",
-    "prefix": "fe-color",
-    "useCssVar": true,
+    "supportedThemes": ["light", "dark", "pink"],
+    "styleThemeKeyTemplate": "${target}[${domAttribute}='${theme}']",
     "colors": {
       "light": {
         "primary": "#00f",
@@ -32,60 +30,59 @@
   "overrides": {
     "domAttribute": "data-theme",
     "defaultTheme": "system",
-    "target": "",
-    "selectorTemplate": "[data-theme='${theme}']",
+    "target": "html",
     "supportedThemes": ["light", "dark", "pink"],
     "storageKey": "fe_theme",
-    "prefix": "fe-color",
-    "useCssVar": true,
+    "styleThemeKeyTemplate": "${target}[${domAttribute}='${theme}']",
+    "styleKeyTemplate": "--fe-color-${colorKey}",
+    "colorsValueTemplate": "rgba(var(${styleKey}))",
     "colors": {
       "light": {
-        "white": "#ffffff",
-        "black": "#333333",
+        "white": "255 255 255",
+        "black": "0 0 0",
         "gray": {
-          "50": "#f9f9f9",
-          "100": "#f0f0f0",
-          "200": "#e0e0e0",
-          "300": "#cccccc",
-          "400": "#b3b3b3",
-          "500": "#999999",
-          "600": "#808080",
-          "700": "#666666",
-          "800": "#4d4d4d",
-          "900": "#333333"
+          "50": "249 250 251",
+          "100": "243 244 246",
+          "200": "229 231 235",
+          "300": "209 213 219",
+          "400": "156 163 175",
+          "500": "107 114 128",
+          "600": "75 85 99",
+          "700": "55 65 81",
+          "800": "31 41 55",
+          "900": "17 24 39"
         }
       },
       "dark": {
-        "white": "#1e1e1e",
-        "black": "#ffffff",
+        "white": "226 232 240",
+        "black": "0 0 0",
         "gray": {
-          "50": "#020617",
-          "100": "#0f172a",
-          "200": "#1e293b",
-          "300": "#334155",
-          "400": "#475569",
-          "500": "#64748b",
-          "600": "#94a3b8",
-          "700": "#cbd5e1",
-          "800": "#e2e8f0",
-          "900": "#f1f5f9",
-          "950": "#f8fafc"
+          "50": "10 10 10",
+          "100": "28 28 28",
+          "200": "46 46 46",
+          "300": "64 64 64",
+          "400": "82 82 82",
+          "500": "100 100 100",
+          "600": "120 120 120",
+          "700": "138 138 138",
+          "800": "156 156 156",
+          "900": "176 176 176"
         }
       },
       "pink": {
-        "white": "#ffe4e1",
-        "black": "#333333",
+        "white": "255 228 225",
+        "black": "51 51 51",
         "gray": {
-          "50": "#fff5f5",
-          "100": "#ffeaea",
-          "200": "#ffc2c2",
-          "300": "#ff9999",
-          "400": "#ff7070",
-          "500": "#ff4747",
-          "600": "#ff1f1f",
-          "700": "#e60000",
-          "800": "#b30000",
-          "900": "#800000"
+          "50": "255 245 245",
+          "100": "255 234 234",
+          "200": "255 194 194",
+          "300": "255 153 153",
+          "400": "255 112 112",
+          "500": "255 71 71",
+          "600": "255 31 31",
+          "700": "230 0 0",
+          "800": "179 0 0",
+          "900": "128 0 0"
         }
       }
     }

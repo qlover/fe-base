@@ -4,6 +4,9 @@ import alias from '@rollup/plugin-alias';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import tsappconfig from './tsconfig.app.json';
+import { searchEnv } from '@qlover/fe-scripts';
+
+searchEnv({});
 
 const tsAppPaths = tsappconfig.compilerOptions.paths || {};
 
@@ -13,7 +16,6 @@ const entries = Object.entries(tsAppPaths).map(([key, value]) => {
     replacement: path.resolve(__dirname, value[0].replace('/*', ''))
   };
 });
-
 
 // https://vite.dev/config/
 export default defineConfig({
