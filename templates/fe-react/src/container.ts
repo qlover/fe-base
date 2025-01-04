@@ -10,14 +10,17 @@ import {
 import {
   ExecutorController,
   JSONStorageController,
-  RequestController
+  RequestController,
+  ThemeController
 } from './controllers';
 import { FeApi } from './services';
 import { openAiConfig } from '@config/app.common';
+import themeConfigJson from '@config/theme.json';
 
 // common api
 export const logger = new Logger({
-  silent: import.meta.env.NODE_ENV === 'production'
+  silent: import.meta.env.NODE_ENV === 'production',
+  debug: import.meta.env.NODE_ENV !== 'production'
 });
 export const JSON = new JSONSerializer();
 export const localJsonStorage = new JSONStorage(
@@ -46,3 +49,8 @@ export const jsonStorageController = new JSONStorageController(
 
 export const requestController = new RequestController(openAiApi, feApi);
 export const executorController = new ExecutorController(feApi);
+
+export const themeController = new ThemeController({
+  storage: localJsonStorage,
+  ...themeConfigJson.base,
+});

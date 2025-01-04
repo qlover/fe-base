@@ -1,11 +1,14 @@
 import './styles/css/index.css';
 import { RouterProvider } from 'react-router-dom';
 import { routerBase } from './pages';
-import initI18n from './services/i18n';
+import { I18nService } from '@/services';
+import { useController } from './hooks/useController';
+import { themeController } from './container';
 
-initI18n();
+I18nService.init();
 
 function App() {
+  useController(themeController);
 
   return <RouterProvider router={routerBase} />;
 }
