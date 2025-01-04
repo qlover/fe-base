@@ -5,7 +5,7 @@ export default function Home() {
   const { t } = useBaseRoutePage();
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+    <div className="min-h-screen bg-gray-100/90 py-6 flex flex-col justify-center sm:py-12">
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="bg-white shadow-lg rounded-lg px-8 py-6">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
