@@ -36,11 +36,11 @@ class KeyTemplate {
     if (colorsValueTemplate) {
       const styleKey = this.getStyleKey(colorKey);
       return template(colorsValueTemplate)({
+        ...rest,
         styleKey,
         key,
         parentKey,
-        value,
-        ...rest
+        value
       });
     }
 
@@ -66,7 +66,7 @@ class KeyTemplate {
 
     // if styleThemeKeyTemplate is provided, use it to generate the style theme key
     if (styleThemeKeyTemplate) {
-      return template(styleThemeKeyTemplate)({ theme, target, ...rest });
+      return template(styleThemeKeyTemplate)({ ...rest, theme, target });
     }
 
     return `${target}.${theme}`;
@@ -100,7 +100,7 @@ class KeyTemplate {
 
     // if styleKeyTemplate is provided, use it to generate the style key
     if (styleKeyTemplate) {
-      return template(styleKeyTemplate)({ colorKey, parentKey, ...rest });
+      return template(styleKeyTemplate)({ ...rest, colorKey, parentKey });
     }
 
     return key;
