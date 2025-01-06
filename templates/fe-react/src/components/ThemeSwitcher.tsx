@@ -1,5 +1,5 @@
 import { themeController } from '@/container';
-import { useController } from '@/hooks';
+import { useController } from '@lib/fe-react-controller';
 import { useTranslation } from 'react-i18next';
 
 export default function ThemeSwitcher() {

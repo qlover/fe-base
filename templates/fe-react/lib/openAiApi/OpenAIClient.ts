@@ -6,13 +6,12 @@ import {
   FetchURLPlugin,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
-import {
-  ApiCommonPlugin,
-  ApiCommonPluginConfig
-} from '../plugins/ApiCommonPlugin';
 import { StreamResultType } from './StreamProcessor';
 import { OpenAIAuthPlugin } from './OpenAIAuthPlugin';
-
+import {
+  RequestCommonPlugin,
+  RequestCommonPluginConfig
+} from '@lib/request-common-plugin';
 export interface ApiMessage {
   content: string;
   role: 'user' | 'system' | 'assistant';
@@ -25,7 +24,8 @@ export interface OpenAIChatParmas {
 }
 
 export type OpenAIAargs = {
-  apiCommon: ApiCommonPluginConfig;
+  commonPluginConfig: RequestCommonPluginConfig;
+  models: readonly string[];
 };
 
 export type OpenAIClientConfig = Partial<RequestAdapterFetchConfig> &
@@ -33,11 +33,11 @@ export type OpenAIClientConfig = Partial<RequestAdapterFetchConfig> &
 
 export class OpenAIClient extends RequestScheduler<RequestAdapterConfig> {
   constructor(config: OpenAIClientConfig) {
-    const { apiCommon, ...rest } = config;
+    const { commonPluginConfig, ...rest } = config;
     super(new RequestAdapterFetch(rest));
 
     this.usePlugin(new FetchURLPlugin());
-    this.usePlugin(new ApiCommonPlugin(apiCommon));
+    this.usePlugin(new RequestCommonPlugin(commonPluginConfig));
     this.usePlugin(new OpenAIAuthPlugin());
   }
 

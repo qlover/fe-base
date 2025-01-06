@@ -1,5 +1,3 @@
-import { OpenAIClient } from '@lib/openAiApi';
-import { RequestLogger } from '@lib/plugins';
 import {
   FetchAbortPlugin,
   JSONSerializer,
@@ -7,13 +5,18 @@ import {
   Logger,
   SyncStorage
 } from '@qlover/fe-utils';
+
+import { OpenAIClient } from '@lib/openAiApi';
+import { ThemeController } from '@lib/fe-react-theme/ThemeController';
+
+import { RequestLogger } from '@/utils';
 import {
   ExecutorController,
   JSONStorageController,
-  RequestController,
-  ThemeController
-} from './controllers';
-import { FeApi } from './services';
+  RequestController
+} from '@/controllers';
+import { FeApi } from '@/services';
+
 import { openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
 
@@ -33,7 +36,8 @@ const requestLogger = new RequestLogger(logger);
 export const feApiAbort = new FetchAbortPlugin();
 
 // open ai api
-openAiConfig.apiCommon.requestDataSerializer = (data) => JSON.stringify(data);
+openAiConfig.commonPluginConfig.requestDataSerializer = (data) =>
+  JSON.stringify(data);
 export const openAiApi = new OpenAIClient(openAiConfig).usePlugin(
   requestLogger
 );
@@ -51,6 +55,6 @@ export const requestController = new RequestController(openAiApi, feApi);
 export const executorController = new ExecutorController(feApi);
 
 export const themeController = new ThemeController({
-  storage: localJsonStorage,
-  ...themeConfigJson.base,
+  ...themeConfigJson.override,
+  storage: localJsonStorage
 });

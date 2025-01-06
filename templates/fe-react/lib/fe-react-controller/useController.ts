@@ -1,5 +1,5 @@
 import { useSliceStore } from '@qlover/slice-store-react';
-import { BaseController } from '@/controllers/BaseController';
+import { FeController } from './FeController';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
  * @returns Controller instance with precise type inference
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useController<C extends BaseController<any>>(
+export function useController<C extends FeController<any>>(
   createController: (() => C) | C
 ): C {
   const controllerRef = useRef<C | null>(null);
@@ -47,7 +47,7 @@ export function useController<C extends BaseController<any>>(
  */
 export function useCreateController<
   T,
-  Ctrl extends BaseController<T>,
+  Ctrl extends FeController<T>,
   Args extends unknown[]
 >(Controller: new (...args: Args) => Ctrl, ...args: Args): Ctrl {
   const { current } = useRef({
@@ -64,7 +64,7 @@ export function useCreateController<
 }
 
 export function useControllerState<T, S = T>(
-  controller: BaseController<T>,
+  controller: FeController<T>,
   selector?: (state: T) => S
 ): S {
   return useSliceStore(controller, selector);
