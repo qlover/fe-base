@@ -1,75 +1,98 @@
-[
-  {
-    "path": "/",
-    "element": "base/RedirectPathname"
-  },
-  {
-    "path": "/:lng",
-    "element": "base/BasicLayout",
-    "children": [
+{
+  "base": {
+    "routes": [
       {
-        "index": true,
-        "element": "base/Home",
+        "path": "/",
+        "element": "base/RedirectPathname"
+      },
+      {
+        "path": "/:lng",
+        "element": "base/BasicLayout",
+        "children": [
+          {
+            "index": true,
+            "element": "base/Home",
+            "pageProps": {
+              "title": "fe-utils/home",
+              "icon": "home",
+              "localNamespace": "home"
+            }
+          },
+          {
+            "path": "about",
+            "element": "base/About",
+            "pageProps": {
+              "title": "关于",
+              "icon": "info",
+              "localNamespace": "about"
+            }
+          },
+          {
+            "path": "jsonStorage",
+            "element": "base/JSONStorage",
+            "pageProps": {
+              "title": "FE-Utils JSONStorage",
+              "icon": "info",
+              "localNamespace": "jsonStorage"
+            }
+          },
+          {
+            "path": "request",
+            "element": "base/Request",
+            "pageProps": {
+              "title": "FE-Utils Request",
+              "icon": "info",
+              "localNamespace": "request"
+            }
+          },
+          {
+            "path": "executor",
+            "element": "base/Executor",
+            "pageProps": {
+              "title": "FE-Utils Executor",
+              "icon": "info",
+              "localNamespace": "executor"
+            }
+          }
+        ]
+      },
+
+      {
+        "path": "/:lng",
+        "element": "auth/Layout",
+        "children": [
+          {
+            "index": true,
+            "element": "/Login"
+          },
+          {
+            "path": "login",
+            "element": "auth/Login"
+          },
+          {
+            "path": "register",
+            "element": "auth/Register"
+          }
+        ]
+      },
+      {
+        "path": "/404",
+        "element": "404",
         "pageProps": {
-          "title": "fe-utils/home",
-          "icon": "home",
-          "localNamespace": "home"
+          "title": "404",
+          "layout": "blank",
+          "localNamespace": "404"
         }
       },
       {
-        "path": "about",
-        "element": "base/About",
+        "path": "*",
+        "element": "404",
         "pageProps": {
-          "title": "关于",
-          "icon": "info",
-          "localNamespace": "about"
-        }
-      },
-      {
-        "path": "jsonStorage",
-        "element": "base/JSONStorage",
-        "pageProps": {
-          "title": "FE-Utils JSONStorage",
-          "icon": "info",
-          "localNamespace": "jsonStorage"
-        }
-      },
-      {
-        "path": "request",
-        "element": "base/Request",
-        "pageProps": {
-          "title": "FE-Utils Request",
-          "icon": "info",
-          "localNamespace": "request"
-        }
-      },
-      {
-        "path": "executor",
-        "element": "base/Executor",
-        "pageProps": {
-          "title": "FE-Utils Executor",
-          "icon": "info",
-          "localNamespace": "executor"
+          "title": "404",
+          "layout": "blank",
+          "localNamespace": "common"
         }
       }
     ]
-  },
-  {
-    "path": "/404",
-    "element": "404",
-    "pageProps": {
-      "title": "404",
-      "layout": "blank",
-      "localNamespace": "404" 
-    }
-  },
-  {
-    "path": "*",
-    "element": "404",
-    "pageProps": {
-      "title": "404",
-      "layout": "blank",
-      "localNamespace": "common"
-    }
   }
-]
+}

@@ -2,7 +2,7 @@ import { createContext, PropsWithChildren, useContext } from 'react';
 import { BasePageProvider, RoutePageProps } from './type';
 import { useTranslation } from 'react-i18next';
 import { defaultBaseRoutePageProps } from '@config/app.common';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 
 const BaseRoutePageContext = createContext<RoutePageProps>({});
 

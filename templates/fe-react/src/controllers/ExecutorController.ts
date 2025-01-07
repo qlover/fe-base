@@ -1,6 +1,6 @@
 import { BaseController } from './BaseController';
 import { FeApi } from '@/services';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   ExecutorPlugin,
   RequestAdapterResponse

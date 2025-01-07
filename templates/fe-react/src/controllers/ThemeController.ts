@@ -1,7 +1,7 @@
 import { JSONStorage } from '@qlover/fe-utils';
 import { BaseController } from './BaseController';
 import { logger } from '@/container';
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 
 export type ThemeControllerState = {
   theme: string;

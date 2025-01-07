@@ -1,6 +1,6 @@
 import { JSONStorage } from '@qlover/fe-utils';
 import { BaseController } from './BaseController';
-import { random } from 'lodash';
+import random from 'lodash/random';
 
 interface JSONStoragePageState {
   testKey1?: number;

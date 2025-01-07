@@ -1,7 +1,7 @@
 import { jsonStorageController } from '@/container';
 import { useController, useControllerState } from '@/hooks/useController';
 import { useBaseRoutePage } from './PageProvider';
-import { template } from 'lodash';
+import template from 'lodash/template';
 
 export default function JSONStorage() {
   const controllerState = useControllerState(

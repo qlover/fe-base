@@ -1,14 +1,18 @@
 import './styles/css/index.css';
-import { RouterProvider } from 'react-router-dom';
-import { routerBase } from './pages';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createReactRouters } from './pages';
 import { I18nService } from '@/services';
-import { useController } from './hooks/useController';
-import { themeController } from './container';
+import { pageProcesser } from './container';
+import { useMemo } from 'react';
+import appRouterConfig from '@config/app.router.json';
 
 I18nService.init();
+pageProcesser.init();
 
 function App() {
-  useController(themeController);
+  const routerBase = useMemo(() => {
+    return createBrowserRouter(createReactRouters(appRouterConfig.base));
+  }, []);
 
   return <RouterProvider router={routerBase} />;
 }
