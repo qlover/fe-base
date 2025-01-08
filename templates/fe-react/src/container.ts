@@ -25,11 +25,14 @@ import { FeApi } from '@/services';
 import { openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
 import { PageProcesser } from './services/pageProcesser';
+import { RouterController } from './controllers/RouterController';
+
+const isProduction = import.meta.env.NODE_ENV === 'production';
 
 // common api
 export const logger = new Logger({
-  silent: import.meta.env.NODE_ENV === 'production',
-  debug: import.meta.env.NODE_ENV !== 'production'
+  silent: isProduction,
+  debug: !isProduction
 });
 export const JSON = new JSONSerializer();
 export const localJsonStorage = new JSONStorage(
@@ -52,14 +55,22 @@ export const feApi = new FeApi(feApiAbort)
   .usePlugin(requestLogger)
   .usePlugin(feApiAbort);
 
+
+
 // ui layer controller
+export const routerController = new RouterController();
+
 export const jsonStorageController = new JSONStorageController(
   localJsonStorage
 );
-
 export const requestController = new RequestController(openAiApi, feApi);
 export const executorController = new ExecutorController(feApi);
-export const userController = new UserController();
+export const userController = new UserController({
+  storageKey: 'fe_user_token',
+  storage: localJsonStorage,
+  feApi,
+  routerController
+});
 export const themeController = new ThemeController({
   ...themeConfigJson.override,
   storage: localJsonStorage

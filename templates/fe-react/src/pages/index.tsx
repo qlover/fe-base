@@ -100,7 +100,7 @@ const transformRoute = (
   return result;
 };
 
-export function createReactRouters(config: RouteConfig) {
+export function createFeReactRoutes(config: RouteConfig) {
   const { routes } = config;
 
   const pagesMaps = getLazyComponentMaps();

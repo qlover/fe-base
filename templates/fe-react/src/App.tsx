@@ -1,6 +1,6 @@
 import './styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { createReactRouters } from './pages';
+import { createFeReactRoutes } from './pages';
 import { I18nService } from '@/services';
 import { pageProcesser } from './container';
 import { useMemo } from 'react';
@@ -11,7 +11,7 @@ pageProcesser.init();
 
 function App() {
   const routerBase = useMemo(() => {
-    return createBrowserRouter(createReactRouters(appRouterConfig.base));
+    return createBrowserRouter(createFeReactRoutes(appRouterConfig.base));
   }, []);
 
   return <RouterProvider router={routerBase} />;

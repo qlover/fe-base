@@ -7,7 +7,7 @@
       },
       {
         "path": "/:lng",
-        "element": "base/BasicLayout",
+        "element": "base/Layout",
         "children": [
           {
             "index": true,
