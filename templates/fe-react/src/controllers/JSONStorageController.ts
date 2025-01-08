@@ -1,6 +1,6 @@
+import { FeController } from '@lib/fe-react-controller';
 import { JSONStorage } from '@qlover/fe-utils';
-import { BaseController } from './BaseController';
-import random from 'lodash/random';
+import { random } from 'lodash';
 
 interface JSONStoragePageState {
   testKey1?: number;
@@ -9,7 +9,7 @@ interface JSONStoragePageState {
   requestTimeout: number;
 }
 
-export class JSONStorageController extends BaseController<JSONStoragePageState> {
+export class JSONStorageController extends FeController<JSONStoragePageState> {
   constructor(private storage: JSONStorage) {
     super({
       testKey1: storage.getItem('testKey1') ?? 0,

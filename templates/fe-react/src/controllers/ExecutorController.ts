@@ -1,4 +1,4 @@
-import { BaseController } from './BaseController';
+import { FeController } from '@lib/fe-react-controller';
 import { FeApi } from '@/services';
 import cloneDeep from 'lodash/cloneDeep';
 import {
@@ -33,7 +33,7 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
   }
 };
 
-export class ExecutorController extends BaseController<ExecutorControllerState> {
+export class ExecutorController extends FeController<ExecutorControllerState> {
   private feApi: FeApi;
 
   constructor(feApi: FeApi) {

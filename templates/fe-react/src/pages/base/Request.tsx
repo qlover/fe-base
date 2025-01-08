@@ -1,5 +1,5 @@
 import { JSON, jsonStorageController, requestController } from '@/container';
-import { useControllerState } from '@/hooks';
+import { useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from './PageProvider';
 
 export default function Request() {

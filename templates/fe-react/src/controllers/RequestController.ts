@@ -1,5 +1,5 @@
 import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
-import { BaseController } from './BaseController';
+import { FeController } from '@lib/fe-react-controller';
 import { logger } from '@/container';
 import { FeApi } from '@/services';
 
@@ -30,7 +30,7 @@ function createDefaultState() {
 
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
-export class RequestController extends BaseController<RequestControllerState> {
+export class RequestController extends FeController<RequestControllerState> {
   constructor(
     private readonly aiApi: OpenAIClient,
     private readonly feApi: FeApi

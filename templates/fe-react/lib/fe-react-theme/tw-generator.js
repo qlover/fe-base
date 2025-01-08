@@ -2,8 +2,13 @@ import plugin from 'tailwindcss/plugin';
 import template from 'lodash/template';
 import isPlainObject from 'lodash/isPlainObject';
 import isString from 'lodash/isString';
+
+
 class KeyTemplate {
   constructor(options) {
+    /**
+     * @type {import('./type').ThemeConfig}
+     */
     this.options = options;
   }
 
@@ -118,7 +123,7 @@ class Generator {
   }
 
   generateBaseStyles() {
-    const { colors, defaultTheme } = this.options;
+    const { colors } = this.options;
 
     const baseStyles = {};
 
@@ -182,7 +187,7 @@ class Generator {
 
     const themeResultColors = {};
 
-    Object.entries(colors).forEach(([theme, themeColors]) => {
+    Object.entries(colors).forEach(([, themeColors]) => {
       Object.entries(themeColors).forEach(([colorKey, value]) => {
         themeResultColors[colorKey] = {};
 

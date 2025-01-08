@@ -1,4 +1,3 @@
-import { ApiCommonPlugin } from '@lib/plugins/ApiCommonPlugin';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,
@@ -7,7 +6,7 @@ import {
   FetchAbortPlugin
 } from '@qlover/fe-utils';
 import { FeApiGetIpInfo, FeApiGetRandomUser } from './FeApiType';
-
+import { RequestCommonPlugin } from '@lib/request-common-plugin';
 export class FeApi extends RequestScheduler<RequestAdapterConfig> {
   constructor(private abortPlugin: FetchAbortPlugin) {
     super(
@@ -17,7 +16,7 @@ export class FeApi extends RequestScheduler<RequestAdapterConfig> {
     );
 
     this.usePlugin(new FetchURLPlugin());
-    this.usePlugin(new ApiCommonPlugin());
+    this.usePlugin(new RequestCommonPlugin());
   }
 
   stop(config: RequestAdapterConfig): void {

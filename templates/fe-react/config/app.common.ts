@@ -1,10 +1,15 @@
-import { i18nConfig } from '@/services/i18n/config';
+import { i18nConfig } from '@config/i18n';
 import { OpenAIClientConfig } from '@lib/openAiApi';
-import { ApiCommonPluginConfig } from '@lib/plugins';
-import themeConfigJson from './theme.json';
-export * from '@/services/i18n/config';
+import { RequestCommonPluginConfig } from '@lib/request-common-plugin';
 
-export const apiCommonPluginConfig: ApiCommonPluginConfig = {
+export const openAiModels = [
+  'gpt-3.5-turbo',
+  'gpt-3.5-turbo-2',
+  'gpt-4',
+  'gpt-4-32k'
+];
+
+export const requestCommonPluginConfig: RequestCommonPluginConfig = {
   tokenPrefix: 'Bearer',
   defaultHeaders: {
     'Content-Type': 'application/json'
@@ -19,7 +24,8 @@ export const apiCommonPluginConfig: ApiCommonPluginConfig = {
 
 export const openAiConfig: OpenAIClientConfig = {
   baseURL: import.meta.env.VITE_OPENAI_API_URL,
-  apiCommon: apiCommonPluginConfig
+  models: openAiModels,
+  commonPluginConfig: requestCommonPluginConfig
 };
 
 export const defaultBaseRoutePageProps = {
