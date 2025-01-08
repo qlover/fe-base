@@ -7,7 +7,7 @@ import {
 import { StreamProcessor } from './StreamProcessor';
 
 export class OpenAIAuthPlugin
-  implements ExecutorPlugin<RequestAdapterFetchConfig, void>
+  implements ExecutorPlugin<RequestAdapterFetchConfig>
 {
   readonly pluginName = 'OpenAIAuthPlugin';
 

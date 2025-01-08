@@ -1,5 +1,5 @@
 import { jsonStorageController } from '@/container';
-import { useController, useControllerState } from '@/hooks/useController';
+import { useController, useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from './PageProvider';
 import { template } from 'lodash';
 

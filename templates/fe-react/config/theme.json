@@ -27,7 +27,7 @@
       }
     }
   },
-  "overrides": {
+  "override": {
     "domAttribute": "data-theme",
     "defaultTheme": "system",
     "target": "html",
