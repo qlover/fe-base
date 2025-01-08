@@ -52,9 +52,7 @@ export class UserController
     this.token = storage.getItem(storageKey) || '';
   }
 
-  get feApi(): FeApi {
-    return this.options.feApi;
-  }
+  selectorSuccess = (state: UserControllerState): boolean => state.success;
 
   /**
    * @override
@@ -66,7 +64,7 @@ export class UserController
       throw new Error('User not logged in');
     }
 
-    const userInfo = await this.feApi.getUserInfo(this.token);
+    const userInfo = await this.options.feApi.getUserInfo();
 
     this.setState({
       success: true,
@@ -89,16 +87,18 @@ export class UserController
   async login(
     params: FeApiLogin['request']
   ): Promise<FeApiGetUserInfo['response']['data']> {
-    const result = await this.feApi.login(params);
-    this.token = result.data.token;
+    const { feApi } = this.options;
 
-    const userInfo = await this.feApi.getUserInfo(this.token);
+    const result = await feApi.login(params);
+
+    this.setToken(result.data.token);
+
+    const userInfo = await feApi.getUserInfo();
 
     this.setState({
       success: true,
       userInfo: userInfo.data
     });
-    this.setToken(result.data.token);
 
     return userInfo.data;
   }

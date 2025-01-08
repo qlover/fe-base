@@ -1,33 +1,11 @@
-import { lazy, PropsWithChildren, Suspense } from 'react';
-import { LazyExoticComponent } from 'react';
+import { lazy, Suspense } from 'react';
 import isString from 'lodash/isString';
-import { RouteObject } from 'react-router-dom';
-import { RoutePageProps } from './base/type';
 import NotFound from './404';
 import PageProvider from './base/PageProvider';
-
-export type RouteType = RouteObject & {
-  pageProps?: RoutePageProps;
-};
-
-export type RouteConfig = {
-  routes: RouteType[];
-};
-
-type PagesMaps = Record<
-  string,
-  () => LazyExoticComponent<React.ComponentType<unknown>>
->;
-
-type LoadProps = {
-  pagesMaps: PagesMaps;
-  componentPath: string;
-  route: RouteType;
-  Provider?: React.ComponentType<PropsWithChildren<RoutePageProps>>;
-};
+import { LoadProps, PagesMaps, RouteCategory, RouteType } from '@/types/Page';
 
 const getRealComponents = () => {
-  return import.meta.glob('./*/**/*.tsx');
+  return import.meta.glob('./**/*.tsx');
 };
 
 const getLazyComponentMaps = () => {
@@ -63,7 +41,7 @@ const lazyLoad = ({ pagesMaps, componentPath, route, Provider }: LoadProps) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       {Provider ? (
-        <Provider {...route.pageProps}>
+        <Provider {...route.meta}>
           <Component />
         </Provider>
       ) : (
@@ -100,12 +78,19 @@ const transformRoute = (
   return result;
 };
 
-export function createFeReactRoutes(config: RouteConfig) {
-  const { routes } = config;
-
+export function createFeReactRoutes(routes: RouteType[]) {
   const pagesMaps = getLazyComponentMaps();
 
   return routes.map((route) =>
     transformRoute(route, { pagesMaps, Provider: PageProvider })
+  );
+}
+
+export function filterRoutesByCategory(
+  routes: RouteType[],
+  category: RouteCategory[]
+): RouteType[] {
+  return routes.filter((route) =>
+    route.meta?.category ? category.includes(route.meta?.category) : true
   );
 }

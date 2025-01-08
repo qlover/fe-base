@@ -1,9 +1,9 @@
 import {
-  FetchURLPlugin,
   RequestAdapterFetch,
   RequestAdapterConfig,
   RequestScheduler,
-  FetchAbortPlugin
+  FetchAbortPlugin,
+  RequestAdapterFetchConfig
 } from '@qlover/fe-utils';
 import {
   FeApiGetIpInfo,
@@ -11,17 +11,19 @@ import {
   FeApiGetUserInfo,
   FeApiLogin
 } from './FeApiType';
-import { RequestCommonPlugin } from '@lib/request-common-plugin';
-export class FeApi extends RequestScheduler<RequestAdapterConfig> {
-  constructor(private abortPlugin: FetchAbortPlugin) {
-    super(
-      new RequestAdapterFetch({
-        responseType: 'json'
-      })
-    );
 
-    this.usePlugin(new FetchURLPlugin());
-    this.usePlugin(new RequestCommonPlugin());
+export class FeApi extends RequestScheduler<RequestAdapterConfig> {
+  private abortPlugin: FetchAbortPlugin;
+  
+  constructor({
+    abortPlugin,
+    config
+  }: {
+    abortPlugin: FetchAbortPlugin;
+    config?: Partial<RequestAdapterFetchConfig>;
+  }) {
+    super(new RequestAdapterFetch(config));
+    this.abortPlugin = abortPlugin;
   }
 
   stop(config: RequestAdapterConfig): void {
@@ -36,11 +38,14 @@ export class FeApi extends RequestScheduler<RequestAdapterConfig> {
     return this.get('https://randomuser.me/api/');
   }
 
-  async getUserInfo(token: string): Promise<FeApiGetUserInfo['response']> {
+  async getUserInfo(): Promise<FeApiGetUserInfo['response']> {
     return this.get('/api/userinfo');
   }
 
   async login(params: FeApiLogin['request']): Promise<FeApiLogin['response']> {
-    return this.post('/api/login', params);
+    return this.post('/api/login', {
+      // FIXME: RequestAdapterResponse response type error
+      data: params as unknown as FeApiLogin['response']['data']
+    });
   }
 }

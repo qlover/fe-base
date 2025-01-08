@@ -6,10 +6,8 @@ export interface PageProcesserOptions {
 
 export class PageProcesser {
   private executor: AsyncExecutor;
-  private logger: Logger;
-  constructor({ logger }: PageProcesserOptions) {
+  constructor(private options: PageProcesserOptions) {
     this.executor = new AsyncExecutor();
-    this.logger = logger;
   }
 
   usePlugin(plugin: ExecutorPlugin): this {
@@ -24,6 +22,8 @@ export class PageProcesser {
   }
 
   init(): Promise<unknown> {
-    return this.executor.exec(this.handler);
+    return this.executor.exec(this.handler).catch(() => {
+      this.options.logger.error('PageProcesser init failed');
+    });
   }
 }

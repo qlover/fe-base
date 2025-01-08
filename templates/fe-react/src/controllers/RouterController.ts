@@ -1,9 +1,22 @@
+import { I18nService } from '@/services';
+import { RouteConfig, RouteType } from '@/types/Page';
 import { UIDependenciesInterface } from '@/types/UIDependenciesInterface';
+import { i18nConfig } from '@config/i18n';
+import { Logger } from '@qlover/fe-utils';
 import { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 export type RouterControllerDependencies = {
   location: globalThis.Location;
   navigate: NavigateFunction;
+};
+
+export type RouterControllerOptions = {
+  config: RouteConfig;
+  logger: Logger;
+};
+
+export type RouterControllerState = {
+  routes: RouteType[];
 };
 
 export class RouterController
@@ -14,7 +27,35 @@ export class RouterController
    */
   dependencies?: RouterControllerDependencies;
 
-  constructor() {}
+  state: RouterControllerState;
+
+  constructor(private options: RouterControllerOptions) {
+    this.state = {
+      routes: options.config.routes
+    };
+  }
+
+  get logger(): Logger {
+    return this.options.logger;
+  }
+
+  get navigate(): NavigateFunction | undefined {
+    const navigate = this.dependencies?.navigate;
+
+    if (!navigate) {
+      this.logger.debug('navigate is not set');
+    }
+
+    return navigate;
+  }
+
+  getRoutes(): RouteType[] {
+    return this.state.routes;
+  }
+
+  changeRoutes(routes: RouteType[]): void {
+    this.state.routes = routes;
+  }
 
   /**
    * @override
@@ -27,7 +68,16 @@ export class RouterController
   }
 
   goto(path: string, options?: NavigateOptions): void {
-    this.dependencies?.navigate(path, options);
+    console.trace('path');
+
+    const tryLng = path.split('/')[0];
+    if (!I18nService.isValidLanguage(tryLng)) {
+      path = i18nConfig.fallbackLng + path.replace(tryLng, '');
+    }
+
+    this.navigate?.(path, options);
+
+    this.navigate?.(path, options);
   }
 
   gotoLogin(): void {

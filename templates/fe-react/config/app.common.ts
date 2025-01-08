@@ -1,6 +1,7 @@
 import { i18nConfig } from '@config/i18n';
 import { OpenAIClientConfig } from '@lib/openAiApi';
 import { RequestCommonPluginConfig } from '@lib/request-common-plugin';
+import { RequestAdapterFetchConfig } from '@qlover/fe-utils';
 
 export const openAiModels = [
   'gpt-3.5-turbo',
@@ -28,8 +29,18 @@ export const openAiConfig: OpenAIClientConfig = {
   commonPluginConfig: requestCommonPluginConfig
 };
 
-export const defaultBaseRoutePageProps = {
+export const defaultBaseRoutemeta = {
   localNamespace: i18nConfig.defaultNS,
   title: '',
   icon: ''
 } as const;
+
+export const defaultLoginInfo = {
+  name: 'qlover',
+  password: 'q1234566'
+};
+
+export const defaultFeApiConfig: Partial<RequestAdapterFetchConfig> = {
+  responseType: 'json',
+  baseURL: 'https://api.example.com/'
+};

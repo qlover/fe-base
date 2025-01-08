@@ -103,14 +103,19 @@ export class RequestCommonPlugin
     };
 
     // append content type header
-    if (parameters.responseType === 'json') {
+    if (
+      !parameters.headers['Content-Type'] &&
+      parameters.responseType === 'json'
+    ) {
       parameters.headers['Content-Type'] = 'application/json';
     }
 
     // append token
-    const authValue = tokenPrefix ? `${tokenPrefix} ${token}` : token;
-    if (authKey && authValue) {
-      parameters.headers[authKey] = authValue;
+    if (authKey && !parameters.headers[authKey]) {
+      const authValue = tokenPrefix ? `${tokenPrefix} ${token}` : token;
+      if (authValue) {
+        parameters.headers[authKey] = authValue;
+      }
     }
 
     // merge defaults request data
