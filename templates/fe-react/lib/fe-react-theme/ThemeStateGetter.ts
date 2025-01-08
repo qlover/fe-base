@@ -4,15 +4,15 @@ import { ThemeControllerProps, ThemeControllerState } from './type';
 export class ThemeStateGetter {
   static SYSTEM_THEME = 'system';
 
-  static init(props: ThemeControllerProps): ThemeControllerState {
-    const theme = ThemeStateGetter.initTheme(props);
+  static create(props: ThemeControllerProps): ThemeControllerState {
+    const theme = ThemeStateGetter.getDefaultTheme(props);
 
     return {
       theme
     };
   }
 
-  static initTheme(props: ThemeControllerProps): string {
+  static getDefaultTheme(props: ThemeControllerProps): string {
     const { storage, storageKey, defaultTheme } = props;
 
     let theme;

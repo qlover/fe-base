@@ -4,7 +4,7 @@ import { ThemeStateGetter } from './ThemeStateGetter';
 
 export class ThemeController extends FeController<ThemeControllerState> {
   constructor(private props: ThemeControllerProps) {
-    super(ThemeStateGetter.init(props));
+    super(ThemeStateGetter.create(props));
 
     this.bindToTheme();
   }
