@@ -10,9 +10,7 @@ I18nService.init();
 function App() {
   const routerBase = useMemo(() => {
     const routes = createFeReactRoutes(routerController.getRoutes());
-    console.log('jj routes', routes);
     const router = createBrowserRouter(routes);
-
     return router;
   }, []);
 

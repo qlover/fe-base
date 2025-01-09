@@ -6,7 +6,8 @@ import {
   SyncStorage
 } from '@qlover/fe-utils';
 
-const isProduction = import.meta.env.NODE_ENV === 'production';
+export const env = import.meta.env.VITE_NODE_ENV;
+export const isProduction = env === 'production';
 
 /**
  * Global logger

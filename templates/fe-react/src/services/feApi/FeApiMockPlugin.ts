@@ -4,21 +4,22 @@ import {
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
-import mockDataJson from '@config/feapi.mock.json';
 import { sleep } from '@/utils/thread';
 
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';
+
+  constructor(private readonly mockDataJson: typeof import('@config/feapi.mock.json')) {}  
 
   async onExec({
     parameters
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<RequestAdapterResponse> {
     const { method = 'GET', url = '', headers } = parameters;
     const key = `${method.toUpperCase()} ${url}`;
-
     const mockData = url
-      ? mockDataJson[key as keyof typeof mockDataJson] || mockDataJson._default
-      : mockDataJson._default;
+      ? this.mockDataJson[key as keyof typeof this.mockDataJson] ||
+        this.mockDataJson._default
+      : this.mockDataJson._default;
 
     const response = new Response(JSON.stringify(mockData), {
       status: 200,

@@ -1,10 +1,12 @@
+import { isProduction } from "@/containers/globals";
+
 /** @type {import('i18next').InitOptions} */
 export const i18nConfig = {
   /**
    * default language
    */
   fallbackLng: 'en',
-  debug: process.env.NODE_ENV === 'development',
+  debug: !isProduction,
   interpolation: {
     escapeValue: false // React already does escaping
   },

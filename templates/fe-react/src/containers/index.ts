@@ -11,6 +11,7 @@ import { FeApi, FeApiMockPlugin } from '@/services/feApi';
 import { defaultFeApiConfig, openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
 import appRouterConfig from '@config/app.router.json';
+import mockDataJson from '@config/feapi.mock.json';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import { localJsonStorage, logger } from './globals';
 import { RequestLogger } from '@/utils/RequestLogger';
@@ -39,7 +40,7 @@ export const feApi = new FeApi({
       token: () => localJsonStorage.getItem('fe_user_token')
     })
   )
-  .usePlugin(new FeApiMockPlugin())
+  .usePlugin(new FeApiMockPlugin(mockDataJson))
   .usePlugin(requestLogger)
   .usePlugin(feApiAbort);
 
