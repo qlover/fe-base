@@ -1,6 +1,7 @@
 import { createContext, useEffect } from 'react';
 import { pageProcesser, routerController, userController } from '@/container';
-import { useLanguageGuard, useStrictEffect } from '@/hooks';
+import { useLanguageGuard } from '@/hooks/useLanguageGuard';
+import { useStrictEffect } from '@/hooks/useStrictEffect';
 import { PageProcesser } from '@/services/pageProcesser';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useControllerState } from '@lib/fe-react-controller';

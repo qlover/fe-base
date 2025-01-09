@@ -1,4 +1,4 @@
-import { LocaleLink } from '@/components';
+import LocaleLink from '@/components/LocaleLink';
 import { useBaseRoutePage } from './PageProvider';
 
 export default function Home() {

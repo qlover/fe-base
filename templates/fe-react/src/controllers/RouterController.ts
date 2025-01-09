@@ -1,4 +1,4 @@
-import { I18nService } from '@/services';
+import { I18nService } from '@/services/i18n';
 import { RouteConfig, RouteType } from '@/types/Page';
 import { UIDependenciesInterface } from '@/types/UIDependenciesInterface';
 import { i18nConfig } from '@config/i18n';

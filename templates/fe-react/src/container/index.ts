@@ -1,48 +1,21 @@
-/**
- * **dont't import tsx, only ts file**
- */
-
-import {
-  FetchAbortPlugin,
-  FetchURLPlugin,
-  JSONSerializer,
-  JSONStorage,
-  Logger,
-  SyncStorage
-} from '@qlover/fe-utils';
-
+//! dont't import tsx, only ts file
+import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { OpenAIClient } from '@lib/openAiApi';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
-
-import {
-  ExecutorController,
-  JSONStorageController,
-  RequestController,
-  UserController
-} from '@/controllers';
-import { FeApi, FeApiMockPlugin } from '@/services';
-
+import { ExecutorController } from '@/controllers/ExecutorController';
+import { JSONStorageController } from '@/controllers/JSONStorageController';
+import { RequestController } from '@/controllers/RequestController';
+import { UserController } from '@/controllers/UserController';
+import { RouterController } from '@/controllers/RouterController';
+import { FeApi, FeApiMockPlugin } from '@/services/feApi';
 import { defaultFeApiConfig, openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
-import { PageProcesser } from './services/pageProcesser';
-import { RouterController } from './controllers/RouterController';
 import appRouterConfig from '@config/app.router.json';
-import { RouteConfig } from './types/Page';
-import { RequestLogger } from './utils/RequestLogger';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
-
-const isProduction = import.meta.env.NODE_ENV === 'production';
-
-// common api
-export const logger = new Logger({
-  silent: isProduction,
-  debug: !isProduction
-});
-export const JSON = new JSONSerializer();
-export const localJsonStorage = new JSONStorage(
-  localStorage as SyncStorage<string, string>,
-  JSON
-);
+import { localJsonStorage, logger } from './globals';
+import { RequestLogger } from '@/utils/RequestLogger';
+import { RouteConfig } from '@/types/Page';
+import { PageProcesser } from '@/services/pageProcesser';
 
 // common plugins
 const requestLogger = new RequestLogger(logger);

@@ -1,4 +1,5 @@
-import { ThemeSwitcher, LocaleLink } from '@/components';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
+import LocaleLink from '@/components/LocaleLink';
 
 export default function BaseHeader() {
   return (
