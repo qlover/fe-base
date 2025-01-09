@@ -1,4 +1,4 @@
-import { userController } from '@/container';
+import { userController } from '@/containers';
 import { useController } from '@lib/fe-react-controller';
 import { Navigate, Outlet } from 'react-router-dom';
 

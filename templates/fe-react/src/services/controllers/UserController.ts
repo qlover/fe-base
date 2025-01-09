@@ -1,7 +1,7 @@
 import { ExecutorPlugin, JSONStorage } from '@qlover/fe-utils';
 import { sleep } from '@/utils/thread';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/services';
+import { FeApi, } from '@/services/feApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/services/feApi/FeApiType';
 import { adjustExpirationTime } from '@/utils/datetime';
 import { RouterController } from './RouterController';

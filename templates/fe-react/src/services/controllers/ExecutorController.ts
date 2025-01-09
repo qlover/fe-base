@@ -1,5 +1,5 @@
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/services';
+import { FeApi } from '@/services/feApi';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   ExecutorPlugin,

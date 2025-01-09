@@ -1,5 +1,5 @@
-import { LocaleLink } from '@/components';
-import { useBaseRoutePage } from './PageProvider';
+import LocaleLink from '@/components/LocaleLink';
+import { useBaseRoutePage } from '../../containers/context/BaseRouteContext';
 
 export default function Home() {
   const { t } = useBaseRoutePage();
