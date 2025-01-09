@@ -1,4 +1,4 @@
-import { themeController } from '@/container';
+import { themeController } from '@/containers';
 import { useController } from '@lib/fe-react-controller';
 import { useTranslation } from 'react-i18next';
 

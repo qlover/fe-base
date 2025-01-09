@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createFeReactRoutes } from './pages';
 import { I18nService } from '@/services/i18n';
 import { useMemo } from 'react';
-import { routerController } from './container';
+import { routerController } from './containers';
 
 I18nService.init();
 

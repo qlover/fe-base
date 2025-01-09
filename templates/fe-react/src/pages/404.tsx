@@ -1,4 +1,4 @@
-import { useBaseRoutePage } from '@/container/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/containers/context/BaseRouteContext';
 
 export default function NotFound({ route }: { route?: string }) {
   const { t } = useBaseRoutePage();

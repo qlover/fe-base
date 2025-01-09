@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import * as feGlobals from '@/container/globals';
+import * as feGlobals from '@/containers/globals.ts';
 
 // set global feGlobals
 if (typeof window !== 'undefined') {

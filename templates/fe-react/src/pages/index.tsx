@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import isString from 'lodash/isString';
 import { LoadProps, PagesMaps, RouteCategory, RouteType } from '@/types/Page';
 import { Loading } from '@/components/Loading';
-import BaseRouteProvider from '../container/context/BaseRouteProvider';
+import BaseRouteProvider from '../containers/context/BaseRouteProvider';
 import NotFound from './404';
 import NotFound500 from './500';
 

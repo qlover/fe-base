@@ -1,5 +1,5 @@
 import { createContext, useEffect } from 'react';
-import { pageProcesser, routerController, userController } from '@/container';
+import { pageProcesser, routerController, userController } from '@/containers';
 import { useLanguageGuard } from '@/hooks/useLanguageGuard';
 import { useStrictEffect } from '@/hooks/useStrictEffect';
 import { PageProcesser } from '@/services/pageProcesser';
