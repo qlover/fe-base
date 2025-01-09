@@ -36,3 +36,20 @@ export type FeApiGetRandomUser = FeApiType<
     };
   }
 >;
+
+
+export type FeApiGetUserInfo = FeApiType<
+  string,
+  {
+    name: string;
+    email: string;
+    picture: string;
+  }
+>;
+
+export type FeApiLogin = FeApiType<
+  { username: string; password: string },
+  {
+    token: string;
+  }
+>;

@@ -12,13 +12,6 @@ export class RequestLogger
 
   constructor(public logger: Logger) {}
 
-  onBefore({ parameters }: ExecutorContext<RequestAdapterFetchConfig>): void {
-    this.logger.info(
-      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url}`,
-      parameters
-    );
-  }
-
   async onSuccess({
     parameters,
     returnValue

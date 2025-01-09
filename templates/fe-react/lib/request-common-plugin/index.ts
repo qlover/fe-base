@@ -7,7 +7,7 @@ import {
 } from '@qlover/fe-utils';
 
 export type RequestCommonPluginConfig = {
-  token?: string;
+  token?: string | (() => string | null);
 
   /**
    * token prefix.
@@ -87,7 +87,6 @@ export class RequestCommonPlugin
 
   onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const {
-      token,
       tokenPrefix,
       defaultHeaders,
       authKey = 'Authorization',
@@ -103,14 +102,20 @@ export class RequestCommonPlugin
     };
 
     // append content type header
-    if (parameters.responseType === 'json') {
+    if (
+      !parameters.headers['Content-Type'] &&
+      parameters.responseType === 'json'
+    ) {
       parameters.headers['Content-Type'] = 'application/json';
     }
 
     // append token
-    const authValue = tokenPrefix ? `${tokenPrefix} ${token}` : token;
-    if (authKey && authValue) {
-      parameters.headers[authKey] = authValue;
+    if (authKey && !parameters.headers[authKey]) {
+      const authToken = this.getAuthToken();
+      const authValue = tokenPrefix ? `${tokenPrefix} ${authToken}` : authToken;
+      if (authValue) {
+        parameters.headers[authKey] = authValue;
+      }
     }
 
     // merge defaults request data
@@ -155,5 +160,10 @@ export class RequestCommonPlugin
           break;
       }
     }
+  }
+
+  getAuthToken(): string {
+    const { token } = this.config;
+    return typeof token === 'function' ? (token() ?? '') : (token ?? '');
   }
 }

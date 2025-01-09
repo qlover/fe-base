@@ -1,7 +1,7 @@
 import { jsonStorageController } from '@/container';
 import { useController, useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from './PageProvider';
-import { template } from 'lodash';
+import template from 'lodash/template';
 
 export default function JSONStorage() {
   const controllerState = useControllerState(
