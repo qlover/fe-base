@@ -13,7 +13,7 @@ export class FeApiMockPlugin implements ExecutorPlugin {
   async onExec({
     parameters
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<RequestAdapterResponse> {
-    const { method = 'GET', url = '' } = parameters;
+    const { method = 'GET', url = '', headers } = parameters;
     const key = `${method.toUpperCase()} ${url}`;
 
     const mockData = url
@@ -25,7 +25,7 @@ export class FeApiMockPlugin implements ExecutorPlugin {
       statusText: 'OK'
     });
 
-    console.log('jj [mock]', key, mockData);
+    console.log('jj [mock]', key, mockData, headers);
 
     await sleep(1000);
 

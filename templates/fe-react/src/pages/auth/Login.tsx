@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useController } from '@lib/fe-react-controller';
-import { userController } from '@/container';
+import { routerController, userController } from '@/container';
 import { useBaseRoutePage } from '../base/PageProvider';
 import { defaultLoginInfo } from '@config/app.common';
 
@@ -16,6 +16,7 @@ export default function Login() {
       setLoading(true);
       await controller.login({ username: email, password });
       // Redirect or show success message
+      routerController.replaceToHome();
     } catch (error) {
       // Handle login error
       console.error(error);

@@ -1,13 +1,16 @@
 import { createContext, useEffect } from 'react';
-import { pageProcesser, routerController } from '@/container';
+import { pageProcesser, routerController, userController } from '@/container';
 import { useLanguageGuard } from '@/hooks';
 import { PageProcesser } from '@/services/pageProcesser';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useControllerState } from '@lib/fe-react-controller';
+import { Loading } from './Loading';
 
 const PageProcesserContext = createContext<PageProcesser>(pageProcesser);
 
 export function ProcessProvider({ children }: { children: React.ReactNode }) {
   useLanguageGuard();
+  const { success } = useControllerState(userController);
 
   const navigate = useNavigate();
 
@@ -16,6 +19,14 @@ export function ProcessProvider({ children }: { children: React.ReactNode }) {
       navigate
     });
   }, [navigate]);
+
+  if (!success) {
+    return <Loading fullscreen />;
+  }
+
+  if (!userController.isAuthenticated()) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <PageProcesserContext.Provider value={pageProcesser}>

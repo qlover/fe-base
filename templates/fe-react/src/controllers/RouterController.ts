@@ -49,14 +49,6 @@ export class RouterController
     return navigate;
   }
 
-  getRoutes(): RouteType[] {
-    return this.state.routes;
-  }
-
-  changeRoutes(routes: RouteType[]): void {
-    this.state.routes = routes;
-  }
-
   /**
    * @override
    */
@@ -65,6 +57,14 @@ export class RouterController
       this.dependencies || {},
       dependencies
     ) as RouterControllerDependencies;
+  }
+
+  getRoutes(): RouteType[] {
+    return this.state.routes;
+  }
+
+  changeRoutes(routes: RouteType[]): void {
+    this.state.routes = routes;
   }
 
   goto(path: string, options?: NavigateOptions): void {
@@ -82,5 +82,9 @@ export class RouterController
 
   gotoLogin(): void {
     this.goto('/login', { replace: true });
+  }
+
+  replaceToHome(): void {
+    this.goto('/', { replace: true });
   }
 }

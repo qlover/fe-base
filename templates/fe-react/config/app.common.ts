@@ -40,7 +40,13 @@ export const defaultLoginInfo = {
   password: 'q1234566'
 };
 
-export const defaultFeApiConfig: Partial<RequestAdapterFetchConfig> = {
-  responseType: 'json',
-  baseURL: 'https://api.example.com/'
+export const defaultFeApiConfig: {
+  adapter: Partial<RequestAdapterFetchConfig>;
+  commonPluginConfig: RequestCommonPluginConfig;
+} = {
+  adapter: {
+    responseType: 'json',
+    baseURL: 'https://api.example.com/'
+  },
+  commonPluginConfig: requestCommonPluginConfig
 };

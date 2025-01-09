@@ -3,6 +3,7 @@ import isString from 'lodash/isString';
 import NotFound from './404';
 import PageProvider from './base/PageProvider';
 import { LoadProps, PagesMaps, RouteCategory, RouteType } from '@/types/Page';
+import { Loading } from '@/components/Loading';
 
 const getRealComponents = () => {
   return import.meta.glob('./**/*.tsx');
@@ -39,7 +40,7 @@ const lazyLoad = ({ pagesMaps, componentPath, route, Provider }: LoadProps) => {
   const Component = loadedComponent();
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading fullscreen />}>
       {Provider ? (
         <Provider {...route.meta}>
           <Component />

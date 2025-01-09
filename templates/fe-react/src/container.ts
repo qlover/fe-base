@@ -57,10 +57,15 @@ export const openAiApi = new OpenAIClient(openAiConfig).usePlugin(
 
 export const feApi = new FeApi({
   abortPlugin: feApiAbort,
-  config: defaultFeApiConfig
+  config: defaultFeApiConfig.adapter
 })
   .usePlugin(new FetchURLPlugin())
-  .usePlugin(new RequestCommonPlugin())
+  .usePlugin(
+    new RequestCommonPlugin({
+      ...defaultFeApiConfig.commonPluginConfig,
+      token: () => localJsonStorage.getItem('fe_user_token')
+    })
+  )
   .usePlugin(new FeApiMockPlugin())
   .usePlugin(requestLogger)
   .usePlugin(feApiAbort);
