@@ -18,6 +18,7 @@
     "release:fe-utils": "fe-release -p ./packages/fe-utils -V",
     "release-pr:fe-scripts": "fe-release-pr -p ./packages/fe-scripts -V",
     "release:fe-scripts": "fe-release -p ./packages/fe-scripts -V",
+    "release:fe-standard": "fe-release -p ./packages/fe-standard -V",
     "dryrun:release-pr:fe-utils": "fe-release-pr -p ./packages/fe-utils -V --dry-run",
     "dryrun:release:fe-utils": "fe-release -p ./packages/fe-utils -V --dry-run",
     "dryrun:release-pr:fe-scripts": "fe-release-pr -p ./packages/fe-scripts -V --dry-run",
