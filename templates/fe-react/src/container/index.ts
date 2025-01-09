@@ -2,11 +2,11 @@
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { OpenAIClient } from '@lib/openAiApi';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
-import { ExecutorController } from '@/controllers/ExecutorController';
-import { JSONStorageController } from '@/controllers/JSONStorageController';
-import { RequestController } from '@/controllers/RequestController';
-import { UserController } from '@/controllers/UserController';
-import { RouterController } from '@/controllers/RouterController';
+import { ExecutorController } from '@/services/controllers/ExecutorController';
+import { JSONStorageController } from '@/services/controllers/JSONStorageController';
+import { RequestController } from '@/services/controllers/RequestController';
+import { UserController } from '@/services/controllers/UserController';
+import { RouterController } from '@/services/controllers/RouterController';
 import { FeApi, FeApiMockPlugin } from '@/services/feApi';
 import { defaultFeApiConfig, openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
