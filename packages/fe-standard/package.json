@@ -1,10 +1,13 @@
 {
   "name": "@qlover/fe-standard",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "private": false,
   "type": "module",
   "files": [
-    "config"
+    "config",
+    "eslint",
+    "package.json",
+    "README.md"
   ],
   "exports": {
     "./config/*": "./config/*",
