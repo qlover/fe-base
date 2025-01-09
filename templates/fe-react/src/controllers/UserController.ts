@@ -29,6 +29,26 @@ interface LoginInterface {
   logout(): void;
 }
 
+function restoreUserSession(options: UserControllerOptions): {
+  state: UserControllerState;
+  token: string;
+} {
+  const { storageKey, storage } = options;
+  const token = storage.getItem(storageKey, '') as string;
+
+  return {
+    state: {
+      success: !!token,
+      userInfo: {
+        name: '',
+        email: '',
+        picture: ''
+      }
+    },
+    token
+  };
+}
+
 export class UserController
   extends FeController<UserControllerState>
   implements ExecutorPlugin, LoginInterface
@@ -38,18 +58,10 @@ export class UserController
   private token = '';
 
   constructor(private options: UserControllerOptions) {
-    super({
-      success: false,
-      userInfo: {
-        name: '',
-        email: '',
-        picture: ''
-      }
-    });
+    const restoreSession = restoreUserSession(options);
+    super(restoreSession.state);
 
-    const { storageKey, storage } = this.options;
-
-    this.token = storage.getItem(storageKey) || '';
+    this.token = restoreSession.token;
   }
 
   selectorSuccess = (state: UserControllerState): boolean => state.success;
