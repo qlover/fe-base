@@ -1,12 +1,19 @@
 import { lazy, Suspense } from 'react';
 import isString from 'lodash/isString';
-import NotFound from './404';
-import PageProvider from './base/PageProvider';
 import { LoadProps, PagesMaps, RouteCategory, RouteType } from '@/types/Page';
 import { Loading } from '@/components/Loading';
+import BaseRouteProvider from '../container/context/BaseRouteProvider';
+import NotFound from './404';
+import NotFound500 from './500';
+
+const staticComponentsMaps: Record<string, () => React.ComponentType<unknown>> =
+  {
+    '404': () => NotFound as React.ComponentType<unknown>,
+    '500': () => NotFound500 as React.ComponentType<unknown>
+  };
 
 const getRealComponents = () => {
-  return import.meta.glob('./**/*.tsx');
+  return import.meta.glob('./*/**/*.tsx');
 };
 
 const getLazyComponentMaps = () => {
@@ -15,8 +22,8 @@ const getLazyComponentMaps = () => {
   const pagesMaps: PagesMaps = {};
 
   for (const path in modules) {
-    // 提取相对路径并去掉文件扩展名
     const componentName = path.replace(/^\.\/(.*)\.tsx$/, '$1');
+
     pagesMaps[componentName] = () =>
       lazy(
         modules[path] as () => Promise<{
@@ -30,11 +37,15 @@ const getLazyComponentMaps = () => {
 
 // 懒加载组件
 const lazyLoad = ({ pagesMaps, componentPath, route, Provider }: LoadProps) => {
-  const loadedComponent = pagesMaps[componentPath];
+  // first try static
+  let loadedComponent = staticComponentsMaps[componentPath];
+  if (!loadedComponent) {
+    loadedComponent = pagesMaps[componentPath];
+  }
 
   if (!loadedComponent) {
     console.warn(`Route ${componentPath} not found`);
-    return <NotFound />;
+    return <NotFound route={componentPath} />;
   }
 
   const Component = loadedComponent();
@@ -83,7 +94,7 @@ export function createFeReactRoutes(routes: RouteType[]) {
   const pagesMaps = getLazyComponentMaps();
 
   return routes.map((route) =>
-    transformRoute(route, { pagesMaps, Provider: PageProvider })
+    transformRoute(route, { pagesMaps, Provider: BaseRouteProvider })
   );
 }
 

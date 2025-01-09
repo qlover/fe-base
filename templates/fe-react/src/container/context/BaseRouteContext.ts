@@ -1,12 +1,13 @@
-import { createContext, PropsWithChildren, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useContext } from 'react';
+import { BasePageProvider } from '@/types/Page';
+import { RouteMeta } from '@/types/Page';
+import { createContext } from 'react';
 import { defaultBaseRoutemeta } from '@config/app.common';
 import merge from 'lodash/merge';
-import { BasePageProvider, RouteMeta } from '@/types/Page';
 
-const BaseRoutePageContext = createContext<RouteMeta>({});
+export const BaseRoutePageContext = createContext<RouteMeta>({});
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useBaseRoutePage(): BasePageProvider {
   const meta = useContext(BaseRoutePageContext);
 
@@ -23,12 +24,4 @@ export function useBaseRoutePage(): BasePageProvider {
     i18n,
     t: i18n.t
   };
-}
-
-export default function PageProvider(props: PropsWithChildren<RouteMeta>) {
-  return (
-    <BaseRoutePageContext.Provider value={props}>
-      {props.children}
-    </BaseRoutePageContext.Provider>
-  );
 }

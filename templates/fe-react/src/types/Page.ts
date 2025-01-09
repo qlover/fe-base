@@ -37,7 +37,8 @@ export type RouteConfig = {
 
 export type PagesMaps = Record<
   string,
-  () => LazyExoticComponent<React.ComponentType<unknown>>
+  | (() => LazyExoticComponent<React.ComponentType<unknown>>)
+  | (() => React.ComponentType<unknown>)
 >;
 
 export type LoadProps = {

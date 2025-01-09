@@ -1,5 +1,6 @@
 {
   "404.notComponent": "Component not found",
   "404.notPage": "Page not found",
+  "500.title": "Server Error",
   "header.theme.label": "Switch Theme"
 }

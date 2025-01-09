@@ -59,6 +59,26 @@
               "icon": "info",
               "localNamespace": "executor"
             }
+          },
+          {
+            "path": "404",
+            "element": "404",
+            "meta": {
+              "category": "common",
+              "title": "404",
+              "layout": "blank",
+              "localNamespace": "common"
+            }
+          },
+          {
+            "path": "500",
+            "element": "500",
+            "meta": {
+              "category": "common",
+              "title": "500",
+              "layout": "blank",
+              "localNamespace": "common"
+            }
           }
         ]
       },
@@ -94,14 +114,25 @@
           }
         ]
       },
+
       {
-        "path": "/404",
+        "path": "404",
         "element": "404",
         "meta": {
           "category": "common",
           "title": "404",
           "layout": "blank",
-          "localNamespace": "404"
+          "localNamespace": "common"
+        }
+      },
+      {
+        "path": "500",
+        "element": "500",
+        "meta": {
+          "category": "common",
+          "title": "500",
+          "layout": "blank",
+          "localNamespace": "common"
         }
       },
       {
