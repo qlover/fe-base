@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
+import { githubLog } from './log';
+
 const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_REF } = process.env;
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
 
-console.log('jj process.argv', process.argv);
-
-console.log('jj has GITHUB_TOKEN', !!GITHUB_TOKEN);
-console.log('jj GITHUB_REPOSITORY', GITHUB_REPOSITORY);
-console.log('jj GITHUB_REF', GITHUB_REF);
-console.log('jj owner', owner);
-console.log('jj repo', repo);
+githubLog(process.argv, 'jj process.argv');
+githubLog(!!GITHUB_TOKEN, 'jj hasGITHUB_TOKEN');
+githubLog(GITHUB_REPOSITORY, 'jj GITHUB_REPOSITORY');
+githubLog(GITHUB_REF, 'jj GITHUB_REF');
+githubLog(owner, 'jj owner');
+githubLog(repo, 'jj repo');
 
 // // 从命令行参数获取标签信息
 // const feScriptsChanged = process.argv[2] === 'true';

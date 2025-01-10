@@ -3,13 +3,12 @@
 // import { execSync } from 'child_process';
 // import fs from 'fs';
 // import path from 'path';
+import { githubLog } from './log';
 
 function main() {
   const baseRef = process.argv[2];
 
-  console.log(
-    `jj baseRef : ${baseRef} process.argv: ${JSON.stringify(process.argv || [])}`
-  );
+  githubLog(baseRef, 'baseRef');
   return;
 
   // console.log(`jj baseRef: ${baseRef}`);
