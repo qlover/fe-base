@@ -57,18 +57,7 @@ jobs:
         id: check-packages
         run: |
           git fetch origin ${{ github.base_ref }}
-
-          # Check fe-scripts changes
-          FE_SCRIPTS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-scripts/" || true)
-          if [ ! -z "$FE_SCRIPTS_CHANGED" ]; then
-            echo "fe_scripts_changed=true" >> $GITHUB_OUTPUT
-          fi
-
-          # Check fe-utils changes
-          FE_UTILS_CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^packages/fe-utils/" || true)
-          if [ ! -z "$FE_UTILS_CHANGED" ]; then
-            echo "fe_utils_changed=true" >> $GITHUB_OUTPUT
-          fi
+          node scripts/check-packages.js ${{ github.base_ref }} >> $GITHUB_OUTPUT
 
       - name: Add package labels
         if: ${{ steps.check-packages.outputs.fe_scripts_changed == 'true' || steps.check-packages.outputs.fe_utils_changed == 'true' }}
