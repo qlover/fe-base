@@ -1,0 +1,11 @@
+{
+  "name": "@qlover/pack-app-browser",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest"
+  }
+}
