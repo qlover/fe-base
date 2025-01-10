@@ -76,6 +76,8 @@ async function main() {
 
   const changePackageNames = getChangePackageNames(baseRef);
 
+  console.log('changePackageNames', changePackageNames);
+
   if (changePackageNames.length > 0) {
     await addChangePackagePRLables(changePackageNames);
     githubLog('success!', 'addLables');
