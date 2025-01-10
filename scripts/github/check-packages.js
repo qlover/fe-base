@@ -82,6 +82,4 @@ async function main() {
   }
 }
 
-main().catch(() => {
-  githubLog('error!', 'addLables');
-});
+main();
