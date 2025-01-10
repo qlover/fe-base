@@ -57,25 +57,28 @@ jobs:
         id: check-packages
         run: |
           git fetch origin ${{ github.base_ref }}
-          node scripts/check-packages.js ${{ github.base_ref }} >> $GITHUB_OUTPUT
+          node scripts/github/check-packages.js ${{ github.base_ref }} >> $GITHUB_OUTPUT
 
       - name: Add package labels
-        if: ${{ steps.check-packages.outputs.fe_scripts_changed == 'true' || steps.check-packages.outputs.fe_utils_changed == 'true' }}
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const feScriptsChanged = '${{ steps.check-packages.outputs.fe_scripts_changed }}' === 'true';
-            const feUtilsChanged = '${{ steps.check-packages.outputs.fe_utils_changed }}' === 'true';
+        id: add-package-labels
+        run: |
+          node scripts/github/add-package-labels.js ${{ steps.check-packages.outputs }}
+        # if: ${{ steps.check-packages.outputs.fe_scripts_changed == 'true' || steps.check-packages.outputs.fe_utils_changed == 'true' }}
+        # uses: actions/github-script@v6
+        # with:
+        #   script: |
+        #     const feScriptsChanged = '${{ steps.check-packages.outputs.fe_scripts_changed }}' === 'true';
+        #     const feUtilsChanged = '${{ steps.check-packages.outputs.fe_utils_changed }}' === 'true';
 
-            const labels = [];
-            if (feScriptsChanged) labels.push('pkg:fe-scripts');
-            if (feUtilsChanged) labels.push('pkg:fe-utils');
+        #     const labels = [];
+        #     if (feScriptsChanged) labels.push('pkg:fe-scripts');
+        #     if (feUtilsChanged) labels.push('pkg:fe-utils');
 
-            if (labels.length > 0) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                labels: labels
-              });
-            }
+        #     if (labels.length > 0) {
+        #       await github.rest.issues.addLabels({
+        #         owner: context.repo.owner,
+        #         repo: context.repo.repo,
+        #         issue_number: context.issue.number,
+        #         labels: labels
+        #       });
+        #     }
