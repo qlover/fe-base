@@ -3,7 +3,7 @@
 // import { execSync } from 'child_process';
 // import fs from 'fs';
 // import path from 'path';
-import { githubLog } from './log';
+import { githubLog } from './log.js';
 
 function main() {
   const baseRef = process.argv[2];

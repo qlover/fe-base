@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { githubLog } from './log';
+import { githubLog } from './log.js';
 
 const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_REF } = process.env;
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
