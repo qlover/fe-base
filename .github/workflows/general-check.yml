@@ -57,4 +57,9 @@ jobs:
         id: check-packages
         run: |
           git fetch origin ${{ github.base_ref }}
-          node scripts/github/check-packages.js ${{ github.base_ref }} >> $GITHUB_OUTPUT
+          node scripts/github/check-packages.js ${{ github.base_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
