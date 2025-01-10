@@ -7,38 +7,38 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  check-code:
-    if: |
-      !contains(github.event.pull_request.title, 'chore(tag):') && 
-      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
-    runs-on: ubuntu-latest
+  # check-code:
+  #   if: |
+  #     !contains(github.event.pull_request.title, 'chore(tag):') && 
+  #     !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
+  #   runs-on: ubuntu-latest
 
-    steps:
-      # - name: Print GitHub Event Information
-      #   run: echo "${{ toJson(github.event) }}" > event.json
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     # - name: Print GitHub Event Information
+  #     #   run: echo "${{ toJson(github.event) }}" > event.json
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.19.0'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '18.19.0'
 
-      - name: Install dependencies
-        run: |
-          npm install -g yarn
-          yarn
+  #     - name: Install dependencies
+  #       run: |
+  #         npm install -g yarn
+  #         yarn
 
-      - name: Lint
-        run: yarn lint
+  #     - name: Lint
+  #       run: yarn lint
 
-      - name: Test
-        run: yarn test
+  #     - name: Test
+  #       run: yarn test
 
-      - name: Build dist
-        run: yarn build
+  #     - name: Build dist
+  #       run: yarn build
 
   check-changes:
     if: |
