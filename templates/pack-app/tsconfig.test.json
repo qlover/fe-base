@@ -5,7 +5,6 @@
     "emitDeclarationOnly": false,
     "noEmit": true,
     "skipLibCheck": true,
-    // "types": ["@jest/test-globals"]
-    "types": ["jest", "node"]
+    "types": ["@jest/test-globals"]
   }
 }

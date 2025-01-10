@@ -3,8 +3,8 @@ import tsJestConfig from '@qlover/fe-standard/config/jest.esm.js';
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
   // ...tsJestConfig,
-  // testEnvironment: 'jest-environment-jsdom',
-  // extensionsToTreatAsEsm: ['.ts', '.tsx']，
+  testEnvironment: 'jest-environment-jsdom',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   projects: [
     {
       ...tsJestConfig,
@@ -25,9 +25,7 @@ export default {
       displayName: 'pack-app-react',
       testEnvironment: 'jest-environment-jsdom',
       extensionsToTreatAsEsm: ['.ts', '.tsx'],
-      testMatch: tsJestConfig.testMatch.map(
-        (item) => '<rootDir>/packages/react/' + item
-      )
+      testMatch: ['<rootDir>/packages/react-vite-lib/__tests__/**/*.test.tsx']
     }
   ]
 };

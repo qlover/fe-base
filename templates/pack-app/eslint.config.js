@@ -1,6 +1,7 @@
 import globals from 'globals';
 import jest from 'eslint-plugin-jest';
 import * as eslintChain from '@qlover/fe-standard/eslint/index.js';
+import reactEslint from './packages/react-vite-lib/eslint.config.js';
 
 const { createCommon, createTslintRecommended, chainEnv } = eslintChain;
 const allGlobals = {
@@ -33,9 +34,7 @@ function createReactConfig() {
   return chainEnv({
     allGlobals,
     files: ['packages/react/**/*.tsx'],
-    languageOptions: {
-      globals: globals.node
-    }
+    ...reactEslint
   });
 }
 
