@@ -40,29 +40,7 @@ jobs:
       - name: Build dist
         run: yarn build
 
-  check-changes:
-    if: |
-      !contains(github.event.pull_request.title, 'chore(tag):') && 
-      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.19.0'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Check changed packages
-        id: check-packages
+      - name: Check packages
         run: |
           git fetch origin ${{ github.base_ref }}
           node scripts/github/check-packages.js ${{ github.base_ref }}
