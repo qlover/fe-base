@@ -38,9 +38,13 @@ function getChangePackageNames(barnch) {
     .map(([key]) => key);
 }
 
-async function addChangePackagePRLables(changePackageNames) {
-  const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_REF } = process.env;
-  const [owner, repo] = GITHUB_REPOSITORY.split('/');
+async function addChangePackagePRLables({
+  changePackageNames,
+  repository,
+  issueNumber
+}) {
+  const { GITHUB_TOKEN } = process.env;
+  const [owner, repo] = repository.split('/');
 
   const releasePRLabelTemplate =
     feConfig.releasePRLabelTemplate || 'pkg:${name}';
@@ -50,8 +54,6 @@ async function addChangePackagePRLables(changePackageNames) {
   if (labels.length > 0) {
     const { Octokit } = await import('@octokit/rest');
     const octokit = new Octokit({ auth: GITHUB_TOKEN });
-    // get issue number
-    const issueNumber = GITHUB_REF.split('/').pop();
     await octokit.issues.addLabels({
       owner,
       repo,
@@ -62,24 +64,26 @@ async function addChangePackagePRLables(changePackageNames) {
 }
 
 async function main() {
-  const { GITHUB_TOKEN, GITHUB_REPOSITORY, GITHUB_REF } = process.env;
+  const { GITHUB_TOKEN } = process.env;
 
-  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY || !GITHUB_REF) {
+  if (!GITHUB_TOKEN) {
     return;
   }
 
-  const baseRef = process.argv[2];
+  const [repository, baseRef, issueNumber] = process.argv.slice(2);
 
   if (!baseRef) {
     return;
   }
 
-  const changePackageNames = getChangePackageNames(baseRef);
+  const options = { repository, baseRef, issueNumber };
+  githubLog(options, 'options');
 
-  console.log('changePackageNames', changePackageNames);
+  const changePackageNames = getChangePackageNames(options.baseRef);
+  githubLog(changePackageNames, 'changePackageNames');
 
   if (changePackageNames.length > 0) {
-    await addChangePackagePRLables(changePackageNames);
+    await addChangePackagePRLables({ changePackageNames, ...options });
     githubLog('success!', 'addLables');
   }
 }
