@@ -46,8 +46,7 @@ async function addChangePackagePRLables({
   const { GITHUB_TOKEN } = process.env;
   const [owner, repo] = repository.split('/');
 
-  const releasePRLabelTemplate =
-    feConfig.releasePRLabelTemplate || 'pkg:${name}';
+  const releasePRLabelTemplate = feConfig.releasePRLabelTemplate || '${name}';
   const labels = changePackageNames.map((name) =>
     releasePRLabelTemplate.replace('${name}', name)
   );

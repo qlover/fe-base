@@ -12,10 +12,10 @@ on:
 
 jobs:
   release-fe-utils-PR:
-    # only run when PR merged and has pkg:fe-utils and CI-Release labels
+    # only run when PR merged and has changes:packages/fe-utils and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'pkg:fe-utils') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-utils') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -57,10 +57,10 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release-fe-utils:
-    # only run when PR merged and has pkg:fe-utils and CI-Release labels
+    # only run when PR merged and has changes:packages/fe-utils and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'pkg:fe-utils') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-utils') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
