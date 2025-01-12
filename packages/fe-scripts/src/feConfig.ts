@@ -107,4 +107,14 @@ export type FeReleaseConfig = {
      */
     name?: string;
   };
+
+  /**
+   * @default `changes:${name}`
+   */
+  changePackagesLabel?: string;
+
+  /**
+   * @default `[]`
+   */
+  packagesDirectories?: string[];
 };

@@ -1,9 +1,10 @@
 {
   "protectedBranches": ["master", "build/tsup", "master", "root-src", "test"],
-  "releasePRLabelTemplate": "changes:${name}",
-  "releasePackages": [
-    "packages/fe-scripts",
-    "packages/fe-utils",
-    "packages/fe-standard"
-  ]
+  "release": {
+    "packagesDirectories": [
+      "packages/fe-scripts",
+      "packages/fe-utils",
+      "packages/fe-standard"
+    ]
+  }
 }

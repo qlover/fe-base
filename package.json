@@ -30,6 +30,7 @@
     "clean:build": "fe-clean -f packages/*/dist -r",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
+    "check-packages": "fe-check-packages",
     "prepare": "husky",
     "build:fe-utils:docs": "yarn workspace @qlover/fe-utils build:docs",
     "build:fe-code2md:docs": "yarn workspace @qlover/fe-code2markdown build:docs",
@@ -45,7 +46,6 @@
     "node": ">=18.19.0"
   },
   "devDependencies": {
-    "@octokit/rest": "^21.0.2",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",

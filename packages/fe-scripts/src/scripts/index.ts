@@ -4,3 +4,4 @@ export * from './commit';
 export * from './release';
 export * from './search-env';
 export * from './setup-husky';
+export * from './check-packages';

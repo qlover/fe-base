@@ -12,7 +12,7 @@ const pkg = JSON.parse(
   readFileSync(join(process.cwd(), 'package.json'), 'utf-8')
 );
 
-const isProduction = true;
+const isProduction = false;
 const buildDir = 'dist';
 
 const treeshake = {

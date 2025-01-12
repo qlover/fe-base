@@ -30,7 +30,8 @@
     "fe-commit": "./bin/commit.js",
     "fe-setup-husky": "./bin/setup-husky.js",
     "fe-release-pr": "./bin/create-release-pr.js",
-    "fe-release": "./bin/release.js"
+    "fe-release": "./bin/release.js",
+    "fe-check-packages": "./bin/check-packages.js"
   },
   "scripts": {
     "build": "rollup -c",
