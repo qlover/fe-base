@@ -1,3 +1,10 @@
 {
-  "protectedBranches": ["master", "develop"]
+  "protectedBranches": ["master", "develop"],
+  "release": {
+    "packagesDirectories": [
+      "packages/browser",
+      "packages/node",
+      "packages/react-vite-lib"
+    ]
+  }
 }

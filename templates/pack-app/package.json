@@ -19,6 +19,7 @@
     "test": "jest",
     "clean": "fe-clean",
     "clean:build": "fe-clean -f packages/*/dist -r",
+    "check-packages": "fe-check-packages",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch"
   },
