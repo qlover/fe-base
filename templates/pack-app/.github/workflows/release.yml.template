@@ -1,4 +1,4 @@
-name: Release Fe-Utils
+name: Release [PATH_NAMES]
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
       - [PATH_NAMES]/**
 
 jobs:
-  release-fe-utils-PR:
+  release-PR:
     # only run when PR merged and has changes:[PATH_NAMES] and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
@@ -50,13 +50,13 @@ jobs:
         run: yarn build
 
       - name: Create release PR
-        run: npm run release-pr:fe-utils
+        run: npm run release-pr:[PATH_NAMES]
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
-  release-fe-utils:
+  release:
     # only run when PR merged and has changes:[PATH_NAMES] and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
@@ -97,7 +97,7 @@ jobs:
         run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:fe-utils
+        run: npm run release:[PATH_NAMES]
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
