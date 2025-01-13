@@ -30,6 +30,7 @@
     "clean:build": "fe-clean -f packages/*/dist -r",
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
+    "check-packages": "fe-check-packages",
     "prepare": "husky",
     "build:fe-utils:docs": "yarn workspace @qlover/fe-utils build:docs",
     "build:fe-code2md:docs": "yarn workspace @qlover/fe-code2markdown build:docs",

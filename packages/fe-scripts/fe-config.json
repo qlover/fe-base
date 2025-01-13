@@ -22,7 +22,9 @@
       "color": "1A7F37",
       "description": "Release PR",
       "name": "CI-Release"
-    }
+    },
+    "packagesDirectories": [],
+    "changePackagesLabel": "changes:${name}"
   },
   "envOrder": [".env.local", ".env.production", ".env"]
 }

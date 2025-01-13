@@ -1,3 +1,10 @@
 {
-  "protectedBranches": ["master", "build/tsup", "master", "root-src", "test"]
+  "protectedBranches": ["master", "build/tsup", "master", "root-src", "test"],
+  "release": {
+    "packagesDirectories": [
+      "packages/fe-scripts",
+      "packages/fe-utils",
+      "packages/fe-standard"
+    ]
+  }
 }
