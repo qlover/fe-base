@@ -1,5 +1,12 @@
 
 
+## [0.5.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.5.1...fe-scripts-v0.5.2) (2025-01-13)
+
+
+### Features
+
+* check packages release ci scripts ([#198](https://github.com/qlover/fe-base/issues/198)) ([ea49c84](https://github.com/qlover/fe-base/commit/ea49c847a05875d693876c0e4c35547c891117a2))
+
 ## [0.5.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.4.4...fe-scripts-v0.5.1) (2024-12-17)
 
 
