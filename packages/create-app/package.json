@@ -1,6 +1,6 @@
 {
-  "name": "create-fe-app",
-  "version": "0.0.2",
+  "name": "@qlover/create-app",
+  "version": "0.0.0",
   "type": "module",
   "private": false,
   "main": "./dist/es/index.js",
@@ -25,7 +25,7 @@
     "CHANGELOG.md"
   ],
   "bin": {
-    "create-fe-app": "./bin/create-fe-app.js"
+    "create-app": "./bin/create-app.js"
   },
   "scripts": {
     "build": "node ./scripts/copy-templates.js && rollup -c"
@@ -33,11 +33,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
-    "directory": "packages/create-fe-app"
+    "directory": "packages/create-app"
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "keywords": [
-    "create-fe-app",
+    "create-app",
     "fe-scripts",
     "scripts"
   ],

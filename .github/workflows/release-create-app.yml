@@ -1,4 +1,4 @@
-name: Release packages/create-fe-app
+name: Release packages/create-app
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     types:
       - closed
     paths:
-      - packages/create-fe-app/**
+      - packages/create-app/**
 
 jobs:
   release-PR:
-    # only run when PR merged and has changes:packages/create-fe-app and CI-Release labels
+    # only run when PR merged and has changes:packages/create-app and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-fe-app') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-app') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -50,17 +50,17 @@ jobs:
         run: yarn build
 
       - name: Create release PR
-        run: npm run release-pr:create-fe-app
+        run: npm run release-pr:create-app
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release:
-    # only run when PR merged and has changes:packages/create-fe-app and CI-Release labels
+    # only run when PR merged and has changes:packages/create-app and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-fe-app') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-app') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
         run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:create-fe-app
+        run: npm run release:create-app
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}

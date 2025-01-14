@@ -2,12 +2,12 @@
   "git": {
     "requireUpstream": true,
     "commit": true,
-    "commitMessage": "chore(tag): create-fe-app v${version}",
+    "commitMessage": "chore(tag): create-app v${version}",
     "tag": true,
-    "tagName": "create-fe-app-v${version}",
-    "tagMatch": "create-fe-app-v*",
+    "tagName": "create-app-v${version}",
+    "tagMatch": "create-app-v*",
     "getLatestTagFromAllRefs": true,
-    "tagAnnotation": "chore(tag): create-fe-app v${version}",
+    "tagAnnotation": "chore(tag): create-app v${version}",
     "push": true,
     "pushArgs": ["--follow-tags"]
   },
@@ -18,7 +18,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "chore(tag): create-fe-app v${version}"
+    "releaseName": "chore(tag): create-app v${version}"
   },
 
   "plugins": {
