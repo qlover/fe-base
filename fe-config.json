@@ -4,7 +4,8 @@
     "packagesDirectories": [
       "packages/fe-scripts",
       "packages/fe-utils",
-      "packages/fe-standard"
+      "packages/fe-standard",
+      "packages/create-fe-app"
     ]
   }
 }

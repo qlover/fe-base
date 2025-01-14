@@ -20,7 +20,9 @@
     "dist",
     "bin",
     "templates",
-    "package.json"
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "bin": {
     "create-fe-app": "./bin/create-fe-app.js"
