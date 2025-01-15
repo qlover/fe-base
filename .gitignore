@@ -35,10 +35,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/package-lock.json
-/yarn.lock
 .husky
-/pnpm-lock.yaml
 public/robots.txt
 public/sitemap*.xml
 dist
@@ -48,3 +45,8 @@ dist
 
 # local output dir
 *.output/
+
+# lock file
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

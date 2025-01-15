@@ -14,7 +14,10 @@ import ignore from 'ignore';
 import { rimraf } from 'rimraf';
 
 function getIg(targetDir) {
-  const gitignorePath = join(targetDir, '.gitignore');
+  const gitignorePath = join(targetDir, '.gitignore.template');
+  if (!existsSync(gitignorePath)) {
+    return;
+  }
   const gitignoreContent = readFileSync(gitignorePath, 'utf8');
   const ignoreToClean = gitignoreContent
     .split('\n')
@@ -29,7 +32,7 @@ function getIg(targetDir) {
  * copy templates recursively
  * @param {string} templatesDir - source directory
  * @param {string} targetDir - target directory
- * @param {ignore.Ignore} ig - ignore rules
+ * @param {ignore.Ignore | undefined} ig - ignore rules
  */
 function copyTemplates(templatesDir, targetDir, ig) {
   const items = readdirSync(templatesDir);
@@ -38,7 +41,7 @@ function copyTemplates(templatesDir, targetDir, ig) {
     const sourcePath = join(templatesDir, item);
     const targetPath = join(targetDir, item);
 
-    if (ig.ignores(item)) {
+    if (ig && ig.ignores(item)) {
       continue; // ignore files listed in .gitignore
     }
 
