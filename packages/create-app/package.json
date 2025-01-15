@@ -1,6 +1,6 @@
 {
   "name": "@qlover/create-app",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "type": "module",
   "private": false,
   "main": "./dist/es/index.js",
@@ -28,7 +28,9 @@
     "create-app": "./bin/create-app.js"
   },
   "scripts": {
-    "build": "node ./scripts/copy-templates.js && rollup -c"
+    "build": "rollup -c",
+    "create:app:build": "npm run build && npm run create:app",
+    "create:app": "node ./bin/create-app.js"
   },
   "repository": {
     "type": "git",

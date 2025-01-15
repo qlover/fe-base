@@ -1,38 +1,18 @@
 import { FeScriptContext } from '@qlover/fe-scripts';
 import { Logger } from '@qlover/fe-utils';
-import inquirer, { DistinctQuestion } from 'inquirer';
-import defaultPrompts from './prompts';
+import inquirer from 'inquirer';
+import { defaultPrompts, packagePrompts } from './prompts';
 import { join } from 'path';
 import { oraPromise } from 'ora';
 import { existsSync } from 'fs';
 import { Copyer } from './Copyer';
-
-export type GeneratorOptions = {
-  prompts?: DistinctQuestion[];
-  templatePath: string;
-};
-
-export interface GeneratorResult {
-  name: string;
-  templateName: string;
-}
-
-export type TaskOptions = {
-  templateFiles: TemplateFile[];
-  result: GeneratorResult;
-};
-
-export type TemplateFile = {
-  path: string;
-  content: string;
-};
+import { GeneratorOptions, GeneratorPrompt, GeneratorResult } from './type';
 
 export class Generator {
-  private prompts: DistinctQuestion[] = [];
   private ora: typeof oraPromise;
   protected context: FeScriptContext<GeneratorOptions>;
   constructor(context: Partial<FeScriptContext<GeneratorOptions>>) {
-    const templatePath = context.options?.templatePath;
+    const templatePath = context.options?.templateRootPath;
 
     if (!templatePath) {
       throw new Error('template path not exit');
@@ -45,14 +25,14 @@ export class Generator {
 
     this.ora = oraPromise;
     this.context = new FeScriptContext(context);
-    this.prompts = context.options?.prompts || defaultPrompts;
+    // this.prompts = context.options?.prompts || defaultPrompts;
   }
 
   get logger(): Logger {
     return this.context.logger;
   }
 
-  async steps(prompts: DistinctQuestion[]): Promise<GeneratorResult> {
+  async steps(prompts: GeneratorPrompt[]): Promise<GeneratorResult> {
     try {
       const answers = await inquirer.prompt(prompts);
 
@@ -67,18 +47,12 @@ export class Generator {
     }
   }
 
-  async getTemplateFiles(path: string): Promise<TemplateFile[]> {
-    console.log('jj paths', path);
-
-    return [];
-  }
-
   async action({
     label,
     task
   }: {
     label: string;
-    task: () => Promise<unknown>;
+    task: (() => Promise<unknown>) | (() => unknown);
   }): Promise<unknown> {
     let awaitTask = task();
 
@@ -88,7 +62,7 @@ export class Generator {
     }
 
     const text = label;
-    this.ora(awaitTask, text);
+    this.ora(awaitTask as Promise<unknown>, text);
 
     return awaitTask;
   }
@@ -100,31 +74,56 @@ export class Generator {
    * to the file system. It handles both files and directories, ensuring that
    * the directory structure is preserved.
    *
-   * @param templateFiles - An array of template files to be created.
    * @param result - The result object containing the name and template name.
    *
    * @returns A promise that resolves when all files have been created.
    *
    * @example
-   * const templateFiles = [{ type: 'file', name: 'example.txt', content: 'Hello World' }];
-   * await taskCreate({ templateFiles, result });
+   * const result = { name: 'my-app', template: 'react-app' };
+   * await this.create(result);
    */
-  async create(targetPath: string, name: string): Promise<void> {
+  async create(result: GeneratorResult): Promise<void> {
+    // generate target path
+    const targetPath = join(process.cwd(), result.name);
+
     const copyer = new Copyer();
-    copyer.copyTemplates(targetPath, name, copyer.getIg(targetPath));
+
+    const options: GeneratorResult = {
+      ...result,
+      targetPath,
+      templateRootPath: this.context.options.templateRootPath
+    };
+
+    this.logger.debug(options);
+
+    // return copyer.create(options);
+    return copyer.createPromise(options);
+  }
+
+  private isPackageTemplate(template: string): boolean {
+    return template === 'pack-app';
+  }
+
+  async getGeneratorResult(): Promise<GeneratorResult> {
+    // const { templatePath } = this.context.options;
+
+    const result = await this.steps(defaultPrompts);
+
+    // if package template, we need to add chooise sub packages type
+    if (this.isPackageTemplate(result.template)) {
+      const choseSubPackages = await this.steps(packagePrompts);
+      Object.assign(result, choseSubPackages);
+    }
+
+    return result;
   }
 
   async generate(): Promise<void> {
-    const { templatePath } = this.context.options;
-
-    const result = await this.steps(this.prompts);
-    this.logger.info(result);
-
-    const targetPath = join(templatePath, result.templateName);
+    const result = await this.getGeneratorResult();
 
     await this.action({
       label: 'Creating project',
-      task: () => this.create(targetPath, result.name)
+      task: () => this.create(result)
     });
   }
 }
