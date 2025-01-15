@@ -46,15 +46,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@octokit/graphql": "^8.1.2",
-    "@octokit/rest": "^21.1.0",
-    "@qlover/fe-scripts": "^0.5.2",
-    "@qlover/fe-utils": "^1.1.3",
-    "ignore": "^7.0.3",
-    "inquirer": "^12.3.2"
-  },
   "devDependencies": {
+    "@qlover/fe-scripts": "latest",
+    "@qlover/fe-utils": "latest",
+    "ignore": "^7.0.3",
+    "inquirer": "^12.3.2",
     "ora": "^8.1.1"
   }
 }
