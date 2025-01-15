@@ -20,7 +20,6 @@
     "dist",
     "bin",
     "templates",
-    "template-config",
     "package.json",
     "README.md",
     "CHANGELOG.md"
