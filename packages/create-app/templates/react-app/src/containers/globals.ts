@@ -1,4 +1,4 @@
-//! global variables, don't import any dependencies and don't have side effects
+// ! global variables, don't import any dependencies and don't have side effects
 import {
   JSONStorage,
   JSONSerializer,

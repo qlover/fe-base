@@ -61,7 +61,12 @@ function createJESTConfig() {
  */
 export default [
   {
-    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**', 'templates/**']
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/node_modules/**',
+      'packages/create-app/templates'
+    ]
   },
   // common js and ts
   createCommon(),

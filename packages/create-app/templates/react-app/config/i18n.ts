@@ -1,4 +1,4 @@
-import { isProduction } from "@/containers/globals";
+import { isProduction } from '@/containers/globals';
 
 /** @type {import('i18next').InitOptions} */
 export const i18nConfig = {

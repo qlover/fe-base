@@ -3,7 +3,6 @@ import template from 'lodash/template';
 import isPlainObject from 'lodash/isPlainObject';
 import isString from 'lodash/isString';
 
-
 class KeyTemplate {
   constructor(options) {
     /**

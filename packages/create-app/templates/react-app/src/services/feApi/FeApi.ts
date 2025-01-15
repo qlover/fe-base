@@ -14,7 +14,7 @@ import {
 
 export class FeApi extends RequestScheduler<RequestAdapterConfig> {
   private abortPlugin: FetchAbortPlugin;
-  
+
   constructor({
     abortPlugin,
     config

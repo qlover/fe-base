@@ -9,7 +9,9 @@ import { sleep } from '@/utils/thread';
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';
 
-  constructor(private readonly mockDataJson: typeof import('@config/feapi.mock.json')) {}  
+  constructor(
+    private readonly mockDataJson: typeof import('@config/feapi.mock.json')
+  ) {}
 
   async onExec({
     parameters

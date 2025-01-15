@@ -1,4 +1,4 @@
-import { sum } from '../src/sum';
+import { sum } from '../src/calc';
 
 describe('sum 函数测试', () => {
   it('应该返回两个数字的和', () => {

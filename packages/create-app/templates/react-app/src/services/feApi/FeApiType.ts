@@ -37,7 +37,6 @@ export type FeApiGetRandomUser = FeApiType<
   }
 >;
 
-
 export type FeApiGetUserInfo = FeApiType<
   string,
   {

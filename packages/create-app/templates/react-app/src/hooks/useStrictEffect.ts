@@ -14,8 +14,11 @@ export const useStrictEffect = (
 
   useEffect(() => {
     // Check if the dependencies have changed
-    const depsChanged = !deps || !depsRef.current || deps.some((dep, i) => dep !== depsRef.current![i]);
-    
+    const depsChanged =
+      !deps ||
+      !depsRef.current ||
+      deps.some((dep, i) => dep !== depsRef.current![i]);
+
     // Update the dependency reference
     depsRef.current = deps;
 
@@ -24,6 +27,6 @@ export const useStrictEffect = (
       mountedRef.current = true;
       return effect();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
-}; 
+};

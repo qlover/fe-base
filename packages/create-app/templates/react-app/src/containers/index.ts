@@ -1,4 +1,4 @@
-//! dont't import tsx, only ts file
+// ! dont't import tsx, only ts file
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { OpenAIClient } from '@lib/openAiApi';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';

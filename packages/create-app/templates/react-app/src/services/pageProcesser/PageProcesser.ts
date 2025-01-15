@@ -17,7 +17,7 @@ export class PageProcesser {
 
   handler(): Promise<{ success: boolean }> {
     return Promise.resolve({
-      success: true,
+      success: true
     });
   }
 
