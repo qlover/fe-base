@@ -46,7 +46,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "devDependencies": {
+  "dependencies": {
     "@qlover/fe-scripts": "latest",
     "@qlover/fe-utils": "latest",
     "ignore": "^7.0.3",
