@@ -10,8 +10,15 @@ import {
 import ignore from 'ignore';
 
 export class Copyer {
-  getIg(targetDir: string): ignore.Ignore {
-    const gitignorePath = join(targetDir, '.gitignore');
+  static IGNORE_FILE = '.gitignore.template';
+
+  getIg(targetDir: string): ignore.Ignore | undefined {
+    const gitignorePath = join(targetDir, Copyer.IGNORE_FILE);
+
+    if (!existsSync(gitignorePath)) {
+      return;
+    }
+
     const gitignoreContent = readFileSync(gitignorePath, 'utf8');
     const ignoreToClean = gitignoreContent
       .split('\n')
@@ -31,7 +38,7 @@ export class Copyer {
   copyTemplates(
     templatesDir: string,
     targetDir: string,
-    ig: ignore.Ignore
+    ig?: ignore.Ignore
   ): void {
     const items = readdirSync(templatesDir);
 
@@ -39,7 +46,7 @@ export class Copyer {
       const sourcePath = join(templatesDir, item);
       const targetPath = join(targetDir, item);
 
-      if (ig.ignores(item)) {
+      if (ig && ig.ignores(item)) {
         continue; // ignore files listed in .gitignore
       }
 
