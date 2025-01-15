@@ -10,10 +10,8 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "pnpm run build:node && pnpm run build:browser && pnpm run build:react",
-    "build:node": "pnpm run build --filter=@qlover/pack-app-node",
-    "build:browser": "pnpm run build --filter=@qlover/pack-app-browser",
-    "build:react": "pnpm run build --filter=@qlover/pack-app-react",
+    "build": "pnpm run build:[PKG_NAME]",
+    "build:[PKG_NAME]": "pnpm run build --filter=@qlover/${PKG_NAME}",
     "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs} --write",
     "lint": "eslint . --fix",
     "test": "jest",
@@ -33,9 +31,9 @@
     "node": ">=18.19.0"
   },
   "devDependencies": {
-    "@qlover/fe-scripts": "^0.5.1",
-    "@qlover/fe-standard": "^0.0.2",
-    "@qlover/fe-utils": "^1.1.3",
+    "@qlover/fe-scripts": "latest",
+    "@qlover/fe-standard": "latest",
+    "@qlover/fe-utils": "latest",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
