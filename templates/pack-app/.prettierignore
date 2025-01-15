@@ -1,5 +1,0 @@
-.github
-.husky
-**/dist/*
-**/node_modules/*
-**/.output/*

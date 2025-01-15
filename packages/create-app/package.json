@@ -20,6 +20,7 @@
     "dist",
     "bin",
     "templates",
+    "template-config",
     "package.json",
     "README.md",
     "CHANGELOG.md"
@@ -28,7 +29,7 @@
     "create-app": "./bin/create-app.js"
   },
   "scripts": {
-    "build": "node ./scripts/copy-templates.js && rollup -c"
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
