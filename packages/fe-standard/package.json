@@ -12,6 +12,7 @@
   "exports": {
     "./config/*": "./config/*",
     "./eslint/*": "./eslint/*",
+    "./app/*": "./app/*",
     "./package.json": "./package.json"
   },
   "repository": {

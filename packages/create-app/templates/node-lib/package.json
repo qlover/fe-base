@@ -1,0 +1,11 @@
+{
+  "name": "@qlover/node-lib",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest"
+  }
+}

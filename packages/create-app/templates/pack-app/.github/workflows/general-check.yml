@@ -1,0 +1,50 @@
+name: General check
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-code:
+    if: |
+      !contains(github.event.pull_request.title, 'chore(tag):') && 
+      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
+    runs-on: ubuntu-latest
+
+    steps:
+      # - name: Print GitHub Event Information
+      #   run: echo "${{ toJson(github.event) }}" > event.json
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.19.0'
+
+      - name: Install dependencies
+        run: |
+          npm install -g yarn
+          yarn
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build dist
+        run: yarn build
+
+      # check packages
+      # - name: Check packages
+      #   run: |
+      #     git fetch origin ${{ github.base_ref }}
+      #     npm run check-packages -- -r ${{ github.repository }} -b ${{ github.base_ref }} -n ${{ github.event.pull_request.number }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

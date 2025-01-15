@@ -1,0 +1,10 @@
+{
+  "welcome": "欢迎来到主页",
+  "description": "一个现代前端实用库集合，提供各种实用工具和组件",
+  "about": "关于我们",
+  "about_description": "了解更多关于我们的项目和团队信息",
+  "jsonstorage": "JSON存储",
+  "jsonstorage_description": "高效的JSON数据存储解决方案",
+  "request": "请求",
+  "request_description": "一个现代前端实用库集合，提供各种实用工具和组件"
+}

@@ -1,0 +1,11 @@
+{
+  "title": "JSONStorage Demo",
+  "title2": "永久存储测试",
+  "title3": "过期时间测试",
+  "title4": "请求超时时间设置",
+  "format.title": "测试 key: ${key}, 随机值范围: ${min}~${max}",
+  "setRandomValue": "设置随机值",
+  "currentValue": "当前值",
+  "ms": "毫秒",
+  "setExpireTime": "设置随机值(带过期时间)"
+}
