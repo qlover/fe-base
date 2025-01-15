@@ -1,4 +1,4 @@
-import { DistinctQuestion } from 'inquirer';
+import { GeneratorPrompt } from './type';
 
 export const validRequiredString = (
   value: string,
@@ -10,7 +10,10 @@ export const validRequiredString = (
   return true;
 };
 
-const prompts: DistinctQuestion[] = [
+const packages = ['pack-app'];
+const templates = ['node-lib', 'react-app', 'react-vite-lib'];
+
+export const defaultPrompts: GeneratorPrompt[] = [
   {
     type: 'input',
     name: 'name',
@@ -19,10 +22,17 @@ const prompts: DistinctQuestion[] = [
   },
   {
     type: 'list',
-    name: 'templateName',
+    name: 'template',
     message: 'Template name',
-    choices: ['fe-react', 'pack-app']
+    choices: [...templates, ...packages]
   }
 ];
 
-export default prompts;
+export const packagePrompts: GeneratorPrompt[] = [
+  {
+    type: 'checkbox',
+    name: 'subPackages',
+    message: 'Sub package names',
+    choices: templates
+  }
+];
