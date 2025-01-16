@@ -155,7 +155,8 @@ export class ReleaseConfiger {
     return Shell.format(this.getReleaseFeConfig('branchName', ''), {
       env: this.releaseEnv,
       branch: this.releaseBaseBranch,
-      tagName
+      tagName,
+      pkgName: this.getPkg('name')
     });
   }
 

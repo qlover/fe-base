@@ -1,13 +1,16 @@
 {
-  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./"
+    "noEmit": true,
+    "strict": false,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    // "jsx": "react-jsx",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "types": ["react", "jest", "node", "trusted-types", "jest-extended"]
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "transpileOnly": true
-  },
-  "include": ["./packages"],
+  "include": ["**/__tests__/*"],
   "exclude": ["**/node_modules/*", "**/dist", "**/build"]
 }

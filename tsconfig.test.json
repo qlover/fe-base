@@ -1,11 +1,12 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
     "composite": false,
     "emitDeclarationOnly": false,
     "noEmit": true,
     "skipLibCheck": true,
     // "types": ["@jest/test-globals"]
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "esModuleInterop": true
   }
 }

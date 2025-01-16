@@ -1,5 +1,4 @@
-import shell from 'shelljs';
-import { execa } from 'execa';
+import shell, { ExecOptions } from 'shelljs';
 import { Logger } from '@qlover/fe-utils';
 import lodash from 'lodash';
 
@@ -9,7 +8,7 @@ const { isEmpty, template: lodashTemplate } = lodash;
  * Configuration interface for Shell class
  * @interface
  */
-interface ShellConfig {
+export interface ShellConfig {
   /** Whether to run in dry-run mode */
   isDryRun?: boolean;
   /** Logger instance */
@@ -20,12 +19,7 @@ interface ShellConfig {
  * Options for shell execution
  * @interface
  */
-export interface ShellExecOptions {
-  /**
-   * Whether to suppress output
-   */
-  silent?: boolean;
-
+export interface ShellExecOptions extends ExecOptions {
   /**
    * Environment variables to be passed to the command
    */
@@ -51,11 +45,6 @@ export interface ShellExecOptions {
    * Template context for command string interpolation
    */
   context?: Record<string, unknown>;
-
-  /**
-   * Additional shelljs options
-   */
-  async?: boolean;
 }
 
 /**
@@ -247,25 +236,29 @@ export class Shell {
    */
   async execWithArguments(
     command: string[],
-    _: ShellExecOptions,
+    options: ShellExecOptions,
     meta: ExecMeta
   ): Promise<string> {
     const [program, ...programArgs] = command;
 
-    try {
-      const { stdout: out, stderr } = await execa(program, programArgs);
-      const stdout = out === '""' ? '' : out;
-      this.logger.verbose(stdout, { isExternal: meta.isExternal });
-      return stdout || stderr;
-    } catch (error) {
-      if (this.isExecaError(error)) {
-        if (error.stdout) {
-          this.logger.log(`\n${error.stdout}`);
+    return new Promise((resolve, reject) => {
+      shell.exec(
+        `${program} ${programArgs.join(' ')}`,
+        { async: true, ...options },
+        (code: number, stdout: string, stderr: string) => {
+          if (code === 0) {
+            const output = stdout.trim();
+            this.logger.verbose(output, { isExternal: meta.isExternal });
+            resolve(output);
+          } else {
+            if (options.silent) {
+              this.logger.error(`${program} ${programArgs.join(' ')}`);
+            }
+            reject(new Error(stderr || stdout));
+          }
         }
-        throw new Error(error.stderr || error.message);
-      }
-      throw error;
-    }
+      );
+    });
   }
 
   /**
