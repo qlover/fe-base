@@ -21,6 +21,12 @@
     "package.json",
     "README.md"
   ],
+  "author": "qlover",
+  "license": "ISC",
+  "keywords": [
+    "script",
+    "scripts-context"
+  ],
   "scripts": {
     "build": "rollup -c",
     "test": "jest"

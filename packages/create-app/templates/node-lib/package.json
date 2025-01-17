@@ -21,6 +21,11 @@
     "package.json",
     "README.md"
   ],
+  "author": "qlover",
+  "license": "ISC",
+  "keywords": [
+    "node-lib"
+  ],
   "scripts": {
     "build": "rollup -c",
     "test": "jest"
