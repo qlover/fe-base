@@ -1,8 +1,8 @@
 {
-  "name": "node-lib",
+  "name": "@qlover/scripts-context",
   "version": "0.0.0",
   "type": "module",
-  "private": true,
+  "private": false,
   "main": "./dist/es/index.js",
   "module": "./dist/es/index.js",
   "types": "./dist/es/index.d.ts",
@@ -26,9 +26,15 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@types/shelljs": "^0.8.15",
     "@qlover/fe-standard": "latest"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-utils": "latest",
+    "chalk": "^5.3.0",
+    "cosmiconfig": "^9.0.0",
+    "lodash": "^4.17.21",
+    "shelljs": "^0.8.5",
+    "merge": "^2.1.1"
   }
 }

@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": false,
-    "emitDeclarationOnly": false,
-    "noEmit": true,
+    // "composite": false,
+    // "emitDeclarationOnly": false,
+    // "noEmit": true,
     // "types": ["@jest/test-globals"]
     "types": ["jest", "node"]
   }
