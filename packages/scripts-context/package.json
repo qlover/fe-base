@@ -1,8 +1,12 @@
 {
   "name": "@qlover/scripts-context",
+  "description": "A scripts context for frontwork",
   "version": "0.0.2",
   "type": "module",
   "private": false,
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/scripts-context#readme",
+  "author": "qlover",
+  "license": "ISC",
   "main": "./dist/es/index.js",
   "module": "./dist/es/index.js",
   "types": "./dist/es/index.d.ts",
@@ -16,17 +20,23 @@
     "./es/*": "./dist/es/*",
     "./package.json": "./package.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/scripts-context"
+  },
   "files": [
     "dist",
     "package.json",
     "README.md"
   ],
-  "author": "qlover",
-  "license": "ISC",
   "keywords": [
     "script",
     "scripts-context"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "test": "jest"

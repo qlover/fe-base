@@ -1,8 +1,12 @@
 {
   "name": "node-lib",
+  "description": "A node lib for frontwork",
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "homepage": "",
+  "author": "qlover",
+  "license": "ISC",
   "main": "./dist/es/index.js",
   "module": "./dist/es/index.js",
   "types": "./dist/es/index.d.ts",
@@ -16,16 +20,22 @@
     "./es/*": "./dist/es/*",
     "./package.json": "./package.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": ""
+  },
   "files": [
     "dist",
     "package.json",
     "README.md"
   ],
-  "author": "qlover",
-  "license": "ISC",
   "keywords": [
     "node-lib"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "test": "jest"
