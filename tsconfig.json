@@ -1,0 +1,8 @@
+{
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./"
+  },
+  "include": ["./packages"],
+  "exclude": ["**/node_modules/*", "**/dist", "**/build"]
+}
