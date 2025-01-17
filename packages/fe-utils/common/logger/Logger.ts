@@ -100,7 +100,7 @@ export class Logger {
    * this.print(LEVELS.INFO, 'Information message');
    * ```
    */
-  protected print(level: LogLevel, ...args: LogArgument[]): void {
+  protected print(_level: LogLevel, ...args: LogArgument[]): void {
     if (!this.isSilent) {
       console.log(...args);
     }

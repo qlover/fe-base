@@ -10,12 +10,11 @@ import { join } from 'path';
 import { searchEnv } from '@qlover/fe-scripts';
 
 const readJSONFile = (path) => JSON.parse(readFileSync(path, 'utf-8'));
-const tsconfig = readJSONFile(join(process.cwd(), 'tsconfig.json'));
 const pkg = readJSONFile(join(process.cwd(), 'package.json'));
 
 const env = searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
-const buildDir = tsconfig.compilerOptions.outDir;
+const buildDir = 'dist';
 
 const treeshake = {
   moduleSideEffects: false,

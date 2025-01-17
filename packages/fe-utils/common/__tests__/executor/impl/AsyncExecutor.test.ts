@@ -425,7 +425,7 @@ describe('AsyncExecutor onExec Lifecycle', () => {
 
     executor.use({
       pluginName: 'plugin1',
-      onExec: async ({ hooksRuntimes }) => {
+      onExec: async () => {
         return 'exec1';
       }
     });
@@ -454,7 +454,7 @@ describe('AsyncExecutor onExec Lifecycle', () => {
     executor.use({
       pluginName: 'plugin1',
       enabled: () => false,
-      onExec: async ({ hooksRuntimes }) => {
+      onExec: async () => {
         return 'exec1';
       }
     });
