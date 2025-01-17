@@ -40,7 +40,7 @@ describe('JSONSerializer', () => {
 
       const replacer = function (
         this: unknown,
-        key: string,
+        _: string,
         value: unknown
       ): unknown {
         return typeof value === 'number' ? value * 2 : value;

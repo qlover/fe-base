@@ -3,11 +3,6 @@
   "compilerOptions": {
     "rootDir": "./"
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "transpileOnly": true
-  },
   "include": ["./packages"],
   "exclude": ["**/node_modules/*", "**/dist", "**/build"]
 }

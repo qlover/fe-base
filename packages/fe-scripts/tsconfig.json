@@ -1,22 +1,11 @@
 {
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2022", "ESNext.Disposable", "DOM"],
-    "module": "ESNext",
-    "baseUrl": "./src",
-    "outDir": "dist",
-    "moduleResolution": "Bundler",
-    "noEmitOnError": true,
-    "noUnusedParameters": true,
-    "pretty": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ES2022",
-    "useDefineForClassFields": false,
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "importHelpers": false,
+    "noEmitHelpers": true,
     "declaration": true
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src"]
 }

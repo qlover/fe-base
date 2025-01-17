@@ -467,7 +467,7 @@ describe('SyncExecutor onError Lifecycle', () => {
 
     executor.use(plugin);
 
-    const result = executor.exec({ shouldThrow: false }, (data) => 'success');
+    const result = executor.exec({ shouldThrow: false }, () => 'success');
     expect(result).toBe('success');
   });
 

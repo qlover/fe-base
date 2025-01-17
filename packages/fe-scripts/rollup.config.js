@@ -8,11 +8,10 @@ import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 
-const pkg = JSON.parse(
-  readFileSync(join(process.cwd(), 'package.json'), 'utf-8')
-);
+const readJSONFile = (path) => JSON.parse(readFileSync(path), 'utf-8');
+const pkg = readJSONFile(join(process.cwd(), './package.json'));
 
-const isProduction = true;
+const isProduction = false;
 const buildDir = 'dist';
 
 const treeshake = {
@@ -35,19 +34,7 @@ function createPlugin(minify) {
     }),
     commonjs(),
     json(),
-    typescript({
-      tsconfig: './tsconfig.json',
-      tsconfigOverride: {
-        compilerOptions: {
-          declaration: true,
-          sourceMap: true,
-          inlineSourceMap: false,
-          inlineSources: false,
-          importHelpers: false,
-          noEmitHelpers: true
-        }
-      }
-    }),
+    typescript(),
     minify && terser()
   ].filter(Boolean);
 }
