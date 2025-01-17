@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@qlover/fe-utils": "^1.0.19",
+    "@qlover/fe-utils": "latest",
     "@qlover/slice-store-react": "^1.0.8",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.2",
