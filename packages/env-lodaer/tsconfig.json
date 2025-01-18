@@ -1,0 +1,8 @@
+{
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES5"
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}
