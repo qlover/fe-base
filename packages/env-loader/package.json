@@ -1,0 +1,51 @@
+{
+  "name": "@qlover/env-loader",
+  "description": "A package for managing environment variables",
+  "version": "0.0.1",
+  "type": "module",
+  "private": false,
+  "homepage": "https://github.com/qlover/fe-base",
+  "author": "qlover",
+  "license": "ISC",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/es/index.d.ts"
+    },
+    "./cjs/*": "./dist/cjs/*",
+    "./es/*": "./dist/es/*",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/env-loader"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "env",
+    "env-loader"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@qlover/fe-standard": "latest",
+    "@qlover/fe-utils": "latest"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

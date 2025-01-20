@@ -9,6 +9,13 @@ export default {
   ],
   projects: [
     {
+      displayName: 'env-loader',
+      ...tsJestConfig,
+      testMatch: tsJestConfig.testMatch.map(
+        (item) => '<rootDir>/packages/env-loader/' + item
+      )
+    },
+    {
       displayName: 'fe-utils',
       ...tsJestConfig,
       testMatch: tsJestConfig.testMatch.map(
