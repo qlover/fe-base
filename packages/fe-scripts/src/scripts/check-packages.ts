@@ -110,6 +110,9 @@ export async function checkPackages(
   options: Partial<FeScriptContext<CheckPackagesOptions>>
 ): Promise<void> {
   const context = new FeScriptContext(options);
+
+  context.logger.verbose('feconfig', context.feConfig);
+
   const { baseRef } = context.options;
 
   if (!baseRef) {
