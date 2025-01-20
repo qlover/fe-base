@@ -1,7 +1,7 @@
 import { ConfigSearch } from './ConfigSearch';
 import { ScriptsLogger } from './ScriptsLogger';
 import { Shell } from './Shell';
-import merge from 'merge';
+import merge from 'lodash/merge';
 import { defaultFeConfig, FeConfig } from './feConfig';
 
 /**

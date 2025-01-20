@@ -83,6 +83,8 @@ async function addChangePackagePRLables(
     changePackagesLabel.replace('${name}', name)
   );
 
+  context.logger.verbose('changePackagesLabel', changePackagesLabel, labels);
+
   if (context.dryRun) {
     githubLog(labels, 'labels');
     return;
@@ -108,6 +110,9 @@ export async function checkPackages(
   options: Partial<FeScriptContext<CheckPackagesOptions>>
 ): Promise<void> {
   const context = new FeScriptContext(options);
+
+  context.logger.verbose('feconfig', context.feConfig);
+
   const { baseRef } = context.options;
 
   if (!baseRef) {

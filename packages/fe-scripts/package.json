@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "type": "module",
   "private": false,
   "main": "./dist/es/index.js",
@@ -21,7 +21,6 @@
     "bin",
     ".release-it.json",
     "commitlint.config.js",
-    "fe-config.json",
     "package.json"
   ],
   "bin": {

@@ -3,12 +3,15 @@ import { ConfigSearch, ConfigSearchOptions } from '../src/ConfigSearch';
 describe('ConfigSearch', () => {
   const defaultOptions = {
     name: 'myapp',
-    defaultConfig: { port: 3000 }
+    defaultConfig: { port: 3000, deepValue: { a: 1, b: 2 } }
   };
 
   it('should initialize with default options', () => {
     const configSearch = new ConfigSearch(defaultOptions);
-    expect(configSearch.config).toEqual({ port: 3000 });
+    expect(configSearch.config).toEqual({
+      port: 3000,
+      deepValue: { a: 1, b: 2 }
+    });
   });
 
   it('should throw an error if neither name nor searchPlaces is provided', () => {
@@ -44,6 +47,20 @@ describe('ConfigSearch', () => {
     });
     jest.spyOn(configSearch, 'search').mockReturnValue({ debug: true });
     expect(configSearch.config).toEqual({ port: 3000, debug: true });
+  });
+
+  it('should merge default and discovered configurations (deep merge)', () => {
+    const configSearch = new ConfigSearch({
+      ...defaultOptions,
+      defaultConfig: { port: 3000, deepValue: { a: 1, b: 2 } }
+    });
+    jest
+      .spyOn(configSearch, 'search')
+      .mockReturnValue({ deepValue: { b: 3, c: 4 } });
+    expect(configSearch.config).toEqual({
+      port: 3000,
+      deepValue: { a: 1, b: 3, c: 4 }
+    });
   });
 
   it('should return cached configuration on subsequent searches', () => {
