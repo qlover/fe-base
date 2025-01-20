@@ -21,7 +21,6 @@
     "bin",
     ".release-it.json",
     "commitlint.config.js",
-    "fe-config.json",
     "package.json"
   ],
   "bin": {
