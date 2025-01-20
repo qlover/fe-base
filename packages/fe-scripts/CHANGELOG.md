@@ -1,5 +1,17 @@
 
 
+## [0.7.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.5.3...fe-scripts-v0.7.1) (2025-01-20)
+
+
+### Features
+
+* remove ConfigSearch,FeScriptContext,ScriptLogger, Shell. use @qlover/script-context ([#223](https://github.com/qlover/fe-base/issues/223)) ([2e07e65](https://github.com/qlover/fe-base/commit/2e07e655ca32d56debe0bb5409958082e32cb1d4))
+
+
+### Bug Fixes
+
+* script-context merge config ([#224](https://github.com/qlover/fe-base/issues/224)) ([8519dec](https://github.com/qlover/fe-base/commit/8519dec765bf560601c6081ddc5109d4395b6f3d))
+
 ## [0.5.3](https://github.com/qlover/fe-base/compare/fe-scripts-v0.5.2...fe-scripts-v0.5.3) (2025-01-15)
 
 ## [0.5.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.5.1...fe-scripts-v0.5.2) (2025-01-13)
