@@ -6,11 +6,12 @@ import dts from 'rollup-plugin-dts';
 import typescript from 'rollup-plugin-typescript2';
 import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
+import { Env } from '@qlover/env-loader';
 
 const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
 const tsConfig = JSON.parse(readFileSync('./tsconfig.json'), 'utf-8');
-
-const isProduction = false;
+const env = Env.searchEnv({ logger: console });
+const isProduction = env.get('NODE_ENV') === 'production';
 const buildDir = tsConfig.compilerOptions.outDir;
 
 const treeshake = {

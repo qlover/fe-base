@@ -4,7 +4,7 @@ import {
   ReflectionKind,
   SourceReference
 } from 'typedoc';
-import { FeScriptContext } from '@qlover/fe-scripts';
+import { FeScriptContext } from '@qlover/scripts-context';
 
 type ValueOf<T> = T[keyof T];
 /**

@@ -4,9 +4,9 @@ import alias from '@rollup/plugin-alias';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import tsappconfig from './tsconfig.app.json';
-import { searchEnv } from '@qlover/fe-scripts';
+import { Env } from '@qlover/env-loader';
 
-searchEnv({});
+Env.searchEnv();
 
 const tsAppPaths = tsappconfig.compilerOptions.paths || {};
 

@@ -6,11 +6,11 @@ import dts from 'rollup-plugin-dts';
 import typescript from 'rollup-plugin-typescript2';
 import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
-import { searchEnv } from '@qlover/fe-scripts';
+import { Env } from '@qlover/env-loader';
 
 const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
 
-const env = searchEnv({ logger: console });
+const env = Env.searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
 const buildDir = 'dist';
 

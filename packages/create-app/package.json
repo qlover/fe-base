@@ -48,8 +48,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "@qlover/scripts-context": "latest"
+  },
   "dependencies": {
-    "@qlover/fe-scripts": "latest",
     "@qlover/fe-utils": "latest",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",
