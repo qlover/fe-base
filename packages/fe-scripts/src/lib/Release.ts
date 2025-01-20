@@ -2,9 +2,8 @@ import { existsSync } from 'node:fs';
 import releaseIt from 'release-it';
 import { ReleaseConfiger } from './release/ReleaseConfiguter';
 import { ReleasePRManager } from './release/ReleasePRManager';
-import { Shell } from './Shell';
 import { Logger } from '@qlover/fe-utils';
-import { FeScriptContext } from './FeScriptContext';
+import { FeScriptContext, Shell } from '@qlover/scripts-context';
 import lodash from 'lodash';
 
 const { merge, get } = lodash;

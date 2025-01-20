@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import {
   FeScriptContext,
   FeScriptContextOptions
-} from '../lib/FeScriptContext';
+} from '@qlover/scripts-context';
 
 export interface CommitOptions {
   /**

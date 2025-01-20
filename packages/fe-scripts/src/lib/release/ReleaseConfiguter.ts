@@ -1,9 +1,8 @@
-import { Shell } from '../Shell';
+import { Shell, FeConfig, FeReleaseConfig } from '@qlover/scripts-context';
 import { ReleaseUtil } from './ReleaseUtil';
 import lodash from 'lodash';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { FeConfig, FeReleaseConfig } from '../../feConfig';
 import { Logger } from '@qlover/fe-utils';
 import { ReleaseContext } from '../Release';
 
@@ -140,7 +139,6 @@ export class ReleaseConfiger {
    * @returns The publish path.
    */
   getPublishPath(): string {
-    // @ts-expect-error
     return this.getReleaseFeConfig('publishPath', process.cwd()) as string;
   }
 

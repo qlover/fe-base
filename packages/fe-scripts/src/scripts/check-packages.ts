@@ -1,7 +1,7 @@
 // #!/usr/bin/env node
 
 import { execSync } from 'child_process';
-import { FeScriptContext } from '../lib/FeScriptContext';
+import { FeScriptContext } from '@qlover/scripts-context';
 
 export interface CheckPackagesOptions {
   /**

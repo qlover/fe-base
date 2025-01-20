@@ -1,4 +1,4 @@
-import { FeConfig } from '../../feConfig';
+import { FeConfig } from '@qlover/scripts-context';
 import lodash from 'lodash';
 
 const { isString, isPlainObject, get } = lodash;
