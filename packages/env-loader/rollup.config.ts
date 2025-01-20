@@ -6,7 +6,8 @@ import dts from 'rollup-plugin-dts';
 import typescript from 'rollup-plugin-typescript2';
 import { builtinModules } from 'module';
 import { rmSync } from 'fs';
-import { Env } from './dist/es/index.js';
+import { Env } from './src/Env';
+import { Plugin, RollupOptions } from 'rollup';
 
 const env = Env.searchEnv();
 const isProduction = env.get('NODE_ENV') === 'production';
@@ -22,7 +23,7 @@ const defaultExternal = [
   ...builtinModules.map((mod) => `node:${mod}`)
 ];
 
-function createPlugin(minify) {
+function createPlugin(minify: boolean): Plugin<unknown>[] {
   return [
     resolve({
       preferBuiltins: false
@@ -36,31 +37,30 @@ function createPlugin(minify) {
       }
     }),
     minify && terser()
-  ].filter(Boolean);
+  ].filter(Boolean) as Plugin<unknown>[];
 }
 
-function cleanBuildDir() {
+function cleanBuildDir(): void {
   rmSync(buildDir, { recursive: true, force: true });
   console.log(`${buildDir} cleaned`);
 }
 
 cleanBuildDir();
 
-/**
- * @type {import('rollup').RollupOptions[]}
- */
-const config = [
+const config: RollupOptions[] = [
   {
     input: 'src/index.ts',
     external: defaultExternal,
     output: [
       {
         file: 'dist/cjs/index.js',
-        format: 'cjs'
+        format: 'cjs',
+        sourcemap: !isProduction
       },
       {
         file: 'dist/es/index.js',
-        format: 'es'
+        format: 'es',
+        sourcemap: !isProduction
       }
     ],
     plugins: createPlugin(isProduction),
@@ -71,11 +71,13 @@ const config = [
     output: [
       {
         file: 'dist/cjs/index.d.ts',
-        format: 'cjs'
+        format: 'cjs',
+        sourcemap: !isProduction
       },
       {
         file: 'dist/es/index.d.ts',
-        format: 'es'
+        format: 'es',
+        sourcemap: !isProduction
       }
     ],
     plugins: [dts()],

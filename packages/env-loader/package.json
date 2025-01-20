@@ -31,14 +31,14 @@
     "README.md"
   ],
   "keywords": [
-    "env-loader",
+    "env",
     "env-loader"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "test": "jest"
   },
   "devDependencies": {
