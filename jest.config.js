@@ -15,13 +15,13 @@ export default {
         (item) => '<rootDir>/packages/env-loader/' + item
       )
     },
-    // {
-    //   displayName: 'fe-utils',
-    //   ...tsJestConfig,
-    //   testMatch: tsJestConfig.testMatch.map(
-    //     (item) => '<rootDir>/packages/fe-utils/' + item
-    //   )
-    // },
+    {
+      displayName: 'fe-utils',
+      ...tsJestConfig,
+      testMatch: tsJestConfig.testMatch.map(
+        (item) => '<rootDir>/packages/fe-utils/' + item
+      )
+    },
     {
       displayName: 'scripts-context',
       ...tsJestConfig,
