@@ -1,5 +1,5 @@
-import { Env } from '../lib';
-import { FeScriptContext } from '../lib/FeScriptContext';
+import { Env } from '@qlover/env-loader';
+import { FeScriptContext } from '@qlover/scripts-context';
 import { Release, ReleaseOptions } from '../lib/Release';
 import { searchEnv } from './search-env';
 

@@ -4,7 +4,8 @@ import ignore, { Ignore } from 'ignore';
 import {
   FeScriptContext,
   FeScriptContextOptions
-} from '../lib/FeScriptContext';
+} from '@qlover/scripts-context';
+
 export interface CleanOptions {
   /**
    * Files to be cleaned

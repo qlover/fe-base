@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
-import { FeScriptContext } from '../lib/FeScriptContext';
+import { FeScriptContext } from '@qlover/scripts-context';
 import lodash from 'lodash';
 
 const { union } = lodash;

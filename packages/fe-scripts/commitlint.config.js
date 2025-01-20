@@ -1,7 +1,8 @@
-import { getFeConfigSearch } from './lib/FeScriptContext.js';
+import { FeScriptContext } from '@qlover/scripts-context';
 
-const feConfig = getFeConfigSearch();
+const context = new FeScriptContext();
+const feConfig = context.feConfig;
 
 export default {
-  ...feConfig.config.commitlint
+  ...feConfig.commitlint
 };

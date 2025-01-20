@@ -1,4 +1,4 @@
-import { Shell } from '../Shell';
+import { Shell } from '@qlover/scripts-context';
 import { ReleaseUtil } from './ReleaseUtil';
 import lodash from 'lodash';
 import { resolve } from 'path';

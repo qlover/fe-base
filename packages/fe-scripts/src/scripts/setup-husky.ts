@@ -1,6 +1,6 @@
 import { resolve, join } from 'node:path';
 import { writeFileSync, readFileSync } from 'node:fs';
-import { FeScriptContext } from '../lib/FeScriptContext';
+import { FeScriptContext } from '@qlover/scripts-context';
 
 export interface SetupHuskyOptions {
   /**
