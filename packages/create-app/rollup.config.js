@@ -7,12 +7,12 @@ import typescript from 'rollup-plugin-typescript2';
 import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
 import { join } from 'path';
-import { searchEnv } from '@qlover/fe-scripts';
+import { Env } from '@qlover/env-loader';
 
 const readJSONFile = (path) => JSON.parse(readFileSync(path, 'utf-8'));
 const pkg = readJSONFile(join(process.cwd(), 'package.json'));
 
-const env = searchEnv({ logger: console });
+const env = Env.searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
 const buildDir = 'dist';
 

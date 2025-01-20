@@ -41,7 +41,8 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "latest"
+    "@qlover/fe-standard": "latest",
+    "@qlover/env-loader": "latest"
   },
   "dependencies": {
     "@qlover/fe-utils": "latest"

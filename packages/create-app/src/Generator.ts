@@ -1,4 +1,4 @@
-import { FeScriptContext } from '@qlover/fe-scripts';
+import { FeScriptContext } from '@qlover/scripts-context';
 import { Logger } from '@qlover/fe-utils';
 import inquirer from 'inquirer';
 import { defaultPrompts, packagePrompts } from './prompts';

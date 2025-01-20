@@ -3,10 +3,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import terser from '@rollup/plugin-terser';
-import { searchEnv } from '@qlover/fe-scripts';
 import del from 'rollup-plugin-delete';
+import { Env } from '@qlover/env-loader';
 
-const env = searchEnv({ logger: console });
+const env = Env.searchEnv({ logger: console });
 const NODE_ENV = env.get('NODE_ENV');
 const isProduction = NODE_ENV === 'production';
 console.log('Enveronment is', NODE_ENV);

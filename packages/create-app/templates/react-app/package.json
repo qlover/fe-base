@@ -24,6 +24,7 @@
   "devDependencies": {
     "@eslint/js": "^9.11.1",
     "@qlover/eslint-plugin-fe-dev": "^0.2.0",
+    "@qlover/env-loader": "latest",
     "@qlover/fe-scripts": "latest",
     "@rollup/plugin-alias": "^5.1.1",
     "@types/lodash": "^4.17.13",
