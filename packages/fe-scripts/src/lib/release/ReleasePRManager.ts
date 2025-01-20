@@ -2,7 +2,7 @@ import { ReleaseUtil } from './ReleaseUtil';
 import { ReleaseConfiger } from './ReleaseConfiguter';
 import { Octokit } from '@octokit/rest';
 import { Logger } from '@qlover/fe-utils';
-import { FeReleaseConfig } from '../../feConfig';
+import { FeReleaseConfig } from '@qlover/scripts-context';
 
 /**
  * Manages the creation and handling of release pull requests.
