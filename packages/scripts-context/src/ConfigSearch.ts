@@ -1,5 +1,5 @@
 import { cosmiconfigSync } from 'cosmiconfig';
-import merge from 'merge';
+import defaultsDeep from 'lodash/defaultsDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -146,7 +146,7 @@ export class ConfigSearch {
    * ```
    */
   get config(): Record<string, unknown> {
-    return merge({}, this._config, this.search());
+    return defaultsDeep({}, this.search(), this._config);
   }
 
   /**

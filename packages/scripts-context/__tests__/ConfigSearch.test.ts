@@ -3,7 +3,7 @@ import { ConfigSearch, ConfigSearchOptions } from '../src/ConfigSearch';
 describe('ConfigSearch', () => {
   const defaultOptions = {
     name: 'myapp',
-    defaultConfig: { port: 3000 }
+    defaultConfig: { port: 3000, deepValue: { a: 1, b: 2 } }
   };
 
   it('should initialize with default options', () => {
@@ -38,6 +38,15 @@ describe('ConfigSearch', () => {
   });
 
   it('should merge default and discovered configurations', () => {
+    const configSearch = new ConfigSearch({
+      ...defaultOptions,
+      defaultConfig: { port: 3000, debug: false }
+    });
+    jest.spyOn(configSearch, 'search').mockReturnValue({ debug: true });
+    expect(configSearch.config).toEqual({ port: 3000, debug: true });
+  });
+
+  it('sholud merge default and discovered configurations(deep merge)', () => {
     const configSearch = new ConfigSearch({
       ...defaultOptions,
       defaultConfig: { port: 3000, debug: false }
