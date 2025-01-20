@@ -1,7 +1,10 @@
+## 0.0.4 (2025-01-20)
 
+### Bug Fixes
+
+- fix: merge default and discovered configurations (deep merge) ([#224](https://github.com/qlover/fe-base/pull/224)) ([19011d2](https://github.com/qlover/fe-base/pull/224/commits/19011d2e0850c329f7aa4f784faf4b70068ee597))
 
 ## 0.0.3 (2025-01-17)
-
 
 ### Features
 
