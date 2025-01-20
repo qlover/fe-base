@@ -83,6 +83,8 @@ async function addChangePackagePRLables(
     changePackagesLabel.replace('${name}', name)
   );
 
+  context.logger.verbose('changePackagesLabel', changePackagesLabel, labels);
+
   if (context.dryRun) {
     githubLog(labels, 'labels');
     return;
