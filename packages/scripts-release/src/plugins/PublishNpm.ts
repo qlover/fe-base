@@ -1,4 +1,4 @@
-import { ReleaseItInstanceType } from '../type';
+import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
 import Plugin from '../Plugin';
 import { existsSync } from 'fs';
 import ReleaseContext from '../ReleaseContext';
@@ -6,8 +6,7 @@ import isObject from 'lodash/isObject';
 export default class PublishNpm extends Plugin {
   readonly pluginName = 'publish-npm';
 
-  private _releaseItOutput?: Record<string, unknown>;
-  private releaseItInstance: ReleaseItInstanceType;
+  private _releaseItOutput?: ReleaseItInstanceOptions;
 
   constructor(context: ReleaseContext, releaseIt?: ReleaseItInstanceType) {
     super(context);
@@ -15,7 +14,8 @@ export default class PublishNpm extends Plugin {
     if (!releaseIt) {
       throw new Error('releaseIt is not required');
     }
-    this.releaseItInstance = releaseIt;
+
+    this.setConfig({ releaseItInstance: releaseIt });
 
     this.getIncrementVersion();
   }
@@ -34,25 +34,42 @@ export default class PublishNpm extends Plugin {
   async onSuccess(): Promise<void> {
     const publishOptions = this.getPublishReleaseItOptions(this.context);
 
-    await this.releaseIt(publishOptions);
+    await this.step({
+      label: 'Publish to NPM',
+      task: () => this.publish(publishOptions)
+    });
   }
 
   /**
    * Executes the release-it process.
    *
+   * use release-it to publish the package to npm
+   *
    * @param releaseItOptions - Options for the release-it process.
    * @returns The output from the release-it process.
    */
-  async releaseIt(
+  async publish(
     releaseItOptions: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     this.logger.debug('Run release-it method', releaseItOptions);
-    const output = await this.releaseItInstance(releaseItOptions);
-    this._releaseItOutput = output;
-    return output;
+
+    const releaseItInstance = this.getConfig(
+      'releaseItInstance'
+    ) as ReleaseItInstanceType;
+
+    if (!releaseItInstance) {
+      throw new Error('releaseItInstance is not set');
+    }
+
+    this._releaseItOutput = await releaseItInstance(releaseItOptions);
+
+    // return the output
+    return this._releaseItOutput;
   }
 
-  getPublishReleaseItOptions(context: ReleaseContext): Record<string, unknown> {
+  getPublishReleaseItOptions(
+    context: ReleaseContext
+  ): ReleaseItInstanceOptions {
     return {
       ci: true,
       npm: {
@@ -93,7 +110,7 @@ export default class PublishNpm extends Plugin {
    * @throws If the NPM token is not set.
    */
   async checkNpmAuth(): Promise<void> {
-    const npmToken = this.env.get('NPM_TOKEN');
+    const npmToken = this.getEnv('NPM_TOKEN');
 
     if (!npmToken) {
       throw new Error('NPM_TOKEN is not set.');

@@ -9,10 +9,9 @@ import { readFileSync, rmSync } from 'fs';
 import { Env } from '@qlover/env-loader';
 
 const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
-const tsConfig = JSON.parse(readFileSync('./tsconfig.json'), 'utf-8');
 const env = Env.searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
-const buildDir = tsConfig.compilerOptions.outDir;
+const buildDir = 'dist';
 
 const treeshake = {
   moduleSideEffects: false,

@@ -13,7 +13,7 @@ export default class CheckEnvironment extends Plugin {
   }
 
   hasReleaseIt(): boolean {
-    if (this.env.get('FE_RELEASE') === 'false') {
+    if (this.getEnv('FE_RELEASE') === 'false') {
       throw new Error('Skip Release');
     }
 
@@ -21,12 +21,14 @@ export default class CheckEnvironment extends Plugin {
   }
 
   hasGithubToken(): boolean {
-    const token = this.env.get('GITHUB_TOKEN') || this.env.get('PAT_TOKEN');
+    const token = this.getEnv('GITHUB_TOKEN') || this.getEnv('PAT_TOKEN');
     if (!token) {
       throw new Error(
         'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
       );
     }
+
+    this.setConfig({ githubToken: token });
 
     return true;
   }

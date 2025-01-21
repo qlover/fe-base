@@ -31,9 +31,14 @@ export interface ReleaseOptions {
   [key: string]: unknown;
 }
 
+export type ReleaseItInstanceOptions = Record<string, unknown>;
+export type ReleaseItInstanceResult = {
+  changelog: string;
+  version: string;
+};
 export type ReleaseItInstanceType = (
-  options: Record<string, unknown>
-) => Promise<Record<string, unknown>>;
+  options: ReleaseItInstanceOptions
+) => Promise<ReleaseItInstanceResult>;
 
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
