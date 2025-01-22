@@ -3,13 +3,24 @@ import { ReleaseReturnValue, ReleaseContextOptions } from './type';
 import Plugin from './Plugin';
 import CheckEnvironment from './plugins/CheckEnvironment';
 import PublishNpm from './plugins/PublishNpm';
-import ReleaseContext from './ReleaseContext';
+import ReleaseContext from './interface/ReleaseContext';
+import CreateReleasePullRequest from './plugins/CreateReleasePullRequest';
+import GithubReleasePR from './implments/GithubReleasePR';
 
 function getPlugins(context: ReleaseContext): Plugin[] {
-  return [
-    new CheckEnvironment(context),
-    new PublishNpm(context, context.options.releaseIt!)
-  ];
+  const result: Plugin[] = [];
+
+  result.push(new CheckEnvironment(context));
+
+  if (context.options.releaseMode === 'release-pullrequest') {
+    result.push(
+      new CreateReleasePullRequest(context, new GithubReleasePR(context))
+    );
+  } else if (context.options.releaseMode === 'publish') {
+    result.push(new PublishNpm(context, context.options.releaseIt!));
+  }
+
+  return result;
 }
 
 export function main(

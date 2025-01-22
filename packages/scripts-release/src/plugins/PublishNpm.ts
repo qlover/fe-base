@@ -1,7 +1,7 @@
 import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
 import Plugin from '../Plugin';
 import { existsSync } from 'fs';
-import ReleaseContext from '../ReleaseContext';
+import ReleaseContext from '../interface/ReleaseContext';
 import isObject from 'lodash/isObject';
 export default class PublishNpm extends Plugin {
   readonly pluginName = 'publish-npm';

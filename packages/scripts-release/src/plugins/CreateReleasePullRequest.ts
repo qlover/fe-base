@@ -5,88 +5,19 @@ import {
   ReleaseItInstanceType
 } from '../type';
 import Plugin from '../Plugin';
-import ReleaseContext from '../ReleaseContext';
+import ReleaseContext from '../interface/ReleaseContext';
 import get from 'lodash/get';
-import { Octokit } from '@octokit/rest';
-import { FeConfig } from '@qlover/scripts-context';
-import isString from 'lodash/isString';
-import isPlainObject from 'lodash/isPlainObject';
+import { PullRequestInterface } from '../interface/PullRequestInterface';
 
 export type CreateReleaseResult = {
   tagName: string;
   releaseBranch: string;
 };
 
-class Util {
-  /**
-   * Checks if the provided value is a valid string.
-   *
-   * A valid string is defined as a non-empty string.
-   *
-   * @param value - The value to check.
-   * @returns True if the value is a valid string, otherwise false.
-   */
-  static isValidString(value: unknown): boolean {
-    return !!value && isString(value);
-  }
-
-  /**
-   * Parses the pull request number from the given output string.
-   *
-   * This method uses a regular expression to extract the pull request number from a GitHub URL.
-   *
-   * @param output - The output string containing the pull request URL.
-   * @returns The extracted pull request number, or an empty string if not found.
-   */
-  static parserPRNumber(output: string): string {
-    const prUrlPattern = /https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/(\d+)/;
-    const match = output.match(prUrlPattern);
-    return (match && match[1]) || '';
-  }
-
-  /**
-   * Retrieves user information from the provided package and front-end configuration.
-   *
-   * This method extracts the repository name and author name from the package and configuration.
-   *
-   * @param pkg - The package information, expected to have a repository and author.
-   * @param feConfig - The front-end configuration.
-   * @returns An object containing the repository name and author name.
-   * @throws Will throw an error if the author name or repository name is invalid.
-   */
-  static getUserInfo(
-    pkg: Record<string, unknown>,
-    feConfig: FeConfig
-  ): { repoName: string; authorName: string } {
-    const { repository, author } = pkg;
-    const localAuthor = feConfig.author || author;
-
-    const authorName = isPlainObject(localAuthor)
-      ? get(localAuthor, 'name')
-      : localAuthor;
-
-    if (!Util.isValidString(authorName)) {
-      throw new Error('please set .fe-config.release valid author');
-    }
-
-    const repoName =
-      // @ts-expect-error
-      feConfig.repository?.url.split('/').pop()?.replace('.git', '') ||
-      // @ts-expect-error
-      repository.url.split('/').pop()?.replace('.git', '');
-    if (!Util.isValidString(repoName)) {
-      throw new Error('please set .fe-config.release repository');
-    }
-
-    // @ts-expect-error
-    return { repoName, authorName };
-  }
-}
-
-export default class CreatePublishPR extends Plugin {
-  readonly pluginName = 'create-publish-pr';
+export default class CreateReleasePullRequest extends Plugin {
+  readonly pluginName = 'create-release-pr';
   private packageJson: Record<string, unknown> = {};
-  private octokit?: Octokit;
+  private repoInfo?: { repoName: string; authorName: string };
 
   /**
    * release merge real branch name
@@ -96,19 +27,13 @@ export default class CreatePublishPR extends Plugin {
   private sourceBranch: string;
 
   /**
-   * Release environment
-   *
-   * @default `development`
-   */
-
-  private releaseEnv: string;
-
-  /**
    * Auto merge release PR
    *
    * @default `false`
    */
-  private autoMergeReleasePR: boolean;
+  get autoMergeReleasePR(): boolean {
+    return this.getConfig('autoMergeReleasePR', false) as boolean;
+  }
 
   /**
    * Dry run PR number
@@ -117,27 +42,39 @@ export default class CreatePublishPR extends Plugin {
    */
   private dryRunPRNumber: string = '999999';
 
-  constructor(context: ReleaseContext) {
+  /**
+   * Release environment
+   *
+   * @default `development`
+   */
+  get releaseEnv(): string {
+    return (
+      (this.getConfig('releaseEnv') as string) ??
+      this.getEnv('NODE_ENV') ??
+      'development'
+    );
+  }
+
+  constructor(
+    context: ReleaseContext,
+    private readonly releasePR: PullRequestInterface
+  ) {
     super(context);
 
-    this.autoMergeReleasePR = this.getConfig(
-      'autoMergeReleasePR',
-      false
-    ) as boolean;
-
-    this.packageJson = this.getConfig('packageJson') as Record<string, unknown>;
     this.sourceBranch =
       this.getEnv('FE_RELEASE_BRANCH') ??
       this.getEnv('FE_RELEASE_SOURCE_BRANCH') ??
       'master';
-
-    this.releaseEnv =
-      (this.getConfig('releaseEnv') as string) ??
-      this.getEnv('NODE_ENV') ??
-      'development';
   }
 
-  async onBefore(): Promise<void> {}
+  async onBefore(): Promise<void> {
+    this.repoInfo = await this.releasePR.getUserInfo();
+
+    const token = this.getConfig('githubToken') as string;
+    await this.releasePR.init({ token: token });
+
+    this.packageJson = this.getConfig('packageJson') as Record<string, unknown>;
+  }
 
   /**
    * @override
@@ -169,11 +106,13 @@ export default class CreatePublishPR extends Plugin {
         label: `Checked Release PR(${prNumber})`,
         task: () => this.checkedPullRequest(prNumber, releaseBranch)
       });
-    } else {
-      this.logger.info(
-        `Please manually merge PR(#${prNumber}) and complete the publishing process afterwards`
-      );
+
+      return;
     }
+
+    this.logger.info(
+      `Please manually merge PR(#${prNumber}) and complete the publishing process afterwards`
+    );
   }
 
   /**
@@ -188,23 +127,20 @@ export default class CreatePublishPR extends Plugin {
       return;
     }
 
-    const { repoName, authorName } = this.getUserInfo();
     const mergeMethod = this.getConfig('autoMergeType', 'squash') as
       | 'squash'
       | 'merge'
       | 'rebase';
 
     if (this.context.dryRun) {
+      const { repoName, authorName } = this.getRepoInfo();
       this.logger.info(
         `[DRY RUN] Would merge PR #${prNumber} with method '${mergeMethod}' in repo ${authorName}/${repoName}, branch ${releaseBranch}`
       );
       return;
     }
 
-    const octokit = await this.getOctokit();
-    await octokit.pulls.merge({
-      owner: authorName,
-      repo: repoName,
+    await this.releasePR.mergePullRequest({
       pull_number: Number(prNumber),
       merge_method: mergeMethod
     });
@@ -221,20 +157,13 @@ export default class CreatePublishPR extends Plugin {
     releaseBranch: string
   ): Promise<void> {
     try {
-      const { repoName, authorName } = this.getUserInfo();
-      const octokit = await this.getOctokit();
-
       // Get PR information
-      await octokit.rest.pulls.get({
-        owner: authorName,
-        repo: repoName,
+      await this.releasePR.getPullRequest({
         pull_number: Number(prNumber)
       });
 
       // Delete remote branch
-      await octokit.rest.git.deleteRef({
-        owner: authorName,
-        repo: repoName,
+      await this.releasePR.deleteBranch({
         ref: `heads/${releaseBranch}`
       });
 
@@ -249,31 +178,6 @@ export default class CreatePublishPR extends Plugin {
       this.logger.error('Failed to check PR or delete branch', error);
       throw error;
     }
-  }
-
-  /**
-   * Retrieves the Octokit instance, creating it if necessary.
-   *
-   * @returns The Octokit instance for GitHub API interactions.
-   * @throws If the GitHub token is not set.
-   */
-  async getOctokit(): Promise<Octokit> {
-    if (this.octokit) {
-      return this.octokit;
-    }
-
-    const ghToken = this.getConfig('githubToken') as string;
-    if (!ghToken) {
-      throw new Error('Github token is not set');
-    }
-
-    const { Octokit } = await import('@octokit/rest');
-
-    const octokit = new Octokit({ auth: ghToken });
-
-    this.octokit = octokit;
-
-    return octokit;
   }
 
   async createReleaseBranch(
@@ -422,7 +326,7 @@ export default class CreatePublishPR extends Plugin {
       throw new Error('Label is not valid, skipping creation');
     }
 
-    const { repoName, authorName } = this.getUserInfo();
+    // const { repoName, authorName } = this.getRepoInfo();
 
     if (this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR label with:`, label);
@@ -430,11 +334,7 @@ export default class CreatePublishPR extends Plugin {
     }
 
     try {
-      const octokit = await this.getOctokit();
-
-      const result = await octokit.rest.issues.createLabel({
-        owner: authorName,
-        repo: repoName,
+      const result = await this.releasePR.createPullRequestLabel({
         name: label.name,
         description: label.description,
         color: label.color.replace('#', '') // remove # prefix
@@ -470,22 +370,6 @@ export default class CreatePublishPR extends Plugin {
   }
 
   /**
-   * Gets user information from the package.
-   *
-   * @returns The user information including repository name and author name.
-   * @throws If the repository name or author name is not found.
-   */
-  getUserInfo(): { repoName: string; authorName: string } {
-    const userInfo = Util.getUserInfo(this.packageJson, this.context.feConfig);
-
-    if (!userInfo.repoName || !userInfo.authorName) {
-      throw new Error('Not round repo or owner!!!');
-    }
-
-    return userInfo;
-  }
-
-  /**
    * Creates a release pull request.
    *
    * @param options - The options for creating the pull request.
@@ -504,8 +388,6 @@ export default class CreatePublishPR extends Plugin {
       options.changelog
     );
 
-    const { repoName, authorName } = this.getUserInfo();
-
     if (this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
         ...prOptions,
@@ -514,23 +396,19 @@ export default class CreatePublishPR extends Plugin {
       return this.dryRunPRNumber;
     }
 
-    const octokit = await this.getOctokit();
-
     try {
       // create PR
-      const response = await octokit.rest.pulls.create(prOptions);
-      const issue_number = response.data.number;
+      const data = await this.releasePR.createPullRequest(prOptions);
+      const issue_number = data.number;
       if (!issue_number) {
         throw new Error('CreateReleasePR Failed, prNumber is empty');
       }
 
-      this.logger.debug('Create PR Success', response.data);
+      this.logger.debug('Create PR Success', data);
 
       // add label
       if (options.label?.name) {
-        const result = await octokit.rest.issues.addLabels({
-          owner: authorName,
-          repo: repoName,
+        const result = await this.releasePR.addPullRequestLabels({
           issue_number,
           labels: [options.label.name]
         });
@@ -569,20 +447,15 @@ export default class CreatePublishPR extends Plugin {
     releaseBranch: string,
     changelog: string
   ): {
-    owner: string;
-    repo: string;
     title: string;
     body: string;
     base: string;
     head: string;
   } {
-    const { repoName, authorName } = this.getUserInfo();
     const title = this.getReleasePRTitle(tagName);
     const body = this.getReleasePRBody({ tagName, changelog });
 
     return {
-      owner: authorName,
-      repo: repoName,
       title,
       body,
       base: this.sourceBranch,
@@ -631,5 +504,12 @@ export default class CreatePublishPR extends Plugin {
       tagName,
       changelog
     });
+  }
+
+  private getRepoInfo(): { repoName: string; authorName: string } {
+    if (!this.repoInfo) {
+      throw new Error('Repository information not initialized');
+    }
+    return this.repoInfo;
   }
 }

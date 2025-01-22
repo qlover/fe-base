@@ -1,7 +1,7 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
 import { DeepPartial, ExecutorReleaseContext, ReleaseConfig } from './type';
 import { ScriptsLogger, Shell } from '@qlover/scripts-context';
-import ReleaseContext from './ReleaseContext';
+import ReleaseContext from './interface/ReleaseContext';
 
 export type StepOption<T> = {
   label: string;

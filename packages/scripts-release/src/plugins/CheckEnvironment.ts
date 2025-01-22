@@ -1,5 +1,5 @@
 import Plugin from '../Plugin';
-import ReleaseContext from '../ReleaseContext';
+import ReleaseContext from '../interface/ReleaseContext';
 
 export default class CheckEnvironment extends Plugin {
   readonly pluginName = 'check-environment';

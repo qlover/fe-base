@@ -1,7 +1,7 @@
 import { Env } from '@qlover/env-loader';
 import { ExecutorContext } from '@qlover/fe-utils';
-import Config from './ReleaseContext';
-import ReleaseContext from './ReleaseContext';
+import Config from './interface/ReleaseContext';
+import ReleaseContext from './interface/ReleaseContext';
 import { FeReleaseConfig } from '@qlover/scripts-context';
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -51,6 +51,8 @@ export interface ReleaseConfig extends FeReleaseConfig {
   packageJson?: Record<string, unknown>;
 
   releaseIt?: ReleaseItInstanceType;
+
+  releaseMode?: 'publish' | 'release-pullrequest';
 
   [key: string]: unknown;
 }

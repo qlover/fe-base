@@ -2,7 +2,7 @@ import { FeScriptContext } from '@qlover/scripts-context';
 import merge from 'lodash/merge';
 import get from 'lodash/get';
 import { Env } from '@qlover/env-loader';
-import { DeepPartial, ReleaseConfig, ReleaseContextOptions } from './type';
+import { DeepPartial, ReleaseConfig, ReleaseContextOptions } from '../type';
 
 export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   protected readonly env: Env;
