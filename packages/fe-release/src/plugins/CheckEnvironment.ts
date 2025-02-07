@@ -13,6 +13,8 @@ export default class CheckEnvironment extends Plugin {
       throw new Error('releaseIt is not required');
     }
 
+    this.checkPublishPath();
+
     this.hasReleaseIt();
 
     this.hasGithubToken();
