@@ -50,11 +50,11 @@ export default class PublishNpm extends Plugin {
     this.logger.debug('Run release-it method', releaseItOptions);
 
     const releaseItInstance = this.getConfig(
-      'releaseItInstance'
+      'releaseIt'
     ) as ReleaseItInstanceType;
 
     if (!releaseItInstance) {
-      throw new Error('releaseItInstance is not set');
+      throw new Error('releaseIt instance is not set');
     }
 
     this._releaseItOutput = await releaseItInstance(releaseItOptions);

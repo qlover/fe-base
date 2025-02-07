@@ -213,7 +213,7 @@ export default class CreateReleasePullRequest extends Plugin {
     ) as ReleaseItInstanceType;
 
     if (!releaseItInstance) {
-      throw new Error('releaseItInstance is not set');
+      throw new Error('releaseIt instance is not set');
     }
 
     return releaseItInstance(this.getReleaseItChangelogOptions());

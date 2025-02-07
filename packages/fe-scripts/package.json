@@ -28,8 +28,6 @@
     "fe-clean-branch": "./bin/clean-branch.js",
     "fe-commit": "./bin/commit.js",
     "fe-setup-husky": "./bin/setup-husky.js",
-    "fe-release-pr": "./bin/create-release-pr.js",
-    "fe-release": "./bin/release.js",
     "fe-check-packages": "./bin/check-packages.js"
   },
   "scripts": {
@@ -38,9 +36,7 @@
     "clean": "node ./bin/clean.js",
     "clean-branch": "node ./bin/clean-branch.js",
     "commit": "node ./bin/commit.js",
-    "setup-husky": "node ./bin/setup-husky.js",
-    "release-pr": "node ./bin/create-release-pr.js",
-    "release": "node ./bin/release.js"
+    "setup-husky": "node ./bin/setup-husky.js"
   },
   "repository": {
     "type": "git",
