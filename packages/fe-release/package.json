@@ -1,9 +1,9 @@
 {
-  "name": "@qlover/scripts-release",
-  "description": "A node lib for frontwork",
-  "version": "0.0.0",
+  "name": "@qlover/fe-release",
+  "description": "A release front-end project tool",
+  "version": "0.1.0",
   "type": "module",
-  "private": true,
+  "private": false,
   "homepage": "",
   "author": "qlover",
   "license": "ISC",
@@ -26,25 +26,36 @@
     "directory": ""
   },
   "files": [
+    "bin",
     "dist",
     "package.json",
     "README.md"
   ],
   "keywords": [
-    "node-lib"
+    "scripts",
+    "release",
+    "fe-release"
   ],
   "publishConfig": {
     "access": "public"
   },
+  "bin": {
+    "fe-release": "./bin/release.js"
+  },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest"
+    "test": "jest",
+    "release": "node bin/release.js"
   },
   "devDependencies": {
     "@qlover/fe-standard": "latest",
-    "@qlover/env-loader": "latest"
+    "@qlover/env-loader": "latest",
+    "commander": "^11.0.0",
+    "release-it": "^17.10.0"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-utils": "latest",
+    "@qlover/scripts-context": "*",
+    "@octokit/rest": "^21.0.2"
   }
 }

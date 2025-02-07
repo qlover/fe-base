@@ -1,29 +1,29 @@
 import { AsyncExecutor } from '@qlover/fe-utils';
-import { ReleaseReturnValue, ReleaseContextOptions } from './type';
-import Plugin from './Plugin';
-import CheckEnvironment from './plugins/CheckEnvironment';
-import PublishNpm from './plugins/PublishNpm';
 import ReleaseContext from './interface/ReleaseContext';
+import Plugin from './Plugin';
+import { ReleaseContextOptions, ReleaseReturnValue } from './type';
+import CheckEnvironment from './plugins/CheckEnvironment';
 import CreateReleasePullRequest from './plugins/CreateReleasePullRequest';
 import GithubReleasePR from './implments/GithubReleasePR';
+import PublishNpm from './plugins/PublishNpm';
 
 function getPlugins(context: ReleaseContext): Plugin[] {
   const result: Plugin[] = [];
 
-  result.push(new CheckEnvironment(context));
+  result.push(new CheckEnvironment(context, context.options.releaseIt!));
 
-  if (context.options.releaseMode === 'release-pullrequest') {
+  if (context.options.pullRequest) {
     result.push(
       new CreateReleasePullRequest(context, new GithubReleasePR(context))
     );
-  } else if (context.options.releaseMode === 'publish') {
-    result.push(new PublishNpm(context, context.options.releaseIt!));
+  } else {
+    result.push(new PublishNpm(context));
   }
 
   return result;
 }
 
-export function main(
+export function release(
   context: ReleaseContextOptions
 ): Promise<ReleaseReturnValue> {
   const releaseContext = new ReleaseContext(context);

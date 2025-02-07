@@ -71,6 +71,7 @@ const config = [
   },
   {
     input: './src/index.ts',
+    external: defaultExternal,
     output: [
       {
         file: 'dist/cjs/index.d.ts',

@@ -68,6 +68,7 @@ export default class CreateReleasePullRequest extends Plugin {
   }
 
   async onBefore(): Promise<void> {
+    this.logger.verbose('CreateReleasePullRequest onBefore');
     this.repoInfo = await this.releasePR.getUserInfo();
 
     const token = this.getConfig('githubToken') as string;
@@ -208,7 +209,7 @@ export default class CreateReleasePullRequest extends Plugin {
    */
   createChangelogAndVersion(): Promise<ReleaseItInstanceResult> {
     const releaseItInstance = this.getConfig(
-      'releaseItInstance'
+      'releaseIt'
     ) as ReleaseItInstanceType;
 
     if (!releaseItInstance) {
@@ -479,7 +480,7 @@ export default class CreateReleasePullRequest extends Plugin {
       env: this.releaseEnv,
       branch: this.sourceBranch,
       tagName,
-      pkgName: get(this.packageJson, 'name')
+      pkgName: this.getPkg('name')
     });
   }
 

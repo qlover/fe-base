@@ -52,7 +52,10 @@ export interface ReleaseConfig extends FeReleaseConfig {
 
   releaseIt?: ReleaseItInstanceType;
 
-  releaseMode?: 'publish' | 'release-pullrequest';
+  /**
+   * 是否发布一个PR
+   */
+  pullRequest?: boolean;
 
   [key: string]: unknown;
 }

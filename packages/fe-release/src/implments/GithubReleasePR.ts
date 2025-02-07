@@ -132,7 +132,9 @@ export default class GithubReleasePR implements PullRequestInterface {
     let repoUrl: string;
     try {
       repoUrl = (
-        await this.context.shell.exec('git config --get remote.origin.url')
+        await this.context.shell.exec('git config --get remote.origin.url', {
+          dryRun: false
+        })
       ).trim();
     } catch (error) {
       throw new Error(
@@ -145,6 +147,8 @@ export default class GithubReleasePR implements PullRequestInterface {
         'Git remote URL is empty. Please set a valid GitHub remote URL.'
       );
     }
+
+    this.context.logger.verbose('repoUrl: ', repoUrl);
 
     // 解析 GitHub URL 获取 owner 和 repo name
     const githubUrlPattern = /github\.com[:/]([^/]+)\/([^/.]+)(?:\.git)?$/;

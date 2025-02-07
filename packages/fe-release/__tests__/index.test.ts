@@ -1,4 +1,4 @@
-import { main } from '../src/index';
+import { release } from '../src/index';
 import { ReleaseItInstanceType } from '../src/type';
 
 describe('index', () => {
@@ -15,10 +15,10 @@ describe('index', () => {
     });
 
     try {
-      await main({ options: { releaseIt } });
+      await release({ options: { releaseIt } });
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toBe('packageJson is not supported');
+      expect((error as Error).message).toBe('package.json is undefined');
     }
   });
 });

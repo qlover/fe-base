@@ -36,10 +36,7 @@ export default abstract class Plugin implements ExecutorPlugin {
    * feConfig.release
    */
   getConfig(keys: string | string[], defaultValue?: unknown): unknown {
-    return this.context.getConfig(
-      ['release', ...(Array.isArray(keys) ? keys : [keys])],
-      defaultValue
-    );
+    return this.context.getConfig(keys, defaultValue);
   }
 
   /**
@@ -64,12 +61,16 @@ export default abstract class Plugin implements ExecutorPlugin {
    * @param task - the task to run
    * @returns the result of the task
    */
-  step<T>({ label, task }: StepOption<T>): Promise<T> {
-    this.logger.verbose(label);
+  async step<T>({ label, task }: StepOption<T>): Promise<T> {
+    this.logger.obtrusive(label);
 
-    return task().then((res) => {
-      this.logger.verbose(`${label} - success`);
+    try {
+      const res = await task();
+      this.logger.info(`${label} - success`);
       return res;
-    });
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
   }
 }

@@ -11,7 +11,8 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   constructor(context: ReleaseContextOptions) {
     super(context);
 
-    this.config = merge({}, context.feConfig?.release, this.options);
+    this.config = merge({}, this.feConfig.release, this.options);
+
     this.env = this.getInitEnv();
   }
 

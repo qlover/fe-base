@@ -8,19 +8,15 @@ export default class PublishNpm extends Plugin {
 
   private _releaseItOutput?: ReleaseItInstanceOptions;
 
-  constructor(context: ReleaseContext, releaseIt?: ReleaseItInstanceType) {
+  constructor(context: ReleaseContext) {
     super(context);
-
-    if (!releaseIt) {
-      throw new Error('releaseIt is not required');
-    }
-
-    this.setConfig({ releaseItInstance: releaseIt });
 
     this.getIncrementVersion();
   }
 
   async onBefore(): Promise<void> {
+    this.logger.verbose('PublishNpm onBefore');
+
     // check npm
     await this.checkNpmAuth();
 
@@ -93,12 +89,13 @@ export default class PublishNpm extends Plugin {
 
   getIncrementVersion(): string {
     const packageJson = this.getConfig('packageJson');
+
     if (!isObject(packageJson)) {
-      throw new Error('packageJson is not supported');
+      throw new Error('package.json is undefined');
     }
 
     if (!('version' in packageJson)) {
-      throw new Error('packageJson.version is required');
+      throw new Error('package.json version is required');
     }
 
     return packageJson.version as string;

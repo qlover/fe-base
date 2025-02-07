@@ -1,11 +1,16 @@
 import Plugin from '../Plugin';
 import ReleaseContext from '../interface/ReleaseContext';
+import { ExecutorReleaseContext, ReleaseItInstanceType } from '../type';
 
 export default class CheckEnvironment extends Plugin {
   readonly pluginName = 'check-environment';
 
-  constructor(context: ReleaseContext) {
+  constructor(context: ReleaseContext, releaseIt?: ReleaseItInstanceType) {
     super(context);
+
+    if (!releaseIt) {
+      throw new Error('releaseIt is not required');
+    }
 
     this.hasReleaseIt();
 
@@ -31,5 +36,9 @@ export default class CheckEnvironment extends Plugin {
     this.setConfig({ githubToken: token });
 
     return true;
+  }
+
+  onBefore(_context: ExecutorReleaseContext): void | Promise<void> {
+    this.logger.verbose('CheckEnvironment onBefore');
   }
 }
