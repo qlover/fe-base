@@ -1,6 +1,5 @@
 import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
 import Plugin from '../Plugin';
-import { existsSync } from 'fs';
 import ReleaseContext from '../interface/ReleaseContext';
 import isObject from 'lodash/isObject';
 export default class PublishNpm extends Plugin {
@@ -19,9 +18,6 @@ export default class PublishNpm extends Plugin {
 
     // check npm
     await this.checkNpmAuth();
-
-    await this.checkPublishPath();
-    // if packageJson is not provided, throw an error
   }
 
   /**
@@ -118,38 +114,5 @@ export default class PublishNpm extends Plugin {
     await this.shell.exec(
       `echo "//registry.npmjs.org/:_authToken=${npmToken}" > .npmrc`
     );
-  }
-
-  /**
-   * Checks the publish path.
-   */
-  async checkPublishPath(): Promise<void> {
-    const publishPath = this.getPublishPath();
-
-    this.switchToPublishPath(publishPath);
-
-    this.logger.debug('Current path:', publishPath);
-  }
-
-  /**
-   * Switches to the publish path.
-   *
-   * @param publishPath - The publish path.
-   */
-  switchToPublishPath(publishPath: string): void {
-    if (publishPath && existsSync(publishPath)) {
-      this.logger.debug('Switching to publish path:', publishPath);
-      process.chdir(publishPath);
-    }
-  }
-
-  /**
-   * Gets the publish path for the release.
-   *
-   * @returns The publish path.
-   */
-  getPublishPath(): string {
-    const publishPath = this.getConfig('publishPath');
-    return typeof publishPath === 'string' ? publishPath : process.cwd();
   }
 }
