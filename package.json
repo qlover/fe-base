@@ -11,7 +11,7 @@
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
     "build": "yarn build:common && yarn build:fe-utils && yarn build:fe-scripts && yarn build:fe-code2markdown && yarn build:create-app",
-    "build:common": "yarn build:env-loader && yarn build:scripts-context && yarn build:release",
+    "build:common": "yarn build:env-loader && yarn build:scripts-context && yarn build:fe-release",
     "build:fe-release": "yarn workspace @qlover/fe-release build",
     "build:fe-utils": "yarn workspace @qlover/fe-utils build",
     "build:fe-scripts": "yarn workspace @qlover/fe-scripts build",
