@@ -30,8 +30,6 @@ async function main() {
 
   const pkgPathRoot = commandOptions.publishPath || './';
   const packageJsonPath = join(pkgPathRoot, './package.json');
-  console.log('packageJsonPath', packageJsonPath);
-
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
   /**
