@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-release",
   "description": "A release front-end project tool",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "private": false,
   "homepage": "",
@@ -51,11 +51,12 @@
     "@qlover/fe-standard": "latest",
     "@qlover/env-loader": "latest",
     "commander": "^11.0.0",
-    "release-it": "^17.10.0"
+    "release-it": "^17.10.0",
+    "@release-it/conventional-changelog": "^8.0.1"
   },
   "dependencies": {
     "@qlover/fe-utils": "latest",
-    "@qlover/scripts-context": "*",
+    "@qlover/scripts-context": "latest",
     "@octokit/rest": "^21.0.2"
   }
 }

@@ -4,6 +4,7 @@ import { release } from '../dist/es/index.js';
 import releaseIt from 'release-it';
 import { readFileSync } from 'fs';
 import { Command } from 'commander';
+import { join } from 'path';
 
 function programArgs() {
   const program = new Command();
@@ -27,7 +28,9 @@ function programArgs() {
 async function main() {
   const { dryRun, verbose, ...commandOptions } = programArgs();
 
-  const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
+  const pkgPathRoot = commandOptions.publishPath || './';
+  const packageJsonPath = join(pkgPathRoot, './package.json');
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
   /**
    * @type {import('@qlover/fe-release').ReleaseContextOptions['options']}

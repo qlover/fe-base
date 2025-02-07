@@ -19,7 +19,6 @@
   "files": [
     "dist",
     "bin",
-    ".release-it.json",
     "commitlint.config.js",
     "package.json"
   ],
@@ -28,8 +27,6 @@
     "fe-clean-branch": "./bin/clean-branch.js",
     "fe-commit": "./bin/commit.js",
     "fe-setup-husky": "./bin/setup-husky.js",
-    "fe-release-pr": "./bin/create-release-pr.js",
-    "fe-release": "./bin/release.js",
     "fe-check-packages": "./bin/check-packages.js"
   },
   "scripts": {
@@ -38,9 +35,7 @@
     "clean": "node ./bin/clean.js",
     "clean-branch": "node ./bin/clean-branch.js",
     "commit": "node ./bin/commit.js",
-    "setup-husky": "node ./bin/setup-husky.js",
-    "release-pr": "node ./bin/create-release-pr.js",
-    "release": "node ./bin/release.js"
+    "setup-husky": "node ./bin/setup-husky.js"
   },
   "repository": {
     "type": "git",
@@ -63,8 +58,7 @@
     "@types/shelljs": "^0.8.15",
     "husky": "^9.1.6",
     "lint-staged": "^15.0.0",
-    "rimraf": "^5.0.5",
-    "release-it": "^17.10.0"
+    "rimraf": "^5.0.5"
   },
   "dependencies": {
     "@commitlint/config-conventional": "^19.2.2",
@@ -72,7 +66,6 @@
     "@qlover/fe-utils": "latest",
     "@qlover/env-loader": "latest",
     "@qlover/scripts-context": "latest",
-    "@release-it/conventional-changelog": "^8.0.1",
     "commitizen": "^4.3.1",
     "commander": "^11.0.0",
     "chalk": "^5.3.0",
