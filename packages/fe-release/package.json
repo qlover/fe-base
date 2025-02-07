@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@qlover/fe-utils": "latest",
-    "@qlover/scripts-context": "*",
+    "@qlover/scripts-context": "latest",
     "@octokit/rest": "^21.0.2"
   }
 }
