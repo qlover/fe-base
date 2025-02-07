@@ -1,0 +1,61 @@
+{
+  "name": "@qlover/fe-release",
+  "description": "A release front-end project tool",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "homepage": "",
+  "author": "qlover",
+  "license": "ISC",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/es/index.d.ts"
+    },
+    "./cjs/*": "./dist/cjs/*",
+    "./es/*": "./dist/es/*",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": ""
+  },
+  "files": [
+    "bin",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "scripts",
+    "release",
+    "fe-release"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "fe-release": "./bin/release.js"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "release": "node bin/release.js"
+  },
+  "devDependencies": {
+    "@qlover/fe-standard": "latest",
+    "@qlover/env-loader": "latest",
+    "commander": "^11.0.0",
+    "release-it": "^17.10.0"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "latest",
+    "@qlover/scripts-context": "*",
+    "@octokit/rest": "^21.0.2"
+  }
+}
