@@ -6,6 +6,7 @@ import CheckEnvironment from './plugins/CheckEnvironment';
 import CreateReleasePullRequest from './plugins/CreateReleasePullRequest';
 import GithubReleasePR from './implments/GithubReleasePR';
 import PublishNpm from './plugins/PublishNpm';
+import PublishPath from './plugins/PublishPath';
 
 function getPlugins(context: ReleaseContext): Plugin[] {
   const result: Plugin[] = [];
@@ -19,6 +20,9 @@ function getPlugins(context: ReleaseContext): Plugin[] {
   } else {
     result.push(new PublishNpm(context));
   }
+
+  // use checkPublishPath to switch to the publish path
+  result.push(new PublishPath(context));
 
   return result;
 }
