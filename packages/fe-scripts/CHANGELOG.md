@@ -1,5 +1,12 @@
 
 
+## [0.9.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.7.1...fe-scripts-v0.9.2) (2025-02-08)
+
+
+### Bug Fixes
+
+* fe-release publish path check ([#236](https://github.com/qlover/fe-base/issues/236)) ([364984e](https://github.com/qlover/fe-base/commit/364984e3b3c27ed3a1e5cd3cc12d3c1184916fab))
+
 ## [0.7.2](https://github.com/qlover/fe-base/compare/fe-scripts-v0.7.1...fe-scripts-v0.7.2) (2025-02-07)
 
 ## [0.7.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.5.3...fe-scripts-v0.7.1) (2025-01-20)
