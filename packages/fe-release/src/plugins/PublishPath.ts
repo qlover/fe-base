@@ -7,11 +7,11 @@ export default class PublishPath extends Plugin {
 
   constructor(context: ReleaseContext) {
     super(context);
-    this.checkPublishPath();
   }
 
   async onBefore(): Promise<void> {
     this.logger.verbose('PublishPath onBefore');
+    this.checkPublishPath();
   }
 
   /**
