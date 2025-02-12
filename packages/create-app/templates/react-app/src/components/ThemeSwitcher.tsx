@@ -1,9 +1,10 @@
-import { themeController } from '@/core';
+import { IOC } from '@/core';
 import { useController } from '@lib/fe-react-controller';
+import { ThemeController } from '@lib/fe-react-theme/ThemeController';
 import { useTranslation } from 'react-i18next';
 
 export default function ThemeSwitcher() {
-  const controller = useController(themeController);
+  const controller = useController(IOC(ThemeController));
   const { theme } = controller.getState();
   const themes = controller.getSupportedThemes();
   const { t } = useTranslation('common');

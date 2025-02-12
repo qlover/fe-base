@@ -1,9 +1,11 @@
-import { jsonStorageController } from '@/core';
+import { IOC } from '@/core';
 import { useController, useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
+import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 
 export default function JSONStorage() {
+  const jsonStorageController = IOC(JSONStorageController);
   const controllerState = useControllerState(
     useController(jsonStorageController)
   );
@@ -28,7 +30,7 @@ export default function JSONStorage() {
                 {template(t('format.title'))({
                   key: 'testKey1',
                   min: 100,
-                  max: 9000,
+                  max: 9000
                 })}
               </div>
 
@@ -58,7 +60,7 @@ export default function JSONStorage() {
                 {template(t('format.title'))({
                   key: 'testKey2',
                   min: 100,
-                  max: 9000,
+                  max: 9000
                 })}
               </div>
 

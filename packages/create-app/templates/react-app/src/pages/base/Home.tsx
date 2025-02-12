@@ -1,5 +1,5 @@
 import LocaleLink from '@/components/LocaleLink';
-import { useBaseRoutePage } from '../../uikit/contexts/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 export default function Home() {
   const { t } = useBaseRoutePage();

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useController } from '@lib/fe-react-controller';
-import { routerController, userController } from '@/core';
+import { IOC } from '@/core';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { defaultLoginInfo } from '@config/app.common';
+import { RouterController } from '@/uikit/controllers/RouterController';
+import { UserController } from '@/uikit/controllers/UserController';
 
 export default function Login() {
   const { t } = useBaseRoutePage();
-  const controller = useController(userController);
+  const controller = useController(IOC(UserController));
   const [email, setEmail] = useState(defaultLoginInfo.name);
   const [password, setPassword] = useState(defaultLoginInfo.password);
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export default function Login() {
       setLoading(true);
       await controller.login({ username: email, password });
       // Redirect or show success message
-      routerController.replaceToHome();
+      IOC(RouterController).replaceToHome();
     } catch (error) {
       // Handle login error
       console.error(error);

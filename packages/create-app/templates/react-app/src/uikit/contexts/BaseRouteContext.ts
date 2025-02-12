@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { BasePageProvider } from '@/base/types/Page';
 import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
@@ -15,7 +15,7 @@ export function useBaseRoutePage(): BasePageProvider {
     throw new Error('useBaseRoutePage must be used within a PageProvider');
   }
 
-  const _meta = merge({}, defaultBaseRoutemeta, meta);
+  const _meta = useMemo(() => merge({}, defaultBaseRoutemeta, meta), [meta]);
 
   const i18n = useTranslation(_meta.localNamespace);
 
