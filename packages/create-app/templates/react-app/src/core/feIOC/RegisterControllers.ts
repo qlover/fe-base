@@ -13,6 +13,7 @@ import { FeApi } from '@/base/apis/feApi';
 
 import appRouterConfig from '@config/app.router.json';
 import themeConfigJson from '@config/theme.json';
+import { UserToken } from '@/base/cases/UserToken';
 
 export class RegisterControllers implements IOCRegisterInterface {
   register(container: IOCInterface): void {
@@ -28,8 +29,7 @@ export class RegisterControllers implements IOCRegisterInterface {
     );
     const executorController = new ExecutorController(container.get(FeApi));
     const userController = new UserController({
-      storageKey: 'fe_user_token',
-      storage: localJsonStorage,
+      userToken: container.get(UserToken),
       feApi: container.get(FeApi),
       routerController
     });

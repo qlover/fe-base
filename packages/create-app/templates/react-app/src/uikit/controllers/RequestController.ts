@@ -35,7 +35,7 @@ export class RequestController extends FeController<RequestControllerState> {
     private readonly aiApi: OpenAIClient,
     private readonly feApi: FeApi
   ) {
-    super(createDefaultState());
+    super(createDefaultState);
   }
 
   onHello = async () => {

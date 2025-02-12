@@ -11,12 +11,12 @@ interface JSONStoragePageState {
 
 export class JSONStorageController extends FeController<JSONStoragePageState> {
   constructor(private storage: JSONStorage) {
-    super({
+    super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,
       testKey2: storage.getItem('testKey2') ?? 0,
       expireTime: 5000,
       requestTimeout: storage.getItem('requestTimeout') ?? 5000
-    });
+    }));
   }
 
   changeRandomTestKey1 = (): void => {

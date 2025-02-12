@@ -1,10 +1,10 @@
-import { ExecutorPlugin, JSONStorage } from '@qlover/fe-utils';
+import { ExecutorPlugin } from '@qlover/fe-utils';
 import { sleep } from '@/uikit/utils/thread';
 import { FeController } from '@lib/fe-react-controller';
 import { FeApi } from '@/base/apis/feApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
-import { adjustExpirationTime } from '@/uikit/utils/datetime';
 import { RouterController } from './RouterController';
+import { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 
 export interface UserControllerState {
   success: boolean;
@@ -12,12 +12,7 @@ export interface UserControllerState {
 }
 
 export interface UserControllerOptions {
-  /**
-   * @default `month`
-   */
-  expiresIn?: number | 'day' | 'week' | 'month' | 'year';
-  storageKey: string;
-  storage: JSONStorage;
+  userToken: StorageTokenInterface;
   feApi: FeApi;
   routerController: RouterController;
 }
@@ -29,23 +24,19 @@ interface LoginInterface {
   logout(): void;
 }
 
-function restoreUserSession(options: UserControllerOptions): {
-  state: UserControllerState;
-  token: string;
-} {
-  const { storageKey, storage } = options;
-  const token = storage.getItem(storageKey, '') as string;
+function createDefaultState(
+  options: UserControllerOptions
+): UserControllerState {
+  const { userToken } = options;
+  const token = userToken.getToken();
 
   return {
-    state: {
-      success: !!token,
-      userInfo: {
-        name: '',
-        email: '',
-        picture: ''
-      }
-    },
-    token
+    success: !!token,
+    userInfo: {
+      name: '',
+      email: '',
+      picture: ''
+    }
   };
 }
 
@@ -55,16 +46,9 @@ export class UserController
 {
   readonly pluginName = 'UserController';
 
-  private token = '';
-
   constructor(private options: UserControllerOptions) {
-    const restoreSession = restoreUserSession(options);
-    super(restoreSession.state);
-
-    this.token = restoreSession.token;
+    super(() => createDefaultState(options));
   }
-
-  selectorSuccess = (state: UserControllerState): boolean => state.success;
 
   /**
    * @override
@@ -72,7 +56,7 @@ export class UserController
   async onBefore(): Promise<void> {
     await sleep(1000);
 
-    if (!this.token) {
+    if (!this.options.userToken.getToken()) {
       throw new Error('User not logged in');
     }
 
@@ -103,7 +87,7 @@ export class UserController
 
     const result = await feApi.login(params);
 
-    this.setToken(result.data.token);
+    this.options.userToken.setToken(result.data.token);
 
     const userInfo = await feApi.getUserInfo();
 
@@ -122,22 +106,12 @@ export class UserController
     this.reset();
   }
 
-  setToken(token: string): void {
-    this.token = token;
-
-    const { storageKey, storage } = this.options;
-
-    storage.setItem(
-      storageKey,
-      this.token,
-      adjustExpirationTime(Date.now(), this.options.expiresIn ?? 'month')
-    );
-  }
-
+  /**
+   * @override
+   */
   reset(): void {
-    this.token = '';
-    this.options.storage.removeItem(this.options.storageKey);
-    this.setState({ success: false });
+    this.options.userToken.removeToken();
+    super.reset();
   }
 
   isAuthenticated(): boolean {

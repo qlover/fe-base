@@ -37,7 +37,7 @@ export class ExecutorController extends FeController<ExecutorControllerState> {
   private feApi: FeApi;
 
   constructor(feApi: FeApi) {
-    super(createDefaultState());
+    super(createDefaultState);
 
     this.feApi = cloneDeep(feApi);
 
