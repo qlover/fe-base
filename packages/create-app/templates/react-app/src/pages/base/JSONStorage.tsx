@@ -1,6 +1,6 @@
-import { jsonStorageController } from '@/containers';
+import { jsonStorageController } from '@/core';
 import { useController, useControllerState } from '@lib/fe-react-controller';
-import { useBaseRoutePage } from '@/containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
 
 export default function JSONStorage() {

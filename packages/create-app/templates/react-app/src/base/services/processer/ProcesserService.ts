@@ -1,12 +1,12 @@
 import { AsyncExecutor, ExecutorPlugin, Logger } from '@qlover/fe-utils';
 
-export interface PageProcesserOptions {
+export interface ProcesserServiceOptions {
   logger: Logger;
 }
 
-export class PageProcesser {
+export class ProcesserService {
   private executor: AsyncExecutor;
-  constructor(private options: PageProcesserOptions) {
+  constructor(private options: ProcesserServiceOptions) {
     this.executor = new AsyncExecutor();
   }
 

@@ -4,7 +4,7 @@ import {
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
-import { sleep } from '@/utils/thread';
+import { sleep } from '@/uikit/utils/thread';
 
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';

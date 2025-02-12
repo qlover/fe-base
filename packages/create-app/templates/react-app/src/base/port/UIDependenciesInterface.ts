@@ -1,3 +1,9 @@
+/**
+ * Need to be used in the UI component
+ *
+ * eg. A service use window.localStorage, it should be like this:
+ *
+ */
 export interface UIDependenciesInterface<Dep = unknown> {
   /**
    * Represents the dependencies required by the UI component.

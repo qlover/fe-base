@@ -1,11 +1,11 @@
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/services/feApi';
+import { FeApi } from '@/base/apis/feApi';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   ExecutorPlugin,
-  RequestAdapterResponse
-} from 'packages/fe-utils/interface';
-import { RequestAdapterFetchConfig } from '@qlover/fe-utils';
+  RequestAdapterResponse,
+  RequestAdapterFetchConfig
+} from '@qlover/fe-utils';
 
 function createDefaultState() {
   return {

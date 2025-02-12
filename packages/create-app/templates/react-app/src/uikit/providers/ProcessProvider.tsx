@@ -1,13 +1,13 @@
 import { createContext, useEffect } from 'react';
-import { pageProcesser, routerController, userController } from '@/containers';
-import { useLanguageGuard } from '@/hooks/useLanguageGuard';
-import { useStrictEffect } from '@/hooks/useStrictEffect';
-import { PageProcesser } from '@/services/pageProcesser';
+import { pageProcesser, routerController, userController } from '@/core';
+import { useLanguageGuard } from '@/uikit/hooks/useLanguageGuard';
+import { useStrictEffect } from '@/uikit/hooks/useStrictEffect';
+import { ProcesserService } from '@/base/services/processer/ProcesserService';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useControllerState } from '@lib/fe-react-controller';
-import { Loading } from './Loading';
+import { Loading } from '@/components/Loading';
 
-const PageProcesserContext = createContext<PageProcesser>(pageProcesser);
+const PageProcesserContext = createContext<ProcesserService>(pageProcesser);
 
 export function ProcessProvider({ children }: { children: React.ReactNode }) {
   useLanguageGuard();

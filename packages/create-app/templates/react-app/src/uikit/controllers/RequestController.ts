@@ -1,7 +1,7 @@
 import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/services/feApi';
-import { logger } from '@/containers/globals';
+import { FeApi } from '@/base/apis/feApi';
+import { logger } from '@/core/globals';
 
 function createDefaultState() {
   return {

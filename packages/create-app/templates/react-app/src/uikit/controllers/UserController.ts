@@ -1,9 +1,9 @@
 import { ExecutorPlugin, JSONStorage } from '@qlover/fe-utils';
-import { sleep } from '@/utils/thread';
+import { sleep } from '@/uikit/utils/thread';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/services/feApi';
-import { FeApiGetUserInfo, FeApiLogin } from '@/services/feApi/FeApiType';
-import { adjustExpirationTime } from '@/utils/datetime';
+import { FeApi } from '@/base/apis/feApi';
+import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
+import { adjustExpirationTime } from '@/uikit/utils/datetime';
 import { RouterController } from './RouterController';
 
 export interface UserControllerState {

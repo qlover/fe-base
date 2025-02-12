@@ -2,21 +2,21 @@
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { OpenAIClient } from '@lib/openAiApi';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
-import { ExecutorController } from '@/services/controllers/ExecutorController';
-import { JSONStorageController } from '@/services/controllers/JSONStorageController';
-import { RequestController } from '@/services/controllers/RequestController';
-import { UserController } from '@/services/controllers/UserController';
-import { RouterController } from '@/services/controllers/RouterController';
-import { FeApi, FeApiMockPlugin } from '@/services/feApi';
+import { ExecutorController } from '@/uikit/controllers/ExecutorController';
+import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
+import { RequestController } from '@/uikit/controllers/RequestController';
+import { UserController } from '@/uikit/controllers/UserController';
+import { RouterController } from '@/uikit/controllers/RouterController';
+import { FeApi, FeApiMockPlugin } from '@/base/apis/feApi';
 import { defaultFeApiConfig, openAiConfig } from '@config/app.common';
 import themeConfigJson from '@config/theme.json';
 import appRouterConfig from '@config/app.router.json';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import { localJsonStorage, logger } from './globals';
-import { RequestLogger } from '@/utils/RequestLogger';
-import { RouteConfig } from '@/types/Page';
-import { PageProcesser } from '@/services/pageProcesser';
+import { RequestLogger } from '@/uikit/utils/RequestLogger';
+import { RouteConfig } from '@/base/types/Page';
+import { ProcesserService } from '@/base/services/processer/ProcesserService';
 
 // common plugins
 const requestLogger = new RequestLogger(logger);
@@ -66,6 +66,6 @@ export const themeController = new ThemeController({
   storage: localJsonStorage
 });
 
-export const pageProcesser = new PageProcesser({
+export const pageProcesser = new ProcesserService({
   logger
 }).usePlugin(userController);

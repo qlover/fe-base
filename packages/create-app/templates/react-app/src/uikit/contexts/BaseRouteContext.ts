@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
-import { BasePageProvider } from '@/types/Page';
-import { RouteMeta } from '@/types/Page';
+import { BasePageProvider } from '@/base/types/Page';
+import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
 import { defaultBaseRoutemeta } from '@config/app.common';
 import merge from 'lodash/merge';

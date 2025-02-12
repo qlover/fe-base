@@ -1,6 +1,6 @@
-import { jsonStorageController, requestController } from '@/containers';
+import { jsonStorageController, requestController } from '@/core';
 import { useControllerState } from '@lib/fe-react-controller';
-import { useBaseRoutePage } from '../../containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '../../uikit/contexts/BaseRouteContext';
 
 export default function Request() {
   const requestControllerState = useControllerState(requestController);

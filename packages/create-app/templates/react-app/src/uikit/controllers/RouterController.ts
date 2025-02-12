@@ -1,6 +1,6 @@
 import { I18nService } from '@/services/i18n';
-import { RouteConfig, RouteType } from '@/types/Page';
-import { UIDependenciesInterface } from '@/types/UIDependenciesInterface';
+import { RouteConfig, RouteType } from '@/base/types/Page';
+import { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import { i18nConfig } from '@config/i18n';
 import { Logger } from '@qlover/fe-utils';
 import { NavigateFunction, NavigateOptions } from 'react-router-dom';

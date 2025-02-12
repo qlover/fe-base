@@ -1,4 +1,4 @@
-import * as feGlobals from '@/containers/globals';
+import * as feGlobals from '@/core/globals';
 
 declare global {
   interface Window {

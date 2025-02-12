@@ -1,4 +1,4 @@
-import { SliceStore } from '@qlover/slice-store';
+import { SliceStore } from '@qlover/slice-store-react';
 
 export class FeController<T> extends SliceStore<T> {
   constructor(initialState: T) {

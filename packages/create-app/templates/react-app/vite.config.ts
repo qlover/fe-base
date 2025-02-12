@@ -1,21 +1,20 @@
-import { defineConfig } from 'vite';
-import alias from '@rollup/plugin-alias';
-// import react from '@vitejs/plugin-react-swc';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import path from 'node:path';
-import tsappconfig from './tsconfig.app.json';
+import alias from '@rollup/plugin-alias';
+import tsappconfig from './tsconfig.json';
+import { resolve } from 'path';
 import { Env } from '@qlover/env-loader';
 
 Env.searchEnv();
 
 const tsAppPaths = tsappconfig.compilerOptions.paths || {};
 
-const entries = Object.entries(tsAppPaths).map(([key, value]) => {
-  return {
-    find: key.replace('/*', ''),
-    replacement: path.resolve(__dirname, value[0].replace('/*', ''))
-  };
-});
+// 将 tsconfig 配置 paths 变成 vite 的 alias
+const entries = Object.entries(tsAppPaths).reduce((acc, [key, value]) => {
+  acc[key.replace('/*', '')] = resolve(__dirname, value[0].replace('/*', ''));
+  return acc;
+}, {});
+
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -27,6 +26,12 @@ export default defineConfig({
   ],
   publicDir: 'public',
   server: {
-    port: Number(process.env.VITE_SERVER_PORT || 3100)
+    port: Number(process.env.VITE_SERVER_PORT || 3200)
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/setupTests.ts'],
+    include: ['src/**/__tests__/**/*.test.{ts,tsx}']
   }
 });

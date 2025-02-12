@@ -1,9 +1,9 @@
-import './styles/css/index.css';
+import '@/uikit/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createFeReactRoutes } from './pages';
 import { I18nService } from '@/services/i18n';
 import { useMemo } from 'react';
-import { routerController } from './containers';
+import { routerController } from './core';
 
 I18nService.init();
 

@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
-import { RouteMeta } from '@/types/Page';
-import { BaseRoutePageContext } from './BaseRouteContext';
+import { RouteMeta } from '@/base/types/Page';
+import { BaseRoutePageContext } from '../contexts/BaseRouteContext';
 
 export default function BaseRouteProvider(props: PropsWithChildren<RouteMeta>) {
   return (

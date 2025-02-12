@@ -1,6 +1,6 @@
-import { executorController, jsonStorageController } from '@/containers';
+import { executorController, jsonStorageController } from '@/core';
 import { useControllerState } from '@lib/fe-react-controller';
-import { useBaseRoutePage } from '@/containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 export default function Executor() {
   const jsonStorageControllerState = useControllerState(jsonStorageController);
