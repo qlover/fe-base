@@ -9,7 +9,7 @@ Env.searchEnv();
 
 const tsAppPaths = tsappconfig.compilerOptions.paths || {};
 
-// 将 tsconfig 配置 paths 变成 vite 的 alias
+// convert tsconfig paths to vite alias
 const entries = Object.entries(tsAppPaths).reduce((acc, [key, value]) => {
   acc[key.replace('/*', '')] = resolve(__dirname, value[0].replace('/*', ''));
   return acc;

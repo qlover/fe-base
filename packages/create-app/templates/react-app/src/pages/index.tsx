@@ -1,6 +1,11 @@
 import { lazy, Suspense } from 'react';
 import isString from 'lodash/isString';
-import { LoadProps, PagesMaps, RouteCategory, RouteType } from '@/base/types/Page';
+import {
+  LoadProps,
+  PagesMaps,
+  RouteCategory,
+  RouteType
+} from '@/base/types/Page';
 import { Loading } from '@/components/Loading';
 import BaseRouteProvider from '../uikit/providers/BaseRouteProvider';
 import NotFound from './404';
