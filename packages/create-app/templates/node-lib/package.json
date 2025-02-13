@@ -1,0 +1,66 @@
+{
+  "name": "node-lib",
+  "description": "A node lib template",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "homepage": "",
+  "author": "qlover",
+  "license": "ISC",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/es/index.d.ts",
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./cjs/*": "./dist/cjs/*",
+    "./es/*": "./dist/es/*",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": ""
+  },
+  "files": [
+    "bin",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "lib",
+    "node lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {},
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "run:command": "node bin/test.js"
+  },
+  "devDependencies": {
+    "@qlover/env-loader": "latest",
+    "@qlover/fe-standard": "latest",
+    "@qlover/scripts-context": "latest",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/node": "^22.13.2",
+    "commander": "^11.0.0",
+    "release-it": "^17.10.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-typescript2": "^0.36.0"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "latest"
+  }
+}

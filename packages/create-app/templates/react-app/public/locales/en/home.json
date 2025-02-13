@@ -1,0 +1,10 @@
+{
+  "welcome": "Welcome to the home page",
+  "description": "A modern frontend utility library collection providing various practical tools and components",
+  "about": "About Us",
+  "about_description": "Learn more about our project and team information",
+  "jsonstorage": "JSONStorage",
+  "jsonstorage_description": "Efficient JSON data storage solution",
+  "request": "Request",
+  "request_description": "A modern frontend utility library collection providing various practical tools and components"
+}

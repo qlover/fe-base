@@ -1,0 +1,94 @@
+{
+  "name": "react-app",
+  "description": "A react app template",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "homepage": "",
+  "author": "qlover",
+  "license": "ISC",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/es/index.d.ts",
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./cjs/*": "./dist/cjs/*",
+    "./es/*": "./dist/es/*",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": ""
+  },
+  "files": [
+    "bin",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "scripts",
+    "release",
+    "fe-release"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "fe-release": "./bin/release.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint ./src --fix",
+    "prettier": "prettier --write ./src",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "latest",
+    "@qlover/slice-store-react": "^1.0.8",
+    "i18next": "^24.2.0",
+    "i18next-browser-languagedetector": "^8.0.2",
+    "i18next-http-backend": "^3.0.1",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.2.0",
+    "react-router-dom": "^7.1.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@qlover/env-loader": "latest",
+    "@qlover/eslint-plugin-fe-dev": "^0.2.0",
+    "@qlover/fe-scripts": "latest",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@types/lodash": "^4.17.13",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/typo-js": "^1.2.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.15.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.12.0",
+    "postcss": "^8.4.49",
+    "sass-embedded": "^1.79.4",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0",
+    "vite": "^5.4.8",
+    "vite-plugin-cross-origin-isolation": "^0.1.6",
+    "vitest": "^3.0.5"
+  }
+}

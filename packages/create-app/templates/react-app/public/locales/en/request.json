@@ -1,0 +1,15 @@
+{
+  "requestTimeout": "Request Timeout",
+  "helloResult": "Hello result is",
+  "helloError": "Hello error is",
+  "ipInfoResult": "IpInfo result is",
+  "ipInfo": "IpInfo",
+  "randomUser": "RandomUser",
+  "loading": "Loading...",
+  "randomUserResult": "RandomUser result is",
+  "randomUserError": "RandomUser error is",
+  "triggerAbortRequest": "Trigger Abort Request",
+  "stopAbortRequest": "Stop Abort Request",
+  "abortRequestResult": "Abort Request Result",
+  "abortRequestError": "Abort Request Error"
+}

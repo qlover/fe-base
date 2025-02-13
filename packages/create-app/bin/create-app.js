@@ -8,19 +8,29 @@ import { existsSync } from 'fs';
 async function main() {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const templateRootPath = join(__dirname, '../templates');
+  const configsRootPath = join(__dirname, '../configs');
 
   if (!existsSync(templateRootPath)) {
     console.error('Template is empty!');
     process.exit(1);
   }
 
+  if (!existsSync(configsRootPath)) {
+    console.error('Configs is empty!');
+    process.exit(1);
+  }
+
   const generator = new Generator({
     options: {
-      templateRootPath
+      templateRootPath,
+      configsRootPath
     }
   });
 
   await generator.generate();
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

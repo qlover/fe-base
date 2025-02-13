@@ -1,0 +1,11 @@
+{
+  "title": "JSONStorage Demo",
+  "title2": "Permanent storage test",
+  "title3": "Expire time test",
+  "title4": "Request Timeout",
+  "format.title": "Test key: ${key}, Random value range: ${min}~${max}",
+  "setRandomValue": "Set random value",
+  "currentValue": "Current value",
+  "ms": "ms",
+  "setExpireTime": "Set random value(with expire time)"
+}

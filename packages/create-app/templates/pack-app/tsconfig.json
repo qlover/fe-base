@@ -1,0 +1,9 @@
+{
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "rootDir": "./"
+  },
+  "include": ["./packages", "configs/node-lib/eslint.config.js"],
+  "exclude": ["**/node_modules/*", "**/dist", "**/build"]
+}
