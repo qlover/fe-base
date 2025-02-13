@@ -3,7 +3,7 @@ import { localJsonStorage, logger } from '../globals';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { RequestController } from '@/uikit/controllers/RequestController';
-import { ProcesserService } from '@/base/services/processer/ProcesserService';
+import { ProcesserService } from '@/services/processer/ProcesserService';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { UserController } from '@/uikit/controllers/UserController';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';

@@ -2,7 +2,7 @@ import { createContext, useEffect } from 'react';
 import { IOC } from '@/core';
 import { useLanguageGuard } from '@/uikit/hooks/useLanguageGuard';
 import { useStrictEffect } from '@/uikit/hooks/useStrictEffect';
-import { ProcesserService } from '@/base/services/processer/ProcesserService';
+import { ProcesserService } from '@/services/processer/ProcesserService';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useControllerState } from '@lib/fe-react-controller';
 import { Loading } from '@/components/Loading';

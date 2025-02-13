@@ -1,12 +1,9 @@
 import '@/uikit/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createFeReactRoutes } from './pages';
-import { I18nService } from '@/services/i18n';
 import { useMemo } from 'react';
 import { IOC } from './core';
 import { RouterController } from './uikit/controllers/RouterController';
-
-I18nService.init();
 
 function App() {
   const routerBase = useMemo(() => {
