@@ -1,0 +1,61 @@
+{
+  "name": "pkg-name",
+  "description": "A pkg-name description",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "homepage": "",
+  "author": "",
+  "license": "ISC",
+  "main": "./dist/es/index.js",
+  "module": "./dist/es/index.js",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/es/index.d.ts",
+      "import": "./dist/es/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./cjs/*": "./dist/cjs/*",
+    "./es/*": "./dist/es/*",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "",
+    "directory": ""
+  },
+  "files": [
+    "bin",
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "lib",
+    "node lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {},
+  "scripts": {
+    "build": "pnpm build",
+    "test": "vitest run",
+    "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs} --write",
+    "lint": "eslint . --fix",
+    "clean": "fe-clean",
+    "check-packages": "fe-check-packages",
+    "commit": "fe-commit",
+    "clean-branch": "fe-clean-branch"
+  },
+  "devDependencies": {
+    "@qlover/env-loader": "latest",
+    "@qlover/fe-standard": "latest",
+    "@qlover/fe-scripts": "latest",
+    "@qlover/scripts-context": "latest"
+  },
+  "dependencies": {
+    "@qlover/fe-utils": "latest"
+  }
+}

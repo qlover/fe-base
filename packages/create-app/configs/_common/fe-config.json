@@ -1,0 +1,6 @@
+{
+  "protectedBranches": ["master", "develop"],
+  "release": {
+    "packagesDirectories": []
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint", // ESLint
+    "esbenp.prettier-vscode", // Prettier
+    "bradlc.vscode-tailwindcss", // Tailwind CSS
+    "wayou.vscode-todo-highlight", // Mark Highlight(TODO, FIXME, etc.),
+    "vitest.explorer" // Vitest
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "eslint.enable": true,
+  "eslint.format.enable": false,
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "jest.runMode": "on-demand",
+  "tailwindCSS.rootFontSize": 10,
+  "editor.snippetSuggestions": "top",
+  "vitest.autoRun": false,
+  "workbench.view.alwaysShowHeaderActions": true
+}
