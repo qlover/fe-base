@@ -1,0 +1,19 @@
+{
+  "react-component": {
+    "prefix": "react-component",
+    "scope": "typescriptreact",
+    "body": [
+      "import clsx from 'clsx';",
+      "",
+      "export type $1Props = {",
+      "  $2",
+      "  className?: string;",
+      "}",
+      "",
+      "export function $1({ $2, className }: $1Props) {",
+      "  return <div data-testid=\"$1\" className={clsx('$3', className)}>$3</div>;",
+      "}"
+    ],
+    "description": "创建一个 React 组件"
+  }
+}

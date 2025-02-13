@@ -1,6 +1,6 @@
 import BaseHeader from './components/BaseHeader';
 import { Outlet } from 'react-router-dom';
-import { ProcessProvider } from '@/components/ProcessProvider';
+import { ProcessProvider } from '@/uikit/providers/ProcessProvider';
 
 export default function Layout() {
   return (

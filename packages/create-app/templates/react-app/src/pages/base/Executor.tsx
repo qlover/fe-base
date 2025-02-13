@@ -1,9 +1,13 @@
-import { executorController, jsonStorageController } from '@/containers';
+import { IOC } from '@/core';
 import { useControllerState } from '@lib/fe-react-controller';
-import { useBaseRoutePage } from '@/containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
+import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
+import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 
 export default function Executor() {
-  const jsonStorageControllerState = useControllerState(jsonStorageController);
+  const jsonStorageControllerState = useControllerState(
+    IOC(JSONStorageController)
+  );
   const { t } = useBaseRoutePage();
 
   return (
@@ -26,7 +30,7 @@ export default function Executor() {
 
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              onClick={executorController.onTestPlugins}
+              onClick={IOC(ExecutorController).onTestPlugins}
             >
               {t('testPlugin')}
             </button>

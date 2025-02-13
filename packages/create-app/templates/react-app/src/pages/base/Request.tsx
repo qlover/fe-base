@@ -1,10 +1,15 @@
-import { jsonStorageController, requestController } from '@/containers';
+import { IOC } from '@/core';
 import { useControllerState } from '@lib/fe-react-controller';
-import { useBaseRoutePage } from '../../containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
+import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
+import { RequestController } from '@/uikit/controllers/RequestController';
 
 export default function Request() {
+  const requestController = IOC(RequestController);
   const requestControllerState = useControllerState(requestController);
-  const jsonStorageControllerState = useControllerState(jsonStorageController);
+  const jsonStorageControllerState = useControllerState(
+    IOC(JSONStorageController)
+  );
   const { t } = useBaseRoutePage();
 
   return (

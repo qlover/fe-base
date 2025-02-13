@@ -1,3 +1,4 @@
+import { expect, describe, it, beforeAll, afterAll } from 'vitest';
 import { readJson } from '../src/readJson';
 import { writeFileSync, unlinkSync } from 'fs';
 

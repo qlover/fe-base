@@ -1,22 +1,24 @@
 import { dirname, join } from 'path';
-import {
-  copyFileSync,
-  existsSync,
-  readFileSync,
-  readdirSync,
-  statSync,
-  mkdirSync
-} from 'fs';
+import { existsSync, readFileSync, mkdirSync } from 'fs';
 import ignore from 'ignore';
-import { GeneratorResult } from './type';
 import { promises as fsPromises } from 'fs';
 const { copyFile, stat } = fsPromises;
+
+export type CopyCallback = (
+  sourceFilePath: string,
+  targetFilePath: string
+) => boolean | Promise<boolean>;
 
 export class Copyer {
   static IGNORE_FILE = '.gitignore.template';
 
-  getIg(targetDir: string): ignore.Ignore | undefined {
-    const gitignorePath = join(targetDir, Copyer.IGNORE_FILE);
+  constructor(
+    private readonly ignoreTargetPath: string,
+    private readonly ignoreFile: string = Copyer.IGNORE_FILE
+  ) {}
+
+  getIg(targetDir: string = this.ignoreTargetPath): ignore.Ignore | undefined {
+    const gitignorePath = join(targetDir, this.ignoreFile);
 
     if (!existsSync(gitignorePath)) {
       return;
@@ -47,10 +49,11 @@ export class Copyer {
    * @example
    * await copyer.copyFilesPromise('src', 'dest', ignoreInstance);
    */
-  async copyFilesPromise(
+  async copyFiles(
     sourcePath: string,
     targetDir: string,
-    ig?: ignore.Ignore
+    ig?: ignore.Ignore,
+    copyCallback?: CopyCallback
   ): Promise<void> {
     const items = await fsPromises.readdir(sourcePath);
 
@@ -69,123 +72,36 @@ export class Copyer {
         const fileStat = await stat(sourceFilePath);
 
         if (fileStat.isDirectory()) {
-          await this.copyFilesPromise(sourceFilePath, targetFilePath, ig);
+          await this.copyFiles(sourceFilePath, targetFilePath, ig);
         } else {
           // console.log(`copy ${sourceFilePath} to ${targetFilePath}`);
+
+          if (
+            copyCallback &&
+            (await copyCallback(sourceFilePath, targetFilePath))
+          ) {
+            return;
+          }
+
           await copyFile(sourceFilePath, targetFilePath);
         }
       })
     );
   }
 
-  /**
-   * copy templates recursively
-   * @param {string} sourePath - source directory
-   * @param {string} targetDir - target directory
-   * @param {ignore.Ignore} ig - ignore rules
-   */
-  copyFilesSync(
-    sourePath: string,
-    targetDir: string,
-    ig?: ignore.Ignore
-  ): void {
-    const items = readdirSync(sourePath);
-
-    for (const item of items) {
-      const sourcePath = join(sourePath, item);
-      const targetPath = join(targetDir, item);
-
-      if (ig && ig.ignores(item)) {
-        continue; // ignore files listed in .gitignore
-      }
-
-      // check if target directory exists, if not create it
-      this.ensureDir(dirname(targetPath));
-
-      if (statSync(sourcePath).isDirectory()) {
-        this.copyFilesSync(sourcePath, targetPath, ig);
-      } else {
-        // console.log(`copy ${sourcePath} to ${targetPath}`);
-        copyFileSync(sourcePath, targetPath);
-      }
-    }
-  }
-
-  create(result: GeneratorResult): void {
-    const {
-      targetPath,
-      templateRootPath,
-      subPackages,
-      packagesNames = 'packages'
-    } = result;
-
-    if (!targetPath || !templateRootPath) {
-      throw new Error('targetPath and templatePath are required');
-    }
-
-    this.createPath(result);
-
-    // if pack template, copy sub packages
-    if (subPackages) {
-      // if pack template, copy sub packages
-      for (const subPackage of subPackages) {
-        const packagesPath = join(targetPath, packagesNames, subPackage);
-        this.createPath({
-          ...result,
-          targetPath: packagesPath,
-          template: subPackage
-        });
-      }
-    }
-  }
-
-  async createPromise(result: GeneratorResult): Promise<void> {
-    const {
-      targetPath,
-      templateRootPath,
-      subPackages,
-      packagesNames = 'packages'
-    } = result;
-
-    if (!targetPath || !templateRootPath) {
-      throw new Error('targetPath and templatePath are required');
-    }
-
-    await this.createPathPromise(result);
-
-    // if pack template, copy sub packages
-    if (subPackages) {
-      // if pack template, copy sub packages
-      for (const subPackage of subPackages) {
-        const packagesPath = join(targetPath, packagesNames, subPackage);
-        await this.createPathPromise({
-          ...result,
-          targetPath: packagesPath,
-          template: subPackage
-        });
-      }
-    }
-  }
-
-  createPath(result: GeneratorResult): void {
-    const { targetPath = '', templateRootPath, template } = result;
-
+  copyPaths({
+    sourcePath,
+    targetPath,
+    copyCallback
+  }: {
+    sourcePath: string;
+    targetPath: string;
+    copyCallback?: CopyCallback;
+  }): Promise<void> {
     this.ensureDir(targetPath);
     // if not pack template, copy templates
-    const templatePath = join(templateRootPath, template);
-    const ig = this.getIg(targetPath);
+    const ig = this.getIg();
 
-    this.copyFilesSync(templatePath, targetPath, ig);
-  }
-
-  createPathPromise(result: GeneratorResult): Promise<void> {
-    const { targetPath = '', templateRootPath, template } = result;
-
-    this.ensureDir(targetPath);
-    // if not pack template, copy templates
-    const templatePath = join(templateRootPath, template);
-    const ig = this.getIg(targetPath);
-
-    return this.copyFilesPromise(templatePath, targetPath, ig);
+    return this.copyFiles(sourcePath, targetPath, ig, copyCallback);
   }
 }

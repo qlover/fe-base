@@ -1,15 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import * as feGlobals from '@/containers/globals';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import { Bootstrap } from './core/bootstrap';
+import { FeIOC } from './core/feIOC/FeIOC';
 
-// set global feGlobals
-if (typeof window !== 'undefined') {
-  window.feGlobals = Object.freeze(Object.assign({}, feGlobals));
-}
+new Bootstrap(new FeIOC()).start();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);

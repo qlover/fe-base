@@ -1,6 +1,6 @@
 {
   "name": "node-lib",
-  "description": "A node lib for frontwork",
+  "description": "A node lib template",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -12,9 +12,9 @@
   "types": "./dist/es/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/es/index.d.ts",
       "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
+      "require": "./dist/cjs/index.js"
     },
     "./cjs/*": "./dist/cjs/*",
     "./es/*": "./dist/es/*",
@@ -26,23 +26,39 @@
     "directory": ""
   },
   "files": [
+    "bin",
     "dist",
     "package.json",
     "README.md"
   ],
   "keywords": [
-    "node-lib"
+    "lib",
+    "node lib"
   ],
   "publishConfig": {
     "access": "public"
   },
+  "bin": {},
   "scripts": {
     "build": "rollup -c",
-    "test": "jest"
+    "lint": "eslint .",
+    "test": "vitest run",
+    "run:command": "node bin/test.js"
   },
   "devDependencies": {
+    "@qlover/env-loader": "latest",
     "@qlover/fe-standard": "latest",
-    "@qlover/env-loader": "latest"
+    "@qlover/scripts-context": "latest",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/node": "^22.13.2",
+    "commander": "^11.0.0",
+    "release-it": "^17.10.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-typescript2": "^0.36.0"
   },
   "dependencies": {
     "@qlover/fe-utils": "latest"

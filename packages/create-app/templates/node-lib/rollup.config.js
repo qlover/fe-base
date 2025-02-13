@@ -9,10 +9,9 @@ import { readFileSync, rmSync } from 'fs';
 import { Env } from '@qlover/env-loader';
 
 const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
-const tsConfig = JSON.parse(readFileSync('./tsconfig.json'), 'utf-8');
 const env = Env.searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
-const buildDir = tsConfig.compilerOptions.outDir;
+const buildDir = 'dist';
 
 const treeshake = {
   moduleSideEffects: false,
@@ -50,6 +49,8 @@ function cleanBuildDir() {
 
 cleanBuildDir();
 
+const formats = ['cjs', 'es'];
+
 /**
  * @type {import('rollup').RollupOptions[]}
  */
@@ -57,31 +58,20 @@ const config = [
   {
     input: 'src/index.ts',
     external: defaultExternal,
-    output: [
-      {
-        file: 'dist/cjs/index.js',
-        format: 'cjs'
-      },
-      {
-        file: 'dist/es/index.js',
-        format: 'es'
-      }
-    ],
+    output: formats.map((format) => ({
+      file: `dist/${format}/index.js`,
+      format
+    })),
     plugins: createPlugin(isProduction),
     treeshake
   },
   {
     input: './src/index.ts',
-    output: [
-      {
-        file: 'dist/cjs/index.d.ts',
-        format: 'cjs'
-      },
-      {
-        file: 'dist/es/index.d.ts',
-        format: 'es'
-      }
-    ],
+    external: defaultExternal,
+    output: formats.map((format) => ({
+      file: `dist/${format}/index.d.ts`,
+      format
+    })),
     plugins: [dts()],
     treeshake
   }

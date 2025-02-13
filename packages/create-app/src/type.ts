@@ -4,12 +4,40 @@ export type GeneratorPrompt = DistinctQuestion;
 
 export type GeneratorOptions = {
   prompts?: GeneratorPrompt[];
+  /**
+   * template root path
+   */
   templateRootPath: string;
+
+  /**
+   * configs root path
+   */
+  configsRootPath: string;
+
+  /**
+   * whether to copy config files
+   */
+  config?: boolean;
 };
 
-export interface GeneratorResult extends GeneratorOptions {
+export interface GeneratorRuntimes extends GeneratorOptions {
+  /**
+   * project name
+   */
   name: string;
+
+  /**
+   * choose template name
+   *
+   * mayby is pack-app
+   */
   template: string;
+
+  /**
+   * choose sub packages
+   *
+   * mayby is ['node-lib', 'react-app']
+   */
   subPackages?: string[];
 
   /**
@@ -17,13 +45,16 @@ export interface GeneratorResult extends GeneratorOptions {
    */
   packagesNames?: string;
 
-  // generated
+  /**
+   * Generated project path
+   * @default `./`
+   */
   targetPath?: string;
 }
 
 export type TaskOptions = {
   templateFiles: TemplateFile[];
-  result: GeneratorResult;
+  result: GeneratorRuntimes;
 };
 
 export type TemplateFile = {

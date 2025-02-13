@@ -1,4 +1,4 @@
-import { useBaseRoutePage } from '@/containers/context/BaseRouteContext';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 export default function NotFound500() {
   const { t } = useBaseRoutePage();

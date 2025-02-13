@@ -19,6 +19,7 @@
   "files": [
     "dist",
     "bin",
+    "configs",
     "templates",
     "package.json",
     "README.md",
