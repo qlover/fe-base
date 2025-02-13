@@ -13,6 +13,11 @@ export type GeneratorOptions = {
    * configs root path
    */
   configsRootPath: string;
+
+  /**
+   * whether to copy config files
+   */
+  config?: boolean;
 };
 
 export interface GeneratorRuntimes extends GeneratorOptions {

@@ -102,12 +102,18 @@ export class Generator {
     configName: string
   ): Promise<void> {
     const copyCallback: CopyCallback = (sourceFilePath, targetFilePath) => {
-      // FIXME: 可以覆盖指定文件或修复复制行为
+      // FIXME: can override the specified file or fix the copy behavior
       this.logger.debug('copyCallback', sourceFilePath, targetFilePath);
       return false;
     };
 
-    const { configsRootPath } = this.context.options;
+    const { configsRootPath, config } = this.context.options;
+
+    if (!config) {
+      this.logger.debug('no copy config files');
+      return;
+    }
+
     await this.copyer.copyPaths({
       sourcePath: join(configsRootPath, configName),
       targetPath,
