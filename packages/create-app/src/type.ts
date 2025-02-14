@@ -20,11 +20,11 @@ export type GeneratorOptions = {
   config?: boolean;
 };
 
-export interface GeneratorRuntimes extends GeneratorOptions {
+export interface GeneratorContext extends GeneratorOptions {
   /**
    * project name
    */
-  name: string;
+  projectName: string;
 
   /**
    * choose template name
@@ -50,11 +50,17 @@ export interface GeneratorRuntimes extends GeneratorOptions {
    * @default `./`
    */
   targetPath?: string;
+
+  /**
+   * release path
+   * @default `src`
+   */
+  releasePath?: string;
 }
 
 export type TaskOptions = {
   templateFiles: TemplateFile[];
-  result: GeneratorRuntimes;
+  result: GeneratorContext;
 };
 
 export type TemplateFile = {

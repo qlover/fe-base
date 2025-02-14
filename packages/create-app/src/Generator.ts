@@ -6,7 +6,8 @@ import { join } from 'path';
 import { oraPromise } from 'ora';
 import { existsSync } from 'fs';
 import { CopyCallback, Copyer } from './Copyer';
-import { GeneratorOptions, GeneratorPrompt, GeneratorRuntimes } from './type';
+import { GeneratorOptions, GeneratorPrompt, GeneratorContext } from './type';
+import { Compose } from './Compose';
 
 const packages = ['pack-app'];
 export class Generator {
@@ -14,6 +15,7 @@ export class Generator {
   protected context: FeScriptContext<GeneratorOptions>;
   private subPackages: string[];
   private copyer: Copyer;
+  private compose: Compose;
 
   constructor(context: Partial<FeScriptContext<GeneratorOptions>>) {
     const templatePath = context.options?.templateRootPath;
@@ -36,17 +38,18 @@ export class Generator {
     this.copyer = new Copyer(
       join(this.context.options.configsRootPath, '_common')
     );
+    this.compose = new Compose();
   }
 
   get logger(): Logger {
     return this.context.logger;
   }
 
-  async steps(prompts: GeneratorPrompt[]): Promise<GeneratorRuntimes> {
+  async steps(prompts: GeneratorPrompt[]): Promise<GeneratorContext> {
     try {
       const answers = await inquirer.prompt(prompts);
 
-      return answers as GeneratorRuntimes;
+      return answers as GeneratorContext;
     } catch (error) {
       if ((error as Record<string, boolean>).isTtyError) {
         // Prompt couldn't be rendered in the current environment
@@ -81,30 +84,79 @@ export class Generator {
     return packages.includes(template);
   }
 
-  private async getGeneratorResult(): Promise<GeneratorRuntimes> {
+  private async getGeneratorContext(): Promise<GeneratorContext> {
     // const { templateRootPath } = this.context.options;
     // get all templates
     const prompts = createDefaultPrompts(this.subPackages, packages);
-    const result = await this.steps(prompts);
+    const context = await this.steps(prompts);
 
     // if package template, we need to add chooise sub packages type
-    if (this.isPackageTemplate(result.template)) {
+    if (this.isPackageTemplate(context.template)) {
       const prompts = createPackagePrompts(this.subPackages);
       const choseSubPackages = await this.steps(prompts);
-      Object.assign(result, choseSubPackages);
+      Object.assign(context, choseSubPackages);
     }
 
-    return result;
+    // generate target path
+    context.targetPath = join(process.cwd(), context.projectName);
+
+    // generate release path
+    context.releasePath = context.releasePath || 'src';
+
+    return context;
   }
 
-  private async copyConfigs(
+  async generate(): Promise<void> {
+    const context = await this.getGeneratorContext();
+
+    this.logger.debug(
+      'context is:',
+      context,
+      this.context.options.templateRootPath
+    );
+
+    // if subPackages is not empty, copy sub packages
+    if (context.subPackages) {
+      await this.action({
+        label: 'Generate Directories(subPackages)',
+        task: async () => {
+          await this.generateTemplateDir(context);
+
+          await this.generateSubPackages(context);
+
+          await this.generateConfigs(context, context.targetPath!, '_common');
+        }
+      });
+
+      return;
+    }
+
+    await this.action({
+      label: 'Generate Directory',
+      task: async () => {
+        await this.generateTemplateDir(context);
+        await this.generateConfigs(context, context.targetPath!, '_common');
+        await this.generateConfigs(
+          context,
+          context.targetPath!,
+          context.template
+        );
+      }
+    });
+  }
+
+  async generateConfigs(
+    context: GeneratorContext,
     targetPath: string,
     configName: string
   ): Promise<void> {
     const copyCallback: CopyCallback = (sourceFilePath, targetFilePath) => {
-      // FIXME: can override the specified file or fix the copy behavior
       this.logger.debug('copyCallback', sourceFilePath, targetFilePath);
-      return false;
+      return this.compose.composeConfigFile(
+        context,
+        sourceFilePath,
+        targetFilePath
+      );
     };
 
     const { configsRootPath, config } = this.context.options;
@@ -121,58 +173,20 @@ export class Generator {
     });
   }
 
-  async generate(): Promise<void> {
-    const result = await this.getGeneratorResult();
-
-    // generate target path
-    result.targetPath = join(process.cwd(), result.name);
-
-    this.logger.debug(
-      'result is:',
-      result,
-      this.context.options.templateRootPath
-    );
-
-    // if subPackages is not empty, copy sub packages
-    if (result.subPackages) {
-      await this.action({
-        label: 'Generate Directories(subPackages)',
-        task: async () => {
-          await this.generateTemplateDir(result);
-
-          await this.generateSubPackages(result);
-
-          await this.copyConfigs(result.targetPath!, '_common');
-        }
-      });
-
-      return;
-    }
-
-    await this.action({
-      label: 'Generate Directory',
-      task: async () => {
-        await this.generateTemplateDir(result);
-        await this.copyConfigs(result.targetPath!, '_common');
-        await this.copyConfigs(result.targetPath!, result.template);
-      }
-    });
-  }
-
-  private generateTemplateDir(result: GeneratorRuntimes): Promise<void> {
+  generateTemplateDir(context: GeneratorContext): Promise<void> {
     return this.copyer.copyPaths({
-      sourcePath: join(this.context.options.templateRootPath, result.template),
-      targetPath: result.targetPath!
+      sourcePath: join(this.context.options.templateRootPath, context.template),
+      targetPath: context.targetPath!
     });
   }
 
-  private async generateSubPackages(result: GeneratorRuntimes): Promise<void> {
+  async generateSubPackages(context: GeneratorContext): Promise<void> {
     // if pack template, copy sub packages
     const {
       packagesNames = 'packages',
       subPackages = [],
       targetPath = ''
-    } = result;
+    } = context;
     const { templateRootPath } = this.context.options;
 
     for (const subPackage of subPackages) {

@@ -1,7 +1,8 @@
 import { dirname, join } from 'path';
-import { existsSync, readFileSync, mkdirSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import ignore from 'ignore';
 import { promises as fsPromises } from 'fs';
+import { Util } from './Util';
 const { copyFile, stat } = fsPromises;
 
 export type CopyCallback = (
@@ -34,12 +35,6 @@ export class Copyer {
     return ignore().add(allRules);
   }
 
-  ensureDir(dir: string): void {
-    if (!existsSync(dir)) {
-      mkdirSync(dir, { recursive: true });
-    }
-  }
-
   /**
    * Asynchronously copy files from source to target directory.
    * @param {string} sourcePath - Source directory.
@@ -67,15 +62,18 @@ export class Copyer {
         }
 
         // Check if target directory exists, if not create it
-        this.ensureDir(dirname(targetFilePath));
+        Util.ensureDir(dirname(targetFilePath));
 
         const fileStat = await stat(sourceFilePath);
 
         if (fileStat.isDirectory()) {
-          await this.copyFiles(sourceFilePath, targetFilePath, ig);
+          await this.copyFiles(
+            sourceFilePath,
+            targetFilePath,
+            ig,
+            copyCallback
+          );
         } else {
-          // console.log(`copy ${sourceFilePath} to ${targetFilePath}`);
-
           if (
             copyCallback &&
             (await copyCallback(sourceFilePath, targetFilePath))
@@ -98,7 +96,7 @@ export class Copyer {
     targetPath: string;
     copyCallback?: CopyCallback;
   }): Promise<void> {
-    this.ensureDir(targetPath);
+    Util.ensureDir(targetPath);
     // if not pack template, copy templates
     const ig = this.getIg();
 

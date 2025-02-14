@@ -1,6 +1,6 @@
 {
-  "name": "pkg-name",
-  "description": "A pkg-name description",
+  "name": "[TPL:projectName]",
+  "description": "[TPL:projectName] description",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -32,8 +32,7 @@
     "README.md"
   ],
   "keywords": [
-    "lib",
-    "node lib"
+    "[TPL:projectName]"
   ],
   "publishConfig": {
     "access": "public"
@@ -47,7 +46,8 @@
     "clean": "fe-clean",
     "check-packages": "fe-check-packages",
     "commit": "fe-commit",
-    "clean-branch": "fe-clean-branch"
+    "clean-branch": "fe-clean-branch",
+    "release:[TPL:projectName]": "release-it"
   },
   "devDependencies": {
     "@qlover/env-loader": "latest",

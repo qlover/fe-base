@@ -1,4 +1,4 @@
-name: Release [PATH_NAMES]
+name: Release [TPL:projectName]
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     types:
       - closed
     paths:
-      - [PATH_NAMES]/**
+      - [TPL:releasePath]/**
 
 jobs:
   release-PR:
-    # only run when PR merged and has changes:[PATH_NAMES] and CI-Release labels
+    # only run when PR merged and has changes:[TPL:projectName] and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:[PATH_NAMES]') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:[TPL:projectName]') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -50,17 +50,17 @@ jobs:
         run: pnpm build
 
       - name: Create release PR
-        run: npm run release-pr:[PATH_NAMES]
+        run: npm run release-pr:[TPL:projectName]
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release:
-    # only run when PR merged and has changes:[PATH_NAMES] and CI-Release labels
+    # only run when PR merged and has changes:[TPL:projectName] and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:[PATH_NAMES]') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:[TPL:projectName]') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
         run: pnpm build
 
       - name: Create tag and publish
-        run: npm run release:[PATH_NAMES]
+        run: npm run release:[TPL:projectName]
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
