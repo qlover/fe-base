@@ -17,7 +17,7 @@ export function createDefaultPrompts(
   return [
     {
       type: 'input',
-      name: 'name',
+      name: 'projectName',
       message: 'Project name',
       validate: (value) => validRequiredString(value, 'Project name')
     },
