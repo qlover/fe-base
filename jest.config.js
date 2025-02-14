@@ -4,9 +4,7 @@ import tsJestConfig from '@qlover/fe-standard/config/jest.esm.js';
 export default {
   // ...tsJestConfig,
   // testMatch: tsJestConfig.testMatch.map((item) => '<rootDir>/packages/' + item),
-  testPathIgnorePatterns: [
-    '<rootDir>/packages/create-app/templates/react-vite-lib/'
-  ],
+  testPathIgnorePatterns: ['<rootDir>/packages/create-app/templates'],
   projects: [
     {
       displayName: 'env-loader',
@@ -28,6 +26,11 @@ export default {
       testMatch: tsJestConfig.testMatch.map(
         (item) => '<rootDir>/packages/scripts-context/' + item
       )
+    },
+    {
+      displayName: 'create-app',
+      ...tsJestConfig,
+      testMatch: ['<rootDir>/packages/create-app/__tests__/**/*.[jt]s?(x)']
     },
 
     /**

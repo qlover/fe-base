@@ -5,7 +5,7 @@ import { GeneratorContext } from './type';
 export class Compose {
   constructor() {}
 
-  private isJSONFilePath(filePath: string): boolean {
+  isJSONFilePath(filePath: string): boolean {
     return filePath.endsWith('.json') || filePath.endsWith('.json.template');
   }
 
@@ -17,21 +17,24 @@ export class Compose {
     return filePath.replace('.template', '');
   }
 
-  private readFile(filePath: string): string {
+  readFile(filePath: string): string {
     return readFileSync(filePath, 'utf-8');
   }
 
-  private readJSONFile(filePath: string): Record<string, unknown> {
+  readJSONFile(filePath: string): Record<string, unknown> {
     return JSON.parse(this.readFile(filePath));
   }
 
-  private writeFile(filePath: string, content: string): void {
+  writeFile(filePath: string, content: string): void {
     writeFileSync(this.getRealTemplateFilePath(filePath), content, {
       encoding: 'utf-8'
     });
   }
 
-  replaceFile(targetFilePath: string, context: GeneratorContext): string {
+  replaceFile(
+    targetFilePath: string,
+    context: Record<string, unknown>
+  ): string {
     let targetFileContent = this.readFile(targetFilePath);
 
     Object.keys(context).forEach((key) => {
@@ -67,7 +70,10 @@ export class Compose {
   ): boolean {
     // If the source and target are both same files, we need to merge them
     if (this.isTemplateFilePath(sourceFilePath)) {
-      const fileContent = this.replaceFile(sourceFilePath, context);
+      const fileContent = this.replaceFile(
+        sourceFilePath,
+        context as unknown as Record<string, unknown>
+      );
 
       // if target file existed, merged!, only json!!
       if (
