@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, MockInstance } from 'vitest';
+import { describe, it, expect, vi, MockInstance, beforeEach } from 'vitest';
 import { Executor, ExecutorError, ExecutorPlugin } from '../../../interface';
 
 function mockLogStdIo(): {

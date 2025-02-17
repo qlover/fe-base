@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, MockInstance } from 'vitest';
+import { describe, it, expect, vi, MockInstance, afterEach } from 'vitest';
 import { Logger } from '../..';
 
 function mockLogStdIo(log?: Logger): {

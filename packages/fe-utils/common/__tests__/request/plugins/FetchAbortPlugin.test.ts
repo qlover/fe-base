@@ -68,7 +68,7 @@ describe('FetchAbortPlugin', () => {
     try {
       await firstRequest;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect(error).toMatchObject({
         id: RequestErrorID.ABORT_ERROR
@@ -215,7 +215,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     try {
       await requestPromise;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
       expect((error as RequestError).message).toBe('TestErrorPlugin abort');
@@ -278,7 +278,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     try {
       await requestPromise;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
       expect(onAbortMock).toHaveBeenCalledTimes(1);
