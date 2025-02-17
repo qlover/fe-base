@@ -4,20 +4,20 @@ import {
   ExecutorPlugin
 } from '../../../../interface';
 import { RequestAdapterFetch, FetchAbortPlugin } from '../../..';
-
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 function sleep(mock: unknown, ms: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(() => resolve(mock), ms));
 }
 
 describe('FetchAbortPlugin', () => {
-  let fetchMock: jest.Mock;
+  let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
   let request: RequestAdapterFetch;
   let abortPlugin: FetchAbortPlugin;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    fetchMock = jest.fn();
+    fetchMock = vi.fn();
     globalThis.fetch = fetchMock;
 
     request = new RequestAdapterFetch({
@@ -30,12 +30,12 @@ describe('FetchAbortPlugin', () => {
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     abortPlugin.abortAll();
   });
 
   it('should abort previous request when making same request', async () => {
-    const onAbortMock = jest.fn();
+    const onAbortMock = vi.fn();
 
     const firstConfig = {
       url: 'https://api.example.com/api/test0',
@@ -68,7 +68,7 @@ describe('FetchAbortPlugin', () => {
     try {
       await firstRequest;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect(error).toMatchObject({
         id: RequestErrorID.ABORT_ERROR
@@ -117,7 +117,7 @@ describe('FetchAbortPlugin', () => {
   });
 
   it('should auto abort request with same URL', async () => {
-    const onAbortMock = jest.fn();
+    const onAbortMock = vi.fn();
 
     fetchMock.mockImplementation((request: Request) => {
       return new Promise((resolve, reject) => {
@@ -165,14 +165,14 @@ describe('FetchAbortPlugin', () => {
 
 describe('FetchAbortPlugin with multiple plugins', () => {
   it('should handle abort error correctly with multiple plugins(before)', async () => {
-    const fetchMock = jest.fn();
+    const fetchMock = vi.fn();
     const request = new RequestAdapterFetch({
       fetcher: fetchMock
     });
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
       pluginName: 'TestErrorPlugin',
-      onError: jest.fn((): RequestError => {
+      onError: vi.fn((): RequestError => {
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
           'TestErrorPlugin abort'
@@ -182,7 +182,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     request.usePlugin(TestErrorPlugin);
     request.usePlugin(abortPlugin);
 
-    const onAbortMock = jest.fn();
+    const onAbortMock = vi.fn();
 
     const config = {
       url: 'https://api.example.com/api/test-multi-plugin',
@@ -215,7 +215,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     try {
       await requestPromise;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
       expect((error as RequestError).message).toBe('TestErrorPlugin abort');
@@ -227,14 +227,14 @@ describe('FetchAbortPlugin with multiple plugins', () => {
   });
 
   it('should handle abort error correctly with multiple plugins(after)', async () => {
-    const fetchMock = jest.fn();
+    const fetchMock = vi.fn();
     const request = new RequestAdapterFetch({
       fetcher: fetchMock
     });
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
       pluginName: 'TestErrorPlugin',
-      onError: jest.fn((): RequestError => {
+      onError: vi.fn((): RequestError => {
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
           'TestErrorPlugin abort'
@@ -245,7 +245,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     request.usePlugin(abortPlugin);
     request.usePlugin(TestErrorPlugin);
 
-    const onAbortMock = jest.fn();
+    const onAbortMock = vi.fn();
 
     const config = {
       url: 'https://api.example.com/api/test-multi-plugin',
@@ -278,7 +278,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     try {
       await requestPromise;
 
-      fail('Request should have been aborted');
+      throw new Error('Request should have been aborted');
     } catch (error: unknown) {
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
       expect(onAbortMock).toHaveBeenCalledTimes(1);

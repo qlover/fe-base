@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FetchURLPlugin } from '../../..';
 
 describe('FetchURLPlugin', () => {

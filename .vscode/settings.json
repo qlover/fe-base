@@ -5,5 +5,7 @@
   "files.eol": "\n",
   "editor.tabSize": 2,
   "jest.runMode": "on-demand",
-  "tailwindCSS.rootFontSize": 10
+  "tailwindCSS.rootFontSize": 10,
+  "vitest.autoRun": false,
+  "vitest.configSearchPatternExclude": "{**/node_modules/**,**/.*/**,**/*.d.ts,**/packages/create-app/templates/**}"
 }

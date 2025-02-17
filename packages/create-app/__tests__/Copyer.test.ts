@@ -1,9 +1,10 @@
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Copyer } from '../src/Copyer';
 import { Util } from '../src/Util';
 
-jest.mock('../src/Util');
+vi.mock('../src/Util');
 
 describe('Copyer 类测试', () => {
   const sourceDir = './source-files';

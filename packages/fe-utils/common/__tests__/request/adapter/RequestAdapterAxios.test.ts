@@ -1,14 +1,18 @@
 import { RequestAdapterAxios } from '../../../request/adapter/RequestAdapterAxios';
-import axios from 'axios';
+import axios, { AxiosStatic } from 'axios';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('RequestAdapterAxios', () => {
-  let axiosMock: jest.Mocked<typeof axios>;
+  let axiosMock: AxiosStatic & {
+    create: ReturnType<typeof vi.fn>;
+    request: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
-    axiosMock = axios as jest.Mocked<typeof axios>;
-    axiosMock.create.mockReturnThis();
+    axiosMock = axios as typeof axiosMock;
+    axiosMock.create = vi.fn().mockReturnThis();
   });
 
   it('should create an axios instance with given config', () => {
@@ -28,7 +32,7 @@ describe('RequestAdapterAxios', () => {
 
   it('should make a request and return a response', async () => {
     const responseData = { data: { id: 1 } };
-    axiosMock.request.mockResolvedValue(responseData);
+    axiosMock.request = vi.fn().mockResolvedValue(responseData);
 
     const adapter = new RequestAdapterAxios(axios);
     const response = await adapter.request({ url: '/users' });
@@ -39,7 +43,7 @@ describe('RequestAdapterAxios', () => {
 
   it('should handle request errors', async () => {
     const error = new Error('Network Error');
-    axiosMock.request.mockRejectedValue(error);
+    axiosMock.request = vi.fn().mockRejectedValue(error);
 
     const adapter = new RequestAdapterAxios(axios);
 

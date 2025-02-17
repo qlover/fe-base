@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { StringEntrypt, StringZlibEncrypt } from '../../encrypt';
 
 describe('StringEntrypt', () => {
