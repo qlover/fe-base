@@ -1,11 +1,12 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Env } from '../src/Env';
 import { Logger } from '@qlover/fe-utils';
 import { config } from 'dotenv';
 import { existsSync } from 'node:fs';
 import { resolve, normalize } from 'path';
 
-jest.mock('dotenv');
-jest.mock('node:fs');
+vi.mock('dotenv');
+vi.mock('node:fs');
 
 function toLocalPath(pathstring: string): string {
   return normalize(resolve(pathstring));
@@ -16,8 +17,8 @@ describe('Env', () => {
 
   beforeEach(() => {
     logger = {
-      warn: jest.fn(),
-      debug: jest.fn()
+      warn: vi.fn(),
+      debug: vi.fn()
     } as unknown as Logger;
   });
 
@@ -36,7 +37,7 @@ describe('Env', () => {
 
   describe('load', () => {
     it('should load environment variables from files', () => {
-      (existsSync as jest.Mock).mockReturnValue(true);
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(true);
       const env = new Env({ rootPath: '/test/path', logger });
       env.load({ preloadList: ['.env'] });
 
@@ -49,7 +50,7 @@ describe('Env', () => {
     });
 
     it('should warn if no .env file is found', () => {
-      (existsSync as jest.Mock).mockReturnValue(false);
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(false);
       const env = new Env({ rootPath: '/test/path', logger });
       env.load({ preloadList: ['.env'] });
 
@@ -137,7 +138,7 @@ describe('Env', () => {
 
   describe('searchEnv', () => {
     it('should search and load .env file', () => {
-      (existsSync as jest.Mock).mockReturnValue(true);
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(true);
       const env = Env.searchEnv({
         cwd: '/test/path',
         preloadList: ['.env'],
@@ -151,7 +152,7 @@ describe('Env', () => {
     });
 
     it('should warn if no environment files are found', () => {
-      (existsSync as jest.Mock).mockReturnValue(false);
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(false);
       Env.searchEnv({ cwd: '/test/path', preloadList: ['.env'], logger });
 
       expect(logger.warn).toHaveBeenCalledWith(
@@ -163,7 +164,7 @@ describe('Env', () => {
     });
 
     it('should stop searching after reaching max depth', () => {
-      (existsSync as jest.Mock).mockReturnValue(false);
+      (existsSync as ReturnType<typeof vi.fn>).mockReturnValue(false);
       Env.searchEnv({
         cwd: '/test/path',
         preloadList: ['.env'],

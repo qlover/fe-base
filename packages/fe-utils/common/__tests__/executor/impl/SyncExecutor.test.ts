@@ -4,14 +4,15 @@ import {
   ExecutorContext
 } from '../../../../interface';
 import { SyncExecutor } from '../../..';
+import { describe, it, expect, vi, MockInstance } from 'vitest';
 
 function mockLogStdIo(): {
-  spy: jest.SpyInstance;
+  spy: MockInstance;
   lastStdout: () => string;
   stdouts: () => string;
   end: () => void;
 } {
-  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   const end = (): void => {
     spy.mockRestore();
@@ -46,7 +47,7 @@ describe('Executor Sync implmentation', () => {
       executor.exec(() => {
         throw error;
       });
-    }).toThrow(error);
+    }).toThrow(ExecutorError);
   });
 
   it('should return ExecutorError in execNoError method', () => {
@@ -63,9 +64,9 @@ describe('Executor Sync implmentation', () => {
     const executor = new SyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn()
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn()
     };
     executor.use(plugin);
     executor.runHooks([plugin], 'onBefore');
@@ -77,9 +78,9 @@ describe('Executor Sync implmentation', () => {
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
       enabled: () => false,
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn()
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn()
     };
     executor.use(plugin);
     executor.runHooks([plugin], 'onBefore');
@@ -108,17 +109,17 @@ describe('SyncExecutor plugin test', () => {
     const executor = new SyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
     const mockPlugin = {
       pluginName: 'mockPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
 
     executor.use(anotherPlugin);
@@ -136,7 +137,7 @@ describe('SyncExecutor plugin test', () => {
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
       onlyOne: true,
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
     executor.use(anotherPlugin);
     // repeat use, and only one plugin
@@ -153,7 +154,7 @@ describe('SyncExecutor plugin test', () => {
     const executor = new SyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     executor.use(anotherPlugin);
     executor.runHooks([anotherPlugin], 'onBefore');
@@ -164,7 +165,7 @@ describe('SyncExecutor plugin test', () => {
     const executor = new SyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     executor.use(anotherPlugin);
     executor.runHooks([anotherPlugin], 'onBefore2');
@@ -231,7 +232,7 @@ describe('SyncExecutor onBefore Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin<Record<string, unknown>> = {
       pluginName: 'test2',
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
 
     executor.use(plugin1);
@@ -255,9 +256,9 @@ describe('SyncExecutor onBefore Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin1);
     executor.use(plugin2);
@@ -279,7 +280,7 @@ describe('SyncExecutor onBefore Lifecycle', () => {
         throw new Error('Error in onBefore');
       }
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin1);
     executor.use({ pluginName: 'test2', onError });
@@ -381,8 +382,8 @@ describe('SyncExecutor onExec Lifecycle', () => {
 
   it('should stop execution and enter onError if onExec throws an error', () => {
     const executor = new SyncExecutor();
-    const onError = jest.fn();
-    const onSuccess = jest.fn();
+    const onError = vi.fn();
+    const onSuccess = vi.fn();
 
     executor.use({
       pluginName: 'test',
@@ -540,7 +541,7 @@ describe('SyncExecutor onError Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -559,11 +560,11 @@ describe('SyncExecutor onError Lifecycle', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'test',
-      onError: jest.fn()
+      onError: vi.fn()
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -584,7 +585,7 @@ describe('SyncExecutor onError Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -649,9 +650,9 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onSuccess: jest.fn()
+      onSuccess: vi.fn()
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin1);
     executor.use(plugin2);
@@ -667,7 +668,7 @@ describe('SyncExecutor onSuccess Lifecycle', () => {
 
   it('should not execute onSuccess hook if task throws an error', () => {
     const executor = new SyncExecutor();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
@@ -711,7 +712,7 @@ describe('SyncExecutor execNoError Method', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -737,7 +738,7 @@ describe('SyncExecutor execNoError Method', () => {
 
   it('should not execute onSuccess hooks if an error occurs', () => {
     const executor = new SyncExecutor();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const plugin: ExecutorPlugin = {
       pluginName: 'test',

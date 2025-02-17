@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import {
   ExecutorPlugin,
   ExecutorError,
@@ -88,7 +89,7 @@ describe('ExecutorPlugin', () => {
       }
     };
 
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     executor.use(plugin);
     expect(consoleSpy).toHaveBeenCalledWith(
       `Plugin ${plugin.pluginName} is already used, skip adding`

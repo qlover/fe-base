@@ -1,15 +1,16 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { JSONStorage } from '../../storage/impl/JSONStorage';
 
 describe('JSONStorage', () => {
   let storage: JSONStorage;
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     storage = new JSONStorage();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should store and retrieve a value', () => {
@@ -33,7 +34,7 @@ describe('JSONStorage', () => {
   it('should handle expiration', () => {
     const expireTime = Date.now() + 1000; // 1 second in the future
     storage.setItem('key3', { data: 'value3' }, expireTime);
-    jest.advanceTimersByTime(1001); // Advance time by 1 second
+    vi.advanceTimersByTime(1001); // Advance time by 1 second
     const value = storage.getItem('key3');
     expect(value).toBeNull();
   });

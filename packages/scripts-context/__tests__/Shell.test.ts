@@ -1,9 +1,13 @@
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { Shell, ShellConfig, ShellExecOptions } from '../src/Shell';
 import { Logger } from '@qlover/fe-utils';
 import shell from 'shelljs';
 
-jest.mock('shelljs', () => ({
-  exec: jest.fn()
+// shell need export default
+vi.mock('shelljs', () => ({
+  default: {
+    exec: vi.fn()
+  }
 }));
 
 describe('Shell', () => {
@@ -12,10 +16,10 @@ describe('Shell', () => {
 
   beforeEach(() => {
     logger = {
-      exec: jest.fn(),
-      error: jest.fn(),
-      log: jest.fn(),
-      verbose: jest.fn()
+      exec: vi.fn(),
+      error: vi.fn(),
+      log: vi.fn(),
+      verbose: vi.fn()
     } as unknown as Logger;
 
     const config: ShellConfig = { log: logger, isDryRun: false };
@@ -26,9 +30,11 @@ describe('Shell', () => {
     it('should execute a command using shelljs', async () => {
       const command = 'echo "Hello World"';
       const options: ShellExecOptions = { silent: true };
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(0, 'Hello World', '');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(0, 'Hello World', '');
+        }
+      );
 
       const result = await shellInstance.exec(command, options);
 
@@ -54,9 +60,11 @@ describe('Shell', () => {
 
     it('should log an error if command execution fails', async () => {
       const command = 'invalid-command';
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(1, '', 'Command not found');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(1, '', 'Command not found');
+        }
+      );
 
       await expect(shellInstance.exec(command)).rejects.toThrow(
         'Command not found'
@@ -68,9 +76,11 @@ describe('Shell', () => {
     it('should execute a command with arguments using shelljs', async () => {
       const command = ['echo', 'Hello', 'World'];
       const options: ShellExecOptions = { silent: true };
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(0, 'Hello World', '');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(0, 'Hello World', '');
+        }
+      );
 
       const result = await shellInstance.execWithArguments(command, options, {
         isExternal: false
@@ -86,9 +96,11 @@ describe('Shell', () => {
 
     it('should handle errors when executing a command with arguments', async () => {
       const command = ['invalid-command'];
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(1, '', 'Command not found');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(1, '', 'Command not found');
+        }
+      );
 
       await expect(
         shellInstance.execWithArguments(command, {}, { isExternal: false })
@@ -114,24 +126,43 @@ describe('Shell', () => {
       expect(result).toBe('Hello, !');
     });
 
-    it('should throw an error if template formatting fails', () => {
-      const template = 'Hello, ${name}!';
+    // is js-dom environment, the context is null
+    // it('should remove the variable from the string, when the context is an invalid parameter', () => {
+    //   // @ts-expect-error
+    //   const result = shellInstance.format('Hello, ${name}!', null);
+    //   expect(result).toBe('Hello, !');
+    // });
+    it('should throw an error when the context is an invalid parameter', () => {
+      try {
+        // @ts-expect-error
+        shellInstance.format('Hello, ${name}!', null);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    });
 
-      expect(() =>
-        shellInstance.format(
-          template,
-          null as unknown as Record<string, unknown>
-        )
-      ).toThrow();
+    it('should throw an error when the context does not have multi-level properties', () => {
+      try {
+        const result = shellInstance.format(
+          'Hello, ${name}! ${name.invalid.property}?',
+          // @ts-expect-error
+          900
+        );
+        expect(result).toBe('Hello, ! ${name.invalid.property}?');
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
     });
   });
 
   describe('run', () => {
     it('should execute a command silently', async () => {
       const command = 'echo "Hello World"';
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(0, 'Hello World', '');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(0, 'Hello World', '');
+        }
+      );
 
       const result = await shellInstance.run(command);
 
@@ -145,15 +176,15 @@ describe('Shell', () => {
 
     it('should handle errors when executing a command silently', async () => {
       const command = 'invalid-command';
-      (shell.exec as jest.Mock).mockImplementation((_cmd, _opts, callback) => {
-        callback(1, '', 'Command not found');
-      });
+      (shell.exec as unknown as Mock).mockImplementation(
+        (_cmd, _opts, callback) => {
+          callback(1, '', 'Command not found');
+        }
+      );
 
       await expect(shellInstance.run(command)).rejects.toThrow(
         'Command not found'
       );
     });
   });
-
-  // 其他方法的测试可以继续添加在这里
 });

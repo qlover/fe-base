@@ -1,15 +1,16 @@
+import { describe, it, expect, vi, MockInstance } from 'vitest';
 import { Logger } from '../..';
 
 function mockLogStdIo(log?: Logger): {
   log: Logger;
-  spy: jest.SpyInstance;
+  spy: MockInstance;
   lastStdout: () => string;
   stdouts: () => string;
   end: () => void;
 } {
   log = log ?? new Logger();
   // mock console.log to avoid printing to stdout
-  const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
   const end = (): void => {
     spy.mockRestore();
@@ -31,7 +32,7 @@ function mockLogStdIo(log?: Logger): {
 
 describe('Logger', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should write to stdout', () => {

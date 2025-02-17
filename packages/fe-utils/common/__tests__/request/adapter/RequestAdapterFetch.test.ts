@@ -1,14 +1,15 @@
-import { RequestError, RequestErrorID } from '../../../../interface';
+import { RequestErrorID } from '../../../../interface';
 import { RequestAdapterFetch } from '../../../request';
 import { FetchURLPlugin } from '../../../request/plugins';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('create a base requestAdapterFetch', () => {
-  let fetchMock: jest.Mock;
+  let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    fetchMock = jest.fn();
+    fetchMock = vi.fn();
     fetchMock.mockReturnValue(
       new Response('Mock Response', { status: 200, statusText: 'OK' })
     );
@@ -17,7 +18,7 @@ describe('create a base requestAdapterFetch', () => {
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create a and use native fetch', () => {
@@ -71,23 +72,23 @@ describe('create a base requestAdapterFetch', () => {
 });
 
 describe('RequestAdapterFetch', () => {
-  let fetchMock: jest.Mock;
+  let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    fetchMock = jest.fn();
+    fetchMock = vi.fn();
     globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should merge config fetcher with request fetcher', async () => {
-    const configFetcher = jest.fn();
-    const requestFetcher = jest.fn();
+    const configFetcher = vi.fn();
+    const requestFetcher = vi.fn();
 
     const request = new RequestAdapterFetch({
       url: '/users',
@@ -107,7 +108,9 @@ describe('RequestAdapterFetch', () => {
       fetcher: requestFetcher
     });
     expect(requestFetcher).toHaveBeenCalledWith(
-      new Request('https://api.example.com/users')
+      expect.objectContaining({
+        url: 'https://api.example.com/users'
+      })
     );
     expect(configFetcher).not.toHaveBeenCalled();
     await expect(result.data.json()).resolves.toEqual(responseData);
@@ -131,7 +134,9 @@ describe('RequestAdapterFetch', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      new Request('https://api.example.com/users')
+      expect.objectContaining({
+        url: 'https://api.example.com/users'
+      })
     );
   });
 
@@ -155,7 +160,9 @@ describe('RequestAdapterFetch', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      new Request('https://api.example.com/users?id=1')
+      expect.objectContaining({
+        url: 'https://api.example.com/users?id=1'
+      })
     );
   });
 
@@ -178,8 +185,6 @@ describe('RequestAdapterFetch', () => {
     });
 
     expect(result.data).toBeInstanceOf(Response);
-    // const result = await response.json();
-    // expect(result).toEqual(responseData);
   });
 
   it('should handle request errors', async () => {
@@ -199,6 +204,9 @@ describe('RequestAdapterFetch', () => {
         url: '/users',
         baseURL: 'https://api.example.com'
       })
-    ).rejects.toEqual(new RequestError('Network error', networkError));
+    ).rejects.toMatchObject({
+      message: networkError.message,
+      id: RequestErrorID.REQUEST_ERROR
+    });
   });
 });

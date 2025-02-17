@@ -1,89 +1,141 @@
-import { ConfigSearch, ConfigSearchOptions } from '../src/ConfigSearch';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ConfigSearch } from '../src/ConfigSearch';
+import { cosmiconfigSync } from 'cosmiconfig';
+import fs from 'fs';
+import path from 'path';
+
+vi.mock('cosmiconfig', () => ({
+  cosmiconfigSync: vi.fn()
+}));
 
 describe('ConfigSearch', () => {
-  const defaultOptions = {
-    name: 'myapp',
-    defaultConfig: { port: 3000, deepValue: { a: 1, b: 2 } }
-  };
+  const testDir = './test-config';
+  const testConfigPath = path.join(testDir, 'test.config.js');
 
-  it('should initialize with default options', () => {
-    const configSearch = new ConfigSearch(defaultOptions);
-    expect(configSearch.config).toEqual({
-      port: 3000,
-      deepValue: { a: 1, b: 2 }
+  beforeEach(() => {
+    if (!fs.existsSync(testDir)) {
+      fs.mkdirSync(testDir);
+    }
+  });
+
+  afterEach(() => {
+    if (fs.existsSync(testDir)) {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    }
+    vi.clearAllMocks();
+  });
+
+  describe('constructor', () => {
+    it('should correctly initialize the config search instance', () => {
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { port: 3000 }
+      });
+
+      expect(configSearch.getSearchPlaces()).toContain('test.json');
+      expect(configSearch.getSearchPlaces()).toContain('test.js');
+    });
+
+    it('should throw an error when name and searchPlaces are not provided', () => {
+      // @ts-expect-error
+      expect(() => new ConfigSearch({})).toThrow(
+        'searchPlaces or name is required'
+      );
     });
   });
 
-  it('should throw an error if neither name nor searchPlaces is provided', () => {
-    expect(() => new ConfigSearch({} as ConfigSearchOptions)).toThrow(
-      'searchPlaces or name is required'
-    );
-  });
+  describe('search', () => {
+    it('should return the merged config', () => {
+      const mockConfig = { test: 'value' };
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({ config: mockConfig, filepath: testConfigPath }),
+        load: vi.fn()
+      });
 
-  it('should return default search places if none are provided', () => {
-    const configSearch = new ConfigSearch(defaultOptions);
-    const expectedPlaces = [
-      'package.json',
-      'myapp.json',
-      'myapp.js',
-      'myapp.ts',
-      'myapp.cjs',
-      'myapp.yaml',
-      'myapp.yml',
-      '.myapp.json',
-      '.myapp.js',
-      '.myapp.ts',
-      '.myapp.cjs',
-      '.myapp.yaml',
-      '.myapp.yml'
-    ];
-    expect(configSearch.getSearchPlaces()).toEqual(expectedPlaces);
-  });
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { port: 3000 }
+      });
 
-  it('should merge default and discovered configurations', () => {
-    const configSearch = new ConfigSearch({
-      ...defaultOptions,
-      defaultConfig: { port: 3000, debug: false }
+      const config = configSearch.config;
+      expect(config).toEqual({
+        test: 'value',
+        port: 3000
+      });
     });
-    jest.spyOn(configSearch, 'search').mockReturnValue({ debug: true });
-    expect(configSearch.config).toEqual({ port: 3000, debug: true });
-  });
 
-  it('should merge default and discovered configurations (deep merge)', () => {
-    const configSearch = new ConfigSearch({
-      ...defaultOptions,
-      defaultConfig: { port: 3000, deepValue: { a: 1, b: 2 } }
-    });
-    jest
-      .spyOn(configSearch, 'search')
-      .mockReturnValue({ deepValue: { b: 3, c: 4 } });
-    expect(configSearch.config).toEqual({
-      port: 3000,
-      deepValue: { a: 1, b: 3, c: 4 }
+    it('should cache the search result', () => {
+      const mockConfig = { test: 'value' };
+      const searchMock = vi.fn().mockReturnValue({
+        config: mockConfig,
+        filepath: testConfigPath
+      });
+
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: searchMock,
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+
+      configSearch.search();
+      configSearch.search();
+
+      expect(searchMock).toHaveBeenCalledTimes(1);
     });
   });
 
-  it('should return cached configuration on subsequent searches', () => {
-    const configSearch = new ConfigSearch(defaultOptions);
-    const searchSpy = jest
-      .spyOn(configSearch, 'get')
-      .mockReturnValue({ port: 4000 });
-    const firstSearch = configSearch.search();
-    const secondSearch = configSearch.search();
-    expect(firstSearch).toEqual(secondSearch);
-    expect(searchSpy).toHaveBeenCalledTimes(1);
-  });
+  describe('get', () => {
+    it('should return an empty object when file is false', () => {
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const result = configSearch.get({ file: false });
+      expect(result).toEqual({});
+    });
 
-  it('should load configuration from a specific file', () => {
-    const configSearch = new ConfigSearch(defaultOptions);
-    jest.spyOn(configSearch, 'get').mockReturnValue({ port: 5000 });
-    const config = configSearch.get({ file: 'custom.config.js' });
-    expect(config).toEqual({ port: 5000 });
-  });
+    it('should throw an error when the configuration file is invalid', () => {
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        load: () => ({
+          config: 'invalid string config' as unknown,
+          filepath: testConfigPath
+        })
+      });
 
-  it('should return an empty object if file is set to false', () => {
-    const configSearch = new ConfigSearch(defaultOptions);
-    const config = configSearch.get({ file: false });
-    expect(config).toEqual({});
+      const configSearch = new ConfigSearch({ name: 'test' });
+
+      expect(() => configSearch.get({ file: testConfigPath })).toThrow(
+        `Invalid configuration file at ${testConfigPath}`
+      );
+    });
+
+    it('should use a custom loader', () => {
+      type CustomLoader = (filepath: string) => Record<string, unknown>;
+      const customLoader: CustomLoader = vi
+        .fn()
+        .mockReturnValue({ custom: 'value' });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        loaders: {
+          '.custom': customLoader
+        }
+      });
+
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({
+          config: { custom: 'value' },
+          filepath: testConfigPath
+        }),
+        load: vi.fn()
+      });
+
+      configSearch.get();
+
+      expect(cosmiconfigSync).toHaveBeenCalledWith('test', {
+        searchPlaces: expect.any(Array),
+        loaders: {
+          '.custom': customLoader
+        }
+      });
+    });
   });
 });

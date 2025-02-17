@@ -1,19 +1,20 @@
 import { RequestErrorID, RequestError } from '../../../interface';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { FetchURLPlugin, RequestAdapterFetch } from '../..';
 
 describe('RequestError', () => {
-  let fetchMock: jest.Mock;
+  let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    fetchMock = jest.fn();
+    fetchMock = vi.fn();
     globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw error if no fetcher provided and no global fetch', () => {

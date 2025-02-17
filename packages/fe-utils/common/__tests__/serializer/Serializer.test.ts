@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { JSONSerializer, Base64Serializer } from '../..';
 
 describe('JSONSerializer', () => {

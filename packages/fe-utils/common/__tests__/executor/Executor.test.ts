@@ -1,12 +1,13 @@
+import { describe, it, expect, vi, MockInstance } from 'vitest';
 import { Executor, ExecutorError, ExecutorPlugin } from '../../../interface';
 
 function mockLogStdIo(): {
-  spy: jest.SpyInstance;
+  spy: MockInstance;
   lastStdout: () => string;
   stdouts: () => string;
   end: () => void;
 } {
-  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   const end = (): void => {
     spy.mockRestore();
@@ -77,10 +78,10 @@ describe('Defined a simple executor implement, reference SyncExecutor', () => {
     myExecutor = new MyExecutor();
     mockPlugin = {
       pluginName: 'mockPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
     myExecutor.use(mockPlugin);
   });
@@ -116,7 +117,7 @@ describe('Defined a simple executor implement, reference SyncExecutor', () => {
   });
 
   it('should not call hooks if plugin is disabled', () => {
-    mockPlugin.enabled = jest.fn().mockReturnValue(false);
+    mockPlugin.enabled = vi.fn().mockReturnValue(false);
     myExecutor.runHooks([mockPlugin], 'onBefore');
     expect(mockPlugin.onBefore).not.toHaveBeenCalled();
   });
@@ -143,17 +144,17 @@ describe('Plugin method test', () => {
     const myExecutor = new MyExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
     const mockPlugin = {
       pluginName: 'mockPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
 
     myExecutor.use(anotherPlugin);
@@ -177,7 +178,7 @@ describe('Plugin method test', () => {
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
       onlyOne: true,
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
     myExecutor.use(anotherPlugin);
     // repeat use, and only one plugin
@@ -195,7 +196,7 @@ describe('Plugin method test', () => {
     const myExecutor = new MyExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     myExecutor.use(anotherPlugin);
     myExecutor.runHooks([anotherPlugin], 'onBefore');
@@ -206,7 +207,7 @@ describe('Plugin method test', () => {
     const myExecutor = new MyExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     myExecutor.use(anotherPlugin);
     myExecutor.runHooks([anotherPlugin], 'onBefore2');

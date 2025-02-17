@@ -100,6 +100,10 @@ export class StringZlibEncrypt implements Encryptor<string, string> {
       decipher.update(encrypted, this.encoding, 'binary'),
       'binary'
     );
+
+    // console.log(decrypted);
+    // console.log(decipher.final());
+
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     const decompressedValue = zlib.inflateSync(decrypted);
 

@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { RetryPlugin } from '../../executor/plugins';
 import {
   RequestError,
@@ -95,7 +96,7 @@ describe('RequestScheduler', () => {
   it('should support use plugin', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
-    const shouldRetry = jest.fn();
+    const shouldRetry = vi.fn();
 
     shouldRetry.mockImplementationOnce(() => {
       return true;
@@ -116,7 +117,7 @@ describe('RequestScheduler', () => {
   it('should support use plugin with shortcut method', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
-    const shouldRetry = jest.fn();
+    const shouldRetry = vi.fn();
 
     shouldRetry.mockImplementationOnce(() => {
       return true;

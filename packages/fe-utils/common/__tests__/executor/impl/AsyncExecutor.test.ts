@@ -1,13 +1,14 @@
+import { describe, it, expect, vi, MockInstance } from 'vitest';
 import { ExecutorError, ExecutorPlugin } from '../../../../interface';
 import { AsyncExecutor } from '../../..';
 
 function mockLogStdIo(): {
-  spy: jest.SpyInstance;
+  spy: MockInstance;
   lastStdout: () => string;
   stdouts: () => string;
   end: () => void;
 } {
-  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   const end = (): void => {
     spy.mockRestore();
@@ -42,7 +43,10 @@ describe('Executor Async implmentation', () => {
       executor.exec(() => {
         throw error;
       })
-    ).rejects.toThrow(error);
+    ).rejects.toMatchObject({
+      message: error.message,
+      id: 'UNKNOWN_ASYNC_ERROR'
+    });
   });
 
   it('should return ExecutorError in execNoError method', async () => {
@@ -59,9 +63,9 @@ describe('Executor Async implmentation', () => {
     const executor = new AsyncExecutor();
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn()
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn()
     };
     executor.use(plugin);
     await executor.runHooks([plugin], 'onBefore');
@@ -73,9 +77,9 @@ describe('Executor Async implmentation', () => {
     const plugin: ExecutorPlugin = {
       pluginName: 'test',
       enabled: () => false,
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn()
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn()
     };
     executor.use(plugin);
     await executor.runHooks([plugin], 'onBefore');
@@ -104,17 +108,17 @@ describe('AsyncExecutor plugin test', () => {
     const executor = new AsyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
     const mockPlugin = {
       pluginName: 'mockPlugin',
-      onBefore: jest.fn(),
-      onSuccess: jest.fn(),
-      onError: jest.fn(),
-      enabled: jest.fn().mockReturnValue(true)
+      onBefore: vi.fn(),
+      onSuccess: vi.fn(),
+      onError: vi.fn(),
+      enabled: vi.fn().mockReturnValue(true)
     };
 
     executor.use(anotherPlugin);
@@ -132,7 +136,7 @@ describe('AsyncExecutor plugin test', () => {
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
       onlyOne: true,
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
     executor.use(anotherPlugin);
     // repeat use, and only one plugin
@@ -149,7 +153,7 @@ describe('AsyncExecutor plugin test', () => {
     const executor = new AsyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     executor.use(anotherPlugin);
     await executor.runHooks([anotherPlugin], 'onBefore');
@@ -160,7 +164,7 @@ describe('AsyncExecutor plugin test', () => {
     const executor = new AsyncExecutor();
     const anotherPlugin = {
       pluginName: 'anotherPlugin',
-      onBefore2: jest.fn()
+      onBefore2: vi.fn()
     };
     executor.use(anotherPlugin);
     await executor.runHooks([anotherPlugin], 'onBefore2');
@@ -228,7 +232,7 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
 
     executor.use(plugin1);
@@ -251,9 +255,9 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onBefore: jest.fn()
+      onBefore: vi.fn()
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin1);
     executor.use(plugin2);
@@ -270,9 +274,9 @@ describe('AsyncExecutor onBefore Lifecycle', () => {
   it('should stop onBefore chain if breakChain is true', async () => {
     const executor = new AsyncExecutor();
 
-    const onBefore1 = jest.fn();
-    const onBefore2 = jest.fn();
-    const onBefore3 = jest.fn();
+    const onBefore1 = vi.fn();
+    const onBefore2 = vi.fn();
+    const onBefore3 = vi.fn();
 
     onBefore1.mockImplementationOnce(async ({ hooksRuntimes }) => {
       expect(hooksRuntimes.times).toBe(1);
@@ -354,7 +358,7 @@ describe('AsyncExecutor onExec Lifecycle', () => {
         throw new Error('Error in onExec');
       }
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin);
     executor.use({ pluginName: 'plugin3', onError });
@@ -514,7 +518,7 @@ describe('AsyncExecutor onError Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -533,11 +537,11 @@ describe('AsyncExecutor onError Lifecycle', () => {
     const executor = new AsyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'plugin1',
-      onError: jest.fn()
+      onError: vi.fn()
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -598,9 +602,9 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onSuccess: jest.fn()
+      onSuccess: vi.fn()
     };
-    const onError = jest.fn();
+    const onError = vi.fn();
 
     executor.use(plugin1);
     executor.use(plugin2);
@@ -620,7 +624,7 @@ describe('AsyncExecutor onSuccess Lifecycle', () => {
 
   it('should not execute onSuccess hook if task throws an error', async () => {
     const executor = new AsyncExecutor();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const plugin: ExecutorPlugin = {
       pluginName: 'plugin1',
@@ -665,7 +669,7 @@ describe('AsyncExecutor execNoError Method', () => {
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'plugin2',
-      onError: jest.fn()
+      onError: vi.fn()
     };
 
     executor.use(plugin1);
@@ -691,7 +695,7 @@ describe('AsyncExecutor execNoError Method', () => {
 
   it('should not execute onSuccess hooks if an error occurs', async () => {
     const executor = new AsyncExecutor();
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
 
     const plugin: ExecutorPlugin = {
       pluginName: 'plugin1',

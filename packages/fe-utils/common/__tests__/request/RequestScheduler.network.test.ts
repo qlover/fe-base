@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import axios from 'axios';
 import { RequestAdapterAxios } from '../../request/adapter';
 import { RequestAdapterFetch } from '../../request/adapter';
