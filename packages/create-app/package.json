@@ -51,10 +51,11 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/scripts-context": "latest"
+    "@qlover/fe-utils": "latest",
+    "@qlover/scripts-context": "latest",
+    "commander": "^13.1.0"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",
     "ora": "^8.1.1"
