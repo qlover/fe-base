@@ -50,12 +50,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "devDependencies": {
+  "dependencies": {
     "@qlover/fe-utils": "latest",
     "@qlover/scripts-context": "latest",
-    "commander": "^13.1.0"
-  },
-  "dependencies": {
+    "commander": "^13.1.0",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",
     "ora": "^8.1.1"
