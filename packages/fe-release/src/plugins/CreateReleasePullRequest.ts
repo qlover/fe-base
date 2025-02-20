@@ -190,10 +190,26 @@ export default class CreateReleasePullRequest extends Plugin {
     this.logger.verbose('PR SourceBranch is:', this.sourceBranch);
     this.logger.verbose('PR TargetBranch is:', releaseBranch);
 
-    await this.shell.exec(`git fetch origin ${this.sourceBranch}`);
-    await this.shell.exec(`git merge origin/${this.sourceBranch}`);
-    await this.shell.exec(`git checkout -b ${releaseBranch}`);
-    await this.shell.exec(`git push origin ${releaseBranch}`);
+    try {
+      await this.shell.exec(`git fetch origin ${this.sourceBranch}`);
+      await this.shell.exec(`git merge origin/${this.sourceBranch}`);
+      await this.shell.exec(`git checkout -b ${releaseBranch}`);
+      await this.shell.exec(`git push origin ${releaseBranch}`);
+    } catch (error) {
+      // maybe not allow token Workflow permissions
+      // FIXME: move to LifeCycle onBefore
+      if (
+        (error as { message: string }).message.includes(
+          'remote: Permission to '
+        )
+      ) {
+        this.logger.warn(
+          `Token maybe not allow Workflow permissions, can you try to open "Workflow permissions" -> "Read and write permissions" for this token?`
+        );
+      }
+
+      throw error;
+    }
 
     return { tagName, releaseBranch };
   }
