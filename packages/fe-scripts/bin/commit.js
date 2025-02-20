@@ -1,19 +1,26 @@
 #!/usr/bin/env node
 
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 import { commit } from '../dist/es/scripts/commit.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// parse command line arguments
+async function programArgs() {
+  const commander = await import('commander');
+  const program = new commander.Command();
+  program
+    .option(
+      '-d, --dry-run',
+      'Do not touch or write anything, but show the commands'
+    )
+    .option('-V, --verbose', 'Show more information');
+  program.parse();
 
-function main() {
-  const changelogModules = join(
-    __dirname,
-    '../../node_modules/cz-conventional-changelog'
-  );
+  return program.opts();
+}
 
-  const options = { defaultCzPath: changelogModules };
-  commit({ options });
+async function main() {
+  const { dryRun, verbose, ...options } = await programArgs();
+
+  commit({ options, dryRun, verbose });
 }
 
 main();

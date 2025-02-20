@@ -1,6 +1,6 @@
-import { resolve } from 'node:path';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import {
   FeScriptContext,
   FeScriptContextOptions
@@ -12,6 +12,22 @@ export interface CommitOptions {
    */
   defaultCzPath?: string;
 }
+
+export function getModulesPath(modulesName: string): string | undefined {
+  const require = createRequire(import.meta.url);
+  try {
+    const path = require.resolve(modulesName, {
+      paths: [process.cwd()]
+    });
+
+    // remove the modules name from the path
+    // e.g. /Users/node_modules/commitizen/dist -> /Users/node_modules/commitizen
+    return path.substring(0, path.indexOf(modulesName) + modulesName.length);
+  } catch {
+    return;
+  }
+}
+
 export function commit(options: FeScriptContextOptions<CommitOptions>): void {
   const context = new FeScriptContext(options);
   const { logger, shell } = context;
@@ -21,20 +37,34 @@ export function commit(options: FeScriptContextOptions<CommitOptions>): void {
   shell.exec('git add .');
 
   // Priority dev project
-  const changelogRootModules = resolve(
-    'node_modules/cz-conventional-changelog'
-  );
+  const changelogRootPath = getModulesPath('cz-conventional-changelog');
+  if (!changelogRootPath) {
+    logger.error('Could not resolve cz-conventional-changelog');
+    return;
+  }
 
-  const path = existsSync(changelogRootModules)
-    ? changelogRootModules
+  const commitizenPath = getModulesPath('commitizen');
+  if (!commitizenPath) {
+    logger.error('Could not resolve commitizen');
+    return;
+  }
+
+  const path = existsSync(changelogRootPath)
+    ? changelogRootPath
     : defaultCzPath;
 
   if (path) {
-    logger.log('czpath:', path);
+    logger.info('czpath:', path);
+    logger.info('commitizenPath:', commitizenPath);
+
+    if (options.dryRun) {
+      return;
+    }
+
     // cz
     // https://www.npmjs.com/package/commitizen#Commitizen for multi-repo projects
     bootstrap({
-      cliPath: resolve('node_modules/commitizen'),
+      cliPath: commitizenPath,
       config: { path }
     });
   } else {
