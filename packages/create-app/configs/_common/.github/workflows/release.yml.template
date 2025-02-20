@@ -40,7 +40,7 @@ jobs:
           npm install -g pnpm
           pnpm -v
 
-      - name: Install dependencies
+      - name: Pnpm Install dependencies
         run: pnpm install
 
       - name: Pnpm Lint
@@ -89,6 +89,9 @@ jobs:
         run: |
           npm install -g pnpm
           pnpm -v
+
+      - name: Pnpm Install dependencies
+        run: pnpm install
 
       - name: Pnpm Lint
         run: pnpm lint
