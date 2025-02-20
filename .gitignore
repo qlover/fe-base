@@ -36,6 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 .husky
+!packages/create-app/configs/_common/.husky
 public/robots.txt
 public/sitemap*.xml
 dist

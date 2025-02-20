@@ -53,7 +53,11 @@
     "@qlover/env-loader": "latest",
     "@qlover/fe-standard": "latest",
     "@qlover/fe-scripts": "latest",
-    "@qlover/scripts-context": "latest"
+    "@qlover/scripts-context": "latest",
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.0.0",
   },
   "dependencies": {
     "@qlover/fe-utils": "latest"
