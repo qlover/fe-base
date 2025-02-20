@@ -33,6 +33,7 @@
     "@qlover/fe-scripts": "latest",
     "@qlover/fe-standard": "latest",
     "@qlover/fe-utils": "latest",
+    "@qlover/fe-release": "latest",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
