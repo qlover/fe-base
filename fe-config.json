@@ -7,7 +7,8 @@
       "packages/fe-standard",
       "packages/create-app",
       "packages/scripts-context",
-      "packages/env-loader"
+      "packages/env-loader",
+      "packages/fe-release"
     ]
   }
 }
