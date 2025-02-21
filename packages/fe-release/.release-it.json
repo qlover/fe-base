@@ -3,6 +3,7 @@
     "requireUpstream": true,
     "commit": true,
     "commitMessage": "chore(tag): fe-release v${version}",
+    "commitArgs": ["--no-verify"],
     "tag": true,
     "tagName": "fe-release-v${version}",
     "tagMatch": "fe-release-v*",
