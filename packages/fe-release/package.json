@@ -45,7 +45,10 @@
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
-    "release": "node bin/release.js"
+    "release": "node bin/release.js",
+    "release-pr": "node bin/release.js -P",
+    "dryrun:release": "node bin/release.js --dry-run -V",
+    "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
   },
   "devDependencies": {
     "@qlover/fe-standard": "latest",

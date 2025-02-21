@@ -22,6 +22,4 @@ export interface PullRequestInterface {
     number: number;
     [key: string]: unknown;
   }>;
-
-  getUserInfo(): Promise<{ repoName: string; authorName: string }>;
 }
