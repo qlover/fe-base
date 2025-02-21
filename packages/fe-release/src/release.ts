@@ -14,9 +14,7 @@ function getPlugins(context: ReleaseContext): Plugin[] {
   result.push(new CheckEnvironment(context, context.options.releaseIt!));
 
   if (context.options.pullRequest) {
-    result.push(
-      new CreateReleasePullRequest(context, new GithubReleasePR(context))
-    );
+    result.push(new CreateReleasePullRequest(context, new GithubReleasePR()));
   } else {
     result.push(new PublishNpm(context));
   }

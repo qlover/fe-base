@@ -34,4 +34,8 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   getEnv(): Env {
     return this.env;
   }
+
+  getPkg(key: string): unknown {
+    return this.getConfig('packageJson', key);
+  }
 }
