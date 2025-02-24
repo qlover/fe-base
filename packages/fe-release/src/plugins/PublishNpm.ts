@@ -112,7 +112,10 @@ export default class PublishNpm extends Plugin {
     this.setConfig({ npmToken });
 
     await this.shell.exec(
-      `echo "//registry.npmjs.org/:_authToken=${npmToken}" > .npmrc`
+      `echo //registry.npmjs.org/:_authToken=${npmToken} > .npmrc`,
+      {
+        dryRun: false
+      }
     );
   }
 }
