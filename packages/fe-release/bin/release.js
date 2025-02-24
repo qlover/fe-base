@@ -15,7 +15,7 @@ const pkg = JSON.parse(
 function programArgs() {
   const program = new Command();
   program
-    .version(pkg.version)
+    .version(pkg.version, '-v, --version', 'Show version')
     .description(pkg.description)
     .option(
       '-d, --dry-run',
