@@ -4,7 +4,6 @@
     "packagesDirectories": [
       "packages/fe-scripts",
       "packages/fe-utils",
-      "packages/fe-standard",
       "packages/create-app",
       "packages/scripts-context",
       "packages/env-loader",
