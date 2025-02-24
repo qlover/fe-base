@@ -4,11 +4,19 @@ import { release } from '../dist/es/index.js';
 import releaseIt from 'release-it';
 import { readFileSync } from 'fs';
 import { Command } from 'commander';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, '../package.json'), 'utf8')
+);
 
 function programArgs() {
   const program = new Command();
   program
+    .version(pkg.version)
+    .description(pkg.description)
     .option(
       '-d, --dry-run',
       'Do not touch or write anything, but show the commands'
