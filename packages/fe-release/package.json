@@ -12,9 +12,9 @@
   "types": "./dist/es/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/es/index.d.ts",
       "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
+      "require": "./dist/cjs/index.js"
     },
     "./cjs/*": "./dist/cjs/*",
     "./es/*": "./dist/es/*",
@@ -23,7 +23,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
-    "directory": ""
+    "directory": "packages/fe-release"
   },
   "files": [
     "bin",
