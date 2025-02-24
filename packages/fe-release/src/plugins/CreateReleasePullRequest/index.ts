@@ -56,7 +56,17 @@ export default class CreateReleasePullRequest extends Plugin {
 
     await this.releaseBase.init();
 
-    await this.releasePR.init({ token: this.githubToken });
+    const repoInfo = this.releaseBase.repoInfo;
+
+    if (!repoInfo) {
+      throw new Error('repoInfo is not set');
+    }
+
+    await this.releasePR.init({
+      token: this.githubToken,
+      repoName: repoInfo.repoName,
+      authorName: repoInfo.authorName
+    });
   }
 
   /**
