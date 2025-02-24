@@ -1,65 +1,24 @@
-import shell from 'shelljs';
 import { Logger } from '@qlover/fe-utils';
-import isEmpty from 'lodash/isEmpty';
 import lodashTemplate from 'lodash/template';
+import { ShellExecOptions, ShellInterface } from './interface/ShellInterface';
+
+export type ExecPromiseFunction = (
+  command: string | string[],
+  options: ShellExecOptions
+) => Promise<string>;
 
 /**
  * Configuration interface for Shell class
  * @interface
  */
-export interface ShellConfig {
-  /** Whether to run in dry-run mode */
-  isDryRun?: boolean;
+export interface ShellConfig extends ShellExecOptions {
   /** Logger instance */
-  log: Logger;
-}
-
-/**
- * Options for shell execution
- * @interface
- */
-export interface ShellExecOptions {
-  /**
-   * Whether to suppress output to the console
-   */
-  silent?: boolean;
+  logger: Logger;
 
   /**
-   * Environment variables to be passed to the command
+   * Promise for the execer
    */
-  env?: Record<string, string>;
-
-  /**
-   * Result to return when in dry-run mode
-   */
-  dryRunResult?: unknown;
-
-  /**
-   * Whether to perform a dry run
-   * Overrides shell config.isDryRun if set
-   */
-  dryRun?: boolean;
-
-  /**
-   * Whether to use external command execution
-   */
-  external?: boolean;
-
-  /**
-   * Template context for command string interpolation
-   */
-  context?: Record<string, unknown>;
-}
-
-/**
- * Metadata for command execution
- * @interface
- */
-interface ExecMeta {
-  /** Whether the command is executed externally */
-  isExternal: boolean;
-  /** Whether the command result is cached */
-  isCached?: boolean;
+  execPromise?: ExecPromiseFunction;
 }
 
 /**
@@ -67,7 +26,7 @@ interface ExecMeta {
  * @class
  * @description Provides methods for executing shell commands with caching and templating support
  */
-export class Shell {
+export class Shell implements ShellInterface {
   /**
    * Creates a new Shell instance
    * @param config - Shell configuration
@@ -82,7 +41,7 @@ export class Shell {
    * Gets the logger instance
    */
   get logger(): Logger {
-    return this.config.log;
+    return this.config.logger;
   }
 
   /**
@@ -127,9 +86,6 @@ export class Shell {
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
-    if (isEmpty(command)) {
-      return Promise.resolve('');
-    }
     const { context, ...execOptions } = options;
     return typeof command === 'string'
       ? this.execFormattedCommand(
@@ -162,14 +118,18 @@ export class Shell {
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
-    const { dryRunResult, silent, external, dryRun } = options;
-    const isDryRun = dryRun !== undefined ? dryRun : this.config.isDryRun;
-    const isExternal = external === true;
+    const execPromise = this.config.execPromise;
+    if (!execPromise) {
+      throw new Error('execPromise is not defined');
+    }
+
+    const { dryRunResult, silent, dryRun } = options;
+    const isDryRun = dryRun !== undefined ? dryRun : this.config.dryRun;
     const cacheKey = typeof command === 'string' ? command : command.join(' ');
-    const isCached = !isExternal && this.cache.has(cacheKey);
+    const isCached = this.cache.has(cacheKey);
 
     if (!silent) {
-      this.logger.exec(command, { isExternal, isCached });
+      this.logger.exec(command, { isCached });
     }
 
     if (isDryRun) {
@@ -180,78 +140,12 @@ export class Shell {
       return this.cache.get(cacheKey)!;
     }
 
-    const result =
-      typeof command === 'string'
-        ? this.execStringCommand(command, options)
-        : this.execWithArguments(command, options, { isExternal });
+    const result = execPromise(command, options);
 
-    if (!isExternal && !this.cache.has(cacheKey)) {
+    if (!this.cache.has(cacheKey)) {
       this.cache.set(cacheKey, result);
     }
 
     return result;
-  }
-
-  /**
-   * Executes a string command using shelljs
-   * @param command - Command string
-   * @param options - Execution options
-   * @returns Promise resolving to command output
-   */
-  execStringCommand(
-    command: string,
-    options: ShellExecOptions
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      shell.exec(
-        command,
-        { async: true, ...options },
-        (code: number, stdout: string, stderr: string) => {
-          stdout = stdout.toString().trimEnd();
-          if (code === 0) {
-            resolve(stdout);
-          } else {
-            if (options.silent) {
-              this.logger.error(command);
-            }
-            reject(new Error(stderr || stdout));
-          }
-        }
-      );
-    });
-  }
-
-  /**
-   * Executes a command with arguments using execa
-   * @param command - Command array
-   * @param options - Execution options
-   * @param meta - Execution metadata
-   * @returns Promise resolving to command output
-   */
-  async execWithArguments(
-    command: string[],
-    options: ShellExecOptions,
-    meta: ExecMeta
-  ): Promise<string> {
-    const [program, ...programArgs] = command;
-
-    return new Promise((resolve, reject) => {
-      shell.exec(
-        `${program} ${programArgs.join(' ')}`,
-        { async: true, ...options },
-        (code: number, stdout: string, stderr: string) => {
-          if (code === 0) {
-            const output = stdout.trim();
-            this.logger.verbose(output, { isExternal: meta.isExternal });
-            resolve(output);
-          } else {
-            if (options.silent) {
-              this.logger.error(`${program} ${programArgs.join(' ')}`);
-            }
-            reject(new Error(stderr || stdout));
-          }
-        }
-      );
-    });
   }
 }

@@ -22,8 +22,9 @@ const treeshake = {
 const defaultExternal = [
   ...builtinModules,
   ...builtinModules.map((mod) => `node:${mod}`),
-  ...Object.keys(pkg.dependencies || {}),
-  ...Object.keys(pkg.devDependencies || {})
+  ...Object.keys(pkg.devDependencies || {}),
+  // FIXME: remove this after cosmiconfig is updated
+  'cosmiconfig'
 ];
 
 function createPlugin(minify) {
