@@ -15,10 +15,19 @@ export const execPromise: ExecPromiseFunction = (
         ...options
       },
       (err, stdout, stderr) => {
-        if (err || stderr) {
-          reject(err || stderr);
+        let code;
+        if (!err) {
+          code = 0;
+        } else if (err.code === undefined) {
+          code = 1;
         } else {
-          resolve(stdout);
+          code = err.code;
+        }
+
+        if (code === 0) {
+          resolve(stdout.trim());
+        } else {
+          reject(new Error(stderr || stdout));
         }
       }
     );

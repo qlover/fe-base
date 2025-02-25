@@ -54,7 +54,7 @@ export interface ShellExecOptions {
    *
    * @type {string}
    */
-  encoding?: string;
+  encoding?: BufferEncoding;
 
   [key: string]: unknown;
 }
