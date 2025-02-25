@@ -8,8 +8,7 @@ type MockTestProps = {
   name: string;
   infile: (name: string) => string;
 };
-// 模拟 testPlugin.js
-// 模拟 testPlugin.js
+
 vi.mock('./testPlugin.js', () => {
   return {
     default: class extends Plugin<MockTestProps> {
