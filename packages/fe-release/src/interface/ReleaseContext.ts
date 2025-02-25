@@ -20,7 +20,7 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
     this.config = merge(this.config, config);
   }
 
-  getConfig(key: string | string[], defaultValue?: unknown): unknown {
+  getConfig<T = unknown>(key: string | string[], defaultValue?: T): T {
     return get(this.config, key, defaultValue);
   }
 

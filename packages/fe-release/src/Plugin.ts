@@ -8,11 +8,16 @@ export type StepOption<T> = {
   task: () => Promise<T>;
 };
 
-export default abstract class Plugin implements ExecutorPlugin {
+export default abstract class Plugin<Props extends Record<string, unknown> = {}>
+  implements ExecutorPlugin
+{
   abstract readonly pluginName: string;
   readonly onlyOne = true;
 
-  constructor(protected context: ReleaseContext) {}
+  constructor(
+    protected context: ReleaseContext,
+    protected props: Props = {} as Props
+  ) {}
 
   get logger(): Logger {
     return this.context.logger;
