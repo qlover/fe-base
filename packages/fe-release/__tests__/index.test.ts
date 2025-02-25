@@ -36,6 +36,7 @@ describe('index', () => {
   let logger: Logger;
 
   beforeEach(() => {
+    process.env.NPM_TOKEN = 'mocked_npm_token';
     process.env.GITHUB_TOKEN = 'mocked_github_token';
     releaseIt = vi.fn();
     logger = {
