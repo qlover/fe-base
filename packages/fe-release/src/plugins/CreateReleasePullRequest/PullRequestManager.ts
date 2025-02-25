@@ -1,9 +1,9 @@
 import { Shell } from '@qlover/scripts-context';
-import { ScriptsLogger } from '@qlover/scripts-context';
 import { PullRequestInterface } from '../../interface/PullRequestInterface';
 import { ReleaseConfig } from '../../type';
 import ReleaseContext from '../../interface/ReleaseContext';
 import ReleaseBase from './ReleaseBase';
+import { Logger } from '@qlover/fe-utils';
 
 type CreatePROptionsArgs = {
   /**
@@ -48,7 +48,7 @@ export default class PullRequestManager {
     private releasePR: PullRequestInterface
   ) {}
 
-  get logger(): ScriptsLogger {
+  get logger(): Logger {
     return this.context.logger;
   }
 

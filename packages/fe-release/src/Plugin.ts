@@ -1,6 +1,6 @@
-import { ExecutorPlugin } from '@qlover/fe-utils';
+import { ExecutorPlugin, Logger } from '@qlover/fe-utils';
 import { DeepPartial, ExecutorReleaseContext, ReleaseConfig } from './type';
-import { ScriptsLogger, Shell } from '@qlover/scripts-context';
+import { Shell } from '@qlover/scripts-context';
 import ReleaseContext from './interface/ReleaseContext';
 
 export type StepOption<T> = {
@@ -14,7 +14,7 @@ export default abstract class Plugin implements ExecutorPlugin {
 
   constructor(protected context: ReleaseContext) {}
 
-  get logger(): ScriptsLogger {
+  get logger(): Logger {
     return this.context.logger;
   }
 
