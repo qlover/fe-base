@@ -1,13 +1,56 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import { release } from '../src/index';
+import { Plugin, release, ReleaseContext } from '../src/index';
 import { ReleaseItInstanceType } from '../src/type';
+import { Shell } from '@qlover/scripts-context';
+import { Logger } from '@qlover/fe-utils';
+
+type MockTestProps = {
+  name: string;
+  infile: (name: string) => string;
+};
+// 模拟 testPlugin.js
+// 模拟 testPlugin.js
+vi.mock('./testPlugin.js', () => {
+  return {
+    default: class extends Plugin<MockTestProps> {
+      pluginName = 'test-plugin';
+
+      constructor(context: ReleaseContext, props: MockTestProps) {
+        // 可以在这里初始化 context 和 props
+        super(context, props);
+      }
+
+      async onBefore(): Promise<void> {
+        this.logger.info(
+          'test-plugin onBefore',
+          this.props.infile(this.props.name)
+        );
+      }
+    }
+  };
+});
 
 describe('index', () => {
   let releaseIt: ReleaseItInstanceType;
+  let shell: Shell;
+  let logger: Logger;
 
   beforeEach(() => {
     process.env.GITHUB_TOKEN = 'mocked_github_token';
     releaseIt = vi.fn();
+    logger = {
+      exec: vi.fn(),
+      info: vi.fn(),
+      log: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    } as unknown as Logger;
+
+    shell = new Shell({
+      execPromise: vi.fn(),
+      logger
+    });
   });
 
   afterEach(() => {
@@ -22,10 +65,41 @@ describe('index', () => {
     });
 
     try {
-      await release({ options: { releaseIt } });
+      await release({ shell, options: { releaseIt } });
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toBe('package.json is undefined');
     }
+  });
+
+  it('should call onBefore when the plugin is loaded', async () => {
+    const name = 'testPlugin';
+    const infileFunc = vi.fn().mockReturnValue(name);
+    const plugins = {
+      './testPlugin.js': {
+        name: 'testPlugin',
+        infile: infileFunc
+      }
+    };
+
+    await release({
+      shell,
+      options: {
+        releaseIt,
+        packageJson: {
+          name: 'test',
+          version: '1.0.0'
+        }
+      },
+      dryRun: true,
+      feConfig: {
+        release: {
+          // @ts-expect-error
+          plugins
+        }
+      }
+    });
+
+    expect(infileFunc).toHaveBeenCalledWith(name);
   });
 });
