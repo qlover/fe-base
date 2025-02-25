@@ -18,7 +18,7 @@ fe-release [options]
 
 ### Options
 
-- `-V, --version`：output the version.
+- `-v, --version`：output the version.
 - `-d, --dry-run`：do not touch or write anything, but show the commands.
 - `-V, --verbose`：show more information.
 - `-P, --pull-request`：create a release PR.
@@ -32,7 +32,7 @@ fe-release [options]
 ```bash
 fe-release --version
 # or
-fe-release -V
+fe-release -v
 ```
 
 2. dry run, show the commands:
