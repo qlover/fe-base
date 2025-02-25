@@ -1,3 +1,12 @@
+
+
+## [0.0.5](https://github.com/qlover/fe-base/compare/scripts-context-v0.0.4...scripts-context-v0.0.5) (2025-02-25)
+
+
+### Features
+
+* remove shelljs dep, add dep inject ([#260](https://github.com/qlover/fe-base/issues/260)) ([c38112f](https://github.com/qlover/fe-base/commit/c38112f4540d6bd5dd89c419c6ecfa11f195dcbd))
+
 ## 0.0.4 (2025-01-20)
 
 ### Bug Fixes
