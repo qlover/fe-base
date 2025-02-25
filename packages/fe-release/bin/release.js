@@ -56,6 +56,7 @@ async function main() {
   });
 }
 
-main().catch(() => {
+main().catch((e) => {
+  console.error(e);
   process.exit(1);
 });
