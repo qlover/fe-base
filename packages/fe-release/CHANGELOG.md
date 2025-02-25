@@ -1,5 +1,12 @@
 
 
+## [0.1.6](https://github.com/qlover/fe-base/compare/fe-release-v0.1.5...fe-release-v0.1.6) (2025-02-25)
+
+
+### Features
+
+* support release plugin ([#266](https://github.com/qlover/fe-base/issues/266)) ([23fba14](https://github.com/qlover/fe-base/commit/23fba1455919f794e5609ddab03cfb99c40ad3b8))
+
 ## [0.1.5](https://github.com/qlover/fe-base/compare/fe-release-v0.1.4...fe-release-v0.1.5) (2025-02-25)
 
 
