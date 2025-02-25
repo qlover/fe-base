@@ -1,5 +1,12 @@
 
 
+## [0.1.5](https://github.com/qlover/fe-base/compare/fe-release-v0.1.4...fe-release-v0.1.5) (2025-02-25)
+
+
+### Bug Fixes
+
+* type error ([#262](https://github.com/qlover/fe-base/issues/262)) ([cf18195](https://github.com/qlover/fe-base/commit/cf18195b4a3a13de45eb4396745e55c236aa2a43))
+
 ## 0.1.4 (2025-02-24)
 
 
