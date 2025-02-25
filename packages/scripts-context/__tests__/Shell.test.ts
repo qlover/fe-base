@@ -1,18 +1,12 @@
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import { Shell, ShellConfig, ShellExecOptions } from '../src/Shell';
+import { Shell, ShellConfig } from '../src/Shell';
+import { ShellExecOptions } from '../src/interface/ShellInterface';
 import { Logger } from '@qlover/fe-utils';
-import shell from 'shelljs';
-
-// shell need export default
-vi.mock('shelljs', () => ({
-  default: {
-    exec: vi.fn()
-  }
-}));
 
 describe('Shell', () => {
   let logger: Logger;
   let shellInstance: Shell;
+  let execPromiseMock: Mock;
 
   beforeEach(() => {
     logger = {
@@ -22,27 +16,28 @@ describe('Shell', () => {
       verbose: vi.fn()
     } as unknown as Logger;
 
-    const config: ShellConfig = { log: logger, isDryRun: false };
+    execPromiseMock = vi.fn();
+
+    const config: ShellConfig = {
+      logger,
+      isDryRun: false,
+      execPromise: execPromiseMock
+    };
     shellInstance = new Shell(config);
   });
 
   describe('exec', () => {
-    it('should execute a command using shelljs', async () => {
+    it('should execute a command using execPromise', async () => {
       const command = 'echo "Hello World"';
       const options: ShellExecOptions = { silent: true };
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(0, 'Hello World', '');
-        }
-      );
+      execPromiseMock.mockResolvedValue('Hello World');
 
       const result = await shellInstance.exec(command, options);
 
       expect(result).toBe('Hello World');
-      expect(shell.exec).toHaveBeenCalledWith(
+      expect(execPromiseMock).toHaveBeenCalledWith(
         command,
-        expect.objectContaining({ async: true, silent: true }),
-        expect.any(Function)
+        expect.objectContaining({ silent: true })
       );
     });
 
@@ -60,51 +55,11 @@ describe('Shell', () => {
 
     it('should log an error if command execution fails', async () => {
       const command = 'invalid-command';
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(1, '', 'Command not found');
-        }
-      );
+      execPromiseMock.mockRejectedValue(new Error('Command not found'));
 
       await expect(shellInstance.exec(command)).rejects.toThrow(
         'Command not found'
       );
-    });
-  });
-
-  describe('execWithArguments', () => {
-    it('should execute a command with arguments using shelljs', async () => {
-      const command = ['echo', 'Hello', 'World'];
-      const options: ShellExecOptions = { silent: true };
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(0, 'Hello World', '');
-        }
-      );
-
-      const result = await shellInstance.execWithArguments(command, options, {
-        isExternal: false
-      });
-
-      expect(result).toBe('Hello World');
-      expect(shell.exec).toHaveBeenCalledWith(
-        'echo Hello World',
-        expect.objectContaining({ async: true, silent: true }),
-        expect.any(Function)
-      );
-    });
-
-    it('should handle errors when executing a command with arguments', async () => {
-      const command = ['invalid-command'];
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(1, '', 'Command not found');
-        }
-      );
-
-      await expect(
-        shellInstance.execWithArguments(command, {}, { isExternal: false })
-      ).rejects.toThrow('Command not found');
     });
   });
 
@@ -126,12 +81,6 @@ describe('Shell', () => {
       expect(result).toBe('Hello, !');
     });
 
-    // is js-dom environment, the context is null
-    // it('should remove the variable from the string, when the context is an invalid parameter', () => {
-    //   // @ts-expect-error
-    //   const result = shellInstance.format('Hello, ${name}!', null);
-    //   expect(result).toBe('Hello, !');
-    // });
     it('should throw an error when the context is an invalid parameter', () => {
       try {
         // @ts-expect-error
@@ -158,33 +107,60 @@ describe('Shell', () => {
   describe('run', () => {
     it('should execute a command silently', async () => {
       const command = 'echo "Hello World"';
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(0, 'Hello World', '');
-        }
-      );
+      execPromiseMock.mockResolvedValue('Hello World');
 
       const result = await shellInstance.run(command);
 
       expect(result).toBe('Hello World');
-      expect(shell.exec).toHaveBeenCalledWith(
+      expect(execPromiseMock).toHaveBeenCalledWith(
         command,
-        expect.objectContaining({ async: true, silent: true }),
-        expect.any(Function)
+        expect.objectContaining({ silent: true })
       );
     });
 
     it('should handle errors when executing a command silently', async () => {
       const command = 'invalid-command';
-      (shell.exec as unknown as Mock).mockImplementation(
-        (_cmd, _opts, callback) => {
-          callback(1, '', 'Command not found');
-        }
-      );
+      execPromiseMock.mockRejectedValue(new Error('Command not found'));
 
       await expect(shellInstance.run(command)).rejects.toThrow(
         'Command not found'
       );
     });
+  });
+
+  it('should throw an error if execPromise is not defined', async () => {
+    const config: ShellConfig = {
+      logger,
+      isDryRun: false
+    };
+    shellInstance = new Shell(config);
+
+    await expect(shellInstance.exec('echo "Hello"')).rejects.toThrow(
+      'execPromise is not defined'
+    );
+  });
+
+  it('should handle invalid command format', async () => {
+    const command = null; // Invalid command
+    // @ts-expect-error
+    await expect(shellInstance.exec(command)).rejects.toThrow();
+  });
+
+  it('should handle non-string return from execPromise', async () => {
+    execPromiseMock.mockResolvedValue(123); // Non-string return
+    const result = await shellInstance.exec('echo "Hello"');
+    expect(result).not.toBe('123');
+  });
+
+  it('should log error when format fails', () => {
+    const template = 'Hello, ${name}!';
+    const context = null; // Invalid context
+
+    try {
+      // @ts-expect-error
+      shellInstance.format(template, context);
+    } catch (e) {
+      expect(logger.error).toHaveBeenCalled();
+    }
   });
 });
