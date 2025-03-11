@@ -1,6 +1,6 @@
 import { ExecutorPlugin, Logger } from '@qlover/fe-utils';
 import { DeepPartial, ExecutorReleaseContext, ReleaseConfig } from './type';
-import { Shell } from '@qlover/scripts-context';
+import { Shell, ShellExecOptions } from '@qlover/scripts-context';
 import ReleaseContext from './interface/ReleaseContext';
 
 export type StepOption<T> = {
@@ -40,8 +40,8 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
    *
    * feConfig.release
    */
-  getConfig(keys: string | string[], defaultValue?: unknown): unknown {
-    return this.context.getConfig(keys, defaultValue);
+  getConfig<T>(keys: string | string[], defaultValue?: T): T {
+    return this.context.getConfig<T>(keys, defaultValue);
   }
 
   /**
@@ -56,6 +56,10 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
   onSuccess?(_context: ExecutorReleaseContext): void | Promise<void> {}
 
   onError?(_context: ExecutorReleaseContext): void | Promise<void> {}
+
+  exec(command: string, options?: ShellExecOptions): Promise<string> {
+    return this.shell.exec(command, options);
+  }
 
   /**
    * run a step

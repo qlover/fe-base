@@ -57,7 +57,28 @@ export interface ReleaseConfig extends FeReleaseConfig {
    */
   pullRequest?: boolean;
 
+  git?: GitConfig;
+
   [key: string]: unknown;
 }
 
 export type ReleaseContextOptions = Partial<ReleaseContext>;
+
+export type GitConfig = {
+  remoteUrl?: string;
+  repo?: GitRepoInfo;
+  branchName?: string;
+
+  latestTag?: string;
+  secondLatestTag?: string;
+  tagTemplate?: string;
+};
+
+export type GitRepoInfo = {
+  host: string;
+  owner?: string;
+  project: string;
+  protocol: string;
+  remote: string;
+  repository: string;
+};

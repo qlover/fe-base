@@ -51,15 +51,17 @@
     "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "latest",
     "@qlover/env-loader": "latest",
+    "@qlover/fe-standard": "latest",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@types/git-url-parse": "^9.0.3",
     "commander": "^11.0.0",
-    "release-it": "^17.10.0",
-    "@release-it/conventional-changelog": "^8.0.1"
+    "release-it": "^17.10.0"
   },
   "dependencies": {
+    "@octokit/rest": "^21.0.2",
     "@qlover/fe-utils": "latest",
     "@qlover/scripts-context": "latest",
-    "@octokit/rest": "^21.0.2"
+    "git-url-parse": "^16.0.1"
   }
 }
