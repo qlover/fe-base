@@ -1,13 +1,11 @@
-import { I18nService } from '@/services/i18n';
+import { I18nService } from '@/services/I18nService';
 import { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
-import { i18nConfig } from '@config/i18n';
 import { Logger } from '@qlover/fe-utils';
 import { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import { RouteConfigValue } from '@lib/router-loader/RouterLoader';
 import { RouteConfig } from '@/base/types/Page';
 
 export type RouterControllerDependencies = {
-  location: globalThis.Location;
   navigate: NavigateFunction;
 };
 
@@ -50,6 +48,11 @@ export class RouterController
     return navigate;
   }
 
+  static composePath(path: string): string {
+    const targetLang = I18nService.getCurrentLanguage();
+    return `/${targetLang}${path}`;
+  }
+
   /**
    * @override
    */
@@ -69,15 +72,8 @@ export class RouterController
   }
 
   goto(path: string, options?: NavigateOptions): void {
-    console.trace('path');
-
-    const tryLng = path.split('/')[0];
-    if (!I18nService.isValidLanguage(tryLng)) {
-      path = i18nConfig.fallbackLng + path.replace(tryLng, '');
-    }
-
-    this.navigate?.(path, options);
-
+    path = RouterController.composePath(path);
+    this.logger.debug('Goto path => ', path);
     this.navigate?.(path, options);
   }
 

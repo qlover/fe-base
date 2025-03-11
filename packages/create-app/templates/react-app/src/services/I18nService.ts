@@ -5,15 +5,15 @@ import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import { i18nConfig, I18nServiceLocale } from '@config/i18n';
 
+const { supportedLngs, fallbackLng } = i18nConfig;
+
 // custom language detector
 const pathLanguageDetector = {
   name: 'pathLanguageDetector',
   lookup() {
     const path = window.location.pathname.split('/');
     const language = path[1];
-    return I18nService.isValidLanguage(language)
-      ? language
-      : i18nConfig.fallbackLng;
+    return I18nService.isValidLanguage(language) ? language : fallbackLng;
   },
   cacheUserLanguage() {
     // no cache, because we get language from URL
@@ -39,12 +39,16 @@ export class I18nService {
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
   }
 
+  static getCurrentLanguage(): I18nServiceLocale {
+    return i18n.language as I18nServiceLocale;
+  }
+
   /**
    * check if the language is supported
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
   static isValidLanguage(language: string): language is I18nServiceLocale {
-    return i18nConfig.supportedLngs.includes(language as I18nServiceLocale);
+    return supportedLngs.includes(language as I18nServiceLocale);
   }
 }

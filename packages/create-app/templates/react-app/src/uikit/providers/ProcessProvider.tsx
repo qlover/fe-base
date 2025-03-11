@@ -26,9 +26,7 @@ export function ProcessProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    IOC(RouterController).setDependencies({
-      navigate
-    });
+    IOC(RouterController).setDependencies({ navigate });
   }, [navigate]);
 
   if (!success) {
