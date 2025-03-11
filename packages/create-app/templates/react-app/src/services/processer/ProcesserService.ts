@@ -22,8 +22,8 @@ export class ProcesserService {
   }
 
   init(): Promise<unknown> {
-    return this.executor.exec(this.handler).catch(() => {
-      this.options.logger.error('PageProcesser init failed');
+    return this.executor.exec(this.handler).catch((err) => {
+      this.options.logger.error('PageProcesser init failed', err);
     });
   }
 }
