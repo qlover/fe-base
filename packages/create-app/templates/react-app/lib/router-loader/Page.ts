@@ -3,7 +3,6 @@ import { RouteObject } from 'react-router-dom';
 
 import { TFunction } from 'i18next';
 import { UseTranslationResponse } from 'react-i18next';
-import { RouteConfigValue } from '@lib/router-loader/RouterLoader';
 
 export interface BasePageProvider {
   meta: RouteMeta;
@@ -28,8 +27,12 @@ export interface RouteMeta {
   localNamespace?: string;
 }
 
+export type RouteType = RouteObject & {
+  meta?: RouteMeta;
+};
+
 export type RouteConfig = {
-  routes: RouteConfigValue[];
+  routes: RouteType[];
 };
 
 export type PagesMaps = Record<
@@ -44,3 +47,18 @@ export type LoadProps = {
   route: RouteType;
   Provider?: React.ComponentType<PropsWithChildren<RouteMeta>>;
 };
+
+
+type ComponentValue = React.ComponentType<unknown> | LazyExoticComponent<React.ComponentType<unknown>>;
+
+export type ComponentMaps = {
+  /**
+   * key: ./xxx/bbb.(jsx,js,tsx,ts)
+   */
+  [key: string]: ComponentValue | (() => Promise<ComponentValue>) | (() => ComponentValue);
+}
+
+// new RouterManager({
+//   routes: [],
+//   componentMaps:
+// });

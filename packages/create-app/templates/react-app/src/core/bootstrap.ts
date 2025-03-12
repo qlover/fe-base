@@ -1,7 +1,7 @@
 import * as feGlobals from '@/core/globals';
 import { IOC } from '.';
 import { IOCInterface } from '@/base/port/IOCInterface';
-import { I18nService } from '@/services/i18n';
+import { I18nService } from '@/services/I18nService';
 
 export class Bootstrap {
   constructor(private IOCContainer: IOCInterface) {}

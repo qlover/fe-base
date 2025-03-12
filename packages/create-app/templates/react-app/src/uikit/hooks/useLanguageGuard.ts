@@ -1,4 +1,4 @@
-import { I18nService } from '@/services/i18n';
+import { I18nService } from '@/services/I18nService';
 import { I18nServiceLocale } from '@config/i18n';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
