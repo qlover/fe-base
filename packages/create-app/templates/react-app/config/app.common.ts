@@ -1,3 +1,4 @@
+import { UserTokenOptions } from '@/base/cases/UserToken';
 import { i18nConfig } from '@config/i18n';
 import { OpenAIClientConfig } from '@lib/openAiApi';
 import { RequestCommonPluginConfig } from '@lib/request-common-plugin';
@@ -49,4 +50,9 @@ export const defaultFeApiConfig: {
     baseURL: 'https://api.example.com/'
   },
   commonPluginConfig: requestCommonPluginConfig
+};
+
+export const userTokenOptions: Omit<UserTokenOptions, 'storage'> = {
+  storageKey: 'fe_user_token',
+  expiresIn: 'month'
 };

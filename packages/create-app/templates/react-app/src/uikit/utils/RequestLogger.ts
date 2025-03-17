@@ -1,16 +1,19 @@
+import { FeRegisterType } from '@/core/feIOC/FeRegisterType';
 import {
   ExecutorPlugin,
   ExecutorContext,
   RequestAdapterFetchConfig,
   Logger
 } from '@qlover/fe-utils';
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export class RequestLogger
   implements ExecutorPlugin<RequestAdapterFetchConfig>
 {
   readonly pluginName = 'RequestLogger';
 
-  constructor(public logger: Logger) {}
+  constructor(@inject(FeRegisterType.Logger) public logger: Logger) {}
 
   async onSuccess({
     parameters,

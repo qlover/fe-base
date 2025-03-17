@@ -1,31 +1,25 @@
 // ! dont't import tsx, only ts file
-import { ServiceIdentifier, IOCInterface } from '@/base/port/IOCInterface';
+import type { IOCContainerInterface } from '@/base/port/IOCContainerInterface';
+import type { IOCFunction } from '@/base/port/IOCFunction';
+import type { ServiceIdentifier } from 'inversify';
 
-export type IOCFunction = {
-  <T>(serviceIdentifier: ServiceIdentifier<T>): T;
-  /**
-   * IOC container instance
-   */
-  implemention: IOCInterface | null;
-  /**
-   * implement IOC container
-   */
-  implement(container: IOCInterface): void;
-};
+let implemention: IOCContainerInterface | null;
 
 export const IOC: IOCFunction = Object.assign(
   function <T>(serviceIdentifier: ServiceIdentifier<T>): T {
-    if (!IOC.implemention) {
+    if (!implemention) {
       throw new Error('IOC is not implemented');
     }
-    return IOC.implemention.get(serviceIdentifier);
+    return implemention.get(serviceIdentifier);
   },
   {
-    implemention: null,
-    implement: (container: IOCInterface) => {
+    get implemention() {
+      return implemention;
+    },
+    implement: (container: IOCContainerInterface) => {
       // FIXME: maybe runtimes configure
       container.configure();
-      IOC.implemention = container;
+      implemention = container;
     }
   }
 );

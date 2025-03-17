@@ -1,4 +1,3 @@
-import { IOCInterface, IOCRegisterInterface } from '@/base/port/IOCInterface';
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { localJsonStorage } from '../globals';
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
@@ -9,9 +8,11 @@ import { openAiConfig } from '@config/app.common';
 import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import mockDataJson from '@config/feapi.mock.json';
+import { Container } from 'inversify';
+import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
 
-export class RegisterApi implements IOCRegisterInterface {
-  register(container: IOCInterface): void {
+export class RegisterApi implements IOCRegisterInterface<Container> {
+  register(container: Container): void {
     const openAiApi = new OpenAIClient({
       ...openAiConfig,
       commonPluginConfig: {
@@ -20,8 +21,9 @@ export class RegisterApi implements IOCRegisterInterface {
       }
     }).usePlugin(container.get(RequestLogger));
 
+    const abortPlugin = container.get(FetchAbortPlugin);
     const feApi = new FeApi({
-      abortPlugin: container.get(FetchAbortPlugin),
+      abortPlugin,
       config: defaultFeApiConfig.adapter
     })
       .usePlugin(new FetchURLPlugin())
@@ -33,9 +35,9 @@ export class RegisterApi implements IOCRegisterInterface {
       )
       .usePlugin(new FeApiMockPlugin(mockDataJson))
       .usePlugin(container.get(RequestLogger))
-      .usePlugin(container.get(FetchAbortPlugin));
+      .usePlugin(abortPlugin);
 
-    container.bind(OpenAIClient, openAiApi);
-    container.bind(FeApi, feApi);
+    container.bind(OpenAIClient).toConstantValue(openAiApi);
+    container.bind(FeApi).toConstantValue(feApi);
   }
 }

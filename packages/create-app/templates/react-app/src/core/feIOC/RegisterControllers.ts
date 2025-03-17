@@ -1,4 +1,4 @@
-import { IOCInterface, IOCRegisterInterface } from '@/base/port/IOCInterface';
+import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
 import { localJsonStorage, logger } from '../globals';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
@@ -14,9 +14,10 @@ import { FeApi } from '@/base/apis/feApi';
 import appRouterConfig from '@config/app.router.json';
 import themeConfigJson from '@config/theme.json';
 import { UserToken } from '@/base/cases/UserToken';
+import { Container } from 'inversify';
 
-export class RegisterControllers implements IOCRegisterInterface {
-  register(container: IOCInterface): void {
+export class RegisterControllers implements IOCRegisterInterface<Container> {
+  register(container: Container): void {
     const routerController = new RouterController({
       config: appRouterConfig.base as RouteConfig,
       logger
@@ -42,12 +43,14 @@ export class RegisterControllers implements IOCRegisterInterface {
       logger
     }).usePlugin(userController);
 
-    container.bind(RouterController, routerController);
-    container.bind(JSONStorageController, jsonStorageController);
-    container.bind(RequestController, requestController);
-    container.bind(ExecutorController, executorController);
-    container.bind(UserController, userController);
-    container.bind(ThemeController, themeController);
-    container.bind(ProcesserService, pageProcesser);
+    container.bind(RouterController).toConstantValue(routerController);
+    container
+      .bind(JSONStorageController)
+      .toConstantValue(jsonStorageController);
+    container.bind(RequestController).toConstantValue(requestController);
+    container.bind(ExecutorController).toConstantValue(executorController);
+    container.bind(UserController).toConstantValue(userController);
+    container.bind(ThemeController).toConstantValue(themeController);
+    container.bind(ProcesserService).toConstantValue(pageProcesser);
   }
 }

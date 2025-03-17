@@ -22,7 +22,8 @@
       "@/*": ["./src/*"],
       "@lib/*": ["./lib/*"],
       "@config/*": ["./config/*"]
-    }
+    },
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
