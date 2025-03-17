@@ -4,6 +4,7 @@ import alias from '@rollup/plugin-alias';
 import tsappconfig from './tsconfig.json';
 import { resolve } from 'path';
 import { Env } from '@qlover/env-loader';
+import { envPrefix } from './config/common.json';
 
 Env.searchEnv();
 
@@ -23,10 +24,12 @@ export default defineConfig({
       entries
     })
   ],
+  envPrefix: envPrefix,
   publicDir: 'public',
   server: {
-    port: Number(process.env.VITE_SERVER_PORT || 3200)
+    port: Number(process.env.VITE_SERVER_PORT || 3200),
   },
+  mode: process.env.NODE_ENV,
   test: {
     environment: 'jsdom',
     globals: true,

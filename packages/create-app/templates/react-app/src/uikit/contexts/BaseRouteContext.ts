@@ -3,8 +3,14 @@ import { useContext, useMemo } from 'react';
 import { BasePageProvider } from '@/base/types/Page';
 import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
-import { defaultBaseRoutemeta } from '@config/app.common';
 import merge from 'lodash/merge';
+import { i18nConfig } from '@config/i18n';
+
+const defaultBaseRoutemeta = {
+  localNamespace: i18nConfig.defaultNS,
+  title: '',
+  icon: ''
+};
 
 export const BaseRoutePageContext = createContext<RouteMeta>({});
 

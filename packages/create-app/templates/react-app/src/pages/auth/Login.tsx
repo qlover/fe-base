@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { useController } from '@lib/fe-react-controller';
 import { IOC } from '@/core';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { defaultLoginInfo } from '@config/app.common';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { UserController } from '@/uikit/controllers/UserController';
+import AppConfig from '@config/AppConfig';
 
 export default function Login() {
   const { t } = useBaseRoutePage();
   const controller = useController(IOC(UserController));
-  const [email, setEmail] = useState(defaultLoginInfo.name);
-  const [password, setPassword] = useState(defaultLoginInfo.password);
+  const [email, setEmail] = useState(AppConfig.loginUser);
+  const [password, setPassword] = useState(AppConfig.loginPassword);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {

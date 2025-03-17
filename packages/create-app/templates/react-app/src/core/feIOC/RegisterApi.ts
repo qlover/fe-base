@@ -2,21 +2,30 @@ import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { localJsonStorage } from '../globals';
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { FeApiMockPlugin } from '@/base/apis/feApi';
-import { defaultFeApiConfig } from '@config/app.common';
 import { OpenAIClient } from '@lib/openAiApi';
-import { openAiConfig } from '@config/app.common';
 import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import mockDataJson from '@config/feapi.mock.json';
 import { Container } from 'inversify';
 import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
+import AppConfig from '@config/AppConfig';
 
 export class RegisterApi implements IOCRegisterInterface<Container> {
   register(container: Container): void {
     const openAiApi = new OpenAIClient({
-      ...openAiConfig,
+      baseURL: AppConfig.openAiBaseUrl,
+      models: AppConfig.openAiModels,
       commonPluginConfig: {
-        ...openAiConfig.commonPluginConfig,
+        tokenPrefix: AppConfig.openAiTokenPrefix,
+        token: AppConfig.openAiToken,
+        defaultHeaders: {
+          'Content-Type': 'application/json'
+        },
+        defaultRequestData: {
+          model: AppConfig.openAiModels[0],
+          stream: true
+        },
+        requiredToken: true,
         requestDataSerializer: (data) => JSON.stringify(data)
       }
     }).usePlugin(container.get(RequestLogger));
@@ -24,12 +33,16 @@ export class RegisterApi implements IOCRegisterInterface<Container> {
     const abortPlugin = container.get(FetchAbortPlugin);
     const feApi = new FeApi({
       abortPlugin,
-      config: defaultFeApiConfig.adapter
+      config: {
+        responseType: 'json',
+        baseURL: 'https://api.example.com/'
+      }
     })
       .usePlugin(new FetchURLPlugin())
       .usePlugin(
         new RequestCommonPlugin({
-          ...defaultFeApiConfig.commonPluginConfig,
+          tokenPrefix: AppConfig.openAiTokenPrefix,
+          requiredToken: true,
           token: () => localJsonStorage.getItem('fe_user_token')
         })
       )

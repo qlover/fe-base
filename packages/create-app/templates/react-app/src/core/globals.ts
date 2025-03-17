@@ -6,7 +6,7 @@ import {
   SyncStorage
 } from '@qlover/fe-utils';
 
-export const env = import.meta.env.VITE_NODE_ENV;
+export const env = import.meta.env.VITE_USER_NODE_ENV;
 export const isProduction = env === 'production';
 
 /**
