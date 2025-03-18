@@ -1,4 +1,4 @@
-import { IOC } from '@/core';
+import { IOC } from '@/core/IOC';
 import { useController } from '@lib/fe-react-controller';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
 import { useTranslation } from 'react-i18next';

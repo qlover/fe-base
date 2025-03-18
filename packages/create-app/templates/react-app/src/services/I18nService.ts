@@ -4,24 +4,16 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import { i18nConfig, I18nServiceLocale } from '@config/i18n';
+import type { BootstrapExecutorPlugin } from '@lib/bootstrap';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
-// custom language detector
-const pathLanguageDetector = {
-  name: 'pathLanguageDetector',
-  lookup() {
-    const path = window.location.pathname.split('/');
-    const language = path[1];
-    return I18nService.isValidLanguage(language) ? language : fallbackLng;
-  },
-  cacheUserLanguage() {
-    // no cache, because we get language from URL
-  }
-};
+export class I18nService implements BootstrapExecutorPlugin {
+  readonly pluginName = 'I18nService';
 
-export class I18nService {
-  static init(): void {
+  constructor(private pathname: string) {}
+
+  onBefore(): void {
     i18n
       .use(HttpApi)
       .use(LanguageDetector)
@@ -36,6 +28,18 @@ export class I18nService {
       );
 
     // add custom detector
+    // custom language detector
+    const pathLanguageDetector = {
+      name: 'pathLanguageDetector',
+      lookup: () => {
+        const path = this.pathname.split('/');
+        const language = path[1];
+        return I18nService.isValidLanguage(language) ? language : fallbackLng;
+      },
+      cacheUserLanguage() {
+        // no cache, because we get language from URL
+      }
+    };
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
   }
 

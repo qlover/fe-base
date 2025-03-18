@@ -25,7 +25,7 @@ export interface OpenAIChatParmas {
 
 export type OpenAIAargs = {
   commonPluginConfig: RequestCommonPluginConfig;
-  models: readonly string[];
+  models: string[];
 };
 
 export type OpenAIClientConfig = Partial<RequestAdapterFetchConfig> &

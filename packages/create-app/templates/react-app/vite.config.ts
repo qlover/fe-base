@@ -4,10 +4,22 @@ import alias from '@rollup/plugin-alias';
 import tsappconfig from './tsconfig.json';
 import { resolve } from 'path';
 import { Env } from '@qlover/env-loader';
+import { envPrefix } from './config/common';
+import { name, version } from './package.json';
+import { injectPkgConfig } from './lib/env-config/injectPkgConfig';
 
 Env.searchEnv();
 
 const tsAppPaths = tsappconfig.compilerOptions.paths || {};
+
+// add version and name to env
+injectPkgConfig(
+  [
+    ['APP_NAME', name],
+    ['APP_VERSION', version]
+  ],
+  envPrefix
+);
 
 // convert tsconfig paths to vite alias
 const entries = Object.entries(tsAppPaths).reduce((acc, [key, value]) => {
@@ -23,10 +35,12 @@ export default defineConfig({
       entries
     })
   ],
+  envPrefix: envPrefix,
   publicDir: 'public',
   server: {
     port: Number(process.env.VITE_SERVER_PORT || 3200)
   },
+  mode: process.env.NODE_ENV,
   test: {
     environment: 'jsdom',
     globals: true,

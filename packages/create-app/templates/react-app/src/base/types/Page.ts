@@ -1,9 +1,7 @@
-import { LazyExoticComponent, PropsWithChildren } from 'react';
-import { RouteObject } from 'react-router-dom';
-
-import { TFunction } from 'i18next';
-import { UseTranslationResponse } from 'react-i18next';
-import { RouteConfigValue } from '@lib/router-loader/RouterLoader';
+import type { LazyExoticComponent, PropsWithChildren } from 'react';
+import type { TFunction } from 'i18next';
+import type { UseTranslationResponse } from 'react-i18next';
+import type { RouteConfigValue } from '@lib/router-loader/RouterLoader';
 
 export interface BasePageProvider {
   meta: RouteMeta;
@@ -37,10 +35,3 @@ export type PagesMaps = Record<
   | (() => LazyExoticComponent<React.ComponentType<unknown>>)
   | (() => React.ComponentType<unknown>)
 >;
-
-export type LoadProps = {
-  pagesMaps: PagesMaps;
-  componentPath: string;
-  route: RouteType;
-  Provider?: React.ComponentType<PropsWithChildren<RouteMeta>>;
-};
