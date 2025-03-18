@@ -4,7 +4,7 @@ import { IOC } from '@/core';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { UserController } from '@/uikit/controllers/UserController';
-import AppConfig from '@config/AppConfig';
+import AppConfig from '@/core/AppConfig';
 
 export default function Login() {
   const { t } = useBaseRoutePage();

@@ -1,11 +1,11 @@
+// !only this file use `window`, `document` ...global variables
 import 'reflect-metadata';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { Bootstrap } from './core/Bootstrap';
-import { FeContainer } from './core/feIOC/FeContainer';
+import startup from './core/bootstrap';
 
-new Bootstrap(new FeContainer()).start();
+startup(window);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

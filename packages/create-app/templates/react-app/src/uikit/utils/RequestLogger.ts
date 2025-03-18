@@ -1,4 +1,4 @@
-import { FeRegisterType } from '@/core/feIOC/FeRegisterType';
+import { RegistersType } from '@/base/consts/AppRegistersType';
 import {
   ExecutorPlugin,
   ExecutorContext,
@@ -13,7 +13,7 @@ export class RequestLogger
 {
   readonly pluginName = 'RequestLogger';
 
-  constructor(@inject(FeRegisterType.Logger) public logger: Logger) {}
+  constructor(@inject(RegistersType.Logger) public logger: Logger) {}
 
   async onSuccess({
     parameters,

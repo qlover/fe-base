@@ -11,6 +11,7 @@ export interface IOCContainerInterface {
    * eg. may need to manually bind implementation classes
    */
   configure(): void;
+  configure<Container>(registers?: IOCRegisterInterface<Container>[]): void;
 
   /**
    * bind instance
@@ -30,5 +31,5 @@ export interface IOCContainerInterface {
 }
 
 export interface IOCRegisterInterface<T> {
-  register(container: T): void;
+  register(container: T, thisArg: IOCContainerInterface): void;
 }

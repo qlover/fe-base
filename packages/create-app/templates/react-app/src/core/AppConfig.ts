@@ -1,4 +1,8 @@
-class Config {
+import { EnvConfigInterface } from '@/base/cases/bootstrap';
+
+class Config implements EnvConfigInterface {
+  readonly appName = '';
+  readonly appVersion = '';
   /**
    * vite mode
    */

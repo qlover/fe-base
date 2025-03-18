@@ -3,12 +3,8 @@ import {
   IOCRegisterInterface
 } from '@/base/port/IOCContainerInterface';
 import { Container } from 'inversify';
-import { RegisterGlobals } from './RegisterGlobals';
-import { RegisterCommon } from './RegisterCommon';
-import { RegisterApi } from './RegisterApi';
-import { RegisterControllers } from './RegisterControllers';
 
-export class FeContainer implements IOCContainerInterface {
+export class AppIOCContainer implements IOCContainerInterface {
   private container: Container;
 
   constructor() {
@@ -20,15 +16,10 @@ export class FeContainer implements IOCContainerInterface {
     });
   }
 
-  configure(): void {
-    const registers: IOCRegisterInterface<Container>[] = [
-      new RegisterGlobals(),
-      new RegisterCommon(),
-      new RegisterApi(),
-      new RegisterControllers()
-    ];
-
-    registers.forEach((register) => register.register(this.container));
+  configure(registers?: IOCRegisterInterface<Container>[]): void {
+    if (registers) {
+      registers.forEach((register) => register.register(this.container, this));
+    }
   }
 
   bind<T>(key: string, value: T): void {

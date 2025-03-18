@@ -2,7 +2,7 @@ import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-utils';
 import { UserToken } from '@/base/cases/UserToken';
 import { Container } from 'inversify';
 import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
-import AppConfig from '@config/AppConfig';
+import AppConfig from '@/core/AppConfig';
 
 export class RegisterCommon implements IOCRegisterInterface<Container> {
   register(container: Container): void {

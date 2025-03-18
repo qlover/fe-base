@@ -1,26 +1,75 @@
-import * as feGlobals from '@/core/globals';
+import {
+  Bootstrap,
+  BootstrapExecutorPlugin,
+  InjectEnv,
+  InjectIOC
+} from '@/base/cases/bootstrap';
+import { AppIOCContainer } from '@/core/AppIOCContainer';
+import AppConfig from '@/core/AppConfig';
+import { envPrefix } from '@config/common.json';
 import { IOC } from '.';
-import type { IOCContainerInterface } from '@/base/port/IOCContainerInterface';
+import * as feGlobals from '@/core/globals';
 import { I18nService } from '@/services/I18nService';
-import AppConfig from '@config/AppConfig';
-import { InjectEnv } from './InjectEnv';
+import { registerList } from './registers';
 
-export class Bootstrap {
-  constructor(private IOCContainer: IOCContainerInterface) {
-    // inject env config to AppConfig
-    InjectEnv.inject(AppConfig);
+const injectGlobals: BootstrapExecutorPlugin = {
+  pluginName: 'InjectGLobas',
+  onBefore({ parameters: { root } }) {
+    // inject globals to window
+    Object.assign(root!, {
+      feGlobals: Object.freeze(Object.assign({}, feGlobals))
+    });
+  }
+};
+
+/**
+ * Bootstrap
+ *
+ * 1. inject env config to AppConfig
+ * 2. inject IOC to Application
+ * 3. inject globals to window
+ *
+ */
+export default function startup(root: typeof globalThis) {
+  const window =
+    typeof root !== 'undefined' && root instanceof Window ? root : undefined;
+
+  if (!window) {
+    throw new Error('Not Found Window');
   }
 
-  start(): void {
-    // set global feGlobals
-    if (typeof window !== 'undefined') {
-      window.feGlobals = Object.freeze(Object.assign({}, feGlobals));
-    }
+  const bootstrap = new Bootstrap(new AppIOCContainer());
 
-    // startup IOC
-    IOC.implement(this.IOCContainer);
+  /**
+   * bootstrap start list
+   *
+   * - inject env config to AppConfig
+   * - inject IOC to Application
+   * - inject globals to window
+   * - inject i18n service to Application
+   */
+  const bootstrapList: BootstrapExecutorPlugin[] = [
+    new InjectEnv(AppConfig, envPrefix),
+    new InjectIOC(IOC, registerList),
+    injectGlobals,
+    new I18nService(window.location.pathname)
+  ];
 
-    // startup i18n
-    I18nService.init();
+  if (AppConfig.env !== 'production') {
+    bootstrapList.push({
+      pluginName: 'InjectDevTools',
+      onBefore() {
+        root.console.log(AppConfig);
+      },
+      onError({ error }) {
+        root.console.error(`${AppConfig.appName} starup error:`, error);
+      }
+    });
+  }
+
+  try {
+    bootstrap.use(bootstrapList).start(root);
+  } catch (error) {
+    root.console.error(`${AppConfig.appName} starup error:`, error);
   }
 }

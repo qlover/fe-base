@@ -8,7 +8,7 @@ import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import mockDataJson from '@config/feapi.mock.json';
 import { Container } from 'inversify';
 import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
-import AppConfig from '@config/AppConfig';
+import AppConfig from '@/core/AppConfig';
 
 export class RegisterApi implements IOCRegisterInterface<Container> {
   register(container: Container): void {
