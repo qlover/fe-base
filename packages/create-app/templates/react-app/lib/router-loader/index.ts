@@ -2,7 +2,7 @@ import { RouteObject } from 'react-router-dom';
 import isString from 'lodash/isString';
 import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 
-type ComponentValue = Record<string, () => unknown>;
+export type ComponentValue = Record<string, () => unknown>;
 
 type RouteComponentType<T = unknown> =
   | ComponentType<T>
@@ -11,7 +11,7 @@ type RouteComponentType<T = unknown> =
 export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
   /**
    * 路径
-   * 
+   *
    * FIXME: support `ReactNode`
    */
   element?: string;

@@ -3,10 +3,12 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
-import { i18nConfig, I18nServiceLocale } from '@config/i18n';
+import i18nConfig from '@config/i18n';
 import type { BootstrapExecutorPlugin } from '@lib/bootstrap';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
+
+export type I18nServiceLocale = (typeof supportedLngs)[number];
 
 export class I18nService implements BootstrapExecutorPlugin {
   readonly pluginName = 'I18nService';

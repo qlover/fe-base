@@ -1,14 +1,8 @@
-import { isProduction } from '@/core/globals';
-
-/** @type {import('i18next').InitOptions} */
-export const i18nConfig = {
-  /**
-   * default language
-   */
+export default {
   fallbackLng: 'en',
-  debug: !isProduction,
+  debug: true,
   interpolation: {
-    escapeValue: false // React already does escaping
+    escapeValue: false
   },
   ns: ['common'],
   defaultNS: 'common',
@@ -17,5 +11,3 @@ export const i18nConfig = {
   },
   supportedLngs: ['en', 'zh']
 } as const;
-
-export type I18nServiceLocale = (typeof i18nConfig.supportedLngs)[number];
