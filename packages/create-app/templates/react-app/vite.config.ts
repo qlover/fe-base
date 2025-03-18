@@ -4,7 +4,7 @@ import alias from '@rollup/plugin-alias';
 import tsappconfig from './tsconfig.json';
 import { resolve } from 'path';
 import { Env } from '@qlover/env-loader';
-import { envPrefix } from './config/common.json';
+import { envPrefix } from './config/common';
 import { name, version } from './package.json';
 import { injectPkgConfig } from './lib/env-config/injectPkgConfig';
 

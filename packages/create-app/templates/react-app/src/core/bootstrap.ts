@@ -2,25 +2,16 @@ import {
   Bootstrap,
   BootstrapExecutorPlugin,
   InjectEnv,
-  InjectIOC
-} from '@/base/cases/bootstrap';
+  InjectIOC,
+  InjectGlobal
+} from '@lib/bootstrap';
 import { AppIOCContainer } from '@/core/AppIOCContainer';
 import AppConfig from '@/core/AppConfig';
-import { envPrefix } from '@config/common.json';
-import { IOC } from '.';
-import * as feGlobals from '@/core/globals';
+import { envPrefix, browserGlobalsName } from '@config/common';
+import { IOC } from './IOC';
+import * as globals from '@/core/globals';
 import { I18nService } from '@/services/I18nService';
 import { registerList } from './registers';
-
-const injectGlobals: BootstrapExecutorPlugin = {
-  pluginName: 'InjectGLobas',
-  onBefore({ parameters: { root } }) {
-    // inject globals to window
-    Object.assign(root!, {
-      feGlobals: Object.freeze(Object.assign({}, feGlobals))
-    });
-  }
-};
 
 /**
  * Bootstrap
@@ -49,9 +40,9 @@ export default function startup(root: typeof globalThis) {
    * - inject i18n service to Application
    */
   const bootstrapList: BootstrapExecutorPlugin[] = [
-    new InjectEnv(AppConfig, envPrefix),
+    new InjectEnv(AppConfig, import.meta.env, envPrefix),
     new InjectIOC(IOC, registerList),
-    injectGlobals,
+    new InjectGlobal(globals, browserGlobalsName),
     new I18nService(window.location.pathname)
   ];
 
@@ -59,10 +50,10 @@ export default function startup(root: typeof globalThis) {
     bootstrapList.push({
       pluginName: 'InjectDevTools',
       onBefore() {
-        root.console.log(AppConfig);
+        console.log(AppConfig);
       },
       onError({ error }) {
-        root.console.error(`${AppConfig.appName} starup error:`, error);
+        console.error(`${AppConfig.appName} starup error:`, error);
       }
     });
   }
@@ -70,6 +61,6 @@ export default function startup(root: typeof globalThis) {
   try {
     bootstrap.use(bootstrapList).start(root);
   } catch (error) {
-    root.console.error(`${AppConfig.appName} starup error:`, error);
+    console.error(`${AppConfig.appName} starup error:`, error);
   }
 }

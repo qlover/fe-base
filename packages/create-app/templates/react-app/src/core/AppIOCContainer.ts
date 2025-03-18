@@ -1,8 +1,6 @@
-import {
-  IOCContainerInterface,
-  IOCRegisterInterface
-} from '@/base/port/IOCContainerInterface';
-import { Container } from 'inversify';
+import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
+import type { IOCContainerInterface } from '@lib/bootstrap';
+import { ServiceIdentifier, Container } from 'inversify';
 
 export class AppIOCContainer implements IOCContainerInterface {
   private container: Container;
@@ -16,13 +14,13 @@ export class AppIOCContainer implements IOCContainerInterface {
     });
   }
 
-  configure(registers?: IOCRegisterInterface<Container>[]): void {
+  configure(registers?: InversifyRegisterInterface[]): void {
     if (registers) {
       registers.forEach((register) => register.register(this.container, this));
     }
   }
 
-  bind<T>(key: string, value: T): void {
+  bind<T>(key: ServiceIdentifier<T>, value: T): void {
     this.container.bind<T>(key).toConstantValue(value);
   }
 

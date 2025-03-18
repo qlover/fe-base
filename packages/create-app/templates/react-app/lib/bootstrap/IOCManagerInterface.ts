@@ -1,8 +1,7 @@
-import { ServiceIdentifier } from 'inversify';
 import type { IOCContainerInterface } from './IOCContainerInterface';
 
-export type IOCFunction = {
-  <T>(serviceIdentifier: ServiceIdentifier<T>): T;
+export interface IOCManagerInterface {
+  get<T>(identifier: unknown): T;
 
   /**
    * implement IOC container
@@ -10,4 +9,4 @@ export type IOCFunction = {
   implement(container: IOCContainerInterface): void;
 
   get implemention(): IOCContainerInterface | null;
-};
+}

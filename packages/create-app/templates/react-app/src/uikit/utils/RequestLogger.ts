@@ -1,4 +1,4 @@
-import { RegistersType } from '@/base/consts/AppRegistersType';
+import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
 import {
   ExecutorPlugin,
   ExecutorContext,
@@ -13,7 +13,7 @@ export class RequestLogger
 {
   readonly pluginName = 'RequestLogger';
 
-  constructor(@inject(RegistersType.Logger) public logger: Logger) {}
+  constructor(@inject(IOCIdentifier.Logger) public logger: Logger) {}
 
   async onSuccess({
     parameters,

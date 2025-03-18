@@ -1,5 +1,3 @@
-import { ServiceIdentifier } from 'inversify';
-
 /**
  * IOC container
  *
@@ -19,7 +17,7 @@ export interface IOCContainerInterface {
    * @param serviceIdentifier
    * @param value
    */
-  bind<T>(serviceIdentifier: ServiceIdentifier<T>, value: T): void;
+  bind<T>(serviceIdentifier: unknown, value: T): void;
 
   /**
    * get instance
@@ -27,7 +25,7 @@ export interface IOCContainerInterface {
    * @param serviceIdentifier
    * @returns
    */
-  get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  get<T>(serviceIdentifier: unknown): T;
 }
 
 export interface IOCRegisterInterface<T> {

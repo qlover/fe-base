@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useController } from '@lib/fe-react-controller';
-import { IOC } from '@/core';
+import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { UserController } from '@/uikit/controllers/UserController';

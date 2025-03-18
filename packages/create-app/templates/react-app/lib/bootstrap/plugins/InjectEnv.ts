@@ -1,4 +1,4 @@
-import { BootstrapExecutorPlugin } from '../BootstrapExecutorPlugin';
+import type { BootstrapExecutorPlugin } from '../BootstrapExecutorPlugin';
 
 export interface EnvConfigInterface {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,6 +10,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
   constructor(
     private target: EnvConfigInterface,
+    private source: Record<string, unknown>,
     private envPrefix: string = '',
     private envWhiteList: string[] = ['env', 'userNodeEnv']
   ) {}
@@ -30,13 +31,13 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     const formattedKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
 
     const envKey = `${this.envPrefix}${formattedKey}`;
-    const value = import.meta.env[envKey];
+    const value = this.source[envKey];
     // if it is a json string, parse it
-    if (InjectEnv.isJSONString(value)) {
+    if (typeof value === 'string' && InjectEnv.isJSONString(value)) {
       return JSON.parse(value);
     }
 
-    return value ?? defaultValue;
+    return (value ?? defaultValue) as D;
   }
 
   inject(config: EnvConfigInterface): void {

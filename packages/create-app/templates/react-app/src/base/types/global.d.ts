@@ -1,7 +1,8 @@
 import * as feGlobals from '@/core/globals';
+import type { browserGlobalsName } from '@config/common';
 
 declare global {
   interface Window {
-    feGlobals: Readonly<typeof feGlobals>;
+    [browserGlobalsName]: Readonly<typeof feGlobals>;
   }
 }

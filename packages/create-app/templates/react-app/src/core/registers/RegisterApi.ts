@@ -1,3 +1,8 @@
+import type {
+  InversifyRegisterInterface,
+  InversifyRegisterContainer
+} from '@/base/port/InversifyIocInterface';
+
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { localJsonStorage } from '../globals';
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
@@ -6,12 +11,10 @@ import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import mockDataJson from '@config/feapi.mock.json';
-import { Container } from 'inversify';
-import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
 import AppConfig from '@/core/AppConfig';
 
-export class RegisterApi implements IOCRegisterInterface<Container> {
-  register(container: Container): void {
+export class RegisterApi implements InversifyRegisterInterface {
+  register(container: InversifyRegisterContainer): void {
     const openAiApi = new OpenAIClient({
       baseURL: AppConfig.openAiBaseUrl,
       models: AppConfig.openAiModels,

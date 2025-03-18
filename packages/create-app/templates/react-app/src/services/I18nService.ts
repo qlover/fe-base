@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import { i18nConfig, I18nServiceLocale } from '@config/i18n';
-import { BootstrapExecutorPlugin } from '@/base/cases/bootstrap';
+import type { BootstrapExecutorPlugin } from '@lib/bootstrap';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 

@@ -1,4 +1,4 @@
-import type { IOCContainerInterface } from '@/base/port/IOCContainerInterface';
+import type { IOCContainerInterface } from './IOCContainerInterface';
 import { SyncExecutor } from '@qlover/fe-utils';
 import { BootstrapExecutorPlugin } from './BootstrapExecutorPlugin';
 

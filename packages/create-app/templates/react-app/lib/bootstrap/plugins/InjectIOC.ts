@@ -1,20 +1,16 @@
-import {
-  IOCContainerInterface,
-  IOCRegisterInterface
-} from '@/base/port/IOCContainerInterface';
-import { ExecutorContext } from '@qlover/fe-utils';
+import type { IOCRegisterInterface } from '../IOCContainerInterface';
+import type { IOCManagerInterface } from '../IOCManagerInterface';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '../BootstrapExecutorPlugin';
-import { IOCFunction } from '@/base/port/IOCFunction';
 import { Container } from 'inversify';
 
 export class InjectIOC implements BootstrapExecutorPlugin {
   readonly pluginName = 'InjectIOC';
 
   constructor(
-    private IOC: IOCFunction,
+    private IOC: IOCManagerInterface,
     private registeres: IOCRegisterInterface<Container>[]
   ) {}
 

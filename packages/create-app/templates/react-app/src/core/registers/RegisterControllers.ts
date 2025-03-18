@@ -1,4 +1,8 @@
-import type { IOCRegisterInterface } from '@/base/port/IOCContainerInterface';
+import type {
+  InversifyRegisterInterface,
+  InversifyRegisterContainer
+} from '@/base/port/InversifyIocInterface';
+
 import { localJsonStorage, logger } from '../globals';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
@@ -10,14 +14,12 @@ import { ThemeController } from '@lib/fe-react-theme/ThemeController';
 import { RouteConfig } from '@/base/types/Page';
 import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
-
 import appRouterConfig from '@config/app.router.json';
 import themeConfigJson from '@config/theme.json';
 import { UserToken } from '@/base/cases/UserToken';
-import { Container } from 'inversify';
 
-export class RegisterControllers implements IOCRegisterInterface<Container> {
-  register(container: Container): void {
+export class RegisterControllers implements InversifyRegisterInterface {
+  register(container: InversifyRegisterContainer): void {
     const routerController = new RouterController({
       config: appRouterConfig.base as RouteConfig,
       logger

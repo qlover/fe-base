@@ -1,6 +1,6 @@
-import { EnvConfigInterface } from '@/base/cases/bootstrap';
+import type { EnvConfigInterface } from '@lib/bootstrap';
 
-class Config implements EnvConfigInterface {
+class AppConfig implements EnvConfigInterface {
   readonly appName = '';
   readonly appVersion = '';
   /**
@@ -24,4 +24,4 @@ class Config implements EnvConfigInterface {
   readonly loginPassword = '';
 }
 
-export default new Config();
+export default new AppConfig();

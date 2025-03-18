@@ -1,5 +1,5 @@
 import { createContext, useEffect } from 'react';
-import { IOC } from '@/core';
+import { IOC } from '@/core/IOC';
 import { useLanguageGuard } from '@/uikit/hooks/useLanguageGuard';
 import { useStrictEffect } from '@/uikit/hooks/useStrictEffect';
 import { ProcesserService } from '@/services/processer/ProcesserService';
