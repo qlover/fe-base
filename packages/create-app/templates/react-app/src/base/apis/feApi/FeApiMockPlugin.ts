@@ -5,16 +5,21 @@ import {
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
-import { sleep } from '@/uikit/utils/thread';
+import { inject, injectable } from 'inversify';
+import mockDataJson from '@config/feapi.mock.json';
+import { Thread } from '@/uikit/utils/thread';
 
+@injectable()
 export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';
 
-  constructor(
-    private readonly mockDataJson: typeof import('@config/feapi.mock.json'),
-    private readonly logger: Logger
-  ) {}
+  private readonly mockDataJson = mockDataJson;
 
+  constructor(@inject(Logger) private readonly logger: Logger) {}
+
+  /**
+   * @override
+   */
   async onExec({
     parameters
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<RequestAdapterResponse> {
@@ -30,9 +35,15 @@ export class FeApiMockPlugin implements ExecutorPlugin {
       statusText: 'OK'
     });
 
-    this.logger.debug('[mock]', key, mockData, headers);
+    await Thread.sleep(1000);
 
-    await sleep(1000);
+    this.logger.log(
+      '%c[mock]%c ' + key,
+      'color: #dd0;',
+      'color: inherit;',
+      ['headers:', headers],
+      ['response json:', await response.json()]
+    );
 
     return {
       status: response.status,

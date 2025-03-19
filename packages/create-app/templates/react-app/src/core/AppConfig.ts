@@ -9,7 +9,7 @@ class AppConfig implements EnvConfigInterface {
    */
   readonly env: string = '';
 
-  readonly userTokenStorageKey = 'fe_user_token';
+  readonly userTokenStorageKey = '';
   readonly openAiModels = [
     'gpt-4o-mini',
     'gpt-3.5-turbo',
@@ -23,6 +23,8 @@ class AppConfig implements EnvConfigInterface {
   readonly openAiRequireToken = true;
   readonly loginUser = '';
   readonly loginPassword = '';
+
+  readonly feApiBaseUrl = '';
 }
 
 export default new AppConfig();
