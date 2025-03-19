@@ -32,10 +32,4 @@ export class InjectGlobal implements BootstrapExecutorPlugin {
       Object.assign(target, { [key]: element });
     }
   }
-
-  onSuccess({ parameters: { logger } }: BootstrapContext): void {
-    logger.debug(
-      `InjectGlobal success! You can use \`window.${this.target}\` to access the globals`
-    );
-  }
 }

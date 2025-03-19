@@ -19,8 +19,10 @@ export class RequestLogger
     parameters,
     returnValue
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<void> {
-    this.logger.info(
-      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url} [success] `,
+    this.logger.log(
+      `%c[Request success]%c [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url}`,
+      'color: #0f0;',
+      'color: inherit;',
       returnValue
     );
   }
@@ -30,7 +32,9 @@ export class RequestLogger
     error
   }: ExecutorContext<RequestAdapterFetchConfig>): void {
     this.logger.error(
-      `Request [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url} [error] `,
+      `%c[Request error]%c [${new Date().toLocaleString()}] ${parameters.method} ${parameters.url}`,
+      'color: #f00;',
+      'color: inherit;',
       error
     );
   }

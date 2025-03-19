@@ -55,7 +55,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     }
   }
 
-  onBefore(): void {
+  onBefore({ parameters: { logger } }: BootstrapContext): void {
     this.inject(this.target);
 
     // transform readonly to writable

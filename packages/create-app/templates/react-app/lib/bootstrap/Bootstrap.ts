@@ -1,12 +1,13 @@
 import type { IOCContainerInterface } from './IOCContainerInterface';
 import { Logger, SyncExecutor } from '@qlover/fe-utils';
 import {
-  BootstrapContext,
+  BootstrapArgs,
   BootstrapExecutorPlugin
 } from './BootstrapExecutorPlugin';
 
 export class Bootstrap extends SyncExecutor {
   constructor(
+    private root: unknown,
     private IOCContainer: IOCContainerInterface,
     private logger: Logger
   ) {
@@ -15,6 +16,10 @@ export class Bootstrap extends SyncExecutor {
 
   getIOCContainer(): IOCContainerInterface {
     return this.IOCContainer;
+  }
+
+  getContext(): BootstrapArgs {
+    return { root: this.root, ioc: this.IOCContainer, logger: this.logger };
   }
 
   use(plugin: BootstrapExecutorPlugin | BootstrapExecutorPlugin[]): this {
@@ -28,19 +33,11 @@ export class Bootstrap extends SyncExecutor {
     return this;
   }
 
-  start(root: unknown): void {
-    this.exec(
-      { root, ioc: this.IOCContainer, logger: this.logger },
-      // nothing to do
-      () => {}
-    );
+  start(): void {
+    this.exec(this.getContext(), () => {});
   }
 
-  startNoError(root: unknown): void {
-    this.execNoError(
-      { root, ioc: this.IOCContainer, logger: this.logger },
-      // nothing to do
-      () => {}
-    );
+  startNoError(): void {
+    this.execNoError(this.getContext(), () => {});
   }
 }
