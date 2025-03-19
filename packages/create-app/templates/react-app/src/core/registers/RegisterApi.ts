@@ -2,20 +2,22 @@ import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
+import type { AppIOCContainer } from '../AppIOCContainer';
 
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
-import { localJsonStorage } from '../globals';
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
 import { FeApiMockPlugin } from '@/base/apis/feApi';
 import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
-import mockDataJson from '@config/feapi.mock.json';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
 
 export class RegisterApi implements InversifyRegisterInterface {
-  register(container: InversifyRegisterContainer): void {
+  register(
+    container: InversifyRegisterContainer,
+    thisArgs: AppIOCContainer
+  ): void {
     const openAiApi = new OpenAIClient({
       baseURL: AppConfig.openAiBaseUrl,
       models: AppConfig.openAiModels,
@@ -35,11 +37,12 @@ export class RegisterApi implements InversifyRegisterInterface {
     }).usePlugin(container.get(RequestLogger));
 
     const abortPlugin = container.get(FetchAbortPlugin);
+
     const feApi = new FeApi({
       abortPlugin,
       config: {
         responseType: 'json',
-        baseURL: 'https://api.example.com/'
+        baseURL: AppConfig.feApiBaseUrl
       }
     })
       .usePlugin(new FetchURLPlugin())
@@ -47,12 +50,10 @@ export class RegisterApi implements InversifyRegisterInterface {
         new RequestCommonPlugin({
           tokenPrefix: AppConfig.openAiTokenPrefix,
           requiredToken: true,
-          token: () => localJsonStorage.getItem('fe_user_token')
+          token: () => thisArgs.get(IOCIdentifier.FeApiToken).getToken()
         })
       )
-      .usePlugin(
-        new FeApiMockPlugin(mockDataJson, container.get(IOCIdentifier.Logger))
-      )
+      .usePlugin(thisArgs.get(FeApiMockPlugin))
       .usePlugin(container.get(RequestLogger))
       .usePlugin(abortPlugin);
 

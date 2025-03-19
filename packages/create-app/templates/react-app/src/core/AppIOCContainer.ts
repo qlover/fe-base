@@ -1,4 +1,5 @@
 import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
+import { IOCIdentifierMap } from '@/base/port/IOCFunctionInterface';
 import type { IOCContainerInterface } from '@lib/bootstrap';
 import { ServiceIdentifier, Container } from 'inversify';
 
@@ -24,7 +25,13 @@ export class AppIOCContainer implements IOCContainerInterface {
     this.container.bind<T>(key).toConstantValue(value);
   }
 
-  get<T>(key: string): T {
-    return this.container.get<T>(key);
+  get<K extends keyof IOCIdentifierMap>(
+    serviceIdentifier: K
+  ): IOCIdentifierMap[K];
+  get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  get<T, K extends keyof IOCIdentifierMap>(
+    serviceIdentifier: ServiceIdentifier<T> | K
+  ): T | IOCIdentifierMap[K] {
+    return this.container.get<T>(serviceIdentifier);
   }
 }

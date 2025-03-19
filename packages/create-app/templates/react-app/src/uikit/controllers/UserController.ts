@@ -1,11 +1,10 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
-import { sleep } from '@/uikit/utils/thread';
 import { FeController } from '@lib/fe-react-controller';
 import { FeApi } from '@/base/apis/feApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
 import { RouterController } from './RouterController';
 import { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
-
+import { Thread } from '@/uikit/utils/thread';
 export interface UserControllerState {
   success: boolean;
   userInfo: FeApiGetUserInfo['response']['data'];
@@ -54,7 +53,7 @@ export class UserController
    * @override
    */
   async onBefore(): Promise<void> {
-    await sleep(1000);
+    await Thread.sleep(1000);
 
     if (!this.options.userToken.getToken()) {
       throw new Error('User not logged in');

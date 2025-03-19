@@ -44,17 +44,22 @@ export class BrowserColorLogger extends Logger {
     }
 
     const prefixColor = this.colorsMaps[level];
-    const [firstString, ...strings] = args;
     prefix = prefixColor ? prefix : '';
 
-    const head =
-      typeof firstString === 'string'
-        ? [BrowserColorLogger.wrap(prefix), firstString].join(' ')
-        : prefix;
+    let head = args[0] as string;
+    let colors = [];
+    if (typeof head === 'string') {
+      head = prefix
+        ? [BrowserColorLogger.wrap(prefix), args[0]].join(' ')
+        : head;
+      colors = prefixColor ? [prefixColor, 'all: unset;'] : [];
+    }
 
-    const prefixColrs = prefixColor ? [prefixColor, 'all: unset;'] : [];
-
-    console.log(head, ...prefixColrs, ...strings);
+    if (head) {
+      console.log(head, ...colors, ...args.slice(1));
+      return;
+    }
+    console.log(...args);
   }
 
   /**
