@@ -1,15 +1,6 @@
 import type { IOCManagerInterface } from '@lib/bootstrap';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import type { ServiceIdentifier } from 'inversify';
-import type { IOCIdentifier } from '@/base/consts/IOCIdentifier';
-import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
-
-export type IOCIdentifierMap = {
-  [IOCIdentifier.JSON]: JSONSerializer;
-  [IOCIdentifier.JSONStorage]: JSONStorage;
-  [IOCIdentifier.Logger]: Logger;
-  [IOCIdentifier.FeApiToken]: StorageTokenInterface;
-};
+import type { IOCIdentifierMap } from '@/core/IOC';
 
 /**
  * IOC function
@@ -21,7 +12,7 @@ export type IOCIdentifierMap = {
  * ```
  *
  */
-export interface IOCFunctionInterface extends IOCManagerInterface {
+export interface IOCFunctionInterface<IOCIdentifierMap> extends IOCManagerInterface {
   /**
    * get constant identifier
    *

@@ -1,10 +1,38 @@
 // ! dont't import tsx, only ts file
 import type { IOCContainerInterface } from '@lib/bootstrap';
-import type {
-  IOCIdentifierMap,
-  IOCFunctionInterface
-} from '@/base/port/IOCFunctionInterface';
+import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
+import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import type { ServiceIdentifier } from 'inversify';
+import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
+
+/**
+ * IOC identifier
+ *
+ * @description
+ * IOC identifier is used to identify the service in the IOC container.
+ *
+ * @example
+ * ```ts
+ * const a = IOC(IOCIdentifier.JSON);
+ * const b = IOC('JSON');
+ * ```
+ */
+export const IOCIdentifier = Object.freeze({
+  JSON: 'JSON',
+  JSONStorage: 'JSONStorage',
+  Logger: 'Logger',
+  FeApiToken: 'FeApiToken'
+});
+
+/**
+ * IOC identifier map
+ */
+export type IOCIdentifierMap = {
+  [IOCIdentifier.JSON]: JSONSerializer;
+  [IOCIdentifier.JSONStorage]: JSONStorage;
+  [IOCIdentifier.Logger]: Logger;
+  [IOCIdentifier.FeApiToken]: StorageTokenInterface;
+};
 
 ioc.implemention = null as IOCContainerInterface | null;
 
@@ -37,7 +65,7 @@ function ioc<T, K extends keyof IOCIdentifierMap>(
  *
  * or use get(),
  */
-export const IOC: IOCFunctionInterface = Object.assign(ioc, {
+export const IOC: IOCFunctionInterface<IOCIdentifierMap> = Object.assign(ioc, {
   get implemention() {
     return ioc.implemention;
   },

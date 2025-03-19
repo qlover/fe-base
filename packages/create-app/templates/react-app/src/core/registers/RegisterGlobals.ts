@@ -4,7 +4,7 @@ import type {
 } from '@/base/port/InversifyIocInterface';
 import { JSON, localJsonStorage, logger } from '../globals';
 import { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
-import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
+import { IOCIdentifier } from '@/core/IOC';
 
 export class RegisterGlobals implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {

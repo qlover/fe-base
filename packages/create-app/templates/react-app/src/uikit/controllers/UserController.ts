@@ -3,50 +3,34 @@ import { FeController } from '@lib/fe-react-controller';
 import { FeApi } from '@/base/apis/feApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
 import { RouterController } from './RouterController';
-import { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 import { Thread } from '@/uikit/utils/thread';
-export interface UserControllerState {
-  success: boolean;
-  userInfo: FeApiGetUserInfo['response']['data'];
-}
+import { inject, injectable } from 'inversify';
+import { UserToken } from '@/base/cases/UserToken';
+import { IOCIdentifier } from '@/core/IOC';
+import { LoginInterface } from '@/base/port/LoginInterface';
 
-export interface UserControllerOptions {
-  userToken: StorageTokenInterface;
-  feApi: FeApi;
-  routerController: RouterController;
-}
-
-interface LoginInterface {
-  login(
-    params: FeApiLogin['request']
-  ): Promise<FeApiGetUserInfo['response']['data']>;
-  logout(): void;
-}
-
-function createDefaultState(
-  options: UserControllerOptions
-): UserControllerState {
-  const { userToken } = options;
-  const token = userToken.getToken();
-
-  return {
-    success: !!token,
-    userInfo: {
-      name: '',
-      email: '',
-      picture: ''
-    }
+class UserControllerState {
+  success: boolean = false;
+  userInfo: FeApiGetUserInfo['response']['data'] = {
+    name: '',
+    email: '',
+    picture: ''
   };
 }
 
+@injectable()
 export class UserController
   extends FeController<UserControllerState>
   implements ExecutorPlugin, LoginInterface
 {
   readonly pluginName = 'UserController';
 
-  constructor(private options: UserControllerOptions) {
-    super(() => createDefaultState(options));
+  constructor(
+    @inject(FeApi) private feApi: FeApi,
+    @inject(RouterController) private routerController: RouterController,
+    @inject(IOCIdentifier.FeApiToken) private userToken: UserToken
+  ) {
+    super(() => new UserControllerState());
   }
 
   /**
@@ -55,11 +39,11 @@ export class UserController
   async onBefore(): Promise<void> {
     await Thread.sleep(1000);
 
-    if (!this.options.userToken.getToken()) {
+    if (!this.userToken.getToken()) {
       throw new Error('User not logged in');
     }
 
-    const userInfo = await this.options.feApi.getUserInfo();
+    const userInfo = await this.feApi.getUserInfo();
 
     this.setState({
       success: true,
@@ -73,7 +57,7 @@ export class UserController
   async onError(): Promise<void> {
     this.logout();
 
-    this.options.routerController.gotoLogin();
+    this.routerController.gotoLogin();
   }
 
   /**
@@ -82,13 +66,11 @@ export class UserController
   async login(
     params: FeApiLogin['request']
   ): Promise<FeApiGetUserInfo['response']['data']> {
-    const { feApi } = this.options;
+    const result = await this.feApi.login(params);
 
-    const result = await feApi.login(params);
+    this.userToken.setToken(result.data.token);
 
-    this.options.userToken.setToken(result.data.token);
-
-    const userInfo = await feApi.getUserInfo();
+    const userInfo = await this.feApi.getUserInfo();
 
     this.setState({
       success: true,
@@ -109,7 +91,7 @@ export class UserController
    * @override
    */
   reset(): void {
-    this.options.userToken.removeToken();
+    this.userToken.removeToken();
     super.reset();
   }
 

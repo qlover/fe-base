@@ -1,5 +1,5 @@
 import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
-import { IOCIdentifierMap } from '@/base/port/IOCFunctionInterface';
+import { IOCIdentifierMap } from '@/core/IOC';
 import type { IOCContainerInterface } from '@lib/bootstrap';
 import { ServiceIdentifier, Container } from 'inversify';
 

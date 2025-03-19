@@ -6,7 +6,7 @@ import type {
 import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-utils';
 import { UserToken } from '@/base/cases/UserToken';
 import AppConfig from '@/core/AppConfig';
-import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
+import { IOCIdentifier } from '@/core/IOC';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {

@@ -1,16 +1,15 @@
 import { AsyncExecutor, ExecutorPlugin, Logger } from '@qlover/fe-utils';
+import { IOCIdentifier } from '@/core/IOC';
+import { injectable, inject } from 'inversify';
 
-export interface ProcesserServiceOptions {
-  logger: Logger;
-}
-
+@injectable()
 export class ProcesserService {
-  private executor: AsyncExecutor;
-  constructor(private options: ProcesserServiceOptions) {
-    this.executor = new AsyncExecutor();
-  }
+  constructor(
+    @inject(IOCIdentifier.Logger) private logger: Logger,
+    @inject(AsyncExecutor) private executor: AsyncExecutor
+  ) {}
 
-  usePlugin(plugin: ExecutorPlugin): this {
+  use(plugin: ExecutorPlugin): this {
     this.executor.use(plugin);
     return this;
   }
@@ -23,7 +22,7 @@ export class ProcesserService {
 
   init(): Promise<unknown> {
     return this.executor.exec(this.handler).catch((err) => {
-      this.options.logger.error('PageProcesser init failed', err);
+      this.logger.error('PageProcesser init failed', err);
     });
   }
 }

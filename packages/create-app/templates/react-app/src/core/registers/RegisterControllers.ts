@@ -15,7 +15,6 @@ import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
 import { base as baseRoutes } from '@config/app.router.json';
 import { override as themeOverride } from '@config/theme.json';
-import { UserToken } from '@/base/cases/UserToken';
 
 export class RegisterControllers implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
@@ -30,19 +29,11 @@ export class RegisterControllers implements InversifyRegisterInterface {
       container.get(FeApi)
     );
     const executorController = new ExecutorController(container.get(FeApi));
-    const userController = new UserController({
-      userToken: container.get(UserToken),
-      feApi: container.get(FeApi),
-      routerController
-    });
+
     const themeController = new ThemeController({
       ...themeOverride,
       storage: localJsonStorage
     });
-
-    const pageProcesser = new ProcesserService({
-      logger
-    }).usePlugin(userController);
 
     container.bind(RouterController).toConstantValue(routerController);
     container
@@ -50,8 +41,9 @@ export class RegisterControllers implements InversifyRegisterInterface {
       .toConstantValue(jsonStorageController);
     container.bind(RequestController).toConstantValue(requestController);
     container.bind(ExecutorController).toConstantValue(executorController);
-    container.bind(UserController).toConstantValue(userController);
+    
     container.bind(ThemeController).toConstantValue(themeController);
-    container.bind(ProcesserService).toConstantValue(pageProcesser);
+
+    container.get(ProcesserService).use(container.get(UserController));
   }
 }
