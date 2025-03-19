@@ -4,10 +4,12 @@ import { BasePageProvider } from '@/base/types/Page';
 import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
 import merge from 'lodash/merge';
-import { i18nConfig } from '@config/i18n';
+import i18nConfig from '@config/i18n';
+
+const { defaultNS } = i18nConfig;
 
 const defaultBaseRoutemeta = {
-  localNamespace: i18nConfig.defaultNS,
+  localNamespace: defaultNS,
   title: '',
   icon: ''
 };

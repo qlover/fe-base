@@ -1,10 +1,10 @@
 import '@/uikit/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
-import { RouterLoader } from '@lib/router-loader/RouterLoader';
-import appConfig from '@config/app.router.json';
+import { RouterLoader, ComponentValue } from '@lib/router-loader';
 import { RouterRenderComponent } from './components/RouterRenderComponent';
-import { PagesMaps } from './base/types/Page';
+import { IOC } from './core/IOC';
+import { RouterController } from './uikit/controllers/RouterController';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -17,7 +17,7 @@ function getAllPages() {
         }>
       );
     return acc;
-  }, {} as PagesMaps);
+  }, {} as ComponentValue);
 }
 
 const routerLoader = new RouterLoader({
@@ -27,9 +27,9 @@ const routerLoader = new RouterLoader({
 
 function App() {
   const routerBase = useMemo(() => {
-    const routes = appConfig.base.routes.map((route) =>
-      routerLoader.toRoute(route)
-    );
+    const routes = IOC(RouterController)
+      .getRoutes()
+      .map((route) => routerLoader.toRoute(route));
     const router = createBrowserRouter(routes);
     return router;
   }, []);

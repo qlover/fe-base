@@ -6,7 +6,7 @@ import type {
 } from '@/base/port/IOCFunctionInterface';
 import type { ServiceIdentifier } from 'inversify';
 
-let implemention: IOCContainerInterface | null;
+ioc.implemention = null as IOCContainerInterface | null;
 
 function ioc<T>(serviceIdentifier: ServiceIdentifier<T>): T;
 function ioc<K extends keyof IOCIdentifierMap>(
@@ -15,10 +15,10 @@ function ioc<K extends keyof IOCIdentifierMap>(
 function ioc<T, K extends keyof IOCIdentifierMap>(
   serviceIdentifier: ServiceIdentifier<T> | K
 ): T | IOCIdentifierMap[K] {
-  if (!implemention) {
+  if (!ioc.implemention) {
     throw new Error('IOC is not implemented');
   }
-  return implemention.get(serviceIdentifier);
+  return ioc.implemention.get(serviceIdentifier);
 }
 
 /**
@@ -39,10 +39,10 @@ function ioc<T, K extends keyof IOCIdentifierMap>(
  */
 export const IOC: IOCFunctionInterface = Object.assign(ioc, {
   get implemention() {
-    return implemention;
+    return ioc.implemention;
   },
   implement: (container: IOCContainerInterface) => {
-    implemention = container;
+    ioc.implemention = container;
   },
   get: ioc
 });

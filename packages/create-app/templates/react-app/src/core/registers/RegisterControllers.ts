@@ -11,17 +11,16 @@ import { ProcesserService } from '@/services/processer/ProcesserService';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { UserController } from '@/uikit/controllers/UserController';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
-import { RouteConfig } from '@/base/types/Page';
 import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
-import appRouterConfig from '@config/app.router.json';
-import themeConfigJson from '@config/theme.json';
+import { base as baseRoutes } from '@config/app.router.json';
+import { override as themeOverride } from '@config/theme.json';
 import { UserToken } from '@/base/cases/UserToken';
 
 export class RegisterControllers implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
     const routerController = new RouterController({
-      config: appRouterConfig.base as RouteConfig,
+      config: baseRoutes,
       logger
     });
 
@@ -37,7 +36,7 @@ export class RegisterControllers implements InversifyRegisterInterface {
       routerController
     });
     const themeController = new ThemeController({
-      ...themeConfigJson.override,
+      ...themeOverride,
       storage: localJsonStorage
     });
 

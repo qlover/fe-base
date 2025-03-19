@@ -3,15 +3,25 @@ import {
   BootstrapExecutorPlugin,
   InjectEnv,
   InjectIOC,
-  InjectGlobal
+  InjectGlobal,
+  IOCContainerInterface
 } from '@lib/bootstrap';
-import { AppIOCContainer } from '@/core/AppIOCContainer';
 import AppConfig from '@/core/AppConfig';
-import { envPrefix, browserGlobalsName } from '@config/common';
+import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
 import { IOC } from './IOC';
 import * as globals from '@/core/globals';
 import { I18nService } from '@/services/I18nService';
 import { registerList } from './registers';
+
+const printBootstrap: BootstrapExecutorPlugin = {
+  pluginName: 'PrintBootstrap',
+  onBefore({ parameters: { logger } }) {
+    logger.info('bootstrap start...', new Date().toISOString());
+  },
+  onSuccess({ parameters: { logger } }) {
+    logger.info('bootstrap success!', new Date().toISOString());
+  }
+};
 
 /**
  * Bootstrap
@@ -21,15 +31,25 @@ import { registerList } from './registers';
  * 3. inject globals to window
  *
  */
-export default function startup(root: typeof globalThis) {
-  const window =
-    typeof root !== 'undefined' && root instanceof Window ? root : undefined;
-
-  if (!window) {
+export default function startup({
+  window,
+  envSource,
+  IOCContainer
+}: {
+  window: unknown;
+  envSource: Record<string, unknown>;
+  IOCContainer: IOCContainerInterface;
+}) {
+  if (!(typeof window !== 'undefined' && window instanceof Window)) {
     throw new Error('Not Found Window');
   }
 
-  const bootstrap = new Bootstrap(new AppIOCContainer());
+  // use AppIOCContainer to `IOC`
+  IOC.implement(IOCContainer);
+
+  const { logger } = globals;
+
+  const bootstrap = new Bootstrap(IOCContainer, logger);
 
   /**
    * bootstrap start list
@@ -40,27 +60,19 @@ export default function startup(root: typeof globalThis) {
    * - inject i18n service to Application
    */
   const bootstrapList: BootstrapExecutorPlugin[] = [
-    new InjectEnv(AppConfig, import.meta.env, envPrefix),
+    new InjectEnv(AppConfig, envSource, envPrefix, envBlackList),
     new InjectIOC(IOC, registerList),
     new InjectGlobal(globals, browserGlobalsName),
     new I18nService(window.location.pathname)
   ];
 
   if (AppConfig.env !== 'production') {
-    bootstrapList.push({
-      pluginName: 'InjectDevTools',
-      onBefore() {
-        console.log(AppConfig);
-      },
-      onError({ error }) {
-        console.error(`${AppConfig.appName} starup error:`, error);
-      }
-    });
+    bootstrapList.push(printBootstrap);
   }
 
   try {
-    bootstrap.use(bootstrapList).start(root);
+    bootstrap.use(bootstrapList).start(window);
   } catch (error) {
-    console.error(`${AppConfig.appName} starup error:`, error);
+    logger.error(`${AppConfig.appName} starup error:`, error);
   }
 }

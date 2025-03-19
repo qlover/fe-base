@@ -2,15 +2,16 @@ import { I18nService } from '@/services/I18nService';
 import { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import { Logger } from '@qlover/fe-utils';
 import { NavigateFunction, NavigateOptions } from 'react-router-dom';
-import { RouteConfigValue } from '@lib/router-loader/RouterLoader';
-import { RouteConfig } from '@/base/types/Page';
+import { RouteConfigValue } from '@lib/router-loader';
 
 export type RouterControllerDependencies = {
   navigate: NavigateFunction;
 };
 
 export type RouterControllerOptions = {
-  config: RouteConfig;
+  config: {
+    routes: RouteConfigValue[];
+  };
   logger: Logger;
 };
 
