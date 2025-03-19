@@ -11,7 +11,7 @@ import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import AppConfig from '@/core/AppConfig';
-import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
+import { IOCIdentifier } from '@/core/IOC';
 
 export class RegisterApi implements InversifyRegisterInterface {
   register(
