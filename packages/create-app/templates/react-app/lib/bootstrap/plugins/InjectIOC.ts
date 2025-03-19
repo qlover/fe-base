@@ -14,8 +14,7 @@ export class InjectIOC implements BootstrapExecutorPlugin {
     private registeres: IOCRegisterInterface<Container>[]
   ) {}
 
-  onBefore(context: BootstrapContext): void {
-    const { ioc } = context.parameters;
+  onBefore({ parameters: { logger, ioc } }: BootstrapContext): void {
     this.IOC.implement(ioc);
 
     // maybe runtimes configure

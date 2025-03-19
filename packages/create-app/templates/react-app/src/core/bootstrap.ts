@@ -15,11 +15,13 @@ import { registerList } from './registers';
 
 const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',
-  onBefore({ parameters: { logger } }) {
-    logger.info('bootstrap start...', new Date().toISOString());
-  },
   onSuccess({ parameters: { logger } }) {
-    logger.info('bootstrap success!', new Date().toISOString());
+    logger.info(
+      'bootstrap success!\n\n' +
+        `You can use \`%cwindow.${browserGlobalsName}%c\` to access the globals`,
+      'color: #0ff; font-weight: bold;',
+      'all: unset;'
+    );
   }
 };
 
@@ -49,7 +51,7 @@ export default function startup({
 
   const { logger } = globals;
 
-  const bootstrap = new Bootstrap(IOCContainer, logger);
+  const bootstrap = new Bootstrap(window, IOCContainer, logger);
 
   /**
    * bootstrap start list
@@ -71,7 +73,9 @@ export default function startup({
   }
 
   try {
-    bootstrap.use(bootstrapList).start(window);
+    logger.info('bootstrap start...');
+
+    bootstrap.use(bootstrapList).start();
   } catch (error) {
     logger.error(`${AppConfig.appName} starup error:`, error);
   }
