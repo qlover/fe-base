@@ -1,4 +1,7 @@
-import type { BootstrapExecutorPlugin } from '../BootstrapExecutorPlugin';
+import type {
+  BootstrapContext,
+  BootstrapExecutorPlugin
+} from '../BootstrapExecutorPlugin';
 
 export interface EnvConfigInterface {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,7 +15,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     private target: EnvConfigInterface,
     private source: Record<string, unknown>,
     private envPrefix: string = '',
-    private envWhiteList: string[] = ['env', 'userNodeEnv']
+    private blackList: string[] = []
   ) {}
 
   static isJSONString(value: string): boolean {
@@ -42,7 +45,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
   inject(config: EnvConfigInterface): void {
     for (const key in config) {
-      if (this.envWhiteList.includes(key)) {
+      if (this.blackList.includes(key)) {
         continue;
       }
 
@@ -57,5 +60,9 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
     // transform readonly to writable
     Object.freeze(this.target);
+  }
+
+  onSuccess({ parameters: { logger } }: BootstrapContext): void {
+    logger.debug('InjectEnv success!');
   }
 }

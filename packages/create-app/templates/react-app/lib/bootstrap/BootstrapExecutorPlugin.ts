@@ -1,5 +1,5 @@
 import { IOCContainerInterface } from './IOCContainerInterface';
-import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-utils';
+import { ExecutorContext, ExecutorPlugin, Logger } from '@qlover/fe-utils';
 
 export type BootstrapArgs = {
   /**
@@ -12,6 +12,11 @@ export type BootstrapArgs = {
    * IOC container
    */
   ioc: IOCContainerInterface;
+
+  /**
+   * logger
+   */
+  logger: Logger;
 };
 
 export interface BootstrapExecutorPlugin

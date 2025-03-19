@@ -16,12 +16,15 @@ export class I18nService implements BootstrapExecutorPlugin {
   constructor(private pathname: string) {}
 
   onBefore(): void {
+    const debug = false;
+
     i18n
       .use(HttpApi)
       .use(LanguageDetector)
       .use(initReactI18next)
       .init(
         merge({}, i18nConfig, {
+          debug,
           detection: {
             order: ['pathLanguageDetector', 'navigator'], // use custom detector
             caches: []

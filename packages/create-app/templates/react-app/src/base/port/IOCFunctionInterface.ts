@@ -1,12 +1,13 @@
 import type { IOCManagerInterface } from '@lib/bootstrap';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
+import type { JSONSerializer, JSONStorage } from '@qlover/fe-utils';
 import type { ServiceIdentifier } from 'inversify';
 import type { IOCIdentifier } from '@/base/consts/IOCIdentifier';
+import type { BrowserColorLogger } from '@lib/browser-color-log';
 
 export type IOCIdentifierMap = {
   [IOCIdentifier.JSON]: JSONSerializer;
   [IOCIdentifier.JSONStorage]: JSONStorage;
-  [IOCIdentifier.Logger]: Logger;
+  [IOCIdentifier.Logger]: BrowserColorLogger;
 };
 
 /**

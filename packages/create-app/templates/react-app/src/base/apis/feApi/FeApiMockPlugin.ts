@@ -1,6 +1,7 @@
 import {
   ExecutorContext,
   ExecutorPlugin,
+  Logger,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
@@ -10,7 +11,8 @@ export class FeApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'FeApiMockPlugin';
 
   constructor(
-    private readonly mockDataJson: typeof import('@config/feapi.mock.json')
+    private readonly mockDataJson: typeof import('@config/feapi.mock.json'),
+    private readonly logger: Logger
   ) {}
 
   async onExec({
@@ -28,7 +30,7 @@ export class FeApiMockPlugin implements ExecutorPlugin {
       statusText: 'OK'
     });
 
-    console.log('jj [mock]', key, mockData, headers);
+    this.logger.debug('[mock]', key, mockData, headers);
 
     await sleep(1000);
 

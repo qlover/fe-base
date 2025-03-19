@@ -21,4 +21,8 @@ export class InjectIOC implements BootstrapExecutorPlugin {
     // maybe runtimes configure
     ioc.configure(this.registeres);
   }
+
+  onSuccess({ parameters: { logger } }: BootstrapContext): void {
+    logger.debug('InjectIOC success!');
+  }
 }

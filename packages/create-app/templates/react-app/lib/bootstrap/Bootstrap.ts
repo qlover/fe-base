@@ -1,9 +1,15 @@
 import type { IOCContainerInterface } from './IOCContainerInterface';
-import { SyncExecutor } from '@qlover/fe-utils';
-import { BootstrapExecutorPlugin } from './BootstrapExecutorPlugin';
+import { Logger, SyncExecutor } from '@qlover/fe-utils';
+import {
+  BootstrapContext,
+  BootstrapExecutorPlugin
+} from './BootstrapExecutorPlugin';
 
 export class Bootstrap extends SyncExecutor {
-  constructor(private IOCContainer: IOCContainerInterface) {
+  constructor(
+    private IOCContainer: IOCContainerInterface,
+    private logger: Logger
+  ) {
     super();
   }
 
@@ -23,14 +29,18 @@ export class Bootstrap extends SyncExecutor {
   }
 
   start(root: unknown): void {
-    this.exec({ root, ioc: this.IOCContainer }, () => {
+    this.exec(
+      { root, ioc: this.IOCContainer, logger: this.logger },
       // nothing to do
-    });
+      () => {}
+    );
   }
 
   startNoError(root: unknown): void {
-    this.execNoError({ root, ioc: this.IOCContainer }, () => {
+    this.execNoError(
+      { root, ioc: this.IOCContainer, logger: this.logger },
       // nothing to do
-    });
+      () => {}
+    );
   }
 }

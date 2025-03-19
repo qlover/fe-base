@@ -5,8 +5,9 @@ class AppConfig implements EnvConfigInterface {
   readonly appVersion = '';
   /**
    * vite mode
+   *
    */
-  readonly env = import.meta.env.VITE_USER_NODE_ENV;
+  readonly env: string = '';
 
   readonly userTokenStorageKey = 'fe_user_token';
   readonly openAiModels = [

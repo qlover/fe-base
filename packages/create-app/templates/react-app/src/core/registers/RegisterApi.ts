@@ -12,6 +12,7 @@ import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import mockDataJson from '@config/feapi.mock.json';
 import AppConfig from '@/core/AppConfig';
+import { IOCIdentifier } from '@/base/consts/IOCIdentifier';
 
 export class RegisterApi implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
@@ -49,7 +50,9 @@ export class RegisterApi implements InversifyRegisterInterface {
           token: () => localJsonStorage.getItem('fe_user_token')
         })
       )
-      .usePlugin(new FeApiMockPlugin(mockDataJson))
+      .usePlugin(
+        new FeApiMockPlugin(mockDataJson, container.get(IOCIdentifier.Logger))
+      )
       .usePlugin(container.get(RequestLogger))
       .usePlugin(abortPlugin);
 

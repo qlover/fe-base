@@ -1,6 +1,8 @@
 /**
  * IOC identifier
  *
+ * define IOC identifier in [IOCFunctionInterface](../port/IOCFunctionInterface.ts)
+ *
  * @description
  * IOC identifier is used to identify the service in the IOC container.
  *
@@ -8,6 +10,7 @@
  * ```ts
  * const a = IOC(IOCIdentifier.JSON);
  * ```
+ *
  */
 export const IOCIdentifier = Object.freeze({
   JSON: 'JSON',
