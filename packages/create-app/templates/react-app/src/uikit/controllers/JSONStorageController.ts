@@ -10,6 +10,10 @@ interface JSONStoragePageState {
 }
 
 export class JSONStorageController extends FeController<JSONStoragePageState> {
+  selector = {
+    requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
+  };
+
   constructor(private storage: JSONStorage) {
     super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,

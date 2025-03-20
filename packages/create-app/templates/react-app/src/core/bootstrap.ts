@@ -12,7 +12,7 @@ import { IOC } from './IOC';
 import * as globals from '@/core/globals';
 import { I18nService } from '@/services/I18nService';
 import { registerList } from './registers';
-
+import { appBootstrapList } from './bootstraps';
 const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',
   onSuccess({ parameters: { logger } }) {
@@ -65,7 +65,8 @@ export default function startup({
     new InjectEnv(AppConfig, envSource, envPrefix, envBlackList),
     new InjectIOC(IOC, registerList),
     new InjectGlobal(globals, browserGlobalsName),
-    new I18nService(window.location.pathname)
+    new I18nService(window.location.pathname),
+    ...appBootstrapList
   ];
 
   if (AppConfig.env !== 'production') {
