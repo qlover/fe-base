@@ -172,7 +172,10 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
       pluginName: 'TestErrorPlugin',
-      onError: vi.fn((): RequestError => {
+      onError: vi.fn(({ hooksRuntimes }): RequestError => {
+        // break the chain
+        hooksRuntimes.returnBreakChain = true;
+
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
           'TestErrorPlugin abort'
@@ -285,6 +288,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     }
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(TestErrorPlugin.onError).toHaveBeenCalledTimes(0);
+    // Executor v1.1.4 add firstErrorBreak
+    expect(TestErrorPlugin.onError).toHaveBeenCalledTimes(1);
   });
 });

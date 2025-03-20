@@ -51,7 +51,9 @@ import {
  * ```
  * @category SyncExecutor
  */
-export class SyncExecutor extends Executor {
+export class SyncExecutor<
+  ExecutorConfig = unknown
+> extends Executor<ExecutorConfig> {
   /**
    * Execute plugin hook functions synchronously
    * Manages the plugin execution chain and handles results
@@ -321,9 +323,6 @@ export class SyncExecutor extends Executor {
       return context.returnValue as Result;
     } catch (error) {
       context.error = error as Error;
-
-      // if onError hook return a Error, then break the chain
-      Object.assign(context.hooksRuntimes, { returnBreakChain: true });
 
       this.runHooks(this.plugins, 'onError', context);
 

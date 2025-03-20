@@ -181,7 +181,7 @@ this.print(LEVELS.INFO, 'Information message');
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  level  | Log level for the message | `LogLevel` |  |  |
+|  _level  |  | `LogLevel` |  |  |
 |  args  | Arguments to log | `unknown[]` |  |  |
 
 
