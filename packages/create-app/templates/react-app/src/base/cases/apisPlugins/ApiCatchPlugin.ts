@@ -7,9 +7,15 @@ import type {
   RequestAdapterResponse
 } from '@qlover/fe-utils';
 import { inject, injectable } from 'inversify';
+import { AppError } from '../appError/AppError';
 
-export class ApiCatchResult {
-  constructor(public readonly id: string = '') {}
+/**
+ * Api 捕获到错误时封装的错误对象
+ */
+export class ApiCatchResult extends AppError {
+  constructor(public readonly id: string = '') {
+    super(id);
+  }
 }
 
 /**

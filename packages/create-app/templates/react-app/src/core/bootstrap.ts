@@ -13,6 +13,8 @@ import * as globals from '@/core/globals';
 import { I18nService } from '@/services/I18nService';
 import { registerList } from './registers';
 import { appBootstrapList } from './bootstraps';
+import { GLOBAL_NO_WINDOW } from '@config/ErrorIdentifier';
+
 const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',
   onSuccess({ parameters: { logger } }) {
@@ -43,7 +45,7 @@ export default function startup({
   IOCContainer: IOCContainerInterface;
 }) {
   if (!(typeof window !== 'undefined' && window instanceof Window)) {
-    throw new Error('Not Found Window');
+    throw new Error(GLOBAL_NO_WINDOW);
   }
 
   // use AppIOCContainer to `IOC`

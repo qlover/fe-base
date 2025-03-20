@@ -34,7 +34,9 @@ export class UserApi extends ApiClient<RequestAdapterConfig> {
   }
 
   async getRandomUser(): Promise<UserApiGetRandomUser['response']> {
-    return this.get('https://randomuser.me/api/');
+    return this.get('https://randomuser.me/api/', {
+      disabledMock: true
+    });
   }
 
   async getUserInfo(): Promise<UserApiGetUserInfo['response']> {
