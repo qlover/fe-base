@@ -1,9 +1,10 @@
 // ! dont't import tsx, only ts file
-import type { IOCContainerInterface } from '@lib/bootstrap';
+import type { EnvConfigInterface, IOCContainerInterface } from '@lib/bootstrap';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import type { ServiceIdentifier } from 'inversify';
 import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
+import { RequestCommonPlugin } from '@lib/request-common-plugin';
 
 /**
  * IOC identifier
@@ -21,7 +22,9 @@ export const IOCIdentifier = Object.freeze({
   JSON: 'JSON',
   JSONStorage: 'JSONStorage',
   Logger: 'Logger',
-  FeApiToken: 'FeApiToken'
+  FeApiToken: 'FeApiToken',
+  FeApiCommonPlugin: 'FeApiCommonPlugin',
+  AppConfig: 'AppConfig'
 });
 
 /**
@@ -32,6 +35,8 @@ export type IOCIdentifierMap = {
   [IOCIdentifier.JSONStorage]: JSONStorage;
   [IOCIdentifier.Logger]: Logger;
   [IOCIdentifier.FeApiToken]: StorageTokenInterface;
+  [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
+  [IOCIdentifier.AppConfig]: EnvConfigInterface;
 };
 
 ioc.implemention = null as IOCContainerInterface | null;

@@ -14,6 +14,7 @@ import { OpenAIClient } from '@lib/openAiApi';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { base as baseRoutes } from '@config/app.router.json';
 import { override as themeOverride } from '@config/theme.json';
+import { UserApi } from '@/base/apis/userApi/UserApi';
 
 export class RegisterControllers implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
@@ -25,7 +26,8 @@ export class RegisterControllers implements InversifyRegisterInterface {
     const jsonStorageController = new JSONStorageController(localJsonStorage);
     const requestController = new RequestController(
       container.get(OpenAIClient),
-      container.get(FeApi)
+      container.get(FeApi),
+      container.get(UserApi)
     );
 
     const themeController = new ThemeController({

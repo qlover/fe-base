@@ -2,6 +2,7 @@ import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
 import { FeController } from '@lib/fe-react-controller';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
+import { UserApi } from '@/base/apis/userApi/UserApi';
 
 function createDefaultState() {
   return {
@@ -33,7 +34,8 @@ export type RequestControllerState = ReturnType<typeof createDefaultState>;
 export class RequestController extends FeController<RequestControllerState> {
   constructor(
     private readonly aiApi: OpenAIClient,
-    private readonly feApi: FeApi
+    private readonly feApi: FeApi,
+    private readonly userApi: UserApi
   ) {
     super(createDefaultState);
   }
@@ -70,7 +72,7 @@ export class RequestController extends FeController<RequestControllerState> {
       randomUserState: { loading: true, result: null, error: null }
     });
     try {
-      const result = await this.feApi.getRandomUser();
+      const result = await this.userApi.getRandomUser();
       this.setState({
         randomUserState: { loading: false, result, error: null }
       });
@@ -90,7 +92,7 @@ export class RequestController extends FeController<RequestControllerState> {
 
     this.setState({ abortState: { loading: true, result: null, error: null } });
     try {
-      await this.feApi.request({
+      await this.userApi.request({
         method: 'GET',
         url: 'https://api.example.com/users'
       });
@@ -100,6 +102,6 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   stopAbortRequest = async () => {
-    this.feApi.stop({ method: 'GET', url: 'https://api.example.com/users' });
+    this.userApi.stop({ method: 'GET', url: 'https://api.example.com/users' });
   };
 }

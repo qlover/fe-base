@@ -1,6 +1,5 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/base/apis/feApi/FeApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
 import { RouterController } from './RouterController';
 import { Thread } from '@/uikit/utils/thread';
@@ -9,6 +8,7 @@ import { UserToken } from '@/base/cases/UserToken';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
 import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
+import { UserApi } from '@/base/apis/userApi/UserApi';
 
 class UserControllerState {
   success: boolean = false;
@@ -27,7 +27,7 @@ export class UserController
   readonly pluginName = 'UserController';
 
   constructor(
-    @inject(FeApi) private feApi: FeApi,
+    @inject(UserApi) private userApi: UserApi,
     @inject(RouterController) private routerController: RouterController,
     @inject(IOCIdentifier.FeApiToken) private userToken: UserToken
   ) {
@@ -44,10 +44,10 @@ export class UserController
       throw new Error('User not logged in');
     }
 
-    const userInfo = await this.feApi.getUserInfo();
+    const userInfo = await this.userApi.getUserInfo();
 
     if (ApiCatchPlugin.is(userInfo.data)) {
-      throw new Error('User not logged in');
+      throw new Error('User login failed');
     }
 
     this.setState({
@@ -71,11 +71,15 @@ export class UserController
   async login(
     params: FeApiLogin['request']
   ): Promise<FeApiGetUserInfo['response']['data']> {
-    const result = await this.feApi.login(params);
+    const result = await this.userApi.login(params);
+
+    if (ApiCatchPlugin.is(result.data)) {
+      throw new Error('Login failed');
+    }
 
     this.userToken.setToken(result.data.token);
 
-    const userInfo = await this.feApi.getUserInfo();
+    const userInfo = await this.userApi.getUserInfo();
 
     this.setState({
       success: true,

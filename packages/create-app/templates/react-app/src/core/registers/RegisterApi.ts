@@ -2,23 +2,13 @@ import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
-import type { AppIOCContainer } from '../AppIOCContainer';
 
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
-import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
-import { ApiMockPlugin } from '@/base/cases/apisPlugins/ApiMockPlugin';
 import { OpenAIClient } from '@lib/openAiApi';
-import { FeApi } from '@/base/apis/feApi/FeApi';
-import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import AppConfig from '@/core/AppConfig';
-import { IOCIdentifier } from '@/core/IOC';
-import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
 
 export class RegisterApi implements InversifyRegisterInterface {
-  register(
-    container: InversifyRegisterContainer,
-    thisArgs: AppIOCContainer
-  ): void {
+  register(container: InversifyRegisterContainer): void {
     const openAiApi = new OpenAIClient({
       baseURL: AppConfig.openAiBaseUrl,
       models: AppConfig.openAiModels,
@@ -37,29 +27,6 @@ export class RegisterApi implements InversifyRegisterInterface {
       }
     }).usePlugin(container.get(RequestLogger));
 
-    const abortPlugin = container.get(FetchAbortPlugin);
-
-    const feApi = new FeApi({
-      abortPlugin,
-      config: {
-        responseType: 'json',
-        baseURL: AppConfig.feApiBaseUrl
-      }
-    })
-      .usePlugin(new FetchURLPlugin())
-      .usePlugin(
-        new RequestCommonPlugin({
-          tokenPrefix: AppConfig.openAiTokenPrefix,
-          requiredToken: true,
-          token: () => thisArgs.get(IOCIdentifier.FeApiToken).getToken()
-        })
-      )
-      .usePlugin(thisArgs.get(ApiMockPlugin))
-      .usePlugin(container.get(RequestLogger))
-      .usePlugin(abortPlugin)
-      .usePlugin(container.get(ApiCatchPlugin));
-
     container.bind(OpenAIClient).toConstantValue(openAiApi);
-    container.bind(FeApi).toConstantValue(feApi);
   }
 }

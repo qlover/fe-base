@@ -5,9 +5,15 @@ import type {
 import { JSON, localJsonStorage, logger } from '../globals';
 import { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import { IOCIdentifier } from '@/core/IOC';
+import { EnvConfigInterface } from '@lib/bootstrap';
 
 export class RegisterGlobals implements InversifyRegisterInterface {
+  constructor(private appConfig: EnvConfigInterface) {}
+
   register(container: InversifyRegisterContainer): void {
+    // inject AppConfig to IOC
+    container.bind(IOCIdentifier.AppConfig).toConstantValue(this.appConfig);
+
     container.bind(JSONSerializer).toConstantValue(JSON);
     container.bind(IOCIdentifier.JSON).toConstantValue(JSON);
 

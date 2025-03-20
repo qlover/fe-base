@@ -25,6 +25,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
   }: ExecutorContext<RequestAdapterFetchConfig>): Promise<RequestAdapterResponse> {
     const { method = 'GET', url = '', headers } = parameters;
     const key = `${method.toUpperCase()} ${url}`;
+
     const mockData = url
       ? this.mockDataJson[key as keyof typeof this.mockDataJson] ||
         this.mockDataJson._default
