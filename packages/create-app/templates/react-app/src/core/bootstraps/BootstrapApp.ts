@@ -7,6 +7,7 @@ import { ApiMockPlugin } from '@/base/cases/apisPlugins/ApiMockPlugin';
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
 import { UserApi } from '@/base/apis/userApi/UserApi';
+import { ApiPickDataPlugin } from '@/base/cases/apisPlugins/ApiPickDataPlugin';
 
 export class BootstrapApp implements BootstrapExecutorPlugin {
   readonly pluginName = 'BootstrapApp';
@@ -20,10 +21,8 @@ export class BootstrapApp implements BootstrapExecutorPlugin {
     IOC.get(FeApi)
       .usePlugin(new FetchURLPlugin())
       .usePlugin(IOC.get(IOCIdentifier.FeApiCommonPlugin))
-      .usePlugin(IOC.get(ApiMockPlugin))
       .usePlugin(IOC.get(RequestLogger))
-      .usePlugin(IOC.get(FetchAbortPlugin))
-      .usePlugin(IOC.get(ApiCatchPlugin));
+      .usePlugin(IOC.get(ApiPickDataPlugin));
   }
 
   useUserApiPlugins(): void {

@@ -28,10 +28,10 @@ export class ApiMockPlugin implements ExecutorPlugin {
     await Thread.sleep(1000);
 
     const { parameters } = context;
-    const { method = 'GET', url = '', headers, noMock } = parameters;
+    const { method = 'GET', url = '', headers, disabledMock } = parameters;
 
-    // if noMock is true, return the result of the task
-    if (noMock) {
+    // if disabledMock is true, return the result of the task
+    if (disabledMock) {
       return task(context) as Promise<RequestAdapterResponse>;
     }
 

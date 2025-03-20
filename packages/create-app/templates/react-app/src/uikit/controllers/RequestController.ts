@@ -58,6 +58,7 @@ export class RequestController extends FeController<RequestControllerState> {
     this.setState({
       ipInfoState: { loading: true, result: null, error: null }
     });
+    
     try {
       const result = await this.feApi.getIpInfo();
       this.setState({ ipInfoState: { loading: false, result, error: null } });
@@ -95,7 +96,7 @@ export class RequestController extends FeController<RequestControllerState> {
       await this.userApi.request({
         method: 'GET',
         url: 'https://api.example.com/users',
-        noMock: true
+        disabledMock: true
       });
     } catch (error) {
       this.setState({ abortState: { loading: false, result: null, error } });
@@ -103,6 +104,6 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   stopAbortRequest = async () => {
-    this.userApi.stop({ noMock: true, method: 'GET', url: 'https://api.example.com/users' });
+    this.userApi.stop({ disabledMock: true, method: 'GET', url: 'https://api.example.com/users' });
   };
 }

@@ -4,9 +4,9 @@ import {
   RequestAdapterConfig,
   RequestAdapterFetch
 } from '@qlover/fe-utils';
-import { FeApiLogin } from '../feApi/FeApiType';
-import { FeApiGetUserInfo } from '../feApi/FeApiType';
-import { FeApiGetRandomUser } from '../feApi/FeApiType';
+import { UserApiLogin } from './UserApiType';
+import { UserApiGetUserInfo } from './UserApiType';
+import { UserApiGetRandomUser } from './UserApiType';
 import { inject, injectable } from 'inversify';
 import { UserApiAdapter } from './UserApiAdapter';
 
@@ -33,18 +33,18 @@ export class UserApi extends ApiClient<RequestAdapterConfig> {
     this.abortPlugin.abort(request);
   }
 
-  async getRandomUser(): Promise<FeApiGetRandomUser['response']> {
+  async getRandomUser(): Promise<UserApiGetRandomUser['response']> {
     return this.get('https://randomuser.me/api/');
   }
 
-  async getUserInfo(): Promise<FeApiGetUserInfo['response']> {
+  async getUserInfo(): Promise<UserApiGetUserInfo['response']> {
     return this.get('/api/userinfo');
   }
 
-  async login(params: FeApiLogin['request']): Promise<FeApiLogin['response']> {
+  async login(params: UserApiLogin['request']): Promise<UserApiLogin['response']> {
     return this.post('/api/login', {
       // FIXME: RequestAdapterResponse response type error
-      data: params as unknown as FeApiLogin['response']['data']
+      data: params as unknown as UserApiLogin['response']['data']
     });
   }
 }

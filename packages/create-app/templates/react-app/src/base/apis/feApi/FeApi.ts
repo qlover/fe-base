@@ -1,8 +1,4 @@
-import {
-  RequestAdapterFetch,
-  RequestAdapterConfig,
-  FetchAbortPlugin
-} from '@qlover/fe-utils';
+import { RequestAdapterFetch, RequestAdapterConfig } from '@qlover/fe-utils';
 import { FeApiGetIpInfo } from './FeApiType';
 import { ApiClient } from '@lib/api-client';
 import { inject, injectable } from 'inversify';
@@ -10,21 +6,21 @@ import { FeApiAdapter } from './FeApiAdapter';
 
 @injectable()
 export class FeApi extends ApiClient<RequestAdapterConfig> {
-  constructor(
-    @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
-    @inject(FeApiAdapter) adapter: RequestAdapterFetch
-  ) {
+  constructor(@inject(FeApiAdapter) adapter: RequestAdapterFetch) {
     super(adapter);
   }
 
-  /**
-   * @override
-   */
-  stop(config: RequestAdapterConfig): void {
-    this.abortPlugin.abort(config);
-  }
+  stop(_config: RequestAdapterConfig): void {}
 
   async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
-    return this.get('http://ip-api.com/json/');
+    /**
+     * Because FeApi uses the ApiPickDataPlugin plugin,
+     * the ApiPickDataPlugin plugin rewrites the data at runtime
+     *
+     * So we need to assert the return value of FeApi
+     */
+    return this.get('http://ip-api.com/json/', {
+      disabledMock: true
+    }) as unknown as FeApiGetIpInfo['response'];
   }
 }
