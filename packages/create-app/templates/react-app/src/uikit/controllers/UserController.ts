@@ -1,18 +1,20 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
+import type {
+  UserApiGetUserInfo,
+  UserApiLogin
+} from '@/base/apis/userApi/UserApiType';
 import { RouterController } from './RouterController';
 import { Thread } from '@/uikit/utils/thread';
 import { inject, injectable } from 'inversify';
 import { UserToken } from '@/base/cases/UserToken';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
-import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 
 class UserControllerState {
   success: boolean = false;
-  userInfo: FeApiGetUserInfo['response']['data'] = {
+  userInfo: UserApiGetUserInfo['response']['data'] = {
     name: '',
     email: '',
     picture: ''
@@ -46,10 +48,6 @@ export class UserController
 
     const userInfo = await this.userApi.getUserInfo();
 
-    if (ApiCatchPlugin.is(userInfo.data)) {
-      throw new Error('User login failed');
-    }
-
     this.setState({
       success: true,
       userInfo: userInfo.data
@@ -69,15 +67,15 @@ export class UserController
    * @override
    */
   async login(
-    params: FeApiLogin['request']
-  ): Promise<FeApiGetUserInfo['response']['data']> {
-    const result = await this.userApi.login(params);
+    params: UserApiLogin['request']
+  ): Promise<UserApiGetUserInfo['response']['data']> {
+    const response = await this.userApi.login(params);
 
-    if (ApiCatchPlugin.is(result.data)) {
+    if (response.apiCatchResult) {
       throw new Error('Login failed');
     }
 
-    this.userToken.setToken(result.data.token);
+    this.userToken.setToken(response.data.token);
 
     const userInfo = await this.userApi.getUserInfo();
 

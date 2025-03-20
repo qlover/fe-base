@@ -144,19 +144,23 @@ export class RequestCommonPlugin
     if (response instanceof Response) {
       switch (parameters.responseType) {
         case 'json':
-          context.returnValue = await response.json();
+          // @ts-expect-error
+          context.returnValue.data = await response.json();
           break;
         case 'text':
-          context.returnValue = await response.text();
+          // @ts-expect-error
+          context.returnValue.data = await response.text();
           break;
         case 'blob':
-          context.returnValue = await response.blob();
+          // @ts-expect-error
+          context.returnValue.data = await response.blob();
           break;
         // FIXME: adapter support `arraybuffer`
         // @ts-expect-error
         case 'arrayBuffer':
         case 'arraybuffer':
-          context.returnValue = await response.arrayBuffer();
+          // @ts-expect-error
+          context.returnValue.data = await response.arrayBuffer();
           break;
       }
     }
