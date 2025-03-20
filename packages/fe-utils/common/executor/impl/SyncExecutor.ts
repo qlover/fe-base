@@ -322,9 +322,6 @@ export class SyncExecutor extends Executor {
     } catch (error) {
       context.error = error as Error;
 
-      // if onError hook return a Error, then break the chain
-      Object.assign(context.hooksRuntimes, { returnBreakChain: true });
-
       this.runHooks(this.plugins, 'onError', context);
 
       // if onError hook return a ExecutorError, then throw it
