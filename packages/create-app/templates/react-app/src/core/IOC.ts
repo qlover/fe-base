@@ -5,6 +5,7 @@ import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import type { ServiceIdentifier } from 'inversify';
 import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
+import { APP_IOC_NOT_IMPLEMENTED } from '@config/ErrorIdentifier';
 
 /**
  * IOC identifier
@@ -49,7 +50,7 @@ function ioc<T, K extends keyof IOCIdentifierMap>(
   serviceIdentifier: ServiceIdentifier<T> | K
 ): T | IOCIdentifierMap[K] {
   if (!ioc.implemention) {
-    throw new Error('IOC is not implemented');
+    throw new Error(APP_IOC_NOT_IMPLEMENTED);
   }
   return ioc.implemention.get(serviceIdentifier);
 }

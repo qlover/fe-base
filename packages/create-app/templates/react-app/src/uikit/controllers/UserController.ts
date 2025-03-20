@@ -11,6 +11,8 @@ import { UserToken } from '@/base/cases/UserToken';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
+import { AppError } from '@/base/cases/appError/AppError';
+import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
 
 class UserControllerState {
   success: boolean = false;
@@ -43,7 +45,7 @@ export class UserController
     await Thread.sleep(1000);
 
     if (!this.userToken.getToken()) {
-      throw new Error('User not logged in');
+      throw new AppError(LOCAL_NO_USER_TOKEN);
     }
 
     const userInfo = await this.userApi.getUserInfo();
@@ -72,7 +74,7 @@ export class UserController
     const response = await this.userApi.login(params);
 
     if (response.apiCatchResult) {
-      throw new Error('Login failed');
+      throw response.apiCatchResult;
     }
 
     this.userToken.setToken(response.data.token);
