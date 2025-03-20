@@ -30,7 +30,9 @@ import {
  *
  * @category AsyncExecutor
  */
-export class AsyncExecutor<ExecutorConfig> extends Executor<ExecutorConfig> {
+export class AsyncExecutor<
+  ExecutorConfig = unknown
+> extends Executor<ExecutorConfig> {
   /**
    * Execute plugin hook functions asynchronously
    *

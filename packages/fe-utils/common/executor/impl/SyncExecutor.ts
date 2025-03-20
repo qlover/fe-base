@@ -51,7 +51,9 @@ import {
  * ```
  * @category SyncExecutor
  */
-export class SyncExecutor extends Executor {
+export class SyncExecutor<
+  ExecutorConfig = unknown
+> extends Executor<ExecutorConfig> {
   /**
    * Execute plugin hook functions synchronously
    * Manages the plugin execution chain and handles results
