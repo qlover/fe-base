@@ -94,7 +94,8 @@ export class RequestController extends FeController<RequestControllerState> {
     try {
       await this.userApi.request({
         method: 'GET',
-        url: 'https://api.example.com/users'
+        url: 'https://api.example.com/users',
+        noMock: true
       });
     } catch (error) {
       this.setState({ abortState: { loading: false, result: null, error } });
@@ -102,6 +103,6 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   stopAbortRequest = async () => {
-    this.userApi.stop({ method: 'GET', url: 'https://api.example.com/users' });
+    this.userApi.stop({ noMock: true, method: 'GET', url: 'https://api.example.com/users' });
   };
 }

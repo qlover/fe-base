@@ -2,6 +2,7 @@ import {
   ExecutorContext,
   ExecutorPlugin,
   Logger,
+  PromiseTask,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-utils';
@@ -20,12 +21,21 @@ export class ApiMockPlugin implements ExecutorPlugin {
   /**
    * @override
    */
-  async onExec({
-    parameters
-  }: ExecutorContext<RequestAdapterFetchConfig>): Promise<RequestAdapterResponse> {
-    const { method = 'GET', url = '', headers } = parameters;
-    const key = `${method.toUpperCase()} ${url}`;
+  async onExec(
+    context: ExecutorContext<RequestAdapterFetchConfig>,
+    task: PromiseTask<unknown, unknown>
+  ): Promise<RequestAdapterResponse> {
+    await Thread.sleep(1000);
 
+    const { parameters } = context;
+    const { method = 'GET', url = '', headers, noMock } = parameters;
+
+    // if noMock is true, return the result of the task
+    if (noMock) {
+      return task(context) as Promise<RequestAdapterResponse>;
+    }
+
+    const key = `${method.toUpperCase()} ${url}`;
     const mockData = url
       ? this.mockDataJson[key as keyof typeof this.mockDataJson] ||
         this.mockDataJson._default
@@ -35,8 +45,6 @@ export class ApiMockPlugin implements ExecutorPlugin {
       status: 200,
       statusText: 'OK'
     });
-
-    await Thread.sleep(1000);
 
     this.logger.log(
       '%c[mock]%c ' + key,
