@@ -6,18 +6,15 @@ import {
   RequestAdapterResponse,
   RequestAdapterFetchConfig
 } from '@qlover/fe-utils';
+import { inject, injectable } from 'inversify';
 
-function createDefaultState() {
-  return {
-    helloState: {
-      loading: false,
-      result: null as unknown,
-      error: null as unknown
-    }
+class ExecutorControllerState {
+  helloState = {
+    loading: false,
+    result: null as Record<string, unknown> | null,
+    error: null as unknown
   };
 }
-
-export type ExecutorControllerState = ReturnType<typeof createDefaultState>;
 
 const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
   pluginName: 'test',
@@ -33,24 +30,54 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
   }
 };
 
+@injectable()
 export class ExecutorController extends FeController<ExecutorControllerState> {
-  private feApi: FeApi;
+  selector = {
+    helloState: (state: ExecutorControllerState) => state.helloState
+  };
 
-  constructor(feApi: FeApi) {
-    super(createDefaultState);
+  constructor(@inject(FeApi) private feApi: FeApi) {
+    super(ExecutorController.create);
 
+    // FIXME: not cloneDeep, create a new instance
     this.feApi = cloneDeep(feApi);
 
     this.feApi.usePlugin(TestPlugin);
   }
 
-  onTestPlugins = async () => {
-    console.log('onTestPlugins');
+  static create(): ExecutorControllerState {
+    return new ExecutorControllerState();
+  }
 
-    const res = await this.feApi.get('/api/v1/executor/test', {
-      responseType: 'text'
+  onTestPlugins = async () => {
+    this.setState({
+      helloState: {
+        loading: true,
+        result: null,
+        error: null
+      }
     });
 
-    console.log('res', res);
+    try {
+      const res = await this.feApi.get('/api/v1/executor/test', {
+        responseType: 'text'
+      });
+
+      this.setState({
+        helloState: {
+          loading: false,
+          result: res,
+          error: null
+        }
+      });
+    } catch (error) {
+      this.setState({
+        helloState: {
+          loading: false,
+          result: null,
+          error
+        }
+      });
+    }
   };
 }

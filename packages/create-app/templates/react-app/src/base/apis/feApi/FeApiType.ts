@@ -1,9 +1,24 @@
+import { ApiCatchResult } from './ApiCatchPlugin';
 import { RequestAdapterResponse } from '@qlover/fe-utils';
+
+/**
+ * extends RequestAdapterResponse
+ * 
+ * - add catchError
+ */
+export interface WrapperFeApiResponse<Request, Response>
+  extends RequestAdapterResponse<Request, Response> {
+  /**
+   * ApiCatchPlugin returns value
+   */
+  catchError?: ApiCatchResult;
+}
 
 export type FeApiType<Request, Response> = {
   request: Request;
-  response: RequestAdapterResponse<Request, Response>;
+  response: WrapperFeApiResponse<Request, Response>;
 };
+
 export type FeApiGetIpInfo = FeApiType<
   undefined,
   {

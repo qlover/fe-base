@@ -12,6 +12,7 @@ import { FeApi } from '@/base/apis/feApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
+import { ApiCatchPlugin } from '@/base/apis/feApi/ApiCatchPlugin';
 
 export class RegisterApi implements InversifyRegisterInterface {
   register(
@@ -55,7 +56,8 @@ export class RegisterApi implements InversifyRegisterInterface {
       )
       .usePlugin(thisArgs.get(FeApiMockPlugin))
       .usePlugin(container.get(RequestLogger))
-      .usePlugin(abortPlugin);
+      .usePlugin(abortPlugin)
+      .usePlugin(container.get(ApiCatchPlugin));
 
     container.bind(OpenAIClient).toConstantValue(openAiApi);
     container.bind(FeApi).toConstantValue(feApi);

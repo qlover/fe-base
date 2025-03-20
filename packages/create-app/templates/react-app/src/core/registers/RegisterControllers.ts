@@ -8,7 +8,6 @@ import { RouterController } from '@/uikit/controllers/RouterController';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { ProcesserService } from '@/services/processer/ProcesserService';
-import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { UserController } from '@/uikit/controllers/UserController';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
 import { OpenAIClient } from '@lib/openAiApi';
@@ -28,7 +27,6 @@ export class RegisterControllers implements InversifyRegisterInterface {
       container.get(OpenAIClient),
       container.get(FeApi)
     );
-    const executorController = new ExecutorController(container.get(FeApi));
 
     const themeController = new ThemeController({
       ...themeOverride,
@@ -40,7 +38,6 @@ export class RegisterControllers implements InversifyRegisterInterface {
       .bind(JSONStorageController)
       .toConstantValue(jsonStorageController);
     container.bind(RequestController).toConstantValue(requestController);
-    container.bind(ExecutorController).toConstantValue(executorController);
     
     container.bind(ThemeController).toConstantValue(themeController);
 

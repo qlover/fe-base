@@ -45,6 +45,10 @@ export class UserController
 
     const userInfo = await this.feApi.getUserInfo();
 
+    if (userInfo.catchError) {
+      throw new Error('User not logged in');
+    }
+
     this.setState({
       success: true,
       userInfo: userInfo.data
