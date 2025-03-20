@@ -6,13 +6,13 @@ import type { AppIOCContainer } from '../AppIOCContainer';
 
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
-import { FeApiMockPlugin } from '@/base/apis/feApi';
+import { ApiMockPlugin } from '@/base/cases/apisPlugins/ApiMockPlugin';
 import { OpenAIClient } from '@lib/openAiApi';
-import { FeApi } from '@/base/apis/feApi';
+import { FeApi } from '@/base/apis/feApi/FeApi';
 import { RequestCommonPlugin } from '@lib/request-common-plugin';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
-import { ApiCatchPlugin } from '@/base/apis/feApi/ApiCatchPlugin';
+import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
 
 export class RegisterApi implements InversifyRegisterInterface {
   register(
@@ -54,7 +54,7 @@ export class RegisterApi implements InversifyRegisterInterface {
           token: () => thisArgs.get(IOCIdentifier.FeApiToken).getToken()
         })
       )
-      .usePlugin(thisArgs.get(FeApiMockPlugin))
+      .usePlugin(thisArgs.get(ApiMockPlugin))
       .usePlugin(container.get(RequestLogger))
       .usePlugin(abortPlugin)
       .usePlugin(container.get(ApiCatchPlugin));

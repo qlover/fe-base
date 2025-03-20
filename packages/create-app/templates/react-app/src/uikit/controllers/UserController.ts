@@ -1,6 +1,6 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
 import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/base/apis/feApi';
+import { FeApi } from '@/base/apis/feApi/FeApi';
 import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
 import { RouterController } from './RouterController';
 import { Thread } from '@/uikit/utils/thread';
@@ -8,6 +8,7 @@ import { inject, injectable } from 'inversify';
 import { UserToken } from '@/base/cases/UserToken';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
+import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';
 
 class UserControllerState {
   success: boolean = false;
@@ -45,7 +46,7 @@ export class UserController
 
     const userInfo = await this.feApi.getUserInfo();
 
-    if (userInfo.catchError) {
+    if (ApiCatchPlugin.is(userInfo.data)) {
       throw new Error('User not logged in');
     }
 

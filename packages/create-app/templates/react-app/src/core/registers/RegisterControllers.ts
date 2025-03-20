@@ -11,7 +11,7 @@ import { ProcesserService } from '@/services/processer/ProcesserService';
 import { UserController } from '@/uikit/controllers/UserController';
 import { ThemeController } from '@lib/fe-react-theme/ThemeController';
 import { OpenAIClient } from '@lib/openAiApi';
-import { FeApi } from '@/base/apis/feApi';
+import { FeApi } from '@/base/apis/feApi/FeApi';
 import { base as baseRoutes } from '@config/app.router.json';
 import { override as themeOverride } from '@config/theme.json';
 

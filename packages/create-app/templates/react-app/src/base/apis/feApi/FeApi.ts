@@ -1,7 +1,6 @@
 import {
   RequestAdapterFetch,
   RequestAdapterConfig,
-  RequestScheduler,
   FetchAbortPlugin,
   RequestAdapterFetchConfig
 } from '@qlover/fe-utils';
@@ -11,8 +10,9 @@ import {
   FeApiGetUserInfo,
   FeApiLogin
 } from './FeApiType';
+import { ApiClient } from '@lib/api-client';
 
-export class FeApi extends RequestScheduler<RequestAdapterConfig> {
+export class FeApi extends ApiClient<RequestAdapterConfig> {
   private abortPlugin: FetchAbortPlugin;
 
   constructor({
@@ -26,6 +26,9 @@ export class FeApi extends RequestScheduler<RequestAdapterConfig> {
     this.abortPlugin = abortPlugin;
   }
 
+  /**
+   * @override
+   */
   stop(config: RequestAdapterConfig): void {
     this.abortPlugin.abort(config);
   }

@@ -1,25 +1,6 @@
-import { ApiCatchResult } from './ApiCatchPlugin';
-import { RequestAdapterResponse } from '@qlover/fe-utils';
+import { FeApiTransaction } from './FeApiTransaction';
 
-/**
- * extends RequestAdapterResponse
- * 
- * - add catchError
- */
-export interface WrapperFeApiResponse<Request, Response>
-  extends RequestAdapterResponse<Request, Response> {
-  /**
-   * ApiCatchPlugin returns value
-   */
-  catchError?: ApiCatchResult;
-}
-
-export type FeApiType<Request, Response> = {
-  request: Request;
-  response: WrapperFeApiResponse<Request, Response>;
-};
-
-export type FeApiGetIpInfo = FeApiType<
+export type FeApiGetIpInfo = FeApiTransaction<
   undefined,
   {
     status: string;
@@ -39,7 +20,7 @@ export type FeApiGetIpInfo = FeApiType<
   }
 >;
 
-export type FeApiGetRandomUser = FeApiType<
+export type FeApiGetRandomUser = FeApiTransaction<
   undefined,
   {
     results: unknown[];
@@ -52,7 +33,7 @@ export type FeApiGetRandomUser = FeApiType<
   }
 >;
 
-export type FeApiGetUserInfo = FeApiType<
+export type FeApiGetUserInfo = FeApiTransaction<
   string,
   {
     name: string;
@@ -61,7 +42,7 @@ export type FeApiGetUserInfo = FeApiType<
   }
 >;
 
-export type FeApiLogin = FeApiType<
+export type FeApiLogin = FeApiTransaction<
   { username: string; password: string },
   {
     token: string;

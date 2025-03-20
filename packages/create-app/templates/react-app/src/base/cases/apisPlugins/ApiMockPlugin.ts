@@ -10,8 +10,8 @@ import mockDataJson from '@config/feapi.mock.json';
 import { Thread } from '@/uikit/utils/thread';
 
 @injectable()
-export class FeApiMockPlugin implements ExecutorPlugin {
-  readonly pluginName = 'FeApiMockPlugin';
+export class ApiMockPlugin implements ExecutorPlugin {
+  readonly pluginName = 'ApiMockPlugin';
 
   private readonly mockDataJson = mockDataJson;
 
