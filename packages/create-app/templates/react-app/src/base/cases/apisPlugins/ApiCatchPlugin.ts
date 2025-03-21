@@ -1,6 +1,6 @@
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
-import { ApiClientInterceptingInterface } from '@lib/api-client';
+import { ApiClientInterceptingInterface } from '@fe-prod/core/api-client';
 import type {
   ExecutorContext,
   ExecutorPlugin,

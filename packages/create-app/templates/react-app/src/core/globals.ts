@@ -1,6 +1,6 @@
 // ! global variables, don't import any dependencies and don't have side effects
 import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-utils';
-import { BrowserColorLogger } from '@lib/browser-color-log';
+import { ColorLogger } from '@fe-prod/core/color-log';
 import { loggerStyles } from '@config/common';
 
 const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
@@ -8,7 +8,7 @@ const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
 /**
  * Global logger
  */
-export const logger = new BrowserColorLogger({
+export const logger = new ColorLogger({
   silent: isProduction,
   debug: !isProduction,
   colorsMaps: loggerStyles

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { envPrefix } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from './lib/vite-env-config';
+import envConfig from './fe-prod/vite/env-config';
 
 // https://vite.dev/config/
 export default defineConfig({

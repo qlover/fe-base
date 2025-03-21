@@ -14,15 +14,15 @@ import { Logger, LogLevel } from '@qlover/fe-utils';
  * //=> Hi Hello（red） world
  * ```
  */
-export class BrowserColorLogger extends Logger {
-  private colorsMaps: Record<LogLevel, string>;
+export class ColorLogger extends Logger {
+  private colorsMaps: Record<string, string>;
 
   constructor(args: {
     isCI?: boolean | undefined;
     dryRun?: boolean | undefined;
     debug?: boolean | undefined;
     silent?: boolean | undefined;
-    colorsMaps: Record<LogLevel, string>;
+    colorsMaps: Record<string, string>;
   }) {
     super(args);
     this.colorsMaps = args.colorsMaps;
@@ -47,10 +47,10 @@ export class BrowserColorLogger extends Logger {
     prefix = prefixColor ? prefix : '';
 
     let head = args[0] as string;
-    let colors = [];
+    let colors: string[] = [];
     if (typeof head === 'string') {
       head = prefix
-        ? [BrowserColorLogger.wrap(prefix), args[0]].join(' ')
+        ? [ColorLogger.wrap(prefix), args[0]].join(' ')
         : head;
       colors = prefixColor ? [prefixColor, 'all: unset;'] : [];
     }

@@ -20,7 +20,7 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@lib/*": ["./lib/*"],
+      "@fe-prod/*": ["./fe-prod/*"],
       "@config/*": ["./config/*"]
     },
     "experimentalDecorators": true

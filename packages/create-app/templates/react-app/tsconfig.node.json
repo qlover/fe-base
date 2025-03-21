@@ -6,9 +6,9 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@lib/*": ["./lib/*"],
+      "@fe-prod/*": ["./fe-prod/*"],
       "@config/*": ["./config/*"]
     }
   },
-  "include": ["vite.config.ts", "lib", "config"]
+  "include": ["vite.config.ts", "fe-prod", "config"]
 }

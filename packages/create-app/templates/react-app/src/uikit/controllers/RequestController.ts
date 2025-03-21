@@ -1,5 +1,4 @@
-import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
-import { FeController } from '@lib/fe-react-controller';
+import { OpenAIClient, FeController } from '@fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
@@ -58,7 +57,7 @@ export class RequestController extends FeController<RequestControllerState> {
     this.setState({
       ipInfoState: { loading: true, result: null, error: null }
     });
-    
+
     try {
       const result = await this.feApi.getIpInfo();
       this.setState({ ipInfoState: { loading: false, result, error: null } });
@@ -104,6 +103,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   stopAbortRequest = async () => {
-    this.userApi.stop({ disabledMock: true, method: 'GET', url: 'https://api.example.com/users' });
+    this.userApi.stop({
+      disabledMock: true,
+      method: 'GET',
+      url: 'https://api.example.com/users'
+    });
   };
 }

@@ -1,11 +1,12 @@
+import type { EnvConfigInterface } from '@fe-prod/core';
 import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
+
 import { JSON, localJsonStorage, logger } from '../globals';
 import { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
 import { IOCIdentifier } from '@/core/IOC';
-import { EnvConfigInterface } from '@lib/bootstrap';
 
 export class RegisterGlobals implements InversifyRegisterInterface {
   constructor(private appConfig: EnvConfigInterface) {}

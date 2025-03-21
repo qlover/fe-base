@@ -1,10 +1,10 @@
+import { OpenAIClient } from '@fe-prod/core/openAiApi';
 import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
 
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
-import { OpenAIClient } from '@lib/openAiApi';
 import AppConfig from '@/core/AppConfig';
 
 export class RegisterApi implements InversifyRegisterInterface {

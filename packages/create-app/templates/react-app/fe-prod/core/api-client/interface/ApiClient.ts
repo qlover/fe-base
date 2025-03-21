@@ -1,4 +1,4 @@
-import { RequestAdapterInterface, RequestScheduler } from '@qlover/fe-utils';
+import { RequestScheduler } from '@qlover/fe-utils';
 
 export abstract class ApiClient<Config> extends RequestScheduler<Config> {
   /**

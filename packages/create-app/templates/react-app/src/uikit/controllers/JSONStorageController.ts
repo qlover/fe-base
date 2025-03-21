@@ -1,5 +1,5 @@
-import { FeController } from '@lib/fe-react-controller';
 import { JSONStorage } from '@qlover/fe-utils';
+import { FeController } from '@fe-prod/core/fe-controller';
 import { random } from 'lodash';
 
 interface JSONStoragePageState {

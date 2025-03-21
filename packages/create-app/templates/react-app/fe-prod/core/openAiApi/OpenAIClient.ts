@@ -11,7 +11,7 @@ import { OpenAIAuthPlugin } from './OpenAIAuthPlugin';
 import {
   RequestCommonPlugin,
   RequestCommonPluginConfig
-} from '@lib/request-common-plugin';
+} from '../request-common-plugin';
 export interface ApiMessage {
   content: string;
   role: 'user' | 'system' | 'assistant';

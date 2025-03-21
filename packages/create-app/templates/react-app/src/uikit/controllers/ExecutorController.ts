@@ -1,4 +1,4 @@
-import { FeController } from '@lib/fe-react-controller';
+import { FeController } from '@fe-prod/core/fe-controller';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import cloneDeep from 'lodash/cloneDeep';
 import {

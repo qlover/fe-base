@@ -1,5 +1,5 @@
 import { ExecutorPlugin } from '@qlover/fe-utils';
-import { FeController } from '@lib/fe-react-controller';
+import { FeController } from '@fe-prod/core/fe-controller';
 import type {
   UserApiGetUserInfo,
   UserApiLogin

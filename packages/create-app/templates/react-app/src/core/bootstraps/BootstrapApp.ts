@@ -1,4 +1,4 @@
-import { BootstrapExecutorPlugin } from '@lib/bootstrap';
+import type { BootstrapExecutorPlugin } from '@fe-prod/core/bootstrap';
 import { IOCIdentifier } from '../IOC';
 import { IOC } from '../IOC';
 import { FeApi } from '@/base/apis/feApi/FeApi';
