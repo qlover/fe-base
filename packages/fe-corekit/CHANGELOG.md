@@ -1,5 +1,12 @@
 
 
+## [1.1.4](https://github.com/qlover/fe-base/compare/fe-utils-v1.1.3...fe-utils-v1.1.4) (2025-03-20)
+
+
+### Features
+
+* remove first error default break chain ([#279](https://github.com/qlover/fe-base/issues/279)) ([bdabf8a](https://github.com/qlover/fe-base/commit/bdabf8aa1bdf37fc9121ca75a4a5924d52b21af0))
+
 ## [1.1.3](https://github.com/qlover/fe-base/compare/fe-utils-v1.1.2...fe-utils-v1.1.3) (2024-12-27)
 
 ## [1.1.2](https://github.com/qlover/fe-base/compare/fe-utils-v1.1.1...fe-utils-v1.1.2) (2024-12-25)

@@ -3,7 +3,7 @@
   "release": {
     "packagesDirectories": [
       "packages/fe-scripts",
-      "packages/fe-utils",
+      "packages/fe-corekit",
       "packages/create-app",
       "packages/scripts-context",
       "packages/env-loader",

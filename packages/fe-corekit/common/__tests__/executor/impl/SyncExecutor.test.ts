@@ -581,7 +581,12 @@ describe('SyncExecutor onError Lifecycle', () => {
     const executor = new SyncExecutor();
     const plugin1: ExecutorPlugin = {
       pluginName: 'test',
-      onError: ({ error }) => new ExecutorError('Handled by plugin1', error)
+      onError: ({ error, hooksRuntimes }) => {
+        // break the chain
+        hooksRuntimes.returnBreakChain = true;
+
+        return new ExecutorError('Handled by plugin1', error);
+      }
     };
     const plugin2: ExecutorPlugin = {
       pluginName: 'test2',

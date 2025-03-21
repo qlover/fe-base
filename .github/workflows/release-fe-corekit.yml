@@ -1,4 +1,4 @@
-name: Release Fe-Utils
+name: Release packages/fe-corekit
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     types:
       - closed
     paths:
-      - packages/fe-utils/**
+      - packages/fe-corekit/**
 
 jobs:
-  release-fe-utils-PR:
-    # only run when PR merged and has changes:packages/fe-utils and CI-Release labels
+  release-fe-corekit-PR:
+    # only run when PR merged and has changes:packages/fe-corekit and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-utils') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-corekit') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -50,17 +50,17 @@ jobs:
         run: yarn build
 
       - name: Create release PR
-        run: npm run release-pr:fe-utils
+        run: npm run release-pr:fe-corekit
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
-  release-fe-utils:
-    # only run when PR merged and has changes:packages/fe-utils and CI-Release labels
+  release-fe-corekit:
+    # only run when PR merged and has changes:packages/fe-corekit and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-utils') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-corekit') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
         run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:fe-utils
+        run: npm run release:fe-corekit
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}

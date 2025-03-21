@@ -30,7 +30,9 @@ import {
  *
  * @category AsyncExecutor
  */
-export class AsyncExecutor extends Executor {
+export class AsyncExecutor<
+  ExecutorConfig = unknown
+> extends Executor<ExecutorConfig> {
   /**
    * Execute plugin hook functions asynchronously
    *
@@ -300,9 +302,6 @@ export class AsyncExecutor extends Executor {
       return context.returnValue as Result;
     } catch (error) {
       context.error = error as Error;
-
-      // if onError hook return a Error, then break the chain
-      Object.assign(context.hooksRuntimes, { returnBreakChain: true });
 
       await this.runHooks(this.plugins, 'onError', context);
 
