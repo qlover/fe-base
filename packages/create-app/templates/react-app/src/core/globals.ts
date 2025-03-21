@@ -1,5 +1,5 @@
 // ! global variables, don't import any dependencies and don't have side effects
-import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-utils';
+import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-corekit';
 import { ColorLogger } from '@fe-prod/core/color-log';
 import { loggerStyles } from '@config/common';
 

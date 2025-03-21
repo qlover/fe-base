@@ -4,7 +4,7 @@ import {
   RequestAdapterConfig,
   ExecutorContext,
   RequestAdapterResponse
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 
 export type RequestCommonPluginConfig = {
   token?: string | (() => string | null);

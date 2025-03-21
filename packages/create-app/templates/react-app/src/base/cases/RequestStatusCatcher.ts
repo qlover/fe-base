@@ -1,6 +1,6 @@
 import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
 import { IOCIdentifier } from '@/core/IOC';
-import type { Logger, RequestAdapterResponse } from '@qlover/fe-utils';
+import type { Logger, RequestAdapterResponse } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 
 @injectable()

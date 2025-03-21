@@ -1,4 +1,4 @@
-import { Logger, LogLevel } from '@qlover/fe-utils';
+import { Logger, LogLevel } from '@qlover/fe-corekit';
 
 /**
  * BrowserColorLogger is a logger that uses color to log messages.

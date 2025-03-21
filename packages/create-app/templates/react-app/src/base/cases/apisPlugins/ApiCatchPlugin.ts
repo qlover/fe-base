@@ -5,7 +5,7 @@ import type {
   ExecutorContext,
   ExecutorPlugin,
   RequestAdapterResponse
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { AppError } from '../appError/AppError';
 

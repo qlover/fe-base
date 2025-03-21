@@ -1,5 +1,5 @@
 import { IOCIdentifier } from '@/core/IOC';
-import { RequestAdapterFetch } from '@qlover/fe-utils';
+import { RequestAdapterFetch } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { AppConfigImpl } from '@/core/AppConfig';
 

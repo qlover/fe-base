@@ -3,7 +3,7 @@ import {
   ExecutorPlugin,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { injectable } from 'inversify';
 
 // @ts-expect-error

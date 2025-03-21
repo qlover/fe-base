@@ -1,6 +1,6 @@
 import { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 import { adjustExpirationTime } from '@/uikit/utils/datetime';
-import { JSONStorage } from '@qlover/fe-utils';
+import { JSONStorage } from '@qlover/fe-corekit';
 
 export interface UserTokenOptions {
   /**

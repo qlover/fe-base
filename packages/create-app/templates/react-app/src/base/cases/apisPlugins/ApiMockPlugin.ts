@@ -5,7 +5,7 @@ import {
   PromiseTask,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import mockDataJson from '@config/feapi.mock.json';
 import { Thread } from '@/uikit/utils/thread';

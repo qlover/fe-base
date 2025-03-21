@@ -1,4 +1,4 @@
-import { JSONStorage } from '@qlover/fe-utils';
+import { JSONStorage } from '@qlover/fe-corekit';
 
 export type ThemeControllerState = {
   theme: string;

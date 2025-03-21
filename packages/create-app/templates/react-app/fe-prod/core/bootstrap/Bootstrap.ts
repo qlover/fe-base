@@ -1,5 +1,5 @@
 import type { IOCContainerInterface } from './IOCContainerInterface';
-import { Logger, SyncExecutor } from '@qlover/fe-utils';
+import { Logger, SyncExecutor } from '@qlover/fe-corekit';
 import {
   BootstrapArgs,
   BootstrapExecutorPlugin

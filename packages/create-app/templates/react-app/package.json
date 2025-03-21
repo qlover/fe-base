@@ -51,7 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest",
+    "@qlover/fe-corekitit": "^1.2.1",
     "@qlover/slice-store-react": "^1.0.8",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.2",

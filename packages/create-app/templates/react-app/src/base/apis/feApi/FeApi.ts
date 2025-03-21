@@ -1,4 +1,4 @@
-import { RequestAdapterFetch, RequestAdapterConfig } from '@qlover/fe-utils';
+import { RequestAdapterFetch, RequestAdapterConfig } from '@qlover/fe-corekit';
 import { FeApiGetIpInfo } from './FeApiType';
 import { ApiClient } from '@fe-prod/core/api-client';
 import { inject, injectable } from 'inversify';

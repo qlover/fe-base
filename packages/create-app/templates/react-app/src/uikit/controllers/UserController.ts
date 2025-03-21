@@ -1,4 +1,4 @@
-import { ExecutorPlugin } from '@qlover/fe-utils';
+import { ExecutorPlugin } from '@qlover/fe-corekit';
 import { FeController } from '@fe-prod/core/fe-controller';
 import type {
   UserApiGetUserInfo,

@@ -5,7 +5,7 @@ import {
   ExecutorPlugin,
   RequestAdapterResponse,
   RequestAdapterFetchConfig
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 
 class ExecutorControllerState {

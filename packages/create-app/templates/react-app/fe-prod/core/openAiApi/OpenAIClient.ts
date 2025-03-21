@@ -5,7 +5,7 @@ import {
   RequestAdapterFetchConfig,
   FetchURLPlugin,
   RequestAdapterResponse
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { StreamResultType } from './StreamProcessor';
 import { OpenAIAuthPlugin } from './OpenAIAuthPlugin';
 import {

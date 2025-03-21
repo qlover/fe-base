@@ -4,7 +4,7 @@ import type {
   IOCContainerInterface
 } from '@fe-prod/core';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
+import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
 import type { ServiceIdentifier } from 'inversify';
 import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 import { RequestCommonPlugin } from '@fe-prod/core/request-common-plugin';

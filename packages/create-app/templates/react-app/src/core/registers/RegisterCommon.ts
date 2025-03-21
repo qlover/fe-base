@@ -3,7 +3,7 @@ import type {
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
 
-import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-utils';
+import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-corekit';
 import { UserToken } from '@/base/cases/UserToken';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
