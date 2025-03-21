@@ -4,7 +4,7 @@ import {
   ExecutorContext,
   RequestAdapterFetchConfig,
   Logger
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { injectable, inject } from 'inversify';
 
 @injectable()

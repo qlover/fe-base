@@ -1,5 +1,5 @@
+import { useController, useControllerState } from '@fe-prod/react';
 import { IOC } from '@/core/IOC';
-import { useController, useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';

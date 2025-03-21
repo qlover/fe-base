@@ -1,6 +1,5 @@
-import type { IOCManagerInterface } from '@lib/bootstrap';
+import type { IOCManagerInterface } from '@fe-prod/core';
 import type { ServiceIdentifier } from 'inversify';
-import type { IOCIdentifierMap } from '@/core/IOC';
 
 /**
  * IOC function
@@ -12,7 +11,8 @@ import type { IOCIdentifierMap } from '@/core/IOC';
  * ```
  *
  */
-export interface IOCFunctionInterface<IOCIdentifierMap> extends IOCManagerInterface {
+export interface IOCFunctionInterface<IOCIdentifierMap>
+  extends IOCManagerInterface {
   /**
    * get constant identifier
    *

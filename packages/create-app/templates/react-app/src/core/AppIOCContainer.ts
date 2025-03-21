@@ -1,7 +1,8 @@
 import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
-import { IOCIdentifierMap } from '@/core/IOC';
-import type { IOCContainerInterface } from '@lib/bootstrap';
-import { ServiceIdentifier, Container } from 'inversify';
+import type { IOCContainerInterface } from '@fe-prod/core';
+import type { IOCIdentifierMap } from '@/core/IOC';
+import type { ServiceIdentifier } from 'inversify';
+import { Container } from 'inversify';
 
 export class AppIOCContainer implements IOCContainerInterface {
   private container: Container;

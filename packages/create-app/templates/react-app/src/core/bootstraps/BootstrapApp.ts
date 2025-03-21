@@ -1,8 +1,8 @@
-import { BootstrapExecutorPlugin } from '@lib/bootstrap';
+import type { BootstrapExecutorPlugin } from '@fe-prod/core/bootstrap';
 import { IOCIdentifier } from '../IOC';
 import { IOC } from '../IOC';
 import { FeApi } from '@/base/apis/feApi/FeApi';
-import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-utils';
+import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-corekit';
 import { ApiMockPlugin } from '@/base/cases/apisPlugins/ApiMockPlugin';
 import { RequestLogger } from '@/uikit/utils/RequestLogger';
 import { ApiCatchPlugin } from '@/base/cases/apisPlugins/ApiCatchPlugin';

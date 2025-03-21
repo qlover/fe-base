@@ -1,6 +1,6 @@
 import { IOC } from '@/core/IOC';
-import { useController } from '@lib/fe-react-controller';
-import { ThemeController } from '@lib/fe-react-theme/ThemeController';
+import { ThemeController } from '@fe-prod/core/theme-controller';
+import { useController } from '@fe-prod/react/userController';
 import { useTranslation } from 'react-i18next';
 
 export default function ThemeSwitcher() {

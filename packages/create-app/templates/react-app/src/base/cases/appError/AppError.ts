@@ -1,4 +1,4 @@
-import { ExecutorError } from '@qlover/fe-utils';
+import { ExecutorError } from '@qlover/fe-corekit';
 
 /**
  * 统一当前项目中开发的错误

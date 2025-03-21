@@ -5,7 +5,7 @@ import {
   InjectIOC,
   InjectGlobal,
   IOCContainerInterface
-} from '@lib/bootstrap';
+} from '@fe-prod/core/bootstrap';
 import AppConfig from '@/core/AppConfig';
 import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
 import { IOC } from './IOC';

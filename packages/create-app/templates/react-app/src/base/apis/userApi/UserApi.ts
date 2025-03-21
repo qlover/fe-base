@@ -1,9 +1,9 @@
-import { ApiClient } from '@lib/api-client';
+import { ApiClient } from '@fe-prod/core/api-client';
 import {
   FetchAbortPlugin,
   RequestAdapterConfig,
   RequestAdapterFetch
-} from '@qlover/fe-utils';
+} from '@qlover/fe-corekit';
 import { UserApiLogin } from './UserApiType';
 import { UserApiGetUserInfo } from './UserApiType';
 import { UserApiGetRandomUser } from './UserApiType';

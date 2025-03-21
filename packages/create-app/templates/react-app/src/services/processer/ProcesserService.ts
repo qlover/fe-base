@@ -1,4 +1,4 @@
-import { AsyncExecutor, ExecutorPlugin, Logger } from '@qlover/fe-utils';
+import { AsyncExecutor, ExecutorPlugin, Logger } from '@qlover/fe-corekit';
 import { IOCIdentifier } from '@/core/IOC';
 import { injectable, inject } from 'inversify';
 

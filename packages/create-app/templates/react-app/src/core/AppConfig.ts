@@ -1,4 +1,4 @@
-import type { EnvConfigInterface } from '@lib/bootstrap';
+import type { EnvConfigInterface } from '@fe-prod/core';
 
 export class AppConfigImpl implements EnvConfigInterface {
   readonly appName = '';

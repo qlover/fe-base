@@ -9,8 +9,7 @@ import { JSONStorageController } from '@/uikit/controllers/JSONStorageController
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { ProcesserService } from '@/services/processer/ProcesserService';
 import { UserController } from '@/uikit/controllers/UserController';
-import { ThemeController } from '@lib/fe-react-theme/ThemeController';
-import { OpenAIClient } from '@lib/openAiApi';
+import { ThemeController, OpenAIClient } from '@fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { base as baseRoutes } from '@config/app.router.json';
 import { override as themeOverride } from '@config/theme.json';
@@ -40,7 +39,7 @@ export class RegisterControllers implements InversifyRegisterInterface {
       .bind(JSONStorageController)
       .toConstantValue(jsonStorageController);
     container.bind(RequestController).toConstantValue(requestController);
-    
+
     container.bind(ThemeController).toConstantValue(themeController);
 
     container.get(ProcesserService).use(container.get(UserController));

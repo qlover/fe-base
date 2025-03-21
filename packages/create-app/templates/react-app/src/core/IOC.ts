@@ -1,10 +1,13 @@
 // ! dont't import tsx, only ts file
-import type { EnvConfigInterface, IOCContainerInterface } from '@lib/bootstrap';
+import type {
+  EnvConfigInterface,
+  IOCContainerInterface
+} from '@fe-prod/core';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
+import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
 import type { ServiceIdentifier } from 'inversify';
 import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
-import { RequestCommonPlugin } from '@lib/request-common-plugin';
+import { RequestCommonPlugin } from '@fe-prod/core/request-common-plugin';
 import { APP_IOC_NOT_IMPLEMENTED } from '@config/ErrorIdentifier';
 
 /**

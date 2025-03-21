@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Loading } from './Loading';
-import { RouterLoaderRender } from '@lib/router-loader';
+import { RouterLoaderRender } from '@fe-prod/react/router-loader';
 import BaseRouteProvider from '@/uikit/providers/BaseRouteProvider';
 
 export const RouterRenderComponent: RouterLoaderRender = (route) => {
