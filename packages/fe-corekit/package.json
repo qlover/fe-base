@@ -1,7 +1,7 @@
 {
-  "name": "@qlover/fe-utils",
-  "description": "A utils for frontwork",
-  "version": "1.1.4",
+  "name": "@qlover/fe-corekit",
+  "description": "A corekit for frontwork",
+  "version": "1.2.0",
   "private": false,
   "type": "module",
   "files": [
@@ -12,34 +12,34 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.umd.js",
-      "import": "./dist/index.es.js",
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.umd.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
     },
     "./interface": {
-      "require": "./dist/interface/index.umd.js",
-      "import": "./dist/interface/index.es.js",
       "types": "./dist/interface/index.d.ts",
-      "default": "./dist/interface/index.umd.js"
+      "import": "./dist/interface/index.es.js",
+      "require": "./dist/interface/index.umd.js"
     },
     "./server": {
-      "require": "./dist/server/index.cjs.js",
-      "import": "./dist/server/index.es.js",
       "types": "./dist/server/index.d.ts",
-      "default": "./dist/server/index.cjs.js"
+      "import": "./dist/server/index.es.js",
+      "require": "./dist/server/index.cjs.js"
     },
     "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
-    "directory": "packages/fe-utils"
+    "directory": "packages/fe-corekit"
   },
-  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-utils#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-corekit#readme",
   "keywords": [
+    "js-utils",
     "utils",
-    "fe-utils"
+    "fe-corekit",
+    "fe-utils",
+    "fe-base"
   ],
   "author": "qlover",
   "license": "ISC",
