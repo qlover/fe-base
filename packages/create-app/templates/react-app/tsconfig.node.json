@@ -6,7 +6,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@fe-prod/*": ["./fe-prod/*"],
+      "@qlover/fe-prod/*": ["./fe-prod/*"],
       "@config/*": ["./config/*"]
     }
   },

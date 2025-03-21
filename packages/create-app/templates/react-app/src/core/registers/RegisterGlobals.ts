@@ -1,4 +1,4 @@
-import type { EnvConfigInterface } from '@fe-prod/core';
+import type { EnvConfigInterface } from '@qlover/fe-prod/core';
 import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer

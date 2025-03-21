@@ -7,7 +7,7 @@ import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-corekit';
 import { UserToken } from '@/base/cases/UserToken';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
-import { RequestCommonPlugin } from '@fe-prod/core/request-common-plugin';
+import { RequestCommonPlugin } from '@qlover/fe-prod/core/request-common-plugin';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {

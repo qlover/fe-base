@@ -1,4 +1,4 @@
-import { useController, useControllerState } from '@fe-prod/react';
+import { useController, useControllerState } from '@qlover/fe-prod/react';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';

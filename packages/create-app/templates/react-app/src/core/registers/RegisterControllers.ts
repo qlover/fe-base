@@ -9,7 +9,7 @@ import { JSONStorageController } from '@/uikit/controllers/JSONStorageController
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { ProcesserService } from '@/services/processer/ProcesserService';
 import { UserController } from '@/uikit/controllers/UserController';
-import { ThemeController, OpenAIClient } from '@fe-prod/core';
+import { ThemeController, OpenAIClient } from '@qlover/fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { base as baseRoutes } from '@config/app.router.json';
 import { override as themeOverride } from '@config/theme.json';

@@ -1,4 +1,4 @@
-import type { RouteConfigValue } from '@fe-prod/react';
+import type { RouteConfigValue } from '@qlover/fe-prod/react';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import { I18nService } from '@/services/I18nService';

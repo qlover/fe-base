@@ -1,4 +1,4 @@
-import { OpenAIClient, FeController } from '@fe-prod/core';
+import { OpenAIClient, FeController } from '@qlover/fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';

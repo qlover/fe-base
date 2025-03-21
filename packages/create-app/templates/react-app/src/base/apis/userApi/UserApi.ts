@@ -1,4 +1,4 @@
-import { ApiClient } from '@fe-prod/core/api-client';
+import { ApiClient } from '@qlover/fe-prod/core/api-client';
 import {
   FetchAbortPlugin,
   RequestAdapterConfig,

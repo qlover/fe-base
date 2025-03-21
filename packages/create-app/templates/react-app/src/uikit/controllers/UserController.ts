@@ -1,5 +1,5 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { FeController } from '@fe-prod/core/fe-controller';
+import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import type {
   UserApiGetUserInfo,
   UserApiLogin

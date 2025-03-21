@@ -1,5 +1,5 @@
 import { useSliceStore } from '@qlover/slice-store-react';
-import { FeController } from '@fe-prod/core/fe-controller';
+import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import { useEffect, useRef, useState } from 'react';
 
 /**
