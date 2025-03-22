@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import axios from 'axios';
 import { RequestAdapterAxios } from '../../request/adapter';
 import { RequestAdapterFetch } from '../../request/adapter';
-import { RequestScheduler } from '../../request/manager/RequestScheduler';
+import { RequestScheduler } from '../../request/managers/RequestScheduler';
 
 async function checkNetworkConnection(): Promise<boolean> {
   try {
