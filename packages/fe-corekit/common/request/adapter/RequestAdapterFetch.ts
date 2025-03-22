@@ -22,15 +22,26 @@ import pick from 'lodash/pick';
  */
 export interface RequestAdapterFetchConfig<Request = unknown>
   extends RequestAdapterConfig<Request>,
-    // Request native attributes
     Omit<globalThis.RequestInit, 'headers'> {
+  /**
+   * The fetcher function
+   *
+   * You can override the default fetch function
+   *
+   * Some environments may not have a global fetch function, or you may want to override the default fetch logic.
+   *
+   * @example
+   * ```typescript
+   * const fetchRequest = new FetchRequest({ fetcher: customFetch });
+   * ```
+   *
+   * @example Or configure it for each request
+   * ```typescript
+   * const fetchRequest = new FetchRequest();
+   * fetchRequest.request({ url: '/data', fetcher: customFetch });
+   * ```
+   */
   fetcher?: typeof fetch;
-
-  onStreamProgress?: (progress: number) => void;
-
-  signal?: AbortSignal;
-
-  onAbort?(config: RequestAdapterFetchConfig): void;
 }
 
 const reqInitAttrs = [

@@ -58,15 +58,28 @@ Extracts headers from the fetch Response object and returns them as a record.
 
 
 ### request
-这个方法用于从 TypeScript 上替换 request 方法
+Core request implementation
+Merges configurations and executes fetch request
 
-可自定义
+- Core Idea: Execute HTTP requests with merged configurations.
+- Main Function: Perform fetch requests using provided configurations.
+- Main Purpose: Facilitate HTTP communication with error handling.
+
+**@throws** 
+
+When fetcher is not available
+
+**@example** 
+
+```typescript
+const response = await fetchRequest.request({ url: '/data' });
+```
 
 
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  |  | `Transaction["request"]` |  |  |
+|  config  | Request configuration | `RequestAdapterFetchConfig<Request>` |  |  |
 
 
 ### toAdapterResponse
@@ -105,25 +118,24 @@ The main purpose is to provide a flexible structure for configuring HTTP request
 ## Members
 
 ### fetcher
+The fetcher function
+
+You can override the default fetch function
+
+Some environments may not have a global fetch function, or you may want to override the default fetch logic.
+
+**@example** 
+
+```typescript
+const fetchRequest = new FetchRequest({ fetcher: customFetch });
+```
+
+**@example** Or configure it for each request
+
+```typescript
+const fetchRequest = new FetchRequest();
+fetchRequest.request({ url: '/data', fetcher: customFetch });
+```
 
 
-
-
-### onStreamProgress
-
-
-
-
-### signal
-
-
-
-
-### onAbort
-
-
-#### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  |  | `RequestAdapterFetchConfig<unknown>` |  |  |
 

@@ -38,5 +38,5 @@ adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(r
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | The configuration options for the request. | `Transaction["request"]` |  |  |
+|  config  | The configuration options for the request. | `AxiosRequestConfig<Request>` |  |  |
 
