@@ -1,7 +1,8 @@
 import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
 import {
   RequestAdapterInterface,
-  RequestAdapterResponse
+  RequestAdapterResponse,
+  RequestTransaction
 } from '../../../interface';
 
 /**
@@ -26,11 +27,12 @@ export class RequestAdapterAxios
     return this.config;
   }
 
-  async request<Request, Response>(
-    config: AxiosRequestConfig<Request>
-  ): Promise<RequestAdapterResponse<Request, Response>> {
-    return this.axiosInstance.request(config) as unknown as Promise<
-      RequestAdapterResponse<Request, Response>
-    >;
+  async request<
+    Transaction extends RequestTransaction<
+      AxiosRequestConfig<unknown>,
+      RequestAdapterResponse<unknown, unknown>
+    >
+  >(config: Transaction['request']): Promise<Transaction['response']> {
+    return this.axiosInstance.request(config);
   }
 }

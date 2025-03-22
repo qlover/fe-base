@@ -4,7 +4,8 @@ import {
   RequestError,
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdapterConfig
+  RequestAdapterConfig,
+  RequestTransaction
 } from '../../../interface';
 import { RequestScheduler } from '../../request';
 
@@ -21,9 +22,12 @@ class MockRequestAdapter
     return this.config;
   }
 
-  async request<Request, Response>(
-    config: RequestAdapterConfig<Response>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
+  async request<
+    Transaction extends RequestTransaction<
+      RequestAdapterConfig,
+      RequestAdapterResponse<unknown, RequestAdapterConfig>
+    >
+  >(config: Transaction['request']): Promise<Transaction['response']> {
     const sendConfig = { ...this.config, ...config };
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -35,11 +39,8 @@ class MockRequestAdapter
       status: 200,
       statusText: 'ok',
       headers: {},
-      data: sendConfig.data as RequestAdapterResponse<
-        Response,
-        Request
-      >['data'],
-      config: sendConfig as RequestAdapterConfig<Response>,
+      data: sendConfig.data as Transaction['response']['data'],
+      config: sendConfig,
       response: new Response()
     };
   }
@@ -77,7 +78,7 @@ describe('RequestScheduler', () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
 
-    const response = await scheduler.request<string, string>({
+    const response = await scheduler.request({
       url: '/test',
       data: 'string type data'
     });

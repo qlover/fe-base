@@ -5,7 +5,8 @@ import {
   ExecutorError,
   ExecutorPlugin,
   RequestErrorID,
-  PromiseTask
+  PromiseTask,
+  RequestTransaction
 } from '../../../interface';
 import { AsyncExecutor } from '../../executor';
 import { merge } from 'merge';
@@ -20,19 +21,18 @@ import pick from 'lodash/pick';
  *
  * @since 1.0.14
  */
-export type RequestAdapterFetchConfig<Request = unknown> = Omit<
-  globalThis.RequestInit,
-  'headers'
-> &
-  RequestAdapterConfig<Request> & {
-    fetcher?: typeof fetch;
+export interface RequestAdapterFetchConfig<Request = unknown>
+  extends RequestAdapterConfig<Request>,
+    // Request native attributes
+    Omit<globalThis.RequestInit, 'headers'> {
+  fetcher?: typeof fetch;
 
-    onStreamProgress?: (progress: number) => void;
+  onStreamProgress?: (progress: number) => void;
 
-    signal?: AbortSignal;
+  signal?: AbortSignal;
 
-    onAbort?(config: RequestAdapterFetchConfig): void;
-  };
+  onAbort?(config: RequestAdapterFetchConfig): void;
+}
 
 const reqInitAttrs = [
   'cache',
@@ -91,6 +91,21 @@ export class RequestAdapterFetch
   usePlugin(plugin: ExecutorPlugin): void {
     this.executor.use(plugin);
   }
+
+  /**
+   * 这个方法用于从 TypeScript 上替换 request 方法
+   *
+   * 可自定义
+   *
+   * @param config
+   * @returns
+   */
+  async request<
+    Transaction extends RequestTransaction<
+      unknown,
+      unknown
+    > = RequestTransaction<RequestAdapterFetchConfig, RequestAdapterResponse>
+  >(config: Transaction['request']): Promise<Transaction['response']>;
 
   /**
    * Core request implementation
@@ -170,11 +185,11 @@ export class RequestAdapterFetch
    * @param config The configuration used for the fetch request.
    * @returns A RequestAdapterResponse containing the processed response data.
    */
-  toAdapterResponse<Request>(
-    data: unknown,
+  toAdapterResponse<Request, Res = unknown>(
+    data: Res,
     response: Response,
     config: RequestAdapterFetchConfig<Request>
-  ): RequestAdapterResponse<Request> {
+  ): RequestAdapterResponse<Request, Res> {
     return {
       data,
       status: response.status,
