@@ -145,10 +145,6 @@ export interface RequestAdapterInterface<Config extends RequestAdapterConfig> {
    */
   readonly config: Config;
 
-  // request<Transaction extends RequestTransaction<unknown, unknown>>(
-  //   options: Transaction['request']
-  // ): Promise<Transaction['response']>;
-
   /**
    * Sends a request using the specified options and returns a promise with the response.
    *
@@ -163,7 +159,7 @@ export interface RequestAdapterInterface<Config extends RequestAdapterConfig> {
    */
   request<Request, Response>(
     options: RequestAdapterConfig<Request>
-  ): Promise<Response>;
+  ): Promise<RequestAdapterResponse<Request, Response>>;
 
   /**
    * Retrieves the current configuration of the request adapter.

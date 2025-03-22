@@ -5,8 +5,7 @@ import {
   ExecutorError,
   ExecutorPlugin,
   RequestErrorID,
-  PromiseTask,
-  RequestTransaction
+  PromiseTask
 } from '../../../interface';
 import { AsyncExecutor } from '../../executor';
 import { merge } from 'merge';
@@ -91,21 +90,6 @@ export class RequestAdapterFetch
   usePlugin(plugin: ExecutorPlugin): void {
     this.executor.use(plugin);
   }
-
-  /**
-   * 这个方法用于从 TypeScript 上替换 request 方法
-   *
-   * 可自定义
-   *
-   * @param config
-   * @returns
-   */
-  async request<
-    Transaction extends RequestTransaction<
-      unknown,
-      unknown
-    > = RequestTransaction<RequestAdapterFetchConfig, RequestAdapterResponse>
-  >(config: Transaction['request']): Promise<Transaction['response']>;
 
   /**
    * Core request implementation
