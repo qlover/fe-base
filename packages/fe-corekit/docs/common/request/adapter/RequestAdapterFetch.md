@@ -58,28 +58,15 @@ Extracts headers from the fetch Response object and returns them as a record.
 
 
 ### request
-Core request implementation
-Merges configurations and executes fetch request
+这个方法用于从 TypeScript 上替换 request 方法
 
-- Core Idea: Execute HTTP requests with merged configurations.
-- Main Function: Perform fetch requests using provided configurations.
-- Main Purpose: Facilitate HTTP communication with error handling.
-
-**@throws** 
-
-When fetcher is not available
-
-**@example** 
-
-```typescript
-const response = await fetchRequest.request({ url: '/data' });
-```
+可自定义
 
 
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterFetchConfig<Request>` |  |  |
+|  config  |  | `Transaction["request"]` |  |  |
 
 
 ### toAdapterResponse
@@ -89,7 +76,7 @@ Converts the raw fetch response into a standardized adapter response.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | The data extracted from the response based on the response type. | `unknown` |  |  |
+|  data  | The data extracted from the response based on the response type. | `Res` |  |  |
 |  response  | The original fetch Response object. | `Response` |  |  |
 |  config  | The configuration used for the fetch request. | `RequestAdapterFetchConfig<Request>` |  |  |
 
@@ -103,10 +90,7 @@ Converts the raw fetch response into a standardized adapter response.
 |  plugin  |  | `ExecutorPlugin<unknown>` |  |  |
 
 
-## TypeAlias `RequestAdapterFetchConfig`
-
-`Omit<globalThis.RequestInit, "headers"> & RequestAdapterConfig<Request> & Object`
-
+## Interface `RequestAdapterFetchConfig`
 Request adapter fetch configuration
 
 This type defines the configuration options for a request adapter.
@@ -117,4 +101,29 @@ The main purpose is to provide a flexible structure for configuring HTTP request
 
 1.0.14
 
+
+## Members
+
+### fetcher
+
+
+
+
+### onStreamProgress
+
+
+
+
+### signal
+
+
+
+
+### onAbort
+
+
+#### Parameters
+| Name | Description | Type | Default | Since |
+|------|------|---------|-------|------------|
+|  config  |  | `RequestAdapterFetchConfig<unknown>` |  |  |
 

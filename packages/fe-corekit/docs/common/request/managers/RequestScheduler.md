@@ -58,20 +58,6 @@ const response = await scheduler.request({ url: '/test', data: reqData });
 
 ## Members
 
-### constructor
-Initializes a new instance of the RequestScheduler class.
-
-**@since** 
-
-1.0.14
-
-
-#### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  adapter  | The request adapter interface to be used for making requests. | `RequestAdapterInterface<Config>` |  |  |
-
-
 ### connect
 Executes a CONNECT request.
 
@@ -183,18 +169,4 @@ Executes a TRACE request.
 |------|------|---------|-------|------------|
 |  url  |  | `string` |  |  |
 |  config  | The configuration for the TRACE request. | `RequestAdapterConfig<Request>` |  |  |
-
-
-### usePlugin
-Adds a plugin to the request execution process.
-
-**@since** 
-
-1.0.14
-
-
-#### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  plugin  | The plugin to be used by the executor. | `ExecutorPlugin<unknown>` |  |  |
 

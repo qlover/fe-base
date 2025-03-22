@@ -75,7 +75,7 @@ const completeUrl = urlPlugin.buildUrl(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterConfig` |  |  |
+|  config  | Request configuration | `RequestAdapterConfig<unknown>` |  |  |
 
 
 ### connectBaseURL
@@ -126,7 +126,7 @@ urlPlugin.onBefore(config);
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig>` |  |  |
+|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig<unknown>>` |  |  |
 
 
 ### onError
