@@ -29,8 +29,6 @@ export class RequestAdapterAxios
   async request<Request, Response>(
     config: AxiosRequestConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
-    return this.axiosInstance.request(config) as unknown as Promise<
-      RequestAdapterResponse<Request, Response>
-    >;
+    return this.axiosInstance.request(config);
   }
 }

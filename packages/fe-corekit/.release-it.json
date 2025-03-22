@@ -3,12 +3,12 @@
   "git": {
     "requireUpstream": true,
     "commit": true,
-    "commitMessage": "chore(tag): release-fe-utils v${version}",
+    "commitMessage": "chore(tag): release-fe-corekit v${version}",
     "tag": true,
-    "tagName": "fe-utils-v${version}",
-    "tagMatch": "fe-utils-v*",
+    "tagName": "fe-corekit-v${version}",
+    "tagMatch": "fe-corekit-v*",
     "getLatestTagFromAllRefs": true,
-    "tagAnnotation": "chore(tag): release-fe-utils v${version}",
+    "tagAnnotation": "chore(tag): release-fe-corekit v${version}",
     "push": true,
     "pushArgs": ["--follow-tags"]
   },
@@ -19,7 +19,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "chore(tag): release-fe-utils v${version}"
+    "releaseName": "chore(tag): release-fe-corekit v${version}"
   },
 
   "plugins": {

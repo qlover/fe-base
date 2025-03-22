@@ -22,8 +22,8 @@ class MockRequestAdapter
   }
 
   async request<Request, Response>(
-    config: RequestAdapterConfig<Response>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
+    config: RequestAdapterConfig<Request>
+  ): Promise<RequestAdapterResponse<Request, Response>> {
     const sendConfig = { ...this.config, ...config };
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -36,10 +36,10 @@ class MockRequestAdapter
       statusText: 'ok',
       headers: {},
       data: sendConfig.data as RequestAdapterResponse<
-        Response,
-        Request
+        Request,
+        Response
       >['data'],
-      config: sendConfig as RequestAdapterConfig<Response>,
+      config: sendConfig as RequestAdapterConfig<Request>,
       response: new Response()
     };
   }
@@ -77,7 +77,7 @@ describe('RequestScheduler', () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
 
-    const response = await scheduler.request<string, string>({
+    const response = await scheduler.request({
       url: '/test',
       data: 'string type data'
     });
@@ -87,9 +87,7 @@ describe('RequestScheduler', () => {
   it('should support shortcut method', async () => {
     const adapter = new MockRequestAdapter();
     const scheduler = new RequestScheduler(adapter);
-    const response = await scheduler.get('/test', {
-      data: 'string type data'
-    });
+    const response = await scheduler.get('/test', { data: 'string type data' });
     expect(typeof response.data === 'string').toBe(true);
   });
 

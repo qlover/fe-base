@@ -89,7 +89,7 @@ Converts the raw fetch response into a standardized adapter response.
 #### Parameters
 | Name | Description | Type | Default | Since |
 |------|------|---------|-------|------------|
-|  data  | The data extracted from the response based on the response type. | `unknown` |  |  |
+|  data  | The data extracted from the response based on the response type. | `Res` |  |  |
 |  response  | The original fetch Response object. | `Response` |  |  |
 |  config  | The configuration used for the fetch request. | `RequestAdapterFetchConfig<Request>` |  |  |
 
@@ -103,10 +103,7 @@ Converts the raw fetch response into a standardized adapter response.
 |  plugin  |  | `ExecutorPlugin<unknown>` |  |  |
 
 
-## TypeAlias `RequestAdapterFetchConfig`
-
-`Omit<globalThis.RequestInit, "headers"> & RequestAdapterConfig<Request> & Object`
-
+## Interface `RequestAdapterFetchConfig`
 Request adapter fetch configuration
 
 This type defines the configuration options for a request adapter.
@@ -116,5 +113,29 @@ The main purpose is to provide a flexible structure for configuring HTTP request
 @since 
 
 1.0.14
+
+
+## Members
+
+### fetcher
+The fetcher function
+
+You can override the default fetch function
+
+Some environments may not have a global fetch function, or you may want to override the default fetch logic.
+
+**@example** 
+
+```typescript
+const fetchRequest = new FetchRequest({ fetcher: customFetch });
+```
+
+**@example** Or configure it for each request
+
+```typescript
+const fetchRequest = new FetchRequest();
+fetchRequest.request({ url: '/data', fetcher: customFetch });
+```
+
 
 

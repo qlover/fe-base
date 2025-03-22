@@ -7,7 +7,7 @@
  *
  * @since 1.0.14
  */
-export type RequestAdapterConfig<RequestData = unknown> = {
+export interface RequestAdapterConfig<RequestData = unknown> {
   /**
    * Request URL path
    * Will be combined with baseURL if provided
@@ -107,7 +107,7 @@ export type RequestAdapterConfig<RequestData = unknown> = {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
-};
+}
 
 /**
  * Request adapter response
@@ -118,7 +118,7 @@ export type RequestAdapterConfig<RequestData = unknown> = {
  * @typeParam Req - The type of the request data.
  * @typeParam Res - The type of the response data.
  */
-export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
+export interface RequestAdapterResponse<Req = unknown, Res = unknown> {
   data: Res;
   status: number;
   statusText: string;
@@ -127,7 +127,7 @@ export type RequestAdapterResponse<Req = unknown, Res = unknown> = {
   response: Response;
 
   [key: string]: unknown;
-};
+}
 
 /**
  * Request adapter interface

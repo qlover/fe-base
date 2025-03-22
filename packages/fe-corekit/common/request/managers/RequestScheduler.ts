@@ -1,11 +1,8 @@
 import {
-  RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdapterConfig,
-  ExecutorPlugin
-} from '../../interface';
-import { AsyncExecutor } from '../executor';
-import merge from 'merge';
+  RequestAdapterConfig
+} from '../../../interface';
+import { RequestManager } from './RequestManager';
 
 /**
  * Represents a scheduler for managing HTTP requests.
@@ -61,53 +58,24 @@ import merge from 'merge';
  *
  * @template Config - The configuration type extending RequestAdapterConfig.
  */
-export class RequestScheduler<Config extends RequestAdapterConfig> {
-  readonly executor: AsyncExecutor;
-
-  /**
-   * Initializes a new instance of the RequestScheduler class.
-   *
-   * @since 1.0.14
-   *
-   * @param adapter - The request adapter interface to be used for making requests.
-   */
-  constructor(readonly adapter: RequestAdapterInterface<Config>) {
-    this.executor = new AsyncExecutor();
-  }
-
-  /**
-   * Adds a plugin to the request execution process.
-   *
-   * @since 1.0.14
-   *
-   * @param plugin - The plugin to be used by the executor.
-   * @returns The current instance of RequestScheduler for chaining.
-   */
-  usePlugin(plugin: ExecutorPlugin): this {
-    this.executor.use(plugin);
-    return this;
-  }
-
+export class RequestScheduler<
+  Config extends RequestAdapterConfig
+> extends RequestManager<Config> {
   /**
    * Executes a request with the given configuration.
    *
    * @since 1.0.14
    *
+   * @override
    * @param config - The configuration for the request.
    * @returns A promise that resolves to the response of the request.
    */
-  async request<Request, Response>(
+  override request<Request, Response>(
     config: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
-    const thisConfig = this.adapter.getConfig();
-    const mergedConfig = merge({}, thisConfig, config);
-    return this.executor.exec(
-      mergedConfig,
-      (context) =>
-        this.adapter.request<Request, Response>(
-          context.parameters
-        ) as unknown as Promise<RequestAdapterResponse<Response, Request>>
-    );
+    return super.request(config) as Promise<
+      RequestAdapterResponse<Response, Request>
+    >;
   }
 
   /**
@@ -219,11 +187,7 @@ export class RequestScheduler<Config extends RequestAdapterConfig> {
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({
-      url,
-      ...config,
-      method: 'TRACE'
-    });
+    return this.request<Request, Response>({ url, ...config, method: 'TRACE' });
   }
 
   /**
