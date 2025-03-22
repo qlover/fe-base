@@ -1,5 +1,12 @@
 
 
+## 1.2.2 (2025-03-22)
+
+
+### Features
+
+* fe corekit and remove fe utils ([#281](https://github.com/qlover/fe-base/issues/281)) ([e333c7f](https://github.com/qlover/fe-base/commit/e333c7fe0518cb5ec34ecc7423dffb511f835324))
+
 ## [1.2.1](https://github.com/qlover/fe-base/compare/fe-utils-v1.1.4...fe-utils-v1.2.1) (2025-03-21)
 
 
