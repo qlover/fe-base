@@ -1,6 +1,58 @@
-import { UserApiTransaction } from './UserApiTransaction';
+import type {
+  ApiCatchPluginResponse,
+  ApiCatchPluginConfig
+} from '@/base/cases/apisPlugins/ApiCatchPlugin';
+import type {
+  RequestAdapterResponse,
+  RequestTransactionInterface
+} from '@qlover/fe-corekit';
+import type { ApiMockPluginConfig } from '@/base/cases/apisPlugins/ApiMockPlugin';
+import type { RequestAdapterConfig } from '@qlover/fe-corekit';
 
-export type UserApiGetIpInfo = UserApiTransaction<
+/**
+ * UserApiConfig
+ *
+ * @description
+ * UserApiConfig is the config for the UserApi.
+ *
+ * extends:
+ * - ApiMockPluginConfig
+ * - ApiCatchPluginConfig
+ */
+export interface UserApiConfig<Request = unknown>
+  extends RequestAdapterConfig<Request>,
+    ApiMockPluginConfig,
+    ApiCatchPluginConfig {}
+
+/**
+ * UserApiResponse
+ *
+ * @description
+ * UserApiResponse is the response for the UserApi.
+ *
+ * extends:
+ * - RequestAdapterResponse<Request, Response>
+ */
+export interface UserApiResponse<Request = unknown, Response = unknown>
+  extends RequestAdapterResponse<Request, Response>,
+    ApiCatchPluginResponse {}
+
+/**
+ * UserApi common transaction
+ *
+ * FIXME: maybe we can add data to RequestTransactionInterface
+ *
+ * add data property
+ */
+export interface UserApiTransaction<Request = unknown, Response = unknown>
+  extends RequestTransactionInterface<
+    UserApiConfig<Request>,
+    UserApiResponse<Request, Response>
+  > {
+  data: UserApiConfig<Request>['data'];
+}
+
+export type GetIpInfoTransaction = UserApiTransaction<
   undefined,
   {
     status: string;
@@ -33,7 +85,7 @@ export type UserApiGetRandomUser = UserApiTransaction<
   }
 >;
 
-export type UserApiGetUserInfo = UserApiTransaction<
+export type UserApiGetUserInfoTransaction = UserApiTransaction<
   string,
   {
     name: string;
@@ -42,7 +94,7 @@ export type UserApiGetUserInfo = UserApiTransaction<
   }
 >;
 
-export type UserApiLogin = UserApiTransaction<
+export type UserApiLoginTransaction = UserApiTransaction<
   { username: string; password: string },
   {
     token: string;

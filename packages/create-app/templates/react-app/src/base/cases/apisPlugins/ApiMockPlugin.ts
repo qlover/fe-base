@@ -10,6 +10,19 @@ import { inject, injectable } from 'inversify';
 import mockDataJson from '@config/feapi.mock.json';
 import { Thread } from '@/uikit/utils/thread';
 
+export interface ApiMockPluginConfig {
+  /**
+   * when disabledMock is true, the mock data will not be used
+   */
+  disabledMock?: boolean;
+
+  /**
+   * mock data
+   *
+   */
+  mockData?: unknown;
+}
+
 @injectable()
 export class ApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiMockPlugin';
@@ -21,27 +34,42 @@ export class ApiMockPlugin implements ExecutorPlugin {
   /**
    * @override
    */
+  enabled(
+    _name: keyof ExecutorPlugin,
+    context?: ExecutorContext<RequestAdapterFetchConfig & ApiMockPluginConfig>
+  ): boolean {
+    console.log('jj api mock context', context);
+    //  if disabledMock is true, return the result of the task
+    return !context?.parameters.disabledMock;
+  }
+
+  /**
+   * @override
+   */
   async onExec(
-    context: ExecutorContext<RequestAdapterFetchConfig>,
-    task: PromiseTask<unknown, unknown>
+    context: ExecutorContext<RequestAdapterFetchConfig & ApiMockPluginConfig>
   ): Promise<RequestAdapterResponse> {
     await Thread.sleep(1000);
 
     const { parameters } = context;
-    const { method = 'GET', url = '', headers, disabledMock } = parameters;
+    const { method = 'GET', url = '', headers, mockData } = parameters;
 
-    // if disabledMock is true, return the result of the task
-    if (disabledMock) {
-      return task(context) as Promise<RequestAdapterResponse>;
-    }
+    let _mockData = mockData;
+    // // if disabledMock is true, return the result of the task
+    // if (disabledMock) {
+    //   return task(context) as Promise<RequestAdapterResponse>;
+    // }
 
     const key = `${method.toUpperCase()} ${url}`;
-    const mockData = url
-      ? this.mockDataJson[key as keyof typeof this.mockDataJson] ||
-        this.mockDataJson._default
-      : this.mockDataJson._default;
 
-    const response = new Response(JSON.stringify(mockData), {
+    if (!_mockData) {
+      _mockData = url
+        ? this.mockDataJson[key as keyof typeof this.mockDataJson] ||
+          this.mockDataJson._default
+        : this.mockDataJson._default;
+    }
+
+    const response = new Response(JSON.stringify(_mockData), {
       status: 200,
       statusText: 'OK'
     });
@@ -58,7 +86,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries()),
-      data: mockData,
+      data: _mockData,
       config: parameters,
       response
     };

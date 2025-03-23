@@ -1,8 +1,8 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
 import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import type {
-  UserApiGetUserInfo,
-  UserApiLogin
+  UserApiGetUserInfoTransaction,
+  UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouterController } from './RouterController';
 import { Thread } from '@/uikit/utils/thread';
@@ -16,7 +16,7 @@ import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
 
 class UserControllerState {
   success: boolean = false;
-  userInfo: UserApiGetUserInfo['response']['data'] = {
+  userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
     name: '',
     email: '',
     picture: ''
@@ -69,8 +69,8 @@ export class UserController
    * @override
    */
   async login(
-    params: UserApiLogin['request']
-  ): Promise<UserApiGetUserInfo['response']['data']> {
+    params: UserApiLoginTransaction['data']
+  ): Promise<UserApiGetUserInfoTransaction['response']> {
     const response = await this.userApi.login(params);
 
     if (response.apiCatchResult) {
@@ -86,7 +86,7 @@ export class UserController
       userInfo: userInfo.data
     });
 
-    return userInfo.data;
+    return userInfo;
   }
 
   /**

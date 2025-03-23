@@ -1,14 +1,18 @@
-import { ApiClient } from '@qlover/fe-prod/core/api-client';
 import {
   FetchAbortPlugin,
-  RequestAdapterConfig,
-  RequestAdapterFetch
+  RequestAdapterFetch,
+  RequestTransaction
 } from '@qlover/fe-corekit';
-import { UserApiLogin } from './UserApiType';
-import { UserApiGetUserInfo } from './UserApiType';
-import { UserApiGetRandomUser } from './UserApiType';
+import { UserApiGetUserInfoTransaction } from './UserApiType';
 import { inject, injectable } from 'inversify';
 import { UserApiAdapter } from './UserApiAdapter';
+import type {
+  GetIpInfoTransaction,
+  UserApiConfig,
+  UserApiLoginTransaction
+} from './UserApiType';
+import { IOCContainerInterface } from '@qlover/fe-prod/core';
+import { ApiClientInterface } from '@qlover/fe-prod/core/api-client/interface/ApiClientInterface';
 
 /**
  * UserApi
@@ -18,7 +22,10 @@ import { UserApiAdapter } from './UserApiAdapter';
  *
  */
 @injectable()
-export class UserApi extends ApiClient<RequestAdapterConfig> {
+export class UserApi
+  extends RequestTransaction<UserApiConfig>
+  implements ApiClientInterface<UserApiConfig>
+{
   constructor(
     @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
     @inject(UserApiAdapter) adapter: RequestAdapterFetch
@@ -28,25 +35,34 @@ export class UserApi extends ApiClient<RequestAdapterConfig> {
 
   /**
    * @override
+   * @param ioc
    */
-  stop(request: RequestAdapterConfig): Promise<void> | void {
+  usePlugins(ioc: IOCContainerInterface): void {
+    ioc.get(FetchAbortPlugin);
+  }
+
+  /**
+   * @override
+   * @param request
+   */
+  stop(request: UserApiConfig): Promise<void> | void {
     this.abortPlugin.abort(request);
   }
 
-  async getRandomUser(): Promise<UserApiGetRandomUser['response']> {
-    return this.get('https://randomuser.me/api/', {
+  async getRandomUser(): Promise<GetIpInfoTransaction['response']> {
+    return this.request<GetIpInfoTransaction>({
+      url: 'https://randomuser.me/api/',
       disabledMock: true
     });
   }
 
-  async getUserInfo(): Promise<UserApiGetUserInfo['response']> {
-    return this.get('/api/userinfo');
+  async getUserInfo(): Promise<UserApiGetUserInfoTransaction['response']> {
+    return this.get<UserApiGetUserInfoTransaction>('/api/userinfo');
   }
 
-  async login(params: UserApiLogin['request']): Promise<UserApiLogin['response']> {
-    return this.post('/api/login', {
-      // FIXME: RequestAdapterResponse response type error
-      data: params as unknown as UserApiLogin['response']['data']
-    });
+  async login(
+    params: UserApiLoginTransaction['data']
+  ): Promise<UserApiLoginTransaction['response']> {
+    return this.post<UserApiLoginTransaction>('/api/login', params);
   }
 }

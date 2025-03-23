@@ -1,7 +1,9 @@
-import { RequestScheduler } from '@qlover/fe-corekit';
+import { RequestTransaction } from '@qlover/fe-corekit';
 import { IOCContainerInterface } from '../../bootstrap';
 
-export abstract class ApiClient<Config> extends RequestScheduler<Config> {
+export abstract class ApiTransactionClient<
+  Config
+> extends RequestTransaction<Config> {
   /**
    * default use plugins
    *
