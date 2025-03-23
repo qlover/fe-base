@@ -2,7 +2,6 @@ import {
   ExecutorContext,
   ExecutorPlugin,
   Logger,
-  PromiseTask,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-corekit';
@@ -38,7 +37,6 @@ export class ApiMockPlugin implements ExecutorPlugin {
     _name: keyof ExecutorPlugin,
     context?: ExecutorContext<RequestAdapterFetchConfig & ApiMockPluginConfig>
   ): boolean {
-    console.log('jj api mock context', context);
     //  if disabledMock is true, return the result of the task
     return !context?.parameters.disabledMock;
   }

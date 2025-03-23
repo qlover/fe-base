@@ -3,16 +3,14 @@ import {
   RequestAdapterFetch,
   RequestTransaction
 } from '@qlover/fe-corekit';
-import { UserApiGetUserInfoTransaction } from './UserApiType';
-import { inject, injectable } from 'inversify';
-import { UserApiAdapter } from './UserApiAdapter';
-import type {
+import {
   GetIpInfoTransaction,
-  UserApiConfig,
+  UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
 } from './UserApiType';
-import { IOCContainerInterface } from '@qlover/fe-prod/core';
-import { ApiClientInterface } from '@qlover/fe-prod/core/api-client/interface/ApiClientInterface';
+import { inject, injectable } from 'inversify';
+import { UserApiAdapter } from './UserApiAdapter';
+import { UserApiConfig } from './UserApiBootstarp';
 
 /**
  * UserApi
@@ -22,23 +20,12 @@ import { ApiClientInterface } from '@qlover/fe-prod/core/api-client/interface/Ap
  *
  */
 @injectable()
-export class UserApi
-  extends RequestTransaction<UserApiConfig>
-  implements ApiClientInterface<UserApiConfig>
-{
+export class UserApi extends RequestTransaction<UserApiConfig> {
   constructor(
     @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
     @inject(UserApiAdapter) adapter: RequestAdapterFetch
   ) {
     super(adapter);
-  }
-
-  /**
-   * @override
-   * @param ioc
-   */
-  usePlugins(ioc: IOCContainerInterface): void {
-    ioc.get(FetchAbortPlugin);
   }
 
   /**
