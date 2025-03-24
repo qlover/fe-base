@@ -15,6 +15,15 @@ export class RequestLogger
 
   constructor(@inject(IOCIdentifier.Logger) public logger: Logger) {}
 
+  onBefore(context: ExecutorContext<RequestAdapterFetchConfig<unknown>>): void {
+    this.logger.log(
+      `%c[Request before]%c [${new Date().toLocaleString()}] ${context.parameters.method} ${context.parameters.url}`,
+      'color: #0ff;',
+      'color: inherit;',
+      context.parameters
+    );
+  }
+
   async onSuccess({
     parameters,
     returnValue

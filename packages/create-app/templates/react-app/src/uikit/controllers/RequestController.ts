@@ -1,7 +1,10 @@
-import { OpenAIClient, FeController } from '@qlover/fe-prod/core';
+import { FeController } from '@qlover/fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
+import { aiHello } from '@/base/apis/AiApi';
+import { inject } from 'inversify';
+import { injectable } from 'inversify';
 
 function createDefaultState() {
   return {
@@ -30,11 +33,11 @@ function createDefaultState() {
 
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
+@injectable()
 export class RequestController extends FeController<RequestControllerState> {
   constructor(
-    private readonly aiApi: OpenAIClient,
-    private readonly feApi: FeApi,
-    private readonly userApi: UserApi
+    @inject(FeApi) private readonly feApi: FeApi,
+    @inject(UserApi) private readonly userApi: UserApi
   ) {
     super(createDefaultState);
   }
@@ -43,7 +46,7 @@ export class RequestController extends FeController<RequestControllerState> {
     this.setState({ helloState: { loading: true, result: '', error: null } });
 
     try {
-      const result = await this.aiApi.completion({
+      const result = await aiHello({
         messages: [{ role: 'user', content: 'Hello, world!' }]
       });
       this.setState({ helloState: { loading: false, result, error: null } });
@@ -68,6 +71,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onRandomUser = async () => {
+    if (this.state.randomUserState.loading) {
+      return;
+    }
+
     this.setState({
       randomUserState: { loading: true, result: null, error: null }
     });

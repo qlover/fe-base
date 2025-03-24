@@ -28,10 +28,6 @@ export class UserApi extends RequestTransaction<UserApiConfig> {
     super(adapter);
   }
 
-  /**
-   * @override
-   * @param request
-   */
   stop(request: UserApiConfig): Promise<void> | void {
     this.abortPlugin.abort(request);
   }

@@ -26,6 +26,11 @@ export class AppConfigImpl implements EnvConfigInterface {
 
   readonly feApiBaseUrl = '';
   readonly userApiBaseUrl = '';
+
+  readonly aiApiBaseUrl = 'https://api.openai.com/v1';
+  readonly aiApiToken = '';
+  readonly aiApiTokenPrefix = 'Bearer';
+  readonly aiApiRequireToken = true;
 }
 
 export default new AppConfigImpl();
