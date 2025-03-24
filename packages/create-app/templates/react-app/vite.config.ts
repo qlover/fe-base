@@ -4,6 +4,8 @@ import { envPrefix } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from './fe-prod/vite/env-config';
+import ts2Locales from './fe-prod/vite/ts-to-locales';
+import i18nConfig from './config/i18n';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,7 +19,16 @@ export default defineConfig({
       ]
     }),
     react(),
-    tsconfigPaths()
+    tsconfigPaths(),
+    ts2Locales({
+      locales: i18nConfig.supportedLngs as unknown as string[],
+      options: [
+        {
+          source: './config/ErrorIdentifier.ts',
+          target: './public/locales/{{lng}}/common.json'
+        }
+      ]
+    })
   ],
   envPrefix: envPrefix,
   publicDir: 'public',

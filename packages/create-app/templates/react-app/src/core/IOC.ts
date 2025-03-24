@@ -38,7 +38,7 @@ export type IOCIdentifierMap = {
   [IOCIdentifier.JSON]: JSONSerializer;
   [IOCIdentifier.JSONStorage]: JSONStorage;
   [IOCIdentifier.Logger]: Logger;
-  [IOCIdentifier.FeApiToken]: StorageTokenInterface;
+  [IOCIdentifier.FeApiToken]: StorageTokenInterface<string>;
   [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
   [IOCIdentifier.AppConfig]: EnvConfigInterface;
 };

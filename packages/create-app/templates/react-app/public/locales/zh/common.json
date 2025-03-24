@@ -2,6 +2,9 @@
   "404.notComponent": "组件不存在",
   "404.notPage": "页面不存在",
   "500.title": "服务器错误",
-  "header.theme.label": "切换主题"
+  "header.theme.label": "切换主题",
+  "err.ioc.not.implemented": "IOC 未实现",
+  "err.local.no.user.token": "本地未找到 user token",
+  "err.global.no.window": "全局未找到 window",
+  "err.within.page.provider": "必须在 PageProvider 中使用"
 }
-

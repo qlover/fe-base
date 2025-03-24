@@ -1,28 +1,27 @@
 /**
- * 用于标识唯一的错误信息
- *
- * 可能的地方
- *
- * 1. 逻辑执行错误的唯一 id
- * 2. 错误信息的唯一 id(后期需要维护一个与之对应的 local, 这个值可能就是一个 local 的 key)
+ * @description IOC 未实现
+ * @localZh IOC 未实现
+ * @localEn IOC not implemented
  */
+export const APP_IOC_NOT_IMPLEMENTED = 'err.ioc.not.implemented';
 
 /**
- * IOC 未实现
+ * @description 本地未找到 user token
+ * @localZh 本地未找到 user token
+ * @localEn Local no user token
  */
-export const APP_IOC_NOT_IMPLEMENTED = 'APP_IOC_NOT_IMPLEMENTED';
+export const LOCAL_NO_USER_TOKEN = 'err.local.no.user.token';
 
 /**
- * 本地未找到 user token
+ * @description 全局未找到 window
+ * @localZh 全局未找到 window
+ * @localEn Global no window
  */
-export const LOCAL_NO_USER_TOKEN = 'LOCAL_NO_USER_TOKEN';
+export const GLOBAL_NO_WINDOW = 'err.global.no.window';
 
 /**
- * 全局未找到 window
+ * @description 必须在 PageProvider 中使用
+ * @localZh 必须在 PageProvider 中使用
+ * @localEn Must be used in PageProvider
  */
-export const GLOBAL_NO_WINDOW = 'GLOBAL_NO_WINDOW';
-
-/**
- * 必须在 PageProvider 中使用
- */
-export const WITHIN_PAGE_PROVIDER = 'WITHIN_PAGE_PROVIDER';
+export const WITHIN_PAGE_PROVIDER = 'err.within.page.provider';
