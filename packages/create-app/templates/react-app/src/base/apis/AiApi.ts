@@ -1,5 +1,5 @@
 import AppConfig from '@/core/AppConfig';
-import { RequestLogger } from '@/uikit/utils/RequestLogger';
+import { RequestLogger } from '@/base/cases/apisPlugins/RequestLogger';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,

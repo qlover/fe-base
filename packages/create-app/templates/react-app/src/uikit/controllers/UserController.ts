@@ -5,7 +5,7 @@ import type {
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouterController } from './RouterController';
-import { Thread } from '@/uikit/utils/thread';
+import { ThreadUtil } from '@qlover/fe-prod/core/thread';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
@@ -42,7 +42,7 @@ export class UserController
    * @override
    */
   async onBefore(): Promise<void> {
-    await Thread.sleep(1000);
+    await ThreadUtil.sleep(1000);
 
     if (!this.userToken.getToken()) {
       throw new AppError(LOCAL_NO_USER_TOKEN);

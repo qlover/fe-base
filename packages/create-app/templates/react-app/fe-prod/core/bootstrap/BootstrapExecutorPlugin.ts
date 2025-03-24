@@ -1,4 +1,4 @@
-import { IOCContainerInterface } from './IOCContainerInterface';
+import { IOCContainerInterface } from '../ioc/IOCContainerInterface';
 import { ExecutorContext, ExecutorPlugin, Logger } from '@qlover/fe-corekit';
 
 export type BootstrapArgs = {

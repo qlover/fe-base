@@ -6,7 +6,7 @@ import type {
 import { localJsonStorage, logger } from '../globals';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
-import { ProcesserService } from '@/services/processer/ProcesserService';
+import { ProcesserService } from '@/base/services/ProcesserService';
 import { UserController } from '@/uikit/controllers/UserController';
 import { ThemeController } from '@qlover/fe-prod/core';
 import { base as baseRoutes } from '@config/app.router.json';

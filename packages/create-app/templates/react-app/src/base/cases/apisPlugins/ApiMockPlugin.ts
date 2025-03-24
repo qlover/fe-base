@@ -7,7 +7,7 @@ import {
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import mockDataJson from '@config/feapi.mock.json';
-import { Thread } from '@/uikit/utils/thread';
+import { ThreadUtil } from '@qlover/fe-prod/core/thread';
 
 export interface ApiMockPluginConfig {
   /**
@@ -47,7 +47,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
   async onExec(
     context: ExecutorContext<RequestAdapterFetchConfig & ApiMockPluginConfig>
   ): Promise<RequestAdapterResponse> {
-    await Thread.sleep(1000);
+    await ThreadUtil.sleep(1000);
 
     const { parameters } = context;
     const { method = 'GET', url = '', headers, mockData } = parameters;

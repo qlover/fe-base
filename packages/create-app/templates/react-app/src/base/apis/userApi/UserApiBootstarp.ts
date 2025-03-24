@@ -9,7 +9,7 @@ import {
   RequestTransactionInterface
 } from '@qlover/fe-corekit';
 import { IOC, IOCIdentifier } from '@/core/IOC';
-import { RequestLogger } from '@/uikit/utils/RequestLogger';
+import { RequestLogger } from '@/base/cases/apisPlugins/RequestLogger';
 import { FetchURLPlugin } from '@qlover/fe-corekit';
 import {
   BootstrapContext,

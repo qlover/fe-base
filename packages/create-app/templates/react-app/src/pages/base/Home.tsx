@@ -1,4 +1,4 @@
-import LocaleLink from '@/components/LocaleLink';
+import LocaleLink from '@/uikit/components/LocaleLink';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 const navigationItems = [

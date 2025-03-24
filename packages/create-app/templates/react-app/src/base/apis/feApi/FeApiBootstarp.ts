@@ -11,7 +11,7 @@ import {
 import { FeApi } from './FeApi';
 import { ApiMockPluginConfig } from '@/base/cases/apisPlugins/ApiMockPlugin';
 import { IOCIdentifier } from '@/core/IOC';
-import { RequestLogger } from '@/uikit/utils/RequestLogger';
+import { RequestLogger } from '@/base/cases/apisPlugins/RequestLogger';
 import { ApiPickDataPlugin } from '@/base/cases/apisPlugins/ApiPickDataPlugin';
 
 /**

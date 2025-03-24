@@ -1,7 +1,7 @@
 import type { RouteConfigValue } from '@qlover/fe-prod/react';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
-import { I18nService } from '@/services/I18nService';
+import { I18nService } from '@/base/services/I18nService';
 import { Logger } from '@qlover/fe-corekit';
 
 export type RouterControllerDependencies = {

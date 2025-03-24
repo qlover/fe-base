@@ -10,7 +10,7 @@ import AppConfig from '@/core/AppConfig';
 import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
 import { IOC } from './IOC';
 import * as globals from '@/core/globals';
-import { I18nService } from '@/services/I18nService';
+import { I18nService } from '@/base/services/I18nService';
 import { registerList } from './registers';
 import { appBootstrapList } from './bootstraps';
 import { GLOBAL_NO_WINDOW } from '@config/ErrorIdentifier';
