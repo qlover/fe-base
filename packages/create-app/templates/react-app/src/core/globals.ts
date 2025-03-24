@@ -1,6 +1,6 @@
 // ! global variables, don't import any dependencies and don't have side effects
 import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-corekit';
-import { ColorLogger } from '@fe-prod/core/color-log';
+import { ColorLogger } from '@qlover/fe-prod/core/color-log';
 import { loggerStyles } from '@config/common';
 
 const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';

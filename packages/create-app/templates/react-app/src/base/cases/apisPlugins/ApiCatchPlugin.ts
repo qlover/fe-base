@@ -1,6 +1,5 @@
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
-import { ApiClientInterceptingInterface } from '@fe-prod/core/api-client';
 import type {
   ExecutorContext,
   ExecutorPlugin,
@@ -8,6 +7,13 @@ import type {
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { AppError } from '../appError/AppError';
+
+export interface ApiCatchPluginConfig {
+  /**
+   * 是否禁用捕获错误
+   */
+  disabledCatch?: boolean;
+}
 
 /**
  * Api 捕获到错误时封装的错误对象
@@ -23,8 +29,7 @@ export class ApiCatchResult extends AppError {
  *
  * - add catchError
  */
-export interface ApiCatchPluginResponse<Request, Response>
-  extends RequestAdapterResponse<Request, Response> {
+export interface ApiCatchPluginResponse {
   /**
    * `ApiCatchPlugin` returns value
    */
@@ -37,10 +42,7 @@ export interface ApiCatchPluginResponse<Request, Response>
  * 不让错误抛出，仅返回错误和数据
  */
 @injectable()
-export class ApiCatchPlugin
-  extends ApiClientInterceptingInterface<ApiCatchResult>
-  implements ExecutorPlugin
-{
+export class ApiCatchPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiCatchPlugin';
 
   constructor(
@@ -48,40 +50,26 @@ export class ApiCatchPlugin
     private readonly feApiRequestCatcher: RequestCatcherInterface<
       RequestAdapterResponse<unknown, unknown>
     >
-  ) {
-    super();
-  }
+  ) {}
 
-  /**
-   * @override
-   */
   static is(result: unknown): result is ApiCatchResult {
     return result instanceof ApiCatchResult;
   }
 
   onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
-    const returnValue = context.returnValue as ApiCatchPluginResponse<
-      unknown,
-      unknown
-    >;
+    const returnValue = context.returnValue as RequestAdapterResponse;
 
     this.feApiRequestCatcher.handler(returnValue);
 
     if (this.isErrorResponse(context)) {
-      Object.assign(
-        context.returnValue as ApiCatchPluginResponse<unknown, unknown>,
-        {
-          apiCatchResult: new ApiCatchResult('test eror id')
-        }
-      );
+      Object.assign(context.returnValue!, {
+        apiCatchResult: new ApiCatchResult('test eror id')
+      });
     }
   }
 
   isErrorResponse(context: ExecutorContext<unknown>): boolean {
-    const returnValue = context.returnValue as ApiCatchPluginResponse<
-      unknown,
-      unknown
-    >;
+    const returnValue = context.returnValue as RequestAdapterResponse;
 
     return returnValue.statusText !== 'OK';
   }

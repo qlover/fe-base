@@ -1,5 +1,5 @@
 import { JSONStorage } from '@qlover/fe-corekit';
-import { FeController } from '@fe-prod/core/fe-controller';
+import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import { random } from 'lodash';
 
 interface JSONStoragePageState {

@@ -1,4 +1,4 @@
-import { useController } from '@fe-prod/react/userController';
+import { useController } from '@qlover/fe-prod/react/userController';
 import { IOC } from '@/core/IOC';
 import { UserController } from '@/uikit/controllers/UserController';
 import { Navigate, Outlet } from 'react-router-dom';

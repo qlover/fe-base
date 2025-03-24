@@ -1,5 +1,5 @@
 import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
-import type { IOCContainerInterface } from '@fe-prod/core';
+import type { IOCContainerInterface } from '@qlover/fe-prod/core';
 import type { IOCIdentifierMap } from '@/core/IOC';
 import type { ServiceIdentifier } from 'inversify';
 import { Container } from 'inversify';

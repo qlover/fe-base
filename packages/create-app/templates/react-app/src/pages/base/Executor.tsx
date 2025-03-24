@@ -1,4 +1,4 @@
-import { useControllerState } from '@fe-prod/react';
+import { useControllerState } from '@qlover/fe-prod/react';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';

@@ -1,4 +1,4 @@
-import { FeController } from '@fe-prod/core';
+import { FeController } from '@qlover/fe-prod/core';
 import { ThemeControllerProps, ThemeControllerState } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
 

@@ -1,4 +1,4 @@
-import { OpenAIClient } from '@fe-prod/core/openAiApi';
+import { OpenAIClient } from '@qlover/fe-prod/core/openAiApi';
 import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer

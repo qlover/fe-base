@@ -1,7 +1,7 @@
 import '@/uikit/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
-import { RouterLoader, ComponentValue } from '@fe-prod/react';
+import { RouterLoader, ComponentValue } from '@qlover/fe-prod/react';
 import { RouterRenderComponent } from './components/RouterRenderComponent';
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';

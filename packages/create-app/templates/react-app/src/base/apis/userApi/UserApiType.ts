@@ -1,6 +1,6 @@
-import { UserApiTransaction } from './UserApiTransaction';
+import { UserApiTransaction } from './UserApiBootstarp';
 
-export type UserApiGetIpInfo = UserApiTransaction<
+export type GetIpInfoTransaction = UserApiTransaction<
   undefined,
   {
     status: string;
@@ -33,7 +33,7 @@ export type UserApiGetRandomUser = UserApiTransaction<
   }
 >;
 
-export type UserApiGetUserInfo = UserApiTransaction<
+export type UserApiGetUserInfoTransaction = UserApiTransaction<
   string,
   {
     name: string;
@@ -42,7 +42,7 @@ export type UserApiGetUserInfo = UserApiTransaction<
   }
 >;
 
-export type UserApiLogin = UserApiTransaction<
+export type UserApiLoginTransaction = UserApiTransaction<
   { username: string; password: string },
   {
     token: string;
