@@ -1,7 +1,10 @@
-import { OpenAIClient, FeController } from '@qlover/fe-prod/core';
+import { FeController } from '@qlover/fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
+import { aiHello } from '@/base/apis/AiApi';
+import { inject } from 'inversify';
+import { injectable } from 'inversify';
 
 function createDefaultState() {
   return {
@@ -24,26 +27,35 @@ function createDefaultState() {
       loading: false,
       result: null as unknown,
       error: null as unknown
+    },
+    apiCatchResultState: {
+      loading: false,
+      result: null as unknown,
+      error: null as unknown
     }
   };
 }
 
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
+@injectable()
 export class RequestController extends FeController<RequestControllerState> {
   constructor(
-    private readonly aiApi: OpenAIClient,
-    private readonly feApi: FeApi,
-    private readonly userApi: UserApi
+    @inject(FeApi) private readonly feApi: FeApi,
+    @inject(UserApi) private readonly userApi: UserApi
   ) {
     super(createDefaultState);
   }
 
   onHello = async () => {
+    if (this.state.helloState.loading) {
+      return;
+    }
+
     this.setState({ helloState: { loading: true, result: '', error: null } });
 
     try {
-      const result = await this.aiApi.completion({
+      const result = await aiHello({
         messages: [{ role: 'user', content: 'Hello, world!' }]
       });
       this.setState({ helloState: { loading: false, result, error: null } });
@@ -54,6 +66,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onIpInfo = async () => {
+    if (this.state.ipInfoState.loading) {
+      return;
+    }
+
     this.setState({
       ipInfoState: { loading: true, result: null, error: null }
     });
@@ -68,6 +84,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onRandomUser = async () => {
+    if (this.state.randomUserState.loading) {
+      return;
+    }
+
     this.setState({
       randomUserState: { loading: true, result: null, error: null }
     });
@@ -80,6 +100,30 @@ export class RequestController extends FeController<RequestControllerState> {
       logger.error(error);
       this.setState({
         randomUserState: { loading: false, result: null, error }
+      });
+    }
+  };
+
+  onTriggerApiCatchResult = async () => {
+    if (this.state.apiCatchResultState.loading) {
+      return;
+    }
+
+    this.setState({
+      apiCatchResultState: { loading: true, result: null, error: null }
+    });
+    try {
+      const result = await this.userApi.testApiCatchResult();
+      this.setState({
+        apiCatchResultState: {
+          loading: false,
+          result,
+          error: result.apiCatchResult
+        }
+      });
+    } catch (error) {
+      this.setState({
+        apiCatchResultState: { loading: false, result: null, error }
       });
     }
   };
