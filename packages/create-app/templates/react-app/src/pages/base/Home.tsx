@@ -1,6 +1,49 @@
 import LocaleLink from '@/components/LocaleLink';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
+const navigationItems = [
+  {
+    href: '/about',
+    bgColor: 'bg-blue-50',
+    hoverColor: 'hover:bg-blue-100',
+    titleColor: 'text-blue-700',
+    titleKey: 'about',
+    descriptionKey: 'about_description'
+  },
+  {
+    href: '/jsonstorage',
+    bgColor: 'bg-green-50',
+    hoverColor: 'hover:bg-green-100',
+    titleColor: 'text-green-700',
+    titleKey: 'jsonstorage',
+    descriptionKey: 'jsonstorage_description'
+  },
+  {
+    href: '/request',
+    bgColor: 'bg-red-50',
+    hoverColor: 'hover:bg-red-100',
+    titleColor: 'text-red-700',
+    titleKey: 'request',
+    descriptionKey: 'request_description'
+  },
+  {
+    href: '/executor',
+    bgColor: 'bg-purple-50',
+    hoverColor: 'hover:bg-purple-100',
+    titleColor: 'text-purple-700',
+    titleKey: 'executor',
+    descriptionKey: 'executor_description'
+  },
+  {
+    href: '/errorIdentifier',
+    bgColor: 'bg-amber-50',
+    hoverColor: 'hover:bg-amber-100',
+    titleColor: 'text-amber-700',
+    titleKey: 'errorIdentifier',
+    descriptionKey: 'errorIdentifier_description'
+  }
+];
+
 export default function Home() {
   const { t } = useBaseRoutePage();
 
@@ -18,35 +61,20 @@ export default function Home() {
             </div>
 
             <div className="grid gap-4">
-              <LocaleLink
-                href="/about"
-                className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-              >
-                <h2 className="text-xl font-semibold text-blue-700 mb-2">
-                  {t('about')}
-                </h2>
-                <p className="text-gray-600">{t('about_description')}</p>
-              </LocaleLink>
-
-              <LocaleLink
-                href="/jsonstorage"
-                className="block p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200"
-              >
-                <h2 className="text-xl font-semibold text-green-700 mb-2">
-                  {t('jsonstorage')}
-                </h2>
-                <p className="text-gray-600">{t('jsonstorage_description')}</p>
-              </LocaleLink>
-
-              <LocaleLink
-                href="/request"
-                className="block p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200"
-              >
-                <h2 className="text-xl font-semibold text-red-700 mb-2">
-                  {t('request')}
-                </h2>
-                <p className="text-gray-600">{t('request_description')}</p>
-              </LocaleLink>
+              {navigationItems.map((item, index) => (
+                <LocaleLink
+                  key={index}
+                  href={item.href}
+                  className={`block p-4 ${item.bgColor} rounded-lg ${item.hoverColor} transition-colors duration-200`}
+                >
+                  <h2
+                    className={`text-xl font-semibold ${item.titleColor} mb-2`}
+                  >
+                    {t(item.titleKey)}
+                  </h2>
+                  <p className="text-gray-600">{t(item.descriptionKey)}</p>
+                </LocaleLink>
+              ))}
             </div>
 
             <div className="mt-8 text-center">
