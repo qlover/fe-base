@@ -4,4 +4,5 @@ export * from './color-log';
 export * from './fe-controller';
 export * from './openAiApi';
 export * from './request-common-plugin';
+export * from './storageToken';
 export * from './theme-controller';

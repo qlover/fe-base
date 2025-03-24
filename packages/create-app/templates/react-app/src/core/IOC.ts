@@ -1,12 +1,12 @@
 // ! dont't import tsx, only ts file
 import type {
   EnvConfigInterface,
-  IOCContainerInterface
+  IOCContainerInterface,
+  StorageTokenInterface
 } from '@qlover/fe-prod/core';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
 import type { ServiceIdentifier } from 'inversify';
-import type { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
 import { RequestCommonPlugin } from '@qlover/fe-prod/core/request-common-plugin';
 import { APP_IOC_NOT_IMPLEMENTED } from '@config/ErrorIdentifier';
 
