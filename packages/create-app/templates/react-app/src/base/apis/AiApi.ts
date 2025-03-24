@@ -1,15 +1,16 @@
 import AppConfig from '@/core/AppConfig';
-import { RequestLogger } from '@/base/cases/apisPlugins/RequestLogger';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,
   RequestScheduler
 } from '@qlover/fe-corekit';
 import {
-  BootstrapExecutorPlugin,
-  RequestCommonPlugin
+  type BootstrapExecutorPlugin,
+  RequestCommonPlugin,
+  ApiMockPlugin
 } from '@qlover/fe-prod/core';
-import { ApiMockPlugin } from '../cases/apisPlugins/ApiMockPlugin';
+import { RequestLogger } from '../cases/RequestLogger';
+import { IOCIdentifier } from '@/core/IOC';
 
 const apiApiAdapter = new RequestAdapterFetch({
   baseURL: AppConfig.aiApiBaseUrl
@@ -31,7 +32,7 @@ export const AiApiBootstarp: BootstrapExecutorPlugin = {
         token: AppConfig.aiApiToken
       })
     );
-    apiApiAdapter.usePlugin(ioc.get(ApiMockPlugin));
+    apiApiAdapter.usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin));
     apiApiAdapter.usePlugin(ioc.get(RequestLogger));
   }
 };

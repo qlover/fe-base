@@ -2,13 +2,17 @@ import type {
   InversifyRegisterInterface,
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
-
-import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-corekit';
+import { FetchAbortPlugin, JSONStorage, Logger } from '@qlover/fe-corekit';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
-import { RequestCommonPlugin } from '@qlover/fe-prod/core/request-common-plugin';
-import { UserToken } from '@qlover/fe-prod/core';
-
+import {
+  UserToken,
+  RequestCommonPlugin,
+  ApiMockPlugin,
+  ApiCatchPlugin
+} from '@qlover/fe-prod/core';
+import mockDataJson from '@config/feapi.mock.json';
+import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 export class RegisterCommon implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
     const userToken = new UserToken(
@@ -29,5 +33,16 @@ export class RegisterCommon implements InversifyRegisterInterface {
     container
       .bind(IOCIdentifier.FeApiCommonPlugin)
       .toConstantValue(feApiRequestCommonPlugin);
+    container
+      .bind(IOCIdentifier.ApiMockPlugin)
+      .toConstantValue(new ApiMockPlugin(mockDataJson, container.get(Logger)));
+    container
+      .bind(IOCIdentifier.ApiCatchPlugin)
+      .toConstantValue(
+        new ApiCatchPlugin(
+          container.get(Logger),
+          container.get(RequestStatusCatcher)
+        )
+      );
   }
 }

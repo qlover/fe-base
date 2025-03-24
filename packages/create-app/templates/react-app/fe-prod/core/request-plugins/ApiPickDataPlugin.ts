@@ -1,20 +1,17 @@
 import {
-  ExecutorContext,
-  ExecutorPlugin,
-  RequestAdapterFetchConfig,
-  RequestAdapterResponse
+  type ExecutorContext,
+  type ExecutorPlugin,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse
 } from '@qlover/fe-corekit';
-import { injectable } from 'inversify';
 
-// @ts-expect-error
-export type ApiPickDataResponse<Request, Response> = Response;
+export type ApiPickDataResponse<_Request, Response> = Response;
 
 /**
  * From `RequestAdapterResponse` pick data
  *
  * Return `RequestAdapterResponse`'s `data` property
  */
-@injectable()
 export class ApiPickDataPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiPickDataPlugin';
 

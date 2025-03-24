@@ -1,25 +1,21 @@
 import {
-  ApiMockPlugin,
-  ApiMockPluginConfig
-} from '@/base/cases/apisPlugins/ApiMockPlugin';
-import {
   FetchAbortPlugin,
   RequestAdapterConfig,
   RequestAdapterResponse,
   RequestTransactionInterface
 } from '@qlover/fe-corekit';
 import { IOC, IOCIdentifier } from '@/core/IOC';
-import { RequestLogger } from '@/base/cases/apisPlugins/RequestLogger';
+import { RequestLogger } from '@/base/cases/RequestLogger';
 import { FetchURLPlugin } from '@qlover/fe-corekit';
 import {
-  BootstrapContext,
-  BootstrapExecutorPlugin
-} from '@qlover/fe-prod/core';
-import {
+  type BootstrapContext,
+  type BootstrapExecutorPlugin,
+  type ApiMockPluginConfig,
+  type ApiCatchPluginConfig,
+  type ApiCatchPluginResponse,
   ApiCatchPlugin,
-  ApiCatchPluginConfig,
-  ApiCatchPluginResponse
-} from '@/base/cases/apisPlugins/ApiCatchPlugin';
+  ApiMockPlugin
+} from '@qlover/fe-prod/core';
 import { UserApi } from './UserApi';
 
 /**
@@ -73,9 +69,9 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())
       .usePlugin(IOC.get(IOCIdentifier.FeApiCommonPlugin))
-      .usePlugin(IOC.get(ApiMockPlugin))
+      .usePlugin(IOC.get(IOCIdentifier.ApiMockPlugin))
       .usePlugin(IOC.get(RequestLogger))
       .usePlugin(IOC.get(FetchAbortPlugin))
-      .usePlugin(IOC.get(ApiCatchPlugin));
+      .usePlugin(IOC.get(IOCIdentifier.ApiCatchPlugin));
   }
 }

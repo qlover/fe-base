@@ -1,15 +1,15 @@
-import {
-  ApiCatchPluginConfig,
-  ApiCatchPluginResponse
-} from '@/base/cases/apisPlugins/ApiCatchPlugin';
 import { IOCIdentifier } from '@/core/IOC';
 import {
-  ExecutorPlugin,
-  ExecutorContext,
-  RequestAdapterFetchConfig,
-  Logger,
-  RequestAdapterResponse
+  type ExecutorPlugin,
+  type ExecutorContext,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse,
+  Logger
 } from '@qlover/fe-corekit';
+import {
+  type ApiCatchPluginConfig,
+  type ApiCatchPluginResponse
+} from '@qlover/fe-prod/core';
 import { injectable, inject } from 'inversify';
 
 @injectable()

@@ -4,7 +4,7 @@ export * from './color-log';
 export * from './fe-controller';
 export * from './ioc';
 export * from './openAiApi';
-export * from './request-common-plugin';
+export * from './request-plugins';
 export * from './storageToken';
 export * from './theme-controller';
 export * from './thread';

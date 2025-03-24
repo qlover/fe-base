@@ -1,20 +1,17 @@
-import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
-import type {
-  ExecutorContext,
-  ExecutorPlugin,
-  Logger,
-  PromiseTask,
-  RequestAdapterFetchConfig,
-  RequestAdapterResponse
+import type { RequestCatcherInterface } from './RequestCatcherInterface';
+import {
+  ExecutorError,
+  type ExecutorContext,
+  type ExecutorPlugin,
+  type Logger,
+  type PromiseTask,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse
 } from '@qlover/fe-corekit';
-import { inject, injectable } from 'inversify';
-import { AppError } from '../appError/AppError';
-import { IOCIdentifier } from '@/core/IOC';
 
 export interface ApiCatchPluginConfig {
   /**
-   * 是否开启捕获错误
+   * Whether to catch the error
    */
   openApiCatch?: boolean;
 }
@@ -28,21 +25,19 @@ export interface ApiCatchPluginResponse {
   /**
    * `ApiCatchPlugin` returns value
    */
-  apiCatchResult?: AppError;
+  apiCatchResult?: ExecutorError;
 }
 
 /**
  * Api request error catch plugin
  *
- * 不让错误抛出，仅返回错误和数据
+ * Do not throw errors, only return errors and data
  */
-@injectable()
 export class ApiCatchPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiCatchPlugin';
 
   constructor(
-    @inject(IOCIdentifier.Logger) private readonly logger: Logger,
-    @inject(RequestStatusCatcher)
+    private readonly logger: Logger,
     private readonly feApiRequestCatcher: RequestCatcherInterface<
       RequestAdapterResponse<unknown, unknown>
     >
@@ -83,13 +78,13 @@ export class ApiCatchPlugin implements ExecutorPlugin {
         });
 
         return {
-          apiCatchResult: new AppError(
+          apiCatchResult: new ExecutorError(
             'test eror id',
             'Internal Server Error(ApiCatchPlugin)'
           ),
           status: errorResponse.status,
           statusText: errorResponse.statusText,
-          headers: Object.fromEntries(errorResponse.headers.entries()),
+          headers: {},
           data: null,
           config: context.parameters,
           response: errorResponse
