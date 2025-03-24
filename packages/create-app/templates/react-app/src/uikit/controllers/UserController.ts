@@ -7,12 +7,12 @@ import type {
 import { RouterController } from './RouterController';
 import { Thread } from '@/uikit/utils/thread';
 import { inject, injectable } from 'inversify';
-import { UserToken } from '@/base/cases/UserToken';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/appError/AppError';
 import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
+import { StorageTokenInterface } from '@qlover/fe-prod/core';
 
 class UserControllerState {
   success: boolean = false;
@@ -33,7 +33,7 @@ export class UserController
   constructor(
     @inject(UserApi) private userApi: UserApi,
     @inject(RouterController) private routerController: RouterController,
-    @inject(IOCIdentifier.FeApiToken) private userToken: UserToken
+    @inject(IOCIdentifier.FeApiToken) private userToken: StorageTokenInterface<string>
   ) {
     super(() => new UserControllerState());
   }
