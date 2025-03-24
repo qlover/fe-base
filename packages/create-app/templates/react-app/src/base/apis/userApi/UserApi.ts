@@ -6,7 +6,8 @@ import {
 import {
   GetIpInfoTransaction,
   UserApiGetUserInfoTransaction,
-  UserApiLoginTransaction
+  UserApiLoginTransaction,
+  UserApiTestApiCatchResultTransaction
 } from './UserApiType';
 import { inject, injectable } from 'inversify';
 import { UserApiAdapter } from './UserApiAdapter';
@@ -35,7 +36,19 @@ export class UserApi extends RequestTransaction<UserApiConfig> {
   async getRandomUser(): Promise<GetIpInfoTransaction['response']> {
     return this.request<GetIpInfoTransaction>({
       url: 'https://randomuser.me/api/',
+      method: 'GET',
       disabledMock: true
+    });
+  }
+
+  async testApiCatchResult(): Promise<
+    UserApiTestApiCatchResultTransaction['response']
+  > {
+    return this.request<UserApiTestApiCatchResultTransaction>({
+      url: 'https://randomuser.me/api/',
+      method: 'GET',
+      disabledMock: true,
+      openApiCatch: true
     });
   }
 

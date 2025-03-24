@@ -27,6 +27,11 @@ function createDefaultState() {
       loading: false,
       result: null as unknown,
       error: null as unknown
+    },
+    apiCatchResultState: {
+      loading: false,
+      result: null as unknown,
+      error: null as unknown
     }
   };
 }
@@ -43,6 +48,10 @@ export class RequestController extends FeController<RequestControllerState> {
   }
 
   onHello = async () => {
+    if (this.state.helloState.loading) {
+      return;
+    }
+
     this.setState({ helloState: { loading: true, result: '', error: null } });
 
     try {
@@ -57,6 +66,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onIpInfo = async () => {
+    if (this.state.ipInfoState.loading) {
+      return;
+    }
+
     this.setState({
       ipInfoState: { loading: true, result: null, error: null }
     });
@@ -87,6 +100,30 @@ export class RequestController extends FeController<RequestControllerState> {
       logger.error(error);
       this.setState({
         randomUserState: { loading: false, result: null, error }
+      });
+    }
+  };
+
+  onTriggerApiCatchResult = async () => {
+    if (this.state.apiCatchResultState.loading) {
+      return;
+    }
+
+    this.setState({
+      apiCatchResultState: { loading: true, result: null, error: null }
+    });
+    try {
+      const result = await this.userApi.testApiCatchResult();
+      this.setState({
+        apiCatchResultState: {
+          loading: false,
+          result,
+          error: result.apiCatchResult
+        }
+      });
+    } catch (error) {
+      this.setState({
+        apiCatchResultState: { loading: false, result: null, error }
       });
     }
   };

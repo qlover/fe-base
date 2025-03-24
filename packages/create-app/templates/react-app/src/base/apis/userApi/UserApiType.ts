@@ -48,3 +48,6 @@ export type UserApiLoginTransaction = UserApiTransaction<
     token: string;
   }
 >;
+
+
+export type UserApiTestApiCatchResultTransaction = UserApiGetRandomUser
