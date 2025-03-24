@@ -1,5 +1,5 @@
-import ThemeSwitcher from '@/components/ThemeSwitcher';
-import LocaleLink from '@/components/LocaleLink';
+import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
+import LocaleLink from '@/uikit/components/LocaleLink';
 
 export default function BaseHeader() {
   return (

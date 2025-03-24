@@ -1,5 +1,5 @@
-import type { IOCRegisterInterface } from '../IOCContainerInterface';
-import type { IOCManagerInterface } from '../IOCManagerInterface';
+import type { IOCRegisterInterface } from '../../ioc/IOCContainerInterface';
+import type { IOCManagerInterface } from '../../ioc/IOCManagerInterface';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin

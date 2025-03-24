@@ -4,7 +4,7 @@ import type {
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
 
-import { RequestLogger } from '@/uikit/utils/RequestLogger';
+import { RequestLogger } from '@/base/cases/RequestLogger';
 import AppConfig from '@/core/AppConfig';
 
 export class RegisterApi implements InversifyRegisterInterface {

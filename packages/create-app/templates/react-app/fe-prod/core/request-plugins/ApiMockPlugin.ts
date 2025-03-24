@@ -1,13 +1,11 @@
 import {
-  ExecutorContext,
-  ExecutorPlugin,
-  Logger,
-  RequestAdapterFetchConfig,
-  RequestAdapterResponse
+  type ExecutorContext,
+  type ExecutorPlugin,
+  type Logger,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse
 } from '@qlover/fe-corekit';
-import { inject, injectable } from 'inversify';
-import mockDataJson from '@config/feapi.mock.json';
-import { Thread } from '@/uikit/utils/thread';
+import { ThreadUtil } from '../thread/ThreadUtil';
 
 export interface ApiMockPluginConfig {
   /**
@@ -22,13 +20,13 @@ export interface ApiMockPluginConfig {
   mockData?: unknown;
 }
 
-@injectable()
 export class ApiMockPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiMockPlugin';
 
-  private readonly mockDataJson = mockDataJson;
-
-  constructor(@inject(Logger) private readonly logger: Logger) {}
+  constructor(
+    private readonly mockDataJson: Record<string, unknown>,
+    private readonly logger: Logger
+  ) {}
 
   /**
    * @override
@@ -47,7 +45,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
   async onExec(
     context: ExecutorContext<RequestAdapterFetchConfig & ApiMockPluginConfig>
   ): Promise<RequestAdapterResponse> {
-    await Thread.sleep(1000);
+    await ThreadUtil.sleep(1000);
 
     const { parameters } = context;
     const { method = 'GET', url = '', headers, mockData } = parameters;
@@ -83,7 +81,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
     return {
       status: response.status,
       statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
+      headers: {},
       data: _mockData,
       config: parameters,
       response

@@ -1,17 +1,18 @@
 import {
+  type RequestAdapterConfig,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse,
   RequestScheduler,
-  RequestAdapterConfig,
   RequestAdapterFetch,
-  RequestAdapterFetchConfig,
-  FetchURLPlugin,
-  RequestAdapterResponse
+  FetchURLPlugin
 } from '@qlover/fe-corekit';
+import {
+  type RequestCommonPluginConfig,
+  RequestCommonPlugin
+} from '../request-plugins';
 import { StreamResultType } from './StreamProcessor';
 import { OpenAIAuthPlugin } from './OpenAIAuthPlugin';
-import {
-  RequestCommonPlugin,
-  RequestCommonPluginConfig
-} from '../request-common-plugin';
+
 export interface ApiMessage {
   content: string;
   role: 'user' | 'system' | 'assistant';

@@ -1,13 +1,15 @@
 // ! dont't import tsx, only ts file
 import type {
+  ApiMockPlugin,
   EnvConfigInterface,
   IOCContainerInterface,
-  StorageTokenInterface
+  StorageTokenInterface,
+  RequestCommonPlugin,
+  ApiCatchPlugin
 } from '@qlover/fe-prod/core';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
 import type { ServiceIdentifier } from 'inversify';
-import { RequestCommonPlugin } from '@qlover/fe-prod/core/request-common-plugin';
 import { APP_IOC_NOT_IMPLEMENTED } from '@config/ErrorIdentifier';
 
 /**
@@ -28,7 +30,9 @@ export const IOCIdentifier = Object.freeze({
   Logger: 'Logger',
   FeApiToken: 'FeApiToken',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
-  AppConfig: 'AppConfig'
+  AppConfig: 'AppConfig',
+  ApiMockPlugin: 'ApiMockPlugin',
+  ApiCatchPlugin: 'ApiCatchPlugin'
 });
 
 /**
@@ -41,6 +45,8 @@ export type IOCIdentifierMap = {
   [IOCIdentifier.FeApiToken]: StorageTokenInterface<string>;
   [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
   [IOCIdentifier.AppConfig]: EnvConfigInterface;
+  [IOCIdentifier.ApiMockPlugin]: ApiMockPlugin;
+  [IOCIdentifier.ApiCatchPlugin]: ApiCatchPlugin;
 };
 
 ioc.implemention = null as IOCContainerInterface | null;
