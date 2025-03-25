@@ -1,28 +1,28 @@
 # @qlover/corekit-bridge
 
-fe-corekit 实际开发环境的抽象工具桥接
+Abstraction tool bridge for fe-corekit in real development environments
 
-## 简介
+## Introduction
 
-@qlover/corekit-bridge 是一个用于连接 fe-corekit 核心工具和实际开发环境的桥接库。它提供了一系列实用工具和插件，简化了前端应用程序的开发流程。
+@qlover/corekit-bridge is a bridge library for connecting fe-corekit core tools with actual development environments. It provides a series of utility tools and plugins to simplify the development process of frontend applications.
 
-## 安装
+## Installation
 
 ```bash
 npm install @qlover/corekit-bridge
 ```
 
-或者
+or
 
 ```bash
 yarn add @qlover/corekit-bridge
 ```
 
-## 主要功能
+## Main Features
 
-### Bootstrap 引导系统
+### Bootstrap System
 
-用于应用程序初始化和依赖注入的引导系统：
+A bootstrap system for application initialization and dependency injection:
 
 ```typescript
 import {
@@ -41,26 +41,26 @@ bootstrap
   .start();
 ```
 
-### IOC 容器接口
+### IOC Container Interface
 
-提供依赖注入容器的标准接口：
+Provides a standard interface for dependency injection containers:
 
 ```typescript
 import { IOCContainerInterface } from '@qlover/corekit-bridge';
 
 class MyContainer implements IOCContainerInterface {
-  // 实现接口方法
+  // Implement interface methods
 }
 ```
 
-### API 请求插件
+### API Request Plugins
 
-一系列增强 API 请求功能的插件：
+A series of plugins to enhance API request functionality:
 
-- ApiCatchPlugin: 捕获 API 请求错误
-- ApiMockPlugin: 提供 API 模拟数据功能
-- ApiPickDataPlugin: 从响应中提取数据
-- RequestCommonPlugin: 处理通用请求配置
+- ApiCatchPlugin: Captures API request errors
+- ApiMockPlugin: Provides API mock data functionality
+- ApiPickDataPlugin: Extracts data from responses
+- RequestCommonPlugin: Handles common request configurations
 
 ```typescript
 import { ApiMockPlugin, ApiCatchPlugin } from '@qlover/corekit-bridge';
@@ -69,16 +69,16 @@ const mockPlugin = new ApiMockPlugin(mockData, logger);
 const catchPlugin = new ApiCatchPlugin(logger, errorCatcher);
 ```
 
-### 构建工具
+### Build Tools
 
-提供一系列有用的构建和配置工具：
+Provides a series of useful build and configuration tools:
 
-#### Tailwind 10px 根字体配置
+#### Tailwind 10px Root Font Size Configuration
 
 ```typescript
 import tailwindRoot10px from '@qlover/corekit-bridge/build/tw-root10px';
 
-// 在 tailwind.config.js 中使用
+// Use in tailwind.config.js
 module.exports = {
   theme: {
     ...tailwindRoot10px.themes
@@ -87,12 +87,12 @@ module.exports = {
 };
 ```
 
-#### Vite 环境配置插件
+#### Vite Environment Configuration Plugin
 
 ```typescript
 import viteEnvConfig from '@qlover/corekit-bridge/build/vite-env-config';
 
-// 在 vite.config.js 中使用
+// Use in vite.config.js
 export default {
   plugins: [
     viteEnvConfig({
@@ -106,12 +106,12 @@ export default {
 };
 ```
 
-#### TypeScript 到本地化文件转换工具
+#### TypeScript to Localization Files Conversion Tool
 
 ```typescript
 import viteTs2Locales from '@qlover/corekit-bridge/build/vite-ts-to-locales';
 
-// 在 vite.config.js 中使用
+// Use in vite.config.js
 export default {
   plugins: [
     viteTs2Locales({
@@ -127,9 +127,9 @@ export default {
 };
 ```
 
-### 彩色日志 ColorLogger
+### Color Logger
 
-提供带颜色的控制台日志输出：
+Provides console log output with colors:
 
 ```typescript
 import { ColorLogger } from '@qlover/corekit-bridge';
@@ -144,16 +144,16 @@ const logger = new ColorLogger({
   }
 });
 
-logger.debug('调试信息');
-logger.info('普通信息');
+logger.debug('Debug information');
+logger.info('Normal information');
 ```
 
-## 其他工具
+## Other Tools
 
-- 线程工具 (ThreadUtil)
-- 存储令牌服务 (StorageTokenService)
-- 主题服务 (ThemeService)
+- Thread Utils (ThreadUtil)
+- Storage Token Service (StorageTokenService)
+- Theme Service (ThemeService)
 
-## 许可证
+## License
 
 ISC
