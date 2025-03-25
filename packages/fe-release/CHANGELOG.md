@@ -1,5 +1,12 @@
 
 
+## [0.1.7](https://github.com/qlover/fe-base/compare/fe-release-v0.1.6...fe-release-v0.1.7) (2025-03-25)
+
+
+### Features
+
+* fe-release branchName arg, and change default branchName tpl:release-${pkgName}-${tagName} ([#291](https://github.com/qlover/fe-base/issues/291)) ([e89652c](https://github.com/qlover/fe-base/commit/e89652c499b8e20753b602eeb49865b303615e12))
+
 ## [0.1.6](https://github.com/qlover/fe-base/compare/fe-release-v0.1.5...fe-release-v0.1.6) (2025-02-25)
 
 
