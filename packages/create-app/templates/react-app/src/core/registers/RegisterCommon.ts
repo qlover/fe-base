@@ -9,10 +9,14 @@ import {
   UserToken,
   RequestCommonPlugin,
   ApiMockPlugin,
-  ApiCatchPlugin
+  ApiCatchPlugin,
+  ThemeService
 } from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
+import { override as themeOverride } from '@config/theme.json';
+import { localJsonStorage } from '../globals';
+
 export class RegisterCommon implements InversifyRegisterInterface {
   register(container: InversifyRegisterContainer): void {
     const userToken = new UserToken(
@@ -44,5 +48,12 @@ export class RegisterCommon implements InversifyRegisterInterface {
           container.get(RequestStatusCatcher)
         )
       );
+
+    container.bind(ThemeService).toConstantValue(
+      new ThemeService({
+        ...themeOverride,
+        storage: localJsonStorage
+      })
+    );
   }
 }

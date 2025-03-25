@@ -1,5 +1,5 @@
-import { ThemeService } from '@/base/services/ThemeService';
 import { IOC } from '@/core/IOC';
+import { ThemeService } from '@qlover/corekit-bridge';
 import { useSliceStore } from '@qlover/slice-store-react';
 import { useTranslation } from 'react-i18next';
 
