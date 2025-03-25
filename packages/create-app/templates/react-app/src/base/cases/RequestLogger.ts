@@ -9,7 +9,7 @@ import {
 import {
   type ApiCatchPluginConfig,
   type ApiCatchPluginResponse
-} from '@qlover/fe-prod/core';
+} from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
 
 @injectable()

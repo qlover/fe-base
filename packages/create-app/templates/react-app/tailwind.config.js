@@ -1,5 +1,5 @@
-import root10px from './fe-prod/build/tw-root10px';
-import themeCreate from './fe-prod/core/theme-controller/tw-generator';
+import root10px from './lib/tw-root10px';
+import themeCreate from './lib/tw-generator';
 import themeConfig from './config/theme.json';
 
 const theme = themeCreate(themeConfig.override);

@@ -10,7 +10,7 @@ import {
   RequestCommonPlugin,
   ApiMockPlugin,
   ApiCatchPlugin
-} from '@qlover/fe-prod/core';
+} from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 export class RegisterCommon implements InversifyRegisterInterface {

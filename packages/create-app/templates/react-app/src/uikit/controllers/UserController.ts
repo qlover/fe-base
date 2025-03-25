@@ -1,18 +1,17 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import type {
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouterController } from './RouterController';
-import { ThreadUtil } from '@qlover/fe-prod/core/thread';
+import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/appError/AppError';
 import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
-import { StorageTokenInterface } from '@qlover/fe-prod/core';
+import { SliceStore } from '@qlover/slice-store-react';
 
 class UserControllerState {
   success: boolean = false;
@@ -25,7 +24,7 @@ class UserControllerState {
 
 @injectable()
 export class UserController
-  extends FeController<UserControllerState>
+  extends SliceStore<UserControllerState>
   implements ExecutorPlugin, LoginInterface
 {
   readonly pluginName = 'UserController';
@@ -33,9 +32,14 @@ export class UserController
   constructor(
     @inject(UserApi) private userApi: UserApi,
     @inject(RouterController) private routerController: RouterController,
-    @inject(IOCIdentifier.FeApiToken) private userToken: StorageTokenInterface<string>
+    @inject(IOCIdentifier.FeApiToken)
+    private userToken: StorageTokenInterface<string>
   ) {
     super(() => new UserControllerState());
+  }
+
+  setState(state: Partial<UserControllerState>): void {
+    this.emit({ ...this.state, ...state });
   }
 
   /**

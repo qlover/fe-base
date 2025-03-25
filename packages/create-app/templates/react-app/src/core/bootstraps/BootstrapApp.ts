@@ -1,4 +1,4 @@
-import type { BootstrapExecutorPlugin } from '@qlover/fe-prod/core/bootstrap';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export class BootstrapApp implements BootstrapExecutorPlugin {
   readonly pluginName = 'BootstrapApp';

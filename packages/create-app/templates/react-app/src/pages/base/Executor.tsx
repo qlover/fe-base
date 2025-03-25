@@ -1,18 +1,18 @@
-import { useControllerState } from '@qlover/fe-prod/react';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 export default function Executor() {
   const executorController = IOC(ExecutorController);
   const jSONStorageController = IOC(JSONStorageController);
-  const requestTimeout = useControllerState(
+  const requestTimeout = useSliceStore(
     jSONStorageController,
     jSONStorageController.selector.requestTimeout
   );
 
-  const helloState = useControllerState(
+  const helloState = useSliceStore(
     executorController,
     executorController.selector.helloState
   );

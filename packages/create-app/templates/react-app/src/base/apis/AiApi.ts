@@ -6,9 +6,8 @@ import {
 } from '@qlover/fe-corekit';
 import {
   type BootstrapExecutorPlugin,
-  RequestCommonPlugin,
-  ApiMockPlugin
-} from '@qlover/fe-prod/core';
+  RequestCommonPlugin
+} from '@qlover/corekit-bridge';
 import { RequestLogger } from '../cases/RequestLogger';
 import { IOCIdentifier } from '@/core/IOC';
 

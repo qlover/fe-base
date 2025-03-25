@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useController } from '@qlover/fe-prod/react';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { UserController } from '@/uikit/controllers/UserController';
 import AppConfig from '@/core/AppConfig';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 export default function Login() {
   const { t } = useBaseRoutePage();
-  const controller = useController(IOC(UserController));
+  const userController = IOC(UserController);
+  useSliceStore(userController);
+
   const [email, setEmail] = useState(AppConfig.loginUser);
   const [password, setPassword] = useState(AppConfig.loginPassword);
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       setLoading(true);
-      await controller.login({ username: email, password });
+      await userController.login({ username: email, password });
       // Redirect or show success message
       IOC(RouterController).replaceToHome();
     } catch (error) {

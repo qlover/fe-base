@@ -9,7 +9,7 @@ import {
   type BootstrapExecutorPlugin,
   type ApiMockPluginConfig,
   ApiPickDataPlugin
-} from '@qlover/fe-prod/core';
+} from '@qlover/corekit-bridge';
 import { FeApi } from './FeApi';
 import { IOCIdentifier } from '@/core/IOC';
 import { RequestLogger } from '@/base/cases/RequestLogger';

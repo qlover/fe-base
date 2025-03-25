@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import { envPrefix } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from './fe-prod/vite/env-config';
-import ts2Locales from './fe-prod/vite/ts-to-locales';
+import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
+import ts2Locales from '@qlover/corekit-bridge/build/vite-ts-to-locales';
 import i18nConfig from './config/i18n';
 
 // https://vite.dev/config/
