@@ -25,7 +25,11 @@ function programArgs() {
     .option('-P, --pull-request', 'Create a release PR')
     .option(
       '-p, --publish-path <publishPath>',
-      'The path of the package to release'
+      'The path of the package to release, map to feConfig.release.publishPath'
+    )
+    .option(
+      '-b, --branch-name <branchName>',
+      'The branch name of the release, map to feConfig.release.branchName, default(release-${env}-${branch}-${tagName})'
     );
   // parse arguments
   program.parse();
