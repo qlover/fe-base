@@ -10,7 +10,7 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "yarn build:common && yarn build:fe-corekit && yarn build:fe-scripts && yarn build:fe-code2markdown && yarn build:create-app && build:corekit-bridge",
+    "build": "yarn build:common && yarn build:fe-corekit && yarn build:fe-scripts && yarn build:fe-code2markdown && yarn build:create-app && yarn build:corekit-bridge",
     "build:common": "yarn build:fe-release && yarn build:env-loader && yarn build:scripts-context",
     "build:fe-release": "yarn workspace @qlover/fe-release build",
     "build:fe-corekit": "yarn workspace @qlover/fe-corekit build",
