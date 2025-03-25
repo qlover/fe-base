@@ -1,10 +1,10 @@
 import '@/uikit/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
-import { RouterLoader, ComponentValue } from '@qlover/fe-prod/react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';
+import { RouterLoader, type ComponentValue } from '@/base/cases/router-loader';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');

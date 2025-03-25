@@ -1,4 +1,4 @@
-import type { IOCManagerInterface } from '@qlover/fe-prod/core';
+import type { IOCManagerInterface } from '@qlover/corekit-bridge';
 import type { ServiceIdentifier } from 'inversify';
 
 /**

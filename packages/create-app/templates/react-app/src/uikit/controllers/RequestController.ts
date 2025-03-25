@@ -1,10 +1,10 @@
-import { FeController } from '@qlover/fe-prod/core';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { aiHello } from '@/base/apis/AiApi';
 import { inject } from 'inversify';
 import { injectable } from 'inversify';
+import { SliceStore } from '@qlover/slice-store-react';
 
 function createDefaultState() {
   return {
@@ -39,12 +39,16 @@ function createDefaultState() {
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
 @injectable()
-export class RequestController extends FeController<RequestControllerState> {
+export class RequestController extends SliceStore<RequestControllerState> {
   constructor(
     @inject(FeApi) private readonly feApi: FeApi,
     @inject(UserApi) private readonly userApi: UserApi
   ) {
     super(createDefaultState);
+  }
+
+  setState(state: Partial<RequestControllerState>) {
+    this.emit({ ...this.state, ...state });
   }
 
   onHello = async () => {

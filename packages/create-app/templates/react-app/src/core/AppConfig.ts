@@ -1,4 +1,4 @@
-import type { EnvConfigInterface } from '@qlover/fe-prod/core';
+import type { EnvConfigInterface } from '@qlover/corekit-bridge';
 
 export class AppConfigImpl implements EnvConfigInterface {
   readonly appName = '';

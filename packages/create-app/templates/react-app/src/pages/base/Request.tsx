@@ -1,9 +1,9 @@
-import { useControllerState } from '@qlover/fe-prod/react';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { useMemo } from 'react';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -22,10 +22,8 @@ function JSONValue({ value }: { value: unknown }) {
 
 export default function Request() {
   const requestController = IOC(RequestController);
-  const requestControllerState = useControllerState(requestController);
-  const jsonStorageControllerState = useControllerState(
-    IOC(JSONStorageController)
-  );
+  const requestControllerState = useSliceStore(requestController);
+  const jsonStorageControllerState = useSliceStore(IOC(JSONStorageController));
   const { t } = useBaseRoutePage();
 
   return (

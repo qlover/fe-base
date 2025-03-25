@@ -12,10 +12,8 @@ import {
   type BootstrapExecutorPlugin,
   type ApiMockPluginConfig,
   type ApiCatchPluginConfig,
-  type ApiCatchPluginResponse,
-  ApiCatchPlugin,
-  ApiMockPlugin
-} from '@qlover/fe-prod/core';
+  type ApiCatchPluginResponse
+} from '@qlover/corekit-bridge';
 import { UserApi } from './UserApi';
 
 /**

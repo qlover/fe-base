@@ -6,7 +6,7 @@ import type {
   StorageTokenInterface,
   RequestCommonPlugin,
   ApiCatchPlugin
-} from '@qlover/fe-prod/core';
+} from '@qlover/corekit-bridge';
 import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
 import type { ServiceIdentifier } from 'inversify';

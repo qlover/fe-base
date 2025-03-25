@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Loading } from './Loading';
-import { RouterLoaderRender } from '@qlover/fe-prod/react/router-loader';
 import BaseRouteProvider from '@/uikit/providers/BaseRouteProvider';
+import { RouterLoaderRender } from '@/base/cases/router-loader';
 
 export const RouterRenderComponent: RouterLoaderRender = (route) => {
   const Component = route.element();

@@ -1,11 +1,11 @@
 import {
   Bootstrap,
-  BootstrapExecutorPlugin,
+  type BootstrapExecutorPlugin,
   InjectEnv,
   InjectIOC,
   InjectGlobal,
-  IOCContainerInterface
-} from '@qlover/fe-prod/core/bootstrap';
+  type IOCContainerInterface
+} from '@qlover/corekit-bridge';
 import AppConfig from '@/core/AppConfig';
 import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
 import { IOC } from './IOC';

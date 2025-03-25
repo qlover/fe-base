@@ -1,4 +1,3 @@
-import { FeController } from '@qlover/fe-prod/core/fe-controller';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import cloneDeep from 'lodash/cloneDeep';
 import {
@@ -7,6 +6,7 @@ import {
   RequestAdapterFetchConfig
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
+import { SliceStore } from '@qlover/slice-store-react';
 
 class ExecutorControllerState {
   helloState = {
@@ -31,7 +31,7 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
 };
 
 @injectable()
-export class ExecutorController extends FeController<ExecutorControllerState> {
+export class ExecutorController extends SliceStore<ExecutorControllerState> {
   selector = {
     helloState: (state: ExecutorControllerState) => state.helloState
   };
@@ -50,7 +50,8 @@ export class ExecutorController extends FeController<ExecutorControllerState> {
   }
 
   onTestPlugins = async () => {
-    this.setState({
+    this.emit({
+      ...this.state,
       helloState: {
         loading: true,
         result: null,
@@ -63,7 +64,8 @@ export class ExecutorController extends FeController<ExecutorControllerState> {
         responseType: 'text'
       });
 
-      this.setState({
+      this.emit({
+        ...this.state,
         helloState: {
           loading: false,
           result: res,
@@ -71,7 +73,8 @@ export class ExecutorController extends FeController<ExecutorControllerState> {
         }
       });
     } catch (error) {
-      this.setState({
+      this.emit({
+        ...this.state,
         helloState: {
           loading: false,
           result: null,

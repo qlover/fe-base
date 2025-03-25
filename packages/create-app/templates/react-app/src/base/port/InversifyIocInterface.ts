@@ -1,4 +1,4 @@
-import type { IOCRegisterInterface } from '@qlover/fe-prod/core/bootstrap';
+import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
 import type { Container } from 'inversify';
 
 export type InversifyRegisterContainer = Container;
