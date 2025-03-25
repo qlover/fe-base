@@ -12,7 +12,7 @@ const allGlobals = {
 function createFeUtilsConfig() {
   const feUtilsCommon = chainEnv({
     allGlobals,
-    files: ['packages/fe-utils/**/*.ts'],
+    files: ['packages/fe-corekit/**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.node
@@ -22,14 +22,14 @@ function createFeUtilsConfig() {
   });
   const feUtilsServer = chainEnv({
     allGlobals,
-    files: ['packages/fe-utils/server/**/*.ts'],
+    files: ['packages/fe-corekit/server/**/*.ts'],
     languageOptions: {
       globals: globals.node
     }
   });
   const feUtilsBrowser = chainEnv({
     allGlobals,
-    files: ['packages/fe-utils/browser/**/*.ts'],
+    files: ['packages/fe-corekit/browser/**/*.ts'],
     languageOptions: {
       globals: globals.browser
     }
@@ -72,8 +72,14 @@ export default [
   createCommon(),
   createTslintRecommended(['packages/**/*.ts']),
 
-  // fe-utils
+  // fe-corekit
   ...createFeUtilsConfig(),
+
+  {
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off'
+    }
+  },
 
   // jest
   createJESTConfig()

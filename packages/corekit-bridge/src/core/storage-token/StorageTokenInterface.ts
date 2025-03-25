@@ -1,4 +1,4 @@
-import { ExpiresInType } from "./QuickerTime";
+import { ExpiresInType } from './QuickerTime';
 
 /**
  * Storage token interface
