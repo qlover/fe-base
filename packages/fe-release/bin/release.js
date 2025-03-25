@@ -29,7 +29,7 @@ function programArgs() {
     )
     .option(
       '-b, --branch-name <branchName>',
-      'The branch name of the release, map to feConfig.release.branchName, default(release-${env}-${branch}-${tagName})'
+      'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
     );
   // parse arguments
   program.parse();

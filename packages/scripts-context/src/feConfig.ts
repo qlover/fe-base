@@ -15,7 +15,7 @@ export const defaultFeConfig: FeConfig = {
     publishPath: '',
     autoMergeReleasePR: false,
     autoMergeType: 'squash',
-    branchName: 'release-${env}-${branch}-${tagName}',
+    branchName: 'release-${pkgName}-${tagName}',
     PRTitle:
       '[${pkgName} Release] Branch:${branch}, Tag:${tagName}, Env:${env}',
     PRBody:
@@ -110,7 +110,9 @@ export type FeReleaseConfig = {
   /**
    * Create the branch name of PR when publishing
    *
-   * @default ${env}-${branch}-${tagName}
+   * support vars: pkgName, tagName, env, branch
+   *
+   * @default 'release-${pkgName}-${tagName}'
    */
   branchName?: string;
   /**
