@@ -1,4 +1,4 @@
-name: Release packages/fe-corekit
+name: Release packages/corekit-bridge
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     types:
       - closed
     paths:
-      - packages/fe-corekit/**
+      - packages/corekit-bridge/**
 
 jobs:
-  release-fe-corekit-PR:
-    # only run when PR merged and has changes:packages/fe-corekit and CI-Release labels
+  release-corekit-bridge-PR:
+    # only run when PR merged and has changes:packages/corekit-bridge and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-corekit') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/corekit-bridge') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -50,17 +50,17 @@ jobs:
         run: yarn build
 
       - name: Create release PR
-        run: npm run release-pr:fe-corekit
+        run: npm run release-pr:corekit-bridge
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
-  release-fe-corekit:
-    # only run when PR merged and has changes:packages/fe-corekit and CI-Release labels
+  release-corekit-bridge:
+    # only run when PR merged and has changes:packages/corekit-bridge and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/fe-corekit') &&
+      contains(github.event.pull_request.labels.*.name, 'changes:packages/corekit-bridge') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
         run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:fe-corekit
+        run: npm run release:corekit-bridge
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}

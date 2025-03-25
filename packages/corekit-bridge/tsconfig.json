@@ -1,0 +1,10 @@
+{
+  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES5",
+    "strict": true,
+    "baseUrl": "./",
+    "declaration": false
+  },
+  "include": ["build/**/*", "core/**/*", "react/**/*"]
+}
