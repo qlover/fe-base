@@ -1,0 +1,67 @@
+{
+  "name": "@qlover/corekit-bridge",
+  "description": "fe-corekit Abstraction tool bridge for real development environments",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.es.js"
+    },
+    "./build/*": {
+      "types": "./dist/build/*/index.d.ts",
+      "import": "./dist/build/*/index.es.js",
+      "require": "./dist/build/*/index.cjs.js",
+      "default": "./dist/build/*/index.es.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/corekit-bridge"
+  },
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/corekit-bridge#readme",
+  "keywords": [
+    "js-utils",
+    "utils",
+    "corekit-bridge",
+    "fe-utils",
+    "fe-base"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "dependencies": {
+    "@qlover/fe-corekit": "^1.2.1",
+    "@qlover/slice-store-react": "^1.2.6",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@qlover/env-loader": "latest",
+    "@types/lodash": "^4.17.13",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/typo-js": "^1.2.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

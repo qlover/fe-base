@@ -4,6 +4,7 @@
     "packagesDirectories": [
       "packages/fe-scripts",
       "packages/fe-corekit",
+      "packages/corekit-bridge",
       "packages/create-app",
       "packages/scripts-context",
       "packages/env-loader",
