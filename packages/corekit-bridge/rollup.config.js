@@ -1,23 +1,44 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
 import dts from 'rollup-plugin-dts';
 import typescript from 'rollup-plugin-typescript2';
 import { builtinModules } from 'module';
 import { readFileSync, rmSync } from 'fs';
+import { join } from 'path';
 import { Env } from '@qlover/env-loader';
 
-const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
+const readJSONFile = (path) => JSON.parse(readFileSync(path), 'utf-8');
+const pkg = readJSONFile(join(process.cwd(), './package.json'));
+
 const env = Env.searchEnv({ logger: console });
 const isProduction = env.get('NODE_ENV') === 'production';
 const buildDir = 'dist';
 
+const treeshake = {
+  moduleSideEffects: false,
+  propertyReadSideEffects: false,
+  tryCatchDeoptimization: false
+};
 const defaultExternal = [
   ...builtinModules,
   ...builtinModules.map((mod) => `node:${mod}`),
-  ...Object.keys(pkg.dependencies || {}),
-  ...Object.keys(pkg.devDependencies || {})
+  ...Object.keys(pkg.dependencies),
+  ...Object.keys(pkg.devDependencies)
 ];
+
+function createPlugin(minify) {
+  return [
+    resolve({
+      preferBuiltins: false
+    }),
+    commonjs(),
+    json(),
+    typescript(),
+    minify && terser()
+  ].filter(Boolean);
+}
 
 function cleanBuildDir() {
   rmSync(buildDir, { recursive: true, force: true });
@@ -26,61 +47,68 @@ function cleanBuildDir() {
 
 cleanBuildDir();
 
-/**
- * @param {{ entry: string, formats: string[], external: string[], target: string, clean: boolean }} options
- * @returns {import('rollup').RollupOptions[]}
- */
-function createBuilder({ target, entry, formats, external, umdName }) {
-  target = target || `${buildDir}/${entry}`;
+function createBuildConfig(inputName) {
+  const input = `src/build/${inputName}/index.ts`;
+  const output = `build/${inputName}/index`;
 
-  /** @type {import('rollup').OutputOptions[]} */
-  const outputs = formats.map((format) => ({
-    file: `${target}/index.${format}.js`,
-    format,
-    name: umdName,
-    sourcemap: !isProduction
-  }));
+  const formats = ['es', 'cjs'];
+  const jsConfig = {
+    input,
+    external: defaultExternal,
+    treeshake,
+    output: formats.map((format) => ({
+      file: `${buildDir}/${output}.${format}.js`,
+      format,
+      exports: 'named'
+    })),
+    plugins: createPlugin(isProduction)
+  };
 
-  return [
-    {
-      input: `${entry}/index.ts`,
-      output: outputs,
-      plugins: [
-        resolve({
-          preferBuiltins: false
-        }),
-        commonjs(),
-        typescript({ tsconfig: './tsconfig.json' }),
-        isProduction && terser()
-      ],
-      external: external
+  const dtsConfig = {
+    input,
+    output: {
+      file: `${buildDir}/${output}.d.ts`,
+      format: 'es',
+      exports: 'named'
     },
-    {
-      input: `${entry}/index.ts`,
-      output: {
-        file: `${target}/index.d.ts`,
-        format: 'es'
-      },
-      plugins: [dts()]
-    }
-  ];
+    plugins: [dts()]
+  };
+
+  return [jsConfig, dtsConfig];
 }
 
+function createCoreConfig() {
+  const formats = ['es', 'cjs'];
+  const jsConfig = {
+    input: 'src/core/index.ts',
+    external: defaultExternal,
+    treeshake,
+    output: formats.map((format) => ({
+      file: `${buildDir}/index.${format}.js`,
+      format
+    })),
+    plugins: createPlugin(isProduction)
+  };
+
+  const dtsConfig = {
+    input: 'src/core/index.ts',
+    output: {
+      file: `${buildDir}/index.d.ts`,
+      format: 'es'
+    },
+    plugins: [dts()]
+  };
+
+  return [jsConfig, dtsConfig];
+}
 /**
  * @type {import('rollup').RollupOptions[]}
  */
-export default [
-  ...createBuilder({
-    entry: 'core',
-    formats: ['es', 'umd'],
-    umdName: 'FeProdCore',
-    external: defaultExternal,
-    clean: true
-  }),
-  ...createBuilder({
-    entry: 'build',
-    formats: ['es', 'cjs'],
-    umdName: 'FeProdBuild',
-    external: defaultExternal
-  })
+const config = [
+  ...createBuildConfig('tw-root10px'),
+  ...createBuildConfig('vite-env-config'),
+  ...createBuildConfig('vite-ts-to-locales'),
+  ...createCoreConfig()
 ];
+
+export default config;

@@ -1,10 +1,10 @@
 import isString from 'lodash/isString';
-import { ThemeControllerProps, ThemeControllerState } from './type';
+import { ThemeServiceProps, ThemeServiceState } from './type';
 
 export class ThemeStateGetter {
   static SYSTEM_THEME = 'system';
 
-  static create(props: ThemeControllerProps): ThemeControllerState {
+  static create(props: ThemeServiceProps): ThemeServiceState {
     const theme = ThemeStateGetter.getDefaultTheme(props);
 
     return {
@@ -12,7 +12,7 @@ export class ThemeStateGetter {
     };
   }
 
-  static getDefaultTheme(props: ThemeControllerProps): string {
+  static getDefaultTheme(props: ThemeServiceProps): string {
     const { storage, storageKey, defaultTheme } = props;
 
     let theme;

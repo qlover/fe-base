@@ -14,22 +14,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.es.js"
     },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.es.js",
-      "require": "./dist/core/index.umd.js"
-    },
-    "./build": {
-      "types": "./dist/build/index.d.ts",
-      "import": "./dist/build/index.es.js",
-      "require": "./dist/build/index.cjs.js"
-    },
-    "./react": {
-      "types": "./dist/react/index.d.ts",
-      "import": "./dist/react/index.es.js",
-      "require": "./dist/react/index.umd.js"
+    "./build/*": {
+      "types": "./dist/build/*/index.d.ts",
+      "import": "./dist/build/*/index.es.js",
+      "require": "./dist/build/*/index.cjs.js",
+      "default": "./dist/build/*/index.es.js"
     },
     "./package.json": "./package.json"
   },
@@ -55,8 +47,8 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@qlover/corekit-bridge": "^1.2.1",
-    "@qlover/slice-store-react": "^1.0.8",
+    "@qlover/fe-corekit": "^1.2.1",
+    "@qlover/slice-store-react": "^1.2.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

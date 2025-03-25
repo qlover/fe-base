@@ -1,6 +1,6 @@
 import { JSONStorage } from '@qlover/fe-corekit';
 
-export type ThemeControllerState = {
+export type ThemeServiceState = {
   theme: string;
 };
 
@@ -16,6 +16,6 @@ export type ThemeConfig = {
   colors: Record<string, unknown>;
 };
 
-export interface ThemeControllerProps extends ThemeConfig {
+export interface ThemeServiceProps extends ThemeConfig {
   storage?: JSONStorage;
 }

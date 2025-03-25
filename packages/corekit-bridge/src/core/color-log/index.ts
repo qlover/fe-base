@@ -1,11 +1,11 @@
 import { Logger, LogLevel } from '@qlover/fe-corekit';
 
 /**
- * BrowserColorLogger is a logger that uses color to log messages.
+ * ColorLogger is a logger that uses color to log messages.
  *
  * @example
  * ```ts
- * const logger = new BrowserColorLogger();
+ * const logger = new ColorLogger();
  * logger.debug('Hello, world!');
  *
  * //=> Hello, world!

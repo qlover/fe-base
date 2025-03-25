@@ -1,9 +1,9 @@
-import { FeController } from '../fe-controller';
-import { ThemeControllerProps, ThemeControllerState } from './type';
+import { SliceStore } from '@qlover/slice-store-react';
+import { ThemeServiceProps, ThemeServiceState } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
 
-export class ThemeController extends FeController<ThemeControllerState> {
-  constructor(private props: ThemeControllerProps) {
+export class ThemeService extends SliceStore<ThemeServiceState> {
+  constructor(private props: ThemeServiceProps) {
     super(() => ThemeStateGetter.create(props));
 
     this.bindToTheme();
@@ -14,7 +14,7 @@ export class ThemeController extends FeController<ThemeControllerState> {
   }
 
   bindToTheme(): void {
-    const { theme } = this.getState();
+    const { theme } = this.state;
 
     const { domAttribute } = this.props;
 
@@ -28,7 +28,7 @@ export class ThemeController extends FeController<ThemeControllerState> {
       theme = ThemeStateGetter.getSystemTheme();
     }
 
-    this.setState({ theme });
+    this.emit({ ...this.state, theme });
 
     const { storage, storageKey } = this.props;
     if (storage && storageKey) {
