@@ -80,6 +80,7 @@ export default class BranchManager {
     this.context.logger.verbose('Release Branch template is:', branchNameTpl);
 
     return this.context.shell.format(branchNameTpl, {
+      pkgName: this.context.getPkg('name'),
       env: this.releaseEnv,
       branch: this.sourceBranch,
       tagName
