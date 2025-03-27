@@ -10,7 +10,7 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "yarn build:common && yarn build:fe-corekit && yarn build:fe-scripts && yarn build:fe-code2markdown && yarn build:create-app && yarn build:corekit-bridge",
+    "build": "pnpm -r --filter @qlover/fe-release --filter @qlover/env-loader --filter @qlover/scripts-context run build && pnpm -r --parallel run build --workspace-concurrency=3",
     "build:common": "yarn build:fe-release && yarn build:env-loader && yarn build:scripts-context",
     "build:fe-release": "yarn workspace @qlover/fe-release build",
     "build:fe-corekit": "yarn workspace @qlover/fe-corekit build",
@@ -76,6 +76,8 @@
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.1",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^22.9.0",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
     "rollup": "^4.24.2",
@@ -83,7 +85,8 @@
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-node": "^10.9.2",
-    "typescript": "~5.4.0",
+    "tslib": "^2.8.1",
+    "typescript": "~5.4.5",
     "vite": "^6.1.0",
     "vitest": "^3.0.5"
   },
@@ -98,6 +101,7 @@
   "dependencies": {
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "nx": "^20.6.4"
   }
 }

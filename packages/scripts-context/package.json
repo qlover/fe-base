@@ -44,7 +44,9 @@
   "devDependencies": {
     "@types/shelljs": "^0.8.15",
     "@qlover/fe-standard": "latest",
-    "@qlover/env-loader": "latest"
+    "@qlover/env-loader": "latest",
+    "@types/lodash": "^4.17.16",
+    "@commitlint/types": "^19.8.0"
   },
   "dependencies": {
     "@qlover/fe-utils": "latest",
