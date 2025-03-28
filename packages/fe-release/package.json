@@ -44,22 +44,22 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest",
     "release": "node bin/release.js",
     "release-pr": "node bin/release.js -P",
     "dryrun:release": "node bin/release.js --dry-run -V",
     "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "latest",
-    "@qlover/env-loader": "latest",
+    "@qlover/fe-standard": "workspace:*",
     "commander": "^11.0.0",
     "release-it": "^17.10.0",
     "@release-it/conventional-changelog": "^8.0.1"
   },
   "dependencies": {
+    "@qlover/env-loader": "workspace:*",
     "@qlover/fe-utils": "latest",
     "@qlover/scripts-context": "latest",
-    "@octokit/rest": "^21.0.2"
+    "@octokit/rest": "^21.0.2",
+    "lodash": "^4.17.21"
   }
 }

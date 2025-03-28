@@ -38,13 +38,12 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c",
-    "test": "jest"
+    "build": "rollup -c"
   },
   "devDependencies": {
     "@types/shelljs": "^0.8.15",
-    "@qlover/fe-standard": "latest",
-    "@qlover/env-loader": "latest",
+    "@qlover/fe-standard": "workspace:*",
+    "@qlover/env-loader": "^0.0.1",
     "@types/lodash": "^4.17.16",
     "@commitlint/types": "^19.8.0"
   },

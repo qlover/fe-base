@@ -10,7 +10,7 @@ import { Env } from '@qlover/env-loader';
 
 const pkg = JSON.parse(readFileSync('./package.json'), 'utf-8');
 
-const env = Env.searchEnv({ logger: console });
+const env = Env.searchEnv();
 const isProduction = env.get('NODE_ENV') === 'production';
 const buildDir = 'dist';
 
@@ -46,7 +46,6 @@ function createPlugin(minify) {
 
 function cleanBuildDir() {
   rmSync(buildDir, { recursive: true, force: true });
-  console.log(`${buildDir} cleaned`);
 }
 
 cleanBuildDir();

@@ -46,8 +46,8 @@
     "run:command": "node bin/test.js"
   },
   "devDependencies": {
-    "@qlover/env-loader": "latest",
-    "@qlover/fe-standard": "latest",
+    "@qlover/env-loader": "workspace:*",
+    "@qlover/fe-standard": "workspace:*",
     "@qlover/scripts-context": "latest",
     "@release-it/conventional-changelog": "^8.0.1",
     "@rollup/plugin-commonjs": "^28.0.1",

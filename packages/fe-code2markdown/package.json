@@ -48,6 +48,8 @@
     "access": "public"
   },
   "devDependencies": {
+    "@qlover/env-loader": "workspace:*",
+    "@qlover/scripts-context": "^0.0.7",
     "fs-extra": "^11.2.0",
     "typescript": "~5.4.0"
   },

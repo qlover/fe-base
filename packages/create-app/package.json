@@ -30,7 +30,6 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest",
     "create:app:build": "npm run build && npm run create:app",
     "create:app": "node ./bin/create-app.js"
   },
@@ -50,12 +49,16 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "@qlover/env-loader": "workspace:*"
+  },
   "dependencies": {
     "@qlover/fe-utils": "latest",
     "@qlover/scripts-context": "latest",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",
-    "ora": "^8.1.1"
+    "ora": "^8.1.1",
+    "lodash": "^4.17.21"
   }
 }

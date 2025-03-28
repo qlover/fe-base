@@ -10,16 +10,8 @@
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
   "scripts": {
-    "build": "pnpm -r --filter @qlover/fe-release --filter @qlover/env-loader --filter @qlover/scripts-context run build && pnpm -r --parallel run build --workspace-concurrency=3",
-    "build:common": "yarn build:fe-release && yarn build:env-loader && yarn build:scripts-context",
-    "build:fe-release": "yarn workspace @qlover/fe-release build",
-    "build:fe-corekit": "yarn workspace @qlover/fe-corekit build",
-    "build:fe-scripts": "yarn workspace @qlover/fe-scripts build",
-    "build:fe-code2markdown": "yarn workspace @qlover/fe-code2markdown build",
-    "build:corekit-bridge": "yarn workspace @qlover/corekit-bridge build",
-    "build:create-app": "yarn workspace @qlover/create-app build",
-    "build:scripts-context": "yarn workspace @qlover/scripts-context build",
-    "build:env-loader": "yarn workspace @qlover/env-loader build",
+    "build": "pnpm -r --workspace-concurrency=4 run build",
+    "nx:build": "nx affected:build",
     "release-pr:fe-release": "fe-release -P -p ./packages/fe-release -V",
     "release-pr:fe-corekit": "fe-release -P -p ./packages/fe-corekit -V",
     "release-pr:fe-scripts": "fe-release -P -p ./packages/fe-scripts -V",
@@ -78,6 +70,7 @@
     "@rollup/plugin-typescript": "^12.1.1",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.9.0",
+    "@qlover/fe-standard": "workspace:*",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
     "rollup": "^4.24.2",
@@ -88,7 +81,8 @@
     "tslib": "^2.8.1",
     "typescript": "~5.4.5",
     "vite": "^6.1.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "nx": "20.6.4"
   },
   "workspaces": [
     "packages/*"
@@ -97,11 +91,5 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
-  },
-  "dependencies": {
-    "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
-    "husky": "^9.1.7",
-    "nx": "^20.6.4"
   }
 }

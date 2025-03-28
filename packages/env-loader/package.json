@@ -38,11 +38,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
-    "test": "jest"
+    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "latest",
+    "@qlover/fe-standard": "workspace:*",
     "@qlover/fe-utils": "latest"
   },
   "dependencies": {

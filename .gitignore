@@ -49,5 +49,9 @@ dist
 
 # lock file
 package-lock.json
-pnpm-lock.yaml
 yarn.lock
+
+rollup.config-*.*js
+
+.nx/cache
+.nx/workspace-data

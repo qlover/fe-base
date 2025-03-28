@@ -42,7 +42,6 @@ function createPlugin(minify: boolean): Plugin<unknown>[] {
 
 function cleanBuildDir(): void {
   rmSync(buildDir, { recursive: true, force: true });
-  console.log(`${buildDir} cleaned`);
 }
 
 cleanBuildDir();

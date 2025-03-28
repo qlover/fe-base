@@ -1,4 +1,4 @@
-import { Env } from '@qlover/env-loader';
+import type { Env } from '@qlover/env-loader';
 import { ExecutorContext } from '@qlover/fe-utils';
 import Config from './interface/ReleaseContext';
 import ReleaseContext from './interface/ReleaseContext';

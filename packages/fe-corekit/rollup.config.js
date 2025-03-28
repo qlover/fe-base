@@ -6,11 +6,9 @@ import terser from '@rollup/plugin-terser';
 import del from 'rollup-plugin-delete';
 import { Env } from '@qlover/env-loader';
 
-const env = Env.searchEnv({ logger: console });
+const env = Env.searchEnv();
 const NODE_ENV = env.get('NODE_ENV');
 const isProduction = NODE_ENV === 'production';
-console.log('Enveronment is', NODE_ENV);
-
 const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
 const commonExternal = ['axios'];
 const buildDir = 'dist';
