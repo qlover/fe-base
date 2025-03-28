@@ -23,11 +23,11 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
   try {
     const module = await import(pluginName);
     plugin = module.default;
-  } catch (err) {
+  } catch {
     try {
       const module = await import(join(process.cwd(), pluginName));
       plugin = module.default;
-    } catch (err) {
+    } catch {
       // In some cases or tests we might need to support legacy `require.resolve`
       const require = createRequire(process.cwd());
       const module = await import(

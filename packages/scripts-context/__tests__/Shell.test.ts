@@ -159,7 +159,7 @@ describe('Shell', () => {
     try {
       // @ts-expect-error
       shellInstance.format(template, context);
-    } catch (e) {
+    } catch {
       expect(logger.error).toHaveBeenCalled();
     }
   });

@@ -48,15 +48,19 @@ export type LoadProps = {
   Provider?: React.ComponentType<PropsWithChildren<RouteMeta>>;
 };
 
-
-type ComponentValue = React.ComponentType<unknown> | LazyExoticComponent<React.ComponentType<unknown>>;
+type ComponentValue =
+  | React.ComponentType<unknown>
+  | LazyExoticComponent<React.ComponentType<unknown>>;
 
 export type ComponentMaps = {
   /**
    * key: ./xxx/bbb.(jsx,js,tsx,ts)
    */
-  [key: string]: ComponentValue | (() => Promise<ComponentValue>) | (() => ComponentValue);
-}
+  [key: string]:
+    | ComponentValue
+    | (() => Promise<ComponentValue>)
+    | (() => ComponentValue);
+};
 
 // new RouterManager({
 //   routes: [],

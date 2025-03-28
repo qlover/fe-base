@@ -9,7 +9,8 @@ export class Bootstrap extends SyncExecutor {
   constructor(
     private root: unknown,
     private IOCContainer: IOCContainerInterface,
-    private logger: Logger
+    private logger: Logger,
+    private logger2: Logger,
   ) {
     super();
   }
