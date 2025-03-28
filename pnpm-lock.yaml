@@ -20,6 +20,9 @@ importers:
       '@qlover/eslint-plugin-fe-dev':
         specifier: workspace:*
         version: link:packages/eslint-plugin-fe-dev
+      '@qlover/fe-scripts':
+        specifier: workspace:*
+        version: link:packages/fe-scripts
       '@qlover/fe-standard':
         specifier: latest
         version: 0.0.4
@@ -47,6 +50,9 @@ importers:
       '@types/node':
         specifier: ^22.9.0
         version: 22.13.14
+      cz-conventional-changelog:
+        specifier: ^3.3.0
+        version: 3.3.0(@types/node@22.13.14)(typescript@5.4.5)
       eslint:
         specifier: ^9.13.0
         version: 9.23.0(jiti@2.4.2)
@@ -6528,6 +6534,26 @@ snapshots:
 
   commander@4.1.1: {}
 
+  commitizen@4.3.1(@types/node@22.13.14)(typescript@5.4.5):
+    dependencies:
+      cachedir: 2.3.0
+      cz-conventional-changelog: 3.3.0(@types/node@22.13.14)(typescript@5.4.5)
+      dedent: 0.7.0
+      detect-indent: 6.1.0
+      find-node-modules: 2.1.3
+      find-root: 1.1.0
+      fs-extra: 9.1.0
+      glob: 7.2.3
+      inquirer: 8.2.5
+      is-utf8: 0.2.1
+      lodash: 4.17.21
+      minimist: 1.2.7
+      strip-bom: 4.0.0
+      strip-json-comments: 3.1.1
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
+
   commitizen@4.3.1(@types/node@22.13.14)(typescript@5.8.2):
     dependencies:
       cachedir: 2.3.0
@@ -6703,6 +6729,20 @@ snapshots:
   cssesc@3.0.0: {}
 
   csstype@3.1.3: {}
+
+  cz-conventional-changelog@3.3.0(@types/node@22.13.14)(typescript@5.4.5):
+    dependencies:
+      chalk: 2.4.2
+      commitizen: 4.3.1(@types/node@22.13.14)(typescript@5.4.5)
+      conventional-commit-types: 3.0.0
+      lodash.map: 4.6.0
+      longest: 2.0.1
+      word-wrap: 1.2.5
+    optionalDependencies:
+      '@commitlint/load': 19.8.0(@types/node@22.13.14)(typescript@5.4.5)
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
 
   cz-conventional-changelog@3.3.0(@types/node@22.13.14)(typescript@5.8.2):
     dependencies:
