@@ -1,4 +1,4 @@
-import { ExecutorPlugin, Logger } from '@qlover/fe-utils';
+import { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
 import { DeepPartial, ExecutorReleaseContext, ReleaseConfig } from './type';
 import { Shell } from '@qlover/scripts-context';
 import ReleaseContext from './interface/ReleaseContext';
@@ -36,7 +36,7 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
   }
 
   /**
-   * get reelase config
+   * get release config
    *
    * feConfig.release
    */

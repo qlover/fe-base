@@ -7,18 +7,20 @@
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-release",
   "author": "qlover",
   "license": "ISC",
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "types": "./dist/es/index.d.ts",
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+    "./cli": {
+      "import": "./dist/cli.js",
+      "require": "./dist/cli.cjs"
+    }
   },
   "repository": {
     "type": "git",
@@ -40,26 +42,25 @@
     "access": "public"
   },
   "bin": {
-    "fe-release": "./bin/release.js"
+    "fe-release": "./dist/cli.cjs"
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest",
-    "release": "node bin/release.js",
-    "release-pr": "node bin/release.js -P",
-    "dryrun:release": "node bin/release.js --dry-run -V",
-    "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
+    "release": "node dist/cli.js",
+    "release-pr": "node dist/cli.js -P",
+    "dryrun:release": "node dist/cli.js --dry-run -V",
+    "dryrun:release-pr": "node dist/cli.js -P --dry-run -V"
   },
   "devDependencies": {
     "@qlover/fe-standard": "latest",
     "@qlover/env-loader": "latest",
     "commander": "^11.0.0",
     "release-it": "^17.10.0",
-    "@release-it/conventional-changelog": "^8.0.1"
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@octokit/rest": "^21.0.2"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest",
-    "@qlover/scripts-context": "latest",
-    "@octokit/rest": "^21.0.2"
+    "@qlover/fe-corekit": "latest",
+    "@qlover/scripts-context": "latest"
   }
 }

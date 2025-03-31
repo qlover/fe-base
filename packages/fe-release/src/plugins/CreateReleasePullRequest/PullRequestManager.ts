@@ -3,7 +3,7 @@ import { PullRequestInterface } from '../../interface/PullRequestInterface';
 import { ReleaseConfig } from '../../type';
 import ReleaseContext from '../../interface/ReleaseContext';
 import ReleaseBase from './ReleaseBase';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 
 type CreatePROptionsArgs = {
   /**

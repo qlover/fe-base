@@ -1,5 +1,5 @@
 import { Env } from '@qlover/env-loader';
-import { ExecutorContext } from '@qlover/fe-utils';
+import { ExecutorContext } from '@qlover/fe-corekit';
 import Config from './interface/ReleaseContext';
 import ReleaseContext from './interface/ReleaseContext';
 import { FeReleaseConfig } from '@qlover/scripts-context';

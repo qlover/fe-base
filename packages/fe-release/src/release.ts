@@ -1,4 +1,4 @@
-import { AsyncExecutor } from '@qlover/fe-utils';
+import { AsyncExecutor } from '@qlover/fe-corekit';
 import ReleaseContext from './interface/ReleaseContext';
 import Plugin from './Plugin';
 import { ReleaseContextOptions, ReleaseReturnValue } from './type';

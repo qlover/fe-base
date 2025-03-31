@@ -1,22 +1,18 @@
 #! /usr/bin/env node
 
-import { release } from '../dist/es/index.js';
+import { release } from './release';
 import releaseIt from 'release-it';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(
-  readFileSync(join(__dirname, '../package.json'), 'utf8')
-);
+import { join } from 'node:path';
+import { version, description } from '../package.json';
+import { ReleaseContextOptions } from './type';
 
 function programArgs() {
   const program = new Command();
   program
-    .version(pkg.version, '-v, --version', 'Show version')
-    .description(pkg.description)
+    .version(version, '-v, --version', 'Show version')
+    .description(description)
     .option(
       '-d, --dry-run',
       'Do not touch or write anything, but show the commands'
@@ -31,7 +27,7 @@ function programArgs() {
       '-b, --branch-name <branchName>',
       'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
     );
-  // parse arguments
+
   program.parse();
 
   return program.opts();
@@ -44,20 +40,13 @@ async function main() {
   const packageJsonPath = join(pkgPathRoot, './package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
-  /**
-   * @type {import('@qlover/fe-release').ReleaseContextOptions['options']}
-   */
-  const options = {
+  const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
     packageJson: packageJson,
     releaseIt: releaseIt
   };
 
-  await release({
-    dryRun,
-    verbose,
-    options
-  });
+  await release({ dryRun, verbose, options });
 }
 
 main().catch((e) => {

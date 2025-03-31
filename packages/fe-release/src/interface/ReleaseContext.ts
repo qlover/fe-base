@@ -26,6 +26,7 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
 
   getInitEnv(): Env {
     return Env.searchEnv({
+      // @ts-expect-error
       logger: this.logger,
       preloadList: this.feConfig.envOrder
     });

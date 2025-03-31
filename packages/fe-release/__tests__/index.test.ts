@@ -1,8 +1,10 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import { Plugin, release, ReleaseContext } from '../src/index';
 import { ReleaseItInstanceType } from '../src/type';
 import { Shell } from '@qlover/scripts-context';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
+import Plugin from '../src/Plugin';
+import ReleaseContext from '../src/interface/ReleaseContext';
+import { release } from '../src/release';
 
 type MockTestProps = {
   name: string;
