@@ -22,28 +22,27 @@ jobs:
           fetch-depth: 0
 
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '18.19.0'
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          npm install -g yarn
-          yarn
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
       - name: Test
-        run: yarn test
+        run: pnpm test
 
-      - name: Build dist
-        run: yarn build
+      - name: NX Build
+        run: pnpm nx:build
 
       - name: Check packages
         run: |
           git fetch origin ${{ github.base_ref }}
-          npm run check-packages -- -V -r ${{ github.repository }} -b ${{ github.base_ref }} -n ${{ github.event.pull_request.number }}
+          pnpm check-packages -- -V -r ${{ github.repository }} -b ${{ github.base_ref }} -n ${{ github.event.pull_request.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
