@@ -42,30 +42,18 @@ export default class CreateReleasePullRequest extends Plugin {
     );
   }
 
-  /**
-   * Github token
-   *
-   * @default `undefined`
-   */
-  get githubToken(): string | undefined {
-    return this.getConfig('githubToken') as string;
-  }
-
   async onBefore(): Promise<void> {
     this.logger.verbose('CreateReleasePullRequest onBefore');
 
     await this.releaseBase.init();
 
-    const repoInfo = this.releaseBase.repoInfo;
-
-    if (!repoInfo) {
+    if (!this.releaseBase.repoInfo) {
       throw new Error('repoInfo is not set');
     }
 
     await this.releasePR.init({
-      token: this.githubToken,
-      repoName: repoInfo.repoName,
-      authorName: repoInfo.authorName
+      repoName: this.releaseBase.repoInfo.repoName,
+      authorName: this.releaseBase.repoInfo.authorName
     });
   }
 

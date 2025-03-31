@@ -3,6 +3,7 @@ import { ExecutorContext } from '@qlover/fe-corekit';
 import Config from './interface/ReleaseContext';
 import ReleaseContext from './interface/ReleaseContext';
 import { FeReleaseConfig } from '@qlover/scripts-context';
+import { CheckEnvironmentCiOptions } from './plugins/CheckEnvironment';
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
   returnValue: ReleaseReturnValue;
@@ -44,12 +45,9 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export interface ReleaseConfig extends FeReleaseConfig {
-  /**
-   * package.json
-   */
-  packageJson?: Record<string, unknown>;
-
+export interface ReleaseConfig
+  extends FeReleaseConfig,
+    CheckEnvironmentCiOptions {
   releaseIt?: ReleaseItInstanceType;
 
   /**

@@ -1,7 +1,26 @@
 import Plugin from '../Plugin';
 import ReleaseContext from '../interface/ReleaseContext';
 import { ExecutorReleaseContext, ReleaseItInstanceType } from '../type';
+import { readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
+export interface CheckEnvironmentCiOptions {
+  rootPath: string;
+
+  /**
+   * Release target package, default is all packages
+   *
+   * You can set `packages` to override the default behavior
+   */
+  publishPath?: string;
+
+  /**
+   * publish path package.json
+   */
+  packageJson?: Record<string, unknown>;
+}
+
+const MANIFEST_PATH = 'package.json';
 export default class CheckEnvironment extends Plugin {
   readonly pluginName = 'check-environment';
 
@@ -12,9 +31,17 @@ export default class CheckEnvironment extends Plugin {
       throw new Error('releaseIt is not required');
     }
 
+    this.switchToRootPath();
+
     this.hasReleaseIt();
 
-    this.hasGithubToken();
+    this.hasReleaseTargetPackage();
+  }
+
+  switchToRootPath(): void {
+    const rootPath = this.context.options.rootPath;
+    process.chdir(rootPath);
+    this.logger.debug('Current working directory: ', rootPath);
   }
 
   hasReleaseIt(): boolean {
@@ -25,20 +52,30 @@ export default class CheckEnvironment extends Plugin {
     return true;
   }
 
-  hasGithubToken(): boolean {
-    const token = this.getEnv('GITHUB_TOKEN') || this.getEnv('PAT_TOKEN');
-    if (!token) {
-      throw new Error(
-        'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
-      );
-    }
-
-    this.setConfig({ githubToken: token });
-
-    return true;
+  async onBefore(_context: ExecutorReleaseContext): Promise<void> {
+    this.logger.verbose('CheckEnvironment onBefore');
+    this.hasReleaseTargetPackage();
   }
 
-  onBefore(_context: ExecutorReleaseContext): void | Promise<void> {
-    this.logger.verbose('CheckEnvironment onBefore');
+  getManifest(publishPath: string): Record<string, unknown> {
+    const packageJsonPath = join(publishPath, MANIFEST_PATH);
+    return JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+  }
+
+  hasReleaseTargetPackage(): boolean {
+    const publishPath = this.getConfig('publishPath', './') as string;
+    const packageJson =
+      this.getConfig('packageJson') || this.getManifest(publishPath);
+
+    if (!packageJson) {
+      throw new Error(`${MANIFEST_PATH} is not found in ${publishPath}`);
+    }
+
+    this.setConfig({
+      publishPath: resolve(publishPath),
+      packageJson: packageJson
+    });
+
+    return true;
   }
 }

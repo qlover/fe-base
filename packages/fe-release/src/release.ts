@@ -39,7 +39,9 @@ async function getPlugins(context: ReleaseContext): Promise<Plugin[]> {
   result.push(new CheckEnvironment(context, context.options.releaseIt!));
 
   if (context.options.pullRequest) {
-    result.push(new CreateReleasePullRequest(context, new GithubReleasePR()));
+    result.push(
+      new CreateReleasePullRequest(context, new GithubReleasePR(context))
+    );
   } else {
     result.push(new PublishNpm(context));
   }

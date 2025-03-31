@@ -3,17 +3,37 @@ import {
   PullRequestInterface
 } from '../interface/PullRequestInterface';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import ReleaseContext from '../interface/ReleaseContext';
 
 export default class GithubReleasePR implements PullRequestInterface {
   private octokit?: Octokit;
+  private options: InitOptions = {};
 
-  constructor(private options: InitOptions = {}) {}
+  constructor(context: ReleaseContext) {
+    this.hasGithubToken(context);
+  }
 
-  async init({ token, repoName, authorName }: InitOptions): Promise<Octokit> {
+  hasGithubToken(context: ReleaseContext): boolean {
+    const token =
+      context.getEnv().get('GITHUB_TOKEN') || context.getEnv().get('PAT_TOKEN');
+
+    if (!token) {
+      throw new Error(
+        'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
+      );
+    }
+
+    this.options.token = token;
+
+    return true;
+  }
+
+  async init(options: InitOptions = {}): Promise<Octokit> {
     if (this.octokit) {
       return this.octokit;
     }
 
+    const { token, repoName, authorName } = { ...this.options, ...options };
     if (!token) {
       throw new Error('Github token is not set');
     }
@@ -23,11 +43,9 @@ export default class GithubReleasePR implements PullRequestInterface {
 
     const { Octokit } = await import('@octokit/rest');
 
-    const octokit = new Octokit({ auth: token });
+    this.octokit = new Octokit({ auth: token });
 
-    this.octokit = octokit;
-
-    return octokit;
+    return this.octokit;
   }
 
   getOctokit(): Octokit {

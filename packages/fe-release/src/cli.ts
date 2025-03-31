@@ -2,9 +2,7 @@
 
 import { release } from './release';
 import releaseIt from 'release-it';
-import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
-import { join } from 'node:path';
 import { version, description } from '../package.json';
 import { ReleaseContextOptions } from './type';
 
@@ -36,13 +34,10 @@ function programArgs() {
 async function main() {
   const { dryRun, verbose, ...commandOptions } = programArgs();
 
-  const pkgPathRoot = commandOptions.publishPath || './';
-  const packageJsonPath = join(pkgPathRoot, './package.json');
-  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-
   const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
-    packageJson: packageJson,
+    rootPath: process.cwd(),
+    // packageJson: packageJson,
     releaseIt: releaseIt
   };
 
