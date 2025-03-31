@@ -4,6 +4,10 @@ import { ReleaseConfig } from '../../type';
 import ReleaseContext from '../../interface/ReleaseContext';
 import ReleaseBase from './ReleaseBase';
 import { Logger } from '@qlover/fe-corekit';
+import {
+  DEFAULT_AUTO_MERGE_RELEASE_PR,
+  DEFAULT_AUTO_MERGE_TYPE
+} from '../../defaults';
 
 type CreatePROptionsArgs = {
   /**
@@ -49,7 +53,7 @@ export default class PullRequestManager {
   ) {}
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   get shell(): Shell {
@@ -62,7 +66,7 @@ export default class PullRequestManager {
    * @default `squash`
    */
   get autoMergeType(): 'squash' | 'merge' | 'rebase' {
-    return this.context.getConfig('autoMergeType', 'squash') as
+    return this.context.getConfig('autoMergeType', DEFAULT_AUTO_MERGE_TYPE) as
       | 'squash'
       | 'merge'
       | 'rebase';
@@ -83,7 +87,10 @@ export default class PullRequestManager {
    * @default `false`
    */
   get autoMergeReleasePR(): boolean {
-    return this.context.getConfig('autoMergeReleasePR', false) as boolean;
+    return this.context.getConfig(
+      'autoMergeReleasePR',
+      DEFAULT_AUTO_MERGE_RELEASE_PR
+    );
   }
 
   /**

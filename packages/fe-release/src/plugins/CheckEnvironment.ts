@@ -1,4 +1,5 @@
 import Plugin from '../Plugin';
+import { DEFAULT_SOURCE_BRANCH, MANIFEST_PATH } from '../defaults';
 import ReleaseContext from '../interface/ReleaseContext';
 import type { DeepPartial, ReleaseItInstanceType } from '../type';
 import { readFileSync } from 'node:fs';
@@ -12,6 +13,7 @@ export interface CheckEnvironmentCiOptions {
    * @default `master`
    */
   sourceBranch?: string;
+
   /**
    * The root path of the project
    *
@@ -23,9 +25,15 @@ export interface CheckEnvironmentCiOptions {
    * publish path package.json
    */
   packageJson?: PackageJson;
+
+  /**
+   * The increment of the version
+   *
+   * @default `patch`
+   */
+  increment?: string;
 }
 
-const MANIFEST_PATH = 'package.json';
 export default class CheckEnvironment extends Plugin {
   readonly pluginName = 'check-environment';
 
@@ -64,9 +72,10 @@ export default class CheckEnvironment extends Plugin {
 
   getSourceBranch(): string {
     return (
+      this.context.options.sourceBranch ||
       this.context.getEnv().get('FE_RELEASE_BRANCH') ||
       this.context.getEnv().get('FE_RELEASE_SOURCE_BRANCH') ||
-      'master'
+      DEFAULT_SOURCE_BRANCH
     );
   }
 
@@ -110,17 +119,22 @@ export default class CheckEnvironment extends Plugin {
     const changed = result.split('\n');
 
     if (changed.length === 0) {
-      this.logger.debug('No changes to publish packages');
       return false;
     }
 
-    if (this.context.options.rootPath === resolve(this.getPublishPath())) {
+    const publishPath = this.getPublishPath();
+
+    if (this.getConfig('rootPath') === resolve(publishPath)) {
       this.logger.debug('Release in root path');
       return true;
     }
 
     for (const filepath of changed) {
-      if (filepath.includes(this.getPublishPath())) {
+      if (
+        filepath.includes(publishPath) ||
+        // If the filepath is a relative path, it will be resolved to the root path
+        resolve(filepath).includes(publishPath)
+      ) {
         return true;
       }
     }

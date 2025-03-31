@@ -5,6 +5,7 @@ import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import { ReleaseContextOptions } from './type';
+import { DEFAULT_INCREMENT } from './defaults';
 
 function programArgs() {
   const program = new Command();
@@ -24,6 +25,15 @@ function programArgs() {
     .option(
       '-b, --branch-name <branchName>',
       'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
+    )
+    .option(
+      '-i, --increment <increment>',
+      'The increment of the release, map to feConfig.release.increment',
+      DEFAULT_INCREMENT
+    )
+    .option(
+      '-s, --source-branch <sourceBranch>',
+      'The source branch of the release'
     );
 
   program.parse();

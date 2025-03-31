@@ -8,6 +8,7 @@ import GithubReleasePR from './implments/GithubReleasePR';
 import PublishNpm from './plugins/PublishNpm';
 import PublishPath from './plugins/PublishPath';
 import { factory, load } from './util';
+import { DEFAULT_INCREMENT, DEFAULT_SOURCE_BRANCH } from './defaults';
 
 const defaultPlugins = {};
 
@@ -59,7 +60,9 @@ export async function release(
     ...context,
     options: {
       rootPath: process.cwd(),
-      publishPath: './',
+      publishPath: process.cwd(),
+      increment: DEFAULT_INCREMENT,
+      sourceBranch: DEFAULT_SOURCE_BRANCH,
       ...context.options
     }
   });

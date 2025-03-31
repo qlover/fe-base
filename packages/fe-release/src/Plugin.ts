@@ -20,7 +20,7 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
   ) {}
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   get shell(): Shell {

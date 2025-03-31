@@ -23,7 +23,7 @@ export default class ChangelogManager {
   getReleaseItChangelogOptions(): ReleaseItInstanceOptions {
     return {
       ci: true,
-      increment: 'patch',
+      increment: this.context.getConfig('increment') as string,
       npm: {
         publish: false
       },
