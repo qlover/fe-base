@@ -10,12 +10,7 @@ export default class BranchManager {
       this.context.getEnv().get('NODE_ENV') ??
       'development';
 
-    const sourceBranch =
-      this.context.getEnv().get('FE_RELEASE_BRANCH') ??
-      this.context.getEnv().get('FE_RELEASE_SOURCE_BRANCH') ??
-      'master';
-
-    this.context.setConfig({ releaseEnv, sourceBranch });
+    this.context.setConfig({ releaseEnv });
   }
 
   /**

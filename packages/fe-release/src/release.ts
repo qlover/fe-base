@@ -55,7 +55,14 @@ async function getPlugins(context: ReleaseContext): Promise<Plugin[]> {
 export async function release(
   context: ReleaseContextOptions
 ): Promise<ReleaseReturnValue> {
-  const releaseContext = new ReleaseContext(context);
+  const releaseContext = new ReleaseContext({
+    ...context,
+    options: {
+      rootPath: process.cwd(),
+      publishPath: './',
+      ...context.options
+    }
+  });
 
   const executor = new AsyncExecutor();
 

@@ -36,7 +36,6 @@ async function main() {
 
   const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
-    rootPath: process.cwd(),
     // packageJson: packageJson,
     releaseIt: releaseIt
   };

@@ -7,14 +7,7 @@ import {
 import get from 'lodash/get';
 
 export default class ChangelogManager {
-  constructor(private readonly context: ReleaseContext) {
-    const sourceBranch =
-      this.context.getEnv().get('FE_RELEASE_BRANCH') ??
-      this.context.getEnv().get('FE_RELEASE_SOURCE_BRANCH') ??
-      'master';
-
-    this.context.setConfig({ sourceBranch });
-  }
+  constructor(private readonly context: ReleaseContext) {}
 
   getReleaseIt(): ReleaseItInstanceType | undefined {
     const instance = this.context.getConfig('releaseIt');

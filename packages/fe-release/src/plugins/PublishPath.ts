@@ -18,7 +18,11 @@ export default class PublishPath extends Plugin {
    * Checks the publish path.
    */
   async checkPublishPath(): Promise<void> {
-    const publishPath = this.getPublishPath();
+    const publishPath = this.context.getConfig('publishPath') as string;
+
+    if (!publishPath) {
+      throw new Error('publishPath is not set');
+    }
 
     this.switchToPublishPath(publishPath);
 
@@ -35,15 +39,5 @@ export default class PublishPath extends Plugin {
       this.logger.debug('Switching to publish path:', publishPath);
       process.chdir(publishPath);
     }
-  }
-
-  /**
-   * Gets the publish path for the release.
-   *
-   * @returns The publish path.
-   */
-  getPublishPath(): string {
-    const publishPath = this.getConfig('publishPath');
-    return typeof publishPath === 'string' ? publishPath : process.cwd();
   }
 }
