@@ -54,6 +54,12 @@ export interface ReleaseConfig
    * 是否发布一个PR
    */
   pullRequest?: boolean;
+  /**
+   * Whether to skip checking the package.json file
+   *
+   * @default `false`
+   */
+  skipCheckPackage?: boolean;
 
   [key: string]: unknown;
 }

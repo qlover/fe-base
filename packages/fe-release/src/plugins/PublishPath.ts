@@ -1,4 +1,4 @@
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 import ReleaseContext from '../interface/ReleaseContext';
 import Plugin from '../Plugin';
 

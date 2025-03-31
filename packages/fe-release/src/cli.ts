@@ -5,7 +5,10 @@ import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import { ReleaseContextOptions } from './type';
-import { DEFAULT_INCREMENT } from './defaults';
+import semver from 'semver';
+
+const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
+const DEFAULT_INCREMENT = 'patch';
 
 function programArgs() {
   const program = new Command();
@@ -29,11 +32,23 @@ function programArgs() {
     .option(
       '-i, --increment <increment>',
       'The increment of the release, map to feConfig.release.increment',
+      (value) => {
+        if (!ALLOWED_INCREMENTS.includes(value) && !semver.valid(value)) {
+          throw new Error(
+            `Invalid increment(-i) Must be one of [${ALLOWED_INCREMENTS.join(', ')}] or valid version string(semver)`
+          );
+        }
+        return value;
+      },
       DEFAULT_INCREMENT
     )
     .option(
       '-s, --source-branch <sourceBranch>',
       'The source branch of the release'
+    )
+    .option(
+      '-c, --skip-check-package',
+      'Whether to skip checking the package.json file'
     );
 
   program.parse();
@@ -54,6 +69,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error(e);
+  console.error(e.message);
   process.exit(1);
 });

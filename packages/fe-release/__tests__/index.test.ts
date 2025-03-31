@@ -51,6 +51,7 @@ describe('index', () => {
 
     shell = new Shell({
       execPromise: vi.fn(),
+      // @ts-expect-error
       logger
     });
   });
@@ -67,7 +68,7 @@ describe('index', () => {
     });
 
     try {
-      await release({ shell, options: { releaseIt } });
+      await release({ shell, options: { releaseIt, skipCheckPackage: true } });
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toBe('package.json is undefined');
@@ -88,6 +89,7 @@ describe('index', () => {
       shell,
       options: {
         releaseIt,
+        skipCheckPackage: true,
         packageJson: {
           name: 'test',
           version: '1.0.0'

@@ -92,7 +92,10 @@ export default class CheckEnvironment extends Plugin {
     this.logger.verbose('CheckEnvironment onBefore');
 
     // Whether or not to modify the package.json
-    if (!(await this.checkModifyPublishPackage())) {
+    if (
+      !this.context.options.skipCheckPackage &&
+      !(await this.checkModifyPublishPackage())
+    ) {
       throw new Error('No changes to publish packages');
     }
   }
