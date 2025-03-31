@@ -25,10 +25,17 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   }
 
   getInitEnv(): Env {
-    return Env.searchEnv({
-      logger: this.logger,
-      preloadList: this.feConfig.envOrder
-    });
+    try {
+      const preloadList = this.feConfig?.envOrder || ['.env.local', '.env'];
+      return Env.searchEnv({
+        logger: this.logger,
+        preloadList
+      });
+    } catch (error) {
+      this.logger.error('Failed to initialize environment:', error);
+      // 返回一个默认的 Env 实例，避免返回 undefined
+      return new Env({ rootPath: process.cwd(), logger: this.logger });
+    }
   }
 
   getEnv(): Env {
