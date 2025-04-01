@@ -1,23 +1,22 @@
-import { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
-import { DeepPartial, ExecutorReleaseContext, ReleaseConfig } from './type';
-import { Shell } from '@qlover/scripts-context';
-import ReleaseContext from './interface/ReleaseContext';
-
-export type StepOption<T> = {
-  label: string;
-  task: () => Promise<T>;
-};
-
-export default abstract class Plugin<Props extends Record<string, unknown> = {}>
-  implements ExecutorPlugin
+import type { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
+import type { DeepPartial, ExecutorReleaseContext, StepOption } from './type';
+import type { Shell } from '@qlover/scripts-context';
+import type ReleaseContext from './interface/ReleaseContext';
+import merge from 'lodash/merge';
+export default abstract class Plugin<Props = unknown>
+  implements ExecutorPlugin<ReleaseContext>
 {
-  abstract readonly pluginName: string;
   readonly onlyOne = true;
+  protected props: Props = {} as Props;
 
   constructor(
     protected context: ReleaseContext,
-    protected props: Props = {} as Props
-  ) {}
+    readonly pluginName: string,
+    props?: Props
+  ) {
+    this.props = merge({}, this.context.options[this.pluginName], props);
+    this.setConfig(this.props);
+  }
 
   get logger(): Logger {
     return this.context.logger as unknown as Logger;
@@ -25,6 +24,10 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
 
   get shell(): Shell {
     return this.context.shell;
+  }
+
+  get options(): Props {
+    return this.context.getConfig(this.pluginName, {} as Props);
   }
 
   getEnv(key: string, defaultValue?: string): string | undefined {
@@ -35,20 +38,17 @@ export default abstract class Plugin<Props extends Record<string, unknown> = {}>
     return true;
   }
 
-  /**
-   * get release config
-   *
-   * feConfig.release
-   */
-  getConfig(keys: string | string[], defaultValue?: unknown): unknown {
-    return this.context.getConfig(keys, defaultValue);
+  getConfig<T>(keys: string | string[], defaultValue?: T): T {
+    return this.context.getConfig(
+      [this.pluginName, ...(Array.isArray(keys) ? keys : [keys])],
+      defaultValue
+    );
   }
 
-  /**
-   * set release config
-   */
-  setConfig(config: DeepPartial<ReleaseConfig>): void {
-    this.context.setConfig(config);
+  setConfig(config: DeepPartial<Props>): void {
+    this.context.setConfig({
+      [this.pluginName]: config
+    });
   }
 
   onBefore?(_context: ExecutorReleaseContext): void | Promise<void> {}

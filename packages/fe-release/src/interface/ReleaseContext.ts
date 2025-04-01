@@ -6,22 +6,19 @@ import { DeepPartial, ReleaseConfig, ReleaseContextOptions } from '../type';
 
 export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   protected readonly env: Env;
-  protected config: ReleaseConfig;
 
   constructor(context: ReleaseContextOptions) {
     super(context);
-
-    this.config = merge({}, this.feConfig.release, this.options);
 
     this.env = this.getInitEnv();
   }
 
   setConfig(config: DeepPartial<ReleaseConfig>): void {
-    this.config = merge(this.config, config);
+    this.options = merge(this.options, config);
   }
 
   getConfig<T = unknown>(key: string | string[], defaultValue?: T): T {
-    return get(this.config, key, defaultValue);
+    return get(this.options, key, defaultValue);
   }
 
   getInitEnv(): Env {
@@ -33,7 +30,7 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
       });
     } catch (error) {
       this.logger.error('Failed to initialize environment:', error);
-      // 返回一个默认的 Env 实例，避免返回 undefined
+      // Return a default Env instance to avoid returning undefined
       return new Env({ rootPath: process.cwd(), logger: this.logger });
     }
   }
@@ -43,6 +40,6 @@ export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
   }
 
   getPkg(key: string): unknown {
-    return this.getConfig(['packageJson', key]);
+    return this.getConfig(['environment', 'packageJson', key]);
   }
 }

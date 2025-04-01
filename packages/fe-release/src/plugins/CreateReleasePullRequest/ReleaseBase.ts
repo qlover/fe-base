@@ -1,4 +1,4 @@
-import ReleaseContext from '../../interface/ReleaseContext';
+import type ReleaseContext from '../../interface/ReleaseContext';
 import isString from 'lodash/isString';
 
 export type UserInfoType = {
@@ -10,12 +10,12 @@ export default class ReleaseBase {
   constructor(private context: ReleaseContext) {}
 
   get repoInfo(): UserInfoType | undefined {
-    return this.context.getConfig('repoInfo') as UserInfoType;
+    return this.context.getConfig('environment.repoInfo') as UserInfoType;
   }
 
   async init(): Promise<void> {
     const repoInfo = await this.getUserInfo();
-    this.context.setConfig({ repoInfo });
+    this.context.setConfig({ 'environment.repoInfo': repoInfo });
   }
 
   /**

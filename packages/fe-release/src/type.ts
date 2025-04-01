@@ -1,9 +1,8 @@
-import { Env } from '@qlover/env-loader';
-import { ExecutorContext } from '@qlover/fe-corekit';
-import Config from './interface/ReleaseContext';
-import ReleaseContext from './interface/ReleaseContext';
-import { FeReleaseConfig } from '@qlover/scripts-context';
-import { CheckEnvironmentCiOptions } from './plugins/CheckEnvironment';
+import type { ExecutorContext } from '@qlover/fe-corekit';
+import type ReleaseContext from './interface/ReleaseContext';
+import type { PublishNpmProps } from './plugins/PublishNpm';
+import type { EnvironmentProps } from './plugins/CheckEnvironment';
+
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
   returnValue: ReleaseReturnValue;
@@ -13,24 +12,6 @@ export type ReleaseReturnValue = {
   githubToken?: string;
   [key: string]: unknown;
 };
-
-export interface ReleaseOptions {
-  config: Config;
-
-  path?: string;
-  mode?: string;
-  releaseBranch?: string;
-  releaseEnv?: string;
-
-  env?: Env;
-  packageJson?: Record<string, unknown>;
-
-  releaseIt?: ReleaseItInstanceType;
-
-  npmToken?: string;
-
-  [key: string]: unknown;
-}
 
 export type ReleaseItInstanceOptions = Record<string, unknown>;
 export type ReleaseItInstanceResult = {
@@ -45,23 +26,19 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export interface ReleaseConfig
-  extends FeReleaseConfig,
-    CheckEnvironmentCiOptions {
-  releaseIt?: ReleaseItInstanceType;
+export interface ReleaseConfig {
+  environment?: EnvironmentProps;
 
-  /**
-   * 是否发布一个PR
-   */
-  pullRequest?: boolean;
-  /**
-   * Whether to skip checking the package.json file
-   *
-   * @default `false`
-   */
-  skipCheckPackage?: boolean;
+  publishNpm?: PublishNpmProps;
+
+  releaseIt: ReleaseItInstanceType;
 
   [key: string]: unknown;
 }
 
 export type ReleaseContextOptions = Partial<ReleaseContext>;
+
+export type StepOption<T> = {
+  label: string;
+  task: () => Promise<T>;
+};

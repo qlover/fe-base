@@ -1,11 +1,12 @@
 #! /usr/bin/env node
 
+import type { ReleaseContextOptions } from './type';
 import { release } from './release';
 import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
-import { ReleaseContextOptions } from './type';
 import semver from 'semver';
+import { reduceOptions } from './util';
 
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
@@ -20,17 +21,17 @@ function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
-    .option('-P, --pull-request', 'Create a release PR')
+    .option('-P, --environment.release-PR', 'Create a release PR')
     .option(
-      '-p, --publish-path <publishPath>',
+      '-p, --environment.publish-path <publishPath>',
       'The path of the package to release, map to feConfig.release.publishPath'
     )
     .option(
-      '-b, --branch-name <branchName>',
+      '-b, --environment.branch-name <branchName>',
       'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
     )
     .option(
-      '-i, --increment <increment>',
+      '--pull-request.increment <increment>',
       'The increment of the release, map to feConfig.release.increment',
       (value) => {
         if (!ALLOWED_INCREMENTS.includes(value) && !semver.valid(value)) {
@@ -43,17 +44,17 @@ function programArgs() {
       DEFAULT_INCREMENT
     )
     .option(
-      '-s, --source-branch <sourceBranch>',
+      '-s, --environment.source-branch <sourceBranch>',
       'The source branch of the release'
     )
     .option(
-      '-c, --skip-check-package',
+      '-c, --environment.skip-check-package',
       'Whether to skip checking the package.json file'
     );
 
   program.parse();
 
-  return program.opts();
+  return reduceOptions(program.opts());
 }
 
 async function main() {
@@ -61,7 +62,6 @@ async function main() {
 
   const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
-    // packageJson: packageJson,
     releaseIt: releaseIt
   };
 

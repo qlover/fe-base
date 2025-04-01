@@ -1,17 +1,14 @@
-import { CreateReleaseResult } from '.';
 import { ReleaseItInstanceResult } from '../../type';
 import get from 'lodash/get';
 import ReleaseContext from '../../interface/ReleaseContext';
 
-export default class BranchManager {
-  constructor(private context: ReleaseContext) {
-    const releaseEnv =
-      (this.context.getConfig('releaseEnv') as string) ??
-      this.context.getEnv().get('NODE_ENV') ??
-      'development';
+export type CreateReleaseResult = {
+  tagName: string;
+  releaseBranch: string;
+};
 
-    this.context.setConfig({ releaseEnv });
-  }
+export default class BranchManager {
+  constructor(private context: ReleaseContext) {}
 
   /**
    * release merge real branch name
@@ -19,7 +16,7 @@ export default class BranchManager {
    * @default `master`
    */
   get sourceBranch(): string {
-    return this.context.getConfig('sourceBranch') as string;
+    return this.context.getConfig('environment.sourceBranch') as string;
   }
 
   /**
@@ -28,7 +25,7 @@ export default class BranchManager {
    * @default `development`
    */
   get releaseEnv(): string {
-    return this.context.getConfig('releaseEnv') as string;
+    return this.context.getConfig('environment.releaseEnv') as string;
   }
 
   /**
@@ -64,7 +61,7 @@ export default class BranchManager {
    */
   getReleaseBranchName(tagName: string): string {
     const branchNameTpl = this.context.getConfig(
-      'branchName',
+      'environment.branchName',
       'release-${tagName}'
     );
 

@@ -1,14 +1,14 @@
+import type { ReleaseContextOptions, ReleaseReturnValue } from './type';
 import { AsyncExecutor } from '@qlover/fe-corekit';
 import ReleaseContext from './interface/ReleaseContext';
 import Plugin from './Plugin';
-import { ReleaseContextOptions, ReleaseReturnValue } from './type';
 import CheckEnvironment from './plugins/CheckEnvironment';
 import CreateReleasePullRequest from './plugins/CreateReleasePullRequest';
 import GithubReleasePR from './implments/GithubReleasePR';
 import PublishNpm from './plugins/PublishNpm';
 import PublishPath from './plugins/PublishPath';
 import { factory, load } from './util';
-import { DEFAULT_SOURCE_BRANCH } from './defaults';
+import { DEFAULT_INCREMENT } from './defaults';
 
 const defaultPlugins = {};
 
@@ -27,28 +27,29 @@ async function injectPlugins(
 
   for (const plugin of Object.keys(configPlugins)) {
     const [, PluginClass] = await loadPlugin(plugin);
-    const args = configPlugins[plugin as keyof typeof configPlugins];
-    initPlugins.push(factory(PluginClass, context, args));
+    const props = configPlugins[plugin as keyof typeof configPlugins];
+    initPlugins.push(factory(PluginClass, context, props));
   }
 
   return initPlugins;
 }
 
 async function getPlugins(context: ReleaseContext): Promise<Plugin[]> {
-  const result: Plugin[] = [];
+  const result: Plugin[] = [
+    // check the environment, and set environment config
+    new CheckEnvironment(context),
 
-  result.push(new CheckEnvironment(context, context.options.releaseIt!));
+    // create a pull request or publish the package
+    context.options.environment?.releasePR
+      ? new CreateReleasePullRequest(context, {
+          increment: DEFAULT_INCREMENT,
+          releasePR: new GithubReleasePR(context)
+        })
+      : new PublishNpm(context),
 
-  if (context.options.pullRequest) {
-    result.push(
-      new CreateReleasePullRequest(context, new GithubReleasePR(context))
-    );
-  } else {
-    result.push(new PublishNpm(context));
-  }
-
-  // use checkPublishPath to switch to the publish path
-  result.push(new PublishPath(context));
+    // use checkPublishPath to switch to the publish path
+    new PublishPath(context)
+  ];
 
   return injectPlugins(context, result);
 }
@@ -56,16 +57,7 @@ async function getPlugins(context: ReleaseContext): Promise<Plugin[]> {
 export async function release(
   context: ReleaseContextOptions
 ): Promise<ReleaseReturnValue> {
-  const releaseContext = new ReleaseContext({
-    ...context,
-    options: {
-      rootPath: process.cwd(),
-      publishPath: process.cwd(),
-      increment: 'patch',
-      sourceBranch: DEFAULT_SOURCE_BRANCH,
-      ...context.options
-    }
-  });
+  const releaseContext = new ReleaseContext(context);
 
   const executor = new AsyncExecutor();
 

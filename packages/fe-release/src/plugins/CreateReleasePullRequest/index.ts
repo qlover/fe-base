@@ -1,33 +1,37 @@
+import type { PullRequestInterface } from '../../interface/PullRequestInterface';
+import type { ReleaseItInstanceResult } from '../../type';
 import Plugin from '../../Plugin';
 import ReleaseContext from '../../interface/ReleaseContext';
-import { PullRequestInterface } from '../../interface/PullRequestInterface';
 import ChangelogManager from './ChangelogManager';
-import { ReleaseItInstanceResult } from '../../type';
 import BranchManager from './BranchManager';
 import PullRequestManager from './PullRequestManager';
 import ReleaseBase from './ReleaseBase';
 
-export type CreateReleaseResult = {
-  tagName: string;
-  releaseBranch: string;
-};
+export interface ReleasePullRequestProps {
+  /**
+   * The increment of the release
+   *
+   * @default `patch`
+   */
+  increment: string;
 
-export default class CreateReleasePullRequest extends Plugin {
-  readonly pluginName = 'create-release-pr';
+  /**
+   * The pull request interface
+   */
+  releasePR: PullRequestInterface;
+}
 
-  private changelogManager: ChangelogManager;
-
-  private branchManager: BranchManager;
-
-  private pullRequestManager: PullRequestManager;
-
+export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestProps> {
   private releaseBase: ReleaseBase;
+  private changelogManager: ChangelogManager;
+  private branchManager: BranchManager;
+  private pullRequestManager: PullRequestManager;
 
   constructor(
     protected readonly context: ReleaseContext,
-    private readonly releasePR: PullRequestInterface
+    props: ReleasePullRequestProps
   ) {
-    super(context);
+    super(context, 'pull-request', props);
 
     this.releaseBase = new ReleaseBase(context);
 
@@ -38,12 +42,12 @@ export default class CreateReleasePullRequest extends Plugin {
     this.pullRequestManager = new PullRequestManager(
       context,
       this.releaseBase,
-      this.releasePR
+      props.releasePR
     );
   }
 
   async onBefore(): Promise<void> {
-    this.logger.verbose('CreateReleasePullRequest onBefore');
+    this.logger.verbose('[before] CreateReleasePullRequest');
 
     await this.releaseBase.init();
 
@@ -51,7 +55,7 @@ export default class CreateReleasePullRequest extends Plugin {
       throw new Error('repoInfo is not set');
     }
 
-    await this.releasePR.init({
+    await this.props.releasePR.init({
       repoName: this.releaseBase.repoInfo.repoName,
       authorName: this.releaseBase.repoInfo.authorName
     });

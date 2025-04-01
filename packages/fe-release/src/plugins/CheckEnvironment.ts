@@ -1,18 +1,26 @@
+import type { DeepPartial } from '../type';
+import type ReleaseContext from '../interface/ReleaseContext';
+import type { FeReleaseConfig } from '@qlover/scripts-context';
 import Plugin from '../Plugin';
 import { DEFAULT_SOURCE_BRANCH, MANIFEST_PATH } from '../defaults';
-import ReleaseContext from '../interface/ReleaseContext';
-import type { DeepPartial, ReleaseItInstanceType } from '../type';
 import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 type PackageJson = Record<string, unknown>;
-export interface CheckEnvironmentCiOptions {
+export interface EnvironmentProps extends FeReleaseConfig {
   /**
    * The source branch of the project
    *
    * @default `master`
    */
   sourceBranch?: string;
+
+  /**
+   * The environment of the project
+   *
+   * @default `development`
+   */
+  releaseEnv?: string;
 
   /**
    * The root path of the project
@@ -27,26 +35,23 @@ export interface CheckEnvironmentCiOptions {
   packageJson?: PackageJson;
 
   /**
-   * The increment of the version
+   * Whether to skip checking the package.json file
    *
-   * @default `patch`
+   * @default `false`
    */
-  increment?: string;
+  skipCheckPackage?: boolean;
+
+  /**
+   * Whether to publish a PR
+   *
+   * @default `false`
+   */
+  releasePR?: boolean;
 }
 
-export default class CheckEnvironment extends Plugin {
-  readonly pluginName = 'check-environment';
-
-  constructor(context: ReleaseContext, releaseIt?: ReleaseItInstanceType) {
-    super(context);
-
-    if (!releaseIt) {
-      throw new Error('releaseIt is required');
-    }
-
-    if (!context.options.rootPath) {
-      throw new Error('rootPath is not set');
-    }
+export default class CheckEnvironment extends Plugin<EnvironmentProps> {
+  constructor(context: ReleaseContext) {
+    super(context, 'environment', context.feConfig.release);
 
     if (this.getEnv('FE_RELEASE') === 'false') {
       throw new Error('Skip Release');
@@ -59,24 +64,21 @@ export default class CheckEnvironment extends Plugin {
       throw new Error(`${MANIFEST_PATH} is not found in ${publishPath}`);
     }
 
-    this.setConfig({
-      publishPath: resolve(publishPath),
+    const rootPath = resolve(this.options.rootPath || process.cwd());
 
-      sourceBranch: this.getSourceBranch(),
+    this.setConfig({
+      publishPath: publishPath,
       packageJson: packageJson as DeepPartial<PackageJson>,
-      rootPath: resolve(context.options.rootPath)
+      rootPath,
+      sourceBranch:
+        this.options.sourceBranch ||
+        this.getEnv('FE_RELEASE_BRANCH') ||
+        this.getEnv('FE_RELEASE_SOURCE_BRANCH', DEFAULT_SOURCE_BRANCH),
+      releaseEnv:
+        this.options.releaseEnv || this.getEnv('NODE_ENV', 'development')
     });
 
-    this.logger.debug('Current working directory: ', context.options.rootPath);
-  }
-
-  getSourceBranch(): string {
-    return (
-      this.context.options.sourceBranch ||
-      this.context.getEnv().get('FE_RELEASE_BRANCH') ||
-      this.context.getEnv().get('FE_RELEASE_SOURCE_BRANCH') ||
-      DEFAULT_SOURCE_BRANCH
-    );
+    this.logger.debug('Current working directory: ', rootPath);
   }
 
   getPublishPath(): string {
@@ -89,11 +91,11 @@ export default class CheckEnvironment extends Plugin {
    * @override
    */
   async onBefore(): Promise<void> {
-    this.logger.verbose('CheckEnvironment onBefore');
+    this.logger.verbose('[before] CheckEnvironment');
 
     // Whether or not to modify the package.json
     if (
-      !this.context.options.skipCheckPackage &&
+      !this.getConfig('skipCheckPackage') &&
       !(await this.checkModifyPublishPackage())
     ) {
       throw new Error('No changes to publish packages');

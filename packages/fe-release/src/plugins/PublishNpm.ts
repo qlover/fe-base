@@ -1,16 +1,30 @@
 import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
 import Plugin from '../Plugin';
 import ReleaseContext from '../interface/ReleaseContext';
-import isObject from 'lodash/isObject';
-export default class PublishNpm extends Plugin {
-  readonly pluginName = 'publish-npm';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
 
+export interface PublishNpmProps {
+  npmToken?: string;
+}
+
+export default class PublishNpm extends Plugin<PublishNpmProps> {
   private _releaseItOutput?: ReleaseItInstanceOptions;
 
   constructor(context: ReleaseContext) {
-    super(context);
+    super(context, 'publish');
 
     this.getIncrementVersion();
+  }
+
+  get releaseIt(): ReleaseItInstanceType {
+    const releaseIt = this.context.options.releaseIt;
+
+    if (!isFunction(releaseIt)) {
+      throw new Error('releaseIt instance is not set');
+    }
+
+    return releaseIt;
   }
 
   async onBefore(): Promise<void> {
@@ -45,15 +59,7 @@ export default class PublishNpm extends Plugin {
   ): Promise<Record<string, unknown>> {
     this.logger.debug('Run release-it method', releaseItOptions);
 
-    const releaseItInstance = this.getConfig(
-      'releaseIt'
-    ) as ReleaseItInstanceType;
-
-    if (!releaseItInstance) {
-      throw new Error('releaseIt instance is not set');
-    }
-
-    this._releaseItOutput = await releaseItInstance(releaseItOptions);
+    this._releaseItOutput = await this.releaseIt(releaseItOptions);
 
     // return the output
     return this._releaseItOutput;
@@ -84,17 +90,13 @@ export default class PublishNpm extends Plugin {
   }
 
   getIncrementVersion(): string {
-    const packageJson = this.getConfig('packageJson');
+    const version = this.context.getPkg('version');
 
-    if (!isObject(packageJson)) {
-      throw new Error('package.json is undefined');
+    if (!version || !isString(version)) {
+      throw new Error('pkg.version is not set');
     }
 
-    if (!('version' in packageJson)) {
-      throw new Error('package.json version is required');
-    }
-
-    return packageJson.version as string;
+    return version;
   }
 
   /**
