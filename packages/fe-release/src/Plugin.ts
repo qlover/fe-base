@@ -26,6 +26,10 @@ export default abstract class Plugin<Props = unknown>
     return this.context.shell;
   }
 
+  get options(): Props {
+    return this.context.getConfig(this.pluginName, {} as Props);
+  }
+
   getEnv(key: string, defaultValue?: string): string | undefined {
     return this.context.getEnv().get(key) ?? defaultValue;
   }

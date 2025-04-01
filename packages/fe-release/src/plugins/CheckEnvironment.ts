@@ -27,7 +27,7 @@ export interface EnvironmentProps extends FeReleaseConfig {
    *
    * @default `process.cwd()`
    */
-  rootPath: string;
+  rootPath?: string;
 
   /**
    * publish path package.json
@@ -51,7 +51,7 @@ export interface EnvironmentProps extends FeReleaseConfig {
 
 export default class CheckEnvironment extends Plugin<EnvironmentProps> {
   constructor(context: ReleaseContext) {
-    super(context, 'environment', context.options.environment);
+    super(context, 'environment', context.feConfig.release);
 
     if (this.getEnv('FE_RELEASE') === 'false') {
       throw new Error('Skip Release');
@@ -64,19 +64,18 @@ export default class CheckEnvironment extends Plugin<EnvironmentProps> {
       throw new Error(`${MANIFEST_PATH} is not found in ${publishPath}`);
     }
 
-    const rootPath = resolve(this.getConfig('rootPath', process.cwd()));
+    const rootPath = resolve(this.options.rootPath || process.cwd());
 
     this.setConfig({
-      ...this.context.feConfig.release,
-      publishPath: resolve(publishPath),
+      publishPath: publishPath,
       packageJson: packageJson as DeepPartial<PackageJson>,
       rootPath,
       sourceBranch:
-        this.getConfig('sourceBranch') ||
+        this.options.sourceBranch ||
         this.getEnv('FE_RELEASE_BRANCH') ||
         this.getEnv('FE_RELEASE_SOURCE_BRANCH', DEFAULT_SOURCE_BRANCH),
       releaseEnv:
-        this.getConfig('releaseEnv') || this.getEnv('NODE_ENV', 'development')
+        this.options.releaseEnv || this.getEnv('NODE_ENV', 'development')
     });
 
     this.logger.debug('Current working directory: ', rootPath);
