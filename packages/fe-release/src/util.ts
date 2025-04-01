@@ -1,6 +1,8 @@
+import type { OptionValues } from 'commander';
 import { join, parse } from 'node:path';
 import { createRequire } from 'module';
 import { pathToFileURL } from 'url';
+import set from 'lodash/set';
 
 export function factory<T, Args extends unknown[]>(
   Constructor: (new (...args: Args) => T) | ((...args: Args) => T),
@@ -47,3 +49,10 @@ const getPluginName = (pluginName: string): string => {
 
   return pluginName;
 };
+
+export function reduceOptions(opts: OptionValues): OptionValues {
+  return Object.entries(opts).reduce((acc, [key, value]) => {
+    set(acc, key, value);
+    return acc;
+  }, {});
+}

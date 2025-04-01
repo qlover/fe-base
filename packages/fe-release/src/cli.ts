@@ -1,21 +1,15 @@
 #! /usr/bin/env node
 
+import type { ReleaseContextOptions } from './type';
 import { release } from './release';
 import releaseIt from 'release-it';
-import { Command, OptionValues } from 'commander';
+import { Command } from 'commander';
 import { version, description } from '../package.json';
-import { ReleaseContextOptions } from './type';
 import semver from 'semver';
-import set from 'lodash/set';
+import { reduceOptions } from './util';
 
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
-function reduceOptions(opts: OptionValues): OptionValues {
-  return Object.entries(opts).reduce((acc, [key, value]) => {
-    set(acc, key, value);
-    return acc;
-  }, {});
-}
 
 function programArgs() {
   const program = new Command();
