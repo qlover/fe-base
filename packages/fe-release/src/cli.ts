@@ -2,13 +2,20 @@
 
 import { release } from './release';
 import releaseIt from 'release-it';
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { version, description } from '../package.json';
 import { ReleaseContextOptions } from './type';
 import semver from 'semver';
+import set from 'lodash/set';
 
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
+function reduceOptions(opts: OptionValues): OptionValues {
+  return Object.entries(opts).reduce((acc, [key, value]) => {
+    set(acc, key, value);
+    return acc;
+  }, {});
+}
 
 function programArgs() {
   const program = new Command();
@@ -20,17 +27,17 @@ function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
-    .option('-P, --pull-request', 'Create a release PR')
+    .option('-P, --environment.release-PR', 'Create a release PR')
     .option(
-      '-p, --publish-path <publishPath>',
+      '-p, --environment.publish-path <publishPath>',
       'The path of the package to release, map to feConfig.release.publishPath'
     )
     .option(
-      '-b, --branch-name <branchName>',
+      '-b, --environment.branch-name <branchName>',
       'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
     )
     .option(
-      '-i, --increment <increment>',
+      '--pull-request.increment <increment>',
       'The increment of the release, map to feConfig.release.increment',
       (value) => {
         if (!ALLOWED_INCREMENTS.includes(value) && !semver.valid(value)) {
@@ -43,17 +50,17 @@ function programArgs() {
       DEFAULT_INCREMENT
     )
     .option(
-      '-s, --source-branch <sourceBranch>',
+      '-s, --environment.source-branch <sourceBranch>',
       'The source branch of the release'
     )
     .option(
-      '-c, --skip-check-package',
+      '-c, --environment.skip-check-package',
       'Whether to skip checking the package.json file'
     );
 
   program.parse();
 
-  return program.opts();
+  return reduceOptions(program.opts());
 }
 
 async function main() {
@@ -61,7 +68,6 @@ async function main() {
 
   const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
-    // packageJson: packageJson,
     releaseIt: releaseIt
   };
 

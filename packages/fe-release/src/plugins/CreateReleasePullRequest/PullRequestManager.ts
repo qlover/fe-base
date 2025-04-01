@@ -1,12 +1,13 @@
-import { Shell } from '@qlover/scripts-context';
-import { PullRequestInterface } from '../../interface/PullRequestInterface';
-import { ReleaseConfig } from '../../type';
-import ReleaseContext from '../../interface/ReleaseContext';
-import ReleaseBase from './ReleaseBase';
-import { Logger } from '@qlover/fe-corekit';
+import type { Shell } from '@qlover/scripts-context';
+import type { PullRequestInterface } from '../../interface/PullRequestInterface';
+import type ReleaseContext from '../../interface/ReleaseContext';
+import type ReleaseBase from './ReleaseBase';
+import type { Logger } from '@qlover/fe-corekit';
+import type { EnvironmentProps } from '../CheckEnvironment';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
-  DEFAULT_AUTO_MERGE_TYPE
+  DEFAULT_AUTO_MERGE_TYPE,
+  DEFAULT_PR_TITLE
 } from '../../defaults';
 
 type CreatePROptionsArgs = {
@@ -65,11 +66,11 @@ export default class PullRequestManager {
    *
    * @default `squash`
    */
-  get autoMergeType(): 'squash' | 'merge' | 'rebase' {
-    return this.context.getConfig('autoMergeType', DEFAULT_AUTO_MERGE_TYPE) as
-      | 'squash'
-      | 'merge'
-      | 'rebase';
+  get autoMergeType(): EnvironmentProps['autoMergeType'] {
+    return this.context.getConfig(
+      'environment.autoMergeType',
+      DEFAULT_AUTO_MERGE_TYPE
+    );
   }
 
   /**
@@ -78,7 +79,7 @@ export default class PullRequestManager {
    * @default `999999`
    */
   get dryRunPRNumber(): string {
-    return this.context.getConfig('dryRunPRNumber', '999999') as string;
+    return this.context.getConfig('pullRequest.dryRunPRNumber', '999999');
   }
 
   /**
@@ -88,7 +89,7 @@ export default class PullRequestManager {
    */
   get autoMergeReleasePR(): boolean {
     return this.context.getConfig(
-      'autoMergeReleasePR',
+      'environment.autoMergeReleasePR',
       DEFAULT_AUTO_MERGE_RELEASE_PR
     );
   }
@@ -158,8 +159,9 @@ export default class PullRequestManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel(): Promise<ReleaseConfig['label']> {
-    const label = this.context.getConfig('label') as ReleaseConfig['label'];
+  async createReleasePRLabel(): Promise<EnvironmentProps['label']> {
+    const label: EnvironmentProps['label'] =
+      this.context.getConfig('environment.label');
 
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
@@ -281,9 +283,9 @@ export default class PullRequestManager {
     args: Pick<CreatePROptionsArgs, 'tagName' | 'releaseEnv' | 'sourceBranch'>
   ): string {
     const prTitleTpl = this.context.getConfig(
-      'PRTitle',
-      'Release ${env} ${pkgName} ${tagName}'
-    ) as string;
+      'environment.PRTitle',
+      DEFAULT_PR_TITLE
+    );
 
     return this.shell.format(prTitleTpl, {
       env: args.releaseEnv,
@@ -305,7 +307,7 @@ export default class PullRequestManager {
       'sourceBranch' | 'releaseEnv' | 'tagName' | 'changelog'
     >
   ): string {
-    const PRBodyTpl = this.context.getConfig('PRBody', '') as string;
+    const PRBodyTpl = this.context.getConfig('environment.PRBody', '');
 
     return this.shell.format(PRBodyTpl, {
       branch: args.sourceBranch,

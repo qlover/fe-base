@@ -1,19 +1,9 @@
 import ReleaseContext from '../../interface/ReleaseContext';
-import {
-  ReleaseItInstanceType,
-  ReleaseItInstanceResult,
-  ReleaseItInstanceOptions
-} from '../../type';
+import { ReleaseItInstanceResult, ReleaseItInstanceOptions } from '../../type';
 import get from 'lodash/get';
 
 export default class ChangelogManager {
   constructor(private readonly context: ReleaseContext) {}
-
-  getReleaseIt(): ReleaseItInstanceType | undefined {
-    const instance = this.context.getConfig('releaseIt');
-
-    return instance as ReleaseItInstanceType;
-  }
 
   /**
    * Gets the options for the release-it changelog process.
@@ -23,7 +13,7 @@ export default class ChangelogManager {
   getReleaseItChangelogOptions(): ReleaseItInstanceOptions {
     return {
       ci: true,
-      increment: this.context.getConfig('increment') as string,
+      increment: this.context.getConfig('pullRequest.increment') as string,
       npm: {
         publish: false
       },
@@ -62,12 +52,12 @@ export default class ChangelogManager {
    * @returns The output from the release-it process.
    */
   createChangelogAndVersion(): Promise<ReleaseItInstanceResult> {
-    const releaseItInstance = this.getReleaseIt();
+    const releaseIt = this.context.options.releaseIt;
 
-    if (!releaseItInstance) {
+    if (!releaseIt) {
       throw new Error('releaseIt instance is not set');
     }
 
-    return releaseItInstance(this.getReleaseItChangelogOptions());
+    return releaseIt(this.getReleaseItChangelogOptions());
   }
 }
