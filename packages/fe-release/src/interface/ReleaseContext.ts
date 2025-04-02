@@ -4,13 +4,19 @@ import get from 'lodash/get';
 import { Env } from '@qlover/env-loader';
 import { DeepPartial, ReleaseConfig, ReleaseContextOptions } from '../type';
 
-export default class ReleaseContext extends FeScriptContext<ReleaseConfig> {
+export default class ReleaseContext<
+  T extends ReleaseConfig = ReleaseConfig
+> extends FeScriptContext<T> {
   protected readonly env: Env;
 
-  constructor(context: ReleaseContextOptions) {
+  constructor(context: ReleaseContextOptions<T>) {
     super(context);
 
     this.env = this.getInitEnv();
+  }
+
+  get releasePR(): boolean {
+    return !!this.options.environment?.releasePR;
   }
 
   setConfig(config: DeepPartial<ReleaseConfig>): void {

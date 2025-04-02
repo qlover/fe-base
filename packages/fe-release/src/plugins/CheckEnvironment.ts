@@ -1,4 +1,4 @@
-import type { DeepPartial } from '../type';
+import type { DeepPartial, UserInfoType } from '../type';
 import type ReleaseContext from '../interface/ReleaseContext';
 import type { FeReleaseConfig } from '@qlover/scripts-context';
 import Plugin from '../Plugin';
@@ -47,6 +47,8 @@ export interface EnvironmentProps extends FeReleaseConfig {
    * @default `false`
    */
   releasePR?: boolean;
+
+  repoInfo?: UserInfoType;
 }
 
 export default class CheckEnvironment extends Plugin<EnvironmentProps> {
@@ -82,7 +84,7 @@ export default class CheckEnvironment extends Plugin<EnvironmentProps> {
   }
 
   getPublishPath(): string {
-    return this.getConfig('publishPath', './') as string;
+    return this.props.publishPath || './';
   }
 
   /**

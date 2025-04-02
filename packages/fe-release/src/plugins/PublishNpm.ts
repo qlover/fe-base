@@ -17,6 +17,10 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
     this.getIncrementVersion();
   }
 
+  enabled(): boolean {
+    return !this.context.releasePR;
+  }
+
   get releaseIt(): ReleaseItInstanceType {
     const releaseIt = this.context.options.releaseIt;
 

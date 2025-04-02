@@ -14,4 +14,7 @@ export { default as Plugin } from './Plugin';
 // release
 export * from './type';
 export * from './release';
-export * from './util';
+export * from './utils/tuple';
+export * from './utils/loader';
+export * from './utils/factory';
+export * from './utils/args';

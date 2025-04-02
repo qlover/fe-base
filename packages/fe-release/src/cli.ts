@@ -6,7 +6,7 @@ import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import semver from 'semver';
-import { reduceOptions } from './util';
+import { reduceOptions } from './utils/args';
 
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
