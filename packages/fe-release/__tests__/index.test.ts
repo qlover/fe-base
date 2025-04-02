@@ -1,10 +1,11 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import { ReleaseItInstanceType } from '../src/type';
+import type { ReleaseItInstanceType } from '../src/type';
+import type ReleaseContext from '../src/interface/ReleaseContext';
 import { Shell } from '@qlover/scripts-context';
 import { Logger } from '@qlover/fe-corekit';
 import Plugin from '../src/Plugin';
-import ReleaseContext from '../src/interface/ReleaseContext';
 import { release } from '../src/release';
+import { tuple } from '../src/utils/tuple';
 
 type MockTestProps = {
   name: string;
@@ -14,11 +15,8 @@ type MockTestProps = {
 vi.mock('./testPlugin.js', () => {
   return {
     default: class extends Plugin<MockTestProps> {
-      pluginName = 'test-plugin';
-
       constructor(context: ReleaseContext, props: MockTestProps) {
-        // 可以在这里初始化 context 和 props
-        super(context, props);
+        super(context, 'test-plugin', props);
       }
 
       async onBefore(): Promise<void> {
@@ -68,7 +66,15 @@ describe('index', () => {
     });
 
     try {
-      await release({ shell, options: { releaseIt, skipCheckPackage: true } });
+      await release({
+        shell,
+        options: {
+          releaseIt,
+          environment: {
+            skipCheckPackage: true
+          }
+        }
+      });
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toBe('package.json is undefined');
@@ -78,30 +84,27 @@ describe('index', () => {
   it('should call onBefore when the plugin is loaded', async () => {
     const name = 'testPlugin';
     const infileFunc = vi.fn().mockReturnValue(name);
-    const plugins = {
-      './testPlugin.js': {
+    const plugins = [
+      tuple('./testPlugin.js', {
         name: 'testPlugin',
         infile: infileFunc
-      }
-    };
+      })
+    ];
 
     await release({
       shell,
       options: {
         releaseIt,
-        skipCheckPackage: true,
-        packageJson: {
-          name: 'test',
-          version: '1.0.0'
+        environment: {
+          skipCheckPackage: true,
+          packageJson: {
+            name: 'test',
+            version: '1.0.0'
+          },
+          plugins: plugins
         }
       },
-      dryRun: true,
-      feConfig: {
-        release: {
-          // @ts-expect-error
-          plugins
-        }
-      }
+      dryRun: true
     });
 
     expect(infileFunc).toHaveBeenCalledWith(name);

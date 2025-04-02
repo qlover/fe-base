@@ -40,13 +40,9 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
 
 export async function loaderPluginsFromPluginTuples(
   context: ReleaseContext,
-  initPlugins: PluginTuple<PluginClass>[],
+  pluginsTuples: PluginTuple<PluginClass>[],
   maxLimit = 5
 ): Promise<Plugin[]> {
-  const configPlugins: PluginTuple<PluginClass>[] = initPlugins.concat(
-    context.getConfig('plugins', [])
-  );
-
   // Helper function to load and create a plugin
   const loadAndCreatePlugin = async (
     pluginClassOrString: PluginClass | string,
@@ -62,7 +58,7 @@ export async function loaderPluginsFromPluginTuples(
   // Limit the number of concurrent plugin loads
   const limit = pLimit(maxLimit);
 
-  const pluginPromises = configPlugins.map(([pluginClassOrString, ...args]) =>
+  const pluginPromises = pluginsTuples.map(([pluginClassOrString, ...args]) =>
     limit(() => loadAndCreatePlugin(pluginClassOrString, args))
   );
 
