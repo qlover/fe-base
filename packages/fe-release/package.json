@@ -58,7 +58,8 @@
     "release-it": "^17.10.0",
     "@release-it/conventional-changelog": "^8.0.1",
     "@octokit/rest": "^21.0.2",
-    "semver": "^7.5.4"
+    "semver": "^7.5.4",
+    "p-limit": "^6.2.0"
   },
   "dependencies": {
     "@qlover/fe-corekit": "latest",

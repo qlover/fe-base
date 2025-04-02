@@ -1,5 +1,6 @@
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
 import type { ReleaseItInstanceResult } from '../../type';
+import { type ConstructorType, factory } from '../../utils/factory';
 import Plugin from '../../Plugin';
 import ReleaseContext from '../../interface/ReleaseContext';
 import ChangelogManager from './ChangelogManager';
@@ -18,7 +19,7 @@ export interface ReleasePullRequestProps {
   /**
    * The pull request interface
    */
-  releasePR: PullRequestInterface;
+  pullRequestInterface: ConstructorType<PullRequestInterface, [ReleaseContext]>;
 }
 
 export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestProps> {
@@ -26,12 +27,16 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
   private changelogManager: ChangelogManager;
   private branchManager: BranchManager;
   private pullRequestManager: PullRequestManager;
+  private prImpl: PullRequestInterface;
 
   constructor(
     protected readonly context: ReleaseContext,
     props: ReleasePullRequestProps
   ) {
     super(context, 'pull-request', props);
+
+    // create the pull request implementation
+    this.prImpl = factory(props.pullRequestInterface, context);
 
     this.releaseBase = new ReleaseBase(context);
 
@@ -42,8 +47,12 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
     this.pullRequestManager = new PullRequestManager(
       context,
       this.releaseBase,
-      props.releasePR
+      this.prImpl
     );
+  }
+
+  enabled(): boolean {
+    return this.context.releasePR;
   }
 
   async onBefore(): Promise<void> {
@@ -55,7 +64,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
       throw new Error('repoInfo is not set');
     }
 
-    await this.props.releasePR.init({
+    await this.prImpl.init({
       repoName: this.releaseBase.repoInfo.repoName,
       authorName: this.releaseBase.repoInfo.authorName
     });

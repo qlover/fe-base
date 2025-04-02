@@ -1,58 +1,24 @@
 import type { ReleaseContextOptions, ReleaseReturnValue } from './type';
+import { type PluginClass, type PluginTuple, tuple } from './utils/tuple';
 import { AsyncExecutor } from '@qlover/fe-corekit';
+import { DEFAULT_INCREMENT } from './defaults';
+import { loaderPluginsFromPluginTuples } from './utils/loader';
 import ReleaseContext from './interface/ReleaseContext';
-import Plugin from './Plugin';
+import GithubReleasePR from './implments/GithubReleasePR';
 import CheckEnvironment from './plugins/CheckEnvironment';
 import CreateReleasePullRequest from './plugins/CreateReleasePullRequest';
-import GithubReleasePR from './implments/GithubReleasePR';
 import PublishNpm from './plugins/PublishNpm';
 import PublishPath from './plugins/PublishPath';
-import { factory, load } from './util';
-import { DEFAULT_INCREMENT } from './defaults';
 
-const defaultPlugins = {};
-
-async function loadPlugin(
-  plugin: string
-): Promise<[string, new (...args: unknown[]) => Plugin]> {
-  const [pluginName, PluginClass] = await load(plugin);
-  return [pluginName, PluginClass as new (...args: unknown[]) => Plugin];
-}
-
-async function injectPlugins(
-  context: ReleaseContext,
-  initPlugins: Plugin[]
-): Promise<Plugin[]> {
-  const configPlugins = context.getConfig('plugins', defaultPlugins);
-
-  for (const plugin of Object.keys(configPlugins)) {
-    const [, PluginClass] = await loadPlugin(plugin);
-    const props = configPlugins[plugin as keyof typeof configPlugins];
-    initPlugins.push(factory(PluginClass, context, props));
-  }
-
-  return initPlugins;
-}
-
-async function getPlugins(context: ReleaseContext): Promise<Plugin[]> {
-  const result: Plugin[] = [
-    // check the environment, and set environment config
-    new CheckEnvironment(context),
-
-    // create a pull request or publish the package
-    context.options.environment?.releasePR
-      ? new CreateReleasePullRequest(context, {
-          increment: DEFAULT_INCREMENT,
-          releasePR: new GithubReleasePR(context)
-        })
-      : new PublishNpm(context),
-
-    // use checkPublishPath to switch to the publish path
-    new PublishPath(context)
-  ];
-
-  return injectPlugins(context, result);
-}
+const innerPlugins: PluginTuple<PluginClass>[] = [
+  tuple(CheckEnvironment),
+  tuple(CreateReleasePullRequest, {
+    increment: DEFAULT_INCREMENT,
+    pullRequestInterface: GithubReleasePR
+  }),
+  tuple(PublishNpm),
+  tuple(PublishPath)
+];
 
 export async function release(
   context: ReleaseContextOptions
@@ -61,7 +27,10 @@ export async function release(
 
   const executor = new AsyncExecutor();
 
-  const plugins = await getPlugins(releaseContext);
+  const plugins = await loaderPluginsFromPluginTuples(
+    releaseContext,
+    innerPlugins
+  );
 
   plugins.forEach((plugin) => {
     executor.use(plugin);

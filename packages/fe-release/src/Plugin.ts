@@ -14,7 +14,14 @@ export default abstract class Plugin<Props = unknown>
     readonly pluginName: string,
     props?: Props
   ) {
-    this.props = merge({}, this.context.options[this.pluginName], props);
+    // command line config, first priority
+    const pluginConfig =
+      context.options[pluginName as keyof typeof context.options];
+
+    this.props =
+      // plugin config, second priority
+      pluginConfig || props ? merge({}, props, pluginConfig) : ({} as Props);
+
     this.setConfig(this.props);
   }
 

@@ -2,6 +2,7 @@ import type { ExecutorContext } from '@qlover/fe-corekit';
 import type ReleaseContext from './interface/ReleaseContext';
 import type { PublishNpmProps } from './plugins/PublishNpm';
 import type { EnvironmentProps } from './plugins/CheckEnvironment';
+import { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
 
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -31,14 +32,20 @@ export interface ReleaseConfig {
 
   publishNpm?: PublishNpmProps;
 
-  releaseIt: ReleaseItInstanceType;
+  pullRequest?: ReleasePullRequestProps;
 
-  [key: string]: unknown;
+  releaseIt: ReleaseItInstanceType;
 }
 
-export type ReleaseContextOptions = Partial<ReleaseContext>;
+export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
+  Partial<ReleaseContext<T>>;
 
 export type StepOption<T> = {
   label: string;
   task: () => Promise<T>;
+};
+
+export type UserInfoType = {
+  repoName: string;
+  authorName: string;
 };
