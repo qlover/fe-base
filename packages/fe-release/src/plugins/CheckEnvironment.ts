@@ -5,6 +5,7 @@ import Plugin from '../Plugin';
 import { DEFAULT_SOURCE_BRANCH, MANIFEST_PATH } from '../defaults';
 import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { PluginClass, PluginTuple } from '../utils/tuple';
 
 type PackageJson = Record<string, unknown>;
 export interface EnvironmentProps extends FeReleaseConfig {
@@ -49,6 +50,8 @@ export interface EnvironmentProps extends FeReleaseConfig {
   releasePR?: boolean;
 
   repoInfo?: UserInfoType;
+
+  plugins?: PluginTuple<PluginClass>[];
 }
 
 export default class CheckEnvironment extends Plugin<EnvironmentProps> {

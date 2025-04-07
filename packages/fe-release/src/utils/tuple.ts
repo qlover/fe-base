@@ -21,7 +21,7 @@ export type PluginConstructorParams<T extends PluginClass> = T extends new (
   : never;
 
 export type PluginTuple<T extends PluginClass> = [
-  T,
+  T | string,
   ...PluginConstructorParams<T>
 ];
 

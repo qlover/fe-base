@@ -29,7 +29,7 @@ export async function release(
 
   const plugins = await loaderPluginsFromPluginTuples(
     releaseContext,
-    innerPlugins
+    innerPlugins.concat(releaseContext.options.environment?.plugins || [])
   );
 
   plugins.forEach((plugin) => {

@@ -38,19 +38,15 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
   return [getPluginName(pluginName), plugin];
 }
 
-export async function loaderPluginsFromPluginTuples(
+export async function loaderPluginsFromPluginTuples<T extends Plugin<unknown>>(
   context: ReleaseContext,
-  initPlugins: PluginTuple<PluginClass>[],
+  pluginsTuples: PluginTuple<PluginClass>[],
   maxLimit = 5
-): Promise<Plugin[]> {
-  const configPlugins: PluginTuple<PluginClass>[] = initPlugins.concat(
-    context.getConfig('plugins', [])
-  );
-
+): Promise<T[]> {
   // Helper function to load and create a plugin
   const loadAndCreatePlugin = async (
     pluginClassOrString: PluginClass | string,
-    args: unknown[]
+    ...args: unknown[]
   ): Promise<Plugin> => {
     if (typeof pluginClassOrString === 'string') {
       const [, pluginClass] = await load<PluginClass>(pluginClassOrString);
@@ -62,9 +58,9 @@ export async function loaderPluginsFromPluginTuples(
   // Limit the number of concurrent plugin loads
   const limit = pLimit(maxLimit);
 
-  const pluginPromises = configPlugins.map(([pluginClassOrString, ...args]) =>
-    limit(() => loadAndCreatePlugin(pluginClassOrString, args))
+  const pluginPromises = pluginsTuples.map(([pluginClassOrString, ...args]) =>
+    limit(() => loadAndCreatePlugin(pluginClassOrString, ...args))
   );
 
-  return Promise.all(pluginPromises);
+  return Promise.all(pluginPromises) as Promise<T[]>;
 }
