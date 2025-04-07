@@ -73,7 +73,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
   /**
    * @override
    */
-  async onSuccess(): Promise<void> {
+  async onExec(): Promise<void> {
     const releaseResult = await this.step({
       label: 'Create Changelog and Version',
       task: () => this.changelogManager.createChangelogAndVersion()

@@ -41,7 +41,7 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
   /**
    * @override
    */
-  async onSuccess(): Promise<void> {
+  async onExec(): Promise<void> {
     const publishOptions = this.getPublishReleaseItOptions(this.context);
 
     await this.step({
