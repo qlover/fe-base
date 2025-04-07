@@ -38,7 +38,17 @@ export interface ReleaseConfig {
 }
 
 export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
-  Partial<ReleaseContext<T>>;
+  Partial<
+    Omit<
+      ReleaseContext<T>,
+      | 'releasePR'
+      | 'setConfig'
+      | 'getConfig'
+      | 'getInitEnv'
+      | 'getEnv'
+      | 'getPkg'
+    >
+  >;
 
 export type StepOption<T> = {
   label: string;
