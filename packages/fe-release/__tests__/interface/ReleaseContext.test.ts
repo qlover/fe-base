@@ -224,14 +224,14 @@ describe('ReleaseContext', () => {
   });
 
   describe('getPkg', () => {
-    it('should return the value of package.json', () => {
+    it('应该返回 package.json 中的值', () => {
       const context = new ReleaseContext(contextOptions);
 
       expect(context.getPkg('name')).toBe('test-package');
       expect(context.getPkg('version')).toBe('0.9.0');
     });
 
-    it('should return undefined when the key does not exist in package.json', () => {
+    it('当 package.json 中不存在该键时应该返回 undefined', () => {
       const context = new ReleaseContext(contextOptions);
 
       expect(context.getPkg('nonExistentKey')).toBeUndefined();
