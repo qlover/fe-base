@@ -178,8 +178,6 @@ describe('ReleaseContext', () => {
     it('should use feConfig.envOrder to initialize environment', () => {
       const context = new ReleaseContext(contextOptions);
 
-      context.getInitEnv();
-
       expect(Env.searchEnv).toHaveBeenCalledWith({
         logger: context.logger,
         preloadList: ['.env.test', '.env']
@@ -192,13 +190,12 @@ describe('ReleaseContext', () => {
       });
 
       const context = new ReleaseContext(contextOptions);
-      const env = context.getInitEnv();
 
       expect(logger.error).toHaveBeenCalledWith(
         'Failed to initialize environment:',
         expect.any(Error)
       );
-      expect(env).toBeDefined();
+      expect(context.env).toBeDefined();
     });
   });
 
@@ -217,21 +214,20 @@ describe('ReleaseContext', () => {
 
     it('should return the environment instance', () => {
       const context = new ReleaseContext(contextOptions);
-      const env = context.getEnv();
 
-      expect(env).toBeDefined();
+      expect(context.env).toBeDefined();
     });
   });
 
   describe('getPkg', () => {
-    it('应该返回 package.json 中的值', () => {
+    it('should return the package.json value', () => {
       const context = new ReleaseContext(contextOptions);
 
       expect(context.getPkg('name')).toBe('test-package');
       expect(context.getPkg('version')).toBe('0.9.0');
     });
 
-    it('当 package.json 中不存在该键时应该返回 undefined', () => {
+    it('should return undefined when the package.json does not have the key', () => {
       const context = new ReleaseContext(contextOptions);
 
       expect(context.getPkg('nonExistentKey')).toBeUndefined();

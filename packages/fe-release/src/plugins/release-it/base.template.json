@@ -2,13 +2,13 @@
   "git": {
     "requireUpstream": true,
     "commit": true,
-    "commitMessage": "chore(tag): fe-release v${version}",
+    "commitMessage": "chore(tag): [TPL:projectName] v${version}",
     "commitArgs": ["--no-verify"],
     "tag": true,
-    "tagName": "fe-release-v${version}",
-    "tagMatch": "fe-release-v*",
+    "tagName": "[TPL:projectName]-v${version}",
+    "tagMatch": "[TPL:projectName]-v*",
     "getLatestTagFromAllRefs": true,
-    "tagAnnotation": "chore(tag): fe-release v${version}",
+    "tagAnnotation": "chore(tag): [TPL:projectName] v${version}",
     "push": true,
     "pushArgs": ["--follow-tags"]
   },
@@ -19,7 +19,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "chore(tag): fe-release v${version}"
+    "releaseName": "chore(tag): [TPL:projectName] v${version}"
   },
 
   "plugins": {
@@ -41,7 +41,7 @@
         ]
       },
       "gitRawCommitsOpts": {
-        "path": "."
+        "path": "[TPL:publishPath]"
       }
     }
   }

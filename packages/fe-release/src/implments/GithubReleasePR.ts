@@ -15,7 +15,7 @@ export default class GithubReleasePR implements PullRequestInterface {
 
   hasGithubToken(context: ReleaseContext): boolean {
     const token =
-      context.getEnv().get('GITHUB_TOKEN') || context.getEnv().get('PAT_TOKEN');
+      context.env.get('GITHUB_TOKEN') || context.env.get('PAT_TOKEN');
 
     if (!token) {
       throw new Error(

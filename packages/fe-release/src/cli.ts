@@ -50,6 +50,10 @@ function programArgs() {
     .option(
       '-c, --environment.skip-check-package',
       'Whether to skip checking the package.json file'
+    )
+    .option(
+      '--publish-npm.skip-npmrc',
+      'Whether to skip setting the npmrc file'
     );
 
   program.parse();
@@ -62,7 +66,7 @@ async function main() {
 
   const options: ReleaseContextOptions['options'] = {
     ...commandOptions,
-    releaseIt: releaseIt
+    releaseIt: { releaseIt }
   };
 
   await release({ dryRun, verbose, options });

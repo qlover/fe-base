@@ -1,34 +1,31 @@
-import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
+import type ReleaseContext from '../interface/ReleaseContext';
 import Plugin from '../Plugin';
-import ReleaseContext from '../interface/ReleaseContext';
-import isString from 'lodash/isString';
-import isFunction from 'lodash/isFunction';
+import type {
+  ReleaseItInstanceOptions,
+  ReleaseItInstanceResult
+} from './release-it/ReleaseIt';
+import merge from 'lodash/merge';
 
 export interface PublishNpmProps {
   npmToken?: string;
+
+  /**
+   * Whether to skip setting the npmrc file
+   *
+   * @default `false`
+   */
+  skipNpmrc?: boolean;
 }
 
 export default class PublishNpm extends Plugin<PublishNpmProps> {
-  private _releaseItOutput?: ReleaseItInstanceOptions;
+  private _releaseItOutput?: ReleaseItInstanceResult;
 
   constructor(context: ReleaseContext) {
-    super(context, 'publish');
-
-    this.getIncrementVersion();
+    super(context, 'publishNpm');
   }
 
   enabled(): boolean {
     return !this.context.releasePR;
-  }
-
-  get releaseIt(): ReleaseItInstanceType {
-    const releaseIt = this.context.options.releaseIt;
-
-    if (!isFunction(releaseIt)) {
-      throw new Error('releaseIt instance is not set');
-    }
-
-    return releaseIt;
   }
 
   async onBefore(): Promise<void> {
@@ -42,40 +39,18 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
    * @override
    */
   async onExec(): Promise<void> {
-    const publishOptions = this.getPublishReleaseItOptions(this.context);
-
     await this.step({
       label: 'Publish to NPM',
-      task: () => this.publish(publishOptions)
+      task: () => this.publish()
     });
   }
 
-  /**
-   * Executes the release-it process.
-   *
-   * use release-it to publish the package to npm
-   *
-   * @param releaseItOptions - Options for the release-it process.
-   * @returns The output from the release-it process.
-   */
-  async publish(
-    releaseItOptions: Record<string, unknown>
-  ): Promise<Record<string, unknown>> {
-    this.logger.debug('Run release-it method', releaseItOptions);
-
-    this._releaseItOutput = await this.releaseIt(releaseItOptions);
-
-    // return the output
-    return this._releaseItOutput;
-  }
-
-  getPublishReleaseItOptions(
-    context: ReleaseContext
-  ): ReleaseItInstanceOptions {
-    return {
+  private getPublishReleaseItOptions(): ReleaseItInstanceOptions {
+    return merge(this.context.getConfig('releaseIt'), {
       ci: true,
       npm: {
-        publish: true
+        publish: true,
+        publishPath: this.context.releasePackageName
       },
       git: {
         requireCleanWorkingDir: false,
@@ -87,20 +62,27 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
           infile: false
         }
       },
-      'dry-run': context.dryRun,
+      'dry-run': this.context.dryRun,
       verbose: true,
-      increment: this.getIncrementVersion()
-    };
+      increment: this.context.getPkg('version')
+    });
   }
 
-  getIncrementVersion(): string {
-    const version = this.context.getPkg('version');
+  /**
+   * Executes the release-it process.
+   *
+   * use release-it to publish the package to npm
+   *
+   * @returns The output from the release-it process.
+   */
+  async publish(): Promise<ReleaseItInstanceResult | undefined> {
+    const releaseItOptions = this.getPublishReleaseItOptions();
+    this.logger.debug('Run release-it method', releaseItOptions);
 
-    if (!version || !isString(version)) {
-      throw new Error('pkg.version is not set');
-    }
+    this._releaseItOutput = await this.context.runReleaseIt(releaseItOptions);
 
-    return version;
+    // return the output
+    return this._releaseItOutput;
   }
 
   /**
@@ -116,6 +98,11 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
     }
 
     this.setConfig({ npmToken });
+
+    if (this.getConfig('skipNpmrc')) {
+      this.logger.debug('skipNpmrc is true, skip set npmrc');
+      return;
+    }
 
     await this.shell.exec(
       `echo //registry.npmjs.org/:_authToken=${npmToken} > .npmrc`,

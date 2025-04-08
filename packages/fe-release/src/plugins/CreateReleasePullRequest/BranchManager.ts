@@ -1,6 +1,6 @@
-import { ReleaseItInstanceResult } from '../../type';
 import get from 'lodash/get';
 import ReleaseContext from '../../interface/ReleaseContext';
+import type { ReleaseItInstanceResult } from '../../plugins/release-it/ReleaseIt';
 
 export type CreateReleaseResult = {
   tagName: string;
@@ -72,7 +72,7 @@ export default class BranchManager {
     this.context.logger.verbose('Release Branch template is:', branchNameTpl);
 
     return this.context.shell.format(branchNameTpl, {
-      pkgName: this.context.getPkg('name'),
+      pkgName: this.context.releasePackageName,
       env: this.releaseEnv,
       branch: this.sourceBranch,
       tagName

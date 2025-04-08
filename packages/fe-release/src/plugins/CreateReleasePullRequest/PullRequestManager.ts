@@ -291,7 +291,7 @@ export default class PullRequestManager {
       env: args.releaseEnv,
       branch: args.sourceBranch,
       tagName: args.tagName,
-      pkgName: this.context.getPkg('name')
+      pkgName: this.context.releasePackageName
     });
   }
 

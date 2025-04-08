@@ -3,6 +3,7 @@ import type ReleaseContext from './interface/ReleaseContext';
 import type { PublishNpmProps } from './plugins/PublishNpm';
 import type { EnvironmentProps } from './plugins/CheckEnvironment';
 import { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
+import { ReleaseItProps } from './plugins/release-it/ReleaseIt';
 
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -13,15 +14,6 @@ export type ReleaseReturnValue = {
   githubToken?: string;
   [key: string]: unknown;
 };
-
-export type ReleaseItInstanceOptions = Record<string, unknown>;
-export type ReleaseItInstanceResult = {
-  changelog: string;
-  version: string;
-};
-export type ReleaseItInstanceType = (
-  options: ReleaseItInstanceOptions
-) => Promise<ReleaseItInstanceResult>;
 
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -34,7 +26,7 @@ export interface ReleaseConfig {
 
   pullRequest?: ReleasePullRequestProps;
 
-  releaseIt: ReleaseItInstanceType;
+  releaseIt: ReleaseItProps;
 }
 
 export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
@@ -42,10 +34,10 @@ export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
     Omit<
       ReleaseContext<T>,
       | 'releasePR'
+      | 'releasePackageName'
+      | 'env'
       | 'setConfig'
       | 'getConfig'
-      | 'getInitEnv'
-      | 'getEnv'
       | 'getPkg'
     >
   >;

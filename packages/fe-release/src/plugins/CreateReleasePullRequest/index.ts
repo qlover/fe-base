@@ -1,5 +1,5 @@
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type { ReleaseItInstanceResult } from '../../type';
+import type { ReleaseItInstanceResult } from '../../plugins/release-it/ReleaseIt';
 import { type ConstructorType, factory } from '../../utils/factory';
 import Plugin from '../../Plugin';
 import ReleaseContext from '../../interface/ReleaseContext';
@@ -33,7 +33,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
     protected readonly context: ReleaseContext,
     props: ReleasePullRequestProps
   ) {
-    super(context, 'pull-request', props);
+    super(context, 'pullRequest', props);
 
     // create the pull request implementation
     this.prImpl = factory(props.pullRequestInterface, context);

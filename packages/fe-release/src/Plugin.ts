@@ -39,14 +39,18 @@ export default abstract class Plugin<Props = unknown>
   }
 
   getEnv(key: string, defaultValue?: string): string | undefined {
-    return this.context.getEnv().get(key) ?? defaultValue;
+    return this.context.env.get(key) ?? defaultValue;
   }
 
   enabled(): boolean {
     return true;
   }
 
-  getConfig<T>(keys: string | string[], defaultValue?: T): T {
+  getConfig<T>(keys?: string | string[], defaultValue?: T): T {
+    if (!keys) {
+      return this.context.getConfig(this.pluginName, defaultValue);
+    }
+
     return this.context.getConfig(
       [this.pluginName, ...(Array.isArray(keys) ? keys : [keys])],
       defaultValue
