@@ -1,27 +1,9 @@
 import type { AsyncExecutor } from '@qlover/fe-corekit';
 import type ReleaseContext from '../interface/ReleaseContext';
+import type { PluginClass, PluginTuple } from '../utils/tuple';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
-import { tuple } from '../utils/tuple';
-import { PluginClass, PluginTuple } from '../utils/tuple';
 import Workspaces from '../plugins/workspaces/Workspaces';
-import CheckEnvironment from '../plugins/CheckEnvironment';
 import Plugin from '../Plugin';
-import ReleaseIt from '../plugins/release-it/ReleaseIt';
-import CreateReleasePullRequest from '../plugins/CreateReleasePullRequest';
-import { DEFAULT_INCREMENT } from '../defaults';
-import GithubReleasePR from './GithubReleasePR';
-import PublishNpm from '../plugins/PublishNpm';
-
-const innerPlugins: PluginTuple<PluginClass>[] = [
-  tuple(CheckEnvironment),
-  tuple(ReleaseIt),
-  tuple(CreateReleasePullRequest, {
-    increment: DEFAULT_INCREMENT,
-    pullRequestInterface: GithubReleasePR
-  }),
-  tuple(PublishNpm),
-  tuple(Workspaces)
-];
 
 export default class ReleaseTask {
   constructor(
@@ -29,11 +11,13 @@ export default class ReleaseTask {
     private executor: AsyncExecutor
   ) {}
 
-  async usePlugins(): Promise<Plugin[]> {
+  async usePlugins(
+    defaultPlugins: PluginTuple<PluginClass>[]
+  ): Promise<Plugin[]> {
     const externalTuples = this.context.options.environment?.plugins || [];
 
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
-      ...innerPlugins,
+      ...defaultPlugins,
       ...externalTuples
     ]);
 
@@ -55,9 +39,9 @@ export default class ReleaseTask {
     );
   }
 
-  async exec(): Promise<unknown> {
+  async exec(defaultPlugins: PluginTuple<PluginClass>[]): Promise<unknown> {
     // load plugins
-    await this.usePlugins();
+    await this.usePlugins(defaultPlugins);
 
     return this.run();
   }
