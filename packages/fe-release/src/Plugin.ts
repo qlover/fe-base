@@ -65,6 +65,7 @@ export default abstract class Plugin<Props = unknown>
 
   onBefore?(_context: ExecutorReleaseContext): void | Promise<void> {}
 
+  onExec?(_context: ExecutorReleaseContext): void | Promise<void> {}
   onSuccess?(_context: ExecutorReleaseContext): void | Promise<void> {}
 
   onError?(_context: ExecutorReleaseContext): void | Promise<void> {}

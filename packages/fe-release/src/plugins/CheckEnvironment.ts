@@ -7,7 +7,8 @@ import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { PluginClass, PluginTuple } from '../utils/tuple';
 
-type PackageJson = Record<string, unknown>;
+export type PackageJson = Record<string, unknown>;
+
 export interface EnvironmentProps extends FeReleaseConfig {
   /**
    * The source branch of the project
@@ -75,6 +76,7 @@ export default class CheckEnvironment extends Plugin<EnvironmentProps> {
       publishPath: publishPath,
       packageJson: packageJson as DeepPartial<PackageJson>,
       rootPath,
+      // FIXME: use current git branch by default
       sourceBranch:
         this.options.sourceBranch ||
         this.getEnv('FE_RELEASE_BRANCH') ||
@@ -87,7 +89,7 @@ export default class CheckEnvironment extends Plugin<EnvironmentProps> {
   }
 
   getPublishPath(): string {
-    return this.props.publishPath || './';
+    return this.getConfig('publishPath', './');
   }
 
   /**

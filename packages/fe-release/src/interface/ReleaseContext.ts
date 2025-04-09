@@ -40,16 +40,16 @@ export default class ReleaseContext<
     return !!this.options.environment?.releasePR;
   }
 
-  get releasePackageName(): string {
+  get releasePackageName(): string | undefined {
     return this.getPkg('name');
   }
 
-  get releasePublishPath(): string {
-    return this.getConfig('environment.publishPath', '.');
+  get releasePublishPath(): string | undefined {
+    return this.getConfig('environment.publishPath');
   }
 
   get rootPath(): string {
-    return this.getConfig('environment.rootPath');
+    return this.getConfig('environment.rootPath', './');
   }
 
   get env(): Env {
@@ -64,7 +64,11 @@ export default class ReleaseContext<
     return get(this.options, key, defaultValue);
   }
 
-  getPkg<T>(key: string, defaultValue?: T): T {
+  getPkg<T>(key?: string, defaultValue?: T): T {
+    if (!key) {
+      return this.getConfig<T>('environment.packageJson', defaultValue);
+    }
+
     return this.getConfig<T>(['environment', 'packageJson', key], defaultValue);
   }
 
@@ -81,6 +85,10 @@ export default class ReleaseContext<
   async runReleaseIt(
     options: ReleaseItInstanceOptions
   ): Promise<ReleaseItInstanceResult> {
+    if (!this.releasePublishPath) {
+      throw new Error('publishPath is not set');
+    }
+
     const lastDir = process.cwd();
 
     try {
