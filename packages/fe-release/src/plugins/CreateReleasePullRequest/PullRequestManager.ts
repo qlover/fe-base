@@ -3,7 +3,7 @@ import type { PullRequestInterface } from '../../interface/PullRequestInterface'
 import type ReleaseContext from '../../interface/ReleaseContext';
 import type ReleaseBase from './ReleaseBase';
 import type { Logger } from '@qlover/fe-corekit';
-import type { EnvironmentProps } from '../CheckEnvironment';
+import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
   DEFAULT_AUTO_MERGE_TYPE,
@@ -66,11 +66,8 @@ export default class PullRequestManager {
    *
    * @default `squash`
    */
-  get autoMergeType(): EnvironmentProps['autoMergeType'] {
-    return this.context.getConfig(
-      'environment.autoMergeType',
-      DEFAULT_AUTO_MERGE_TYPE
-    );
+  get autoMergeType(): SharedReleaseOptions['autoMergeType'] {
+    return this.context.shared.autoMergeType || DEFAULT_AUTO_MERGE_TYPE;
   }
 
   /**
@@ -88,9 +85,8 @@ export default class PullRequestManager {
    * @default `false`
    */
   get autoMergeReleasePR(): boolean {
-    return this.context.getConfig(
-      'environment.autoMergeReleasePR',
-      DEFAULT_AUTO_MERGE_RELEASE_PR
+    return (
+      this.context.shared.autoMergeReleasePR || DEFAULT_AUTO_MERGE_RELEASE_PR
     );
   }
 
@@ -159,9 +155,8 @@ export default class PullRequestManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel(): Promise<EnvironmentProps['label']> {
-    const label: EnvironmentProps['label'] =
-      this.context.getConfig('environment.label');
+  async createReleasePRLabel(): Promise<SharedReleaseOptions['label']> {
+    const label = this.context.shared.label;
 
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
@@ -282,10 +277,7 @@ export default class PullRequestManager {
   getReleasePRTitle(
     args: Pick<CreatePROptionsArgs, 'tagName' | 'releaseEnv' | 'sourceBranch'>
   ): string {
-    const prTitleTpl = this.context.getConfig(
-      'environment.PRTitle',
-      DEFAULT_PR_TITLE
-    );
+    const prTitleTpl = this.context.shared.PRTitle || DEFAULT_PR_TITLE;
 
     return this.shell.format(prTitleTpl, {
       env: args.releaseEnv,
@@ -307,7 +299,7 @@ export default class PullRequestManager {
       'sourceBranch' | 'releaseEnv' | 'tagName' | 'changelog'
     >
   ): string {
-    const PRBodyTpl = this.context.getConfig('environment.PRBody', '');
+    const PRBodyTpl = this.context.shared.PRBody || '';
 
     return this.shell.format(PRBodyTpl, {
       branch: args.sourceBranch,

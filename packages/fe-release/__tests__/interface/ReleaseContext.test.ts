@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Logger } from '@qlover/fe-utils';
 import type { ReleaseConfig, ReleaseContextOptions } from '../../src/type';
 import type {
@@ -15,7 +15,9 @@ vi.mock('@qlover/env-loader', () => {
     Env: class {
       static searchEnv = vi.fn().mockImplementation(() => {
         return {
-          get: vi.fn(),
+          get: vi.fn().mockImplementation((key: string) => {
+            return process.env[key];
+          }),
           set: vi.fn(),
           remove: vi.fn(),
           load: vi.fn(),
@@ -55,7 +57,7 @@ describe('ReleaseContext', () => {
   let contextOptions: Required<ReleaseContextOptions>;
 
   beforeEach(() => {
-    process.env = { ...process.env };
+    vi.clearAllMocks();
 
     logger = {
       info: vi.fn(),
@@ -81,23 +83,31 @@ describe('ReleaseContext', () => {
       dryRun: false,
       verbose: false,
       options: {
-        releaseIt: mockReleaseIt,
-        environment: {
-          packageJson: {
-            name: 'test-package',
-            version: '0.9.0'
-          },
-          releasePR: false
-        }
+        releaseIt: { releaseIt: mockReleaseIt }
+      },
+      shared: {
+        packageJson: {
+          name: 'test-package',
+          version: '0.9.0'
+        },
+        releasePR: false
       },
       feConfig: {
         envOrder: ['.env.test', '.env']
       }
     };
-  });
 
-  afterEach(() => {
-    vi.resetAllMocks();
+    (Env.searchEnv as ReturnType<typeof vi.fn>).mockImplementation(() => {
+      return {
+        get: vi.fn().mockImplementation((key: string) => {
+          return process.env[key];
+        }),
+        set: vi.fn(),
+        remove: vi.fn(),
+        load: vi.fn(),
+        getDestroy: vi.fn()
+      };
+    });
   });
 
   describe('constructor', () => {
@@ -115,7 +125,7 @@ describe('ReleaseContext', () => {
     });
 
     it('should return true when releasePR is true', () => {
-      contextOptions.options!.environment!.releasePR = true;
+      contextOptions.shared!.releasePR = true;
       const context = new ReleaseContext(contextOptions);
       expect(context.releasePR).toBe(true);
     });
@@ -130,12 +140,12 @@ describe('ReleaseContext', () => {
         }
       };
 
+      // @ts-expect-error
       context.setConfig(newConfig);
 
+      // @ts-expect-error
       expect(context.options!.environment!.skipCheckPackage).toBe(true);
-      expect(context.options!.environment!.packageJson?.name).toBe(
-        'test-package'
-      );
+      expect(context.getPkg('name')).toBe('test-package');
     });
   });
 
@@ -143,12 +153,8 @@ describe('ReleaseContext', () => {
     it('should return the correct config value', () => {
       const context = new ReleaseContext(contextOptions);
 
-      expect(context.getConfig('environment.packageJson.name')).toBe(
-        'test-package'
-      );
-      expect(context.getConfig(['environment', 'packageJson', 'version'])).toBe(
-        '0.9.0'
-      );
+      expect(context.getPkg('name')).toBe('test-package');
+      expect(context.getPkg('version')).toBe('0.9.0');
     });
 
     it('should return the default value when the config does not exist', () => {
@@ -161,57 +167,7 @@ describe('ReleaseContext', () => {
     });
   });
 
-  describe('getInitEnv', () => {
-    beforeEach(() => {
-      vi.restoreAllMocks();
-      (Env.searchEnv as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        return {
-          get: vi.fn(),
-          set: vi.fn(),
-          remove: vi.fn(),
-          load: vi.fn(),
-          getDestroy: vi.fn()
-        };
-      });
-    });
-
-    it('should use feConfig.envOrder to initialize environment', () => {
-      const context = new ReleaseContext(contextOptions);
-
-      expect(Env.searchEnv).toHaveBeenCalledWith({
-        logger: context.logger,
-        preloadList: ['.env.test', '.env']
-      });
-    });
-
-    it('should record an error and return a default Env instance when initialization fails', () => {
-      (Env.searchEnv as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        throw new Error('Failed to initialize environment');
-      });
-
-      const context = new ReleaseContext(contextOptions);
-
-      expect(logger.error).toHaveBeenCalledWith(
-        'Failed to initialize environment:',
-        expect.any(Error)
-      );
-      expect(context.env).toBeDefined();
-    });
-  });
-
   describe('getEnv', () => {
-    beforeEach(() => {
-      (Env.searchEnv as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        return {
-          get: vi.fn(),
-          set: vi.fn(),
-          remove: vi.fn(),
-          load: vi.fn(),
-          getDestroy: vi.fn()
-        };
-      });
-    });
-
     it('should return the environment instance', () => {
       const context = new ReleaseContext(contextOptions);
 
@@ -231,6 +187,115 @@ describe('ReleaseContext', () => {
       const context = new ReleaseContext(contextOptions);
 
       expect(context.getPkg('nonExistentKey')).toBeUndefined();
+    });
+  });
+
+  describe('releasePackageName', () => {
+    it('should return the correct package name', () => {
+      const context = new ReleaseContext(contextOptions);
+      expect(context.releasePackageName).toBe('test-package');
+    });
+  });
+
+  describe('releasePublishPath', () => {
+    it('should return undefined when publishPath is not set', () => {
+      const context = new ReleaseContext(contextOptions);
+      expect(context.releasePublishPath).toBeUndefined();
+    });
+
+    it('should return the correct path when publishPath is set', () => {
+      contextOptions.shared!.publishPath = '/path/to/publish';
+      const context = new ReleaseContext(contextOptions);
+      expect(context.releasePublishPath).toBe('/path/to/publish');
+    });
+  });
+
+  describe('rootPath', () => {
+    it('should return the correct root path', () => {
+      contextOptions.shared!.rootPath = '/root/path';
+      const context = new ReleaseContext(contextOptions);
+      expect(context.rootPath).toBe('/root/path');
+    });
+
+    it('should use the default value (current working directory) when rootPath is not set', () => {
+      // delete the explicitly set rootPath
+      if (contextOptions.shared!.rootPath) {
+        delete contextOptions.shared!.rootPath;
+      }
+      const context = new ReleaseContext(contextOptions);
+      expect(context.rootPath).toBe(process.cwd());
+    });
+  });
+
+  describe('sourceBranch', () => {
+    it('should return the correct source branch', () => {
+      contextOptions.shared!.sourceBranch = 'feature/test';
+      const context = new ReleaseContext(contextOptions);
+      expect(context.sourceBranch).toBe('feature/test');
+    });
+
+    it('should use the default value when sourceBranch is not set', () => {
+      // delete the explicitly set sourceBranch
+      if (contextOptions.shared!.sourceBranch) {
+        delete contextOptions.shared!.sourceBranch;
+      }
+      const context = new ReleaseContext(contextOptions);
+      expect(context.sourceBranch).toBe('master'); // assume the default value is 'master'
+    });
+
+    it('should prioritize the value from the environment variable', () => {
+      process.env.FE_RELEASE_BRANCH = 'env-branch';
+      // delete the explicitly set sourceBranch
+      if (contextOptions.shared!.sourceBranch) {
+        delete contextOptions.shared!.sourceBranch;
+      }
+      const context = new ReleaseContext(contextOptions);
+      expect(context.sourceBranch).toBe('env-branch');
+      delete process.env.FE_RELEASE_BRANCH;
+    });
+  });
+
+  describe('releaseEnv', () => {
+    it('should return the correct release environment', () => {
+      contextOptions.shared!.releaseEnv = 'production';
+      const context = new ReleaseContext(contextOptions);
+      expect(context.releaseEnv).toBe('production');
+    });
+
+    it('should use the default value when releaseEnv is not set', () => {
+      // delete the explicitly set releaseEnv
+      if (contextOptions.shared!.releaseEnv) {
+        delete contextOptions.shared!.releaseEnv;
+      }
+      const context = new ReleaseContext(contextOptions);
+      // because test env is 'test', NODE_ENV is 'test', so the default value is 'development'
+      expect(context.releaseEnv).toBe('test');
+    });
+
+    it('should prioritize the value from the environment variable', () => {
+      process.env.FE_RELEASE_ENV = 'staging';
+      // delete the explicitly set releaseEnv
+      if (contextOptions.shared!.releaseEnv) {
+        delete contextOptions.shared!.releaseEnv;
+      }
+      const context = new ReleaseContext(contextOptions);
+      expect(context.releaseEnv).toBe('staging');
+      delete process.env.FE_RELEASE_ENV;
+    });
+  });
+
+  describe('setShared', () => {
+    it('should correctly merge shared configs', () => {
+      const context = new ReleaseContext(contextOptions);
+      const newShared = {
+        publishPath: '/new/publish/path',
+        releasePR: true
+      };
+
+      context.setShared(newShared);
+
+      expect(context.releasePublishPath).toBe('/new/publish/path');
+      expect(context.releasePR).toBe(true);
     });
   });
 });

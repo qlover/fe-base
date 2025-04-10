@@ -11,24 +11,6 @@ export default class BranchManager {
   constructor(private context: ReleaseContext) {}
 
   /**
-   * release merge real branch name
-   *
-   * @default `master`
-   */
-  get sourceBranch(): string {
-    return this.context.getConfig('environment.sourceBranch') as string;
-  }
-
-  /**
-   * Release environment
-   *
-   * @default `development`
-   */
-  get releaseEnv(): string {
-    return this.context.getConfig('environment.releaseEnv') as string;
-  }
-
-  /**
    * Checks the current tag.
    *
    * @returns The tag name.
@@ -60,10 +42,8 @@ export default class BranchManager {
    * @returns The formatted release branch.
    */
   getReleaseBranchName(tagName: string): string {
-    const branchNameTpl = this.context.getConfig(
-      'environment.branchName',
-      'release-${tagName}'
-    );
+    const branchNameTpl =
+      this.context.shared.branchName || 'release-${tagName}';
 
     if (typeof branchNameTpl !== 'string') {
       throw new Error('Branch name template is not a string');
@@ -73,8 +53,8 @@ export default class BranchManager {
 
     return this.context.shell.format(branchNameTpl, {
       pkgName: this.context.releasePackageName,
-      env: this.releaseEnv,
-      branch: this.sourceBranch,
+      env: this.context.shared.releaseEnv,
+      branch: this.context.shared.sourceBranch,
       tagName
     });
   }
@@ -94,7 +74,7 @@ export default class BranchManager {
   ): Promise<CreateReleaseResult> {
     const { tagName } = await this.checkTag(releaseResult);
     const releaseBranch = this.getReleaseBranchName(tagName);
-    const sourceBranch = this.sourceBranch;
+    const sourceBranch = this.context.shared.sourceBranch;
 
     this.context.logger.verbose('PR SourceBranch is:', sourceBranch);
     this.context.logger.verbose('PR TargetBranch is:', releaseBranch);

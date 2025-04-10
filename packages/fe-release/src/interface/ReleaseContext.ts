@@ -1,17 +1,19 @@
-import { FeScriptContext } from '@qlover/scripts-context';
-import merge from 'lodash/merge';
-import get from 'lodash/get';
-import { Env } from '@qlover/env-loader';
+import type ReleaseItInstanceType from 'release-it';
+import type { SharedReleaseOptions } from './ShreadReleaseOptions';
 import type {
   DeepPartial,
   ReleaseConfig,
   ReleaseContextOptions
 } from '../type';
-import type ReleaseItInstanceType from 'release-it';
-import {
+import type {
   ReleaseItInstanceOptions,
   ReleaseItInstanceResult
 } from '../plugins/release-it/ReleaseIt';
+import { FeScriptContext } from '@qlover/scripts-context';
+import merge from 'lodash/merge';
+import get from 'lodash/get';
+import { Env } from '@qlover/env-loader';
+import { DEFAULT_SOURCE_BRANCH } from '../defaults';
 
 const DEFAULT_ENV_ORDER = ['.env.local', '.env'];
 
@@ -21,35 +23,73 @@ export default class ReleaseContext<
   protected readonly _env: Env;
   protected readonly releaseIt: ReleaseItInstanceType;
 
+  /**
+   * Shared Config
+   */
+  shared: SharedReleaseOptions;
+
   constructor(context: ReleaseContextOptions<T>) {
     super(context);
-
-    this._env = Env.searchEnv({
-      logger: this.logger,
-      preloadList: this.feConfig?.envOrder || DEFAULT_ENV_ORDER
-    });
 
     if (!context.options?.releaseIt?.releaseIt) {
       throw new Error('releaseIt is not set');
     }
 
+    this._env = Env.searchEnv({
+      logger: this.logger,
+      preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
+    });
+
+    // use ReleaseIt to relese github/git and npm publish
+    // FIXME: replace `release-it`
     this.releaseIt = context.options.releaseIt.releaseIt;
+
+    this.shared = merge(
+      this.getDefaultShreadOptions(context.shared),
+      this.feConfig.release
+    );
+  }
+
+  private getDefaultShreadOptions(
+    props?: SharedReleaseOptions
+  ): SharedReleaseOptions {
+    return {
+      rootPath: process.cwd(),
+      // FIXME: use current git branch by default
+      sourceBranch:
+        this._env.get('FE_RELEASE_BRANCH') ||
+        this._env.get('FE_RELEASE_SOURCE_BRANCH') ||
+        DEFAULT_SOURCE_BRANCH,
+      releaseEnv:
+        this._env.get('FE_RELEASE_ENV') ||
+        this._env.get('NODE_ENV') ||
+        'development',
+      ...props
+    };
   }
 
   get releasePR(): boolean {
-    return !!this.options.environment?.releasePR;
+    return !!this.shared.releasePR;
   }
 
-  get releasePackageName(): string | undefined {
+  get releasePackageName(): string {
     return this.getPkg('name');
   }
 
   get releasePublishPath(): string | undefined {
-    return this.getConfig('environment.publishPath');
+    return this.shared.publishPath;
   }
 
   get rootPath(): string {
-    return this.getConfig('environment.rootPath', './');
+    return this.shared.rootPath!;
+  }
+
+  get sourceBranch(): string {
+    return this.shared.sourceBranch!;
+  }
+
+  get releaseEnv(): string {
+    return this.shared.releaseEnv!;
   }
 
   get env(): Env {
@@ -64,12 +104,22 @@ export default class ReleaseContext<
     return get(this.options, key, defaultValue);
   }
 
+  setShared(shared: Partial<SharedReleaseOptions>): void {
+    this.shared = merge(this.shared, shared);
+  }
+
   getPkg<T>(key?: string, defaultValue?: T): T {
-    if (!key) {
-      return this.getConfig<T>('environment.packageJson', defaultValue);
+    const packageJson = this.shared.packageJson;
+
+    if (!packageJson) {
+      throw new Error('package.json is not found');
     }
 
-    return this.getConfig<T>(['environment', 'packageJson', key], defaultValue);
+    if (!key) {
+      return packageJson as T;
+    }
+
+    return get(packageJson, key, defaultValue) as T;
   }
 
   /**
@@ -77,6 +127,8 @@ export default class ReleaseContext<
    *
    * Because `release-it` only support signle publish path,
    * so we need to change the current working directory to the publish path.
+   *
+   * FIXME: replace `process.chdir`
    *
    * @note This method will change the current working directory to the publish path.
    * @param options - The options for the release-it process.

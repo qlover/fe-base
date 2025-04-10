@@ -132,8 +132,8 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
       tagName,
       releaseBranch,
       changelog,
-      sourceBranch: this.branchManager.sourceBranch,
-      releaseEnv: this.branchManager.releaseEnv,
+      sourceBranch: this.context.sourceBranch,
+      releaseEnv: this.context.releaseEnv,
       labels
     });
   }

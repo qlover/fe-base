@@ -1,9 +1,11 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
 import type ReleaseContext from './interface/ReleaseContext';
 import type { PublishNpmProps } from './plugins/PublishNpm';
-import type { EnvironmentProps } from './plugins/CheckEnvironment';
-import { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
-import { ReleaseItProps } from './plugins/release-it/ReleaseIt';
+import type { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
+import type { ReleaseItProps } from './plugins/release-it/ReleaseIt';
+import type { FeScriptContextOptions } from '@qlover/scripts-context';
+import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
+import type { WorkspacesProps } from './plugins/workspaces/Workspaces';
 
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -20,27 +22,18 @@ export type DeepPartial<T> = {
 };
 
 export interface ReleaseConfig {
-  environment?: EnvironmentProps;
-
   publishNpm?: PublishNpmProps;
 
   pullRequest?: ReleasePullRequestProps;
 
   releaseIt: ReleaseItProps;
+  workspaces?: WorkspacesProps;
 }
 
-export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
-  Partial<
-    Omit<
-      ReleaseContext<T>,
-      | 'releasePR'
-      | 'releasePackageName'
-      | 'env'
-      | 'setConfig'
-      | 'getConfig'
-      | 'getPkg'
-    >
-  >;
+export interface ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig>
+  extends Omit<FeScriptContextOptions<T>, 'constructor'> {
+  shared?: SharedReleaseOptions;
+}
 
 export type StepOption<T> = {
   label: string;
@@ -51,3 +44,5 @@ export type UserInfoType = {
   repoName: string;
   authorName: string;
 };
+
+export type PackageJson = Record<string, unknown>;

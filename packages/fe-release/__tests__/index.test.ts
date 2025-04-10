@@ -1,11 +1,14 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import type { ReleaseItInstanceType } from '../src/type';
 import type ReleaseContext from '../src/interface/ReleaseContext';
+import type { ReleaseItInstanceType } from '../src/plugins/release-it/ReleaseIt';
 import { Shell } from '@qlover/scripts-context';
 import { Logger } from '@qlover/fe-corekit';
 import Plugin from '../src/Plugin';
 import { release } from '../src/release';
 import { tuple } from '../src/utils/tuple';
+
+const chdirMock = vi.fn();
+process.chdir = chdirMock;
 
 type MockTestProps = {
   name: string;
@@ -69,15 +72,13 @@ describe('index', () => {
       await release({
         shell,
         options: {
-          releaseIt,
-          environment: {
-            skipCheckPackage: true
-          }
-        }
+          releaseIt: { releaseIt }
+        },
+        shared: {}
       });
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toBe('package.json is undefined');
+      expect((error as Error).message).toBe('package.json is not found');
     }
   });
 
@@ -93,18 +94,29 @@ describe('index', () => {
 
     await release({
       shell,
+      dryRun: true,
       options: {
-        releaseIt,
-        environment: {
-          skipCheckPackage: true,
-          packageJson: {
+        releaseIt: { releaseIt },
+        workspaces: {
+          workspace: {
+            path: 'test',
+            root: 'test',
             name: 'test',
-            version: '1.0.0'
-          },
-          plugins: plugins
+            version: '1.0.0',
+            packageJson: {
+              name: 'test',
+              version: '1.0.0'
+            }
+          }
         }
       },
-      dryRun: true
+      shared: {
+        packageJson: {
+          name: 'test',
+          version: '1.0.0'
+        },
+        plugins: plugins
+      }
     });
 
     expect(infileFunc).toHaveBeenCalledWith(name);

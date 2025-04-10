@@ -14,7 +14,7 @@ export default class ReleaseTask {
   async usePlugins(
     defaultPlugins: PluginTuple<PluginClass>[]
   ): Promise<Plugin[]> {
-    const externalTuples = this.context.options.environment?.plugins || [];
+    const externalTuples = this.context.shared.plugins || [];
 
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
       ...defaultPlugins,

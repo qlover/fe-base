@@ -1,11 +1,10 @@
 import type ReleaseTask from '../../implments/ReleaseTask';
+import type { DeepPartial, PackageJson } from '../../type';
 import { join, resolve } from 'node:path';
 import ReleaseContext from '../../interface/ReleaseContext';
 import Plugin from '../../Plugin';
 import { readFileSync } from 'node:fs';
 import { MANIFEST_PATH } from '../../defaults';
-import { DeepPartial } from '../../type';
-import { PackageJson } from '../CheckEnvironment';
 
 export interface WorkspacesProps {
   /**
@@ -13,7 +12,19 @@ export interface WorkspacesProps {
    *
    * @default `false`
    */
-  skipWorkspaces?: boolean;
+  skip?: boolean;
+
+  /**
+   * Whether to skip checking the package.json file
+   *
+   * @default `false`
+   */
+  skipCheckPackage?: boolean;
+
+  /**
+   * The workspace to publish
+   */
+  workspace?: WorkspaceValue;
 }
 
 export interface WorkspaceValue {
@@ -39,22 +50,32 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
   private workspacesList: WorkspaceValue[] = [];
 
-  private skip = false;
+  private _skip = false;
 
   constructor(context: ReleaseContext) {
     super(context, 'workspaces');
   }
 
-  setReleaseTask(releaseTask: ReleaseTask): void {
-    this.releaseTask = releaseTask;
-  }
-
   override enabled(): boolean {
-    return !this.skip && !this.getConfig('skipWorkspaces');
+    return !this._skip && !this.getConfig('skip');
   }
 
   override async onBefore(): Promise<void> {
+    const workspace = this.getConfig('workspace');
+
+    if (workspace) {
+      this.logger.debug('Use the specified workspace', workspace);
+
+      this.setCurrentWorkspace(workspace as WorkspaceValue);
+      return;
+    }
+
     const workspaces = await this.getWorkspaces();
+
+    if (this.getConfig('skipCheckPackage') || workspaces.length === 0) {
+      this.logger.debug('No changes to publish packages');
+      return;
+    }
 
     const [firstWorkspace, ...restWorkspaces] = workspaces;
 
@@ -66,7 +87,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
   override async onExec(): Promise<void> {
     // important
-    this.skip = true;
+    this._skip = true;
 
     for (const workspace of this.workspacesList) {
       this.logger.obtrusive(
@@ -79,19 +100,21 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     }
   }
 
+  setReleaseTask(releaseTask: ReleaseTask): void {
+    this.releaseTask = releaseTask;
+  }
+
   setCurrentWorkspace(workspace: WorkspaceValue): void {
-    this.context.setConfig({
-      environment: {
-        packageJson: workspace.packageJson as DeepPartial<PackageJson>,
-        publishPath: workspace.path
-      }
+    this.setConfig({ workspace: workspace } as DeepPartial<WorkspacesProps>);
+
+    this.context.setShared({
+      publishPath: workspace.root,
+      packageJson: workspace.packageJson
     });
   }
 
   private getWorkspacesPaths(): string[] {
-    const packagesDirections = this.context.getConfig(
-      'environment.packagesDirectories'
-    );
+    const packagesDirections = this.context.shared.packagesDirectories;
 
     if (Array.isArray(packagesDirections)) {
       return packagesDirections;
@@ -102,20 +125,14 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   }
 
   private async getGitWorkspaces(): Promise<string[]> {
-    const sourceBranch = this.context.getConfig('environment.sourceBranch');
+    const sourceBranch = this.context.sourceBranch;
 
     const result = await this.shell.exec(
       `git diff --name-only origin/${sourceBranch}...HEAD`,
       { dryRun: false }
     );
 
-    const changed = result.split('\n');
-
-    if (changed.length === 0) {
-      return [];
-    }
-
-    return changed;
+    return typeof result === 'string' ? result.split('\n') : [];
   }
 
   private intersection(paths: string[], changed: string[]): string[] {
