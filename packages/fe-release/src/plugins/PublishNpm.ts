@@ -1,6 +1,6 @@
 import type ReleaseContext from '../implments/ReleaseContext';
 import type { ReleaseItInstanceResult } from '../implments/release-it/ReleaseIt';
-import Plugin from '../Plugin';
+import Plugin from './Plugin';
 
 export interface PublishNpmProps {
   npmToken?: string;

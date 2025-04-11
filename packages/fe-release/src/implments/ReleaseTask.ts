@@ -3,7 +3,7 @@ import type ReleaseContext from './ReleaseContext';
 import type { PluginClass, PluginTuple } from '../utils/tuple';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
 import Workspaces from '../plugins/workspaces/Workspaces';
-import Plugin from '../Plugin';
+import Plugin from '../plugins/Plugin';
 
 export default class ReleaseTask {
   constructor(

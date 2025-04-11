@@ -1,4 +1,4 @@
-import Plugin from '../Plugin';
+import Plugin from '../plugins/Plugin';
 
 /**
  * Represents a class that extends Plugin.

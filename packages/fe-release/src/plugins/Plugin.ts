@@ -1,7 +1,7 @@
 import type { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
-import type { DeepPartial, ExecutorReleaseContext, StepOption } from './type';
+import type { DeepPartial, ExecutorReleaseContext, StepOption } from '../type';
 import type { Shell } from '@qlover/scripts-context';
-import type ReleaseContext from './implments/ReleaseContext';
+import type ReleaseContext from '../implments/ReleaseContext';
 import merge from 'lodash/merge';
 
 export default abstract class Plugin<Props = unknown>
