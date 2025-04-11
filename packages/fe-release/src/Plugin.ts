@@ -8,12 +8,11 @@ export default abstract class Plugin<Props = unknown>
   implements ExecutorPlugin<ReleaseContext>
 {
   readonly onlyOne = true;
-  protected props: Props = {} as Props;
 
   constructor(
     protected context: ReleaseContext,
     readonly pluginName: string,
-    props?: Props
+    protected props: Props = {} as Props
   ) {
     this.setConfig(this.getInitialProps(props));
   }

@@ -1,11 +1,11 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import type ReleaseContext from '../src/interface/ReleaseContext';
-import type { ReleaseItInstanceType } from '../src/plugins/release-it/ReleaseIt';
+import type ReleaseContext from '../src/implments/ReleaseContext';
+import type { ReleaseItInstanceType } from '../src/implments/release-it/ReleaseIt';
 import { Shell } from '@qlover/scripts-context';
 import { Logger } from '@qlover/fe-corekit';
 import Plugin from '../src/Plugin';
 import { release } from '../src/release';
-import { tuple } from '../src/utils/tuple';
+import { PluginClass, PluginTuple } from '../src/utils/tuple';
 
 const chdirMock = vi.fn();
 process.chdir = chdirMock;
@@ -86,10 +86,13 @@ describe('index', () => {
     const name = 'testPlugin';
     const infileFunc = vi.fn().mockReturnValue(name);
     const plugins = [
-      tuple('./testPlugin.js', {
-        name: 'testPlugin',
-        infile: infileFunc
-      })
+      [
+        './testPlugin.js',
+        {
+          name: 'testPlugin',
+          infile: infileFunc
+        }
+      ]
     ];
 
     await release({
@@ -115,7 +118,7 @@ describe('index', () => {
           name: 'test',
           version: '1.0.0'
         },
-        plugins: plugins
+        plugins: plugins as PluginTuple<PluginClass>[]
       }
     });
 
