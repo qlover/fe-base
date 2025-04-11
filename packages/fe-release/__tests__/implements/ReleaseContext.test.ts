@@ -7,7 +7,7 @@ import type {
   ScriptContextOptions,
   Shell
 } from '@qlover/scripts-context';
-import ReleaseContext from '../../src/interface/ReleaseContext';
+import ReleaseContext from '../../src/implments/ReleaseContext';
 import { Env } from '@qlover/env-loader';
 
 vi.mock('@qlover/env-loader', () => {

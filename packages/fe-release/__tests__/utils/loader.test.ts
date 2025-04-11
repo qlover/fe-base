@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReleaseContext } from '../../src';
 import { load, loaderPluginsFromPluginTuples } from '../../src/utils/loader';
-import Plugin from '../../src/Plugin';
+import Plugin from '../../src/plugins/Plugin';
 import { tuple } from '../../src/utils/tuple';
 import { createTestReleaseContext } from '../helpers';
 

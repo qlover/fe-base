@@ -148,7 +148,8 @@ export function createTestLogger(): Logger {
     error: vi.fn(),
     log: vi.fn(),
     exec: vi.fn(),
-    obtrusive: vi.fn()
+    obtrusive: vi.fn(),
+    verbose: vi.fn()
   } as unknown as Logger;
 }
 
