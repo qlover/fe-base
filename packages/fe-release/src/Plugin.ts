@@ -1,29 +1,33 @@
 import type { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
 import type { DeepPartial, ExecutorReleaseContext, StepOption } from './type';
 import type { Shell } from '@qlover/scripts-context';
-import type ReleaseContext from './interface/ReleaseContext';
+import type ReleaseContext from './implments/ReleaseContext';
 import merge from 'lodash/merge';
 
 export default abstract class Plugin<Props = unknown>
   implements ExecutorPlugin<ReleaseContext>
 {
   readonly onlyOne = true;
-  protected props: Props = {} as Props;
 
   constructor(
     protected context: ReleaseContext,
     readonly pluginName: string,
-    props?: Props
+    protected props: Props = {} as Props
   ) {
+    this.setConfig(this.getInitialProps(props));
+  }
+
+  getInitialProps(props?: Props): Props {
     // command line config, first priority
     const pluginConfig =
-      context.options[pluginName as keyof typeof context.options];
+      this.context.options[
+        this.pluginName as keyof typeof this.context.options
+      ];
 
-    this.props =
-      // plugin config, second priority
-      pluginConfig || props ? merge({}, props, pluginConfig) : ({} as Props);
-
-    this.setConfig(this.props);
+    // plugin config, second priority
+    return pluginConfig || props
+      ? merge({}, props, pluginConfig)
+      : ({} as Props);
   }
 
   get logger(): Logger {
@@ -39,14 +43,18 @@ export default abstract class Plugin<Props = unknown>
   }
 
   getEnv(key: string, defaultValue?: string): string | undefined {
-    return this.context.getEnv().get(key) ?? defaultValue;
+    return this.context.env.get(key) ?? defaultValue;
   }
 
   enabled(): boolean {
     return true;
   }
 
-  getConfig<T>(keys: string | string[], defaultValue?: T): T {
+  getConfig<T>(keys?: string | string[], defaultValue?: T): T {
+    if (!keys) {
+      return this.context.getConfig(this.pluginName, defaultValue);
+    }
+
     return this.context.getConfig(
       [this.pluginName, ...(Array.isArray(keys) ? keys : [keys])],
       defaultValue
@@ -61,6 +69,7 @@ export default abstract class Plugin<Props = unknown>
 
   onBefore?(_context: ExecutorReleaseContext): void | Promise<void> {}
 
+  onExec?(_context: ExecutorReleaseContext): void | Promise<void> {}
   onSuccess?(_context: ExecutorReleaseContext): void | Promise<void> {}
 
   onError?(_context: ExecutorReleaseContext): void | Promise<void> {}

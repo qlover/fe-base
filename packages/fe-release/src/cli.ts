@@ -21,15 +21,20 @@ function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
-    .option('-P, --environment.release-PR', 'Create a release PR')
+    .option('-P, --release-PR', 'Create a release PR')
     .option(
-      '-p, --environment.publish-path <publishPath>',
+      '-p, --publish-path <publishPath>',
       'The path of the package to release, map to feConfig.release.publishPath'
     )
     .option(
-      '-b, --environment.branch-name <branchName>',
+      '-b, --branch-name <branchName>',
       'The branch name of the release, map to feConfig.release.branchName, default(release-${pkgName}-${tagName})'
     )
+    .option(
+      '-s, --source-branch <sourceBranch>',
+      'The source branch of the release'
+    )
+    // plugins args
     .option(
       '--pull-request.increment <increment>',
       'The increment of the release, map to feConfig.release.increment',
@@ -44,28 +49,24 @@ function programArgs() {
       DEFAULT_INCREMENT
     )
     .option(
-      '-s, --environment.source-branch <sourceBranch>',
-      'The source branch of the release'
-    )
-    .option(
-      '-c, --environment.skip-check-package',
-      'Whether to skip checking the package.json file'
+      '--publish-npm.skip-npmrc',
+      'Whether to skip setting the npmrc file'
     );
 
   program.parse();
 
-  return reduceOptions(program.opts());
+  return reduceOptions(program.opts(), 'shared');
 }
 
 async function main() {
-  const { dryRun, verbose, ...commandOptions } = programArgs();
+  const { shared: commonOptions, ...allOptions } = programArgs();
+  const { dryRun, verbose, ...shared } = commonOptions;
 
-  const options: ReleaseContextOptions['options'] = {
-    ...commandOptions,
-    releaseIt: releaseIt
-  };
+  const options: ReleaseContextOptions['options'] = Object.assign(allOptions, {
+    releaseIt: { releaseIt }
+  });
 
-  await release({ dryRun, verbose, options });
+  await release({ dryRun, verbose, options, shared });
 }
 
 main().catch((e) => {

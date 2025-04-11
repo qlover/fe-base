@@ -1,34 +1,25 @@
-import { ReleaseItInstanceOptions, ReleaseItInstanceType } from '../type';
+import type ReleaseContext from '../implments/ReleaseContext';
+import type { ReleaseItInstanceResult } from '../implments/release-it/ReleaseIt';
 import Plugin from '../Plugin';
-import ReleaseContext from '../interface/ReleaseContext';
-import isString from 'lodash/isString';
-import isFunction from 'lodash/isFunction';
 
 export interface PublishNpmProps {
   npmToken?: string;
+
+  /**
+   * Whether to skip setting the npmrc file
+   *
+   * @default `false`
+   */
+  skipNpmrc?: boolean;
 }
 
 export default class PublishNpm extends Plugin<PublishNpmProps> {
-  private _releaseItOutput?: ReleaseItInstanceOptions;
-
   constructor(context: ReleaseContext) {
-    super(context, 'publish');
-
-    this.getIncrementVersion();
+    super(context, 'publishNpm');
   }
 
   enabled(): boolean {
     return !this.context.releasePR;
-  }
-
-  get releaseIt(): ReleaseItInstanceType {
-    const releaseIt = this.context.options.releaseIt;
-
-    if (!isFunction(releaseIt)) {
-      throw new Error('releaseIt instance is not set');
-    }
-
-    return releaseIt;
   }
 
   async onBefore(): Promise<void> {
@@ -41,12 +32,10 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
   /**
    * @override
    */
-  async onSuccess(): Promise<void> {
-    const publishOptions = this.getPublishReleaseItOptions(this.context);
-
+  async onExec(): Promise<void> {
     await this.step({
       label: 'Publish to NPM',
-      task: () => this.publish(publishOptions)
+      task: () => this.publish()
     });
   }
 
@@ -55,52 +44,10 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
    *
    * use release-it to publish the package to npm
    *
-   * @param releaseItOptions - Options for the release-it process.
    * @returns The output from the release-it process.
    */
-  async publish(
-    releaseItOptions: Record<string, unknown>
-  ): Promise<Record<string, unknown>> {
-    this.logger.debug('Run release-it method', releaseItOptions);
-
-    this._releaseItOutput = await this.releaseIt(releaseItOptions);
-
-    // return the output
-    return this._releaseItOutput;
-  }
-
-  getPublishReleaseItOptions(
-    context: ReleaseContext
-  ): ReleaseItInstanceOptions {
-    return {
-      ci: true,
-      npm: {
-        publish: true
-      },
-      git: {
-        requireCleanWorkingDir: false,
-        requireUpstream: false,
-        changelog: false
-      },
-      plugins: {
-        '@release-it/conventional-changelog': {
-          infile: false
-        }
-      },
-      'dry-run': context.dryRun,
-      verbose: true,
-      increment: this.getIncrementVersion()
-    };
-  }
-
-  getIncrementVersion(): string {
-    const version = this.context.getPkg('version');
-
-    if (!version || !isString(version)) {
-      throw new Error('pkg.version is not set');
-    }
-
-    return version;
+  async publish(): Promise<ReleaseItInstanceResult | undefined> {
+    return this.context.releaseIt.publishNpm();
   }
 
   /**
@@ -116,6 +63,11 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
     }
 
     this.setConfig({ npmToken });
+
+    if (this.getConfig('skipNpmrc')) {
+      this.logger.debug('skipNpmrc is true, skip set npmrc');
+      return;
+    }
 
     await this.shell.exec(
       `echo //registry.npmjs.org/:_authToken=${npmToken} > .npmrc`,

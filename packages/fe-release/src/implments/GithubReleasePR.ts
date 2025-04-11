@@ -3,7 +3,7 @@ import {
   PullRequestInterface
 } from '../interface/PullRequestInterface';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import ReleaseContext from '../interface/ReleaseContext';
+import ReleaseContext from './ReleaseContext';
 
 export default class GithubReleasePR implements PullRequestInterface {
   private octokit?: Octokit;
@@ -15,7 +15,7 @@ export default class GithubReleasePR implements PullRequestInterface {
 
   hasGithubToken(context: ReleaseContext): boolean {
     const token =
-      context.getEnv().get('GITHUB_TOKEN') || context.getEnv().get('PAT_TOKEN');
+      context.env.get('GITHUB_TOKEN') || context.env.get('PAT_TOKEN');
 
     if (!token) {
       throw new Error(

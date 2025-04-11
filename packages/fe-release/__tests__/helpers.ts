@@ -119,14 +119,14 @@ export function createTestReleaseContext(
     dryRun: false,
     verbose: false,
     options: {
-      releaseIt: mockReleaseIt,
-      environment: {
-        packageJson: {
-          name: 'test-package',
-          version: '0.9.0'
-        },
-        releasePR: false
-      }
+      releaseIt: { releaseIt: mockReleaseIt }
+    },
+    shared: {
+      packageJson: {
+        name: 'test-package',
+        version: '0.9.0'
+      },
+      releasePR: false
     },
     feConfig: {}
   };
@@ -187,8 +187,14 @@ export function createMockFeScriptContext(
     dryRun: false,
     verbose: false,
     options: {
-      releaseIt: vi.fn(),
-      environment: { packageJson: {}, releasePR: false }
+      releaseIt: { releaseIt: vi.fn() }
+    },
+    shared: {
+      packageJson: {
+        name: 'test-package',
+        version: '0.9.0'
+      },
+      releasePR: false
     }
   };
 

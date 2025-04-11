@@ -1,8 +1,11 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
-import type ReleaseContext from './interface/ReleaseContext';
+import type ReleaseContext from './implments/ReleaseContext';
 import type { PublishNpmProps } from './plugins/PublishNpm';
-import type { EnvironmentProps } from './plugins/CheckEnvironment';
-import { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
+import type { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
+import type { ReleaseItProps } from './implments/release-it/ReleaseIt';
+import type { FeScriptContextOptions } from '@qlover/scripts-context';
+import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
+import type { WorkspacesProps } from './plugins/workspaces/Workspaces';
 
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -14,41 +17,23 @@ export type ReleaseReturnValue = {
   [key: string]: unknown;
 };
 
-export type ReleaseItInstanceOptions = Record<string, unknown>;
-export type ReleaseItInstanceResult = {
-  changelog: string;
-  version: string;
-};
-export type ReleaseItInstanceType = (
-  options: ReleaseItInstanceOptions
-) => Promise<ReleaseItInstanceResult>;
-
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
 export interface ReleaseConfig {
-  environment?: EnvironmentProps;
-
   publishNpm?: PublishNpmProps;
 
   pullRequest?: ReleasePullRequestProps;
 
-  releaseIt: ReleaseItInstanceType;
+  releaseIt: ReleaseItProps;
+  workspaces?: WorkspacesProps;
 }
 
-export type ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig> =
-  Partial<
-    Omit<
-      ReleaseContext<T>,
-      | 'releasePR'
-      | 'setConfig'
-      | 'getConfig'
-      | 'getInitEnv'
-      | 'getEnv'
-      | 'getPkg'
-    >
-  >;
+export interface ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig>
+  extends Omit<FeScriptContextOptions<T>, 'constructor'> {
+  shared?: SharedReleaseOptions;
+}
 
 export type StepOption<T> = {
   label: string;
@@ -59,3 +44,9 @@ export type UserInfoType = {
   repoName: string;
   authorName: string;
 };
+
+export type PackageJson = Record<string, unknown>;
+
+export interface TemplateContext extends SharedReleaseOptions {
+  publishPath: string;
+}

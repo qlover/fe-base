@@ -9,3 +9,7 @@ export const DEFAULT_AUTO_MERGE_TYPE = 'squash';
 export const MANIFEST_PATH = 'package.json';
 
 export const DEFAULT_PR_TITLE = 'Release ${env} ${pkgName} ${tagName}';
+
+export const TEMPLATE_OPEN = '{{';
+
+export const TEMPLATE_CLOSE = '}}';

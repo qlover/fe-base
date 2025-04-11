@@ -1,8 +1,8 @@
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type { ReleaseItInstanceResult } from '../../type';
+import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
 import { type ConstructorType, factory } from '../../utils/factory';
 import Plugin from '../../Plugin';
-import ReleaseContext from '../../interface/ReleaseContext';
+import ReleaseContext from '../../implments/ReleaseContext';
 import ChangelogManager from './ChangelogManager';
 import BranchManager from './BranchManager';
 import PullRequestManager from './PullRequestManager';
@@ -33,7 +33,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
     protected readonly context: ReleaseContext,
     props: ReleasePullRequestProps
   ) {
-    super(context, 'pull-request', props);
+    super(context, 'pullRequest', props);
 
     // create the pull request implementation
     this.prImpl = factory(props.pullRequestInterface, context);
@@ -73,7 +73,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
   /**
    * @override
    */
-  async onSuccess(): Promise<void> {
+  async onExec(): Promise<void> {
     const releaseResult = await this.step({
       label: 'Create Changelog and Version',
       task: () => this.changelogManager.createChangelogAndVersion()
@@ -132,8 +132,8 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
       tagName,
       releaseBranch,
       changelog,
-      sourceBranch: this.branchManager.sourceBranch,
-      releaseEnv: this.branchManager.releaseEnv,
+      sourceBranch: this.context.sourceBranch,
+      releaseEnv: this.context.releaseEnv,
       labels
     });
   }

@@ -1,6 +1,6 @@
-import { ReleaseItInstanceResult } from '../../type';
 import get from 'lodash/get';
-import ReleaseContext from '../../interface/ReleaseContext';
+import ReleaseContext from '../../implments/ReleaseContext';
+import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
 
 export type CreateReleaseResult = {
   tagName: string;
@@ -9,24 +9,6 @@ export type CreateReleaseResult = {
 
 export default class BranchManager {
   constructor(private context: ReleaseContext) {}
-
-  /**
-   * release merge real branch name
-   *
-   * @default `master`
-   */
-  get sourceBranch(): string {
-    return this.context.getConfig('environment.sourceBranch') as string;
-  }
-
-  /**
-   * Release environment
-   *
-   * @default `development`
-   */
-  get releaseEnv(): string {
-    return this.context.getConfig('environment.releaseEnv') as string;
-  }
 
   /**
    * Checks the current tag.
@@ -60,10 +42,8 @@ export default class BranchManager {
    * @returns The formatted release branch.
    */
   getReleaseBranchName(tagName: string): string {
-    const branchNameTpl = this.context.getConfig(
-      'environment.branchName',
-      'release-${tagName}'
-    );
+    const branchNameTpl =
+      this.context.shared.branchName || 'release-${tagName}';
 
     if (typeof branchNameTpl !== 'string') {
       throw new Error('Branch name template is not a string');
@@ -72,9 +52,9 @@ export default class BranchManager {
     this.context.logger.verbose('Release Branch template is:', branchNameTpl);
 
     return this.context.shell.format(branchNameTpl, {
-      pkgName: this.context.getPkg('name'),
-      env: this.releaseEnv,
-      branch: this.sourceBranch,
+      pkgName: this.context.releasePackageName,
+      env: this.context.shared.releaseEnv,
+      branch: this.context.shared.sourceBranch,
       tagName
     });
   }
@@ -94,7 +74,7 @@ export default class BranchManager {
   ): Promise<CreateReleaseResult> {
     const { tagName } = await this.checkTag(releaseResult);
     const releaseBranch = this.getReleaseBranchName(tagName);
-    const sourceBranch = this.sourceBranch;
+    const sourceBranch = this.context.shared.sourceBranch;
 
     this.context.logger.verbose('PR SourceBranch is:', sourceBranch);
     this.context.logger.verbose('PR TargetBranch is:', releaseBranch);
