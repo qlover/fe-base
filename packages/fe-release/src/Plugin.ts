@@ -1,7 +1,7 @@
 import type { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
 import type { DeepPartial, ExecutorReleaseContext, StepOption } from './type';
 import type { Shell } from '@qlover/scripts-context';
-import type ReleaseContext from './interface/ReleaseContext';
+import type ReleaseContext from './implments/ReleaseContext';
 import merge from 'lodash/merge';
 
 export default abstract class Plugin<Props = unknown>
@@ -15,15 +15,20 @@ export default abstract class Plugin<Props = unknown>
     readonly pluginName: string,
     props?: Props
   ) {
+    this.setConfig(this.getInitialProps(props));
+  }
+
+  getInitialProps(props?: Props): Props {
     // command line config, first priority
     const pluginConfig =
-      context.options[pluginName as keyof typeof context.options];
+      this.context.options[
+        this.pluginName as keyof typeof this.context.options
+      ];
 
-    this.props =
-      // plugin config, second priority
-      pluginConfig || props ? merge({}, props, pluginConfig) : ({} as Props);
-
-    this.setConfig(this.props);
+    // plugin config, second priority
+    return pluginConfig || props
+      ? merge({}, props, pluginConfig)
+      : ({} as Props);
   }
 
   get logger(): Logger {

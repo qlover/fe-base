@@ -1,5 +1,5 @@
 import type { AsyncExecutor } from '@qlover/fe-corekit';
-import type ReleaseContext from '../interface/ReleaseContext';
+import type ReleaseContext from './ReleaseContext';
 import type { PluginClass, PluginTuple } from '../utils/tuple';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
 import Workspaces from '../plugins/workspaces/Workspaces';

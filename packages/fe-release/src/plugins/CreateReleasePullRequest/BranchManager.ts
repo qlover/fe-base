@@ -1,6 +1,6 @@
 import get from 'lodash/get';
-import ReleaseContext from '../../interface/ReleaseContext';
-import type { ReleaseItInstanceResult } from '../../plugins/release-it/ReleaseIt';
+import ReleaseContext from '../../implments/ReleaseContext';
+import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
 
 export type CreateReleaseResult = {
   tagName: string;

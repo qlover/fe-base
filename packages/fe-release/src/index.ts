@@ -1,6 +1,6 @@
 // interface
 export * from './interface/PullRequestInterface';
-export { default as ReleaseContext } from './interface/ReleaseContext';
+export { default as ReleaseContext } from './implments/ReleaseContext';
 
 // implments
 // export { default as GithubReleasePR } from './implments/GithubReleasePR';

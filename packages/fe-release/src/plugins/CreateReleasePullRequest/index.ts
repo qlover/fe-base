@@ -1,8 +1,8 @@
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type { ReleaseItInstanceResult } from '../../plugins/release-it/ReleaseIt';
+import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
 import { type ConstructorType, factory } from '../../utils/factory';
 import Plugin from '../../Plugin';
-import ReleaseContext from '../../interface/ReleaseContext';
+import ReleaseContext from '../../implments/ReleaseContext';
 import ChangelogManager from './ChangelogManager';
 import BranchManager from './BranchManager';
 import PullRequestManager from './PullRequestManager';

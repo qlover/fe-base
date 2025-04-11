@@ -60,11 +60,11 @@ function programArgs() {
 
 async function main() {
   const { shared: commonOptions, ...allOptions } = programArgs();
-  const { dryRun, verbose, shared } = commonOptions;
-  const options: ReleaseContextOptions['options'] = {
-    ...allOptions,
+  const { dryRun, verbose, ...shared } = commonOptions;
+
+  const options: ReleaseContextOptions['options'] = Object.assign(allOptions, {
     releaseIt: { releaseIt }
-  };
+  });
 
   await release({ dryRun, verbose, options, shared });
 }

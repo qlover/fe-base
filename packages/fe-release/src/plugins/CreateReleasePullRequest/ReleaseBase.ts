@@ -1,4 +1,4 @@
-import type ReleaseContext from '../../interface/ReleaseContext';
+import type ReleaseContext from '../../implments/ReleaseContext';
 import type { UserInfoType } from '../../type';
 import isString from 'lodash/isString';
 

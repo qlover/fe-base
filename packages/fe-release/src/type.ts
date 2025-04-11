@@ -1,8 +1,8 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
-import type ReleaseContext from './interface/ReleaseContext';
+import type ReleaseContext from './implments/ReleaseContext';
 import type { PublishNpmProps } from './plugins/PublishNpm';
 import type { ReleasePullRequestProps } from './plugins/CreateReleasePullRequest';
-import type { ReleaseItProps } from './plugins/release-it/ReleaseIt';
+import type { ReleaseItProps } from './implments/release-it/ReleaseIt';
 import type { FeScriptContextOptions } from '@qlover/scripts-context';
 import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
 import type { WorkspacesProps } from './plugins/workspaces/Workspaces';
@@ -46,3 +46,7 @@ export type UserInfoType = {
 };
 
 export type PackageJson = Record<string, unknown>;
+
+export interface TemplateContext extends SharedReleaseOptions {
+  publishPath: string;
+}

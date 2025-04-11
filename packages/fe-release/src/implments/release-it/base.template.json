@@ -2,13 +2,13 @@
   "git": {
     "requireUpstream": true,
     "commit": true,
-    "commitMessage": "chore(tag): [TPL:projectName] v${version}",
+    "commitMessage": "chore(tag): {{packageJson.name}} v${version}",
     "commitArgs": ["--no-verify"],
     "tag": true,
-    "tagName": "[TPL:projectName]-v${version}",
-    "tagMatch": "[TPL:projectName]-v*",
+    "tagName": "{{packageJson.name}}-v${version}",
+    "tagMatch": "{{packageJson.name}}-v*",
     "getLatestTagFromAllRefs": true,
-    "tagAnnotation": "chore(tag): [TPL:projectName] v${version}",
+    "tagAnnotation": "chore(tag): {{packageJson.name}} v${version}",
     "push": true,
     "pushArgs": ["--follow-tags"]
   },
@@ -19,7 +19,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "chore(tag): [TPL:projectName] v${version}"
+    "releaseName": "chore(tag): {{packageJson.name}} v${version}"
   },
 
   "plugins": {
@@ -41,7 +41,7 @@
         ]
       },
       "gitRawCommitsOpts": {
-        "path": "[TPL:publishPath]"
+        "path": "{{publishPath}}"
       }
     }
   }

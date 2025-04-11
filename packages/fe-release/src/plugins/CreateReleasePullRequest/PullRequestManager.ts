@@ -1,6 +1,6 @@
 import type { Shell } from '@qlover/scripts-context';
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type ReleaseContext from '../../interface/ReleaseContext';
+import type ReleaseContext from '../../implments/ReleaseContext';
 import type ReleaseBase from './ReleaseBase';
 import type { Logger } from '@qlover/fe-corekit';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';

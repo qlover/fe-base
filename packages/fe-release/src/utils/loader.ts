@@ -1,7 +1,7 @@
 import type { PluginTuple } from './tuple';
 import type { PluginClass } from './tuple';
 import type Plugin from '../Plugin';
-import type ReleaseContext from '../interface/ReleaseContext';
+import type ReleaseContext from '../implments/ReleaseContext';
 import { join, parse } from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';

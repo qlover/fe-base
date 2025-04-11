@@ -1,10 +1,6 @@
-import type ReleaseContext from '../interface/ReleaseContext';
+import type ReleaseContext from '../implments/ReleaseContext';
+import type { ReleaseItInstanceResult } from '../implments/release-it/ReleaseIt';
 import Plugin from '../Plugin';
-import type {
-  ReleaseItInstanceOptions,
-  ReleaseItInstanceResult
-} from './release-it/ReleaseIt';
-import merge from 'lodash/merge';
 
 export interface PublishNpmProps {
   npmToken?: string;
@@ -18,8 +14,6 @@ export interface PublishNpmProps {
 }
 
 export default class PublishNpm extends Plugin<PublishNpmProps> {
-  private _releaseItOutput?: ReleaseItInstanceResult;
-
   constructor(context: ReleaseContext) {
     super(context, 'publishNpm');
   }
@@ -45,29 +39,6 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
     });
   }
 
-  private getPublishReleaseItOptions(): ReleaseItInstanceOptions {
-    return merge(this.context.getConfig('releaseIt'), {
-      ci: true,
-      npm: {
-        publish: true,
-        publishPath: this.context.releasePackageName
-      },
-      git: {
-        requireCleanWorkingDir: false,
-        requireUpstream: false,
-        changelog: false
-      },
-      plugins: {
-        '@release-it/conventional-changelog': {
-          infile: false
-        }
-      },
-      'dry-run': this.context.dryRun,
-      verbose: true,
-      increment: this.context.getPkg('version')
-    });
-  }
-
   /**
    * Executes the release-it process.
    *
@@ -76,13 +47,7 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
    * @returns The output from the release-it process.
    */
   async publish(): Promise<ReleaseItInstanceResult | undefined> {
-    const releaseItOptions = this.getPublishReleaseItOptions();
-    this.logger.debug('Run release-it method', releaseItOptions);
-
-    this._releaseItOutput = await this.context.runReleaseIt(releaseItOptions);
-
-    // return the output
-    return this._releaseItOutput;
+    return this.context.releaseIt.publishNpm();
   }
 
   /**

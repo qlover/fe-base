@@ -3,7 +3,7 @@ import {
   PullRequestInterface
 } from '../interface/PullRequestInterface';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import ReleaseContext from '../interface/ReleaseContext';
+import ReleaseContext from './ReleaseContext';
 
 export default class GithubReleasePR implements PullRequestInterface {
   private octokit?: Octokit;
