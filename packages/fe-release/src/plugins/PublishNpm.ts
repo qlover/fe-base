@@ -1,6 +1,6 @@
 import type ReleaseContext from '../implments/ReleaseContext';
 import type { ReleaseItInstanceResult } from '../implments/release-it/ReleaseIt';
-import Plugin from '../Plugin';
+import Plugin from './Plugin';
 
 export interface PublishNpmProps {
   npmToken?: string;
@@ -56,7 +56,8 @@ export default class PublishNpm extends Plugin<PublishNpmProps> {
    * @throws If the NPM token is not set.
    */
   async checkNpmAuth(): Promise<void> {
-    const npmToken = this.getEnv('NPM_TOKEN');
+    const npmToken =
+      (this.getConfig('npmToken') as string) || this.getEnv('NPM_TOKEN');
 
     if (!npmToken) {
       throw new Error('NPM_TOKEN is not set.');

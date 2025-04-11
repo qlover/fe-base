@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { tuple } from '../../src/utils/tuple';
-import Plugin from '../../src/Plugin';
+import Plugin from '../../src/plugins/Plugin';
 
 class TestPlugin extends Plugin {
   // eslint-disable-next-line

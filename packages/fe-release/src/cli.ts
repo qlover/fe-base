@@ -1,12 +1,12 @@
 #! /usr/bin/env node
 
 import type { ReleaseContextOptions } from './type';
-import { release } from './release';
 import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import semver from 'semver';
 import { reduceOptions } from './utils/args';
+import ReleaseTask from './implments/ReleaseTask';
 
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
@@ -66,7 +66,7 @@ async function main() {
     releaseIt: { releaseIt }
   });
 
-  await release({ dryRun, verbose, options, shared });
+  await new ReleaseTask({ dryRun, verbose, options, shared }).exec();
 }
 
 main().catch((e) => {

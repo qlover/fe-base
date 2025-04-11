@@ -1,6 +1,6 @@
 import type { PluginTuple } from './tuple';
 import type { PluginClass } from './tuple';
-import type Plugin from '../Plugin';
+import type Plugin from '../plugins/Plugin';
 import type ReleaseContext from '../implments/ReleaseContext';
 import { join, parse } from 'node:path';
 import { createRequire } from 'node:module';

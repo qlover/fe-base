@@ -2,7 +2,7 @@ import type ReleaseTask from '../../implments/ReleaseTask';
 import type { DeepPartial, PackageJson } from '../../type';
 import { join, resolve } from 'node:path';
 import ReleaseContext from '../../implments/ReleaseContext';
-import Plugin from '../../Plugin';
+import Plugin from '../Plugin';
 import { readFileSync } from 'node:fs';
 import { MANIFEST_PATH } from '../../defaults';
 
