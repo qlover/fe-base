@@ -28,7 +28,7 @@ export default class ReleaseContext<
   constructor(context: ReleaseContextOptions<T>) {
     super(context);
 
-    this.releaseIt = new ReleaseIt(this, context.options!.releaseIt);
+    this.releaseIt = new ReleaseIt(this, context.options?.releaseIt);
 
     this._env = Env.searchEnv({
       logger: this.logger,
@@ -36,8 +36,8 @@ export default class ReleaseContext<
     });
 
     this.shared = merge(
-      this.getDefaultShreadOptions(context.shared),
-      this.feConfig.release
+      this.feConfig.release,
+      this.getDefaultShreadOptions(context.shared)
     );
   }
 

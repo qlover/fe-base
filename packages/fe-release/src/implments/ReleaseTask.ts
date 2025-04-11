@@ -22,11 +22,15 @@ const innerTuples: PluginTuple<PluginClass>[] = [
 export default class ReleaseTask {
   protected context: ReleaseContext;
   constructor(
-    options: ReleaseContextOptions,
+    options: ReleaseContextOptions = {},
     private executor: AsyncExecutor = new AsyncExecutor(),
     private defaultTuples: PluginTuple<PluginClass>[] = innerTuples
   ) {
     this.context = new ReleaseContext(options);
+  }
+
+  getContext(): ReleaseContext {
+    return this.context;
   }
 
   async usePlugins(
@@ -35,7 +39,22 @@ export default class ReleaseTask {
     externalTuples = externalTuples || this.context.shared.plugins || [];
 
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
-      ...this.defaultTuples,
+      ...this.defaultTuples.filter((tuple) => {
+        // filter create release pull request plugin if releasePR is false
+        if (
+          !this.context.shared.releasePR &&
+          tuple[0] === CreateReleasePullRequest
+        ) {
+          return false;
+        }
+
+        // filter publish npm plugin if releasePackageName is not set
+        else if (this.context.shared.releasePR && tuple[0] === PublishNpm) {
+          return false;
+        }
+
+        return true;
+      }),
       ...externalTuples
     ]);
 

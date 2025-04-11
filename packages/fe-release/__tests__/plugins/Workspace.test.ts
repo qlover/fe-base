@@ -1,12 +1,11 @@
+import '../MockReleaseContextDep';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Workspaces, {
   type WorkspaceValue
 } from '../../src/plugins/workspaces/Workspaces';
-import { createTestReleaseContext, setupGlobalMocks } from '../helpers';
+import { createTestReleaseContext } from '../helpers';
 import type { ReleaseContext } from '../../src';
 import type ReleaseTask from '../../src/implments/ReleaseTask';
-
-setupGlobalMocks();
 
 describe('Workspaces Plugin', () => {
   let context: ReleaseContext;

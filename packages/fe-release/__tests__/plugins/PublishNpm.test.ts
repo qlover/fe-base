@@ -1,9 +1,8 @@
+import '../MockReleaseContextDep';
 import type { ReleaseContext } from '../../src';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import PublishNpm from '../../src/plugins/PublishNpm';
-import { createTestReleaseContext, setupGlobalMocks } from '../helpers';
-
-setupGlobalMocks();
+import { createTestReleaseContext } from '../helpers';
 
 describe('PublishNpm Plugin', () => {
   let context: ReleaseContext;

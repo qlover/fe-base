@@ -1,117 +1,31 @@
+import '../MockReleaseContextDep';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Logger } from '@qlover/fe-utils';
 import type { ReleaseConfig, ReleaseContextOptions } from '../../src/type';
-import type {
-  FeConfig,
-  FeScriptContextOptions,
-  ScriptContextOptions,
-  Shell
-} from '@qlover/scripts-context';
 import ReleaseContext from '../../src/implments/ReleaseContext';
+
+import { createTestReleaseContext } from '../helpers';
 import { Env } from '@qlover/env-loader';
-
-vi.mock('@qlover/env-loader', () => {
-  return {
-    Env: class {
-      static searchEnv = vi.fn().mockImplementation(() => {
-        return {
-          get: vi.fn().mockImplementation((key: string) => {
-            return process.env[key];
-          }),
-          set: vi.fn(),
-          remove: vi.fn(),
-          load: vi.fn(),
-          getDestroy: vi.fn()
-        };
-      });
-    }
-  };
-});
-
-vi.mock('@qlover/scripts-context', () => {
-  return {
-    FeScriptContext: class {
-      public readonly logger: Logger;
-      public readonly shell: Shell;
-      public readonly feConfig: FeConfig;
-      public readonly dryRun: boolean;
-      public readonly verbose: boolean;
-      public readonly options: ScriptContextOptions<ReleaseConfig>;
-      constructor(context: Required<FeScriptContextOptions<ReleaseConfig>>) {
-        const { logger, shell, feConfig, dryRun, verbose, options } = context;
-        this.logger = logger;
-        this.shell = shell;
-        this.feConfig = feConfig;
-        this.dryRun = !!dryRun;
-        this.verbose = !!verbose;
-        this.options = options;
-      }
-    }
-  };
-});
+import { defaultFeConfig } from '@qlover/scripts-context';
 
 describe('ReleaseContext', () => {
-  let logger: Logger;
-  let shell: Shell;
-  let mockReleaseIt: ReturnType<typeof vi.fn>;
-  let contextOptions: Required<ReleaseContextOptions>;
+  const defaultPackageJson = {
+    name: 'test-package-name',
+    version: '99.1020-test'
+  };
+  let contextOptions: ReleaseContextOptions<ReleaseConfig>;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    logger = {
-      info: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      log: vi.fn(),
-      exec: vi.fn()
-    } as unknown as Logger;
-
-    shell = {
-      exec: vi.fn()
-    } as unknown as Shell;
-
-    mockReleaseIt = vi.fn().mockResolvedValue({
-      changelog: '## 1.0.0\n* Feature 1\n* Feature 2',
-      version: '1.0.0'
-    });
-
-    contextOptions = {
-      logger,
-      shell,
-      dryRun: false,
-      verbose: false,
-      options: {
-        releaseIt: { releaseIt: mockReleaseIt }
-      },
+    contextOptions = createTestReleaseContext({
       shared: {
-        packageJson: {
-          name: 'test-package',
-          version: '0.9.0'
-        },
-        releasePR: false
-      },
-      feConfig: {
-        envOrder: ['.env.test', '.env']
+        packageJson: defaultPackageJson
       }
-    };
-
-    (Env.searchEnv as ReturnType<typeof vi.fn>).mockImplementation(() => {
-      return {
-        get: vi.fn().mockImplementation((key: string) => {
-          return process.env[key];
-        }),
-        set: vi.fn(),
-        remove: vi.fn(),
-        load: vi.fn(),
-        getDestroy: vi.fn()
-      };
     });
   });
 
   describe('constructor', () => {
-    it('should correctly initialize ReleaseContext instance', () => {
+    it('should correctly initialize ReleaseContext instance', async () => {
       const context = new ReleaseContext(contextOptions);
       expect(context).toBeInstanceOf(ReleaseContext);
       expect(Env.searchEnv).toHaveBeenCalled();
@@ -145,7 +59,7 @@ describe('ReleaseContext', () => {
 
       // @ts-expect-error
       expect(context.options!.environment!.skipCheckPackage).toBe(true);
-      expect(context.getPkg('name')).toBe('test-package');
+      expect(context.getPkg('name')).toBe(defaultPackageJson.name);
     });
   });
 
@@ -153,8 +67,8 @@ describe('ReleaseContext', () => {
     it('should return the correct config value', () => {
       const context = new ReleaseContext(contextOptions);
 
-      expect(context.getPkg('name')).toBe('test-package');
-      expect(context.getPkg('version')).toBe('0.9.0');
+      expect(context.getPkg('name')).toBe(defaultPackageJson.name);
+      expect(context.getPkg('version')).toBe(defaultPackageJson.version);
     });
 
     it('should return the default value when the config does not exist', () => {
@@ -179,8 +93,8 @@ describe('ReleaseContext', () => {
     it('should return the package.json value', () => {
       const context = new ReleaseContext(contextOptions);
 
-      expect(context.getPkg('name')).toBe('test-package');
-      expect(context.getPkg('version')).toBe('0.9.0');
+      expect(context.getPkg('name')).toBe(defaultPackageJson.name);
+      expect(context.getPkg('version')).toBe(defaultPackageJson.version);
     });
 
     it('should return undefined when the package.json does not have the key', () => {
@@ -193,19 +107,23 @@ describe('ReleaseContext', () => {
   describe('releasePackageName', () => {
     it('should return the correct package name', () => {
       const context = new ReleaseContext(contextOptions);
-      expect(context.releasePackageName).toBe('test-package');
+      expect(context.releasePackageName).toBe(defaultPackageJson.name);
     });
   });
 
   describe('releasePublishPath', () => {
     it('should return undefined when publishPath is not set', () => {
       const context = new ReleaseContext(contextOptions);
-      expect(context.releasePublishPath).toBeUndefined();
+      expect(context.releasePublishPath).toBe(
+        defaultFeConfig.release?.publishPath
+      );
     });
 
     it('should return the correct path when publishPath is set', () => {
-      contextOptions.shared!.publishPath = '/path/to/publish';
       const context = new ReleaseContext(contextOptions);
+      context.setShared({
+        publishPath: '/path/to/publish'
+      });
       expect(context.releasePublishPath).toBe('/path/to/publish');
     });
   });

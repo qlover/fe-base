@@ -26,6 +26,8 @@ export default class ReleaseIt {
   private templateOptions: ReleaseItInstanceOptions;
   private templateJson: TemplateJson;
 
+  private lastPath: string = '';
+
   constructor(
     private context: ReleaseContext,
     props?: ReleaseItProps
@@ -58,8 +60,6 @@ export default class ReleaseIt {
       throw new Error('publishPath is not set');
     }
 
-    const lastDir = process.cwd();
-
     try {
       this.context.logger.debug(
         'Switch to publish path to:',
@@ -67,10 +67,12 @@ export default class ReleaseIt {
       );
       process.chdir(this.context.releasePublishPath);
 
+      this.lastPath = this.context.releasePublishPath;
+
       return await this.releaseItInstance(options!);
     } finally {
-      this.context.logger.debug('Switch back to:', lastDir);
-      process.chdir(lastDir);
+      this.context.logger.debug('Switch back to:', this.lastPath);
+      process.chdir(this.lastPath);
     }
   }
 

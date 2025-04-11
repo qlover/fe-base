@@ -1,5 +1,9 @@
 import { vi } from 'vitest';
-import type { ReleaseConfig, ReleaseContextOptions } from '../src/type';
+import type {
+  DeepPartial,
+  ReleaseConfig,
+  ReleaseContextOptions
+} from '../src/type';
 import type { Logger } from '@qlover/fe-corekit';
 import type {
   FeConfig,
@@ -9,6 +13,8 @@ import type {
 } from '@qlover/scripts-context';
 import { ReleaseContext } from '../src';
 import merge from 'lodash/merge';
+import { defaultFeConfig } from '@qlover/scripts-context';
+import template from 'lodash/template';
 
 /**
  * Setup global mocks
@@ -27,7 +33,9 @@ export function setupGlobalMocks() {
       Env: class {
         static searchEnv = vi.fn().mockImplementation(() => {
           return {
-            get: vi.fn(),
+            get: vi.fn().mockImplementation((key: string) => {
+              return process.env[key];
+            }),
             set: vi.fn(),
             remove: vi.fn(),
             load: vi.fn(),
@@ -39,7 +47,7 @@ export function setupGlobalMocks() {
   });
 
   // Mock @qlover/scripts-context
-  vi.mock('@qlover/scripts-context', () => {
+  vi.mock('@qlover/scripts-context', async () => {
     return {
       FeScriptContext: class {
         public readonly logger: Logger;
@@ -58,7 +66,10 @@ export function setupGlobalMocks() {
           this.verbose = !!verbose;
           this.options = options;
         }
-      }
+      },
+      defaultFeConfig: await import('@qlover/scripts-context').then(
+        (m) => m.defaultFeConfig
+      )
     };
   });
 }
@@ -102,7 +113,7 @@ export function createMockEnv() {
  * ```
  */
 export function createTestReleaseContext(
-  overrideOptions: Partial<ReleaseContextOptions> = {}
+  overrideOptions: DeepPartial<ReleaseContextOptions> = {}
 ): ReleaseContext {
   const logger = createTestLogger();
   const shell = createTestShell();
@@ -121,14 +132,7 @@ export function createTestReleaseContext(
     options: {
       releaseIt: { releaseIt: mockReleaseIt }
     },
-    shared: {
-      packageJson: {
-        name: 'test-package',
-        version: '0.9.0'
-      },
-      releasePR: false
-    },
-    feConfig: {}
+    feConfig: defaultFeConfig
   };
 
   const mergedOptions = merge({}, defaultOptions, overrideOptions);
@@ -160,7 +164,10 @@ export function createTestLogger(): Logger {
  */
 export function createTestShell(): Shell {
   return {
-    exec: vi.fn()
+    exec: vi.fn(),
+    format: vi.fn().mockImplementation((templateString, context) => {
+      return template(templateString)(context);
+    })
   } as unknown as Shell;
 }
 

@@ -41,7 +41,7 @@ export interface SharedReleaseOptions extends FeReleaseConfig {
   /**
    * Plugins
    */
-  plugins?: PluginTuple<PluginClass>[];
+  plugins?: PluginTuple<PluginClass<unknown[]>>[];
 
   /**
    * The workspace of the project
