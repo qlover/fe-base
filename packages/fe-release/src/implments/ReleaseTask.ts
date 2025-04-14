@@ -41,10 +41,7 @@ export default class ReleaseTask {
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
       ...this.defaultTuples.filter((tuple) => {
         // filter create release pull request plugin if releasePR is false
-        if (
-          !this.context.shared.releasePR &&
-          tuple[0] === GithubPR
-        ) {
+        if (!this.context.shared.releasePR && tuple[0] === GithubPR) {
           return false;
         }
 
