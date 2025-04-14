@@ -1,7 +1,7 @@
 import type { Shell } from '@qlover/scripts-context';
 import type { PullRequestInterface } from '../../interface/PullRequestInterface';
 import type ReleaseContext from '../../implments/ReleaseContext';
-import type ReleaseBase from './ReleaseBase';
+import type GitBase from '../GitBase';
 import type { Logger } from '@qlover/fe-corekit';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
 import {
@@ -49,7 +49,7 @@ type CreatePROptionsArgs = {
 export default class PullRequestManager {
   constructor(
     private context: ReleaseContext,
-    private releaseBase: ReleaseBase,
+    private releaseBase: GitBase,
     private releasePR: PullRequestInterface
   ) {}
 
@@ -105,7 +105,7 @@ export default class PullRequestManager {
     const mergeMethod = this.autoMergeType;
 
     if (this.context.dryRun) {
-      const { repoName, authorName } = this.releaseBase.repoInfo!;
+      const { repoName, authorName } = this.context.shared!;
       this.logger.info(
         `[DRY RUN] Would merge PR #${prNumber} with method '${mergeMethod}' in repo ${authorName}/${repoName}, branch ${releaseBranch}`
       );

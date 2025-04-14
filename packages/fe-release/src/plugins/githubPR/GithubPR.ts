@@ -6,7 +6,7 @@ import ReleaseContext from '../../implments/ReleaseContext';
 import ChangelogManager from './ChangelogManager';
 import BranchManager from './BranchManager';
 import PullRequestManager from './PullRequestManager';
-import ReleaseBase from './ReleaseBase';
+import GitBase from '../GitBase';
 
 export interface ReleasePullRequestProps {
   /**
@@ -23,7 +23,7 @@ export interface ReleasePullRequestProps {
 }
 
 export default class GithubPR extends Plugin<ReleasePullRequestProps> {
-  private releaseBase: ReleaseBase;
+  private gitBase: GitBase;
   private changelogManager: ChangelogManager;
   private branchManager: BranchManager;
   private pullRequestManager: PullRequestManager;
@@ -38,15 +38,15 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     // create the pull request implementation
     this.prImpl = factory(props.pullRequestInterface, context);
 
-    this.releaseBase = new ReleaseBase(context);
+    this.gitBase = new GitBase(context);
 
     this.changelogManager = new ChangelogManager(context);
 
-    this.branchManager = new BranchManager(context);
+    this.branchManager = new BranchManager(context, this.gitBase);
 
     this.pullRequestManager = new PullRequestManager(
       context,
-      this.releaseBase,
+      this.gitBase,
       this.prImpl
     );
   }
@@ -58,16 +58,11 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
   async onBefore(): Promise<void> {
     this.logger.verbose('[before] CreateReleasePullRequest');
 
-    await this.releaseBase.init();
+    await this.gitBase.onBefore();
 
-    if (!this.releaseBase.repoInfo) {
-      throw new Error('repoInfo is not set');
-    }
+    const { repoName, authorName } = this.context.shared!;
 
-    await this.prImpl.init({
-      repoName: this.releaseBase.repoInfo.repoName,
-      authorName: this.releaseBase.repoInfo.authorName
-    });
+    await this.prImpl.init({ repoName, authorName });
   }
 
   /**

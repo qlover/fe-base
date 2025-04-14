@@ -1,6 +1,7 @@
-import get from 'lodash/get';
-import ReleaseContext from '../../implments/ReleaseContext';
 import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
+import type GitBase from '../GitBase';
+import type ReleaseContext from '../../implments/ReleaseContext';
+import get from 'lodash/get';
 
 export type CreateReleaseResult = {
   tagName: string;
@@ -8,7 +9,10 @@ export type CreateReleaseResult = {
 };
 
 export default class BranchManager {
-  constructor(private context: ReleaseContext) {}
+  constructor(
+    private context: ReleaseContext,
+    private gitBase: GitBase
+  ) {}
 
   /**
    * Checks the current tag.
