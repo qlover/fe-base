@@ -1,0 +1,8 @@
+{
+  "name": "@qlover/test-package2",
+  "version": "0.0.0",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ]
+}

@@ -2,13 +2,8 @@
   "protectedBranches": ["master", "build/tsup", "master", "root-src", "test"],
   "release": {
     "packagesDirectories": [
-      "packages/fe-scripts",
-      "packages/fe-corekit",
-      "packages/corekit-bridge",
-      "packages/create-app",
-      "packages/scripts-context",
-      "packages/env-loader",
-      "packages/fe-release"
+      "packages/test-package",
+      "packages/test-package2"
     ]
   }
 }
