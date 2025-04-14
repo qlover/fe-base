@@ -51,6 +51,11 @@ function programArgs() {
     .option(
       '--publish-npm.skip-npmrc',
       'Whether to skip setting the npmrc file'
+    )
+    .option(
+      '--packages-directories <packagesDirectories>',
+      'The packages that have been changed, multiple values use `,` to split, map to feConfig.release.packagesDirectories',
+      (value) => value.split(',')
     );
 
   program.parse();

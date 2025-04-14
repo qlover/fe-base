@@ -42,7 +42,7 @@
     "access": "public"
   },
   "bin": {
-    "fe-release": "./dist/cli.cjs"
+    "fe-release": "./dist/cli.js"
   },
   "scripts": {
     "build": "rollup -c",

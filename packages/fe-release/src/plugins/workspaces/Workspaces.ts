@@ -73,8 +73,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     const workspaces = await this.getWorkspaces();
 
     if (this.getConfig('skipCheckPackage') || workspaces.length === 0) {
-      this.logger.debug('No changes to publish packages');
-      return;
+      throw new Error('No changes to publish packages');
     }
 
     const [firstWorkspace, ...restWorkspaces] = workspaces;

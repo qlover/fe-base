@@ -121,7 +121,7 @@ export default class ReleaseIt {
     return this.run(
       this.getOptions(this.context.getTemplateContext(), {
         ci: true,
-        increment: this.context.getConfig('pullRequest.increment') as string,
+        increment: this.context.getConfig('githubPR.increment') as string,
         npm: {
           publish: false
         },
