@@ -7,7 +7,7 @@ import { resolve } from 'path';
 import { createTestReleaseContext } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
 import Workspaces from '../../src/plugins/workspaces/Workspaces';
-import ReleaseBase from '../../src/plugins/CreateReleasePullRequest/ReleaseBase';
+import ReleaseBase from '../../src/plugins/githubPR/ReleaseBase';
 
 interface TestPluginProps {
   testValue: string;
