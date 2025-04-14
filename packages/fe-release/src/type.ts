@@ -40,11 +40,6 @@ export type StepOption<T> = {
   task: () => Promise<T>;
 };
 
-export type UserInfoType = {
-  repoName: string;
-  authorName: string;
-};
-
 export type PackageJson = Record<string, unknown>;
 
 export interface TemplateContext extends SharedReleaseOptions {
