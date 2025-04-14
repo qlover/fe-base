@@ -50,4 +50,6 @@ export interface SharedReleaseOptions extends FeReleaseConfig {
 
   repoName?: string;
   authorName?: string;
+
+  currentBranch?: string;
 }

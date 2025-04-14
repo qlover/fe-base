@@ -16,14 +16,25 @@ export default class GitBase {
       throw new Error('Failed to get repoInfo');
     }
 
-    const sourceBranch = this.context.shared.sourceBranch;
+    let currentBranch = this.context.shared.currentBranch;
+    if (!currentBranch) {
+      currentBranch = await this.context.shell.exec(
+        'git rev-parse --abbrev-ref HEAD',
+        { dryRun: false }
+      );
+    }
 
-    // switch to source branch
-    await this.context.shell.exec(`git checkout ${sourceBranch}`);
+    if (currentBranch) {
+      // switch to current branch
+      await this.context.shell.exec(`git checkout ${currentBranch}`, {
+        dryRun: false
+      });
+    }
 
     this.context.setShared({
       repoName: repoInfo.repoName,
-      authorName: repoInfo.authorName
+      authorName: repoInfo.authorName,
+      currentBranch
     });
   }
 
