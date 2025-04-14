@@ -1,6 +1,6 @@
 import type { FeReleaseConfig } from '@qlover/scripts-context';
 import type { PluginClass, PluginTuple } from '../utils/tuple';
-import type { PackageJson, UserInfoType } from '../type';
+import type { PackageJson } from '../type';
 
 export interface SharedReleaseOptions extends FeReleaseConfig {
   /**
@@ -48,8 +48,6 @@ export interface SharedReleaseOptions extends FeReleaseConfig {
    */
   packageJson?: PackageJson;
 
-  /**
-   * The repository information
-   */
-  repoInfo?: UserInfoType;
+  repoName?: string;
+  authorName?: string;
 }

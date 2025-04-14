@@ -1,17 +1,30 @@
-import type ReleaseContext from '../../implments/ReleaseContext';
-import type { UserInfoType } from '../../type';
+import type ReleaseContext from '../implments/ReleaseContext';
 import isString from 'lodash/isString';
 
-export default class ReleaseBase {
+type UserInfoType = {
+  repoName: string;
+  authorName: string;
+};
+
+export default class GitBase {
   constructor(private context: ReleaseContext) {}
 
-  get repoInfo(): UserInfoType | undefined {
-    return this.context.shared.repoInfo;
-  }
-
-  async init(): Promise<void> {
+  async onBefore(): Promise<void> {
     const repoInfo = await this.getUserInfo();
-    this.context.shared.repoInfo = repoInfo;
+
+    if (!repoInfo) {
+      throw new Error('Failed to get repoInfo');
+    }
+
+    const sourceBranch = this.context.shared.sourceBranch;
+
+    // switch to source branch
+    await this.context.shell.exec(`git checkout ${sourceBranch}`);
+
+    this.context.setShared({
+      repoName: repoInfo.repoName,
+      authorName: repoInfo.authorName
+    });
   }
 
   /**
@@ -47,7 +60,7 @@ export default class ReleaseBase {
 
     this.context.logger.verbose('repoUrl: ', repoUrl);
 
-    // 解析 GitHub URL 获取 owner 和 repo name
+    // Parse GitHub URL to get owner and repo name
     const githubUrlPattern = /github\.com[:/]([^/]+)\/([^/.]+)(?:\.git)?$/;
     const match = repoUrl.match(githubUrlPattern);
 
