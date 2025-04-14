@@ -4,14 +4,14 @@ import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
 import { AsyncExecutor } from '@qlover/fe-corekit';
 import ReleaseContext from './ReleaseContext';
 import GithubReleasePR from './GithubReleasePR';
-import CreateReleasePullRequest from '../plugins/CreateReleasePullRequest';
+import GithubPR from '../plugins/githubPR/GithubPR';
 import { DEFAULT_INCREMENT } from '../defaults';
 import PublishNpm from '../plugins/PublishNpm';
 import Workspaces from '../plugins/workspaces/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
 
 const innerTuples: PluginTuple<PluginClass>[] = [
-  tuple(CreateReleasePullRequest, {
+  tuple(GithubPR, {
     increment: DEFAULT_INCREMENT,
     pullRequestInterface: GithubReleasePR
   }),
@@ -43,7 +43,7 @@ export default class ReleaseTask {
         // filter create release pull request plugin if releasePR is false
         if (
           !this.context.shared.releasePR &&
-          tuple[0] === CreateReleasePullRequest
+          tuple[0] === GithubPR
         ) {
           return false;
         }

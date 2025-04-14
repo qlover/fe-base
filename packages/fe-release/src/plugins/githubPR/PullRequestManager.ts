@@ -76,7 +76,7 @@ export default class PullRequestManager {
    * @default `999999`
    */
   get dryRunPRNumber(): string {
-    return this.context.getConfig('pullRequest.dryRunPRNumber', '999999');
+    return this.context.getConfig('githubPR.dryRunPRNumber', '999999');
   }
 
   /**

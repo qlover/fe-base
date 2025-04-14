@@ -9,8 +9,13 @@ export interface PullRequestInterface {
   init(params: InitOptions): Promise<unknown>;
 
   mergePullRequest(params: unknown): Promise<unknown>;
-  mergePullRequest(params: unknown): Promise<unknown>;
-  getPullRequest(params: unknown): Promise<unknown>;
+
+  /**
+   *
+   * @param params
+   */
+  getPullRequest(params: { pull_number: number }): Promise<unknown>;
+
   deleteBranch(params: unknown): Promise<unknown>;
   addPullRequestLabels(params: unknown): Promise<unknown>;
   createPullRequestLabel(params: unknown): Promise<unknown>;

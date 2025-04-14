@@ -22,7 +22,7 @@ export interface ReleasePullRequestProps {
   pullRequestInterface: ConstructorType<PullRequestInterface, [ReleaseContext]>;
 }
 
-export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestProps> {
+export default class GithubPR extends Plugin<ReleasePullRequestProps> {
   private releaseBase: ReleaseBase;
   private changelogManager: ChangelogManager;
   private branchManager: BranchManager;
@@ -33,7 +33,7 @@ export default class CreateReleasePullRequest extends Plugin<ReleasePullRequestP
     protected readonly context: ReleaseContext,
     props: ReleasePullRequestProps
   ) {
-    super(context, 'pullRequest', props);
+    super(context, 'githubPR', props);
 
     // create the pull request implementation
     this.prImpl = factory(props.pullRequestInterface, context);

@@ -35,7 +35,9 @@ export default class ReleaseContext<
       preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
     });
 
-    this.shared = merge(
+    // don't use deep merge, because the shared options will be overwritten by the default options
+    this.shared = Object.assign(
+      {},
       this.feConfig.release,
       this.getDefaultShreadOptions(context.shared)
     );
