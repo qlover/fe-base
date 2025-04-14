@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - feat-fe-release-v1.0
+      - master
     types:
       - closed
     paths:
@@ -43,7 +43,7 @@ jobs:
       - run: yarn build
 
       - name: Release Pull Request
-        run: npm run fe-release --pull-request
+        run: npx fe-release -V -d -P
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -83,7 +83,7 @@ jobs:
       - run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:corekit-bridge
+        run: npx fe-release -V -d
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
