@@ -207,7 +207,9 @@ describe('Workspaces Plugin', () => {
       );
       workspaces.setConfig({ skipCheckPackage: true });
 
-      await workspaces.onBefore();
+      await expect(workspaces.onBefore()).rejects.toThrow(
+        'No changes to publish packages'
+      );
 
       expect(workspaces.getConfig('workspace')).toBeUndefined();
     });
