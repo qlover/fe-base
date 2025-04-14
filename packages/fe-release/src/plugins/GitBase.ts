@@ -17,6 +17,8 @@ export default class GitBase {
     }
 
     let currentBranch = this.context.shared.currentBranch;
+    this.context.logger.debug('Shared.currentBranch is:', currentBranch);
+
     if (!currentBranch) {
       currentBranch = await this.getCurrentBranch();
     }

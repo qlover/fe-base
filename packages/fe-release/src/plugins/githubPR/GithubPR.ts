@@ -63,7 +63,7 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
   }
 
   async onBefore(): Promise<void> {
-    this.logger.verbose('[before] CreateReleasePullRequest');
+    this.logger.verbose('[before] GithubPR');
 
     await this.gitBase.onBefore();
 
