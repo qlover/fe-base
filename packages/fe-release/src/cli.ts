@@ -22,6 +22,8 @@ function programArgs() {
     )
     .option('-V, --verbose', 'Show more information')
     .option('-P, --release-PR', 'Create a release PR')
+    .option('-M, --merge-publish', 'Merge publish')
+    // to Workspaces use workspace
     .option(
       '-p, --publish-path <publishPath>',
       'The path of the package to release, map to feConfig.release.publishPath'

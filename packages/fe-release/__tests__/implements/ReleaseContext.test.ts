@@ -5,7 +5,6 @@ import ReleaseContext from '../../src/implments/ReleaseContext';
 
 import { createTestReleaseContext } from '../helpers';
 import { Env } from '@qlover/env-loader';
-import { defaultFeConfig } from '@qlover/scripts-context';
 
 describe('ReleaseContext', () => {
   const defaultPackageJson = {
@@ -18,8 +17,12 @@ describe('ReleaseContext', () => {
     vi.clearAllMocks();
 
     contextOptions = createTestReleaseContext({
-      shared: {
-        packageJson: defaultPackageJson
+      options: {
+        workspaces: {
+          workspace: {
+            packageJson: defaultPackageJson
+          }
+        }
       }
     });
   });
@@ -104,19 +107,10 @@ describe('ReleaseContext', () => {
     });
   });
 
-  describe('releasePackageName', () => {
-    it('should return the correct package name', () => {
-      const context = new ReleaseContext(contextOptions);
-      expect(context.releasePackageName).toBe(defaultPackageJson.name);
-    });
-  });
-
   describe('releasePublishPath', () => {
     it('should return undefined when publishPath is not set', () => {
       const context = new ReleaseContext(contextOptions);
-      expect(context.releasePublishPath).toBe(
-        defaultFeConfig.release?.publishPath
-      );
+      expect(context.workspace!.path).toBeUndefined();
     });
 
     it('should return the correct path when publishPath is set', () => {
@@ -124,7 +118,7 @@ describe('ReleaseContext', () => {
       context.setShared({
         publishPath: '/path/to/publish'
       });
-      expect(context.releasePublishPath).toBe('/path/to/publish');
+      expect(context.shared.publishPath).toBe('/path/to/publish');
     });
   });
 
@@ -212,7 +206,7 @@ describe('ReleaseContext', () => {
 
       context.setShared(newShared);
 
-      expect(context.releasePublishPath).toBe('/new/publish/path');
+      expect(context.shared.publishPath).toBe('/new/publish/path');
       expect(context.releasePR).toBe(true);
     });
   });

@@ -11,6 +11,7 @@ import get from 'lodash/get';
 import { Env } from '@qlover/env-loader';
 import { DEFAULT_SOURCE_BRANCH } from '../defaults';
 import ReleaseIt from './release-it/ReleaseIt';
+import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
 
 const DEFAULT_ENV_ORDER = ['.env.local', '.env'];
 
@@ -65,14 +66,6 @@ export default class ReleaseContext<
     return !!this.shared.releasePR;
   }
 
-  get releasePackageName(): string {
-    return this.getPkg('name');
-  }
-
-  get releasePublishPath(): string | undefined {
-    return this.shared.publishPath;
-  }
-
   get rootPath(): string {
     return this.shared.rootPath!;
   }
@@ -89,6 +82,14 @@ export default class ReleaseContext<
     return this._env;
   }
 
+  get workspaces(): WorkspaceValue[] | undefined {
+    return this.getConfig('workspaces.workspaces');
+  }
+
+  get workspace(): WorkspaceValue | undefined {
+    return this.getConfig('workspaces.workspace');
+  }
+
   setConfig(config: DeepPartial<ReleaseConfig>): void {
     this.options = merge(this.options, config);
   }
@@ -102,7 +103,7 @@ export default class ReleaseContext<
   }
 
   getPkg<T>(key?: string, defaultValue?: T): T {
-    const packageJson = this.shared.packageJson;
+    const packageJson = this.workspace?.packageJson;
 
     if (!packageJson) {
       throw new Error('package.json is not found');
@@ -118,7 +119,11 @@ export default class ReleaseContext<
   getTemplateContext(): TemplateContext {
     return {
       ...this.shared,
-      publishPath: this.releasePublishPath!
+      ...this.workspace!,
+      publishPath: this.workspace?.path || '',
+      // deprecated
+      env: this.releaseEnv,
+      branch: this.sourceBranch
     };
   }
 }
