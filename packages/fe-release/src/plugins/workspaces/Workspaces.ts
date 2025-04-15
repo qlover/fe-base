@@ -25,6 +25,12 @@ export interface WorkspacesProps {
    * The workspace to publish
    */
   workspace?: WorkspaceValue;
+
+  /**
+   * The workspaces to publish
+   * @private
+   */
+  workspaces?: WorkspaceValue[];
 }
 
 export interface WorkspaceValue {
@@ -61,12 +67,14 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   }
 
   override async onBefore(): Promise<void> {
+    this.logger.debug('Merge publish:', !!this.context.shared.mergePublish);
+
     const workspace = this.getConfig('workspace');
 
     if (workspace) {
       this.logger.debug('Use the specified workspace', workspace);
 
-      this.setCurrentWorkspace(workspace as WorkspaceValue);
+      this.setCurrentWorkspace(workspace as WorkspaceValue, []);
       return;
     }
 
@@ -77,7 +85,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     }
 
     // If has publishPath, use the workspace
-    const publishPath = this.context.releasePublishPath;
+    const publishPath = this.context.shared.publishPath;
     if (publishPath) {
       const publishPathWorkspace = workspaces.find(
         (workspace) => resolve(workspace.root) === resolve(publishPath)
@@ -86,7 +94,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
       this.nextSkip();
 
       if (!publishPathWorkspace) {
-        throw new Error('No workspace found for publishPath');
+        throw new Error(`No workspace found for: ${publishPath}`);
       }
 
       this.logger.debug(
@@ -94,8 +102,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
         join(publishPathWorkspace.root, MANIFEST_PATH)
       );
 
-      this.setCurrentWorkspace(publishPathWorkspace);
-
+      this.setCurrentWorkspace(publishPathWorkspace, workspaces);
       return;
     }
 
@@ -104,7 +111,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.workspacesList = restWorkspaces;
 
     // first workspace
-    this.setCurrentWorkspace(firstWorkspace);
+    this.setCurrentWorkspace(firstWorkspace, workspaces);
   }
 
   /**
@@ -123,6 +130,11 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     // important
     this.nextSkip();
 
+    if (this.context.shared.mergePublish) {
+      this.logger.info('Merge publish, skip Workspaces');
+      return;
+    }
+
     for (const workspace of this.workspacesList) {
       this.logger.obtrusive(
         `workspace: ${workspace.name} ${workspace.version}`
@@ -138,13 +150,14 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.releaseTask = releaseTask;
   }
 
-  setCurrentWorkspace(workspace: WorkspaceValue): void {
-    this.setConfig({ workspace: workspace } as DeepPartial<WorkspacesProps>);
-
-    this.context.setShared({
-      publishPath: workspace.root,
-      packageJson: workspace.packageJson
-    });
+  setCurrentWorkspace(
+    workspace: WorkspaceValue,
+    workspaces?: WorkspaceValue[]
+  ): void {
+    this.setConfig({
+      workspace: workspace,
+      workspaces
+    } as DeepPartial<WorkspacesProps>);
   }
 
   private getWorkspacesPaths(): string[] {
@@ -202,17 +215,29 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.logger.debug('changedPaths', changedPaths);
 
     const workspaces: WorkspaceValue[] = changedPaths.map((path) => {
-      const packageJsonData = this.readJson(join(path, MANIFEST_PATH));
-
-      return {
-        name: packageJsonData.name as string,
-        version: packageJsonData.version as string,
-        path,
-        root: join(this.context.rootPath, path),
-        packageJson: packageJsonData
-      };
+      return this.toWorkspace({ path });
     });
 
     return workspaces;
+  }
+
+  toWorkspace(workspace: Partial<WorkspaceValue>): WorkspaceValue {
+    let { root, packageJson } = workspace;
+    const path = workspace.path as string;
+
+    if (!path) {
+      throw new Error('path is not required!');
+    }
+
+    root = root || join(this.context.rootPath, path);
+    packageJson = packageJson || this.readJson(join(root, MANIFEST_PATH));
+
+    return {
+      name: packageJson.name as string,
+      version: packageJson.version as string,
+      path,
+      root,
+      packageJson
+    };
   }
 }

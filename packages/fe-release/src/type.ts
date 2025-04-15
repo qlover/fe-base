@@ -5,7 +5,10 @@ import type { ReleasePullRequestProps } from './plugins/githubPR/GithubPR';
 import type { ReleaseItProps } from './implments/release-it/ReleaseIt';
 import type { FeScriptContextOptions } from '@qlover/scripts-context';
 import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
-import type { WorkspacesProps } from './plugins/workspaces/Workspaces';
+import type {
+  WorkspacesProps,
+  WorkspaceValue
+} from './plugins/workspaces/Workspaces';
 
 export interface ExecutorReleaseContext
   extends ExecutorContext<ReleaseContext> {
@@ -42,6 +45,16 @@ export type StepOption<T> = {
 
 export type PackageJson = Record<string, unknown>;
 
-export interface TemplateContext extends SharedReleaseOptions {
+export interface TemplateContext extends SharedReleaseOptions, WorkspaceValue {
   publishPath: string;
+
+  /**
+   * @deprecated  use `releaseEnv` from `shared`
+   */
+  env: string;
+
+  /**
+   * @deprecated  use `sourceBranch` from `shared`
+   */
+  branch: string;
 }

@@ -1,6 +1,10 @@
 import type ReleaseContext from '../../implments/ReleaseContext';
 import type { ReleaseItInstanceResult } from '../../implments/release-it/ReleaseIt';
+import { DeepPartial, ReleaseConfig } from '../../type';
+import type { WorkspaceValue } from '../workspaces/Workspaces';
 import get from 'lodash/get';
+
+export type ComposeWorkspace = WorkspaceValue & ReleaseItInstanceResult;
 
 export default class ChangelogManager {
   constructor(private readonly context: ReleaseContext) {}
@@ -26,7 +30,28 @@ export default class ChangelogManager {
    *
    * @returns The output from the release-it process.
    */
-  createChangelogAndVersion(): Promise<ReleaseItInstanceResult> {
+  createChangelog(): Promise<ReleaseItInstanceResult> {
     return this.context.releaseIt.createChangelog();
+  }
+
+  async createChangeLogs(
+    workspaces: WorkspaceValue[]
+  ): Promise<ComposeWorkspace[]> {
+    const composeWorkspaces: ComposeWorkspace[] = [];
+    for (const workspace of workspaces) {
+      this.context.setConfig({
+        workspaces: {
+          workspace
+        }
+      } as DeepPartial<ReleaseConfig>);
+
+      const generateResult = await this.createChangelog();
+
+      composeWorkspaces.push({
+        ...workspace,
+        ...generateResult
+      });
+    }
+    return composeWorkspaces;
   }
 }

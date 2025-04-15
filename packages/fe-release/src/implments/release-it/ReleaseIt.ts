@@ -56,18 +56,17 @@ export default class ReleaseIt {
   async run(
     options?: ReleaseItInstanceOptions
   ): Promise<ReleaseItInstanceResult> {
-    if (!this.context.releasePublishPath) {
+    const publishPath = this.context.workspace?.root;
+
+    if (!publishPath) {
       throw new Error('publishPath is not set');
     }
 
     try {
-      this.context.logger.debug(
-        'Switch to publish path to:',
-        this.context.releasePublishPath
-      );
-      process.chdir(this.context.releasePublishPath);
+      this.context.logger.debug('Switch to publish path to:', publishPath);
+      process.chdir(publishPath);
 
-      this.lastPath = this.context.releasePublishPath;
+      this.lastPath = publishPath;
 
       return await this.releaseItInstance(options!);
     } finally {
@@ -98,7 +97,7 @@ export default class ReleaseIt {
         ci: true,
         npm: {
           publish: true,
-          publishPath: this.context.releasePackageName
+          publishPath: this.context.workspace?.name
         },
         git: {
           requireCleanWorkingDir: false,
@@ -127,6 +126,7 @@ export default class ReleaseIt {
         },
         git: {
           requireCleanWorkingDir: false,
+          requireUpstream: false,
           tag: false,
           push: false
         },
