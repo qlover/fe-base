@@ -197,7 +197,9 @@ export default class PullRequestManager {
   async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
     const prOptions = this.getCreateReleasePROptions(options);
 
-    if (this.context.dryRun) {
+    const dryRunCreatePR = this.context.getConfig('githubPR.dryRunCreatePR');
+
+    if (dryRunCreatePR || this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
         ...prOptions,
         labels: options.labels
@@ -213,7 +215,7 @@ export default class PullRequestManager {
         throw new Error('CreateReleasePR Failed, prNumber is empty');
       }
 
-      this.logger.debug('Create PR Success', data);
+      this.logger.debug('Create PR Success', [data?.url]);
 
       // add label
       if (options.labels && options.labels.length) {
@@ -221,7 +223,9 @@ export default class PullRequestManager {
           issue_number,
           labels: options.labels
         });
-        this.logger.debug('Add PR label Success', result);
+        this.logger.debug('Add PR label Success', [
+          (result as unknown as { url: string })?.url
+        ]);
       }
 
       return issue_number.toString();

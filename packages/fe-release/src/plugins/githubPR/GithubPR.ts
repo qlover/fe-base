@@ -17,6 +17,13 @@ export interface ReleasePullRequestProps {
   increment: string;
 
   /**
+   * Whether to dry run the creation of the pull request
+   *
+   * @default `false`
+   */
+  dryRunCreatePR?: boolean;
+
+  /**
    * The pull request interface
    */
   pullRequestInterface: ConstructorType<PullRequestInterface, [ReleaseContext]>;
@@ -56,7 +63,7 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
   }
 
   async onBefore(): Promise<void> {
-    this.logger.verbose('[before] CreateReleasePullRequest');
+    this.logger.verbose('[before] GithubPR');
 
     await this.gitBase.onBefore();
 

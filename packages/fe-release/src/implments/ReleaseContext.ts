@@ -48,7 +48,7 @@ export default class ReleaseContext<
   ): SharedReleaseOptions {
     return {
       rootPath: process.cwd(),
-      // FIXME: use current git branch by default
+      // use currentBranch by default
       sourceBranch:
         this._env.get('FE_RELEASE_BRANCH') ||
         this._env.get('FE_RELEASE_SOURCE_BRANCH') ||
