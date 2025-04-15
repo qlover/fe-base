@@ -400,7 +400,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     );
 
     expect(context.logger.verbose).toHaveBeenCalledWith(
-      'PR TargetBranch is:',
+      'PR ReleaseBranch is:',
       `test-release-${targetPackageJson.name}-${targetPackageJson.version}`
     );
     expect(context.logger.info).toHaveBeenCalledWith(

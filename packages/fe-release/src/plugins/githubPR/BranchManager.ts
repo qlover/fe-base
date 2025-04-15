@@ -80,10 +80,9 @@ export default class BranchManager {
     const releaseBranch = this.getReleaseBranchName(tagName);
     const { sourceBranch, currentBranch } = this.context.shared;
 
-    this.context.logger.verbose(
-      'PR [CurrentBranch, SourceBranch, ReleaseBranch] is:',
-      [currentBranch, sourceBranch, releaseBranch]
-    );
+    this.context.logger.verbose('PR CurrentBranch is:', currentBranch);
+    this.context.logger.verbose('PR SourceBranch is:', sourceBranch);
+    this.context.logger.verbose('PR ReleaseBranch is:', releaseBranch);
 
     try {
       await this.context.shell.exec(
