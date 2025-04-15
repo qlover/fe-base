@@ -154,6 +154,10 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     workspace: WorkspaceValue,
     workspaces?: WorkspaceValue[]
   ): void {
+    this.context.setShared({
+      publishPath: workspace.path
+    });
+
     this.setConfig({
       workspace: workspace,
       workspaces

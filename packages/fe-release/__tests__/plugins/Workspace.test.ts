@@ -15,10 +15,6 @@ describe('Workspaces Plugin', () => {
   beforeEach(() => {
     context = createTestReleaseContext({
       shared: {
-        packageJson: {
-          name: 'root-package',
-          version: '1.0.0'
-        },
         packagesDirectories: ['packages/package-a', 'packages/package-b']
       }
     });
@@ -173,8 +169,8 @@ describe('Workspaces Plugin', () => {
       workspaces.setCurrentWorkspace(workspace);
 
       expect(workspaces.getConfig('workspace')).toEqual(workspace);
-      expect(context.shared.publishPath).toBe('/absolute/path/to/workspace');
-      expect(context.shared.packageJson).toEqual({
+      expect(context.shared.publishPath).toBe('path/to/workspace');
+      expect(context.workspace!.packageJson).toEqual({
         name: 'test-workspace',
         version: '1.1.0'
       });

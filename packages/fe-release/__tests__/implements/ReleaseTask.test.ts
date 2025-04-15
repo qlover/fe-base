@@ -405,7 +405,7 @@ describe('ReleaseTask internal plugin execution process (dry run)', () => {
       `test-release-${targetPackageJson.name}-${targetPackageJson.version}`
     );
     expect(context.logger.info).toHaveBeenCalledWith(
-      expect.stringMatching('Create Changelog and Version - success')
+      expect.stringMatching('Create Changelogs - success')
     );
     expect(context.logger.info).toHaveBeenCalledWith(
       expect.stringMatching('Create Release Branch - success')
@@ -477,7 +477,7 @@ describe('ReleaseTask internal plugin execution process (dry run)', () => {
     const releaseTask = new ReleaseTask(context);
 
     await expect(releaseTask.exec()).rejects.toThrow(
-      'No workspace found for publishPath'
+      'No workspace found for: invalid/publish-path'
     );
 
     expect(context.logger.debug).toHaveBeenCalledWith('skip next workspace');
