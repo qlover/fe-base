@@ -28,6 +28,28 @@ export default class ReleaseContext<
   constructor(context: ReleaseContextOptions<T>) {
     super(context);
 
+    this.shell.execFormattedCommand = function (command, options = {}) {
+      const execPromise = this.config.execPromise;
+      if (!execPromise) {
+        throw new Error('execPromise is not defined');
+      }
+
+      const { dryRunResult, silent, dryRun } = options;
+      const isDryRun = dryRun !== undefined ? dryRun : this.config.dryRun;
+
+      if (!silent) {
+        this.logger.exec(command);
+      }
+
+      if (isDryRun) {
+        return Promise.resolve(dryRunResult as string);
+      }
+
+      const result = execPromise(command, options);
+
+      return result;
+    };
+
     this.releaseIt = new ReleaseIt(this, context.options?.releaseIt);
 
     this._env = Env.searchEnv({

@@ -80,14 +80,18 @@ export default class BranchManager {
     const releaseBranch = this.getReleaseBranchName(tagName);
     const { sourceBranch, currentBranch } = this.context.shared;
 
-    this.context.logger.verbose('PR CurrentBranch is:', currentBranch);
-    this.context.logger.verbose('PR SourceBranch is:', sourceBranch);
-    this.context.logger.verbose('PR TargetBranch is:', releaseBranch);
+    this.context.logger.verbose(
+      'PR [CurrentBranch, SourceBranch, ReleaseBranch] is:',
+      [currentBranch, sourceBranch, releaseBranch]
+    );
 
     try {
-      await this.context.shell.exec(`git fetch origin ${sourceBranch}`);
-      await this.context.shell.exec(`git merge origin/${sourceBranch}`);
-      await this.context.shell.exec(`git checkout -b ${releaseBranch}`);
+      await this.context.shell.exec(
+        `git fetch origin ${sourceBranch} ${currentBranch}`
+      );
+      await this.context.shell.exec(
+        `git checkout -b ${releaseBranch} ${currentBranch}`
+      );
       await this.context.shell.exec(`git push origin ${releaseBranch}`);
     } catch (error) {
       // maybe not allow token Workflow permissions

@@ -35,7 +35,10 @@ export default class GitBase {
     });
   }
 
-  getCurrentBranch(): Promise<string> {
+  async getCurrentBranch(): Promise<string> {
+    // Add a small delay to ensure Git internal state is updated
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     return this.context.shell.exec('git rev-parse --abbrev-ref HEAD', {
       dryRun: false
     });
