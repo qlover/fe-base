@@ -7,7 +7,7 @@ import { resolve } from 'path';
 import { createTestReleaseContext } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
 import Workspaces from '../../src/plugins/workspaces/Workspaces';
-import ReleaseBase from '../../src/plugins/githubPR/ReleaseBase';
+import ReleaseBase from '../../src/plugins/GitBase';
 
 interface TestPluginProps {
   testValue: string;
@@ -400,7 +400,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     );
 
     expect(context.logger.verbose).toHaveBeenCalledWith(
-      'PR TargetBranch is:',
+      'PR ReleaseBranch is:',
       `test-release-${targetPackageJson.name}-${targetPackageJson.version}`
     );
     expect(context.logger.info).toHaveBeenCalledWith(

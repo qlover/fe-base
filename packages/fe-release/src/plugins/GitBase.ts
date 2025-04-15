@@ -18,10 +18,7 @@ export default class GitBase {
 
     let currentBranch = this.context.shared.currentBranch;
     if (!currentBranch) {
-      currentBranch = await this.context.shell.exec(
-        'git rev-parse --abbrev-ref HEAD',
-        { dryRun: false }
-      );
+      currentBranch = await this.getCurrentBranch();
     }
 
     if (currentBranch) {
@@ -35,6 +32,15 @@ export default class GitBase {
       repoName: repoInfo.repoName,
       authorName: repoInfo.authorName,
       currentBranch
+    });
+  }
+
+  async getCurrentBranch(): Promise<string> {
+    // Add a small delay to ensure Git internal state is updated
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    return this.context.shell.exec('git rev-parse --abbrev-ref HEAD', {
+      dryRun: false
     });
   }
 

@@ -56,6 +56,10 @@ function programArgs() {
       '--packages-directories <packagesDirectories>',
       'The packages that have been changed, multiple values use `,` to split, map to feConfig.release.packagesDirectories',
       (value) => value.split(',')
+    )
+    .option(
+      '--githubPR.dry-run-create-PR',
+      'Whether to dry run the creation of the pull request'
     );
 
   program.parse();
