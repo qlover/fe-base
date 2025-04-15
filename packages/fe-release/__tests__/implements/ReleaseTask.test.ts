@@ -3,11 +3,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ReleaseTask from '../../src/implments/ReleaseTask';
 import { AsyncExecutor, PromiseTask } from '@qlover/fe-corekit';
 import { Plugin, ReleaseContext } from '../../src';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { createTestReleaseContext } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
 import Workspaces from '../../src/plugins/workspaces/Workspaces';
 import ReleaseBase from '../../src/plugins/GitBase';
+import { MANIFEST_PATH } from '../../src/defaults';
 
 interface TestPluginProps {
   testValue: string;
@@ -33,24 +34,24 @@ class MockExecutor extends AsyncExecutor {
   }
 }
 
-describe('ReleaseTask 基本使用', () => {
-  describe('必须依赖 release-it', () => {
-    it('应该抛出错误，没有 releaseIt 选项', () => {
+describe('ReleaseTask basic usage', () => {
+  describe('must depend on release-it', () => {
+    it('should throw error, no releaseIt option', () => {
       expect(() => new ReleaseTask({})).toThrow('releaseIt is not set');
     });
 
-    it('应该抛出错误，没有 options 选项时 release-it 选项未设置', () => {
+    it('should throw error, no releaseIt option', () => {
       expect(() => new ReleaseTask()).toThrow('releaseIt is not set');
     });
   });
 
-  describe('创建 ReleaseTask 实例', () => {
-    it('应该正确创建ReleaseTask示例', () => {
+  describe('create ReleaseTask instance', () => {
+    it('should create ReleaseTask instance', () => {
       const releaseTask = new ReleaseTask(createTestReleaseContext());
       expect(releaseTask).toBeInstanceOf(ReleaseTask);
     });
 
-    it('应该覆盖 executor 执行逻辑', async () => {
+    it('should override executor execution logic', async () => {
       const releaseTask = new ReleaseTask(
         createTestReleaseContext(),
         new MockExecutor()
@@ -61,7 +62,7 @@ describe('ReleaseTask 基本使用', () => {
       expect(reuslt).toBe('test exec result');
     });
 
-    it('应该结束插件执行在设置了 FE_RELEASE 环境变量时', async () => {
+    it('should end plugin execution when FE_RELEASE environment variable is set', async () => {
       process.env['FE_RELEASE'] = 'false';
 
       const releaseTask = new ReleaseTask(
@@ -74,7 +75,7 @@ describe('ReleaseTask 基本使用', () => {
       delete process.env['FE_RELEASE'];
     });
 
-    it('应该执行自定义的插件', async () => {
+    it('should execute custom plugins', async () => {
       const onBefore = vi.fn();
       const onExec = vi.fn();
       class TestPlugin extends Plugin<TestPluginProps> {
@@ -112,7 +113,7 @@ describe('ReleaseTask 基本使用', () => {
       expect(onBefore).toHaveBeenCalled();
       expect(onExec).toHaveBeenCalled();
     });
-    it('应该执行自定义的插件, 覆盖默认插件', async () => {
+    it('should execute custom plugins, override default plugins', async () => {
       const onBefore = vi.fn();
       const onExec = vi.fn();
       class TestPlugin extends Plugin<TestPluginProps> {
@@ -149,7 +150,7 @@ describe('ReleaseTask 基本使用', () => {
   });
 });
 
-describe('ReleaseTask 上下文参数的验证', () => {
+describe('ReleaseTask context parameter verification', () => {
   const overrideShared = {
     // append from Workspace plugins
     packageJson: {
@@ -166,12 +167,12 @@ describe('ReleaseTask 上下文参数的验证', () => {
 
   const extendsArgsNames = Object.keys(overrideShared);
 
-  it('应该正确初始化参数和context', () => {
+  it('should correctly initialize parameters and context', () => {
     const releaseTask = new ReleaseTask(createTestReleaseContext());
     expect(releaseTask.getContext()).toBeDefined();
   });
 
-  it('应该正确初始化 shared 参数(继承自 feConfig.release)', () => {
+  it('should correctly initialize shared parameters (inherited from feConfig.release)', () => {
     const releaseTask = new ReleaseTask(createTestReleaseContext());
 
     const context = releaseTask.getContext();
@@ -189,7 +190,7 @@ describe('ReleaseTask 上下文参数的验证', () => {
     });
   });
 
-  it('应该覆盖默认的 shard 参数', () => {
+  it('should override default shared parameters', () => {
     const releaseTask = new ReleaseTask(
       createTestReleaseContext({
         shared: overrideShared
@@ -218,13 +219,13 @@ const mockPackageJsonMaps = {
   }
 } as const;
 
-describe('ReleaseTask 内部插件执行流程(空跑)', () => {
+describe('ReleaseTask internal plugin execution process (dry run)', () => {
   let mockChdir: typeof process.chdir;
 
   beforeEach(() => {
     vi.mock('fs', () => ({
       ...vi.importActual('fs'), // 保留其他 fs 模块的原始功能
-      readFileSync: vi.fn().mockImplementation((path: string) => {
+      readFileSync: vi.fn().mockImplementation((_path: string) => {
         for (const path of Object.keys(mockPackageJsonMaps)) {
           if (path.includes(path)) {
             return JSON.stringify(
@@ -243,7 +244,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     vi.clearAllMocks();
   });
 
-  it('应该成功发布到 npm, 传入 npm token', async () => {
+  it('should publish to npm, pass npm token', async () => {
     const defaultWorkspace = {
       name: 'test-workspace',
       version: '1.0.0',
@@ -281,7 +282,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     );
   });
 
-  it('应该成功发布 npm, 设置 process.env.npmToken', async () => {
+  it('should publish npm, set process.env.npmToken', async () => {
     process.env.NPM_TOKEN = 'testnpmtoken';
     const packagesDirectories = Object.keys(mockPackageJsonMaps);
 
@@ -322,7 +323,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     delete process.env.NPM_TOKEN;
   });
 
-  it('应该成功发布多个工作区', async () => {
+  it('should publish multiple workspaces', async () => {
     process.env.NPM_TOKEN = 'testnpmtoken';
 
     const packagesDirectories = Object.keys(mockPackageJsonMaps);
@@ -352,7 +353,7 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     delete process.env.NPM_TOKEN;
   });
 
-  it('应该成功发布 PR, 发布一个项目时', async () => {
+  it('should publish PR, publish a project', async () => {
     process.env.GITHUB_TOKEN = 'test-githubtoken';
     const packagesDirectories = Object.keys(mockPackageJsonMaps);
 
@@ -414,5 +415,75 @@ describe('ReleaseTask 内部插件执行流程(空跑)', () => {
     );
 
     delete process.env.GITHUB_TOKEN;
+  });
+
+  it('should skip workspaces when publishPath is set', async () => {
+    process.env.NPM_TOKEN = 'test-npm-token';
+
+    const packagesDirectories = Object.keys(mockPackageJsonMaps);
+
+    // @ts-expect-error
+    vi.spyOn(Workspaces.prototype, 'getGitWorkspaces').mockImplementation(
+      // @ts-expect-error
+      () => {
+        return Promise.resolve([
+          packagesDirectories[0] + '/index.ts',
+          packagesDirectories[0] + '/func.ts'
+        ]);
+      }
+    );
+
+    const context = createTestReleaseContext({
+      dryRun: true,
+      shared: { packagesDirectories, publishPath: packagesDirectories[0] }
+    });
+
+    const releaseTask = new ReleaseTask(context);
+
+    await releaseTask.exec();
+
+    expect(context.logger.debug).toHaveBeenCalledWith(
+      'publishPathWorkspace find!',
+      expect.stringContaining(join(packagesDirectories[0], MANIFEST_PATH))
+    );
+    expect(context.logger.debug).toHaveBeenCalledWith('skip next workspace');
+
+    expect(context.options.releaseIt.releaseIt).toBeCalledTimes(1);
+
+    delete process.env.NPM_TOKEN;
+  });
+
+  it('should directly stop the chain, when publishPath is invalid', async () => {
+    process.env.NPM_TOKEN = 'test-npm-token';
+
+    const packagesDirectories = Object.keys(mockPackageJsonMaps);
+
+    // @ts-expect-error
+    vi.spyOn(Workspaces.prototype, 'getGitWorkspaces').mockImplementation(
+      // @ts-expect-error
+      () => {
+        return Promise.resolve([
+          packagesDirectories[0] + '/index.ts',
+          packagesDirectories[0] + '/func.ts'
+        ]);
+      }
+    );
+
+    const context = createTestReleaseContext({
+      dryRun: true,
+      shared: { packagesDirectories, publishPath: 'invalid/publish-path' }
+    });
+
+    const releaseTask = new ReleaseTask(context);
+
+    await expect(releaseTask.exec()).rejects.toThrow(
+      'No workspace found for publishPath'
+    );
+
+    expect(context.logger.debug).toHaveBeenCalledWith('skip next workspace');
+
+    expect(context.options.releaseIt.releaseIt).toBeCalledTimes(0);
+
+    delete process.env.NPM_TOKEN;
   });
 });

@@ -76,6 +76,29 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
       throw new Error('No changes to publish packages');
     }
 
+    // If has publishPath, use the workspace
+    const publishPath = this.context.releasePublishPath;
+    if (publishPath) {
+      const publishPathWorkspace = workspaces.find(
+        (workspace) => resolve(workspace.root) === resolve(publishPath)
+      );
+
+      this.nextSkip();
+
+      if (!publishPathWorkspace) {
+        throw new Error('No workspace found for publishPath');
+      }
+
+      this.logger.debug(
+        'publishPathWorkspace find!',
+        join(publishPathWorkspace.root, MANIFEST_PATH)
+      );
+
+      this.setCurrentWorkspace(publishPathWorkspace);
+
+      return;
+    }
+
     const [firstWorkspace, ...restWorkspaces] = workspaces;
 
     this.workspacesList = restWorkspaces;
@@ -84,9 +107,21 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.setCurrentWorkspace(firstWorkspace);
   }
 
+  /**
+   * Skip the next workspace
+   *
+   * - has publishPath
+   * - has workspace
+   */
+  private nextSkip(): void {
+    this._skip = true;
+
+    this.logger.debug('skip next workspace');
+  }
+
   override async onExec(): Promise<void> {
     // important
-    this._skip = true;
+    this.nextSkip();
 
     for (const workspace of this.workspacesList) {
       this.logger.obtrusive(
