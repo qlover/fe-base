@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+
+
+jobs:
+  release-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          # ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Config Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.19.0'
+
+      - name: Install dependencies
+        run: |
+          npm install -g yarn
+          yarn
+
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
+
+      - name: Release Pull Request
+        run: npx fe-release -V -d -P -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
