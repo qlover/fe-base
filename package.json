@@ -9,6 +9,7 @@
     "url": "https://github.com/qlover/fe-base"
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
+  "files": [],
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=4 run build",
     "nx:build": "nx affected:build",

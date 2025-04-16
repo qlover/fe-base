@@ -100,6 +100,7 @@ export class Shell implements ShellInterface {
    * @param command - Command string or array
    * @param options - Execution options
    * @returns Promise resolving to command output
+   * @deprecated Use `exec` instead
    */
   run(
     command: string | string[],
@@ -123,10 +124,11 @@ export class Shell implements ShellInterface {
       throw new Error('execPromise is not defined');
     }
 
-    const { dryRunResult, silent, dryRun } = options;
+    const { dryRunResult, silent, dryRun, isCache } = options;
     const isDryRun = dryRun !== undefined ? dryRun : this.config.dryRun;
+    const _isCache = isCache !== undefined ? !!isCache : !!this.config.isCache;
     const cacheKey = typeof command === 'string' ? command : command.join(' ');
-    const isCached = this.cache.has(cacheKey);
+    const isCached = _isCache && this.cache.has(cacheKey);
 
     if (!silent) {
       this.logger.exec(command, { isCached });

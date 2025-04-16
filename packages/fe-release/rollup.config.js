@@ -53,16 +53,21 @@ cleanBuildDir();
  */
 const config = [
   {
-    input: 'src/index.ts',
+    input: {
+      index: 'src/index.ts',
+      cli: 'src/cli.ts'
+    },
     external: defaultExternal,
     output: [
       {
-        file: 'dist/cjs/index.js',
-        format: 'cjs'
+        dir: 'dist',
+        format: 'cjs',
+        entryFileNames: '[name].cjs'
       },
       {
-        file: 'dist/es/index.js',
-        format: 'es'
+        dir: 'dist',
+        format: 'es',
+        entryFileNames: '[name].js'
       }
     ],
     plugins: createPlugin(isProduction),
@@ -73,11 +78,7 @@ const config = [
     external: defaultExternal,
     output: [
       {
-        file: 'dist/cjs/index.d.ts',
-        format: 'cjs'
-      },
-      {
-        file: 'dist/es/index.d.ts',
+        file: 'dist/index.d.ts',
         format: 'es'
       }
     ],

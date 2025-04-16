@@ -1,24 +1,26 @@
 {
   "name": "@qlover/fe-release",
   "description": "A tool for releasing front-end projects, supporting multiple release modes and configurations, simplifying the release process and improving efficiency.",
-  "version": "0.1.7",
+  "version": "1.0.5",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-release",
   "author": "qlover",
   "license": "ISC",
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "types": "./dist/es/index.d.ts",
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+    "./cli": {
+      "import": "./dist/cli.js",
+      "require": "./dist/cli.cjs"
+    }
   },
   "repository": {
     "type": "git",
@@ -40,7 +42,7 @@
     "access": "public"
   },
   "bin": {
-    "fe-release": "./bin/release.js"
+    "fe-release": "./dist/cli.js"
   },
   "scripts": {
     "build": "rollup -c",
@@ -53,11 +55,14 @@
     "@qlover/fe-standard": "workspace:*",
     "commander": "^11.0.0",
     "release-it": "^17.10.0",
-    "@release-it/conventional-changelog": "^8.0.1"
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@octokit/rest": "^21.0.2",
+    "semver": "^7.5.4",
+    "p-limit": "^6.2.0"
   },
   "dependencies": {
     "@qlover/env-loader": "workspace:*",
-    "@qlover/fe-utils": "latest",
+    "@qlover/fe-corekit": "latest",
     "@qlover/scripts-context": "latest",
     "@octokit/rest": "^21.0.2",
     "lodash": "^4.17.21"

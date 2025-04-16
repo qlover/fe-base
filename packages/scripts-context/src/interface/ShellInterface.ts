@@ -56,6 +56,14 @@ export interface ShellExecOptions {
    */
   encoding?: BufferEncoding;
 
+  /**
+   * Whether to cache the command
+   *
+   * @type {boolean}
+   * @default `false`
+   */
+  isCache?: boolean;
+
   [key: string]: unknown;
 }
 

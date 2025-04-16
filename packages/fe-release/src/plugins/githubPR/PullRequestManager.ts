@@ -1,36 +1,14 @@
-import { Shell } from '@qlover/scripts-context';
-import { PullRequestInterface } from '../../interface/PullRequestInterface';
-import { ReleaseConfig } from '../../type';
-import ReleaseContext from '../../interface/ReleaseContext';
-import ReleaseBase from './ReleaseBase';
-import { Logger } from '@qlover/fe-utils';
+import type { Shell } from '@qlover/scripts-context';
+import type { PullRequestInterface } from '../../interface/PullRequestInterface';
+import type ReleaseContext from '../../implments/ReleaseContext';
+import type { Logger } from '@qlover/fe-corekit';
+import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
+import {
+  DEFAULT_AUTO_MERGE_RELEASE_PR,
+  DEFAULT_AUTO_MERGE_TYPE
+} from '../../defaults';
 
 type CreatePROptionsArgs = {
-  /**
-   * The tag name for the release.
-   */
-  tagName: string;
-
-  /**
-   * The release branch for the release.
-   */
-  releaseBranch: string;
-
-  /**
-   * The changelog for the release.
-   */
-  changelog: string;
-
-  /**
-   * The source branch for the release.
-   */
-  sourceBranch: string;
-
-  /**
-   * The release environment for the release.
-   */
-  releaseEnv: string;
-
   /**
    * Get the labels to add to the created PR.
    *
@@ -39,17 +17,22 @@ type CreatePROptionsArgs = {
    * @default `[]`
    */
   labels?: string[];
+
+  title: string;
+  body: string;
+
+  base: string;
+  head: string;
 };
 
 export default class PullRequestManager {
   constructor(
     private context: ReleaseContext,
-    private releaseBase: ReleaseBase,
     private releasePR: PullRequestInterface
   ) {}
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   get shell(): Shell {
@@ -61,11 +44,8 @@ export default class PullRequestManager {
    *
    * @default `squash`
    */
-  get autoMergeType(): 'squash' | 'merge' | 'rebase' {
-    return this.context.getConfig('autoMergeType', 'squash') as
-      | 'squash'
-      | 'merge'
-      | 'rebase';
+  get autoMergeType(): SharedReleaseOptions['autoMergeType'] {
+    return this.context.shared.autoMergeType || DEFAULT_AUTO_MERGE_TYPE;
   }
 
   /**
@@ -74,7 +54,7 @@ export default class PullRequestManager {
    * @default `999999`
    */
   get dryRunPRNumber(): string {
-    return this.context.getConfig('dryRunPRNumber', '999999') as string;
+    return this.context.getConfig('githubPR.dryRunPRNumber', '999999');
   }
 
   /**
@@ -83,7 +63,9 @@ export default class PullRequestManager {
    * @default `false`
    */
   get autoMergeReleasePR(): boolean {
-    return this.context.getConfig('autoMergeReleasePR', false) as boolean;
+    return (
+      this.context.shared.autoMergeReleasePR || DEFAULT_AUTO_MERGE_RELEASE_PR
+    );
   }
 
   /**
@@ -101,7 +83,7 @@ export default class PullRequestManager {
     const mergeMethod = this.autoMergeType;
 
     if (this.context.dryRun) {
-      const { repoName, authorName } = this.releaseBase.repoInfo!;
+      const { repoName, authorName } = this.context.shared!;
       this.logger.info(
         `[DRY RUN] Would merge PR #${prNumber} with method '${mergeMethod}' in repo ${authorName}/${repoName}, branch ${releaseBranch}`
       );
@@ -151,8 +133,8 @@ export default class PullRequestManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel(): Promise<ReleaseConfig['label']> {
-    const label = this.context.getConfig('label') as ReleaseConfig['label'];
+  async createReleasePRLabel(): Promise<SharedReleaseOptions['label']> {
+    const label = this.context.shared.label;
 
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
@@ -191,11 +173,11 @@ export default class PullRequestManager {
    * @throws If the creation fails or if the pull request already exists.
    */
   async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
-    const prOptions = this.getCreateReleasePROptions(options);
+    const dryRunCreatePR = this.context.getConfig('githubPR.dryRunCreatePR');
 
-    if (this.context.dryRun) {
+    if (dryRunCreatePR || this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
-        ...prOptions,
+        ...options,
         labels: options.labels
       });
       return this.dryRunPRNumber;
@@ -203,13 +185,13 @@ export default class PullRequestManager {
 
     try {
       // create PR
-      const data = await this.releasePR.createPullRequest(prOptions);
+      const data = await this.releasePR.createPullRequest(options);
       const issue_number = data.number;
       if (!issue_number) {
         throw new Error('CreateReleasePR Failed, prNumber is empty');
       }
 
-      this.logger.debug('Create PR Success', data);
+      this.logger.debug('Create PR Success', [data?.url]);
 
       // add label
       if (options.labels && options.labels.length) {
@@ -217,7 +199,9 @@ export default class PullRequestManager {
           issue_number,
           labels: options.labels
         });
-        this.logger.debug('Add PR label Success', result);
+        this.logger.debug('Add PR label Success', [
+          (result as unknown as { url: string })?.url
+        ]);
       }
 
       return issue_number.toString();
@@ -235,76 +219,5 @@ export default class PullRequestManager {
       this.logger.error('Failed to create PR', error);
       throw error;
     }
-  }
-
-  /**
-   * Gets the options for creating a release pull request.
-   *
-   * return a PR number
-   *
-   * @param tagName - The tag name for the release.
-   * @param releaseBranch - The branch for the release.
-   * @param changelog - The changelog for the release.
-   * @returns The options for creating a release pull request.
-   */
-  getCreateReleasePROptions(args: CreatePROptionsArgs): {
-    title: string;
-    body: string;
-    base: string;
-    head: string;
-  } {
-    const title = this.getReleasePRTitle(args);
-    const body = this.getReleasePRBody(args);
-
-    return {
-      title,
-      body,
-      base: args.sourceBranch,
-      head: args.releaseBranch
-    };
-  }
-
-  /**
-   * Gets the title for the release pull request.
-   *
-   * @param tagName - The tag name for the release.
-   * @returns The formatted release pull request title.
-   */
-  getReleasePRTitle(
-    args: Pick<CreatePROptionsArgs, 'tagName' | 'releaseEnv' | 'sourceBranch'>
-  ): string {
-    const prTitleTpl = this.context.getConfig(
-      'PRTitle',
-      'Release ${env} ${pkgName} ${tagName}'
-    ) as string;
-
-    return this.shell.format(prTitleTpl, {
-      env: args.releaseEnv,
-      branch: args.sourceBranch,
-      tagName: args.tagName,
-      pkgName: this.context.getPkg('name')
-    });
-  }
-
-  /**
-   * Gets the body for the release pull request.
-   *
-   * @param options - The options containing tag name and changelog.
-   * @returns The formatted release pull request body.
-   */
-  getReleasePRBody(
-    args: Pick<
-      CreatePROptionsArgs,
-      'sourceBranch' | 'releaseEnv' | 'tagName' | 'changelog'
-    >
-  ): string {
-    const PRBodyTpl = this.context.getConfig('PRBody', '') as string;
-
-    return this.shell.format(PRBodyTpl, {
-      branch: args.sourceBranch,
-      env: args.releaseEnv,
-      tagName: args.tagName,
-      changelog: args.changelog
-    });
   }
 }
