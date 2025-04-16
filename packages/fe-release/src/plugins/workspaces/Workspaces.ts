@@ -216,6 +216,10 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
     // if has changeLabels, use the changeLabels
     const changeLabels = this.getConfig('changeLabels');
+
+    this.logger.debug('paths', paths);
+    this.logger.debug('changed', changed);
+    this.logger.debug('changedPaths', changedPaths);
     this.logger.debug('changeLabels', changeLabels);
 
     if (Array.isArray(changeLabels) && changeLabels.length > 0) {
