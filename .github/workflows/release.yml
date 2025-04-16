@@ -35,12 +35,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g yarn
-          yarn
+          npm install -g pnpm
+          pnpm
 
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
 
       - name: Release Pull Request
         run: node packages/fe-release/dist/cli.js -V -P -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
@@ -75,12 +75,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g yarn
-          yarn
+          npm install -g pnpm
+          pnpm
       
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
 
       - name: Create tag and publish
         run: node packages/fe-release/dist/cli.js -V -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
