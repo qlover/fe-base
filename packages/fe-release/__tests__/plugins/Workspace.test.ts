@@ -67,32 +67,21 @@ describe('Workspaces Plugin', () => {
     });
   });
 
-  describe('getWorkspacesPaths', () => {
-    it('should get packagesDirectories from context', () => {
-      // @ts-expect-error call private method for testing
-      const paths = workspaces.getWorkspacesPaths();
-
-      expect(paths).toEqual(['packages/package-a', 'packages/package-b']);
+  describe('getChangedPackages', () => {
+    it('should return changed packages', async () => {
+      const result = await workspaces.getChangedPackages([
+        'packages/package-a',
+        'packages/package-b'
+      ]);
+      expect(result).toEqual(['packages/package-a', 'packages/package-b']);
     });
 
-    it('when packagesDirectories is not an array, should return empty array', () => {
-      context = createTestReleaseContext({
-        shared: {
-          packageJson: {
-            name: 'root-package',
-            version: '1.0.0'
-          },
-          // @ts-expect-error test non-array case
-          packagesDirectories: null
-        }
-      });
-
-      workspaces = new Workspaces(context);
-
-      // @ts-expect-error call private method for testing
-      const paths = workspaces.getWorkspacesPaths();
-
-      expect(paths).toEqual([]);
+    it('should return changed packages by changeLabels', async () => {
+      const result = await workspaces.getChangedPackages(
+        ['packages/package-a', 'packages/package-b'],
+        ['changes:packages/package-a']
+      );
+      expect(result).toEqual(['packages/package-a']);
     });
   });
 

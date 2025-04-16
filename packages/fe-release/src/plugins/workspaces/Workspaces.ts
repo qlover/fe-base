@@ -207,10 +207,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return JSON.parse(packageJsonContent);
   }
 
-  async getChangedPackages(packagesPaths: string[]) {
-    // if has changeLabels, use the changeLabels
-    const changeLabels = this.getConfig('changeLabels');
-
+  async getChangedPackages(packagesPaths: string[], changeLabels?: string[]) {
     this.logger.debug('changeLabels', changeLabels);
 
     if (Array.isArray(changeLabels) && changeLabels.length > 0) {
@@ -234,7 +231,10 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   async getWorkspaces(): Promise<WorkspaceValue[]> {
     const packages = this.getPackages();
 
-    const changedPaths = await this.getChangedPackages(packages);
+    const changedPaths = await this.getChangedPackages(
+      packages,
+      this.getConfig('changeLabels')
+    );
 
     this.logger.debug('changedPaths', changedPaths);
 
