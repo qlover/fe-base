@@ -47,4 +47,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      - run: npx fe-release -V -d -P -M --workspaces.change-labels=${{toJSON(github.event.pull_request.labels.*.name)}}
+      - run: npx fe-release -V -d -P -M --workspaces.change-labels=${{join(toJSON(github.event.pull_request.labels.*.name),',')}}
