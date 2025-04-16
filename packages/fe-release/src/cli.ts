@@ -11,7 +11,9 @@ import ReleaseTask from './implments/ReleaseTask';
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
 
-const splitWithComma = (value: string) => value.split(',');
+const splitWithComma = (value: string) =>
+  value.split(',').filter((value) => value != null && value != '');
+
 function programArgs() {
   const program = new Command();
   program

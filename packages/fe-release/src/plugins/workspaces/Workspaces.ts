@@ -218,7 +218,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     const changeLabels = this.getConfig('changeLabels');
     this.logger.debug('changeLabels', changeLabels);
 
-    if (Array.isArray(changeLabels)) {
+    if (Array.isArray(changeLabels) && changeLabels.length > 0) {
       return changedPaths.filter((path) => {
         const lable = this.releaseLabel.toChangeLabel(path);
         return changeLabels.includes(lable);

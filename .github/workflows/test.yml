@@ -1,0 +1,15 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - feat-fe-release-v1.0
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "PR Labels: ${{github.event.pull_request.labels.*.name}}"
+        
