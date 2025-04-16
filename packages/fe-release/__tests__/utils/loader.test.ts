@@ -7,7 +7,7 @@ import { createTestReleaseContext } from '../helpers';
 
 vi.mock('node:module', () => ({
   createRequire: vi.fn(() => ({
-    resolve: vi.fn(() => '/mocked/path/to/plugin.js')
+    resolve: vi.fn(() => './test-plugin')
   }))
 }));
 
