@@ -7,7 +7,22 @@
 
 ### Features
 
-* fe-release branchName arg, and change default branchName tpl:release-${pkgName}-${tagName} ([#291](https://github.com/qlover/fe-base/issues/291)) ([e89652c](https://github.com/qlover/fe-base/commit/e89652c499b8e20753b602eeb49865b303615e12))
+- check env add pkgjson ([#301](https://github.com/qlover/fe-base/pull/301)) ([14dc38b](https://github.com/qlover/fe-base/pull/301/commits/14dc38b54c20ba2c9c138a421ffce36054fbf3cf))
+- check ModifyPublishPackage ([#301](https://github.com/qlover/fe-base/pull/301)) ([14dc38b](https://github.com/qlover/fe-base/pull/301/commits/d5178422cc404770fe8946ea66fa39616e25d163))
+- defaults value ([#301](https://github.com/qlover/fe-base/pull/301)) ([14dc38b](https://github.com/qlover/fe-base/pull/301/commits/6f0447da8c94488138591798d58319cba228fc79))
+- increment args ([#301](https://github.com/qlover/fe-base/pull/301)) ([14dc38b](https://github.com/qlover/fe-base/pull/301/commits/07109bba4eb52e741fbddc2ecc135850c6a253f3))
+-  add config namesapce ([#299](https://github.com/qlover/fe-base/pull/299)) ([d7f8303](https://github.com/qlover/fe-base/pull/301/commits/d7f830387a87d480eb8b25d03668b0725ca926a5))
+- load plugin use async ([#300](https://github.com/qlover/fe-base/pull/300) ([a49228](https://github.com/qlover/fe-base/pull/301/commits/a49228de6de31c16327b4b4bbc37db62c6e6394d))
+- support mulit entry ([#303](https://github.com/qlover/fe-base/pull/303) ([ad08aa0](https://github.com/qlover/fe-base/pull/301/commits/ad08aa0dc2f83925975adec09d5aa5c2a7c23b4e))
+- plugins test ([#304](https://github.com/qlover/fe-base/pull/304) ([eb1e1ac](https://github.com/qlover/fe-base/pull/301/commits/eb1e1ac6501012bde29528840a29774955382d46))
+- Merge release pr and publish ([#315](https://github.com/qlover/fe-base/pull/315) ([eaf9cb9](https://github.com/qlover/fe-base/pull/301/commits/eaf9cb979b8038a40ecafffc39d524229f1255a8))
+- change lable control release package ([#316](https://github.com/qlover/fe-base/pull/316) ([d361b40](https://github.com/qlover/fe-base/pull/301/commits/d361b40d2d2ba13531f5cf31bad7889322cf2fab))
+- fe-release branchName arg, and change default branchName tpl:release-${pkgName}-${tagName} ([#291](https://github.com/qlover/fe-base/issues/291)) ([e89652c](https://github.com/qlover/fe-base/commit/e89652c499b8e20753b602eeb49865b303615e12))
+
+### Bug fixes
+
+- multi packages release branch error ([#314](https://github.com/qlover/fe-base/pull/314) ([99169f1](https://github.com/qlover/fe-base/pull/301/commits/99169f18055110cc8126fec7d7886b29ef9e3099))
+- publish path use target workspace ([cc7eb8c](https://github.com/qlover/fe-base/pull/301/commits/cc7eb8cc6555b3c9aeee127591b19fb58c15b513))
 
 ## [0.1.6](https://github.com/qlover/fe-base/compare/fe-release-v0.1.5...fe-release-v0.1.6) (2025-02-25)
 
