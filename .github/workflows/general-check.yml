@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print GitHub Event Information
-        run: echo "${{ toJson(github.event.pull_request) }}" > event.json
+      # - name: Print GitHub Event Information
+      #   run: echo "${{ toJson(github.event.pull_request) }}" > event.json
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -47,9 +47,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      - name: Test Release Pull Request
-        run: node packages/fe-release/dist/cli.js -V -d -P -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
