@@ -9,6 +9,7 @@
     "url": "https://github.com/qlover/fe-base"
   },
   "homepage": "https://github.com/qlover/fe-base#readme",
+  "files": [],
   "scripts": {
     "build": "yarn build:common && yarn build:fe-corekit && yarn build:fe-scripts && yarn build:fe-code2markdown && yarn build:create-app && yarn build:corekit-bridge",
     "build:common": "yarn build:fe-release && yarn build:env-loader && yarn build:scripts-context",

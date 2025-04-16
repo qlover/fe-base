@@ -1,4 +1,4 @@
-name: Release packages/create-app
+name: Release sub packages
 
 on:
   workflow_dispatch:
@@ -8,14 +8,12 @@ on:
     types:
       - closed
     paths:
-      - packages/create-app/**
+      - packages/**
 
 jobs:
-  release-PR:
-    # only run when PR merged and has changes:packages/create-app and CI-Release labels
+  release-pull-request:
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-app') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -40,27 +38,20 @@ jobs:
           npm install -g yarn
           yarn
 
-      - name: Lint
-        run: yarn lint
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
 
-      - name: Test
-        run: yarn test
-
-      - name: Build dist
-        run: yarn build
-
-      - name: Create release PR
-        run: npm run release-pr:create-app
+      - name: Release Pull Request
+        run: npx fe-release -V -d -P -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release:
-    # only run when PR merged and has changes:packages/create-app and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:packages/create-app') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -86,25 +77,14 @@ jobs:
         run: |
           npm install -g yarn
           yarn
-
-      - name: Lint
-        run: yarn lint
-
-      - name: Test
-        run: yarn test
-
-      - name: Build dist
-        run: yarn build
+      
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn build
 
       - name: Create tag and publish
-        run: npm run release:create-app
+        run: npx fe-release -V -d -M --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-      - name: Debug Git status
-        run: |
-          git status
-          git branch
-          git rev-parse --abbrev-ref HEAD
