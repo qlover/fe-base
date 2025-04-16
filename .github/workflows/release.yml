@@ -43,7 +43,7 @@ jobs:
       - run: yarn build
 
       - name: Release Pull Request
-        run: npx fe-release -V -d -P
+        run: npx fe-release -V -d -P -M
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -83,7 +83,7 @@ jobs:
       - run: yarn build
 
       - name: Create tag and publish
-        run: npx fe-release -V -d
+        run: npx fe-release -V -d -M
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
