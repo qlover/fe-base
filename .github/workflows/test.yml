@@ -10,6 +10,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - run: echo "${{ toJson(github.event.pull_request) }}" > pull-request.json
+      - run: echo "${{ toJson(github.event.pull_request.labels) }}" > labels.json
       - run: |
           echo "PR Labels: ${{join(github.event.pull_request.labels.*.name, ',')}}"
         
