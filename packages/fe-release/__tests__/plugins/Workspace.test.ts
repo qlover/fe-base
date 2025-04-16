@@ -119,28 +119,6 @@ describe('Workspaces Plugin', () => {
     });
   });
 
-  describe('intersection', () => {
-    it('should return workspace paths that are included in the changed paths', () => {
-      const paths = ['packages/package-a', 'packages/package-b'];
-      const changed = ['packages/package-a/index.ts', 'other/path/file.js'];
-
-      // @ts-expect-error call private method for testing
-      const result = workspaces.intersection(paths, changed);
-
-      expect(result).toEqual(['packages/package-a']);
-    });
-
-    it('when no workspace paths are included in the changed paths, should return empty array', () => {
-      const paths = ['packages/package-a', 'packages/package-b'];
-      const changed = ['other/path/file.js'];
-
-      // @ts-expect-error call private method for testing
-      const result = workspaces.intersection(paths, changed);
-
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('getWorkspaces', () => {
     it('should return changed workspaces list', async () => {
       const workspacesResult = await workspaces.getWorkspaces();

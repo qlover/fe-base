@@ -43,7 +43,7 @@ jobs:
       - run: yarn build
 
       - name: Release Pull Request
-        run: npx fe-release -V -d -P -M
+        run: npx fe-release -V -d -P -M --workspaces.change-labels=${{toJSON(github.event.pull_request.labels.*.name)}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
@@ -83,7 +83,7 @@ jobs:
       - run: yarn build
 
       - name: Create tag and publish
-        run: npx fe-release -V -d -M
+        run: npx fe-release -V -d -M --workspaces.change-labels=${{toJSON(github.event.pull_request.labels.*.name)}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}

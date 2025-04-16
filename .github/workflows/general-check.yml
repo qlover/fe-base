@@ -3,7 +3,7 @@ name: General check
 on:
   pull_request:
     branches:
-      - master
+      - feat-fe-release-v1.0
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -47,3 +47,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - run: npx fe-release -V -d -P -M --workspaces.change-labels=${{toJSON(github.event.pull_request.labels.*.name)}}
