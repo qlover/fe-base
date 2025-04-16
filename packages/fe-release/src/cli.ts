@@ -11,6 +11,9 @@ import ReleaseTask from './implments/ReleaseTask';
 const ALLOWED_INCREMENTS = ['patch', 'minor', 'major'];
 const DEFAULT_INCREMENT = 'patch';
 
+const splitWithComma = (value: string) =>
+  value.split(',').filter((value) => value != null && value != '');
+
 function programArgs() {
   const program = new Command();
   program
@@ -57,11 +60,16 @@ function programArgs() {
     .option(
       '--packages-directories <packagesDirectories>',
       'The packages that have been changed, multiple values use `,` to split, map to feConfig.release.packagesDirectories',
-      (value) => value.split(',')
+      splitWithComma
     )
     .option(
       '--githubPR.dry-run-create-PR',
       'Whether to dry run the creation of the pull request'
+    )
+    .option(
+      '-l, --workspaces.change-labels <changeLabels>',
+      'The change labels of the release, multiple values use `,` to split',
+      splitWithComma
     );
 
   program.parse();

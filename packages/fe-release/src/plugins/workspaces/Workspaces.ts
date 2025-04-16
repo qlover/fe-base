@@ -5,6 +5,7 @@ import ReleaseContext from '../../implments/ReleaseContext';
 import Plugin from '../Plugin';
 import { readFileSync } from 'node:fs';
 import { MANIFEST_PATH } from '../../defaults';
+import { ReleaseLabel } from '../../implments/ReleaseLabel';
 
 export interface WorkspacesProps {
   /**
@@ -31,6 +32,13 @@ export interface WorkspacesProps {
    * @private
    */
   workspaces?: WorkspaceValue[];
+
+  /**
+   * The change labels
+   *
+   * from `changePackagesLabel`
+   */
+  changeLabels?: string[];
 }
 
 export interface WorkspaceValue {
@@ -58,8 +66,16 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
   private _skip = false;
 
+  private releaseLabel: ReleaseLabel;
+
   constructor(context: ReleaseContext) {
     super(context, 'workspaces');
+
+    this.releaseLabel = new ReleaseLabel({
+      changePackagesLabel:
+        this.context.shared.changePackagesLabel || 'change:${name}',
+      packagesDirectories: this.context.shared.packagesDirectories || []
+    });
   }
 
   override enabled(): boolean {
@@ -186,35 +202,34 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return typeof result === 'string' ? result.split('\n') : [];
   }
 
-  private intersection(paths: string[], changed: string[]): string[] {
-    const result: string[] = [];
-
-    for (const path of paths) {
-      for (const filepath of changed) {
-        if (
-          filepath.includes(path) ||
-          // If the filepath is a relative path, it will be resolved to the root path
-          resolve(filepath).includes(path)
-        ) {
-          result.push(path);
-          break;
-        }
-      }
-    }
-
-    return result;
-  }
-
   private readJson(path: string): Record<string, unknown> {
     const packageJsonContent = readFileSync(path, 'utf-8');
     return JSON.parse(packageJsonContent);
   }
 
-  async getWorkspaces(): Promise<WorkspaceValue[]> {
+  async getChagedPackages() {
     const paths = this.getWorkspacesPaths();
+
     const changed = await this.getGitWorkspaces();
 
-    const changedPaths = this.intersection(paths, changed);
+    const changedPaths = this.releaseLabel.pick(changed, paths);
+
+    // if has changeLabels, use the changeLabels
+    const changeLabels = this.getConfig('changeLabels');
+    this.logger.debug('changeLabels', changeLabels);
+
+    if (Array.isArray(changeLabels) && changeLabels.length > 0) {
+      return changedPaths.filter((path) => {
+        const lable = this.releaseLabel.toChangeLabel(path);
+        return changeLabels.includes(lable);
+      });
+    }
+
+    return changedPaths;
+  }
+
+  async getWorkspaces(): Promise<WorkspaceValue[]> {
+    const changedPaths = await this.getChagedPackages();
 
     this.logger.debug('changedPaths', changedPaths);
 
