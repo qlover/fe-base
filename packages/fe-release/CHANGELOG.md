@@ -1,5 +1,7 @@
 
 
+## 1.0.5 (2025-04-16)
+
 ## [0.1.7](https://github.com/qlover/fe-base/compare/fe-release-v0.1.6...fe-release-v0.1.7) (2025-03-25)
 
 
