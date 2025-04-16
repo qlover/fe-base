@@ -20,6 +20,9 @@ type CreatePROptionsArgs = {
 
   title: string;
   body: string;
+
+  base: string;
+  head: string;
 };
 
 export default class PullRequestManager {

@@ -177,6 +177,8 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     return this.pullRequestManager.createReleasePR({
       title: prTitle,
       body: prBody,
+      base: this.context.sourceBranch,
+      head: releaseBranchParams.releaseBranch,
       labels
     });
   }
