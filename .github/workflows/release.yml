@@ -57,8 +57,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print GitHub Event Information
-        run: echo "${{ toJson(github.event.pull_request) }}" > event.json
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
