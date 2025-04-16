@@ -180,7 +180,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     } as DeepPartial<WorkspacesProps>);
   }
 
-  private getWorkspacesPaths(): string[] {
+  private getPackages(): string[] {
     const packagesDirections = this.context.shared.packagesDirectories;
 
     if (Array.isArray(packagesDirections)) {
@@ -207,33 +207,34 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return JSON.parse(packageJsonContent);
   }
 
-  async getChagedPackages() {
-    const paths = this.getWorkspacesPaths();
-
-    const changed = await this.getGitWorkspaces();
-
-    const changedPaths = this.releaseLabel.pick(changed, paths);
-
-    // if has changeLabels, use the changeLabels
-    const changeLabels = this.getConfig('changeLabels');
-
-    this.logger.debug('paths', paths);
-    this.logger.debug('changed', changed);
-    this.logger.debug('changedPaths', changedPaths);
+  async getChangedPackages(packagesPaths: string[], changeLabels?: string[]) {
     this.logger.debug('changeLabels', changeLabels);
 
     if (Array.isArray(changeLabels) && changeLabels.length > 0) {
-      return changedPaths.filter((path) => {
+      const changed = packagesPaths.filter((path) => {
         const lable = this.releaseLabel.toChangeLabel(path);
         return changeLabels.includes(lable);
       });
+
+      this.logger.debug('changed by labels', changed);
+
+      return changed;
     }
 
-    return changedPaths;
+    const changed = await this.getGitWorkspaces();
+
+    this.logger.debug('changed by git', changed);
+
+    return this.releaseLabel.pick(changed, packagesPaths);
   }
 
   async getWorkspaces(): Promise<WorkspaceValue[]> {
-    const changedPaths = await this.getChagedPackages();
+    const packages = this.getPackages();
+
+    const changedPaths = await this.getChangedPackages(
+      packages,
+      this.getConfig('changeLabels')
+    );
 
     this.logger.debug('changedPaths', changedPaths);
 
