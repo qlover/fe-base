@@ -1,5 +1,18 @@
 
 
+## [1.0.8](https://github.com/qlover/fe-base/compare/@qlover/fe-release-v1.0.5...@qlover/fe-release-v1.0.8) (2025-04-17)
+
+
+### Features
+
+* feature yarn to pnpm ([#297](https://github.com/qlover/fe-base/issues/297)) ([c3e13d5](https://github.com/qlover/fe-base/commit/c3e13d509a752267d9be29e7a5ed609d24c309ce))
+
+
+### Bug Fixes
+
+* fe-relesae build cli ([#325](https://github.com/qlover/fe-base/issues/325)) ([aa7447b](https://github.com/qlover/fe-base/commit/aa7447b51a3dc755689de0783e8fd211ff99672e))
+* release publish npm ([#327](https://github.com/qlover/fe-base/issues/327)) ([fa26d04](https://github.com/qlover/fe-base/commit/fa26d04eab2fa1ea4baa05c4d3502e5a873d5c8c))
+
 ## [1.0.7](https://github.com/qlover/fe-base/compare/@qlover/fe-release-v1.0.5...@qlover/fe-release-v1.0.7) (2025-04-17)
 
 ## 1.0.5 (2025-04-16)
