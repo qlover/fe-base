@@ -1,5 +1,7 @@
 
 
+## 0.1.14 (2025-04-17)
+
 ## [0.1.12](https://github.com/qlover/fe-base/compare/create-app-v0.1.11...create-app-v0.1.12) (2025-03-18)
 
 
