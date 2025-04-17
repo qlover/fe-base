@@ -16,7 +16,7 @@ export class ProjectReader {
   constructor(private context: ReflectionGeneraterContext) {}
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   /**

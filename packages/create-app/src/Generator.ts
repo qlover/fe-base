@@ -42,7 +42,7 @@ export class Generator {
   }
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   async steps(prompts: GeneratorPrompt[]): Promise<GeneratorContext> {

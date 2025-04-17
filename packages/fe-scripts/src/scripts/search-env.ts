@@ -18,5 +18,5 @@ export function searchEnv(options: {
   logger?: Logger;
   maxDepth?: number;
 }): Env {
-  return Env.searchEnv(options);
+  return Env.searchEnv(options as any);
 }

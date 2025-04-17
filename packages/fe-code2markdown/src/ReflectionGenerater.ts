@@ -23,7 +23,7 @@ export class ReflectionGenerater {
   }
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   async generateJson(): Promise<ParserContextMap> {
