@@ -24,7 +24,7 @@
     "CHANGELOG.md"
   ],
   "bin": {
-    "create-app": "./bin/create-app.js"
+    "create-app": "bin/create-app.js"
   },
   "scripts": {
     "build": "rollup -c",

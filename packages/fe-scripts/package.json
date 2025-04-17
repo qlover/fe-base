@@ -23,11 +23,11 @@
     "package.json"
   ],
   "bin": {
-    "fe-clean": "./bin/clean.js",
-    "fe-clean-branch": "./bin/clean-branch.js",
-    "fe-commit": "./bin/commit.js",
-    "fe-setup-husky": "./bin/setup-husky.js",
-    "fe-check-packages": "./bin/check-packages.js"
+    "fe-clean": "bin/clean.js",
+    "fe-clean-branch": "bin/clean-branch.js",
+    "fe-commit": "bin/commit.js",
+    "fe-setup-husky": "bin/setup-husky.js",
+    "fe-check-packages": "bin/check-packages.js"
   },
   "scripts": {
     "build": "rollup -c",
