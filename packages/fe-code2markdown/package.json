@@ -40,7 +40,7 @@
     "fe-code2markdown"
   ],
   "bin": {
-    "fe-code2md": "./bin/code2md.js"
+    "fe-code2md": "bin/code2md.js"
   },
   "author": "qlover",
   "license": "ISC",

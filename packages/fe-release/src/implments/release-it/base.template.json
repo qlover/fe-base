@@ -41,7 +41,7 @@
         ]
       },
       "gitRawCommitsOpts": {
-        "path": "{{publishPath}}"
+        "path": "."
       }
     }
   }

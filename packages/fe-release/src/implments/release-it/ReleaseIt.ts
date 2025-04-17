@@ -68,7 +68,16 @@ export default class ReleaseIt {
 
       this.lastPath = publishPath;
 
-      return await this.releaseItInstance(options!);
+      this.context.logger.debug('Release it options:', options);
+
+      const result = await this.releaseItInstance(options!);
+
+      this.context.logger.debug('Release it result:', result);
+
+      return result;
+    } catch (error) {
+      this.context.logger.error('Release it error:', error);
+      throw error;
     } finally {
       this.context.logger.debug('Switch back to:', this.lastPath);
       process.chdir(this.lastPath);
@@ -96,8 +105,7 @@ export default class ReleaseIt {
       this.getOptions(this.context.getTemplateContext(), {
         ci: true,
         npm: {
-          publish: true,
-          publishPath: this.context.workspace?.name
+          publish: true
         },
         git: {
           requireCleanWorkingDir: false,
