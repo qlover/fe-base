@@ -3,18 +3,16 @@
   "version": "0.1.12",
   "type": "module",
   "private": false,
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
-    },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "files": [
     "dist",

@@ -7,18 +7,20 @@
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/scripts-context#readme",
   "author": "qlover",
   "license": "ISC",
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+    "./cli": {
+      "import": "./dist/cli.js",
+      "require": "./dist/cli.cjs"
+    }
   },
   "repository": {
     "type": "git",

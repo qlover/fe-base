@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { existsSync } from 'node:fs';
 import { resolve, dirname } from 'path';
-import { type Logger } from '@qlover/fe-corekit';
+import { Logger } from '@qlover/fe-corekit';
 
 /**
  * Environment configuration options interface
