@@ -1,4 +1,4 @@
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 import chalk from 'chalk';
 
 export class ScriptsLogger extends Logger {

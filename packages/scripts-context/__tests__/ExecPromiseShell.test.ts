@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { execPromise } from '../src/implement/execPromise';
 import { Shell } from '../src/Shell';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 
 describe('execPromise', () => {
   let shell: Shell;

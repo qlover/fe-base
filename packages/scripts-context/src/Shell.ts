@@ -1,4 +1,4 @@
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 import lodashTemplate from 'lodash/template';
 import { ShellExecOptions, ShellInterface } from './interface/ShellInterface';
 

@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Env } from '../src/Env';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 import { config } from 'dotenv';
 import { existsSync } from 'node:fs';
 import { resolve, normalize } from 'path';

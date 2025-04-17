@@ -24,13 +24,13 @@ importers:
         specifier: workspace:*
         version: link:packages/eslint-plugin-fe-dev
       '@qlover/fe-scripts':
-        specifier: workspace:*
-        version: link:packages/fe-scripts
+        specifier: ^0.10.1
+        version: 0.10.1(@types/node@22.14.1)(typescript@5.4.5)
       '@qlover/fe-standard':
-        specifier: latest
-        version: 0.0.4
+        specifier: workspace:*
+        version: link:packages/fe-standard
       '@qlover/scripts-context':
-        specifier: latest
+        specifier: ^0.0.8
         version: 0.0.8(typescript@5.4.5)
       '@rollup/plugin-commonjs':
         specifier: ^28.0.1
@@ -139,8 +139,8 @@ importers:
         version: 4.17.21
     devDependencies:
       '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
+        specifier: ^0.0.1
+        version: 0.0.1
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.16
@@ -174,11 +174,11 @@ importers:
 
   packages/create-app:
     dependencies:
-      '@qlover/fe-utils':
-        specifier: latest
-        version: 1.1.4
+      '@qlover/fe-corekit':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@qlover/scripts-context':
-        specifier: latest
+        specifier: ^0.0.8
         version: 0.0.8(typescript@5.8.3)
       commander:
         specifier: ^13.1.0
@@ -197,8 +197,8 @@ importers:
         version: 8.2.0
     devDependencies:
       '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
+        specifier: ^0.0.1
+        version: 0.0.1
 
   packages/env-loader:
     dependencies:
@@ -206,12 +206,9 @@ importers:
         specifier: ^16.4.5
         version: 16.5.0
     devDependencies:
-      '@qlover/fe-standard':
-        specifier: workspace:*
-        version: link:../fe-standard
-      '@qlover/fe-utils':
-        specifier: latest
-        version: 1.1.4
+      '@qlover/fe-corekit':
+        specifier: ^1.2.2
+        version: 1.2.2
 
   packages/eslint-plugin-fe-dev: {}
 
@@ -220,9 +217,9 @@ importers:
       '@microsoft/tsdoc':
         specifier: ^0.15.0
         version: 0.15.1
-      '@qlover/fe-utils':
-        specifier: latest
-        version: 1.1.4
+      '@qlover/fe-corekit':
+        specifier: ^1.2.2
+        version: 1.2.2
       commander:
         specifier: ^11.0.0
         version: 11.1.0
@@ -237,8 +234,8 @@ importers:
         version: 0.25.13(typescript@5.4.5)
     devDependencies:
       '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
+        specifier: ^0.0.1
+        version: 0.0.1
       '@qlover/scripts-context':
         specifier: ^0.0.7
         version: 0.0.7(typescript@5.4.5)
@@ -274,21 +271,18 @@ importers:
         specifier: ^21.0.2
         version: 21.1.1
       '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
+        specifier: ^0.0.1
+        version: 0.0.1
       '@qlover/fe-corekit':
-        specifier: latest
+        specifier: ^1.2.2
         version: 1.2.2
       '@qlover/scripts-context':
-        specifier: latest
+        specifier: ^0.0.8
         version: 0.0.8(typescript@5.8.3)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
-      '@qlover/fe-standard':
-        specifier: workspace:*
-        version: link:../fe-standard
       '@release-it/conventional-changelog':
         specifier: ^8.0.1
         version: 8.0.2(release-it@17.11.0(typescript@5.8.3))
@@ -314,13 +308,13 @@ importers:
         specifier: ^21.0.2
         version: 21.1.1
       '@qlover/env-loader':
-        specifier: latest
+        specifier: ^0.0.1
         version: 0.0.1
-      '@qlover/fe-utils':
-        specifier: latest
-        version: 1.1.4
+      '@qlover/fe-corekit':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@qlover/scripts-context':
-        specifier: latest
+        specifier: ^0.0.8
         version: 0.0.8(typescript@5.8.3)
       commander:
         specifier: ^11.0.0
@@ -374,9 +368,9 @@ importers:
 
   packages/scripts-context:
     dependencies:
-      '@qlover/fe-utils':
-        specifier: latest
-        version: 1.1.4
+      '@qlover/fe-corekit':
+        specifier: ^1.2.2
+        version: 1.2.2
       chalk:
         specifier: ^5.3.0
         version: 5.4.1
@@ -393,9 +387,6 @@ importers:
       '@qlover/env-loader':
         specifier: ^0.0.1
         version: 0.0.1
-      '@qlover/fe-standard':
-        specifier: workspace:*
-        version: link:../fe-standard
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
@@ -1780,8 +1771,9 @@ packages:
   '@qlover/fe-corekit@1.2.2':
     resolution: {integrity: sha512-4S75L/z1kZui4AS01EIENlbn9DKmVOh6IdBqXNm52J96KZVufqkLtbCd7ALenjR6lWus4e5hdoHv3hUxkYiQJw==}
 
-  '@qlover/fe-standard@0.0.4':
-    resolution: {integrity: sha512-tKkilDE1IRaFpt6koWLropb9TPRILX+U97td2k669Vcei9OXaDNytPPOFjVz7b2jhB8QyJSMBotlMwDhJoK3Mg==}
+  '@qlover/fe-scripts@0.10.1':
+    resolution: {integrity: sha512-hGFoqYHmNsfXacpk7uajRAZCjGrLaJSLKnX4meVr5nf1T7X/BGqwAiN0V5HhiVRwmtDiXt/T2fofMwpdVop1Ow==}
+    hasBin: true
 
   '@qlover/fe-utils@1.1.4':
     resolution: {integrity: sha512-oRUn7CcpuRK3sCzAaTF8FxtS4Czo47N3jbAOo2+QqGajt6oqlax6WN9J91+IBsXrGvZZ8a2cdKXm9Y3Lt6EGQg==}
@@ -6397,7 +6389,7 @@ snapshots:
       '@commitlint/types': 19.8.0
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.8.3)
-      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.14.1)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3)
+      cosmiconfig-typescript-loader: 6.1.0(@types/node@22.14.1)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.8.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -7102,7 +7094,20 @@ snapshots:
       lodash: 4.17.21
       merge: 2.1.1
 
-  '@qlover/fe-standard@0.0.4': {}
+  '@qlover/fe-scripts@0.10.1(@types/node@22.14.1)(typescript@5.4.5)':
+    dependencies:
+      '@commitlint/config-conventional': 19.8.0
+      '@octokit/rest': 21.1.1
+      '@qlover/env-loader': 0.0.1
+      '@qlover/fe-utils': 1.1.4
+      '@qlover/scripts-context': 0.0.8(typescript@5.4.5)
+      commander: 11.1.0
+      commitizen: 4.3.1(@types/node@22.14.1)(typescript@5.4.5)
+      ignore: 6.0.2
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
 
   '@qlover/fe-utils@1.1.4':
     dependencies:
@@ -8257,10 +8262,10 @@ snapshots:
       jiti: 2.4.2
       typescript: 5.4.5
 
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.14.1)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3):
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.14.1)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.8.3):
     dependencies:
       '@types/node': 22.14.1
-      cosmiconfig: 9.0.0(typescript@5.8.3)
+      cosmiconfig: 9.0.0(typescript@5.4.5)
       jiti: 2.4.2
       typescript: 5.8.3
 

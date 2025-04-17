@@ -13,7 +13,7 @@ import {
   ParserContextMap,
   ReflectionKindName
 } from './type';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 
 const DisplayPartsKindName = {
   text: 'Text',

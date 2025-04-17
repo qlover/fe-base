@@ -1,4 +1,4 @@
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 import fsExtra from 'fs-extra';
 import {
   Application,

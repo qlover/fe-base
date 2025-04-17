@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { Shell, ShellConfig } from '../src/Shell';
 import { ShellExecOptions } from '../src/interface/ShellInterface';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 
 describe('Shell', () => {
   let logger: Logger;

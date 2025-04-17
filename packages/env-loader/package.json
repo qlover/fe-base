@@ -41,8 +41,7 @@
     "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "workspace:*",
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-corekit": "^1.2.2"
   },
   "dependencies": {
     "dotenv": "^16.4.5"

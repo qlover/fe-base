@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { existsSync } from 'node:fs';
 import { resolve, dirname } from 'path';
-import { type Logger } from '@qlover/fe-utils';
+import { type Logger } from '@qlover/fe-corekit';
 
 /**
  * Environment configuration options interface
@@ -98,7 +98,7 @@ export class Env {
    * @param {object} options
    * @param {string} [options.cwd] start search directory, default is process.cwd()
    * @param {string[]} [options.preloadList] search file name list, default is ['.env.local', '.env']
-   * @param {import('@qlover/fe-utils').Logger} [options.logger] logger
+   * @param {import('@qlover/fe-corekit').Logger} [options.logger] logger
    * @param {number} [options.maxDepth=5] maximum search depth
    * @returns {Env} environment variable loader instance
    */

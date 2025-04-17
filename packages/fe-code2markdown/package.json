@@ -48,14 +48,14 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/env-loader": "workspace:*",
+    "@qlover/env-loader": "^0.0.1",
     "@qlover/scripts-context": "^0.0.7",
     "fs-extra": "^11.2.0",
     "typescript": "~5.4.0"
   },
   "dependencies": {
     "@microsoft/tsdoc": "^0.15.0",
-    "@qlover/fe-utils": "latest",
+    "@qlover/fe-corekit": "^1.2.2",
     "commander": "^11.0.0",
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",

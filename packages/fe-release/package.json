@@ -52,7 +52,6 @@
     "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "workspace:*",
     "commander": "^11.0.0",
     "release-it": "^17.10.0",
     "@release-it/conventional-changelog": "^8.0.1",
@@ -61,9 +60,9 @@
     "p-limit": "^6.2.0"
   },
   "dependencies": {
-    "@qlover/env-loader": "workspace:*",
-    "@qlover/fe-corekit": "latest",
-    "@qlover/scripts-context": "latest",
+    "@qlover/env-loader": "^0.0.1",
+    "@qlover/fe-corekit": "^1.2.2",
+    "@qlover/scripts-context": "^0.0.8",
     "@octokit/rest": "^21.0.2",
     "lodash": "^4.17.21"
   }
