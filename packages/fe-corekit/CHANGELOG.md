@@ -1,5 +1,13 @@
 
 
+## 1.2.5 (2025-04-17)
+
+
+### Features
+
+* fe corekit and remove fe utils ([#281](https://github.com/qlover/fe-base/issues/281)) ([e333c7f](https://github.com/qlover/fe-base/commit/e333c7fe0518cb5ec34ecc7423dffb511f835324))
+* feature yarn to pnpm ([#297](https://github.com/qlover/fe-base/issues/297)) ([c3e13d5](https://github.com/qlover/fe-base/commit/c3e13d509a752267d9be29e7a5ed609d24c309ce))
+
 ## 1.2.4 (2025-04-17)
 
 ## 1.2.2 (2025-03-22)
