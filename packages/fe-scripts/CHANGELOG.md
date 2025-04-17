@@ -1,5 +1,12 @@
 
 
+## [0.10.4](https://github.com/qlover/fe-base/compare/@qlover/fe-scripts-v0.10.3...@qlover/fe-scripts-v0.10.4) (2025-04-17)
+
+
+### Bug Fixes
+
+* release publish npm ([#327](https://github.com/qlover/fe-base/issues/327)) ([fa26d04](https://github.com/qlover/fe-base/commit/fa26d04eab2fa1ea4baa05c4d3502e5a873d5c8c))
+
 ## 0.10.3 (2025-04-17)
 
 ## [0.10.1](https://github.com/qlover/fe-base/compare/fe-scripts-v0.10.0...fe-scripts-v0.10.1) (2025-02-20)
