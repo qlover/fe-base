@@ -207,7 +207,10 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return JSON.parse(packageJsonContent);
   }
 
-  async getChangedPackages(packagesPaths: string[], changeLabels?: string[]) {
+  async getChangedPackages(
+    packagesPaths: string[],
+    changeLabels?: string[]
+  ): Promise<string[]> {
     this.logger.debug('changeLabels', changeLabels);
 
     if (Array.isArray(changeLabels) && changeLabels.length > 0) {

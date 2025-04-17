@@ -5,7 +5,7 @@ import { Utils } from './Utils.js';
 import { ProjectReader } from './ProjectReader.js';
 import { TypeDocConverter } from './TypeDocConverter.js';
 import { ParserContextMap, ReflectionGeneraterContext } from './type';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 
 export class ReflectionGenerater {
   private context: ReflectionGeneraterContext;
@@ -23,7 +23,7 @@ export class ReflectionGenerater {
   }
 
   get logger(): Logger {
-    return this.context.logger;
+    return this.context.logger as unknown as Logger;
   }
 
   async generateJson(): Promise<ParserContextMap> {

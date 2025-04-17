@@ -7,18 +7,16 @@
   "homepage": "https://github.com/qlover/fe-base",
   "author": "qlover",
   "license": "ISC",
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
-    },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "repository": {
     "type": "git",
@@ -38,12 +36,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
-    "test": "jest"
+    "build": "rollup -c"
   },
   "devDependencies": {
-    "@qlover/fe-standard": "latest",
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-corekit": "^1.2.2"
   },
   "dependencies": {
     "dotenv": "^16.4.5"

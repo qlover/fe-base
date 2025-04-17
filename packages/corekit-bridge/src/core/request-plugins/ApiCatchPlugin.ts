@@ -68,7 +68,7 @@ export class ApiCatchPlugin implements ExecutorPlugin {
         result = await task(context);
 
         return result;
-      } catch (error) {
+      } catch {
         const errorResponse = new Response(null, {
           // The FetchURLPlugin may default to catching if the response is ok and throw an error,
           // here it is so that the error response is 200 by default, but that may not be very good

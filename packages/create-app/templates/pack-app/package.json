@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@qlover/fe-scripts": "latest",
-    "@qlover/fe-standard": "latest",
+    "@qlover/fe-standard": "workspace:*",
     "@qlover/fe-utils": "latest",
     "@qlover/fe-release": "latest",
     "@rollup/plugin-commonjs": "^28.0.1",

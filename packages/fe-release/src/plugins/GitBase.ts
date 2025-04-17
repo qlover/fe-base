@@ -63,7 +63,7 @@ export default class GitBase {
           dryRun: false
         })
       ).trim();
-    } catch (error) {
+    } catch {
       throw new Error(
         'Failed to get git remote url. Please ensure this is a git repository with a valid remote.'
       );

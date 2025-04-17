@@ -230,5 +230,6 @@ export class ExampleClass {
    * @param options options description
    */
   // @ts-expect-error
+  // eslint-disable-next-line
   optionsMethods(options: ExampleOptionsInterface): void {}
 }

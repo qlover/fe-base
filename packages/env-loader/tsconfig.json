@@ -1,8 +1,9 @@
 {
-  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES5"
+    "target": "ES5",
+    "moduleResolution": "Node",
   },
-  "include": ["src", "rollup.config.ts"],
+  "include": ["src"],
   "exclude": ["dist", "node_modules"]
 }

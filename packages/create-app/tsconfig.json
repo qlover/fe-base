@@ -1,5 +1,5 @@
 {
-  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "skipLibCheck": true,
     "downlevelIteration": true,

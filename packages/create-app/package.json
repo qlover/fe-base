@@ -3,18 +3,16 @@
   "version": "0.1.12",
   "type": "module",
   "private": false,
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
-    },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "files": [
     "dist",
@@ -30,7 +28,6 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest",
     "create:app:build": "npm run build && npm run create:app",
     "create:app": "node ./bin/create-app.js"
   },
@@ -50,12 +47,16 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "@qlover/env-loader": "^0.0.1"
+  },
   "dependencies": {
-    "@qlover/fe-utils": "latest",
-    "@qlover/scripts-context": "latest",
+    "@qlover/fe-corekit": "^1.2.2",
+    "@qlover/scripts-context": "^0.0.8",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",
-    "ora": "^8.1.1"
+    "ora": "^8.1.1",
+    "lodash": "^4.17.21"
   }
 }

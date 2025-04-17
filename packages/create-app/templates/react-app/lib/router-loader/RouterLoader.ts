@@ -11,7 +11,7 @@ type RouteComponentType<T = unknown> =
 export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
   /**
    * 路径
-   * 
+   *
    * FIXME: support `ReactNode`
    */
   element?: string;

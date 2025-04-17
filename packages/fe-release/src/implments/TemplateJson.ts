@@ -81,7 +81,7 @@ export default class TemplateJson {
         // if successful, recursively process the object and stringify it again
         const processed = this.format(jsonObj, context, options);
         return JSON.stringify(processed) as Input;
-      } catch (e) {
+      } catch {
         // if not a valid JSON, process the template string normally
         return this.resolveString(input, context, open!, close!) as Input;
       }

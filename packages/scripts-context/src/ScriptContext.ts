@@ -2,7 +2,7 @@ import { ConfigSearch } from './ConfigSearch';
 import { ExecPromiseFunction, Shell } from './Shell';
 import merge from 'lodash/merge';
 import { defaultFeConfig, FeConfig } from './feConfig';
-import { Logger } from '@qlover/fe-utils';
+import { Logger } from '@qlover/fe-corekit';
 import { ScriptsLogger } from './ScriptsLogger';
 import { execPromise } from './implement/execPromise';
 

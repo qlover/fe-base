@@ -10,7 +10,7 @@ function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
-    .option('-n, --name <name>', 'The name of the test')
+    .option('-n, --name <name>', 'The name of the test');
   // parse arguments
   program.parse();
 

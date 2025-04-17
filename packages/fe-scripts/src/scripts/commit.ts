@@ -1,6 +1,7 @@
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import {
   FeScriptContext,
   FeScriptContextOptions
@@ -13,18 +14,29 @@ export interface CommitOptions {
   defaultCzPath?: string;
 }
 
-export function getModulesPath(modulesName: string): string | undefined {
+function getModuleRoot(moduleName: string): string | null {
   const require = createRequire(import.meta.url);
+
   try {
-    const path = require.resolve(modulesName, {
+    const modulePath = require.resolve(moduleName, {
       paths: [process.cwd()]
     });
 
-    // remove the modules name from the path
-    // e.g. /Users/node_modules/commitizen/dist -> /Users/node_modules/commitizen
-    return path.substring(0, path.indexOf(modulesName) + modulesName.length);
-  } catch {
-    return;
+    let dir = dirname(modulePath);
+    while (dir !== dirname(dir)) {
+      if (existsSync(join(dir, 'package.json'))) {
+        return dir;
+      }
+      dir = dirname(dir);
+    }
+
+    throw new Error(`Cannot determine root for module: ${moduleName}`);
+  } catch (error) {
+    console.error(
+      `Failed to resolve module ${moduleName}:`,
+      (error as Error).message
+    );
+    return null;
   }
 }
 
@@ -37,13 +49,13 @@ export function commit(options: FeScriptContextOptions<CommitOptions>): void {
   shell.exec('git add .');
 
   // Priority dev project
-  const changelogRootPath = getModulesPath('cz-conventional-changelog');
+  const changelogRootPath = getModuleRoot('cz-conventional-changelog');
   if (!changelogRootPath) {
     logger.error('Could not resolve cz-conventional-changelog');
     return;
   }
 
-  const commitizenPath = getModulesPath('commitizen');
+  const commitizenPath = getModuleRoot('commitizen');
   if (!commitizenPath) {
     logger.error('Could not resolve commitizen');
     return;
