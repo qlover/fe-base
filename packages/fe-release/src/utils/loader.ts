@@ -29,8 +29,8 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
       // In some cases or tests we might need to support legacy `require.resolve`
       const require = createRequire(process.cwd());
       const module = await import(
-        // @ts-expect-error
         pathToFileURL(require.resolve(pluginName, { paths: [process.cwd()] }))
+          .href
       );
       plugin = module.default;
     }
