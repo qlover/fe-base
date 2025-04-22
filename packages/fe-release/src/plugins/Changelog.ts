@@ -273,6 +273,25 @@ export default class Changelog extends Plugin<ChangelogProps> {
     }
   }
 
+  getIncrement(): string {
+    const lables = this.context.getConfig('workspaces.changeLabels');
+
+    if (Array.isArray(lables) && lables.length > 0) {
+      if (lables.includes('increment:major')) {
+        return 'major';
+      }
+
+      if (lables.includes('increment:minor')) {
+        return 'minor';
+      }
+    }
+
+    const increment = this.getConfig('increment', 'patch');
+    // TODO: support a version number
+
+    return increment;
+  }
+
   async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
     const { name, version } = workspace;
     const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');
@@ -280,7 +299,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
     const fileContent = this.shell.format(contentTmplate, {
       ...workspace,
-      increment: this.getConfig('increment')
+      increment: this.getIncrement()
     });
 
     if (this.context.dryRun) {
