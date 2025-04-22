@@ -1,6 +1,6 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
 import type ReleaseContext from './implments/ReleaseContext';
-import type { ReleasePullRequestProps } from './plugins/githubPR/GithubPR';
+import type { GithubPRProps } from './plugins/githubPR/GithubPR';
 import type { FeScriptContextOptions } from '@qlover/scripts-context';
 import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
 import type {
@@ -23,7 +23,7 @@ export type DeepPartial<T> = {
 };
 
 export interface ReleaseConfig {
-  githubPR?: ReleasePullRequestProps;
+  githubPR?: GithubPRProps;
   workspaces?: WorkspacesProps;
 }
 
@@ -34,6 +34,7 @@ export interface ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig>
 
 export type StepOption<T> = {
   label: string;
+  enabled?: boolean;
   task: () => Promise<T>;
 };
 

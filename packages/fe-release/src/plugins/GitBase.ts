@@ -6,7 +6,21 @@ type UserInfoType = {
   authorName: string;
 };
 
-export default class GitBase<T> extends Plugin<T> {
+export interface GitBaseProps {
+  /**
+   * The token for the GitHub API
+   *
+   * @default `GITHUB_TOKEN`
+   */
+  tokenRef?: string;
+
+  /**
+   * The timeout for the GitHub API
+   */
+  timeout?: number;
+}
+
+export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
   override async onBefore(): Promise<void> {
     const repoInfo = await this.getUserInfo();
 

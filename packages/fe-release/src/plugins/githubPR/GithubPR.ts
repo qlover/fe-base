@@ -5,10 +5,10 @@ import {
 } from '../../implments/ReleaseParams';
 import ReleaseContext from '../../implments/ReleaseContext';
 import { WorkspaceValue } from '../workspaces/Workspaces';
-import PullRequestManager from './PullRequestManager';
-import GitBase from '../GitBase';
+import GithubManager from './GithubManager';
+import GitBase, { type GitBaseProps } from '../GitBase';
 
-export interface ReleasePullRequestProps extends ReleaseParamsConfig {
+export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
    * Whether to publish a PR
    *
@@ -31,28 +31,74 @@ export interface ReleasePullRequestProps extends ReleaseParamsConfig {
    * @default []
    */
   commitArgs?: string[];
+
+  /**
+   * The release name of the release
+   *
+   * @default 'Release ${name} v${version}'
+   */
+  releaseName?: string;
+
+  /**
+   * Whether to create a draft release
+   *
+   * @default false
+   */
+  draft?: boolean;
+
+  /**
+   * Whether to create a pre-release
+   *
+   * @default false
+   */
+  preRelease?: boolean;
+
+  /**
+   * Whether to auto-generate the release notes
+   *
+   * @default false
+   */
+  autoGenerate?: boolean;
+
+  /**
+   * Whether to make the latest release
+   *
+   * @default true
+   */
+  makeLatest?: boolean | 'true' | 'false' | 'legacy';
+
+  /**
+   * The release notes of the release
+   *
+   * @default undefined
+   */
+  releaseNotes?: string;
+
+  /**
+   * The discussion category name of the release
+   *
+   * @default undefined
+   */
+  discussionCategoryName?: string;
 }
 
+const DEFAULT_RELEASE_NAME = 'Release ${name} v${version}';
 const DEFAULT_COMMIT_MESSAGE = 'chore(tag): ${name} v${version}';
 
-export default class GithubPR extends GitBase<ReleasePullRequestProps> {
+export default class GithubPR extends GitBase<GithubPRProps> {
   private releaseParams: ReleaseParams;
-  private pullRequestManager: PullRequestManager;
+  private githubManager: GithubManager;
 
   constructor(
     protected readonly context: ReleaseContext,
-    props: ReleasePullRequestProps
+    props: GithubPRProps
   ) {
-    super(context, 'githubPR', props);
+    super(context, 'githubPR', {
+      releaseName: DEFAULT_RELEASE_NAME,
+      ...props
+    });
 
-    const token = this.getEnv('GITHUB_TOKEN') || this.getEnv('PAT_TOKEN');
-    if (!token) {
-      throw new Error(
-        'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
-      );
-    }
-
-    this.pullRequestManager = new PullRequestManager(this.context, token);
+    this.githubManager = new GithubManager(this.context);
     // @ts-expect-error logger is fe-utils
     this.releaseParams = new ReleaseParams(context.shell, context.logger, {
       PRTitle: this.getConfig('PRTitle', this.context.shared.PRTitle),
@@ -61,8 +107,16 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
     });
   }
 
-  override enabled(): boolean {
-    return !!this.getConfig('releasePR');
+  override enabled(_name: string): boolean {
+    if (_name === 'onExec') {
+      return !!this.getConfig('releasePR');
+    }
+
+    if (_name === 'onSuccess') {
+      return !this.getConfig('releasePR');
+    }
+
+    return true;
   }
 
   override async onBefore(): Promise<void> {
@@ -77,30 +131,74 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
 
     const releaseBranchParams = await this.step({
       label: 'Create Release Branch',
-      task: () =>
-        this.createReleaseBranch(
-          this.releaseParams.getReleaseBranchParams(
-            workspaces,
-            this.context.getTemplateContext()
-          )
-        )
+      task: () => this.createReleaseBranch(workspaces)
     });
 
+    await this.releasePullRequest(workspaces, releaseBranchParams);
+  }
+
+  override async onSuccess(): Promise<void> {
+    const workspaces = this.context.workspaces!;
+
+    await this.shell.exec('npx @changesets/cli publish');
+    await this.shell.exec('git push origin --tags');
+
+    await this.step({
+      label: 'Release Github',
+      task: () =>
+        Promise.all(
+          workspaces.map((workspace) => {
+            return this.githubManager.createRelease(workspace);
+          })
+        )
+    });
+  }
+
+  private async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
+    const commitArgs: string[] = this.getConfig('commitArgs', []);
+
+    // use changeset to
+    await this.shell.exec('npx @changesets/cli version --no-changelog');
+
+    if (workspaces.length === 1) {
+      await this.shell.exec('git add .');
+      await this.commitWorkspace(workspaces[0], commitArgs);
+      return;
+    }
+
+    await this.shell.exec('git add .');
+    const commitMessage = `chore(tag): ${workspaces
+      .map((w) => `${w.name} v${w.version}`)
+      .join(',')}`;
+
+    await this.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      commitMessage,
+      ...commitArgs
+    ]);
+  }
+
+  async releasePullRequest(
+    workspaces: WorkspaceValue[],
+    releaseBranchParams: ReleaseBranchParams
+  ): Promise<void> {
     const prNumber = await this.step({
       label: 'Create Release PR',
       task: () => this.createReleasePR(workspaces, releaseBranchParams)
     });
 
-    if (this.pullRequestManager.autoMergeReleasePR) {
+    if (this.githubManager.autoMergeReleasePR) {
       const { releaseBranch } = releaseBranchParams;
 
       await this.step({
         label: `Merge Release PR(${prNumber})`,
-        task: () => this.pullRequestManager.mergePR(prNumber, releaseBranch)
+        task: () => this.githubManager.mergePR(prNumber, releaseBranch)
       });
       await this.step({
         label: `Checked Release PR(${prNumber})`,
-        task: () => this.pullRequestManager.checkedPR(prNumber, releaseBranch)
+        task: () => this.githubManager.checkedPR(prNumber, releaseBranch)
       });
       return;
     }
@@ -128,32 +226,6 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
     ]);
   }
 
-  async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
-    const commitArgs: string[] = this.getConfig('commitArgs', []);
-
-    // use changeset to
-    await this.shell.exec('pnpm dlx @changesets/cli version --no-changelog');
-
-    if (workspaces.length === 1) {
-      await this.shell.exec('git add .');
-      await this.commitWorkspace(workspaces[0], commitArgs);
-      return;
-    }
-
-    await this.shell.exec('git add .');
-    const commitMessage = `chore(tag): ${workspaces
-      .map((w) => `${w.name} v${w.version}`)
-      .join(',')}`;
-
-    await this.shell.exec([
-      'git',
-      'commit',
-      '--message',
-      commitMessage,
-      ...commitArgs
-    ]);
-  }
-
   /**
    * Create a branch that merges to a tag with new changlog and version.
    *
@@ -161,12 +233,17 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
    *
    * eg. release-production-1.0.0
    *
-   * @param params - The release branch params.
+   *
    * @returns The release branch.
    */
-  async createReleaseBranch(
-    params: ReleaseBranchParams
+  private async createReleaseBranch(
+    workspaces: WorkspaceValue[]
   ): Promise<ReleaseBranchParams> {
+    const params = this.releaseParams.getReleaseBranchParams(
+      workspaces,
+      this.context.getTemplateContext()
+    );
+
     const { tagName, releaseBranch } = params;
 
     if (typeof tagName !== 'string') {
@@ -214,11 +291,11 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
    * @param releaseBranchParams - The release branch params.
    * @returns The created pull request number.
    */
-  async createReleasePR(
+  private async createReleasePR(
     workspaces: WorkspaceValue[],
     releaseBranchParams: ReleaseBranchParams
   ): Promise<string> {
-    const label = await this.pullRequestManager.createReleasePRLabel();
+    const label = await this.githubManager.createReleasePRLabel();
 
     const labels = [label!.name!];
 
@@ -230,7 +307,7 @@ export default class GithubPR extends GitBase<ReleasePullRequestProps> {
       context
     );
 
-    return this.pullRequestManager.createReleasePR({
+    return this.githubManager.createReleasePR({
       title: prTitle,
       body: prBody,
       base: this.context.sourceBranch,

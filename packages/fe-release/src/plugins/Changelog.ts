@@ -20,8 +20,28 @@ export interface ChangelogProps {
    */
   skip?: boolean;
 
+  /**
+   * Whether to skip the changesets
+   * @default false
+   */
+  skipChangeset?: boolean;
+
+  /**
+   * The template of the tag
+   * @default '${name}@${version}'
+   */
   tagTemplate?: string;
+
+  /**
+   * The prefix of the tag
+   * @default '${name}'
+   */
   tagPrefix?: string;
+
+  /**
+   * The match of the tag
+   * @default '${name}@*'
+   */
   tagMatch?: string;
 
   /**
@@ -69,9 +89,9 @@ export default class Changelog extends Plugin<ChangelogProps> {
     super(context, 'changelog', {
       increment: 'patch',
       changesetRoot: '.changeset',
-      tagTemplate: '${packageJson.name}-v${version}',
-      tagPrefix: '${packageJson.name}',
-      tagMatch: '${packageJson.name}-v*',
+      tagTemplate: '${name}@${version}',
+      tagPrefix: '${name}',
+      tagMatch: '${name}@*',
       ...props
     });
   }
@@ -97,18 +117,26 @@ export default class Changelog extends Plugin<ChangelogProps> {
   override async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
-    const changelogs = await Promise.all(
-      workspaces.map((workspace) => this.generate(workspace))
-    );
+    const changelogs = await this.step({
+      label: 'Generate Changelogs',
+      task: () =>
+        Promise.all(workspaces.map((workspace) => this.generate(workspace)))
+    });
 
     this.logger.debug('changelogs', changelogs);
 
     this.context.setWorkspaces(changelogs);
 
     // create changeset files
-    await Promise.all(
-      changelogs.map((changelog) => this.generateChangesetFile(changelog))
-    );
+    if (!this.getConfig('skipChangeset')) {
+      await this.step({
+        label: 'Create Changeset Files',
+        task: () =>
+          Promise.all(
+            changelogs.map((changelog) => this.generateChangesetFile(changelog))
+          )
+      });
+    }
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
