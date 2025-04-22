@@ -1,12 +1,18 @@
 import type { Shell } from '@qlover/scripts-context';
-import type { PullRequestInterface } from '../../interface/PullRequestInterface';
 import type ReleaseContext from '../../implments/ReleaseContext';
 import type { Logger } from '@qlover/fe-corekit';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
+import { Octokit } from '@octokit/rest';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
   DEFAULT_AUTO_MERGE_TYPE
 } from '../../defaults';
+
+export interface PullRequestManagerOptions {
+  token: string;
+  owner: string;
+  repo: string;
+}
 
 type CreatePROptionsArgs = {
   /**
@@ -26,10 +32,34 @@ type CreatePROptionsArgs = {
 };
 
 export default class PullRequestManager {
+  private _octokit: Octokit | null = null;
   constructor(
     private context: ReleaseContext,
-    private releasePR: PullRequestInterface
-  ) {}
+    token: string
+  ) {
+    this._octokit = new Octokit({ auth: token });
+  }
+
+  getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
+    const { authorName, repoName } = this.context.shared;
+
+    if (!authorName || !repoName) {
+      throw new Error('Author name or repo name is not set');
+    }
+
+    return {
+      owner: authorName,
+      repo: repoName
+    };
+  }
+
+  get octokit(): Octokit {
+    if (!this._octokit) {
+      throw new Error('Octokit is not initialized');
+    }
+
+    return this._octokit;
+  }
 
   get logger(): Logger {
     return this.context.logger as unknown as Logger;
@@ -90,7 +120,8 @@ export default class PullRequestManager {
       return;
     }
 
-    await this.releasePR.mergePullRequest({
+    await this.octokit.rest.pulls.merge({
+      ...this.getGitHubUserInfo(),
       pull_number: Number(prNumber),
       merge_method: mergeMethod
     });
@@ -105,12 +136,14 @@ export default class PullRequestManager {
   async checkedPR(prNumber: string, releaseBranch: string): Promise<void> {
     try {
       // Get PR information
-      await this.releasePR.getPullRequest({
+      await this.octokit.rest.pulls.get({
+        ...this.getGitHubUserInfo(),
         pull_number: Number(prNumber)
       });
 
       // Delete remote branch
-      await this.releasePR.deleteBranch({
+      await this.octokit.rest.git.deleteRef({
+        ...this.getGitHubUserInfo(),
         ref: `heads/${releaseBranch}`
       });
 
@@ -146,7 +179,8 @@ export default class PullRequestManager {
     }
 
     try {
-      const result = await this.releasePR.createPullRequestLabel({
+      const result = await this.octokit.rest.issues.createLabel({
+        ...this.getGitHubUserInfo(),
         name: label.name,
         description: label.description,
         color: label.color.replace('#', '') // remove # prefix
@@ -185,23 +219,26 @@ export default class PullRequestManager {
 
     try {
       // create PR
-      const data = await this.releasePR.createPullRequest(options);
-      const issue_number = data.number;
+      const response = await this.octokit.rest.pulls.create({
+        ...this.getGitHubUserInfo(),
+        ...options
+      });
+      const issue_number = response.data.number;
       if (!issue_number) {
         throw new Error('CreateReleasePR Failed, prNumber is empty');
       }
 
-      this.logger.debug('Create PR Success', [data?.url]);
+      this.logger.debug('Create PR Success', [response?.url]);
 
       // add label
       if (options.labels && options.labels.length) {
-        const result = await this.releasePR.addPullRequestLabels({
+        const response = await this.octokit.rest.issues.addLabels({
+          ...this.getGitHubUserInfo(),
           issue_number,
           labels: options.labels
         });
-        this.logger.debug('Add PR label Success', [
-          (result as unknown as { url: string })?.url
-        ]);
+
+        this.logger.debug('Add PR label Success', [response.url]);
       }
 
       return issue_number.toString();

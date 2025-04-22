@@ -1,4 +1,3 @@
-export * from './interface/PullRequestInterface';
 export { default as ReleaseContext } from './implments/ReleaseContext';
 export { default as ReleaseTask } from './implments/ReleaseTask';
 export * from './implments/ReleaseLabel';

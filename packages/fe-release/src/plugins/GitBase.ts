@@ -1,15 +1,13 @@
-import type ReleaseContext from '../implments/ReleaseContext';
 import isString from 'lodash/isString';
+import Plugin from './Plugin';
 
 type UserInfoType = {
   repoName: string;
   authorName: string;
 };
 
-export default class GitBase {
-  constructor(private context: ReleaseContext) {}
-
-  async onBefore(): Promise<void> {
+export default class GitBase<T> extends Plugin<T> {
+  override async onBefore(): Promise<void> {
     const repoInfo = await this.getUserInfo();
 
     if (!repoInfo) {

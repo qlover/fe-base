@@ -1,158 +1,266 @@
-import { execSync } from 'child_process';
 import ReleaseContext from '../implments/ReleaseContext';
 import Plugin from './Plugin';
+import conventionalChangelog from 'conventional-changelog';
+import { WorkspaceValue } from './workspaces/Workspaces';
+import { join } from 'path';
+import { existsSync, writeFileSync } from 'fs';
 
-interface CommitType {
-  type: string;
-  section: string;
-  hidden?: boolean;
+export interface ChangelogProps {
+  /**
+   * The increment of the changelog
+   * @default 'patch'
+   */
+  increment?: string;
+
+  /**
+   * Whether to skip the changelog
+   *
+   * If has changeset file, can be set to true
+   * @default false
+   */
+  skip?: boolean;
+
+  tagTemplate?: string;
+  tagPrefix?: string;
+  tagMatch?: string;
+
+  /**
+   * The commit message of the changelog
+   * @default 'chore: update changelog'
+   */
+  commitMessage?: string;
+
+  /**
+   * The root directory of the changeset
+   * @default '.changeset'
+   */
+  changesetRoot?: string;
 }
 
-interface Commit {
-  hash: string;
-  type: string | null;
-  scope: string | null;
-  subject: string;
-  body: string | null;
-  files: string[];
-}
+const defaultOptions = {
+  preset: {
+    name: 'angular',
+    types: [
+      { type: 'feat', section: '✨ Features', hidden: false },
+      { type: 'fix', section: '🐞 Bug Fixes', hidden: false },
+      { type: 'chore', section: '🔧 Chores', hidden: false },
+      { type: 'docs', section: '📝 Documentation', hidden: false },
+      { type: 'refactor', section: '♻️ Refactors', hidden: false },
+      { type: 'perf', section: '🚀 Performance', hidden: false },
+      { type: 'test', section: '🚨 Tests', hidden: false },
+      { type: 'style', section: '🎨 Styles', hidden: false },
+      { type: 'ci', section: '🔄 CI', hidden: false },
+      { type: 'build', section: '🚧 Build', hidden: false },
+      { type: 'revert', section: '⏪ Reverts', hidden: false },
+      { type: 'release', section: '🔖 Releases', hidden: false }
+    ]
+  }
+};
 
-export default class Changelog extends Plugin {
-  private types: CommitType[] = [
-    { type: 'feat', section: 'Features' },
-    { type: 'fix', section: 'Bug Fixes' },
-    { type: 'perf', section: 'Performance Improvements' },
-    { type: 'revert', section: 'Reverts' },
-    { type: 'docs', section: 'Documentation', hidden: true },
-    { type: 'style', section: 'Styles', hidden: true },
-    { type: 'refactor', section: 'Code Refactoring' },
-    { type: 'test', section: 'Tests', hidden: true },
-    { type: 'build', section: 'Build System', hidden: true },
-    { type: 'ci', section: 'Continuous Integration', hidden: true }
-  ];
+const contentTmplate = "---\n'${name}': '${increment}'\n---\n${changelog}";
 
-  constructor(context: ReleaseContext) {
-    super(context, 'changelog');
-    // 如果配置中有自定义 types，则覆盖默认值
-    const customTypes = this.context.getConfig('changelog.types');
-    if (customTypes) {
-      this.types = customTypes as CommitType[];
+/**
+ * @class Changelog
+ * @description
+ * @extends Plugin
+ */
+export default class Changelog extends Plugin<ChangelogProps> {
+  constructor(context: ReleaseContext, props: ChangelogProps) {
+    super(context, 'changelog', {
+      increment: 'patch',
+      changesetRoot: '.changeset',
+      tagTemplate: '${packageJson.name}-v${version}',
+      tagPrefix: '${packageJson.name}',
+      tagMatch: '${packageJson.name}-v*',
+      ...props
+    });
+  }
+
+  get changesetRoot(): string {
+    return join(this.context.rootPath, this.getConfig('changesetRoot'));
+  }
+
+  override enabled(): boolean {
+    return !this.getConfig('skip');
+  }
+
+  override async onBefore(): Promise<void> {
+    if (!existsSync(this.changesetRoot)) {
+      throw new Error(
+        `Changeset directory ${this.changesetRoot} does not exist`
+      );
     }
+
+    this.logger.debug(`${this.changesetRoot} exists`);
   }
 
-  private parseCommit(commitStr: string): Commit {
-    const [hashSubject, ...bodyLines] = commitStr.split('\n');
-    const [hash, subject] = hashSubject.split(' ', 2);
-
-    // 解析 conventional commit
-    const typeMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?: (.+)$/);
-    const [, type = null, scope = null, message = subject] = typeMatch || [];
-
-    // 获取提交涉及的文件
-    const files = execSync(`git show --pretty="" --name-only ${hash}`)
-      .toString()
-      .trim()
-      .split('\n');
-
-    return {
-      hash: hash.trim(),
-      type,
-      scope,
-      subject: message.trim(),
-      body: bodyLines.join('\n').trim() || null,
-      files
-    };
-  }
-
-  private getCommitsSinceLastTag(): Commit[] {
-    const lastTag = execSync('git describe --tags --abbrev=0')
-      .toString()
-      .trim();
-    const format = '%H %s'; // hash and subject
-    const command = `git log ${lastTag}..HEAD --pretty=format:"${format}"`;
-
-    const output = execSync(command).toString().trim();
-    if (!output) return [];
-
-    return output.split('\n').map((commit) => this.parseCommit(commit));
-  }
-
-  private groupCommitsByWorkspace(commits: Commit[]): Record<string, Commit[]> {
+  override async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
-    const result: Record<string, Commit[]> = {};
 
-    // 初始化工作区数组
-    workspaces.forEach((ws) => {
-      result[ws.name] = [];
-    });
+    const changelogs = await Promise.all(
+      workspaces.map((workspace) => this.generate(workspace))
+    );
 
-    commits.forEach((commit) => {
-      // 根据文件路径判断属于哪个工作区
-      workspaces.forEach((ws) => {
-        const hasWorkspaceFiles = commit.files.some((file) =>
-          file.startsWith(ws.path)
-        );
-        if (hasWorkspaceFiles) {
-          result[ws.name].push(commit);
-        }
-      });
-    });
+    this.logger.debug('changelogs', changelogs);
 
-    return result;
+    this.context.setWorkspaces(changelogs);
+
+    // create changeset files
+    await Promise.all(
+      changelogs.map((changelog) => this.generateChangesetFile(changelog))
+    );
+
   }
 
-  private formatChangelog(groupedCommits: Record<string, Commit[]>): string {
-    let changelog = '';
+  getTagPrefix(workspace: WorkspaceValue): string {
+    return this.shell.format(
+      this.getConfig('tagPrefix') as string,
+      workspace as unknown as Record<string, string>
+    );
+  }
 
-    Object.entries(groupedCommits).forEach(([workspace, commits]) => {
-      if (commits.length === 0) return;
+  async createChangelog({
+    lastTag,
+    workspace
+  }: {
+    lastTag: string;
+    workspace: WorkspaceValue;
+  }): Promise<string> {
+    const options: Parameters<typeof conventionalChangelog>[0] = {
+      releaseCount: 1,
+      tagPrefix: this.getTagPrefix(workspace),
+      warn: this.logger.warn.bind(this.logger),
+      preset: defaultOptions.preset.name
+    };
+    const context: Parameters<typeof conventionalChangelog>[1] = {
+      version: workspace.version
+    };
+    const gitRawCommitsOpts: Parameters<typeof conventionalChangelog>[2] = {
+      debug: this.logger.debug.bind(this.logger),
+      from: lastTag
+    };
+    const parserOpts: Parameters<typeof conventionalChangelog>[3] = {};
+    const writerOpts: Parameters<typeof conventionalChangelog>[4] = {};
 
-      changelog += `\n## ${workspace}\n`;
+    return new Promise((resolve, reject) => {
+      let log = '';
 
-      // 按 type 分组
-      const byType: Record<string, Commit[]> = {};
-      commits.forEach((commit) => {
-        if (!commit.type) return;
-        if (!byType[commit.type]) byType[commit.type] = [];
-        byType[commit.type].push(commit);
-      });
-
-      // 按配置的类型顺序输出
-      this.types.forEach(({ type, section, hidden }) => {
-        if (hidden || !byType[type]) return;
-
-        changelog += `\n### ${section}\n\n`;
-        byType[type].forEach((commit) => {
-          const scope = commit.scope ? `**${commit.scope}**: ` : '';
-          changelog += `- ${scope}${commit.subject} (${commit.hash.slice(0, 7)})\n`;
-        });
-      });
+      conventionalChangelog(
+        options,
+        context,
+        gitRawCommitsOpts,
+        parserOpts,
+        writerOpts
+      )
+        .on('data', (chunk) => {
+          log += chunk.toString();
+        })
+        .on('end', () => {
+          resolve(this.tranformChangelog(log, defaultOptions.preset.types));
+        })
+        .on('error', reject);
     });
+  }
 
+  private tranformChangelog(
+    changelog: string,
+    _types: { type: string; section?: string; hidden?: boolean }[]
+  ): string {
+    // TODO:
     return changelog;
   }
 
-  async onExec(): Promise<void> {
+  async generate(workspace: WorkspaceValue): Promise<WorkspaceValue> {
+    const tagName = await this.getTagName(workspace);
+
+    this.logger.verbose('tagName is:', tagName);
+
+    const changelog = await this.createChangelog({
+      workspace,
+      lastTag: tagName
+    });
+
+    return {
+      ...workspace,
+      tagName,
+      changelog
+    };
+  }
+
+  private async generateTagName(workspace: WorkspaceValue): Promise<string> {
     try {
-      // 1. 获取最近一次 tag 到现在的所有提交
-      const commits = this.getCommitsSinceLastTag();
+      const tagTemplate = this.getConfig('tagTemplate') as string;
 
-      // 2. 按工作区分组提交
-      const groupedCommits = this.groupCommitsByWorkspace(commits);
-
-      // 3. 生成 changelog
-      const changelog = this.formatChangelog(groupedCommits);
-
-      // 4. 保存到上下文中，供其他插件使用
-      this.setConfig({ changelog });
-
-      // 5. 输出日志
-      this.context.logger.info(
-        'Generated changelog for workspaces:',
-        Object.keys(groupedCommits)
+      return this.shell.format(
+        tagTemplate,
+        workspace as unknown as Record<string, string>
       );
     } catch (error) {
-      this.context.logger.error('Failed to generate changelog:', error);
+      console.error(`Error generating tag name for ${workspace.name}:`, error);
+      return `${workspace.name}-v0.0.0`;
     }
+  }
+
+  async getTagName(workspace: WorkspaceValue): Promise<string> {
+    try {
+      const currentTagPattern = await this.generateTagName(workspace);
+      const tagMatch = this.shell.format(
+        this.getConfig('tagMatch') as string,
+        workspace as unknown as Record<string, string>
+      );
+
+      // use git for-each-ref command to get tags and their creation time
+      const tagsOutput = await this.shell.exec(
+        `git for-each-ref --sort=-creatordate --format "%(refname:short)|%(creatordate:iso8601)" "refs/tags/${tagMatch}"`,
+        { dryRun: false }
+      );
+
+      this.logger.debug('tagsOutput', tagsOutput);
+
+      if (!tagsOutput) {
+        return currentTagPattern;
+      }
+
+      const tags = tagsOutput.split('\n').filter(Boolean);
+
+      if (tags.length === 0) {
+        // if no tags found, return the initial tag based on the current package.json
+        return currentTagPattern;
+      }
+
+      // get the latest tag (the first one is the latest because it is sorted by time)
+      const latestTag = tags[0].split('|')[0];
+      return latestTag;
+    } catch (error) {
+      console.error(`Error getting tag for ${workspace.name}:`, error);
+      const fallbackTag = await this.generateTagName(workspace);
+      return fallbackTag;
+    }
+  }
+
+  async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
+    const { name, version } = workspace;
+    const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');
+    const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
+
+    const fileContent = this.shell.format(contentTmplate, {
+      ...workspace,
+      increment: this.getConfig('increment')
+    });
+
+    if (this.context.dryRun) {
+      this.logger.info(
+        `Changeset [${changesetPath}] will be created, content is:`
+      );
+      this.logger.log(fileContent);
+      return;
+    }
+
+    if (existsSync(changesetPath)) {
+      this.logger.info(`Changeset ${changesetName} already exists`);
+      return;
+    }
+
+    writeFileSync(changesetPath, fileContent, 'utf-8');
   }
 }

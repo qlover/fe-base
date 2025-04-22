@@ -1,44 +1,43 @@
-import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type { Logger } from '@qlover/fe-corekit';
-import { type ConstructorType, factory } from '../../utils/factory';
 import {
-  type ReleaseBranchParams,
+  ReleaseBranchParams,
   ReleaseParams,
-  ReleaseParamsConfig
+  type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
-import Plugin from '../Plugin';
 import ReleaseContext from '../../implments/ReleaseContext';
-import ChangelogManager, { ComposeWorkspace } from './ChangelogManager';
+import { WorkspaceValue } from '../workspaces/Workspaces';
 import PullRequestManager from './PullRequestManager';
 import GitBase from '../GitBase';
 
 export interface ReleasePullRequestProps extends ReleaseParamsConfig {
   /**
-   * The increment of the release
-   *
-   * @default `patch`
-   */
-  increment: string;
-
-  /**
-   * Whether to dry run the creation of the pull request
+   * Whether to publish a PR
    *
    * @default `false`
    */
-  dryRunCreatePR?: boolean;
+  releasePR?: boolean;
 
   /**
-   * The pull request interface
+   * The commit message of the release
+   *
+   * support WorkspaceValue
+   *
+   * @default 'chore(tag): {{name}} v${version}'
    */
-  pullRequestInterface: ConstructorType<PullRequestInterface, [ReleaseContext]>;
+  commitMessage?: string;
+
+  /**
+   * The commit args of the release
+   *
+   * @default []
+   */
+  commitArgs?: string[];
 }
 
-export default class GithubPR extends Plugin<ReleasePullRequestProps> {
-  private gitBase: GitBase;
-  private changelogManager: ChangelogManager;
-  private pullRequestManager: PullRequestManager;
-  private prImpl: PullRequestInterface;
+const DEFAULT_COMMIT_MESSAGE = 'chore(tag): ${name} v${version}';
+
+export default class GithubPR extends GitBase<ReleasePullRequestProps> {
   private releaseParams: ReleaseParams;
+  private pullRequestManager: PullRequestManager;
 
   constructor(
     protected readonly context: ReleaseContext,
@@ -46,52 +45,42 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
   ) {
     super(context, 'githubPR', props);
 
-    // create the pull request implementation
-    this.prImpl = factory(props.pullRequestInterface, context);
+    const token = this.getEnv('GITHUB_TOKEN') || this.getEnv('PAT_TOKEN');
+    if (!token) {
+      throw new Error(
+        'GITHUB_TOKEN or PAT_TOKEN environment variable is not set.'
+      );
+    }
 
-    this.gitBase = new GitBase(context);
-
-    this.changelogManager = new ChangelogManager(context);
-
-    this.releaseParams = new ReleaseParams(
-      context.shell,
-      context.logger as unknown as Logger,
-      {
-        PRTitle: this.context.shared.PRTitle,
-        PRBody: this.context.shared.PRBody,
-        ...this.props
-      }
-    );
-
-    this.pullRequestManager = new PullRequestManager(context, this.prImpl);
+    this.pullRequestManager = new PullRequestManager(this.context, token);
+    // @ts-expect-error logger is fe-utils
+    this.releaseParams = new ReleaseParams(context.shell, context.logger, {
+      PRTitle: this.getConfig('PRTitle', this.context.shared.PRTitle),
+      PRBody: this.getConfig('PRBody', this.context.shared.PRBody),
+      ...this.props
+    });
   }
 
-  enabled(): boolean {
-    return this.context.releasePR;
+  override enabled(): boolean {
+    return !!this.getConfig('releasePR');
   }
 
   override async onBefore(): Promise<void> {
-    this.logger.verbose('[before] GithubPR');
-
-    await this.gitBase.onBefore();
-
-    const { repoName, authorName } = this.context.shared!;
-
-    await this.prImpl.init({ repoName, authorName });
+    this.logger.verbose('GithubPR onBefore');
+    await super.onBefore();
   }
 
   override async onExec(): Promise<void> {
-    const composeWorkspaces = await this.step({
-      label: 'Create Changelogs',
-      task: () => this.getComposeWorkspaces()
-    });
+    const workspaces = this.context.workspaces!;
+
+    await this.relesaeCommit(workspaces);
 
     const releaseBranchParams = await this.step({
       label: 'Create Release Branch',
       task: () =>
         this.createReleaseBranch(
           this.releaseParams.getReleaseBranchParams(
-            composeWorkspaces,
+            workspaces,
             this.context.getTemplateContext()
           )
         )
@@ -99,11 +88,20 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
 
     const prNumber = await this.step({
       label: 'Create Release PR',
-      task: () => this.createReleasePR(composeWorkspaces, releaseBranchParams)
+      task: () => this.createReleasePR(workspaces, releaseBranchParams)
     });
 
     if (this.pullRequestManager.autoMergeReleasePR) {
-      await this.mergePR(prNumber, releaseBranchParams.releaseBranch);
+      const { releaseBranch } = releaseBranchParams;
+
+      await this.step({
+        label: `Merge Release PR(${prNumber})`,
+        task: () => this.pullRequestManager.mergePR(prNumber, releaseBranch)
+      });
+      await this.step({
+        label: `Checked Release PR(${prNumber})`,
+        task: () => this.pullRequestManager.checkedPR(prNumber, releaseBranch)
+      });
       return;
     }
 
@@ -112,75 +110,48 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     );
   }
 
-  private async getComposeWorkspaces(): Promise<ComposeWorkspace[]> {
-    const workspaces = this.context.workspaces;
-
-    if (!workspaces) {
-      throw new Error('No workspaces found');
-    }
-
-    if (this.context.shared.mergePublish) {
-      return this.changelogManager.createChangeLogs(workspaces);
-    }
-
-    const releaseResult = await this.changelogManager.createChangelog();
-
-    return [
-      {
-        ...this.context.workspace!,
-        ...releaseResult
-      }
-    ];
-  }
-
-  /**
-   * Merge the release pull request.
-   *
-   * @param prNumber - The number of the pull request.
-   * @param releaseBranch - The branch for the release.
-   */
-  async mergePR(prNumber: string, releaseBranch: string): Promise<void> {
-    // this.logger.obtrusive('Auto Merge Release PR...');
-    await this.step({
-      label: `Merge Release PR(${prNumber})`,
-      task: () => this.pullRequestManager.mergePR(prNumber, releaseBranch)
-    });
-    await this.step({
-      label: `Checked Release PR(${prNumber})`,
-      task: () => this.pullRequestManager.checkedPR(prNumber, releaseBranch)
-    });
-  }
-
-  /**
-   * Creates a release pull request.
-   *
-   * @param composeWorkspaces - The compose workspaces.
-   * @param releaseBranchParams - The release branch params.
-   * @returns The created pull request number.
-   */
-  async createReleasePR(
-    composeWorkspaces: ComposeWorkspace[],
-    releaseBranchParams: ReleaseBranchParams
+  private async commitWorkspace(
+    workspace: WorkspaceValue,
+    commitArgs: string[] = []
   ): Promise<string> {
-    const label = await this.pullRequestManager.createReleasePRLabel();
-
-    const labels = [label!.name!];
-
-    const context = this.context.getTemplateContext();
-    const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);
-    const prBody = this.releaseParams.getPRBody(
-      composeWorkspaces,
-      releaseBranchParams,
-      context
+    const commitMessage = this.shell.format(
+      this.getConfig('commitMessage', DEFAULT_COMMIT_MESSAGE),
+      workspace as unknown as Record<string, unknown>
     );
 
-    return this.pullRequestManager.createReleasePR({
-      title: prTitle,
-      body: prBody,
-      base: this.context.sourceBranch,
-      head: releaseBranchParams.releaseBranch,
-      labels
-    });
+    return await this.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      `"${commitMessage}"`,
+      ...commitArgs
+    ]);
+  }
+
+  async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
+    const commitArgs: string[] = this.getConfig('commitArgs', []);
+
+    // use changeset to
+    await this.shell.exec('pnpm dlx @changesets/cli version --no-changelog');
+
+    if (workspaces.length === 1) {
+      await this.shell.exec('git add .');
+      await this.commitWorkspace(workspaces[0], commitArgs);
+      return;
+    }
+
+    await this.shell.exec('git add .');
+    const commitMessage = `chore(tag): ${workspaces
+      .map((w) => `${w.name} v${w.version}`)
+      .join(',')}`;
+
+    await this.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      commitMessage,
+      ...commitArgs
+    ]);
   }
 
   /**
@@ -234,5 +205,37 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     }
 
     return { tagName, releaseBranch };
+  }
+
+  /**
+   * Creates a release pull request.
+   *
+   * @param workspaces - The compose workspaces.
+   * @param releaseBranchParams - The release branch params.
+   * @returns The created pull request number.
+   */
+  async createReleasePR(
+    workspaces: WorkspaceValue[],
+    releaseBranchParams: ReleaseBranchParams
+  ): Promise<string> {
+    const label = await this.pullRequestManager.createReleasePRLabel();
+
+    const labels = [label!.name!];
+
+    const context = this.context.getTemplateContext();
+    const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);
+    const prBody = this.releaseParams.getPRBody(
+      workspaces,
+      releaseBranchParams,
+      context
+    );
+
+    return this.pullRequestManager.createReleasePR({
+      title: prTitle,
+      body: prBody,
+      base: this.context.sourceBranch,
+      head: releaseBranchParams.releaseBranch,
+      labels
+    });
   }
 }

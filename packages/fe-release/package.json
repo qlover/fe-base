@@ -46,18 +46,17 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "release": "node bin/release.js",
-    "release-pr": "node bin/release.js -P",
-    "dryrun:release": "node bin/release.js --dry-run -V",
-    "dryrun:release-pr": "node bin/release.js -P --dry-run -V"
+    "release": "node dist/cli.js",
+    "release-pr": "node dist/cli.js -P",
+    "dryrun:release": "node dist/cli.js --dry-run -V",
+    "dryrun:release-pr": "node dist/cli.js -P --dry-run -V"
   },
   "devDependencies": {
     "@octokit/rest": "^21.0.2",
-    "@release-it/conventional-changelog": "^8.0.1",
+    "@types/conventional-changelog": "^6.0.0",
     "@types/semver": "^7.7.0",
     "commander": "^11.0.0",
     "p-limit": "^6.2.0",
-    "release-it": "^17.10.0",
     "semver": "^7.5.4"
   },
   "dependencies": {
@@ -65,6 +64,7 @@
     "@qlover/env-loader": "^0.0.1",
     "@qlover/fe-corekit": "^1.2.2",
     "@qlover/scripts-context": "^0.0.8",
+    "conventional-changelog": "^6.0.0",
     "lodash": "^4.17.21"
   }
 }

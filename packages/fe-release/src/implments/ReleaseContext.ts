@@ -10,7 +10,6 @@ import merge from 'lodash/merge';
 import get from 'lodash/get';
 import { Env } from '@qlover/env-loader';
 import { DEFAULT_SOURCE_BRANCH } from '../defaults';
-import ReleaseIt from './release-it/ReleaseIt';
 import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
 
 const DEFAULT_ENV_ORDER = ['.env.local', '.env'];
@@ -19,7 +18,6 @@ export default class ReleaseContext<
   T extends ReleaseConfig = ReleaseConfig
 > extends FeScriptContext<T> {
   protected readonly _env: Env;
-  public readonly releaseIt: ReleaseIt;
 
   /**
    * Shared Config
@@ -28,8 +26,6 @@ export default class ReleaseContext<
 
   constructor(context: ReleaseContextOptions<T>) {
     super(context);
-
-    this.releaseIt = new ReleaseIt(this, context.options?.releaseIt);
 
     this._env = Env.searchEnv({
       logger: this.logger,
@@ -62,10 +58,6 @@ export default class ReleaseContext<
     };
   }
 
-  get releasePR(): boolean {
-    return !!this.shared.releasePR;
-  }
-
   get rootPath(): string {
     return this.shared.rootPath!;
   }
@@ -88,6 +80,13 @@ export default class ReleaseContext<
 
   get workspace(): WorkspaceValue | undefined {
     return this.getConfig('workspaces.workspace');
+  }
+
+  setWorkspaces(workspaces: WorkspaceValue[]): void {
+    this.options.workspaces = {
+      ...this.options.workspaces,
+      workspaces
+    };
   }
 
   setConfig(config: DeepPartial<ReleaseConfig>): void {

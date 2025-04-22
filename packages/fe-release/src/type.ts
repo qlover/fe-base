@@ -1,8 +1,6 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
 import type ReleaseContext from './implments/ReleaseContext';
-import type { PublishNpmProps } from './plugins/PublishNpm';
 import type { ReleasePullRequestProps } from './plugins/githubPR/GithubPR';
-import type { ReleaseItProps } from './implments/release-it/ReleaseIt';
 import type { FeScriptContextOptions } from '@qlover/scripts-context';
 import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
 import type {
@@ -25,11 +23,7 @@ export type DeepPartial<T> = {
 };
 
 export interface ReleaseConfig {
-  publishNpm?: PublishNpmProps;
-
   githubPR?: ReleasePullRequestProps;
-
-  releaseIt: ReleaseItProps;
   workspaces?: WorkspacesProps;
 }
 

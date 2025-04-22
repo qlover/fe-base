@@ -1,5 +1,4 @@
 import type { Shell } from '@qlover/scripts-context';
-import type { ComposeWorkspace } from '../plugins/githubPR/ChangelogManager';
 import { Logger } from '@qlover/fe-corekit';
 import { SharedReleaseOptions } from '../interface/ShreadReleaseOptions';
 import {
@@ -10,6 +9,7 @@ import {
   WORKSPACE_VERSION_SEPARATOR
 } from '../defaults';
 import { TemplateContext } from '../type';
+import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
 
 export type ReleaseBranchParams = {
   tagName: string;
@@ -126,7 +126,7 @@ export class ReleaseParams {
     });
   }
 
-  getReleaseName(composeWorkspaces: ComposeWorkspace[]): string {
+  getReleaseName(composeWorkspaces: WorkspaceValue[]): string {
     if (composeWorkspaces.length === 1) {
       return composeWorkspaces[0].name;
     }
@@ -142,7 +142,7 @@ export class ReleaseParams {
       .join(multiWorkspaceSeparator);
   }
 
-  getReleaseTagName(composeWorkspaces: ComposeWorkspace[]): string {
+  getReleaseTagName(composeWorkspaces: WorkspaceValue[]): string {
     if (composeWorkspaces.length === 1) {
       return composeWorkspaces[0].version;
     }
@@ -151,7 +151,7 @@ export class ReleaseParams {
   }
 
   getReleaseBranchParams(
-    composeWorkspaces: ComposeWorkspace[],
+    composeWorkspaces: WorkspaceValue[],
     shared: SharedReleaseOptions
   ): ReleaseBranchParams {
     const releaseTagName = this.getReleaseTagName(composeWorkspaces);
@@ -193,7 +193,7 @@ export class ReleaseParams {
    * @returns The formatted release pull request body.
    */
   getPRBody(
-    composeWorkspaces: ComposeWorkspace[],
+    composeWorkspaces: WorkspaceValue[],
     releaseBranchParams: ReleaseBranchParams,
     context: TemplateContext
   ): string {

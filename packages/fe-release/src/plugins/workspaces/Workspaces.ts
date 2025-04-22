@@ -57,6 +57,16 @@ export interface WorkspaceValue {
    * The package.json of the workspace
    */
   packageJson: PackageJson;
+
+  /**
+   * The tag name of the workspace
+   */
+  tagName?: string;
+
+  /**
+   * The changelog of the workspace
+   */
+  changelog?: string;
 }
 
 export default class Workspaces extends Plugin<WorkspacesProps> {
@@ -83,8 +93,6 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   }
 
   override async onBefore(): Promise<void> {
-    this.logger.debug('Merge publish:', !!this.context.shared.mergePublish);
-
     const workspace = this.getConfig('workspace');
 
     if (workspace) {
@@ -101,24 +109,25 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     }
 
     // If has publishPath, use the workspace
-    const publishPath = this.context.shared.publishPath;
+    const { publishPath } = this.context.shared;
     if (publishPath) {
-      const publishPathWorkspace = workspaces.find(
+      const targetWorkspace = workspaces.find(
         (workspace) => resolve(workspace.root) === resolve(publishPath)
       );
 
       this.nextSkip();
 
-      if (!publishPathWorkspace) {
+      if (!targetWorkspace) {
         throw new Error(`No workspace found for: ${publishPath}`);
       }
 
       this.logger.debug(
-        'publishPathWorkspace find!',
-        join(publishPathWorkspace.root, MANIFEST_PATH)
+        `Workspace of ${publishPath} find!`,
+        join(targetWorkspace.root, MANIFEST_PATH)
       );
 
-      this.setCurrentWorkspace(publishPathWorkspace, workspaces);
+      // only one workspace
+      this.setCurrentWorkspace(targetWorkspace, [targetWorkspace]);
       return;
     }
 
@@ -140,26 +149,6 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this._skip = true;
 
     this.logger.debug('skip next workspace');
-  }
-
-  override async onExec(): Promise<void> {
-    // important
-    this.nextSkip();
-
-    if (this.context.shared.mergePublish) {
-      this.logger.info('Merge publish, skip Workspaces');
-      return;
-    }
-
-    for (const workspace of this.workspacesList) {
-      this.logger.obtrusive(
-        `workspace: ${workspace.name} ${workspace.version}`
-      );
-
-      this.setCurrentWorkspace(workspace);
-
-      await this.releaseTask?.run();
-    }
   }
 
   setReleaseTask(releaseTask: ReleaseTask): void {
