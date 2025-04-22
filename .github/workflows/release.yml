@@ -43,8 +43,6 @@ jobs:
         run: node packages/fe-release/dist/cli.js -V -P --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release:
     if: |
@@ -81,4 +79,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

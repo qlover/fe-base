@@ -117,19 +117,32 @@ export default class GithubPR extends GitBase<GithubPRProps> {
 
   override enabled(_name: string): boolean {
     if (_name === 'onExec') {
-      return !!this.getConfig('releasePR');
+      return !this.isPublish;
     }
 
     if (_name === 'onSuccess') {
-      return !this.getConfig('releasePR');
+      return this.isPublish;
     }
 
     return true;
   }
 
+  get isPublish(): boolean {
+    return !this.getConfig('releasePR');
+  }
+
   override async onBefore(): Promise<void> {
     this.logger.verbose('GithubPR onBefore');
     await super.onBefore();
+
+    if (this.isPublish) {
+      const npmToken = this.getEnv('NPM_TOKEN');
+      if (!npmToken) {
+        throw new Error('NPM_TOKEN is not set');
+      }
+
+      await this.shell.exec(`npm config set //registry.npmjs.org/:_authToken=${npmToken}`);
+    }
   }
 
   override async onExec(): Promise<void> {
