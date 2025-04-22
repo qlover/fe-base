@@ -109,7 +109,6 @@ export default class Changelog extends Plugin<ChangelogProps> {
     await Promise.all(
       changelogs.map((changelog) => this.generateChangesetFile(changelog))
     );
-
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
@@ -137,10 +136,18 @@ export default class Changelog extends Plugin<ChangelogProps> {
     };
     const gitRawCommitsOpts: Parameters<typeof conventionalChangelog>[2] = {
       debug: this.logger.debug.bind(this.logger),
-      from: lastTag
+      from: lastTag,
+      reverse: true
     };
     const parserOpts: Parameters<typeof conventionalChangelog>[3] = {};
     const writerOpts: Parameters<typeof conventionalChangelog>[4] = {};
+
+    if (this.context.dryRun) {
+      this.logger.info('[Dry Run] Changelog is dry run');
+      return new Promise((resolve) => {
+        resolve('## Dry Run Changelog');
+      });
+    }
 
     return new Promise((resolve, reject) => {
       let log = '';

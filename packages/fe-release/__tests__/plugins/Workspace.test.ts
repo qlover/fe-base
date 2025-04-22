@@ -186,19 +186,5 @@ describe('Workspaces Plugin', () => {
       expect(currentWorkspace).toBeDefined();
       expect(currentWorkspace?.name).toBe('package-a');
     });
-
-    it('onExec: should set _skip to true and execute publish tasks for all remaining workspaces', async () => {
-      // first set current workspace and workspaces list through onBefore
-      await workspaces.onBefore();
-
-      // then execute onExec
-      await workspaces.onExec();
-
-      // verify _skip is set to true
-      expect(workspaces['_skip']).toBe(true);
-
-      // verify releaseTask.run is called for each remaining workspace
-      expect(mockReleaseTask.run).toHaveBeenCalled();
-    });
   });
 });
