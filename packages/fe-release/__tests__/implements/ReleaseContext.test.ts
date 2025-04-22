@@ -1,5 +1,4 @@
 import '../MockReleaseContextDep';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { ReleaseConfig, ReleaseContextOptions } from '../../src/type';
 import ReleaseContext from '../../src/implments/ReleaseContext';
 
@@ -32,19 +31,6 @@ describe('ReleaseContext', () => {
       const context = new ReleaseContext(contextOptions);
       expect(context).toBeInstanceOf(ReleaseContext);
       expect(Env.searchEnv).toHaveBeenCalled();
-    });
-  });
-
-  describe('releasePR', () => {
-    it('should return false when releasePR is false', () => {
-      const context = new ReleaseContext(contextOptions);
-      expect(context.releasePR).toBe(false);
-    });
-
-    it('should return true when releasePR is true', () => {
-      contextOptions.shared!.releasePR = true;
-      const context = new ReleaseContext(contextOptions);
-      expect(context.releasePR).toBe(true);
     });
   });
 
@@ -200,14 +186,12 @@ describe('ReleaseContext', () => {
     it('should correctly merge shared configs', () => {
       const context = new ReleaseContext(contextOptions);
       const newShared = {
-        publishPath: '/new/publish/path',
-        releasePR: true
+        publishPath: '/new/publish/path'
       };
 
       context.setShared(newShared);
 
       expect(context.shared.publishPath).toBe('/new/publish/path');
-      expect(context.releasePR).toBe(true);
     });
   });
 });

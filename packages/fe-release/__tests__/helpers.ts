@@ -118,20 +118,13 @@ export function createTestReleaseContext(
   const logger = createTestLogger();
   const shell = createTestShell();
 
-  const mockReleaseIt = vi.fn().mockResolvedValue({
-    changelog: '## 1.0.0\n* Feature 1\n* Feature 2',
-    version: '1.0.0'
-  });
-
   const defaultOptions: Required<ReleaseContextOptions> = {
     // @ts-expect-error
     logger,
     shell,
     dryRun: false,
     verbose: false,
-    options: {
-      releaseIt: { releaseIt: mockReleaseIt }
-    },
+    options: {},
     feConfig: defaultFeConfig
   };
 
@@ -195,9 +188,7 @@ export function createMockFeScriptContext(
     feConfig: {},
     dryRun: false,
     verbose: false,
-    options: {
-      releaseIt: { releaseIt: vi.fn() }
-    },
+    options: {},
     shared: {
       packageJson: {
         name: 'test-package',

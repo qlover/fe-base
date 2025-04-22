@@ -36,12 +36,14 @@
     "node": ">=18.19.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.2",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.13.0",
     "@nx/js": "20.6.4",
-    "@qlover/eslint-plugin-fe-dev": "workspace:*",
     "@qlover/env-loader": "^0.0.1",
+    "@qlover/eslint-plugin-fe-dev": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
     "@qlover/scripts-context": "^0.0.8",
@@ -84,6 +86,5 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
-  },
-  "dependencies": {}
+  }
 }

@@ -3,20 +3,15 @@ import type Plugin from '../plugins/Plugin';
 import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
 import { AsyncExecutor } from '@qlover/fe-corekit';
 import ReleaseContext from './ReleaseContext';
-import GithubReleasePR from './GithubReleasePR';
 import GithubPR from '../plugins/githubPR/GithubPR';
-import { DEFAULT_INCREMENT } from '../defaults';
-import PublishNpm from '../plugins/PublishNpm';
 import Workspaces from '../plugins/workspaces/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
+import Changelog from '../plugins/Changelog';
 
 const innerTuples: PluginTuple<PluginClass>[] = [
-  tuple(GithubPR, {
-    increment: DEFAULT_INCREMENT,
-    pullRequestInterface: GithubReleasePR
-  }),
-  tuple(PublishNpm),
-  tuple(Workspaces)
+  tuple(Workspaces),
+  tuple(Changelog, {}),
+  tuple(GithubPR, {})
 ];
 
 export default class ReleaseTask {
@@ -39,19 +34,7 @@ export default class ReleaseTask {
     externalTuples = externalTuples || this.context.shared.plugins || [];
 
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
-      ...this.defaultTuples.filter((tuple) => {
-        // filter create release pull request plugin if releasePR is false
-        if (!this.context.shared.releasePR && tuple[0] === GithubPR) {
-          return false;
-        }
-
-        // filter publish npm plugin if releasePackageName is not set
-        else if (this.context.shared.releasePR && tuple[0] === PublishNpm) {
-          return false;
-        }
-
-        return true;
-      }),
+      ...this.defaultTuples,
       ...externalTuples
     ]);
 
