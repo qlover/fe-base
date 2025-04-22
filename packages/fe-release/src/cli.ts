@@ -66,6 +66,11 @@ function programArgs() {
       '-l, --workspaces.change-labels <changeLabels>',
       'The change labels of the release, multiple values use `,` to split',
       splitWithComma
+    )
+    .option(
+      '--githubPR.command-prefix <commandPrefix>',
+      'The command prefix of the release, call @changeset/cli command',
+      'pnpm dlx'
     );
 
   program.parse();

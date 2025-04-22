@@ -10,6 +10,13 @@ import GitBase, { type GitBaseProps } from '../GitBase';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
+   * The command to run before the release
+   *
+   * @default `pnpm dlx`
+   */
+  commandPrefix?: string;
+
+  /**
    * Whether to publish a PR
    *
    * @default `false`
@@ -94,6 +101,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     props: GithubPRProps
   ) {
     super(context, 'githubPR', {
+      commandPrefix: 'pnpm dlx',
       releaseName: DEFAULT_RELEASE_NAME,
       ...props
     });
@@ -140,7 +148,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
-    await this.shell.exec('npx @changesets/cli publish');
+    await this.runChangesetsCli('publish');
     await this.shell.exec('git push origin --tags');
 
     await this.step({
@@ -158,7 +166,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     const commitArgs: string[] = this.getConfig('commitArgs', []);
 
     // use changeset to
-    await this.shell.exec('npx @changesets/cli version --no-changelog');
+    await this.runChangesetsCli('version', ['--no-changelog']);
 
     if (workspaces.length === 1) {
       await this.shell.exec('git add .');
@@ -177,6 +185,15 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       '--message',
       commitMessage,
       ...commitArgs
+    ]);
+  }
+
+  runChangesetsCli(name: string, args?: string[]): Promise<string> {
+    return this.shell.exec([
+      this.getConfig('commandPrefix', 'npx'),
+      '@changesets/cli',
+      name,
+      ...(args ?? [])
     ]);
   }
 
