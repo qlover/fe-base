@@ -1,6 +1,11 @@
 import type { FeReleaseConfig } from '@qlover/scripts-context';
 import type { PluginClass, PluginTuple } from '../utils/tuple';
 
+/**
+ * This is the shared options for the release.
+ *
+ * extends `FeReleaseConfig`
+ */
 export interface SharedReleaseOptions extends FeReleaseConfig {
   /**
    * The source branch of the project
@@ -31,28 +36,22 @@ export interface SharedReleaseOptions extends FeReleaseConfig {
   rootPath?: string;
 
   /**
-   * Whether to publish a PR
-   *
-   * @default `false`
-   */
-  releasePR?: boolean;
-
-  /**
    * Plugins
    */
   plugins?: PluginTuple<PluginClass<unknown[]>>[];
 
+  /**
+   * The name of the repository
+   */
   repoName?: string;
-  authorName?: string;
-
-  currentBranch?: string;
 
   /**
-   * Merge publish?
-   *
-   * If true, the PR will be created for all workspaces, instead of creating one PR per workspace.
-   *
-   * @default `false`
+   * The name of the author
    */
-  mergePublish?: boolean;
+  authorName?: string;
+
+  /**
+   * The current branch of the project
+   */
+  currentBranch?: string;
 }

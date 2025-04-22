@@ -1,12 +1,23 @@
 import type { Shell } from '@qlover/scripts-context';
-import type { PullRequestInterface } from '../../interface/PullRequestInterface';
 import type ReleaseContext from '../../implments/ReleaseContext';
 import type { Logger } from '@qlover/fe-corekit';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
+import { Octokit } from '@octokit/rest';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
   DEFAULT_AUTO_MERGE_TYPE
 } from '../../defaults';
+import { GithubPRProps } from './GithubPR';
+import { WorkspaceValue } from '../workspaces/Workspaces';
+
+export interface PullRequestManagerOptions {
+  token: string;
+  owner: string;
+  repo: string;
+}
+
+export type CreateReleaseOptions =
+  import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['parameters'];
 
 type CreatePROptionsArgs = {
   /**
@@ -25,11 +36,56 @@ type CreatePROptionsArgs = {
   head: string;
 };
 
-export default class PullRequestManager {
-  constructor(
-    private context: ReleaseContext,
-    private releasePR: PullRequestInterface
-  ) {}
+export default class GithubManager {
+  private _octokit: Octokit | null = null;
+  constructor(private context: ReleaseContext) {}
+
+  getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
+    const { authorName, repoName } = this.context.shared;
+
+    if (!authorName || !repoName) {
+      throw new Error('Author name or repo name is not set');
+    }
+
+    return {
+      owner: authorName,
+      repo: repoName
+    };
+  }
+
+  getToken(): string {
+    const { tokenRef = 'GITHUB_TOKEN' } =
+      this.context.getConfig<GithubPRProps>('githubPR');
+
+    const token = this.context.env.get(tokenRef);
+
+    if (!token) {
+      throw new Error(
+        `Token is not set. Please set ${tokenRef} environment variable.`
+      );
+    }
+
+    return token;
+  }
+
+  get octokit(): Octokit {
+    if (this._octokit) {
+      return this._octokit;
+    }
+
+    const { timeout } = this.context.getConfig<GithubPRProps>('githubPR');
+
+    const options = {
+      auth: this.getToken(),
+      request: {
+        timeout
+      }
+    };
+
+    this._octokit = new Octokit(options);
+
+    return this._octokit;
+  }
 
   get logger(): Logger {
     return this.context.logger as unknown as Logger;
@@ -90,7 +146,8 @@ export default class PullRequestManager {
       return;
     }
 
-    await this.releasePR.mergePullRequest({
+    await this.octokit.rest.pulls.merge({
+      ...this.getGitHubUserInfo(),
       pull_number: Number(prNumber),
       merge_method: mergeMethod
     });
@@ -105,12 +162,14 @@ export default class PullRequestManager {
   async checkedPR(prNumber: string, releaseBranch: string): Promise<void> {
     try {
       // Get PR information
-      await this.releasePR.getPullRequest({
+      await this.octokit.rest.pulls.get({
+        ...this.getGitHubUserInfo(),
         pull_number: Number(prNumber)
       });
 
       // Delete remote branch
-      await this.releasePR.deleteBranch({
+      await this.octokit.rest.git.deleteRef({
+        ...this.getGitHubUserInfo(),
         ref: `heads/${releaseBranch}`
       });
 
@@ -146,7 +205,8 @@ export default class PullRequestManager {
     }
 
     try {
-      const result = await this.releasePR.createPullRequestLabel({
+      const result = await this.octokit.rest.issues.createLabel({
+        ...this.getGitHubUserInfo(),
         name: label.name,
         description: label.description,
         color: label.color.replace('#', '') // remove # prefix
@@ -185,23 +245,26 @@ export default class PullRequestManager {
 
     try {
       // create PR
-      const data = await this.releasePR.createPullRequest(options);
-      const issue_number = data.number;
+      const response = await this.octokit.rest.pulls.create({
+        ...this.getGitHubUserInfo(),
+        ...options
+      });
+      const issue_number = response.data.number;
       if (!issue_number) {
         throw new Error('CreateReleasePR Failed, prNumber is empty');
       }
 
-      this.logger.debug('Create PR Success', [data?.url]);
+      this.logger.debug('Create PR Success', [response?.url]);
 
       // add label
       if (options.labels && options.labels.length) {
-        const result = await this.releasePR.addPullRequestLabels({
+        const response = await this.octokit.rest.issues.addLabels({
+          ...this.getGitHubUserInfo(),
           issue_number,
           labels: options.labels
         });
-        this.logger.debug('Add PR label Success', [
-          (result as unknown as { url: string })?.url
-        ]);
+
+        this.logger.debug('Add PR label Success', [response.url]);
       }
 
       return issue_number.toString();
@@ -219,5 +282,69 @@ export default class PullRequestManager {
       this.logger.error('Failed to create PR', error);
       throw error;
     }
+  }
+
+  private truncateBody(body: string): string {
+    if (body && body.length >= 124000) return body.substring(0, 124000) + '...';
+    return body;
+  }
+
+  private getOctokitReleaseOptions(
+    options: Partial<CreateReleaseOptions>
+  ): CreateReleaseOptions {
+    const {
+      releaseName,
+      draft = false,
+      preRelease = false,
+      autoGenerate = false,
+      makeLatest = true,
+      releaseNotes,
+      discussionCategoryName = undefined
+    } = this.context.getConfig<GithubPRProps>('githubPR');
+
+    const name = releaseName;
+    const body = autoGenerate ? '' : this.truncateBody(String(releaseNotes));
+
+    return {
+      name,
+      make_latest: makeLatest.toString() as 'true' | 'false' | 'legacy',
+      body,
+      draft,
+      prerelease: preRelease,
+      generate_release_notes: autoGenerate,
+      discussion_category_name: discussionCategoryName,
+      tag_name: '',
+      ...options,
+      ...this.getGitHubUserInfo()
+    };
+  }
+
+  async createRelease(
+    workspace: WorkspaceValue
+  ): Promise<// import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['response']['data']
+  void> {
+    const meragedOptions = this.getOctokitReleaseOptions({
+      tag_name: workspace.tagName,
+      body: workspace.changelog
+    });
+
+    meragedOptions.name = this.shell.format(
+      meragedOptions.name,
+      workspace as unknown as Record<string, string>
+    );
+
+    if (this.context.dryRun) {
+      this.logger.exec(
+        `octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`
+      );
+
+      return;
+    }
+
+    const response = await this.octokit.repos.createRelease(meragedOptions);
+
+    this.logger.verbose(
+      `octokit repos.createRelease: done (${response.headers.location})`
+    );
   }
 }

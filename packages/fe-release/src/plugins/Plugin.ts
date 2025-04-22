@@ -46,7 +46,7 @@ export default abstract class Plugin<Props = unknown>
     return this.context.env.get(key) ?? defaultValue;
   }
 
-  enabled(): boolean {
+  enabled(_name: string, _context: ExecutorReleaseContext): boolean {
     return true;
   }
 

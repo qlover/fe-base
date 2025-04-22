@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 
 import type { ReleaseContextOptions } from './type';
-import releaseIt from 'release-it';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import semver from 'semver';
@@ -24,8 +23,7 @@ function programArgs() {
       'Do not touch or write anything, but show the commands'
     )
     .option('-V, --verbose', 'Show more information')
-    .option('-P, --release-PR', 'Create a release PR')
-    .option('-M, --merge-publish', 'Merge publish')
+
     // to Workspaces use workspace
     .option(
       '-p, --publish-path <publishPath>',
@@ -41,8 +39,8 @@ function programArgs() {
     )
     // plugins args
     .option(
-      '--pull-request.increment <increment>',
-      'The increment of the release, map to feConfig.release.increment',
+      '-i, --changelog.increment <increment>',
+      'The increment of the release',
       (value) => {
         if (!ALLOWED_INCREMENTS.includes(value) && !semver.valid(value)) {
           throw new Error(
@@ -53,10 +51,7 @@ function programArgs() {
       },
       DEFAULT_INCREMENT
     )
-    .option(
-      '--publish-npm.skip-npmrc',
-      'Whether to skip setting the npmrc file'
-    )
+    .option('--changelog.skip', 'Whether to skip the changelog')
     .option(
       '--packages-directories <packagesDirectories>',
       'The packages that have been changed, multiple values use `,` to split, map to feConfig.release.packagesDirectories',
@@ -66,10 +61,16 @@ function programArgs() {
       '--githubPR.dry-run-create-PR',
       'Whether to dry run the creation of the pull request'
     )
+    .option('-P, --githubPR.release-PR', 'Create a release PR')
     .option(
       '-l, --workspaces.change-labels <changeLabels>',
       'The change labels of the release, multiple values use `,` to split',
       splitWithComma
+    )
+    .option(
+      '--githubPR.command-prefix <commandPrefix>',
+      'The command prefix of the release, call @changeset/cli command',
+      'pnpm dlx'
     );
 
   program.parse();
@@ -81,9 +82,10 @@ async function main() {
   const { shared: commonOptions, ...allOptions } = programArgs();
   const { dryRun, verbose, ...shared } = commonOptions;
 
-  const options: ReleaseContextOptions['options'] = Object.assign(allOptions, {
-    releaseIt: { releaseIt }
-  });
+  const options: ReleaseContextOptions['options'] = Object.assign(
+    allOptions,
+    {}
+  );
 
   await new ReleaseTask({ dryRun, verbose, options, shared }).exec();
 }

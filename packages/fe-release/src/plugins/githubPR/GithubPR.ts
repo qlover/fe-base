@@ -1,109 +1,222 @@
-import type { PullRequestInterface } from '../../interface/PullRequestInterface';
-import type { Logger } from '@qlover/fe-corekit';
-import { type ConstructorType, factory } from '../../utils/factory';
 import {
-  type ReleaseBranchParams,
+  ReleaseBranchParams,
   ReleaseParams,
-  ReleaseParamsConfig
+  type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
-import Plugin from '../Plugin';
 import ReleaseContext from '../../implments/ReleaseContext';
-import ChangelogManager, { ComposeWorkspace } from './ChangelogManager';
-import PullRequestManager from './PullRequestManager';
-import GitBase from '../GitBase';
+import { WorkspaceValue } from '../workspaces/Workspaces';
+import GithubManager from './GithubManager';
+import GitBase, { type GitBaseProps } from '../GitBase';
 
-export interface ReleasePullRequestProps extends ReleaseParamsConfig {
+export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
-   * The increment of the release
+   * The command to run before the release
    *
-   * @default `patch`
+   * @default `pnpm dlx`
    */
-  increment: string;
+  commandPrefix?: string;
 
   /**
-   * Whether to dry run the creation of the pull request
+   * Whether to publish a PR
    *
    * @default `false`
    */
-  dryRunCreatePR?: boolean;
+  releasePR?: boolean;
 
   /**
-   * The pull request interface
+   * The commit message of the release
+   *
+   * support WorkspaceValue
+   *
+   * @default 'chore(tag): {{name}} v${version}'
    */
-  pullRequestInterface: ConstructorType<PullRequestInterface, [ReleaseContext]>;
+  commitMessage?: string;
+
+  /**
+   * The commit args of the release
+   *
+   * @default []
+   */
+  commitArgs?: string[];
+
+  /**
+   * The release name of the release
+   *
+   * @default 'Release ${name} v${version}'
+   */
+  releaseName?: string;
+
+  /**
+   * Whether to create a draft release
+   *
+   * @default false
+   */
+  draft?: boolean;
+
+  /**
+   * Whether to create a pre-release
+   *
+   * @default false
+   */
+  preRelease?: boolean;
+
+  /**
+   * Whether to auto-generate the release notes
+   *
+   * @default false
+   */
+  autoGenerate?: boolean;
+
+  /**
+   * Whether to make the latest release
+   *
+   * @default true
+   */
+  makeLatest?: boolean | 'true' | 'false' | 'legacy';
+
+  /**
+   * The release notes of the release
+   *
+   * @default undefined
+   */
+  releaseNotes?: string;
+
+  /**
+   * The discussion category name of the release
+   *
+   * @default undefined
+   */
+  discussionCategoryName?: string;
 }
 
-export default class GithubPR extends Plugin<ReleasePullRequestProps> {
-  private gitBase: GitBase;
-  private changelogManager: ChangelogManager;
-  private pullRequestManager: PullRequestManager;
-  private prImpl: PullRequestInterface;
+const DEFAULT_RELEASE_NAME = 'Release ${name} v${version}';
+const DEFAULT_COMMIT_MESSAGE = 'chore(tag): ${name} v${version}';
+
+export default class GithubPR extends GitBase<GithubPRProps> {
   private releaseParams: ReleaseParams;
+  private githubManager: GithubManager;
 
   constructor(
     protected readonly context: ReleaseContext,
-    props: ReleasePullRequestProps
+    props: GithubPRProps
   ) {
-    super(context, 'githubPR', props);
+    super(context, 'githubPR', {
+      commandPrefix: 'pnpm dlx',
+      releaseName: DEFAULT_RELEASE_NAME,
+      ...props
+    });
 
-    // create the pull request implementation
-    this.prImpl = factory(props.pullRequestInterface, context);
-
-    this.gitBase = new GitBase(context);
-
-    this.changelogManager = new ChangelogManager(context);
-
-    this.releaseParams = new ReleaseParams(
-      context.shell,
-      context.logger as unknown as Logger,
-      {
-        PRTitle: this.context.shared.PRTitle,
-        PRBody: this.context.shared.PRBody,
-        ...this.props
-      }
-    );
-
-    this.pullRequestManager = new PullRequestManager(context, this.prImpl);
+    this.githubManager = new GithubManager(this.context);
+    // @ts-expect-error logger is fe-utils
+    this.releaseParams = new ReleaseParams(context.shell, context.logger, {
+      PRTitle: this.getConfig('PRTitle', this.context.shared.PRTitle),
+      PRBody: this.getConfig('PRBody', this.context.shared.PRBody),
+      ...this.props
+    });
   }
 
-  enabled(): boolean {
-    return this.context.releasePR;
+  override enabled(_name: string): boolean {
+    if (_name === 'onExec') {
+      return !!this.getConfig('releasePR');
+    }
+
+    if (_name === 'onSuccess') {
+      return !this.getConfig('releasePR');
+    }
+
+    return true;
   }
 
   override async onBefore(): Promise<void> {
-    this.logger.verbose('[before] GithubPR');
-
-    await this.gitBase.onBefore();
-
-    const { repoName, authorName } = this.context.shared!;
-
-    await this.prImpl.init({ repoName, authorName });
+    this.logger.verbose('GithubPR onBefore');
+    await super.onBefore();
   }
 
   override async onExec(): Promise<void> {
-    const composeWorkspaces = await this.step({
-      label: 'Create Changelogs',
-      task: () => this.getComposeWorkspaces()
-    });
+    const workspaces = this.context.workspaces!;
+
+    await this.relesaeCommit(workspaces);
 
     const releaseBranchParams = await this.step({
       label: 'Create Release Branch',
+      task: () => this.createReleaseBranch(workspaces)
+    });
+
+    await this.releasePullRequest(workspaces, releaseBranchParams);
+  }
+
+  override async onSuccess(): Promise<void> {
+    const workspaces = this.context.workspaces!;
+
+    await this.runChangesetsCli('publish');
+    await this.shell.exec('git push origin --tags');
+
+    await this.step({
+      label: 'Release Github',
       task: () =>
-        this.createReleaseBranch(
-          this.releaseParams.getReleaseBranchParams(
-            composeWorkspaces,
-            this.context.getTemplateContext()
-          )
+        Promise.all(
+          workspaces.map((workspace) => {
+            return this.githubManager.createRelease(workspace);
+          })
         )
     });
+  }
 
+  private async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
+    const commitArgs: string[] = this.getConfig('commitArgs', []);
+
+    // use changeset to
+    await this.runChangesetsCli('version', ['--no-changelog']);
+
+    if (workspaces.length === 1) {
+      await this.shell.exec('git add .');
+      await this.commitWorkspace(workspaces[0], commitArgs);
+      return;
+    }
+
+    await this.shell.exec('git add .');
+    const commitMessage = `chore(tag): ${workspaces
+      .map((w) => `${w.name} v${w.version}`)
+      .join(',')}`;
+
+    await this.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      commitMessage,
+      ...commitArgs
+    ]);
+  }
+
+  runChangesetsCli(name: string, args?: string[]): Promise<string> {
+    return this.shell.exec([
+      this.getConfig('commandPrefix', 'npx'),
+      '@changesets/cli',
+      name,
+      ...(args ?? [])
+    ]);
+  }
+
+  async releasePullRequest(
+    workspaces: WorkspaceValue[],
+    releaseBranchParams: ReleaseBranchParams
+  ): Promise<void> {
     const prNumber = await this.step({
       label: 'Create Release PR',
-      task: () => this.createReleasePR(composeWorkspaces, releaseBranchParams)
+      task: () => this.createReleasePR(workspaces, releaseBranchParams)
     });
 
-    if (this.pullRequestManager.autoMergeReleasePR) {
-      await this.mergePR(prNumber, releaseBranchParams.releaseBranch);
+    if (this.githubManager.autoMergeReleasePR) {
+      const { releaseBranch } = releaseBranchParams;
+
+      await this.step({
+        label: `Merge Release PR(${prNumber})`,
+        task: () => this.githubManager.mergePR(prNumber, releaseBranch)
+      });
+      await this.step({
+        label: `Checked Release PR(${prNumber})`,
+        task: () => this.githubManager.checkedPR(prNumber, releaseBranch)
+      });
       return;
     }
 
@@ -112,75 +225,22 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     );
   }
 
-  private async getComposeWorkspaces(): Promise<ComposeWorkspace[]> {
-    const workspaces = this.context.workspaces;
-
-    if (!workspaces) {
-      throw new Error('No workspaces found');
-    }
-
-    if (this.context.shared.mergePublish) {
-      return this.changelogManager.createChangeLogs(workspaces);
-    }
-
-    const releaseResult = await this.changelogManager.createChangelog();
-
-    return [
-      {
-        ...this.context.workspace!,
-        ...releaseResult
-      }
-    ];
-  }
-
-  /**
-   * Merge the release pull request.
-   *
-   * @param prNumber - The number of the pull request.
-   * @param releaseBranch - The branch for the release.
-   */
-  async mergePR(prNumber: string, releaseBranch: string): Promise<void> {
-    // this.logger.obtrusive('Auto Merge Release PR...');
-    await this.step({
-      label: `Merge Release PR(${prNumber})`,
-      task: () => this.pullRequestManager.mergePR(prNumber, releaseBranch)
-    });
-    await this.step({
-      label: `Checked Release PR(${prNumber})`,
-      task: () => this.pullRequestManager.checkedPR(prNumber, releaseBranch)
-    });
-  }
-
-  /**
-   * Creates a release pull request.
-   *
-   * @param composeWorkspaces - The compose workspaces.
-   * @param releaseBranchParams - The release branch params.
-   * @returns The created pull request number.
-   */
-  async createReleasePR(
-    composeWorkspaces: ComposeWorkspace[],
-    releaseBranchParams: ReleaseBranchParams
+  private async commitWorkspace(
+    workspace: WorkspaceValue,
+    commitArgs: string[] = []
   ): Promise<string> {
-    const label = await this.pullRequestManager.createReleasePRLabel();
-
-    const labels = [label!.name!];
-
-    const context = this.context.getTemplateContext();
-    const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);
-    const prBody = this.releaseParams.getPRBody(
-      composeWorkspaces,
-      releaseBranchParams,
-      context
+    const commitMessage = this.shell.format(
+      this.getConfig('commitMessage', DEFAULT_COMMIT_MESSAGE),
+      workspace as unknown as Record<string, unknown>
     );
 
-    return this.pullRequestManager.createReleasePR({
-      title: prTitle,
-      body: prBody,
-      base: this.context.sourceBranch,
-      head: releaseBranchParams.releaseBranch,
-      labels
-    });
+    return await this.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      `"${commitMessage}"`,
+      ...commitArgs
+    ]);
   }
 
   /**
@@ -190,12 +250,17 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
    *
    * eg. release-production-1.0.0
    *
-   * @param params - The release branch params.
+   *
    * @returns The release branch.
    */
-  async createReleaseBranch(
-    params: ReleaseBranchParams
+  private async createReleaseBranch(
+    workspaces: WorkspaceValue[]
   ): Promise<ReleaseBranchParams> {
+    const params = this.releaseParams.getReleaseBranchParams(
+      workspaces,
+      this.context.getTemplateContext()
+    );
+
     const { tagName, releaseBranch } = params;
 
     if (typeof tagName !== 'string') {
@@ -234,5 +299,37 @@ export default class GithubPR extends Plugin<ReleasePullRequestProps> {
     }
 
     return { tagName, releaseBranch };
+  }
+
+  /**
+   * Creates a release pull request.
+   *
+   * @param workspaces - The compose workspaces.
+   * @param releaseBranchParams - The release branch params.
+   * @returns The created pull request number.
+   */
+  private async createReleasePR(
+    workspaces: WorkspaceValue[],
+    releaseBranchParams: ReleaseBranchParams
+  ): Promise<string> {
+    const label = await this.githubManager.createReleasePRLabel();
+
+    const labels = [label!.name!];
+
+    const context = this.context.getTemplateContext();
+    const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);
+    const prBody = this.releaseParams.getPRBody(
+      workspaces,
+      releaseBranchParams,
+      context
+    );
+
+    return this.githubManager.createReleasePR({
+      title: prTitle,
+      body: prBody,
+      base: this.context.sourceBranch,
+      head: releaseBranchParams.releaseBranch,
+      labels
+    });
   }
 }
