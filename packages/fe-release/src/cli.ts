@@ -52,6 +52,8 @@ function programArgs() {
       DEFAULT_INCREMENT
     )
     .option('--changelog.skip', 'Whether to skip the changelog')
+    .option('--changelog.skip-changeset', 'Whether to skip the changeset')
+    .option('--githubPR.skip', 'Whether to skip the githubPR')
     .option(
       '--packages-directories <packagesDirectories>',
       'The packages that have been changed, multiple values use `,` to split, map to feConfig.release.packagesDirectories',
@@ -66,11 +68,6 @@ function programArgs() {
       '-l, --workspaces.change-labels <changeLabels>',
       'The change labels of the release, multiple values use `,` to split',
       splitWithComma
-    )
-    .option(
-      '--githubPR.command-prefix <commandPrefix>',
-      'The command prefix of the release, call @changeset/cli command',
-      'pnpm dlx'
     );
 
   program.parse();

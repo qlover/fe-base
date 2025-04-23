@@ -4,17 +4,27 @@ import {
   type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
 import ReleaseContext from '../../implments/ReleaseContext';
-import { WorkspaceCreator, WorkspaceValue } from '../workspaces/Workspaces';
+import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
-   * The command to run before the release
+   * Whether to dry run the creation of the pull request
    *
-   * @default `pnpm dlx`
+   * - create pr
+   * - changeset publish
+   *
+   * @default `false`
    */
-  commandPrefix?: string;
+  dryRunCreatePR?: boolean;
+
+  /**
+   * Whether to skip the release
+   *
+   * @default `false`
+   */
+  skip?: boolean;
 
   /**
    * Whether to publish a PR
@@ -101,7 +111,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     props: GithubPRProps
   ) {
     super(context, 'githubPR', {
-      commandPrefix: 'pnpm dlx',
       releaseName: DEFAULT_RELEASE_NAME,
       ...props
     });
@@ -116,6 +125,10 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   }
 
   override enabled(_name: string): boolean {
+    if (this.getConfig('skip')) {
+      return false;
+    }
+
     if (_name === 'onExec') {
       return !this.isPublish;
     }
@@ -164,37 +177,13 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
   }
 
-  async generateVersionAndChangelog(
-    workspaces: WorkspaceValue[]
-  ): Promise<WorkspaceValue[]> {
-    await this.runChangesetsCli('version', ['--no-changelog']);
-
-    return Promise.all(
-      workspaces.map((workspace) => {
-        const newPackgeJson = WorkspaceCreator.toWorkspace(
-          {
-            path: workspace.path
-          },
-          this.context.rootPath
-        );
-        return {
-          ...workspace,
-          version: newPackgeJson.version
-        };
-      })
-    );
-  }
-
   override async onExec(): Promise<void> {
-    // use changeset to
-    const workspaces = await this.step({
-      label: 'Generate Version and Changelog',
-      task: () => this.generateVersionAndChangelog(this.context.workspaces!)
+    const workspaces = this.context.workspaces!;
+
+    await this.step({
+      label: 'Release Commit',
+      task: () => this.relesaeCommit(workspaces)
     });
-
-    this.logger.debug('new workspaces', workspaces);
-
-    await this.relesaeCommit(workspaces);
 
     const releaseBranchParams = await this.step({
       label: 'Create Release Branch',
@@ -207,8 +196,11 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
-    await this.runChangesetsCli('publish');
-    await this.shell.exec('git push origin --tags');
+    if (!this.getConfig('dryRunCreatePR')) {
+      await this.context.runChangesetsCli('publish');
+
+      await this.shell.exec('git push origin --tags');
+    }
 
     await this.step({
       label: 'Release Github',
@@ -242,15 +234,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       '--message',
       commitMessage,
       ...commitArgs
-    ]);
-  }
-
-  runChangesetsCli(name: string, args?: string[]): Promise<string> {
-    return this.shell.exec([
-      this.getConfig('commandPrefix', 'npx'),
-      '@changesets/cli',
-      name,
-      ...(args ?? [])
     ]);
   }
 

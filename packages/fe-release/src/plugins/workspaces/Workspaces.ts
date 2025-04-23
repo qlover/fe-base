@@ -64,6 +64,11 @@ export interface WorkspaceValue {
   tagName?: string;
 
   /**
+   * The last tag name of the workspace
+   */
+  lastTag?: string;
+
+  /**
    * The changelog of the workspace
    */
   changelog?: string;

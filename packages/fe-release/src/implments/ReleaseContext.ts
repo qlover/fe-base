@@ -125,4 +125,21 @@ export default class ReleaseContext<
       branch: this.sourceBranch
     };
   }
+
+  async runChangesetsCli(name: string, args?: string[]): Promise<string> {
+    // is pnpm?
+    let packageManager = 'pnpm';
+    try {
+      await this.shell.exec('pnpm -v', { dryRun: false });
+    } catch {
+      packageManager = 'npm';
+    }
+
+    return await this.shell.exec([
+      packageManager === 'pnpm' ? 'pnpm dlx' : 'npx',
+      '@changesets/cli',
+      name,
+      ...(args ?? [])
+    ]);
+  }
 }
