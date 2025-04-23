@@ -1,13 +1,22 @@
 import { IOC } from '@/core/IOC';
-import { useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 export default function Executor() {
-  const jsonStorageControllerState = useControllerState(
-    IOC(JSONStorageController)
+  const executorController = IOC(ExecutorController);
+  const jSONStorageController = IOC(JSONStorageController);
+  const requestTimeout = useSliceStore(
+    jSONStorageController,
+    jSONStorageController.selector.requestTimeout
   );
+
+  const helloState = useSliceStore(
+    executorController,
+    executorController.selector.helloState
+  );
+
   const { t } = useBaseRoutePage();
 
   return (
@@ -20,7 +29,7 @@ export default function Executor() {
         </div>
 
         <div className="bg-white shadow-lg rounded-lg px-8 py-6">
-          {t('requestTimeout')}: {jsonStorageControllerState.requestTimeout}
+          {t('requestTimeout')}: {requestTimeout}
         </div>
         <div className="space-y-6">
           <div className="p-6 bg-gray-50 rounded-lg">
@@ -28,12 +37,24 @@ export default function Executor() {
               {t('executorTestPlugin')}
             </h2>
 
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              onClick={IOC(ExecutorController).onTestPlugins}
-            >
-              {t('testPlugin')}
-            </button>
+            <div className="text-gray-800">
+              {helloState.loading ? (
+                <div>Loading...</div>
+              ) : (
+                <button
+                  className="bg-blue-500 px-4 py-2 rounded-md"
+                  onClick={executorController.onTestPlugins}
+                >
+                  {t('testPlugin')}
+                </button>
+              )}
+
+              {helloState.error instanceof Error ? (
+                <div>{helloState.error.message}</div>
+              ) : (
+                <div>{IOC('JSON').stringify(helloState.result?.data)}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

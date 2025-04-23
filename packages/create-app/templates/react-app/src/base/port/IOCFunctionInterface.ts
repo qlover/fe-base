@@ -1,13 +1,5 @@
-import type { IOCManagerInterface } from '@lib/bootstrap';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-utils';
+import type { IOCManagerInterface } from '@qlover/corekit-bridge';
 import type { ServiceIdentifier } from 'inversify';
-import type { IOCIdentifier } from '@/base/consts/IOCIdentifier';
-
-export type IOCIdentifierMap = {
-  [IOCIdentifier.JSON]: JSONSerializer;
-  [IOCIdentifier.JSONStorage]: JSONStorage;
-  [IOCIdentifier.Logger]: Logger;
-};
 
 /**
  * IOC function
@@ -19,7 +11,8 @@ export type IOCIdentifierMap = {
  * ```
  *
  */
-export interface IOCFunctionInterface extends IOCManagerInterface {
+export interface IOCFunctionInterface<IOCIdentifierMap>
+  extends IOCManagerInterface {
   /**
    * get constant identifier
    *

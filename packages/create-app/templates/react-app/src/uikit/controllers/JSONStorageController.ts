@@ -1,5 +1,5 @@
-import { FeController } from '@lib/fe-react-controller';
-import { JSONStorage } from '@qlover/fe-utils';
+import { JSONStorage } from '@qlover/fe-corekit';
+import { SliceStore } from '@qlover/slice-store-react';
 import { random } from 'lodash';
 
 interface JSONStoragePageState {
@@ -9,7 +9,11 @@ interface JSONStoragePageState {
   requestTimeout: number;
 }
 
-export class JSONStorageController extends FeController<JSONStoragePageState> {
+export class JSONStorageController extends SliceStore<JSONStoragePageState> {
+  selector = {
+    requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
+  };
+
   constructor(private storage: JSONStorage) {
     super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,

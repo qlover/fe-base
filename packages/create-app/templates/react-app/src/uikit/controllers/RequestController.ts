@@ -1,7 +1,10 @@
-import { OpenAIClient } from '@lib/openAiApi/OpenAIClient';
-import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/base/apis/feApi';
+import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
+import { UserApi } from '@/base/apis/userApi/UserApi';
+import { aiHello } from '@/base/apis/AiApi';
+import { inject } from 'inversify';
+import { injectable } from 'inversify';
+import { SliceStore } from '@qlover/slice-store-react';
 
 function createDefaultState() {
   return {
@@ -24,25 +27,39 @@ function createDefaultState() {
       loading: false,
       result: null as unknown,
       error: null as unknown
+    },
+    apiCatchResultState: {
+      loading: false,
+      result: null as unknown,
+      error: null as unknown
     }
   };
 }
 
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
-export class RequestController extends FeController<RequestControllerState> {
+@injectable()
+export class RequestController extends SliceStore<RequestControllerState> {
   constructor(
-    private readonly aiApi: OpenAIClient,
-    private readonly feApi: FeApi
+    @inject(FeApi) private readonly feApi: FeApi,
+    @inject(UserApi) private readonly userApi: UserApi
   ) {
     super(createDefaultState);
   }
 
+  setState(state: Partial<RequestControllerState>) {
+    this.emit({ ...this.state, ...state });
+  }
+
   onHello = async () => {
+    if (this.state.helloState.loading) {
+      return;
+    }
+
     this.setState({ helloState: { loading: true, result: '', error: null } });
 
     try {
-      const result = await this.aiApi.completion({
+      const result = await aiHello({
         messages: [{ role: 'user', content: 'Hello, world!' }]
       });
       this.setState({ helloState: { loading: false, result, error: null } });
@@ -53,9 +70,14 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onIpInfo = async () => {
+    if (this.state.ipInfoState.loading) {
+      return;
+    }
+
     this.setState({
       ipInfoState: { loading: true, result: null, error: null }
     });
+
     try {
       const result = await this.feApi.getIpInfo();
       this.setState({ ipInfoState: { loading: false, result, error: null } });
@@ -66,11 +88,15 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   onRandomUser = async () => {
+    if (this.state.randomUserState.loading) {
+      return;
+    }
+
     this.setState({
       randomUserState: { loading: true, result: null, error: null }
     });
     try {
-      const result = await this.feApi.getRandomUser();
+      const result = await this.userApi.getRandomUser();
       this.setState({
         randomUserState: { loading: false, result, error: null }
       });
@@ -78,6 +104,30 @@ export class RequestController extends FeController<RequestControllerState> {
       logger.error(error);
       this.setState({
         randomUserState: { loading: false, result: null, error }
+      });
+    }
+  };
+
+  onTriggerApiCatchResult = async () => {
+    if (this.state.apiCatchResultState.loading) {
+      return;
+    }
+
+    this.setState({
+      apiCatchResultState: { loading: true, result: null, error: null }
+    });
+    try {
+      const result = await this.userApi.testApiCatchResult();
+      this.setState({
+        apiCatchResultState: {
+          loading: false,
+          result,
+          error: result.apiCatchResult
+        }
+      });
+    } catch (error) {
+      this.setState({
+        apiCatchResultState: { loading: false, result: null, error }
       });
     }
   };
@@ -90,9 +140,10 @@ export class RequestController extends FeController<RequestControllerState> {
 
     this.setState({ abortState: { loading: true, result: null, error: null } });
     try {
-      await this.feApi.request({
+      await this.userApi.request({
         method: 'GET',
-        url: 'https://api.example.com/users'
+        url: 'https://api.example.com/users',
+        disabledMock: true
       });
     } catch (error) {
       this.setState({ abortState: { loading: false, result: null, error } });
@@ -100,6 +151,10 @@ export class RequestController extends FeController<RequestControllerState> {
   };
 
   stopAbortRequest = async () => {
-    this.feApi.stop({ method: 'GET', url: 'https://api.example.com/users' });
+    this.userApi.stop({
+      disabledMock: true,
+      method: 'GET',
+      url: 'https://api.example.com/users'
+    });
   };
 }

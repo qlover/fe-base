@@ -3,12 +3,25 @@
     "mock": true,
     "noUrl": true
   },
-  "GET https://api.example.com/api/userinfo": {
+  "GET https://feapi.example.com/api/userinfo": {
     "name": "John Doe",
     "email": "john.doe@example.com",
     "picture": "https://randomuser.me/api/portraits/men/1.jpg"
   },
-  "POST https://api.example.com/api/login": {
+  "POST https://feapi.example.com/api/login": {
     "token": "asdfasdf123123asdfasdf"
+  },
+  "POST https://api.openai.com/v1/chat/completions": {
+    "id": "chatcmpl-1234567890",
+    "object": "chat.completion",
+    "created": 1721702400,
+    "choices": [
+      {
+        "message": {
+          "role": "assistant",
+          "content": "Hello, how can I help you today?"
+        }
+      }
+    ]
   }
 }

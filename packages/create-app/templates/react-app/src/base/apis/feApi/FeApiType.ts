@@ -1,10 +1,6 @@
-import { RequestAdapterResponse } from '@qlover/fe-utils';
+import { FeApiTransaction } from './FeApiBootstarp';
 
-export type FeApiType<Request, Response> = {
-  request: Request;
-  response: RequestAdapterResponse<Request, Response>;
-};
-export type FeApiGetIpInfo = FeApiType<
+export type FeApiGetIpInfo = FeApiTransaction<
   undefined,
   {
     status: string;
@@ -21,34 +17,5 @@ export type FeApiGetIpInfo = FeApiType<
     org: string;
     as: string;
     query: string;
-  }
->;
-
-export type FeApiGetRandomUser = FeApiType<
-  undefined,
-  {
-    results: unknown[];
-    info: {
-      seed: string;
-      results: number;
-      page: number;
-      version: string;
-    };
-  }
->;
-
-export type FeApiGetUserInfo = FeApiType<
-  string,
-  {
-    name: string;
-    email: string;
-    picture: string;
-  }
->;
-
-export type FeApiLogin = FeApiType<
-  { username: string; password: string },
-  {
-    token: string;
   }
 >;

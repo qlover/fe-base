@@ -1,66 +1,58 @@
-import { ExecutorPlugin } from '@qlover/fe-utils';
-import { sleep } from '@/uikit/utils/thread';
-import { FeController } from '@lib/fe-react-controller';
-import { FeApi } from '@/base/apis/feApi';
-import { FeApiGetUserInfo, FeApiLogin } from '@/base/apis/feApi/FeApiType';
+import { ExecutorPlugin } from '@qlover/fe-corekit';
+import type {
+  UserApiGetUserInfoTransaction,
+  UserApiLoginTransaction
+} from '@/base/apis/userApi/UserApiType';
 import { RouterController } from './RouterController';
-import { StorageTokenInterface } from '@/base/port/StorageTokenInterface';
+import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
+import { inject, injectable } from 'inversify';
+import { IOCIdentifier } from '@/core/IOC';
+import { LoginInterface } from '@/base/port/LoginInterface';
+import { UserApi } from '@/base/apis/userApi/UserApi';
+import { AppError } from '@/base/cases/appError/AppError';
+import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
+import { SliceStore } from '@qlover/slice-store-react';
 
-export interface UserControllerState {
-  success: boolean;
-  userInfo: FeApiGetUserInfo['response']['data'];
-}
-
-export interface UserControllerOptions {
-  userToken: StorageTokenInterface;
-  feApi: FeApi;
-  routerController: RouterController;
-}
-
-interface LoginInterface {
-  login(
-    params: FeApiLogin['request']
-  ): Promise<FeApiGetUserInfo['response']['data']>;
-  logout(): void;
-}
-
-function createDefaultState(
-  options: UserControllerOptions
-): UserControllerState {
-  const { userToken } = options;
-  const token = userToken.getToken();
-
-  return {
-    success: !!token,
-    userInfo: {
-      name: '',
-      email: '',
-      picture: ''
-    }
+class UserControllerState {
+  success: boolean = false;
+  userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
+    name: '',
+    email: '',
+    picture: ''
   };
 }
 
+@injectable()
 export class UserController
-  extends FeController<UserControllerState>
+  extends SliceStore<UserControllerState>
   implements ExecutorPlugin, LoginInterface
 {
   readonly pluginName = 'UserController';
 
-  constructor(private options: UserControllerOptions) {
-    super(() => createDefaultState(options));
+  constructor(
+    @inject(UserApi) private userApi: UserApi,
+    @inject(RouterController) private routerController: RouterController,
+    @inject(IOCIdentifier.FeApiToken)
+    private userToken: StorageTokenInterface<string>
+  ) {
+    super(() => new UserControllerState());
+  }
+
+  setState(state: Partial<UserControllerState>): void {
+    this.emit({ ...this.state, ...state });
   }
 
   /**
    * @override
    */
   async onBefore(): Promise<void> {
-    await sleep(1000);
+    await ThreadUtil.sleep(1000);
 
-    if (!this.options.userToken.getToken()) {
-      throw new Error('User not logged in');
+    if (!this.userToken.getToken()) {
+      throw new AppError(LOCAL_NO_USER_TOKEN);
     }
 
-    const userInfo = await this.options.feApi.getUserInfo();
+    const userInfo = await this.userApi.getUserInfo();
 
     this.setState({
       success: true,
@@ -74,29 +66,31 @@ export class UserController
   async onError(): Promise<void> {
     this.logout();
 
-    this.options.routerController.gotoLogin();
+    this.routerController.gotoLogin();
   }
 
   /**
    * @override
    */
   async login(
-    params: FeApiLogin['request']
-  ): Promise<FeApiGetUserInfo['response']['data']> {
-    const { feApi } = this.options;
+    params: UserApiLoginTransaction['data']
+  ): Promise<UserApiGetUserInfoTransaction['response']> {
+    const response = await this.userApi.login(params);
 
-    const result = await feApi.login(params);
+    if (response.apiCatchResult) {
+      throw response.apiCatchResult;
+    }
 
-    this.options.userToken.setToken(result.data.token);
+    this.userToken.setToken(response.data.token);
 
-    const userInfo = await feApi.getUserInfo();
+    const userInfo = await this.userApi.getUserInfo();
 
     this.setState({
       success: true,
       userInfo: userInfo.data
     });
 
-    return userInfo.data;
+    return userInfo;
   }
 
   /**
@@ -110,7 +104,7 @@ export class UserController
    * @override
    */
   reset(): void {
-    this.options.userToken.removeToken();
+    this.userToken.removeToken();
     super.reset();
   }
 

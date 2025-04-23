@@ -2,12 +2,12 @@ import { createContext, useEffect } from 'react';
 import { IOC } from '@/core/IOC';
 import { useLanguageGuard } from '@/uikit/hooks/useLanguageGuard';
 import { useStrictEffect } from '@/uikit/hooks/useStrictEffect';
-import { ProcesserService } from '@/services/processer/ProcesserService';
+import { ProcesserService } from '@/base/services/ProcesserService';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useControllerState } from '@lib/fe-react-controller';
-import { Loading } from '@/components/Loading';
+import { Loading } from '@/uikit/components/Loading';
 import { RouterController } from '../controllers/RouterController';
 import { UserController } from '../controllers/UserController';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 const PageProcesserContext = createContext<ProcesserService>(
   IOC(ProcesserService)
@@ -17,7 +17,7 @@ export function ProcessProvider({ children }: { children: React.ReactNode }) {
   useLanguageGuard();
   const userController = IOC(UserController);
   const pageProcesser = IOC(ProcesserService);
-  const { success } = useControllerState(userController);
+  const success = useSliceStore(userController, (state) => state.success);
 
   const navigate = useNavigate();
 

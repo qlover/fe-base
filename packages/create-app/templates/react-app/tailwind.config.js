@@ -1,5 +1,5 @@
 import root10px from './lib/tw-root10px';
-import themeCreate from './lib/fe-react-theme/tw-generator';
+import themeCreate from './lib/tw-generator';
 import themeConfig from './config/theme.json';
 
 const theme = themeCreate(themeConfig.override);
