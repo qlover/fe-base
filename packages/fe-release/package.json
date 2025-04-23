@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-release",
   "description": "A tool for releasing front-end projects, supporting multiple release modes and configurations, simplifying the release process and improving efficiency.",
-  "version": "1.0.10",
+  "version": "2.0.0",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-release",
