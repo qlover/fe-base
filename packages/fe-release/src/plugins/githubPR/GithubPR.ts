@@ -4,7 +4,7 @@ import {
   type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
 import ReleaseContext from '../../implments/ReleaseContext';
-import { WorkspaceValue } from '../workspaces/Workspaces';
+import { WorkspaceCreator, WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
 
@@ -164,8 +164,35 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
   }
 
+  async generateVersionAndChangelog(
+    workspaces: WorkspaceValue[]
+  ): Promise<WorkspaceValue[]> {
+    await this.runChangesetsCli('version', ['--no-changelog']);
+
+    return Promise.all(
+      workspaces.map((workspace) => {
+        const newPackgeJson = WorkspaceCreator.toWorkspace(
+          {
+            path: workspace.path
+          },
+          this.context.rootPath
+        );
+        return {
+          ...workspace,
+          version: newPackgeJson.version
+        };
+      })
+    );
+  }
+
   override async onExec(): Promise<void> {
-    const workspaces = this.context.workspaces!;
+    // use changeset to
+    const workspaces = await this.step({
+      label: 'Generate Version and Changelog',
+      task: () => this.generateVersionAndChangelog(this.context.workspaces!)
+    });
+
+    this.logger.debug('new workspaces', workspaces);
 
     await this.relesaeCommit(workspaces);
 
@@ -197,9 +224,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
 
   private async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
     const commitArgs: string[] = this.getConfig('commitArgs', []);
-
-    // use changeset to
-    await this.runChangesetsCli('version', ['--no-changelog']);
 
     if (workspaces.length === 1) {
       await this.shell.exec('git add .');

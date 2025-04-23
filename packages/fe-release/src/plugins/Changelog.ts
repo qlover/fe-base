@@ -136,7 +136,10 @@ export default class Changelog extends Plugin<ChangelogProps> {
             changelogs.map((changelog) => this.generateChangesetFile(changelog))
           )
       });
+      return;
     }
+    
+    this.logger.debug('Skip generate changeset files');
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
@@ -296,10 +299,13 @@ export default class Changelog extends Plugin<ChangelogProps> {
     const { name, version } = workspace;
     const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
+    const increment = this.getIncrement();
+
+    this.logger.verbose('increment is:', [increment]);
 
     const fileContent = this.shell.format(contentTmplate, {
       ...workspace,
-      increment: this.getIncrement()
+      increment
     });
 
     if (this.context.dryRun) {

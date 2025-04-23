@@ -191,11 +191,6 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return typeof result === 'string' ? result.split('\n') : [];
   }
 
-  private readJson(path: string): Record<string, unknown> {
-    const packageJsonContent = readFileSync(path, 'utf-8');
-    return JSON.parse(packageJsonContent);
-  }
-
   async getChangedPackages(
     packagesPaths: string[],
     changeLabels?: string[]
@@ -223,6 +218,8 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   async getWorkspaces(): Promise<WorkspaceValue[]> {
     const packages = this.getPackages();
 
+    this.logger.debug('packages', packages);
+
     const changedPaths = await this.getChangedPackages(
       packages,
       this.getConfig('changeLabels')
@@ -231,13 +228,23 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.logger.debug('changedPaths', changedPaths);
 
     const workspaces: WorkspaceValue[] = changedPaths.map((path) => {
-      return this.toWorkspace({ path });
+      return WorkspaceCreator.toWorkspace({ path }, this.context.rootPath);
     });
 
     return workspaces;
   }
+}
 
-  toWorkspace(workspace: Partial<WorkspaceValue>): WorkspaceValue {
+export class WorkspaceCreator {
+  static readJson(path: string): Record<string, unknown> {
+    const packageJsonContent = readFileSync(path, 'utf-8');
+    return JSON.parse(packageJsonContent);
+  }
+
+  static toWorkspace(
+    workspace: Partial<WorkspaceValue>,
+    rootPath: string
+  ): WorkspaceValue {
     let { root, packageJson } = workspace;
     const path = workspace.path as string;
 
@@ -245,8 +252,9 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
       throw new Error('path is not required!');
     }
 
-    root = root || join(this.context.rootPath, path);
-    packageJson = packageJson || this.readJson(join(root, MANIFEST_PATH));
+    root = root || join(rootPath, path);
+    packageJson =
+      packageJson || WorkspaceCreator.readJson(join(root, MANIFEST_PATH));
 
     return {
       name: packageJson.name as string,
