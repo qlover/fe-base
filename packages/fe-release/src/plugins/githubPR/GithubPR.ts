@@ -131,8 +131,25 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     return !this.getConfig('releasePR');
   }
 
+  private async isGithubRepository(): Promise<boolean> {
+    try {
+      const remoteUrl = await this.getRemoteUrl();
+      return remoteUrl.includes('github.com');
+    } catch {
+      return false;
+    }
+  }
+
   override async onBefore(): Promise<void> {
     this.logger.verbose('GithubPR onBefore');
+
+    const isGithub = await this.isGithubRepository();
+    if (!isGithub) {
+      throw new Error(
+        'Current repository is not a GitHub repository. GitHub PR workflow is only available for GitHub repositories.'
+      );
+    }
+
     await super.onBefore();
 
     if (this.isPublish) {
@@ -141,7 +158,9 @@ export default class GithubPR extends GitBase<GithubPRProps> {
         throw new Error('NPM_TOKEN is not set');
       }
 
-      await this.shell.exec(`npm config set //registry.npmjs.org/:_authToken=${npmToken}`);
+      await this.shell.exec(
+        `npm config set //registry.npmjs.org/:_authToken=${npmToken}`
+      );
     }
   }
 
@@ -169,7 +188,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       task: () =>
         Promise.all(
           workspaces.map((workspace) => {
-            this.logger.debug(workspace)
+            this.logger.debug(workspace);
             return this.githubManager.createRelease(workspace);
           })
         )

@@ -56,6 +56,14 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
     });
   }
 
+  async getRemoteUrl(): Promise<string> {
+    return (
+      await this.context.shell.exec('git config --get remote.origin.url', {
+        dryRun: false
+      })
+    ).trim();
+  }
+
   /**
    * Retrieves repository owner and name from Git remote URL.
    *
@@ -67,14 +75,9 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
    * @throws Will throw an error if repository information cannot be determined
    */
   async getUserInfo(): Promise<UserInfoType> {
-    // 获取 git remote origin url
     let repoUrl: string;
     try {
-      repoUrl = (
-        await this.context.shell.exec('git config --get remote.origin.url', {
-          dryRun: false
-        })
-      ).trim();
+      repoUrl = await this.getRemoteUrl();
     } catch {
       throw new Error(
         'Failed to get git remote url. Please ensure this is a git repository with a valid remote.'
