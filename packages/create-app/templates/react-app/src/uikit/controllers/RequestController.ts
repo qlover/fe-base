@@ -47,7 +47,7 @@ export class RequestController extends SliceStore<RequestControllerState> {
     super(createDefaultState);
   }
 
-  setState(state: Partial<RequestControllerState>) {
+  setState(state: Partial<RequestControllerState>): void {
     this.emit({ ...this.state, ...state });
   }
 
@@ -143,7 +143,8 @@ export class RequestController extends SliceStore<RequestControllerState> {
       await this.userApi.request({
         method: 'GET',
         url: 'https://api.example.com/users',
-        disabledMock: true
+        disabledMock: true,
+        requestId: 'onTriggerAbortRequest'
       });
     } catch (error) {
       this.setState({ abortState: { loading: false, result: null, error } });
@@ -152,9 +153,7 @@ export class RequestController extends SliceStore<RequestControllerState> {
 
   stopAbortRequest = async () => {
     this.userApi.stop({
-      disabledMock: true,
-      method: 'GET',
-      url: 'https://api.example.com/users'
+      requestId: 'onTriggerAbortRequest'
     });
   };
 }

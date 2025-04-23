@@ -9,7 +9,7 @@ function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
     try {
       return JSON.stringify(value, null, 2);
-    } catch (error) {
+    } catch {
       return 'Invalid JSON';
     }
   }, [value]);

@@ -45,7 +45,7 @@ export class UserApi extends RequestTransaction<UserApiConfig> {
     UserApiTestApiCatchResultTransaction['response']
   > {
     return this.request<UserApiTestApiCatchResultTransaction>({
-      url: 'https://randomuser.me/api/',
+      url: 'https://randomuser.me/api/?_name=ApiCatchResult',
       method: 'GET',
       disabledMock: true,
       openApiCatch: true

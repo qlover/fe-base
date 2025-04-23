@@ -50,14 +50,24 @@
     "release:[TPL:projectName]": "release-it"
   },
   "devDependencies": {
+    "@eslint/js": "^9.11.1",
     "@qlover/env-loader": "latest",
     "@qlover/fe-standard": "latest",
     "@qlover/fe-scripts": "latest",
     "@qlover/scripts-context": "latest",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
+    "eslint": "^9.15.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "eslint-plugin-vitest": "^0.5.4",
+    "globals": "^15.12.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.0.0",
+    "postcss": "^8.4.49",
+    "prettier": "^3.5.3",
   },
   "dependencies": {
     "@qlover/fe-utils": "latest"

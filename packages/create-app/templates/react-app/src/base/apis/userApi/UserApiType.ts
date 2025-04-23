@@ -49,5 +49,4 @@ export type UserApiLoginTransaction = UserApiTransaction<
   }
 >;
 
-
-export type UserApiTestApiCatchResultTransaction = UserApiGetRandomUser
+export type UserApiTestApiCatchResultTransaction = UserApiGetRandomUser;

@@ -53,7 +53,7 @@ export default function startup({
 
   const { logger } = globals;
 
-  const bootstrap = new Bootstrap(window, IOCContainer, logger);
+  const bootstrap = new Bootstrap(window, IOCContainer, logger, logger);
 
   /**
    * bootstrap start list

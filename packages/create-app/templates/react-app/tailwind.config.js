@@ -1,5 +1,5 @@
-import root10px from './lib/tw-root10px';
-import themeCreate from './lib/tw-generator';
+import root10px from './lib/tailwind/root10px';
+import themeCreate from './lib/tailwind/theme-generator';
 import themeConfig from './config/theme.json';
 
 const theme = themeCreate(themeConfig.override);
