@@ -3,10 +3,9 @@ import type { DeepPartial, PackageJson } from '../../type';
 import { join, resolve } from 'node:path';
 import ReleaseContext from '../../implments/ReleaseContext';
 import Plugin from '../Plugin';
-import { readFileSync } from 'node:fs';
 import { MANIFEST_PATH } from '../../defaults';
 import { ReleaseLabel } from '../../implments/ReleaseLabel';
-
+import { WorkspaceCreator } from './WorkspaceCreator';
 export interface WorkspacesProps {
   /**
    * Whether to skip workspaces
@@ -237,36 +236,5 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     });
 
     return workspaces;
-  }
-}
-
-export class WorkspaceCreator {
-  static readJson(path: string): Record<string, unknown> {
-    const packageJsonContent = readFileSync(path, 'utf-8');
-    return JSON.parse(packageJsonContent);
-  }
-
-  static toWorkspace(
-    workspace: Partial<WorkspaceValue>,
-    rootPath: string
-  ): WorkspaceValue {
-    let { root, packageJson } = workspace;
-    const path = workspace.path as string;
-
-    if (!path) {
-      throw new Error('path is not required!');
-    }
-
-    root = root || join(rootPath, path);
-    packageJson =
-      packageJson || WorkspaceCreator.readJson(join(root, MANIFEST_PATH));
-
-    return {
-      name: packageJson.name as string,
-      version: packageJson.version as string,
-      path,
-      root,
-      packageJson
-    };
   }
 }

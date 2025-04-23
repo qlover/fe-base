@@ -1,10 +1,10 @@
 import ReleaseContext from '../implments/ReleaseContext';
 import Plugin from './Plugin';
 import conventionalChangelog from 'conventional-changelog';
-import { WorkspaceCreator, WorkspaceValue } from './workspaces/Workspaces';
+import { WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-
+import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
 export interface ChangelogProps {
   /**
    * The increment of the changelog

@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Workspaces, {
   type WorkspaceValue
 } from '../../src/plugins/workspaces/Workspaces';
+import { WorkspaceCreator } from '../../src/plugins/workspaces/WorkspaceCreator';
 import { createTestReleaseContext } from '../helpers';
 import type { ReleaseContext } from '../../src';
 import type ReleaseTask from '../../src/implments/ReleaseTask';
@@ -31,9 +32,8 @@ describe('Workspaces Plugin', () => {
       'packages/package-a/index.ts\npackages/package-b/package.json'
     );
 
-    // mock readJson method for testing getWorkspaces
-    // @ts-expect-error test non-string case
-    vi.spyOn(workspaces, 'readJson').mockImplementation((path) => {
+    // mock WorkspaceCreator.readJson method for testing getWorkspaces
+    vi.spyOn(WorkspaceCreator, 'readJson').mockImplementation((path) => {
       if (path.includes('package-a')) {
         return {
           name: 'package-a',
