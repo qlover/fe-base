@@ -3,10 +3,9 @@ import type { DeepPartial, PackageJson } from '../../type';
 import { join, resolve } from 'node:path';
 import ReleaseContext from '../../implments/ReleaseContext';
 import Plugin from '../Plugin';
-import { readFileSync } from 'node:fs';
 import { MANIFEST_PATH } from '../../defaults';
 import { ReleaseLabel } from '../../implments/ReleaseLabel';
-
+import { WorkspaceCreator } from './WorkspaceCreator';
 export interface WorkspacesProps {
   /**
    * Whether to skip workspaces
@@ -62,6 +61,11 @@ export interface WorkspaceValue {
    * The tag name of the workspace
    */
   tagName?: string;
+
+  /**
+   * The last tag name of the workspace
+   */
+  lastTag?: string;
 
   /**
    * The changelog of the workspace
@@ -191,11 +195,6 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return typeof result === 'string' ? result.split('\n') : [];
   }
 
-  private readJson(path: string): Record<string, unknown> {
-    const packageJsonContent = readFileSync(path, 'utf-8');
-    return JSON.parse(packageJsonContent);
-  }
-
   async getChangedPackages(
     packagesPaths: string[],
     changeLabels?: string[]
@@ -223,6 +222,8 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
   async getWorkspaces(): Promise<WorkspaceValue[]> {
     const packages = this.getPackages();
 
+    this.logger.debug('packages', packages);
+
     const changedPaths = await this.getChangedPackages(
       packages,
       this.getConfig('changeLabels')
@@ -231,29 +232,9 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.logger.debug('changedPaths', changedPaths);
 
     const workspaces: WorkspaceValue[] = changedPaths.map((path) => {
-      return this.toWorkspace({ path });
+      return WorkspaceCreator.toWorkspace({ path }, this.context.rootPath);
     });
 
     return workspaces;
-  }
-
-  toWorkspace(workspace: Partial<WorkspaceValue>): WorkspaceValue {
-    let { root, packageJson } = workspace;
-    const path = workspace.path as string;
-
-    if (!path) {
-      throw new Error('path is not required!');
-    }
-
-    root = root || join(this.context.rootPath, path);
-    packageJson = packageJson || this.readJson(join(root, MANIFEST_PATH));
-
-    return {
-      name: packageJson.name as string,
-      version: packageJson.version as string,
-      path,
-      root,
-      packageJson
-    };
   }
 }

@@ -4,7 +4,7 @@ import conventionalChangelog from 'conventional-changelog';
 import { WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-
+import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
 export interface ChangelogProps {
   /**
    * The increment of the changelog
@@ -114,29 +114,57 @@ export default class Changelog extends Plugin<ChangelogProps> {
     this.logger.debug(`${this.changesetRoot} exists`);
   }
 
-  override async onExec(): Promise<void> {
-    const workspaces = this.context.workspaces!;
+  mergeWorkspaces(workspaces: WorkspaceValue[]): WorkspaceValue[] {
+    return workspaces.map((workspace) => {
+      const newPackgeJson = WorkspaceCreator.toWorkspace(
+        {
+          path: workspace.path
+        },
+        this.context.rootPath
+      );
 
-    const changelogs = await this.step({
+      const newWorkspace = {
+        ...workspace,
+        version: newPackgeJson.version
+      };
+
+      newWorkspace.tagName = this.generateTagName(newWorkspace);
+
+      return newWorkspace;
+    });
+  }
+
+  override async onExec(): Promise<void> {
+    const workspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>
-        Promise.all(workspaces.map((workspace) => this.generate(workspace)))
+        Promise.all(
+          this.context.workspaces!.map((workspace) =>
+            this.generateChangelog(workspace)
+          )
+        )
     });
-
-    this.logger.debug('changelogs', changelogs);
-
-    this.context.setWorkspaces(changelogs);
 
     // create changeset files
     if (!this.getConfig('skipChangeset')) {
       await this.step({
-        label: 'Create Changeset Files',
+        label: 'Changeset Version',
         task: () =>
           Promise.all(
-            changelogs.map((changelog) => this.generateChangesetFile(changelog))
+            workspaces.map((changelog) => this.generateChangesetFile(changelog))
           )
       });
+
+      await this.context.runChangesetsCli('version', ['--no-changelog']);
+    } else {
+      this.logger.debug('Skip generate changeset files');
     }
+
+    const newWorkspaces = this.mergeWorkspaces(workspaces);
+
+    this.logger.debug('new workspaces', newWorkspaces);
+
+    this.context.setWorkspaces(newWorkspaces);
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
@@ -168,7 +196,9 @@ export default class Changelog extends Plugin<ChangelogProps> {
       reverse: true
     };
     const parserOpts: Parameters<typeof conventionalChangelog>[3] = {};
-    const writerOpts: Parameters<typeof conventionalChangelog>[4] = {};
+    const writerOpts: Parameters<typeof conventionalChangelog>[4] = {
+      headerPartial: ''
+    };
 
     if (this.context.dryRun) {
       this.logger.info('[Dry Run] Changelog is dry run');
@@ -205,7 +235,8 @@ export default class Changelog extends Plugin<ChangelogProps> {
     return changelog;
   }
 
-  async generate(workspace: WorkspaceValue): Promise<WorkspaceValue> {
+  async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {
+    // FIXME: where to get the tagName?
     const tagName = await this.getTagName(workspace);
 
     this.logger.verbose('tagName is:', tagName);
@@ -217,12 +248,12 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
     return {
       ...workspace,
-      tagName,
+      lastTag: tagName,
       changelog
     };
   }
 
-  private async generateTagName(workspace: WorkspaceValue): Promise<string> {
+  private generateTagName(workspace: WorkspaceValue): string {
     try {
       const tagTemplate = this.getConfig('tagTemplate') as string;
 
@@ -238,7 +269,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
   async getTagName(workspace: WorkspaceValue): Promise<string> {
     try {
-      const currentTagPattern = await this.generateTagName(workspace);
+      const currentTagPattern = this.generateTagName(workspace);
       const tagMatch = this.shell.format(
         this.getConfig('tagMatch') as string,
         workspace as unknown as Record<string, string>
@@ -268,7 +299,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
       return latestTag;
     } catch (error) {
       console.error(`Error getting tag for ${workspace.name}:`, error);
-      const fallbackTag = await this.generateTagName(workspace);
+      const fallbackTag = this.generateTagName(workspace);
       return fallbackTag;
     }
   }
@@ -296,10 +327,13 @@ export default class Changelog extends Plugin<ChangelogProps> {
     const { name, version } = workspace;
     const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
+    const increment = this.getIncrement();
+
+    this.logger.verbose('increment is:', [increment]);
 
     const fileContent = this.shell.format(contentTmplate, {
       ...workspace,
-      increment: this.getIncrement()
+      increment
     });
 
     if (this.context.dryRun) {

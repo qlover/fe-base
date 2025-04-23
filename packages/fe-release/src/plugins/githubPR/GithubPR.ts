@@ -10,11 +10,21 @@ import GitBase, { type GitBaseProps } from '../GitBase';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
-   * The command to run before the release
+   * Whether to dry run the creation of the pull request
    *
-   * @default `pnpm dlx`
+   * - create pr
+   * - changeset publish
+   *
+   * @default `false`
    */
-  commandPrefix?: string;
+  dryRunCreatePR?: boolean;
+
+  /**
+   * Whether to skip the release
+   *
+   * @default `false`
+   */
+  skip?: boolean;
 
   /**
    * Whether to publish a PR
@@ -101,7 +111,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     props: GithubPRProps
   ) {
     super(context, 'githubPR', {
-      commandPrefix: 'pnpm dlx',
       releaseName: DEFAULT_RELEASE_NAME,
       ...props
     });
@@ -116,6 +125,10 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   }
 
   override enabled(_name: string): boolean {
+    if (this.getConfig('skip')) {
+      return false;
+    }
+
     if (_name === 'onExec') {
       return !this.isPublish;
     }
@@ -167,7 +180,10 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   override async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
-    await this.relesaeCommit(workspaces);
+    await this.step({
+      label: 'Release Commit',
+      task: () => this.relesaeCommit(workspaces)
+    });
 
     const releaseBranchParams = await this.step({
       label: 'Create Release Branch',
@@ -180,8 +196,11 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
-    await this.runChangesetsCli('publish');
-    await this.shell.exec('git push origin --tags');
+    if (!this.getConfig('dryRunCreatePR')) {
+      await this.context.runChangesetsCli('publish');
+
+      await this.shell.exec('git push origin --tags');
+    }
 
     await this.step({
       label: 'Release Github',
@@ -197,9 +216,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
 
   private async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
     const commitArgs: string[] = this.getConfig('commitArgs', []);
-
-    // use changeset to
-    await this.runChangesetsCli('version', ['--no-changelog']);
 
     if (workspaces.length === 1) {
       await this.shell.exec('git add .');
@@ -218,15 +234,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       '--message',
       commitMessage,
       ...commitArgs
-    ]);
-  }
-
-  runChangesetsCli(name: string, args?: string[]): Promise<string> {
-    return this.shell.exec([
-      this.getConfig('commandPrefix', 'npx'),
-      '@changesets/cli',
-      name,
-      ...(args ?? [])
     ]);
   }
 
