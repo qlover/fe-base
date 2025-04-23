@@ -169,6 +169,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       task: () =>
         Promise.all(
           workspaces.map((workspace) => {
+            this.logger.debug(workspace)
             return this.githubManager.createRelease(workspace);
           })
         )

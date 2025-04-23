@@ -333,11 +333,18 @@ export default class GithubManager {
       workspace as unknown as Record<string, string>
     );
 
-    if (this.context.dryRun) {
-      this.logger.exec(
-        `octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`
-      );
+    this.logger.exec(
+      `octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
+      {
+        isDryRun: this.context.dryRun
+      }
+    );
 
+    if (!meragedOptions.tag_name) {
+      throw new Error('TagName is undefined');
+    }
+
+    if (this.context.dryRun) {
       return;
     }
 
