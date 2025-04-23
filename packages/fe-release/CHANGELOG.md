@@ -1,5 +1,15 @@
 ## 1.0.9
 
+## 1.0.10
+
+### Patch Changes
+
+- ## 1.0.9 (2025-04-23)
+
+  ### Bug Fixes
+
+  - no workspace tagname ([#333](https://github.com/qlover/fe-base/issues/333)) ([595fefe](https://github.com/qlover/fe-base/commit/595fefe4e1bce4f97ade1899a5691af39c55e67d))
+
 ### Patch Changes
 
 - ## 1.0.8 (2025-04-22)
