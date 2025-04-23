@@ -1,5 +1,13 @@
 ## 1.0.9
 
+## 2.0.4
+
+### Patch Changes
+
+- ### Bug Fixes
+
+  - **release:** change skip-changeset arg ([#340](https://github.com/qlover/fe-base/issues/340)) ([fffc35a](https://github.com/qlover/fe-base/commit/fffc35a52e768cf2739564e748d8abadab5dc3db))
+
 ## 2.0.2
 
 ### Patch Changes
