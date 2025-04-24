@@ -116,7 +116,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     this.githubManager = new GithubManager(this.context);
-    // @ts-expect-error logger is fe-utils
     this.releaseParams = new ReleaseParams(context.shell, context.logger, {
       PRTitle: this.getConfig('PRTitle', this.context.shared.PRTitle),
       PRBody: this.getConfig('PRBody', this.context.shared.PRBody),

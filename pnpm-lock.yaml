@@ -39,8 +39,8 @@ importers:
         specifier: workspace:*
         version: link:packages/fe-standard
       '@qlover/scripts-context':
-        specifier: ^0.0.8
-        version: 0.0.8(typescript@5.4.5)
+        specifier: ^0.0.11
+        version: 0.0.11(typescript@5.4.5)
       '@rollup/plugin-commonjs':
         specifier: ^28.0.1
         version: 28.0.3(rollup@4.40.0)
@@ -187,8 +187,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.5
       '@qlover/scripts-context':
-        specifier: ^0.0.8
-        version: 0.0.8(typescript@5.8.3)
+        specifier: ^0.0.11
+        version: 0.0.11(typescript@5.8.3)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -246,8 +246,8 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
       '@qlover/scripts-context':
-        specifier: ^0.0.7
-        version: 0.0.7(typescript@5.4.5)
+        specifier: ^0.0.11
+        version: 0.0.11(typescript@5.4.5)
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.0
@@ -286,8 +286,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.5
       '@qlover/scripts-context':
-        specifier: ^0.0.8
-        version: 0.0.8(typescript@5.8.3)
+        specifier: ^0.0.11
+        version: 0.0.11(typescript@5.8.3)
       conventional-changelog:
         specifier: ^6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
@@ -326,8 +326,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.5
       '@qlover/scripts-context':
-        specifier: ^0.0.8
-        version: 0.0.8(typescript@5.8.3)
+        specifier: ^0.0.11
+        version: 0.0.11(typescript@5.8.3)
       commander:
         specifier: ^11.0.0
         version: 11.1.0
@@ -1800,15 +1800,8 @@ packages:
   '@qlover/fe-corekit@1.2.5':
     resolution: {integrity: sha512-e4gvVuD1lVUbkmzLq8rTqegMQglRbHZBpeqYRkXk4nMXNdwH1grATb8pd4/3Ta9cWZHtJCKUuEgYF04bGF5RZw==}
 
-  '@qlover/fe-utils@1.1.4':
-    resolution: {integrity: sha512-oRUn7CcpuRK3sCzAaTF8FxtS4Czo47N3jbAOo2+QqGajt6oqlax6WN9J91+IBsXrGvZZ8a2cdKXm9Y3Lt6EGQg==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-
-  '@qlover/scripts-context@0.0.7':
-    resolution: {integrity: sha512-EsO7QJg0wl4dtzJugRhqgFsoPl9856XkJtRA+YNbSYCXtAP2bS51VvwKUHHxqKVmTYOWgOmhugb3L7aIYASUCQ==}
-
-  '@qlover/scripts-context@0.0.8':
-    resolution: {integrity: sha512-4Lw5/LvTVUG/6JgDGKHh4zG+HBHodkAmnKf2TX61rBJgsHUGgr8SecJjF6SVDOs/AZG7d2iECAbLu7WTPRe8GQ==}
+  '@qlover/scripts-context@0.0.11':
+    resolution: {integrity: sha512-5/AphYzfjPI8NGpAyNqdatmOS7dDlfTi7Y9WLg0hp+TeNrRrf8cSrt7GB6Ek6UOaXL3va3LDM4IFtHsWd9/Riw==}
 
   '@qlover/slice-store-react@1.2.6':
     resolution: {integrity: sha512-m0lUc8p4y7JiYAA5pxpGsuHeJnwW8Q7V1xH4KJb0qDd/STbHn1N/1eyGB4wRBxzv/8PYfJ125fYm06OU1OymWA==}
@@ -6953,32 +6946,18 @@ snapshots:
       lodash: 4.17.21
       merge: 2.1.1
 
-  '@qlover/fe-utils@1.1.4':
+  '@qlover/scripts-context@0.0.11(typescript@5.4.5)':
     dependencies:
-      lodash: 4.17.21
-      merge: 2.1.1
-
-  '@qlover/scripts-context@0.0.7(typescript@5.4.5)':
-    dependencies:
-      '@qlover/fe-utils': 1.1.4
+      '@qlover/fe-corekit': 1.2.5
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.4.5)
       lodash: 4.17.21
     transitivePeerDependencies:
       - typescript
 
-  '@qlover/scripts-context@0.0.8(typescript@5.4.5)':
+  '@qlover/scripts-context@0.0.11(typescript@5.8.3)':
     dependencies:
-      '@qlover/fe-utils': 1.1.4
-      chalk: 5.4.1
-      cosmiconfig: 9.0.0(typescript@5.4.5)
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - typescript
-
-  '@qlover/scripts-context@0.0.8(typescript@5.8.3)':
-    dependencies:
-      '@qlover/fe-utils': 1.1.4
+      '@qlover/fe-corekit': 1.2.5
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.8.3)
       lodash: 4.17.21

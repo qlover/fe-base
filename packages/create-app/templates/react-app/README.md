@@ -112,7 +112,6 @@
 - Vite
 - Tailwind CSS
 - i18next
-- @qlover/fe-utils
 
 ## 开发
 

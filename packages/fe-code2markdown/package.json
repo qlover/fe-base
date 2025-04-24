@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@qlover/env-loader": "^0.0.1",
-    "@qlover/scripts-context": "^0.0.7",
+    "@qlover/scripts-context": "^0.0.11",
     "fs-extra": "^11.2.0",
     "typescript": "~5.4.0"
   },
