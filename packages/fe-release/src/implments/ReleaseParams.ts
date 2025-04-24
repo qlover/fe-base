@@ -39,7 +39,7 @@ export type ReleaseParamsConfig = {
   /**
    * The branch name for batch release
    *
-   * @default `batch-${releaseName}-${length}-packages`
+   * @default `batch-${timestamp}-${releaseName}-${length}-packages`
    */
   batchBranchName?: string;
 
@@ -64,7 +64,7 @@ const DEFAULT_RELEASE_CONFIG: ReleaseParamsConfig = {
   maxWorkspace: MAX_WORKSPACE,
   multiWorkspaceSeparator: MULTI_WORKSPACE_SEPARATOR,
   workspaceVersionSeparator: WORKSPACE_VERSION_SEPARATOR,
-  batchBranchName: 'batch-${releaseName}-${length}-packages'
+  batchBranchName: 'batch-${timestamp}-${releaseName}-${length}-packages'
 };
 
 export class ReleaseParams {
@@ -122,7 +122,8 @@ export class ReleaseParams {
       tagName,
       // deprecated
       ...shared,
-      length
+      length,
+      timestamp: Date.now()
     });
   }
 
@@ -135,7 +136,7 @@ export class ReleaseParams {
       this.config;
 
     return composeWorkspaces
-      .slice(maxWorkspace)
+      .slice(0, maxWorkspace)
       .map(
         ({ name, version }) => `${name}${workspaceVersionSeparator}${version}`
       )
