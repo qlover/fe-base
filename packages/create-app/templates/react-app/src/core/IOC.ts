@@ -1,17 +1,17 @@
 // ! dont't import tsx, only ts file
-import type {
+import {
   ApiMockPlugin,
   EnvConfigInterface,
   StorageTokenInterface,
   RequestCommonPlugin,
   ApiCatchPlugin,
-  IOCContainerInterface
+  IOCContainerInterface,
+  createIOCFunction,
+  ServiceIdentifier
 } from '@qlover/corekit-bridge';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
-import { createIOCFunction } from '@/base/cases/ioc/createIOCFunction';
 import { Container } from 'inversify';
 import { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
-import { ServiceIdentifier } from '@/base/cases/ioc/IOCFunctionInterface';
 
 export class InversifyContainer implements IOCContainerInterface {
   private container: Container;

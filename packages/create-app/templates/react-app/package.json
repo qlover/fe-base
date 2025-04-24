@@ -51,7 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@qlover/corekit-bridge": "^0.0.4",
+    "@qlover/corekit-bridge": "^0.0.5",
     "@qlover/fe-corekit": "^1.2.5",
     "@qlover/slice-store-react": "^1.0.8",
     "i18next": "^24.2.0",
