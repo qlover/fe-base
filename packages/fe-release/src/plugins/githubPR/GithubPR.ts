@@ -228,13 +228,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       .map((w) => `${w.name} v${w.version}`)
       .join(',')}`;
 
-    await this.shell.exec([
-      'git',
-      'commit',
-      '--message',
-      commitMessage,
-      ...commitArgs
-    ]);
+    await this.commit(commitMessage, commitArgs);
   }
 
   async releasePullRequest(
@@ -274,13 +268,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       workspace as unknown as Record<string, unknown>
     );
 
-    return await this.shell.exec([
-      'git',
-      'commit',
-      '--message',
-      `"${commitMessage}"`,
-      ...commitArgs
-    ]);
+    return await this.commit(commitMessage, commitArgs);
   }
 
   /**

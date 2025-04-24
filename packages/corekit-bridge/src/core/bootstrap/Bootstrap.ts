@@ -1,6 +1,6 @@
 import type { IOCContainerInterface } from '../ioc/IOCContainerInterface';
-import { Logger, SyncExecutor } from '@qlover/fe-corekit';
-import {
+import { type Logger, SyncExecutor } from '@qlover/fe-corekit';
+import type {
   BootstrapArgs,
   BootstrapExecutorPlugin
 } from './BootstrapExecutorPlugin';
@@ -9,8 +9,7 @@ export class Bootstrap extends SyncExecutor {
   constructor(
     private root: unknown,
     private IOCContainer: IOCContainerInterface,
-    private logger: Logger,
-    private logger2: Logger,
+    private logger: Logger
   ) {
     super();
   }

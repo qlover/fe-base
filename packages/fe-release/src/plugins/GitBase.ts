@@ -124,4 +124,14 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
   isValidString(value: unknown): value is string {
     return !!value && isString(value);
   }
+
+  commit(message: string, args: string[] = []): Promise<string> {
+    return this.context.shell.exec([
+      'git',
+      'commit',
+      '--message',
+      JSON.stringify(message),
+      ...args
+    ]);
+  }
 }
