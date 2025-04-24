@@ -207,7 +207,8 @@ export class ReleaseParams {
               BATCH_PR_BODY,
               workspace as unknown as Record<string, unknown>
             );
-          })
+          // format array use toString, [1,2] => 1,2
+          }).join('\n')
         : composeWorkspaces[0].changelog;
 
     const { workspaceVersionSeparator } = this.config;

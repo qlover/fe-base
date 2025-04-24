@@ -63,6 +63,10 @@ function programArgs() {
       '--githubPR.dry-run-create-PR',
       'Whether to dry run the creation of the pull request'
     )
+    .option(
+      '--githubPR.push-change-labels',
+      'Whether to push the changed labels to the release PR'
+    )
     .option('-P, --githubPR.release-PR', 'Create a release PR')
     .option(
       '-l, --workspaces.change-labels <changeLabels>',

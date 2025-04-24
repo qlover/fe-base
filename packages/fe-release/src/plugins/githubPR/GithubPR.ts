@@ -97,6 +97,13 @@ export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
    * @default undefined
    */
   discussionCategoryName?: string;
+
+  /**
+   * Whether to push the changed labels to the release PR
+   *
+   * @default false
+   */
+  pushChangeLabels?: boolean;
 }
 
 const DEFAULT_RELEASE_NAME = 'Release ${name} v${version}';
@@ -341,7 +348,18 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   ): Promise<string> {
     const label = await this.githubManager.createReleasePRLabel();
 
-    const labels = [label!.name!];
+    let labels = [label!.name!];
+
+    // if pushChangeLabels is true, then push the changed labels to the release PR
+    if (this.getConfig('pushChangeLabels')) {
+      const changeLabels = this.context.getConfig('workspaces.changeLabels');
+      if (Array.isArray(changeLabels) && changeLabels.length > 0) {
+        labels.push(...changeLabels);
+      }
+    }
+
+    labels = Array.from(new Set(labels));
+    this.logger.verbose('Release PR labels:', labels);
 
     const context = this.context.getTemplateContext();
     const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);

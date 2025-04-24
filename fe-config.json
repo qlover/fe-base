@@ -11,7 +11,8 @@
       "packages/fe-release"
     ],
     "githubPR": {
-      "commitArgs": ["--no-verify"]
+      "commitArgs": ["--no-verify"],
+      "pushChangedLabels": true
     }
   }
 }
