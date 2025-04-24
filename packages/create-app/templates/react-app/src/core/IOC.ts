@@ -2,15 +2,49 @@
 import type {
   ApiMockPlugin,
   EnvConfigInterface,
-  IOCContainerInterface,
   StorageTokenInterface,
   RequestCommonPlugin,
-  ApiCatchPlugin
+  ApiCatchPlugin,
+  IOCContainerInterface
 } from '@qlover/corekit-bridge';
-import type { IOCFunctionInterface } from '@/base/port/IOCFunctionInterface';
 import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
-import type { ServiceIdentifier } from 'inversify';
-import { APP_IOC_NOT_IMPLEMENTED } from '@config/ErrorIdentifier';
+import { createIOCFunction } from '@/base/cases/ioc/createIOCFunction';
+import { Container } from 'inversify';
+import { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
+import { ServiceIdentifier } from '@/base/cases/ioc/IOCFunctionInterface';
+
+export class InversifyContainer implements IOCContainerInterface {
+  private container: Container;
+
+  constructor() {
+    this.container = new Container({
+      // allow `@injectable` decorator, auto bind injectable classes
+      autobind: true,
+      // use singleton scope
+      defaultScope: 'Singleton'
+    });
+  }
+
+  configure(registers?: InversifyRegisterInterface[]): void {
+    if (registers) {
+      registers.forEach((register) => register.register(this.container, this));
+    }
+  }
+
+  bind<T>(key: ServiceIdentifier<T>, value: T): void {
+    this.container.bind<T>(key).toConstantValue(value);
+  }
+
+  get<K extends keyof IOCIdentifierMap>(
+    serviceIdentifier: K
+  ): IOCIdentifierMap[K];
+  get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  get<T, K extends keyof IOCIdentifierMap>(
+    serviceIdentifier: ServiceIdentifier<T> | K
+  ): T | IOCIdentifierMap[K] {
+    return this.container.get<T>(serviceIdentifier);
+  }
+}
 
 /**
  * IOC identifier
@@ -38,7 +72,7 @@ export const IOCIdentifier = Object.freeze({
 /**
  * IOC identifier map
  */
-export type IOCIdentifierMap = {
+export interface IOCIdentifierMap {
   [IOCIdentifier.JSON]: JSONSerializer;
   [IOCIdentifier.JSONStorage]: JSONStorage;
   [IOCIdentifier.Logger]: Logger;
@@ -47,45 +81,8 @@ export type IOCIdentifierMap = {
   [IOCIdentifier.AppConfig]: EnvConfigInterface;
   [IOCIdentifier.ApiMockPlugin]: ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: ApiCatchPlugin;
-};
-
-ioc.implemention = null as IOCContainerInterface | null;
-
-function ioc<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-function ioc<K extends keyof IOCIdentifierMap>(
-  serviceIdentifier: K
-): IOCIdentifierMap[K];
-function ioc<T, K extends keyof IOCIdentifierMap>(
-  serviceIdentifier: ServiceIdentifier<T> | K
-): T | IOCIdentifierMap[K] {
-  if (!ioc.implemention) {
-    throw new Error(APP_IOC_NOT_IMPLEMENTED);
-  }
-  return ioc.implemention.get(serviceIdentifier);
 }
 
-/**
- * IOC manager function.
- *
- * eg.
- * ```ts
- * class A {}
- * const a = IOC(A);
- * ```
- *
- * or
- * ```ts
- * const a = IOC<A>();
- * ```
- *
- * or use get(),
- */
-export const IOC: IOCFunctionInterface<IOCIdentifierMap> = Object.assign(ioc, {
-  get implemention() {
-    return ioc.implemention;
-  },
-  implement: (container: IOCContainerInterface) => {
-    ioc.implemention = container;
-  },
-  get: ioc
-});
+export const IOC = createIOCFunction<IOCIdentifierMap>(
+  new InversifyContainer()
+);

@@ -3,8 +3,7 @@ import {
   type BootstrapExecutorPlugin,
   InjectEnv,
   InjectIOC,
-  InjectGlobal,
-  type IOCContainerInterface
+  InjectGlobal
 } from '@qlover/corekit-bridge';
 import AppConfig from '@/core/AppConfig';
 import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
@@ -37,23 +36,18 @@ const printBootstrap: BootstrapExecutorPlugin = {
  */
 export default function startup({
   window,
-  envSource,
-  IOCContainer
+  envSource
 }: {
   window: unknown;
   envSource: Record<string, unknown>;
-  IOCContainer: IOCContainerInterface;
 }) {
   if (!(typeof window !== 'undefined' && window instanceof Window)) {
     throw new Error(GLOBAL_NO_WINDOW);
   }
 
-  // use AppIOCContainer to `IOC`
-  IOC.implement(IOCContainer);
-
   const { logger } = globals;
 
-  const bootstrap = new Bootstrap(window, IOCContainer, logger, logger);
+  const bootstrap = new Bootstrap(window, IOC.implemention!, logger, logger);
 
   /**
    * bootstrap start list
