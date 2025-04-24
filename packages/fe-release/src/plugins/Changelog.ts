@@ -190,40 +190,78 @@ export default class Changelog extends Plugin<ChangelogProps> {
     const context: Parameters<typeof conventionalChangelog>[1] = {
       version: workspace.version
     };
+
+    let actualFromTag: string | undefined = lastTag;
+
+    try {
+      await this.shell.exec(
+        `git rev-parse --verify --quiet "refs/tags/${lastTag}"`,
+        { dryRun: false }
+      );
+      this.logger.verbose(
+        `Tag '${lastTag}' found for workspace '${workspace.name}'. Using it as the starting point.`
+      );
+    } catch {
+      this.logger.warn(
+        `Tag '${lastTag}' not found for workspace '${workspace.name}'. Will generate changelog using commits within path '${workspace.path}' from the beginning of history or latest available tag.`
+      );
+      actualFromTag = undefined;
+    }
+
     const gitRawCommitsOpts: Parameters<typeof conventionalChangelog>[2] = {
       debug: this.logger.debug.bind(this.logger),
-      from: lastTag,
-      reverse: true
+      from: actualFromTag,
+      reverse: true,
+      path: workspace.path
     };
+
     const parserOpts: Parameters<typeof conventionalChangelog>[3] = {};
     const writerOpts: Parameters<typeof conventionalChangelog>[4] = {
       headerPartial: ''
     };
 
-    if (this.context.dryRun) {
-      this.logger.info('[Dry Run] Changelog is dry run');
-      return new Promise((resolve) => {
-        resolve('## Dry Run Changelog');
-      });
-    }
+    this.logger.debug('options', options);
+    this.logger.debug('context', context);
+    this.logger.debug('gitRawCommitsOpts', gitRawCommitsOpts);
 
     return new Promise((resolve, reject) => {
       let log = '';
-
-      conventionalChangelog(
+      const stream = conventionalChangelog(
         options,
         context,
         gitRawCommitsOpts,
         parserOpts,
         writerOpts
-      )
-        .on('data', (chunk) => {
-          log += chunk.toString();
-        })
-        .on('end', () => {
-          resolve(this.tranformChangelog(log, defaultOptions.preset.types));
-        })
-        .on('error', reject);
+      );
+
+      stream.on('data', (chunk) => {
+        log += chunk.toString();
+      });
+
+      stream.on('error', (err) => {
+        this.logger.error(
+          `Error during conventional-changelog stream for workspace '${workspace.name}':`,
+          err
+        );
+        reject(
+          new Error(
+            `Failed to generate changelog for ${workspace.name}: ${err.message}`
+          )
+        );
+      });
+
+      stream.on('end', () => {
+        if (!log && actualFromTag) {
+          this.logger.warn(
+            `No commits found for workspace '${workspace.name}' since tag '${actualFromTag}' within path '${workspace.path}'. Changelog will be empty.`
+          );
+        } else if (!log) {
+          this.logger.info(
+            `No commits found for workspace '${workspace.name}' within path '${workspace.path}'. Changelog will be empty.`
+          );
+        }
+        resolve(this.tranformChangelog(log, defaultOptions.preset.types));
+      });
     });
   }
 
