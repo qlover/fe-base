@@ -1,8 +1,8 @@
+import { IOCContainerInterface } from './IOCContainerInterface';
 import type {
   IOCFunctionInterface,
   ServiceIdentifier
 } from './IOCFunctionInterface';
-import type { IOCContainerInterface } from '@qlover/corekit-bridge';
 
 /**
  * Creates an IOC function factory
