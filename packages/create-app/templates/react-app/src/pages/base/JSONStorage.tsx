@@ -1,14 +1,12 @@
 import { IOC } from '@/core/IOC';
-import { useController, useControllerState } from '@lib/fe-react-controller';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 export default function JSONStorage() {
   const jsonStorageController = IOC(JSONStorageController);
-  const controllerState = useControllerState(
-    useController(jsonStorageController)
-  );
+  const controllerState = useSliceStore(jsonStorageController);
 
   const { t } = useBaseRoutePage();
 

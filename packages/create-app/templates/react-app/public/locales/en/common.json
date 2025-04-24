@@ -2,5 +2,9 @@
   "404.notComponent": "Component not found",
   "404.notPage": "Page not found",
   "500.title": "Server Error",
-  "header.theme.label": "Switch Theme"
+  "header.theme.label": "Switch Theme",
+  "err.ioc.not.implemented": "IOC not implemented",
+  "err.local.no.user.token": "Local no user token",
+  "err.global.no.window": "Global no window",
+  "err.within.page.provider": "Must be used in PageProvider"
 }

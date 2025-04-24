@@ -1,51 +1,20 @@
-import {
-  RequestAdapterFetch,
-  RequestAdapterConfig,
-  RequestScheduler,
-  FetchAbortPlugin,
-  RequestAdapterFetchConfig
-} from '@qlover/fe-utils';
-import {
-  FeApiGetIpInfo,
-  FeApiGetRandomUser,
-  FeApiGetUserInfo,
-  FeApiLogin
-} from './FeApiType';
+import { RequestAdapterFetch, RequestScheduler } from '@qlover/fe-corekit';
+import { FeApiGetIpInfo } from './FeApiType';
+import { inject, injectable } from 'inversify';
+import { FeApiAdapter } from './FeApiAdapter';
+import { FeApiConfig } from './FeApiBootstarp';
 
-export class FeApi extends RequestScheduler<RequestAdapterConfig> {
-  private abortPlugin: FetchAbortPlugin;
-
-  constructor({
-    abortPlugin,
-    config
-  }: {
-    abortPlugin: FetchAbortPlugin;
-    config?: Partial<RequestAdapterFetchConfig>;
-  }) {
-    super(new RequestAdapterFetch(config));
-    this.abortPlugin = abortPlugin;
+@injectable()
+export class FeApi extends RequestScheduler<FeApiConfig> {
+  constructor(@inject(FeApiAdapter) adapter: RequestAdapterFetch) {
+    super(adapter);
   }
 
-  stop(config: RequestAdapterConfig): void {
-    this.abortPlugin.abort(config);
-  }
+  stop(_config: FeApiConfig): void {}
 
   async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
-    return this.get('http://ip-api.com/json/');
-  }
-
-  async getRandomUser(): Promise<FeApiGetRandomUser['response']> {
-    return this.get('https://randomuser.me/api/');
-  }
-
-  async getUserInfo(): Promise<FeApiGetUserInfo['response']> {
-    return this.get('/api/userinfo');
-  }
-
-  async login(params: FeApiLogin['request']): Promise<FeApiLogin['response']> {
-    return this.post('/api/login', {
-      // FIXME: RequestAdapterResponse response type error
-      data: params as unknown as FeApiLogin['response']['data']
-    });
+    return this.get('http://ip-api.com/json/') as unknown as Promise<
+      FeApiGetIpInfo['response']
+    >;
   }
 }

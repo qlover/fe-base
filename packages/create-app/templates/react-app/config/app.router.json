@@ -61,6 +61,15 @@
             }
           },
           {
+            "path": "errorIdentifier",
+            "element": "base/ErrorIdentifier",
+            "meta": {
+              "title": "FE-Utils ErrorIdentifier",
+              "icon": "info",
+              "localNamespace": "common"
+            }
+          },
+          {
             "path": "404",
             "element": "404",
             "meta": {

@@ -1,14 +1,15 @@
-import type { EnvConfigInterface } from '@lib/bootstrap';
+import type { EnvConfigInterface } from '@qlover/corekit-bridge';
 
-class AppConfig implements EnvConfigInterface {
+export class AppConfigImpl implements EnvConfigInterface {
   readonly appName = '';
   readonly appVersion = '';
   /**
    * vite mode
+   *
    */
-  readonly env = import.meta.env.VITE_USER_NODE_ENV;
+  readonly env: string = '';
 
-  readonly userTokenStorageKey = 'fe_user_token';
+  readonly userTokenStorageKey = '';
   readonly openAiModels = [
     'gpt-4o-mini',
     'gpt-3.5-turbo',
@@ -22,6 +23,14 @@ class AppConfig implements EnvConfigInterface {
   readonly openAiRequireToken = true;
   readonly loginUser = '';
   readonly loginPassword = '';
+
+  readonly feApiBaseUrl = '';
+  readonly userApiBaseUrl = '';
+
+  readonly aiApiBaseUrl = 'https://api.openai.com/v1';
+  readonly aiApiToken = '';
+  readonly aiApiTokenPrefix = 'Bearer';
+  readonly aiApiRequireToken = true;
 }
 
-export default new AppConfig();
+export default new AppConfigImpl();
