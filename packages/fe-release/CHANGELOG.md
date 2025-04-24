@@ -1,5 +1,14 @@
 ## 1.0.9
 
+## 2.0.5
+
+### Patch Changes
+
+- ### Bug Fixes
+
+  - **changelog:** improve tag handling and error logging in changelog generation ([#344](https://github.com/qlover/fe-base/issues/344)) ([32abcbd](https://github.com/qlover/fe-base/commit/32abcbdc6681ee6fad1c1ca2e60ae7ca08977d82))
+  - **release:** update batch branch name format and refactor commit handling ([#345](https://github.com/qlover/fe-base/issues/345)) ([c4bb9cc](https://github.com/qlover/fe-base/commit/c4bb9cca78341956029defdf7f2ac8edeffaa3d8))
+
 ## 2.0.4
 
 ### Patch Changes
