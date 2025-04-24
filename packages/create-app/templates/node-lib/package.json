@@ -61,6 +61,6 @@
     "rollup-plugin-typescript2": "^0.36.0"
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-corekit": "latest"
   }
 }

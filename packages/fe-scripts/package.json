@@ -64,7 +64,7 @@
     "@octokit/rest": "^21.0.2",
     "@qlover/fe-corekit": "^1.2.2",
     "@qlover/env-loader": "^0.0.1",
-    "@qlover/scripts-context": "^0.0.8",
+    "@qlover/scripts-context": "^0.0.11",
     "commitizen": "^4.3.1",
     "commander": "^11.0.0",
     "ignore": "^6.0.2",

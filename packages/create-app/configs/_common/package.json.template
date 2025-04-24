@@ -70,6 +70,6 @@
     "prettier": "^3.5.3",
   },
   "dependencies": {
-    "@qlover/fe-utils": "latest"
+    "@qlover/fe-corekit": "latest"
   }
 }

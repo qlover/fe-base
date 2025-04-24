@@ -46,7 +46,7 @@
     "@qlover/eslint-plugin-fe-dev": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
-    "@qlover/scripts-context": "^0.0.8",
+    "@qlover/scripts-context": "^0.0.11",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
