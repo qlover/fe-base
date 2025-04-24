@@ -1,5 +1,5 @@
 {
-  "protectedBranches": ["master", "build/tsup", "master", "root-src", "test"],
+  "protectedBranches": ["master"],
   "release": {
     "packagesDirectories": [
       "packages/fe-scripts",
@@ -9,6 +9,9 @@
       "packages/scripts-context",
       "packages/env-loader",
       "packages/fe-release"
-    ]
+    ],
+    "githubPR": {
+      "commitArgs": ["--no-verify"]
+    }
   }
 }

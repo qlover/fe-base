@@ -3,6 +3,7 @@ import type { DeepPartial, ExecutorReleaseContext, StepOption } from '../type';
 import type { Shell } from '@qlover/scripts-context';
 import type ReleaseContext from '../implments/ReleaseContext';
 import merge from 'lodash/merge';
+import get from 'lodash/get';
 
 export default abstract class Plugin<Props = unknown>
   implements ExecutorPlugin<ReleaseContext>
@@ -24,9 +25,10 @@ export default abstract class Plugin<Props = unknown>
         this.pluginName as keyof typeof this.context.options
       ];
 
+    const fileConfig = get(this.context.shared, this.pluginName);
     // plugin config, second priority
     return pluginConfig || props
-      ? merge({}, props, pluginConfig)
+      ? merge({}, fileConfig, props, pluginConfig)
       : ({} as Props);
   }
 
