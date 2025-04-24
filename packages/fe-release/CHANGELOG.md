@@ -1,5 +1,11 @@
 ## 1.0.9
 
+## 2.0.6
+
+### Patch Changes
+
+-
+
 ## 2.0.5
 
 ### Patch Changes
