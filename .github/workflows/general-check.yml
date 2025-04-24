@@ -8,9 +8,9 @@ on:
 
 jobs:
   check-code:
+    # if not CI-Release label, then run check
     if: |
-      !contains(github.event.pull_request.title, 'chore(tag):') && 
-      !contains(join(github.event.pull_request.commits.*.message, ' '), 'chore(tag):')
+      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
