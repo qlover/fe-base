@@ -65,7 +65,7 @@ export interface ChangelogProps extends GitChangelogOptions {
   gitChangelogOptions?: GitChangelogOptions;
 }
 
-const contentTmplate = "---\n'${name}': '${increment}'\n---\n${changelog}";
+const contentTmplate = "---\n'${name}': '${increment}'\n---\n\n${changelog}";
 
 /**
  * @class Changelog
