@@ -138,7 +138,7 @@ importers:
   packages/corekit-bridge:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.1
+        specifier: ^1.2.5
         version: 1.2.5
       '@qlover/slice-store-react':
         specifier: ^1.2.6
@@ -184,7 +184,7 @@ importers:
   packages/create-app:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
       '@qlover/scripts-context':
         specifier: ^0.0.11
@@ -216,7 +216,7 @@ importers:
         version: 16.5.0
     devDependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
 
   packages/eslint-plugin-fe-dev: {}
@@ -227,7 +227,7 @@ importers:
         specifier: ^0.15.0
         version: 0.15.1
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
       commander:
         specifier: ^11.0.0
@@ -283,7 +283,7 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
       '@qlover/scripts-context':
         specifier: ^0.0.11
@@ -317,7 +317,7 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
       '@qlover/scripts-context':
         specifier: ^0.0.11
@@ -378,7 +378,7 @@ importers:
   packages/scripts-context:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.2
+        specifier: ^1.2.5
         version: 1.2.5
       chalk:
         specifier: ^5.3.0
