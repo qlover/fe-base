@@ -1,5 +1,33 @@
 ## 1.2.6
 
+## 1.2.8
+
+### Patch Changes
+
+- ### ✨ Features
+
+  - implement GitChangelog for improved changelog generation (#351)
+
+    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+    - Enhanced default options for changelog types and formatting.
+
+  - request manager (#284)
+  - add fe-corekit dir, remove fe-utils (#281)
+
+  ### 🐞 Bug Fixes
+
+  - add option to push changed labels to release PRs in workflow (#353)
+  - find module root path (#297)
+
+  ### 📝 Documentation
+
+  - request transaction (#284)
+  - add index docs (#281)
+
+    ***
+
 ## 1.2.7
 
 ### Patch Changes

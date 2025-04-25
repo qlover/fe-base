@@ -1,5 +1,39 @@
 ## 1.0.9
 
+## 2.0.10
+
+### Patch Changes
+
+- ### ✨ Features
+
+  - implement GitChangelog for improved changelog generation (#351)
+
+    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+    - Enhanced default options for changelog types and formatting.
+
+  - add option to push changed labels to release PRs and update dependencies (#350)
+
+    - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
+    - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
+    - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
+    - Enhanced the GitHub Actions workflow to conditionally run checks based on the presence of the `CI-Release` label.
+
+    ***
+
+  ### 🐞 Bug Fixes
+
+  - add option to push changed labels to release PRs in workflow (#353)
+  - format array output in changelog generation to use toString method for improved readability (#350)
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @qlover/env-loader@0.0.7
+  - @qlover/fe-corekit@1.2.8
+  - @qlover/scripts-context@0.0.14
+
 ## 2.0.9
 
 ### Patch Changes

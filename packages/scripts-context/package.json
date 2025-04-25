@@ -1,7 +1,7 @@
 {
   "name": "@qlover/scripts-context",
   "description": "A scripts context for frontwork",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/scripts-context#readme",
@@ -44,12 +44,12 @@
   },
   "devDependencies": {
     "@types/shelljs": "^0.8.15",
-    "@qlover/env-loader": "^0.0.4",
+    "@qlover/env-loader": "^0.0.7",
     "@types/lodash": "^4.17.16",
     "@commitlint/types": "^19.8.0"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.5",
+    "@qlover/fe-corekit": "^1.2.8",
     "chalk": "^5.3.0",
     "cosmiconfig": "^9.0.0",
     "lodash": "^4.17.21"
