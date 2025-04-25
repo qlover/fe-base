@@ -56,9 +56,12 @@ export interface GitChangelogOptions {
   directory?: string;
   /**
    * 自定义 log 格式
-   * @default '%h %s'
+   * @default '%H%n%s%n%b%n----------------------'
    */
   format?: string;
+
+  logCommand?: string;
+
   /**
    * 是否不包含合并的 commit
    * @default true
@@ -71,11 +74,14 @@ export interface GitChangelogOptions {
 
   /**
    * 自定义 commit 格式
-   * @default '* ${message}${prRef}\n'
+   * @default '- ${message}${prRef}\n'
    */
   formatTemplate?: string;
   formatter?: GitChangelogFormatter;
 }
+
+const DEFAULT_FORMATTEMPLATE = '- ${message}${prRef}\n';
+const DEFAULT_FORMAT = '%H%n%s%n%b%n----------------------';
 
 export class GitChangelogFormatter {
   formatFlatCommits(
@@ -83,7 +89,7 @@ export class GitChangelogFormatter {
     options: Pick<GitChangelogOptions, 'types' | 'formatTemplate'>,
     shell: Shell
   ): string[] {
-    const { types = [], formatTemplate = '* ${message}${prRef}\n' } = options;
+    const { types = [], formatTemplate = DEFAULT_FORMATTEMPLATE } = options;
     const commitsByType = new Map<string, typeof commits>();
 
     for (const commit of commits) {
@@ -271,11 +277,11 @@ export class GitChangelog {
   }
 
   async getLog(options: GitChangelogOptions): Promise<string> {
-    const {
-      directory,
-      format = '%H%n%s%n%b%n----------------------',
-      noMerges = true
-    } = options;
+    const { directory, format = DEFAULT_FORMAT, noMerges = true } = options;
+
+    if (options.logCommand) {
+      return this.shell.exec(options.logCommand, { dryRun: false });
+    }
 
     const from = await this.resolveTag(options.from, 'root');
     const to = await this.resolveTag(options.to, 'HEAD');
