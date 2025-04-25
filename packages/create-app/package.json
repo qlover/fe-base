@@ -1,6 +1,6 @@
 {
   "name": "@qlover/create-app",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "type": "module",
   "private": false,
   "main": "./dist/index.cjs",
@@ -48,11 +48,11 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.4"
+    "@qlover/env-loader": "^0.0.5"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.2",
-    "@qlover/scripts-context": "^0.0.11",
+    "@qlover/fe-corekit": "^1.2.6",
+    "@qlover/scripts-context": "^0.0.12",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",

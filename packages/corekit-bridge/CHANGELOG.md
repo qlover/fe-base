@@ -1,5 +1,21 @@
 ## 0.0.5
 
+## 0.0.6
+
+### Patch Changes
+
+- ### ✨ Features
+
+  - implement GitChangelog for improved changelog generation (#351)
+
+    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+    - Enhanced default options for changelog types and formatting.
+
+- Updated dependencies
+  - @qlover/fe-corekit@1.2.6
+
 ### Patch Changes
 
 - ### Features

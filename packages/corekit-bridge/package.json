@@ -1,7 +1,7 @@
 {
   "name": "@qlover/corekit-bridge",
   "description": "fe-corekit Abstraction tool bridge for real development environments",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": false,
   "type": "module",
   "files": [
@@ -47,12 +47,12 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.1",
+    "@qlover/fe-corekit": "^1.2.6",
     "@qlover/slice-store-react": "^1.2.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.4",
+    "@qlover/env-loader": "^0.0.5",
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
