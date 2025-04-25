@@ -34,7 +34,7 @@ jobs:
           node-version: '18.20.0'
 
       - run: npm install -g pnpm
-      - run: pnpm install
+      - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
@@ -69,7 +69,7 @@ jobs:
           node-version: '18.20.0'
 
       - run: npm install -g pnpm
-      - run: pnpm install
+      - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
