@@ -227,8 +227,6 @@ export default class Changelog extends Plugin<ChangelogProps> {
         { dryRun: false }
       );
 
-      this.logger.debug('tagsOutput', tagsOutput);
-
       if (!tagsOutput) {
         return currentTagPattern;
       }

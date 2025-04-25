@@ -252,8 +252,8 @@ export class GitChangelog {
         // Check if tag exists (using quotes to handle special characters)
         const exists = await this.shell
           .exec(`git tag --list "${tag}"`, { dryRun: false })
-          .then(out => !!out.trim());
-        
+          .then((out) => !!out.trim());
+
         if (exists) return tag;
       } catch {
         // If there's an error checking the tag, fall through to fallback
@@ -300,16 +300,35 @@ export class GitChangelog {
         prNumber: prCommit.prNumber
       };
 
-      // 保留原有结构，在此基础上扩展
-      const commits = prCommit.commits.map((commit) => ({
-        ...commit, // 保留所有原有属性，包括 raw, type, scope, message, bodyLines, body 等
-        prNumber: prCommit.prNumber,
-        hash: prCommit.hash,
-        parentHash: prCommit.hash,
-        parentCommit
-      }));
+      if (Array.isArray(prCommit.commits) && prCommit.commits.length > 0) {
+        // 保留原有结构，在此基础上扩展
+        const commits = prCommit.commits.map((commit) => ({
+          ...commit, // 保留所有原有属性，包括 raw, type, scope, message, bodyLines, body 等
+          prNumber: prCommit.prNumber,
+          hash: prCommit.hash, // 使用 PR commit 的 hash
+          parentHash: prCommit.hash, // 使用 PR commit 的 hash 作为 parentHash
+          parentCommit // 引用外部定义的 parentCommit 对象
+        }));
 
-      flatCommits.push(...commits);
+        flatCommits.push(...commits);
+      } else {
+        // 当 commits 为空时，将 PR commit 本身扁平化
+        flatCommits.push({
+          // CommitInfo 部分，使用 PR commit 的 title 信息
+          raw: prCommit.raw.title, // 使用原始 PR 标题作为 raw
+          type: prCommit.title.type,
+          scope: prCommit.title.scope,
+          message: prCommit.title.message,
+          // body 可以留空，因为没有单独的 commit body
+          body: undefined,
+
+          // FlatCommit 特有部分
+          prNumber: prCommit.prNumber,
+          hash: prCommit.hash,
+          parentHash: prCommit.hash, // 指向自身 hash
+          parentCommit // 引用外部定义的 parentCommit 对象
+        });
+      }
     }
 
     return flatCommits;
