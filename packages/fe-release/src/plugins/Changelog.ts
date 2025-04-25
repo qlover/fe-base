@@ -8,7 +8,7 @@ import {
   GitChangelog,
   GitChangelogOptions
 } from '../implments/gitChangeLog/gitChangeLog';
-export interface ChangelogProps {
+export interface ChangelogProps extends GitChangelogOptions {
   /**
    * The increment of the changelog
    * @default 'patch'
@@ -58,24 +58,12 @@ export interface ChangelogProps {
    * @default '.changeset'
    */
   changesetRoot?: string;
-}
 
-const defaultOptions: GitChangelogOptions = {
-  types: [
-    { type: 'feat', section: '### ✨ Features', hidden: false },
-    { type: 'fix', section: '### 🐞 Bug Fixes', hidden: false },
-    { type: 'chore', section: '### 🔧 Chores', hidden: false },
-    { type: 'docs', section: '### 📝 Documentation', hidden: false },
-    { type: 'refactor', section: '### ♻️ Refactors', hidden: false },
-    { type: 'perf', section: '### 🚀 Performance', hidden: false },
-    { type: 'test', section: '### 🚨 Tests', hidden: false },
-    { type: 'style', section: '### 🎨 Styles', hidden: false },
-    { type: 'ci', section: '### 🔄 CI', hidden: false },
-    { type: 'build', section: '### 🚧 Build', hidden: false },
-    { type: 'revert', section: '### ⏪ Reverts', hidden: false },
-    { type: 'release', section: '### 🔖 Releases', hidden: false }
-  ]
-};
+  /**
+   * The options of the git changelog
+   */
+  gitChangelogOptions?: GitChangelogOptions;
+}
 
 const contentTmplate = "---\n'${name}': '${increment}'\n---\n${changelog}";
 
@@ -182,7 +170,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     workspace: WorkspaceValue;
   }): Promise<string> {
     const gitChangelog = new GitChangelog(this.context.shell, {
-      ...defaultOptions,
+      ...this.getConfig('gitChangelogOptions'),
       from: lastTag,
       directory: workspace.path
     });
@@ -191,14 +179,6 @@ export default class Changelog extends Plugin<ChangelogProps> {
       const flatCommits = gitChangelog.flatCommits(prCommits);
       return gitChangelog.formatFlatCommits(flatCommits).join('\n');
     });
-  }
-
-  private tranformChangelog(
-    changelog: string,
-    _types: { type: string; section?: string; hidden?: boolean }[]
-  ): string {
-    // TODO:
-    return changelog;
   }
 
   async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {

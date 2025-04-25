@@ -246,8 +246,18 @@ export class GitChangelog {
   }
 
   private async resolveTag(tag?: string, fallback?: string): Promise<string> {
-    if (tag && (await this.hasTag(tag))) {
-      return tag;
+    if (tag) {
+      // Properly escape tag names with special characters
+      try {
+        // Check if tag exists (using quotes to handle special characters)
+        const exists = await this.shell
+          .exec(`git tag --list "${tag}"`, { dryRun: false })
+          .then(out => !!out.trim());
+        
+        if (exists) return tag;
+      } catch {
+        // If there's an error checking the tag, fall through to fallback
+      }
     }
 
     if (fallback === 'root') {
