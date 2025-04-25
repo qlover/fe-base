@@ -1,3 +1,5 @@
+# @qlover/corekit-bridge
+
 ## 1.2.8
 
 ### Patch Changes
