@@ -1,10 +1,13 @@
 import ReleaseContext from '../implments/ReleaseContext';
 import Plugin from './Plugin';
-import conventionalChangelog from 'conventional-changelog';
 import { WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
+import {
+  GitChangelog,
+  GitChangelogOptions
+} from '../implments/gitChangeLog/gitChangeLog';
 export interface ChangelogProps {
   /**
    * The increment of the changelog
@@ -57,24 +60,21 @@ export interface ChangelogProps {
   changesetRoot?: string;
 }
 
-const defaultOptions = {
-  preset: {
-    name: 'angular',
-    types: [
-      { type: 'feat', section: '✨ Features', hidden: false },
-      { type: 'fix', section: '🐞 Bug Fixes', hidden: false },
-      { type: 'chore', section: '🔧 Chores', hidden: false },
-      { type: 'docs', section: '📝 Documentation', hidden: false },
-      { type: 'refactor', section: '♻️ Refactors', hidden: false },
-      { type: 'perf', section: '🚀 Performance', hidden: false },
-      { type: 'test', section: '🚨 Tests', hidden: false },
-      { type: 'style', section: '🎨 Styles', hidden: false },
-      { type: 'ci', section: '🔄 CI', hidden: false },
-      { type: 'build', section: '🚧 Build', hidden: false },
-      { type: 'revert', section: '⏪ Reverts', hidden: false },
-      { type: 'release', section: '🔖 Releases', hidden: false }
-    ]
-  }
+const defaultOptions: GitChangelogOptions = {
+  types: [
+    { type: 'feat', section: '### ✨ Features', hidden: false },
+    { type: 'fix', section: '### 🐞 Bug Fixes', hidden: false },
+    { type: 'chore', section: '### 🔧 Chores', hidden: false },
+    { type: 'docs', section: '### 📝 Documentation', hidden: false },
+    { type: 'refactor', section: '### ♻️ Refactors', hidden: false },
+    { type: 'perf', section: '### 🚀 Performance', hidden: false },
+    { type: 'test', section: '### 🚨 Tests', hidden: false },
+    { type: 'style', section: '### 🎨 Styles', hidden: false },
+    { type: 'ci', section: '### 🔄 CI', hidden: false },
+    { type: 'build', section: '### 🚧 Build', hidden: false },
+    { type: 'revert', section: '### ⏪ Reverts', hidden: false },
+    { type: 'release', section: '### 🔖 Releases', hidden: false }
+  ]
 };
 
 const contentTmplate = "---\n'${name}': '${increment}'\n---\n${changelog}";
@@ -181,87 +181,15 @@ export default class Changelog extends Plugin<ChangelogProps> {
     lastTag: string;
     workspace: WorkspaceValue;
   }): Promise<string> {
-    const options: Parameters<typeof conventionalChangelog>[0] = {
-      releaseCount: 1,
-      tagPrefix: this.getTagPrefix(workspace),
-      warn: this.logger.warn.bind(this.logger),
-      preset: defaultOptions.preset.name
-    };
-    const context: Parameters<typeof conventionalChangelog>[1] = {
-      version: workspace.version
-    };
+    const gitChangelog = new GitChangelog(this.context.shell, {
+      ...defaultOptions,
+      from: lastTag,
+      directory: workspace.path
+    });
 
-    let actualFromTag: string | undefined = lastTag;
-
-    try {
-      await this.shell.exec(
-        `git rev-parse --verify --quiet "refs/tags/${lastTag}"`,
-        { dryRun: false }
-      );
-      this.logger.verbose(
-        `Tag '${lastTag}' found for workspace '${workspace.name}'. Using it as the starting point.`
-      );
-    } catch {
-      this.logger.warn(
-        `Tag '${lastTag}' not found for workspace '${workspace.name}'. Will generate changelog using commits within path '${workspace.path}' from the beginning of history or latest available tag.`
-      );
-      actualFromTag = undefined;
-    }
-
-    const gitRawCommitsOpts: Parameters<typeof conventionalChangelog>[2] = {
-      debug: this.logger.debug.bind(this.logger),
-      from: actualFromTag,
-      reverse: true,
-      path: workspace.path
-    };
-
-    const parserOpts: Parameters<typeof conventionalChangelog>[3] = {};
-    const writerOpts: Parameters<typeof conventionalChangelog>[4] = {
-      headerPartial: ''
-    };
-
-    this.logger.debug('options', options);
-    this.logger.debug('context', context);
-    this.logger.debug('gitRawCommitsOpts', gitRawCommitsOpts);
-
-    return new Promise((resolve, reject) => {
-      let log = '';
-      const stream = conventionalChangelog(
-        options,
-        context,
-        gitRawCommitsOpts,
-        parserOpts,
-        writerOpts
-      );
-
-      stream.on('data', (chunk) => {
-        log += chunk.toString();
-      });
-
-      stream.on('error', (err) => {
-        this.logger.error(
-          `Error during conventional-changelog stream for workspace '${workspace.name}':`,
-          err
-        );
-        reject(
-          new Error(
-            `Failed to generate changelog for ${workspace.name}: ${err.message}`
-          )
-        );
-      });
-
-      stream.on('end', () => {
-        if (!log && actualFromTag) {
-          this.logger.warn(
-            `No commits found for workspace '${workspace.name}' since tag '${actualFromTag}' within path '${workspace.path}'. Changelog will be empty.`
-          );
-        } else if (!log) {
-          this.logger.info(
-            `No commits found for workspace '${workspace.name}' within path '${workspace.path}'. Changelog will be empty.`
-          );
-        }
-        resolve(this.tranformChangelog(log, defaultOptions.preset.types));
-      });
+    return gitChangelog.getPRCommits().then((prCommits) => {
+      const flatCommits = gitChangelog.flatCommits(prCommits);
+      return gitChangelog.formatFlatCommits(flatCommits).join('\n');
     });
   }
 
