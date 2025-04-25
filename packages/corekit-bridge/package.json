@@ -52,7 +52,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.1",
+    "@qlover/env-loader": "^0.0.4",
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",

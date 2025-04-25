@@ -48,7 +48,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.1"
+    "@qlover/env-loader": "^0.0.4"
   },
   "dependencies": {
     "@qlover/fe-corekit": "^1.2.2",

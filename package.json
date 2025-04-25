@@ -12,6 +12,8 @@
   "files": [],
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=4 run build",
+    "build:fe-release": "pnpm --filter @qlover/fe-release build",
+    "release": "pnpm --filter @qlover/fe-release release",
     "nx:build": "nx affected:build",
     "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs} --write",
     "lint": "eslint . --fix",
@@ -42,7 +44,7 @@
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.13.0",
     "@nx/js": "20.6.4",
-    "@qlover/env-loader": "^0.0.1",
+    "@qlover/env-loader": "^0.0.4",
     "@qlover/eslint-plugin-fe-dev": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
