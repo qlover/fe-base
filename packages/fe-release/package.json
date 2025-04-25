@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-release",
   "description": "A tool for releasing front-end projects, supporting multiple release modes and configurations, simplifying the release process and improving efficiency.",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-release",
@@ -60,9 +60,9 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.0.2",
-    "@qlover/env-loader": "^0.0.4",
-    "@qlover/fe-corekit": "^1.2.5",
-    "@qlover/scripts-context": "^0.0.11",
+    "@qlover/env-loader": "^0.0.6",
+    "@qlover/fe-corekit": "^1.2.7",
+    "@qlover/scripts-context": "^0.0.13",
     "lodash": "^4.17.21"
   }
 }

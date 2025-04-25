@@ -1,7 +1,7 @@
 {
   "name": "@qlover/env-loader",
   "description": "A package for managing environment variables",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base",
@@ -39,7 +39,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
-    "@qlover/fe-corekit": "^1.2.5"
+    "@qlover/fe-corekit": "^1.2.7"
   },
   "dependencies": {
     "dotenv": "^16.4.5"

@@ -1,5 +1,29 @@
 ## 0.10.5
 
+## 0.10.7
+
+### Patch Changes
+
+- ### ✨ Features
+
+  - implement GitChangelog for improved changelog generation (#351)
+
+    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+    - Enhanced default options for changelog types and formatting.
+
+  ### 🐞 Bug Fixes
+
+  - add option to push changed labels to release PRs in workflow (#353)
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @qlover/env-loader@0.0.6
+  - @qlover/fe-corekit@1.2.7
+  - @qlover/scripts-context@0.0.13
+
 ## 0.10.6
 
 ### Patch Changes

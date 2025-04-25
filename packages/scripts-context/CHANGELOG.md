@@ -1,5 +1,31 @@
 ## 0.0.12
 
+## 0.0.13
+
+### Patch Changes
+
+- ### ✨ Features
+
+  - implement GitChangelog for improved changelog generation (#351)
+
+    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+    - Enhanced default options for changelog types and formatting.
+
+  - release branchName arg (#291)
+  - add pkgName to branchName tpl (#291)
+  - add script-context (#213)
+
+  ### 🐞 Bug Fixes
+
+  - add option to push changed labels to release PRs in workflow (#353)
+  - find module root path (#297)
+  - merge search config (#224)
+
+- Updated dependencies
+  - @qlover/fe-corekit@1.2.7
+
 ### Patch Changes
 
 - ### ✨ Features
