@@ -40,7 +40,7 @@ jobs:
       - run: pnpm build
 
       - name: Release Pull Request
-        run: node packages/fe-release/dist/cli.js -V -P --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
+        run: node packages/fe-release/dist/cli.js -V -P --githubPR.push-change-labels --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
 

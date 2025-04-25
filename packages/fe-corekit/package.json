@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-corekit",
   "description": "A corekit for frontwork",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": false,
   "type": "module",
   "files": [
@@ -58,7 +58,7 @@
     "merge": "^2.1.1"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.4",
+    "@qlover/env-loader": "^0.0.5",
     "@types/lodash": "^4.17.12",
     "axios": "^1.7.9"
   }
