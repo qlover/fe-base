@@ -1,72 +1,24 @@
-## 0.10.5
-
-## 0.10.7
+## 0.10.8
 
 ### Patch Changes
 
-- ### ✨ Features
+#### ✨ Features
 
-  - implement GitChangelog for improved changelog generation (#351)
+- implement GitChangelog for improved changelog generation (#351)
 
-    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
-    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
-    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
-    - Enhanced default options for changelog types and formatting.
+  - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+  - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+  - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+  - Enhanced default options for changelog types and formatting.
 
-  ### 🐞 Bug Fixes
+#### 🐞 Bug Fixes
 
-  - add option to push changed labels to release PRs in workflow (#353)
-
-- Updated dependencies
-- Updated dependencies
-- Updated dependencies
-  - @qlover/env-loader@0.0.6
-  - @qlover/fe-corekit@1.2.7
-  - @qlover/scripts-context@0.0.13
-
-## 0.10.6
-
-### Patch Changes
-
-- ### ✨ Features
-
-  - implement GitChangelog for improved changelog generation (#351)
-
-    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
-    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
-    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
-    - Enhanced default options for changelog types and formatting.
+- add option to push changed labels to release PRs in workflow (#353)
 
 - Updated dependencies
-- Updated dependencies
-- Updated dependencies
-  - @qlover/env-loader@0.0.5
-  - @qlover/fe-corekit@1.2.6
-  - @qlover/scripts-context@0.0.12
-
-### Patch Changes
-
-- ### Bug Fixes
-
-  - comm commitizen ([#128](https://github.com/qlover/fe-base/issues/128)) ([042ff3a](https://github.com/qlover/fe-base/commit/042ff3a71ab6bec039ee4fa1bc3f4fc116f9dd35))
-  - eslint config ([#171](https://github.com/qlover/fe-base/issues/171)) ([fc14f4b](https://github.com/qlover/fe-base/commit/fc14f4b2fb3196394d3b470eaa25bcfb428c7861))
-  - fe-release publish path check ([#236](https://github.com/qlover/fe-base/issues/236)) ([364984e](https://github.com/qlover/fe-base/commit/364984e3b3c27ed3a1e5cd3cc12d3c1184916fab))
-  - fe-scripts type ([#153](https://github.com/qlover/fe-base/issues/153)) ([99da575](https://github.com/qlover/fe-base/commit/99da575a75eb13cdbc2e7546e13a851cb1329abc))
-  - **fe-scripts/scripts/release.js:** not clear github_token var ([#148](https://github.com/qlover/fe-base/issues/148)) ([1538ae1](https://github.com/qlover/fe-base/commit/1538ae15c1af038702897b47ce01a148dbf0e8d4))
-  - release ignore changelog ([#125](https://github.com/qlover/fe-base/issues/125)) ([d738a72](https://github.com/qlover/fe-base/commit/d738a72875020273401b1bd3b92e1f1108a1e116))
-  - release npm token error ([#152](https://github.com/qlover/fe-base/issues/152)) ([e9a24d1](https://github.com/qlover/fe-base/commit/e9a24d1e00b1adbb261ed66f936c3a57319a8847))
-  - release publish npm ([#327](https://github.com/qlover/fe-base/issues/327)) ([fa26d04](https://github.com/qlover/fe-base/commit/fa26d04eab2fa1ea4baa05c4d3502e5a873d5c8c))
-  - release push changlog.md ([#123](https://github.com/qlover/fe-base/issues/123)) ([1952ae1](https://github.com/qlover/fe-base/commit/1952ae1caad2a965ec233eca18092bb0b356987b))
-  - script-context merge config ([#224](https://github.com/qlover/fe-base/issues/224)) ([8519dec](https://github.com/qlover/fe-base/commit/8519dec765bf560601c6081ddc5109d4395b6f3d))
-
-  ### Features
-
-  - check packages release ci scripts ([#198](https://github.com/qlover/fe-base/issues/198)) ([ea49c84](https://github.com/qlover/fe-base/commit/ea49c847a05875d693876c0e4c35547c891117a2))
-  - clean branch command options ([#158](https://github.com/qlover/fe-base/issues/158)) ([387e3c7](https://github.com/qlover/fe-base/commit/387e3c7aba1303b4caaef0053683d9e67ba981fa))
-  - fe utils interface ([#172](https://github.com/qlover/fe-base/issues/172)) ([ad32dd8](https://github.com/qlover/fe-base/commit/ad32dd815d80cf839103ae08ee5174ad73522624))
-  - feature yarn to pnpm ([#297](https://github.com/qlover/fe-base/issues/297)) ([c3e13d5](https://github.com/qlover/fe-base/commit/c3e13d509a752267d9be29e7a5ed609d24c309ce))
-  - remove auto merge ([#121](https://github.com/qlover/fe-base/issues/121)) ([434b198](https://github.com/qlover/fe-base/commit/434b198e174963c2f683362c22cc5295173a7a63))
-  - remove ConfigSearch,FeScriptContext,ScriptLogger, Shell. use @qlover/script-context ([#223](https://github.com/qlover/fe-base/issues/223)) ([2e07e65](https://github.com/qlover/fe-base/commit/2e07e655ca32d56debe0bb5409958082e32cb1d4))
+  - @qlover/env-loader@0.0.7
+  - @qlover/fe-corekit@1.2.8
+  - @qlover/scripts-context@0.0.14
 
 ## [0.10.4](https://github.com/qlover/fe-base/compare/@qlover/fe-scripts-v0.10.3...@qlover/fe-scripts-v0.10.4) (2025-04-17)
 

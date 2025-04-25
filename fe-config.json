@@ -17,26 +17,26 @@
     "changelog": {
       "gitChangelogOptions": {
         "types": [
-          { "type": "feat", "section": "### ✨ Features", "hidden": false },
-          { "type": "fix", "section": "### 🐞 Bug Fixes", "hidden": false },
-          { "type": "chore", "section": "### 🔧 Chores", "hidden": true },
+          { "type": "feat", "section": "#### ✨ Features", "hidden": false },
+          { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },
+          { "type": "chore", "section": "#### 🔧 Chores", "hidden": true },
           {
             "type": "docs",
-            "section": "### 📝 Documentation",
+            "section": "#### 📝 Documentation",
             "hidden": false
           },
           {
             "type": "refactor",
-            "section": "### ♻️ Refactors",
+            "section": "#### ♻️ Refactors",
             "hidden": false
           },
-          { "type": "perf", "section": "### 🚀 Performance", "hidden": false },
-          { "type": "test", "section": "### 🚨 Tests", "hidden": true },
-          { "type": "style", "section": "### 🎨 Styles", "hidden": true },
-          { "type": "ci", "section": "### 🔄 CI", "hidden": true },
-          { "type": "build", "section": "### 🚧 Build", "hidden": false },
-          { "type": "revert", "section": "### ⏪ Reverts", "hidden": true },
-          { "type": "release", "section": "### 🔖 Releases", "hidden": true }
+          { "type": "perf", "section": "#### 🚀 Performance", "hidden": false },
+          { "type": "test", "section": "#### 🚨 Tests", "hidden": true },
+          { "type": "style", "section": "#### 🎨 Styles", "hidden": true },
+          { "type": "ci", "section": "#### 🔄 CI", "hidden": true },
+          { "type": "build", "section": "#### 🚧 Build", "hidden": false },
+          { "type": "revert", "section": "#### ⏪ Reverts", "hidden": true },
+          { "type": "release", "section": "#### 🔖 Releases", "hidden": true }
         ]
       }
     }
