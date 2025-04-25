@@ -33,7 +33,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18.19.0'
+          node-version: '18.20.0'
 
       - name: Install Pnpm
         run: |
@@ -83,7 +83,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18.19.0'
+          node-version: '18.20.0'
 
       - name: Install Pnpm
         run: |

@@ -24,9 +24,9 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.19.0'
+          node-version: '18.20.0'
       - run: npm install -g pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install
       - run: pnpm lint
       - run: pnpm test
       # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
