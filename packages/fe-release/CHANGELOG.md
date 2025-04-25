@@ -1,140 +1,51 @@
-## 1.0.9
-
 ## 2.0.10
 
 ### Patch Changes
 
-- ### ✨ Features
+#### ✨ Features
 
-  - implement GitChangelog for improved changelog generation (#351)
+- implement GitChangelog for improved changelog generation (#351)
 
-    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
-    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
-    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
-    - Enhanced default options for changelog types and formatting.
+  - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
+  - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
+  - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
+  - Enhanced default options for changelog types and formatting.
 
-  - add option to push changed labels to release PRs and update dependencies (#350)
+- add option to push changed labels to release PRs and update dependencies (#350)
 
-    - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
-    - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
-    - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
-    - Enhanced the GitHub Actions workflow to conditionally run checks based on the presence of the `CI-Release` label.
+  - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
+  - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
+  - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
+  - Enhanced the GitHub Actions workflow to conditionally run checks based on the presence of the `CI-Release` label.
 
-    ***
+  ***
 
-  ### 🐞 Bug Fixes
+#### 🐞 Bug Fixes
 
-  - add option to push changed labels to release PRs in workflow (#353)
-  - format array output in changelog generation to use toString method for improved readability (#350)
+- add option to push changed labels to release PRs in workflow (#353)
+- format array output in changelog generation to use toString method for improved readability (#350)
 
-- Updated dependencies
-- Updated dependencies
 - Updated dependencies
   - @qlover/env-loader@0.0.7
   - @qlover/fe-corekit@1.2.8
   - @qlover/scripts-context@0.0.14
 
-## 2.0.9
-
-### Patch Changes
-
-- ### ✨ Features
-
-  - implement GitChangelog for improved changelog generation (#351)
-
-    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
-    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
-    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
-    - Enhanced default options for changelog types and formatting.
-
-  - add option to push changed labels to release PRs and update dependencies (#350)
-
-    - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
-    - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
-    - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
-    - Enhanced the GitHub Actions workflow to conditionally run checks based on the presence of the `CI-Release` label.
-
-    ***
-
-  ### 🐞 Bug Fixes
-
-  - add option to push changed labels to release PRs in workflow (#353)
-  - format array output in changelog generation to use toString method for improved readability (#350)
-
-- Updated dependencies
-- Updated dependencies
-- Updated dependencies
-  - @qlover/env-loader@0.0.6
-  - @qlover/fe-corekit@1.2.7
-  - @qlover/scripts-context@0.0.13
-
-## 2.0.8
-
-### Patch Changes
-
-- ### ✨ Features
-
-  - implement GitChangelog for improved changelog generation (#351)
-
-    - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
-    - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
-    - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
-    - Enhanced default options for changelog types and formatting.
-
-  - add option to push changed labels to release PRs and update dependencies (#350)
-
-    - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
-    - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
-    - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
-    - Enhanced the GitHub Actions workflow to conditionally run checks based on the presence of the `CI-Release` label.
-
-    ***
-
-  ### 🐞 Bug Fixes
-
-  - format array output in changelog generation to use toString method for improved readability (#350)
-
-- Updated dependencies
-- Updated dependencies
-- Updated dependencies
-  - @qlover/env-loader@0.0.5
-  - @qlover/fe-corekit@1.2.6
-  - @qlover/scripts-context@0.0.12
-
-## 2.0.7
-
-### Patch Changes
-
--
-
-## 2.0.6
-
-### Patch Changes
-
--
-
 ## 2.0.5
 
 ### Patch Changes
 
-- ### Bug Fixes
+#### Bug Fixes
 
-  - **changelog:** improve tag handling and error logging in changelog generation ([#344](https://github.com/qlover/fe-base/issues/344)) ([32abcbd](https://github.com/qlover/fe-base/commit/32abcbdc6681ee6fad1c1ca2e60ae7ca08977d82))
-  - **release:** update batch branch name format and refactor commit handling ([#345](https://github.com/qlover/fe-base/issues/345)) ([c4bb9cc](https://github.com/qlover/fe-base/commit/c4bb9cca78341956029defdf7f2ac8edeffaa3d8))
+- **changelog:** improve tag handling and error logging in changelog generation ([#344](https://github.com/qlover/fe-base/issues/344)) ([32abcbd](https://github.com/qlover/fe-base/commit/32abcbdc6681ee6fad1c1ca2e60ae7ca08977d82))
+- **release:** update batch branch name format and refactor commit handling ([#345](https://github.com/qlover/fe-base/issues/345)) ([c4bb9cc](https://github.com/qlover/fe-base/commit/c4bb9cca78341956029defdf7f2ac8edeffaa3d8))
 
 ## 2.0.4
 
 ### Patch Changes
 
-- ### Bug Fixes
+#### Bug Fixes
 
-  - **release:** change skip-changeset arg ([#340](https://github.com/qlover/fe-base/issues/340)) ([fffc35a](https://github.com/qlover/fe-base/commit/fffc35a52e768cf2739564e748d8abadab5dc3db))
-
-## 2.0.2
-
-### Patch Changes
-
--
+- **release:** change skip-changeset arg ([#340](https://github.com/qlover/fe-base/issues/340)) ([fffc35a](https://github.com/qlover/fe-base/commit/fffc35a52e768cf2739564e748d8abadab5dc3db))
 
 ## 2.0.0
 
@@ -148,7 +59,7 @@
 
 - ## 1.0.9 (2025-04-23)
 
-  ### Bug Fixes
+  #### Bug Fixes
 
   - no workspace tagname ([#333](https://github.com/qlover/fe-base/issues/333)) ([595fefe](https://github.com/qlover/fe-base/commit/595fefe4e1bce4f97ade1899a5691af39c55e67d))
 
