@@ -65,7 +65,7 @@ export interface ChangelogProps extends GitChangelogOptions {
   gitChangelogOptions?: GitChangelogOptions;
 }
 
-const contentTmplate = "---\n'${name}': '${increment}'\n---\n${changelog}";
+const contentTmplate = "---\n'${name}': '${increment}'\n---\n\n${changelog}";
 
 /**
  * @class Changelog
@@ -226,8 +226,6 @@ export default class Changelog extends Plugin<ChangelogProps> {
         `git for-each-ref --sort=-creatordate --format "%(refname:short)|%(creatordate:iso8601)" "refs/tags/${tagMatch}"`,
         { dryRun: false }
       );
-
-      this.logger.debug('tagsOutput', tagsOutput);
 
       if (!tagsOutput) {
         return currentTagPattern;
