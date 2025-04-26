@@ -1,5 +1,20 @@
 # @qlover/scripts-context
 
+## 0.0.15
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- add dry run script for release PRs and update changelog template formatting (#358)
+
+#### ♻️ Refactors
+
+- enhance commit flattening logic and improve tag existence check; clean up Changelog plugin (#358)
+
+- update default log format and add logCommand option for enhanced flexibility in changelog generation (#358)
+- Updated dependencies
+
 ## 0.0.14
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-corekit",
   "description": "A corekit for frontwork",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "private": false,
   "type": "module",
   "files": [
