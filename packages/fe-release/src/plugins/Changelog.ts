@@ -143,7 +143,10 @@ export default class Changelog extends Plugin<ChangelogProps> {
           )
       });
 
-      await this.context.runChangesetsCli('version', ['--no-changelog']);
+      await this.context.runChangesetsCli('version', [
+        '--no-changelog',
+        '--update-dependencies'
+      ]);
     } else {
       this.logger.debug('Skip generate changeset files');
     }
