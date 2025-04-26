@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 0.1.21
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- add dry run script for release PRs and update changelog template formatting (#358)
+
+#### ♻️ Refactors
+
+- enhance commit flattening logic and improve tag existence check; clean up Changelog plugin (#358)
+
+- update default log format and add logCommand option for enhanced flexibility in changelog generation (#358)
+- Updated dependencies
+
 ## 0.1.20
 
 ### Patch Changes
@@ -15,7 +30,7 @@
 
 #### 🐞 Bug Fixes
 
-  - add option to push changed labels to release PRs in workflow (#353)
+- add option to push changed labels to release PRs in workflow (#353)
 
 - Updated dependencies
   - @qlover/fe-corekit@1.2.8
