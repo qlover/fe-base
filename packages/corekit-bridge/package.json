@@ -47,12 +47,12 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.9",
+    "@qlover/fe-corekit": "^1.2.8",
     "@qlover/slice-store-react": "^1.2.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.8",
+    "@qlover/env-loader": "^0.0.7",
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",

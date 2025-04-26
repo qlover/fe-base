@@ -62,9 +62,9 @@
   "dependencies": {
     "@commitlint/config-conventional": "^19.2.2",
     "@octokit/rest": "^21.0.2",
-    "@qlover/fe-corekit": "^1.2.9",
-    "@qlover/env-loader": "^0.0.8",
-    "@qlover/scripts-context": "^0.0.15",
+    "@qlover/fe-corekit": "^1.2.8",
+    "@qlover/env-loader": "^0.0.7",
+    "@qlover/scripts-context": "^0.0.14",
     "commitizen": "^4.3.1",
     "commander": "^11.0.0",
     "ignore": "^6.0.2",
