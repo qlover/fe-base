@@ -138,8 +138,8 @@ importers:
   packages/corekit-bridge:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
       '@qlover/slice-store-react':
         specifier: ^1.2.6
         version: 1.2.6
@@ -148,8 +148,8 @@ importers:
         version: 4.17.21
     devDependencies:
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.16
@@ -184,11 +184,11 @@ importers:
   packages/create-app:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
       '@qlover/scripts-context':
-        specifier: ^0.0.11
-        version: 0.0.11(typescript@5.8.3)
+        specifier: ^0.0.14
+        version: 0.0.14(typescript@5.8.3)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -206,8 +206,8 @@ importers:
         version: 8.2.0
     devDependencies:
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
 
   packages/env-loader:
     dependencies:
@@ -216,8 +216,8 @@ importers:
         version: 16.5.0
     devDependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
 
   packages/eslint-plugin-fe-dev: {}
 
@@ -265,8 +265,8 @@ importers:
         version: 2.1.1
     devDependencies:
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
       '@types/lodash':
         specifier: ^4.17.12
         version: 4.17.16
@@ -280,14 +280,14 @@ importers:
         specifier: ^21.0.2
         version: 21.1.1
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
       '@qlover/scripts-context':
-        specifier: ^0.0.11
-        version: 0.0.11(typescript@5.8.3)
+        specifier: ^0.0.14
+        version: 0.0.14(typescript@5.8.3)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -314,14 +314,14 @@ importers:
         specifier: ^21.0.2
         version: 21.1.1
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
       '@qlover/scripts-context':
-        specifier: ^0.0.11
-        version: 0.0.11(typescript@5.8.3)
+        specifier: ^0.0.14
+        version: 0.0.14(typescript@5.8.3)
       commander:
         specifier: ^11.0.0
         version: 11.1.0
@@ -378,8 +378,8 @@ importers:
   packages/scripts-context:
     dependencies:
       '@qlover/fe-corekit':
-        specifier: ^1.2.5
-        version: 1.2.5
+        specifier: ^1.2.8
+        version: 1.2.8
       chalk:
         specifier: ^5.3.0
         version: 5.4.1
@@ -394,8 +394,8 @@ importers:
         specifier: ^19.8.0
         version: 19.8.0
       '@qlover/env-loader':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.7
+        version: 0.0.7
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
@@ -1763,11 +1763,20 @@ packages:
   '@qlover/env-loader@0.0.4':
     resolution: {integrity: sha512-JMIvXf4BnD/cbPOcjj4WpNMpZGNrfrjNtH55c3PMfJgAu8bk11GZ3TWiXqPMWc5nrty0ERFJACQt1wodwI86cA==}
 
+  '@qlover/env-loader@0.0.7':
+    resolution: {integrity: sha512-Vld7NXmxd/WHk8iNyxTBtRPEqpx0FrdW89fqwaRWkmYjqB8B5rlpw2jRxmek0ZFjTBdFbEAUv2ZIrdGBGn2e0A==}
+
   '@qlover/fe-corekit@1.2.5':
     resolution: {integrity: sha512-e4gvVuD1lVUbkmzLq8rTqegMQglRbHZBpeqYRkXk4nMXNdwH1grATb8pd4/3Ta9cWZHtJCKUuEgYF04bGF5RZw==}
 
+  '@qlover/fe-corekit@1.2.8':
+    resolution: {integrity: sha512-Y9VYy70GaUYCQdpFjBskoEtNuky8EGkewIRA4mjuur5da8h5HNRV33GcMkn/pQ16strVJlswufiutajq2FsrHw==}
+
   '@qlover/scripts-context@0.0.11':
     resolution: {integrity: sha512-5/AphYzfjPI8NGpAyNqdatmOS7dDlfTi7Y9WLg0hp+TeNrRrf8cSrt7GB6Ek6UOaXL3va3LDM4IFtHsWd9/Riw==}
+
+  '@qlover/scripts-context@0.0.14':
+    resolution: {integrity: sha512-a7qgA1+FFlOwiL25NpmL4n0YLi7FSAhFNh6phOa7BKy155WDcouMiAmxUjdbeOVSl+h/q4FNheB6JUovFYZGwg==}
 
   '@qlover/slice-store-react@1.2.6':
     resolution: {integrity: sha512-m0lUc8p4y7JiYAA5pxpGsuHeJnwW8Q7V1xH4KJb0qDd/STbHn1N/1eyGB4wRBxzv/8PYfJ125fYm06OU1OymWA==}
@@ -6744,23 +6753,32 @@ snapshots:
     dependencies:
       dotenv: 16.5.0
 
+  '@qlover/env-loader@0.0.7':
+    dependencies:
+      dotenv: 16.5.0
+
   '@qlover/fe-corekit@1.2.5':
+    dependencies:
+      lodash: 4.17.21
+      merge: 2.1.1
+
+  '@qlover/fe-corekit@1.2.8':
     dependencies:
       lodash: 4.17.21
       merge: 2.1.1
 
   '@qlover/scripts-context@0.0.11(typescript@5.4.5)':
     dependencies:
-      '@qlover/fe-corekit': 1.2.5
+      '@qlover/fe-corekit': 1.2.8
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.4.5)
       lodash: 4.17.21
     transitivePeerDependencies:
       - typescript
 
-  '@qlover/scripts-context@0.0.11(typescript@5.8.3)':
+  '@qlover/scripts-context@0.0.14(typescript@5.8.3)':
     dependencies:
-      '@qlover/fe-corekit': 1.2.5
+      '@qlover/fe-corekit': 1.2.8
       chalk: 5.4.1
       cosmiconfig: 9.0.0(typescript@5.8.3)
       lodash: 4.17.21
