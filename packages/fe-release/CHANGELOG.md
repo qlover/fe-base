@@ -1,5 +1,26 @@
 # @qlover/fe-release
 
+## 2.0.12
+
+### Patch Changes
+
+#### ✨ Features
+
+- Enable bumping versions with workspace protocol only in changeset configuration (#360)
+
+#### 🐞 Bug Fixes
+
+- Enhance Changelog plugin to include '--update-dependencies' option in changesets CLI command for improved dependency management during versioning. (#360)
+
+- add dry run script for release PRs and update changelog template formatting (#358)
+
+#### ♻️ Refactors
+
+- enhance commit flattening logic and improve tag existence check; clean up Changelog plugin (#358)
+
+- update default log format and add logCommand option for enhanced flexibility in changelog generation (#358)
+- Updated dependencies
+
 ## 2.0.11
 
 ### Patch Changes
