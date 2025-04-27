@@ -60,8 +60,8 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.0.2",
-    "@qlover/env-loader": "^0.0.7",
-    "@qlover/fe-corekit": "^1.2.8",
+    "@qlover/env-loader": "^0.1.1",
+    "@qlover/fe-corekit": "^1.2.9",
     "@qlover/scripts-context": "^0.0.14",
     "lodash": "^4.17.21"
   }
