@@ -43,40 +43,47 @@ export interface FlatCommit extends CommitInfo {
 
 export interface GitChangelogOptions {
   /**
-   * 开始 tag
+   * start tag
    */
   from?: string;
   /**
-   * 结束 tag
+   * end tag
    */
   to?: string;
   /**
-   * 限定目录
+   * log directory
    */
   directory?: string;
   /**
-   * 自定义 log 格式
+   * log
    * @default '%H%n%s%n%b%n----------------------'
    */
   format?: string;
 
+  /**
+   *
+   */
   logCommand?: string;
 
   /**
-   * 是否不包含合并的 commit
+   * not include merge commit
    * @default true
    */
   noMerges?: boolean;
+
   /**
-   * 自定义 commit 类型
+   * custom commit type
    */
   types?: { type: string; section?: string; hidden?: boolean }[];
 
   /**
-   * 自定义 commit 格式
+   * custom commit format
    * @default '- ${message}${prRef}\n'
    */
   formatTemplate?: string;
+  /**
+   * custom formatter
+   */
   formatter?: GitChangelogFormatter;
 }
 
@@ -120,7 +127,7 @@ export class GitChangelogFormatter {
           })
         );
 
-        // 如果有 body，添加缩进的 body 内容
+        // if there is body, add the indented body content
         if (commit.body) {
           const bodyLines = commit.body.split('\n').map((line) => `  ${line}`);
           changelog.push(bodyLines.join('\n'));
@@ -267,7 +274,6 @@ export class GitChangelog {
     }
 
     if (fallback === 'root') {
-      // 获取仓库初始 commit
       return this.shell
         .exec(`git rev-list --max-parents=0 HEAD`, { dryRun: false })
         .then((out) => out.trim());
@@ -307,32 +313,26 @@ export class GitChangelog {
       };
 
       if (Array.isArray(prCommit.commits) && prCommit.commits.length > 0) {
-        // 保留原有结构，在此基础上扩展
         const commits = prCommit.commits.map((commit) => ({
-          ...commit, // 保留所有原有属性，包括 raw, type, scope, message, bodyLines, body 等
+          ...commit,
           prNumber: prCommit.prNumber,
-          hash: prCommit.hash, // 使用 PR commit 的 hash
-          parentHash: prCommit.hash, // 使用 PR commit 的 hash 作为 parentHash
-          parentCommit // 引用外部定义的 parentCommit 对象
+          hash: prCommit.hash,
+          parentHash: prCommit.hash,
+          parentCommit
         }));
 
         flatCommits.push(...commits);
       } else {
-        // 当 commits 为空时，将 PR commit 本身扁平化
         flatCommits.push({
-          // CommitInfo 部分，使用 PR commit 的 title 信息
-          raw: prCommit.raw.title, // 使用原始 PR 标题作为 raw
+          raw: prCommit.raw.title,
           type: prCommit.title.type,
           scope: prCommit.title.scope,
           message: prCommit.title.message,
-          // body 可以留空，因为没有单独的 commit body
-          body: undefined,
-
-          // FlatCommit 特有部分
+          body: prCommit.raw.body,
           prNumber: prCommit.prNumber,
           hash: prCommit.hash,
-          parentHash: prCommit.hash, // 指向自身 hash
-          parentCommit // 引用外部定义的 parentCommit 对象
+          parentHash: prCommit.hash,
+          parentCommit
         });
       }
     }
