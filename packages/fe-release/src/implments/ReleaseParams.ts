@@ -39,9 +39,16 @@ export type ReleaseParamsConfig = {
   /**
    * The branch name for batch release
    *
-   * @default `batch-${timestamp}-${releaseName}-${length}-packages`
+   * @default `batch-${releaseName}-${length}-packages-${timestamp}`
    */
   batchBranchName?: string;
+
+  /**
+   * The tag name for batch release
+   *
+   * @default `batch-${length}-packages-${timestamp}`
+   */
+  batchTagName?: string;
 
   /**
    * The PR title for batch release
@@ -64,7 +71,8 @@ const DEFAULT_RELEASE_CONFIG: ReleaseParamsConfig = {
   maxWorkspace: MAX_WORKSPACE,
   multiWorkspaceSeparator: MULTI_WORKSPACE_SEPARATOR,
   workspaceVersionSeparator: WORKSPACE_VERSION_SEPARATOR,
-  batchBranchName: 'batch-${timestamp}-${releaseName}-${length}-packages'
+  batchBranchName: 'batch-${releaseName}-${length}-packages-${timestamp}',
+  batchTagName: 'batch-${length}-packages-${timestamp}'
 };
 
 export class ReleaseParams {
@@ -148,7 +156,12 @@ export class ReleaseParams {
       return composeWorkspaces[0].version;
     }
 
-    return `batch-${composeWorkspaces.length}-${new Date().toISOString().split('T')[0]}`;
+    const { batchTagName } = this.config;
+
+    return this.shell.format(batchTagName, {
+      length: composeWorkspaces.length,
+      timestamp: Date.now()
+    });
   }
 
   getReleaseBranchParams(
@@ -202,13 +215,15 @@ export class ReleaseParams {
 
     const changelog =
       composeWorkspaces.length > 1
-        ? composeWorkspaces.map((workspace) => {
-            return this.shell.format(
-              BATCH_PR_BODY,
-              workspace as unknown as Record<string, unknown>
-            );
-          // format array use toString, [1,2] => 1,2
-          }).join('\n')
+        ? composeWorkspaces
+            .map((workspace) => {
+              return this.shell.format(
+                BATCH_PR_BODY,
+                workspace as unknown as Record<string, unknown>
+              );
+              // format array use toString, [1,2] => 1,2
+            })
+            .join('\n')
         : composeWorkspaces[0].changelog;
 
     const { workspaceVersionSeparator } = this.config;
