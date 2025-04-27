@@ -47,7 +47,7 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.8",
+    "@qlover/fe-corekit": "latest",
     "@qlover/slice-store-react": "^1.2.6",
     "lodash": "^4.17.21"
   },

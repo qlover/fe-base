@@ -51,7 +51,7 @@
     "@qlover/env-loader": "^0.0.8"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.9",
+    "@qlover/fe-corekit": "latest",
     "@qlover/scripts-context": "^0.0.14",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
