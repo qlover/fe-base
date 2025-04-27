@@ -60,3 +60,6 @@ pnpm [递归模式](https://pnpm.io/cli/recursive) 自动按依赖顺序执行 b
 不要手动直接上传 `workspace:*` 依赖的包到 npm，一定要用 pnpm/yarn/changesets 的官方发布命令。
 
 如果你用的是 npm publish（而不是 pnpm/yarn/changesets），它不会自动替换 `workspace:*`，这会导致你发布的包依赖不合法，下游无法安装。
+
+
+还有一种方法比较简单直接，但是可能存在版本引用的隐患, 就所有包依赖变成 `lasted`

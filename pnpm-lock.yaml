@@ -217,7 +217,7 @@ importers:
     devDependencies:
       '@qlover/fe-corekit':
         specifier: latest
-        version: 1.2.9
+        version: 1.2.10
 
   packages/eslint-plugin-fe-dev: {}
 
@@ -1760,8 +1760,8 @@ packages:
     resolution: {integrity: sha512-ROFF39F6ZrnzSUEmQQZUar0Jt4xVoP9WnDRdWwF4NNcXs3xBTLgBUDoOwW141y1jP+S8nahIbdxbFC7IShw9Iw==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@qlover/fe-corekit@1.2.9':
-    resolution: {integrity: sha512-MDaic2W8W6vBK0WpWaElwk6td06s0JYqPsAPDETRTdGe0p9c9vaDOBijl7fgOhJV3tR+8xA/kGTho1+YNhDI+w==}
+  '@qlover/fe-corekit@1.2.10':
+    resolution: {integrity: sha512-3SEyCo210dDEROBpZkDSK+XUtU4VoCVPEa66mppb8wmKx5DY+TlJ3iAKyi9rYXcgGZ0fjmHBykUG7pGQH+4/3Q==}
 
   '@qlover/slice-store-react@1.2.6':
     resolution: {integrity: sha512-m0lUc8p4y7JiYAA5pxpGsuHeJnwW8Q7V1xH4KJb0qDd/STbHn1N/1eyGB4wRBxzv/8PYfJ125fYm06OU1OymWA==}
@@ -6705,7 +6705,7 @@ snapshots:
 
   '@pkgr/core@0.2.4': {}
 
-  '@qlover/fe-corekit@1.2.9':
+  '@qlover/fe-corekit@1.2.10':
     dependencies:
       lodash: 4.17.21
       merge: 2.1.1

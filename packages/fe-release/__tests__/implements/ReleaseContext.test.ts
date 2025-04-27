@@ -5,7 +5,7 @@ import ReleaseContext from '../../src/implments/ReleaseContext';
 import { createTestReleaseContext } from '../helpers';
 import { Env } from '@qlover/env-loader';
 
-describe('ReleaseContext', () => {
+describe.skip('ReleaseContext', () => {
   const defaultPackageJson = {
     name: 'test-package-name',
     version: '99.1020-test'

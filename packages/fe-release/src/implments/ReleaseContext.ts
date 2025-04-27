@@ -28,7 +28,8 @@ export default class ReleaseContext<
     super(context);
 
     this._env = Env.searchEnv({
-      logger: this.logger,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger: this.logger as any,
       preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
     });
 

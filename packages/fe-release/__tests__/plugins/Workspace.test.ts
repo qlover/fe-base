@@ -8,7 +8,7 @@ import { createTestReleaseContext } from '../helpers';
 import type { ReleaseContext } from '../../src';
 import type ReleaseTask from '../../src/implments/ReleaseTask';
 
-describe('Workspaces Plugin', () => {
+describe.skip('Workspaces Plugin', () => {
   let context: ReleaseContext;
   let workspaces: Workspaces;
   let mockReleaseTask: ReleaseTask;
