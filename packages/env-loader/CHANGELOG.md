@@ -1,5 +1,20 @@
 # @qlover/env-loader
 
+## 0.1.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- Enable bumping versions with workspace protocol only in changeset configuration (#360)
+
+  ***
+
+#### 🐞 Bug Fixes
+
+- Enhance Changelog plugin to include '--update-dependencies' option in changesets CLI command for improved dependency management during versioning. (#360)
+- Updated dependencies
+
 ## 0.0.8
 
 ### Patch Changes
