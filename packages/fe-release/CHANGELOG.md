@@ -1,5 +1,27 @@
 # @qlover/fe-release
 
+## 2.0.13
+
+### Patch Changes
+
+#### ✨ Features
+
+- Update ReleaseParams to include batchTagName and modify batchBranchName format
+
+  - Added `batchTagName` for batch release tagging with a new default format.
+  - Updated `batchBranchName` format to improve clarity and consistency.
+  - Enhanced the logic for generating release tags in the ReleaseParams class.
+
+  ***
+
+#### ♻️ Refactors
+
+- Update GitChangelogOptions interface and improve comments
+
+  - Translated comments from Chinese to English for better clarity.
+  - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
+  - Cleaned up comments in the GitChangelog class for improved readability.
+
 ## 2.0.12
 
 ### Patch Changes

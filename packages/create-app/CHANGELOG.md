@@ -1,5 +1,9 @@
 # @qlover/create-app
 
+## 0.1.22
+
+### Patch Changes
+
 ## 0.1.21
 
 ### Patch Changes
