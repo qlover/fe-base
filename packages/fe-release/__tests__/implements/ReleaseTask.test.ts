@@ -1,4 +1,3 @@
-import '../MockReleaseContextDep';
 import ReleaseTask from '../../src/implments/ReleaseTask';
 import { AsyncExecutor, PromiseTask } from '@qlover/fe-corekit';
 import { Plugin, ReleaseContext } from '../../src';

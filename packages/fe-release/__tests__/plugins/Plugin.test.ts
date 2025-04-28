@@ -1,5 +1,3 @@
-import '../MockReleaseContextDep';
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Plugin from '../../src/plugins/Plugin';
 import { createTestReleaseContext } from '../helpers';
@@ -26,7 +24,7 @@ class TestPlugin extends Plugin<TestPluginProps> {
   }
 }
 
-describe.skip('Plugin Class', () => {
+describe('Plugin Class', () => {
   let context: ReleaseContext;
   let plugin: TestPlugin;
   let defaultProps: TestPluginProps;

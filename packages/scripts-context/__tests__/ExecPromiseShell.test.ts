@@ -1,14 +1,22 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { execPromise } from '../src/implement/execPromise';
 import { Shell } from '../src/Shell';
-import { Logger } from '@qlover/fe-corekit';
 
 describe('execPromise', () => {
   let shell: Shell;
+  let logger: {};
 
   beforeEach(() => {
+    logger = {
+      log: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+      info: vi.fn(),
+      exec: vi.fn()
+    };
     shell = new Shell({
-      logger: new Logger(),
+      logger: logger,
       execPromise: execPromise
     });
   });

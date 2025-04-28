@@ -1,10 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { AsyncExecutor, RetryPlugin } from '../../../executor';
 
+const default_retry_delay = 10;
+const delayMs = 8;
+
 describe('RetryPlugin', () => {
   it('should retry 2 times', async () => {
     const executor = new AsyncExecutor();
-    executor.use(new RetryPlugin({ maxRetries: 2 }));
+    executor.use(
+      new RetryPlugin({ maxRetries: 2, retryDelay: default_retry_delay })
+    );
 
     let calls = 0;
     const result = await executor.exec(async () => {
@@ -20,7 +25,9 @@ describe('RetryPlugin', () => {
 
   it('should fail after max retries exceeded', async () => {
     const executor = new AsyncExecutor();
-    executor.use(new RetryPlugin({ maxRetries: 2 }));
+    executor.use(
+      new RetryPlugin({ maxRetries: 2, retryDelay: default_retry_delay })
+    );
 
     let calls = 0;
     await expect(
@@ -35,7 +42,6 @@ describe('RetryPlugin', () => {
 
   it('should respect retry delay', async () => {
     const executor = new AsyncExecutor();
-    const delayMs = 50;
     executor.use(new RetryPlugin({ maxRetries: 1, retryDelay: delayMs }));
 
     let calls = 0;
@@ -75,7 +81,7 @@ describe('RetryPlugin', () => {
 
   it('Should retry the default number of times(3)', async () => {
     const executor = new AsyncExecutor();
-    executor.use(new RetryPlugin());
+    executor.use(new RetryPlugin({ retryDelay: default_retry_delay }));
 
     let calls = 0;
     await expect(

@@ -9,6 +9,9 @@ function sleep(mock: unknown, ms: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(() => resolve(mock), ms));
 }
 
+const request_timeout = 70;
+const sleep_time = 20;
+
 describe('FetchAbortPlugin', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
@@ -48,7 +51,7 @@ describe('FetchAbortPlugin', () => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('first response'));
-        }, 1000);
+        }, request_timeout);
 
         request.signal?.addEventListener('abort', (e) => {
           clearTimeout(timeoutId);
@@ -60,7 +63,7 @@ describe('FetchAbortPlugin', () => {
     const firstRequest = request.request(firstConfig);
 
     // wait for a while to ensure the request starts
-    await sleep(null, 500);
+    await sleep(null, sleep_time);
 
     abortPlugin.abort(firstConfig);
 
@@ -123,7 +126,7 @@ describe('FetchAbortPlugin', () => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('response'));
-        }, 1000);
+        }, request_timeout);
 
         request.signal?.addEventListener('abort', (e) => {
           clearTimeout(timeoutId);
@@ -139,7 +142,7 @@ describe('FetchAbortPlugin', () => {
     } as const;
 
     const firstRequest = request.request(config);
-    await sleep(null, 100);
+    await sleep(null, sleep_time);
 
     const secondRequest = request.request(config);
 
@@ -197,7 +200,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('response'));
-        }, 1000);
+        }, request_timeout);
 
         request.signal?.addEventListener('abort', (e) => {
           clearTimeout(timeoutId);
@@ -209,7 +212,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const requestPromise = request.request(config);
 
     // wait for a while to ensure the request starts
-    await sleep(null, 100);
+    await sleep(null, sleep_time);
 
     // Simulate abort
     abortPlugin.abort(config);
@@ -260,7 +263,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           resolve(new Response('response'));
-        }, 1000);
+        }, request_timeout);
 
         request.signal?.addEventListener('abort', (e: unknown) => {
           clearTimeout(timeoutId);
@@ -272,7 +275,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const requestPromise = request.request(config);
 
     // wait for a while to ensure the request starts
-    await sleep(null, 100);
+    await sleep(null, sleep_time);
 
     // Simulate abort
     abortPlugin.abort(config);

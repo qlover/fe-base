@@ -39,7 +39,7 @@ class TestPlugin extends Plugin {
   }
 }
 
-describe.skip('loader utils', () => {
+describe('loader utils', () => {
   let releaseContext: ReleaseContext;
 
   beforeEach(() => {
