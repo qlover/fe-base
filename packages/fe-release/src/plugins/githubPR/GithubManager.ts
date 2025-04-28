@@ -319,10 +319,7 @@ export default class GithubManager {
     };
   }
 
-  async createRelease(
-    workspace: WorkspaceValue
-  ): Promise<// import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['response']['data']
-  void> {
+  async createRelease(workspace: WorkspaceValue): Promise<void> {
     const meragedOptions = this.getOctokitReleaseOptions({
       tag_name: workspace.tagName,
       body: workspace.changelog
@@ -334,7 +331,7 @@ export default class GithubManager {
     );
 
     this.logger.exec(
-      `octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
+      `[DRY RUN] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
       {
         isDryRun: this.context.dryRun
       }
@@ -348,10 +345,17 @@ export default class GithubManager {
       return;
     }
 
-    const response = await this.octokit.repos.createRelease(meragedOptions);
+    try {
+      const response = await this.octokit.repos.createRelease(meragedOptions);
 
-    this.logger.verbose(
-      `octokit repos.createRelease: done (${response.headers.location})`
-    );
+      this.logger.verbose(
+        `[DONE] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name}) (${response.headers.location})`
+      );
+    } catch (error) {
+      this.logger.error(
+        `[FAILED] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
+        error
+      );
+    }
   }
 }
