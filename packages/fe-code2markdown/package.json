@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-code2markdown",
   "description": "A tool to convert code to markdown",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "type": "module",
   "files": [
