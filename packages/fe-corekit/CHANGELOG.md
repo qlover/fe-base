@@ -1,5 +1,44 @@
 # @qlover/corekit-bridge
 
+## 1.2.10
+
+### Patch Changes
+
+#### ✨ Features
+
+- Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
+
+  - Added `batchTagName` for batch release tagging with a new default format.
+  - Updated `batchBranchName` format to improve clarity and consistency.
+  - Enhanced the logic for generating release tags in the ReleaseParams class.
+
+- Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
+
+  - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
+  - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
+  - Updated vite.config.ts to include alias mappings for the mocked packages.
+  - Refactored tests to utilize the new mock implementations, enhancing test isolation and reliability.
+
+#### ♻️ Refactors
+
+- Simplify getDependencyReleaseLine function to return an empty string (#362)
+
+  - Removed unnecessary parameters and streamlined the function for better clarity and performance.
+
+- Update GitChangelogOptions interface and improve comments (#362)
+
+  - Translated comments from Chinese to English for better clarity.
+  - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
+  - Cleaned up comments in the GitChangelog class for improved readability.
+
+- Enhance viteMockPackage to support dynamic alias mapping (#362)
+
+  - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
+  - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
+  - Removed hardcoded alias mappings for a more scalable approach to package management.
+
+  ***
+
 ## 1.2.9
 
 ### Patch Changes
