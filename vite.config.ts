@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitest/config';
-import viteMockPackage from './make/vite-mock-package';
+import viteMockPackage, { parsePackagesMap } from './make/vite-mock-package';
 
 export default defineConfig({
   // plugins: [
+  // FIXME: not override alias?
   //   viteMockPackage({
   //     onlyPackages: ['scripts-context', 'env-loader', 'fe-corekit']
   //   })
@@ -17,10 +18,10 @@ export default defineConfig({
       // workspace:* case link to local package, has __tests__ folder
       'packages/**/node_modules/**'
     ],
-    alias:{
-      '@qlover/env-loader': 'D:\\qrj\\workspace\\fe-base\\packages\\env-loader\\__mocks__',
-      '@qlover/fe-corekit': 'D:\\qrj\\workspace\\fe-base\\packages\\fe-corekit\\__mocks__',
-      '@qlover/scripts-context': 'D:\\qrj\\workspace\\fe-base\\packages\\scripts-context\\__mocks__'
+    alias: {
+      ...parsePackagesMap({
+        onlyPackages: ['scripts-context', 'env-loader', 'fe-corekit']
+      })
     }
   }
 });

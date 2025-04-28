@@ -11,7 +11,7 @@ export type ViteMockPackageOptions = {
   mockDirname?: string;
 };
 
-export default (opts: ViteMockPackageOptions = {}): Plugin => {
+export function parsePackagesMap(opts: ViteMockPackageOptions = {}) {
   const {
     onlyPackages,
     root = process.cwd(),
@@ -31,19 +31,21 @@ export default (opts: ViteMockPackageOptions = {}): Plugin => {
     .map((path) => WorkspaceCreator.toWorkspace({ path }, root))
     .filter(Boolean);
 
+  return workspaces.reduce((acc, workspace) => {
+    acc[workspace.name] = join(workspace.root, mockDirname);
+    return acc;
+  }, {} as AliasOptions);
+}
+
+export default (opts: ViteMockPackageOptions = {}): Plugin => {
   return {
     name: 'vite-mock-package',
     config(userConfig) {
-      const packageMocks = workspaces.reduce((acc, workspace) => {
-        acc[workspace.name] = join(workspace.root, mockDirname);
-        return acc;
-      }, {} as AliasOptions);
-
       return {
         test: {
           alias: {
             ...userConfig.test?.alias,
-            ...packageMocks
+            ...parsePackagesMap(opts)
           }
         }
       };
