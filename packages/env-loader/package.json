@@ -1,7 +1,7 @@
 {
   "name": "@qlover/env-loader",
   "description": "A package for managing environment variables",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base",
