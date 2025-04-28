@@ -36,7 +36,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "vite build"
   },
   "devDependencies": {
     "@qlover/fe-corekit": "latest"
