@@ -5,94 +5,11 @@ import type {
   ReleaseContextOptions
 } from '../src/type';
 import type { Logger } from '@qlover/fe-corekit';
-import type {
-  FeConfig,
-  FeScriptContextOptions,
-  ScriptContextOptions,
-  Shell
-} from '@qlover/scripts-context';
+import type { FeScriptContextOptions, Shell } from '@qlover/scripts-context';
 import { ReleaseContext } from '../src';
 import merge from 'lodash/merge';
 import { defaultFeConfig } from '@qlover/scripts-context';
 import template from 'lodash/template';
-
-/**
- * Setup global mocks
- *
- * @description Set up the global mocks needed for testing, including Env and FeScriptContext
- * @example
- * ```ts
- * // Call this at the top of your test file
- * setupGlobalMocks();
- * ```
- */
-export function setupGlobalMocks() {
-  // Mock @qlover/env-loader
-  vi.mock('@qlover/env-loader', () => {
-    return {
-      Env: class {
-        static searchEnv = vi.fn().mockImplementation(() => {
-          return {
-            get: vi.fn().mockImplementation((key: string) => {
-              return process.env[key];
-            }),
-            set: vi.fn(),
-            remove: vi.fn(),
-            load: vi.fn(),
-            getDestroy: vi.fn()
-          };
-        });
-      }
-    };
-  });
-
-  // Mock @qlover/scripts-context
-  vi.mock('@qlover/scripts-context', async () => {
-    return {
-      FeScriptContext: class {
-        public readonly logger: Logger;
-        public readonly shell: Shell;
-        public readonly feConfig: FeConfig;
-        public readonly dryRun: boolean;
-        public readonly verbose: boolean;
-        public readonly options: ScriptContextOptions<ReleaseConfig>;
-        constructor(context: Required<FeScriptContextOptions<ReleaseConfig>>) {
-          const { logger, shell, feConfig, dryRun, verbose, options } = context;
-          // @ts-expect-error
-          this.logger = logger;
-          this.shell = shell;
-          this.feConfig = feConfig;
-          this.dryRun = !!dryRun;
-          this.verbose = !!verbose;
-          this.options = options;
-        }
-      },
-      defaultFeConfig: await import('@qlover/scripts-context').then(
-        (m) => m.defaultFeConfig
-      )
-    };
-  });
-}
-
-/**
- * Create a mock Env instance
- *
- * @description Create a mock Env object with common methods
- * @returns Mocked Env instance
- * @example
- * ```ts
- * const mockEnv = createMockEnv();
- * ```
- */
-export function createMockEnv() {
-  return {
-    get: vi.fn(),
-    set: vi.fn(),
-    remove: vi.fn(),
-    load: vi.fn(),
-    getDestroy: vi.fn()
-  };
-}
 
 /**
  * Create a testable ReleaseContext instance

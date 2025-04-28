@@ -12,12 +12,8 @@ const getReleaseLine = async (changeset, type, options) => {
   return returnVal;
 };
 
-const getDependencyReleaseLine = async (
-  changesets,
-  dependenciesUpdated,
-  options
-) => {
-  return '  - Updated dependencies';
+const getDependencyReleaseLine = async () => {
+  return '';
 };
 
 module.exports = {

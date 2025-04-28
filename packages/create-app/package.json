@@ -48,11 +48,11 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.7"
+    "@qlover/env-loader": "workspace:*"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "^1.2.8",
-    "@qlover/scripts-context": "^0.0.14",
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/scripts-context": "workspace:*",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
     "inquirer": "^12.3.2",

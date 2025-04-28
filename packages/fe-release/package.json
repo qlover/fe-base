@@ -60,9 +60,9 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.0.2",
-    "@qlover/env-loader": "^0.0.7",
-    "@qlover/fe-corekit": "^1.2.8",
-    "@qlover/scripts-context": "^0.0.14",
+    "@qlover/env-loader": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/scripts-context": "workspace:*",
     "lodash": "^4.17.21"
   }
 }

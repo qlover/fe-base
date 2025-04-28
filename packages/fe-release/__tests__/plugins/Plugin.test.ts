@@ -1,5 +1,3 @@
-import '../MockReleaseContextDep';
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Plugin from '../../src/plugins/Plugin';
 import { createTestReleaseContext } from '../helpers';

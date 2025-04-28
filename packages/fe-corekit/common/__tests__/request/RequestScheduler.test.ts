@@ -8,6 +8,8 @@ import {
 } from '../../../interface';
 import { RequestScheduler } from '../../request';
 
+const default_retry_delay = 8;
+const request_timeout = 10;
 class MockRequestAdapter
   implements RequestAdapterInterface<RequestAdapterConfig>
 {
@@ -25,7 +27,9 @@ class MockRequestAdapter
     config: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const sendConfig = { ...this.config, ...config };
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, request_timeout
+
+    ));
 
     if (sendConfig.url?.includes('/test/fail')) {
       throw new RequestError('Request failed');
@@ -103,7 +107,7 @@ describe('RequestScheduler', () => {
     scheduler.usePlugin(
       new RetryPlugin({
         maxRetries: 2,
-        retryDelay: 100,
+        retryDelay: default_retry_delay,
         shouldRetry: shouldRetry
       })
     );
@@ -124,7 +128,7 @@ describe('RequestScheduler', () => {
     scheduler.usePlugin(
       new RetryPlugin({
         maxRetries: 2,
-        retryDelay: 100,
+        retryDelay: default_retry_delay,
         shouldRetry: shouldRetry
       })
     );

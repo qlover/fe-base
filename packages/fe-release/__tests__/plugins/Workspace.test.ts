@@ -1,4 +1,4 @@
-import '../MockReleaseContextDep';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Workspaces, {
   type WorkspaceValue
@@ -16,6 +16,7 @@ describe('Workspaces Plugin', () => {
   beforeEach(() => {
     context = createTestReleaseContext({
       shared: {
+        // @ts-expect-error test case
         packagesDirectories: ['packages/package-a', 'packages/package-b']
       }
     });
@@ -98,7 +99,6 @@ describe('Workspaces Plugin', () => {
     });
 
     it('when shell.exec returns non-string, should return empty array', async () => {
-      // @ts-expect-error test non-string case
       vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(null);
 
       // @ts-expect-error call private method for testing
@@ -136,7 +136,7 @@ describe('Workspaces Plugin', () => {
       workspaces.setCurrentWorkspace(workspace);
 
       expect(workspaces.getConfig('workspace')).toEqual(workspace);
-      expect(context.shared.publishPath).toBe('path/to/workspace');
+      expect((context.shared as any).publishPath).toBe('path/to/workspace');
       expect(context.workspace!.packageJson).toEqual({
         name: 'test-workspace',
         version: '1.1.0'

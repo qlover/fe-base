@@ -58,7 +58,7 @@
     "merge": "^2.1.1"
   },
   "devDependencies": {
-    "@qlover/env-loader": "^0.0.7",
+    "@qlover/env-loader": "workspace:*",
     "@types/lodash": "^4.17.12",
     "axios": "^1.7.9"
   }
