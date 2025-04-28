@@ -27,7 +27,7 @@
     "create-app": "bin/create-app.js"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "vite build",
     "create:app:build": "npm run build && npm run create:app",
     "create:app": "node ./bin/create-app.js"
   },
