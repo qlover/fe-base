@@ -40,7 +40,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "vite build"
   },
   "devDependencies": {
     "@types/shelljs": "^0.8.15",
