@@ -1,6 +1,9 @@
-import { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
+import type {
+  ShellExecOptions,
+  ShellInterface
+} from './interface/ShellInterface';
 import lodashTemplate from 'lodash/template';
-import { ShellExecOptions, ShellInterface } from './interface/ShellInterface';
 
 export type ExecPromiseFunction = (
   command: string | string[],
@@ -13,7 +16,7 @@ export type ExecPromiseFunction = (
  */
 export interface ShellConfig extends ShellExecOptions {
   /** Logger instance */
-  logger: Logger;
+  logger: LoggerInterface;
 
   /**
    * Promise for the execer
@@ -40,7 +43,7 @@ export class Shell implements ShellInterface {
   /**
    * Gets the logger instance
    */
-  get logger(): Logger {
+  get logger(): LoggerInterface {
     return this.config.logger;
   }
 
@@ -131,7 +134,7 @@ export class Shell implements ShellInterface {
     const isCached = _isCache && this.cache.has(cacheKey);
 
     if (!silent) {
-      this.logger.exec(command, { isCached });
+      this.logger.debug(command);
     }
 
     if (isDryRun) {

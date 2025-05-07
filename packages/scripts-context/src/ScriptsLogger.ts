@@ -1,29 +1,45 @@
-import { Logger } from '@qlover/fe-corekit';
+import { type FormatterInterface, type LogEvent, Logger } from '@qlover/logger';
 import chalk from 'chalk';
 
-export class ScriptsLogger extends Logger {
-  /**
-   * @override
-   * @param {string} value
-   * @returns {string}
-   */
-  prefix(value: string): string {
-    switch (value) {
-      case 'INFO':
-        return chalk.blue(value);
-      case 'WARN':
-        return chalk.yellow(value);
-      case 'ERROR':
-        return chalk.red(value);
-      case 'DEBUG':
-        return chalk.gray(value);
-      default:
-        return value;
+export class ColorFormatter implements FormatterInterface {
+  constructor(
+    protected levelColors: Record<
+      string,
+      string | ((...args: unknown[]) => string)
+    > = {
+      fatal: chalk.bgRed.white.bold,
+      error: chalk.red.bold,
+      warn: chalk.yellow.bold,
+      info: chalk.blue,
+      debug: chalk.green,
+      trace: chalk.gray,
+      log: chalk.white
     }
-  }
+  ) {}
 
+  format(event: LogEvent): unknown[] {
+    const { level, args } = event;
+
+    // Apply the appropriate color function to the level
+    const colorFunction =
+      this.levelColors[level as keyof typeof this.levelColors] || chalk.white;
+
+    const coloredLevel =
+      typeof colorFunction === 'function'
+        ? colorFunction(level.toUpperCase())
+        : level.toUpperCase();
+
+    // Return the colored level followed by the original arguments
+    return [coloredLevel, ...args];
+  }
+}
+
+export class ScriptsLogger extends Logger {
   obtrusive(title: string): void {
     const header = chalk.bold(title);
-    super.obtrusive(header);
+
+    this.log();
+    this.log(header);
+    this.log();
   }
 }

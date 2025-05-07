@@ -1,20 +1,24 @@
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { Shell, ShellConfig } from '../src/Shell';
 import { ShellExecOptions } from '../src/interface/ShellInterface';
-import { Logger } from '@qlover/fe-corekit';
+import { LoggerInterface } from '@qlover/logger';
 
 describe('Shell', () => {
-  let logger: Logger;
+  let logger: LoggerInterface;
   let shellInstance: Shell;
   let execPromiseMock: Mock;
 
   beforeEach(() => {
     logger = {
-      exec: vi.fn(),
       error: vi.fn(),
       log: vi.fn(),
-      verbose: vi.fn()
-    } as unknown as Logger;
+      verbose: vi.fn(),
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      trace: vi.fn(),
+      fatal: vi.fn()
+    } as unknown as LoggerInterface;
 
     execPromiseMock = vi.fn();
 
