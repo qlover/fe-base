@@ -378,6 +378,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
 
+  packages/logger: {}
+
   packages/scripts-context:
     dependencies:
       '@qlover/fe-corekit':
