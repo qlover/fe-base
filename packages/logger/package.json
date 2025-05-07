@@ -18,6 +18,7 @@
     "dist",
     "package.json",
     "README.md",
+    "README_EN.md",
     "CHANGELOG.md"
   ],
   "scripts": {

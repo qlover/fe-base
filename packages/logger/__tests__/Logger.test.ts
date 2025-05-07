@@ -354,4 +354,158 @@ describe('Logger', () => {
       expect(mockHandler.events).toHaveLength(0);
     });
   });
+
+  describe('appender management', () => {
+    let logger: Logger;
+    let mockHandler1: MockHandler;
+    let mockHandler2: MockHandler;
+
+    beforeEach(() => {
+      mockHandler1 = new MockHandler();
+      mockHandler2 = new MockHandler();
+      logger = new Logger({ name: 'AppenderTestLogger' });
+    });
+
+    it('should add multiple appenders individually', () => {
+      logger.addAppender(mockHandler1);
+      logger.addAppender(mockHandler2);
+
+      logger.info('test message');
+
+      expect(mockHandler1.events).toHaveLength(1);
+      expect(mockHandler2.events).toHaveLength(1);
+    });
+  });
+
+  describe('formatter behavior', () => {
+    class TestFormatter implements FormatterInterface {
+      format(event: LogEvent): string[] {
+        return [
+          `[${event.loggerName}][${event.level}]`,
+          ...(event.args as string[])
+        ];
+      }
+    }
+
+    class ContextFormatter implements FormatterInterface {
+      format(event: LogEvent): string[] {
+        if (event.context) {
+          return [
+            `[${event.level}]`,
+            ...(event.args as string[]),
+            JSON.stringify(event.context)
+          ];
+        }
+        return [`[${event.level}]`, ...(event.args as string[])];
+      }
+    }
+
+    it('should properly use custom formatter', () => {
+      const testFormatter = new TestFormatter();
+      const consoleAppender = new ConsoleAppender(testFormatter);
+      const logger = new Logger({
+        name: 'FormatterTestLogger',
+        handlers: consoleAppender
+      });
+
+      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+      logger.info('test message');
+
+      expect(infoSpy).toHaveBeenCalledWith(
+        '[FormatterTestLogger][info]',
+        'test message'
+      );
+
+      infoSpy.mockRestore();
+    });
+
+    it('should format messages with context', () => {
+      const contextFormatter = new ContextFormatter();
+      const consoleAppender = new ConsoleAppender(contextFormatter);
+      const logger = new Logger({
+        name: 'ContextFormatterLogger',
+        handlers: consoleAppender
+      });
+
+      const context = { userId: '123', requestId: 'abc' };
+      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+      logger.info('user action', context);
+
+      expect(infoSpy).toHaveBeenCalledWith(
+        '[info]',
+        'user action',
+        JSON.stringify(context)
+      );
+
+      infoSpy.mockRestore();
+    });
+
+    it('should chain multiple formatters if supported', () => {
+      class ChainFormatter implements FormatterInterface {
+        constructor(private nextFormatter: FormatterInterface) {}
+
+        format(event: LogEvent): string[] {
+          const formatted = this.nextFormatter.format(event) as string[];
+          return [`CHAIN-${formatted[0]}`, ...formatted.slice(1)];
+        }
+      }
+
+      const baseFormatter = new TestFormatter();
+      const chainFormatter = new ChainFormatter(baseFormatter);
+      const consoleAppender = new ConsoleAppender(chainFormatter);
+
+      const logger = new Logger({
+        name: 'ChainLogger',
+        handlers: consoleAppender
+      });
+
+      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+      logger.info('chain message');
+
+      expect(infoSpy).toHaveBeenCalledWith(
+        'CHAIN-[ChainLogger][info]',
+        'chain message'
+      );
+
+      infoSpy.mockRestore();
+    });
+  });
+
+  describe('appender error handling', () => {
+    class ErrorAppender implements HandlerInterface {
+      formatter: FormatterInterface | null = null;
+
+      append(): void {
+        throw new Error('Appender error');
+      }
+
+      setFormatter(formatter: FormatterInterface): void {
+        this.formatter = formatter;
+      }
+    }
+
+    it('should handle errors in appenders gracefully', () => {
+      const errorAppender = new ErrorAppender();
+      const mockHandler = new MockHandler();
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const logger = new Logger({
+        name: 'ErrorLogger',
+        handlers: [errorAppender, mockHandler]
+      });
+
+      try {
+        logger.info('test message');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+      }
+
+      consoleSpy.mockRestore();
+    });
+  });
 });
