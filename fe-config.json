@@ -8,7 +8,8 @@
       "packages/create-app",
       "packages/scripts-context",
       "packages/env-loader",
-      "packages/fe-release"
+      "packages/fe-release",
+      "packages/logger"
     ],
     "githubPR": {
       "commitArgs": ["--no-verify"],
