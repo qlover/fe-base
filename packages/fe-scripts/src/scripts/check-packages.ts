@@ -83,7 +83,7 @@ async function addChangePackagePRLables(
     changePackagesLabel.replace('${name}', name)
   );
 
-  context.logger.verbose('changePackagesLabel', changePackagesLabel, labels);
+  context.logger.debug('changePackagesLabel', changePackagesLabel, labels);
 
   if (context.dryRun) {
     githubLog(labels, 'labels');
@@ -111,12 +111,12 @@ export async function checkPackages(
 ): Promise<void> {
   const context = new FeScriptContext(options);
 
-  context.logger.verbose('feconfig', context.feConfig);
+  context.logger.debug('feconfig', context.feConfig);
 
   const { baseRef } = context.options;
 
   if (!baseRef) {
-    context.logger.verbose('No baseRef provided');
+    context.logger.debug('No baseRef provided');
     return;
   }
 
@@ -125,7 +125,7 @@ export async function checkPackages(
   }
 
   if (!context.options.token) {
-    context.logger.verbose('No token provided');
+    context.logger.debug('No token provided');
     return;
   }
 
