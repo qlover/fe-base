@@ -382,9 +382,6 @@ importers:
 
   packages/scripts-context:
     dependencies:
-      '@qlover/fe-corekit':
-        specifier: workspace:*
-        version: link:../fe-corekit
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger

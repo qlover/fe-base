@@ -1,10 +1,10 @@
 import { ConfigSearch } from './ConfigSearch';
 import { ExecPromiseFunction, Shell } from './Shell';
 import merge from 'lodash/merge';
-import { defaultFeConfig, FeConfig } from './feConfig';
-import { ColorFormatter, ScriptsLogger } from './ScriptsLogger';
-import { execPromise } from './implement/execPromise';
-import { ConsoleAppender, type LoggerInterface } from '@qlover/logger';
+import { defaultFeConfig, FeConfig } from '../feConfig';
+import { ColorFormatter } from './ColorFormatter';
+import { execPromise } from './execPromise';
+import { ConsoleAppender, Logger, type LoggerInterface } from '@qlover/logger';
 
 /**
  * Create a new ConfigSearch instance with fe configuration
@@ -121,7 +121,7 @@ export class FeScriptContext<T = unknown> {
 
     this.logger =
       logger ||
-      new ScriptsLogger({
+      new Logger({
         level: verbose ? 'debug' : undefined,
         name: 'scripts',
         handlers: new ConsoleAppender(new ColorFormatter())

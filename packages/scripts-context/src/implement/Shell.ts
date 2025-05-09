@@ -2,7 +2,7 @@ import type { LoggerInterface } from '@qlover/logger';
 import type {
   ShellExecOptions,
   ShellInterface
-} from './interface/ShellInterface';
+} from '../interface/ShellInterface';
 import lodashTemplate from 'lodash/template';
 
 export type ExecPromiseFunction = (

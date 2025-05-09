@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { LoggerInterface } from '@qlover/logger';
 import { execPromise } from '../src/implement/execPromise';
-import { Shell } from '../src/Shell';
+import { Shell } from '../src/implement/Shell';
 
 describe('execPromise', () => {
   let shell: Shell;
-  let logger: {};
+  let logger: LoggerInterface;
 
   beforeEach(() => {
     logger = {
@@ -13,7 +13,9 @@ describe('execPromise', () => {
       warn: vi.fn(),
       debug: vi.fn(),
       info: vi.fn(),
-      exec: vi.fn()
+      trace: vi.fn(),
+      fatal: vi.fn(),
+      addAppender() {}
     };
     shell = new Shell({
       logger: logger,

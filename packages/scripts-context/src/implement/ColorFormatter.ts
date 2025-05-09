@@ -1,4 +1,4 @@
-import { type FormatterInterface, type LogEvent, Logger } from '@qlover/logger';
+import { type FormatterInterface, type LogEvent } from '@qlover/logger';
 import chalk from 'chalk';
 
 export class ColorFormatter implements FormatterInterface {
@@ -31,15 +31,5 @@ export class ColorFormatter implements FormatterInterface {
 
     // Return the colored level followed by the original arguments
     return [coloredLevel, ...args];
-  }
-}
-
-export class ScriptsLogger extends Logger {
-  obtrusive(title: string): void {
-    const header = chalk.bold(title);
-
-    this.log();
-    this.log(header);
-    this.log();
   }
 }

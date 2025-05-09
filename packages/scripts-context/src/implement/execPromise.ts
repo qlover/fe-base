@@ -1,5 +1,5 @@
 import { ShellExecOptions } from '../interface/ShellInterface';
-import { ExecPromiseFunction } from '../Shell';
+import { ExecPromiseFunction } from './Shell';
 import { exec } from 'child_process';
 
 export const execPromise: ExecPromiseFunction = (

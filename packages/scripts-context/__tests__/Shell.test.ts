@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import { Shell, ShellConfig } from '../src/Shell';
+import { Mock } from 'vitest';
+import { Shell, ShellConfig } from '../src/implement/Shell';
 import { ShellExecOptions } from '../src/interface/ShellInterface';
 import { LoggerInterface } from '@qlover/logger';
 
