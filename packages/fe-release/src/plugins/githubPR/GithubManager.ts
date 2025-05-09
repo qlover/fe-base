@@ -1,6 +1,6 @@
 import type { Shell } from '@qlover/scripts-context';
 import type ReleaseContext from '../../implments/ReleaseContext';
-import type { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
 import { Octokit } from '@octokit/rest';
 import {
@@ -87,8 +87,8 @@ export default class GithubManager {
     return this._octokit;
   }
 
-  get logger(): Logger {
-    return this.context.logger as unknown as Logger;
+  get logger(): LoggerInterface {
+    return this.context.logger;
   }
 
   get shell(): Shell {
@@ -330,7 +330,7 @@ export default class GithubManager {
       workspace as unknown as Record<string, string>
     );
 
-    this.logger.exec(
+    this.logger.log(
       `[DRY RUN] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name})`,
       {
         isDryRun: this.context.dryRun
@@ -348,7 +348,7 @@ export default class GithubManager {
     try {
       const response = await this.octokit.repos.createRelease(meragedOptions);
 
-      this.logger.verbose(
+      this.logger.debug(
         `[DONE] octokit repos.createRelease "${meragedOptions.name}" (${meragedOptions.tag_name}) (${response.headers.location})`
       );
     } catch (error) {

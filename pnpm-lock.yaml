@@ -288,6 +288,9 @@ importers:
       '@qlover/fe-corekit':
         specifier: workspace:*
         version: link:../fe-corekit
+      '@qlover/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@qlover/scripts-context':
         specifier: workspace:*
         version: link:../scripts-context
@@ -382,9 +385,9 @@ importers:
 
   packages/scripts-context:
     dependencies:
-      '@qlover/fe-corekit':
+      '@qlover/logger':
         specifier: workspace:*
-        version: link:../fe-corekit
+        version: link:../logger
       chalk:
         specifier: ^5.3.0
         version: 5.4.1

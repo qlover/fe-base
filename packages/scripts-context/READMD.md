@@ -14,8 +14,30 @@ pnpm add @qlover/scripts-context
 
 ## Usage
 
+### 基本使用
+
 ```typescript
-import { ConfigSearch } from './ConfigSearch';
+import { FeScriptContext } from '@qlover/scripts-context';
+
+// 创建脚本上下文
+const context = new FeScriptContext({
+  verbose: true,  // 启用详细日志
+  dryRun: false   // 实际执行命令
+});
+
+// 使用 logger
+context.logger.info('开始执行脚本');
+context.logger.error('发生错误');
+
+// 使用 shell 执行命令
+await context.shell.exec('npm run build');
+```
+
+### 配置搜索
+
+```typescript
+import { ConfigSearch } from '@qlover/scripts-context';
+
 const configSearch = new ConfigSearch({
   name: 'myapp',
   defaultConfig: { port: 3000 }

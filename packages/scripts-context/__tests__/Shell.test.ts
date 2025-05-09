@@ -1,20 +1,24 @@
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import { Shell, ShellConfig } from '../src/Shell';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Mock } from 'vitest';
+import { Shell, ShellConfig } from '../src/implement/Shell';
 import { ShellExecOptions } from '../src/interface/ShellInterface';
-import { Logger } from '@qlover/fe-corekit';
 
 describe('Shell', () => {
-  let logger: Logger;
+  let logger: any;
   let shellInstance: Shell;
   let execPromiseMock: Mock;
 
   beforeEach(() => {
     logger = {
-      exec: vi.fn(),
       error: vi.fn(),
       log: vi.fn(),
-      verbose: vi.fn()
-    } as unknown as Logger;
+      verbose: vi.fn(),
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      trace: vi.fn(),
+      fatal: vi.fn()
+    } as unknown as any;
 
     execPromiseMock = vi.fn();
 

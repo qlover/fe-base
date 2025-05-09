@@ -1,10 +1,10 @@
 import { ConfigSearch } from './ConfigSearch';
 import { ExecPromiseFunction, Shell } from './Shell';
 import merge from 'lodash/merge';
-import { defaultFeConfig, FeConfig } from './feConfig';
-import { Logger } from '@qlover/fe-corekit';
-import { ScriptsLogger } from './ScriptsLogger';
-import { execPromise } from './implement/execPromise';
+import { defaultFeConfig, FeConfig } from '../feConfig';
+import { ColorFormatter } from './ColorFormatter';
+import { execPromise } from './execPromise';
+import { ConsoleAppender, Logger, type LoggerInterface } from '@qlover/logger';
 
 /**
  * Create a new ConfigSearch instance with fe configuration
@@ -53,7 +53,7 @@ export type ScriptContextOptions<T> = T & {
  */
 export interface FeScriptContextOptions<T> {
   /** Custom logger instance */
-  logger?: Logger;
+  logger?: LoggerInterface;
   /** Shell instance for command execution */
   shell?: Shell;
   /** Custom fe configuration */
@@ -85,7 +85,7 @@ export interface FeScriptContextOptions<T> {
  */
 export class FeScriptContext<T = unknown> {
   /** Logger instance */
-  public readonly logger: Logger;
+  public readonly logger: LoggerInterface;
   /** Shell instance */
   public readonly shell: Shell;
   /** Fe configuration */
@@ -119,7 +119,14 @@ export class FeScriptContext<T = unknown> {
       scriptsOptions || {};
     const _options = options || ({} as ScriptContextOptions<T>);
 
-    this.logger = logger || new ScriptsLogger({ debug: verbose, dryRun });
+    this.logger =
+      logger ||
+      new Logger({
+        level: verbose ? 'debug' : undefined,
+        name: 'scripts',
+        handlers: new ConsoleAppender(new ColorFormatter())
+      });
+
     this.shell =
       shell ||
       new Shell({

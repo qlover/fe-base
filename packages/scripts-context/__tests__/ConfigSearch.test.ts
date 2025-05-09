@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ConfigSearch } from '../src/ConfigSearch';
+import { ConfigSearch } from '../src/implement/ConfigSearch';
 import { cosmiconfigSync } from 'cosmiconfig';
 import fs from 'fs';
 import path from 'path';

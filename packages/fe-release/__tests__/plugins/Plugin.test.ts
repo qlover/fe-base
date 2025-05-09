@@ -164,7 +164,7 @@ describe('Plugin Class', () => {
 
       expect(result).toBe(expectedResult);
       expect(task).toHaveBeenCalled();
-      expect(plugin.logger.obtrusive).toHaveBeenCalledWith('Test Step');
+      expect(plugin.logger.info).toHaveBeenCalledWith('Test Step');
       expect(plugin.logger.info).toHaveBeenCalledWith('Test Step - success');
     });
 
@@ -177,7 +177,7 @@ describe('Plugin Class', () => {
       );
 
       expect(task).toHaveBeenCalled();
-      expect(plugin.logger.obtrusive).toHaveBeenCalledWith('Failing Step');
+      expect(plugin.logger.info).toHaveBeenCalledWith('Failing Step');
       expect(plugin.logger.error).toHaveBeenCalledWith(taskError);
     });
   });

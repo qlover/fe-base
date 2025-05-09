@@ -160,7 +160,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   }
 
   override async onBefore(): Promise<void> {
-    this.logger.verbose('GithubPR onBefore');
+    this.logger.debug('GithubPR onBefore');
 
     const isGithub = await this.isGithubRepository();
     if (!isGithub) {
@@ -303,10 +303,10 @@ export default class GithubPR extends GitBase<GithubPRProps> {
 
     const { sourceBranch, currentBranch } = this.context.shared;
 
-    this.context.logger.verbose('PR TagName is:', tagName);
-    this.context.logger.verbose('PR CurrentBranch is:', currentBranch);
-    this.context.logger.verbose('PR SourceBranch is:', sourceBranch);
-    this.context.logger.verbose('PR ReleaseBranch is:', releaseBranch);
+    this.context.logger.debug('PR TagName is:', tagName);
+    this.context.logger.debug('PR CurrentBranch is:', currentBranch);
+    this.context.logger.debug('PR SourceBranch is:', sourceBranch);
+    this.context.logger.debug('PR ReleaseBranch is:', releaseBranch);
 
     try {
       await this.context.shell.exec(
@@ -359,7 +359,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
 
     labels = Array.from(new Set(labels));
-    this.logger.verbose('Release PR labels:', labels);
+    this.logger.debug('Release PR labels:', labels);
 
     const context = this.context.getTemplateContext();
     const prTitle = this.releaseParams.getPRTitle(releaseBranchParams, context);

@@ -188,7 +188,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     // FIXME: where to get the tagName?
     const tagName = await this.getTagName(workspace);
 
-    this.logger.verbose('tagName is:', tagName);
+    this.logger.debug('tagName is:', tagName);
 
     const changelog = await this.createChangelog({
       workspace,
@@ -276,7 +276,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
     const increment = this.getIncrement();
 
-    this.logger.verbose('increment is:', [increment]);
+    this.logger.debug('increment is:', [increment]);
 
     const fileContent = this.shell.format(contentTmplate, {
       ...workspace,

@@ -14,8 +14,30 @@ pnpm add @qlover/scripts-context
 
 ## Usage
 
+### Basic Usage
+
 ```typescript
-import { ConfigSearch } from './ConfigSearch';
+import { FeScriptContext } from '@qlover/scripts-context';
+
+// Create script context
+const context = new FeScriptContext({
+  verbose: true,  // Enable detailed logging
+  dryRun: false   // Actually execute commands
+});
+
+// Use logger
+context.logger.info('Starting script execution');
+context.logger.error('An error occurred');
+
+// Use shell to execute commands
+await context.shell.exec('npm run build');
+```
+
+### Configuration Search
+
+```typescript
+import { ConfigSearch } from '@qlover/scripts-context';
+
 const configSearch = new ConfigSearch({
   name: 'myapp',
   defaultConfig: { port: 3000 }

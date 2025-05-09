@@ -1,5 +1,5 @@
 import type { Shell } from '@qlover/scripts-context';
-import { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import { SharedReleaseOptions } from '../interface/ShreadReleaseOptions';
 import {
   BATCH_PR_BODY,
@@ -79,7 +79,7 @@ export class ReleaseParams {
   private config: ReleaseParamsConfig;
   constructor(
     private shell: Shell,
-    private logger: Logger,
+    private logger: LoggerInterface,
     config: Partial<ReleaseParamsConfig> = {}
   ) {
     this.config = {
@@ -99,7 +99,7 @@ export class ReleaseParams {
       throw new Error('Branch name template is not a string');
     }
 
-    this.logger.verbose('Release Branch template is:', branchNameTpl);
+    this.logger.debug('Release Branch template is:', branchNameTpl);
 
     return this.shell.format(branchNameTpl, {
       pkgName: releaseName,
@@ -122,7 +122,7 @@ export class ReleaseParams {
       throw new Error('Branch name template is not a string');
     }
 
-    this.logger.verbose('Release Batch Branch template is:', branchNameTpl);
+    this.logger.debug('Release Batch Branch template is:', branchNameTpl);
 
     return this.shell.format(branchNameTpl, {
       pkgName: releaseName,

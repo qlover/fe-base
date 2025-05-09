@@ -1,4 +1,5 @@
-import type { ExecutorPlugin, Logger } from '@qlover/fe-corekit';
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import type { DeepPartial, ExecutorReleaseContext, StepOption } from '../type';
 import type { Shell } from '@qlover/scripts-context';
 import type ReleaseContext from '../implments/ReleaseContext';
@@ -32,8 +33,8 @@ export default abstract class Plugin<Props = unknown>
       : ({} as Props);
   }
 
-  get logger(): Logger {
-    return this.context.logger as unknown as Logger;
+  get logger(): LoggerInterface {
+    return this.context.logger as unknown as LoggerInterface;
   }
 
   get shell(): Shell {
@@ -86,7 +87,9 @@ export default abstract class Plugin<Props = unknown>
    * @returns the result of the task
    */
   async step<T>({ label, task }: StepOption<T>): Promise<T> {
-    this.logger.obtrusive(label);
+    this.logger.log();
+    this.logger.info(label);
+    this.logger.log();
 
     try {
       const res = await task();
