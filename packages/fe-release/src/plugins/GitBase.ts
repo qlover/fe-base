@@ -90,7 +90,7 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
       );
     }
 
-    this.context.logger.verbose('repoUrl: ', repoUrl);
+    this.context.logger.debug('repoUrl: ', repoUrl);
 
     // Parse GitHub URL to get owner and repo name
     const githubUrlPattern = /github\.com[:/]([^/]+)\/([^/.]+)(?:\.git)?$/;

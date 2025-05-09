@@ -4,7 +4,7 @@ import type {
   ReleaseConfig,
   ReleaseContextOptions
 } from '../src/type';
-import type { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import type { FeScriptContextOptions, Shell } from '@qlover/scripts-context';
 import { ReleaseContext } from '../src';
 import merge from 'lodash/merge';
@@ -54,7 +54,7 @@ export function createTestReleaseContext(
  *
  * @returns Mocked Logger instance
  */
-export function createTestLogger(): Logger {
+export function createTestLogger(): LoggerInterface {
   return {
     info: vi.fn(),
     debug: vi.fn(),
@@ -64,7 +64,7 @@ export function createTestLogger(): Logger {
     exec: vi.fn(),
     obtrusive: vi.fn(),
     verbose: vi.fn()
-  } as unknown as Logger;
+  } as unknown as LoggerInterface;
 }
 
 /**
