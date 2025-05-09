@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Mock } from 'vitest';
 import { Shell, ShellConfig } from '../src/implement/Shell';
 import { ShellExecOptions } from '../src/interface/ShellInterface';
-import { LoggerInterface } from '@qlover/logger';
 
 describe('Shell', () => {
-  let logger: LoggerInterface;
+  let logger: any;
   let shellInstance: Shell;
   let execPromiseMock: Mock;
 
@@ -18,7 +18,7 @@ describe('Shell', () => {
       warn: vi.fn(),
       trace: vi.fn(),
       fatal: vi.fn()
-    } as unknown as LoggerInterface;
+    } as unknown as any;
 
     execPromiseMock = vi.fn();
 

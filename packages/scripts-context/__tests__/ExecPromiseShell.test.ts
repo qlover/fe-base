@@ -1,10 +1,10 @@
-import { LoggerInterface } from '@qlover/logger';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { execPromise } from '../src/implement/execPromise';
 import { Shell } from '../src/implement/Shell';
 
 describe('execPromise', () => {
   let shell: Shell;
-  let logger: LoggerInterface;
+  let logger: any;
 
   beforeEach(() => {
     logger = {
