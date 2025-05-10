@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { cleanBranch } from '../dist/es/scripts/clean-branch.js';
+import { cleanBranch, type CleanBranchOptions } from '../scripts/clean-branch';
+import { Command } from 'commander';
 
 // parse command line arguments
-async function programArgs() {
-  const commander = await import('commander');
-  const program = new commander.Command();
+function programArgs() {
+  const program = new Command();
   program
     .option(
       '-d, --dry-run',
@@ -23,8 +23,8 @@ async function programArgs() {
 }
 
 async function main() {
-  const { dryRun, verbose, ...options } = await programArgs();
-  cleanBranch({ options, dryRun, verbose });
+  const { dryRun, verbose, ...options } = programArgs();
+  cleanBranch({ options: options as CleanBranchOptions, dryRun, verbose });
 }
 
 main();

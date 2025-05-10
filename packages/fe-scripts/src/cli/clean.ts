@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { clean } from '../dist/es/scripts/clean.js';
+import { clean, type CleanOptions } from '../scripts/clean';
+import { Command, type OptionValues } from 'commander';
 
 // parse command line arguments
-async function programArgs() {
+function programArgs() {
   try {
-    const commander = await import('commander');
-    const program = new commander.Command();
+    const program = new Command();
     program
       .option('-r, --recursion', 'recursion delete')
       .option('--dry-run', 'preview files to be deleted (will not delete)')
@@ -31,7 +31,7 @@ async function programArgs() {
       recursion: false,
       gitignore: false,
       dryrun: false,
-      files: []
+      files: [] as string[]
     };
 
     for (let i = 0; i < args.length; i++) {
@@ -66,8 +66,8 @@ async function programArgs() {
 }
 
 async function main() {
-  const { dryRun, verbose, ...options } = await programArgs();
-  await clean({ options, dryRun, verbose });
+  const { dryRun, verbose, ...options } = programArgs() as OptionValues;
+  await clean({ options: options as CleanOptions, dryRun, verbose });
 }
 
 main();

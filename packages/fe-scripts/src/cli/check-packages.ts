@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
-import { checkPackages } from '../dist/es/scripts/check-packages.js';
+import {
+  checkPackages,
+  type CheckPackagesOptions
+} from '../scripts/check-packages';
+import { Command } from 'commander';
 
 // parse command line arguments
-async function programArgs() {
-  const commander = await import('commander');
-  const program = new commander.Command();
+function programArgs() {
+  const program = new Command();
   program
     .option(
       '-d, --dry-run',
@@ -25,8 +28,8 @@ async function programArgs() {
 }
 
 async function main() {
-  const { dryRun, verbose, ...options } = await programArgs();
-  checkPackages({ options, dryRun, verbose });
+  const { dryRun, verbose, ...options } = programArgs();
+  checkPackages({ options: options as CheckPackagesOptions, dryRun, verbose });
 }
 
 main();
