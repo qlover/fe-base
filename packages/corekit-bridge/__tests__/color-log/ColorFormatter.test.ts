@@ -4,7 +4,8 @@ import {
   HandlerInterface,
   LogEvent,
   FormatterInterface,
-  ConsoleAppender
+  ConsoleAppender,
+  LogContext
 } from '@qlover/logger';
 
 describe('ColorFormatter', () => {
@@ -52,14 +53,12 @@ describe('ColorFormatter', () => {
   it('should handle color segments correctly', () => {
     const event = new LogEvent(
       'info',
-      [
-        'Hello World',
-        [
-          { text: 'Hello', style: { color: 'red', fontWeight: 'bold' } },
-          { text: ' World', style: { color: 'blue', background: '#f0f0f0' } }
-        ]
-      ],
-      'test'
+      ['Hello World'],
+      'test',
+      new LogContext([
+        { text: 'Hello', style: { color: 'red', fontWeight: 'bold' } },
+        { text: ' World', style: { color: 'blue', background: '#f0f0f0' } }
+      ])
     );
 
     const result = formatter.format(event);
