@@ -23,11 +23,11 @@
     "package.json"
   ],
   "bin": {
-    "fe-clean": "./dist/cli/clean.mjs",
-    "fe-clean-branch": "./dist/cli/clean-branch.mjs",
-    "fe-commit": "./dist/cli/commit.mjs",
-    "fe-setup-husky": "./dist/cli/setup-husky.mjs",
-    "fe-check-packages": "./dist/cli/check-packages.mjs"
+    "fe-clean": "./dist/cli/clean.js",
+    "fe-clean-branch": "./dist/cli/clean-branch.js",
+    "fe-commit": "./dist/cli/commit.js",
+    "fe-setup-husky": "./dist/cli/setup-husky.js",
+    "fe-check-packages": "./dist/cli/check-packages.js"
   },
   "scripts": {
     "build": "tsup"

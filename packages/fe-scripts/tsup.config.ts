@@ -19,18 +19,13 @@ export default defineConfig([
       commit: 'src/cli/commit.ts',
       'setup-husky': 'src/cli/setup-husky.ts'
     },
-    format: ['cjs', 'esm'],
+    format: ['esm'],
     dts: false,
     clean: true,
     external,
     noExternal: [],
     minify: 'terser',
-    outDir: 'dist/cli',
-    outExtension({ format }) {
-      return {
-        js: format === 'cjs' ? '.cjs' : '.mjs'
-      };
-    }
+    outDir: 'dist/cli'
   },
   {
     entry: {
