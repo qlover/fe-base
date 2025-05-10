@@ -3,39 +3,34 @@
   "version": "0.11.3",
   "type": "module",
   "private": false,
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/scripts/index.cjs",
+  "module": "./dist/scripts/index.js",
+  "types": "./dist/scripts/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
+      "types": "./dist/scripts/index.d.ts",
+      "import": "./dist/scripts/index.js",
+      "require": "./dist/scripts/index.cjs"
     },
-    "./cjs/*": "./dist/cjs/*",
-    "./es/*": "./dist/es/*",
-    "./package.json": "./package.json"
+    "./scripts/*": {
+      "types": "./dist/scripts/*.d.ts",
+      "import": "./dist/scripts/*.js",
+      "require": "./dist/scripts/*.cjs"
+    }
   },
   "files": [
     "dist",
-    "bin",
-    "commitlint.config.js",
     "package.json"
   ],
   "bin": {
-    "fe-clean": "bin/clean.js",
-    "fe-clean-branch": "bin/clean-branch.js",
-    "fe-commit": "bin/commit.js",
-    "fe-setup-husky": "bin/setup-husky.js",
-    "fe-check-packages": "bin/check-packages.js"
+    "fe-clean": "./dist/cli/clean.js",
+    "fe-clean-branch": "./dist/cli/clean-branch.js",
+    "fe-commit": "./dist/cli/commit.js",
+    "fe-setup-husky": "./dist/cli/setup-husky.js",
+    "fe-check-packages": "./dist/cli/check-packages.js"
   },
   "scripts": {
-    "build": "rollup -c",
-    "build:ts": "rollup -c rollup.config.ts --configPlugin typescript",
-    "clean": "node ./bin/clean.js",
-    "clean-branch": "node ./bin/clean-branch.js",
-    "commit": "node ./bin/commit.js",
-    "setup-husky": "node ./bin/setup-husky.js"
+    "build": "tsup"
   },
   "repository": {
     "type": "git",
