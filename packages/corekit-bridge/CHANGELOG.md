@@ -1,5 +1,44 @@
 # @qlover/corekit-bridge
 
+## 0.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- integrate @qlover/logger into corekit-bridge (#373)
+
+  - Added @qlover/logger as a dependency across multiple files, replacing the previous logger from @qlover/fe-corekit.
+  - Updated type references to LoggerInterface in Bootstrap, ApiCatchPlugin, and ApiMockPlugin.
+  - Introduced ColorFormatter for enhanced logging capabilities, with tests added for ColorFormatter and ColorLogger.
+  - Updated tsconfig.json to include test files for better coverage.
+  - Adjusted pnpm-lock.yaml to reflect the new logger integration.
+
+#### 🐞 Bug Fixes
+
+- update ColorFormatter tests to utilize LogContext (#373)
+
+  - Modified ColorFormatter tests to use the new LogContext class for improved context handling.
+  - Adjusted the test setup to ensure proper formatting of color segments with the updated LogContext structure.
+  - Exported LogContext from the logger package for broader accessibility.
+
+#### ♻️ Refactors
+
+- enhance context handling and update ColorFormatter tests (#373)
+
+  - Refactored logger context handling to utilize a new LogContext class for better type safety and clarity.
+  - Updated ColorFormatter tests to use logger.context for passing context objects.
+  - Adjusted ColorFormatter methods to improve handling of color segments and context.
+  - Improved documentation for context usage in logger methods.
+
+- replace ConsoleAppender with ConsoleHandler (#373)
+
+  - Updated tests and implementation to utilize ConsoleHandler instead of ConsoleAppender for improved logging functionality.
+  - Introduced ConsoleHandler class to manage log events and formatting.
+  - Adjusted Logger integration to reflect the new handler structure across various test files and implementations.
+
+  ***
+
 ## 0.1.0
 
 ### Minor Changes
