@@ -1,7 +1,7 @@
 {
   "name": "@qlover/scripts-context",
   "description": "A scripts context for frontwork",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/scripts-context#readme",
