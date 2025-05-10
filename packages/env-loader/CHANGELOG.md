@@ -1,5 +1,19 @@
 # @qlover/env-loader
 
+## 0.3.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- replace @qlover/fe-corekit with @qlover/logger (#375)
+
+  - Updated dependencies in package.json and pnpm-lock.yaml to use @qlover/logger instead of @qlover/fe-corekit.
+  - Changed type references from Logger to LoggerInterface in Env.ts and Env.test.ts for improved type safety.
+  - Adjusted logger handling in the Env class to align with the new logger interface.
+
+  ## Co-authored-by: QRenjie <renjie.qin@brain.im>
+
 ## 0.2.0
 
 ### Minor Changes

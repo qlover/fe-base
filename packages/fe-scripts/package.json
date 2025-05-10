@@ -1,6 +1,6 @@
 {
   "name": "@qlover/fe-scripts",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "type": "module",
   "private": false,
   "main": "./dist/es/index.js",
