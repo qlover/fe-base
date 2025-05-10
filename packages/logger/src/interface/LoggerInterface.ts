@@ -1,4 +1,5 @@
 import { HandlerInterface } from './HandlerInterface';
+import { LogContext } from './LogContext';
 
 
 export interface LoggerInterface {
@@ -11,4 +12,12 @@ export interface LoggerInterface {
   trace(...args: unknown[]): void;
 
   addAppender(appender: HandlerInterface): void;
+  /**
+   * Creates a new LogContext instance
+   *
+   * @since 0.1.0
+   * @param value - Optional value to be stored in the context
+   * @returns A new LogContext instance with the provided value
+   */
+  context<Value>(value?: Value): LogContext<Value>;
 }

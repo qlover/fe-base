@@ -172,7 +172,7 @@ describe('Logger', () => {
     });
 
     it('should recognize an object as context when it is the last argument', () => {
-      const context = { user: 'testUser', requestId: '123' };
+      const context = logger.context({ user: 'testUser', requestId: '123' });
       logger.info('message with context', context);
 
       expect(mockHandler.events).toHaveLength(1);
@@ -241,12 +241,12 @@ describe('Logger', () => {
       const printSpy = vi.spyOn(Logger.prototype, 'print');
 
       // Test with levels that should be logged
-      logger.info('critical message', { level: 'critical' });
-      logger.info('important message', { level: 'important' });
+      logger.info('critical message', logger.context({ level: 'critical' }));
+      logger.info('important message', logger.context({ level: 'important' }));
 
       // Test with levels that should be filtered out
-      logger.info('standard message', { level: 'standard' });
-      logger.info('verbose message', { level: 'verbose' });
+      logger.info('standard message', logger.context({ level: 'standard' }));
+      logger.info('verbose message', logger.context({ level: 'verbose' }));
 
       // Verify the print method was called with the right levels
       expect(printSpy).toHaveBeenCalledTimes(4);
@@ -428,7 +428,7 @@ describe('Logger', () => {
         handlers: consoleAppender
       });
 
-      const context = { userId: '123', requestId: 'abc' };
+      const context = logger.context({ userId: '123', requestId: 'abc' });
       const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       logger.info('user action', context);

@@ -1,6 +1,7 @@
 import { LoggerInterface } from './interface/LoggerInterface';
 import { HandlerInterface } from './interface/HandlerInterface';
 import { LogEvent } from './interface/LogEvent';
+import { LogContext } from './interface/LogContext';
 
 /**
  * Default log levels with their priorities (lower number = higher priority)
@@ -157,6 +158,18 @@ export class Logger implements LoggerInterface {
   }
 
   /**
+   * Creates a new LogContext instance
+   *
+   * @override
+   * @since 0.1.0
+   * @param value - Optional value to be stored in the context
+   * @returns A new LogContext instance with the provided value
+   */
+  context<Value>(value?: Value): LogContext<Value> {
+    return new LogContext(value);
+  }
+
+  /**
    * Internal method to process and distribute log events
    *
    * This method:
@@ -168,6 +181,18 @@ export class Logger implements LoggerInterface {
    * @protected
    * @param level - Log level name (e.g., "info", "error")
    * @param args - Log message arguments (message content and optional context)
+   *
+   * @example context
+   * ```ts
+   * logger.info('message with context', logger.context({ user: 'testUser', requestId: '123' }));
+   * logger.info('message with context', logger.context([1,2,3]));
+   * logger.info('message with context', logger.context(1));
+   * logger.info('message with context', logger.context('1'));
+   * logger.info('message with context', logger.context(true));
+   * logger.info('message with context', logger.context());
+   * ```
+   *
+   * **But context only support last argument and must be a non-null object**
    *
    * @note Context object must be the last argument and must be a non-null object
    * @note Context can override the log level via a 'level' property
@@ -182,13 +207,13 @@ export class Logger implements LoggerInterface {
     }
 
     // Extract context object from arguments if present
-    let ctx = args.slice(-1)[0];
-    const hasCtx = args.length > 1 && typeof ctx === 'object' && ctx !== null;
+    let ctx = args.slice(-1)[0] as LogContext<unknown> | undefined;
+    const hasCtx = args.length > 1 && ctx instanceof LogContext;
     ctx = hasCtx ? ctx : undefined;
     args = hasCtx ? args.slice(0, -1) : args;
 
-    // Allow level override from context
-    level = (ctx as { level?: string })?.level ?? level;
+    // Allow level override from context, if a plain object is provided
+    level = (ctx?.value as { level?: string })?.level ?? level;
 
     // Apply level filtering based on configured threshold
     if (indexLevel && levels) {

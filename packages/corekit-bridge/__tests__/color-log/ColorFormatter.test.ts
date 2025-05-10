@@ -167,10 +167,13 @@ describe('Logger with ColorFormatter', () => {
   });
 
   it('should handle color segments correctly', () => {
-    logger.info('Hello World', [
-      { text: 'Hello', style: { color: 'red', fontWeight: 'bold' } },
-      { text: ' World', style: { color: 'blue', background: '#f0f0f0' } }
-    ]);
+    logger.info(
+      'Hello World',
+      logger.context([
+        { text: 'Hello', style: { color: 'red', fontWeight: 'bold' } },
+        { text: ' World', style: { color: 'blue', background: '#f0f0f0' } }
+      ])
+    );
 
     expect(consoleSpy).toHaveBeenCalledWith(
       '%cHello%c%c World%c',
@@ -203,9 +206,9 @@ describe('Logger with ColorFormatter', () => {
     });
   });
 
-  it('should handle logs with context correctly', () => {
+  it('should handle logs with not context correctly', () => {
     const context = { userId: 123, role: 'admin' };
-    logger.info('User logged in', context, {});
+    logger.info('User logged in', context);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       '%cINFO%c User logged in',
@@ -217,7 +220,7 @@ describe('Logger with ColorFormatter', () => {
 
   it('should handle error objects correctly', () => {
     const error = new Error('Something went wrong');
-    logger.error('Operation failed', error, {});
+    logger.error('Operation failed', error);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       '%cERROR%c Operation failed',
