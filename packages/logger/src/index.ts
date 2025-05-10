@@ -1,5 +1,5 @@
 export * from './Logger';
-export * from './ConsoleAppender';
+export * from './ConsoleHandler';
 export * from './TimestampFormatter';
 export * from './interface/LoggerInterface';
 export * from './interface/HandlerInterface';

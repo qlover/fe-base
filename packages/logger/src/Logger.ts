@@ -85,7 +85,7 @@ export type LoggerOptions = {
    *
    * Handlers determine how and where logs are output (console, file, network, etc.)
    *
-   * @example [new ConsoleAppender(), new FileAppender('./logs/app.log')]
+   * @example [new ConsoleHandler(), new FileAppender('./logs/app.log')]
    */
   handlers?: HandlerInterface | HandlerInterface[];
 };
@@ -103,7 +103,7 @@ export type LoggerOptions = {
  * @example
  * // Basic usage
  * const logger = new Logger({ level: 'info' });
- * logger.addAppender(new ConsoleAppender());
+ * logger.addAppender(new ConsoleHandler());
  * logger.info('Application started');
  *
  * @example
@@ -146,7 +146,7 @@ export class Logger implements LoggerInterface {
    * @param appender - Handler instance to add
    *
    * @example
-   * logger.addAppender(new ConsoleAppender());
+   * logger.addAppender(new ConsoleHandler());
    * logger.addAppender(new FileAppender('./logs/errors.log', { level: 'error' }));
    *
    * @note Handlers are processed in the order they are added

@@ -4,7 +4,7 @@ import {
   HandlerInterface,
   LogEvent,
   FormatterInterface,
-  ConsoleAppender,
+  ConsoleHandler,
   LogContext
 } from '@qlover/logger';
 
@@ -247,7 +247,7 @@ describe('Logger with ColorFormatter', () => {
     const customLogger = new Logger({
       name: 'test',
       level: 'debug',
-      handlers: new ConsoleAppender(
+      handlers: new ConsoleHandler(
         new ColorFormatter({
           info: { color: '#ff00ff', fontWeight: 'bold' }
         })

@@ -2,7 +2,7 @@ import { HandlerInterface } from './interface/HandlerInterface';
 import { FormatterInterface } from './interface/FormatterInterface';
 import { LogEvent } from './interface/LogEvent';
 
-export class ConsoleAppender implements HandlerInterface {
+export class ConsoleHandler implements HandlerInterface {
   constructor(protected formatter: FormatterInterface | null = null) {}
 
   /**
