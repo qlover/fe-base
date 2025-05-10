@@ -51,6 +51,7 @@
     "@qlover/env-loader": "workspace:*"
   },
   "dependencies": {
+    "@qlover/logger": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
     "commander": "^13.1.0",

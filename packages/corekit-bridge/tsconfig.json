@@ -7,5 +7,5 @@
     "importHelpers": false,
     "declaration": false
   },
-  "include": ["src"]
+  "include": ["src", "__tests__"]
 }

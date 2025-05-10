@@ -3,11 +3,11 @@ import {
   ExecutorError,
   type ExecutorContext,
   type ExecutorPlugin,
-  type Logger,
   type PromiseTask,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface ApiCatchPluginConfig {
   /**
@@ -37,7 +37,7 @@ export class ApiCatchPlugin implements ExecutorPlugin {
   readonly pluginName = 'ApiCatchPlugin';
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerInterface,
     private readonly feApiRequestCatcher: RequestCatcherInterface<
       RequestAdapterResponse<unknown, unknown>
     >

@@ -1,5 +1,5 @@
+import type { LoggerInterface } from '@qlover/logger';
 import { FeScriptContext } from '@qlover/scripts-context';
-import { Logger } from '@qlover/fe-corekit';
 import inquirer from 'inquirer';
 import { createDefaultPrompts, createPackagePrompts } from './prompts';
 import { join } from 'path';
@@ -41,8 +41,8 @@ export class Generator {
     this.compose = new Compose();
   }
 
-  get logger(): Logger {
-    return this.context.logger as unknown as Logger;
+  get logger(): LoggerInterface {
+    return this.context.logger;
   }
 
   async steps(prompts: GeneratorPrompt[]): Promise<GeneratorContext> {

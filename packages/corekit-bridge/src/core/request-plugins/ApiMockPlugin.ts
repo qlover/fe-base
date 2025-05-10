@@ -1,10 +1,10 @@
 import {
   type ExecutorContext,
   type ExecutorPlugin,
-  type Logger,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import { ThreadUtil } from '../thread/ThreadUtil';
 
 export interface ApiMockPluginConfig {
@@ -25,7 +25,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
 
   constructor(
     private readonly mockDataJson: Record<string, unknown>,
-    private readonly logger: Logger
+    private readonly logger: LoggerInterface
   ) {}
 
   /**

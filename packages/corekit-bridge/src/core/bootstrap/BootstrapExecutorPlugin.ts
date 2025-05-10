@@ -1,6 +1,6 @@
 import { IOCContainerInterface } from '../ioc/IOCContainerInterface';
-import { ExecutorContext, ExecutorPlugin, Logger } from '@qlover/fe-corekit';
-
+import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 export type BootstrapArgs = {
   /**
    * starup global object
@@ -16,7 +16,7 @@ export type BootstrapArgs = {
   /**
    * logger
    */
-  logger: Logger;
+  logger: LoggerInterface;
 };
 
 export interface BootstrapExecutorPlugin
