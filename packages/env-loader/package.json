@@ -39,7 +39,7 @@
     "build": "rollup -c"
   },
   "devDependencies": {
-    "@qlover/fe-corekit": "latest"
+    "@qlover/logger": "workspace:*"
   },
   "dependencies": {
     "dotenv": "^16.4.5"
