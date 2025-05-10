@@ -1,5 +1,33 @@
 # @qlover/fe-scripts
 
+## 0.11.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- update build script to include rebuild step (#377)
+
+  - Modified the build script in package.json to append a rebuild command, ensuring that dependencies are rebuilt after the main build process.
+
+  ***
+
+#### ♻️ Refactors
+
+- migrate build system from Rollup to tsup (#377)
+
+  - Updated package.json to change entry points and output directories for the new build system.
+  - Removed Rollup configuration file and replaced it with tsup configuration for better performance and simplicity.
+  - Added new CLI scripts for various functionalities, including check-packages, clean-branch, clean, commit, and setup-husky.
+  - Adjusted TypeScript configuration to disable source maps for production builds.
+  - Removed deprecated files and dependencies related to the previous build system.
+
+- update CLI script paths and build configuration (#377)
+
+  - Changed CLI script file extensions from .mjs to .js in package.json for consistency.
+  - Updated tsup configuration to output only ESM format and removed unnecessary outExtension logic.
+  - Adjusted output directory settings for better organization of build artifacts.
+
 ## 0.11.3
 
 ## 0.11.2
