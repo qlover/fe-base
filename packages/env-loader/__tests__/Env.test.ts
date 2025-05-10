@@ -1,5 +1,5 @@
 import { Env } from '../src/Env';
-import { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import { config } from 'dotenv';
 import { existsSync } from 'node:fs';
 import { resolve, normalize } from 'path';
@@ -12,7 +12,7 @@ function toLocalPath(pathstring: string): string {
 }
 
 describe('Env', () => {
-  let logger: Logger;
+  let logger: LoggerInterface;
 
   beforeEach(() => {
     logger = {
