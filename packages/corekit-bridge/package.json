@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@qlover/fe-corekit": "workspace:*",
+    "@qlover/logger": "workspace:*",
     "@qlover/slice-store-react": "^1.2.6",
     "lodash": "^4.17.21"
   },

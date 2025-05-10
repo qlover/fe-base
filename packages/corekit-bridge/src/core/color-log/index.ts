@@ -1,4 +1,7 @@
-import { Logger, LogLevel } from '@qlover/fe-corekit';
+import { Logger } from "@qlover/logger";
+import { ColorFormatter, ColorSegment } from "./ColorFormatter";
+
+export type LogLevel = 'LOG' | 'INFO' | 'ERROR' | 'WARN' | 'DEBUG';
 
 /**
  * ColorLogger is a logger that uses color to log messages.
@@ -6,16 +9,24 @@ import { Logger, LogLevel } from '@qlover/fe-corekit';
  * @example
  * ```ts
  * const logger = new ColorLogger();
+ * 
+ * // 基本用法
  * logger.debug('Hello, world!');
  *
- * //=> Hello, world!
+ * // 使用颜色片段
+ * logger.debug('这是%c红色%c和%c蓝色%c的文字', 'color: red', 'color: inherit', 'color: blue', 'color: inherit');
  *
- * logger.debug('Hi %cHello%c world', 'color: red;', 'all: unset;');
- * //=> Hi Hello（red） world
+ * // 使用颜色片段数组
+ * logger.debug('Hello World', [
+ *   { text: 'Hello', style: { color: 'red' } },
+ *   { text: ' World', style: { color: 'blue' } }
+ * ]);
  * ```
  */
 export class ColorLogger extends Logger {
   private colorsMaps: Record<string, string>;
+  private formatter: ColorFormatter;
+  protected isSilent: boolean;
 
   constructor(args: {
     isCI?: boolean | undefined;
@@ -26,45 +37,72 @@ export class ColorLogger extends Logger {
   }) {
     super(args);
     this.colorsMaps = args.colorsMaps;
+    this.formatter = new ColorFormatter();
+    this.isSilent = args.silent || false;
   }
 
-  static wrap(value: string): string {
-    return value ? `%c${value}%c` : '';
+  /**
+   * 将颜色映射转换为颜色片段
+   */
+  private createColorSegment(text: string, level: LogLevel): ColorSegment {
+    return {
+      text,
+      style: {
+        color: this.colorsMaps[level] || 'inherit'
+      }
+    };
   }
 
   /**
    * @override
-   * @param level
-   * @param prefix
-   * @param args
    */
-  print(level: LogLevel, prefix: string, ...args: unknown[]): void {
+  protected print(level: string, args: unknown[]): void {
     if (this.isSilent) {
       return;
     }
 
-    const prefixColor = this.colorsMaps[level];
-    prefix = prefixColor ? prefix : '';
+    const formattedArgs = this.formatter.format({
+      level,
+      args,
+      loggerName: this.constructor.name,
+      timestamp: Date.now()
+    });
 
-    let head = args[0] as string;
-    let colors: string[] = [];
-    if (typeof head === 'string') {
-      head = prefix ? [ColorLogger.wrap(prefix), args[0]].join(' ') : head;
-      colors = prefixColor ? [prefixColor, 'all: unset;'] : [];
-    }
-
-    if (head) {
-      console.log(head, ...colors, ...args.slice(1));
-      return;
-    }
-    console.log(...args);
+    console.log(...formattedArgs);
   }
 
   /**
    * @override
-   * @param args
    */
   log(...args: unknown[]): void {
-    this.print('LOG', '', ...args);
+    this.print('LOG', args);
+  }
+
+  /**
+   * @override
+   */
+  info(...args: unknown[]): void {
+    this.print('INFO', args);
+  }
+
+  /**
+   * @override
+   */
+  error(...args: unknown[]): void {
+    this.print('ERROR', args);
+  }
+
+  /**
+   * @override
+   */
+  warn(...args: unknown[]): void {
+    this.print('WARN', args);
+  }
+
+  /**
+   * @override
+   */
+  debug(...args: unknown[]): void {
+    this.print('DEBUG', args);
   }
 }

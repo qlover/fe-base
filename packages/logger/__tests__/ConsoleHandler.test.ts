@@ -1,9 +1,9 @@
-import { ConsoleAppender } from '../src/ConsoleAppender';
+import { ConsoleHandler } from '../src/ConsoleHandler';
 import { TimestampFormatter } from '../src/TimestampFormatter';
 import { LogEvent } from '../src/interface/LogEvent';
 import type { FormatterInterface } from '../src/interface/FormatterInterface';
 
-describe('ConsoleAppender', () => {
+describe('ConsoleHandler', () => {
   // Setup mocks for console methods
   beforeEach(() => {
     // Mock all console methods
@@ -20,7 +20,7 @@ describe('ConsoleAppender', () => {
   });
 
   it('should append log event without formatter', () => {
-    const appender = new ConsoleAppender();
+    const appender = new ConsoleHandler();
     const event = new LogEvent('info', ['Test message'], 'testLogger');
     
     appender.append(event);
@@ -30,7 +30,7 @@ describe('ConsoleAppender', () => {
   });
 
   it('should append log event with multiple arguments', () => {
-    const appender = new ConsoleAppender();
+    const appender = new ConsoleHandler();
     const event = new LogEvent('debug', ['Debug', 123, { foo: 'bar' }], 'testLogger');
     
     appender.append(event);
@@ -41,7 +41,7 @@ describe('ConsoleAppender', () => {
 
   it('should use formatter when provided', () => {
     const formatter = new TimestampFormatter();
-    const appender = new ConsoleAppender(formatter);
+    const appender = new ConsoleHandler(formatter);
     const event = new LogEvent('warn', ['Warning message'], 'testLogger');
     const timestamp = event.timestamp;
     
@@ -69,7 +69,7 @@ describe('ConsoleAppender', () => {
       format: () => 'Formatted message'
     };
     
-    const appender = new ConsoleAppender(customFormatter);
+    const appender = new ConsoleHandler(customFormatter);
     const event = new LogEvent('error', ['Original message'], 'testLogger');
     
     appender.append(event);
@@ -79,7 +79,7 @@ describe('ConsoleAppender', () => {
   });
 
   it('should set formatter via setFormatter method', () => {
-    const appender = new ConsoleAppender();
+    const appender = new ConsoleHandler();
     const formatter = new TimestampFormatter();
     
     appender.setFormatter(formatter);
@@ -106,7 +106,7 @@ describe('ConsoleAppender', () => {
   });
 
   it('should handle all log levels', () => {
-    const appender = new ConsoleAppender();
+    const appender = new ConsoleHandler();
     const logLevels = ['log', 'info', 'error', 'warn', 'debug', 'trace'] as const;
     
     for (const level of logLevels) {

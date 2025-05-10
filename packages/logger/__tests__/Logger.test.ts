@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Logger } from '../src/Logger';
-import { ConsoleAppender } from '../src/ConsoleAppender';
+import { ConsoleHandler } from '../src/ConsoleHandler';
 import { TimestampFormatter } from '../src/TimestampFormatter';
 import { LogEvent } from '../src/interface/LogEvent';
 import { HandlerInterface } from '../src/interface/HandlerInterface';
@@ -172,7 +172,7 @@ describe('Logger', () => {
     });
 
     it('should recognize an object as context when it is the last argument', () => {
-      const context = { user: 'testUser', requestId: '123' };
+      const context = logger.context({ user: 'testUser', requestId: '123' });
       logger.info('message with context', context);
 
       expect(mockHandler.events).toHaveLength(1);
@@ -241,12 +241,12 @@ describe('Logger', () => {
       const printSpy = vi.spyOn(Logger.prototype, 'print');
 
       // Test with levels that should be logged
-      logger.info('critical message', { level: 'critical' });
-      logger.info('important message', { level: 'important' });
+      logger.info('critical message', logger.context({ level: 'critical' }));
+      logger.info('important message', logger.context({ level: 'important' }));
 
       // Test with levels that should be filtered out
-      logger.info('standard message', { level: 'standard' });
-      logger.info('verbose message', { level: 'verbose' });
+      logger.info('standard message', logger.context({ level: 'standard' }));
+      logger.info('verbose message', logger.context({ level: 'verbose' }));
 
       // Verify the print method was called with the right levels
       expect(printSpy).toHaveBeenCalledTimes(4);
@@ -259,8 +259,8 @@ describe('Logger', () => {
   });
 
   describe('integration with handlers and formatters', () => {
-    it('should work with ConsoleAppender', () => {
-      const consoleAppender = new ConsoleAppender();
+    it('should work with ConsoleHandler', () => {
+      const consoleAppender = new ConsoleHandler();
       const logger = new Logger({
         name: 'TestLogger',
         handlers: consoleAppender
@@ -285,7 +285,7 @@ describe('Logger', () => {
 
     it('should work with TimestampFormatter', () => {
       const timestampFormatter = new TimestampFormatter({ locale: 'en-US' });
-      const consoleAppender = new ConsoleAppender(timestampFormatter);
+      const consoleAppender = new ConsoleHandler(timestampFormatter);
       const logger = new Logger({
         name: 'TestLogger',
         handlers: consoleAppender
@@ -306,7 +306,7 @@ describe('Logger', () => {
     });
 
     it('should allow setting formatter after initialization', () => {
-      const consoleAppender = new ConsoleAppender();
+      const consoleAppender = new ConsoleHandler();
       const logger = new Logger({
         name: 'TestLogger',
         handlers: consoleAppender
@@ -402,7 +402,7 @@ describe('Logger', () => {
 
     it('should properly use custom formatter', () => {
       const testFormatter = new TestFormatter();
-      const consoleAppender = new ConsoleAppender(testFormatter);
+      const consoleAppender = new ConsoleHandler(testFormatter);
       const logger = new Logger({
         name: 'FormatterTestLogger',
         handlers: consoleAppender
@@ -422,13 +422,13 @@ describe('Logger', () => {
 
     it('should format messages with context', () => {
       const contextFormatter = new ContextFormatter();
-      const consoleAppender = new ConsoleAppender(contextFormatter);
+      const consoleAppender = new ConsoleHandler(contextFormatter);
       const logger = new Logger({
         name: 'ContextFormatterLogger',
         handlers: consoleAppender
       });
 
-      const context = { userId: '123', requestId: 'abc' };
+      const context = logger.context({ userId: '123', requestId: 'abc' });
       const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       logger.info('user action', context);
@@ -454,7 +454,7 @@ describe('Logger', () => {
 
       const baseFormatter = new TestFormatter();
       const chainFormatter = new ChainFormatter(baseFormatter);
-      const consoleAppender = new ConsoleAppender(chainFormatter);
+      const consoleAppender = new ConsoleHandler(chainFormatter);
 
       const logger = new Logger({
         name: 'ChainLogger',

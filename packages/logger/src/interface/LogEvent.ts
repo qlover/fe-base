@@ -1,3 +1,5 @@
+import { LogContext } from "./LogContext";
+
 export class LogEvent<Ctx = unknown> {
   public timestamp: number;
 
@@ -5,7 +7,7 @@ export class LogEvent<Ctx = unknown> {
     public level: string,
     public args: unknown[],
     public loggerName: string,
-    public context?: Ctx
+    public context?: LogContext<Ctx>
   ) {
     this.timestamp = Date.now();
   }
