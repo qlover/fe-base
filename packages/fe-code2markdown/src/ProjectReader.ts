@@ -1,4 +1,4 @@
-import { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import fsExtra from 'fs-extra';
 import {
   Application,
@@ -15,8 +15,8 @@ export class ProjectReader {
 
   constructor(private context: ReflectionGeneraterContext) {}
 
-  get logger(): Logger {
-    return this.context.logger as unknown as Logger;
+  get logger(): LoggerInterface {
+    return this.context.logger;
   }
 
   /**

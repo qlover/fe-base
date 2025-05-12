@@ -13,7 +13,7 @@ import {
   ParserContextMap,
   ReflectionKindName
 } from './type';
-import { Logger } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 const DisplayPartsKindName = {
   text: 'Text',
@@ -44,7 +44,7 @@ type TemplateSummary = CommentDisplayPart & {
 
 type TypeDocConverterOptions = {
   project: ProjectReflection;
-  logger: Logger;
+  logger: LoggerInterface;
 
   /**
    * 1 优先 ts 类型 2 优先注释类型 default 1
@@ -58,7 +58,7 @@ type TypeDocConverterOptions = {
 
 export class TypeDocConverter {
   private project: ProjectReflection;
-  private logger: Logger;
+  private logger: LoggerInterface;
   private level: number;
   private hasSkipInherited: boolean;
 

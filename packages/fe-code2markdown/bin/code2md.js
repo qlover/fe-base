@@ -5,7 +5,8 @@ import { Command } from 'commander';
 import fs from 'fs-extra';
 import { fileURLToPath } from 'url';
 import { ReflectionGenerater } from '../dist/es/index.js';
-import { Logger } from '@qlover/fe-corekit';
+import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
+
 const program = new Command();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -53,7 +54,15 @@ const main = async () => {
   };
 
   const generater = new ReflectionGenerater({
-    logger: new Logger({ debug: opts.debug ?? verbose }),
+    logger: new Logger({
+      level: (opts.debug ?? verbose) ? 'debug' : 'info',
+      name: 'code2md',
+      handlers: new ConsoleHandler({
+        formatter: new TimestampFormatter({
+          formatType: 'datetime'
+        })
+      })
+    }),
     // not used
     shell: {},
     // not used
