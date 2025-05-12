@@ -5,6 +5,7 @@
       "packages/fe-scripts",
       "packages/fe-corekit",
       "packages/corekit-bridge",
+      "packages/corekit-node",
       "packages/create-app",
       "packages/scripts-context",
       "packages/env-loader",

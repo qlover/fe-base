@@ -48,35 +48,16 @@ const storage = new JSONStorage();
 storage.setItem('key', { data: 'value' });
 ```
 
-### Import specific submodules
-
-fe-corekit provides the ability to import by module:
-
-```typescript
-// Import interface definitions
-import { Serializer } from '@qlover/fe-corekit/interface';
-
-// Import server-related modules
-import { Encrypt } from '@qlover/fe-corekit/server';
-```
-
 ## Core Features
 
-### Common Module (common)
+### Core Module
 
--- **Storage** (storage): Provides storage, retrieval, and management for JSON data, supporting custom storage backends and serializers
--- **Serializer** (serializer): Data serialization and deserialization tools
--- **Request** (request): Network request tools, simplifying API calls
--- **Logger** (logger): Flexible logging system
--- **Executor** (executor): Task execution management
-
-### Interface Module (interface)
-
-Provides a series of standard interface definitions, ensuring consistency and interoperability between modules.
-
-### Server Module (server)
-
-- **Encrypt (encrypt)**: Provides data encryption and security-related functionality
+- **Storage**: Provides storage, retrieval, and management for JSON data, supporting custom storage backends and serializers
+- **Serializer**: Data serialization and deserialization tools
+- **Request**: Network request tools, simplifying API calls
+- **Logger**: Flexible logging system
+- **Executor**: Task execution management
+- **Interface Definitions**: Provides a series of standard interface definitions, ensuring consistency and interoperability between modules
 
 ## Usage Examples
 
@@ -143,9 +124,7 @@ fe-corekit is completely written in TypeScript, providing complete type definiti
 
 ## Quick Navigation
 
-- [Common Module](./common/)
-- [Interface](./interface/)
-- [Server Module](./server/)
+- [Core Module Documentation](./common/)
 
 ## Compatibility
 
@@ -153,4 +132,6 @@ fe-corekit supports all modern browsers and Node.js environments. It supports bo
 
 ## Version Information
 
-For detailed information about updates and changes, please check the[Changelog](./CHANGELOG.md)。
+Current version: 1.2.0
+
+For detailed information about updates and changes, please check the [Changelog](./CHANGELOG.md).

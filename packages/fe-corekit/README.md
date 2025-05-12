@@ -48,35 +48,16 @@ const storage = new JSONStorage();
 storage.setItem('key', { data: 'value' });
 ```
 
-### 导入特定子模块
-
-fe-corekit 提供了分模块导入的能力：
-
-```typescript
-// 导入接口定义
-import { Serializer } from '@qlover/fe-corekit/interface';
-
-// 导入服务器相关模块
-import { Encrypt } from '@qlover/fe-corekit/server';
-```
-
 ## 核心功能
 
-### 通用模块 (common)
+### 核心模块
 
 - **存储 (storage)**: 提供 JSON 数据的存储、检索和管理功能，支持自定义存储后端和序列化器
 - **序列化 (serializer)**: 数据序列化和反序列化工具
 - **请求 (request)**: 网络请求工具，简化 API 调用
 - **日志 (logger)**: 灵活的日志记录系统
 - **执行器 (executor)**: 任务执行管理
-
-### 接口模块 (interface)
-
-提供了一系列标准接口定义，确保各模块之间的一致性和互操作性。
-
-### 服务器模块 (server)
-
-- **加密 (encrypt)**: 提供数据加密和安全相关功能
+- **接口定义**: 提供了一系列标准接口定义，确保各模块之间的一致性和互操作性
 
 ## 使用示例
 
@@ -143,9 +124,7 @@ fe-corekit 完全使用 TypeScript 编写，提供了完整的类型定义，可
 
 ## 快速导航
 
-- [通用模块文档](./common/)
-- [接口文档](./interface/)
-- [服务器模块文档](./server/)
+- [核心模块文档](./common/)
 
 ## 兼容性
 
