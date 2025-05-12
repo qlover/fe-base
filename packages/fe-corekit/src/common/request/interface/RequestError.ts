@@ -1,4 +1,4 @@
-import { ExecutorError } from '../executor';
+import { ExecutorError } from '../../executor/interface';
 
 /**
  * Represents a custom error class for handling request-related errors in the application

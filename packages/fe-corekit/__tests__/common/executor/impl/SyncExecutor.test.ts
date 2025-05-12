@@ -1,10 +1,10 @@
+import { MockInstance } from 'vitest';
 import {
   ExecutorError,
   ExecutorPlugin,
-  ExecutorContext
-} from '../../../../src/interface';
-import { SyncExecutor } from '../../../../src/common/executor/impl/SyncExecutor';
-import { describe, it, expect, vi, MockInstance } from 'vitest';
+  ExecutorContext,
+  SyncExecutor
+} from '../../../../src/common';
 
 function mockLogStdIo(): {
   spy: MockInstance;

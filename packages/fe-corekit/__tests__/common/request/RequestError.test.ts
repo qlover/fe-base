@@ -1,8 +1,8 @@
-import { RequestErrorID, RequestError } from '../../../src/interface';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   FetchURLPlugin,
-  RequestAdapterFetch
+  RequestAdapterFetch,
+  RequestError,
+  RequestErrorID
 } from '../../../src/common/request';
 
 describe('RequestError', () => {

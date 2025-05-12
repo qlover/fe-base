@@ -1,6 +1,5 @@
 import { RequestAdapterAxios } from '../../../../src/common/request/adapter/RequestAdapterAxios';
 import axios, { AxiosStatic } from 'axios';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 vi.mock('axios');
 

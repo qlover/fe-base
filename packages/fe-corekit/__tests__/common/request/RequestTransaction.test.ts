@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { RequestTransaction } from '../../../src/common/request';
 import {
   RequestAdapterInterface,
@@ -6,7 +5,7 @@ import {
   RequestAdapterResponse,
   RequestTransactionInterface,
   RequestError
-} from '../../../src/interface';
+} from '../../../src/common/request';
 
 class MockAdapter implements RequestAdapterInterface<RequestAdapterConfig> {
   readonly config: RequestAdapterConfig;

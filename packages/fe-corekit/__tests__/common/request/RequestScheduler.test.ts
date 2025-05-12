@@ -1,12 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
 import { RetryPlugin } from '../../../src/common/executor/plugins';
 import {
   RequestError,
   RequestAdapterInterface,
   RequestAdapterResponse,
-  RequestAdapterConfig
-} from '../../../src/interface';
-import { RequestScheduler } from '../../../src/common/request';
+  RequestAdapterConfig,
+  RequestScheduler
+} from '../../../src/common/request';
 
 const default_retry_delay = 8;
 const request_timeout = 10;

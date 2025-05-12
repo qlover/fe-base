@@ -1,4 +1,4 @@
-import { Executor, ExecutorContext, Task } from '../../src/interface';
+import { Executor, ExecutorContext, Task } from '../../../../src/common';
 
 class MyExecutor extends Executor {
   constructor() {

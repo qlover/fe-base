@@ -1,11 +1,10 @@
 import {
-  ExecutorPlugin,
-  ExecutorContext,
-  RequestError,
   RequestErrorID,
-  RequestAdapterConfig,
-  RequestAdapterResponse
-} from '../../../interface';
+  RequestError,
+  type RequestAdapterConfig,
+  type RequestAdapterResponse
+} from '../interface';
+import type { ExecutorPlugin, ExecutorContext } from '../../executor';
 
 /**
  * Plugin for URL manipulation and response handling

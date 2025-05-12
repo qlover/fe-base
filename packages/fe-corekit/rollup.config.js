@@ -12,7 +12,11 @@ const isProduction = NODE_ENV === 'production';
 const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
 const commonExternal = ['axios'];
 const buildDir = 'dist';
-
+const fileMap = {
+  es: 'js',
+  umd: 'umd.js',
+  cjs: 'cjs'
+};
 /**
  * @param {{ entry: string, formats: string[], external: string[], target: string, clean: boolean }} options
  * @returns {import('rollup').RollupOptions[]}
@@ -22,7 +26,7 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
 
   /** @type {import('rollup').OutputOptions[]} */
   const outputs = formats.map((format) => ({
-    file: `${target}/index.${format}.js`,
+    file: `${target}/index.${fileMap[format] || format + '.js'}`,
     format,
     name: umdName,
     sourcemap: !isProduction
@@ -30,7 +34,7 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
 
   return [
     {
-      input: `${entry}/index.ts`,
+      input: `src/${entry}/index.ts`,
       output: outputs,
       plugins: [
         clean && del({ targets: `${buildDir}/*` }),
@@ -44,7 +48,7 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
       external: external
     },
     {
-      input: `${entry}/index.ts`,
+      input: `src/${entry}/index.ts`,
       output: {
         file: `${target}/index.d.ts`,
         format: 'es'
@@ -59,22 +63,16 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
  */
 export default [
   ...createBuilder({
-    entry: 'interface',
-    formats: ['es', 'umd'],
-    umdName: 'FeUtilsInterface',
-    clean: true
-  }),
-  ...createBuilder({
     entry: 'common',
     target: buildDir,
     formats: ['es', 'umd'],
-    umdName: 'FeUtilsCommon',
+    umdName: 'FeCorekitCommon',
+    clean: true,
     external: commonExternal
   }),
   ...createBuilder({
     entry: 'server',
     formats: ['es', 'cjs'],
-    umdName: 'FeUtilsServer',
     external: serverExternal
   })
 ];

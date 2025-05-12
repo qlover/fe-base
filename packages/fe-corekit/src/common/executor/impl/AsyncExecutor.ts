@@ -4,7 +4,7 @@ import {
   ExecutorError,
   ExecutorPlugin,
   PromiseTask
-} from '../../../interface';
+} from '../interface';
 
 /**
  * Asynchronous implementation of the Executor pattern

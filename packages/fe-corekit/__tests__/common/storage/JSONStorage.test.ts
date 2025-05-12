@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { JSONStorage } from '../../../src/common/storage/impl/JSONStorage';
 
 describe('JSONStorage', () => {

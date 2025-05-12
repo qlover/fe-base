@@ -1,9 +1,5 @@
-import { describe, it, expect, vi, MockInstance, beforeEach } from 'vitest';
-import {
-  Executor,
-  ExecutorError,
-  ExecutorPlugin
-} from '../../../src/interface';
+import { MockInstance } from 'vitest';
+import { Executor, ExecutorError, ExecutorPlugin } from '../../../src/common';
 
 function mockLogStdIo(): {
   spy: MockInstance;

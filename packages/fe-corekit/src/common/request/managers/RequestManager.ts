@@ -1,8 +1,8 @@
-import { AsyncExecutor, ExecutorPlugin } from '../..';
-import {
+import { AsyncExecutor, type ExecutorPlugin } from '../../executor';
+import type {
   RequestAdapterConfig,
   RequestAdapterInterface
-} from '../../../interface/request/RequestAdapter';
+} from '../interface/RequestAdapter';
 import merge from 'lodash/merge';
 
 /**

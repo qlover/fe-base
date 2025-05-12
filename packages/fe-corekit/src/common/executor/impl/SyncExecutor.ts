@@ -4,7 +4,7 @@ import {
   ExecutorError,
   ExecutorPlugin,
   SyncTask
-} from '../../../interface';
+} from '../interface';
 
 /**
  * Synchronous executor class that extends the base Executor

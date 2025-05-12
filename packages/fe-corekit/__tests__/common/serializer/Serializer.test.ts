@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import {
-  JSONSerializer,
-  Base64Serializer
+  Base64Serializer,
+  JSONSerializer
 } from '../../../src/common/serializer';
 
 describe('JSONSerializer', () => {

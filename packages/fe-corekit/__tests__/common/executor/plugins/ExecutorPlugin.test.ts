@@ -1,9 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
 import {
   ExecutorPlugin,
   ExecutorError,
   ExecutorContext
-} from '../../../../src/interface';
+} from '../../../../src/common';
 
 describe('ExecutorPlugin', () => {
   it('should execute onBefore hook and modify data', async () => {

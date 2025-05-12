@@ -1,6 +1,9 @@
-import { describe, it, expect, vi, MockInstance } from 'vitest';
-import { ExecutorError, ExecutorPlugin } from '../../../../src/interface';
-import { AsyncExecutor } from '../../../../src/common/executor/impl/AsyncExecutor';
+import { MockInstance } from 'vitest';
+import {
+  AsyncExecutor,
+  ExecutorError,
+  ExecutorPlugin
+} from '../../../../src/common';
 
 function mockLogStdIo(): {
   spy: MockInstance;

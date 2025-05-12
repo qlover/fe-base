@@ -1,10 +1,9 @@
 import {
-  ExecutorPlugin,
   RequestErrorID,
   RequestError,
-  ExecutorContext,
-  RequestAdapterConfig
-} from '../../../interface';
+  type RequestAdapterConfig
+} from '../interface';
+import type { ExecutorPlugin, ExecutorContext } from '../../executor';
 
 /**
  * Plugin for handling request cancellation

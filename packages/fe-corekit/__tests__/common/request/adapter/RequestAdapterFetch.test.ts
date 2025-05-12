@@ -1,7 +1,8 @@
-import { RequestErrorID } from '../../../../src/interface';
-import { RequestAdapterFetch } from '../../../../src/common/request';
-import { FetchURLPlugin } from '../../../../src/common/request/plugins';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  RequestErrorID,
+  RequestAdapterFetch,
+  FetchURLPlugin
+} from '../../../../src/common/request';
 
 describe('create a base requestAdapterFetch', () => {
   let fetchMock: ReturnType<typeof vi.fn>;

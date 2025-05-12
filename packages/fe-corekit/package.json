@@ -9,21 +9,18 @@
     "package.json",
     "README.md"
   ],
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
+      "import": "./dist/index.js",
       "require": "./dist/index.umd.js"
-    },
-    "./interface": {
-      "types": "./dist/interface/index.d.ts",
-      "import": "./dist/interface/index.es.js",
-      "require": "./dist/interface/index.umd.js"
     },
     "./server": {
       "types": "./dist/server/index.d.ts",
-      "import": "./dist/server/index.es.js",
+      "import": "./dist/server/index.js",
       "require": "./dist/server/index.cjs.js"
     },
     "./package.json": "./package.json"

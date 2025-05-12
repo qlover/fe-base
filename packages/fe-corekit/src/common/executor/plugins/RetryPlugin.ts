@@ -3,7 +3,7 @@ import {
   PromiseTask,
   ExecutorError,
   ExecutorContext
-} from '../../../interface';
+} from '../interface';
 
 /**
  * Configuration options for the RetryPlugin

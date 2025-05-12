@@ -1,13 +1,15 @@
 import {
-  RequestAdapterInterface,
-  RequestAdapterResponse,
-  RequestAdapterConfig,
-  ExecutorError,
-  ExecutorPlugin,
-  RequestErrorID,
-  PromiseTask
-} from '../../../interface';
-import { AsyncExecutor } from '../../executor';
+  type ExecutorPlugin,
+  type PromiseTask,
+  AsyncExecutor,
+  ExecutorError
+} from '../../executor';
+import {
+  type RequestAdapterConfig,
+  type RequestAdapterInterface,
+  type RequestAdapterResponse,
+  RequestErrorID
+} from '../interface';
 import { merge } from 'merge';
 import pick from 'lodash/pick';
 

@@ -1,4 +1,4 @@
-import { Serializer } from '../../interface';
+import { Serializer } from './Serializer';
 
 /**
  * Base64 serialization implementation

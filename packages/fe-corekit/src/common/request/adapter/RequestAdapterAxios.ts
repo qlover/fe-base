@@ -1,8 +1,8 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
-import {
+import type {
   RequestAdapterInterface,
   RequestAdapterResponse
-} from '../../../interface';
+} from '../interface';
+import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
 
 /**
  * Axios request adapter

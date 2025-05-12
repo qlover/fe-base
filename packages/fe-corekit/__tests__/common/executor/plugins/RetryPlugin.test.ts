@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-import { AsyncExecutor, RetryPlugin } from '../../../../src/common/executor';
+import { AsyncExecutor, RetryPlugin } from '../../../../src/common';
 
 const default_retry_delay = 10;
 const delayMs = 8;

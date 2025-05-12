@@ -1,13 +1,11 @@
+import { ExecutorPlugin } from '../../../../src/common/executor';
 import {
   RequestErrorID,
   RequestError,
-  ExecutorPlugin
-} from '../../../../src/interface';
-import {
   RequestAdapterFetch,
   FetchAbortPlugin
 } from '../../../../src/common/request';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 function sleep(mock: unknown, ms: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(() => resolve(mock), ms));
 }

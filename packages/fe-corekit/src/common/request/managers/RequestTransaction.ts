@@ -1,8 +1,8 @@
-import {
+import type {
   RequestAdapterConfig,
   RequestAdapterResponse,
   RequestTransactionInterface
-} from '../../../interface';
+} from '../interface';
 import { RequestManager } from './RequestManager';
 
 /**

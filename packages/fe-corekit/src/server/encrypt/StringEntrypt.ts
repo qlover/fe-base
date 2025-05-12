@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Buffer } from 'buffer';
-import { Encryptor } from '../../interface';
+import { Encryptor } from '../../common';
 
 /**
  * Represents a string encryption utility using AES-256-CBC algorithm.
