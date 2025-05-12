@@ -6,5 +6,5 @@
     "baseUrl": "./",
     "declaration": false
   },
-  "include": ["common/**/*", "server/**/*"]
+  "include": ["src/common/**/*", "src/server/**/*"]
 }
