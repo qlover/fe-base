@@ -1,0 +1,42 @@
+{
+  "name": "@qlover/corekit-interface",
+  "description": "An interface definition package for corekit, providing type definitions for core functionalities including encryption, executor, request, serialization, and storage.",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "homepage": "https://github.com/qlover/fe-base",
+  "author": "qlover",
+  "license": "ISC",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/corekit-interface"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "keywords": [
+    "interface",
+    "corekit",
+    "corekit-interface"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup"
+  }
+}
