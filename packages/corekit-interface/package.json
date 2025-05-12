@@ -1,7 +1,7 @@
 {
   "name": "@qlover/corekit-interface",
   "description": "An interface definition package for corekit, providing type definitions for core functionalities including encryption, executor, request, serialization, and storage.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base",
