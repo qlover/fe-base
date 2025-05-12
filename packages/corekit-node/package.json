@@ -1,0 +1,46 @@
+{
+  "name": "@qlover/corekit-node",
+  "version": "0.0.0",
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "README_EN.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qlover/fe-base.git",
+    "directory": "packages/corekit-node"
+  },
+  "homepage": "https://github.com/qlover/fe-base#readme",
+  "keywords": [
+    "corekit",
+    "fe-corekit",
+    "corekit-node"
+  ],
+  "author": "qlover",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@qlover/fe-corekit": "workspace:*"
+  }
+}

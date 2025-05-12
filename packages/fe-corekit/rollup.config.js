@@ -9,20 +9,23 @@ import { Env } from '@qlover/env-loader';
 const env = Env.searchEnv();
 const NODE_ENV = env.get('NODE_ENV');
 const isProduction = NODE_ENV === 'production';
-const serverExternal = ['crypto', 'buffer', 'zlib', 'axios'];
 const commonExternal = ['axios'];
 const buildDir = 'dist';
+const fileMap = {
+  es: 'js',
+  cjs: 'cjs'
+};
 
 /**
  * @param {{ entry: string, formats: string[], external: string[], target: string, clean: boolean }} options
  * @returns {import('rollup').RollupOptions[]}
  */
-function createBuilder({ target, entry, formats, external, clean, umdName }) {
-  target = target || `${buildDir}/${entry}`;
+function createBuilder({ target, formats, external, clean, umdName }) {
+  target = target || `${buildDir}`;
 
   /** @type {import('rollup').OutputOptions[]} */
   const outputs = formats.map((format) => ({
-    file: `${target}/index.${format}.js`,
+    file: `${target}/index.${fileMap[format] || format + '.js'}`,
     format,
     name: umdName,
     sourcemap: !isProduction
@@ -30,7 +33,7 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
 
   return [
     {
-      input: `${entry}/index.ts`,
+      input: `src/index.ts`,
       output: outputs,
       plugins: [
         clean && del({ targets: `${buildDir}/*` }),
@@ -44,7 +47,7 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
       external: external
     },
     {
-      input: `${entry}/index.ts`,
+      input: `src/index.ts`,
       output: {
         file: `${target}/index.d.ts`,
         format: 'es'
@@ -55,26 +58,12 @@ function createBuilder({ target, entry, formats, external, clean, umdName }) {
 }
 
 /**
- * @type {import('rollup').RollupOptions[]}
+ * @type {import('rollup').RollupOptions}
  */
-export default [
-  ...createBuilder({
-    entry: 'interface',
-    formats: ['es', 'umd'],
-    umdName: 'FeUtilsInterface',
-    clean: true
-  }),
-  ...createBuilder({
-    entry: 'common',
-    target: buildDir,
-    formats: ['es', 'umd'],
-    umdName: 'FeUtilsCommon',
-    external: commonExternal
-  }),
-  ...createBuilder({
-    entry: 'server',
-    formats: ['es', 'cjs'],
-    umdName: 'FeUtilsServer',
-    external: serverExternal
-  })
-];
+export default createBuilder({
+  target: buildDir,
+  formats: ['es', 'umd'],
+  umdName: 'FeCorekit',
+  clean: true,
+  external: commonExternal
+});
