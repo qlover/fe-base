@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@microsoft/tsdoc": "^0.15.0",
-    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/logger": "workspace:*",
     "commander": "^11.0.0",
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",

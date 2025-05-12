@@ -187,7 +187,11 @@ importers:
         specifier: ^5.4.10
         version: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
 
-  packages/corekit-interface: {}
+  packages/corekit-node:
+    devDependencies:
+      '@qlover/fe-corekit':
+        specifier: workspace:*
+        version: link:../fe-corekit
 
   packages/create-app:
     dependencies:
@@ -237,9 +241,9 @@ importers:
       '@microsoft/tsdoc':
         specifier: ^0.15.0
         version: 0.15.1
-      '@qlover/fe-corekit':
+      '@qlover/logger':
         specifier: workspace:*
-        version: link:../fe-corekit
+        version: link:../logger
       commander:
         specifier: ^11.0.0
         version: 11.1.0
