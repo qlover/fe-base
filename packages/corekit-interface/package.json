@@ -1,6 +1,6 @@
 {
   "name": "@qlover/corekit-interface",
-  "description": "A interface for corekit",
+  "description": "An interface definition package for corekit, providing type definitions for core functionalities including encryption, executor, request, serialization, and storage.",
   "version": "0.0.0",
   "type": "module",
   "private": false,
