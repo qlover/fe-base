@@ -1,5 +1,15 @@
 # @qlover/logger
 
+## 0.1.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- fe corekit (#383)
+
+  ***
+
 ## 0.1.0
 
 ### Minor Changes
