@@ -9,7 +9,8 @@
       "packages/scripts-context",
       "packages/env-loader",
       "packages/fe-release",
-      "packages/logger"
+      "packages/logger",
+      "packages/corekit-interface"
     ],
     "githubPR": {
       "commitArgs": ["--no-verify"],

@@ -187,6 +187,8 @@ importers:
         specifier: ^5.4.10
         version: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
 
+  packages/corekit-interface: {}
+
   packages/create-app:
     dependencies:
       '@qlover/fe-corekit':
