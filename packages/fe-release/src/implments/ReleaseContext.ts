@@ -133,12 +133,12 @@ export default class ReleaseContext<
     try {
       await this.shell.exec('pnpm -v', { dryRun: false });
     } catch {
-      packageManager = 'npm';
+      packageManager = 'npx';
     }
 
     return await this.shell.exec([
-      packageManager === 'pnpm' ? 'pnpm dlx' : 'npx',
-      '@changesets/cli',
+      packageManager,
+      'changeset',
       name,
       ...(args ?? [])
     ]);

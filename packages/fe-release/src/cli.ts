@@ -52,6 +52,10 @@ function programArgs() {
       DEFAULT_INCREMENT
     )
     .option('--changelog.skip', 'Whether to skip the changelog')
+    .option(
+      '--changelog.ignore-non-updated-packages',
+      'Whether to ignore non updated packages'
+    )
     .option('--changelog.skip-changeset', 'Whether to skip the changeset')
     .option('--githubPR.skip', 'Whether to skip the githubPR')
     .option(
