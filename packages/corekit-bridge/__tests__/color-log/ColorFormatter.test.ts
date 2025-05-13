@@ -46,7 +46,6 @@ describe('ColorFormatter', () => {
     );
 
     const result = formatter.format(event);
-    console.info(result);
     expect(result).toEqual(event.args);
   });
 
