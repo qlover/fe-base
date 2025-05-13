@@ -1,5 +1,9 @@
 # @qlover/fe-release
 
+## 2.1.6
+
+### Patch Changes
+
 ## 2.1.5
 
 ### Patch Changes
