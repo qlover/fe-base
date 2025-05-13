@@ -28,6 +28,7 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: pnpm prettier
       - run: pnpm test
       # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
       - run: pnpm build

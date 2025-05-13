@@ -1,4 +1,4 @@
-import { LogContext } from "./LogContext";
+import { LogContext } from './LogContext';
 
 export class LogEvent<Ctx = unknown> {
   public timestamp: number;

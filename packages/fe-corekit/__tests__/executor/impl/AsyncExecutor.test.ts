@@ -1,9 +1,5 @@
 import { MockInstance } from 'vitest';
-import {
-  AsyncExecutor,
-  ExecutorError,
-  ExecutorPlugin
-} from '../../../src';
+import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../../../src';
 
 function mockLogStdIo(): {
   spy: MockInstance;

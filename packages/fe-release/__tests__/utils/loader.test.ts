@@ -46,7 +46,11 @@ describe('loader utils', () => {
     vi.clearAllMocks();
 
     vi.stubGlobal('import', async (path: string) => {
-      if (path === 'test-plugin' || path.includes('/test-plugin') || path.startsWith('file://')) {
+      if (
+        path === 'test-plugin' ||
+        path.includes('/test-plugin') ||
+        path.startsWith('file://')
+      ) {
         return { default: TestPlugin };
       }
       throw new Error(`Import not mocked for ${path}`);
