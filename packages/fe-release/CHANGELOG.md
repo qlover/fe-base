@@ -1,5 +1,21 @@
 # @qlover/fe-release
 
+## 2.1.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- add option to ignore non-updated packages and enhance workspace handling (#385)
+
+  - Introduced `--changelog.ignore-non-updated-packages` CLI option to allow skipping non-updated packages in changelog generation.
+  - Updated `ChangelogProps` to include `ignoreNonUpdatedPackages` configuration.
+  - Enhanced `WorkspacesProps` to manage `changedPaths` and `packages` more effectively.
+  - Implemented `restoreIgnorePackages` method to restore non-changed packages during the changelog process.
+  - Adjusted package manager fallback from `npm` to `npx` for executing changeset commands.
+
+  ***
+
 ## 2.1.4
 
 ## 2.1.3
