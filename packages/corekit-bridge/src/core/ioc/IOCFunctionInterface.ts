@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { IOCManagerInterface } from "./IOCManagerInterface";
+import { IOCManagerInterface } from './IOCManagerInterface';
 
 export type Constructor<T = any> = new (...args: any[]) => T;
 export type ServiceIdentifier<T = any> =

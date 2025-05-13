@@ -29,20 +29,13 @@ function createFeCorekitConfig() {
   });
   const feCorekitServer = chainEnv({
     allGlobals,
-    files: ['packages/fe-corekit/server/**/*.ts'],
+    files: ['packages/corekit-node/**/*.ts'],
     languageOptions: {
       globals: globals.node
     }
   });
-  const feCorekitBrowser = chainEnv({
-    allGlobals,
-    files: ['packages/fe-corekit/browser/**/*.ts'],
-    languageOptions: {
-      globals: globals.browser
-    }
-  });
 
-  return [feCorekitCommon, feCorekitServer, feCorekitBrowser];
+  return [feCorekitCommon, feCorekitServer];
 }
 
 function createVitestConfig() {
@@ -68,21 +61,22 @@ function createVitestConfig() {
 
 const commonConfig = createCommon();
 
-
 /**
  * @type {import('eslint').Linter.Config[]}
  */
 export default tseslint.config([
   {
-    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**', 'packages/create-app/templates/**']
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/node_modules/**',
+      'packages/create-app/templates/**'
+    ]
   },
 
   {
-    files: ['packages/**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      commonConfig
-    ],
+    files: ['packages/**/*.{js,jsx,ts,tsx}'],
+    extends: [js.configs.recommended, commonConfig],
     plugins: {
       prettier: prettier
     },
@@ -95,18 +89,19 @@ export default tseslint.config([
 
   {
     files: ['packages/**/*.{ts,tsx}'],
-    extends: [
-      ...tseslint.configs.recommended,
-    ],
+    extends: [...tseslint.configs.recommended],
     plugins: {
       'fe-dev': feDev
     },
     rules: {
       'fe-dev/ts-class-method-return': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      "@typescript-eslint/no-empty-object-type": "off",
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-      "@typescript-eslint/ban-ts-comment": "off"
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' }
+      ],
+      '@typescript-eslint/ban-ts-comment': 'off'
     }
   },
 

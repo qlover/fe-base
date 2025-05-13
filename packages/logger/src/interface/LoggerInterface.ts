@@ -1,7 +1,6 @@
 import { HandlerInterface } from './HandlerInterface';
 import { LogContext } from './LogContext';
 
-
 export interface LoggerInterface {
   log(...args: unknown[]): void;
   fatal(...args: unknown[]): void;

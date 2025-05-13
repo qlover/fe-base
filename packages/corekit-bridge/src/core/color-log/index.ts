@@ -1,5 +1,5 @@
-import { Logger } from "@qlover/logger";
-import { ColorFormatter, ColorSegment } from "./ColorFormatter";
+import { Logger } from '@qlover/logger';
+import { ColorFormatter, ColorSegment } from './ColorFormatter';
 
 export type LogLevel = 'LOG' | 'INFO' | 'ERROR' | 'WARN' | 'DEBUG';
 
@@ -9,7 +9,7 @@ export type LogLevel = 'LOG' | 'INFO' | 'ERROR' | 'WARN' | 'DEBUG';
  * @example
  * ```ts
  * const logger = new ColorLogger();
- * 
+ *
  * // 基本用法
  * logger.debug('Hello, world!');
  *

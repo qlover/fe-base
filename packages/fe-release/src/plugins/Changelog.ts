@@ -304,6 +304,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
   async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
     const { name, version } = workspace;
+    // eslint-disable-next-line no-useless-escape
     const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');
     const changesetPath = join(this.changesetRoot, `${changesetName}.md`);
     const increment = this.getIncrement();

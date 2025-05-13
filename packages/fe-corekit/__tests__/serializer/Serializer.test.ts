@@ -1,7 +1,4 @@
-import {
-  Base64Serializer,
-  JSONSerializer
-} from '../../src/serializer';
+import { Base64Serializer, JSONSerializer } from '../../src/serializer';
 
 describe('JSONSerializer', () => {
   describe('Serializer interface', () => {
