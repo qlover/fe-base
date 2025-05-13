@@ -38,6 +38,18 @@ export interface WorkspacesProps {
    * from `changePackagesLabel`
    */
   changeLabels?: string[];
+
+  /**
+   * The changed paths
+   * @private
+   */
+  changedPaths?: string[];
+
+  /**
+   * The packages
+   * @private
+   */
+  packages?: string[];
 }
 
 export interface WorkspaceValue {
@@ -229,6 +241,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
       this.getConfig('changeLabels')
     );
 
+    this.setConfig({ packages, changedPaths });
     this.logger.debug('changedPaths', changedPaths);
 
     const workspaces: WorkspaceValue[] = changedPaths.map((path) => {

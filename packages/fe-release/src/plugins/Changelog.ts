@@ -1,6 +1,6 @@
 import ReleaseContext from '../implments/ReleaseContext';
 import Plugin from './Plugin';
-import { WorkspaceValue } from './workspaces/Workspaces';
+import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
@@ -63,6 +63,12 @@ export interface ChangelogProps extends GitChangelogOptions {
    * The options of the git changelog
    */
   gitChangelogOptions?: GitChangelogOptions;
+
+  /**
+   * Whether to ignore non updated packages
+   * @default false
+   */
+  ignoreNonUpdatedPackages?: boolean;
 }
 
 const contentTmplate = "---\n'${name}': '${increment}'\n---\n\n${changelog}";
@@ -86,6 +92,10 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
   get changesetRoot(): string {
     return join(this.context.rootPath, this.getConfig('changesetRoot'));
+  }
+
+  get changesetConfigPath(): string {
+    return join(this.changesetRoot, 'config.json');
   }
 
   override enabled(): boolean {
@@ -147,6 +157,10 @@ export default class Changelog extends Plugin<ChangelogProps> {
         '--no-changelog',
         '--update-dependencies'
       ]);
+
+      if (this.getConfig('ignoreNonUpdatedPackages')) {
+        await this.restoreIgnorePackages();
+      }
     } else {
       this.logger.debug('Skip generate changeset files');
     }
@@ -156,6 +170,24 @@ export default class Changelog extends Plugin<ChangelogProps> {
     this.logger.debug('new workspaces', newWorkspaces);
 
     this.context.setWorkspaces(newWorkspaces);
+  }
+
+  async restoreIgnorePackages(): Promise<void> {
+    const { changedPaths = [], packages = [] } = this.context.getConfig(
+      'workspaces'
+    ) as WorkspacesProps;
+
+    const noChangedPackages = packages
+      .filter((pkgPath) => !changedPaths.includes(pkgPath))
+      .map(
+        (pkgPath) =>
+          WorkspaceCreator.toWorkspace({ path: pkgPath }, this.context.rootPath)
+            .path
+      );
+
+    this.logger.debug('noChangedPackages', noChangedPackages);
+
+    await this.shell.exec(['git', 'restore', ...noChangedPackages]);
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
