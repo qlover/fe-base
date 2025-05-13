@@ -2,6 +2,8 @@
 
 import { execSync } from 'child_process';
 import { FeScriptContext } from '@qlover/scripts-context';
+import { findWorkspaces } from 'find-workspaces';
+import { relative, join } from 'path';
 
 export interface CheckPackagesOptions {
   /**
@@ -35,6 +37,23 @@ function githubLog(value: unknown, key = 'githubLog'): void {
   console.log(`${key}=${value}`);
 }
 
+function getWorkspacePackages(
+  context: FeScriptContext<CheckPackagesOptions>
+): string[] {
+  const packagesDirectories =
+    context.feConfig.release?.packagesDirectories || [];
+
+  if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
+    return packagesDirectories;
+  }
+
+  const root = process.cwd();
+
+  return (findWorkspaces(root) || []).map((workspace) =>
+    relative(root, workspace.location)
+  );
+}
+
 function getChangePackageNames(
   context: FeScriptContext<CheckPackagesOptions>
 ): string[] {
@@ -43,31 +62,17 @@ function getChangePackageNames(
     `git diff --name-only origin/${baseRef} HEAD`
   ).toString();
 
-  // get real files changed
-  const filteredFiles = changedFiles.split('\n');
+  const filteredFiles = changedFiles.split('\n').filter(Boolean);
+  const releasePackages = getWorkspacePackages(context);
 
-  const releasePackages: string[] =
-    context.feConfig.release?.packagesDirectories || [];
-
-  const result = releasePackages.reduce(
-    (acc, name) => {
-      acc[name] = false;
-      return acc;
-    },
-    {} as Record<string, boolean>
+  const normalizedReleasePackages = releasePackages.map((pkgPath) =>
+    join(pkgPath)
   );
+  const normalizedFilteredFiles = filteredFiles.map((file) => join(file));
 
-  filteredFiles.forEach((file) => {
-    releasePackages.forEach((name) => {
-      if (file.startsWith(name)) {
-        result[name] = true;
-      }
-    });
-  });
-
-  return Object.entries(result)
-    .filter(([, value]) => value)
-    .map(([key]) => key);
+  return normalizedReleasePackages.filter((pkgPath) =>
+    normalizedFilteredFiles.some((file) => file.startsWith(pkgPath))
+  );
 }
 
 async function addChangePackagePRLables(
