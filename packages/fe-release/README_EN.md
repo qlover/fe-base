@@ -14,7 +14,6 @@ A professional front-end release automation tool built on top of [@changesets/cl
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Workflows](#workflows)
-- [Plugin System](#plugin-system)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -22,18 +21,21 @@ A professional front-end release automation tool built on top of [@changesets/cl
 ## ✨ Features
 
 - **Automated Version Management**
+
   - Powered by `@changesets/cli` for reliable version control
   - Automatic version bumping based on changes
   - Configurable version increment strategies
   - Support for Semantic Versioning
 
 - **Flexible Release Workflows**
+
   - Manual release process for direct control
   - PR-based automated release workflow (GitHub)
   - Customizable release strategies
   - Multi-environment release support (dev, test, prod)
 
 - **GitHub Integration**
+
   - Automated PR creation and management
   - Smart PR labeling system
   - Automated release notes generation
@@ -41,6 +43,7 @@ A professional front-end release automation tool built on top of [@changesets/cl
   - Support for auto-merge and conflict resolution
 
 - **Workspace Support**
+
   - First-class monorepo support
   - Multi-package release coordination
   - Dependency graph awareness
@@ -69,6 +72,7 @@ pnpm add @qlover/fe-release -D
 ## 🏃 Quick Start
 
 1. **Basic Release**
+
 ```bash
 # Create a release PR
 fe-release -P
@@ -81,6 +85,7 @@ fe-release --changelog.increment=major
 ```
 
 2. **Workspace Release**
+
 ```bash
 # Release multiple packages
 fe-release --workspaces.change-labels=pkg1,pkg2 -P
@@ -90,6 +95,7 @@ fe-release --publish-path=packages/core
 ```
 
 3. **Environment Release**
+
 ```bash
 # Release to test environment
 fe-release --env=test -P
@@ -108,36 +114,36 @@ fe-release [options]
 
 #### Core Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-v, --version` | Show version | - |
-| `-d, --dry-run` | Preview mode without making changes | `false` |
-| `-V, --verbose` | Show detailed logs | `false` |
-| `-p, --publish-path` | Package publish path | - |
-| `-P, --githubPR.release-PR` | Create release PR | `false` |
-| `--env` | Release environment | `prod` |
+| Option                      | Description                         | Default |
+| --------------------------- | ----------------------------------- | ------- |
+| `-v, --version`             | Show version                        | -       |
+| `-d, --dry-run`             | Preview mode without making changes | `false` |
+| `-V, --verbose`             | Show detailed logs                  | `false` |
+| `-p, --publish-path`        | Package publish path                | -       |
+| `-P, --githubPR.release-PR` | Create release PR                   | `false` |
+| `--env`                     | Release environment                 | `prod`  |
 
 #### Advanced Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-b, --branch-name` | Release branch template | `release-${pkgName}-${tagName}` |
-| `-s, --source-branch` | Source branch | `master` |
-| `-i, --changelog.increment` | Version increment type | `patch` |
-| `--changelog.skip` | Skip changelog generation | `false` |
-| `--packages-directories` | Changed package directories | - |
-| `-l, --workspaces.change-labels` | Change labels | - |
+| Option                           | Description                 | Default                         |
+| -------------------------------- | --------------------------- | ------------------------------- |
+| `-b, --branch-name`              | Release branch template     | `release-${pkgName}-${tagName}` |
+| `-s, --source-branch`            | Source branch               | `master`                        |
+| `-i, --changelog.increment`      | Version increment type      | `patch`                         |
+| `--changelog.skip`               | Skip changelog generation   | `false`                         |
+| `--packages-directories`         | Changed package directories | -                               |
+| `-l, --workspaces.change-labels` | Change labels               | -                               |
 
 ## ⚙️ Configuration
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `FE_RELEASE` | Enable/disable release | `true` |
-| `FE_RELEASE_BRANCH` | Source branch | - |
-| `FE_RELEASE_ENV` | Release environment | - |
-| `FE_RELEASE_TOKEN` | GitHub Token | - |
+| Variable            | Description            | Default |
+| ------------------- | ---------------------- | ------- |
+| `FE_RELEASE`        | Enable/disable release | `true`  |
+| `FE_RELEASE_BRANCH` | Source branch          | -       |
+| `FE_RELEASE_ENV`    | Release environment    | -       |
+| `FE_RELEASE_TOKEN`  | GitHub Token           | -       |
 
 ### fe-config.json
 
@@ -163,8 +169,16 @@ fe-release [options]
           { "type": "feat", "section": "#### ✨ Features", "hidden": false },
           { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },
           { "type": "chore", "section": "#### 🔧 Chores", "hidden": true },
-          { "type": "docs", "section": "#### 📝 Documentation", "hidden": false },
-          { "type": "refactor", "section": "#### ♻️ Refactors", "hidden": false },
+          {
+            "type": "docs",
+            "section": "#### 📝 Documentation",
+            "hidden": false
+          },
+          {
+            "type": "refactor",
+            "section": "#### ♻️ Refactors",
+            "hidden": false
+          },
           { "type": "perf", "section": "#### 🚀 Performance", "hidden": false },
           { "type": "test", "section": "#### 🚨 Tests", "hidden": true },
           { "type": "style", "section": "#### 🎨 Styles", "hidden": true },
@@ -204,53 +218,24 @@ graph LR
     E --> F[Publish & Tag]
 ```
 
-## 🔌 Plugin System
-
-### Built-in Plugins
-
-- **GithubPR**: Handles GitHub PR automation
-- **Workspaces**: Manages workspace releases
-- **Changelog**: Generates changelogs
-- **Version**: Version management
-- **Publish**: Package publishing
-
-### Custom Plugin Example
-
-```typescript
-import { Plugin } from '@qlover/fe-release';
-
-class CustomPlugin extends Plugin {
-  async apply(context) {
-    // Plugin logic
-    const { config, logger } = context;
-    
-    // Execute before publish
-    this.hooks.beforePublish.tap('custom-plugin', async () => {
-      logger.info('Executing custom pre-publish operations');
-    });
-    
-    // Execute after publish
-    this.hooks.afterPublish.tap('custom-plugin', async () => {
-      logger.info('Executing custom post-publish operations');
-    });
-  }
-}
-```
-
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
 1. **Release Skipped**
+
    ```bash
    Error: Skip Release
    ```
+
    Solutions:
+
    - Check `FE_RELEASE` environment variable
    - Verify if there are changes to release
    - Validate package version needs update
 
 2. **PR Creation Failed**
+
    - Verify GitHub token permissions
    - Check repository access
    - Confirm branch existence
@@ -265,6 +250,7 @@ class CustomPlugin extends Plugin {
 ### Debug Mode
 
 Enable verbose logging:
+
 ```bash
 fe-release -V
 ```
