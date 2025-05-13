@@ -1,11 +1,13 @@
 import type ReleaseTask from '../../implments/ReleaseTask';
 import type { DeepPartial, PackageJson } from '../../type';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative } from 'node:path';
 import ReleaseContext from '../../implments/ReleaseContext';
 import Plugin from '../Plugin';
 import { MANIFEST_PATH } from '../../defaults';
 import { ReleaseLabel } from '../../implments/ReleaseLabel';
+import { findWorkspaces } from 'find-workspaces';
 import { WorkspaceCreator } from './WorkspaceCreator';
+
 export interface WorkspacesProps {
   /**
    * Whether to skip workspaces
@@ -50,6 +52,12 @@ export interface WorkspacesProps {
    * @private
    */
   packages?: string[];
+
+  /**
+   * All project packages mapping
+   * @private
+   */
+  projectWorkspaces?: WorkspaceValue[];
 }
 
 export interface WorkspaceValue {
@@ -71,16 +79,19 @@ export interface WorkspaceValue {
 
   /**
    * The tag name of the workspace
+   * @private
    */
   tagName?: string;
 
   /**
    * The last tag name of the workspace
+   * @private
    */
   lastTag?: string;
 
   /**
    * The changelog of the workspace
+   * @private
    */
   changelog?: string;
 }
@@ -100,7 +111,9 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.releaseLabel = new ReleaseLabel({
       changePackagesLabel:
         this.context.shared.changePackagesLabel || 'change:${name}',
-      packagesDirectories: this.context.shared.packagesDirectories || []
+      packagesDirectories: this.context.shared.packagesDirectories || [],
+      compare: (changedFilePath, packagePath) =>
+        resolve(changedFilePath).startsWith(resolve(packagePath))
     });
   }
 
@@ -185,17 +198,6 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     } as DeepPartial<WorkspacesProps>);
   }
 
-  private getPackages(): string[] {
-    const packagesDirections = this.context.shared.packagesDirectories;
-
-    if (Array.isArray(packagesDirections)) {
-      return packagesDirections;
-    }
-
-    // TODO: from package.json workspace or pnpm-workspace.yaml
-    return [];
-  }
-
   private async getGitWorkspaces(): Promise<string[]> {
     const sourceBranch = this.context.sourceBranch;
 
@@ -231,23 +233,45 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     return this.releaseLabel.pick(changed, packagesPaths);
   }
 
-  async getWorkspaces(): Promise<WorkspaceValue[]> {
-    const packages = this.getPackages();
+  private getProjectWorkspaces(): WorkspaceValue[] {
+    const rootPath = this.context.rootPath;
+    const packagesDirectories = this.context.shared.packagesDirectories;
 
+    if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
+      return packagesDirectories.map((path) =>
+        WorkspaceCreator.toWorkspace({ path }, rootPath)
+      );
+    }
+
+    const projectPackages = findWorkspaces(rootPath) || [];
+    return projectPackages.map((value) => ({
+      name: value.package.name,
+      version: value.package.version!,
+      path: relative(rootPath, value.location),
+      root: resolve(rootPath, value.location),
+      packageJson: value.package as Record<string, unknown>
+    }));
+  }
+
+  async getWorkspaces(): Promise<WorkspaceValue[]> {
+    const projectWorkspaces: WorkspaceValue[] = this.getProjectWorkspaces();
+
+    const packages = projectWorkspaces.map(({ path }) => path);
     this.logger.debug('packages', packages);
 
-    const changedPaths = await this.getChangedPackages(
+    const changeLabels = this.getConfig('changeLabels') as string[];
+    const changedPaths = await this.getChangedPackages(packages, changeLabels);
+
+    this.setConfig({
       packages,
-      this.getConfig('changeLabels')
-    );
-
-    this.setConfig({ packages, changedPaths });
-    this.logger.debug('changedPaths', changedPaths);
-
-    const workspaces: WorkspaceValue[] = changedPaths.map((path) => {
-      return WorkspaceCreator.toWorkspace({ path }, this.context.rootPath);
+      changedPaths,
+      projectWorkspaces: projectWorkspaces as DeepPartial<WorkspaceValue>[]
     });
 
-    return workspaces;
+    this.logger.debug('changedPaths', changedPaths);
+
+    return projectWorkspaces.filter((workspace) =>
+      changedPaths.includes(workspace.path)
+    );
   }
 }

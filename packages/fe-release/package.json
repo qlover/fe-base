@@ -64,6 +64,7 @@
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
+    "find-workspaces": "^0.3.1",
     "lodash": "^4.17.21"
   }
 }

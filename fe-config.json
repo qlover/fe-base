@@ -1,17 +1,6 @@
 {
   "protectedBranches": ["master"],
   "release": {
-    "packagesDirectories": [
-      "packages/fe-scripts",
-      "packages/fe-corekit",
-      "packages/corekit-bridge",
-      "packages/corekit-node",
-      "packages/create-app",
-      "packages/scripts-context",
-      "packages/env-loader",
-      "packages/fe-release",
-      "packages/logger"
-    ],
     "githubPR": {
       "commitArgs": ["--no-verify"],
       "pushChangedLabels": true
