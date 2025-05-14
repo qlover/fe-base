@@ -1,11 +1,13 @@
-import { AsyncExecutor, ExecutorPlugin, Logger } from '@qlover/fe-corekit';
+import { AsyncExecutor, ExecutorPlugin } from '@qlover/fe-corekit';
 import { IOCIdentifier } from '@/core/IOC';
 import { injectable, inject } from 'inversify';
+import type { LoggerInterface } from '@qlover/logger';
+
 
 @injectable()
 export class ProcesserService {
   constructor(
-    @inject(IOCIdentifier.Logger) private logger: Logger,
+    @inject(IOCIdentifier.Logger) private logger: LoggerInterface,
     @inject(AsyncExecutor) private executor: AsyncExecutor
   ) {}
 

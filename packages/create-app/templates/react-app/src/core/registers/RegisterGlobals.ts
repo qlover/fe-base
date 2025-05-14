@@ -1,4 +1,4 @@
-import { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
+import { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
 import type { EnvConfigInterface } from '@qlover/corekit-bridge';
 import type {
   InversifyRegisterInterface,
@@ -6,6 +6,7 @@ import type {
 } from '@/base/port/InversifyIocInterface';
 import { JSON, localJsonStorage, logger } from '../globals';
 import { IOCIdentifier } from '@/core/IOC';
+import { Logger } from '@qlover/logger';
 
 export class RegisterGlobals implements InversifyRegisterInterface {
   constructor(private appConfig: EnvConfigInterface) {}
