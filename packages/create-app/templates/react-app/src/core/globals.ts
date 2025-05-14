@@ -1,17 +1,15 @@
 // ! global variables, don't import any dependencies and don't have side effects
 import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-corekit';
-import { ColorLogger } from '@qlover/corekit-bridge';
-import { loggerStyles } from '@config/common';
+import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
 
 const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
 
 /**
  * Global logger
  */
-export const logger = new ColorLogger({
-  silent: isProduction,
-  debug: !isProduction,
-  colorsMaps: loggerStyles,
+export const logger = new Logger({
+  handlers: new ConsoleHandler(new ColorFormatter()),
+  silent: isProduction
 });
 
 /**
