@@ -37,7 +37,7 @@ export class ColorFormatter implements FormatterInterface {
   /**
    * Transform style object to CSS string
    */
-static styleToCss(style: ColorStyle): string {
+  static styleToCss(style: ColorStyle): string {
     return Object.entries(style)
       .map(([key, value]) => `${key}: ${value}`)
       .join('; ');
