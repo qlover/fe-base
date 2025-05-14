@@ -76,7 +76,7 @@ const catchPlugin = new ApiCatchPlugin(logger, errorCatcher);
 #### Tailwind 10px 根字体配置
 
 ```typescript
-import tailwindRoot10px from '@qlover/corekit-bridge/build/tw-root10px';
+import tailwindRoot10px from '@qlover/corekit-bridge/tw-root10px';
 
 // 在 tailwind.config.js 中使用
 module.exports = {
@@ -90,7 +90,7 @@ module.exports = {
 #### Vite 环境配置插件
 
 ```typescript
-import viteEnvConfig from '@qlover/corekit-bridge/build/vite-env-config';
+import viteEnvConfig from '@qlover/corekit-bridge/vite-env-config';
 
 // 在 vite.config.js 中使用
 export default {
@@ -109,7 +109,7 @@ export default {
 #### TypeScript 到本地化文件转换工具
 
 ```typescript
-import viteTs2Locales from '@qlover/corekit-bridge/build/vite-ts-to-locales';
+import viteTs2Locales from '@qlover/corekit-bridge/vite-ts-to-locales';
 
 // 在 vite.config.js 中使用
 export default {
@@ -132,16 +132,11 @@ export default {
 提供带颜色的控制台日志输出：
 
 ```typescript
-import { ColorLogger } from '@qlover/corekit-bridge';
+import { Logger, ColorFormatter } from '@qlover/corekit-bridge';
 
-const logger = new ColorLogger({
-  debug: true,
-  colorsMaps: {
-    DEBUG: 'color: blue;',
-    INFO: 'color: green;',
-    WARN: 'color: orange;',
-    ERROR: 'color: red;'
-  }
+const logger = new Logger({
+  level: 'debug',
+  handlers: new ColorFormatter();
 });
 
 logger.debug('调试信息');
