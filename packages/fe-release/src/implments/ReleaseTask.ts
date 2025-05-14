@@ -7,11 +7,12 @@ import GithubPR from '../plugins/githubPR/GithubPR';
 import Workspaces from '../plugins/workspaces/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
 import Changelog from '../plugins/Changelog';
-
+import GithubChangelog from '../plugins/githubPR/GithubChangelog';
 const innerTuples: PluginTuple<PluginClass>[] = [
   tuple(Workspaces),
   tuple(Changelog, {}),
-  tuple(GithubPR, {})
+  tuple(GithubPR, {}),
+  tuple(GithubChangelog, {})
 ];
 
 export default class ReleaseTask {
