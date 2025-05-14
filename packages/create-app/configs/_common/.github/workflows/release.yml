@@ -1,4 +1,4 @@
-name: Release [TPL:projectName]
+name: Release sub packages
 
 on:
   workflow_dispatch:
@@ -8,14 +8,12 @@ on:
     types:
       - closed
     paths:
-      - [TPL:releasePath]/**
+      - packages/**
 
 jobs:
-  release-PR:
-    # only run when PR merged and has changes:[TPL:projectName] and CI-Release labels
+  release-pull-request:
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:[TPL:projectName]') &&
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
@@ -35,35 +33,20 @@ jobs:
         with:
           node-version: '18.20.0'
 
-      - name: Install Pnpm
-        run: |
-          npm install -g pnpm
-          pnpm -v
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
 
-      - name: Pnpm Install dependencies
-        run: pnpm install
-
-      - name: Pnpm Lint
-        run: pnpm lint
-
-      - name: Pnpm Test
-        run: pnpm test
-
-      - name: Pnpm Build
-        run: pnpm build
-
-      - name: Create release PR
-        run: npm run release-pr:[TPL:projectName]
+      - name: Release Pull Request
+        run: node packages/fe-release/dist/cli.js -V -P --githubPR.push-change-labels --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}} --changelog.ignore-non-updated-packages
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} 
 
   release:
-    # only run when PR merged and has changes:[TPL:projectName] and CI-Release labels
     if: |
       github.event.pull_request.merged == true && 
-      contains(github.event.pull_request.labels.*.name, 'changes:[TPL:projectName]') &&
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 
     runs-on: ubuntu-latest
@@ -85,32 +68,14 @@ jobs:
         with:
           node-version: '18.20.0'
 
-      - name: Install Pnpm
-        run: |
-          npm install -g pnpm
-          pnpm -v
-
-      - name: Pnpm Install dependencies
-        run: pnpm install
-
-      - name: Pnpm Lint
-        run: pnpm lint
-
-      - name: Pnpm Test
-        run: pnpm test
-
-      - name: Pnpm Build
-        run: pnpm build
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
 
       - name: Create tag and publish
-        run: npm run release:[TPL:projectName]
+        run: node packages/fe-release/dist/cli.js -V --changelog.skip-changeset --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-      - name: Debug Git status
-        run: |
-          git status
-          git branch
-          git rev-parse --abbrev-ref HEAD
