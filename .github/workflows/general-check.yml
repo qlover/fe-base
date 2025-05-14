@@ -3,7 +3,7 @@ name: General check
 on:
   pull_request:
     branches:
-      - master
+      - test-release
     types: [opened, synchronize, reopened]
 
 jobs:
