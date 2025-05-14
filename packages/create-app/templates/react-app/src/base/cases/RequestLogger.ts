@@ -4,21 +4,20 @@ import {
   type ExecutorContext,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse,
-  Logger
 } from '@qlover/fe-corekit';
 import {
   type ApiCatchPluginConfig,
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
-
+import { LoggerInterface } from '@qlover/logger';
 @injectable()
 export class RequestLogger
   implements ExecutorPlugin<RequestAdapterFetchConfig>
 {
   readonly pluginName = 'RequestLogger';
 
-  constructor(@inject(IOCIdentifier.Logger) public logger: Logger) {}
+  constructor(@inject(IOCIdentifier.Logger) public logger: LoggerInterface) {}
 
   onBefore(context: ExecutorContext<RequestAdapterFetchConfig<unknown>>): void {
     this.logger.log(

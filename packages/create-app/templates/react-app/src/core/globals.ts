@@ -11,7 +11,7 @@ const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
 export const logger = new ColorLogger({
   silent: isProduction,
   debug: !isProduction,
-  colorsMaps: loggerStyles
+  colorsMaps: loggerStyles,
 });
 
 /**

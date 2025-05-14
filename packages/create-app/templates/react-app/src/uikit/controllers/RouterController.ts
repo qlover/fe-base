@@ -1,8 +1,8 @@
 import type { RouteConfigValue } from '@/base/cases/router-loader';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
+import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
-import { Logger } from '@qlover/fe-corekit';
 
 export type RouterControllerDependencies = {
   navigate: NavigateFunction;
@@ -12,7 +12,7 @@ export type RouterControllerOptions = {
   config: {
     routes: RouteConfigValue[];
   };
-  logger: Logger;
+  logger: LoggerInterface;
 };
 
 export type RouterControllerState = {
@@ -35,7 +35,7 @@ export class RouterController
     };
   }
 
-  get logger(): Logger {
+  get logger(): LoggerInterface {
     return this.options.logger;
   }
 
