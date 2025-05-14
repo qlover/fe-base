@@ -183,9 +183,8 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
   }
 
-  override async onExec(): Promise<void> {
+  override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
-
     await this.step({
       label: 'Release Commit',
       task: () => this.relesaeCommit(workspaces)
@@ -197,10 +196,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     await this.releasePullRequest(workspaces, releaseBranchParams);
-  }
-
-  override async onSuccess(): Promise<void> {
-    const workspaces = this.context.workspaces!;
 
     if (!this.getConfig('dryRunCreatePR')) {
       await this.context.runChangesetsCli('publish');

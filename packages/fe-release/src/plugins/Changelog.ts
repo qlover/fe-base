@@ -8,6 +8,7 @@ import {
   GitChangelog,
   GitChangelogOptions
 } from '../implments/gitChangeLog/gitChangeLog';
+import { ExecutorReleaseContext } from '../type';
 export interface ChangelogProps extends GitChangelogOptions {
   /**
    * The increment of the changelog
@@ -132,7 +133,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     });
   }
 
-  override async onExec(): Promise<void> {
+  override async onExec(_context: ExecutorReleaseContext): Promise<void> {
     const workspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>
@@ -143,6 +144,11 @@ export default class Changelog extends Plugin<ChangelogProps> {
         )
     });
 
+    this.context.setWorkspaces(workspaces);
+  }
+
+  override async onSuccess(): Promise<void> {
+    const workspaces = this.context.workspaces!;
     // create changeset files
     if (!this.getConfig('skipChangeset')) {
       await this.step({
