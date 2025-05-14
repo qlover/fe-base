@@ -1,5 +1,15 @@
 # @qlover/corekit-bridge
 
+## 1.0.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- restore types entry and enhance exports in package.json (#392)
+
+  ***
+
 ## 1.0.0
 
 ### Major Changes
