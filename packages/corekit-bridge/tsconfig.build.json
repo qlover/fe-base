@@ -5,7 +5,9 @@
     "inlineSourceMap": false,
     "inlineSources": false,
     "importHelpers": false,
-    "declaration": false
+    "declaration": true,
+    "outDir": "dist",
   },
-  "include": ["src"]
+  "include": ["src/build/**/*.ts"],
+  "exclude": ["src/core", "node_modules", "dist"]
 }
