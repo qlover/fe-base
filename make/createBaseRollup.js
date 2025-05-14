@@ -85,10 +85,13 @@ export function createBaseRollup({
     {
       input: input,
       external: defaultExternal,
-      output: formats.map(({ format, ext }) => ({
+      output: formats.map(({ format, ext, name, globals, ...reset }) => ({
         dir: buildDir,
         format,
-        entryFileNames: `[name].${ext}`
+        name: name,
+        globals,
+        entryFileNames: `[name].${ext}`,
+        ...reset
       })),
       plugins: createPlugin(isProduction, tsconfigOptions),
       treeshake

@@ -10,20 +10,16 @@
     "README.md"
   ],
   "types": "./dist/index.d.ts",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.js",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
-      "default": "./dist/index.es.js"
-    },
-    "./build/*": {
-      "types": "./dist/build/*/index.d.ts",
-      "import": "./dist/build/*/index.es.js",
-      "require": "./dist/build/*/index.cjs.js",
-      "default": "./dist/build/*/index.es.js"
-    },
-    "./package.json": "./package.json"
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.js",
+      "browser": "./dist/index.umd.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -44,7 +40,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build:umd": "rollup -c",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && tsc -p tsconfig.esm.json && rollup -c"
   },
   "dependencies": {
     "@qlover/fe-corekit": "workspace:*",

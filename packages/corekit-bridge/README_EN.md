@@ -76,7 +76,7 @@ Provides a series of useful build and configuration tools:
 #### Tailwind 10px Root Font Size Configuration
 
 ```typescript
-import tailwindRoot10px from '@qlover/corekit-bridge/build/tw-root10px';
+import tailwindRoot10px from '@qlover/corekit-bridge/tw-root10px';
 
 // Use in tailwind.config.js
 module.exports = {
@@ -90,7 +90,7 @@ module.exports = {
 #### Vite Environment Configuration Plugin
 
 ```typescript
-import viteEnvConfig from '@qlover/corekit-bridge/build/vite-env-config';
+import viteEnvConfig from '@qlover/corekit-bridge/vite-env-config';
 
 // Use in vite.config.js
 export default {
@@ -109,7 +109,7 @@ export default {
 #### TypeScript to Localization Files Conversion Tool
 
 ```typescript
-import viteTs2Locales from '@qlover/corekit-bridge/build/vite-ts-to-locales';
+import viteTs2Locales from '@qlover/corekit-bridge/vite-ts-to-locales';
 
 // Use in vite.config.js
 export default {
@@ -132,16 +132,11 @@ export default {
 Provides console log output with colors:
 
 ```typescript
-import { ColorLogger } from '@qlover/corekit-bridge';
+import { Logger, ColorFormatter } from '@qlover/corekit-bridge';
 
-const logger = new ColorLogger({
-  debug: true,
-  colorsMaps: {
-    DEBUG: 'color: blue;',
-    INFO: 'color: green;',
-    WARN: 'color: orange;',
-    ERROR: 'color: red;'
-  }
+const logger = new Logger({
+  level: 'debug',
+  handlers: new ColorFormatter();
 });
 
 logger.debug('Debug information');
