@@ -1,6 +1,6 @@
 import type { Shell } from '@qlover/scripts-context';
 
-export interface PRCommit {
+export interface CommitValue {
   hash: string;
   raw: {
     title: string;
@@ -11,10 +11,10 @@ export interface PRCommit {
     scope?: string;
     message: string;
   };
-  commits: CommitInfo[];
+  commits: CommitTuple[];
   prNumber?: string;
 }
-export interface CommitInfo {
+export interface CommitTuple {
   raw: string;
   type?: string;
   scope?: string;
@@ -22,7 +22,7 @@ export interface CommitInfo {
   body?: string;
 }
 
-export interface FlatCommit extends CommitInfo {
+export interface FlatCommit extends CommitTuple {
   prNumber?: string;
   hash: string;
   parentHash: string;
@@ -145,9 +145,9 @@ export class GitChangelog {
     protected options: GitChangelogOptions
   ) {}
 
-  private parseCommitBody(body: string): CommitInfo[] {
+  private parseCommitBody(body: string): CommitTuple[] {
     const lines = body.split('\n').filter(Boolean);
-    const commits: CommitInfo[] = [];
+    const commits: CommitTuple[] = [];
 
     let currentCommit: {
       raw: string;
@@ -205,49 +205,42 @@ export class GitChangelog {
     return commits;
   }
 
-  async getPRCommits(options?: GitChangelogOptions): Promise<PRCommit[]> {
-    const { from, to, directory, format } = {
-      ...this.options,
-      ...options
+  parseCommitMessage(hash: string, message: string): CommitValue {
+    const [title, ...bodyLines] = message.trim().split('\n');
+    const body = bodyLines.join('\n');
+
+    const prMatch = title.match(/\(#(\d+)\)/);
+    const titleMatch = title
+      .replace(/\s*\(#\d+\)\s*$/, '')
+      .match(/^(?:([a-z]+)(?:\((.*?)\))?: )?(.+)$/i);
+
+    return {
+      hash,
+      raw: {
+        title,
+        body
+      },
+      title: titleMatch
+        ? {
+            type: titleMatch[1]?.toLowerCase(),
+            scope: titleMatch[2]?.trim(),
+            message: titleMatch[3].trim()
+          }
+        : {
+            message: title.replace(/\s*\(#\d+\)\s*$/, '').trim()
+          },
+      commits: this.parseCommitBody(body),
+      prNumber: prMatch?.[1]
     };
+  }
 
-    const log = await this.getLog({
-      from,
-      to,
-      directory,
-      format,
-      noMerges: false
-    });
-
-    const commits = log.split('\n----------------------\n').filter(Boolean);
+  async getCommits(options?: GitChangelogOptions): Promise<CommitValue[]> {
+    const commits = await this.getLogCommits(options);
 
     return commits.map((commit) => {
-      const [hash, title, ...bodyLines] = commit.trim().split('\n');
-      const body = bodyLines.join('\n');
-
-      const prMatch = title.match(/\(#(\d+)\)/);
-      const titleMatch = title
-        .replace(/\s*\(#\d+\)\s*$/, '')
-        .match(/^(?:([a-z]+)(?:\((.*?)\))?: )?(.+)$/i);
-
-      return {
-        hash,
-        raw: {
-          title,
-          body
-        },
-        title: titleMatch
-          ? {
-              type: titleMatch[1]?.toLowerCase(),
-              scope: titleMatch[2]?.trim(),
-              message: titleMatch[3].trim()
-            }
-          : {
-              message: title.replace(/\s*\(#\d+\)\s*$/, '').trim()
-            },
-        commits: this.parseCommitBody(body),
-        prNumber: prMatch?.[1]
-      };
+      // first is hash
+      const [hash, ...bodyLines] = commit.trim().split('\n');
+      return this.parseCommitMessage(hash, bodyLines.join('\n'));
     });
   }
 
@@ -301,7 +294,7 @@ export class GitChangelog {
     return this.shell.exec(command.trim(), { dryRun: false });
   }
 
-  flatCommits(prCommits: PRCommit[]): FlatCommit[] {
+  flatCommits(prCommits: CommitValue[]): FlatCommit[] {
     const flatCommits: Array<FlatCommit> = [];
 
     for (const prCommit of prCommits) {
@@ -349,5 +342,24 @@ export class GitChangelog {
     const _formatter = formatter || new GitChangelogFormatter();
 
     return _formatter.formatFlatCommits(commits, { types }, this.shell);
+  }
+
+  async getLogCommits(options?: GitChangelogOptions): Promise<string[]> {
+    const { from, to, directory, format } = {
+      ...this.options,
+      ...options
+    };
+
+    const log = await this.getLog({
+      from,
+      to,
+      directory,
+      format,
+      noMerges: false
+    });
+
+    const commits = log.split('\n----------------------\n').filter(Boolean);
+
+    return commits;
   }
 }

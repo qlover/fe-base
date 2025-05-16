@@ -216,7 +216,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
       directory: workspace.path
     });
 
-    return gitChangelog.getPRCommits().then((prCommits) => {
+    return gitChangelog.getCommits().then((prCommits) => {
       const flatCommits = gitChangelog.flatCommits(prCommits);
       return gitChangelog.formatFlatCommits(flatCommits).join('\n');
     });
