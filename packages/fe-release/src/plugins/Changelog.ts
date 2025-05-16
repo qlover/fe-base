@@ -61,11 +61,6 @@ export interface ChangelogProps extends GitChangelogOptions {
   changesetRoot?: string;
 
   /**
-   * The options of the git changelog
-   */
-  gitChangelogOptions?: GitChangelogOptions;
-
-  /**
    * Whether to ignore non updated packages
    * @default false
    */
@@ -211,7 +206,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     workspace: WorkspaceValue;
   }): Promise<string> {
     const gitChangelog = new GitChangelog(this.context.shell, {
-      ...this.getConfig('gitChangelogOptions'),
+      ...this.getConfig(),
       from: lastTag,
       directory: workspace.path
     });
