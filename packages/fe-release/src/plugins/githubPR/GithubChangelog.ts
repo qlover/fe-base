@@ -1,14 +1,14 @@
 import type { Shell } from '@qlover/scripts-context';
-import {
-  CommitValue,
-  GitChangelog,
-  GitChangelogOptions
-} from '../../implments/gitChangeLog/gitChangeLog';
 import ReleaseContext from '../../implments/ReleaseContext';
 import Plugin from '../Plugin';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import groupBy from 'lodash/groupBy';
+import { CommitValue, GitChangelogOptions } from '../../interface/ChangeLog';
+import {
+  GitChangelog,
+  GitChangelogProps
+} from '../../implments/changelog/GitChangelog';
 
 export type GithubChangelogProps = {
   mergePRcommit?: boolean;
@@ -111,10 +111,11 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
       return changelog;
     }
 
-    const gitChangelog = new GitChangelog(this.context.shell, {
-      ...this.context.getConfig('changelog'),
+    const gitChangelog = new GitChangelog({
+      ...(this.context.getConfig('changelog') as GitChangelogProps),
       from: lastTag,
-      directory: path
+      directory: path,
+      shell: this.shell
     });
 
     const allCommits = await gitChangelog.getCommits();
@@ -131,7 +132,7 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
           await this.githubManager.getPullRequestCommits(+prNumber);
 
         return prCommits.map(({ sha, commit: { message } }) =>
-          Object.assign(gitChangelog.parseCommitMessage(sha, message), {
+          Object.assign(gitChangelog.toCommitValue(sha, message), {
             prNumber
           })
         );

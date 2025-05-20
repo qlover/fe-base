@@ -4,11 +4,13 @@ import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
+import { ExecutorReleaseContext } from '../type';
+import { GitChangelogOptions } from '../interface/ChangeLog';
 import {
   GitChangelog,
-  GitChangelogOptions
-} from '../implments/gitChangeLog/gitChangeLog';
-import { ExecutorReleaseContext } from '../type';
+  GitChangelogProps
+} from '../implments/changelog/GitChangelog';
+import { GitChangelogFormatter } from '../implments/changelog/GitChangelogFormatter';
 export interface ChangelogProps extends GitChangelogOptions {
   /**
    * The increment of the changelog
@@ -65,6 +67,12 @@ export interface ChangelogProps extends GitChangelogOptions {
    * @default false
    */
   ignoreNonUpdatedPackages?: boolean;
+
+  /**
+   * Whether to flat the commit body in the changelog
+   * @default false
+   */
+  flatCommitBody?: boolean;
 }
 
 const contentTmplate = "---\n'${name}': '${increment}'\n---\n\n${changelog}";
@@ -198,40 +206,42 @@ export default class Changelog extends Plugin<ChangelogProps> {
     );
   }
 
-  async createChangelog({
-    lastTag,
-    workspace
-  }: {
-    lastTag: string;
-    workspace: WorkspaceValue;
-  }): Promise<string> {
-    const gitChangelog = new GitChangelog(this.context.shell, {
-      ...this.getConfig(),
-      from: lastTag,
-      directory: workspace.path
-    });
-
-    return gitChangelog.getCommits().then((prCommits) => {
-      const flatCommits = gitChangelog.flatCommits(prCommits);
-      return gitChangelog.formatFlatCommits(flatCommits).join('\n');
-    });
-  }
-
   async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {
     // FIXME: where to get the tagName?
     const tagName = await this.getTagName(workspace);
 
     this.logger.debug('tagName is:', tagName);
 
-    const changelog = await this.createChangelog({
-      workspace,
-      lastTag: tagName
-    });
+    const baseConfig = this.getConfig() as ChangelogProps;
+    const props: GitChangelogProps = {
+      ...baseConfig,
+      from: tagName,
+      directory: workspace.path,
+      shell: this.shell
+    };
+
+    const gitChangelog = new GitChangelog(props);
+
+    let commits = await gitChangelog.getCommits();
+
+    if (baseConfig.flatCommitBody) {
+      // flat commits
+      commits = commits.flatMap((commit) => {
+        return Array(commit.commits) && commit.commits.length > 0
+          ? commit.commits.map((commit2) => ({
+              ...commit2,
+              hash: commit2.hash || commit.hash
+            }))
+          : { ...commit, commits: [] };
+      });
+    }
+
+    const changelog = new GitChangelogFormatter(props).format(commits);
 
     return {
       ...workspace,
       lastTag: tagName,
-      changelog
+      changelog: changelog.join('\n')
     };
   }
 
