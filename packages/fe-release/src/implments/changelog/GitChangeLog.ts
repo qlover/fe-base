@@ -77,6 +77,18 @@ export class GitChangelog implements ChangeLogInterface {
     });
   }
 
+  protected createBaseCommit(
+    message: string,
+    target?: Partial<BaseCommit>
+  ): BaseCommit {
+    return {
+      subject: message,
+      rawBody: message,
+      body: message,
+      ...target
+    } as BaseCommit;
+  }
+
   protected parseCommitBody(body: string): CommitValue[] {
     const lines = body.split('\n').filter(Boolean);
     const commits: CommitValue[] = [];
@@ -94,22 +106,14 @@ export class GitChangelog implements ChangeLogInterface {
         continue;
       }
 
-      const baseCommit: BaseCommit = {
-        subject: line,
-        rawBody: line,
-        body: line,
-        hash: undefined,
-        abbrevHash: undefined
-      } as BaseCommit;
+      const baseCommit = this.createBaseCommit(line);
 
-      const commitValue: CommitValue = {
+      commits.push({
         base: baseCommit,
         commitlint: commitlint,
         commits: [],
         prNumber: prMatch?.[1]
-      };
-
-      commits.push(commitValue);
+      });
     }
 
     return commits;
@@ -139,21 +143,16 @@ export class GitChangelog implements ChangeLogInterface {
   toCommitValue(hash: string, message: string): CommitValue {
     const [title] = message.trim().split('\n');
 
-    // 检查是否包含 PR 编号
     const prMatch = title.match(/\(#(\d+)\)/);
 
-    // 使用 parseCommitlint 解析提交标题
     const commitlint = this.parseCommitlint(title);
 
-    // 创建基本的提交对象
-    const baseCommit: BaseCommit = {
+    const baseCommit: BaseCommit = this.createBaseCommit(title, {
       hash,
       abbrevHash: hash.substring(0, 7),
-      subject: title,
       rawBody: message
-    } as BaseCommit;
+    });
 
-    // 创建并返回 CommitValue 对象
     return {
       base: baseCommit,
       commitlint,

@@ -37,13 +37,13 @@ export interface GitChangelogOptions {
 
   /**
    * custom commit format
-   * @default '- ${message}${prRef}\n'
+   *
+   * - support `CommitValue` properties
+   * - add scopeHeader, commitLink, prLink
+   *
+   * @default '\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}'
    */
   formatTemplate?: string;
-  /**
-   * custom formatter
-   */
-  formatter?: ChangelogFormatter;
 }
 
 export interface CommitTuple {

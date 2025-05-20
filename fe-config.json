@@ -6,6 +6,7 @@
       "pushChangedLabels": true
     },
     "changelog": {
+      "formatTemplate": "\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}",
       "types": [
         { "type": "feat", "section": "#### ✨ Features", "hidden": false },
         { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },

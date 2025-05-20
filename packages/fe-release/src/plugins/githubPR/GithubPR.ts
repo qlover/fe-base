@@ -192,10 +192,10 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       this.githubManager
     );
 
-    const newWorkspaces = await githubChangelog.transformWorkspace(
-      workspaces,
-      this.context
-    );
+    const newWorkspaces = await this.step({
+      label: 'GithubPR Changelogs',
+      task: () => githubChangelog.transformWorkspace(workspaces, this.context)
+    });
 
     this.context.setWorkspaces(newWorkspaces);
     this.logger.debug('github changelog', this.context.workspaces);
