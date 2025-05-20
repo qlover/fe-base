@@ -67,11 +67,12 @@ export class GitChangelog implements ChangeLogInterface {
     const gitCommits = await this.getGitLog(options);
 
     return gitCommits.map((commit) => {
-      const { subject, rawBody, body } = commit;
+      const { subject, rawBody } = commit;
       return {
         base: commit,
         commitlint: this.parseCommitlint(subject || rawBody || ''),
-        commits: body ? this.parseCommitBody(body) : []
+        // commits: body ? this.parseCommitBody(body) : [],
+        commits: []
       } as CommitValue;
     });
   }
@@ -96,6 +97,7 @@ export class GitChangelog implements ChangeLogInterface {
       const baseCommit: BaseCommit = {
         subject: line,
         rawBody: line,
+        body: line,
         hash: undefined,
         abbrevHash: undefined
       } as BaseCommit;

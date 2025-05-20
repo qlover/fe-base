@@ -7,6 +7,7 @@ import ReleaseContext from '../../implments/ReleaseContext';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
+import GithubChangelog from './GithubChangelog';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
@@ -181,6 +182,23 @@ export default class GithubPR extends GitBase<GithubPRProps> {
         `npm config set //registry.npmjs.org/:_authToken=${npmToken}`
       );
     }
+  }
+
+  override async onExec(): Promise<void> {
+    const workspaces = this.context.workspaces!;
+
+    const githubChangelog = new GithubChangelog(
+      this.context.getConfig('changelog'),
+      this.githubManager
+    );
+
+    const newWorkspaces = await githubChangelog.transformWorkspace(
+      workspaces,
+      this.context
+    );
+
+    this.context.setWorkspaces(newWorkspaces);
+    this.logger.debug('github changelog', this.context.workspaces);
   }
 
   override async onSuccess(): Promise<void> {

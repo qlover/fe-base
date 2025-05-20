@@ -44,8 +44,8 @@ export class GitChangelogFormatter implements ChangelogFormatter {
         typeCommits.forEach((commit) => {
           changelog.push(this.formatCommit(commit, options));
 
-          if (commit.base.rawBody) {
-            const bodyLines = commit.base.rawBody
+          if (commit.base.body) {
+            const bodyLines = commit.base.body
               .split('\n')
               .map((line) => `  ${line}`);
             changelog.push(...bodyLines);

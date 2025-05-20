@@ -1,134 +1,45 @@
-import type { Shell } from '@qlover/scripts-context';
 import ReleaseContext from '../../implments/ReleaseContext';
-import Plugin from '../Plugin';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
-import groupBy from 'lodash/groupBy';
 import { CommitValue, GitChangelogOptions } from '../../interface/ChangeLog';
 import {
+  CHANGELOG_ALL_FIELDS,
   GitChangelog,
   GitChangelogProps
-} from '../../implments/changelog/GitChangelog';
-
-export type GithubChangelogProps = {
-  mergePRcommit?: boolean;
-};
+} from '../../implments/changelog/GitChangeLog';
+import { GitChangelogFormatter } from '../../implments/changelog/GitChangelogFormatter';
 
 const DOMAIN = 'https://github.com';
-const DEFAULT_TEMPLATE =
-  '\n- ${scopeHeader} ${title.message} ${commitLink} ${prLink}';
 
-export class GithubChangelogFormatter {
-  format(
-    commits: CommitValue[],
-    options: GitChangelogOptions & { repoUrl: string },
-    shell: Shell
-  ): string[] {
-    const { types = [] } = options;
-    const changelog: string[] = [];
-
-    const groupedCommits = groupBy(commits, (commit) => commit.commitlint.type);
-
-    types.forEach((typeConfig) => {
-      const { type, section, hidden } = typeConfig;
-
-      if (hidden) return;
-
-      const typeCommits = groupedCommits[type] || [];
-
-      if (typeCommits.length > 0) {
-        changelog.push(section || '');
-
-        typeCommits.forEach((commit) => {
-          changelog.push(this.formatCommit(commit, options, shell));
-
-          if (commit.base.rawBody) {
-            const bodyLines = commit.base.rawBody
-              .split('\n')
-              .map((line) => `  ${line}`);
-            changelog.push(...bodyLines);
-          }
-        });
-      }
-    });
-
-    return changelog;
-  }
-
-  formatCommit(
-    commit: CommitValue,
-    options: GitChangelogOptions & { repoUrl: string },
-    shell: Shell
-  ): string {
-    const {
-      commitlint,
-      base: { hash },
-      prNumber
-    } = commit;
-    const { repoUrl, formatTemplate = DEFAULT_TEMPLATE } = options;
-
-    const scopeHeader = commitlint.scope
-      ? `${this.formatScope(commitlint.scope)} `
-      : '';
-    const prLink = prNumber
-      ? `${this.foramtLink('#' + prNumber, `${repoUrl}/pull/${prNumber}`)}`
-      : '';
-    const hashLink = hash
-      ? `${this.foramtLink(hash.slice(0, 7), `${repoUrl}/commit/${hash}`)}`
-      : '';
-
-    return shell.format(formatTemplate, {
-      ...commit,
-      scopeHeader: scopeHeader,
-      commitLink: hashLink,
-      prLink
-    });
-  }
-
-  foramtLink(target: string, url?: string): string {
-    return url ? `([${target}](${url}))` : `(${target})`;
-  }
-
-  formatCommitLink(target: string, url?: string): string {
-    return url ? `([${target}](${url}))` : `(${target})`;
-  }
-
-  formatScope(scope: string): string {
-    return `**${scope}:**`;
-  }
+export interface GithubChangelogProps extends GitChangelogProps {
+  mergePRcommit?: boolean;
+  githubRootPath?: string;
 }
 
-export default class GithubChangelog extends Plugin<GithubChangelogProps> {
-  private githubManager: GithubManager;
-  private formatter: GithubChangelogFormatter;
-  private githubRootPath: string = '';
-
-  constructor(context: ReleaseContext, props?: GithubChangelogProps) {
-    super(context, 'githubChangelog', props);
-
-    this.githubManager = new GithubManager(this.context);
-    this.formatter = new GithubChangelogFormatter();
+export default class GithubChangelog extends GitChangelog {
+  constructor(
+    protected options: GithubChangelogProps,
+    protected githubManager: GithubManager
+  ) {
+    super(options);
   }
 
-  async getFullCommit(workspace: WorkspaceValue): Promise<unknown> {
-    const { path, lastTag, changelog = '' } = workspace;
+  async getFullCommit(options?: GitChangelogOptions): Promise<CommitValue[]> {
+    const _options = { ...this.options, ...options };
 
-    if (!lastTag) {
-      return changelog;
-    }
-
-    const gitChangelog = new GitChangelog({
-      ...(this.context.getConfig('changelog') as GitChangelogProps),
-      from: lastTag,
-      directory: path,
-      shell: this.shell
-    });
-
-    const allCommits = await gitChangelog.getCommits();
+    const allCommits = await this.getCommits(_options);
 
     const newallCommits = await Promise.all(
       allCommits.map(async (commit) => {
-        const { prNumber } = commit;
+        let { prNumber } = commit;
+
+        if (!prNumber && commit.base.subject) {
+          const prMatch = commit.base.subject.match(/\(#(\d+)\)/);
+          if (prMatch) {
+            prNumber = prMatch[1];
+            commit.prNumber = prNumber;
+          }
+        }
 
         if (!prNumber) {
           return commit;
@@ -138,7 +49,7 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
           await this.githubManager.getPullRequestCommits(+prNumber);
 
         return prCommits.map(({ sha, commit: { message } }) =>
-          Object.assign(gitChangelog.toCommitValue(sha, message), {
+          Object.assign(this.toCommitValue(sha, message), {
             prNumber
           })
         );
@@ -148,18 +59,35 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
     return newallCommits.flat();
   }
 
-  override async onExec(): Promise<void> {
-    const workspaces = this.context.workspaces!;
-
-    this.githubRootPath = [
+  async transformWorkspace(
+    workspaces: WorkspaceValue[],
+    context: ReleaseContext
+  ): Promise<WorkspaceValue[]> {
+    const githubRootPath = [
       DOMAIN,
-      this.context.shared.authorName!,
-      this.context.shared.repoName!
+      context.shared.authorName!,
+      context.shared.repoName!
     ].join('/');
 
-    const newWorkspaces = await Promise.all(
+    const changelogProps = {
+      ...(context.getConfig('changelog') as GitChangelogOptions),
+      githubRootPath,
+      mergePRcommit: true,
+      shell: context.shell
+    };
+    const githubChangelog = new GithubChangelog(
+      changelogProps,
+      this.githubManager
+    );
+    const formatter = new GitChangelogFormatter(changelogProps);
+
+    return await Promise.all(
       workspaces.map(async (workspace) => {
-        const changelog = await this.getFullCommit(workspace);
+        const changelog = await githubChangelog.getFullCommit({
+          from: workspace.lastTag ?? '',
+          directory: workspace.path,
+          fileds: CHANGELOG_ALL_FIELDS
+        });
 
         if (typeof changelog === 'string') {
           return {
@@ -168,14 +96,10 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
           };
         }
 
-        const changelogLines = this.formatter.format(
-          changelog as CommitValue[],
-          {
-            ...this.context.getConfig('changelog'),
-            repoUrl: this.githubRootPath
-          },
-          this.context.shell
-        );
+        const changelogLines = formatter.format(changelog, {
+          ...changelogProps,
+          repoUrl: githubRootPath
+        });
 
         return {
           ...workspace,
@@ -183,8 +107,5 @@ export default class GithubChangelog extends Plugin<GithubChangelogProps> {
         };
       })
     );
-
-    this.context.setWorkspaces(newWorkspaces);
-    this.logger.debug('github changelog', this.context.workspaces);
   }
 }
