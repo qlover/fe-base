@@ -1,0 +1,58 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+这个文档目前cursor还不支持自定义说明, 未来可能支持
+
+This document currently cursor does not support custom descriptions, which may be supported in the future.
+
+## Git Commit Standards
+
+All commit messages must be in English
+
+### Format
+
+```
+type(scope?): subject
+
+body?
+
+footer?
+```
+
+### Length Limits
+
+- Subject line: Maximum 50 characters
+- Body line: Maximum 72 characters per line
+- Total commit message: Should not exceed 500 characters
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+- `test`: Adding/updating tests
+- `chore`: Build tasks, configs, etc
+
+### Rules
+
+- Subject: Must be concise (max 50 chars), present tense, no period
+- Scope (Optional): Component name (e.g., auth, api)
+- Body (Optional): Wrap text at 72 chars, use bullet points for multiple items
+- Footer (Optional): Breaking changes, issues
+
+### Examples
+
+```
+feat(auth): implement google oauth login
+fix(api): fix session timeout issue
+docs: add installation steps
+```
+
+### notes
+
+如果可以将修改的文件列表列在 Footer 中
