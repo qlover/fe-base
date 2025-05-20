@@ -5,12 +5,14 @@ import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
 import { ExecutorReleaseContext } from '../type';
-import { GitChangelogOptions } from '../interface/ChangeLog';
+import { CommitValue, GitChangelogOptions } from '../interface/ChangeLog';
 import {
+  CHANGELOG_ALL_FIELDS,
   GitChangelog,
   GitChangelogProps
 } from '../implments/changelog/GitChangelog';
 import { GitChangelogFormatter } from '../implments/changelog/GitChangelogFormatter';
+
 export interface ChangelogProps extends GitChangelogOptions {
   /**
    * The increment of the changelog
@@ -217,21 +219,28 @@ export default class Changelog extends Plugin<ChangelogProps> {
       ...baseConfig,
       from: tagName,
       directory: workspace.path,
-      shell: this.shell
+      shell: this.shell,
+      fileds: CHANGELOG_ALL_FIELDS
     };
 
     const gitChangelog = new GitChangelog(props);
 
-    let commits = await gitChangelog.getCommits();
+    let commits = await gitChangelog.getCommits(props);
 
     if (baseConfig.flatCommitBody) {
       // flat commits
       commits = commits.flatMap((commit) => {
-        return Array(commit.commits) && commit.commits.length > 0
-          ? commit.commits.map((commit2) => ({
-              ...commit2,
-              hash: commit2.hash || commit.hash
-            }))
+        return Array.isArray(commit.commits) && commit.commits.length > 0
+          ? commit.commits.map(
+              (commit2) =>
+                ({
+                  ...commit2,
+                  base: {
+                    ...commit2.base,
+                    hash: commit2.base.hash || commit.base.hash
+                  }
+                }) as CommitValue
+            )
           : { ...commit, commits: [] };
       });
     }

@@ -1,3 +1,9 @@
+import type { CommitField } from 'gitlog';
+
+export type BaseCommit = {
+  [key in CommitField]: string | undefined;
+};
+
 export interface GitChangelogOptions {
   /**
    * start tag
@@ -11,16 +17,12 @@ export interface GitChangelogOptions {
    * log directory
    */
   directory?: string;
-  /**
-   * log
-   * @default '%H%n%s%n%b%n----------------------'
-   */
-  format?: string;
 
   /**
-   *
+   * gitlog default fields
+   * @default ["abbrevHash", "hash", "subject", "authorName", "authorDate"]
    */
-  logCommand?: string;
+  fileds?: CommitField[];
 
   /**
    * not include merge commit
@@ -52,19 +54,31 @@ export interface CommitTuple {
   body?: string;
 }
 
+export interface Commitlint {
+  type?: string;
+  scope?: string;
+  message: string;
+}
+
 export interface CommitValue {
-  hash: string;
-  raw: {
-    title: string;
-    body: string;
-    bodyLines?: string[];
-  };
-  title: {
-    type?: string;
-    scope?: string;
-    message: string;
-  };
+  /**
+   * git log base info
+   */
+  base: BaseCommit;
+
+  /**
+   * parsed commitlint info
+   */
+  commitlint: Commitlint;
+
+  /**
+   * parsed commitlint info
+   */
   commits: CommitValue[];
+
+  /**
+   * pr number
+   */
   prNumber?: string;
 }
 

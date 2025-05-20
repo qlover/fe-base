@@ -27,7 +27,7 @@ export class GithubChangelogFormatter {
     const { types = [] } = options;
     const changelog: string[] = [];
 
-    const groupedCommits = groupBy(commits, (commit) => commit.title.type);
+    const groupedCommits = groupBy(commits, (commit) => commit.commitlint.type);
 
     types.forEach((typeConfig) => {
       const { type, section, hidden } = typeConfig;
@@ -42,8 +42,8 @@ export class GithubChangelogFormatter {
         typeCommits.forEach((commit) => {
           changelog.push(this.formatCommit(commit, options, shell));
 
-          if (commit.raw.body) {
-            const bodyLines = commit.raw.body
+          if (commit.base.rawBody) {
+            const bodyLines = commit.base.rawBody
               .split('\n')
               .map((line) => `  ${line}`);
             changelog.push(...bodyLines);
@@ -60,10 +60,16 @@ export class GithubChangelogFormatter {
     options: GitChangelogOptions & { repoUrl: string },
     shell: Shell
   ): string {
-    const { title, hash, prNumber } = commit;
+    const {
+      commitlint,
+      base: { hash },
+      prNumber
+    } = commit;
     const { repoUrl, formatTemplate = DEFAULT_TEMPLATE } = options;
 
-    const scopeHeader = title.scope ? `${this.formatScope(title.scope)} ` : '';
+    const scopeHeader = commitlint.scope
+      ? `${this.formatScope(commitlint.scope)} `
+      : '';
     const prLink = prNumber
       ? `${this.foramtLink('#' + prNumber, `${repoUrl}/pull/${prNumber}`)}`
       : '';

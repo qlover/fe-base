@@ -7,7 +7,7 @@ import {
 import groupBy from 'lodash/groupBy';
 
 const DEFAULT_TEMPLATE =
-  '\n- ${scopeHeader} ${title.message} ${commitLink} ${prLink}';
+  '\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}';
 
 export interface Options extends GitChangelogOptions {
   repoUrl?: string;
@@ -25,10 +25,10 @@ export class GitChangelogFormatter implements ChangelogFormatter {
     const changelog: string[] = [];
 
     const groupedCommits = groupBy(commits, (commit) => {
-      if (commit.title.type) {
-        return commit.title.type;
+      if (commit.commitlint.type) {
+        return commit.commitlint.type;
       }
-      return commit.title.message;
+      return commit.commitlint.message;
     });
 
     types.forEach((typeConfig) => {
@@ -44,8 +44,8 @@ export class GitChangelogFormatter implements ChangelogFormatter {
         typeCommits.forEach((commit) => {
           changelog.push(this.formatCommit(commit, options));
 
-          if (commit.raw.body) {
-            const bodyLines = commit.raw.body
+          if (commit.base.rawBody) {
+            const bodyLines = commit.base.rawBody
               .split('\n')
               .map((line) => `  ${line}`);
             changelog.push(...bodyLines);
@@ -58,18 +58,30 @@ export class GitChangelogFormatter implements ChangelogFormatter {
   }
 
   formatCommit(commit: CommitValue, options?: Options): string {
-    const { title, hash, prNumber } = commit;
+    const {
+      commitlint,
+      base: { hash },
+      prNumber
+    } = commit;
     const { repoUrl, formatTemplate = DEFAULT_TEMPLATE } = {
       ...this.options,
       ...options
     };
 
-    const scopeHeader = title.scope ? `${this.formatScope(title.scope)} ` : '';
+    const scopeHeader = commitlint.scope
+      ? this.formatScope(commitlint.scope)
+      : '';
     const prLink = prNumber
-      ? `${this.foramtLink('#' + prNumber, repoUrl ? `${repoUrl}/pull/${prNumber}` : '')}`
+      ? this.foramtLink(
+          '#' + prNumber,
+          repoUrl ? `${repoUrl}/pull/${prNumber}` : ''
+        )
       : '';
     const hashLink = hash
-      ? `${this.foramtLink(hash.slice(0, 7), repoUrl ? `${repoUrl}/commit/${hash}` : '')}`
+      ? this.foramtLink(
+          hash.slice(0, 7),
+          repoUrl ? `${repoUrl}/commit/${hash}` : ''
+        )
       : '';
 
     return this.options.shell.format(formatTemplate, {
