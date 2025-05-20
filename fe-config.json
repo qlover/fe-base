@@ -1,5 +1,5 @@
 {
-  "protectedBranches": ["master", "test-release"],
+  "protectedBranches": ["master", "develop"],
   "release": {
     "githubPR": {
       "commitArgs": ["--no-verify"],
