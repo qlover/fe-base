@@ -55,6 +55,19 @@ describe('GitChangelog', () => {
         message: 'improve button design'
       });
     });
+
+    it('should handle PR references in commit messages with body', () => {
+      const messageBody = '\n\nThis is a detailed description of the feature.';
+      const message = 'feat(ui): improve button design (#123)' + messageBody;
+      const result = gitChangelog.parseCommitlint(message, message);
+
+      expect(result).toEqual({
+        type: 'feat',
+        scope: 'ui',
+        message: 'improve button design',
+        body: messageBody
+      });
+    });
   });
 
   describe('toCommitValue', () => {

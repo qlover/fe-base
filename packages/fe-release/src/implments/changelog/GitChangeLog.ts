@@ -104,14 +104,14 @@ export class GitChangelog implements ChangeLogInterface {
         type: titleMatch[1]?.toLowerCase(),
         scope: titleMatch[2]?.trim(),
         message: titleMatch[3].trim(),
-        body: bodyLines
+        body: bodyLines || undefined
       };
     }
 
     return {
       // message: title.replace(/\s*\(#\d+\)\s*$/, '').trim()
       message: title,
-      body: bodyLines
+      body: bodyLines || undefined
     };
   }
 
