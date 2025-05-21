@@ -70,7 +70,7 @@ export class GitChangelog implements ChangeLogInterface {
       const { subject, rawBody } = commit;
       return {
         base: commit,
-        commitlint: this.parseCommitlint(subject || rawBody || ''),
+        commitlint: this.parseCommitlint(subject || '', rawBody),
         // commits: body ? this.parseCommitBody(body) : [],
         commits: []
       } as CommitValue;
@@ -89,38 +89,11 @@ export class GitChangelog implements ChangeLogInterface {
     } as BaseCommit;
   }
 
-  protected parseCommitBody(body: string): CommitValue[] {
-    const lines = body.split('\n').filter(Boolean);
-    const commits: CommitValue[] = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-
-      if (!line) continue;
-
-      const prMatch = line.match(/\(#(\d+)\)/);
-
-      const commitlint = this.parseCommitlint(line);
-
-      if (!commitlint.message) {
-        continue;
-      }
-
-      const baseCommit = this.createBaseCommit(line);
-
-      commits.push({
-        base: baseCommit,
-        commitlint: commitlint,
-        commits: [],
-        prNumber: prMatch?.[1]
-      });
-    }
-
-    return commits;
-  }
-
-  parseCommitlint(message: string): Commitlint {
-    const [title] = message.trim().split('\n');
+  parseCommitlint(subject: string, rawBody: string = ''): Commitlint {
+    const [title] = subject.trim().split('\n');
+    const bodyLines = rawBody.startsWith(title)
+      ? rawBody.replace(title, '')
+      : rawBody;
 
     const titleMatch = title
       .replace(/\s*\(#\d+\)\s*$/, '')
@@ -130,13 +103,15 @@ export class GitChangelog implements ChangeLogInterface {
       return {
         type: titleMatch[1]?.toLowerCase(),
         scope: titleMatch[2]?.trim(),
-        message: titleMatch[3].trim()
+        message: titleMatch[3].trim(),
+        body: bodyLines
       };
     }
 
     return {
       // message: title.replace(/\s*\(#\d+\)\s*$/, '').trim()
-      message: title
+      message: title,
+      body: bodyLines
     };
   }
 
@@ -145,7 +120,7 @@ export class GitChangelog implements ChangeLogInterface {
 
     const prMatch = title.match(/\(#(\d+)\)/);
 
-    const commitlint = this.parseCommitlint(title);
+    const commitlint = this.parseCommitlint(title, message);
 
     const baseCommit: BaseCommit = this.createBaseCommit(title, {
       hash,
