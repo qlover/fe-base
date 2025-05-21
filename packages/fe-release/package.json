@@ -1,7 +1,7 @@
 {
   "name": "@qlover/fe-release",
   "description": "A tool for releasing front-end projects, supporting multiple release modes and configurations, simplifying the release process and improving efficiency.",
-  "version": "2.1.6",
+  "version": "2.3.0",
   "type": "module",
   "private": false,
   "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-release",
@@ -65,6 +65,7 @@
     "@qlover/logger": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
     "find-workspaces": "^0.3.1",
+    "gitlog": "^5.1.0",
     "lodash": "^4.17.21"
   }
 }

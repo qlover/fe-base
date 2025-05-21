@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Language Allowed Areas
+
+- 我的主要语言是中文
+- 其他有关代码注释，说明，文档等优先使用英文
+
+## File Organization
+
+- Follow project structure conventions
+- Use meaningful file names
+- Maintain consistent naming

@@ -1,6 +1,9 @@
 export { default as ReleaseContext } from './implments/ReleaseContext';
 export { default as ReleaseTask } from './implments/ReleaseTask';
 export * from './implments/ReleaseLabel';
+export * from './implments/changelog/GitChangeLog';
+export * from './implments/changelog/GitChangelogFormatter';
+export * from './plugins/githubPR/GithubChangelog';
 export { default as Plugin } from './plugins/Plugin';
 export * from './type';
 export * from './utils/tuple';

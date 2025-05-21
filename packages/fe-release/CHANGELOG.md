@@ -1,5 +1,60 @@
 # @qlover/fe-release
 
+## 2.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **changelog:** add support for commit body in changelog generation ([5383055](https://github.com/qlover/fe-base/commit/5383055d2abb095df40575ce2d40e4c40827e422)) ([#398](https://github.com/qlover/fe-base/pull/398))
+
+  - Updated GitChangelog to parse and include commit body along with the title.
+  - Enhanced GitChangelogFormatter to conditionally format and display commit body in the changelog.
+  - Introduced commitBody option in GitChangelogOptions to control the inclusion of commit body in the output.
+  - Updated related interfaces to accommodate the new body field in commitlint.
+
+  Co-authored-by: QRJ <renjie.qin@brain.im>
+
+## 2.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **githubPR:** add GithubChangelog plugin to enhance changelog management ([a5c5913](https://github.com/qlover/fe-base/commit/a5c591316a2ee1a80becb5d4ec0dd503877e2459)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  feat(githubPR): add GithubChangelog plugin to enhance changelog management
+
+- **GithubChangelog:** add debug logging for workspaces in changelog plugin ([c57ffb8](https://github.com/qlover/fe-base/commit/c57ffb87e23ec4d4188890a2e6f4cf0a4c11e3bb)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  feat(GithubChangelog): add debug logging for workspaces in changelog plugin
+
+- **changelog:** implement GitChangelog and GitChangelogFormatter for enhanced changelog generation ([f9901d6](https://github.com/qlover/fe-base/commit/f9901d65adbf01588b2b96f1666608e5fdb78aa2)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  feat(changelog): implement GitChangelog and GitChangelogFormatter for enhanced changelog generation
+
+- **changelog:** integrate gitlog for enhanced commit logging and changelog generation ([c29d502](https://github.com/qlover/fe-base/commit/c29d502885d49240d2130cecb705a43a8aae1d46)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  feat(changelog): integrate gitlog for enhanced commit logging and changelog generation
+
+- **changelog:** enhance changelog formatting and introduce GitChangelog class ([86a8f2a](https://github.com/qlover/fe-base/commit/86a8f2a835260660f1683a69a0b504099cf4a93e)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  feat(changelog): enhance changelog formatting and introduce GitChangelog class
+
+#### 🐞 Bug Fixes
+
+- **githubPR:** enhance PR handling logic and introduce publishPR method ([5e2a2eb](https://github.com/qlover/fe-base/commit/5e2a2eb463294c847c606f472367a206dcdb7e2d)) ([#396](https://github.com/qlover/fe-base/pull/396))
+  fix(githubPR): enhance PR handling logic and introduce publishPR method
+
+- **changelog:** update onExec method to accept ExecutorReleaseContext and enhance onSuccess handling ([eacb97e](https://github.com/qlover/fe-base/commit/eacb97e175dff121a399714f41ddf514bbb68066)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  fix(changelog): update onExec method to accept ExecutorReleaseContext and enhance onSuccess handling
+
+- **ColorFormatter.test:** remove unnecessary console.info call from test ([6f58880](https://github.com/qlover/fe-base/commit/6f588806c1db82042aaf2f9ebfa29846397e254c)) ([#389](https://github.com/qlover/fe-base/pull/389))
+  fix(ColorFormatter.test): remove unnecessary console.info call from test
+
+#### ♻️ Refactors
+
+- update branch references from master to test-release in configuration files ([c2f7cad](https://github.com/qlover/fe-base/commit/c2f7cad1512fc77982834a4e344580636061a0a4)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  refactor: update branch references from master to test-release in configuration files
+
+- **changelog:** streamline changelog configuration and enhance formatting logic ([25b8547](https://github.com/qlover/fe-base/commit/25b8547ad00877c9d7ed9375ca4b0a4c453c784f)) ([#395](https://github.com/qlover/fe-base/pull/395))
+  refactor(changelog): streamline changelog configuration and enhance formatting logic
+
 ## 2.1.6
 
 ### Patch Changes

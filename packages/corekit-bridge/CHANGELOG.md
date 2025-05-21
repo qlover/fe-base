@@ -1,5 +1,40 @@
 # @qlover/corekit-bridge
 
+## 1.0.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- restore types entry and enhance exports in package.json (#392)
+
+  ***
+
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- enhance build configuration and export structure (#390)
+
+  - Updated Rollup configuration to utilize createBaseRollup for streamlined builds.
+  - Added new TypeScript configuration files for building and ESM support.
+  - Modified package.json to include main and module entries for better module resolution.
+  - Expanded exports in core index file to include additional dependencies.
+  - Refactored ColorFormatter to improve method visibility and added override annotation.
+
+#### 🐞 Bug Fixes
+
+- remove unnecessary console.info call from test (#389)
+
+#### 📝 Documentation
+
+- update import paths and refactor logger usage in documentation (#390)
+
+  - Changed import paths in README files to remove 'build' directory references for Tailwind, Vite, and TypeScript tools.
+  - Refactored logger example to use new Logger and ColorFormatter classes, improving clarity in usage.
+
 ## 0.2.1
 
 ## 0.2.0

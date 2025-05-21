@@ -37,7 +37,7 @@ export class ColorFormatter implements FormatterInterface {
   /**
    * Transform style object to CSS string
    */
-  private static styleToCss(style: ColorStyle): string {
+  static styleToCss(style: ColorStyle): string {
     return Object.entries(style)
       .map(([key, value]) => `${key}: ${value}`)
       .join('; ');
@@ -68,6 +68,7 @@ export class ColorFormatter implements FormatterInterface {
 
   /**
    * Format log event
+   * @override
    */
   format(event: LogEvent): unknown[] {
     const { level, args, context } = event;

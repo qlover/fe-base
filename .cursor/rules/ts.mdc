@@ -1,0 +1,36 @@
+---
+description: 
+globs: **/**/*.ts,**/**/*.tsx,**/**/*.js
+alwaysApply: false
+---
+## Code Comment Standards
+
+### TSDoc/JSDoc Requirements
+
+- Each class/interface comment must include:
+  - Significance of existence
+  - Core idea
+  - Main function
+  - Main purpose
+  - Code example
+- For methods/functions:
+  - `@param`: type, purpose, constraints
+  - `@returns`: type and description
+- All comments must be in English
+
+### Example
+
+```typescript
+/**
+ * User authentication service
+ *
+ * Significance: Central authentication management
+ * Core idea: Single responsibility for user auth
+ * Main function: Handle user login/logout
+ * Main purpose: Secure user authentication
+ *
+ * @example
+ * const authService = new AuthService();
+ * await authService.login(credentials);
+ */
+```
