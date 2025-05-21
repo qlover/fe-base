@@ -65,6 +65,7 @@
     "@qlover/logger": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
     "find-workspaces": "^0.3.1",
+    "gitlog": "^5.1.0",
     "lodash": "^4.17.21"
   }
 }

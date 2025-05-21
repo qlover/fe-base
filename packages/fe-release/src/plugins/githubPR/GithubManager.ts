@@ -2,7 +2,7 @@ import type { Shell } from '@qlover/scripts-context';
 import type ReleaseContext from '../../implments/ReleaseContext';
 import type { LoggerInterface } from '@qlover/logger';
 import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
-import { Octokit } from '@octokit/rest';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
   DEFAULT_AUTO_MERGE_TYPE
@@ -15,6 +15,9 @@ export interface PullRequestManagerOptions {
   owner: string;
   repo: string;
 }
+
+export type PullRequestCommits =
+  RestEndpointMethodTypes['pulls']['listCommits']['response']['data'];
 
 export type CreateReleaseOptions =
   import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['parameters'];
@@ -153,6 +156,25 @@ export default class GithubManager {
     });
   }
 
+  async getPullRequestCommits(prNumber: number): Promise<PullRequestCommits> {
+    const pr = await this.octokit.rest.pulls.listCommits({
+      ...this.getGitHubUserInfo(),
+      pull_number: prNumber
+    });
+
+    return pr.data;
+  }
+  async getPullRequest(
+    prNumber: number
+  ): Promise<RestEndpointMethodTypes['pulls']['get']['response']['data']> {
+    const pr = await this.octokit.rest.pulls.get({
+      ...this.getGitHubUserInfo(),
+      pull_number: prNumber
+    });
+
+    return pr.data;
+  }
+
   /**
    * Checks the status of a pull request.
    *
@@ -162,10 +184,7 @@ export default class GithubManager {
   async checkedPR(prNumber: string, releaseBranch: string): Promise<void> {
     try {
       // Get PR information
-      await this.octokit.rest.pulls.get({
-        ...this.getGitHubUserInfo(),
-        pull_number: Number(prNumber)
-      });
+      await this.getPullRequest(Number(prNumber));
 
       // Delete remote branch
       await this.octokit.rest.git.deleteRef({

@@ -7,6 +7,7 @@ import ReleaseContext from '../../implments/ReleaseContext';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
+import GithubChangelog from './GithubChangelog';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
@@ -186,6 +187,22 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   override async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
+    const githubChangelog = new GithubChangelog(
+      this.context.getConfig('changelog'),
+      this.githubManager
+    );
+
+    const newWorkspaces = await this.step({
+      label: 'GithubPR Changelogs',
+      task: () => githubChangelog.transformWorkspace(workspaces, this.context)
+    });
+
+    this.context.setWorkspaces(newWorkspaces);
+    this.logger.debug('github changelog', this.context.workspaces);
+  }
+
+  override async onSuccess(): Promise<void> {
+    const workspaces = this.context.workspaces!;
     await this.step({
       label: 'Release Commit',
       task: () => this.relesaeCommit(workspaces)
@@ -197,10 +214,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     await this.releasePullRequest(workspaces, releaseBranchParams);
-  }
-
-  override async onSuccess(): Promise<void> {
-    const workspaces = this.context.workspaces!;
 
     if (!this.getConfig('dryRunCreatePR')) {
       await this.context.runChangesetsCli('publish');

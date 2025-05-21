@@ -1,0 +1,21 @@
+---
+description: 
+globs: *.md
+alwaysApply: false
+---
+## Documentation Standards
+
+### Markdown File Rules
+
+- For all md files, language preference is given to the language in the md file, or English if a new file is created.
+- AI-generated content for .md files must always be wrapped in code blocks
+- Use proper markdown formatting and structure
+- Content updates must follow this format:
+
+  ```markdown
+  // Original content to be replaced
+  ```
+
+  ```markdown
+  // New content
+  ```
