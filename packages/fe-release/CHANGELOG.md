@@ -1,5 +1,20 @@
 # @qlover/fe-release
 
+## 2.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **changelog:** add support for commit body in changelog generation ([5383055](https://github.com/qlover/fe-base/commit/5383055d2abb095df40575ce2d40e4c40827e422)) ([#398](https://github.com/qlover/fe-base/pull/398))
+
+  - Updated GitChangelog to parse and include commit body along with the title.
+  - Enhanced GitChangelogFormatter to conditionally format and display commit body in the changelog.
+  - Introduced commitBody option in GitChangelogOptions to control the inclusion of commit body in the output.
+  - Updated related interfaces to accommodate the new body field in commitlint.
+
+  Co-authored-by: QRJ <renjie.qin@brain.im>
+
 ## 2.2.0
 
 ### Minor Changes
