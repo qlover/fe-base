@@ -21,7 +21,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
   ) {}
 
   format(commits: CommitValue[], options?: Options): string[] {
-    const { types = [] } = { ...this.options, ...options };
+    const { types = [], commitBody = false } = { ...this.options, ...options };
     const changelog: string[] = [];
 
     const groupedCommits = groupBy(commits, (commit) => {
@@ -44,8 +44,8 @@ export class GitChangelogFormatter implements ChangelogFormatter {
         typeCommits.forEach((commit) => {
           changelog.push(this.formatCommit(commit, options));
 
-          if (commit.base.body) {
-            const bodyLines = commit.base.body
+          if (commitBody && commit.commitlint.body) {
+            const bodyLines = commit.commitlint.body
               .split('\n')
               .map((line) => `  ${line}`);
             changelog.push(...bodyLines);

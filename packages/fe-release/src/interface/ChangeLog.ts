@@ -44,6 +44,13 @@ export interface GitChangelogOptions {
    * @default '\n- ${scopeHeader} ${commitlint.message} ${commitLink} ${prLink}'
    */
   formatTemplate?: string;
+
+  /**
+   * whether to include commit body
+   * @since 2.3.0
+   * @default false
+   */
+  commitBody?: boolean;
 }
 
 export interface CommitTuple {
@@ -58,6 +65,11 @@ export interface Commitlint {
   type?: string;
   scope?: string;
   message: string;
+  /**
+   * commit body, remove repeat title
+   * @since 2.3.0
+   */
+  body?: string;
 }
 
 export interface CommitValue {
