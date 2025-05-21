@@ -15,7 +15,7 @@
     "build:fe-release": "pnpm --filter @qlover/fe-release build",
     "build:logger": "pnpm --filter @qlover/logger build",
     "dryrun:releasePR": "node ./packages/fe-release/dist/cli.js -V -P --githubPR.dry-run-create-PR",
-    "dryrun:release": "node ./packages/fe-release/dist/cli.js -V --githubPR.dry-run-create-PR",
+    "dryrun:release": "node ./packages/fe-release/dist/cli.js -V --changelog.skip-changeset --githubPR.dry-run-create-PR",
     "release": "pnpm --filter @qlover/fe-release release",
     "nx:build": "nx affected:build",
     "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs} --write",

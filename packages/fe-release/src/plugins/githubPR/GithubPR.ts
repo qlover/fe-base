@@ -136,14 +136,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       return false;
     }
 
-    if (_name === 'onExec') {
-      return !this.isPublish;
-    }
-
-    if (_name === 'onSuccess') {
-      return this.isPublish;
-    }
-
     return true;
   }
 
@@ -202,7 +194,16 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   }
 
   override async onSuccess(): Promise<void> {
-    const workspaces = this.context.workspaces!;
+    if (this.isPublish) {
+      await this.publishPR(this.context.workspaces!);
+
+      return;
+    }
+
+    await this.releasePR(this.context.workspaces!);
+  }
+
+  async releasePR(workspaces: WorkspaceValue[]): Promise<void> {
     await this.step({
       label: 'Release Commit',
       task: () => this.relesaeCommit(workspaces)
@@ -214,7 +215,9 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     await this.releasePullRequest(workspaces, releaseBranchParams);
+  }
 
+  async publishPR(workspaces: WorkspaceValue[]): Promise<void> {
     if (!this.getConfig('dryRunCreatePR')) {
       await this.context.runChangesetsCli('publish');
 
