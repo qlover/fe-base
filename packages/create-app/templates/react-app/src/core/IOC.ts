@@ -9,7 +9,8 @@ import {
   createIOCFunction,
   ServiceIdentifier
 } from '@qlover/corekit-bridge';
-import type { JSONSerializer, JSONStorage, Logger } from '@qlover/fe-corekit';
+import type { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import { Container } from 'inversify';
 import { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
 
@@ -75,7 +76,7 @@ export const IOCIdentifier = Object.freeze({
 export interface IOCIdentifierMap {
   [IOCIdentifier.JSON]: JSONSerializer;
   [IOCIdentifier.JSONStorage]: JSONStorage;
-  [IOCIdentifier.Logger]: Logger;
+  [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.FeApiToken]: StorageTokenInterface<string>;
   [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
   [IOCIdentifier.AppConfig]: EnvConfigInterface;

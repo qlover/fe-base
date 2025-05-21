@@ -1,6 +1,7 @@
 import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
 import { IOCIdentifier } from '@/core/IOC';
-import type { Logger, RequestAdapterResponse } from '@qlover/fe-corekit';
+import type { RequestAdapterResponse } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 import { inject, injectable } from 'inversify';
 
 @injectable()
@@ -9,7 +10,7 @@ export class RequestStatusCatcher
 {
   constructor(
     @inject(IOCIdentifier.Logger)
-    private readonly logger: Logger
+    private readonly logger: LoggerInterface
   ) {}
   /**
    * default handler
