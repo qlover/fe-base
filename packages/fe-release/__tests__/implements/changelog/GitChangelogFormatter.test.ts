@@ -203,7 +203,8 @@ describe('GitChangelogFormatter', () => {
           commitlint: {
             type: 'feat',
             scope: 'ui',
-            message: 'add new feature'
+            message: 'add new feature',
+            body: 'Detailed description\nMultiple lines'
           },
           commits: []
         }
@@ -211,7 +212,10 @@ describe('GitChangelogFormatter', () => {
 
       const typeConfig = [{ type: 'feat', section: '### Features' }];
 
-      const result = formatter.format(commits, { types: typeConfig });
+      const result = formatter.format(commits, {
+        types: typeConfig,
+        commitBody: true
+      });
 
       expect(result).toEqual([
         '### Features',
