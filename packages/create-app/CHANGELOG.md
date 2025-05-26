@@ -1,5 +1,13 @@
 # @qlover/create-app
 
+## 0.3.2
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **ColorFormatter.test:** remove unnecessary console.info call from test ([6f58880](https://github.com/qlover/fe-base/commit/6f588806c1db82042aaf2f9ebfa29846397e254c)) ([#389](https://github.com/qlover/fe-base/pull/389))
+
 ## 0.3.1
 
 ## 0.3.0
