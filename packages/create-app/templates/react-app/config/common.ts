@@ -8,8 +8,11 @@ export const browserGlobalsName = 'feGlobals';
 export const envBlackList = ['env', 'userNodeEnv'];
 
 export const loggerStyles = {
-  INFO: 'color: blue;',
-  WARN: 'color: orange; font-weight: bold;',
-  ERROR: 'color: red; font-weight: bold;',
-  DEBUG: 'color: #8d7'
+  fatal: { color: '#ff0000', fontWeight: 'bold' },
+  error: { color: '#ff0000' },
+  warn: { color: '#ffa500' },
+  info: { color: '#0000ff' },
+  debug: { color: '#008000' },
+  trace: { color: '#808080' },
+  log: { color: '#000000' }
 };
