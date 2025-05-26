@@ -75,6 +75,14 @@ export type ReflectionGeneraterOptions = {
    * hbs template root dir
    */
   hbsRootDir: string;
+
+  /**
+   * Whether to remove the prefix of the entry point
+   *
+   * @default `false`
+   * @since 0.1.0
+   */
+  removePrefix?: boolean;
 };
 
 export type ReflectionGeneraterContext =

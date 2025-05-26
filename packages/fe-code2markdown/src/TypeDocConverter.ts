@@ -237,6 +237,9 @@ export class TypeDocConverter {
       this.getOneBlockTags(blockTags, '@default') || ''
     );
 
+    // 添加调试日志来验证 defaultValue
+    this.logger.debug(`Parameter ${child.name} defaultValue: ${defaultValue}`);
+
     // getOneBlockTags 没有找到会返回 null
     const deprecated = this.getOneBlockTags(blockTags, '@deprecated') !== null;
 
@@ -369,10 +372,12 @@ export class TypeDocConverter {
     const result = this.reflectionToTemplateResult({ reflection });
     this.logger.debug(result.kindName, result.name, result.id);
 
+    let members = [];
+    let hasMembers = false;
+
     // 一般只有 class, interface 有 children
     // 第二层， 基本是 Constructors,Properties, Methods ...
     if (reflection.children) {
-      const members = [];
       for (const v2member of reflection.children) {
         const signatures = this.packSignatures(v2member, reflection);
 
@@ -382,10 +387,31 @@ export class TypeDocConverter {
           members.push(signatures);
         }
       }
-
-      // 增加 hasMembers 属性，用于模板渲染
-      Object.assign(result, { members, hasMembers: members.length > 0 });
+      hasMembers = members.length > 0;
     }
+
+    // 特殊处理 TypeAlias：从 type.declaration.children 中提取 members
+    if (reflection.kind === ReflectionKind.TypeAlias && reflection.type) {
+      const typeReflection = reflection.type;
+      if (
+        typeReflection.type === 'reflection' &&
+        typeReflection.declaration?.children
+      ) {
+        members = [];
+        for (const child of typeReflection.declaration.children) {
+          // 将 TypeAlias 内部的属性转换为 member
+          const memberResult = this.reflectionToTemplateResult({
+            reflection: child as DeclarationReflection,
+            parent: reflection
+          });
+          members.push(memberResult);
+        }
+        hasMembers = members.length > 0;
+      }
+    }
+
+    // 增加 hasMembers 属性，用于模板渲染
+    Object.assign(result, { members, hasMembers });
 
     return result;
   }
@@ -559,12 +585,35 @@ export class TypeDocConverter {
         )
       : undefined;
 
+    // 对于 TypeAlias，尝试获取更详细的类型信息
+    let typeString = type ? this.getParamType(type) : undefined;
+    if (kind === ReflectionKind.TypeAlias && type) {
+      const typeReflection = type;
+      if (
+        typeReflection.type === 'reflection' &&
+        typeReflection.declaration?.children
+      ) {
+        // 构建更详细的类型定义
+        const properties = typeReflection.declaration.children
+          .map((child) => {
+            const childType =
+              // @ts-expect-error
+              child.type?.name || child.type?.toString() || 'unknown';
+            return `  ${child.name}: ${childType}`;
+          })
+          .join(';\n');
+        typeString = `\`\`\`typescript\n{\n${properties}\n}\n\`\`\``;
+      } else {
+        typeString = this.warpType(type.toString());
+      }
+    }
+
     const result = {
       id: id,
       kind: kind,
       kindName: ReflectionKindName[kind],
       name: name,
-      type: type ? this.getParamType(type) : undefined,
+      type: typeString,
       summaryList: summary,
       blockTagsList,
       returnValue: undefined,

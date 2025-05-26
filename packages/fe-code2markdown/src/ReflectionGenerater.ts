@@ -6,16 +6,16 @@ import { ProjectReader } from './ProjectReader.js';
 import { TypeDocConverter } from './TypeDocConverter.js';
 import { ParserContextMap, ReflectionGeneraterContext } from './type';
 import type { LoggerInterface } from '@qlover/logger';
+import { FeScriptContext } from '@qlover/scripts-context';
 
 export class ReflectionGenerater {
   private context: ReflectionGeneraterContext;
   private reader: ProjectReader;
   private sourceTemplate: HBSTemplate;
 
-  constructor(context: ReflectionGeneraterContext) {
-    // this.context = new FeScriptContext(context);
-    this.context = context;
-    this.reader = new ProjectReader(context);
+  constructor(context: Partial<ReflectionGeneraterContext>) {
+    this.context = new FeScriptContext(context);
+    this.reader = new ProjectReader(this.context);
     this.sourceTemplate = new HBSTemplate({
       name: 'context',
       hbsRootDir: this.context.options.hbsRootDir
@@ -80,11 +80,13 @@ export class ReflectionGenerater {
     docPaths: { docPath: string; docFullPath: string; docDir: string };
     output: string;
   } {
+    const { entryPoints, generatePath, removePrefix } = this.context.options;
     const name = path.basename(fullFileName).split('.').slice(0, -1).join('.');
     const docPaths = Utils.extractDocumentationPath(
-      this.context.options.entryPoints,
-      this.context.options.generatePath,
-      fullFileName
+      entryPoints,
+      generatePath,
+      fullFileName,
+      removePrefix
     );
 
     return {

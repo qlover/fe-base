@@ -12,21 +12,25 @@
     "package.json",
     "README.md"
   ],
-  "main": "./dist/es/index.js",
-  "module": "./dist/es/index.js",
-  "types": "./dist/es/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/es/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "./package.json": "./package.json"
+    "./cli": {
+      "import": "./dist/cli.js",
+      "require": "./dist/cli.cjs"
+    }
   },
   "scripts": {
     "build": "rollup -c",
-    "build:docs": "node ./bin/code2md.js -p example/example.ts",
-    "build:docs:json": "node ./bin/code2md.js -p example/example.ts --onlyJson"
+    "build:docs": "node ./dist/cli.js -p example/example.ts",
+    "build:docs:json": "node ./dist/cli.js -p example/example.ts --onlyJson"
   },
   "repository": {
     "type": "git",
@@ -40,7 +44,7 @@
     "fe-code2markdown"
   ],
   "bin": {
-    "fe-code2md": "bin/code2md.js"
+    "fe-code2md": "dist/cli.js"
   },
   "author": "qlover",
   "license": "ISC",

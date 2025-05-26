@@ -26,10 +26,7 @@
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",
-    "prepare": "husky",
-    "build:fe-corekit:docs": "yarn workspace @qlover/fe-corekit build:docs",
-    "build:fe-code2md:docs": "yarn workspace @qlover/fe-code2markdown build:docs",
-    "build:docs": "yarn build:fe-corekit:docs && yarn build:fe-code2md:docs"
+    "prepare": "husky"
   },
   "keywords": [
     "fe",
@@ -51,6 +48,7 @@
     "@qlover/eslint-plugin-fe-dev": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
+    "@qlover/fe-code2markdown": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
