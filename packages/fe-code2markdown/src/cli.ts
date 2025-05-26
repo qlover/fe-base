@@ -7,6 +7,11 @@ import pkg from '../package.json';
 import { ReflectionGenerater } from './ReflectionGenerater';
 import { Utils } from './Utils';
 
+const DEFAULT_GENERATE_PATH = './docs.output';
+const DEFAULT_OUTPUT_JSON_FILE_PATH = DEFAULT_GENERATE_PATH + '/code2md.json';
+const DEFAULT_TPL_PATH = './code2md.tpl.json';
+const DEFAULT_HBS_ROOT_DIR = '../hbs';
+
 const program = new Command();
 
 program
@@ -17,13 +22,13 @@ program
   .option(
     '-o, --outputJSONFilePath <path>',
     'Output JSON file path',
-    './docs.output/code2md.json'
+    DEFAULT_OUTPUT_JSON_FILE_PATH
   )
-  .option('-g, --generatePath <path>', 'Generate path', './docs.output')
+  .option('-g, --generatePath <path>', 'Generate path', DEFAULT_GENERATE_PATH)
   .option('-t, --tplPath <path>', 'Template path')
   .option('--onlyJson', 'Only generate JSON file')
   .option('-d, --debug', 'Debug mode')
-  .option('-l, --coverterLevel <level>', 'Converter level', '1');
+  .option('--removePrefix', 'Remove prefix of the entry point');
 
 program.parse(process.argv);
 
@@ -33,14 +38,14 @@ const main = async () => {
   const { dryRun, verbose, ...opts } = options;
   const tplPath = opts.tplPath
     ? resolve(opts.tplPath)
-    : resolve(opts.generatePath, './code2md.tpl.json');
+    : resolve(opts.generatePath, DEFAULT_TPL_PATH);
 
   // fixed hbs root dir
   const currentDir = Utils.getCurrentDirPath(
     typeof import.meta !== 'undefined' ? import.meta : undefined
   );
 
-  const hbsRootDir = resolve(join(currentDir, '../hbs'));
+  const hbsRootDir = resolve(join(currentDir, DEFAULT_HBS_ROOT_DIR));
 
   // TODO: 检验参数
   const generaterOptions = {

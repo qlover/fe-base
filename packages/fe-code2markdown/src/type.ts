@@ -77,11 +77,12 @@ export type ReflectionGeneraterOptions = {
   hbsRootDir: string;
 
   /**
-   * 1 优先 ts 类型 2 优先注释类型
+   * Whether to remove the prefix of the entry point
    *
-   * @default `1`
+   * @default `false`
+   * @since 0.1.0
    */
-  coverterLevel?: number;
+  removePrefix?: boolean;
 };
 
 export type ReflectionGeneraterContext =

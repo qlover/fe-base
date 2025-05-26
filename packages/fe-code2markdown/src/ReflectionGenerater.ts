@@ -40,8 +40,7 @@ export class ReflectionGenerater {
 
     const typeDocConverter = new TypeDocConverter({
       project,
-      logger: this.logger,
-      level: this.context.options.coverterLevel
+      logger: this.logger
     });
     const templateResults = typeDocConverter.getContextMap();
 
@@ -81,11 +80,13 @@ export class ReflectionGenerater {
     docPaths: { docPath: string; docFullPath: string; docDir: string };
     output: string;
   } {
+    const { entryPoints, generatePath, removePrefix } = this.context.options;
     const name = path.basename(fullFileName).split('.').slice(0, -1).join('.');
     const docPaths = Utils.extractDocumentationPath(
-      this.context.options.entryPoints,
-      this.context.options.generatePath,
-      fullFileName
+      entryPoints,
+      generatePath,
+      fullFileName,
+      removePrefix
     );
 
     return {
