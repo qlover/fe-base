@@ -1,4 +1,5 @@
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export class Utils {
   /**
@@ -83,5 +84,21 @@ export class Utils {
       docFullPath,
       docDir: path.dirname(docFullPath)
     };
+  }
+
+  static getCurrentFilePath(importMeta?: ImportMeta): string {
+    if (importMeta?.url) {
+      // ESM environment
+      return fileURLToPath(importMeta.url);
+    } else if (typeof __filename !== 'undefined') {
+      // CJS environment
+      return __filename;
+    } else {
+      throw new Error('Unable to determine current file path');
+    }
+  }
+
+  static getCurrentDirPath(importMeta?: ImportMeta): string {
+    return dirname(Utils.getCurrentFilePath(importMeta));
   }
 }

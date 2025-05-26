@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 
-import { dirname, join, resolve } from 'path';
+import { join, resolve } from 'path';
 import { Command } from 'commander';
-import fs from 'fs-extra';
-import { fileURLToPath } from 'url';
-import { ReflectionGenerater } from '../dist/es/index.js';
 import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
+import pkg from '../package.json';
+import { ReflectionGenerater } from './ReflectionGenerater';
+import { Utils } from './Utils';
 
 const program = new Command();
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(
-  fs.readFileSync(join(__dirname, '../package.json'), 'utf-8')
-);
 
 program
   .version(pkg.version)
@@ -26,7 +22,8 @@ program
   .option('-g, --generatePath <path>', 'Generate path', './docs.output')
   .option('-t, --tplPath <path>', 'Template path')
   .option('--onlyJson', 'Only generate JSON file')
-  .option('-d, --debug', 'Debug mode');
+  .option('-d, --debug', 'Debug mode')
+  .option('-l, --coverterLevel <level>', 'Converter level', '1');
 
 program.parse(process.argv);
 
@@ -39,11 +36,16 @@ const main = async () => {
     : resolve(opts.generatePath, './code2md.tpl.json');
 
   // fixed hbs root dir
-  const hbsRootDir = resolve(join(__dirname, '../hbs'));
+  const currentDir = Utils.getCurrentDirPath(
+    typeof import.meta !== 'undefined' ? import.meta : undefined
+  );
+
+  const hbsRootDir = resolve(join(currentDir, '../hbs'));
 
   // TODO: 检验参数
   const generaterOptions = {
-    entryPoints: opts.entryPoints.map((entry) => resolve(entry)),
+    ...opts,
+    entryPoints: (opts.entryPoints as string[]).map((entry) => resolve(entry)),
     outputJSONFilePath: opts.outputJSONFilePath
       ? resolve(opts.outputJSONFilePath)
       : '',
@@ -57,16 +59,8 @@ const main = async () => {
     logger: new Logger({
       level: (opts.debug ?? verbose) ? 'debug' : 'info',
       name: 'code2md',
-      handlers: new ConsoleHandler({
-        formatter: new TimestampFormatter({
-          formatType: 'datetime'
-        })
-      })
+      handlers: new ConsoleHandler(new TimestampFormatter())
     }),
-    // not used
-    shell: {},
-    // not used
-    feConfig: {},
     verbose: opts.debug ?? verbose,
     dryRun: dryRun,
     options: generaterOptions

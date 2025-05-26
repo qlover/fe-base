@@ -75,6 +75,13 @@ export type ReflectionGeneraterOptions = {
    * hbs template root dir
    */
   hbsRootDir: string;
+
+  /**
+   * 1 优先 ts 类型 2 优先注释类型
+   *
+   * @default `1`
+   */
+  coverterLevel?: number;
 };
 
 export type ReflectionGeneraterContext =

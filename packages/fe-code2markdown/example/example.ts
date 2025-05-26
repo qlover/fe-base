@@ -51,7 +51,15 @@ export interface ExampleOptionsInterface {
 }
 
 export type ExampleOptionsType = {
+  /**
+   * @description eoptType1 description
+   * @type {string}
+   */
   eoptType1: string;
+  /**
+   * @description eoptType2 description
+   * @type {boolean}
+   */
   eoptType2: boolean;
 };
 
@@ -104,6 +112,7 @@ export class ExampleClass {
    * @core Toggles debug functionality on/off
    * @functionality Enables or disables debug features and logging
    * @usage Set during instantiation to control debug behavior
+   * @default `false`
    * @example
    * ```typescript
    * const instance = new ExampleClass({

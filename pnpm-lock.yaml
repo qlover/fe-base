@@ -32,6 +32,9 @@ importers:
       '@qlover/eslint-plugin-fe-dev':
         specifier: workspace:*
         version: link:packages/eslint-plugin-fe-dev
+      '@qlover/fe-code2markdown':
+        specifier: workspace:*
+        version: link:packages/fe-code2markdown
       '@qlover/fe-scripts':
         specifier: workspace:*
         version: link:packages/fe-scripts

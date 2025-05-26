@@ -237,6 +237,9 @@ export class TypeDocConverter {
       this.getOneBlockTags(blockTags, '@default') || ''
     );
 
+    // 添加调试日志来验证 defaultValue
+    this.logger.debug(`Parameter ${child.name} defaultValue: ${defaultValue}`);
+
     // getOneBlockTags 没有找到会返回 null
     const deprecated = this.getOneBlockTags(blockTags, '@deprecated') !== null;
 
