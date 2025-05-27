@@ -1,4 +1,17 @@
-# @qlover/corekit-bridge
+# @qlover/fe-corekit
+
+## 1.4.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **fe-corekit:** update documentation structure and enhance build scripts ([b886224](https://github.com/qlover/fe-base/commit/b886224881bf3a2fc7ae46699d19842b196661c7)) ([#401](https://github.com/qlover/fe-base/pull/401))
+
+  - Removed outdated documentation files and added new markdown files for various components.
+  - Updated package.json scripts for documentation generation to reflect new paths and formats.
+  - Enhanced the build process for documentation to include new type aliases and interfaces.
+  - Introduced new examples and improved clarity in existing documentation for better developer experience.
 
 ## 1.3.1
 
