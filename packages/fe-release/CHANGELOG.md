@@ -1,5 +1,15 @@
 # @qlover/fe-release
 
+## 2.3.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **changelog:** conditionally execute git restore for unchanged packages ([b419a2a](https://github.com/qlover/fe-base/commit/b419a2a42d810c89a6d5c04be61fc100724f43ad)) ([#403](https://github.com/qlover/fe-base/pull/403))
+
+  - Added a check to ensure that the git restore command is only executed if there are packages that have not changed, improving the efficiency of the Changelog plugin.
+
 ## 2.3.0
 
 ### Minor Changes
