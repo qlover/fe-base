@@ -192,7 +192,9 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
     this.logger.debug('noChangedPackages', noChangedPackages);
 
-    await this.shell.exec(['git', 'restore', ...noChangedPackages]);
+    if (noChangedPackages.length > 0) {
+      await this.shell.exec(['git', 'restore', ...noChangedPackages]);
+    }
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
