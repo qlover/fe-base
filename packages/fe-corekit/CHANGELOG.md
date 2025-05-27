@@ -1,30 +1,8 @@
-# @qlover/corekit-bridge
+# @qlover/fe-corekit
 
 ## 1.4.0
 
 ### Minor Changes
-
-#### ✨ Features
-
-- **fe-code2markdown:** enhance CLI options and reflection generation ([2b3dcd0](https://github.com/qlover/fe-base/commit/2b3dcd080614762d58df2e617773a506a663c129)) ([#401](https://github.com/qlover/fe-base/pull/401))
-
-  - Introduced new default paths for output JSON and template files in the CLI.
-  - Added a new option to remove the prefix from entry points in the CLI.
-  - Updated ReflectionGenerater to utilize the new options for better path handling.
-  - Enhanced Utils with a method to remove entry point prefixes from paths.
-  - Improved TypeDocConverter to handle TypeAlias reflections more effectively.
-
-- **changelog:** add option to ignore non-updated packages and enhance workspace handling ([dcb51af](https://github.com/qlover/fe-base/commit/dcb51afc3e8071c614510c4856491d2dafe331fc)) ([#385](https://github.com/qlover/fe-base/pull/385))
-
-  - Introduced `--changelog.ignore-non-updated-packages` CLI option to allow skipping non-updated packages in changelog generation.
-  - Updated `ChangelogProps` to include `ignoreNonUpdatedPackages` configuration.
-  - Enhanced `WorkspacesProps` to manage `changedPaths` and `packages` more effectively.
-  - Implemented `restoreIgnorePackages` method to restore non-changed packages during the changelog process.
-  - Adjusted package manager fallback from `npm` to `npx` for executing changeset commands.
-
-#### 🐞 Bug Fixes
-
-- **ColorFormatter.test:** remove unnecessary console.info call from test ([6f58880](https://github.com/qlover/fe-base/commit/6f588806c1db82042aaf2f9ebfa29846397e254c)) ([#389](https://github.com/qlover/fe-base/pull/389))
 
 #### ♻️ Refactors
 
