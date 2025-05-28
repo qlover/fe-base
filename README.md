@@ -1,65 +1,200 @@
 # fe-base
 
-## 构建与依赖管理
+前端基础工具包 - 专为前端应用设计的强大工具集合
 
-pnpm [递归模式](https://pnpm.io/cli/recursive) 自动按依赖顺序执行 build 命令
+## 📖 目录
 
-当前项目采用 pnpm recursive 和 `worksapce:*` 结合
+- [项目简介](#-项目简介)
+- [特性](#-特性)
+- [快速开始](#-快速开始)
+  - [环境要求](#环境要求)
+  - [安装](#安装)
+  - [基础使用](#基础使用)
+- [包列表](#-包列表)
+- [开发指南](#-开发指南)
+  - [项目的构建与依赖管理](./docs/zh/project-builder.md)
+  - [提交规范](./docs/zh/commit-convention.md)
+  - [项目发布](./docs/zh/project-release.md)
+  - [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
+  - [测试指南](./docs/zh/testing-guide.md)
+  - [打包格式指南](./docs/zh/build-formats.md)
+- [脚本命令](#-脚本命令)
+- [技术栈](#-技术栈)
+- [项目结构](#-项目结构)
+- [贡献指南](#-贡献指南)
+- [版本发布](#-版本发布)
+- [常见问题](#-常见问题)
+- [许可证](#-许可证)
 
-### 命令结构
+## 📋 项目简介
 
-- `pnpm` 包管理器，支持 monorepo
-- `-r` 或 `--recursive` 递归模式，表示对所有 workspace 下的包都执行后面的命令
-- `run build` 在每个包里执行 npm run build（即 package.json 里的 build 脚本）
+fe-base 是一个专为前端应用设计的工具包集合，采用 monorepo 架构，提供模块化的前端解决方案。项目包含了从核心工具库到开发脚本、从日志系统到代码生成等多个实用工具包。
 
-### 它做了什么？
+## ✨ 特性
 
-- 遍历你的所有子包（比如 packages/\*）。
-- 检查每个包的 package.json 里有没有 build 脚本。
-- 自动分析依赖关系（比如 A 依赖 B），先 build 被依赖的包（B），再 build 依赖它的包（A）。
-- 保证 build 顺序正确，不会出现“依赖包还没 build，当前包 build 失败”的问题。
+- 🎯 **模块化设计** - 基于 pnpm workspace 的 monorepo 架构
+- 🔧 **TypeScript 支持** - 完整的类型定义和智能提示
+- 📦 **独立发布** - 每个包可独立安装和使用
+- 🚀 **现代化工具链** - 使用 Vite、ESLint、Prettier 等现代工具
+- 🔄 **自动化发布** - 基于 Changesets 的版本管理和发布流程
+- 🧪 **测试覆盖** - 集成 Vitest 测试框架
+- 🛠️ **开发工具** - 提供完整的开发工具链和脚本
 
-### 前提条件
+## 🚀 快速开始
 
-需要在本地相互依赖的包请使用 `workspace:*`, 而不是具体的版本号
+### 环境要求
 
-如果不需要参与本地多包构建，可以使用固定版本号, 比如一些没有发生代码修改的包，可以直接使用
+- Node.js >= 18.19.0
+- pnpm >= 8.0.0
 
-`pnpm install` 处理 `workspace:*` 的机制, 只在 monorepo/workspace 内部有效，用于本地开发和构建时自动链接本地包
+### 安装
 
-当你在某个包的 package.json 里写：
+```bash
+# 克隆项目
+git clone https://github.com/qlover/fe-base.git
+cd fe-base
+
+# 安装依赖
+pnpm install
+
+# 构建所有包
+pnpm build
+```
+
+### 基础使用
+
+```bash
+# 安装核心工具包
+npm install @qlover/fe-corekit
+
+# 安装开发脚本工具
+npm install @qlover/fe-scripts
+
+# 安装日志工具
+npm install @qlover/logger
+
+# 或使用 pnpm
+pnpm add @qlover/fe-corekit @qlover/fe-scripts @qlover/logger
+```
+
+## 📦 包列表
+
+| 包名 | 版本 | 描述 |
+| ---- | ---- | ---- |
+| [@qlover/fe-corekit](./packages/fe-corekit/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/fe-corekit) | 前端核心工具包，提供存储、序列化、请求等功能 |
+| [@qlover/fe-scripts](./packages/fe-scripts/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/fe-scripts) | 前端开发脚本工具集，包含清理、提交、检查等命令 |
+| [@qlover/fe-code2markdown](./packages/fe-code2markdown/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/fe-code2markdown) | 代码转 Markdown 文档生成工具 |
+| [@qlover/fe-release](./packages/fe-release/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/fe-release) | 项目发布管理工具 |
+| [@qlover/logger](./packages/logger/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/logger) | 灵活的日志记录系统 |
+| [@qlover/env-loader](./packages/env-loader/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/env-loader) | 环境变量加载工具 |
+| [@qlover/fe-standard](./packages/fe-standard/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/fe-standard) | 前端开发标准和规范 |
+| [@qlover/eslint-plugin-fe-dev](./packages/eslint-plugin-fe-dev/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin-fe-dev) | 前端开发 ESLint 插件 |
+| [@qlover/scripts-context](./packages/scripts-context/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/scripts-context) | 脚本执行上下文工具 |
+| [@qlover/corekit-bridge](./packages/corekit-bridge/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/corekit-bridge) | 核心工具包桥接器 |
+| [@qlover/corekit-node](./packages/corekit-node/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/corekit-node) | Node.js 环境核心工具 |
+| [@qlover/create-app](./packages/create-app/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/create-app) | 应用脚手架生成工具 |
+
+## 🛠️ 开发指南
+
+- [项目的构建与依赖管理](./docs/zh/project-builder.md)
+- [提交规范](./docs/zh/commit-convention.md)
+- [项目发布](./docs/zh/project-release.md)
+- [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
+- [测试指南](./docs/zh/testing-guide.md)
+- [打包格式指南](./docs/zh/build-formats.md)
+
+## 📜 脚本命令
+
+```bash
+# 构建所有包
+pnpm build
+
+# 代码检查和格式化
+pnpm lint
+pnpm prettier
+
+# 运行测试
+pnpm test
+
+# 清理构建产物
+pnpm clean:build
+
+# 提交代码（使用 commitizen）
+pnpm commit
+
+# 检查包依赖
+pnpm check-packages
+
+# 清理分支
+pnpm clean-branch
+
+# 发布版本
+pnpm release
+```
+
+## 🔧 技术栈
+
+- **构建工具**: Vite, Rollup, tsup
+- **包管理**: pnpm workspace
+- **代码质量**: ESLint, Prettier, Husky
+- **测试框架**: Vitest
+- **版本管理**: Changesets
+- **任务运行**: Nx
+- **语言**: TypeScript
+
+## 📁 项目结构
 
 ```
-{
-  "dependencies": {
-    "@qlover/fe-corekit": "workspace:*"
-  }
-}
+fe-base/
+├── packages/                 # 子包目录
+│   ├── fe-corekit/          # 前端核心工具包
+│   ├── fe-scripts/          # 开发脚本工具
+│   ├── fe-code2markdown/    # 代码文档生成工具
+│   ├── fe-release/          # 发布管理工具
+│   ├── logger/              # 日志系统
+│   ├── env-loader/          # 环境变量加载器
+│   ├── fe-standard/         # 开发标准
+│   ├── eslint-plugin-fe-dev/ # ESLint 插件
+│   ├── scripts-context/     # 脚本上下文
+│   ├── corekit-bridge/      # 核心工具桥接器
+│   ├── corekit-node/        # Node.js 核心工具
+│   └── create-app/          # 应用脚手架
+├── docs/                     # 文档目录
+│   ├── zh/                   # 中文文档
+│   └── en/                   # 英文文档
+├── .github/                  # GitHub 配置
+├── .changeset/               # 版本变更配置
+├── package.json              # 根包配置
+├── pnpm-workspace.yaml       # pnpm 工作空间配置
+├── fe-config.json            # 前端工具配置
+└── README.md                 # 项目说明
 ```
 
-执行 `pnpm install` 时，pnpm 会自动识别 `workspace:*`，并将依赖指向本地 workspace 里的对应包，而不是去 `npm registry` 下载。
+## 🤝 贡献指南
 
-- pnpm 会在 `node_modules` 里为所有 `workspace:*` 依赖创建指向本地 workspace 包的软链接（symlink），而不是去 npm registry 下载远程包。
-- 这样，依赖方包在 `node_modules` 里访问到的其实就是本地包的内容（如 `packages/xxx` 目录）。
-- 需要注意的是，pnpm install 只做依赖软链接，不会自动构建（build）这些本地包。
-- 如果依赖包的 `main`、`module`、`types` 等字段指向 `dist` 目录，而 `dist` 还没有生成（即还没 build），那么依赖方在 build 时会找不到文件，导致构建失败。
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`pnpm commit`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建 Pull Request
 
-**结论：**
+## 📋 版本发布
 
-- `pnpm install` 只负责把 `workspace:*` 依赖软链接到本地包，不会自动 build。
-- 第一次 install 后，必须手动（或在 CI 里）执行 `pnpm -r run build`，才能保证所有包的 dist 产物都存在，依赖链才完整。
+本项目使用 [Changesets](https://github.com/changesets/changesets) 进行版本管理：
 
-> **建议：**  
-> 每次 `pnpm install` 后，务必执行一次 `pnpm -r run build`，以确保所有包的 dist 产物已生成，避免依赖链断裂导致的 build 失败。
+```bash
+# 添加变更记录
+pnpm changeset
 
-### 致命问题
+# 发布版本
+pnpm changeset version
+pnpm changeset publish
+```
 
-发布到 npm 不能出现 `workspace:*`, 上传到 npm（发布包）时, `workspace:*` 绝不能出现在最终发布的包的依赖里，否则下游用户 npm install 时会报错，因为 npm registry 上没有 `workspace:*` 这个版本。
+## ❓ 常见问题
 
-需要注意什么？
-不要手动直接上传 `workspace:*` 依赖的包到 npm，一定要用 pnpm/yarn/changesets 的官方发布命令。
+- [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
 
-如果你用的是 npm publish（而不是 pnpm/yarn/changesets），它不会自动替换 `workspace:*`，这会导致你发布的包依赖不合法，下游无法安装。
+## 📄 许可证
 
-
-还有一种方法比较简单直接，但是可能存在版本引用的隐患, 就所有包依赖变成 `lasted`
+[ISC](./LICENSE)
