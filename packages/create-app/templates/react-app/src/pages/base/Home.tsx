@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
+import clsx from 'clsx';
 
 export default function Home() {
   const { t } = useBaseRoutePage();
@@ -50,16 +50,14 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-bg-base))]">
+    <div className="min-h-screen bg-primary">
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[rgb(var(--color-text-primary))]">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
             {t('welcome')}
           </h1>
-          <p className="text-xl text-[rgb(var(--color-text-secondary))] mb-8">
-            {t('description')}
-          </p>
+          <p className="text-xl text-text-secondary mb-8">{t('description')}</p>
         </div>
       </section>
 
@@ -70,20 +68,18 @@ export default function Home() {
             <LocaleLink
               key={item.href}
               href={item.href}
-              className={`
-                block rounded-lg p-6
-                bg-[rgb(var(--color-bg-secondary))]
-                border border-[rgb(var(--color-border))]
-                hover:bg-[rgb(var(--color-bg-elevated))]
-                transition-colors duration-200
-              `}
+              className={clsx(
+                'block rounded-lg p-6',
+                'bg-secondary',
+                'border border-border',
+                'hover:bg-elevated',
+                'transition-colors duration-200'
+              )}
             >
-              <h3
-                className={`text-xl font-semibold mb-3 text-[rgb(var(--color-text-primary))]`}
-              >
+              <h3 className={`text-xl font-semibold mb-3 text-text`}>
                 {t(item.titleKey)}
               </h3>
-              <p className="text-[rgb(var(--color-text-secondary))] mb-4">
+              <p className="text-text-secondary mb-4">
                 {t(item.descriptionKey)}
               </p>
               <Button type="primary" className="w-full">
@@ -95,12 +91,12 @@ export default function Home() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-16 px-4 bg-[rgb(var(--color-bg-elevated))]">
+      <section className="py-16 px-4 bg-elevated">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 text-[rgb(var(--color-text-primary))]">
+          <h2 className="text-3xl font-bold mb-4 text-text">
             Ready to Get Started?
           </h2>
-          <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-8">
+          <p className="text-lg text-text-secondary mb-8">
             Join us and discover the power of our utilities.
           </p>
           <Button type="primary" size="large" className="px-8">

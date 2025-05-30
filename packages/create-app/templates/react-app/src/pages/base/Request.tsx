@@ -16,7 +16,7 @@ function JSONValue({ value }: { value: unknown }) {
     }
   }, [value]);
   return (
-    <pre className="mt-1 text-sm text-[rgb(var(--color-text-secondary))] font-mono bg-[rgb(var(--color-bg-secondary))] p-2 rounded overflow-x-auto">
+    <pre className="mt-1 text-sm text-text-secondary font-mono bg-secondary p-2 rounded overflow-x-auto">
       {output}
     </pre>
   );
@@ -29,25 +29,23 @@ export default function Request() {
   const { t } = useBaseRoutePage();
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-bg-base))] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Request Timeout Information */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-2">
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary">
+          <h2 className="text-lg font-medium text-text mb-2">
             {t('requestTimeout')}
           </h2>
-          <div className="text-sm text-[rgb(var(--color-text-secondary))] font-mono bg-[rgb(var(--color-bg-base))] p-2 rounded">
+          <div className="text-sm text-text-secondary font-mono bg-base p-2 rounded">
             {jsonStorageControllerState.requestTimeout}
           </div>
         </div>
 
         {/* Hello Request Card */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
-            AI API: Hello
-          </h2>
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
+          <h2 className="text-lg font-medium text-text mb-4">AI API: Hello</h2>
 
-          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             函数式 api, 使用了 FetchURLPlugin, RequestCommonPlugin,
             ApiMockPlugin, RequestLogger 插件
           </p>
@@ -61,14 +59,14 @@ export default function Request() {
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('helloResult')}:
               </p>
               <JSONValue value={requestControllerState.helloState.result} />
             </div>
 
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('helloError')}:
               </p>
               <JSONValue value={requestControllerState.helloState.error} />
@@ -77,12 +75,12 @@ export default function Request() {
         </div>
 
         {/* IP Information Card */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
+          <h2 className="text-lg font-medium text-text mb-4">
             FeApi: IP Information
           </h2>
 
-          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             RequestScheduler 类式 api, 使用了 FetchURLPlugin,
             RequestCommonPlugin, RequestLogger, ApiPickDataPlugin 插件, 其中
             ApiPickDataPlugin 插件可以将返回类型统一扁平到 data 字段
@@ -98,7 +96,7 @@ export default function Request() {
           </Button>
 
           <div className="mt-4">
-            <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+            <p className="text-sm font-medium text-text">
               {t('ipInfoResult')}:
             </p>
             <JSONValue value={requestControllerState.ipInfoState.result} />
@@ -106,11 +104,11 @@ export default function Request() {
         </div>
 
         {/* Random User Card */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
+          <h2 className="text-lg font-medium text-text mb-4">
             UserApi:Random User
           </h2>
-          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             RequestTransaction 类式 api, 使用了 FetchURLPlugin,
             RequestCommonPlugin, ApiMockPlugin, FetchAbortPlugin,
             RequestLogger,ApiCatchPlugin 插件, 其中 FetchAbortPlugin 可以
@@ -128,7 +126,7 @@ export default function Request() {
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('randomUserResult')}:
               </p>
               <JSONValue
@@ -137,7 +135,7 @@ export default function Request() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('randomUserError')}:
               </p>
               <JSONValue value={requestControllerState.randomUserState.error} />
@@ -146,8 +144,8 @@ export default function Request() {
         </div>
 
         {/* Api catch result */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
+          <h2 className="text-lg font-medium text-text mb-4">
             UserApi: Api Catch Result
           </h2>
           <Button
@@ -167,7 +165,7 @@ export default function Request() {
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('abortRequestResult')}:
               </p>
               <JSONValue
@@ -176,7 +174,7 @@ export default function Request() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('abortRequestError')}:
               </p>
               <JSONValue
@@ -187,8 +185,8 @@ export default function Request() {
         </div>
 
         {/* Abort Request Card */}
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
-          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
+          <h2 className="text-lg font-medium text-text mb-4">
             UserApi: Abort Request
           </h2>
           <Button
@@ -206,14 +204,14 @@ export default function Request() {
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('abortRequestResult')}:
               </p>
               <JSONValue value={requestControllerState.abortState.result} />
             </div>
 
             <div>
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
+              <p className="text-sm font-medium text-text">
                 {t('abortRequestError')}:
               </p>
               <JSONValue value={requestControllerState.abortState.error} />

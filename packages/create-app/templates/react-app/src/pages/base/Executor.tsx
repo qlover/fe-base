@@ -1,4 +1,13 @@
-import { Button, Progress, Tag, Space, Card, message, Input, Select } from 'antd';
+import {
+  Button,
+  Progress,
+  Tag,
+  Space,
+  Card,
+  message,
+  Input,
+  Select
+} from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useState, useEffect } from 'react';
 import { IOC } from '@/core/IOC';
@@ -76,29 +85,37 @@ export default function Executor() {
     }
   ]);
 
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [customUrl, setCustomUrl] = useState('');
-  const [customMethod, setCustomMethod] = useState<'GET' | 'POST' | 'PUT' | 'DELETE'>('GET');
-  const [customResponseType, setCustomResponseType] = useState<'text' | 'json' | 'blob'>('text');
+  const [customMethod, setCustomMethod] = useState<
+    'GET' | 'POST' | 'PUT' | 'DELETE'
+  >('GET');
+  const [customResponseType, setCustomResponseType] = useState<
+    'text' | 'json' | 'blob'
+  >('text');
 
   // 监听 helloState 变化，更新任务状态
   useEffect(() => {
     if (helloState.result) {
       message.success('插件测试成功');
       // 更新任务状态
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === '1' 
-            ? { ...task, status: 'completed', progress: 100, endTime: new Date() }
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === '1'
+            ? {
+                ...task,
+                status: 'completed',
+                progress: 100,
+                endTime: new Date()
+              }
             : task
         )
       );
     } else if (helloState.error) {
       message.error('插件测试失败');
       // 更新任务状态
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === '1' 
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === '1'
             ? { ...task, status: 'failed', endTime: new Date() }
             : task
         )
@@ -109,13 +126,13 @@ export default function Executor() {
   const getStatusColor = (status: Task['status']) => {
     switch (status) {
       case 'running':
-        return 'processing';
+        return 'active';
       case 'completed':
         return 'success';
       case 'failed':
-        return 'error';
+        return 'exception';
       default:
-        return 'default';
+        return 'normal';
     }
   };
 
@@ -143,22 +160,20 @@ export default function Executor() {
   };
 
   const handleStartTask = async (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
-    setTasks(prevTasks =>
-      prevTasks.map(t =>
-        t.id === taskId
-          ? { ...t, status: 'running', startTime: new Date() }
-          : t
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.id === taskId ? { ...t, status: 'running', startTime: new Date() } : t
       )
     );
 
     try {
       await executorController.onTestPlugins();
 
-      setTasks(prevTasks =>
-        prevTasks.map(t =>
+      setTasks((prevTasks) =>
+        prevTasks.map((t) =>
           t.id === taskId
             ? { ...t, status: 'completed', progress: 100, endTime: new Date() }
             : t
@@ -166,12 +181,10 @@ export default function Executor() {
       );
 
       message.success(`任务 ${task.name} 执行成功`);
-    } catch (error) {
-      setTasks(prevTasks =>
-        prevTasks.map(t =>
-          t.id === taskId
-            ? { ...t, status: 'failed', endTime: new Date() }
-            : t
+    } catch {
+      setTasks((prevTasks) =>
+        prevTasks.map((t) =>
+          t.id === taskId ? { ...t, status: 'failed', endTime: new Date() } : t
         )
       );
 
@@ -180,8 +193,8 @@ export default function Executor() {
   };
 
   const handleStopTask = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
         task.id === taskId
           ? { ...task, status: 'failed', endTime: new Date() }
           : task
@@ -206,39 +219,39 @@ export default function Executor() {
       method: customMethod
     };
 
-    setTasks(prev => [...prev, newTask]);
+    setTasks((prev) => [...prev, newTask]);
     setCustomUrl('');
     setCustomMethod('GET');
     setCustomResponseType('text');
   };
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--color-bg-base))] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <section className="py-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[rgb(var(--color-text-primary))]">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
               {t('executor')}
             </h1>
-            <p className="text-xl text-[rgb(var(--color-text-secondary))] mb-8">
+            <p className="text-xl text-text-secondary mb-8">
               {t('executor_description')}
             </p>
           </div>
         </section>
 
         {/* Test Plugin Section */}
-        <section className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
-          <h2 className="text-xl font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
+          <h2 className="text-xl font-medium text-text mb-4">
             {t('executorTestPlugin')}
           </h2>
           <div className="space-y-4">
-            <div className="text-[rgb(var(--color-text-secondary))]">
+            <div className="text-text-secondary">
               {t('requestTimeout')}: {requestTimeout}
             </div>
             <div>
               {helloState.loading ? (
-                <div className="text-[rgb(var(--color-text-secondary))]">Loading...</div>
+                <div className="text-text-secondary">Loading...</div>
               ) : (
                 <Button
                   type="primary"
@@ -248,11 +261,11 @@ export default function Executor() {
                 </Button>
               )}
             </div>
-            <div className="bg-[rgb(var(--color-bg-base))] p-4 rounded-lg">
+            <div className="bg-elevated p-4 rounded-lg">
               {helloState.error instanceof Error ? (
                 <div className="text-red-500">{helloState.error.message}</div>
               ) : (
-                <pre className="text-[rgb(var(--color-text-secondary))]">
+                <pre className="text-text-secondary">
                   {IOC('JSON').stringify(helloState.result?.data)}
                 </pre>
               )}
@@ -260,24 +273,22 @@ export default function Executor() {
           </div>
         </section>
 
-        {/* Create New Task Section */}
-        <section className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
-          <h2 className="text-xl font-medium text-[rgb(var(--color-text-primary))] mb-4">
-            创建新任务
+        {/* Create Task Section */}
+        <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
+          <h2 className="text-xl font-medium text-text mb-4">
+            {t('createTask')}
           </h2>
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Input
-                placeholder="输入URL"
+                placeholder={t('url')}
                 value={customUrl}
-                onChange={e => setCustomUrl(e.target.value)}
-                className="flex-1"
+                onChange={(e) => setCustomUrl(e.target.value)}
+                className="md:col-span-2"
               />
               <Select
                 value={customMethod}
-                onChange={value => setCustomMethod(value)}
-                style={{ width: 120 }}
-                className="fe-theme ant-select-css-var"
+                onChange={(value) => setCustomMethod(value)}
                 options={[
                   { value: 'GET', label: 'GET' },
                   { value: 'POST', label: 'POST' },
@@ -287,163 +298,137 @@ export default function Executor() {
               />
               <Select
                 value={customResponseType}
-                onChange={value => setCustomResponseType(value)}
-                style={{ width: 120 }}
-                className="fe-theme ant-select-css-var"
+                onChange={(value) => setCustomResponseType(value)}
                 options={[
                   { value: 'text', label: 'Text' },
                   { value: 'json', label: 'JSON' },
                   { value: 'blob', label: 'Blob' }
                 ]}
               />
-              <Button type="primary" onClick={handleCreateTask}>
-                创建任务
-              </Button>
             </div>
+            <Button type="primary" onClick={handleCreateTask}>
+              {t('createTask')}
+            </Button>
           </div>
         </section>
 
         {/* Task Statistics */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border))]">
+          <Card className="bg-elevated border-border">
             <div className="text-center">
-              <div className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
-                {tasks.length}
-              </div>
-              <div className="text-sm text-[rgb(var(--color-text-secondary))]">
-                总任务数
-              </div>
+              <div className="text-2xl font-bold text-text">{tasks.length}</div>
+              <div className="text-sm text-text-secondary">总任务数</div>
             </div>
           </Card>
-          <Card className="bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border))]">
+          <Card className="bg-elevated border-border">
             <div className="text-center">
-              <div className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
-                {tasks.filter(t => t.status === 'running').length}
+              <div className="text-2xl font-bold text-text">
+                {tasks.filter((t) => t.status === 'running').length}
               </div>
-              <div className="text-sm text-[rgb(var(--color-text-secondary))]">
-                运行中
-              </div>
+              <div className="text-sm text-text-secondary">运行中</div>
             </div>
           </Card>
-          <Card className="bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border))]">
+          <Card className="bg-elevated border-border">
             <div className="text-center">
-              <div className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
-                {tasks.filter(t => t.status === 'completed').length}
+              <div className="text-2xl font-bold text-text">
+                {tasks.filter((t) => t.status === 'completed').length}
               </div>
-              <div className="text-sm text-[rgb(var(--color-text-secondary))]">
-                已完成
-              </div>
+              <div className="text-sm text-text-secondary">已完成</div>
             </div>
           </Card>
-          <Card className="bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border))]">
+          <Card className="bg-elevated border-border">
             <div className="text-center">
-              <div className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
-                {tasks.filter(t => t.status === 'failed').length}
+              <div className="text-2xl font-bold text-text">
+                {tasks.filter((t) => t.status === 'failed').length}
               </div>
-              <div className="text-sm text-[rgb(var(--color-text-secondary))]">
-                失败
-              </div>
+              <div className="text-sm text-text-secondary">失败</div>
             </div>
           </Card>
         </section>
 
-        {/* Task List */}
-        <section className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-medium text-[rgb(var(--color-text-primary))]">
-              任务列表
-            </h2>
-            <Space>
-              <Button type="primary" onClick={() => setSelectedTask(null)}>
-                新建任务
-              </Button>
-              <Button>刷新</Button>
-            </Space>
-          </div>
+        {/* Task List Section */}
+        <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
+          <h2 className="text-xl font-medium text-text mb-4">
+            {t('taskList')}
+          </h2>
           <div className="space-y-4">
-            {tasks.map(task => (
-              <div
+            {tasks.map((task) => (
+              <Card
                 key={task.id}
-                className="bg-[rgb(var(--color-bg-base))] p-4 rounded-lg border border-[rgb(var(--color-border))]"
+                className="bg-elevated border-border"
+                title={
+                  <div className="flex items-center justify-between">
+                    <span className="text-text">{task.name}</span>
+                    <Space>
+                      <Tag color={getTypeColor(task.type)}>{task.type}</Tag>
+                      <Tag color={getStatusColor(task.status)}>
+                        {task.status}
+                      </Tag>
+                    </Space>
+                  </div>
+                }
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-[rgb(var(--color-text-primary))]">
-                      {task.name}
-                    </span>
-                    <Tag color={getTypeColor(task.type)}>
-                      {task.type}
-                    </Tag>
-                    <Tag color={getStatusColor(task.status)}>
-                      {task.status}
-                    </Tag>
-                    <Tag color="blue">
-                      {task.method} {task.responseType}
-                    </Tag>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-text-secondary">
+                    <div>
+                      <span className="font-medium">URL:</span> {task.url}
+                    </div>
+                    <div>
+                      <span className="font-medium">Method:</span> {task.method}
+                    </div>
+                    <div>
+                      <span className="font-medium">Response Type:</span>{' '}
+                      {task.responseType}
+                    </div>
+                    <div>
+                      <span className="font-medium">Duration:</span>{' '}
+                      {formatDuration(task.startTime, task.endTime)}
+                    </div>
                   </div>
-                  <div className="text-sm text-[rgb(var(--color-text-secondary))] mt-2 sm:mt-0">
-                    持续时间: {formatDuration(task.startTime, task.endTime)}
+                  <Progress
+                    percent={task.progress}
+                    status={getStatusColor(task.status)}
+                  />
+                  <div className="flex justify-end space-x-2">
+                    {task.status === 'pending' && (
+                      <Button
+                        type="primary"
+                        onClick={() => handleStartTask(task.id)}
+                      >
+                        {t('start')}
+                      </Button>
+                    )}
+                    {task.status === 'running' && (
+                      <Button danger onClick={() => handleStopTask(task.id)}>
+                        {t('stop')}
+                      </Button>
+                    )}
                   </div>
                 </div>
-                <div className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
-                  URL: {task.url}
-                </div>
-                <Progress
-                  percent={task.progress}
-                  status={task.status === 'failed' ? 'exception' : undefined}
-                  className="mb-2"
-                />
-                <div className="flex justify-end space-x-2">
-                  {task.status === 'pending' && (
-                    <Button 
-                      type="primary" 
-                      size="small"
-                      onClick={() => handleStartTask(task.id)}
-                    >
-                      开始执行
-                    </Button>
-                  )}
-                  {task.status === 'running' && (
-                    <Button 
-                      danger 
-                      size="small"
-                      onClick={() => handleStopTask(task.id)}
-                    >
-                      停止
-                    </Button>
-                  )}
-                  <Button size="small">查看详情</Button>
-                </div>
-              </div>
+              </Card>
             ))}
           </div>
         </section>
 
         {/* Task History */}
-        <section className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
-          <h2 className="text-xl font-medium text-[rgb(var(--color-text-primary))] mb-4">
-            执行历史
-          </h2>
+        <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
+          <h2 className="text-xl font-medium text-text mb-4">执行历史</h2>
           <div className="space-y-2">
             {tasks
-              .filter(task => task.status === 'completed' || task.status === 'failed')
-              .map(task => (
+              .filter(
+                (task) =>
+                  task.status === 'completed' || task.status === 'failed'
+              )
+              .map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center justify-between p-2 bg-[rgb(var(--color-bg-base))] rounded"
+                  className="flex items-center justify-between p-2 bg-elevated rounded"
                 >
                   <div className="flex items-center space-x-2">
-                    <Tag color={getStatusColor(task.status)}>
-                      {task.status}
-                    </Tag>
-                    <span className="text-[rgb(var(--color-text-primary))]">
-                      {task.name}
-                    </span>
-                    <Tag color="blue">
-                      {task.method} {task.responseType}
-                    </Tag>
+                    <Tag color={getStatusColor(task.status)}>{task.status}</Tag>
+                    <span className="text-text">{task.name}</span>
                   </div>
-                  <span className="text-sm text-[rgb(var(--color-text-secondary))]">
+                  <span className="text-sm text-text-secondary">
                     {task.endTime?.toLocaleString()}
                   </span>
                 </div>
@@ -453,19 +438,17 @@ export default function Executor() {
 
         {/* Call to Action Section */}
         <section className="py-8 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-[rgb(var(--color-text-primary))]">
+          <h2 className="text-2xl font-bold mb-4 text-text">
             {t('Need Help?')}
           </h2>
-          <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-6">
+          <p className="text-lg text-text-secondary mb-6">
             遇到问题？查看我们的任务执行指南或联系支持团队
           </p>
           <Space>
             <Button type="primary" size="large">
               查看指南
             </Button>
-            <Button size="large">
-              联系支持
-            </Button>
+            <Button size="large">联系支持</Button>
           </Space>
         </section>
       </div>

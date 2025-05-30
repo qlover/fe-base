@@ -17,10 +17,7 @@ const colorMap: Record<
   { colors: string[]; icons: React.ElementType[] }
 > = {
   default: {
-    colors: [
-      'text-[rgb(var(--color-text-primary))]',
-      'text-[rgb(var(--color-text-secondary))]'
-    ],
+    colors: ['text-text', 'text-text-secondary'],
     icons: [BulbFilled, BulbOutlined]
   },
   dark: {
@@ -63,7 +60,7 @@ export default function ThemeSwitcher() {
         )
       };
     });
-  }, [themes]);
+  }, [theme, themes, t]);
 
   return (
     <div className="flex items-center gap-2">
