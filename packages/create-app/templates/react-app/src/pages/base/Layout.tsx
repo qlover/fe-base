@@ -5,10 +5,13 @@ import { ProcessProvider } from '@/uikit/providers/ProcessProvider';
 export default function Layout() {
   return (
     <ProcessProvider>
-      <div data-testid="basic-layout" className="text-base">
+      <div 
+        data-testid="basic-layout" 
+        className="text-base min-h-screen bg-[rgb(var(--color-bg-base))]"
+      >
         <BaseHeader />
 
-        <div className="text-black bg-white">
+        <div className="text-[rgb(var(--color-text-primary))] bg-[rgb(var(--color-bg-base))]">
           <Outlet />
         </div>
       </div>
