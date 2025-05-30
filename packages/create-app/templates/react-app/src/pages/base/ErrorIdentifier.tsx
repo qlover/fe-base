@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import * as ErrorIdentifierList from '@config/Identifier.Error';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 export default function ErrorIdentifier() {
   const { t } = useBaseRoutePage();
@@ -12,10 +13,10 @@ export default function ErrorIdentifier() {
         <section className="py-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-              {t('errorIdentifier')}
+              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_MAIN_TITLE)}
             </h1>
             <p className="text-xl text-text-secondary mb-8">
-              Identifier From: '@config/Identifier.Error'
+              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_SOURCE_DESCRIPTION)}
             </p>
           </div>
         </section>
@@ -42,13 +43,13 @@ export default function ErrorIdentifier() {
         {/* Call to Action Section */}
         <section className="py-8 text-center">
           <h2 className="text-2xl font-bold mb-4 text-text">
-            {t('Need Help?')}
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_TITLE)}
           </h2>
           <p className="text-lg text-text-secondary mb-6">
-            {t('errorIdentifier_help_text')}
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_DESCRIPTION)}
           </p>
           <Button type="primary" size="large">
-            {t('Contact Support')}
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_CONTACT_SUPPORT)}
           </Button>
         </section>
       </div>

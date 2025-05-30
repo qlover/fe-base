@@ -14,6 +14,7 @@ import { IOC } from '@/core/IOC';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { useSliceStore } from '@qlover/slice-store-react';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 interface Task {
   id: string;
@@ -45,7 +46,7 @@ export default function Executor() {
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: '1',
-      name: '测试插件任务',
+      name: t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE),
       status: 'pending',
       progress: 0,
       type: 'data-sync',
@@ -55,7 +56,7 @@ export default function Executor() {
     },
     {
       id: '2',
-      name: '数据同步任务',
+      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_DATA_SYNC),
       status: 'pending',
       progress: 0,
       type: 'data-sync',
@@ -65,7 +66,7 @@ export default function Executor() {
     },
     {
       id: '3',
-      name: '系统维护任务',
+      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_MAINTENANCE),
       status: 'pending',
       progress: 0,
       type: 'system-maintenance',
@@ -75,7 +76,7 @@ export default function Executor() {
     },
     {
       id: '4',
-      name: '数据备份任务',
+      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_BACKUP),
       status: 'pending',
       progress: 0,
       type: 'backup',
@@ -96,7 +97,7 @@ export default function Executor() {
   // 监听 helloState 变化，更新任务状态
   useEffect(() => {
     if (helloState.result) {
-      message.success('插件测试成功');
+      message.success(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS));
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -111,7 +112,7 @@ export default function Executor() {
         )
       );
     } else if (helloState.error) {
-      message.error('插件测试失败');
+      message.error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -121,7 +122,7 @@ export default function Executor() {
         )
       );
     }
-  }, [helloState.result, helloState.error]);
+  }, [helloState.result, helloState.error, t]);
 
   const getStatusColor = (status: Task['status']) => {
     switch (status) {
@@ -156,7 +157,7 @@ export default function Executor() {
     const end = endTime || new Date();
     const duration = end.getTime() - startTime.getTime();
     const minutes = Math.floor(duration / (1000 * 60));
-    return `${minutes} 分钟`;
+    return `${minutes} ${t(i18nKeys.PAGE_EXECUTOR_TASK_DURATION_UNIT)}`;
   };
 
   const handleStartTask = async (taskId: string) => {
@@ -180,7 +181,9 @@ export default function Executor() {
         )
       );
 
-      message.success(`任务 ${task.name} 执行成功`);
+      message.success(
+        t(i18nKeys.PAGE_EXECUTOR_TASK_SUCCESS, { name: task.name })
+      );
     } catch {
       setTasks((prevTasks) =>
         prevTasks.map((t) =>
@@ -188,7 +191,9 @@ export default function Executor() {
         )
       );
 
-      message.error(`任务 ${task.name} 执行失败`);
+      message.error(
+        t(i18nKeys.PAGE_EXECUTOR_TASK_FAILURE, { name: task.name })
+      );
     }
   };
 
@@ -204,13 +209,16 @@ export default function Executor() {
 
   const handleCreateTask = () => {
     if (!customUrl) {
-      message.error('请输入URL');
+      message.error(t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED));
       return;
     }
 
     const newTask: Task = {
       id: Date.now().toString(),
-      name: `自定义任务 ${customMethod} ${customUrl}`,
+      name: t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_NAME, {
+        method: customMethod,
+        url: customUrl
+      }),
       status: 'pending',
       progress: 0,
       type: 'data-sync',
@@ -232,10 +240,10 @@ export default function Executor() {
         <section className="py-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-              {t('executor')}
+              {t(i18nKeys.PAGE_EXECUTOR_MAIN_TITLE)}
             </h1>
             <p className="text-xl text-text-secondary mb-8">
-              {t('executor_description')}
+              {t(i18nKeys.PAGE_EXECUTOR_DESCRIPTION)}
             </p>
           </div>
         </section>
@@ -243,11 +251,11 @@ export default function Executor() {
         {/* Test Plugin Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t('executorTestPlugin')}
+            {t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE)}
           </h2>
           <div className="space-y-4">
             <div className="text-text-secondary">
-              {t('requestTimeout')}: {requestTimeout}
+              {t(i18nKeys.PAGE_REQUEST_TIMEOUT)}: {requestTimeout}
             </div>
             <div>
               {helloState.loading ? (
@@ -257,7 +265,7 @@ export default function Executor() {
                   type="primary"
                   onClick={executorController.onTestPlugins}
                 >
-                  {t('testPlugin')}
+                  {t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE)}
                 </Button>
               )}
             </div>
@@ -276,39 +284,39 @@ export default function Executor() {
         {/* Create Task Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t('createTask')}
+            {t(i18nKeys.PAGE_EXECUTOR_CREATE_TASK_TITLE)}
           </h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="flex items-center space-x-4">
               <Input
-                placeholder={t('url')}
+                placeholder={t(i18nKeys.PAGE_EXECUTOR_ENTER_URL)}
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
-                className="md:col-span-2"
+                className="flex-1"
               />
               <Select
                 value={customMethod}
-                onChange={(value) => setCustomMethod(value)}
-                options={[
-                  { value: 'GET', label: 'GET' },
-                  { value: 'POST', label: 'POST' },
-                  { value: 'PUT', label: 'PUT' },
-                  { value: 'DELETE', label: 'DELETE' }
-                ]}
-              />
+                onChange={setCustomMethod}
+                style={{ width: 120 }}
+              >
+                <Select.Option value="GET">GET</Select.Option>
+                <Select.Option value="POST">POST</Select.Option>
+                <Select.Option value="PUT">PUT</Select.Option>
+                <Select.Option value="DELETE">DELETE</Select.Option>
+              </Select>
               <Select
                 value={customResponseType}
-                onChange={(value) => setCustomResponseType(value)}
-                options={[
-                  { value: 'text', label: 'Text' },
-                  { value: 'json', label: 'JSON' },
-                  { value: 'blob', label: 'Blob' }
-                ]}
-              />
+                onChange={setCustomResponseType}
+                style={{ width: 120 }}
+              >
+                <Select.Option value="text">Text</Select.Option>
+                <Select.Option value="json">JSON</Select.Option>
+                <Select.Option value="blob">Blob</Select.Option>
+              </Select>
+              <Button type="primary" onClick={handleCreateTask}>
+                {t(i18nKeys.PAGE_EXECUTOR_CREATE_BUTTON)}
+              </Button>
             </div>
-            <Button type="primary" onClick={handleCreateTask}>
-              {t('createTask')}
-            </Button>
           </div>
         </section>
 
@@ -317,7 +325,9 @@ export default function Executor() {
           <Card className="bg-elevated border-border">
             <div className="text-center">
               <div className="text-2xl font-bold text-text">{tasks.length}</div>
-              <div className="text-sm text-text-secondary">总任务数</div>
+              <div className="text-sm text-text-secondary">
+                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_TOTAL)}
+              </div>
             </div>
           </Card>
           <Card className="bg-elevated border-border">
@@ -325,7 +335,9 @@ export default function Executor() {
               <div className="text-2xl font-bold text-text">
                 {tasks.filter((t) => t.status === 'running').length}
               </div>
-              <div className="text-sm text-text-secondary">运行中</div>
+              <div className="text-sm text-text-secondary">
+                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_RUNNING)}
+              </div>
             </div>
           </Card>
           <Card className="bg-elevated border-border">
@@ -333,7 +345,9 @@ export default function Executor() {
               <div className="text-2xl font-bold text-text">
                 {tasks.filter((t) => t.status === 'completed').length}
               </div>
-              <div className="text-sm text-text-secondary">已完成</div>
+              <div className="text-sm text-text-secondary">
+                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_COMPLETED)}
+              </div>
             </div>
           </Card>
           <Card className="bg-elevated border-border">
@@ -341,7 +355,9 @@ export default function Executor() {
               <div className="text-2xl font-bold text-text">
                 {tasks.filter((t) => t.status === 'failed').length}
               </div>
-              <div className="text-sm text-text-secondary">失败</div>
+              <div className="text-sm text-text-secondary">
+                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_FAILED)}
+              </div>
             </div>
           </Card>
         </section>
@@ -349,7 +365,7 @@ export default function Executor() {
         {/* Task List Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t('taskList')}
+            {t(i18nKeys.PAGE_EXECUTOR_TASK_LIST_TITLE)}
           </h2>
           <div className="space-y-4">
             {tasks.map((task) => (
@@ -395,12 +411,16 @@ export default function Executor() {
                         type="primary"
                         onClick={() => handleStartTask(task.id)}
                       >
-                        {t('start')}
+                        {t(i18nKeys.PAGE_EXECUTOR_TASK_START)}
                       </Button>
                     )}
                     {task.status === 'running' && (
-                      <Button danger onClick={() => handleStopTask(task.id)}>
-                        {t('stop')}
+                      <Button
+                        type="primary"
+                        danger
+                        onClick={() => handleStopTask(task.id)}
+                      >
+                        {t(i18nKeys.PAGE_EXECUTOR_TASK_STOP)}
                       </Button>
                     )}
                   </div>
@@ -412,7 +432,9 @@ export default function Executor() {
 
         {/* Task History */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
-          <h2 className="text-xl font-medium text-text mb-4">执行历史</h2>
+          <h2 className="text-xl font-medium text-text mb-4">
+            {t(i18nKeys.PAGE_EXECUTOR_TASK_HISTORY_TITLE)}
+          </h2>
           <div className="space-y-2">
             {tasks
               .filter(
@@ -439,16 +461,18 @@ export default function Executor() {
         {/* Call to Action Section */}
         <section className="py-8 text-center">
           <h2 className="text-2xl font-bold mb-4 text-text">
-            {t('Need Help?')}
+            {t(i18nKeys.PAGE_EXECUTOR_HELP_TITLE)}
           </h2>
           <p className="text-lg text-text-secondary mb-6">
-            遇到问题？查看我们的任务执行指南或联系支持团队
+            {t(i18nKeys.PAGE_EXECUTOR_HELP_DESCRIPTION)}
           </p>
           <Space>
             <Button type="primary" size="large">
-              查看指南
+              {t(i18nKeys.PAGE_EXECUTOR_VIEW_GUIDE)}
             </Button>
-            <Button size="large">联系支持</Button>
+            <Button size="large">
+              {t(i18nKeys.PAGE_EXECUTOR_CONTACT_SUPPORT)}
+            </Button>
           </Space>
         </section>
       </div>

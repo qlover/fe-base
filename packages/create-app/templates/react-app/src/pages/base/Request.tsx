@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useSliceStore } from '@qlover/slice-store-react';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -34,7 +35,7 @@ export default function Request() {
         {/* Request Timeout Information */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary">
           <h2 className="text-lg font-medium text-text mb-2">
-            {t('requestTimeout')}
+            {t(i18nKeys.PAGE_REQUEST_TIMEOUT)}
           </h2>
           <div className="text-sm text-text-secondary font-mono bg-base p-2 rounded">
             {jsonStorageControllerState.requestTimeout}
@@ -43,31 +44,34 @@ export default function Request() {
 
         {/* Hello Request Card */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
-          <h2 className="text-lg font-medium text-text mb-4">AI API: Hello</h2>
+          <h2 className="text-lg font-medium text-text mb-4">
+            {t(i18nKeys.PAGE_REQUEST_HELLO_TITLE)}
+          </h2>
 
           <p className="text-sm text-text-secondary mb-4">
-            函数式 api, 使用了 FetchURLPlugin, RequestCommonPlugin,
-            ApiMockPlugin, RequestLogger 插件
+            {t(i18nKeys.PAGE_REQUEST_HELLO_DESCRIPTION)}
           </p>
           <Button
             type="primary"
             onClick={requestController.onHello}
             loading={requestControllerState.helloState.loading}
           >
-            {requestControllerState.helloState.loading ? t('loading') : 'Hello'}
+            {requestControllerState.helloState.loading
+              ? t(i18nKeys.REQUEST_LOADING)
+              : t(i18nKeys.PAGE_REQUEST_HELLO_BUTTON)}
           </Button>
 
           <div className="mt-4 space-y-2">
             <div>
               <p className="text-sm font-medium text-text">
-                {t('helloResult')}:
+                {t(i18nKeys.REQUEST_HELLO_RESULT)}:
               </p>
               <JSONValue value={requestControllerState.helloState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
-                {t('helloError')}:
+                {t(i18nKeys.REQUEST_HELLO_ERROR)}:
               </p>
               <JSONValue value={requestControllerState.helloState.error} />
             </div>
@@ -77,13 +81,11 @@ export default function Request() {
         {/* IP Information Card */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
           <h2 className="text-lg font-medium text-text mb-4">
-            FeApi: IP Information
+            {t(i18nKeys.PAGE_REQUEST_IP_INFO_TITLE)}
           </h2>
 
           <p className="text-sm text-text-secondary mb-4">
-            RequestScheduler 类式 api, 使用了 FetchURLPlugin,
-            RequestCommonPlugin, RequestLogger, ApiPickDataPlugin 插件, 其中
-            ApiPickDataPlugin 插件可以将返回类型统一扁平到 data 字段
+            {t(i18nKeys.PAGE_REQUEST_IP_INFO_DESCRIPTION)}
           </p>
           <Button
             type="primary"
@@ -91,13 +93,13 @@ export default function Request() {
             loading={requestControllerState.ipInfoState.loading}
           >
             {requestControllerState.ipInfoState.loading
-              ? t('loading')
-              : t('ipInfo')}
+              ? t(i18nKeys.REQUEST_LOADING)
+              : t(i18nKeys.REQUEST_IP_INFO)}
           </Button>
 
           <div className="mt-4">
             <p className="text-sm font-medium text-text">
-              {t('ipInfoResult')}:
+              {t(i18nKeys.REQUEST_IP_INFO_RESULT)}:
             </p>
             <JSONValue value={requestControllerState.ipInfoState.result} />
           </div>
@@ -106,13 +108,10 @@ export default function Request() {
         {/* Random User Card */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
           <h2 className="text-lg font-medium text-text mb-4">
-            UserApi:Random User
+            {t(i18nKeys.PAGE_REQUEST_RANDOM_USER_TITLE)}
           </h2>
           <p className="text-sm text-text-secondary mb-4">
-            RequestTransaction 类式 api, 使用了 FetchURLPlugin,
-            RequestCommonPlugin, ApiMockPlugin, FetchAbortPlugin,
-            RequestLogger,ApiCatchPlugin 插件, 其中 FetchAbortPlugin 可以
-            中止请求, ApiCatchPlugin 可以将捕获的错误统一到 apiCatchResult 字段
+            {t(i18nKeys.PAGE_REQUEST_RANDOM_USER_DESCRIPTION)}
           </p>
           <Button
             type="primary"
@@ -120,14 +119,14 @@ export default function Request() {
             loading={requestControllerState.randomUserState.loading}
           >
             {requestControllerState.randomUserState.loading
-              ? t('loading')
-              : t('randomUser')}
+              ? t(i18nKeys.REQUEST_LOADING)
+              : t(i18nKeys.REQUEST_RANDOM_USER)}
           </Button>
 
           <div className="mt-4 space-y-2">
             <div>
               <p className="text-sm font-medium text-text">
-                {t('randomUserResult')}:
+                {t(i18nKeys.REQUEST_RANDOM_USER_RESULT)}:
               </p>
               <JSONValue
                 value={requestControllerState.randomUserState.result}
@@ -136,7 +135,7 @@ export default function Request() {
 
             <div>
               <p className="text-sm font-medium text-text">
-                {t('randomUserError')}:
+                {t(i18nKeys.REQUEST_RANDOM_USER_ERROR)}:
               </p>
               <JSONValue value={requestControllerState.randomUserState.error} />
             </div>
@@ -146,7 +145,7 @@ export default function Request() {
         {/* Api catch result */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
           <h2 className="text-lg font-medium text-text mb-4">
-            UserApi: Api Catch Result
+            {t(i18nKeys.PAGE_REQUEST_API_CATCH_TITLE)}
           </h2>
           <Button
             type={
@@ -159,14 +158,14 @@ export default function Request() {
             loading={requestControllerState.apiCatchResultState.loading}
           >
             {requestControllerState.apiCatchResultState.loading
-              ? t('stopApiCatchResult')
-              : t('triggerApiCatchResult')}
+              ? t(i18nKeys.PAGE_REQUEST_STOP_API_CATCH)
+              : t(i18nKeys.PAGE_REQUEST_TRIGGER_API_CATCH)}
           </Button>
 
           <div className="mt-4 space-y-2">
             <div>
               <p className="text-sm font-medium text-text">
-                {t('abortRequestResult')}:
+                {t(i18nKeys.REQUEST_ABORT_RESULT)}:
               </p>
               <JSONValue
                 value={requestControllerState.apiCatchResultState.result}
@@ -175,7 +174,7 @@ export default function Request() {
 
             <div>
               <p className="text-sm font-medium text-text">
-                {t('abortRequestError')}:
+                {t(i18nKeys.REQUEST_ABORT_ERROR)}:
               </p>
               <JSONValue
                 value={requestControllerState.apiCatchResultState.error}
@@ -187,7 +186,7 @@ export default function Request() {
         {/* Abort Request Card */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary hover:bg-elevated transition-colors duration-200">
           <h2 className="text-lg font-medium text-text mb-4">
-            UserApi: Abort Request
+            {t(i18nKeys.PAGE_REQUEST_ABORT_TITLE)}
           </h2>
           <Button
             type={
@@ -198,21 +197,21 @@ export default function Request() {
           >
             {requestControllerState.abortState.loading && <LoadingOutlined />}
             {requestControllerState.abortState.loading
-              ? t('stopAbortRequest')
-              : t('triggerAbortRequest')}
+              ? t(i18nKeys.PAGE_REQUEST_STOP_ABORT)
+              : t(i18nKeys.PAGE_REQUEST_TRIGGER_ABORT)}
           </Button>
 
           <div className="mt-4 space-y-2">
             <div>
               <p className="text-sm font-medium text-text">
-                {t('abortRequestResult')}:
+                {t(i18nKeys.REQUEST_ABORT_RESULT)}:
               </p>
               <JSONValue value={requestControllerState.abortState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
-                {t('abortRequestError')}:
+                {t(i18nKeys.REQUEST_ABORT_ERROR)}:
               </p>
               <JSONValue value={requestControllerState.abortState.error} />
             </div>

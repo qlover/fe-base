@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
-import { PAGE_ABOUT_TITLE } from '@config/Identifier.I18n';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 export default function Home() {
   const { t } = useBaseRoutePage();
@@ -13,40 +13,40 @@ export default function Home() {
       bgColor: 'bg-blue-50',
       hoverColor: 'hover:bg-blue-100',
       titleColor: 'text-blue-700',
-      titleKey: PAGE_ABOUT_TITLE,
-      descriptionKey: PAGE_ABOUT_DESCRIPTION
+      titleKey: i18nKeys.PAGE_ABOUT_TITLE,
+      descriptionKey: i18nKeys.PAGE_ABOUT_DESCRIPTION
     },
     {
       href: '/jsonstorage',
       bgColor: 'bg-green-50',
       hoverColor: 'hover:bg-green-100',
       titleColor: 'text-green-700',
-      titleKey: 'jsonstorage',
-      descriptionKey: 'jsonstorage_description'
+      titleKey: i18nKeys.PAGE_JSONSTORAGE_TITLE,
+      descriptionKey: i18nKeys.PAGE_JSONSTORAGE_DESCRIPTION
     },
     {
       href: '/request',
       bgColor: 'bg-red-50',
       hoverColor: 'hover:bg-red-100',
       titleColor: 'text-red-700',
-      titleKey: 'request',
-      descriptionKey: 'request_description'
+      titleKey: i18nKeys.PAGE_REQUEST_TITLE,
+      descriptionKey: i18nKeys.PAGE_REQUEST_DESCRIPTION
     },
     {
       href: '/executor',
       bgColor: 'bg-purple-50',
       hoverColor: 'hover:bg-purple-100',
       titleColor: 'text-purple-700',
-      titleKey: 'executor',
-      descriptionKey: 'executor_description'
+      titleKey: i18nKeys.PAGE_EXECUTOR_TITLE,
+      descriptionKey: i18nKeys.PAGE_EXECUTOR_DESCRIPTION
     },
     {
       href: '/errorIdentifier',
       bgColor: 'bg-amber-50',
       hoverColor: 'hover:bg-amber-100',
       titleColor: 'text-amber-700',
-      titleKey: 'errorIdentifier',
-      descriptionKey: 'errorIdentifier_description'
+      titleKey: i18nKeys.PAGE_ERROR_IDENTIFIER_TITLE,
+      descriptionKey: i18nKeys.PAGE_ERROR_IDENTIFIER_DESCRIPTION
     }
   ];
 
@@ -56,9 +56,11 @@ export default function Home() {
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-            {t('welcome')}
+            {t(i18nKeys.HOME_WELCOME)}
           </h1>
-          <p className="text-xl text-text-secondary mb-8">{t('description')}</p>
+          <p className="text-xl text-text-secondary mb-8">
+            {t(i18nKeys.HOME_DESCRIPTION)}
+          </p>
         </div>
       </section>
 
@@ -84,7 +86,7 @@ export default function Home() {
                 {t(item.descriptionKey)}
               </p>
               <Button type="primary" className="w-full">
-                {t('Explore')}
+                {t(i18nKeys.HOME_EXPLORE)}
               </Button>
             </LocaleLink>
           ))}
@@ -95,13 +97,13 @@ export default function Home() {
       <section className="py-16 px-4 bg-elevated">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4 text-text">
-            Ready to Get Started?
+            {t(i18nKeys.HOME_GET_STARTED_TITLE)}
           </h2>
           <p className="text-lg text-text-secondary mb-8">
-            Join us and discover the power of our utilities.
+            {t(i18nKeys.HOME_GET_STARTED_DESCRIPTION)}
           </p>
           <Button type="primary" size="large" className="px-8">
-            Get Started Now
+            {t(i18nKeys.HOME_GET_STARTED_BUTTON)}
           </Button>
         </div>
       </section>

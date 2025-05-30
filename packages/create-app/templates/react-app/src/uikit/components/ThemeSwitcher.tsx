@@ -11,20 +11,24 @@ import {
 } from '@ant-design/icons';
 import clsx from 'clsx';
 import { useMemo } from 'react';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 const colorMap: Record<
   string,
-  { colors: string[]; icons: React.ElementType[] }
+  { i18nkey: string; colors: string[]; icons: React.ElementType[] }
 > = {
   default: {
+    i18nkey: i18nKeys.HEADER_THEME_DEFAULT,
     colors: ['text-text', 'text-text-secondary'],
     icons: [BulbFilled, BulbOutlined]
   },
   dark: {
+    i18nkey: i18nKeys.HEADER_THEME_DARK,
     colors: ['text-[#9333ea]', 'text-[#a855f7]'],
     icons: [BulbFilled, BulbOutlined]
   },
   pink: {
+    i18nkey: i18nKeys.HEADER_THEME_PINK,
     colors: ['text-[#f472b6]', 'text-[#ec4899]'],
     icons: [HeartFilled, HeartOutlined]
   }
@@ -38,8 +42,8 @@ export default function ThemeSwitcher() {
 
   const themeOptions = useMemo(() => {
     return themes.map((themeName) => {
-      const i18nkey = `header.theme.${themeName}`;
-      const { colors, icons } = colorMap[themeName] || colorMap.default;
+      const { i18nkey, colors, icons } =
+        colorMap[themeName] || colorMap.default;
       const [currentColor, normalColor] = colors;
       const [CurrentIcon, NormalIcon] = icons;
       const isSelf = theme === themeName;
@@ -69,7 +73,7 @@ export default function ThemeSwitcher() {
         onChange={(value) => themeService.changeTheme(value)}
         options={themeOptions}
         style={{ width: 120 }}
-        className="ant-select-css-var"
+        className="min-w-40 max-w-full"
       />
     </div>
   );
