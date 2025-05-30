@@ -1,5 +1,25 @@
 # @qlover/corekit-bridge
 
+## 1.0.2
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **theme-service:** enhance theme configuration and remove unused tw-generator ([1f11c20](https://github.com/qlover/fe-base/commit/1f11c20b8fda9e4208cd568e544b264b42f1b0c0)) ([#406](https://github.com/qlover/fe-base/pull/406))
+
+  - Introduced a default theme configuration with properties for DOM attribute, default theme, target element, supported themes, storage key, initialization, and store prioritization.
+  - Updated ThemeService to utilize the new configuration and improved theme binding logic.
+  - Enhanced ThemeStateGetter to conditionally access storage based on the new prioritizeStore property.
+  - Removed the unused tw-generator file to streamline the theme service module.
+
+- **theme-service:** add cacheTarget option and improve target element handling ([3a290dc](https://github.com/qlover/fe-base/commit/3a290dc022878858bfc7a9ef0a47c49d05c74702)) ([#406](https://github.com/qlover/fe-base/pull/406))
+
+  - Introduced a new cacheTarget property in the theme configuration to optimize target element retrieval.
+  - Enhanced ThemeService to cache the target element for improved performance.
+  - Updated bindToTheme method to utilize the new getTarget method for better clarity and efficiency.
+  - Removed redundant storage handling from changeTheme method to streamline theme updates.
+
 ## 1.0.1
 
 ### Patch Changes
