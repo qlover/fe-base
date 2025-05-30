@@ -1,10 +1,141 @@
-/* theme variables */
-@theme {
-  --text-xs: 1rem;
+/* theme variables - for tailwind */
+@layer base {
+  :root {
+    /* 基础背景色 */
+    --color-bg-base: 255 255 255;
+    --color-bg-secondary: 241 245 249; /* slate-100 */
+    --color-bg-elevated: 248 250 252; /* slate-50 */
+    
+    /* 文字颜色 */
+    --color-text-primary: 15 23 42; /* slate-900 */
+    --color-text-secondary: 71 85 105; /* slate-600 */
+    --color-text-tertiary: 100 116 139; /* slate-500 */
+    
+    /* 边框颜色 */
+    --color-border: 226 232 240; /* slate-200 */
+    
+    /* 品牌色 */
+    --color-brand: 37 99 235; /* blue-600 */
+    --color-brand-hover: 59 130 246; /* blue-500 */
+  }
 }
 
-/* custom variables */
+/* custom variables - for antd and custom css */
 html,
 .fe-theme {
-  --fe-color-primary: #0ff;
+  /* Antd 主色调相关变量 - 浅蓝色主题 */
+  --fe-color-primary: #60a5fa; /* blue-400 */
+  --fe-color-primary-hover: #3b82f6; /* blue-500 */
+  --fe-color-primary-active: #2563eb; /* blue-600 */
+  --fe-color-primary-bg: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
+  --fe-color-primary-border: #60a5fa; /* blue-400 */
+  --fe-color-primary-text: #60a5fa; /* blue-400 */
+  --fe-color-primary-text-hover: #3b82f6; /* blue-500 */
+  --fe-color-primary-text-active: #2563eb; /* blue-600 */
+  --fe-color-primary-deprecated-bg: #60a5fa; /* blue-400 */
+  --fe-color-primary-deprecated-border: #60a5fa; /* blue-400 */
+  
+  /* Antd 基础变量 */
+  --fe-color-bg-container: rgb(255 255 255);
+  --fe-color-bg-elevated: rgb(248 250 252);
+  --fe-color-text: rgba(15 23 42 / 0.85);
+  --fe-color-text-secondary: rgba(15 23 42 / 0.45);
+  --fe-color-border: rgb(226 232 240);
+  
+  /* Antd 组件通用变量 */
+  --fe-line-width: 1px;
+  --fe-line-type: solid;
+  --fe-border-radius: 6px;
+  --fe-motion-duration-mid: 0.2s;
+  --fe-line-height: 1.5715;
+
+  /* Antd Input 组件变量 */
+  &.ant-input-css-var {
+    /* Input 内边距 */
+    --fe-input-padding-block: 4px;
+    --fe-input-padding-block-sm: 0px;
+    --fe-input-padding-block-lg: 7px;
+    --fe-input-padding-inline: 11px;
+    --fe-input-padding-inline-sm: 7px;
+    --fe-input-padding-inline-lg: 11px;
+
+    /* Input 字体大小 */
+    --fe-input-input-font-size: 14px;
+    --fe-input-input-font-size-lg: 16px;
+    --fe-input-input-font-size-sm: 14px;
+
+    /* Input 交互状态 */
+    --fe-input-hover-border-color: #4096ff;
+    --fe-input-active-border-color: #1677ff;
+    --fe-input-active-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+    --fe-input-error-active-shadow: 0 0 0 2px rgba(255, 38, 5, 0.06);
+    --fe-input-warning-active-shadow: 0 0 0 2px rgba(255, 215, 5, 0.1);
+    --fe-input-hover-bg: #ffffff;
+    --fe-input-active-bg: #ffffff;
+    --fe-input-addon-bg: rgba(0, 0, 0, 0.02);
+  }
+
+  /* 登录页特定样式 */
+  --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --login-input-bg: var(--fe-color-bg-container);
+  --login-input-border: var(--fe-color-border);
+  --login-button-text: rgb(255 255 255);
+  --login-social-button-bg: var(--fe-color-bg-container);
+  --login-social-button-border: var(--fe-color-border);
+
+  /* Antd Button 组件变量 */
+  &.ant-btn {
+    /* 基础样式 */
+    --fe-button-font-weight: 400;
+    --fe-button-padding-inline: 15px;
+    --fe-button-padding-inline-lg: 15px;
+    --fe-button-padding-inline-sm: 7px;
+    --fe-button-padding-block: 4px;
+    --fe-button-padding-block-sm: 0px;
+    --fe-button-padding-block-lg: 7px;
+    
+    /* 字体大小 */
+    --fe-button-content-font-size: 14px;
+    --fe-button-content-font-size-sm: 14px;
+    --fe-button-content-font-size-lg: 16px;
+    --fe-button-content-line-height: 1.5714285714285714;
+    --fe-button-content-line-height-sm: 1.5714285714285714;
+    --fe-button-content-line-height-lg: 1.5;
+
+    /* 浅蓝色主题 */
+    --fe-button-primary-color: #fff;
+    --fe-button-primary-bg: #60a5fa; /* blue-400 */
+    --fe-button-primary-hover-bg: #3b82f6; /* blue-500 */
+    --fe-button-primary-active-bg: #2563eb; /* blue-600 */
+    --fe-button-primary-shadow: 0 2px 0 rgba(37, 99, 235, 0.1);
+
+    /* 默认按钮 */
+    --fe-button-default-color: rgba(0, 0, 0, 0.88);
+    --fe-button-default-bg: #ffffff;
+    --fe-button-default-border-color: #d9d9d9;
+    --fe-button-default-hover-bg: #ffffff;
+    --fe-button-default-hover-color: #60a5fa;
+    --fe-button-default-hover-border-color: #60a5fa;
+    --fe-button-default-active-bg: #ffffff;
+    --fe-button-default-active-color: #2563eb;
+    --fe-button-default-active-border-color: #2563eb;
+    --fe-button-default-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+
+    /* 其他状态 */
+    --fe-button-danger-color: #fff;
+    --fe-button-danger-shadow: 0 2px 0 rgba(255, 38, 5, 0.06);
+    --fe-button-border-color-disabled: #d9d9d9;
+    --fe-button-text-hover-bg: rgba(0, 0, 0, 0.04);
+  }
+
+  /* Antd 图标相关变量 */
+  --fe-color-icon: rgba(0, 0, 0, 0.45); /* 默认图标颜色 */
+  --fe-color-icon-hover: rgba(0, 0, 0, 0.88); /* 图标悬停颜色 */
+  --fe-color-icon-active: var(--fe-color-primary); /* 图标激活颜色 */
+  --fe-color-icon-disabled: rgba(0, 0, 0, 0.25); /* 禁用状态图标颜色 */
+  
+  /* Motion 动画变量 */
+  --fe-motion-duration-slow: 0.3s;
+  --fe-motion-duration-normal: 0.2s;
+  --fe-motion-duration-fast: 0.1s;
 }

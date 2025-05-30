@@ -1,12 +1,95 @@
-/* theme variables */
+/* theme variables - for tailwind */
 @layer base {
   [data-theme='dark'] {
-    --text-xs: 5rem;
+    /* 基础背景色 */
+    --color-bg-base: 15 23 42; /* slate-900 */
+    --color-bg-secondary: 30 41 59; /* slate-800 */
+    --color-bg-elevated: 51 65 85; /* slate-700 */
+    
+    /* 文字颜色 */
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 148 163 184; /* slate-400 */
+    --color-text-tertiary: 100 116 139; /* slate-500 */
+    
+    /* 边框颜色 */
+    --color-border: 51 65 85; /* slate-700 */
+    
+    /* 品牌色 */
+    --color-brand: 37 99 235; /* blue-600 */
+    --color-brand-hover: 59 130 246; /* blue-500 */
   }
 }
 
-/* custom variables */
+/* custom variables - for antd and custom css */
 [data-theme='dark'],
 [data-theme='dark'] .fe-theme {
-  --fe-color-primary: #f00;
+  /* Antd 主色调相关变量 - 紫色主题 */
+  --fe-color-primary: #9333ea; /* purple-600 */
+  --fe-color-primary-hover: #a855f7; /* purple-500 */
+  --fe-color-primary-active: #7e22ce; /* purple-700 */
+  --fe-color-primary-bg: rgba(147, 51, 234, 0.1); /* purple-600 with 0.1 opacity */
+  --fe-color-primary-border: #9333ea; /* purple-600 */
+  --fe-color-primary-text: #a855f7; /* purple-500 - 文字用亮一点的紫色 */
+  --fe-color-primary-text-hover: #c084fc; /* purple-400 */
+  --fe-color-primary-text-active: #9333ea; /* purple-600 */
+  --fe-color-primary-deprecated-bg: #9333ea; /* purple-600 */
+  --fe-color-primary-deprecated-border: #9333ea; /* purple-600 */
+  
+  /* Antd 基础变量 */
+  --fe-color-bg-container: rgb(30 41 59);
+  --fe-color-bg-elevated: rgb(51 65 85);
+  --fe-color-text: rgba(255, 255, 255, 0.85);
+  --fe-color-text-secondary: rgba(255, 255, 255, 0.45);
+  --fe-color-border: rgb(51 65 85);
+
+  /* Antd Input 组件变量 */
+  &.ant-input-css-var {
+    /* Input 交互状态 */
+    --fe-input-hover-border-color: #4096ff;
+    --fe-input-active-border-color: #1677ff;
+    --fe-input-active-shadow: 0 0 0 2px rgba(5, 145, 255, 0.2);
+    --fe-input-hover-bg: rgb(51 65 85);
+    --fe-input-active-bg: rgb(51 65 85);
+    --fe-input-addon-bg: rgba(255, 255, 255, 0.02);
+  }
+
+  /* 登录页特定样式 */
+  --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --login-input-bg: var(--fe-color-bg-container);
+  --login-input-border: var(--fe-color-border);
+  --login-button-text: rgb(255 255 255);
+  --login-social-button-bg: var(--fe-color-bg-container);
+  --login-social-button-border: var(--fe-color-border);
+
+  /* Antd Button 组件变量 */
+  &.ant-btn {
+    /* 紫色主题 */
+    --fe-button-primary-color: #fff;
+    --fe-button-primary-bg: #8b5cf6; /* violet-500 */
+    --fe-button-primary-hover-bg: #7c3aed; /* violet-600 */
+    --fe-button-primary-active-bg: #6d28d9; /* violet-700 */
+    --fe-button-primary-shadow: 0 2px 0 rgba(109, 40, 217, 0.2);
+
+    /* 默认按钮 */
+    --fe-button-default-color: rgba(255, 255, 255, 0.85);
+    --fe-button-default-bg: rgb(30 41 59); /* slate-800 */
+    --fe-button-default-border-color: rgb(51 65 85); /* slate-700 */
+    --fe-button-default-hover-bg: rgb(30 41 59);
+    --fe-button-default-hover-color: #8b5cf6;
+    --fe-button-default-hover-border-color: #8b5cf6;
+    --fe-button-default-active-bg: rgb(30 41 59);
+    --fe-button-default-active-color: #6d28d9;
+    --fe-button-default-active-border-color: #6d28d9;
+    --fe-button-default-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+
+    /* 其他状态 */
+    --fe-button-text-hover-bg: rgba(255, 255, 255, 0.08);
+    --fe-button-border-color-disabled: rgb(51 65 85);
+  }
+
+  /* Antd 图标相关变量 */
+  --fe-color-icon: rgba(255, 255, 255, 0.45); /* 暗色主题下的图标颜色 */
+  --fe-color-icon-hover: rgba(255, 255, 255, 0.85); /* 暗色主题下图标悬停颜色 */
+  --fe-color-icon-active: var(--fe-color-primary); /* 使用主题紫色 */
+  --fe-color-icon-disabled: rgba(255, 255, 255, 0.25); /* 暗色主题下禁用状态 */
 }
