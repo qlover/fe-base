@@ -1,0 +1,10 @@
+@layer base {
+  [data-theme='pink'] {
+    --text-xs: 2rem;
+  }
+}
+
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme {
+  --fe-color-primary: #f0f;
+}

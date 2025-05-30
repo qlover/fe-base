@@ -8,11 +8,5 @@ const theme = themeCreate(themeConfig.override);
 export default {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    extend: {
-      ...root10px.themes,
-      colors: theme.colors
-    }
-  },
-  plugins: [root10px.plugin, theme.plugin]
+  theme: {}
 };

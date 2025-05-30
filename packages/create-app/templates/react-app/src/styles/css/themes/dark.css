@@ -1,0 +1,12 @@
+/* theme variables */
+@layer base {
+  [data-theme='dark'] {
+    --text-xs: 5rem;
+  }
+}
+
+/* custom variables */
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme {
+  --fe-color-primary: #f00;
+}

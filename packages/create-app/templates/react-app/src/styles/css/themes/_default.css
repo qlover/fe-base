@@ -1,0 +1,10 @@
+/* theme variables */
+@theme {
+  --text-xs: 1rem;
+}
+
+/* custom variables */
+html,
+.fe-theme {
+  --fe-color-primary: #0ff;
+}
