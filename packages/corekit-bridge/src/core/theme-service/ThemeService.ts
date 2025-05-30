@@ -9,10 +9,13 @@ export const defaultThemeConfig: ThemeConfig = {
   supportedThemes: ['light', 'dark'],
   storageKey: 'theme',
   init: true,
-  prioritizeStore: true
+  prioritizeStore: true,
+  cacheTarget: true
 };
 
 export class ThemeService extends SliceStore<ThemeServiceState> {
+  private _target: HTMLElement | null = null;
+
   constructor(private props: ThemeServiceProps) {
     const config = { ...defaultThemeConfig, ...props };
 
@@ -27,10 +30,12 @@ export class ThemeService extends SliceStore<ThemeServiceState> {
     return this.props.supportedThemes!;
   }
 
-  bindToTheme(): void {
-    const { theme } = this.state;
+  getTarget(): HTMLElement {
+    const { target, cacheTarget } = this.props;
 
-    const { domAttribute, target } = this.props;
+    if (cacheTarget && this._target) {
+      return this._target;
+    }
 
     let targetElement: HTMLElement;
     if (target instanceof HTMLElement) {
@@ -41,8 +46,25 @@ export class ThemeService extends SliceStore<ThemeServiceState> {
       targetElement = document.documentElement;
     }
 
+    this._target = targetElement;
+
+    return targetElement;
+  }
+
+  bindToTheme(): void {
+    const { theme } = this.state;
+
+    const { domAttribute } = this.props;
+
+    const targetElement = this.getTarget();
+
     if (domAttribute) {
       targetElement.setAttribute(domAttribute, theme);
+    }
+
+    const { storage, storageKey } = this.props;
+    if (storage && storageKey) {
+      storage.setItem(storageKey, theme);
     }
   }
 
@@ -52,11 +74,6 @@ export class ThemeService extends SliceStore<ThemeServiceState> {
     }
 
     this.emit({ ...this.state, theme });
-
-    const { storage, storageKey } = this.props;
-    if (storage && storageKey) {
-      storage.setItem(storageKey, theme);
-    }
 
     this.bindToTheme();
   }

@@ -49,8 +49,15 @@ export type ThemeConfig = {
    * @default `true`
    */
   prioritizeStore?: boolean;
+
+  /**
+   * Whether to cache the target
+   * @default `true`
+   */
+  cacheTarget?: boolean;
 };
 
 export interface ThemeServiceProps extends ThemeConfig {
+  /** */
   storage?: JSONStorage;
 }
