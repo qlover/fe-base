@@ -1,25 +1,48 @@
 import { SliceStore } from '@qlover/slice-store-react';
-import { ThemeServiceProps, ThemeServiceState } from './type';
+import { ThemeConfig, ThemeServiceProps, ThemeServiceState } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
+
+export const defaultThemeConfig: ThemeConfig = {
+  domAttribute: 'data-theme',
+  defaultTheme: 'system',
+  target: 'html',
+  supportedThemes: ['light', 'dark'],
+  storageKey: 'theme',
+  init: true,
+  prioritizeStore: true
+};
 
 export class ThemeService extends SliceStore<ThemeServiceState> {
   constructor(private props: ThemeServiceProps) {
-    super(() => ThemeStateGetter.create(props));
+    const config = { ...defaultThemeConfig, ...props };
 
-    this.bindToTheme();
+    super(() => ThemeStateGetter.create(config));
+
+    if (config.init) {
+      this.bindToTheme();
+    }
   }
 
   getSupportedThemes(): string[] {
-    return this.props.supportedThemes;
+    return this.props.supportedThemes!;
   }
 
   bindToTheme(): void {
     const { theme } = this.state;
 
-    const { domAttribute } = this.props;
+    const { domAttribute, target } = this.props;
+
+    let targetElement: HTMLElement;
+    if (target instanceof HTMLElement) {
+      targetElement = target;
+    } else if (typeof target === 'string') {
+      targetElement = document.querySelector(target) as HTMLElement;
+    } else {
+      targetElement = document.documentElement;
+    }
 
     if (domAttribute) {
-      document.documentElement.setAttribute(domAttribute, theme);
+      targetElement.setAttribute(domAttribute, theme);
     }
   }
 

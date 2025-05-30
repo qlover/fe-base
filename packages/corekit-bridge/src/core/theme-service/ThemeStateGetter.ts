@@ -13,16 +13,18 @@ export class ThemeStateGetter {
   }
 
   static getDefaultTheme(props: ThemeServiceProps): string {
-    const { storage, storageKey, defaultTheme } = props;
+    const { storage, storageKey, defaultTheme, prioritizeStore } = props;
 
     let theme;
 
-    // Trying to use local storage
-    if (storage && storageKey) {
-      theme = storage.getItem(storageKey);
+    if (prioritizeStore) {
+      // Trying to use local storage
+      if (storage && storageKey) {
+        theme = storage.getItem(storageKey);
 
-      if (isString(theme) && props.supportedThemes.includes(theme)) {
-        return theme;
+        if (isString(theme) && props.supportedThemes?.includes(theme)) {
+          return theme;
+        }
       }
     }
 
