@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as ErrorIdentifierList from '@config/ErrorIdentifier';
+import * as ErrorIdentifierList from '@config/Identifier.Error';
 
 export default function ErrorIdentifier() {
   const { t } = useBaseRoutePage();
@@ -15,7 +15,7 @@ export default function ErrorIdentifier() {
               {t('errorIdentifier')}
             </h1>
             <p className="text-xl text-text-secondary mb-8">
-              Identifier From: '@config/ErrorIdentifier'
+              Identifier From: '@config/Identifier.Error'
             </p>
           </div>
         </section>

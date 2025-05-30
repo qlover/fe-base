@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
+import { PAGE_ABOUT_TITLE } from '@config/Identifier.I18n';
 
 export default function Home() {
   const { t } = useBaseRoutePage();
@@ -12,8 +13,8 @@ export default function Home() {
       bgColor: 'bg-blue-50',
       hoverColor: 'hover:bg-blue-100',
       titleColor: 'text-blue-700',
-      titleKey: 'about',
-      descriptionKey: 'about_description'
+      titleKey: PAGE_ABOUT_TITLE,
+      descriptionKey: PAGE_ABOUT_DESCRIPTION
     },
     {
       href: '/jsonstorage',

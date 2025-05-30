@@ -26,7 +26,11 @@ export default defineConfig({
       locales: i18nConfig.supportedLngs as unknown as string[],
       options: [
         {
-          source: './config/ErrorIdentifier.ts',
+          source: './config/Identifier.Error.ts',
+          target: './public/locales/{{lng}}/common.json'
+        },
+        {
+          source: './config/Identifier.I18n.ts',
           target: './public/locales/{{lng}}/common.json'
         }
       ]
