@@ -40,6 +40,9 @@ html,
   --fe-color-bg-elevated: rgb(248 250 252);
   --fe-color-text: rgba(15 23 42 / 0.85);
   --fe-color-text-secondary: rgba(15 23 42 / 0.45);
+  --fe-color-text-tertiary: rgba(15 23 42 / 0.35);
+  --fe-color-text-quaternary: rgba(15 23 42 / 0.15);
+  --fe-color-text-placeholder: rgba(15 23 42 / 0.25);
   --fe-color-border: rgb(226 232 240);
   
   /* Antd 组件通用变量 */
@@ -133,6 +136,62 @@ html,
   --fe-color-icon-hover: rgba(0, 0, 0, 0.88); /* 图标悬停颜色 */
   --fe-color-icon-active: var(--fe-color-primary); /* 图标激活颜色 */
   --fe-color-icon-disabled: rgba(0, 0, 0, 0.25); /* 禁用状态图标颜色 */
+  
+  /* Antd Select 组件变量 */
+  &.ant-select-css-var {
+    --fe-select-internal_fixed_item_margin: 2px;
+    --fe-select-z-index-popup: 1050;
+    --fe-select-option-selected-color: rgba(0, 0, 0, 0.88);
+    --fe-select-option-selected-font-weight: 600;
+    --fe-select-option-selected-bg: var(--fe-color-primary-bg);
+    --fe-select-option-active-bg: rgba(0, 0, 0, 0.04);
+    --fe-select-option-padding: 5px 12px;
+    --fe-select-option-font-size: 14px;
+    --fe-select-option-line-height: 1.5714285714285714;
+    --fe-select-option-height: 32px;
+    --fe-select-selector-bg: var(--fe-color-bg-container);
+    --fe-select-clear-bg: var(--fe-color-bg-container);
+    --fe-select-single-item-height-lg: 40px;
+    --fe-select-multiple-item-bg: rgba(0, 0, 0, 0.06);
+    --fe-select-multiple-item-border-color: transparent;
+    --fe-select-multiple-item-height: 24px;
+    --fe-select-multiple-item-height-sm: 16px;
+    --fe-select-multiple-item-height-lg: 32px;
+    --fe-select-multiple-selector-bg-disabled: rgba(0, 0, 0, 0.04);
+    --fe-select-multiple-item-color-disabled: rgba(0, 0, 0, 0.25);
+    --fe-select-multiple-item-border-color-disabled: transparent;
+    --fe-select-show-arrow-padding-inline-end: 18px;
+    --fe-select-hover-border-color: var(--fe-color-primary);
+    --fe-select-active-border-color: var(--fe-color-primary-active);
+    --fe-select-active-outline-color: var(--fe-color-primary-bg);
+    --fe-select-select-affix-padding: 4px;
+  }
+
+  /* Antd Tag 组件变量 */
+  &.ant-tag-css-var {
+    --fe-tag-default-bg: var(--fe-color-bg-container);
+    --fe-tag-default-color: var(--fe-color-text);
+    --fe-tag-default-border-color: var(--fe-color-border);
+    --fe-tag-font-size: 12px;
+    --fe-tag-line-height: 20px;
+    --fe-tag-height: 22px;
+    --fe-tag-padding-horizontal: 7px;
+    --fe-tag-margin: 0 8px 0 0;
+    --fe-tag-border-radius: 4px;
+  }
+
+  /* Antd Progress 组件变量 */
+  &.ant-progress-css-var {
+    --fe-progress-default-color: var(--fe-color-primary);
+    --fe-progress-remaining-color: var(--fe-color-bg-elevated);
+    --fe-progress-text-color: var(--fe-color-text);
+    --fe-progress-line-font-size: 14px;
+    --fe-progress-circle-font-size: 14px;
+    --fe-progress-circle-text-color: var(--fe-color-text);
+    --fe-progress-circle-trail-color: var(--fe-color-bg-elevated);
+    --fe-progress-circle-stroke-width: 6px;
+    --fe-progress-line-stroke-width: 8px;
+  }
   
   /* Motion 动画变量 */
   --fe-motion-duration-slow: 0.3s;

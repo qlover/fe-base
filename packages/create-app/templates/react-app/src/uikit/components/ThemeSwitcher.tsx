@@ -2,6 +2,36 @@ import { IOC } from '@/core/IOC';
 import { ThemeService } from '@qlover/corekit-bridge';
 import { useSliceStore } from '@qlover/slice-store-react';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'antd';
+import {
+  BulbOutlined,
+  BulbFilled,
+  HeartFilled,
+  HeartOutlined
+} from '@ant-design/icons';
+import clsx from 'clsx';
+import { useMemo } from 'react';
+
+const colorMap: Record<
+  string,
+  { colors: string[]; icons: React.ElementType[] }
+> = {
+  default: {
+    colors: [
+      'text-[rgb(var(--color-text-primary))]',
+      'text-[rgb(var(--color-text-secondary))]'
+    ],
+    icons: [BulbFilled, BulbOutlined]
+  },
+  dark: {
+    colors: ['text-[#9333ea]', 'text-[#a855f7]'],
+    icons: [BulbFilled, BulbOutlined]
+  },
+  pink: {
+    colors: ['text-[#f472b6]', 'text-[#ec4899]'],
+    icons: [HeartFilled, HeartOutlined]
+  }
+};
 
 export default function ThemeSwitcher() {
   const themeService = IOC(ThemeService);
@@ -9,22 +39,41 @@ export default function ThemeSwitcher() {
   const themes = themeService.getSupportedThemes();
   const { t } = useTranslation('common');
 
+  const themeOptions = useMemo(() => {
+    return themes.map((themeName) => {
+      const i18nkey = `header.theme.${themeName}`;
+      const { colors, icons } = colorMap[themeName] || colorMap.default;
+      const [currentColor, normalColor] = colors;
+      const [CurrentIcon, NormalIcon] = icons;
+      const isSelf = theme === themeName;
+
+      return {
+        key: themeName + i18nkey,
+        value: themeName,
+        label: (
+          <div
+            className={clsx(
+              'flex items-center gap-2',
+              isSelf ? currentColor : normalColor
+            )}
+          >
+            {isSelf ? <CurrentIcon /> : <NormalIcon />}
+            <span>{t(i18nkey)}</span>
+          </div>
+        )
+      };
+    });
+  }, [themes]);
+
   return (
     <div className="flex items-center gap-2">
-      <label className="text-black" htmlFor="theme-select">
-        {t('header.theme.label')}
-      </label>
-      <select
-        id="theme-select"
+      <Select
         value={theme}
-        onChange={(e) => themeService.changeTheme(e.target.value)}
-      >
-        {themes.map((theme) => (
-          <option key={theme} value={theme}>
-            {theme}
-          </option>
-        ))}
-      </select>
+        onChange={(value) => themeService.changeTheme(value)}
+        options={themeOptions}
+        style={{ width: 120 }}
+        className="ant-select-css-var"
+      />
     </div>
   );
 }

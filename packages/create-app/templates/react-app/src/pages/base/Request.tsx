@@ -4,6 +4,8 @@ import { JSONStorageController } from '@/uikit/controllers/JSONStorageController
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { useMemo } from 'react';
 import { useSliceStore } from '@qlover/slice-store-react';
+import { Button } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -14,7 +16,7 @@ function JSONValue({ value }: { value: unknown }) {
     }
   }, [value]);
   return (
-    <pre className="mt-1 text-sm text-gray-600 font-mono bg-gray-50 p-2 rounded overflow-x-auto">
+    <pre className="mt-1 text-sm text-[rgb(var(--color-text-secondary))] font-mono bg-[rgb(var(--color-bg-secondary))] p-2 rounded overflow-x-auto">
       {output}
     </pre>
   );
@@ -27,71 +29,46 @@ export default function Request() {
   const { t } = useBaseRoutePage();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[rgb(var(--color-bg-base))] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Request Timeout Information */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))]">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-2">
             {t('requestTimeout')}
           </h2>
-          <div className="text-sm text-gray-600 font-mono bg-gray-50 p-2 rounded">
+          <div className="text-sm text-[rgb(var(--color-text-secondary))] font-mono bg-[rgb(var(--color-bg-base))] p-2 rounded">
             {jsonStorageControllerState.requestTimeout}
           </div>
         </div>
 
         {/* Hello Request Card */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
             AI API: Hello
           </h2>
 
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
             函数式 api, 使用了 FetchURLPlugin, RequestCommonPlugin,
             ApiMockPlugin, RequestLogger 插件
           </p>
-          <button
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          <Button
+            type="primary"
             onClick={requestController.onHello}
+            loading={requestControllerState.helloState.loading}
           >
-            {requestControllerState.helloState.loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {t('loading')}
-              </>
-            ) : (
-              'Hello'
-            )}
-          </button>
+            {requestControllerState.helloState.loading ? t('loading') : 'Hello'}
+          </Button>
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('helloResult')}:
               </p>
               <JSONValue value={requestControllerState.helloState.result} />
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('helloError')}:
               </p>
               <JSONValue value={requestControllerState.helloState.error} />
@@ -100,51 +77,28 @@ export default function Request() {
         </div>
 
         {/* IP Information Card */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
             FeApi: IP Information
           </h2>
 
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
             RequestScheduler 类式 api, 使用了 FetchURLPlugin,
             RequestCommonPlugin, RequestLogger, ApiPickDataPlugin 插件, 其中
             ApiPickDataPlugin 插件可以将返回类型统一扁平到 data 字段
           </p>
-          <button
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          <Button
+            type="primary"
             onClick={requestController.onIpInfo}
+            loading={requestControllerState.ipInfoState.loading}
           >
-            {requestControllerState.ipInfoState.loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {t('loading')}
-              </>
-            ) : (
-              t('ipInfo')
-            )}
-          </button>
+            {requestControllerState.ipInfoState.loading
+              ? t('loading')
+              : t('ipInfo')}
+          </Button>
 
           <div className="mt-4">
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
               {t('ipInfoResult')}:
             </p>
             <JSONValue value={requestControllerState.ipInfoState.result} />
@@ -152,52 +106,29 @@ export default function Request() {
         </div>
 
         {/* Random User Card */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
             UserApi:Random User
           </h2>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
             RequestTransaction 类式 api, 使用了 FetchURLPlugin,
             RequestCommonPlugin, ApiMockPlugin, FetchAbortPlugin,
             RequestLogger,ApiCatchPlugin 插件, 其中 FetchAbortPlugin 可以
             中止请求, ApiCatchPlugin 可以将捕获的错误统一到 apiCatchResult 字段
           </p>
-          <button
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          <Button
+            type="primary"
             onClick={requestController.onRandomUser}
+            loading={requestControllerState.randomUserState.loading}
           >
-            {requestControllerState.randomUserState.loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {t('loading')}
-              </>
-            ) : (
-              t('randomUser')
-            )}
-          </button>
+            {requestControllerState.randomUserState.loading
+              ? t('loading')
+              : t('randomUser')}
+          </Button>
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('randomUserResult')}:
               </p>
               <JSONValue
@@ -206,7 +137,7 @@ export default function Request() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('randomUserError')}:
               </p>
               <JSONValue value={requestControllerState.randomUserState.error} />
@@ -215,50 +146,28 @@ export default function Request() {
         </div>
 
         {/* Api catch result */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
             UserApi: Api Catch Result
           </h2>
-          <button
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
+          <Button
+            type={
               requestControllerState.apiCatchResultState.loading
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+                ? 'primary'
+                : 'primary'
+            }
+            danger={requestControllerState.apiCatchResultState.loading}
             onClick={requestController.onTriggerApiCatchResult}
+            loading={requestControllerState.apiCatchResultState.loading}
           >
-            {requestControllerState.apiCatchResultState.loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {t('stopApiCatchResult')}
-              </>
-            ) : (
-              t('triggerApiCatchResult')
-            )}
-          </button>
+            {requestControllerState.apiCatchResultState.loading
+              ? t('stopApiCatchResult')
+              : t('triggerApiCatchResult')}
+          </Button>
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('abortRequestResult')}:
               </p>
               <JSONValue
@@ -267,7 +176,7 @@ export default function Request() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('abortRequestError')}:
               </p>
               <JSONValue
@@ -278,57 +187,33 @@ export default function Request() {
         </div>
 
         {/* Abort Request Card */}
-        <div className="bg-white shadow sm:rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow sm:rounded-lg p-6 border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-bg-elevated))] transition-colors duration-200">
+          <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
             UserApi: Abort Request
           </h2>
-          <button
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
-              requestControllerState.abortState.loading
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+          <Button
+            type={
+              requestControllerState.abortState.loading ? 'primary' : 'primary'
+            }
+            danger={requestControllerState.abortState.loading}
             onClick={requestController.onTriggerAbortRequest}
           >
-            {requestControllerState.abortState.loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {t('stopAbortRequest')}
-              </>
-            ) : (
-              t('triggerAbortRequest')
-            )}
-          </button>
+            {requestControllerState.abortState.loading && <LoadingOutlined />}
+            {requestControllerState.abortState.loading
+              ? t('stopAbortRequest')
+              : t('triggerAbortRequest')}
+          </Button>
 
           <div className="mt-4 space-y-2">
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('abortRequestResult')}:
               </p>
               <JSONValue value={requestControllerState.abortState.result} />
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))]">
                 {t('abortRequestError')}:
               </p>
               <JSONValue value={requestControllerState.abortState.error} />
