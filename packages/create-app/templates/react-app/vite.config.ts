@@ -6,10 +6,12 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
 import ts2Locales from '@qlover/corekit-bridge/vite-ts-to-locales/index';
 import i18nConfig from './config/i18n';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     envConfig({
       envPops: true,
       envPrefix,
@@ -24,7 +26,11 @@ export default defineConfig({
       locales: i18nConfig.supportedLngs as unknown as string[],
       options: [
         {
-          source: './config/ErrorIdentifier.ts',
+          source: './config/Identifier.Error.ts',
+          target: './public/locales/{{lng}}/common.json'
+        },
+        {
+          source: './config/Identifier.I18n.ts',
           target: './public/locales/{{lng}}/common.json'
         }
       ]

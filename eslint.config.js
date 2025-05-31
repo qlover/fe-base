@@ -66,12 +66,7 @@ const commonConfig = createCommon();
  */
 export default tseslint.config([
   {
-    ignores: [
-      '**/dist/**',
-      '**/build/**',
-      '**/node_modules/**',
-      'packages/create-app/templates/**'
-    ]
+    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**']
   },
 
   {

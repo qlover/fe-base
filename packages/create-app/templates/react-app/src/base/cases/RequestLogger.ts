@@ -3,7 +3,7 @@ import {
   type ExecutorPlugin,
   type ExecutorContext,
   type RequestAdapterFetchConfig,
-  type RequestAdapterResponse,
+  type RequestAdapterResponse
 } from '@qlover/fe-corekit';
 import {
   type ApiCatchPluginConfig,

@@ -21,7 +21,7 @@
             "meta": {
               "title": "fe-utils/home",
               "icon": "home",
-              "localNamespace": "home"
+              "localNamespace": "common"
             }
           },
           {
@@ -30,7 +30,7 @@
             "meta": {
               "title": "关于",
               "icon": "info",
-              "localNamespace": "about"
+              "localNamespace": "common"
             }
           },
           {
@@ -39,7 +39,7 @@
             "meta": {
               "title": "FE-Utils JSONStorage",
               "icon": "info",
-              "localNamespace": "jsonStorage"
+              "localNamespace": "common"
             }
           },
           {
@@ -48,7 +48,7 @@
             "meta": {
               "title": "FE-Utils Request",
               "icon": "info",
-              "localNamespace": "request"
+              "localNamespace": "common"
             }
           },
           {
@@ -57,7 +57,7 @@
             "meta": {
               "title": "FE-Utils Executor",
               "icon": "info",
-              "localNamespace": "executor"
+              "localNamespace": "common"
             }
           },
           {
@@ -109,7 +109,7 @@
             "meta": {
               "title": "登录",
               "icon": "info",
-              "localNamespace": "login"
+              "localNamespace": "common"
             }
           },
           {
@@ -118,7 +118,7 @@
             "meta": {
               "title": "注册",
               "icon": "info",
-              "localNamespace": "register"
+              "localNamespace": "common"
             }
           }
         ]

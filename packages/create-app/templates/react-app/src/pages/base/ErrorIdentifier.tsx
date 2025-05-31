@@ -1,38 +1,57 @@
+import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as ErrorIdentifierList from '@config/ErrorIdentifier';
+import * as ErrorIdentifierList from '@config/Identifier.Error';
+import * as i18nKeys from '@config/Identifier.I18n';
 
 export default function ErrorIdentifier() {
   const { t } = useBaseRoutePage();
 
   return (
-    <div className="min-h-screen bg-gray-100/90 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
-            <h1 className="text-2xl font-bold text-white">
-              {t('errorIdentifier')}
+    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header Section */}
+        <section className="py-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
+              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_MAIN_TITLE)}
             </h1>
-            <p className="text-blue-100 mt-1">
-              Identifier From: '@config/ErrorIdentifier'
+            <p className="text-xl text-text-secondary mb-8">
+              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_SOURCE_DESCRIPTION)}
             </p>
           </div>
+        </section>
 
-          <div className="divide-y divide-gray-200">
-            {Object.entries(ErrorIdentifierList).map(([key, value]) => (
-              <div
-                key={key}
-                className="px-6 py-4 flex flex-col sm:flex-row sm:items-center hover:bg-gray-50"
-              >
-                <span className="font-medium text-gray-700 mr-3 min-w-[200px]">
+        {/* Error Identifier List */}
+        <div className="grid gap-4">
+          {Object.entries(ErrorIdentifierList).map(([key, value]) => (
+            <div
+              key={key}
+              className="bg-secondary shadow sm:rounded-lg p-6 border border-border hover:bg-elevated transition-colors duration-200"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                <span className="font-medium text-text mb-2 sm:mb-0">
                   {key}
                 </span>
-                <span className="mt-1 sm:mt-0 text-gray-600 bg-gray-100 px-3 py-1 rounded-md">
+                <span className="text-sm text-text-secondary bg-primary px-3 py-1 rounded-md">
                   {t(value)}
                 </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+
+        {/* Call to Action Section */}
+        <section className="py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4 text-text">
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_TITLE)}
+          </h2>
+          <p className="text-lg text-text-secondary mb-6">
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_DESCRIPTION)}
+          </p>
+          <Button type="primary" size="large">
+            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_CONTACT_SUPPORT)}
+          </Button>
+        </section>
       </div>
     </div>
   );

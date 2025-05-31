@@ -3,7 +3,7 @@ import type {
   InversifyRegisterContainer
 } from '@/base/port/InversifyIocInterface';
 import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-corekit';
-import { Logger }from '@qlover/logger';
+import { Logger } from '@qlover/logger';
 import AppConfig from '@/core/AppConfig';
 import { IOCIdentifier } from '@/core/IOC';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import { override as themeOverride } from '@config/theme.json';
+import themeConfig from '@config/theme.json';
 import { localJsonStorage } from '../globals';
 
 export class RegisterCommon implements InversifyRegisterInterface {
@@ -52,7 +52,7 @@ export class RegisterCommon implements InversifyRegisterInterface {
 
     container.bind(ThemeService).toConstantValue(
       new ThemeService({
-        ...themeOverride,
+        ...themeConfig,
         storage: localJsonStorage
       })
     );

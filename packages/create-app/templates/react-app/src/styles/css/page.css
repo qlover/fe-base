@@ -1,0 +1,11 @@
+@theme {
+  --color-primary: rgba(var(--color-bg-base));
+  --color-secondary: rgba(var(--color-bg-secondary));
+  --color-elevated: rgba(var(--color-bg-elevated));
+  --color-text: rgba(var(--color-text-primary));
+  --color-text-secondary: rgba(var(--color-text-secondary));
+  --color-text-tertiary: rgba(var(--color-text-tertiary));
+  --color-border: rgba(var(--color-border));
+  --color-brand: rgba(var(--color-brand));
+  --color-brand-hover: rgba(var(--color-brand-hover));
+}

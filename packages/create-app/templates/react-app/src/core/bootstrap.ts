@@ -12,7 +12,7 @@ import * as globals from '@/core/globals';
 import { I18nService } from '@/base/services/I18nService';
 import { registerList } from './registers';
 import { appBootstrapList } from './bootstraps';
-import { GLOBAL_NO_WINDOW } from '@config/ErrorIdentifier';
+import { GLOBAL_NO_WINDOW } from '@config/Identifier.Error';
 
 const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',

@@ -1,7 +1,6 @@
 {
   "eslint.enable": true,
   "eslint.format.enable": false,
-  "prettier.configPath": "./packages/fe-standard/config/prettierrc.js",
   "files.eol": "\n",
   "editor.tabSize": 2,
   "jest.runMode": "on-demand",
