@@ -10,7 +10,7 @@ import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/appError/AppError';
-import { LOCAL_NO_USER_TOKEN } from '@config/ErrorIdentifier';
+import { LOCAL_NO_USER_TOKEN } from '@config/Identifier.Error';
 import { SliceStore } from '@qlover/slice-store-react';
 
 class UserControllerState {

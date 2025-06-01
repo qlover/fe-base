@@ -1,10 +1,11 @@
-import '@/uikit/styles/css/index.css';
+import '@/styles/css/index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';
 import { RouterLoader, type ComponentValue } from '@/base/cases/router-loader';
+import { ConfigProvider } from 'antd';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -34,7 +35,18 @@ function App() {
     return router;
   }, []);
 
-  return <RouterProvider router={routerBase} />;
+  return (
+    <ConfigProvider
+      theme={{
+        cssVar: {
+          key: 'fe-theme',
+          prefix: 'fe'
+        }
+      }}
+    >
+      <RouterProvider router={routerBase} />
+    </ConfigProvider>
+  );
 }
 
 export default App;

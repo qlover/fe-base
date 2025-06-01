@@ -3,7 +3,6 @@ import { IOCIdentifier } from '@/core/IOC';
 import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 
-
 @injectable()
 export class ProcesserService {
   constructor(
