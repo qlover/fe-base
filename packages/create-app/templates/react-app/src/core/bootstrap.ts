@@ -1,78 +1,67 @@
 import {
   Bootstrap,
-  type BootstrapExecutorPlugin,
-  InjectEnv,
-  InjectIOC,
-  InjectGlobal
+  type InjectGlobalConfig,
+  type InjectIOCOptions,
+  type IOCContainerInterface,
+  type InjectEnvConfig
 } from '@qlover/corekit-bridge';
 import AppConfig from '@/core/AppConfig';
-import { envPrefix, browserGlobalsName, envBlackList } from '@config/common';
+import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import { IOC } from './IOC';
 import * as globals from '@/core/globals';
-import { I18nService } from '@/base/services/I18nService';
-import { registerList } from './registers';
-import { appBootstrapList } from './bootstraps';
+import { IocRegister } from './registers';
+import { BootstrapsRegistry } from './bootstraps';
 import { GLOBAL_NO_WINDOW } from '@config/Identifier.Error';
 
-const printBootstrap: BootstrapExecutorPlugin = {
-  pluginName: 'PrintBootstrap',
-  onSuccess({ parameters: { logger } }) {
-    logger.info(
-      'bootstrap success!\n\n' +
-        `You can use \`%cwindow.${browserGlobalsName}%c\` to access the globals`,
-      'color: #0ff; font-weight: bold;',
-      'all: unset;'
-    );
-  }
-};
-
-/**
- * Bootstrap
- *
- * 1. inject env config to AppConfig
- * 2. inject IOC to Application
- * 3. inject globals to window
- *
- */
-export default function startup({
-  window,
+export default async function startup({
+  root,
   envSource
 }: {
-  window: unknown;
+  root: unknown;
   envSource: Record<string, unknown>;
 }) {
-  if (!(typeof window !== 'undefined' && window instanceof Window)) {
+  if (!(typeof root !== 'undefined' && root instanceof Window)) {
     throw new Error(GLOBAL_NO_WINDOW);
   }
 
   const { logger } = globals;
 
-  const bootstrap = new Bootstrap(window, IOC.implemention!, logger);
+  const envOptions: InjectEnvConfig = {
+    target: AppConfig,
+    source: envSource,
+    prefix: envPrefix,
+    blackList: envBlackList
+  };
 
-  /**
-   * bootstrap start list
-   *
-   * - inject env config to AppConfig
-   * - inject IOC to Application
-   * - inject globals to window
-   * - inject i18n service to Application
-   */
-  const bootstrapList: BootstrapExecutorPlugin[] = [
-    new InjectEnv(AppConfig, envSource, envPrefix, envBlackList),
-    new InjectIOC(IOC, registerList),
-    new InjectGlobal(globals, browserGlobalsName),
-    new I18nService(window.location.pathname),
-    ...appBootstrapList
-  ];
+  const iocOptions: InjectIOCOptions<IOCContainerInterface> = {
+    manager: IOC,
+    register: new IocRegister({
+      pathname: root.location.pathname
+    })
+  };
 
-  if (AppConfig.env !== 'production') {
-    bootstrapList.push(printBootstrap);
-  }
+  const globalOptions: InjectGlobalConfig = {
+    sources: globals,
+    target: browserGlobalsName
+  };
+
+  const bootstrap = new Bootstrap({
+    root,
+    logger,
+    ioc: iocOptions,
+    envOptions,
+    globalOptions
+  });
 
   try {
     logger.info('bootstrap start...');
 
-    bootstrap.use(bootstrapList).start();
+    // init bootstrap
+    await bootstrap.initialize();
+
+    const bootstrapsRegistry = new BootstrapsRegistry(IOC);
+
+    await bootstrap.use(bootstrapsRegistry.register()).start();
   } catch (error) {
     logger.error(`${AppConfig.appName} starup error:`, error);
   }

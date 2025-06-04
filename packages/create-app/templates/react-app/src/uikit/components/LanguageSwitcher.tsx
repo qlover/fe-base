@@ -2,13 +2,18 @@ import { Select } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import i18nConfig from '@config/i18n';
-import i18n from 'i18next';
+import { IOC } from '@/core/IOC';
+import { I18nService, I18nServiceLocale } from '@/base/services/I18nService';
+import { useCallback } from 'react';
+import { useSliceStore } from '@qlover/slice-store-react';
 
 const { supportedLngs } = i18nConfig;
 
 export default function LanguageSwitcher() {
   const navigate = useNavigate();
-  const { lng } = useParams<{ lng: string }>();
+  const i18nService = IOC(I18nService);
+  const loading = useSliceStore(i18nService, i18nService.selector.loading);
+  const { lng } = useParams<{ lng: I18nServiceLocale }>();
   const currentPath = window.location.pathname;
 
   const languageOptions = supportedLngs.map((lang) => ({
@@ -22,17 +27,24 @@ export default function LanguageSwitcher() {
     )
   }));
 
-  const handleLanguageChange = async (newLang: string) => {
-    // Change i18n language
-    await i18n.changeLanguage(newLang);
-    // Update URL path
-    const newPath = currentPath.replace(`/${lng}`, `/${newLang}`);
-    navigate(newPath);
-  };
+  const handleLanguageChange = useCallback(
+    async (newLang: I18nServiceLocale) => {
+      i18nService.changeLoading(true);
+      // Change i18n language
+      await i18nService.changeLanguage(newLang);
+      // Update URL path
+      const newPath = currentPath.replace(`/${lng}`, `/${newLang}`);
+      navigate(newPath);
+      i18nService.changeLoading(false);
+    },
+    [lng, currentPath, navigate, i18nService]
+  );
 
   return (
     <div className="flex items-center gap-2">
       <Select
+        loading={loading}
+        disabled={loading}
         value={lng}
         onChange={handleLanguageChange}
         options={languageOptions}

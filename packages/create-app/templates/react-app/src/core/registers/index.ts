@@ -1,18 +1,33 @@
-import type { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
 import { RegisterGlobals } from './RegisterGlobals';
 import { RegisterCommon } from './RegisterCommon';
 import { RegisterApi } from './RegisterApi';
 import { RegisterControllers } from './RegisterControllers';
 import AppConfig from '../AppConfig';
+import {
+  InversifyContainer,
+  InversifyRegisterInterface,
+  IocRegisterOptions
+} from '../IOC';
+import { IOCManagerInterface } from '@qlover/corekit-bridge';
 
-/**
- * Register List
- *
- * Register List is used to register dependencies in bootstrap
- */
-export const registerList: InversifyRegisterInterface[] = [
-  new RegisterGlobals(AppConfig),
-  new RegisterCommon(),
-  new RegisterApi(),
-  new RegisterControllers()
-];
+export class IocRegister implements InversifyRegisterInterface {
+  constructor(protected options: IocRegisterOptions) {}
+
+  getRegisterList(): InversifyRegisterInterface[] {
+    return [
+      new RegisterGlobals(AppConfig),
+      new RegisterCommon(),
+      new RegisterApi(),
+      new RegisterControllers()
+    ];
+  }
+
+  register(
+    ioc: InversifyContainer,
+    manager: IOCManagerInterface<InversifyContainer>
+  ): void {
+    this.getRegisterList().forEach((register) => {
+      register.register(ioc, manager, this.options);
+    });
+  }
+}
