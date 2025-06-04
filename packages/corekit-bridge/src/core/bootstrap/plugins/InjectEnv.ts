@@ -8,14 +8,21 @@ export interface EnvConfigInterface {
   [key: string]: any;
 }
 
+export interface InjectEnvConfig {
+  prefix?: string;
+  target?: EnvConfigInterface;
+  source?: Record<string, unknown>;
+  blackList?: string[];
+}
+
 export class InjectEnv implements BootstrapExecutorPlugin {
   readonly pluginName = 'InjectEnv';
 
   constructor(
-    private target: EnvConfigInterface,
-    private source: Record<string, unknown>,
-    private envPrefix: string = '',
-    private blackList: string[] = []
+    /**
+     * @since 2.0.0
+     */
+    protected options: InjectEnvConfig
   ) {}
 
   static isJSONString(value: string): boolean {
@@ -30,11 +37,12 @@ export class InjectEnv implements BootstrapExecutorPlugin {
   }
 
   env<D>(key: string, defaultValue?: D): D {
+    const { prefix = '', source = {} } = this.options;
     // transform key to env key
     const formattedKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
 
-    const envKey = `${this.envPrefix}${formattedKey}`;
-    const value = this.source[envKey];
+    const envKey = `${prefix}${formattedKey}`;
+    const value = source[envKey];
     // if it is a json string, parse it
     if (typeof value === 'string' && InjectEnv.isJSONString(value)) {
       return JSON.parse(value);
@@ -44,8 +52,10 @@ export class InjectEnv implements BootstrapExecutorPlugin {
   }
 
   inject(config: EnvConfigInterface): void {
+    const { blackList = [] } = this.options;
+
     for (const key in config) {
-      if (this.blackList.includes(key)) {
+      if (blackList.includes(key)) {
         continue;
       }
 
@@ -56,10 +66,16 @@ export class InjectEnv implements BootstrapExecutorPlugin {
   }
 
   onBefore(): void {
-    this.inject(this.target);
+    const { target } = this.options;
+
+    if (!target) {
+      throw new Error('target is required');
+    }
+
+    this.inject(target);
 
     // transform readonly to writable
-    Object.freeze(this.target);
+    Object.freeze(target);
   }
 
   onSuccess({ parameters: { logger } }: BootstrapContext): void {

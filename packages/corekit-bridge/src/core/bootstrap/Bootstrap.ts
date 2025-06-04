@@ -1,28 +1,105 @@
-import type { IOCContainerInterface } from '../ioc/IOCContainerInterface';
-import { SyncExecutor } from '@qlover/fe-corekit';
+import { ExecutorError, SyncExecutor } from '@qlover/fe-corekit';
 import type {
-  BootstrapArgs,
+  BootstrapContextValue,
   BootstrapExecutorPlugin
 } from './BootstrapExecutorPlugin';
-import type { LoggerInterface } from '@qlover/logger';
-export class Bootstrap extends SyncExecutor {
+import { InjectEnv, type InjectEnvConfig } from './plugins/InjectEnv';
+import { InjectIOC, InjectIOCOptions } from './plugins/InjectIOC';
+import { InjectGlobal, InjectGlobalConfig } from './plugins/InjectGlobal';
+import { IOCContainerInterface, IOCManagerInterface } from '../ioc';
+
+export interface BootstrapConfig<Container extends IOCContainerInterface>
+  extends Omit<BootstrapContextValue, 'ioc'> {
+  /**
+   * InjectIOC options
+   *
+   * or is a IOCManagerInterface
+   */
+  ioc?: InjectIOCOptions<Container> | IOCManagerInterface<Container>;
+
+  /**
+   * InjectEnv options
+   */
+  envOptions?: InjectEnvConfig;
+
+  /**
+   * InjectGlobal options
+   */
+  globalOptions?: InjectGlobalConfig;
+}
+
+export class Bootstrap<
+  Container extends IOCContainerInterface = IOCContainerInterface
+> extends SyncExecutor {
   constructor(
-    private root: unknown,
-    private IOCContainer: IOCContainerInterface,
-    private logger: LoggerInterface
+    /**
+     * @since 2.0.0
+     */
+    protected options: BootstrapConfig<Container>
   ) {
     super();
+
+    // correction ioc parameter
+    if (options.ioc && InjectIOC.isIocManager(options.ioc)) {
+      this.options.ioc = {
+        manager: options.ioc
+      };
+    }
   }
 
-  getIOCContainer(): IOCContainerInterface {
-    return this.IOCContainer;
+  setOptions(options: Partial<BootstrapConfig<Container>>): this {
+    this.options = { ...this.options, ...options };
+    return this;
   }
 
-  getContext(): BootstrapArgs {
-    return { root: this.root, ioc: this.IOCContainer, logger: this.logger };
+  async initialize(): Promise<void> {
+    const { ioc: iocOptions, envOptions, globalOptions } = this.options;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const inits: [new (options: any) => BootstrapExecutorPlugin, any][] = [
+      [InjectEnv, envOptions],
+      [InjectIOC, iocOptions],
+      [InjectGlobal, globalOptions]
+    ];
+
+    const plugins = inits
+      .filter(([_, options]) => options !== undefined)
+      .map(([Plugin, options]) => new Plugin(options));
+
+    this.use(plugins);
+
+    await this.start();
+
+    this.plugins = [];
   }
 
-  use(plugin: BootstrapExecutorPlugin | BootstrapExecutorPlugin[]): this {
+  getIOCContainer(): Container | undefined {
+    const ioc = this.options.ioc as InjectIOCOptions<Container>;
+
+    if (ioc?.manager && ioc.manager.implemention) {
+      return ioc.manager.implemention;
+    }
+
+    return undefined;
+  }
+
+  getContext(): BootstrapContextValue {
+    return {
+      root: this.options.root,
+      ioc: this.getIOCContainer()!,
+      logger: this.options.logger
+    };
+  }
+
+  use(
+    plugin: BootstrapExecutorPlugin | BootstrapExecutorPlugin[],
+    skip?: boolean
+  ): this {
+    // skip plugin
+    if (skip) {
+      return this;
+    }
+
     if (Array.isArray(plugin)) {
       plugin.forEach((p) => super.use(p));
       return this;
@@ -33,11 +110,15 @@ export class Bootstrap extends SyncExecutor {
     return this;
   }
 
-  start(): void {
-    this.exec(this.getContext(), () => {});
+  start(): Promise<BootstrapContextValue> {
+    const context = this.getContext();
+    return this.exec(context, () => Promise.resolve(context));
   }
 
-  startNoError(): void {
-    this.execNoError(this.getContext(), () => {});
+  startNoError():
+    | Promise<BootstrapContextValue | ExecutorError>
+    | ExecutorError {
+    const context = this.getContext();
+    return this.execNoError(context, () => Promise.resolve(context));
   }
 }
