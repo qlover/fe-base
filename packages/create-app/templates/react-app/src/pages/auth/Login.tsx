@@ -5,7 +5,6 @@ import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouterController } from '@/uikit/controllers/RouterController';
 import { UserController } from '@/uikit/controllers/UserController';
-import AppConfig from '@/core/AppConfig';
 import { useSliceStore } from '@qlover/slice-store-react';
 
 interface LoginFormData {
@@ -16,6 +15,7 @@ interface LoginFormData {
 export default function Login() {
   const { t } = useBaseRoutePage();
   const userController = IOC(UserController);
+  const AppConfig = IOC('AppConfig');
   useSliceStore(userController);
   const [loading, setLoading] = useState(false);
 

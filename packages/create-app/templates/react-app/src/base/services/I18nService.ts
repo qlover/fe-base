@@ -4,17 +4,37 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import i18nConfig from '@config/i18n';
-import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
+import {
+  SliceStore,
+  type BootstrapExecutorPlugin
+} from '@qlover/corekit-bridge';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
 export type I18nServiceLocale = (typeof supportedLngs)[number];
 
-export class I18nService implements BootstrapExecutorPlugin {
+export class I18nServiceState {
+  loading: boolean = false;
+  constructor(public language: I18nServiceLocale) {}
+}
+
+export class I18nService
+  extends SliceStore<I18nServiceState>
+  implements BootstrapExecutorPlugin
+{
   readonly pluginName = 'I18nService';
 
-  constructor(private pathname: string) {}
+  selector = {
+    loading: (state: I18nServiceState) => state.loading
+  };
 
+  constructor(private pathname: string) {
+    super(() => new I18nServiceState(i18n.language as I18nServiceLocale));
+  }
+
+  /**
+   * @override
+   */
   onBefore(): void {
     const debug = false;
 
@@ -46,6 +66,14 @@ export class I18nService implements BootstrapExecutorPlugin {
       }
     };
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
+  }
+
+  async changeLanguage(language: I18nServiceLocale): Promise<void> {
+    await i18n.changeLanguage(language);
+  }
+
+  changeLoading(loading: boolean): void {
+    this.emit({ ...this.state, loading });
   }
 
   static getCurrentLanguage(): I18nServiceLocale {

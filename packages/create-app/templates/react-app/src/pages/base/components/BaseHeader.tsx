@@ -1,5 +1,6 @@
 import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
 import LocaleLink from '@/uikit/components/LocaleLink';
+import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
 
 export default function BaseHeader() {
   return (
@@ -17,6 +18,7 @@ export default function BaseHeader() {
           </LocaleLink>
         </div>
         <div className="flex items-center gap-4">
+          <LanguageSwitcher />
           <ThemeSwitcher />
         </div>
       </div>
