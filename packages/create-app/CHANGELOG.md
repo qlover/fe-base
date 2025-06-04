@@ -1,5 +1,93 @@
 # @qlover/create-app
 
+## 0.3.3
+
+### Patch Changes
+
+#### ✨ Features
+
+- **LanguageSwitcher:** add language switcher component to enhance localization ([72edba8](https://github.com/qlover/fe-base/commit/72edba8a71dabba00608fceafc355cf4bc2dfd63)) ([#411](https://github.com/qlover/fe-base/pull/411))
+
+  - Introduced a new LanguageSwitcher component that allows users to change the application language.
+  - Integrated the component into BaseHeader for improved accessibility.
+  - Utilized Ant Design's Select component for a user-friendly interface.
+  - Implemented language change functionality that updates the URL and i18n configuration accordingly.
+
+- **Login:** integrate Ant Design components for enhanced user experience ([d380157](https://github.com/qlover/fe-base/commit/d380157d3360ad5b9e96d0e3edeb2639a3a6ba9f)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+  - Added Ant Design library to the project dependencies.
+  - Refactored the Login component to utilize Ant Design's Form, Input, and Button components, improving the UI and UX.
+  - Implemented a structured login form with validation and Google sign-in option.
+  - Enhanced layout with a brand section and feature highlights for better engagement.
+
+- update React app with Tailwind CSS integration and Ant Design enhancements ([eff0ae2](https://github.com/qlover/fe-base/commit/eff0ae25eb2f831b2344a9d4307495377dce647f)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+- Added Tailwind CSS and its PostCSS and Vite plugins to the project dependencies.
+- Refactored the PostCSS configuration to utilize the new Tailwind CSS setup.
+- Updated the Tailwind configuration to simplify theme management.
+- Enhanced the Login component with Ant Design's Form and Input components, improving the UI.
+- Introduced a new CSS structure for theming, including default, dark, and pink themes.
+- Removed outdated Tailwind CSS files from the uikit directory to streamline styles.
+
+- enhance React app UI with Ant Design components and improve theming ([008e69a](https://github.com/qlover/fe-base/commit/008e69a89ca0ed0fe23d60c2b368fbd88bb3f15c)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+- Replaced various UI elements with Ant Design components for a consistent look and feel.
+- Updated ErrorIdentifier and Executor components to utilize Ant Design's Button and layout features.
+- Refactored styles to leverage CSS variables for better theming across components.
+- Added new task management features in the Executor component, including task creation and status tracking.
+- Improved overall layout and responsiveness of pages with enhanced CSS styling.
+
+- enhance localization and error handling in React app ([f8a5398](https://github.com/qlover/fe-base/commit/f8a5398084cde69b967242a1db89d511a4b2b79e)) ([#408](https://github.com/qlover/fe-base/pull/408))
+  feat: enhance localization and error handling in React app
+
+- Introduced new localization keys for various pages including JSONStorage, Request, and Executor.
+- Updated components to utilize new localization keys for improved internationalization support.
+- Removed outdated error identifiers and added new ones for better clarity and consistency.
+- Enhanced the Home, About, and ErrorIdentifier components with improved localization.
+- Streamlined theme switcher labels to utilize localization keys for better user experience.
+
+#### ♻️ Refactors
+
+- **Bootstrap:** update dependencies and refactor core components ([9aeff78](https://github.com/qlover/fe-base/commit/9aeff78209925a9e3e6e4cdf1e5a7cbbcecb07f8)) ([#411](https://github.com/qlover/fe-base/pull/411))
+
+  - Upgraded @qlover/corekit-bridge to version ^1.0.3 in package.json.
+  - Refactored startup function to use 'root' instead of 'window' for better compatibility.
+  - Removed InversifyIocInterface.ts as it was no longer needed.
+  - Enhanced I18nService to manage loading state and language changes more effectively.
+  - Introduced BootstrapsRegistry for improved bootstrap management and organization.
+  - Updated various register classes to align with new IOC structure and improve dependency injection.
+  - Added printBootstrap for logging successful bootstrap initialization.
+
+- **Home, JSONStorage, Layout, BaseHeader:** enhance UI with Ant Design components and improve theming ([8023e01](https://github.com/qlover/fe-base/commit/8023e0179729859a1406f5dabf013f529c1a2b58)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+  - Replaced button elements with Ant Design's Button component for a consistent UI experience.
+  - Updated layout and background colors to utilize CSS variables for better theming.
+  - Refactored navigation items in Home component for improved structure and readability.
+  - Enhanced JSONStorage component styling and layout for better user interaction.
+  - Improved BaseHeader styling with new background and border colors for a modern look.
+
+- streamline UI components and enhance theming in React app ([9baf49b](https://github.com/qlover/fe-base/commit/9baf49b60b58f3c3e614f2bf473853a50abeff8e)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+- Consolidated background and text color styles across various components to utilize CSS variables for improved theming.
+- Updated 404 and 500 error pages to align with new color schemes.
+- Refactored Login, About, and Executor components to enhance layout and responsiveness.
+- Improved overall consistency in UI by replacing hardcoded colors with theme variables.
+- Enhanced the Home and JSONStorage components for better user experience and visual appeal.
+
+- update localization and error handling in React app ([b5617a1](https://github.com/qlover/fe-base/commit/b5617a1e04770352d92a840a59728a57955475fe)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+- Renamed error identifier files for clarity and consistency.
+- Introduced new localization identifiers for error messages and page content.
+- Updated configuration to reflect new file paths for error handling.
+- Removed outdated localization files to streamline the project structure.
+- Enhanced the Home and About components with improved localization support.
+
+- **Loading:** update loading component with animated bouncing dots ([83ede4b](https://github.com/qlover/fe-base/commit/83ede4b644a01843dd64e2d3e5254730f115d1ec)) ([#408](https://github.com/qlover/fe-base/pull/408))
+
+  - Replaced the SVG spinner with a new loading animation using bouncing dots for improved visual appeal.
+  - Utilized the clsx library for conditional class management, enhancing readability and maintainability.
+  - Adjusted styles to support dark mode and added backdrop blur for fullscreen loading state.
+
 ## 0.3.2
 
 ### Patch Changes
