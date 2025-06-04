@@ -1,8 +1,5 @@
-import type {
-  InversifyRegisterInterface,
-  InversifyRegisterContainer
-} from '@/base/port/InversifyIocInterface';
+import { InversifyContainer, InversifyRegisterInterface } from '../IOC';
 
 export class RegisterApi implements InversifyRegisterInterface {
-  register(_container: InversifyRegisterContainer): void {}
+  register(_container: InversifyContainer): void {}
 }

@@ -6,7 +6,7 @@ import App from './App.tsx';
 import startup from './core/bootstrap';
 
 startup({
-  window: window,
+  root: window,
   envSource: import.meta.env
 });
 

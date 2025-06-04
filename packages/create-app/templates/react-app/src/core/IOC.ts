@@ -12,7 +12,18 @@ import {
 import type { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import { Container } from 'inversify';
-import { InversifyRegisterInterface } from '@/base/port/InversifyIocInterface';
+import { IOCRegisterInterface } from '@qlover/corekit-bridge';
+
+export type IocRegisterOptions = {
+  pathname: string;
+};
+
+export type InversifyRegisterContainer = Container;
+/**
+ * Inversify register interface.
+ */
+export interface InversifyRegisterInterface
+  extends IOCRegisterInterface<InversifyContainer, IocRegisterOptions> {}
 
 export class InversifyContainer implements IOCContainerInterface {
   private container: Container;
@@ -24,12 +35,6 @@ export class InversifyContainer implements IOCContainerInterface {
       // use singleton scope
       defaultScope: 'Singleton'
     });
-  }
-
-  configure(registers?: InversifyRegisterInterface[]): void {
-    if (registers) {
-      registers.forEach((register) => register.register(this.container, this));
-    }
   }
 
   bind<T>(key: ServiceIdentifier<T>, value: T): void {
