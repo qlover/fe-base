@@ -1,5 +1,19 @@
 # @qlover/corekit-bridge
 
+## 1.0.3
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **Bootstrap:** enhance configuration and plugin integration ([4256c19](https://github.com/qlover/fe-base/commit/4256c19a044d208d73bafcab173083b727fe0fe4)) ([#409](https://github.com/qlover/fe-base/pull/409))
+
+  - Introduced BootstrapConfig interface to streamline configuration options for IOC, environment, and global plugins.
+  - Refactored Bootstrap class to utilize the new configuration structure, improving clarity and maintainability.
+  - Updated plugin initialization logic in the initialize method to support dynamic plugin loading based on provided options.
+  - Enhanced InjectEnv, InjectIOC, and InjectGlobal plugins to accept configuration objects, improving flexibility and usability.
+  - Adjusted method signatures and return types for better type safety and consistency across the Bootstrap class and its plugins.
+
 ## 1.0.2
 
 ### Patch Changes
