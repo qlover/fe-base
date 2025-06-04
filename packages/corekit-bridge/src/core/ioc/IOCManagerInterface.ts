@@ -1,12 +1,12 @@
 import type { IOCContainerInterface } from './IOCContainerInterface';
 
-export interface IOCManagerInterface {
+export interface IOCManagerInterface<Container extends IOCContainerInterface> {
   get<T>(identifier: unknown): T;
 
   /**
    * implement IOC container
    */
-  implement(container: IOCContainerInterface): void;
+  implement(container: Container): void;
 
-  get implemention(): IOCContainerInterface | null;
+  get implemention(): Container | null;
 }

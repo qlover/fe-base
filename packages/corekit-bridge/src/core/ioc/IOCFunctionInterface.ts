@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import { IOCContainerInterface } from './IOCContainerInterface';
 import { IOCManagerInterface } from './IOCManagerInterface';
 
 export type Constructor<T = any> = new (...args: any[]) => T;
@@ -20,8 +21,10 @@ export type ServiceIdentifier<T = any> =
  * ```
  *
  */
-export interface IOCFunctionInterface<IOCIdentifierMap>
-  extends IOCManagerInterface {
+export interface IOCFunctionInterface<
+  IOCIdentifierMap,
+  Container extends IOCContainerInterface = IOCContainerInterface
+> extends IOCManagerInterface<Container> {
   /**
    * get constant identifier
    *

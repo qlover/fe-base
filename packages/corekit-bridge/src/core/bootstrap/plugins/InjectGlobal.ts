@@ -3,33 +3,41 @@ import type {
   BootstrapExecutorPlugin
 } from '../BootstrapExecutorPlugin';
 
+export interface InjectGlobalConfig {
+  sources: Record<string, unknown>;
+
+  /**
+   * If target is string, will be append to plugin context root
+   * If target is object, will be inject to target
+   */
+  target?: string | Record<string, unknown>;
+}
+
 export class InjectGlobal implements BootstrapExecutorPlugin {
   readonly pluginName = 'InjectGlobal';
 
-  constructor(
-    private sources: Record<string, unknown>,
-    private target?: string | Record<string, unknown>
-  ) {}
+  constructor(protected config: InjectGlobalConfig) {}
 
   onBefore(context: BootstrapContext): void {
+    const { sources, target } = this.config;
     // if target is provided, inject globals to target
-    if (typeof this.target === 'string') {
+    if (typeof target === 'string') {
       Object.assign(context.parameters.root!, {
-        [this.target]: Object.freeze(Object.assign({}, this.sources))
+        [target]: Object.freeze(Object.assign({}, sources))
       });
       return;
     }
 
-    const target = this.target || context.parameters.root;
+    const _target = target || context.parameters.root;
 
-    if (typeof target !== 'object' || target === null) {
+    if (typeof _target !== 'object' || _target === null) {
       throw new Error('target must be an object');
     }
 
     // inject globals to root
-    for (const key in this.sources) {
-      const element = this.sources[key];
-      Object.assign(target, { [key]: element });
+    for (const key in sources) {
+      const element = sources[key];
+      Object.assign(_target, { [key]: element });
     }
   }
 }

@@ -45,6 +45,12 @@ export class ThemeStateGetter {
   }
 
   static getSystemTheme(): 'dark' | 'light' {
+    if (typeof window === 'undefined') {
+      // if not in browser, return light
+      console.warn('ThemeStateGetter: not in browser, return light');
+      return 'light';
+    }
+
     // use window.matchMedia to detect prefers-color-scheme media query
     const isDarkMode =
       window.matchMedia &&
