@@ -7,7 +7,7 @@ import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
-import viteDeprecatedAntd from './lib/antd-overried/vite';
+import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
 
 // https://vite.dev/config/
 export default defineConfig({

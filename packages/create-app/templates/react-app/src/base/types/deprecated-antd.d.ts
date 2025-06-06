@@ -1,4 +1,5 @@
 import AntdMessageStatic from 'antd/es/message';
+import { TypeOpen } from 'antd/es/message/interface';
 import AntdModalStatic from 'antd/es/modal';
 
 import { ModalFunc } from 'antd/es/modal/confirm';
@@ -7,7 +8,28 @@ declare module 'antd' {
   /**
    * @deprecated Please use alternative message implementation instead
    */
-  export const message: typeof AntdMessageStatic;
+  export const message: typeof AntdMessageStatic & {
+    /**
+     * @deprecated Please use alternative message implementation instead
+     */
+    info: TypeOpen;
+    /**
+     * @deprecated Please use alternative message implementation instead
+     */
+    success: TypeOpen;
+    /**
+     * @deprecated Please use alternative message implementation instead
+     */
+    error: TypeOpen;
+    /**
+     * @deprecated Please use alternative message implementation instead
+     */
+    warning: TypeOpen;
+    /**
+     * @deprecated Please use alternative message implementation instead
+     */
+    loading: TypeOpen;
+  };
 
   export const Modal: typeof AntdModalStatic & {
     /**

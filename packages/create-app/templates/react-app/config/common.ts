@@ -1,4 +1,4 @@
-import type { ViteDeprecatedAntdOptions } from '../lib/antd-overried/vite';
+import type { ViteDeprecatedAntdOptions } from '@brain-toolkit/antd-theme-override/vite';
 
 export const envPrefix = 'VITE_';
 
