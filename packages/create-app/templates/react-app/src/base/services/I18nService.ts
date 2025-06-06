@@ -88,4 +88,23 @@ export class I18nService
   static isValidLanguage(language: string): language is I18nServiceLocale {
     return supportedLngs.includes(language as I18nServiceLocale);
   }
+
+  /**
+   * translate the key
+   * @param key - key to translate
+   * @param params - params to pass to the translation
+   * @returns translated value
+   */
+  t(key: string, params?: Record<string, unknown>): string {
+    const i18nValue = i18n.t(key, {
+      lng: i18n.language,
+      ...params
+    });
+
+    if (!i18nValue || i18nValue === key) {
+      return key;
+    }
+
+    return i18nValue;
+  }
 }
