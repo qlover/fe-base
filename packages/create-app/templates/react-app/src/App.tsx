@@ -4,7 +4,7 @@ import { lazy, useMemo } from 'react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';
-import { RouterLoader, type ComponentValue } from '@/base/cases/router-loader';
+import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
 import { AntdThemeProvider } from '@lib/antd-overried/bridge/AntdThemeProvider';
 
 function getAllPages() {

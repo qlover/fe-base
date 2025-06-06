@@ -1,4 +1,4 @@
-import {
+import type {
   AntdStaticApiInterface,
   MessageApi,
   ModalApi,
@@ -39,8 +39,6 @@ export class DialogHandler
     modal?: ModalApi;
     notification?: NotificationApi;
   } = {};
-
-  private static readonly DEFAULT_DURATION = 3000;
 
   setMessage(message: MessageApi): void {
     this.antds.message = message;
@@ -83,11 +81,6 @@ export class DialogHandler
   }
 
   public confirm(options: ConfirmOptions): void {
-    this.antds.modal?.confirm({
-      ...options,
-      content: String(options.content),
-      okText: options.okText ?? 'OK',
-      cancelText: options.cancelText ?? 'Cancel'
-    });
+    this.antds.modal?.confirm(options);
   }
 }
