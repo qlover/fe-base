@@ -3,7 +3,7 @@ import type {
   MessageApi,
   ModalApi,
   NotificationApi
-} from '@lib/antd-overried/bridge/AntdStaticApiInterface';
+} from '@brain-toolkit/antd-theme-override/react';
 import type {
   InteractionHubInterface,
   InteractionOptions,

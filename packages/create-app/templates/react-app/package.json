@@ -51,6 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@brain-toolkit/antd-theme-override": "^0.0.3",
     "@qlover/corekit-bridge": "^1.0.3",
     "@qlover/fe-corekit": "^1.3.1",
     "@qlover/logger": "^0.1.1",
