@@ -1,6 +1,19 @@
+import type { ViteDeprecatedAntdOptions } from '../lib/antd-overried/vite';
+
 export const envPrefix = 'VITE_';
 
 export const browserGlobalsName = 'feGlobals';
+
+/**
+ * 覆盖 antd 主题模式
+ *
+ * - noGlobals 不要使用全局的 antd 组件(推荐)
+ * - overrideStatic 单独覆盖静态组件变量(这个文件就是这个作用)
+ *
+ * If use vite-deprecated-antd, automatically change file
+ */
+export const overrideAntdThemeMode: ViteDeprecatedAntdOptions['mode'] =
+  'noGlobals';
 
 /**
  * bootstrap ,not inject env

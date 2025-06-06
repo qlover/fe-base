@@ -1,0 +1,34 @@
+/*
+  这里是 Antd Message 和 Notification 静态组件变量
+  因为静态组件是全局样式，应用不上antd context样式主题变量，需要在这里覆盖
+ */
+.ant-message:not(.fe-theme) {
+  color: var(--fe-color-text);
+
+  .ant-message-notice-wrapper .ant-message-notice-content {
+    background: var(--fe-message-content-bg);
+  }
+
+  .ant-message-notice-wrapper .ant-message-info > .anticon,
+  .ant-message-notice-wrapper .ant-message-loading > .anticon {
+    color: var(--fe-color-info);
+  }
+}
+
+.ant-notification:not(.fe-theme) {
+  .ant-notification-notice-wrapper {
+    background: var(--fe-color-bg-elevated);
+  }
+
+  .ant-notification-notice-wrapper .ant-notification-notice-close {
+    color: var(--fe-color-icon);
+  }
+
+  .ant-notification-notice-wrapper .ant-notification-notice-message {
+    color: var(--fe-color-text-heading);
+  }
+
+  .ant-notification-notice-wrapper .ant-notification-notice-description {
+    color: var(--fe-color-text);
+  }
+}

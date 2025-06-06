@@ -1,0 +1,199 @@
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme {
+  /* Antd 主色调相关变量 - 玫瑰色主题 */
+  --fe-color-primary: #f472b6; /* pink-400 */
+  --fe-color-primary-hover: #ec4899; /* pink-500 */
+  --fe-color-primary-active: #db2777; /* pink-600 */
+  --fe-color-primary-bg: rgba(244, 114, 182, 0.1); /* pink-400 with 0.1 opacity */
+  --fe-color-primary-border: #f472b6; /* pink-400 */
+  --fe-color-primary-text: #f472b6; /* pink-400 */
+  --fe-color-primary-text-hover: #ec4899; /* pink-500 */
+  --fe-color-primary-text-active: #db2777; /* pink-600 */
+  --fe-color-primary-deprecated-bg: #f472b6; /* pink-400 */
+  --fe-color-primary-deprecated-border: #f472b6; /* pink-400 */
+
+  /* 状态色 */
+  --fe-color-success: #52c41a;
+  --fe-color-warning: #faad14;
+  /* 警告信息相关颜色 - 粉色主题 */
+  --fe-color-warning-bg: #fff7e6;
+  --fe-color-warning-bg-hover: #fff0d9;
+  --fe-color-warning-border: #ffd591;
+  --fe-color-warning-border-hover: #ffc069;
+  --fe-color-warning-hover: #ffc069;
+  --fe-color-warning-active: #d4770c;
+  --fe-color-warning-text-hover: #ffc53d;
+  --fe-color-warning-text: #faad14;
+  --fe-color-warning-text-active: #d4770c;
+  --fe-color-error: #fb7185; /* rose-400 for error in pink theme */
+  --fe-color-info: var(--fe-color-primary);
+  --fe-color-link: var(--fe-color-primary);
+
+  /* Antd 基础变量 */
+  --ant-color-bg-container: rgb(255 241 242);
+  --ant-color-bg-elevated: rgb(254 205 211);
+  --fe-color-text-heading: rgb(159 18 57); /* rose-800 用于粉色主题标题文本 */
+  --ant-color-text: rgba(190 18 60 / 0.85);
+  --ant-color-text-secondary: rgba(190 18 60 / 0.45);
+  --ant-color-text-tertiary: rgba(190 18 60 / 0.35);
+  --ant-color-text-quaternary: rgba(190 18 60 / 0.15);
+  --ant-color-text-placeholder: rgba(190 18 60 / 0.25);
+  --ant-color-border: rgb(254 205 211);
+
+  /* Antd 图标相关变量 */
+  --fe-color-icon: rgba(190, 18, 60, 0.45); /* 粉色主题下的图标颜色 */
+  --fe-color-icon-hover: rgba(190, 18, 60, 0.85); /* 粉色主题下图标悬停颜色 */
+  --fe-color-icon-active: var(--fe-color-primary); /* 使用主题粉色 */
+  --fe-color-icon-disabled: rgba(190, 18, 60, 0.25); /* 粉色主题下禁用状态 */
+
+  /* Antd Input 组件变量 */
+  .ant-input,
+  .ant-input-css-var {
+    /* Input 背景色 */
+    --fe-input-bg: var(--ant-color-bg-container);
+    --fe-input-hover-bg: var(--ant-color-bg-elevated);
+    --fe-input-active-bg: var(--ant-color-bg-elevated);
+    --fe-input-addon-bg: rgba(190 18 60, 0.02);
+
+    /* Input 边框颜色 */
+    --fe-input-border-color: var(--ant-color-border);
+    --fe-input-hover-border-color: rgb(var(--color-brand));
+    --fe-input-active-border-color: rgb(var(--color-brand));
+
+    /* Input 阴影效果 */
+    --fe-input-active-shadow: 0 0 0 2px rgba(var(--color-brand), 0.1);
+  }
+
+  /* Antd Button 组件变量 */
+  .ant-btn,
+  .ant-btn-css-var {
+    /* 玫瑰色主题 */
+    --fe-button-primary-color: #fff;
+    --fe-button-primary-bg: #f472b6; /* pink-400 */
+    --fe-button-primary-hover-bg: #ec4899; /* pink-500 */
+    --fe-button-primary-active-bg: #db2777; /* pink-600 */
+    --fe-button-primary-shadow: 0 2px 0 rgba(219, 39, 119, 0.15);
+
+    /* 默认按钮 */
+    --fe-button-default-color: rgb(190 18 60);
+    --fe-button-default-bg: rgb(255 241 242);
+    --fe-button-default-border-color: rgb(254 205 211);
+    --fe-button-default-hover-bg: rgb(255 241 242);
+    --fe-button-default-hover-color: #f472b6;
+    --fe-button-default-hover-border-color: #f472b6;
+    --fe-button-default-active-bg: rgb(255 241 242);
+    --fe-button-default-active-color: #db2777;
+    --fe-button-default-active-border-color: #db2777;
+    --fe-button-default-shadow: 0 2px 0 rgba(244, 114, 182, 0.1);
+
+    /* 其他状态 */
+    --fe-button-text-hover-bg: rgba(244, 114, 182, 0.08);
+    --fe-button-border-color-disabled: rgb(254 205 211);
+  }
+
+  /* Antd Select 组件变量 */
+  .ant-select,
+  .ant-select-css-var {
+    --fe-select-internal_fixed_item_margin: 2px;
+    --fe-select-z-index-popup: 1050;
+    --fe-select-option-selected-color: rgba(190, 18, 60, 0.88);
+    --fe-select-option-selected-font-weight: 600;
+    --fe-select-option-selected-bg: var(--fe-color-primary-bg);
+    --fe-select-option-active-bg: rgba(190, 18, 60, 0.04);
+    --fe-select-option-padding: 5px 12px;
+    --fe-select-option-font-size: 14px;
+    --fe-select-option-line-height: 1.5714285714285714;
+    --fe-select-option-height: 32px;
+    --fe-select-selector-bg: var(--fe-color-bg-container);
+    --fe-select-clear-bg: var(--fe-color-bg-container);
+    --fe-select-single-item-height-lg: 40px;
+    --fe-select-multiple-item-bg: rgba(190, 18, 60, 0.06);
+    --fe-select-multiple-item-border-color: transparent;
+    --fe-select-multiple-item-height: 24px;
+    --fe-select-multiple-item-height-sm: 16px;
+    --fe-select-multiple-item-height-lg: 32px;
+    --fe-select-multiple-selector-bg-disabled: rgba(190, 18, 60, 0.04);
+    --fe-select-multiple-item-color-disabled: rgba(190, 18, 60, 0.25);
+    --fe-select-multiple-item-border-color-disabled: transparent;
+    --fe-select-show-arrow-padding-inline-end: 18px;
+    --fe-select-hover-border-color: var(--fe-color-primary);
+    --fe-select-active-border-color: var(--fe-color-primary-active);
+    --fe-select-active-outline-color: var(--fe-color-primary-bg);
+    --fe-select-select-affix-padding: 4px;
+  }
+
+  /* Antd Tag 组件变量 */
+  .ant-tag,
+  .ant-tag-css-var {
+    --fe-tag-default-bg: var(--fe-color-bg-container);
+    --fe-tag-default-color: var(--fe-color-text);
+    --fe-tag-default-border-color: var(--fe-color-border);
+    --fe-tag-font-size: 12px;
+    --fe-tag-line-height: 20px;
+    --fe-tag-height: 22px;
+    --fe-tag-padding-horizontal: 7px;
+    --fe-tag-margin: 0 8px 0 0;
+    --fe-tag-border-radius: 4px;
+  }
+
+  /* Antd Progress 组件变量 */
+  .ant-progress,
+  .ant-progress-css-var {
+    --fe-progress-default-color: var(--fe-color-primary);
+    --fe-progress-remaining-color: var(--fe-color-bg-elevated);
+    --fe-progress-text-color: var(--fe-color-text);
+    --fe-progress-line-font-size: 14px;
+    --fe-progress-circle-font-size: 14px;
+    --fe-progress-circle-text-color: var(--fe-color-text);
+    --fe-progress-circle-trail-color: var(--fe-color-bg-elevated);
+    --fe-progress-circle-stroke-width: 6px;
+    --fe-progress-line-stroke-width: 8px;
+  }
+
+  /* Antd Message 组件变量 */
+  .ant-message,
+  .ant-message-css-var {
+    --fe-message-z-index-popup: 2010;
+    --fe-message-content-bg: var(--ant-color-bg-container);
+    --fe-message-content-padding: 9px 12px;
+    --fe-message-notice-content-padding: 10px 16px;
+    --fe-message-notice-content-bg: var(--ant-color-bg-container);
+    --fe-message-notice-content-shadow:
+      0 6px 16px 0 rgba(244, 114, 182, 0.08),
+      0 3px 6px -4px rgba(244, 114, 182, 0.12),
+      0 9px 28px 8px rgba(244, 114, 182, 0.05);
+    --fe-message-success-color: #52c41a;
+    --fe-message-error-color: #fb7185; /* rose-400 for error in pink theme */
+    --fe-message-warning-color: #faad14;
+    --fe-message-info-color: var(--fe-color-primary);
+    --fe-message-loading-color: var(--fe-color-primary);
+  }
+
+  /* Antd Modal 组件变量 */
+  .ant-modal,
+  .ant-modal-css-var {
+    --fe-modal-footer-bg: transparent;
+    --fe-modal-header-bg: var(--ant-color-bg-container);
+    --fe-modal-title-line-height: var(--fe-line-height);
+    --fe-modal-title-font-size: 16px;
+    --fe-modal-content-bg: var(--ant-color-bg-container);
+    --fe-modal-title-color: var(--ant-color-text);
+    --fe-modal-content-padding: 20px 24px;
+    --fe-modal-header-padding: 16px 24px;
+    --fe-modal-header-border-bottom: 1px solid var(--ant-color-border);
+    --fe-modal-header-margin-bottom: 8px;
+    --fe-modal-body-padding: 0px;
+    --fe-modal-footer-padding: 10px 16px;
+    --fe-modal-footer-border-top: 1px solid var(--ant-color-border);
+    --fe-modal-footer-border-radius: var(--fe-border-radius);
+    --fe-modal-footer-margin-top: 12px;
+    --fe-modal-confirm-body-padding: 32px 32px 24px;
+    --fe-modal-confirm-icon-margin-inline-end: 12px;
+    --fe-modal-confirm-btns-margin-top: 12px;
+    --fe-modal-box-shadow:
+      0 6px 16px 0 rgba(244, 114, 182, 0.08),
+      0 3px 6px -4px rgba(244, 114, 182, 0.12),
+      0 9px 28px 8px rgba(244, 114, 182, 0.05);
+    --fe-modal-mask-bg: rgba(244, 114, 182, 0.45);
+  }
+}

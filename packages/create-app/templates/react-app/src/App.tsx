@@ -5,7 +5,7 @@ import { RouterRenderComponent } from './uikit/components/RouterRenderComponent'
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';
 import { RouterLoader, type ComponentValue } from '@/base/cases/router-loader';
-import { ConfigProvider } from 'antd';
+import { AntdThemeProvider } from '@lib/antd-overried/bridge/AntdThemeProvider';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -36,7 +36,8 @@ function App() {
   }, []);
 
   return (
-    <ConfigProvider
+    <AntdThemeProvider
+      staticApi={IOC('DialogHandler')}
       theme={{
         cssVar: {
           key: 'fe-theme',
@@ -45,7 +46,7 @@ function App() {
       }}
     >
       <RouterProvider router={routerBase} />
-    </ConfigProvider>
+    </AntdThemeProvider>
   );
 }
 

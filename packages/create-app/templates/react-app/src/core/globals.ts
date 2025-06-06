@@ -1,8 +1,11 @@
 // ! global variables, don't import any dependencies and don't have side effects
 import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-corekit';
 import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
+import { DialogHandler } from '@/base/bridge/DialogHandler';
 
 const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
+
+export const dialogHandler = new DialogHandler();
 
 /**
  * Global logger

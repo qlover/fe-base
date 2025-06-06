@@ -1,12 +1,13 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { envPrefix } from './config/common';
+import { envPrefix, overrideAntdThemeMode } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
-import ts2Locales from '@qlover/corekit-bridge/vite-ts-to-locales/index';
+import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
+import viteDeprecatedAntd from './lib/antd-overried/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -34,6 +35,11 @@ export default defineConfig({
           target: './public/locales/{{lng}}/common.json'
         }
       ]
+    }),
+    viteDeprecatedAntd({
+      mode: overrideAntdThemeMode,
+      overriedCssFilePath: './src/styles/css/antd-themes/no-context.css',
+      targetPath: './src/base/types/deprecated-antd.d.ts'
     })
   ],
   envPrefix: envPrefix,
