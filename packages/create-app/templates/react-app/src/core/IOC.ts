@@ -11,11 +11,14 @@ import {
 } from '@qlover/corekit-bridge';
 import type { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
+import type { AppConfig } from '@/base/cases/AppConfig';
 import { Container } from 'inversify';
 import { IOCRegisterInterface } from '@qlover/corekit-bridge';
+import { DialogHandler } from '@/base/cases/DialogHandler';
 
 export type IocRegisterOptions = {
   pathname: string;
+  appConfig: AppConfig;
 };
 
 export type InversifyRegisterContainer = Container;
@@ -72,7 +75,8 @@ export const IOCIdentifier = Object.freeze({
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   AppConfig: 'AppConfig',
   ApiMockPlugin: 'ApiMockPlugin',
-  ApiCatchPlugin: 'ApiCatchPlugin'
+  ApiCatchPlugin: 'ApiCatchPlugin',
+  DialogHandler: 'DialogHandler'
 });
 
 /**
@@ -87,6 +91,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.AppConfig]: EnvConfigInterface;
   [IOCIdentifier.ApiMockPlugin]: ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: ApiCatchPlugin;
+  [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 
 export const IOC = createIOCFunction<IOCIdentifierMap>(

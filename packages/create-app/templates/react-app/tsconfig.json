@@ -20,10 +20,11 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["./config/*"]
+      "@config/*": ["./config/*"],
+      "@lib/*": ["./lib/*"]
     },
     "experimentalDecorators": true
   },
-  "include": ["src"],
+  "include": ["src", "lib/**/*.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

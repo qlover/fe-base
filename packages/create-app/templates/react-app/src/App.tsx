@@ -4,8 +4,8 @@ import { lazy, useMemo } from 'react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
 import { RouterController } from './uikit/controllers/RouterController';
-import { RouterLoader, type ComponentValue } from '@/base/cases/router-loader';
-import { ConfigProvider } from 'antd';
+import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
+import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -36,7 +36,8 @@ function App() {
   }, []);
 
   return (
-    <ConfigProvider
+    <AntdThemeProvider
+      staticApi={IOC('DialogHandler')}
       theme={{
         cssVar: {
           key: 'fe-theme',
@@ -45,7 +46,7 @@ function App() {
       }}
     >
       <RouterProvider router={routerBase} />
-    </ConfigProvider>
+    </AntdThemeProvider>
   );
 }
 

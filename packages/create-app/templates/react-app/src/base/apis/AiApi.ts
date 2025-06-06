@@ -1,4 +1,3 @@
-import AppConfig from '@/core/AppConfig';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,
@@ -10,9 +9,10 @@ import {
 } from '@qlover/corekit-bridge';
 import { RequestLogger } from '../cases/RequestLogger';
 import { IOCIdentifier } from '@/core/IOC';
+import { appConfig } from '@/core/globals';
 
 const apiApiAdapter = new RequestAdapterFetch({
-  baseURL: AppConfig.aiApiBaseUrl
+  baseURL: appConfig.aiApiBaseUrl
 });
 
 // 使用 RequestScheduler
@@ -27,8 +27,8 @@ export const AiApiBootstarp: BootstrapExecutorPlugin = {
     apiApiAdapter.usePlugin(new FetchURLPlugin());
     apiApiAdapter.usePlugin(
       new RequestCommonPlugin({
-        tokenPrefix: AppConfig.aiApiTokenPrefix,
-        token: AppConfig.aiApiToken
+        tokenPrefix: appConfig.aiApiTokenPrefix,
+        token: appConfig.aiApiToken
       })
     );
     apiApiAdapter.usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin));

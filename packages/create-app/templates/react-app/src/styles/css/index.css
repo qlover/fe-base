@@ -1,2 +1,5 @@
 @import './tailwind.css';
+
+@import './antd-themes/index.css';
+
 @import './page.css';
