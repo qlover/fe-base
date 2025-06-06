@@ -9,5 +9,6 @@
       "@config/*": ["./config/*"]
     }
   },
-  "include": ["vite.config.ts", "fe-prod", "config"]
+  "include": ["vite.config.ts", "config", "lib"],
+  "exclude": ["lib/**/*.tsx"]
 }
