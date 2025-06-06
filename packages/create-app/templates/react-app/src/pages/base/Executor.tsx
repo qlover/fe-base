@@ -1,13 +1,4 @@
-import {
-  Button,
-  Progress,
-  Tag,
-  Space,
-  Card,
-  message,
-  Input,
-  Select
-} from 'antd';
+import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useState, useEffect } from 'react';
 import { IOC } from '@/core/IOC';
@@ -97,7 +88,9 @@ export default function Executor() {
   // 监听 helloState 变化，更新任务状态
   useEffect(() => {
     if (helloState.result) {
-      message.success(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS));
+      IOC('DialogHandler').success(
+        t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS)
+      );
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -112,7 +105,7 @@ export default function Executor() {
         )
       );
     } else if (helloState.error) {
-      message.error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
+      IOC('DialogHandler').error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -181,7 +174,7 @@ export default function Executor() {
         )
       );
 
-      message.success(
+      IOC('DialogHandler').success(
         t(i18nKeys.PAGE_EXECUTOR_TASK_SUCCESS, { name: task.name })
       );
     } catch {
@@ -191,7 +184,7 @@ export default function Executor() {
         )
       );
 
-      message.error(
+      IOC('DialogHandler').error(
         t(i18nKeys.PAGE_EXECUTOR_TASK_FAILURE, { name: task.name })
       );
     }
@@ -209,7 +202,9 @@ export default function Executor() {
 
   const handleCreateTask = () => {
     if (!customUrl) {
-      message.error(t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED));
+      IOC('DialogHandler').error(
+        t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED)
+      );
       return;
     }
 
