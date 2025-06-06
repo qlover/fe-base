@@ -8,11 +8,73 @@ import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
 import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
+import vitePluginImp from 'vite-plugin-imp';
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'antd-core': [
+            'antd/es/config-provider',
+            'antd/es/theme',
+            'antd/es/locale'
+          ],
+          'antd-basic': [
+            'antd/es/button',
+            'antd/es/input',
+            'antd/es/form',
+            'antd/es/select'
+          ],
+          'antd-advanced': [
+            'antd/es/progress',
+            'antd/es/card',
+            'antd/es/space',
+            'antd/es/tag',
+            'antd/es/table'
+          ],
+          utils: ['lodash/random', 'lodash/merge', 'lodash/get', 'lodash/set'],
+          i18n: ['i18next', 'react-i18next']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 600,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: [
+          'console.log',
+          'console.info',
+          'console.debug',
+          'console.time',
+          'console.timeEnd'
+        ],
+        passes: 2,
+        toplevel: true
+      },
+      format: {
+        comments: false
+      },
+      mangle: {
+        safari10: true
+      }
+    }
+  },
   plugins: [
     tailwindcss(),
+    vitePluginImp({
+      libList: [
+        {
+          libName: 'antd',
+          style: (name) => `antd/es/${name}/style/index`,
+          libDirectory: 'es'
+        }
+      ]
+    }),
     envConfig({
       envPops: true,
       envPrefix,
