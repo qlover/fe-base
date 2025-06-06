@@ -1,4 +1,4 @@
-import type { RouteConfigValue } from '@/base/cases/router-loader';
+import type { RouteConfigValue } from '@/base/cases/RouterLoader';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';

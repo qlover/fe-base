@@ -1,19 +1,22 @@
 import { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
-import type { EnvConfigInterface } from '@qlover/corekit-bridge';
+import type { IOCManagerInterface } from '@qlover/corekit-bridge';
 import { dialogHandler, JSON, localJsonStorage, logger } from '../globals';
 import {
   type InversifyContainer,
   type InversifyRegisterInterface,
-  IOCIdentifier
+  IOCIdentifier,
+  IocRegisterOptions
 } from '@/core/IOC';
 import { Logger } from '@qlover/logger';
 
 export class RegisterGlobals implements InversifyRegisterInterface {
-  constructor(private appConfig: EnvConfigInterface) {}
-
-  register(container: InversifyContainer): void {
+  register(
+    container: InversifyContainer,
+    _: IOCManagerInterface<InversifyContainer>,
+    options: IocRegisterOptions
+  ): void {
     // inject AppConfig to IOC
-    container.bind(IOCIdentifier.AppConfig, this.appConfig);
+    container.bind(IOCIdentifier.AppConfig, options.appConfig);
     container.bind(IOCIdentifier.DialogHandler, dialogHandler);
 
     container.bind(JSONSerializer, JSON);

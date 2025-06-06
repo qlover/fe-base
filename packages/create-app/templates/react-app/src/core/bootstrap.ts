@@ -1,11 +1,4 @@
-import {
-  Bootstrap,
-  type InjectGlobalConfig,
-  type InjectIOCOptions,
-  type IOCContainerInterface,
-  type InjectEnvConfig
-} from '@qlover/corekit-bridge';
-import AppConfig from '@/core/AppConfig';
+import { Bootstrap } from '@qlover/corekit-bridge';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import { IOC } from './IOC';
 import * as globals from '@/core/globals';
@@ -24,33 +17,30 @@ export default async function startup({
     throw new Error(GLOBAL_NO_WINDOW);
   }
 
-  const { logger } = globals;
+  const { logger, appConfig } = globals;
 
-  const envOptions: InjectEnvConfig = {
-    target: AppConfig,
-    source: envSource,
-    prefix: envPrefix,
-    blackList: envBlackList
-  };
-
-  const iocOptions: InjectIOCOptions<IOCContainerInterface> = {
-    manager: IOC,
-    register: new IocRegister({
-      pathname: root.location.pathname
-    })
-  };
-
-  const globalOptions: InjectGlobalConfig = {
-    sources: globals,
-    target: browserGlobalsName
-  };
+  const iocRegister = new IocRegister({
+    pathname: root.location.pathname,
+    appConfig
+  });
 
   const bootstrap = new Bootstrap({
     root,
     logger,
-    ioc: iocOptions,
-    envOptions,
-    globalOptions
+    ioc: {
+      manager: IOC,
+      register: iocRegister
+    },
+    envOptions: {
+      target: appConfig,
+      source: envSource,
+      prefix: envPrefix,
+      blackList: envBlackList
+    },
+    globalOptions: {
+      sources: globals,
+      target: browserGlobalsName
+    }
   });
 
   try {
@@ -63,6 +53,6 @@ export default async function startup({
 
     await bootstrap.use(bootstrapsRegistry.register()).start();
   } catch (error) {
-    logger.error(`${AppConfig.appName} starup error:`, error);
+    logger.error(`${appConfig.appName} starup error:`, error);
   }
 }

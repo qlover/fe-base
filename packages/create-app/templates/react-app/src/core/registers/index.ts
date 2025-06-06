@@ -2,7 +2,6 @@ import { RegisterGlobals } from './RegisterGlobals';
 import { RegisterCommon } from './RegisterCommon';
 import { RegisterApi } from './RegisterApi';
 import { RegisterControllers } from './RegisterControllers';
-import AppConfig from '../AppConfig';
 import {
   InversifyContainer,
   InversifyRegisterInterface,
@@ -15,7 +14,7 @@ export class IocRegister implements InversifyRegisterInterface {
 
   getRegisterList(): InversifyRegisterInterface[] {
     return [
-      new RegisterGlobals(AppConfig),
+      new RegisterGlobals(),
       new RegisterCommon(),
       new RegisterApi(),
       new RegisterControllers()

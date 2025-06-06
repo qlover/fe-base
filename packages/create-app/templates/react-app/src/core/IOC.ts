@@ -11,12 +11,14 @@ import {
 } from '@qlover/corekit-bridge';
 import type { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
+import type { AppConfig } from '@/base/cases/AppConfig';
 import { Container } from 'inversify';
 import { IOCRegisterInterface } from '@qlover/corekit-bridge';
-import { DialogHandler } from '@/base/bridge/DialogHandler';
+import { DialogHandler } from '@/base/cases/DialogHandler';
 
 export type IocRegisterOptions = {
   pathname: string;
+  appConfig: AppConfig;
 };
 
 export type InversifyRegisterContainer = Container;
