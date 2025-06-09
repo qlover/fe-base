@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 0.3.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- enhance Vite configuration and add new dependencies for improved build performance ([e14ee42](https://github.com/qlover/fe-base/commit/e14ee428d46fc48decb99762103c25d6e6c8535e)) ([#418](https://github.com/qlover/fe-base/pull/418))
+
+- Added `terser` for advanced minification options, including console log removal and improved compression.
+- Introduced `vite-plugin-imp` to optimize Ant Design imports, reducing bundle size and improving load times.
+- Updated Vite configuration to define manual chunks for better code splitting and chunk management.
+
+
+    Co-authored-by: QRJ <renjie.qin@brain.im>
+
 ## 0.3.4
 
 ### Patch Changes
@@ -15,8 +30,7 @@
 - Refactored DialogHandler to manage Ant Design's static APIs globally.
 - Improved overall code structure and organization for better maintainability.
 
-
-    Co-authored-by: QRJ <renjie.qin@brain.im>
+  Co-authored-by: QRJ <renjie.qin@brain.im>
 
 - enhance React app with improved configuration management and new components ([67f88cb](https://github.com/qlover/fe-base/commit/67f88cbc7cc0ebab51cbd33be66f98117fc2cf21)) ([#414](https://github.com/qlover/fe-base/pull/414))
 
@@ -26,30 +40,28 @@
 - Updated various API adapters to utilize the new AppConfig structure for better maintainability.
 - Removed outdated DialogHandler implementation and reorganized related files for improved clarity.
 
-
-    Co-authored-by: QRJ <renjie.qin@brain.im>
+  Co-authored-by: QRJ <renjie.qin@brain.im>
 
 - integrate @brain-toolkit/antd-theme-override for improved Ant D… ([4ebb081](https://github.com/qlover/fe-base/commit/4ebb081d89397424c459dd7f885817152098e322)) ([#414](https://github.com/qlover/fe-base/pull/414))
 
+  - feat: integrate @brain-toolkit/antd-theme-override for improved Ant Design support
 
-    * feat: integrate @brain-toolkit/antd-theme-override for improved Ant Design support
+  * Added @brain-toolkit/antd-theme-override as a dependency to enhance theming capabilities.
+  * Updated imports to utilize the new theming library, replacing the deprecated antd-overried references.
+  * Removed outdated files related to the previous Ant Design integration to streamline the codebase.
+  * Refactored components to leverage the new theme provider and static API interface for notifications and modals.
 
-    - Added @brain-toolkit/antd-theme-override as a dependency to enhance theming capabilities.
-    - Updated imports to utilize the new theming library, replacing the deprecated antd-overried references.
-    - Removed outdated files related to the previous Ant Design integration to streamline the codebase.
-    - Refactored components to leverage the new theme provider and static API interface for notifications and modals.
+  Co-authored-by: QRJ <renjie.qin@brain.im>
 
-    Co-authored-by: QRJ <renjie.qin@brain.im>
+  - feat(I18nService): add translation method for improved localization support
 
-    * feat(I18nService): add translation method for improved localization support
+  * Implemented a new `t` method in the I18nService class to facilitate key-based translations.
+  * The method accepts a translation key and optional parameters, returning the translated value or the key if no translation is found.
+  * Enhanced localization handling to improve user experience across the application.
 
-    - Implemented a new `t` method in the I18nService class to facilitate key-based translations.
-    - The method accepts a translation key and optional parameters, returning the translated value or the key if no translation is found.
-    - Enhanced localization handling to improve user experience across the application.
+  ***
 
-    ---------
-
-    Co-authored-by: QRJ <renjie.qin@brain.im>
+  Co-authored-by: QRJ <renjie.qin@brain.im>
 
 ## 0.3.3
 
