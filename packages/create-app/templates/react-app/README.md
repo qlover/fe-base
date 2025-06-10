@@ -72,6 +72,25 @@ pnpm test
 - 支持服务自动注册和依赖管理
 - 提供完整的类型推导
 
+### env 配置注入
+
+[vite 环境变量和模式](https://cn.vite.dev/guide/env-and-mode#env-variables-and-modes)
+
+`vite dev` 默认 NODE_ENV 表示为 development, 他会加载可能的 `.env[mode]` 文件, 比如 .env.local -> .env
+
+`vite build`默认 NODE_ENV 表示为 production, 他会加载可能的 `.env[mode]` 文件, 比如 .env.production -> .env
+
+Nodejs NODE_ENV 只支持 development,production,test
+
+这个和 vite 中的 mode 是完全不一样的, mode 可以根据 `--mode` 指定不同模式，来加载不同的 env 配置
+
+比如:
+
+```bash
+vite dev --mode staging # 加载 .env.staging
+vite dev --mode local # 加载 .env.local
+```
+
 ### 国际化支持
 
 - 基于 i18next 的完整国际化解决方案

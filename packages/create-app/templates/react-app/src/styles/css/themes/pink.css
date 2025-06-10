@@ -7,9 +7,9 @@
     --color-bg-elevated: 254 205 211; /* rose-200 */
 
     /* 文字颜色 */
-    --color-text-primary: 190 18 60; /* rose-700 */
-    --color-text-secondary: 225 29 72; /* rose-600 */
-    --color-text-tertiary: 244 63 94; /* rose-500 */
+    --text-primary: 190 18 60; /* rose-700 */
+    --text-secondary: 225 29 72; /* rose-600 */
+    --text-tertiary: 244 63 94; /* rose-500 */
 
     /* 边框颜色 */
     --color-border: 254 205 211; /* rose-200 */

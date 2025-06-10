@@ -7,9 +7,9 @@
     --color-bg-elevated: 248 250 252; /* slate-50 */
 
     /* 文字颜色 */
-    --color-text-primary: 15 23 42; /* slate-900 */
-    --color-text-secondary: 71 85 105; /* slate-600 */
-    --color-text-tertiary: 100 116 139; /* slate-500 */
+    --text-primary: 15 23 42; /* slate-900 */
+    --text-secondary: 71 85 105; /* slate-600 */
+    --text-tertiary: 100 116 139; /* slate-500 */
 
     /* 边框颜色 */
     --color-border: 226 232 240; /* slate-200 */

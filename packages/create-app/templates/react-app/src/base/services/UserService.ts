@@ -10,8 +10,8 @@ import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import { LOCAL_NO_USER_TOKEN } from '@config/Identifier/Error';
 import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
+import * as errKeys from '@config/Identifier/Error';
 
 class UserServiceState implements StoreStateInterface {
   success: boolean = false;
@@ -48,8 +48,10 @@ export class UserService
   async onBefore(): Promise<void> {
     await ThreadUtil.sleep(1000);
 
-    if (!this.userToken.getToken()) {
-      throw new AppError(LOCAL_NO_USER_TOKEN);
+    const userToken = this.userToken.getToken();
+
+    if (!userToken) {
+      throw new AppError(errKeys.LOCAL_NO_USER_TOKEN);
     }
 
     const userInfo = await this.userApi.getUserInfo();
@@ -79,6 +81,10 @@ export class UserService
 
     if (response.apiCatchResult) {
       throw response.apiCatchResult;
+    }
+
+    if (!response.data.token) {
+      throw new AppError(errKeys.RES_NO_TOKEN);
     }
 
     this.userToken.setToken(response.data.token);

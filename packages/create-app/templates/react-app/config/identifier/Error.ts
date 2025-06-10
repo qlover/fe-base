@@ -25,3 +25,10 @@ export const GLOBAL_NO_WINDOW = 'err.global.no.window';
  * @localEn Must be used in PageProvider
  */
 export const WITHIN_PAGE_PROVIDER = 'err.within.page.provider';
+
+/**
+ * @description 响应内容没有 token 值
+ * @localZh 响应内容没有 token 值
+ * @localEn Response not token value
+ */
+export const RES_NO_TOKEN = 'response.no.token';
