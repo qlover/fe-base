@@ -1,5 +1,42 @@
 # @qlover/create-app
 
+## 0.4.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** enhance routing and configuration with router prefix and new services ([b32795d](https://github.com/qlover/fe-base/commit/b32795d02af4234d4708a5bdcb111bf8d2a54bd6)) ([#430](https://github.com/qlover/fe-base/pull/430))
+
+  - Introduced a router prefix in the configuration to manage asset paths and API routes more effectively.
+  - Updated the application to utilize the new RouteService for routing logic, replacing the previous RouterController.
+  - Refactored user authentication handling to use UserService, improving modularity and maintainability.
+  - Added PublicAssetsPath service to manage public asset paths dynamically based on the router prefix.
+  - Updated localization files to include additional keys and ensure consistency across languages.
+  - Modified various components to integrate the new services and ensure proper routing and asset management.
+
+  This update enhances the overall structure and flexibility of the application, paving the way for future improvements.
+
+- **create-app:** enhance login and registration features with improved localization and form handling ([a3724e5](https://github.com/qlover/fe-base/commit/a3724e5e75c8708dd00684ece563d9e1c63c0d00)) ([#430](https://github.com/qlover/fe-base/pull/430))
+
+  - Updated routing configuration to include localized titles for various pages, enhancing user experience.
+  - Added new keys for login and registration in localization files for both English and Chinese.
+  - Implemented a registration form with validation and user feedback, integrating with the UserService for account creation.
+  - Enhanced the Login component to utilize localized strings for better accessibility and clarity.
+  - Refactored the I18nService to support dynamic title updates based on the current route.
+
+  This update significantly improves the user interface and experience for authentication processes within the application.
+
+- **create-app:** refactor internationalization and store management ([c86ed98](https://github.com/qlover/fe-base/commit/c86ed9818d844d4059878c11897051a6c504a333)) ([#430](https://github.com/qlover/fe-base/pull/430))
+
+  - Updated file structure for internationalization resources, moving identifiers to a new directory for better organization.
+  - Introduced new error and i18n identifier files to enhance localization support.
+  - Refactored store management by implementing a new StoreInterface, improving state management across services.
+  - Replaced deprecated useSliceStore with a new useStore hook for better integration with the updated store architecture.
+  - Enhanced README documentation to reflect changes in project structure and build optimizations.
+
+  This update significantly improves the maintainability and scalability of the application, paving the way for future enhancements.
+
 ## 0.4.1
 
 ### Patch Changes
