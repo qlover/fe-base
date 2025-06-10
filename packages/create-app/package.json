@@ -1,22 +1,10 @@
 {
   "name": "@qlover/create-app",
   "version": "0.3.5",
-  "type": "module",
+  "description": "Create a new app with a single command",
   "private": false,
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
   "files": [
     "dist",
-    "bin",
     "configs",
     "templates",
     "package.json",
@@ -24,12 +12,11 @@
     "CHANGELOG.md"
   ],
   "bin": {
-    "create-app": "bin/create-app.js"
+    "create-app": "dist/index.js"
   },
   "scripts": {
-    "build": "rollup -c",
-    "create:app:build": "npm run build && npm run create:app",
-    "create:app": "node ./bin/create-app.js"
+    "build": "tsup",
+    "create:app": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -48,16 +35,14 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/env-loader": "workspace:*"
-  },
-  "dependencies": {
     "@qlover/logger": "workspace:*",
-    "@qlover/fe-corekit": "workspace:*",
-    "@qlover/scripts-context": "workspace:*",
     "commander": "^13.1.0",
     "ignore": "^7.0.3",
-    "inquirer": "^12.3.2",
-    "ora": "^8.1.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "ora": "^8.1.1"
+  },
+  "dependencies": {
+    "@qlover/scripts-context": "workspace:*",
+    "inquirer": "^12.3.2"
   }
 }
