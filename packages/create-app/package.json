@@ -3,6 +3,7 @@
   "version": "0.3.5",
   "description": "Create a new app with a single command",
   "private": false,
+  "type": "module",
   "files": [
     "dist",
     "configs",

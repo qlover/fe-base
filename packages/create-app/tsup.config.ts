@@ -6,7 +6,7 @@ export default defineConfig({
   format: ['cjs'],
   dts: false,
   minify: 'terser',
-  noExternal: Object.keys(pkg.dependencies),
+  noExternal: Object.keys(pkg.devDependencies),
   splitting: true,
   sourcemap: false,
   clean: true
