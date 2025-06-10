@@ -1,5 +1,24 @@
 # @qlover/create-app
 
+## 0.3.7
+
+### Patch Changes
+
+#### ✨ Features
+
+- add tabify method to format commit body in GitChangelog ([5670b78](https://github.com/qlover/fe-base/commit/5670b78b1cb06a730d2cbd7ac1f5bd7e9e7df490)) ([#422](https://github.com/qlover/fe-base/pull/422))
+
+  - Introduced a new `tabify` method to format the body of commit messages by adding indentation.
+  - Updated `parseCommitlint` to utilize the `tabify` method for improved body formatting.
+
+#### 🐞 Bug Fixes
+
+- update @qlover/create-app to use ES module format ([5e9dffb](https://github.com/qlover/fe-base/commit/5e9dffb4d9e54dc2457588a81b11159820196067)) ([#422](https://github.com/qlover/fe-base/pull/422))
+
+  - Changed the entry point in package.json from "dist/index.cjs" to "dist/index.js" to align with ES module standards.
+  - Updated tsup.config.ts to output in ES module format instead of CommonJS.
+  - Refactored index.ts to use fileURLToPath for resolving the root path, enhancing compatibility with ES modules.
+
 ## 0.3.6
 
 ### Patch Changes
