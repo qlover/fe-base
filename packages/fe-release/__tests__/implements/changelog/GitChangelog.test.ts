@@ -65,7 +65,7 @@ describe('GitChangelog', () => {
         type: 'feat',
         scope: 'ui',
         message: 'improve button design',
-        body: messageBody
+        body: gitChangelog.tabify(messageBody)
       });
     });
   });
@@ -257,6 +257,38 @@ describe('GitChangelog', () => {
 
       // Verify parseCommitlint was called
       expect(parseCommitlintSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('tabify', () => {
+    it('should add default indentation (2 spaces) to each line', () => {
+      const input = 'first line\nsecond line\nthird line';
+      const result = gitChangelog.tabify(input);
+      expect(result).toBe('  first line\n  second line\n  third line');
+    });
+
+    it('should handle custom indentation size', () => {
+      const input = 'first line\nsecond line';
+      const result = gitChangelog.tabify(input, 4);
+      expect(result).toBe('    first line\n    second line');
+    });
+
+    it('should handle empty lines', () => {
+      const input = 'first line\n\nthird line';
+      const result = gitChangelog.tabify(input);
+      expect(result).toBe('  first line\n  \n  third line');
+    });
+
+    it('should trim whitespace from each line', () => {
+      const input = '  first line  \n   second line   ';
+      const result = gitChangelog.tabify(input);
+      expect(result).toBe('  first line\n  second line');
+    });
+
+    it('should handle single line input', () => {
+      const input = 'single line';
+      const result = gitChangelog.tabify(input);
+      expect(result).toBe('  single line');
     });
   });
 });

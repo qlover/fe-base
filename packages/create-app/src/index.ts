@@ -5,6 +5,7 @@ import { existsSync } from 'fs';
 import { Command } from 'commander';
 import { Generator } from './Generator';
 import pkg from '../package.json';
+import { fileURLToPath } from 'url';
 
 function programArgs() {
   const program = new Command();
@@ -29,7 +30,7 @@ function programArgs() {
 async function main() {
   const { dryRun, verbose, ...commandOptions } = programArgs();
 
-  const rootPath = __dirname;
+  const rootPath = fileURLToPath(import.meta.url);
 
   const templateRootPath = join(rootPath, '../templates');
   const configsRootPath = join(rootPath, '../configs');

@@ -89,6 +89,21 @@ export class GitChangelog implements ChangeLogInterface {
     } as BaseCommit;
   }
 
+  /**
+   * Tabify the body
+   *
+   * @since 2.3.2
+   * @param body
+   * @param size
+   * @returns
+   */
+  tabify(body: string, size = 2): string {
+    return body
+      .split('\n')
+      .map((line) => ' '.repeat(size) + line.trim())
+      .join('\n');
+  }
+
   parseCommitlint(subject: string, rawBody: string = ''): Commitlint {
     const [title] = subject.trim().split('\n');
     const bodyLines = rawBody.startsWith(title)
@@ -104,14 +119,14 @@ export class GitChangelog implements ChangeLogInterface {
         type: titleMatch[1]?.toLowerCase(),
         scope: titleMatch[2]?.trim(),
         message: titleMatch[3].trim(),
-        body: bodyLines || undefined
+        body: bodyLines ? this.tabify(bodyLines) : undefined
       };
     }
 
     return {
       // message: title.replace(/\s*\(#\d+\)\s*$/, '').trim()
       message: title,
-      body: bodyLines || undefined
+      body: bodyLines ? this.tabify(bodyLines) : undefined
     };
   }
 
