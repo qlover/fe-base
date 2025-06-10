@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 import { Command } from 'commander';
 import { Generator } from './Generator';
@@ -30,7 +30,7 @@ function programArgs() {
 async function main() {
   const { dryRun, verbose, ...commandOptions } = programArgs();
 
-  const rootPath = fileURLToPath(import.meta.url);
+  const rootPath = dirname(fileURLToPath(import.meta.url));
 
   const templateRootPath = join(rootPath, '../templates');
   const configsRootPath = join(rootPath, '../configs');
