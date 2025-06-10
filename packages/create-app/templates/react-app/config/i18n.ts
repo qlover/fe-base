@@ -1,3 +1,5 @@
+import { routerPrefix } from './common';
+
 export default {
   fallbackLng: 'en',
   debug: false,
@@ -7,7 +9,7 @@ export default {
   ns: ['common'],
   defaultNS: 'common',
   backend: {
-    loadPath: '/locales/{{lng}}/{{ns}}.json'
+    loadPath: routerPrefix + '/locales/{{lng}}/{{ns}}.json'
   },
   supportedLngs: ['en', 'zh']
 } as const;

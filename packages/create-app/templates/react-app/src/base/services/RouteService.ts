@@ -4,32 +4,32 @@ import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterfac
 import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
 
-export type RouterControllerDependencies = {
+export type RouterServiceDependencies = {
   navigate: NavigateFunction;
 };
 
-export type RouterControllerOptions = {
+export type RouterServiceOptions = {
   config: {
     routes: RouteConfigValue[];
   };
   logger: LoggerInterface;
 };
 
-export type RouterControllerState = {
+export type RouterServiceState = {
   routes: RouteConfigValue[];
 };
 
-export class RouterController
-  implements UIDependenciesInterface<RouterControllerDependencies>
+export class RouteService
+  implements UIDependenciesInterface<RouterServiceDependencies>
 {
   /**
    * @override
    */
-  dependencies?: RouterControllerDependencies;
+  dependencies?: RouterServiceDependencies;
 
-  state: RouterControllerState;
+  state: RouterServiceState;
 
-  constructor(private options: RouterControllerOptions) {
+  constructor(private options: RouterServiceOptions) {
     this.state = {
       routes: options.config.routes
     };
@@ -49,7 +49,7 @@ export class RouterController
     return navigate;
   }
 
-  static composePath(path: string): string {
+  composePath(path: string): string {
     const targetLang = I18nService.getCurrentLanguage();
     return `/${targetLang}${path}`;
   }
@@ -57,11 +57,11 @@ export class RouterController
   /**
    * @override
    */
-  setDependencies(dependencies: Partial<RouterControllerDependencies>): void {
+  setDependencies(dependencies: Partial<RouterServiceDependencies>): void {
     this.dependencies = Object.assign(
       this.dependencies || {},
       dependencies
-    ) as RouterControllerDependencies;
+    ) as RouterServiceDependencies;
   }
 
   getRoutes(): RouteConfigValue[] {
@@ -73,7 +73,7 @@ export class RouterController
   }
 
   goto(path: string, options?: NavigateOptions): void {
-    path = RouterController.composePath(path);
+    path = this.composePath(path);
     this.logger.debug('Goto path => ', path);
     this.navigate?.(path, options);
   }

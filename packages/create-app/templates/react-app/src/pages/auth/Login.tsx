@@ -3,8 +3,8 @@ import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { RouterController } from '@/uikit/controllers/RouterController';
-import { UserController } from '@/uikit/controllers/UserController';
+import { RouteService } from '@/base/services/RouteService';
+import { UserService } from '@/base/services/UserService';
 import { useSliceStore } from '@qlover/slice-store-react';
 
 interface LoginFormData {
@@ -14,19 +14,19 @@ interface LoginFormData {
 
 export default function Login() {
   const { t } = useBaseRoutePage();
-  const userController = IOC(UserController);
+  const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');
-  useSliceStore(userController);
+  useSliceStore(userService);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormData) => {
     try {
       setLoading(true);
-      await userController.login({
+      await userService.login({
         username: values.email,
         password: values.password
       });
-      IOC(RouterController).replaceToHome();
+      IOC(RouteService).replaceToHome();
     } catch (error) {
       console.error(error);
     } finally {

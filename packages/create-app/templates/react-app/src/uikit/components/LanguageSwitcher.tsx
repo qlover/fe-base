@@ -1,6 +1,6 @@
 import { Select } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import i18nConfig from '@config/i18n';
 import { IOC } from '@/core/IOC';
 import { I18nService, I18nServiceLocale } from '@/base/services/I18nService';
@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
   const i18nService = IOC(I18nService);
   const loading = useSliceStore(i18nService, i18nService.selector.loading);
   const { lng } = useParams<{ lng: I18nServiceLocale }>();
-  const currentPath = window.location.pathname;
+  const { pathname } = useLocation();
 
   const languageOptions = supportedLngs.map((lang) => ({
     key: lang,
@@ -33,11 +33,11 @@ export default function LanguageSwitcher() {
       // Change i18n language
       await i18nService.changeLanguage(newLang);
       // Update URL path
-      const newPath = currentPath.replace(`/${lng}`, `/${newLang}`);
-      navigate(newPath);
+      navigate(pathname.replace(`/${lng}`, `/${newLang}`));
+
       i18nService.changeLoading(false);
     },
-    [lng, currentPath, navigate, i18nService]
+    [lng, pathname, navigate, i18nService]
   );
 
   return (

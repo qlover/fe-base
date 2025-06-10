@@ -1,6 +1,8 @@
 import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
+import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
+import { IOC } from '@/core/IOC';
 
 export default function BaseHeader() {
   return (
@@ -11,9 +13,13 @@ export default function BaseHeader() {
             href="/"
             className="flex items-center hover:opacity-80 transition-opacity"
           >
-            <img src="/logo.svg" alt="logo" className="h-8 w-auto" />
+            <img
+              src={IOC(PublicAssetsPath).getPath('/logo.svg')}
+              alt="logo"
+              className="h-8 w-auto"
+            />
             <span className="ml-2 text-lg font-semibold text-text">
-              {'appName'}
+              {IOC('AppConfig').appName}
             </span>
           </LocaleLink>
         </div>

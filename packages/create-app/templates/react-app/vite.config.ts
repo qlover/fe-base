@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { envPrefix, overrideAntdThemeMode } from './config/common';
+import {
+  envPrefix,
+  overrideAntdThemeMode,
+  routerPrefix
+} from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
@@ -90,11 +94,11 @@ export default defineConfig({
       options: [
         {
           source: './config/Identifier.Error.ts',
-          target: './public/locales/{{lng}}/common.json'
+          target: `./public/locales/{{lng}}/common.json`
         },
         {
           source: './config/Identifier.I18n.ts',
-          target: './public/locales/{{lng}}/common.json'
+          target: `./public/locales/{{lng}}/common.json`
         }
       ]
     }),
@@ -104,6 +108,7 @@ export default defineConfig({
       targetPath: './src/base/types/deprecated-antd.d.ts'
     })
   ],
+  base: routerPrefix,
   envPrefix: envPrefix,
   publicDir: 'public',
   server: {

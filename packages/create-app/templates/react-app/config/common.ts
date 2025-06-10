@@ -29,3 +29,11 @@ export const loggerStyles = {
   trace: { color: '#808080' },
   log: { color: '#000000' }
 };
+
+/**
+ * 路由前缀
+ *
+ * - 需要以 / 开头
+ * - 但是不能只有 /
+ */
+export const routerPrefix = '/router-root';
