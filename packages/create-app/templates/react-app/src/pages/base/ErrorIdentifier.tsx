@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as ErrorIdentifierList from '@config/Identifier.Error';
-import * as i18nKeys from '@config/Identifier.I18n';
+import * as ErrorIdentifierList from '@config/Identifier/Error';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 export default function ErrorIdentifier() {
   const { t } = useBaseRoutePage();

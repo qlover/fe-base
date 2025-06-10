@@ -1,15 +1,18 @@
 import { JSONStorage } from '@qlover/fe-corekit';
-import { SliceStore } from '@qlover/slice-store-react';
+import {
+  StoreInterface,
+  StoreStateInterface
+} from '@/base/port/StoreInterface';
 import { random } from 'lodash';
 
-interface JSONStoragePageState {
+interface JSONStoragePageState extends StoreStateInterface {
   testKey1?: number;
   testKey2?: number;
   expireTime: number;
   requestTimeout: number;
 }
 
-export class JSONStorageController extends SliceStore<JSONStoragePageState> {
+export class JSONStorageController extends StoreInterface<JSONStoragePageState> {
   selector = {
     requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
   };

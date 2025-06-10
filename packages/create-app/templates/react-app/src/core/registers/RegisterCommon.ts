@@ -17,8 +17,10 @@ import {
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import themeConfig from '@config/theme.json';
-import { localJsonStorage } from '../globals';
+import { localJsonStorage, logger } from '../globals';
 import { I18nService } from '@/base/services/I18nService';
+import { RouteService } from '@/base/services/RouteService';
+import { base as baseRoutes } from '@config/app.router.json';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(
@@ -61,6 +63,14 @@ export class RegisterCommon implements InversifyRegisterInterface {
       new ThemeService({
         ...themeConfig,
         storage: localJsonStorage
+      })
+    );
+
+    container.bind(
+      RouteService,
+      new RouteService({
+        config: baseRoutes,
+        logger
       })
     );
 

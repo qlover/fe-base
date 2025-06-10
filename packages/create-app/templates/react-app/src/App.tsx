@@ -3,9 +3,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
-import { RouterController } from './uikit/controllers/RouterController';
+import { RouteService } from './base/services/RouteService';
 import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
+import { routerPrefix } from '@config/common';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -28,10 +29,12 @@ const routerLoader = new RouterLoader({
 
 function App() {
   const routerBase = useMemo(() => {
-    const routes = IOC(RouterController)
+    const routes = IOC(RouteService)
       .getRoutes()
       .map((route) => routerLoader.toRoute(route));
-    const router = createBrowserRouter(routes);
+    const router = createBrowserRouter(routes, {
+      basename: routerPrefix
+    });
     return router;
   }, []);
 

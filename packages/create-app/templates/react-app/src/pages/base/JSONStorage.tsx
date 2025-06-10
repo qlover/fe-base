@@ -2,13 +2,13 @@ import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
-import { useSliceStore } from '@qlover/slice-store-react';
+import { useStore } from '@/uikit/hooks/useStore';
 import { Button, Input } from 'antd';
-import * as i18nKeys from '@config/Identifier.I18n';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 export default function JSONStorage() {
   const jsonStorageController = IOC(JSONStorageController);
-  const controllerState = useSliceStore(jsonStorageController);
+  const controllerState = useStore(jsonStorageController);
   const { t } = useBaseRoutePage();
 
   return (

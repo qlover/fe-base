@@ -3,10 +3,10 @@ import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { RequestController } from '@/uikit/controllers/RequestController';
 import { useMemo } from 'react';
-import { useSliceStore } from '@qlover/slice-store-react';
+import { useStore } from '@/uikit/hooks/useStore';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import * as i18nKeys from '@config/Identifier.I18n';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -25,8 +25,8 @@ function JSONValue({ value }: { value: unknown }) {
 
 export default function Request() {
   const requestController = IOC(RequestController);
-  const requestControllerState = useSliceStore(requestController);
-  const jsonStorageControllerState = useSliceStore(IOC(JSONStorageController));
+  const requestControllerState = useStore(requestController);
+  const jsonStorageControllerState = useStore(IOC(JSONStorageController));
   const { t } = useBaseRoutePage();
 
   return (

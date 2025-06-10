@@ -1,10 +1,9 @@
+import { inject, injectable } from 'inversify';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { aiHello } from '@/base/apis/AiApi';
-import { inject } from 'inversify';
-import { injectable } from 'inversify';
-import { SliceStore } from '@qlover/slice-store-react';
+import { StoreInterface } from '@/base/port/StoreInterface';
 
 function createDefaultState() {
   return {
@@ -39,7 +38,7 @@ function createDefaultState() {
 export type RequestControllerState = ReturnType<typeof createDefaultState>;
 
 @injectable()
-export class RequestController extends SliceStore<RequestControllerState> {
+export class RequestController extends StoreInterface<RequestControllerState> {
   constructor(
     @inject(FeApi) private readonly feApi: FeApi,
     @inject(UserApi) private readonly userApi: UserApi

@@ -1,14 +1,14 @@
 import { IOC } from '@/core/IOC';
-import { UserController } from '@/uikit/controllers/UserController';
+import { UserService } from '@/base/services/UserService';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useSliceStore } from '@qlover/slice-store-react';
+import { useStore } from '@/uikit/hooks/useStore';
 
 export default function Layout() {
-  const userController = IOC(UserController);
-  useSliceStore(userController, (state) => state.success);
+  const userService = IOC(UserService);
+  useStore(userService, (state) => state.success);
 
   // If user is authenticated, redirect to home page
-  if (userController.isAuthenticated()) {
+  if (userService.isAuthenticated()) {
     return <Navigate to="/" replace />;
   }
 

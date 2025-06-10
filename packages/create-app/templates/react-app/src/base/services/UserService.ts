@@ -3,17 +3,17 @@ import type {
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
-import { RouterController } from './RouterController';
+import { RouteService } from './RouteService';
 import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
-import { LoginInterface } from '@/base/port/LoginInterface';
+import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import { LOCAL_NO_USER_TOKEN } from '@config/Identifier.Error';
-import { SliceStore } from '@qlover/slice-store-react';
+import { LOCAL_NO_USER_TOKEN } from '@config/Identifier/Error';
+import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
 
-class UserControllerState {
+class UserServiceState implements StoreStateInterface {
   success: boolean = false;
   userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
     name: '',
@@ -23,22 +23,22 @@ class UserControllerState {
 }
 
 @injectable()
-export class UserController
-  extends SliceStore<UserControllerState>
+export class UserService
+  extends StoreInterface<UserServiceState>
   implements ExecutorPlugin, LoginInterface
 {
-  readonly pluginName = 'UserController';
+  readonly pluginName = 'UserService';
 
   constructor(
     @inject(UserApi) private userApi: UserApi,
-    @inject(RouterController) private routerController: RouterController,
+    @inject(RouteService) private routerController: RouteService,
     @inject(IOCIdentifier.FeApiToken)
     private userToken: StorageTokenInterface<string>
   ) {
-    super(() => new UserControllerState());
+    super(() => new UserServiceState());
   }
 
-  setState(state: Partial<UserControllerState>): void {
+  setState(state: Partial<UserServiceState>): void {
     this.emit({ ...this.state, ...state });
   }
 
@@ -110,5 +110,15 @@ export class UserController
 
   isAuthenticated(): boolean {
     return this.state.success;
+  }
+
+  /**
+   * @override
+   */
+  async register(params: RegisterFormData): Promise<unknown> {
+    return this.login({
+      username: params.username,
+      password: params.password
+    });
   }
 }
