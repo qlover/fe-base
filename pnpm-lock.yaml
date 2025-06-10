@@ -201,25 +201,25 @@ importers:
       '@qlover/scripts-context':
         specifier: workspace:*
         version: link:../scripts-context
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
       inquirer:
         specifier: ^12.3.2
         version: 12.6.0(@types/node@22.15.2)
+      ora:
+        specifier: ^8.1.1
+        version: 8.2.0
     devDependencies:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
-      commander:
-        specifier: ^13.1.0
-        version: 13.1.0
       ignore:
         specifier: ^7.0.3
         version: 7.0.4
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      ora:
-        specifier: ^8.1.1
-        version: 8.2.0
 
   packages/env-loader:
     dependencies:
