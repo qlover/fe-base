@@ -37,13 +37,13 @@
   },
   "devDependencies": {
     "@qlover/logger": "workspace:*",
-    "commander": "^13.1.0",
-    "ignore": "^7.0.3",
     "lodash": "^4.17.21",
-    "ora": "^8.1.1"
+    "ignore": "^7.0.3"
   },
   "dependencies": {
     "@qlover/scripts-context": "workspace:*",
-    "inquirer": "^12.3.2"
+    "ora": "^8.1.1",
+    "inquirer": "^12.3.2",
+    "commander": "^13.1.0"
   }
 }

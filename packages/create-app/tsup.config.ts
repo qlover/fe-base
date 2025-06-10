@@ -1,13 +1,23 @@
 import { defineConfig } from 'tsup';
+import { builtinModules } from 'module';
 import pkg from './package.json';
+
+const external = [
+  ...builtinModules,
+  ...builtinModules.map((mod) => `node:${mod}`),
+  ...Object.keys(pkg.devDependencies || {})
+];
 
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   dts: false,
-  minify: 'terser',
-  noExternal: Object.keys(pkg.devDependencies),
-  splitting: true,
+  noExternal: ['lodash/merge', 'ignore', '@qlover/logger'],
+  splitting: false,
   sourcemap: false,
-  clean: true
+  clean: true,
+  minify: false,
+  treeshake: true,
+  external,
+  platform: 'node'
 });
