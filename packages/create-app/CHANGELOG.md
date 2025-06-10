@@ -1,5 +1,16 @@
 # @qlover/create-app
 
+## 0.3.8
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **create-app:** update dependencies and tsup configuration for @qlover/create-app ([4a5fa84](https://github.com/qlover/fe-base/commit/4a5fa846ae6c3df97c73df5e594c3adb4fb7cda9)) ([#424](https://github.com/qlover/fe-base/pull/424))
+
+  - Reorganized package.json to move "commander" and "ora" to dependencies from devDependencies, ensuring they are included in the production build.
+  - Updated tsup.config.ts to enhance build configuration by defining external modules and adjusting minification and splitting settings for improved performance.
+
 ## 0.3.7
 
 ### Patch Changes
