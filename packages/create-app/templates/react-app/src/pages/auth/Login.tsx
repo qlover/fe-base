@@ -6,6 +6,8 @@ import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
 import { UserService } from '@/base/services/UserService';
 import { useSliceStore } from '@qlover/slice-store-react';
+import * as i18nKeys from '@config/Identifier.I18n';
+import LocaleLink from '@/uikit/components/LocaleLink';
 
 interface LoginFormData {
   email: string;
@@ -45,19 +47,21 @@ export default function Login() {
           </span>
         </div>
         <h1 className="text-4xl font-bold text-text mb-4">
-          Welcome back to the future of learning
+          {t(i18nKeys.LOGIN_WELCOME)}
         </h1>
         <p className="text-text-secondary text-lg mb-8">
-          Unlock personalized AI-powered learning experiences designed to
-          accelerate your knowledge journey.
+          {t(i18nKeys.LOGIN_SUBTITLE)}
         </p>
         <div className="space-y-4">
+          <FeatureItem icon="🎯" text={t(i18nKeys.LOGIN_FEATURE_AI_PATHS)} />
           <FeatureItem
             icon="🎯"
-            text="AI-powered personalized learning paths"
+            text={t(i18nKeys.LOGIN_FEATURE_SMART_RECOMMENDATIONS)}
           />
-          <FeatureItem icon="🎯" text="Smart content recommendations" />
-          <FeatureItem icon="📊" text="Real-time progress tracking" />
+          <FeatureItem
+            icon="📊"
+            text={t(i18nKeys.LOGIN_FEATURE_PROGRESS_TRACKING)}
+          />
         </div>
       </div>
 
@@ -65,10 +69,10 @@ export default function Login() {
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
           <h2 className="text-2xl font-semibold mb-2 text-text">
-            {t('Sign in to your account')}
+            {t(i18nKeys.LOGIN_TITLE)}
           </h2>
           <p className="text-text-secondary mb-8">
-            Enter your credentials to access your dashboard
+            {t(i18nKeys.LOGIN_SUBTITLE)}
           </p>
 
           <Form
@@ -83,11 +87,14 @@ export default function Login() {
           >
             <Form.Item
               name="email"
-              rules={[{ required: true, message: 'Please input your email!' }]}
+              rules={[
+                { required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }
+              ]}
             >
               <Input
                 prefix={<UserOutlined className="text-text-tertiary" />}
-                placeholder={t('email')}
+                placeholder={t(i18nKeys.LOGIN_EMAIL)}
+                title={t(i18nKeys.LOGIN_EMAIL_TITLE)}
                 className="h-12 text-base bg-secondary border-border"
               />
             </Form.Item>
@@ -95,19 +102,24 @@ export default function Login() {
             <Form.Item
               name="password"
               rules={[
-                { required: true, message: 'Please input your password!' }
+                { required: true, message: t(i18nKeys.LOGIN_PASSWORD_REQUIRED) }
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder={t('password')}
+                placeholder={t(i18nKeys.LOGIN_PASSWORD)}
+                title={t(i18nKeys.LOGIN_PASSWORD_TITLE)}
                 className="h-12 text-base"
               />
             </Form.Item>
 
             <div className="flex justify-end">
-              <a href="#" className="text-brand hover:text-brand-hover">
-                {t('Forgot your password?')}
+              <a
+                href="#"
+                className="text-brand hover:text-brand-hover"
+                title={t(i18nKeys.LOGIN_FORGOT_PASSWORD_TITLE)}
+              >
+                {t(i18nKeys.LOGIN_FORGOT_PASSWORD)}
               </a>
             </div>
 
@@ -116,27 +128,36 @@ export default function Login() {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
+                title={t(i18nKeys.LOGIN_BUTTON_TITLE)}
                 className="w-full h-12 text-base"
               >
-                {t('Sign In')}
+                {t(i18nKeys.LOGIN_BUTTON)}
               </Button>
             </Form.Item>
 
             <div className="text-center text-text-tertiary my-4">
-              or continue with
+              {t(i18nKeys.LOGIN_CONTINUE_WITH)}
             </div>
 
-            <Button icon={<GoogleOutlined />} className="w-full h-12 text-base">
-              Sign in with Google
+            <Button
+              icon={<GoogleOutlined />}
+              className="w-full h-12 text-base"
+              title={t(i18nKeys.LOGIN_WITH_GOOGLE_TITLE)}
+            >
+              {t(i18nKeys.LOGIN_WITH_GOOGLE)}
             </Button>
 
             <div className="text-center mt-6">
               <span className="text-text-tertiary">
-                Don't have an account?{' '}
+                {t(i18nKeys.LOGIN_NO_ACCOUNT)}{' '}
               </span>
-              <a href="#" className="text-brand hover:text-brand-hover">
-                Create one here
-              </a>
+              <LocaleLink
+                href="/register"
+                className="text-brand hover:text-brand-hover"
+                title={t(i18nKeys.LOGIN_CREATE_ACCOUNT_TITLE)}
+              >
+                {t(i18nKeys.LOGIN_CREATE_ACCOUNT)}
+              </LocaleLink>
             </div>
           </Form>
         </div>

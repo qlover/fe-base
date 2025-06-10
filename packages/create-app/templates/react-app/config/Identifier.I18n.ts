@@ -153,6 +153,20 @@ export const LOGIN_PASSWORD = 'login.password';
 export const LOGIN_BUTTON = 'login.login';
 
 /**
+ * @description Login page description
+ * @localZh 欢迎来到未来学习
+ * @localEn Welcome to the future of learning
+ */
+export const LOGIN_WELCOME = 'login.welcome';
+
+/**
+ * @description Login page description
+ * @localZh 解锁个性化 AI 驱动的学习体验，加速您的知识旅程。
+ * @localEn Unlock personalized AI-powered learning experiences designed to accelerate your knowledge journey.
+ */
+export const LOGIN_SUBTITLE = 'login.subtitle';
+
+/**
  * @description Request timeout message
  * @localZh 请求超时
  * @localEn Request Timeout
@@ -367,7 +381,7 @@ export const PAGE_EXECUTOR_TITLE = 'page.executor.title';
  * @localZh 错误标识符
  * @localEn Error Identifier
  */
-export const PAGE_ERROR_IDENTIFIER_TITLE = 'page.error.identifier.title';
+export const PAGE_ERROR_IDENTIFIER_TITLE = 'page.error_identifier.title';
 
 /**
  * @description Error Identifier page description
@@ -1046,3 +1060,307 @@ export const COMMON_OK = 'common.ok';
  * @Codebase
  */
 export const COMMON_CANCEL = 'common.cancel';
+
+/**
+ * @description Login page forgot password text
+ * @localZh 忘记密码？
+ * @localEn Forgot your password?
+ */
+export const LOGIN_FORGOT_PASSWORD = 'login.forgot_password';
+
+/**
+ * @description Login page continue with text
+ * @localZh 或继续使用
+ * @localEn or continue with
+ */
+export const LOGIN_CONTINUE_WITH = 'login.continue_with';
+
+/**
+ * @description Login with Google button text
+ * @localZh 使用 Google 登录
+ * @localEn Sign in with Google
+ */
+export const LOGIN_WITH_GOOGLE = 'login.with_google';
+
+/**
+ * @description Login page no account text
+ * @localZh 还没有账号？
+ * @localEn Don't have an account?
+ */
+export const LOGIN_NO_ACCOUNT = 'login.no_account';
+
+/**
+ * @description Login page create account link text
+ * @localZh 在此创建
+ * @localEn Create one here
+ */
+export const LOGIN_CREATE_ACCOUNT = 'login.create_account';
+
+/**
+ * @description Login page email validation message
+ * @localZh 请输入您的邮箱！
+ * @localEn Please input your email!
+ */
+export const LOGIN_EMAIL_REQUIRED = 'login.email_required';
+
+/**
+ * @description Login page password validation message
+ * @localZh 请输入您的密码！
+ * @localEn Please input your password!
+ */
+export const LOGIN_PASSWORD_REQUIRED = 'login.password_required';
+
+/**
+ * @description Login page feature item - AI learning paths
+ * @localZh AI驱动的个性化学习路径
+ * @localEn AI-powered personalized learning paths
+ */
+export const LOGIN_FEATURE_AI_PATHS = 'login.feature.ai_paths';
+
+/**
+ * @description Login page feature item - Smart recommendations
+ * @localZh 智能内容推荐
+ * @localEn Smart content recommendations
+ */
+export const LOGIN_FEATURE_SMART_RECOMMENDATIONS =
+  'login.feature.smart_recommendations';
+
+/**
+ * @description Login page feature item - Progress tracking
+ * @localZh 实时进度追踪
+ * @localEn Real-time progress tracking
+ */
+export const LOGIN_FEATURE_PROGRESS_TRACKING =
+  'login.feature.progress_tracking';
+
+/**
+ * @description Login page email input title
+ * @localZh 输入邮箱
+ * @localEn Enter email
+ */
+export const LOGIN_EMAIL_TITLE = 'login.email.title';
+
+/**
+ * @description Login page password input title
+ * @localZh 输入密码
+ * @localEn Enter password
+ */
+export const LOGIN_PASSWORD_TITLE = 'login.password.title';
+
+/**
+ * @description Login page forgot password link title
+ * @localZh 重置密码
+ * @localEn Reset password
+ */
+export const LOGIN_FORGOT_PASSWORD_TITLE = 'login.forgot_password.title';
+
+/**
+ * @description Login page submit button title
+ * @localZh 登录账号
+ * @localEn Sign in to account
+ */
+export const LOGIN_BUTTON_TITLE = 'login.button.title';
+
+/**
+ * @description Login page Google sign in button title
+ * @localZh 使用Google账号登录
+ * @localEn Sign in with Google account
+ */
+export const LOGIN_WITH_GOOGLE_TITLE = 'login.with_google.title';
+
+/**
+ * @description Login page create account link title
+ * @localZh 创建新账号
+ * @localEn Create new account
+ */
+export const LOGIN_CREATE_ACCOUNT_TITLE = 'login.create_account.title';
+
+/**
+ * @description Register page title
+ * @localZh 创建账号
+ * @localEn Create Account
+ */
+export const REGISTER_TITLE = 'register.title';
+
+/**
+ * @description Register page subtitle
+ * @localZh 开始您的学习之旅
+ * @localEn Start your learning journey
+ */
+export const REGISTER_SUBTITLE = 'register.subtitle';
+
+/**
+ * @description Register page username field
+ * @localZh 用户名
+ * @localEn Username
+ */
+export const REGISTER_USERNAME = 'register.username';
+
+/**
+ * @description Register page username required message
+ * @localZh 请输入用户名！
+ * @localEn Please input your username!
+ */
+export const REGISTER_USERNAME_REQUIRED = 'register.username_required';
+
+/**
+ * @description Register page email field
+ * @localZh 邮箱
+ * @localEn Email
+ */
+export const REGISTER_EMAIL = 'register.email';
+
+/**
+ * @description Register page email required message
+ * @localZh 请输入邮箱！
+ * @localEn Please input your email!
+ */
+export const REGISTER_EMAIL_REQUIRED = 'register.email_required';
+
+/**
+ * @description Register page password field
+ * @localZh 密码
+ * @localEn Password
+ */
+export const REGISTER_PASSWORD = 'register.password';
+
+/**
+ * @description Register page password required message
+ * @localZh 请输入密码！
+ * @localEn Please input your password!
+ */
+export const REGISTER_PASSWORD_REQUIRED = 'register.password_required';
+
+/**
+ * @description Register page confirm password field
+ * @localZh 确认密码
+ * @localEn Confirm Password
+ */
+export const REGISTER_CONFIRM_PASSWORD = 'register.confirm_password';
+
+/**
+ * @description Register page confirm password required message
+ * @localZh 请确认密码！
+ * @localEn Please confirm your password!
+ */
+export const REGISTER_CONFIRM_PASSWORD_REQUIRED =
+  'register.confirm_password_required';
+
+/**
+ * @description Register page passwords don't match message
+ * @localZh 两次输入的密码不匹配！
+ * @localEn The passwords you entered don't match!
+ */
+export const REGISTER_PASSWORD_MISMATCH = 'register.password_mismatch';
+
+/**
+ * @description Register page submit button
+ * @localZh 注册
+ * @localEn Register
+ */
+export const REGISTER_BUTTON = 'register.button';
+
+/**
+ * @description Register page terms and conditions text
+ * @localZh 注册即表示您同意我们的
+ * @localEn By registering, you agree to our
+ */
+export const REGISTER_TERMS_PREFIX = 'register.terms_prefix';
+
+/**
+ * @description Register page terms and conditions link
+ * @localZh 服务条款
+ * @localEn Terms of Service
+ */
+export const REGISTER_TERMS_LINK = 'register.terms_link';
+
+/**
+ * @description Register page privacy policy text
+ * @localZh 和
+ * @localEn and
+ */
+export const REGISTER_TERMS_AND = 'register.terms_and';
+
+/**
+ * @description Register page privacy policy link
+ * @localZh 隐私政策
+ * @localEn Privacy Policy
+ */
+export const REGISTER_PRIVACY_LINK = 'register.privacy_link';
+
+/**
+ * @description Register page have account text
+ * @localZh 已有账号？
+ * @localEn Already have an account?
+ */
+export const REGISTER_HAVE_ACCOUNT = 'register.have_account';
+
+/**
+ * @description Register page login link
+ * @localZh 登录
+ * @localEn Sign in
+ */
+export const REGISTER_LOGIN_LINK = 'register.login_link';
+
+/**
+ * @description Register page feature item - Personalized Learning
+ * @localZh 个性化学习体验
+ * @localEn Personalized Learning Experience
+ */
+export const REGISTER_FEATURE_PERSONALIZED = 'register.feature.personalized';
+
+/**
+ * @description Register page feature item - Expert Support
+ * @localZh 专家支持和指导
+ * @localEn Expert Support and Guidance
+ */
+export const REGISTER_FEATURE_SUPPORT = 'register.feature.support';
+
+/**
+ * @description Register page feature item - Learning Community
+ * @localZh 活跃的学习社区
+ * @localEn Active Learning Community
+ */
+export const REGISTER_FEATURE_COMMUNITY = 'register.feature.community';
+
+/**
+ * @description Register page terms agreement required message
+ * @localZh 请同意服务条款和隐私政策
+ * @localEn Please agree to the Terms of Service and Privacy Policy
+ */
+export const REGISTER_TERMS_REQUIRED = 'register.terms_required';
+
+/**
+ * @description Home page title
+ * @localZh 首页
+ * @localEn Home
+ */
+export const PAGE_HOME_TITLE = 'page.home.title';
+
+/**
+ * @description 404 page title
+ * @localZh 404 - 页面未找到
+ * @localEn 404 - Page Not Found
+ */
+export const PAGE_404_TITLE = 'page.404.title';
+
+/**
+ * @description 500 page title
+ * @localZh 500 - 服务器错误
+ * @localEn 500 - Server Error
+ */
+export const PAGE_500_TITLE = 'page.500.title';
+
+/**
+ * @description Login page title
+ * @localZh 登录
+ * @localEn Login
+ */
+export const PAGE_LOGIN_TITLE = 'page.login.title';
+
+/**
+ * @description Register page title
+ * @localZh 注册
+ * @localEn Register
+ */
+export const PAGE_REGISTER_TITLE = 'page.register.title';

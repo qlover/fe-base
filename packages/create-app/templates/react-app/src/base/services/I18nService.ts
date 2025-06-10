@@ -57,9 +57,15 @@ export class I18nService
     const pathLanguageDetector = {
       name: 'pathLanguageDetector',
       lookup: () => {
-        const path = this.pathname.split('/');
-        const language = path[1];
-        return I18nService.isValidLanguage(language) ? language : fallbackLng;
+        const paths = this.pathname.split('/');
+
+        for (const path of paths) {
+          if (I18nService.isValidLanguage(path)) {
+            return path;
+          }
+        }
+
+        return fallbackLng;
       },
       cacheUserLanguage() {
         // no cache, because we get language from URL

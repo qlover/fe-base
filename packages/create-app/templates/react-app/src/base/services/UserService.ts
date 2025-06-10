@@ -7,7 +7,7 @@ import { RouteService } from './RouteService';
 import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
-import { LoginInterface } from '@/base/port/LoginInterface';
+import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
 import { LOCAL_NO_USER_TOKEN } from '@config/Identifier.Error';
@@ -110,5 +110,15 @@ export class UserService
 
   isAuthenticated(): boolean {
     return this.state.success;
+  }
+
+  /**
+   * @override
+   */
+  async register(params: RegisterFormData): Promise<unknown> {
+    return this.login({
+      username: params.username,
+      password: params.password
+    });
   }
 }

@@ -19,7 +19,7 @@
             "index": true,
             "element": "base/Home",
             "meta": {
-              "title": "fe-utils/home",
+              "title": "page.home.title",
               "icon": "home",
               "localNamespace": "common"
             }
@@ -28,7 +28,7 @@
             "path": "about",
             "element": "base/About",
             "meta": {
-              "title": "关于",
+              "title": "page.about.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -37,7 +37,7 @@
             "path": "jsonStorage",
             "element": "base/JSONStorage",
             "meta": {
-              "title": "FE-Utils JSONStorage",
+              "title": "page.jsonstorage.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -46,7 +46,7 @@
             "path": "request",
             "element": "base/Request",
             "meta": {
-              "title": "FE-Utils Request",
+              "title": "page.request.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -55,7 +55,7 @@
             "path": "executor",
             "element": "base/Executor",
             "meta": {
-              "title": "FE-Utils Executor",
+              "title": "page.executor.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -64,7 +64,7 @@
             "path": "errorIdentifier",
             "element": "base/ErrorIdentifier",
             "meta": {
-              "title": "FE-Utils ErrorIdentifier",
+              "title": "page.error_identifier.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -74,7 +74,7 @@
             "element": "404",
             "meta": {
               "category": "common",
-              "title": "404",
+              "title": "page.404.title",
               "layout": "blank",
               "localNamespace": "common"
             }
@@ -84,7 +84,7 @@
             "element": "500",
             "meta": {
               "category": "common",
-              "title": "500",
+              "title": "page.500.title",
               "layout": "blank",
               "localNamespace": "common"
             }
@@ -107,7 +107,7 @@
             "path": "login",
             "element": "auth/Login",
             "meta": {
-              "title": "登录",
+              "title": "page.login.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -116,7 +116,7 @@
             "path": "register",
             "element": "auth/Register",
             "meta": {
-              "title": "注册",
+              "title": "page.register.title",
               "icon": "info",
               "localNamespace": "common"
             }
@@ -129,7 +129,7 @@
         "element": "404",
         "meta": {
           "category": "common",
-          "title": "404",
+          "title": "page.404.title",
           "layout": "blank",
           "localNamespace": "common"
         }
@@ -139,7 +139,7 @@
         "element": "500",
         "meta": {
           "category": "common",
-          "title": "500",
+          "title": "page.500.title",
           "layout": "blank",
           "localNamespace": "common"
         }
@@ -149,7 +149,7 @@
         "element": "404",
         "meta": {
           "category": "common",
-          "title": "404",
+          "title": "page.404.title",
           "layout": "blank",
           "localNamespace": "common"
         }
