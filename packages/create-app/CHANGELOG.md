@@ -1,5 +1,13 @@
 # @qlover/create-app
 
+## 0.4.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **create-app:** correct prettier version formatting in package.json.template ([dbd9336](https://github.com/qlover/fe-base/commit/dbd93366e04dcbbeba245d2dc28a7909957b58c3)) ([#428](https://github.com/qlover/fe-base/pull/428))
+
 ## 0.4.0
 
 ### Minor Changes
