@@ -13,11 +13,11 @@
     "CHANGELOG.md"
   ],
   "bin": {
-    "create-app": "dist/index.cjs"
+    "create-app": "dist/index.js"
   },
   "scripts": {
     "build": "tsup",
-    "create:app": "node ./dist/index.cjs"
+    "create:app": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
