@@ -5,15 +5,15 @@ import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
 import { UserService } from '@/base/services/UserService';
-import { useSliceStore } from '@qlover/slice-store-react';
-import * as i18nKeys from '@config/Identifier.I18n';
+import { useStore } from '@/uikit/hooks/useStore';
+import * as i18nKeys from '@config/Identifier/I18n';
 import type { RegisterFormData } from '@/base/port/LoginInterface';
 
 export default function Register() {
   const { t } = useBaseRoutePage();
   const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');
-  useSliceStore(userService);
+  useStore(userService);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 

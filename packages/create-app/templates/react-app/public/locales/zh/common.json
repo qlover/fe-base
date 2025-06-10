@@ -120,7 +120,7 @@
   "page.executor.view_guide": "查看指南",
   "page.executor.contact_support": "联系支持",
   "page.error.identifier.main_title": "错误标识符",
-  "page.error.identifier.source_description": "来自 '@config/Identifier.Error' 的标识符",
+  "page.error.identifier.source_description": "来自 '@config/Identifier/Error' 的标识符",
   "page.error.identifier.help.title": "需要帮助？",
   "page.error.identifier.help.description": "如果您在使用错误标识符时遇到问题，请联系我们的支持团队",
   "page.error.identifier.contact_support": "联系支持",

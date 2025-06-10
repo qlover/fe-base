@@ -4,22 +4,22 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import i18nConfig from '@config/i18n';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import {
-  SliceStore,
-  type BootstrapExecutorPlugin
-} from '@qlover/corekit-bridge';
-
+  StoreInterface,
+  StoreStateInterface
+} from '@/base/port/StoreInterface';
 const { supportedLngs, fallbackLng } = i18nConfig;
 
 export type I18nServiceLocale = (typeof supportedLngs)[number];
 
-export class I18nServiceState {
+export class I18nServiceState implements StoreStateInterface {
   loading: boolean = false;
   constructor(public language: I18nServiceLocale) {}
 }
 
 export class I18nService
-  extends SliceStore<I18nServiceState>
+  extends StoreInterface<I18nServiceState>
   implements BootstrapExecutorPlugin
 {
   readonly pluginName = 'I18nService';

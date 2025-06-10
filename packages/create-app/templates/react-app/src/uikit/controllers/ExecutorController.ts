@@ -6,9 +6,12 @@ import {
   RequestAdapterFetchConfig
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
-import { SliceStore } from '@qlover/slice-store-react';
+import {
+  StoreInterface,
+  StoreStateInterface
+} from '@/base/port/StoreInterface';
 
-class ExecutorControllerState {
+class ExecutorControllerState implements StoreStateInterface {
   helloState = {
     loading: false,
     result: null as Record<string, unknown> | null,
@@ -31,7 +34,7 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
 };
 
 @injectable()
-export class ExecutorController extends SliceStore<ExecutorControllerState> {
+export class ExecutorController extends StoreInterface<ExecutorControllerState> {
   selector = {
     helloState: (state: ExecutorControllerState) => state.helloState
   };

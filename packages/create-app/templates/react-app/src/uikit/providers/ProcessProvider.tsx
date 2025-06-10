@@ -7,7 +7,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Loading } from '@/uikit/components/Loading';
 import { RouteService } from '../../base/services/RouteService';
 import { UserService } from '../../base/services/UserService';
-import { useSliceStore } from '@qlover/slice-store-react';
+import { useStore } from '@/uikit/hooks/useStore';
 
 const PageProcesserContext = createContext<ProcesserService>(
   IOC(ProcesserService)
@@ -17,7 +17,7 @@ export function ProcessProvider({ children }: { children: React.ReactNode }) {
   useLanguageGuard();
   const userService = IOC(UserService);
   const pageProcesser = IOC(ProcesserService);
-  const success = useSliceStore(userService, (state) => state.success);
+  const success = useStore(userService, (state) => state.success);
 
   const navigate = useNavigate();
 

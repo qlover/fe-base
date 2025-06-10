@@ -7,13 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function BaseRouteProvider(props: PropsWithChildren<RouteMeta>) {
   const { t } = useTranslation();
-
-  console.log('props.title', props.title);
-
-  const title = props.title ? t(props.title) : IOC('AppConfig').appName;
-  console.log('title', title);
-
-  useDocumentTitle(title);
+  useDocumentTitle(props.title ? t(props.title) : IOC('AppConfig').appName);
 
   return (
     <BaseRoutePageContext.Provider value={props}>

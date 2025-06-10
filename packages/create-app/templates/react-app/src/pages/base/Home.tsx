@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
-import * as i18nKeys from '@config/Identifier.I18n';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 export default function Home() {
   const { t } = useBaseRoutePage();

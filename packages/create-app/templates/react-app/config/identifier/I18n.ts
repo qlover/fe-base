@@ -861,8 +861,8 @@ export const PAGE_ERROR_IDENTIFIER_MAIN_TITLE =
 
 /**
  * @description ErrorIdentifier page description
- * @localZh 来自 '@config/Identifier.Error' 的标识符
- * @localEn Identifier From: '@config/Identifier.Error'
+ * @localZh 来自 '@config/Identifier/Error' 的标识符
+ * @localEn Identifier From: '@config/Identifier/Error'
  */
 export const PAGE_ERROR_IDENTIFIER_SOURCE_DESCRIPTION =
   'page.error.identifier.source_description';

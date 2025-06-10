@@ -85,7 +85,7 @@ pnpm test
 项目使用 `@brain-toolkit/ts2locales` 插件从 TypeScript 注释自动生成国际化资源：
 
 ```typescript
-// config/Identifier.I18n.ts
+// config/Identifier/I18n.ts
 export const Messages = {
   /**
    * @description Home page welcome message
@@ -116,11 +116,11 @@ export default defineConfig({
       locales: i18nConfig.supportedLngs,
       options: [
         {
-          source: './config/Identifier.Error.ts',
+          source: './config/Identifier/Error.ts',
           target: './public/locales/{{lng}}/common.json'
         },
         {
-          source: './config/Identifier.I18n.ts',
+          source: './config/Identifier/I18n.ts',
           target: './public/locales/{{lng}}/common.json'
         }
       ]
@@ -147,7 +147,7 @@ await i18nService.changeLanguage('zh');
 
 ```typescript
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier.I18n';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 function MyComponent() {
   const { t } = useBaseRoutePage();
@@ -181,8 +181,8 @@ function Header() {
 
 1. 国际化标识符管理：
 
-   - 在 `config/Identifier.I18n.ts` 中集中管理UI文本
-   - 在 `config/Identifier.Error.ts` 中集中管理错误信息
+   - 在 `config/Identifier/I18n.ts` 中集中管理UI文本
+   - 在 `config/Identifier/Error.ts` 中集中管理错误信息
    - 使用有意义的 key 命名（如：'page.home.title'）
 
 2. TypeScript 注释规范：
@@ -198,7 +198,7 @@ function Header() {
 
 4. 组件开发：
    - 使用 `useBaseRoutePage` hook 获取翻译函数
-   - 从 `@config/Identifier.I18n` 引入国际化 key
+   - 从 `@config/Identifier/I18n` 引入国际化 key
    - 避免硬编码文本，始终使用国际化 key
 
 ### 主题系统
@@ -217,7 +217,7 @@ function Header() {
 
 ```typescript
 @injectable()
-export class RequestController extends SliceStore<RequestControllerState> {
+export class RequestController extends StoreInterface<RequestControllerState> {
   constructor(
     @inject(FeApi) private readonly feApi: FeApi,
     @inject(UserApi) private readonly userApi: UserApi
@@ -375,3 +375,65 @@ const response = await api.request({
 1. 在 `public/locales` 添加翻译文件
 2. 使用 `useTranslation` hook 进行调用
 3. 支持按需加载语言包
+
+### 构建优化
+
+项目使用 Vite 进行构建，并进行了以下优化：
+
+#### 代码分割
+
+自动进行智能代码分割，将代码分为以下几个主要块：
+
+- react-vendor: React 核心库
+- antd-core: Ant Design 核心组件
+- antd-basic: 基础 UI 组件
+- antd-advanced: 高级 UI 组件
+- utils: 工具函数
+- i18n: 国际化相关
+
+#### 构建优化配置
+
+```typescript
+build: {
+  // 分块大小警告限制设置为 600kb
+  chunkSizeWarningLimit: 600,
+  // 使用 terser 进行代码压缩
+  minify: 'terser',
+  terserOptions: {
+    compress: {
+      // 移除控制台输出和调试器语句
+      drop_console: true,
+      drop_debugger: true,
+      // 移除特定的控制台函数调用
+      pure_funcs: ['console.log', 'console.info', 'console.debug']
+    }
+  }
+}
+```
+
+### 项目配置
+
+#### 环境变量
+
+- 使用 `@qlover/corekit-bridge/vite-env-config` 管理环境变量
+- 自动注入应用名称和版本信息
+- 支持环境变量前缀配置
+
+#### 样式配置
+
+- 集成 Tailwind CSS
+- 按需加载 Ant Design 组件样式
+- 支持主题模式覆盖
+
+#### 开发服务器
+
+```bash
+# 默认端口 3200，可通过环境变量配置
+VITE_SERVER_PORT=3000 pnpm dev
+```
+
+#### 测试配置
+
+- 使用 Vitest 进行单元测试
+- 支持 JSDOM 环境
+- 内置测试工具配置

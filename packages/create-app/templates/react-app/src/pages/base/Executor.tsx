@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { IOC } from '@/core/IOC';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
-import { useSliceStore } from '@qlover/slice-store-react';
-import * as i18nKeys from '@config/Identifier.I18n';
+import { useStore } from '@/uikit/hooks/useStore';
+import * as i18nKeys from '@config/Identifier/I18n';
 
 interface Task {
   id: string;
@@ -24,12 +24,12 @@ export default function Executor() {
   const { t } = useBaseRoutePage();
   const executorController = IOC(ExecutorController);
   const jSONStorageController = IOC(JSONStorageController);
-  const requestTimeout = useSliceStore(
+  const requestTimeout = useStore(
     jSONStorageController,
     jSONStorageController.selector.requestTimeout
   );
 
-  const helloState = useSliceStore(
+  const helloState = useStore(
     executorController,
     executorController.selector.helloState
   );

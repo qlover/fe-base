@@ -120,7 +120,7 @@
   "page.executor.view_guide": "View Guide",
   "page.executor.contact_support": "Contact Support",
   "page.error.identifier.main_title": "Error Identifier",
-  "page.error.identifier.source_description": "Identifier From: '@config/Identifier.Error'",
+  "page.error.identifier.source_description": "Identifier From: '@config/Identifier/Error'",
   "page.error.identifier.help.title": "Need Help?",
   "page.error.identifier.help.description": "If you encounter any issues while using error identifiers, please contact our support team",
   "page.error.identifier.contact_support": "Contact Support",

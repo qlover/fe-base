@@ -10,10 +10,10 @@ import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import { LOCAL_NO_USER_TOKEN } from '@config/Identifier.Error';
-import { SliceStore } from '@qlover/slice-store-react';
+import { LOCAL_NO_USER_TOKEN } from '@config/Identifier/Error';
+import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
 
-class UserServiceState {
+class UserServiceState implements StoreStateInterface {
   success: boolean = false;
   userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
     name: '',
@@ -24,7 +24,7 @@ class UserServiceState {
 
 @injectable()
 export class UserService
-  extends SliceStore<UserServiceState>
+  extends StoreInterface<UserServiceState>
   implements ExecutorPlugin, LoginInterface
 {
   readonly pluginName = 'UserService';
