@@ -1,5 +1,13 @@
 # @qlover/create-app
 
+## 0.4.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **create-app:** update root path resolution to use dirname for compatibility with ES modules ([d091f0b](https://github.com/qlover/fe-base/commit/d091f0bc5ed17a6d16a7bedcac5416a41cba41d2)) ([#426](https://github.com/qlover/fe-base/pull/426))
+
 ## 0.3.8
 
 ### Patch Changes
