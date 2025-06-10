@@ -1,5 +1,18 @@
 # @qlover/create-app
 
+## 0.3.6
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- update @qlover/create-app with new build tools and dependencies ([a6d902b](https://github.com/qlover/fe-base/commit/a6d902bee8a5f8b3c37669f26cf0862bf317ef6f)) ([#420](https://github.com/qlover/fe-base/pull/420))
+
+- Replaced Rollup with tsup for building the application, enhancing build performance and simplifying configuration.
+- Updated package.json to reflect changes in dependencies and scripts, including the removal of outdated entries.
+- Improved README with installation and usage instructions for better user guidance.
+- Removed unnecessary files and streamlined the project structure for clarity.
+
 ## 0.3.5
 
 ### Patch Changes
@@ -12,8 +25,7 @@
 - Introduced `vite-plugin-imp` to optimize Ant Design imports, reducing bundle size and improving load times.
 - Updated Vite configuration to define manual chunks for better code splitting and chunk management.
 
-
-    Co-authored-by: QRJ <renjie.qin@brain.im>
+  Co-authored-by: QRJ <renjie.qin@brain.im>
 
 ## 0.3.4
 
