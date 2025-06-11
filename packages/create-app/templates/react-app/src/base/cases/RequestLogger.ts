@@ -10,7 +10,8 @@ import {
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
-import { LoggerInterface } from '@qlover/logger';
+import type { LoggerInterface } from '@qlover/logger';
+
 @injectable()
 export class RequestLogger
   implements ExecutorPlugin<RequestAdapterFetchConfig>

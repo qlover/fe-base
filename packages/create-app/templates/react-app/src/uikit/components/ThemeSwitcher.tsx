@@ -1,5 +1,5 @@
 import { IOC } from '@/core/IOC';
-import { ThemeService } from '@qlover/corekit-bridge';
+import { ThemeService, ThemeServiceState } from '@qlover/corekit-bridge';
 import { useStore } from '@/uikit/hooks/useStore';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
@@ -12,6 +12,7 @@ import {
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import * as i18nKeys from '@config/Identifier/I18n';
+import { StoreInterface } from '@/base/port/StoreInterface';
 
 const colorMap: Record<
   string,
@@ -36,7 +37,9 @@ const colorMap: Record<
 
 export default function ThemeSwitcher() {
   const themeService = IOC(ThemeService);
-  const { theme } = useStore(themeService);
+  const { theme } = useStore(
+    themeService as unknown as StoreInterface<ThemeServiceState>
+  );
   const themes = themeService.getSupportedThemes();
   const { t } = useTranslation('common');
 
