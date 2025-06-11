@@ -1,5 +1,22 @@
 # @qlover/create-app
 
+## 0.4.3
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** enhance environment configuration and localization support ([76e5e22](https://github.com/qlover/fe-base/commit/76e5e22e41fe23ce109c303ca3974103f8a85cf6)) ([#432](https://github.com/qlover/fe-base/pull/432))
+
+  - Updated .gitignore to include .env files and added .env.template to the repository.
+  - Introduced a new .env.template file for environment variable configuration in the react-app template.
+  - Enhanced package.json scripts for development modes: added staging and production modes.
+  - Updated README.md to document environment variable usage with Vite.
+  - Added new error identifiers for token handling in Error.ts and updated UserService to utilize these identifiers.
+  - Improved localization files to include new keys for error messages related to token absence.
+
+  This update improves the application's configuration management and localization, enhancing developer experience and user feedback.
+
 ## 0.4.2
 
 ### Patch Changes
