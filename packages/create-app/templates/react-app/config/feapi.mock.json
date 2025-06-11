@@ -8,8 +8,16 @@
     "email": "john.doe@example.com",
     "picture": "https://randomuser.me/api/portraits/men/1.jpg"
   },
+  "GET /api/userinfo": {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "picture": "https://randomuser.me/api/portraits/men/1.jpg"
+  },
   "POST https://feapi.example.com/api/login": {
     "token": "asdfasdf123123asdfasdf"
+  },
+  "POST /api/login": {
+    "token": "/api/login-token-adfasdfasdf"
   },
   "POST https://api.openai.com/v1/chat/completions": {
     "id": "chatcmpl-1234567890",

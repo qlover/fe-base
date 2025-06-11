@@ -51,7 +51,7 @@ export class AppConfig implements EnvConfigInterface {
    * Storage key for user authentication token
    * @description Injected from VITE_USER_TOKEN_STORAGE_KEY environment variable
    */
-  readonly userTokenStorageKey = '';
+  readonly userTokenStorageKey = '__fe_user_token__';
 
   /**
    * Available OpenAI model configurations

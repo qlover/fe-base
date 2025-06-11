@@ -193,5 +193,6 @@
   "page.404.title": "404 - 页面未找到",
   "page.500.title": "500 - 服务器错误",
   "page.login.title": "登录",
-  "page.register.title": "注册"
+  "page.register.title": "注册",
+  "response.no.token": "响应内容没有 token 值"
 }

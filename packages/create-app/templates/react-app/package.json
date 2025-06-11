@@ -43,7 +43,9 @@
     "fe-release": "./bin/release.js"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode localhost",
+    "dev:staging": "vite --mode staging",
+    "dev:prod": "vite --mode production",
     "build": "vite build",
     "lint": "eslint ./src --fix",
     "prettier": "prettier --write ./src",
