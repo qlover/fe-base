@@ -1,5 +1,38 @@
 # @qlover/create-app
 
+## 0.4.4
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** add error identifiers and localization support for new components ([0ec3780](https://github.com/qlover/fe-base/commit/0ec3780a7972acd855e1b4d2ae866575534dc094)) ([#434](https://github.com/qlover/fe-base/pull/434))
+
+  - Introduced new error identifiers in Error.ts for handling various application states, including IOC not implemented and token absence.
+  - Added extensive localization keys in I18n.ts for various pages and components, enhancing user experience across different languages.
+  - Improved error handling and messaging consistency throughout the application.
+
+  This update enhances the application's localization capabilities and error management, providing clearer feedback to users.
+
+- **create-app:** enhance TypeScript configuration and linting ([f049395](https://github.com/qlover/fe-base/commit/f049395c90ee2c13a33d7358098a87251ef40913)) ([#434](https://github.com/qlover/fe-base/pull/434))
+
+  - Updated the TypeScript configuration by introducing a new `tsconfig.app.json` for better modularity and organization.
+  - Modified `tsconfig.json` to reference the new app configuration and streamline project structure.
+  - Enhanced `tsconfig.node.json` with improved compiler options for better compatibility and performance.
+  - Updated linting script in `package.json` to include TypeScript checks alongside ESLint, ensuring code quality and type safety.
+  - Refactored imports in `RequestLogger.ts` and `ThemeSwitcher.tsx` to use type imports for better clarity and performance.
+
+  This update improves the TypeScript setup and linting process, enhancing code quality and maintainability across the application.
+
+#### ♻️ Refactors
+
+- **create-app:** remove unused error identifiers and localization keys ([3b19f19](https://github.com/qlover/fe-base/commit/3b19f193b839c1e97fa727c1847a4bbd5ff84211)) ([#434](https://github.com/qlover/fe-base/pull/434))
+
+  - Deleted Error.ts and I18n.ts files as they contained unused error identifiers and localization keys.
+  - This cleanup improves the overall codebase by removing unnecessary files, enhancing maintainability and reducing clutter.
+
+  This update streamlines the application by eliminating redundant localization and error handling resources.
+
 ## 0.4.3
 
 ### Patch Changes
