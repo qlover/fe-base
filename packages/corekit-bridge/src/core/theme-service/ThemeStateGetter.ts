@@ -1,4 +1,3 @@
-import isString from 'lodash/isString';
 import { ThemeServiceProps, ThemeServiceState } from './type';
 
 export class ThemeStateGetter {
@@ -22,7 +21,10 @@ export class ThemeStateGetter {
       if (storage && storageKey) {
         theme = storage.getItem(storageKey);
 
-        if (isString(theme) && props.supportedThemes?.includes(theme)) {
+        if (
+          typeof theme === 'string' &&
+          props.supportedThemes?.includes(theme)
+        ) {
           return theme;
         }
       }

@@ -1,7 +1,4 @@
-import get from 'lodash/get';
-import isUndefined from 'lodash/isUndefined';
-import set from 'lodash/set';
-import {
+import type {
   ExecutorPlugin,
   RequestAdapterConfig,
   ExecutorContext,
@@ -87,6 +84,39 @@ export class RequestCommonPlugin
     }
   }
 
+  /**
+   * Safely merges default data with the provided data
+   * @param defaultData - The default data to merge
+   * @param targetData - The target data to merge into
+   * @returns The merged data
+   */
+  private mergeRequestData(
+    defaultData: Record<string, unknown>,
+    targetData: unknown
+  ): unknown {
+    // If target is not an object, return as is
+    if (!targetData || typeof targetData !== 'object') {
+      return targetData;
+    }
+
+    // Handle array case
+    if (Array.isArray(targetData)) {
+      return targetData;
+    }
+
+    // Create a new object to avoid mutations
+    const result = { ...(targetData as Record<string, unknown>) };
+
+    // Only merge top-level properties that are explicitly undefined or don't exist
+    Object.entries(defaultData).forEach(([key, value]) => {
+      if (result[key] === undefined) {
+        result[key] = value;
+      }
+    });
+
+    return result;
+  }
+
   onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const {
       tokenPrefix,
@@ -122,12 +152,10 @@ export class RequestCommonPlugin
 
     // merge defaults request data
     if (defaultRequestData) {
-      Object.entries(defaultRequestData).forEach(([key, value]) => {
-        const prevValue = get(parameters.data, key);
-        if (isUndefined(prevValue)) {
-          set(parameters.data as Record<string, unknown>, key, value);
-        }
-      });
+      parameters.data = this.mergeRequestData(
+        defaultRequestData,
+        parameters.data
+      );
     }
 
     // serialize request data

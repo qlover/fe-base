@@ -50,12 +50,10 @@
   "dependencies": {
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
-    "@qlover/slice-store-react": "^1.2.6",
-    "lodash": "^4.17.21"
+    "@qlover/slice-store-react": "^1.2.6"
   },
   "devDependencies": {
     "@qlover/env-loader": "workspace:*",
-    "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@types/react-syntax-highlighter": "^15.5.13",

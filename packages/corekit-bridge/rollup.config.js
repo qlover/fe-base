@@ -11,6 +11,6 @@ export default createBaseRollup({
     }
   ],
   clean: false,
-  excludeDependencies: ['lodash'],
+  excludeDependencies: true,
   isProduction: Env.searchEnv().get('NODE_ENV') === 'production'
 });
