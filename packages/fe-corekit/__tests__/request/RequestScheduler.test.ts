@@ -132,4 +132,23 @@ describe('RequestScheduler', () => {
     await expect(scheduler.get('/test/fail')).rejects.toThrow();
     expect(shouldRetry).toHaveBeenCalledTimes(2);
   });
+
+  it('should use response,request type', async () => {
+    const adapter = new MockRequestAdapter();
+    const scheduler = new RequestScheduler(adapter);
+
+    const response = await scheduler.get<
+      { code: number; name: string },
+      { code: number; name: string; age: number }
+    >('/test', {
+      data: {
+        name: 'test',
+        code: 200,
+        age: 10
+      }
+    });
+
+    expect(response.data.code).toBe(200);
+    expect(response.data.name).toBe('test');
+  });
 });
