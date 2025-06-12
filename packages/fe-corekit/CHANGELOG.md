@@ -1,5 +1,18 @@
 # @qlover/fe-corekit
 
+## 1.4.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **RequestScheduler:** enhance request type handling and add new test case ([585e09f](https://github.com/qlover/fe-base/commit/585e09fc7a957f3cadc374c334a6d227c70bcd13)) ([#436](https://github.com/qlover/fe-base/pull/436))
+
+  - Updated the RequestScheduler methods to swap the generic parameters for Request and Response, improving clarity and consistency in type usage.
+  - Added a new test case to validate the correct handling of response and request types in the RequestScheduler, ensuring robust type safety and functionality.
+
+  This update enhances the type management within the RequestScheduler, providing better developer experience and reliability in request handling.
+
 ## 1.4.0
 
 ### Minor Changes
