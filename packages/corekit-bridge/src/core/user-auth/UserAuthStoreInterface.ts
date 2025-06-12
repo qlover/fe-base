@@ -19,12 +19,22 @@ export interface UserAuthStoreInterface<User> {
   getUserInfo(): User | null;
 
   /**
-   * 切换登录状态
-   */
-  changeLoginStatus(status: LOGIN_STATUS): void;
-
-  /**
    * 重置
    */
   reset(): void;
+
+  /**
+   * 开始认证
+   */
+  startAuth(): void;
+
+  /**
+   * 认证成功
+   */
+  authSuccess(): void;
+
+  /**
+   * 认证失败
+   */
+  authFailed(error?: unknown): void;
 }

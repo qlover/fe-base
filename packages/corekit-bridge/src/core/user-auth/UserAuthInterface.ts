@@ -1,7 +1,7 @@
 import type {
   LoginResponseData,
-  UserAuthServiceInterface
-} from './UserAuthServiceInterface';
+  UserAuthApiInterface
+} from './UserAuthApiInterface';
 import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
 
 /**
@@ -22,9 +22,9 @@ import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
  *
  * userAuth.logout();
  */
-export interface UserAuthInterface<User> {
+export interface AuthServiceInterface<User> {
   get store(): UserAuthStoreInterface<User>;
-  get service(): UserAuthServiceInterface<User>;
+  get service(): UserAuthApiInterface<User>;
 
   login(params: unknown): Promise<LoginResponseData>;
   login(token: string): Promise<LoginResponseData>;

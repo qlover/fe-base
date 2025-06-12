@@ -1,18 +1,18 @@
 import type { StorageTokenInterface } from '../../storage-token';
-import type { UserAuthInterface } from '../UserAuthInterface';
+import type { AuthServiceInterface } from '../UserAuthInterface';
 import type {
   LoginResponseData,
-  UserAuthServiceInterface
-} from '../UserAuthServiceInterface';
+  UserAuthApiInterface
+} from '../UserAuthApiInterface';
 import {
   LOGIN_STATUS,
-  UserAuthStoreInterface
+  type UserAuthStoreInterface
 } from '../UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
 import { getURLProperty } from '../utils/getURLProperty';
 
 /**
- * Configuration options for UserAuth system
+ * Configuration options for UserAuthService system
  *
  * Significance: Defines the core dependencies and configuration needed for authentication
  * Core idea: Provide flexible configuration for different authentication scenarios
@@ -31,7 +31,7 @@ export interface UserAuthOptions<User> {
    *
    * @required This is a required field
    */
-  service: UserAuthServiceInterface<User>;
+  service: UserAuthApiInterface<User>;
 
   /**
    * Storage implementation for managing authentication state
@@ -120,8 +120,8 @@ export interface UserAuthOptions<User> {
  * // Initialize authentication service
  * const authService = new CustomAuthService();
  *
- * // Create UserAuth instance with custom configuration
- * const userAuth = new UserAuth({
+ * // Create UserAuthService instance with custom configuration
+ * const userAuthService = new UserAuthService({
  *   service: authService,
  *   urlTokenKey: 'token',
  *   storageToken: new LocalStorageToken('auth-token')
@@ -129,13 +129,13 @@ export interface UserAuthOptions<User> {
  *
  * // Login workflow
  * try {
- *   await userAuth.login({
+ *   await userAuthService.login({
  *     username: 'user@example.com',
  *     password: 'password123'
  *   });
  *
- *   if (userAuth.isAuthenticated()) {
- *     const userInfo = await userAuth.fetchUserInfo();
+ *   if (userAuthService.isAuthenticated()) {
+ *     const userInfo = await userAuthService.fetchUserInfo();
  *     console.log('Logged in user:', userInfo);
  *   }
  * } catch (error) {
@@ -143,15 +143,15 @@ export interface UserAuthOptions<User> {
  * }
  *
  * // Logout when needed
- * userAuth.logout();
+ * userAuthService.logout();
  */
-export class UserAuth<
+export class UserAuthService<
   User,
   Opt extends UserAuthOptions<User> = UserAuthOptions<User>
-> implements UserAuthInterface<User>
+> implements AuthServiceInterface<User>
 {
   /**
-   * Initializes a new UserAuth instance
+   * Initializes a new UserAuthService instance
    *
    * Setup process:
    * 1. Validates and processes provided options
@@ -197,7 +197,7 @@ export class UserAuth<
    *
    * @returns The configured UserAuthServiceInterface instance
    */
-  get service(): UserAuthServiceInterface<User> {
+  get service(): UserAuthApiInterface<User> {
     return this.options.service!;
   }
 
@@ -219,15 +219,16 @@ export class UserAuth<
    * @returns Promise with login response containing token
    */
   async login(params: unknown): Promise<LoginResponseData> {
-    this.store.changeLoginStatus(LOGIN_STATUS.LOADING);
+    this.store.startAuth();
 
     try {
-      if (typeof params === 'string') {
-        await this.fetchUserInfo(params);
-        return { token: params };
-      }
+      let response: LoginResponseData;
 
-      const response = await this.service.login(params);
+      if (typeof params === 'string') {
+        response = { token: params };
+      } else {
+        response = await this.service.login(params);
+      }
 
       if (!response.token) {
         throw new Error('login failed');
@@ -235,9 +236,12 @@ export class UserAuth<
 
       await this.fetchUserInfo(response.token);
 
+      this.store.authSuccess();
+
       return response;
-    } finally {
-      this.store.changeLoginStatus(LOGIN_STATUS.SUCCESS);
+    } catch (error) {
+      this.store.authFailed(error);
+      throw error;
     }
   }
 
@@ -283,8 +287,14 @@ export class UserAuth<
    * 3. Resets login status
    * 4. Cleans up any session data
    */
-  logout(): void {
-    this.store.reset();
+  async logout(): Promise<void> {
+    try {
+      await this.service.logout();
+    } finally {
+      if (this.isAuthenticated()) {
+        this.store.reset();
+      }
+    }
   }
 
   /**
@@ -301,9 +311,6 @@ export class UserAuth<
    * @returns true if user is authenticated, false otherwise
    */
   isAuthenticated(): boolean {
-    return (
-      !!this.store.getToken() &&
-      this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS
-    );
+    return this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS;
   }
 }

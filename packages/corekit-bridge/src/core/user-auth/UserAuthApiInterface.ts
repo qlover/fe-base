@@ -3,7 +3,7 @@ export interface LoginResponseData {
   [key: string]: unknown;
 }
 
-export interface UserAuthServiceInterface<User> {
+export interface UserAuthApiInterface<User> {
   /**
    * 登录
    * @param params 登录参数

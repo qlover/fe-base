@@ -20,6 +20,13 @@ export class UserAuthStoreState<User> {
    * Save login status in priority store
    */
   loginStatus: LOGIN_STATUS | null = null;
+
+  /**
+   * User auth error
+   *
+   * maybe login failed, fetch user info failed, etc.
+   */
+  error: unknown | null = null;
 }
 
 export class UserAuthStore<User>
@@ -52,10 +59,6 @@ export class UserAuthStore<User>
     return this.state.userInfo;
   }
 
-  changeLoginStatus(status: LOGIN_STATUS): void {
-    this.emit({ ...this.state, loginStatus: status });
-  }
-
   getLoginStatus(): LOGIN_STATUS | null {
     return this.state.loginStatus;
   }
@@ -63,5 +66,25 @@ export class UserAuthStore<User>
   override reset(): void {
     super.reset();
     this.userToken?.removeToken();
+  }
+
+  startAuth(): void {
+    this.emit({
+      ...this.state,
+      loginStatus: LOGIN_STATUS.LOADING,
+      error: null
+    });
+  }
+
+  authSuccess(): void {
+    this.emit({
+      ...this.state,
+      loginStatus: LOGIN_STATUS.SUCCESS,
+      error: null
+    });
+  }
+
+  authFailed(error: unknown): void {
+    this.emit({ ...this.state, loginStatus: LOGIN_STATUS.FAILED, error });
   }
 }
