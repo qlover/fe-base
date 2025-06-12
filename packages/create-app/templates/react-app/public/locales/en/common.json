@@ -194,5 +194,7 @@
   "page.500.title": "500 - Server Error",
   "page.login.title": "Login",
   "page.register.title": "Register",
-  "response.no.token": "Response not token value"
+  "response.no.token": "Response not token value",
+  "Logout": "Logout",
+  "Are you sure you want to logout?": "Are you sure you want to logout?"
 }

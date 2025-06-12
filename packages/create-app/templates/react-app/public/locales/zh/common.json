@@ -194,5 +194,7 @@
   "page.500.title": "500 - 服务器错误",
   "page.login.title": "登录",
   "page.register.title": "注册",
-  "response.no.token": "响应内容没有 token 值"
+  "response.no.token": "响应内容没有 token 值",
+  "Logout": "登出",
+  "Are you sure you want to logout?": "确定要登出吗？"
 }

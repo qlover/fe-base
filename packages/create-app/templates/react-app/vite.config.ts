@@ -118,7 +118,6 @@ export default defineConfig({
   server: {
     port: Number(process.env.VITE_SERVER_PORT || 3200)
   },
-  mode: process.env.NODE_ENV,
   test: {
     environment: 'jsdom',
     globals: true,

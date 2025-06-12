@@ -9,7 +9,7 @@ export default function Layout() {
         data-testid="basic-layout"
         className="text-base min-h-screen bg-primary"
       >
-        <BaseHeader />
+        <BaseHeader showLogoutButton />
 
         <div className="text-text bg-primary">
           <Outlet />

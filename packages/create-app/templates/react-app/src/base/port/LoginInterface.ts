@@ -6,7 +6,7 @@ export interface RegisterFormData {
   agreeToTerms: boolean;
 }
 export interface LoginInterface {
-  login(params: { username: string; password: string }): Promise<unknown>;
+  login(params: unknown): Promise<unknown>;
   logout(): void;
   register(params: RegisterFormData): Promise<unknown>;
 }

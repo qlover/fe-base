@@ -16,7 +16,8 @@ export const dialogHandler = new DialogHandler();
  */
 export const logger = new Logger({
   handlers: new ConsoleHandler(new ColorFormatter(loggerStyles)),
-  silent: isProduction
+  silent: isProduction,
+  level: 'debug'
 });
 
 /**

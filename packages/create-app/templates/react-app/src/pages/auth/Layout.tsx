@@ -15,7 +15,7 @@ export default function Layout() {
 
   return (
     <>
-      <BaseHeader />
+      <BaseHeader showLogoutButton={false} />
       <div className="flex-1">
         <Outlet />
       </div>
