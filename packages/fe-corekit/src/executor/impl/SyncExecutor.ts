@@ -7,49 +7,148 @@ import {
 } from '../interface';
 
 /**
- * Synchronous executor class that extends the base Executor
- * Provides synchronous task execution with plugin support
+ * SyncExecutor implements a synchronous execution pattern with plugin support
  *
- * Key features:
- * 1. Synchronous plugin hook execution
- * 2. No Promise-based operations
- * 3. Immediate error handling
- * 4. Direct execution flow
+ * Purpose:
+ * This class provides a robust framework for executing synchronous tasks with
+ * plugin-based middleware support, immediate error handling, and direct execution flow.
+ * It serves as a high-performance alternative to AsyncExecutor when dealing with
+ * synchronous operations that require plugin support and error management.
  *
- * Use this executor when:
- * 1. All operations are synchronous
- * 2. You need immediate results
- * 3. Performance is critical
- * 4. No async operations are involved
+ * Design Philosophy:
+ * - Synchronous First: Optimized for synchronous operations
+ * - Zero Async Overhead: No Promise-based operations or async/await
+ * - Direct Flow Control: Immediate execution and result handling
+ * - Plugin Architecture: Extensible through a flexible plugin system
+ * - Error Boundary: Comprehensive error handling without async complexities
+ * - Type Safety: Strong TypeScript support with generics
  *
- * @extends Executor
+ * Working Process:
+ * 1. Task Initialization
+ *    - Validate and prepare the task
+ *    - Set up execution context
+ *    - Initialize plugin chain
+ * 2. Plugin Pipeline Execution
+ *    - Execute pre-task plugins (onBefore)
+ *    - Run the main task directly
+ *    - Execute post-task plugins (onSuccess)
+ *    - Handle errors immediately (onError)
+ * 3. Result Handling
+ *    - Direct result return
+ *    - Immediate error handling
+ *    - Context cleanup
  *
- * @example
+ * Use Cases:
+ * 1. Data Transformation
+ *    - String manipulation
+ *    - Object transformation
+ *    - Data validation
+ * 2. Computation Tasks
+ *    - Mathematical calculations
+ *    - Business logic processing
+ *    - State transitions
+ * 3. Synchronous Operations
+ *    - In-memory operations
+ *    - CPU-bound tasks
+ *    - Real-time processing
+ *
+ * Plugin System:
+ * - Synchronous plugin execution
+ * - Direct result modification
+ * - Execution order preservation
+ * - Chain breaking support
+ * - Shared context across plugins
+ *
+ * Error Handling:
+ * - Immediate error catching
+ * - Direct error wrapping
+ * - Error type preservation
+ * - Plugin-based error processing
+ * - Error context maintenance
+ *
+ * Performance Considerations:
+ * - No async overhead
+ * - Direct execution path
+ * - Minimal memory footprint
+ * - Efficient plugin pipeline
+ * - Optimized for CPU-bound tasks
+ *
+ * Important Notes:
+ * - All operations must be synchronous
+ * - No Promise or async/await support
+ * - Plugins must return immediately
+ * - Error handling is immediate
+ * - Type safety is enforced at compile time
+ * - Suitable for CPU-intensive tasks
+ *
+ * @example Basic Usage
  * ```typescript
- * // Create a sync executor
  * const executor = new SyncExecutor();
- *
- * // Add plugins for different purposes
  * executor.use(new ValidationPlugin());
- * executor.use(new LoggerPlugin());
  *
- * // Example 1: Basic sync task execution
  * const result = executor.exec((data) => {
  *   return data.toUpperCase();
  * });
- *
- * // Example 2: Execution with input data
- * const data = { value: 'hello' };
- * const result = executor.exec(data, (input) => {
- *   return input.value.toUpperCase();
- * });
- *
- * // Example 3: Error handling with execNoError
- * const result = executor.execNoError(() => {
- *   throw new Error('Validation Error');
- * }); // Returns ExecutorError instead of throwing
  * ```
- * @category SyncExecutor
+ *
+ * @example Advanced Usage with Data and Multiple Plugins
+ * ```typescript
+ * const executor = new SyncExecutor();
+ *
+ * // Add multiple plugins for different purposes
+ * executor.use(new ValidationPlugin());
+ * executor.use(new TransformPlugin());
+ * executor.use(new LoggerPlugin());
+ *
+ * // Execute with context and data
+ * const data = {
+ *   value: 'hello',
+ *   type: 'string',
+ *   options: { uppercase: true }
+ * };
+ *
+ * try {
+ *   const result = executor.exec(data, (context) => {
+ *     // Access validated data
+ *     const { value, options } = context.parameters;
+ *
+ *     // Perform transformation
+ *     return options.uppercase ? value.toUpperCase() : value;
+ *   });
+ *
+ *   console.log('Operation completed:', result);
+ * } catch (error) {
+ *   console.error('Operation failed:', error);
+ * }
+ * ```
+ *
+ * @example Error Handling with Recovery
+ * ```typescript
+ * class ValidationPlugin implements ExecutorPlugin {
+ *   onError(context: ExecutorContext) {
+ *     if (context.error instanceof ValidationError) {
+ *       // Provide default value for validation errors
+ *       return context.parameters.defaultValue;
+ *     }
+ *     // Let other errors propagate
+ *     return context.error;
+ *   }
+ * }
+ *
+ * const executor = new SyncExecutor();
+ * executor.use(new ValidationPlugin());
+ *
+ * const result = executor.exec({
+ *   value: null,
+ *   defaultValue: 'default'
+ * }, (context) => {
+ *   const { value } = context.parameters;
+ *   if (value === null) {
+ *     throw new ValidationError('Value cannot be null');
+ *   }
+ *   return value;
+ * });
+ * ```
  */
 export class SyncExecutor<
   ExecutorConfig = unknown
