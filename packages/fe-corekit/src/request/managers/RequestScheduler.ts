@@ -27,9 +27,9 @@ import { RequestManager } from './RequestManager';
  * getConfig(): any {
  *   return this.config;
  * }
- * async request<Request, Response>(
+ * async request<Response, Request>(
  *   config: any
- * ): Promise<RequestAdapterResponse<Response, Request>> {
+ * ): Promise<RequestAdapterResponse<Request, Response>> {
  *   const sendConfig = { ...this.config, ...config };
  *   await new Promise((resolve) => setTimeout(resolve, 1000));
  *
@@ -70,11 +70,11 @@ export class RequestScheduler<
    * @param config - The configuration for the request.
    * @returns A promise that resolves to the response of the request.
    */
-  override request<Request, Response>(
+  override request<Response, Request>(
     config: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
+  ): Promise<RequestAdapterResponse<Request, Response>> {
     return super.request(config) as Promise<
-      RequestAdapterResponse<Response, Request>
+      RequestAdapterResponse<Request, Response>
     >;
   }
 
@@ -84,11 +84,11 @@ export class RequestScheduler<
    * @param config - The configuration for the GET request.
    * @returns A promise that resolves to the response of the GET request.
    */
-  async get<Request, Response>(
+  async get<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'GET' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'GET' });
   }
 
   /**
@@ -97,11 +97,11 @@ export class RequestScheduler<
    * @param config - The configuration for the POST request.
    * @returns A promise that resolves to the response of the POST request.
    */
-  async post<Request, Response>(
+  async post<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'POST' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'POST' });
   }
 
   /**
@@ -110,11 +110,11 @@ export class RequestScheduler<
    * @param config - The configuration for the PUT request.
    * @returns A promise that resolves to the response of the PUT request.
    */
-  async put<Request, Response>(
+  async put<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'PUT' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'PUT' });
   }
 
   /**
@@ -123,11 +123,11 @@ export class RequestScheduler<
    * @param config - The configuration for the DELETE request.
    * @returns A promise that resolves to the response of the DELETE request.
    */
-  async delete<Request, Response>(
+  async delete<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({
       url,
       ...config,
       method: 'DELETE'
@@ -140,11 +140,11 @@ export class RequestScheduler<
    * @param config - The configuration for the PATCH request.
    * @returns A promise that resolves to the response of the PATCH request.
    */
-  async patch<Request, Response>(
+  async patch<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'PATCH' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'PATCH' });
   }
 
   /**
@@ -153,11 +153,11 @@ export class RequestScheduler<
    * @param config - The configuration for the HEAD request.
    * @returns A promise that resolves to the response of the HEAD request.
    */
-  async head<Request, Response>(
+  async head<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'HEAD' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'HEAD' });
   }
 
   /**
@@ -166,11 +166,11 @@ export class RequestScheduler<
    * @param config - The configuration for the OPTIONS request.
    * @returns A promise that resolves to the response of the OPTIONS request.
    */
-  async options<Request, Response>(
+  async options<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({
       url,
       ...config,
       method: 'OPTIONS'
@@ -183,11 +183,11 @@ export class RequestScheduler<
    * @param config - The configuration for the TRACE request.
    * @returns A promise that resolves to the response of the TRACE request.
    */
-  async trace<Request, Response>(
+  async trace<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({ url, ...config, method: 'TRACE' });
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({ url, ...config, method: 'TRACE' });
   }
 
   /**
@@ -196,11 +196,11 @@ export class RequestScheduler<
    * @param config - The configuration for the CONNECT request.
    * @returns A promise that resolves to the response of the CONNECT request.
    */
-  async connect<Request, Response>(
+  async connect<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
-  ): Promise<RequestAdapterResponse<Response, Request>> {
-    return this.request<Request, Response>({
+  ): Promise<RequestAdapterResponse<Request, Response>> {
+    return this.request<Response, Request>({
       url,
       ...config,
       method: 'CONNECT'
