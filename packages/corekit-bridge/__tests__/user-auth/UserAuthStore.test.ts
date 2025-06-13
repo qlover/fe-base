@@ -85,13 +85,13 @@ describe('UserAuthStore', () => {
     });
 
     it('should set and get login status', () => {
-      store.changeLoginStatus(LOGIN_STATUS.LOADING);
+      store.startAuth();
       expect(store.getLoginStatus()).toBe(LOGIN_STATUS.LOADING);
     });
 
     it('should update login status', () => {
-      store.changeLoginStatus(LOGIN_STATUS.LOADING);
-      store.changeLoginStatus(LOGIN_STATUS.SUCCESS);
+      store.startAuth();
+      store.authSuccess();
       expect(store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
     });
   });
@@ -106,7 +106,7 @@ describe('UserAuthStore', () => {
     beforeEach(() => {
       store.setToken('test-token');
       store.setUserInfo(mockUser);
-      store.changeLoginStatus(LOGIN_STATUS.SUCCESS);
+      store.authSuccess();
     });
 
     it('should reset all store values', () => {
