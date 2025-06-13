@@ -190,7 +190,6 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     this.context.setWorkspaces(newWorkspaces);
-    this.logger.debug('github changelog', this.context.workspaces);
   }
 
   override async onSuccess(): Promise<void> {

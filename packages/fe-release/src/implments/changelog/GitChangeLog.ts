@@ -6,7 +6,8 @@ import type {
   CommitValue,
   GitChangelogOptions
 } from '../../interface/ChangeLog';
-import gitlog, { CommitField } from 'gitlog';
+import gitlog, { CommitField, GitlogOptions } from 'gitlog';
+import type { LoggerInterface } from '@qlover/logger';
 
 export const CHANGELOG_ALL_FIELDS: CommitField[] = [
   'hash',
@@ -31,6 +32,7 @@ export const CHANGELOG_ALL_FIELDS: CommitField[] = [
 
 export interface GitChangelogProps extends GitChangelogOptions {
   shell: Shell;
+  logger: LoggerInterface;
 }
 
 export class GitChangelog implements ChangeLogInterface {
@@ -50,7 +52,7 @@ export class GitChangelog implements ChangeLogInterface {
 
     const range = from === to ? to : `${from}..${to}`;
 
-    const commits = await gitlog({
+    const gitLogOptions: GitlogOptions<CommitField> = {
       repo: '.',
       number: 1000,
       fields: fileds,
@@ -58,7 +60,12 @@ export class GitChangelog implements ChangeLogInterface {
       file: directory,
       nameStatus: false,
       includeMergeCommitFiles: !noMerges
-    });
+    };
+
+    const commits = await gitlog(gitLogOptions);
+
+    this.options.logger?.debug('GitChangelog', gitLogOptions);
+    this.options.logger?.debug('GitChangelog commits', commits);
 
     return commits;
   }

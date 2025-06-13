@@ -216,7 +216,8 @@ export default class Changelog extends Plugin<ChangelogProps> {
       from: tagName,
       directory: workspace.path,
       shell: this.shell,
-      fileds: CHANGELOG_ALL_FIELDS
+      fileds: CHANGELOG_ALL_FIELDS,
+      logger: this.logger
     };
 
     const gitChangelog = new GitChangelog(props);
