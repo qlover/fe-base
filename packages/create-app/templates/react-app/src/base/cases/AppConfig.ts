@@ -44,8 +44,10 @@ export class AppConfig implements EnvConfigInterface {
    * Current environment mode for Vite
    * @description Represents the running environment (development, production, etc.)
    * Automatically set based on the current .env file being used
+   *
+   * from vite.config `mode`
    */
-  readonly env: string = '';
+  readonly env: string = import.meta.env.MODE;
 
   /**
    * Storage key for user authentication token

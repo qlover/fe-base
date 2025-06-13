@@ -152,16 +152,10 @@ importers:
       '@qlover/slice-store-react':
         specifier: ^1.2.6
         version: 1.2.6
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
     devDependencies:
       '@qlover/env-loader':
         specifier: workspace:*
         version: link:../env-loader
-      '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.16
       '@types/react':
         specifier: ^18.3.11
         version: 18.3.20

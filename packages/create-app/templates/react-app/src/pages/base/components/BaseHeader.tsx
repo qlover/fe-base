@@ -3,8 +3,13 @@ import LocaleLink from '@/uikit/components/LocaleLink';
 import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
 import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
 import { IOC } from '@/core/IOC';
+import LogoutButton from './LogoutButton';
 
-export default function BaseHeader() {
+export default function BaseHeader({
+  showLogoutButton
+}: {
+  showLogoutButton?: boolean;
+}) {
   return (
     <header className="h-14 bg-secondary border-b border-border sticky top-0 z-50">
       <div className="flex items-center justify-between h-full px-4 mx-auto max-w-7xl">
@@ -26,6 +31,8 @@ export default function BaseHeader() {
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
           <ThemeSwitcher />
+
+          {showLogoutButton && <LogoutButton />}
         </div>
       </div>
     </header>
