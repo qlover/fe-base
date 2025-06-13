@@ -73,7 +73,8 @@ export default class GithubChangelog extends GitChangelog {
       ...(context.getConfig('changelog') as GitChangelogOptions),
       githubRootPath,
       mergePRcommit: true,
-      shell: context.shell
+      shell: context.shell,
+      logger: context.logger
     };
     const githubChangelog = new GithubChangelog(
       changelogProps,
