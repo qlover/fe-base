@@ -1,5 +1,41 @@
 # @qlover/create-app
 
+## 0.4.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** implement logout functionality and enhance localization ([c49f956](https://github.com/qlover/fe-base/commit/c49f956aecbc11a6b96b28309d112f7219a7dcca)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Added a new LogoutButton component to handle user logout with a confirmation dialog.
+  - Introduced localization keys for logout dialog titles and content in both English and Chinese.
+  - Updated BaseHeader to conditionally display the logout button based on the layout context.
+  - Refactored AppConfig to utilize the Vite environment mode directly.
+  - Adjusted LoginInterface to accept a more generic parameter type for login.
+
+  This update improves user experience by providing a clear logout process and enhances localization support for logout-related messages.
+
+- **corekit-bridge:** enhance user authentication and state management ([ebff39c](https://github.com/qlover/fe-base/commit/ebff39c73a4d09fea751f456007ecf88bd97f54b)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Introduced a comprehensive user authentication system with UserAuth and UserAuthStore implementations.
+  - Added interfaces for UserAuth and UserAuthService to standardize authentication operations.
+  - Implemented token management and user information retrieval, improving session handling.
+  - Created unit tests for UserAuth and UserAuthStore to ensure functionality and reliability.
+  - Refactored request handling to remove lodash dependencies, enhancing performance and reducing bundle size.
+
+  This update significantly improves the authentication capabilities and state management within the corekit-bridge, providing a robust foundation for user interactions.
+
+- **corekit-bridge:** refactor user authentication interfaces and enhance state management ([1eb98ee](https://github.com/qlover/fe-base/commit/1eb98eed7f7de9740db237f36bf101855eb20bee)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Replaced UserAuthServiceInterface with UserAuthApiInterface for improved clarity and consistency in authentication operations.
+  - Updated UserAuth and UserAuthStore implementations to utilize the new interfaces, enhancing modularity.
+  - Introduced comprehensive state management methods in UserAuthStore for better handling of authentication states.
+  - Added unit tests to validate the new UserAuthService and its interactions with the updated interfaces.
+  - Enhanced error handling and user feedback mechanisms during authentication processes.
+
+  This update strengthens the user authentication framework, providing a more robust and maintainable solution for managing user sessions and states.
+
 ## 0.4.4
 
 ### Patch Changes
