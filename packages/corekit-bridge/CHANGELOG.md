@@ -1,5 +1,31 @@
 # @qlover/corekit-bridge
 
+## 1.0.4
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** enhance user authentication and state management ([ebff39c](https://github.com/qlover/fe-base/commit/ebff39c73a4d09fea751f456007ecf88bd97f54b)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Introduced a comprehensive user authentication system with UserAuth and UserAuthStore implementations.
+  - Added interfaces for UserAuth and UserAuthService to standardize authentication operations.
+  - Implemented token management and user information retrieval, improving session handling.
+  - Created unit tests for UserAuth and UserAuthStore to ensure functionality and reliability.
+  - Refactored request handling to remove lodash dependencies, enhancing performance and reducing bundle size.
+
+  This update significantly improves the authentication capabilities and state management within the corekit-bridge, providing a robust foundation for user interactions.
+
+- **corekit-bridge:** refactor user authentication interfaces and enhance state management ([1eb98ee](https://github.com/qlover/fe-base/commit/1eb98eed7f7de9740db237f36bf101855eb20bee)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Replaced UserAuthServiceInterface with UserAuthApiInterface for improved clarity and consistency in authentication operations.
+  - Updated UserAuth and UserAuthStore implementations to utilize the new interfaces, enhancing modularity.
+  - Introduced comprehensive state management methods in UserAuthStore for better handling of authentication states.
+  - Added unit tests to validate the new UserAuthService and its interactions with the updated interfaces.
+  - Enhanced error handling and user feedback mechanisms during authentication processes.
+
+  This update strengthens the user authentication framework, providing a more robust and maintainable solution for managing user sessions and states.
+
 ## 1.0.3
 
 ### Patch Changes

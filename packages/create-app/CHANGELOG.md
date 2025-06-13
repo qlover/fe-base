@@ -1,5 +1,21 @@
 # @qlover/create-app
 
+## 0.4.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **create-app:** implement logout functionality and enhance localization ([c49f956](https://github.com/qlover/fe-base/commit/c49f956aecbc11a6b96b28309d112f7219a7dcca)) ([#438](https://github.com/qlover/fe-base/pull/438))
+
+  - Added a new LogoutButton component to handle user logout with a confirmation dialog.
+  - Introduced localization keys for logout dialog titles and content in both English and Chinese.
+  - Updated BaseHeader to conditionally display the logout button based on the layout context.
+  - Refactored AppConfig to utilize the Vite environment mode directly.
+  - Adjusted LoginInterface to accept a more generic parameter type for login.
+
+  This update improves user experience by providing a clear logout process and enhances localization support for logout-related messages.
+
 ## 0.4.4
 
 ### Patch Changes
