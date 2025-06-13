@@ -1,4 +1,4 @@
-import type { StorageTokenInterface } from '../../storage-token';
+import type { StorageTokenInterface } from '../../storage';
 import type { AuthServiceInterface } from '../UserAuthInterface';
 import type {
   LoginResponseData,

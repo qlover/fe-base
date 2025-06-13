@@ -1,4 +1,4 @@
-import { SliceStore } from '@qlover/slice-store-react';
+import { SliceStore } from '@qlover/slice-store';
 import { ThemeConfig, ThemeServiceProps, ThemeServiceState } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
 

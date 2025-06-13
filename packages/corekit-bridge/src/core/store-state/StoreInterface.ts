@@ -1,4 +1,4 @@
-import { SliceStore } from '@qlover/slice-store-react';
+import { SliceStore } from '@qlover/slice-store';
 
 /**
  * Store State Interface
