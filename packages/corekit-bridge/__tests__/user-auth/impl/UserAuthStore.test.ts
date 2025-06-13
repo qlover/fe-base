@@ -1,6 +1,6 @@
-import { UserAuthStore } from '../../src/core/user-auth';
-import { StorageTokenInterface } from '../../src/core/storage-token';
-import { LOGIN_STATUS } from '../../src/core/user-auth';
+import { UserAuthStore } from '../../../src/core/user-auth';
+import { StorageTokenInterface } from '../../../src/core/storage';
+import { LOGIN_STATUS } from '../../../src/core/user-auth';
 
 // Mock user type for testing
 interface MockUser {

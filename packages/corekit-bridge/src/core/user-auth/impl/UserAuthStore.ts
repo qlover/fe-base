@@ -1,4 +1,4 @@
-import type { StorageTokenInterface } from '../../storage-token';
+import type { StorageTokenInterface } from '../../storage';
 import { StoreInterface } from '../../store-state';
 import {
   LOGIN_STATUS,

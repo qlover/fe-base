@@ -2,14 +2,47 @@ import { type ExpiresInType, QuickerTime } from './QuickerTime';
 import type { StorageTokenInterface } from './StorageTokenInterface';
 import type { SyncStorage } from '@qlover/fe-corekit';
 
+export interface UserTokenOptions {
+  /**
+   * 存储键
+   * @default 'user_token'
+   */
+  storageKey: string;
+  /**
+   * 存储
+   */
+  storage: SyncStorage<string, string>;
+  /**
+   * 过期时间
+   * @default 'month'
+   */
+  expiresIn?: ExpiresInType;
+  /**
+   * 时间计算器
+   * @default new QuickerTime()
+   */
+  quickerTime?: QuickerTime;
+}
+
 export class UserToken implements StorageTokenInterface<string> {
   private token = '';
+  protected options: UserTokenOptions;
+  constructor(options: UserTokenOptions) {
+    this.options = {
+      storageKey: options.storageKey,
+      storage: options.storage,
+      expiresIn: options?.expiresIn || 'month',
+      quickerTime: options?.quickerTime || new QuickerTime()
+    };
+  }
 
-  constructor(
-    private storageKey?: string,
-    private storage?: SyncStorage<string, string>,
-    private quickerTime: QuickerTime = new QuickerTime()
-  ) {}
+  get storageKey(): string {
+    return this.options.storageKey;
+  }
+
+  get storage(): SyncStorage<string, string> {
+    return this.options.storage;
+  }
 
   getToken(): string {
     if (!this.token) {
@@ -48,17 +81,23 @@ export class UserToken implements StorageTokenInterface<string> {
   }
 
   protected getTokenExpireTime(
-    expiresIn?: ExpiresInType,
+    expiresIn: ExpiresInType = 'month',
     targetTime: number = Date.now()
   ): number {
+    const quick = this.options.quickerTime!;
+
+    if (!quick) {
+      throw new Error('quickerTime is required');
+    }
+
     if (Array.isArray(expiresIn)) {
-      return this.quickerTime.add(expiresIn[0], expiresIn[1], targetTime);
+      return quick.add(expiresIn[0], expiresIn[1], targetTime);
     }
 
     if (typeof expiresIn === 'string') {
-      return this.quickerTime.add(expiresIn, 1, targetTime);
+      return quick.add(expiresIn, 1, targetTime);
     }
 
-    return this.quickerTime.add('month', expiresIn, targetTime);
+    return quick.add('month', expiresIn, targetTime);
   }
 }

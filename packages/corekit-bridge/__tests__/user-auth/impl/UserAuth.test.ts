@@ -4,11 +4,11 @@ import {
   LOGIN_STATUS,
   UserAuthApiInterface,
   UserAuthService
-} from '../../src/core/user-auth';
+} from '../../../src/core/user-auth';
 import {
   ExpiresInType,
   StorageTokenInterface
-} from '../../src/core/storage-token';
+} from '../../../src/core/storage';
 
 // Mock interfaces and types
 interface MockUser {
