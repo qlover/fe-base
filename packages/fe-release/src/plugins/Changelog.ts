@@ -206,7 +206,12 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
   async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {
     // FIXME: where to get the tagName?
-    const tagName = await this.getTagName(workspace);
+    let tagName = await this.getTagName(workspace);
+
+    if (workspace.lastTag) {
+      this.logger.warn(`${workspace.name} has lastTag: ${workspace.lastTag}`);
+      tagName = workspace.lastTag;
+    }
 
     this.logger.debug('tagName is:', tagName);
 

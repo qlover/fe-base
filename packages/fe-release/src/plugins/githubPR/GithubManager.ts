@@ -19,6 +19,12 @@ export interface PullRequestManagerOptions {
 export type PullRequestCommits =
   RestEndpointMethodTypes['pulls']['listCommits']['response']['data'];
 
+export type PullRequestInfo =
+  RestEndpointMethodTypes['pulls']['get']['response']['data'];
+
+export type CommitInfo =
+  RestEndpointMethodTypes['repos']['getCommit']['response']['data'];
+
 export type CreateReleaseOptions =
   import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['parameters'];
 
@@ -164,6 +170,16 @@ export default class GithubManager {
 
     return pr.data;
   }
+
+  async getCommitInfo(commitSha: string): Promise<CommitInfo> {
+    const pr = await this.octokit.rest.repos.getCommit({
+      ...this.getGitHubUserInfo(),
+      ref: commitSha
+    });
+
+    return pr.data;
+  }
+
   async getPullRequest(
     prNumber: number
   ): Promise<RestEndpointMethodTypes['pulls']['get']['response']['data']> {
