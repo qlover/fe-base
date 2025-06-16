@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { UserToken } from '../../src/core/storage/UserToken';
 import type { SyncStorage } from '@qlover/fe-corekit';
