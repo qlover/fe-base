@@ -3,7 +3,7 @@ import path from 'path';
 import { HBSTemplate } from './HBSTemplate.js';
 import { Utils } from './Utils.js';
 import { ProjectReader } from './ProjectReader.js';
-import { TypeDocConverter } from './TypeDocConverter.js';
+import { TypeDocConverter } from './plugins/typedoc/TypeDocConverter.js';
 import { ParserContextMap, ReflectionGeneraterContext } from './type';
 import type { LoggerInterface } from '@qlover/logger';
 import { FeScriptContext } from '@qlover/scripts-context';
