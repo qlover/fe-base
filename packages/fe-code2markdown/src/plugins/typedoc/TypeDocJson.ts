@@ -1,99 +1,163 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type Code2MDContext from '../../implments/Code2MDContext';
 import {
   Application,
+  CommentDisplayPart,
+  CommentTag,
+  DeclarationReflection,
+  ParameterReflection,
   ProjectReflection,
+  ReflectionKind,
+  SourceReference,
   TSConfigReader,
   TypeDocReader
 } from 'typedoc';
 import { ScriptPlugin } from '../../scripts-plugin';
+import { ReflectionKindName } from '../../type';
 import fsExtra from 'fs-extra';
 
 /**
- * Interface for comment table data structure
+ * 简化的参数数据结构
  *
- * @purpose Defines the structure for organizing TypeDoc comments into table format
- * @core Provides a standardized way to represent comment information
- * @functionality Structures comment data for easy table generation
- * @usage Used by extractCommentsToTable method to organize comment data
+ * @description 用于存储参数的基本信息，避免复杂的循环引用
+ */
+interface SimpleParameter {
+  /**
+   * 参数 ID
+   */
+  id: number;
+
+  /**
+   * 参数名称
+   */
+  name: string;
+
+  /**
+   * 参数类型
+   */
+  type: string;
+
+  /**
+   * 参数描述
+   */
+  description: string;
+
+  /**
+   * 摘要列表
+   */
+  summaryList: CommentDisplayPart[];
+
+  /**
+   * 块标签列表
+   */
+  blockTagsList: CommentDisplayPart[];
+
+  /**
+   * 默认值
+   */
+  defaultValue: string;
+
+  /**
+   * 版本信息
+   */
+  since: string;
+
+  /**
+   * 是否已废弃
+   */
+  deprecated: boolean;
+}
+
+/**
+ * CommentTableData 接口定义
+ *
+ * @description 用于定义从 TypeDoc 项目数据转换后的注释表格数据结构
+ *
+ * @purpose
+ * - 提供统一的数据结构来存储 TypeDoc 解析后的注释信息
+ * - 支持递归的子元素结构
+ * - 包含完整的类型、参数等信息
+ *
+ * @usage
+ * 主要用于将 TypeDoc 的 ProjectReflection 数据转换为更适合生成文档的格式
  *
  * @example
  * ```typescript
- * const tableData: CommentTableData = {
- *   name: "ExampleClass",
- *   kind: "class",
- *   summary: "This is an example class",
- *   description: "Detailed description",
- *   tags: [
- *     { tag: "@example", content: "const example = new ExampleClass()" }
- *   ],
- *   children: [
- *     {
- *       name: "debug",
- *       kind: "property",
- *       summary: "Debug flag"
- *     }
- *   ]
+ * const commentData: CommentTableData = {
+ *   id: 1,
+ *   kind: ReflectionKind.Class,
+ *   name: 'MyClass',
+ *   type: 'class',
+ *   kindName: 'Class',
+ *   summaryList: [],
+ *   blockTagsList: [],
+ *   parametersList: [],
+ *   source: sourceRef,
+ *   children: [],
+ *   hasMembers: false
  * };
  * ```
  */
 interface CommentTableData {
-  /** Element name */
+  id: number;
+  kind: number;
   name: string;
-  /** Element kind (class, method, property, etc.) */
-  kind: string;
-  /** Summary text */
-  summary: string;
-  /** Description content */
-  description: string;
-  /** Block tags information */
-  tags: Array<{
-    tag: string;
-    name?: string;
-    content: string;
-  }>;
-  /** Source file information */
-  source?: {
-    fileName: string;
-    line: number;
-    url?: string;
-  };
-  /** Child elements */
-  children?: CommentTableData[];
+  type: string | undefined;
+  kindName: string;
+
+  /**
+   * 摘要列表
+   */
+  summaryList: CommentDisplayPart[];
+
+  /**
+   * 块标签列表
+   */
+  blockTagsList: CommentDisplayPart[];
+
+  /**
+   * 参数列表 - 简化的参数数据结构
+   */
+  parametersList: SimpleParameter[];
+
+  /**
+   * 源码信息
+   */
+  source: SourceReference;
+
+  /**
+   * 子元素
+   */
+  children: CommentTableData[];
+
+  /**
+   * 是否存在子元素
+   */
+  hasMembers: boolean;
 }
 
 /**
- * TypeDoc reflection interface for type safety
+ * TypeDocJson 插件类
+ *
+ * @description 用于将 TypeDoc 项目数据转换为 JSON 格式并输出到文件
+ *
+ * @purpose
+ * - 解析 TypeScript 项目并生成 TypeDoc 数据
+ * - 将项目数据转换为 CommentTableData 格式
+ * - 输出结构化的 JSON 文件供后续处理
+ *
+ * @workflow
+ * 1. 初始化 TypeDoc Application
+ * 2. 转换项目为 ProjectReflection
+ * 3. 将数据转换为 CommentTableData 格式
+ * 4. 写入 JSON 文件
+ *
+ * @example
+ * ```typescript
+ * const plugin = new TypeDocJson(context);
+ * await plugin.onBefore(); // 自动执行转换和文件写入
+ * ```
  */
-interface TypeDocReflection {
-  id?: number;
-  name: string;
-  kind: number;
-  comment?: {
-    summary?: Array<{ kind: string; text: string }>;
-    blockTags?: Array<{
-      tag: string;
-      name?: string;
-      content?: Array<{ kind: string; text: string }>;
-    }>;
-  };
-  signatures?: TypeDocReflection[];
-  children?: TypeDocReflection[];
-  parameters?: Array<{
-    name: string;
-    flags?: { isOptional?: boolean };
-  }>;
-  sources?: Array<{
-    fileName: string;
-    line: number;
-    url?: string;
-  }>;
-  type?: {
-    declaration?: {
-      children?: TypeDocReflection[];
-    };
-  };
-}
-
 export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   private app?: Application;
 
@@ -101,6 +165,19 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
     super(context, 'TypeDocJson');
   }
 
+  /**
+   * 获取或创建 TypeDoc Application 实例
+   *
+   * @description 创建并配置 TypeDoc 应用程序实例，用于解析 TypeScript 项目
+   *
+   * @returns Promise<Application> TypeDoc 应用程序实例
+   *
+   * @example
+   * ```typescript
+   * const app = await this.getApp();
+   * const project = await app.convert();
+   * ```
+   */
   async getApp(): Promise<Application> {
     if (this.app) {
       return this.app;
@@ -120,6 +197,18 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
     return app;
   }
 
+  /**
+   * 插件执行前的钩子方法
+   *
+   * @description 在插件执行前调用，负责转换项目并写入文件
+   *
+   * @throws {Error} 当项目转换失败时抛出错误
+   *
+   * @example
+   * ```typescript
+   * await plugin.onBefore();
+   * ```
+   */
   override async onBefore(): Promise<void> {
     const app = await this.getApp();
     const project = await app.convert();
@@ -130,305 +219,30 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
 
     this.context.setConfig({ projectReflection: project });
 
-    // Extract comments to table format
-    // const projectData = app.serializer.projectToObject(project, './');
-    const tableData = this.extractCommentsToTable(project as TypeDocReflection);
-
-    this.writeJSON({ data: tableData }, './typedoc.json');
-    // Log extracted data summary
-    this.logger.info(`Extracted ${tableData.length} documented elements`);
-
-    // Simple output of extracted data
-    tableData.forEach((item) => {
-      this.logger.info(
-        `${item.kind}: ${item.name} - ${item.summary || 'No summary'}`
-      );
-    });
-
     await this.writeToFile(project);
+
+    const tableData = this.convertProjectToCommentTableData(project);
+    const cleanData = this.removeCircularReferences(tableData);
+    this.writeJSON({ data: cleanData }, './typedoc.json');
   }
 
   /**
-   * Extracts comments from TypeDoc JSON and organizes them into hierarchical table format
+   * 将项目数据写入文件
    *
-   * @purpose Converts TypeDoc comment structure into a hierarchical table data format
-   * @core Recursively processes TypeDoc JSON to extract all comment information with parent-child relationships
-   * @functionality Parses summary, description, and block tags from TypeDoc comments and organizes them hierarchically
-   * @usage Call this method with TypeDoc JSON data to get organized hierarchical comment table data
+   * @description 将 ProjectReflection 转换为 CommentTableData 格式并写入 JSON 文件
    *
-   * @param jsonData - The TypeDoc JSON data object
-   * @returns Array of CommentTableData representing all comments in hierarchical format
+   * @param project TypeDoc 项目反射对象
    *
    * @example
    * ```typescript
-   * const typeDocJson = new TypeDocJson(context);
-   * const jsonData = JSON.parse(fs.readFileSync('typedoc.json', 'utf-8'));
-   * const tableData = typeDocJson.extractCommentsToTable(jsonData);
-   *
-   * // Access hierarchical data
-   * tableData.forEach(item => {
-   *   console.log(`${item.kind}: ${item.name}`);
-   *   if (item.children) {
-   *     item.children.forEach(child => {
-   *       console.log(`  - ${child.kind}: ${child.name}`);
-   *     });
-   *   }
-   * });
+   * await this.writeToFile(project);
    * ```
    */
-  extractCommentsToTable(jsonData: TypeDocReflection): CommentTableData[] {
-    const results: CommentTableData[] = [];
-
-    /**
-     * Recursively processes TypeDoc reflection objects to extract comment data
-     *
-     * @param reflection - TypeDoc reflection object
-     * @returns CommentTableData object or null if no valid data
-     */
-    const processReflection = (
-      reflection: TypeDocReflection
-    ): CommentTableData | null => {
-      if (!reflection) return null;
-
-      // Create base data for current reflection
-      let currentData: CommentTableData | null = null;
-
-      // Process current reflection if it has comments
-      if (reflection.comment) {
-        currentData = this.parseCommentToTableData(reflection, reflection.name);
-      }
-
-      // If no comment data, create basic structure for elements with children
-      if (!currentData && (reflection.children || reflection.signatures)) {
-        currentData = {
-          name: reflection.name,
-          kind: this.getKindName(reflection.kind),
-          summary: '',
-          description: '',
-          tags: [],
-          source: reflection.sources?.[0]
-            ? {
-                fileName: reflection.sources[0].fileName,
-                line: reflection.sources[0].line,
-                url: reflection.sources[0].url
-              }
-            : undefined
-        };
-      }
-
-      if (!currentData) return null;
-
-      // Process children
-      const children: CommentTableData[] = [];
-
-      // Process signatures (for methods, constructors, etc.)
-      if (reflection.signatures) {
-        reflection.signatures.forEach((signature: TypeDocReflection) => {
-          if (signature.comment) {
-            const signatureName = `${reflection.name}(${this.getParameterNames(
-              signature.parameters
-            )})`;
-            const signatureData = this.parseCommentToTableData(
-              signature,
-              signatureName
-            );
-            if (signatureData) {
-              // For signatures, we usually want to merge with parent or replace parent data
-              if (
-                signatureData.summary ||
-                signatureData.description ||
-                signatureData.tags.length > 0
-              ) {
-                currentData!.summary =
-                  signatureData.summary || currentData!.summary;
-                currentData!.description =
-                  signatureData.description || currentData!.description;
-                currentData!.tags = [
-                  ...currentData!.tags,
-                  ...signatureData.tags
-                ];
-              }
-            }
-          }
-        });
-      }
-
-      // Process child reflections
-      if (reflection.children) {
-        reflection.children.forEach((child: TypeDocReflection) => {
-          const childData = processReflection(child);
-          if (childData) {
-            children.push(childData);
-          }
-        });
-      }
-
-      // Process type declaration children (for type aliases, interfaces)
-      if (reflection.type?.declaration?.children) {
-        reflection.type.declaration.children.forEach(
-          (child: TypeDocReflection) => {
-            const childData = processReflection(child);
-            if (childData) {
-              children.push(childData);
-            }
-          }
-        );
-      }
-
-      // Add children to current data if any exist
-      if (children.length > 0) {
-        currentData.children = children;
-      }
-
-      return currentData;
-    };
-
-    // Start processing from root children
-    if (jsonData.children) {
-      jsonData.children.forEach((child: TypeDocReflection) => {
-        const childData = processReflection(child);
-        if (childData) {
-          results.push(childData);
-        }
-      });
-    }
-
-    return results;
-  }
-
-  /**
-   * Parses a single TypeDoc comment into table data format
-   *
-   * @purpose Converts individual TypeDoc comment structure to CommentTableData
-   * @core Extracts summary, description, and block tags from comment object
-   * @functionality Handles different comment content types (text, code)
-   * @usage Used internally by extractCommentsToTable to process individual comments
-   *
-   * @param reflection - TypeDoc reflection object with comment
-   * @param name - Element name
-   * @returns CommentTableData object or null if no valid comment
-   */
-  private parseCommentToTableData(
-    reflection: TypeDocReflection,
-    name: string
-  ): CommentTableData | null {
-    const comment = reflection.comment;
-    if (!comment) return null;
-
-    // Extract summary
-    const summary =
-      comment.summary
-        ?.map((item) => item.text || '')
-        .join('')
-        .trim() || '';
-
-    // Extract description from @description tag
-    let description = '';
-    const tags: Array<{ tag: string; name?: string; content: string }> = [];
-
-    if (comment.blockTags) {
-      comment.blockTags.forEach((blockTag) => {
-        const content =
-          blockTag.content
-            ?.map((item) => {
-              if (item.kind === 'text') return item.text;
-              if (item.kind === 'code') return item.text;
-              return '';
-            })
-            .join('')
-            .trim() || '';
-
-        if (blockTag.tag === '@description') {
-          description = content;
-        } else {
-          tags.push({
-            tag: blockTag.tag,
-            name: blockTag.name,
-            content
-          });
-        }
-      });
-    }
-
-    // Extract source information
-    let source;
-    if (reflection.sources && reflection.sources[0]) {
-      const sourceInfo = reflection.sources[0];
-      source = {
-        fileName: sourceInfo.fileName,
-        line: sourceInfo.line,
-        url: sourceInfo.url
-      };
-    }
-
-    return {
-      name,
-      kind: this.getKindName(reflection.kind),
-      summary,
-      description,
-      tags,
-      source
-    };
-  }
-
-  /**
-   * Gets parameter names from signature parameters
-   *
-   * @purpose Extracts parameter names for method signature display
-   * @core Processes parameter array to get comma-separated names
-   * @functionality Handles optional parameters and type information
-   * @usage Used to generate readable method signatures
-   *
-   * @param parameters - Array of parameter objects
-   * @returns Comma-separated parameter names string
-   */
-  private getParameterNames(
-    parameters?: Array<{ name: string; flags?: { isOptional?: boolean } }>
-  ): string {
-    if (!parameters || parameters.length === 0) return '';
-
-    return parameters
-      .map((param) => {
-        const optional = param.flags?.isOptional ? '?' : '';
-        return `${param.name}${optional}`;
-      })
-      .join(', ');
-  }
-
-  /**
-   * Converts TypeDoc kind number to readable string
-   *
-   * @purpose Maps TypeDoc kind enumeration to human-readable names
-   * @core Provides mapping from numeric kind values to descriptive strings
-   * @functionality Handles all common TypeDoc reflection kinds
-   * @usage Used to display element types in table format
-   *
-   * @param kind - TypeDoc kind number
-   * @returns Human-readable kind name
-   */
-  private getKindName(kind: number): string {
-    const kindMap: Record<number, string> = {
-      1: 'project',
-      128: 'class',
-      256: 'interface',
-      512: 'constructor',
-      1024: 'property',
-      2048: 'method',
-      4096: 'signature',
-      16384: 'constructor-signature',
-      32768: 'parameter',
-      65536: 'type-literal',
-      2097152: 'type-alias'
-    };
-
-    return kindMap[kind] || `unknown(${kind})`;
-  }
-
   async writeToFile(project: ProjectReflection): Promise<void> {
     const path = this.context.options.outputJSONFilePath;
 
     if (!path) {
-      this.logger.warn('ProjectReader writeTo Ouput path is empty!');
+      this.logger.warn('ProjectReader writeTo Output path is empty!');
       return;
     }
 
@@ -438,9 +252,310 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
     this.logger.info('Generate JSON file success', path);
   }
 
+  /**
+   * 将 ProjectReflection 转换为 CommentTableData 格式
+   *
+   * @description 递归转换 TypeDoc 项目数据为 CommentTableData 结构
+   *
+   * @param project TypeDoc 项目反射对象
+   * @returns CommentTableData[] 转换后的数据数组
+   *
+   * @example
+   * ```typescript
+   * const data = this.convertProjectToCommentTableData(project);
+   * ```
+   */
+  private convertProjectToCommentTableData(
+    project: ProjectReflection
+  ): CommentTableData[] {
+    const result: CommentTableData[] = [];
+
+    if (!project.children) {
+      return result;
+    }
+
+    for (const child of project.children) {
+      const commentData = this.convertReflectionToCommentTableData(child);
+      if (commentData) {
+        result.push(commentData);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * 将单个 DeclarationReflection 转换为 CommentTableData
+   *
+   * @description 转换单个反射对象为 CommentTableData 格式，包括处理子元素
+   *
+   * @param reflection 声明反射对象
+   * @param parent 父级反射对象（可选）
+   * @returns CommentTableData | null 转换后的数据或 null
+   *
+   * @example
+   * ```typescript
+   * const data = this.convertReflectionToCommentTableData(reflection);
+   * ```
+   */
+  private convertReflectionToCommentTableData(
+    reflection: DeclarationReflection,
+    parent?: DeclarationReflection
+  ): CommentTableData | null {
+    try {
+      const { id, name, kind, type } = reflection;
+      const kindName = ReflectionKindName[kind] || 'Unknown';
+
+      // 获取注释信息
+      const { summary, blockTags } = this.getComments(reflection);
+      const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
+
+      // 获取源码信息
+      const source = this.getRealSource(reflection, parent);
+
+      // 处理参数列表 - 从 signatures 中获取参数
+      let parametersList: SimpleParameter[] = [];
+      if (
+        reflection.signatures &&
+        reflection.signatures.length > 0 &&
+        reflection.signatures[0].parameters
+      ) {
+        parametersList = this.toParametersList(
+          reflection.signatures[0].parameters
+        );
+      }
+
+      // 获取类型字符串
+      const typeString = type ? this.warpType(type.toString()) : undefined;
+
+      // 处理子元素
+      const children: CommentTableData[] = [];
+      let hasMembers = false;
+
+      if (reflection.children) {
+        for (const child of reflection.children) {
+          const childData = this.convertReflectionToCommentTableData(
+            child,
+            reflection
+          );
+          if (childData) {
+            children.push(childData);
+          }
+        }
+        hasMembers = children.length > 0;
+      }
+
+      // 特殊处理 TypeAlias
+      if (kind === ReflectionKind.TypeAlias && type) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const typeReflection = type as any;
+        if (
+          typeReflection.type === 'reflection' &&
+          typeReflection.declaration?.children
+        ) {
+          for (const child of typeReflection.declaration.children) {
+            const childData = this.convertReflectionToCommentTableData(
+              child as DeclarationReflection,
+              reflection
+            );
+            if (childData) {
+              children.push(childData);
+            }
+          }
+          hasMembers = children.length > 0;
+        }
+      }
+
+      return {
+        id,
+        kind,
+        name,
+        type: typeString,
+        kindName,
+        summaryList: summary,
+        blockTagsList,
+        parametersList,
+        source: source ? this.createSafeSourceReference(source) : {},
+        children,
+        hasMembers
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error converting reflection ${reflection.name}:`,
+        error
+      );
+      return null;
+    }
+  }
+
+  /**
+   * 获取类的注释信息
+   *
+   * @description 提取反射对象的摘要和块标签信息
+   *
+   * @param reflection 声明反射对象
+   * @returns 包含摘要和块标签的对象
+   *
+   * @example
+   * ```typescript
+   * const { summary, blockTags } = this.getComments(reflection);
+   * ```
+   */
+  private getComments(reflection: DeclarationReflection): {
+    summary: CommentDisplayPart[];
+    blockTags: CommentTag[];
+  } {
+    const { summary, blockTags } = reflection.comment || {};
+
+    return {
+      summary: this.toTemplateSummaryList(summary || []),
+      blockTags: blockTags || []
+    };
+  }
+
+  /**
+   * 转换摘要列表为模板格式
+   *
+   * @description 将 CommentDisplayPart 数组转换为模板需要的格式
+   *
+   * @param summary 摘要数组
+   * @returns 转换后的摘要数组
+   *
+   * @example
+   * ```typescript
+   * const summaryList = this.toTemplateSummaryList(summary);
+   * ```
+   */
+  private toTemplateSummaryList(
+    summary: CommentDisplayPart[]
+  ): CommentDisplayPart[] {
+    return summary.map((item) => this.toTemplateSummary(item));
+  }
+
+  /**
+   * 转换单个摘要为模板格式
+   *
+   * @description 为摘要项添加类型标识属性
+   *
+   * @param summary 摘要项
+   * @param tag 标签（可选）
+   * @returns 转换后的摘要项
+   *
+   * @example
+   * ```typescript
+   * const templateSummary = this.toTemplateSummary(summary);
+   * ```
+   */
+  private toTemplateSummary(
+    summary: CommentDisplayPart,
+    tag?: string
+  ): CommentDisplayPart {
+    const DisplayPartsKindName = {
+      text: 'Text',
+      code: 'Code',
+      inlineTag: 'InlineTag'
+    };
+
+    return {
+      ...summary,
+      [`is${DisplayPartsKindName[summary.kind as keyof typeof DisplayPartsKindName]}`]:
+        true,
+      tag,
+      title: tag?.replace('@', '') || ''
+    } as any;
+  }
+
+  /**
+   * 获取不包含 @param 的块标签
+   *
+   * @description 过滤掉参数相关的块标签
+   *
+   * @param blockTags 块标签数组
+   * @returns 过滤后的块标签数组
+   *
+   * @example
+   * ```typescript
+   * const filteredTags = this.getBlockTagsNoParamAndReturn(blockTags);
+   * ```
+   */
+  private getBlockTagsNoParamAndReturn(
+    blockTags: CommentTag[]
+  ): CommentDisplayPart[] {
+    return blockTags
+      .filter((item) => !['@param'].includes(item.tag))
+      .map((tag) => {
+        return tag.content.map((item) => this.toTemplateSummary(item, tag.tag));
+      })
+      .flat();
+  }
+
+  /**
+   * 获取真实的源码信息
+   *
+   * @description 获取反射对象的源码位置信息，确保属于当前类
+   *
+   * @param member 成员反射对象
+   * @param parent 父级反射对象（可选）
+   * @returns 源码引用信息或 undefined
+   *
+   * @example
+   * ```typescript
+   * const source = this.getRealSource(member, parent);
+   * ```
+   */
+  private getRealSource(
+    member: DeclarationReflection,
+    parent?: DeclarationReflection
+  ): SourceReference | undefined {
+    if (!member.sources?.length) {
+      return undefined;
+    }
+
+    const source = member.sources[0];
+    if (parent && parent.sources?.length) {
+      const classSource = parent.sources[0];
+      if (source.fileName !== classSource.fileName) {
+        return undefined;
+      }
+    }
+
+    return source;
+  }
+
+  /**
+   * 包装类型字符串
+   *
+   * @description 用反引号包装类型字符串，避免模板渲染问题
+   *
+   * @param typeString 类型字符串
+   * @returns 包装后的类型字符串
+   *
+   * @example
+   * ```typescript
+   * const wrappedType = this.warpType('string | number');
+   * // 返回: `string \| number`
+   * ```
+   */
+  private warpType(typeString: string): string {
+    return `\`${typeString.replace(/\|/g, '\\|')}\``;
+  }
+
+  /**
+   * 写入 JSON 数据到文件
+   *
+   * @description 将数据序列化为 JSON 并写入指定文件
+   *
+   * @param value 要写入的数据
+   * @param path 文件路径
+   *
+   * @example
+   * ```typescript
+   * this.writeJSON(data, '/path/to/output.json');
+   * ```
+   */
   writeJSON(value: unknown, path: string): void {
     if (!path) {
-      this.logger.warn('ProjectReader writeJSON Ouput path is empty!');
+      this.logger.warn('ProjectReader writeJSON Output path is empty!');
       return;
     }
 
@@ -450,81 +565,233 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * Generates a markdown table from extracted comment data
+   * 移除对象中的循环引用
    *
-   * @purpose Converts CommentTableData array to formatted markdown table
-   * @core Creates table with columns for name, kind, and summary
-   * @functionality Handles hierarchical structure with proper indentation
-   * @usage Used to output extracted comments in readable markdown format
+   * @description 递归清理对象中的循环引用，确保可以正常序列化为 JSON
    *
-   * @param tableData - Array of CommentTableData to convert
-   * @param indentLevel - Current indentation level for hierarchical display
-   * @returns Formatted markdown table string
+   * @param obj 要清理的对象
+   * @param seen 已访问的对象集合，用于检测循环引用
+   * @returns 清理后的对象
    *
    * @example
    * ```typescript
-   * const comments = this.extractCommentsToTable(jsonData);
-   * const markdown = this.generateMarkdownTable(comments);
-   * console.log(markdown);
-   * // Output:
-   * // | Name | Kind | Summary |
-   * // |------|------|---------|
-   * // | ExampleClass | class | A sample class |
-   * // | ├─ debug | property | Debug flag |
-   * // | └─ getName | method | Gets the name |
+   * const cleanData = this.removeCircularReferences(data);
    * ```
    */
-  generateMarkdownTable(
-    tableData: CommentTableData[],
-    indentLevel: number = 0
-  ): string {
-    if (!tableData || tableData.length === 0) {
-      return '| Name | Kind | Summary |\n|------|------|---------|';
+  private removeCircularReferences(obj: any, seen = new WeakSet()): any {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
     }
 
-    const rows: string[] = [];
-
-    // Add header only at top level
-    if (indentLevel === 0) {
-      rows.push('| Name | Kind | Summary |');
-      rows.push('|------|------|---------|');
+    if (seen.has(obj)) {
+      return '[Circular Reference]';
     }
 
-    const processItems = (
-      items: CommentTableData[],
-      level: number,
-      isLast: boolean[] = []
-    ) => {
-      items.forEach((item, index) => {
-        const isLastItem = index === items.length - 1;
-        const currentIsLast = [...isLast, isLastItem];
+    seen.add(obj);
 
-        // Create indentation prefix for hierarchical display
-        let prefix = '';
-        if (level > 0) {
-          // Build tree-like prefix
-          for (let i = 0; i < level - 1; i++) {
-            prefix += isLast[i] ? '   ' : '│  ';
-          }
-          prefix += isLastItem ? '└─ ' : '├─ ';
+    if (Array.isArray(obj)) {
+      const cleanArray = obj.map((item) =>
+        this.removeCircularReferences(item, seen)
+      );
+      seen.delete(obj);
+      return cleanArray;
+    }
+
+    const cleanObj: any = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        // 跳过一些可能包含循环引用的 TypeDoc 内部属性
+        if (this.shouldSkipProperty(key)) {
+          continue;
         }
 
-        // Escape pipe characters in content
-        const escapedName = `${prefix}${item.name}`.replace(/\|/g, '\\|');
-        const escapedKind = item.kind.replace(/\|/g, '\\|');
-        const escapedSummary = item.summary.replace(/\|/g, '\\|');
-
-        rows.push(`| ${escapedName} | ${escapedKind} | ${escapedSummary} |`);
-
-        // Process children recursively
-        if (item.children && item.children.length > 0) {
-          processItems(item.children, level + 1, currentIsLast);
+        try {
+          cleanObj[key] = this.removeCircularReferences(obj[key], seen);
+        } catch (error) {
+          // 如果某个属性无法序列化，跳过它
+          this.logger.debug(
+            `Skipping property ${key} due to serialization error:`,
+            error
+          );
+          cleanObj[key] = '[Serialization Error]';
         }
-      });
+      }
+    }
+
+    seen.delete(obj);
+    return cleanObj;
+  }
+
+  /**
+   * 判断是否应该跳过某个属性
+   *
+   * @description 检查属性名是否为可能包含循环引用的 TypeDoc 内部属性
+   *
+   * @param key 属性名
+   * @returns 是否应该跳过该属性
+   *
+   * @example
+   * ```typescript
+   * const shouldSkip = this.shouldSkipProperty('parent');
+   * ```
+   */
+  private shouldSkipProperty(key: string): boolean {
+    // 跳过可能包含循环引用的 TypeDoc 内部属性
+    const skipProperties = [
+      'parent',
+      'project',
+      'reflection',
+      'reflections',
+      'owner',
+      'originalName',
+      'traverse',
+      'getFullName',
+      'getAlias',
+      'hasGetterOrSetter',
+      'getAllSignatures'
+    ];
+
+    return skipProperties.includes(key) || key.startsWith('_');
+  }
+
+  /**
+   * 创建安全的 SourceReference 对象
+   *
+   * @description 创建一个不包含循环引用的 SourceReference 副本
+   *
+   * @param source 原始 SourceReference 对象
+   * @returns 安全的 SourceReference 对象
+   *
+   * @example
+   * ```typescript
+   * const safeSource = this.createSafeSourceReference(source);
+   * ```
+   */
+  private createSafeSourceReference(source: SourceReference): any {
+    if (!source) {
+      return {};
+    }
+
+    return {
+      fileName: source.fileName,
+      line: source.line,
+      character: source.character,
+      fullFileName: source.fullFileName,
+      url: source.url
     };
+  }
 
-    processItems(tableData, indentLevel);
+  /**
+   * 将参数列表转换为简化的参数数据结构
+   *
+   * @description 将 ParameterReflection 数组转换为 SimpleParameter 数组，参考 TypeDocConverter 的逻辑
+   *
+   * @param parameters ParameterReflection 数组
+   * @returns SimpleParameter 数组
+   *
+   * @example
+   * ```typescript
+   * const parametersList = this.toParametersList(reflection.signatures[0].parameters);
+   * ```
+   */
+  private toParametersList(
+    parameters: ParameterReflection[]
+  ): SimpleParameter[] {
+    const result: SimpleParameter[] = [];
 
-    return rows.join('\n');
+    parameters.forEach((param) => {
+      try {
+        // @ts-expect-error - TypeDoc 内部类型处理
+        const decChildren = (param.type?.declaration?.children ||
+          []) as ParameterReflection[];
+
+        // 如果是一个引用类型，处理其子属性
+        if (decChildren.length > 0) {
+          decChildren.forEach((child) => {
+            result.push(this.toParametersListItem(child, param));
+          });
+        } else {
+          result.push(this.toParametersListItem(param));
+        }
+      } catch (error) {
+        this.logger.warn(
+          'toParametersListItem Error:',
+          `${param?.id} ${param?.name}`,
+          error
+        );
+        // 发生错误时，添加基本的参数信息
+        result.push(this.toParametersListItem(param));
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * 将单个参数转换为 SimpleParameter 格式
+   *
+   * @description 转换单个参数反射对象为简化的参数数据结构
+   *
+   * @param param 参数反射对象
+   * @param parent 父级参数（可选，用于嵌套参数）
+   * @returns SimpleParameter 简化的参数数据
+   */
+  private toParametersListItem(
+    param: ParameterReflection,
+    parent?: ParameterReflection
+  ): SimpleParameter {
+    const { summary = [], blockTags = [] } = param.comment || {};
+
+    // 过滤掉 @param 相关的块标签
+    const blockTagsList = this.getBlockTagsNoParamAndReturn(blockTags);
+
+    // 获取默认值
+    const defaultValue = param.defaultValue || '';
+
+    // 检查是否已废弃
+    const deprecated = blockTags.some((tag) => tag.tag === '@deprecated');
+
+    // 获取版本信息
+    const since =
+      blockTags
+        .find((tag) => tag.tag === '@since')
+        ?.content.map((item) => item.text)
+        .join(' ') || '';
+
+    // 处理摘要
+    const summaryList = this.toTemplateSummaryList(summary);
+
+    // 用于 markdown table，将 summary 转换为描述文本
+    const description = this.summaryListToMarkdownTable(summaryList);
+
+    return {
+      id: param.id,
+      name: parent ? `${parent.name}.${param.name}` : param.name,
+      type: param.type ? this.warpType(param.type.toString()) : 'unknown',
+      description,
+      summaryList,
+      blockTagsList,
+      defaultValue,
+      since,
+      deprecated
+    };
+  }
+
+  /**
+   * 将摘要列表转换为 markdown table 格式
+   *
+   * @description 只处理 text 类型的 summary，将换行符转换为 <br>
+   *
+   * @param summaryList 摘要列表
+   * @returns markdown table 格式的字符串
+   */
+  private summaryListToMarkdownTable(
+    summaryList: CommentDisplayPart[]
+  ): string {
+    return summaryList
+      .filter((summary) => summary.kind === 'text')
+      .map((summary) => summary.text)
+      .join('')
+      .replace(/\n/g, '<br>');
   }
 }
