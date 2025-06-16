@@ -1,5 +1,19 @@
 # @qlover/fe-release
 
+## 2.3.4
+
+### Patch Changes
+
+#### ✨ Features
+
+- **pather:** add cross-platform path utility and comprehensive tests ([b87a269](https://github.com/qlover/fe-base/commit/b87a269c9215c34df3646e5511792c5c6818e736)) ([#445](https://github.com/qlover/fe-base/pull/445))
+
+  - Introduced the Pather class for reliable path normalization and comparison across Windows and POSIX systems, providing methods like `toLocalPath`, `isSubPath`, `startsWith`, and `containsPath`.
+  - Added extensive unit tests for the Pather class to ensure functionality and edge case handling.
+  - Updated Changelog and GithubChangelog plugins to utilize the new Pather utility for improved path handling in commit filtering.
+
+  These enhancements improve path management capabilities within the project, ensuring consistent behavior across different operating systems.
+
 ## 2.3.3
 
 ### Patch Changes
