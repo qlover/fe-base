@@ -1,5 +1,20 @@
 # @qlover/corekit-bridge
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** implement CookieStorage and QuickerTime for enhanced storage management ([21051d7](https://github.com/qlover/fe-base/commit/21051d79233af26e4bf0180cd318cfbe02d28d65)) ([#442](https://github.com/qlover/fe-base/pull/442))
+
+  - Introduced CookieStorage class to provide a synchronous API for managing cookies, facilitating token persistence.
+  - Added QuickerTime class for simplified time calculations, aiding in token expiration management.
+  - Refactored storage-related imports to utilize the new CookieStorage and updated interfaces for better modularity.
+  - Updated package dependencies to include js-cookie and its type definitions.
+
+  These enhancements improve the overall storage capabilities and user authentication management within the corekit-bridge.
+
 ## 1.0.4
 
 ### Patch Changes
