@@ -6,23 +6,11 @@ import type {
   RequestAdapterResponse
 } from '@qlover/fe-corekit';
 
-/**
- * RequestCommonPlugin 单元测试
- *
- * 测试范围：
- * - 插件初始化和配置
- * - token 处理和认证头添加
- * - 默认请求头合并
- * - 默认请求数据合并
- * - 请求数据序列化
- * - 响应数据处理
- */
 describe('RequestCommonPlugin', () => {
   let plugin: RequestCommonPlugin;
   let mockContext: ExecutorContext<RequestAdapterConfig>;
 
   beforeEach(() => {
-    // 重置 mock context
     mockContext = {
       parameters: {
         headers: {},
