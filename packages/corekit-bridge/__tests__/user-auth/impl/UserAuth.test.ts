@@ -3,8 +3,7 @@ import {
   UserAuthStore,
   LOGIN_STATUS,
   UserAuthApiInterface,
-  UserAuthService,
-  UserAuthStoreInterface
+  UserAuthService
 } from '../../../src/core/user-auth';
 import {
   ExpiresInType,
