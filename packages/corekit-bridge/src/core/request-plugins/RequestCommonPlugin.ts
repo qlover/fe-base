@@ -16,9 +16,13 @@ export type RequestCommonPluginConfig = {
   tokenPrefix?: string;
 
   /**
+   * auth key.
+   *
+   * - If is `false`, will not append auth header.
+   *
    * @default `Authorization`
    */
-  authKey?: string;
+  authKey?: string | false;
 
   /**
    * default request headers
@@ -124,7 +128,7 @@ export class RequestCommonPlugin
       authKey = 'Authorization',
       defaultRequestData,
       requestDataSerializer
-    } = this.config;
+    } = { ...this.config, ...context.parameters };
     const { parameters } = context;
 
     // append default headers
@@ -142,10 +146,16 @@ export class RequestCommonPlugin
     }
 
     // append token
-    if (authKey && !parameters.headers[authKey]) {
-      const authToken = this.getAuthToken();
-      const authValue = tokenPrefix ? `${tokenPrefix} ${authToken}` : authToken;
-      if (authValue) {
+    if (
+      authKey &&
+      typeof authKey === 'string' &&
+      !parameters.headers[authKey]
+    ) {
+      const authToken = this.getAuthToken(context.parameters);
+      if (authToken) {
+        const authValue = tokenPrefix
+          ? `${tokenPrefix} ${authToken}`
+          : authToken;
         parameters.headers[authKey] = authValue;
       }
     }
@@ -196,8 +206,8 @@ export class RequestCommonPlugin
     }
   }
 
-  getAuthToken(): string {
-    const { token } = this.config;
+  getAuthToken(mergeConfig?: Partial<RequestAdapterConfig>): string {
+    const { token } = { ...this.config, ...mergeConfig };
     return typeof token === 'function' ? (token() ?? '') : (token ?? '');
   }
 }
