@@ -1,5 +1,18 @@
 # @qlover/corekit-bridge
 
+## 1.1.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** add unit tests for RequestCommonPlugin ([7703647](https://github.com/qlover/fe-base/commit/7703647730153726bbc190132dc2fb4167a46fea)) ([#447](https://github.com/qlover/fe-base/pull/447))
+
+  - Introduced comprehensive unit tests for the RequestCommonPlugin, covering initialization, token handling, header management, request data merging, and response processing.
+  - Enhanced test coverage for various scenarios, including edge cases and integration flows, ensuring robust functionality and reliability of the plugin.
+
+  These additions improve the overall test suite for the corekit-bridge, facilitating better maintenance and confidence in the plugin's behavior.
+
 ## 1.1.0
 
 ### Minor Changes
