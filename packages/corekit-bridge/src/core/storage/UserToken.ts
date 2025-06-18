@@ -11,7 +11,7 @@ export interface UserTokenOptions {
   /**
    * 存储
    */
-  storage: SyncStorage<string, string>;
+  storage?: SyncStorage<string, string>;
   /**
    * 过期时间
    * @default 'month'
@@ -40,7 +40,7 @@ export class UserToken implements StorageTokenInterface<string> {
     return this.options.storageKey;
   }
 
-  get storage(): SyncStorage<string, string> {
+  get storage(): SyncStorage<string, string> | undefined {
     return this.options.storage;
   }
 

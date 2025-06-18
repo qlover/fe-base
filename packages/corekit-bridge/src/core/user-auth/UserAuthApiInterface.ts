@@ -1,9 +1,17 @@
+import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
+
 export interface LoginResponseData {
   token?: string;
   [key: string]: unknown;
 }
 
 export interface UserAuthApiInterface<User> {
+  /**
+   * 设置用户认证存储
+   * @param store 用户认证存储
+   */
+  setUserAuthStore(store: UserAuthStoreInterface<User>): void;
+
   /**
    * 登录
    * @param params 登录参数

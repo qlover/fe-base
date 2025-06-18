@@ -24,7 +24,7 @@ import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
  */
 export interface AuthServiceInterface<User> {
   get store(): UserAuthStoreInterface<User>;
-  get service(): UserAuthApiInterface<User>;
+  get api(): UserAuthApiInterface<User>;
 
   login(params: unknown): Promise<LoginResponseData>;
   login(token: string): Promise<LoginResponseData>;

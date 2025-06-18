@@ -1,3 +1,5 @@
+import { StorageTokenInterface } from '../storage';
+
 export enum LOGIN_STATUS {
   LOADING = 'loading',
   SUCCESS = 'success',
@@ -5,6 +7,9 @@ export enum LOGIN_STATUS {
 }
 
 export interface UserAuthStoreInterface<User> {
+  setUserToken(userToken: StorageTokenInterface<string>): void;
+  getUserToken(): StorageTokenInterface<string> | null;
+
   setToken(token: string): void;
   getToken(): string | null;
   getLoginStatus(): LOGIN_STATUS | null;
