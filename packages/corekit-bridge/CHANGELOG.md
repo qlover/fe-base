@@ -1,5 +1,21 @@
 # @qlover/corekit-bridge
 
+## 1.1.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** refactor user authentication interfaces and enhance token management ([12770ce](https://github.com/qlover/fe-base/commit/12770cec8eee16740823dee0deead528aea1ec3a)) ([#449](https://github.com/qlover/fe-base/pull/449))
+
+  - Updated UserAuthService to use `api` instead of `service` for improved clarity in the authentication flow.
+  - Introduced `setUserAuthStore` method in UserAuthApiInterface to manage user authentication storage.
+  - Enhanced UserAuthStore with methods to set and get user tokens, improving token management capabilities.
+  - Made storage options in UserToken interface optional, allowing for more flexible configurations.
+  - Added comprehensive unit tests to validate the new implementations and ensure robust functionality.
+
+  These changes improve the overall structure and maintainability of the user authentication system within the corekit-bridge.
+
 ## 1.1.1
 
 ### Patch Changes
