@@ -42,6 +42,14 @@ export class UserAuthStore<User>
     super(() => new UserAuthStoreState(userToken?.getToken() || ''));
   }
 
+  setUserToken(userToken: StorageTokenInterface<string>): void {
+    this.userToken = userToken;
+  }
+
+  getUserToken(): StorageTokenInterface<string> | null {
+    return this.userToken;
+  }
+
   setToken(token: string): void {
     this.emit({ ...this.state, token });
     this.userToken?.setToken(token);

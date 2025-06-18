@@ -1,4 +1,8 @@
-import type { StorageTokenInterface } from '../../storage';
+import {
+  UserToken,
+  type StorageTokenInterface,
+  type UserTokenOptions
+} from '../../storage';
 import type { AuthServiceInterface } from '../UserAuthInterface';
 import type {
   LoginResponseData,
@@ -10,6 +14,12 @@ import {
 } from '../UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
 import { getURLProperty } from '../utils/getURLProperty';
+
+const defaultTokenType = {
+  storageKey: 'user-auth-token',
+  expiresIn: 'month',
+  storageToken: 'memory'
+} as const;
 
 /**
  * Configuration options for UserAuthService system
@@ -31,7 +41,7 @@ export interface UserAuthOptions<User> {
    *
    * @required This is a required field
    */
-  service: UserAuthApiInterface<User>;
+  api: UserAuthApiInterface<User>;
 
   /**
    * Storage implementation for managing authentication state
@@ -48,6 +58,19 @@ export interface UserAuthOptions<User> {
   /**
    * Token storage implementation
    *
+   * - A UserTokenOptions object, use to create a `UserToken` instance
+   * - A StorageTokenInterface implementation
+   *
+   * UserTokenOptions default is:
+   *
+   * ```typescript
+   * {
+   *   storageKey: 'user-auth-token',
+   *   expiresIn: 'month',
+   *   storageToken: 'memory'
+   * }
+   * ```
+   *
    * Used for:
    * - Persisting authentication tokens
    * - Reading stored tokens
@@ -55,7 +78,7 @@ export interface UserAuthOptions<User> {
    *
    * @optional Can be used to customize token storage strategy (e.g., localStorage, sessionStorage)
    */
-  storageToken?: StorageTokenInterface<string>;
+  storageToken?: Partial<UserTokenOptions> | StorageTokenInterface<string>;
 
   /**
    * URL for token extraction
@@ -82,6 +105,18 @@ export interface UserAuthOptions<User> {
    * @optional Required only when href is provided
    */
   urlTokenKey?: string;
+}
+
+function isStorageTokenInterface(
+  obj: unknown
+): obj is StorageTokenInterface<string> {
+  return Boolean(
+    obj &&
+      typeof obj === 'object' &&
+      typeof (obj as Record<string, unknown>).getToken === 'function' &&
+      typeof (obj as Record<string, unknown>).setToken === 'function' &&
+      typeof (obj as Record<string, unknown>).removeToken === 'function'
+  );
 }
 
 /**
@@ -117,12 +152,14 @@ export interface UserAuthOptions<User> {
  * @template Opt - Configuration options type extending UserAuthOptions
  *
  * @example
+ *
+ * ```typescript
  * // Initialize authentication service
- * const authService = new CustomAuthService();
+ * const authApi = new CustomAuthService();
  *
  * // Create UserAuthService instance with custom configuration
  * const userAuthService = new UserAuthService({
- *   service: authService,
+ *   api: authApi,
  *   urlTokenKey: 'token',
  *   storageToken: new LocalStorageToken('auth-token')
  * });
@@ -144,6 +181,38 @@ export interface UserAuthOptions<User> {
  *
  * // Logout when needed
  * userAuthService.logout();
+ * ```
+ *
+ * @example use localStorage as token storage
+ *
+ * ```typescript
+ * const userAuthService = new UserAuthService({
+ *   api: authApi,
+ *   urlTokenKey: 'token',
+ *   storageToken: {
+ *     storageKey: 'user-auth-token2',
+ *     storage: window.localStorage,
+ *     expiresIn: 'month',
+ *   }
+ * });
+ * ```
+ *
+ * @example use Cookie as token storage
+ *
+ * ```typescript
+ * import { CookieStorage } from '@qlover/fe-corekit';
+ *
+ * // use Cookie as token storage
+ * const userAuthService = new UserAuthService({
+ *   api: authApi,
+ *   urlTokenKey: 'token',
+ *   storageToken: {
+ *     storageKey: 'user-auth-token3',
+ *     storage: new CookieStorage(),
+ *     expiresIn: 'month',
+ *   }
+ * });
+ * ```
  */
 export class UserAuthService<
   User,
@@ -163,14 +232,39 @@ export class UserAuthService<
    * @throws {Error} When required service is not provided
    */
   constructor(protected options: Opt) {
-    const { service, store, storageToken, href } = options;
+    const { api: service, store, storageToken, href } = options;
 
-    options.store = store || new UserAuthStore(storageToken);
-    options.service = service;
+    const tokenStorage = this.getStorageToken(storageToken);
+    options.store = store || new UserAuthStore(tokenStorage);
+    options.api = service;
+
+    if (!options.store.getUserToken()) {
+      options.store.setUserToken(tokenStorage);
+    }
 
     if (href && options.urlTokenKey) {
       options.store.setToken(getURLProperty(href, options.urlTokenKey));
     }
+
+    if (options.store) {
+      options.api.setUserAuthStore(options.store);
+    }
+  }
+
+  getStorageToken(
+    storageToken:
+      | Partial<UserTokenOptions>
+      | StorageTokenInterface<string>
+      | undefined
+  ): StorageTokenInterface<string> {
+    if (isStorageTokenInterface(storageToken)) {
+      return storageToken;
+    }
+
+    return new UserToken({
+      ...defaultTokenType,
+      ...storageToken
+    });
   }
 
   /**
@@ -197,8 +291,8 @@ export class UserAuthService<
    *
    * @returns The configured UserAuthServiceInterface instance
    */
-  get service(): UserAuthApiInterface<User> {
-    return this.options.service!;
+  get api(): UserAuthApiInterface<User> {
+    return this.options.api!;
   }
 
   /**
@@ -227,7 +321,7 @@ export class UserAuthService<
       if (typeof params === 'string') {
         response = { token: params };
       } else {
-        response = await this.service.login(params);
+        response = await this.api.login(params);
       }
 
       if (!response.token) {
@@ -270,7 +364,7 @@ export class UserAuthService<
       throw new Error('token is not set');
     }
 
-    const response = await this.service.getUserInfo({ token });
+    const response = await this.api.getUserInfo({ token });
 
     this.store.setToken(token);
     this.store.setUserInfo(response);
@@ -289,7 +383,7 @@ export class UserAuthService<
    */
   async logout(): Promise<void> {
     try {
-      await this.service.logout();
+      await this.api.logout();
     } finally {
       if (this.isAuthenticated()) {
         this.store.reset();

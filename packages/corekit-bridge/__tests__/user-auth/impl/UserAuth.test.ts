@@ -40,6 +40,7 @@ class MockStorageToken implements StorageTokenInterface<string> {
 }
 
 class MockAuthService implements UserAuthApiInterface<MockUser> {
+  setUserAuthStore(): void {}
   private validToken = 'valid-token';
   private validUser: MockUser = {
     id: '1',
@@ -71,15 +72,15 @@ class MockAuthService implements UserAuthApiInterface<MockUser> {
 }
 
 describe('UserAuth', () => {
-  let authService: MockAuthService;
+  let authApi: MockAuthService;
   let storageToken: MockStorageToken;
   let userAuth: UserAuthService<MockUser>;
 
   beforeEach(() => {
-    authService = new MockAuthService();
+    authApi = new MockAuthService();
     storageToken = new MockStorageToken();
     userAuth = new UserAuthService({
-      service: authService,
+      api: authApi,
       storageToken
     });
   });
@@ -87,14 +88,14 @@ describe('UserAuth', () => {
   describe('Initialization', () => {
     it('should initialize with required service', () => {
       expect(userAuth).toBeDefined();
-      expect(userAuth.service).toBeDefined();
+      expect(userAuth.api).toBeDefined();
       expect(userAuth.store).toBeDefined();
     });
 
     it('should initialize with custom store', () => {
       const customStore = new UserAuthStore(storageToken);
       const auth = new UserAuthService({
-        service: authService,
+        api: authApi,
         store: customStore
       });
       expect(auth.store).toBe(customStore);
@@ -102,7 +103,7 @@ describe('UserAuth', () => {
 
     it('should handle URL token initialization', () => {
       const auth = new UserAuthService({
-        service: authService,
+        api: authApi,
         href: 'https://example.com?token=test-token',
         urlTokenKey: 'token'
       });
@@ -201,7 +202,7 @@ describe('UserAuth', () => {
 
       // Create new instance with same storage
       const newAuth = new UserAuthService({
-        service: authService,
+        api: authApi,
         storageToken
       });
       expect(newAuth.store.getToken()).toBe(token);
@@ -294,14 +295,15 @@ describe('UserAuth', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors during login', async () => {
-      const failingService: UserAuthApiInterface<MockUser> = {
+      const api: UserAuthApiInterface<MockUser> = {
         login: () => Promise.reject(new Error('Network error')),
         getUserInfo: async () => ({ id: '', name: '', email: '' }),
         register: async () => ({ token: '' }),
-        logout: async () => {}
+        logout: async () => {},
+        setUserAuthStore: () => {}
       };
       const authWithFailingService = new UserAuthService({
-        service: failingService
+        api
       });
       await expect(
         authWithFailingService.login({
@@ -315,14 +317,15 @@ describe('UserAuth', () => {
     });
 
     it('should handle network errors during user info fetch', async () => {
-      const failingService: UserAuthApiInterface<MockUser> = {
+      const api: UserAuthApiInterface<MockUser> = {
         login: async () => ({ token: '' }),
         getUserInfo: () => Promise.reject(new Error('Network error')),
         register: async () => ({ token: '' }),
-        logout: async () => {}
+        logout: async () => {},
+        setUserAuthStore: () => {}
       };
       const authWithFailingService = new UserAuthService({
-        service: failingService
+        api
       });
       await expect(
         authWithFailingService.fetchUserInfo('valid-token')
@@ -331,14 +334,15 @@ describe('UserAuth', () => {
     });
 
     it('should handle missing token in login response', async () => {
-      const badService: UserAuthApiInterface<MockUser> = {
+      const api: UserAuthApiInterface<MockUser> = {
         login: async () => ({}),
         getUserInfo: async () => ({ id: '', name: '', email: '' }),
         register: async () => ({ token: '' }),
-        logout: async () => {}
+        logout: async () => {},
+        setUserAuthStore: () => {}
       };
       const authWithBadService = new UserAuthService({
-        service: badService
+        api
       });
       await expect(
         authWithBadService.login({
@@ -367,14 +371,15 @@ describe('UserAuth', () => {
     });
 
     it('should handle errors during logout', async () => {
-      const failingService: UserAuthApiInterface<MockUser> = {
+      const api: UserAuthApiInterface<MockUser> = {
         login: async () => ({ token: 'valid-token' }),
         getUserInfo: async () => ({ id: '', name: '', email: '' }),
         register: async () => ({ token: '' }),
-        logout: () => Promise.reject(new Error('Logout failed'))
+        logout: () => Promise.reject(new Error('Logout failed')),
+        setUserAuthStore: () => {}
       };
       const authWithFailingService = new UserAuthService({
-        service: failingService
+        api
       });
       await authWithFailingService.login({
         username: 'valid@user.com',
@@ -395,16 +400,17 @@ describe('UserAuth', () => {
     });
 
     it('should handle malformed user info response', async () => {
-      const badService: UserAuthApiInterface<MockUser> = {
+      const api: UserAuthApiInterface<MockUser> = {
         login: async () => ({ token: 'valid-token' }),
         getUserInfo: async () => {
           throw new Error('Malformed user data');
         },
         register: async () => ({ token: '' }),
-        logout: async () => {}
+        logout: async () => {},
+        setUserAuthStore: () => {}
       };
       const authWithBadService = new UserAuthService({
-        service: badService
+        api
       });
       await expect(
         authWithBadService.fetchUserInfo('valid-token')
@@ -467,6 +473,7 @@ class CustomUserAuthService implements UserAuthApiInterface<MockUser> {
       email: 'test@example.com'
     });
   }
+  setUserAuthStore(): void {}
 
   async login(params: MockLoginParams): Promise<LoginResponseData> {
     if (!params || !params.username || !params.password) {
@@ -554,13 +561,13 @@ class MemoryStorageToken implements StorageTokenInterface<string> {
 describe('Custom UserAuthService', () => {
   let memoryStorageToken: MemoryStorageToken;
   let userAuth: UserAuthService<MockUser>;
-  let authService: CustomUserAuthService;
+  let api: CustomUserAuthService;
 
   beforeEach(() => {
     memoryStorageToken = new MemoryStorageToken();
-    authService = new CustomUserAuthService();
+    api = new CustomUserAuthService();
     userAuth = new UserAuthService({
-      service: authService,
+      api,
       storageToken: memoryStorageToken
     });
   });
@@ -651,7 +658,7 @@ describe('Custom UserAuthService', () => {
 
   describe('Registration', () => {
     it('should successfully register new user', async () => {
-      const response = await authService.register({
+      const response = await api.register({
         username: 'new@example.com',
         password: 'new-password'
       });
@@ -660,13 +667,13 @@ describe('Custom UserAuthService', () => {
     });
 
     it('should reject duplicate registration', async () => {
-      await authService.register({
+      await api.register({
         username: 'duplicate@example.com',
         password: 'password'
       });
 
       await expect(
-        authService.register({
+        api.register({
           username: 'duplicate@example.com',
           password: 'another-password'
         })
@@ -675,7 +682,7 @@ describe('Custom UserAuthService', () => {
 
     it('should reject registration with invalid data', async () => {
       await expect(
-        authService.register({
+        api.register({
           username: '',
           password: ''
         })
