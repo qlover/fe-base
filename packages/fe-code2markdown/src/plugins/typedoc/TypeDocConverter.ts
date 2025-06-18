@@ -12,7 +12,7 @@ import {
   HBSTemplateContext,
   ParserContextMap,
   ReflectionKindName
-} from './type';
+} from '../../type';
 import type { LoggerInterface } from '@qlover/logger';
 
 const DisplayPartsKindName = {

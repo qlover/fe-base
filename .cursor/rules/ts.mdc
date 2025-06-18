@@ -3,34 +3,149 @@ description:
 globs: **/**/*.ts,**/**/*.tsx,**/**/*.js
 alwaysApply: false
 ---
-## Code Comment Standards
+## Code Documentation
 
-### TSDoc/JSDoc Requirements
+First, you need to think of the document as a complete documentation page detailing the main contents of the document. Our goal is to follow the “code as documentation” philosophy. But instead of writing comments right at the top of the document
 
-- Each class/interface comment must include:
-  - Significance of existence
-  - Core idea
-  - Main function
-  - Main purpose
-  - Code example
-- For methods/functions:
-  - `@param`: type, purpose, constraints
-  - `@returns`: type and description
-- All comments must be in English
+- Code comments follow TSDoc rules
 
-### Example
+- Special attention should be paid to exported objects, such as export class, export interface, export function, which are generally important elements
+
+- For each element, you need to articulate its purpose, considerations, usage instructions, and workflow, which is crucial
+
+- Detailed usage instructions should also be provided, using @example to demonstrate standardized usage examples, as detailed as possible
+
+# Code Documentation Example
+
+This document demonstrates how to write high-quality code documentation using TSDoc specifications. Following the "code is documentation" philosophy, we build clear API documentation through standardized comments.
+
+## Example Code
 
 ```typescript
 /**
- * User authentication service
+ * ExampleClass is a demonstration class for standard documentation comments
+ * 
+ * Usage Instructions:
+ * This class demonstrates how to properly write TSDoc-style code comments, including complete documentation for classes, properties, methods, and parameters.
  *
- * Significance: Central authentication management
- * Core idea: Single responsibility for user auth
- * Main function: Handle user login/logout
- * Main purpose: Secure user authentication
+ * Purpose:
+ * - Demonstrate standard code documentation practices
+ * - Provide reusable documentation templates
+ * - Ensure code maintainability and readability
+ * 
+ * Working Process:
+ * 1. Initialize instance through constructor
+ * 2. Provide basic property access and method calls
+ * 3. Support debug mode logging
  *
- * @example
- * const authService = new AuthService();
- * await authService.login(credentials);
+ * Important Notes:
+ * - All required parameters must be strictly passed according to type definitions
+ * - Debug mode will generate additional log output, use cautiously in production
+ * - Ensure name parameter is not empty, as it affects instance identification
+ * - The deprecated extra parameter will be removed in future versions
+ *
+ * @example Basic Usage Example
+ * ```typescript
+ * const instance = new ExampleClass({
+ *   name: 'myInstance',
+ *   debug: true
+ * });
+ * 
+ * const result = instance.exampleMethod('test');
+ * console.log(result); // Output: test
+ * ```
+ * 
+ * @example Complete Configuration Example
+ * ```typescript
+ * const instance = new ExampleClass({
+ *   name: 'advancedInstance',
+ *   debug: true,
+ *   extra: {
+ *     customField: 'value'
+ *   }
+ * });
+ * ```
  */
+export class ExampleClass {
+  /**
+   * Unique identifier name for the instance
+   * 
+   * @purpose Used to uniquely identify each class instance
+   * @core Stores instance name as a string
+   * @functionality Provides instance reference and identification mechanism
+   * @usage Used for instance identification across class methods
+   * 
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({ name: "myInstance" });
+   * console.log(instance.name); // Output: "myInstance"
+   * ```
+   */
+  public name: string;
+
+  /**
+   * Debug mode flag
+   * 
+   * @description Controls log output and debugging features
+   * @default false
+   * 
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({
+   *   name: "debugInstance",
+   *   debug: true
+   * });
+   * ```
+   */
+  public debug: boolean = false;
+
+  constructor(options: {
+    /**
+     * Instance name
+     * @description Used to identify the instance uniquely
+     * @default ''
+     * @type {string}
+     */
+    name: string;
+
+    /**
+     * Debug mode
+     * @description Whether to enable debugging features
+     * @default false
+     * @since 1.0.0
+     * @type {boolean}
+     */
+    debug: boolean;
+
+    /**
+     * Extended parameters
+     * @description Used to pass additional configuration items
+     * @type {Record<string, unknown>}
+     * @default {}
+     * @deprecated This parameter will be removed in the next major version
+     */
+    extra?: Record<string, unknown>;
+  }) {
+    this.name = options.name;
+    this.debug = options.debug;
+  }
+
+  /**
+   * Example method
+   * 
+   * @description Demonstrates how to properly document a class method
+   * @param {string} name Input parameter name
+   * @returns {string} Returns the input name
+   * 
+   * @example
+   * ```typescript
+   * const instance = new ExampleClass({ name: "test", debug: false });
+   * const result = instance.exampleMethod("hello");
+   * console.log(result); // Output: "hello"
+   * ```
+   */
+  exampleMethod(name: string): string {
+    return name;
+  }
+}
 ```

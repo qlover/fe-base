@@ -238,6 +238,9 @@ importers:
       '@microsoft/tsdoc':
         specifier: ^0.15.0
         version: 0.15.1
+      '@qlover/fe-corekit':
+        specifier: workspace:*
+        version: link:../fe-corekit
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
