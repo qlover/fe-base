@@ -30,8 +30,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
-      # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
-      - run: pnpm build
+      - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
+      # - run: pnpm build
 
       - name: Check packages
         run: |
