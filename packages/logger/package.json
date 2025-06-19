@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "type": "module",
   "private": false,
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.umd.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -11,7 +11,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.umd.js"
     }
   },
   "files": [
@@ -29,7 +29,7 @@
     "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/logger"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/logger#readme",
   "keywords": [
     "logger",
     "fe-logger",
