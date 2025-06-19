@@ -13,6 +13,7 @@ Frontend Toolkit - Powerful frontend tools collection for modern applications
 - [Package List](#-package-list)
 - [Development Guide](#-development-guide)
   - [Project Build and Dependency Management](./docs/en/project-builder.md)
+  - [Dependency Management Guide](./docs/en/dependency-management-guide.md)
   - [Commit Convention](./docs/en/commit-convention.md)
   - [Project Release](./docs/en/project-release.md)
   - [How to Add a Subpackage](./docs/en/how-to-add-a-subpackage.md)
@@ -97,6 +98,7 @@ pnpm add @qlover/fe-corekit @qlover/fe-scripts @qlover/logger
 ## 🛠️ Development Guide
 
 - [Project Build and Dependency Management](./docs/en/project-builder.md)
+- [Dependency Management Guide](./docs/en/dependency-management-guide.md)
 - [Commit Convention](./docs/en/commit-convention.md)
 - [Project Release](./docs/en/project-release.md)
 - [How to Add a Subpackage](./docs/en/how-to-add-a-subpackage.md)

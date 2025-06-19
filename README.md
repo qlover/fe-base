@@ -13,6 +13,7 @@
 - [包列表](#-包列表)
 - [开发指南](#-开发指南)
   - [项目的构建与依赖管理](./docs/zh/project-builder.md)
+  - [依赖打包策略指南](./docs/zh/dependency-management-guide.md)
   - [提交规范](./docs/zh/commit-convention.md)
   - [项目发布](./docs/zh/project-release.md)
   - [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
@@ -97,6 +98,7 @@ pnpm add @qlover/fe-corekit @qlover/fe-scripts @qlover/logger
 ## 🛠️ 开发指南
 
 - [项目的构建与依赖管理](./docs/zh/project-builder.md)
+- [依赖打包策略指南](./docs/zh/dependency-management-guide.md)
 - [提交规范](./docs/zh/commit-convention.md)
 - [项目发布](./docs/zh/project-release.md)
 - [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
