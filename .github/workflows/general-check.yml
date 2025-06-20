@@ -31,7 +31,12 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       
-      - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
+      # CI environment does not have .nx/cache cache, and each new build cannot read the cache, 
+      # if there is no cache from the last time, then other packages will not produce dist, but the local will read it directly from .nx/cache
+      # TODO: solve nx cache, use incremental build
+      # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD --skip-nx-cache
+      - run: pnpm nx:build:force
+
       - run: pnpm rebuild
 
       - name: Check packages
