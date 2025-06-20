@@ -983,6 +983,11 @@ export default defineConfig({
 - [npm 依赖类型说明](https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file)
 - [语义化版本规范](https://semver.org/lang/zh-CN/)
 
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../../en/builder-guide/dependency-management.md)** - English version of this document
+- **[🏠 返回首页](../index.md)** - 返回中文文档首页
+
 ---
 
 *合理的依赖管理是项目健康发展的基础。遵循最佳实践，定期审计和优化依赖。*

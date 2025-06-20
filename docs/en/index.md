@@ -134,7 +134,8 @@ pnpm changeset publish
 
 ## 🌐 Other Languages
 
-- **[中文文档](../zh/)** - 完整的中文开发文档
+- **[🇨🇳 中文文档](../zh/index.md)** - 完整的中文开发文档
+- **[🏠 Home](../../README.en.md)** - Back to project root
 
 ## 🤝 Contributing
 

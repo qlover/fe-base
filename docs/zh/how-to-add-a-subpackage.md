@@ -685,3 +685,8 @@ pnpm test
 - [测试指南](./testing-guide.md)
 - [打包格式指南](./build-formats.md)
 - [项目发布](./project-release.md)
+
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../en/how-to-add-a-subpackage.md)** - English version of this document
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页

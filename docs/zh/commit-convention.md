@@ -449,3 +449,8 @@ squash ghi9012 feat(fe-corekit): add error handling
 2. 参考本文档的故障排除部分
 3. 联系项目维护者
 4. 查看 commitlint 错误信息获取具体指导 
+
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../en/commit-convention.md)** - English version of this document
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页 
