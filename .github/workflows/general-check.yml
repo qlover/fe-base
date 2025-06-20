@@ -34,8 +34,6 @@ jobs:
       - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
       - run: pnpm rebuild
 
-      # - run: pnpm build
-
       - name: Check packages
         run: |
           git fetch origin ${{ github.base_ref }}
