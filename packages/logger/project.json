@@ -6,12 +6,15 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsup --config packages/logger/tsup.config.ts",
+        "command": "pnpm build",
         "cwd": "packages/logger"
       },
       "inputs": [
         "{projectRoot}/src/**/*.ts",
         "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{projectRoot}/README_EN.md",
         "{workspaceRoot}/nx.json"
       ],
       "outputs": ["{projectRoot}/dist"],

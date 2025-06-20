@@ -164,6 +164,12 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      tailwindcss:
+        specifier: ^3.4.16
+        version: 3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
+      vite:
+        specifier: ^5.4.10
+        version: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
     devDependencies:
       '@qlover/env-loader':
         specifier: workspace:*
@@ -171,36 +177,9 @@ importers:
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
-      '@types/react':
-        specifier: ^18.3.11
-        version: 18.3.20
-      '@types/react-dom':
-        specifier: ^18.3.0
-        version: 18.3.6(@types/react@18.3.20)
-      '@types/react-syntax-highlighter':
-        specifier: ^15.5.13
-        version: 15.5.13
-      '@types/typo-js':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.4.1(vite@5.4.18(@types/node@22.15.2)(terser@5.39.0))
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.5.0
-        version: 3.9.0(@swc/helpers@0.5.17)(vite@5.4.18(@types/node@22.15.2)(terser@5.39.0))
-      tailwindcss:
-        specifier: ^3.4.16
-        version: 3.4.17(ts-node@10.9.2(@swc/core@1.11.22(@swc/helpers@0.5.17))(@types/node@22.15.2)(typescript@5.8.3))
-      typescript:
-        specifier: ^5.6.3
-        version: 5.8.3
-      vite:
-        specifier: ^5.4.10
-        version: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
 
   packages/corekit-node:
-    devDependencies:
+    dependencies:
       '@qlover/fe-corekit':
         specifier: workspace:*
         version: link:../fe-corekit
@@ -210,25 +189,25 @@ importers:
       '@qlover/scripts-context':
         specifier: workspace:*
         version: link:../scripts-context
-      commander:
-        specifier: ^13.1.0
-        version: 13.1.0
       inquirer:
         specifier: ^12.3.2
         version: 12.6.0(@types/node@22.15.2)
-      ora:
-        specifier: ^8.1.1
-        version: 8.2.0
     devDependencies:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
       ignore:
         specifier: ^7.0.3
         version: 7.0.4
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      ora:
+        specifier: ^8.1.1
+        version: 8.2.0
 
   packages/env-loader:
     dependencies:
@@ -244,25 +223,6 @@ importers:
 
   packages/fe-code2markdown:
     dependencies:
-      '@microsoft/tsdoc':
-        specifier: ^0.15.0
-        version: 0.15.1
-      '@qlover/logger':
-        specifier: workspace:*
-        version: link:../logger
-      commander:
-        specifier: ^11.0.0
-        version: 11.1.0
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.8
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      typedoc:
-        specifier: ~0.25.0
-        version: 0.25.13(typescript@5.4.5)
-    devDependencies:
       '@qlover/env-loader':
         specifier: workspace:*
         version: link:../env-loader
@@ -272,28 +232,38 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.0
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      typedoc:
+        specifier: ~0.25.0
+        version: 0.25.13(typescript@5.4.5)
       typescript:
         specifier: ~5.4.0
         version: 5.4.5
-
-  packages/fe-corekit:
-    dependencies:
+    devDependencies:
+      '@qlover/logger':
+        specifier: workspace:*
+        version: link:../logger
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      merge:
-        specifier: ^2.1.1
-        version: 2.1.1
-    devDependencies:
-      '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
+
+  packages/fe-corekit:
+    dependencies:
       '@types/lodash':
         specifier: ^4.17.12
         version: 4.17.16
       axios:
         specifier: ^1.7.9
         version: 1.9.0
+    devDependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
 
   packages/fe-release:
     dependencies:
@@ -412,18 +382,12 @@ importers:
 
   packages/scripts-context:
     dependencies:
-      '@qlover/logger':
-        specifier: workspace:*
-        version: link:../logger
       chalk:
         specifier: ^5.3.0
         version: 5.4.1
       cosmiconfig:
         specifier: ^9.0.0
         version: 9.0.0(typescript@5.8.3)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
     devDependencies:
       '@commitlint/types':
         specifier: ^19.8.0
@@ -431,12 +395,18 @@ importers:
       '@qlover/env-loader':
         specifier: workspace:*
         version: link:../env-loader
+      '@qlover/logger':
+        specifier: workspace:*
+        version: link:../logger
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
       '@types/shelljs':
         specifier: ^0.8.15
         version: 0.8.15
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
 
 packages:
 
@@ -854,18 +824,6 @@ packages:
 
   '@babel/plugin-transform-property-literals@7.25.9':
     resolution: {integrity: sha512-IvIUeV5KrS/VPavfSM/Iu+RE6llrHrYIKY1yfCzyO/lMXHQ+p7uGhonmGVisv6tSBSVgWzMBohTcvkC9vQcQFA==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
-  '@babel/plugin-transform-react-jsx-self@7.25.9':
-    resolution: {integrity: sha512-y8quW6p0WHkEhmErnfe58r7x0A70uKphQm8Sp8cV7tjNQwK56sNVK0M73LK3WuYmsuyrftut4xAkjjgU0twaMg==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
-  '@babel/plugin-transform-react-jsx-source@7.25.9':
-    resolution: {integrity: sha512-+iqjT8xmXhhYv4/uiYd8FNQsraMFZIfxVSqxxVSZP0WbbSAWvBXAul0m/zu+7Vv4O/3WtApy9pmaTMiumEZgfg==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -2326,18 +2284,6 @@ packages:
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
 
-  '@types/babel__core@7.20.5':
-    resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
-
-  '@types/babel__generator@7.27.0':
-    resolution: {integrity: sha512-ufFd2Xi92OAVPYsy+P4n7/U7e68fex0+Ee8gSG9KX7eo084CWiQ4sdxktvdl0bOPupXtVJPY19zk6EwWqUQ8lg==}
-
-  '@types/babel__template@7.4.4':
-    resolution: {integrity: sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A==}
-
-  '@types/babel__traverse@7.20.7':
-    resolution: {integrity: sha512-dkO5fhS7+/oos4ciWxyEyjWe48zmG6wbCheo/G2ZnHx4fs3EU6YC6UM8rk56gAjNJ9P3MTH2jo5jb92/K6wbng==}
-
   '@types/conventional-commits-parser@5.0.1':
     resolution: {integrity: sha512-7uz5EHdzz2TqoMfV7ee61Egf5y6NkcO4FB/1iCCQnbeiI1F3xzv3vK5dBCXUCLQgGYS+mUeigK1iKQzvED+QnQ==}
 
@@ -2371,20 +2317,6 @@ packages:
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
 
-  '@types/prop-types@15.7.14':
-    resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
-
-  '@types/react-dom@18.3.6':
-    resolution: {integrity: sha512-nf22//wEbKXusP6E9pfOCDwFdHAX4u172eaJI4YkDRQEZiorm6KfYnSC2SWLDMVWUOWPERmJnN0ujeAfTBLvrw==}
-    peerDependencies:
-      '@types/react': ^18.0.0
-
-  '@types/react-syntax-highlighter@15.5.13':
-    resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
-
-  '@types/react@18.3.20':
-    resolution: {integrity: sha512-IPaCZN7PShZK/3t6Q87pfTkRm6oLTd4vztyoj+cbHUF1g3FfVb2tFIL79uCRKEfv16AhqDMBywP2VW3KIZUvcg==}
-
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
@@ -2393,9 +2325,6 @@ packages:
 
   '@types/shelljs@0.8.15':
     resolution: {integrity: sha512-vzmnCHl6hViPu9GNLQJ+DZFd6BQI2DBTUeOvYHqkWQLMfKAAQYMb/xAmZkTogZI/vqXHCWkqDRymDI5p0QTi5Q==}
-
-  '@types/typo-js@1.2.2':
-    resolution: {integrity: sha512-AgN5IwO3EPXv2d+UE9VdoOcueCBa4ZcHHwUvx2/IXlfRvkW4Yt3g+eRHzJbkySfj9pyILRT6Zk7V6Vr4LD5Kvg==}
 
   '@typescript-eslint/eslint-plugin@8.31.0':
     resolution: {integrity: sha512-evaQJZ/J/S4wisevDvC1KFZkPzRetH8kYZbkgcTRyql3mcKsf+ZFDV1BVWUGTCAW5pQHoqn5gK5b8kn7ou9aFQ==}
@@ -2470,17 +2399,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.31.0':
     resolution: {integrity: sha512-QcGHmlRHWOl93o64ZUMNewCdwKGU6WItOU52H0djgNmn1EOrhVudrDzXz4OycCRSCPwFCDrE2iIt5vmuUdHxuQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@vitejs/plugin-react-swc@3.9.0':
-    resolution: {integrity: sha512-jYFUSXhwMCYsh/aQTgSGLIN3Foz5wMbH9ahb0Zva//UzwZYbMiZd7oT3AU9jHT9DLswYDswsRwPU9jVF3yA48Q==}
-    peerDependencies:
-      vite: ^4 || ^5 || ^6
-
-  '@vitejs/plugin-react@4.4.1':
-    resolution: {integrity: sha512-IpEm5ZmeXAP/osiBXVVP5KjFMzbWOonMs0NaQQl+xYnUAcq4oHUBsF2+p4MgKWG4YMmFYJU8A6sxRPuowllm6w==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    peerDependencies:
-      vite: ^4.2.0 || ^5.0.0 || ^6.0.0
 
   '@vitest/expect@3.1.2':
     resolution: {integrity: sha512-O8hJgr+zREopCAqWl3uCVaOdqJwZ9qaDwUP7vy3Xigad0phZe9APxKhPcDNqYYi0rX5oMvwJMSCAXY2afqeTSA==}
@@ -2990,9 +2908,6 @@ packages:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
     hasBin: true
-
-  csstype@3.1.3:
-    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
   cz-conventional-changelog@3.3.0:
     resolution: {integrity: sha512-U466fIzU5U22eES5lTNiNbZ+d8dfcHcssH4o7QsdWaCcRs/feIPCxKYSWkYBNs5mny7MvEfwpTLWjvbm94hecw==}
@@ -4659,10 +4574,6 @@ packages:
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
-  react-refresh@0.17.0:
-    resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
-    engines: {node: '>=0.10.0'}
-
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
 
@@ -5996,16 +5907,6 @@ snapshots:
       - supports-color
 
   '@babel/plugin-transform-property-literals@7.25.9(@babel/core@7.26.10)':
-    dependencies:
-      '@babel/core': 7.26.10
-      '@babel/helper-plugin-utils': 7.26.5
-
-  '@babel/plugin-transform-react-jsx-self@7.25.9(@babel/core@7.26.10)':
-    dependencies:
-      '@babel/core': 7.26.10
-      '@babel/helper-plugin-utils': 7.26.5
-
-  '@babel/plugin-transform-react-jsx-source@7.25.9(@babel/core@7.26.10)':
     dependencies:
       '@babel/core': 7.26.10
       '@babel/helper-plugin-utils': 7.26.5
@@ -7446,6 +7347,7 @@ snapshots:
       '@swc/core-win32-ia32-msvc': 1.11.22
       '@swc/core-win32-x64-msvc': 1.11.22
       '@swc/helpers': 0.5.17
+    optional: true
 
   '@swc/core@1.5.29(@swc/helpers@0.5.17)':
     dependencies:
@@ -7488,27 +7390,6 @@ snapshots:
 
   '@types/argparse@1.0.38': {}
 
-  '@types/babel__core@7.20.5':
-    dependencies:
-      '@babel/parser': 7.27.0
-      '@babel/types': 7.27.0
-      '@types/babel__generator': 7.27.0
-      '@types/babel__template': 7.4.4
-      '@types/babel__traverse': 7.20.7
-
-  '@types/babel__generator@7.27.0':
-    dependencies:
-      '@babel/types': 7.27.0
-
-  '@types/babel__template@7.4.4':
-    dependencies:
-      '@babel/parser': 7.27.0
-      '@babel/types': 7.27.0
-
-  '@types/babel__traverse@7.20.7':
-    dependencies:
-      '@babel/types': 7.27.0
-
   '@types/conventional-commits-parser@5.0.1':
     dependencies:
       '@types/node': 22.15.2
@@ -7538,21 +7419,6 @@ snapshots:
 
   '@types/parse-json@4.0.2': {}
 
-  '@types/prop-types@15.7.14': {}
-
-  '@types/react-dom@18.3.6(@types/react@18.3.20)':
-    dependencies:
-      '@types/react': 18.3.20
-
-  '@types/react-syntax-highlighter@15.5.13':
-    dependencies:
-      '@types/react': 18.3.20
-
-  '@types/react@18.3.20':
-    dependencies:
-      '@types/prop-types': 15.7.14
-      csstype: 3.1.3
-
   '@types/resolve@1.20.2': {}
 
   '@types/semver@7.7.0': {}
@@ -7561,8 +7427,6 @@ snapshots:
     dependencies:
       '@types/glob': 7.2.0
       '@types/node': 22.15.2
-
-  '@types/typo-js@1.2.2': {}
 
   '@typescript-eslint/eslint-plugin@8.31.0(@typescript-eslint/parser@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.4.5))(eslint@9.25.1(jiti@2.4.2))(typescript@5.4.5)':
     dependencies:
@@ -7678,24 +7542,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.31.0
       eslint-visitor-keys: 4.2.0
-
-  '@vitejs/plugin-react-swc@3.9.0(@swc/helpers@0.5.17)(vite@5.4.18(@types/node@22.15.2)(terser@5.39.0))':
-    dependencies:
-      '@swc/core': 1.11.22(@swc/helpers@0.5.17)
-      vite: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
-    transitivePeerDependencies:
-      - '@swc/helpers'
-
-  '@vitejs/plugin-react@4.4.1(vite@5.4.18(@types/node@22.15.2)(terser@5.39.0))':
-    dependencies:
-      '@babel/core': 7.26.10
-      '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.10)
-      '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.10)
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.17.0
-      vite: 5.4.18(@types/node@22.15.2)(terser@5.39.0)
-    transitivePeerDependencies:
-      - supports-color
 
   '@vitest/expect@3.1.2':
     dependencies:
@@ -8251,8 +8097,6 @@ snapshots:
       which: 2.0.2
 
   cssesc@3.0.0: {}
-
-  csstype@3.1.3: {}
 
   cz-conventional-changelog@3.3.0(@types/node@22.15.2)(typescript@5.4.5):
     dependencies:
@@ -10028,8 +9872,6 @@ snapshots:
 
   react-is@18.3.1: {}
 
-  react-refresh@0.17.0: {}
-
   read-cache@1.0.0:
     dependencies:
       pify: 2.3.0
@@ -10696,7 +10538,8 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  typescript@5.8.3: {}
+  typescript@5.8.3:
+    optional: true
 
   ufo@1.6.1: {}
 
