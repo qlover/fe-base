@@ -6,8 +6,6 @@
   "type": "module",
   "files": [
     "dist",
-    "configs",
-    "templates",
     "package.json",
     "README.md",
     "CHANGELOG.md"

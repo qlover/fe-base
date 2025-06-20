@@ -4,12 +4,12 @@ import { glob } from 'glob';
 
 /**
  * Copy files or directories (support glob pattern)
- * 
+ *
  * Significance: Asset management utility for build processes
  * Core idea: Flexible file/directory copying with glob pattern support
  * Main function: Copy matched files/directories to target location
  * Main purpose: Simplify asset copying in build scripts
- * 
+ *
  * @example
  * // Copy all files in hbs directory to dist
  * await copyAssets('./hbs', 'dist');
@@ -17,14 +17,15 @@ import { glob } from 'glob';
  * await copyAssets('./hbs/*.hbs', 'dist');
  * // Copy all .hbs files to dist/hbs
  * await copyAssets('./hbs/*.hbs', 'dist/hbs');
- * 
+ *
  * @param {string} sourcePattern - source path (support glob, like `./src/**`)
  * @param {string} targetDir - target directory
  * @param {object} [options] - options
  * @param {boolean} [options.verbose=false] - whether to show verbose logs
+ * @param {string[]} [options.ignores=[]] - ignore patterns
  */
 export async function copyAssets(sourcePattern, targetDir, options = {}) {
-  const { verbose = false } = options;
+  const { verbose = false, ignores = [] } = options;
 
   try {
     // 1. Get all matching files/directories
@@ -51,7 +52,7 @@ export async function copyAssets(sourcePattern, targetDir, options = {}) {
           );
       } else if (stats.isDirectory()) {
         // Directory: Copy all contents directly to target directory
-        await copyDirectoryContents(sourcePath, targetDir, verbose);
+        await copyDirectoryContents(sourcePath, targetDir, verbose, ignores);
       }
     }
 
@@ -64,12 +65,13 @@ export async function copyAssets(sourcePattern, targetDir, options = {}) {
 
 /**
  * Copy directory contents directly to target directory (flatten structure)
- * 
+ *
  * @param {string} srcDir - source directory path
- * @param {string} destDir - destination directory path  
+ * @param {string} destDir - destination directory path
  * @param {boolean} verbose - whether to show verbose logs
+ * @param {string[]} [ignores=[]] - ignore patterns
  */
-async function copyDirectoryContents(srcDir, destDir, verbose) {
+async function copyDirectoryContents(srcDir, destDir, verbose, ignores) {
   await mkdir(destDir, { recursive: true });
   const entries = await readdir(srcDir, { withFileTypes: true });
 
@@ -77,8 +79,12 @@ async function copyDirectoryContents(srcDir, destDir, verbose) {
     const srcPath = join(srcDir, entry.name);
     const destPath = join(destDir, entry.name);
 
+    if (ignores.some((ignore) => srcPath.includes(ignore))) {
+      continue;
+    }
+
     if (entry.isDirectory()) {
-      await copyDirectoryContents(srcPath, destPath, verbose);
+      await copyDirectoryContents(srcPath, destPath, verbose, ignores);
     } else {
       await copyFile(srcPath, destPath);
       if (verbose)
