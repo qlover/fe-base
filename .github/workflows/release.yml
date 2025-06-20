@@ -37,7 +37,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
-      - run: pnpm build
+      - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
+      - run: pnpm rebuild
 
       - name: Release Pull Request
         run: node packages/fe-release/dist/cli.js -V -P --githubPR.push-change-labels --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}} --changelog.ignore-non-updated-packages
@@ -72,7 +73,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
-      - run: pnpm build
+      - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD
+      - run: pnpm rebuild
 
       - name: Create tag and publish
         run: node packages/fe-release/dist/cli.js -V --changelog.skip-changeset --workspaces.change-labels=${{join(github.event.pull_request.labels.*.name,',')}}
