@@ -1,0 +1,25 @@
+{
+  "name": "@qlover/create-app",
+  "sourceRoot": "packages/create-app/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build",
+        "cwd": "packages/create-app"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/templates/**/*.ts",
+        "{projectRoot}/configs",
+        "{projectRoot}/package.json",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/README.md",
+        "{workspaceRoot}/nx.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    }
+  }
+}
