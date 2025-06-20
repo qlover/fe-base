@@ -18,6 +18,7 @@
     "dryrun:release": "node ./packages/fe-release/dist/cli.js -V --changelog.skip-changeset --githubPR.dry-run-create-PR",
     "release": "pnpm --filter @qlover/fe-release release",
     "nx:build": "nx affected:build",
+    "nx:build:force": "pnpm nx run-many --target=build --all --skip-nx-cache --parallel --maxParallel=4",
     "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs} --write",
     "lint": "eslint . --fix",
     "test": "vitest run",
