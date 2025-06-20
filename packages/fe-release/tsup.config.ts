@@ -1,8 +1,6 @@
 import { defineConfig } from 'tsup';
 import { builtinModules } from 'module';
 import pkg from './package.json';
-import { copyAssets } from '../../make/copyAssets';
-
 const external = [
   ...builtinModules,
   ...builtinModules.map((mod) => `node:${mod}`),
@@ -11,8 +9,8 @@ const external = [
 
 export default defineConfig([
   {
-    entry: ['src/index.ts'],
-    format: 'cjs',
+    entry: ['src/index.ts', 'src/cli.ts'],
+    format: ['esm', 'cjs'],
     dts: false,
     clean: true,
     minify: true,
@@ -21,14 +19,7 @@ export default defineConfig([
   },
   {
     entry: ['src/index.ts'],
-    format: 'esm',
-    minify: true,
-    dts: true,
-    onSuccess: async () => {
-      await copyAssets('./configs', 'dist/configs');
-      await copyAssets('./templates', 'dist/templates', {
-        ignores: ['node_modules', 'dist']
-      });
-    }
+    format: ['esm'],
+    dts: true
   }
 ]);

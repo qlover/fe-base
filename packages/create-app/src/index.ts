@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-import { join, dirname } from 'path';
+import { resolve } from 'path';
 import { existsSync } from 'fs';
 import { Command } from 'commander';
 import { Generator } from './Generator';
 import pkg from '../package.json';
-import { fileURLToPath } from 'url';
 
 function programArgs() {
   const program = new Command();
@@ -30,10 +29,8 @@ function programArgs() {
 async function main() {
   const { dryRun, verbose, ...commandOptions } = programArgs();
 
-  const rootPath = dirname(fileURLToPath(import.meta.url));
-
-  const templateRootPath = join(rootPath, '../templates');
-  const configsRootPath = join(rootPath, '../configs');
+  const templateRootPath = resolve('./templates');
+  const configsRootPath = resolve('./configs');
 
   if (!existsSync(templateRootPath)) {
     console.error('Template is empty!');

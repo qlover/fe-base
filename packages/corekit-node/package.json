@@ -40,7 +40,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "devDependencies": {
+  "dependencies": {
     "@qlover/fe-corekit": "workspace:*"
   }
 }

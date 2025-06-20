@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import { Command } from 'commander';
 import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
 import pkg from '../package.json';
 import { ReflectionGenerater } from './ReflectionGenerater';
-import { Utils } from './Utils';
 
 const DEFAULT_GENERATE_PATH = './docs.output';
 const DEFAULT_OUTPUT_JSON_FILE_PATH = DEFAULT_GENERATE_PATH + '/code2md.json';
 const DEFAULT_TPL_PATH = './code2md.tpl.json';
-const DEFAULT_HBS_ROOT_DIR = '../hbs';
+const DEFAULT_HBS_ROOT_DIR = './hbs';
 
 const program = new Command();
 
@@ -40,12 +39,7 @@ const main = async () => {
     ? resolve(opts.tplPath)
     : resolve(opts.generatePath, DEFAULT_TPL_PATH);
 
-  // fixed hbs root dir
-  const currentDir = Utils.getCurrentDirPath(
-    typeof import.meta !== 'undefined' ? import.meta : undefined
-  );
-
-  const hbsRootDir = resolve(join(currentDir, DEFAULT_HBS_ROOT_DIR));
+  const hbsRootDir = resolve(DEFAULT_HBS_ROOT_DIR);
 
   // TODO: 检验参数
   const generaterOptions = {

@@ -10,7 +10,7 @@ import {
   type RequestAdapterResponse,
   RequestErrorID
 } from '../interface';
-import { merge } from 'merge';
+import merge from 'lodash/merge';
 import pick from 'lodash/pick';
 
 /**

@@ -1,5 +1,11 @@
+import { readFileSync } from 'fs';
 import { createBaseRollup } from '../../make/createBaseRollup.js';
-import { Env } from '@qlover/env-loader';
+import { toPureCamelCase } from '../../make/toPureCamelCase.js';
+import { join } from 'path';
+
+const packageName = JSON.parse(
+  readFileSync(join(process.cwd(), 'package.json'), 'utf-8')
+).name;
 
 export default createBaseRollup({
   input: 'src/core/index.ts',
@@ -7,10 +13,11 @@ export default createBaseRollup({
     {
       format: 'umd',
       ext: 'umd.js',
-      name: 'feCorekitBridge'
+      name: toPureCamelCase(packageName)
     }
   ],
   clean: false,
   excludeDependencies: true,
-  isProduction: Env.searchEnv().get('NODE_ENV') === 'production'
+  external: ['tailwindcss', 'vite'],
+  isProduction: true
 });

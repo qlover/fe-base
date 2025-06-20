@@ -9,15 +9,17 @@
     "package.json",
     "README.md"
   ],
-  "main": "./dist/index.umd.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
+  "browser": "./dist/index.iife.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.umd.js"
+      "browser": "./dist/index.iife.js",
+      "require": "./dist/index.cjs"
     }
   },
   "repository": {
@@ -39,16 +41,14 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsup",
     "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "merge": "^2.1.1"
+    "axios": "^1.7.9",
+    "@types/lodash": "^4.17.12"
   },
   "devDependencies": {
-    "@qlover/env-loader": "workspace:*",
-    "@types/lodash": "^4.17.12",
-    "axios": "^1.7.9"
+    "lodash": "^4.17.21"
   }
 }

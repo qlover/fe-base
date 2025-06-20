@@ -11,24 +11,20 @@ const external = [
 
 export default defineConfig([
   {
-    entry: ['src/index.ts'],
-    format: 'cjs',
+    entry: ['src/index.ts', 'src/cli.ts'],
+    format: ['esm', 'cjs'],
     dts: false,
     clean: true,
-    minify: true,
+    minify: false,
     external,
     platform: 'node'
   },
   {
     entry: ['src/index.ts'],
-    format: 'esm',
-    minify: true,
+    format: ['esm'],
     dts: true,
     onSuccess: async () => {
-      await copyAssets('./configs', 'dist/configs');
-      await copyAssets('./templates', 'dist/templates', {
-        ignores: ['node_modules', 'dist']
-      });
+      await copyAssets('./hbs', 'dist/hbs');
     }
   }
 ]);
