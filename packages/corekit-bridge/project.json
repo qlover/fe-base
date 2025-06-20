@@ -1,0 +1,26 @@
+{
+  "name": "@qlover/corekit-bridge",
+  "sourceRoot": "packages/corekit-bridge/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build",
+        "cwd": "packages/corekit-bridge"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tsconfig.build.json",
+        "{projectRoot}/tsconfig.esm.json",
+        "{projectRoot}/rollup.config.js",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{projectRoot}/README_EN.md",
+        "{workspaceRoot}/nx.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    }
+  }
+}

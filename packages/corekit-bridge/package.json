@@ -12,6 +12,7 @@
   "main": "./dist/index.umd.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "browser": "./dist/index.umd.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -51,19 +52,12 @@
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
     "@qlover/slice-store": "^1.2.6",
-    "js-cookie": "^3.0.5"
+    "js-cookie": "^3.0.5",
+    "tailwindcss": "^3.4.16",
+    "vite": "^5.4.10"
   },
   "devDependencies": {
     "@qlover/env-loader": "workspace:*",
-    "@types/js-cookie": "^3.0.6",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/typo-js": "^1.2.2",
-    "@vitejs/plugin-react": "^4.3.4",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "tailwindcss": "^3.4.16",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.10"
+    "@types/js-cookie": "^3.0.6"
   }
 }
