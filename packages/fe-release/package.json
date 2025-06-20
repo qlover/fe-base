@@ -45,7 +45,7 @@
     "fe-release": "dist/cli.js"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsup",
     "release": "node dist/cli.js",
     "release-pr": "node dist/cli.js -P",
     "dryrun:release": "node dist/cli.js --dry-run -V",
