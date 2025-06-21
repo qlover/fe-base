@@ -580,3 +580,8 @@ If you encounter issues while using commit conventions:
 2. Refer to the troubleshooting section in this document
 3. Contact project maintainers
 4. Check commitlint error messages for specific guidance 
+
+## 🌐 Other Languages
+
+- **[🇨🇳 中文](../zh/commit-convention.md)** - Chinese version of this document
+- **[🏠 Home](./index.md)** - Back to English documentation home 

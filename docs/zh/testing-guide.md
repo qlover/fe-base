@@ -637,3 +637,9 @@ describe('fe-corekit Integration Tests', () => {
     expect(() => MyUtility.processData('')).not.toThrow();
   });
 });
+```
+
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../en/testing-guide.md)** - English version of this document
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页
