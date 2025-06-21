@@ -556,3 +556,8 @@ npm ls @qlover/fe-corekit
 - [如何增加一个子包](./how-to-add-a-subpackage.md)
 - [项目构建与依赖管理](./project-builder.md)
 - [测试指南](./testing-guide.md)
+
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../en/project-release.md)** - English version of this document
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页

@@ -132,9 +132,10 @@ pnpm changeset publish
 - **测试相关** - 查看 [测试指南](./testing-guide.md)
 - **提交规范** - 查看 [提交规范](./commit-convention.md)
 
-## 🌐 其他语言
+## 🌐 其他语言版本
 
-- **[English Documentation](../en/)** - Complete English documentation
+- **[🇺🇸 English Documentation](../en/index.md)** - Complete English documentation
+- **[🏠 返回根目录](../../README.md)** - 返回项目根目录
 
 ## 🤝 参与贡献
 
