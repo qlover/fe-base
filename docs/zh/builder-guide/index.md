@@ -105,10 +105,12 @@ pnpm 的工作空间功能，允许在单个仓库中管理多个包，并共享
 - [Vite 库模式](https://vitejs.dev/guide/build.html#library-mode)
 
 ### 工具链
-- [pnpm](https://pnpm.io/) - 包管理器
-- [nx](https://nx.dev/) - 构建系统
-- [tsup](https://tsup.egoist.dev/) - TypeScript 构建工具
-- [Vite](https://vitejs.dev/) - 现代构建工具
+- [pnpm](https://pnpm.io/) - 包管理器 (v8.0.0+)
+- [nx](https://nx.dev/) - 构建系统 (v20.6.4)
+- [tsup](https://tsup.egoist.dev/) - TypeScript 构建工具 (v8.4.0+)
+- [Vite](https://vitejs.dev/) - 现代构建工具 (v6.1.0+)
+- [TypeScript](https://www.typescriptlang.org/) - 类型系统 (v5.4.5)
+- [Rollup](https://rollupjs.org/) - 模块打包工具 (v4.24.2)
 
 ### 社区资源
 - [npm 包发布最佳实践](https://docs.npmjs.com/packages-and-modules/)

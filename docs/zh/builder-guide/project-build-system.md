@@ -21,7 +21,9 @@ fe-base 采用 **Monorepo**（单体仓库）架构，在一个 Git 仓库中管
 ```
 fe-base/
 ├── packages/
-│   ├── fe-corekit/           # 核心工具包
+│   ├── corekit-bridge/       # 核心桥接工具包
+│   ├── corekit-node/         # Node.js 核心工具包
+│   ├── fe-corekit/           # 前端核心工具包
 │   ├── fe-scripts/           # 脚本工具
 │   ├── fe-release/           # 发布工具
 │   ├── logger/               # 日志工具

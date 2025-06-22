@@ -9,7 +9,6 @@
 全面了解 fe-base 的 monorepo 架构和构建系统：
 
 - **[构建系统概览](./builder-guide/index.md)** - 整体架构和技术栈介绍
-- **[项目构建系统](./builder-guide/project-build-system.md)** - monorepo 架构、pnpm workspace、构建命令
 - **[依赖管理策略](./builder-guide/dependency-management.md)** - 依赖类型、本地包管理、打包策略
 - **[打包格式配置](./builder-guide/build-formats-config.md)** - 输出格式选择、构建工具配置、优化策略
 
@@ -19,7 +18,6 @@
 
 - **[提交规范](./commit-convention.md)** - Git 提交信息规范和工具配置
 - **[测试指南](./testing-guide.md)** - 测试策略、工具使用和最佳实践
-- **[打包格式指南](./build-formats.md)** - 包格式选择和配置指南
 
 ### 🚀 项目管理
 
@@ -72,10 +70,12 @@ pnpm add @qlover/logger
 
 ### 核心工具包
 - **[@qlover/fe-corekit](../../packages/fe-corekit/README.md)** - 前端核心工具库，提供存储、序列化、请求等功能
-- **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - 前端开发脚本工具集
+- **[@qlover/corekit-bridge](../../packages/corekit-bridge/README.md)** - 核心工具包桥接器
+- **[@qlover/corekit-node](../../packages/corekit-node/README.md)** - Node.js 环境核心工具
 - **[@qlover/logger](../../packages/logger/README.md)** - 灵活的日志记录系统
 
 ### 开发工具
+- **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - 前端开发脚本工具集
 - **[@qlover/fe-code2markdown](../../packages/fe-code2markdown/README.md)** - 代码转 Markdown 文档生成工具
 - **[@qlover/fe-release](../../packages/fe-release/README.md)** - 项目发布管理工具
 - **[@qlover/create-app](../../packages/create-app/README.md)** - 应用脚手架生成工具
@@ -84,11 +84,7 @@ pnpm add @qlover/logger
 - **[@qlover/fe-standard](../../packages/fe-standard/README.md)** - 前端开发标准和规范
 - **[@qlover/eslint-plugin-fe-dev](../../packages/eslint-plugin-fe-dev/README.md)** - 前端开发 ESLint 插件
 - **[@qlover/env-loader](../../packages/env-loader/README.md)** - 环境变量加载工具
-
-### 支持工具
 - **[@qlover/scripts-context](../../packages/scripts-context/README.md)** - 脚本执行上下文工具
-- **[@qlover/corekit-bridge](../../packages/corekit-bridge/README.md)** - 核心工具包桥接器
-- **[@qlover/corekit-node](../../packages/corekit-node/README.md)** - Node.js 环境核心工具
 
 ## 🔧 常用命令
 
@@ -123,7 +119,6 @@ pnpm changeset publish
 ## ❓ 常见问题
 
 ### 构建相关
-- **构建失败** - 查看 [项目构建系统](./builder-guide/project-build-system.md#常见问题)
 - **依赖问题** - 查看 [依赖管理策略](./builder-guide/dependency-management.md#常见问题)
 - **格式配置** - 查看 [打包格式配置](./builder-guide/build-formats-config.md#常见问题)
 

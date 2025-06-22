@@ -37,8 +37,8 @@
     "axios": "^1.6.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tsup": "^8.0.0"
+    "typescript": "~5.4.5",
+    "tsup": "^8.4.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

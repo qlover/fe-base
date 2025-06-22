@@ -42,6 +42,7 @@ mkdir src
 mkdir __tests__
 mkdir __mocks__
 mkdir dist
+mkdir docs
 ```
 
 ### 第二步：创建核心配置文件
@@ -62,45 +63,37 @@ touch package.json
   "description": "你的包描述",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
+  "browser": "./dist/index.iife.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
+      "browser": "./dist/index.iife.js",
       "require": "./dist/index.cjs"
     }
   },
   "files": [
     "dist",
     "package.json",
-    "README.md",
-    "README_EN.md",
-    "CHANGELOG.md"
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/my-new-package.json -t ./docs/.output/my-new-package.tpl.json"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/my-new-package"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",
-  "keywords": ["frontend toolkit", "my-new-package", "你的关键词"],
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/my-new-package#readme",
+  "keywords": ["frontend toolkit", "my-new-package"],
   "author": "你的名字",
   "license": "ISC",
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "typescript": "workspace:*",
-    "tsup": "workspace:*",
-    "vitest": "workspace:*"
   }
 }
 ```
@@ -133,19 +126,27 @@ touch tsup.config.ts
 
 ```typescript
 import { defineConfig } from 'tsup';
+import pkg from './package.json';
+import { toPureCamelCase } from '../../make/toPureCamelCase';
 
+const pkgName = toPureCamelCase(pkg.name);
 export default defineConfig([
-  // 主构建配置
   {
     entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    format: ['cjs', 'iife'],
     dts: false,
-    sourcemap: true,
+    minify: true,
     clean: true,
-    minify: process.env.NODE_ENV === 'production',
+    silent: true,
+    globalName: pkgName,
+    outExtension: ({ format }) => {
+      if (format === 'iife') {
+        return { js: '.iife.js' };
+      }
+      return { js: '.cjs' };
+    },
     outDir: 'dist'
   },
-  // 类型定义构建
   {
     entry: ['src/index.ts'],
     format: 'esm',
@@ -304,10 +305,10 @@ describe('myUtilFunction', () => {
 
 ### 第五步：创建文档文件
 
-#### 5.1 创建 README.md
+#### 5.1 创建 README.md 和 README_EN.md
 
 ```bash
-touch README.md
+touch README.md README_EN.md
 ```
 
 ```markdown
@@ -388,7 +389,7 @@ pnpm test
 
 # 检查构建产物
 ls dist/
-# 应该看到：index.js, index.cjs, index.d.ts
+# 应该看到：index.js, index.cjs, index.iife.js, index.d.ts
 ```
 
 ## 🚀 使用 nx 创建
@@ -425,11 +426,12 @@ packages/my-new-package/
 ```json
 {
   "name": "my-new-package",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/my-new-package/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/js:tsup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "packages/my-new-package/dist",
@@ -450,55 +452,6 @@ packages/my-new-package/
 }
 ```
 
-## 📋 配置文件详解
-
-### package.json 关键字段
-
-| 字段 | 说明 | 示例 |
-|------|------|------|
-| `name`    | 包名，必须以 `@qlover/` 开头 | `@qlover/my-package` |
-| `version` | 版本号，遵循语义化版本 | `0.1.0` |
-| `type`    | 模块类型，设为 `module` | `module` |
-| `main`    | CommonJS 入口 | `./dist/index.cjs` |
-| `module`  | ES Module 入口 | `./dist/index.js` |
-| `types`   | TypeScript 类型定义 | `./dist/index.d.ts` |
-| `exports` | 现代模块导出配置 | 见上面示例 |
-
-### tsconfig.json 配置
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "__tests__"]
-}
-```
-
-### tsup.config.ts 配置选项
-
-```typescript
-import { defineConfig } from 'tsup';
-
-export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm', 'cjs'],
-  dts: true,
-  sourcemap: true,
-  clean: true,
-  minify: process.env.NODE_ENV === 'production',
-  splitting: false,
-  outDir: 'dist',
-  target: 'es2020',
-  platform: 'neutral'
-});
-```
-
 ## 📁 目录结构规范
 
 ### 推荐的包结构
@@ -515,14 +468,14 @@ export default defineConfig({
 │   └── utils.test.ts      # 工具测试文件
 ├── __mocks__/             # Mock 文件
 ├── dist/                  # 构建产物（自动生成）
-├── docs/                  # 文档目录（可选）
-├── examples/              # 示例代码（可选）
+├── docs/                  # 文档目录
 ├── package.json           # 包配置
 ├── tsconfig.json          # TS 配置
 ├── tsup.config.ts         # 构建配置
-├── README.md              # 说明文档
-├── README_EN.md           # 英文文档（可选）
-└── CHANGELOG.md           # 变更日志
+├── project.json           # nx 项目配置
+├── README.md             # 中文文档
+├── README_EN.md          # 英文文档
+└── CHANGELOG.md          # 变更日志
 ```
 
 ## 🎯 最佳实践
@@ -681,9 +634,9 @@ pnpm test
 
 ## 📚 相关文档
 
-- [项目构建与依赖管理](./project-builder.md)
+- [依赖管理策略](./builder-guide/dependency-management.md)
 - [测试指南](./testing-guide.md)
-- [打包格式指南](./build-formats.md)
+- [打包格式配置](./builder-guide/build-formats-config.md)
 - [项目发布](./project-release.md)
 
 ## 🌐 其他语言版本

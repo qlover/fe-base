@@ -26,44 +26,50 @@
 
 ### 主要类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `feat` | 新功能 | Minor | ✅ |
-| `fix` | Bug 修复 | Patch | ✅ |
-| `docs` | 文档更新 | - | ✅ |
-| `refactor` | 代码重构 | - | ✅ |
-| `perf` | 性能优化 | Patch | ✅ |
-| `build` | 构建系统或外部依赖变更 | - | ✅ |
+| 类型 | 描述 | CHANGELOG 显示 |
+|------|------|----------------|
+| `feat` | 新功能 | ✨ Features |
+| `fix` | Bug 修复 | 🐞 Bug Fixes |
+| `docs` | 文档更新 | 📝 Documentation |
+| `refactor` | 代码重构 | ♻️ Refactors |
+| `perf` | 性能优化 | 🚀 Performance |
+| `build` | 构建系统或外部依赖变更 | 🚧 Build |
 
 ### 辅助类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `test` | 测试相关 | - | ❌ |
-| `chore` | 其他杂项 | - | ❌ |
-| `style` | 代码格式化 | - | ❌ |
-| `ci` | CI/CD 配置 | - | ❌ |
-| `revert` | 回滚提交 | - | ❌ |
+| 类型 | 描述 | CHANGELOG 显示 |
+|------|------|----------------|
+| `test` | 测试相关 | 🚨 Tests (隐藏) |
+| `chore` | 其他杂项 | 🔧 Chores (隐藏) |
+| `style` | 代码格式化 | 🎨 Styles (隐藏) |
+| `ci` | CI/CD 配置 | 🔄 CI (隐藏) |
+| `revert` | 回滚提交 | ⏪ Reverts (隐藏) |
+| `release` | 发布相关 | 🔖 Releases (隐藏) |
 
 ### 特殊类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `BREAKING CHANGE` | 破坏性变更 | Major | ✅ |
-| `release` | 发布相关 | - | ❌ |
+| 类型 | 描述 | 版本影响 |
+|------|------|----------|
+| `BREAKING CHANGE` | 破坏性变更 | Major |
 
 ## 🎯 作用域 (Scope)
 
-作用域用于指明提交影响的范围，使用小写字母。
+作用域用于指明提交影响的范围，使用小写字母。当前项目支持的作用域包括：
 
 ### 包作用域
 
-```bash
-feat(fe-corekit): add storage utility functions
-fix(fe-scripts): resolve clean command issue
-test(logger): add unit tests for log levels
-docs(fe-release): update release workflow guide
-```
+- `fe-corekit` - 前端核心工具库
+- `corekit-bridge` - 核心工具包桥接器
+- `corekit-node` - Node.js 环境核心工具
+- `logger` - 日志工具
+- `fe-scripts` - 前端开发脚本
+- `fe-code2markdown` - 代码转文档工具
+- `fe-release` - 发布管理工具
+- `create-app` - 应用脚手架
+- `fe-standard` - 前端开发标准
+- `eslint-plugin-fe-dev` - ESLint 插件
+- `env-loader` - 环境变量加载器
+- `scripts-context` - 脚本上下文工具
 
 ### 功能作用域
 
@@ -200,63 +206,31 @@ npm install -g commitizen
 git cz
 ```
 
-#### 交互式提交流程
-
-```bash
-? Select the type of change that you're committing: feat
-? What is the scope of this change (e.g. component or file name): fe-corekit
-? Write a short, imperative tense description: add storage utilities
-? Provide a longer description: (optional)
-? Are there any breaking changes? No
-? Does this change affect any open issues? No
-```
-
 ### 配置文件
 
+项目使用 `fe-config.json` 统一管理提交规范配置：
+
 ```json
-// package.json
 {
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
+  "release": {
+    "changelog": {
+      "types": [
+        { "type": "feat", "section": "#### ✨ Features", "hidden": false },
+        { "type": "fix", "section": "#### 🐞 Bug Fixes", "hidden": false },
+        { "type": "docs", "section": "#### 📝 Documentation", "hidden": false },
+        { "type": "refactor", "section": "#### ♻️ Refactors", "hidden": false },
+        { "type": "perf", "section": "#### 🚀 Performance", "hidden": false },
+        { "type": "build", "section": "#### 🚧 Build", "hidden": false },
+        { "type": "chore", "section": "#### 🔧 Chores", "hidden": true },
+        { "type": "test", "section": "#### 🚨 Tests", "hidden": true },
+        { "type": "style", "section": "#### 🎨 Styles", "hidden": true },
+        { "type": "ci", "section": "#### 🔄 CI", "hidden": true },
+        { "type": "revert", "section": "#### ⏪ Reverts", "hidden": true },
+        { "type": "release", "section": "#### 🔖 Releases", "hidden": true }
+      ]
     }
   }
 }
-```
-
-### 作用域配置
-
-```javascript
-// .cz-config.js
-module.exports = {
-  types: [
-    { value: 'feat', name: 'feat:     新功能' },
-    { value: 'fix', name: 'fix:      Bug 修复' },
-    { value: 'docs', name: 'docs:     文档更新' },
-    { value: 'refactor', name: 'refactor: 代码重构' },
-    { value: 'perf', name: 'perf:     性能优化' },
-    { value: 'test', name: 'test:     测试相关' },
-    { value: 'build', name: 'build:    构建系统' },
-    { value: 'ci', name: 'ci:       CI/CD' },
-    { value: 'chore', name: 'chore:    其他杂项' },
-    { value: 'style', name: 'style:    代码格式' },
-    { value: 'revert', name: 'revert:   回滚提交' }
-  ],
-  scopes: [
-    'fe-corekit',
-    'fe-scripts', 
-    'fe-code2markdown',
-    'fe-release',
-    'logger',
-    'env-loader',
-    'fe-standard',
-    'eslint-plugin-fe-dev',
-    'scripts-context',
-    'corekit-bridge',
-    'corekit-node',
-    'create-app'
-  ]
-};
 ```
 
 ## 📊 提交示例
