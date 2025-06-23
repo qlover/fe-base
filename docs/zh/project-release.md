@@ -42,7 +42,7 @@ git push origin feature/your-feature-name
 在 PR 上添加以下标签来控制版本号递增：
 
 - `increment:major` - 主版本号递增 (1.0.0 → 2.0.0)
-- `increment:minor` - 次版本号递增 (1.0.0 → 1.1.0)  
+- `increment:minor` - 次版本号递增 (1.0.0 → 1.1.0)
 - `increment:patch` - 补丁版本号递增 (1.0.0 → 1.0.1) **[默认]**
 
 ### 第二步：MergePR 自动化处理
@@ -70,6 +70,7 @@ pnpm build     # 构建所有包
 #### 2.3 生成 ReleasePR
 
 如果所有检查通过，系统会：
+
 - 自动生成每个包的 changelog
 - 更新版本号
 - 创建 ReleasePR
@@ -83,7 +84,7 @@ pnpm build     # 构建所有包
 ```json
 {
   "release": {
-    "autoMergeReleasePR": true  // 自动合并 ReleasePR
+    "autoMergeReleasePR": true // 自动合并 ReleasePR
   }
 }
 ```
@@ -91,6 +92,7 @@ pnpm build     # 构建所有包
 #### 3.2 发布到 GitHub 和 npm
 
 ReleasePR 合并后，系统会自动：
+
 - 创建 Git 标签
 - 发布 GitHub Release
 - 发布包到 npm 仓库
@@ -158,7 +160,7 @@ jobs:
     if: |
       github.event.pull_request.merged == true && 
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
-    
+
   release:
     # 当 PR 合并且包含 CI-Release 标签时执行
     if: |
@@ -194,15 +196,15 @@ NPM_TOKEN=npm_xxxxxxxxxxxxxxxxxxxx
 
 #### 提交类型
 
-| 类型 | 描述 | 示例 |
-|------|------|------|
-| `feat` | 新功能 | `feat(fe-corekit): add resize animation` |
-| `fix` | 修复 bug | `fix(fe-corekit): resolve memory leak` |
-| `docs` | 文档更新 | `docs(fe-corekit): update API documentation` |
-| `style` | 代码格式 | `style(fe-corekit): fix code formatting` |
-| `refactor` | 重构 | `refactor(fe-corekit): optimize performance` |
-| `test` | 测试相关 | `test(fe-corekit): add unit tests` |
-| `chore` | 构建/工具 | `chore(fe-corekit): update dependencies` |
+| 类型       | 描述      | 示例                                         |
+| ---------- | --------- | -------------------------------------------- |
+| `feat`     | 新功能    | `feat(fe-corekit): add resize animation`     |
+| `fix`      | 修复 bug  | `fix(fe-corekit): resolve memory leak`       |
+| `docs`     | 文档更新  | `docs(fe-corekit): update API documentation` |
+| `style`    | 代码格式  | `style(fe-corekit): fix code formatting`     |
+| `refactor` | 重构      | `refactor(fe-corekit): optimize performance` |
+| `test`     | 测试相关  | `test(fe-corekit): add unit tests`           |
+| `chore`    | 构建/工具 | `chore(fe-corekit): update dependencies`     |
 
 #### 作用域 (Scope)
 
@@ -294,7 +296,7 @@ CI-Release                       # 发布标签 (系统自动添加)
 在 GitHub 仓库的 Actions 页面可以查看：
 
 - ✅ 构建状态
-- ✅ 测试结果  
+- ✅ 测试结果
 - ✅ 发布状态
 - ❌ 失败原因
 
@@ -326,11 +328,13 @@ npm view @qlover/fe-corekit version
 #### 1. 发布失败：权限不足
 
 **错误信息**:
+
 ```
 npm ERR! 403 Forbidden - PUT https://registry.npmjs.org/@qlover/fe-corekit
 ```
 
 **解决方案**:
+
 - 检查 `NPM_TOKEN` 是否正确配置
 - 确认 npm 账户有发布权限
 - 验证包名是否已被占用
@@ -338,33 +342,39 @@ npm ERR! 403 Forbidden - PUT https://registry.npmjs.org/@qlover/fe-corekit
 #### 2. GitHub Actions 失败
 
 **错误信息**:
+
 ```
 Error: Resource not accessible by integration
 ```
 
 **解决方案**:
+
 - 检查 `PAT_TOKEN` 权限设置
 - 确认 token 包含 `repo` 和 `write:packages` 权限
 
 #### 3. 版本冲突
 
 **错误信息**:
+
 ```
 npm ERR! 409 Conflict - PUT https://registry.npmjs.org/@qlover/fe-corekit
 ```
 
 **解决方案**:
+
 - 检查是否尝试发布已存在的版本
 - 手动更新版本号或使用 changeset
 
 #### 4. 构建失败
 
 **错误信息**:
+
 ```
 Build failed with exit code 1
 ```
 
 **解决方案**:
+
 - 检查 TypeScript 编译错误
 - 确认所有依赖已正确安装
 - 查看详细的构建日志
@@ -536,7 +546,7 @@ npm ls @qlover/fe-corekit
 ### 发布频率建议
 
 - **补丁版本 (patch)**: 每周 1-2 次
-- **次版本 (minor)**: 每月 1-2 次  
+- **次版本 (minor)**: 每月 1-2 次
 - **主版本 (major)**: 每季度或半年 1 次
 
 ### 发布质量检查
@@ -556,3 +566,8 @@ npm ls @qlover/fe-corekit
 - [如何增加一个子包](./how-to-add-a-subpackage.md)
 - [项目构建与依赖管理](./project-builder.md)
 - [测试指南](./testing-guide.md)
+
+## 🌐 其他语言版本
+
+- **[🇺🇸 English](../en/project-release.md)** - English version of this document
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页
