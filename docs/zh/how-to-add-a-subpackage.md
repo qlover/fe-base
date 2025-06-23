@@ -5,7 +5,7 @@
 ## 📋 目录
 
 - [创建方式选择](#-创建方式选择)
-- [手动创建子包](#-手动创建子包)
+- [手动创建子包](#手动创建子包)
 - [使用 nx 创建](#-使用-nx-创建)
 - [配置文件详解](#-配置文件详解)
 - [最佳实践](#-最佳实践)
@@ -27,7 +27,7 @@
 - 🚀 **快速开发**: 使用 nx 创建
 - 🔧 **特殊需求**: 手动创建（如需要特定构建工具）
 
-## 🛠️ 手动创建子包
+## 手动创建子包
 
 ### 第一步：创建包目录结构
 
@@ -71,36 +71,21 @@ touch package.json
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist",
-    "package.json",
-    "README.md",
-    "README_EN.md",
-    "CHANGELOG.md"
-  ],
+  "files": ["dist", "package.json", "README.md", "CHANGELOG.md"],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "build": "tsup"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
     "directory": "packages/my-new-package"
   },
-  "homepage": "https://github.com/qlover/fe-base#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/my-new-package#readme",
   "keywords": ["frontend toolkit", "my-new-package", "你的关键词"],
-  "author": "你的名字",
+  "author": "qlover",
   "license": "ISC",
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "typescript": "workspace:*",
-    "tsup": "workspace:*",
-    "vitest": "workspace:*"
   }
 }
 ```
@@ -133,19 +118,22 @@ touch tsup.config.ts
 
 ```typescript
 import { defineConfig } from 'tsup';
+import pkg from './package.json';
+import { toPureCamelCase } from '../../make/toPureCamelCase';
+
+const pkgName = toPureCamelCase(pkg.name);
 
 export default defineConfig([
-  // 主构建配置
   {
     entry: ['src/index.ts'],
-    format: ['esm', 'cjs'],
+    format: ['cjs'],
     dts: false,
-    sourcemap: true,
+    minify: true,
     clean: true,
-    minify: process.env.NODE_ENV === 'production',
+    silent: true,
+    globalName: pkgName,
     outDir: 'dist'
   },
-  // 类型定义构建
   {
     entry: ['src/index.ts'],
     format: 'esm',
@@ -153,6 +141,39 @@ export default defineConfig([
     outDir: 'dist'
   }
 ]);
+```
+
+#### 2.4 创建 nx 项目配置
+
+```bash
+# 创建 project.json
+touch project.json
+```
+
+```json
+{
+  "name": "@qlover/my-new-package",
+  "sourceRoot": "packages/my-new-package/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build",
+        "cwd": "packages/my-new-package"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{workspaceRoot}/nx.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    }
+  }
+}
 ```
 
 ### 第三步：创建源码文件
@@ -237,13 +258,16 @@ export class MyMainClass {
 // src/utils.ts
 import type { MyUtilOptions } from './types';
 
-export function myUtilFunction(input: string, options: MyUtilOptions = {}): string {
+export function myUtilFunction(
+  input: string,
+  options: MyUtilOptions = {}
+): string {
   const { debug = false } = options;
-  
+
   if (debug) {
     console.log('Processing:', input);
   }
-  
+
   return input.toUpperCase();
 }
 ```
@@ -293,9 +317,9 @@ describe('myUtilFunction', () => {
 
   it('should log debug info when debug is enabled', () => {
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    
+
     myUtilFunction('test', { debug: true });
-    
+
     expect(consoleSpy).toHaveBeenCalledWith('Processing:', 'test');
     consoleSpy.mockRestore();
   });
@@ -310,7 +334,7 @@ describe('myUtilFunction', () => {
 touch README.md
 ```
 
-```markdown
+````markdown
 # @qlover/my-new-package
 
 你的包的简短描述
@@ -322,6 +346,7 @@ npm install @qlover/my-new-package
 # 或
 pnpm add @qlover/my-new-package
 ```
+````
 
 ## 使用
 
@@ -355,13 +380,14 @@ new MyMainClass(options?: MyMainClassOptions)
 ## 许可证
 
 ISC
-```
+
+````
 
 #### 5.2 创建 CHANGELOG.md
 
 ```bash
 touch CHANGELOG.md
-```
+````
 
 ```markdown
 # @qlover/my-new-package
@@ -369,6 +395,7 @@ touch CHANGELOG.md
 ## [0.1.0] - 2024-01-01
 
 ### Added
+
 - 初始版本
 - 添加 MyMainClass 类
 - 添加工具函数
@@ -393,14 +420,13 @@ ls dist/
 
 ## 🚀 使用 nx 创建
 
-### 安装 nx 生成器
+### 使用现有的 nx 配置
+
+项目已经配置了 nx，你可以直接使用以下命令：
 
 ```bash
-# 如果还没有安装 nx
-pnpm add -D @nx/js
-
-# 生成新的库
-nx generate @nx/js:library my-new-package --directory=packages/my-new-package
+# 使用 nx 生成新的库
+nx generate @nx/js:library my-new-package --directory=packages/my-new-package --bundler=none --unitTestRunner=vitest
 ```
 
 ### nx 生成的目录结构
@@ -422,29 +448,29 @@ packages/my-new-package/
 
 #### 修改 project.json
 
+生成后需要修改 project.json 以符合项目标准：
+
 ```json
 {
-  "name": "my-new-package",
+  "name": "@qlover/my-new-package",
   "sourceRoot": "packages/my-new-package/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "packages/my-new-package/dist",
-        "main": "packages/my-new-package/src/index.ts",
-        "tsConfig": "packages/my-new-package/tsconfig.lib.json",
-        "assets": ["packages/my-new-package/*.md"]
-      }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "coverage/packages/my-new-package"
-      }
+        "command": "pnpm build",
+        "cwd": "packages/my-new-package"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{workspaceRoot}/nx.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
     }
   }
 }
@@ -454,15 +480,15 @@ packages/my-new-package/
 
 ### package.json 关键字段
 
-| 字段 | 说明 | 示例 |
-|------|------|------|
+| 字段      | 说明                         | 示例                 |
+| --------- | ---------------------------- | -------------------- |
 | `name`    | 包名，必须以 `@qlover/` 开头 | `@qlover/my-package` |
-| `version` | 版本号，遵循语义化版本 | `0.1.0` |
-| `type`    | 模块类型，设为 `module` | `module` |
-| `main`    | CommonJS 入口 | `./dist/index.cjs` |
-| `module`  | ES Module 入口 | `./dist/index.js` |
-| `types`   | TypeScript 类型定义 | `./dist/index.d.ts` |
-| `exports` | 现代模块导出配置 | 见上面示例 |
+| `version` | 版本号，遵循语义化版本       | `0.1.0`              |
+| `type`    | 模块类型，设为 `module`      | `module`             |
+| `main`    | CommonJS 入口                | `./dist/index.cjs`   |
+| `module`  | ES Module 入口               | `./dist/index.js`    |
+| `types`   | TypeScript 类型定义          | `./dist/index.d.ts`  |
+| `exports` | 现代模块导出配置             | 见上面示例           |
 
 ### tsconfig.json 配置
 
@@ -569,10 +595,10 @@ export interface MyClassOptions {
 
 ### 4. 文档规范
 
-```typescript
+````typescript
 /**
  * 我的工具类
- * 
+ *
  * @example
  * ```typescript
  * const instance = new MyClass({ enabled: true });
@@ -582,7 +608,7 @@ export interface MyClassOptions {
 export class MyClass {
   /**
    * 执行某个操作
-   * 
+   *
    * @param input - 输入参数
    * @returns 处理结果
    */
@@ -590,7 +616,7 @@ export class MyClass {
     return input;
   }
 }
-```
+````
 
 ### 5. 测试覆盖
 
@@ -599,10 +625,10 @@ export class MyClass {
 describe('MyClass', () => {
   // 正常情况
   it('should work with valid input', () => {});
-  
+
   // 边界情况
   it('should handle empty input', () => {});
-  
+
   // 错误情况
   it('should throw error with invalid input', () => {});
 });

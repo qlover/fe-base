@@ -26,31 +26,33 @@
 
 ### 主要类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `feat` | 新功能 | Minor | ✅ |
-| `fix` | Bug 修复 | Patch | ✅ |
-| `docs` | 文档更新 | - | ✅ |
-| `refactor` | 代码重构 | - | ✅ |
-| `perf` | 性能优化 | Patch | ✅ |
-| `build` | 构建系统或外部依赖变更 | - | ✅ |
+| 类型       | 描述                   | 版本影响 | 显示在 CHANGELOG |
+| ---------- | ---------------------- | -------- | ---------------- |
+| `feat`     | 新功能                 | Minor    | ✅               |
+| `fix`      | Bug 修复               | Patch    | ✅               |
+| `docs`     | 文档更新               | -        | ✅               |
+| `refactor` | 代码重构               | -        | ✅               |
+| `perf`     | 性能优化               | Patch    | ✅               |
+| `build`    | 构建系统或外部依赖变更 | -        | ✅               |
 
 ### 辅助类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `test` | 测试相关 | - | ❌ |
-| `chore` | 其他杂项 | - | ❌ |
-| `style` | 代码格式化 | - | ❌ |
-| `ci` | CI/CD 配置 | - | ❌ |
-| `revert` | 回滚提交 | - | ❌ |
+| 类型     | 描述       | 版本影响 | 显示在 CHANGELOG |
+| -------- | ---------- | -------- | ---------------- |
+| `test`   | 测试相关   | -        | ❌               |
+| `chore`  | 其他杂项   | -        | ❌               |
+| `style`  | 代码格式化 | -        | ❌               |
+| `ci`     | CI/CD 配置 | -        | ❌               |
+| `revert` | 回滚提交   | -        | ❌               |
 
 ### 特殊类型
 
-| 类型 | 描述 | 版本影响 | 显示在 CHANGELOG |
-|------|------|----------|------------------|
-| `BREAKING CHANGE` | 破坏性变更 | Major | ✅ |
-| `release` | 发布相关 | - | ❌ |
+| 类型              | 描述       | 版本影响 | 显示在 CHANGELOG |
+| ----------------- | ---------- | -------- | ---------------- |
+| `BREAKING CHANGE` | 破坏性变更 | Major    | ✅               |
+| `release`         | 发布相关   | -        | ❌               |
+
+> 关于是否在changelog中显示，可以在 `fe-config.json` 中配置 `release.changelog.types`
 
 ## 🎯 作用域 (Scope)
 
@@ -227,37 +229,72 @@ git cz
 ### 作用域配置
 
 ```javascript
-// .cz-config.js
-module.exports = {
-  types: [
-    { value: 'feat', name: 'feat:     新功能' },
-    { value: 'fix', name: 'fix:      Bug 修复' },
-    { value: 'docs', name: 'docs:     文档更新' },
-    { value: 'refactor', name: 'refactor: 代码重构' },
-    { value: 'perf', name: 'perf:     性能优化' },
-    { value: 'test', name: 'test:     测试相关' },
-    { value: 'build', name: 'build:    构建系统' },
-    { value: 'ci', name: 'ci:       CI/CD' },
-    { value: 'chore', name: 'chore:    其他杂项' },
-    { value: 'style', name: 'style:    代码格式' },
-    { value: 'revert', name: 'revert:   回滚提交' }
-  ],
-  scopes: [
-    'fe-corekit',
-    'fe-scripts', 
-    'fe-code2markdown',
-    'fe-release',
-    'logger',
-    'env-loader',
-    'fe-standard',
-    'eslint-plugin-fe-dev',
-    'scripts-context',
-    'corekit-bridge',
-    'corekit-node',
-    'create-app'
-  ]
+// .commitlint.config.js
+
+/**
+ * @type {import('@commitlint/types').UserConfig}
+ */
+const Configuration = {
+  /*
+   * 从 node_modules 中解析并加载 @commitlint/config-conventional
+   * 引用的包必须已安装
+   */
+  extends: ['@commitlint/config-conventional'],
+  /*
+   * 从 node_modules 中解析并加载 conventional-changelog-atom
+   * 引用的包必须已安装
+   */
+  parserPreset: 'conventional-changelog-atom',
+  /*
+   * 从 node_modules 中解析并加载 @commitlint/format
+   * 引用的包必须已安装
+   */
+  formatter: '@commitlint/format',
+  /*
+   * 此处定义的任何规则都将覆盖 @commitlint/config-conventional 中的规则
+   */
+  rules: {
+    'type-enum': [2, 'always', ['foo']]
+  },
+  /*
+   * 返回 true 的函数数组，表示 commitlint 应忽略给定的提交消息
+   * 给定数组会与预定义的函数合并，这些预定义函数包含如下匹配器：
+   *
+   * - 'Merge pull request'、'Merge X into Y' 或 'Merge branch X'
+   * - 'Revert X'
+   * - 'v1.2.3' (如语义化版本匹配器)
+   * - 'Automatic merge X' 或 'Auto-merged X into Y'
+   *
+   * 查看完整列表请访问：https://github.com/conventional-changelog/commitlint/blob/master/%40commitlint/is-ignored/src/defaults.ts
+   * 要禁用这些忽略规则并始终运行检查，可设置 `defaultIgnores: false` 如下所示
+   */
+  ignores: [(commit) => commit === ''],
+  /*
+   * 是否使用 commitlint 默认的忽略规则，参见上文描述
+   */
+  defaultIgnores: true,
+  /*
+   * 检查失败时显示的自定义帮助链接
+   */
+  helpUrl:
+    'https://github.com/conventional-changelog/commitlint/#what-is-commitlint',
+  /*
+   * 自定义提示配置
+   */
+  prompt: {
+    messages: {},
+    questions: {
+      type: {
+        description: '请输入提交类型:'
+      }
+    }
+  }
 };
+
+export default Configuration;
 ```
+
+更多参考: [Commitlint Configuration](https://commitlint.js.org/reference/configuration.html)
 
 ## 📊 提交示例
 
@@ -349,6 +386,7 @@ Migration guide:
 ```
 
 **正确写法：**
+
 ```bash
 ✅ feat(fe-corekit): add storage feature
 ✅ fix(fe-corekit): resolve typo in error message
@@ -364,6 +402,7 @@ Migration guide:
 ```
 
 **正确写法：**
+
 ```bash
 ✅ feat(fe-corekit): add storage feature
 ✅ fix(logger): resolve log level issue
@@ -379,6 +418,7 @@ Migration guide:
 ```
 
 **正确写法：**
+
 ```bash
 ✅ feat(fe-corekit): add storage feature
 ✅ fix(logger): resolve memory leak
@@ -430,7 +470,7 @@ git rebase -i main
 
 # 示例：将多个提交合并为一个
 pick abc1234 feat(fe-corekit): add storage interface
-squash def5678 feat(fe-corekit): implement JSONStorage  
+squash def5678 feat(fe-corekit): implement JSONStorage
 squash ghi9012 feat(fe-corekit): add error handling
 ```
 
@@ -448,9 +488,9 @@ squash ghi9012 feat(fe-corekit): add error handling
 1. 查看 [项目 Issues](https://github.com/qlover/fe-base/issues)
 2. 参考本文档的故障排除部分
 3. 联系项目维护者
-4. 查看 commitlint 错误信息获取具体指导 
+4. 查看 commitlint 错误信息获取具体指导
 
 ## 🌐 其他语言版本
 
 - **[🇺🇸 English](../en/commit-convention.md)** - English version of this document
-- **[🏠 返回首页](./index.md)** - 返回中文文档首页 
+- **[🏠 返回首页](./index.md)** - 返回中文文档首页

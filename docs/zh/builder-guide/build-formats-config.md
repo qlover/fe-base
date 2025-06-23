@@ -19,15 +19,16 @@
 
 fe-base 项目支持三种主要的输出格式，每种格式都有其特定的适用场景：
 
-| 格式 | 全称 | 文件扩展名 | 适用环境 | 特点 |
-|------|------|------------|----------|------|
-| **CJS** | CommonJS | `.cjs` | Node.js | 同步加载，向后兼容 |
-| **ESM** | ES Modules | `.mjs` | 现代环境 | 异步加载，支持 tree-shaking |
-| **UMD** | Universal Module Definition | `.umd.js` | 浏览器/Node.js | 通用格式，体积较大 |
+| 格式    | 全称                        | 文件扩展名 | 适用环境       | 特点                        |
+| ------- | --------------------------- | ---------- | -------------- | --------------------------- |
+| **CJS** | CommonJS                    | `.cjs`     | Node.js        | 同步加载，向后兼容          |
+| **ESM** | ES Modules                  | `.mjs`     | 现代环境       | 异步加载，支持 tree-shaking |
+| **UMD** | Universal Module Definition | `.umd.js`  | 浏览器/Node.js | 通用格式，体积较大          |
 
 ### CommonJS (CJS) 格式
 
 #### 特点与优势
+
 ```javascript
 // 输出示例 (dist/index.cjs)
 'use strict';
@@ -46,6 +47,7 @@ exports.createUtils = createUtils;
 ```
 
 **特点**：
+
 - ✅ Node.js 原生支持，无需转换
 - ✅ 同步加载，启动速度快
 - ✅ 兼容性好，支持所有 Node.js 版本
@@ -53,12 +55,14 @@ exports.createUtils = createUtils;
 - ⚠️ 浏览器需要打包工具支持
 
 **适用场景**：
+
 - Node.js 服务端应用
 - CLI 工具
 - 需要同步加载的库
 - 兼容旧版本 Node.js 的包
 
 #### 构建配置
+
 ```typescript
 // tsup.config.ts - CJS 配置
 export default defineConfig({
@@ -75,6 +79,7 @@ export default defineConfig({
 ### ES Modules (ESM) 格式
 
 #### 特点与优势
+
 ```javascript
 // 输出示例 (dist/index.mjs)
 import { log } from '@qlover/logger';
@@ -89,6 +94,7 @@ export { createUtils };
 ```
 
 **特点**：
+
 - ✅ 支持 tree-shaking，减少包体积
 - ✅ 异步加载，支持代码分割
 - ✅ 现代 JavaScript 标准
@@ -97,12 +103,14 @@ export { createUtils };
 - ⚠️ 某些工具链可能不完全支持
 
 **适用场景**：
+
 - 现代前端应用
 - 支持 tree-shaking 的库
 - 微前端架构
 - 现代 Node.js 应用
 
 #### 构建配置
+
 ```typescript
 // tsup.config.ts - ESM 配置
 export default defineConfig({
@@ -119,13 +127,16 @@ export default defineConfig({
 ### Universal Module Definition (UMD) 格式
 
 #### 特点与优势
+
 ```javascript
 // 输出示例 (dist/index.umd.js)
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.MyLib = {}));
-}(this, (function (exports) {
+  typeof exports === 'object' && typeof module !== 'undefined'
+    ? factory(exports)
+    : typeof define === 'function' && define.amd
+      ? define(['exports'], factory)
+      : ((global = global || self), factory((global.MyLib = {})));
+})(this, function (exports) {
   'use strict';
 
   function createUtils() {
@@ -133,10 +144,11 @@ export default defineConfig({
   }
 
   exports.createUtils = createUtils;
-})));
+});
 ```
 
 **特点**：
+
 - ✅ 兼容 AMD、CommonJS 和全局变量
 - ✅ 可以直接在浏览器中使用
 - ✅ 不需要打包工具
@@ -145,12 +157,14 @@ export default defineConfig({
 - ⚠️ 主要用于库的发布
 
 **适用场景**：
+
 - 需要直接在浏览器中使用的库
 - 支持多种模块系统的通用库
 - CDN 分发的包
 - 向后兼容的组件库
 
 #### 构建配置
+
 ```typescript
 // tsup.config.ts - UMD 配置
 export default defineConfig({
@@ -170,24 +184,24 @@ export default defineConfig({
 ```mermaid
 flowchart TD
     A[开始选择格式] --> B{包的类型?}
-    
+
     B -->|CLI 工具| C[CJS]
     B -->|Node.js 库| D{目标 Node.js 版本?}
     B -->|前端库| E{使用场景?}
     B -->|通用库| F[CJS + ESM]
-    
+
     D -->|< 14| G[CJS]
     D -->|>= 14| H[CJS + ESM]
-    
+
     E -->|现代框架| I[ESM]
     E -->|直接浏览器使用| J[UMD]
     E -->|多环境| K[CJS + ESM + UMD]
-    
+
     C --> L[单一 CJS 输出]
     G --> L
     I --> M[单一 ESM 输出]
     J --> N[单一 UMD 输出]
-    
+
     F --> O[双格式输出]
     H --> O
     K --> P[三格式输出]
@@ -196,6 +210,7 @@ flowchart TD
 ### 不同包类型的格式选择
 
 #### 1. CLI 工具包
+
 ```json
 {
   "main": "dist/index.cjs",
@@ -208,11 +223,13 @@ flowchart TD
 
 **推荐格式**：CJS
 **原因**：
+
 - CLI 工具需要快速启动
 - 主要在 Node.js 环境运行
 - 不需要 tree-shaking
 
 **构建配置**：
+
 ```typescript
 export default defineConfig({
   entry: {
@@ -228,6 +245,7 @@ export default defineConfig({
 ```
 
 #### 2. Node.js 库包
+
 ```json
 {
   "main": "dist/index.cjs",
@@ -244,11 +262,13 @@ export default defineConfig({
 
 **推荐格式**：CJS + ESM
 **原因**：
+
 - 兼容不同的 Node.js 版本
 - 支持现代和传统的导入方式
 - 允许用户选择合适的格式
 
 **构建配置**：
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -263,6 +283,7 @@ export default defineConfig({
 ```
 
 #### 3. 前端组件库
+
 ```json
 {
   "main": "dist/index.cjs",
@@ -281,11 +302,13 @@ export default defineConfig({
 
 **推荐格式**：CJS + ESM + UMD
 **原因**：
+
 - ESM 支持 tree-shaking
 - CJS 兼容旧的构建工具
 - UMD 支持 CDN 直接使用
 
 **构建配置**：
+
 ```typescript
 export default defineConfig([
   // ESM 和 CJS 版本
@@ -313,6 +336,7 @@ export default defineConfig([
 ```
 
 #### 4. 工具库包
+
 ```json
 {
   "main": "dist/index.cjs",
@@ -336,6 +360,7 @@ export default defineConfig([
 
 **推荐格式**：全格式支持
 **原因**：
+
 - 支持多种使用场景
 - 提供最大的兼容性
 - 允许按需选择
@@ -345,6 +370,7 @@ export default defineConfig([
 ### tsup 配置详解
 
 #### 基础配置模板
+
 ```typescript
 // tsup.config.ts
 import { defineConfig } from 'tsup';
@@ -380,6 +406,7 @@ export default defineConfig([
 #### 高级配置选项
 
 ##### 1. 多入口点配置
+
 ```typescript
 export default defineConfig({
   entry: {
@@ -388,28 +415,30 @@ export default defineConfig({
     cli: 'src/cli.ts'
   },
   format: ['cjs', 'esm'],
-  outDir: 'dist',
+  outDir: 'dist'
   // 为不同入口点生成不同的输出文件
 });
 ```
 
 ##### 2. 条件构建配置
+
 ```typescript
 export default defineConfig((options) => {
   const isProduction = !options.watch;
-  
+
   return {
     entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
     minify: isProduction,
     sourcemap: !isProduction,
-    dts: isProduction,
+    dts: isProduction
     // 开发时不生成类型定义，提升构建速度
   };
 });
 ```
 
 ##### 3. 外部依赖配置
+
 ```typescript
 import pkg from './package.json';
 
@@ -422,18 +451,22 @@ export default defineConfig({
     // 排除所有 peerDependencies
     ...Object.keys(pkg.peerDependencies || {}),
     // 排除 Node.js 内置模块
-    'fs', 'path', 'url', 'util'
+    'fs',
+    'path',
+    'url',
+    'util'
   ]
 });
 ```
 
 ##### 4. 代码分割配置
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
-  splitting: true,  // 启用代码分割
-  target: 'es2020',
+  splitting: true, // 启用代码分割
+  target: 'es2020'
   // 只在 ESM 格式下启用分割
 });
 ```
@@ -441,6 +474,7 @@ export default defineConfig({
 ### Rollup 配置（高级场景）
 
 #### 基础 Rollup 配置
+
 ```typescript
 // rollup.config.ts
 import { defineConfig } from 'rollup';
@@ -480,18 +514,14 @@ export default defineConfig([
         'react-dom': 'ReactDOM'
       }
     },
-    plugins: [
-      nodeResolve(),
-      commonjs(),
-      typescript(),
-      terser()
-    ],
+    plugins: [nodeResolve(), commonjs(), typescript(), terser()],
     external: ['react', 'react-dom']
   }
 ]);
 ```
 
 #### 高级 Rollup 配置
+
 ```typescript
 // 支持多个包的构建
 import { readdirSync } from 'fs';
@@ -500,7 +530,7 @@ import { join } from 'path';
 const packagesDir = 'packages';
 const packages = readdirSync(packagesDir);
 
-export default packages.map(pkg => ({
+export default packages.map((pkg) => ({
   input: join(packagesDir, pkg, 'src/index.ts'),
   output: [
     {
@@ -525,6 +555,7 @@ export default packages.map(pkg => ({
 ### Vite 配置（库模式）
 
 #### 基础 Vite 库配置
+
 ```typescript
 // vite.config.ts
 import { defineConfig } from 'vite';
@@ -539,10 +570,14 @@ export default defineConfig({
       formats: ['es', 'cjs', 'umd'],
       fileName: (format) => {
         switch (format) {
-          case 'es': return 'index.mjs';
-          case 'cjs': return 'index.cjs';
-          case 'umd': return 'index.umd.js';
-          default: return `index.${format}.js`;
+          case 'es':
+            return 'index.mjs';
+          case 'cjs':
+            return 'index.cjs';
+          case 'umd':
+            return 'index.umd.js';
+          default:
+            return `index.${format}.js`;
         }
       }
     },
@@ -565,6 +600,7 @@ export default defineConfig({
 ```
 
 #### 多包 Vite 配置
+
 ```typescript
 // packages/*/vite.config.ts
 import { defineConfig } from 'vite';
@@ -590,18 +626,20 @@ export default defineConfig({
 ### 入口点配置详解
 
 #### 1. 传统入口点
+
 ```json
 {
-  "main": "dist/index.cjs",          // CommonJS 入口
-  "module": "dist/index.mjs",        // ES Modules 入口
-  "browser": "dist/index.umd.js",    // 浏览器入口
-  "types": "dist/index.d.ts",        // TypeScript 类型定义
-  "unpkg": "dist/index.umd.js",      // CDN 入口
-  "jsdelivr": "dist/index.umd.js"    // CDN 入口
+  "main": "dist/index.cjs", // CommonJS 入口
+  "module": "dist/index.mjs", // ES Modules 入口
+  "browser": "dist/index.umd.js", // 浏览器入口
+  "types": "dist/index.d.ts", // TypeScript 类型定义
+  "unpkg": "dist/index.umd.js", // CDN 入口
+  "jsdelivr": "dist/index.umd.js" // CDN 入口
 }
 ```
 
 #### 2. 现代 exports 配置
+
 ```json
 {
   "exports": {
@@ -622,6 +660,7 @@ export default defineConfig({
 ```
 
 #### 3. 条件导出配置
+
 ```json
 {
   "exports": {
@@ -641,6 +680,7 @@ export default defineConfig({
 ```
 
 #### 4. 完整的 package.json 配置示例
+
 ```json
 {
   "name": "@qlover/my-package",
@@ -657,11 +697,7 @@ export default defineConfig({
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist",
-    "README.md",
-    "CHANGELOG.md"
-  ],
+  "files": ["dist", "README.md", "CHANGELOG.md"],
   "engines": {
     "node": ">=18.0.0"
   },
@@ -675,39 +711,39 @@ export default defineConfig({
 ### 重要字段说明
 
 #### 1. `sideEffects` 字段
+
 ```json
 {
   // 无副作用，支持 tree-shaking
   "sideEffects": false,
-  
+
   // 或指定有副作用的文件
-  "sideEffects": [
-    "dist/polyfills.js",
-    "*.css"
-  ]
+  "sideEffects": ["dist/polyfills.js", "*.css"]
 }
 ```
 
 #### 2. `engines` 字段
+
 ```json
 {
   "engines": {
-    "node": ">=18.0.0",      // 最低 Node.js 版本
-    "npm": ">=8.0.0",        // 最低 npm 版本
-    "pnpm": ">=8.0.0"        // 最低 pnpm 版本
+    "node": ">=18.0.0", // 最低 Node.js 版本
+    "npm": ">=8.0.0", // 最低 npm 版本
+    "pnpm": ">=8.0.0" // 最低 pnpm 版本
   }
 }
 ```
 
 #### 3. `files` 字段
+
 ```json
 {
   "files": [
-    "dist",              // 构建产物
-    "src",               // 源码（可选）
-    "README.md",         // 文档
-    "CHANGELOG.md",      // 变更日志
-    "LICENSE"            // 许可证
+    "dist", // 构建产物
+    "src", // 源码（可选）
+    "README.md", // 文档
+    "CHANGELOG.md", // 变更日志
+    "LICENSE" // 许可证
   ]
 }
 ```
@@ -717,6 +753,7 @@ export default defineConfig({
 ### 环境特定构建
 
 #### 1. Node.js vs 浏览器构建
+
 ```typescript
 // tsup.config.ts
 export default defineConfig([
@@ -742,16 +779,17 @@ export default defineConfig([
 ```
 
 #### 2. 开发 vs 生产构建
+
 ```typescript
 export default defineConfig((options) => {
   const isDev = options.watch;
-  
+
   return {
     entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
     minify: !isDev,
     sourcemap: isDev ? 'inline' : true,
-    dts: !isDev,  // 开发时跳过类型生成
+    dts: !isDev, // 开发时跳过类型生成
     onSuccess: isDev ? 'echo "Build completed"' : undefined
   };
 });
@@ -760,6 +798,7 @@ export default defineConfig((options) => {
 ### 代码分割策略
 
 #### 1. 手动代码分割
+
 ```typescript
 // src/index.ts
 export { default as utils } from './utils';
@@ -770,13 +809,14 @@ import { utils } from 'my-package';
 ```
 
 #### 2. 动态导入支持
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   splitting: true,
-  target: 'es2020',
+  target: 'es2020'
   // 生成多个 chunk 文件
 });
 ```
@@ -784,19 +824,21 @@ export default defineConfig({
 ### 类型定义优化
 
 #### 1. 类型定义生成配置
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: {
-    resolve: true,      // 解析外部类型
-    only: false,        // 同时生成 JS 和 .d.ts
-    entry: ['src/index.ts', 'src/utils.ts']  // 多个入口点
+    resolve: true, // 解析外部类型
+    only: false, // 同时生成 JS 和 .d.ts
+    entry: ['src/index.ts', 'src/utils.ts'] // 多个入口点
   }
 });
 ```
 
 #### 2. 类型定义分离
+
 ```json
 {
   "exports": {
@@ -814,17 +856,19 @@ export default defineConfig({
 ### 构建性能优化
 
 #### 1. 增量构建
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
-  watch: process.env.NODE_ENV === 'development',
+  watch: process.env.NODE_ENV === 'development'
   // 开发时启用监听模式
 });
 ```
 
 #### 2. 并行构建
+
 ```bash
 # package.json
 {
@@ -838,6 +882,7 @@ export default defineConfig({
 ```
 
 #### 3. 缓存优化
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -852,6 +897,7 @@ export default defineConfig({
 ### 输出优化
 
 #### 1. 文件体积优化
+
 ```typescript
 export default defineConfig([
   // 开发版本
@@ -872,6 +918,7 @@ export default defineConfig([
 ```
 
 #### 2. Tree-shaking 优化
+
 ```typescript
 // 确保代码支持 tree-shaking
 export default defineConfig({
@@ -890,6 +937,7 @@ export default defineConfig({
 ### 构建配置最佳实践
 
 #### 1. 统一的配置模板
+
 ```typescript
 // scripts/build-config.ts
 import { defineConfig, type Options } from 'tsup';
@@ -913,6 +961,7 @@ export function createBuildConfig(options: Partial<Options> = {}): Options {
 ```
 
 #### 2. 包类型特定配置
+
 ```typescript
 // packages/cli/tsup.config.ts
 import { createBuildConfig } from '../../scripts/build-config';
@@ -928,6 +977,7 @@ export default defineConfig(
 ```
 
 #### 3. 环境变量配置
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -942,6 +992,7 @@ export default defineConfig({
 ### 发布配置最佳实践
 
 #### 1. 发布前验证
+
 ```json
 {
   "scripts": {
@@ -953,6 +1004,7 @@ export default defineConfig({
 ```
 
 #### 2. 文件包含策略
+
 ```json
 {
   "files": [
@@ -966,16 +1018,13 @@ export default defineConfig({
 ```
 
 #### 3. 版本兼容性标识
+
 ```json
 {
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "browserslist": ["> 1%", "last 2 versions", "not dead"]
 }
 ```
 
@@ -984,9 +1033,11 @@ export default defineConfig({
 ### 构建配置问题
 
 #### Q: 构建后的文件无法正确导入
+
 **原因**：入口点配置不正确或格式不匹配
 
 **解决方案**：
+
 ```json
 {
   "main": "dist/index.cjs",
@@ -1002,15 +1053,17 @@ export default defineConfig({
 ```
 
 #### Q: TypeScript 类型定义缺失
+
 **原因**：没有生成或配置类型定义文件
 
 **解决方案**：
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
-  dts: true,  // 生成类型定义
+  dts: true, // 生成类型定义
   // 或者
   dts: {
     entry: ['src/index.ts'],
@@ -1022,9 +1075,11 @@ export default defineConfig({
 ### 格式兼容性问题
 
 #### Q: ESM 模块在 CommonJS 环境中无法使用
+
 **原因**：没有提供 CommonJS 格式的构建产物
 
 **解决方案**：
+
 ```typescript
 export default defineConfig([
   {
@@ -1041,14 +1096,16 @@ export default defineConfig([
 ```
 
 #### Q: UMD 格式在浏览器中报错
+
 **原因**：全局变量名冲突或外部依赖配置错误
 
 **解决方案**：
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['umd'],
-  globalName: 'MyUniqueLibName',  // 使用唯一的全局变量名
+  globalName: 'MyUniqueLibName', // 使用唯一的全局变量名
   external: ['react'],
   esbuildOptions: (options) => {
     options.globalName = 'MyUniqueLibName';
@@ -1059,9 +1116,11 @@ export default defineConfig({
 ### 性能问题
 
 #### Q: 构建速度很慢
+
 **原因**：没有利用缓存或并行构建
 
 **解决方案**：
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -1084,22 +1143,24 @@ export default defineConfig({
 ```
 
 #### Q: 构建产物体积过大
+
 **原因**：没有启用 tree-shaking 或包含了不必要的依赖
 
 **解决方案**：
+
 ```typescript
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   treeshake: true,
   minify: true,
-  external: ['lodash', 'react']  // 外部化大型依赖
+  external: ['lodash', 'react'] // 外部化大型依赖
 });
 ```
 
 ```json
 {
-  "sideEffects": false  // 标记为无副作用
+  "sideEffects": false // 标记为无副作用
 }
 ```
 
@@ -1118,7 +1179,7 @@ export default defineConfig({
 
 ---
 
-*正确的打包配置是库成功发布的关键。根据使用场景选择合适的格式，提供最佳的开发体验。*
+_正确的打包配置是库成功发布的关键。根据使用场景选择合适的格式，提供最佳的开发体验。_
 
 ## 🌐 其他语言版本
 

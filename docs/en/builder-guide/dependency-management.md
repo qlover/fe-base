@@ -1,28 +1,28 @@
-# Dependency Management Strategies
+# Dependency Management Strategy
 
-This document provides detailed guidance on dependency management strategies for the fe-base project, including dependency type selection, local package management, dependency bundling decisions, and best practices.
+This document provides a comprehensive guide to dependency management strategies in the fe-base project, including dependency type selection, local package management, dependency bundling decisions, and best practices.
 
 ## 📋 Table of Contents
 
 - [Dependency Types Explained](#dependency-types-explained)
 - [Local Package Dependency Management](#local-package-dependency-management)
-- [Dependency Bundling Strategies](#dependency-bundling-strategies)
+- [Dependency Bundling Strategy](#dependency-bundling-strategy)
 - [Dependency Version Management](#dependency-version-management)
-- [Security and Optimization](#security-and-optimization)
+- [Dependency Security & Optimization](#dependency-security--optimization)
 - [Best Practices](#best-practices)
-- [Common Questions](#common-questions)
+- [Common Issues](#common-issues)
 
 ## Dependency Types Explained
 
 ### Quick Reference
 
-| Dependency Type | User Install | Development | Production | Typical Use Cases |
-|-----------------|-------------|-------------|------------|-------------------|
-| `dependencies` | ✅ Auto-installed | ✅ Installed | ✅ Installed | Runtime libraries |
-| `devDependencies` | ❌ Not installed | ✅ Installed | ❌ Not installed | Build tools, testing |
-| `peerDependencies` | ❌ Not installed, shows warning | ❌ Not installed | ❌ Not installed | React, Vue frameworks |
+| Dependency Type    | User Package Install            | Dev Environment  | Production Environment | Typical Usage              |
+| ------------------ | ------------------------------- | ---------------- | ---------------------- | -------------------------- |
+| `dependencies`     | ✅ Auto-installed               | ✅ Installed     | ✅ Installed           | Runtime libraries          |
+| `devDependencies`  | ❌ Not installed                | ✅ Installed     | ❌ Not installed       | Build tools, testing       |
+| `peerDependencies` | ❌ Not installed, shows warning | ❌ Not installed | ❌ Not installed       | Frameworks like React, Vue |
 
-### npm Installation Behavior
+### npm Installation Behavior Explained
 
 #### What happens when users install a package?
 
@@ -46,40 +46,43 @@ Suppose a user wants to install a package `my-awesome-package`:
 }
 ```
 
-#### npm install behavior
+#### npm install Installation Behavior
 
 ```bash
 # User executes: npm install my-awesome-package
 ```
 
 **Dependencies that will be auto-installed**:
+
 ```
 node_modules/
-├── my-awesome-package/     # Main package
-├── lodash/                 # ✅ dependencies - auto-installed
-├── axios/                  # ✅ dependencies - auto-installed
+├── my-awesome-package/ # Main package
+├── lodash/ # ✅ dependencies - auto-installed
+├── axios/ # ✅ dependencies - auto-installed
 └── (other transitive dependencies...)
 ```
 
 **Dependencies that will NOT be installed**:
+
 ```
 ❌ typescript  (devDependencies - users don't need this)
-❌ tsup        (devDependencies - users don't need this)  
-❌ react       (peerDependencies - users must install manually)
+❌ tsup        (devDependencies - users don't need this)
+❌ react       (peerDependencies - users need to install manually)
 ```
 
-**peerDependencies warning**:
+**peerDependencies Warning**:
+
 ```bash
 npm WARN peerDependencies my-awesome-package@1.0.0 requires a peer of react@>=16.8.0 but none is installed.
 ```
 
 #### Installation Scenario Comparison
 
-| Installation Scenario | dependencies | devDependencies | peerDependencies |
-|----------------------|-------------|-----------------|------------------|
-| **User installs package** | ✅ Auto-installed | ❌ Not installed | ❌ Not installed, shows warning |
-| **Developer development** | ✅ Installed | ✅ Installed | ❌ Not installed, shows warning |
-| **Production environment** | ✅ Installed | ❌ Not installed | ❌ Not installed |
+| Installation Scenario      | dependencies      | devDependencies  | peerDependencies                |
+| -------------------------- | ----------------- | ---------------- | ------------------------------- |
+| **User installs package**  | ✅ Auto-installed | ❌ Not installed | ❌ Not installed, shows warning |
+| **Developer development**  | ✅ Installed      | ✅ Installed     | ❌ Not installed, shows warning |
+| **Production environment** | ✅ Installed      | ❌ Not installed | ❌ Not installed                |
 
 ```bash
 # Developer in package directory
@@ -92,7 +95,8 @@ npm install my-package      # Only installs dependencies
 
 ### dependencies (Production Dependencies)
 
-#### Definition and Characteristics
+#### Definition & Characteristics
+
 ```json
 {
   "dependencies": {
@@ -104,14 +108,16 @@ npm install my-package      # Only installs dependencies
 ```
 
 **Characteristics**:
+
 - ✅ **User installation**: Automatically installed to user's `node_modules`
 - ✅ **Development environment**: Always installed
 - ✅ **Production environment**: Always installed (`npm install --production`)
-- ✅ **Use cases**: Runtime-required dependencies
+- ✅ **Use case**: Runtime-required dependencies
 
 #### Use Cases
 
 **1. Runtime-required utility libraries**
+
 ```typescript
 // packages/fe-corekit/src/utils.ts
 import { merge } from 'lodash'; // Required at runtime
@@ -123,15 +129,17 @@ export function mergeConfig(config: any) {
 ```
 
 **2. Local package dependencies**
+
 ```json
 {
   "dependencies": {
-    "@qlover/logger": "workspace:*"  // Local package dependency
+    "@qlover/logger": "workspace:*" // Local package dependency
   }
 }
 ```
 
 **3. Core functionality dependencies**
+
 ```typescript
 // Core dependencies for CLI tools
 import { Command } from 'commander';
@@ -141,15 +149,18 @@ import chalk from 'chalk';
 ```
 
 #### Decision Criteria
-Put dependencies in `dependencies` when:
+
+Criteria for placing dependencies in `dependencies`:
+
 - ✅ Code contains `import` or `require` statements
 - ✅ Must exist at runtime
-- ✅ Users need this dependency when using your package
+- ✅ Users need this dependency when using the package
 - ✅ Dependency size is acceptable
 
 ### devDependencies (Development Dependencies)
 
-#### Definition and Characteristics
+#### Definition & Characteristics
+
 ```json
 {
   "devDependencies": {
@@ -163,66 +174,74 @@ Put dependencies in `dependencies` when:
 ```
 
 **Characteristics**:
+
 - ❌ **User installation**: Not installed (users don't need these tools)
 - ✅ **Development environment**: Installed (`npm install`)
 - ❌ **Production environment**: Not installed (`npm install --production`)
-- ✅ **Use cases**: Build, test, development tools
+- ✅ **Use case**: Build, testing, development tools
 
 #### Use Cases
 
 **1. Build tools**
+
 ```json
 {
   "devDependencies": {
-    "tsup": "^8.4.0",        // TypeScript build tool
-    "rollup": "^4.24.2",     // Module bundler
-    "vite": "^6.1.0"         // Development server
+    "tsup": "^8.4.0", // TypeScript build tool
+    "rollup": "^4.24.2", // Module bundler
+    "vite": "^6.1.0" // Development server
   }
 }
 ```
 
 **2. Type definitions**
+
 ```json
 {
   "devDependencies": {
-    "@types/node": "^20.0.0",     // Node.js type definitions
-    "@types/lodash": "^4.14.0"    // lodash type definitions
+    "@types/node": "^20.0.0", // Node.js type definitions
+    "@types/lodash": "^4.14.0" // lodash type definitions
   }
 }
 ```
 
 **3. Testing frameworks**
+
 ```json
 {
   "devDependencies": {
-    "vitest": "^2.1.8",           // Testing framework
-    "@vitest/ui": "^2.1.8",       // Test UI
-    "jsdom": "^25.0.1"            // DOM simulation environment
+    "vitest": "^2.1.8", // Testing framework
+    "@vitest/ui": "^2.1.8", // Testing UI
+    "jsdom": "^25.0.1" // DOM simulation environment
   }
 }
 ```
 
 **4. Code quality tools**
+
 ```json
 {
   "devDependencies": {
-    "eslint": "^8.57.0",          // Code linting
-    "prettier": "^3.0.0",         // Code formatting
-    "husky": "^9.0.0"             // Git hooks
+    "eslint": "^8.57.0", // Code linting
+    "prettier": "^3.0.0", // Code formatting
+    "husky": "^9.0.0" // Git hooks
   }
 }
 ```
 
 #### Decision Criteria
-Put dependencies in `devDependencies` when:
-- ✅ Only used during development/build
-- ✅ Don't appear in runtime code
+
+Criteria for placing dependencies in `devDependencies`:
+
+- ✅ Only used during development/build time
+- ✅ Not present in runtime code
 - ✅ Users don't need to install these dependencies
 - ✅ Build tools, testing tools, type definitions, etc.
 
 ### peerDependencies (Peer Dependencies)
 
-#### Definition and Characteristics
+#### Definition & Characteristics
+
 ```json
 {
   "peerDependencies": {
@@ -239,14 +258,16 @@ Put dependencies in `devDependencies` when:
 ```
 
 **Characteristics**:
+
 - ❌ **User installation**: Not auto-installed, shows warning
-- ❌ **Development environment**: Not auto-installed (manual installation required)
+- ❌ **Development environment**: Not auto-installed (requires manual installation)
 - ❌ **Production environment**: Not auto-installed
-- ⚠️ **User responsibility**: Users must manually install these dependencies
+- ⚠️ **User responsibility**: Users need to manually install these dependencies
 
 #### Use Cases
 
 **1. React component libraries**
+
 ```json
 // Component library's package.json
 {
@@ -266,18 +287,20 @@ export function MyComponent() {
 }
 ```
 
-**User project**:
+**In user projects**:
+
 ```json
 {
   "dependencies": {
-    "react": "^18.0.0",           // User provides
-    "react-dom": "^18.0.0",       // User provides
-    "my-component-lib": "^1.0.0"  // Uses component library
+    "react": "^18.0.0", // Provided by user
+    "react-dom": "^18.0.0", // Provided by user
+    "my-component-lib": "^1.0.0" // Using component library
   }
 }
 ```
 
 **2. Plugin systems**
+
 ```json
 // Webpack plugin's package.json
 {
@@ -288,6 +311,7 @@ export function MyComponent() {
 ```
 
 **3. TypeScript type support**
+
 ```json
 {
   "peerDependencies": {
@@ -295,24 +319,27 @@ export function MyComponent() {
   },
   "peerDependenciesMeta": {
     "typescript": {
-      "optional": true  // Optional peer dependency
+      "optional": true // Optional peer dependency
     }
   }
 }
 ```
 
 #### Decision Criteria
-Set dependencies as `peerDependencies` when:
-- ✅ Host project usually already has this dependency
-- ✅ Need version compatibility with host project
-- ✅ Duplicate installation would cause issues (React, Vue, etc.)
+
+Criteria for setting dependencies as `peerDependencies`:
+
+- ✅ Host project usually already has this dependency installed
+- ✅ Need to maintain compatibility with host project version
+- ✅ Duplicate installation would cause issues (like React, Vue, etc.)
 - ✅ Plugin or extension type packages
 
 ## Local Package Dependency Management
 
-### workspace:* Mechanism
+### workspace:\* Mechanism
 
 #### Basic Principle
+
 ```json
 {
   "dependencies": {
@@ -322,12 +349,14 @@ Set dependencies as `peerDependencies` when:
 }
 ```
 
-**Development time**: pnpm creates symlinks
+**During development**: pnpm creates symlinks
+
 ```bash
 node_modules/@qlover/logger -> ../../packages/logger
 ```
 
-**Publish time**: Automatically replaced with specific versions
+**During publishing**: Automatically replaced with specific versions
+
 ```json
 {
   "dependencies": {
@@ -339,42 +368,46 @@ node_modules/@qlover/logger -> ../../packages/logger
 ### Local Package Dependency Best Practices
 
 #### 1. Dependency Declaration Strategy
+
 ```json
 {
   "dependencies": {
-    // ✅ Correct: Use workspace:* for local packages
+    // ✅ Correct: Use workspace:* to reference local packages
     "@qlover/logger": "workspace:*",
-    
-    // ❌ Wrong: Direct version numbers
+
+    // ❌ Incorrect: Direct version number usage
     "@qlover/logger": "^1.0.0"
   }
 }
 ```
 
 #### 2. Build Order Management
+
 ```bash
 # pnpm automatically builds in dependency order
 pnpm -r run build
 
 # Build order:
 # 1. logger (no dependencies)
-# 2. env-loader (no dependencies)  
+# 2. env-loader (no dependencies)
 # 3. fe-corekit (depends on logger)
 # 4. fe-scripts (depends on fe-corekit, logger)
 ```
 
 #### 3. Development Hot Reload
-```bash
-# Start development mode for dependency package
-cd packages/logger
-pnpm dev  # Watch for file changes, auto-rebuild
 
-# Dependent packages automatically get latest build artifacts
+```bash
+# Start development mode in dependent package
+cd packages/logger
+pnpm dev  # Watch file changes, auto-rebuild
+
+# Dependents automatically get latest build artifacts
 ```
 
-### Circular Dependency Detection and Resolution
+### Circular Dependency Detection & Resolution
 
 #### Detecting Circular Dependencies
+
 ```bash
 # Use tools to detect circular dependencies
 npx madge --circular packages/*/src/index.ts
@@ -384,20 +417,25 @@ pnpm check-circular-deps
 ```
 
 #### Resolving Circular Dependencies
+
 ```typescript
 // ❌ Circular dependency example
 // packages/a/src/index.ts
 import { funcB } from '@qlover/b';
 
-// packages/b/src/index.ts  
+// packages/b/src/index.ts
 import { funcA } from '@qlover/a';
 ```
 
 **Solutions**:
+
 1. **Extract common logic**
+
 ```typescript
 // Create packages/shared/src/index.ts
-export const sharedFunc = () => { /* ... */ };
+export const sharedFunc = () => {
+  /* ... */
+};
 
 // packages/a/src/index.ts
 import { sharedFunc } from '@qlover/shared';
@@ -407,6 +445,7 @@ import { sharedFunc } from '@qlover/shared';
 ```
 
 2. **Redesign package structure**
+
 ```
 packages/
 ├── core/          # Core functionality, no dependencies
@@ -415,7 +454,7 @@ packages/
 └── app/           # Application, depends on all packages
 ```
 
-## Dependency Bundling Strategies
+## Dependency Bundling Strategy
 
 ### Core Decision Framework
 
@@ -424,56 +463,57 @@ Decision flow for whether dependencies should be bundled:
 ```mermaid
 flowchart TD
     A[Dependency Analysis] --> B{Required at runtime?}
-    B -->|Yes| C{User projects usually have this dependency?}
+    B -->|Yes| C{Do user projects typically have this dependency?}
     B -->|No| D[devDependencies]
-    
-    C -->|Yes| E{Version compatibility important?}
+
+    C -->|Yes| E{Is version compatibility important?}
     C -->|No| F[dependencies + bundle]
-    
+
     E -->|Yes| G[peerDependencies]
     E -->|No| F
-    
-    F --> H{Large dependency size?}
+
+    F --> H{Is dependency size large?}
     H -->|Yes| I[Consider externalization]
-    H -->|No| J[Bundle in output]
-    
+    H -->|No| J[Bundle into output]
+
     G --> K[User provides dependency]
     D --> L[Don't bundle]
-    I --> M[external configuration]
-    J --> N[bundle configuration]
+    I --> M[external config]
+    J --> N[bundle config]
 ```
 
 ### Strategies for Different Package Types
 
 #### 1. CLI Tool Package Strategy
 
-**Characteristics**: Standalone execution, users don't directly reference code
+**Characteristics**: Runs independently, users don't directly reference code
 
 ```json
 {
   "dependencies": {
-    "commander": "^12.0.0",      // Bundle: CLI core functionality
-    "chalk": "^5.3.0",           // Bundle: Output beautification
-    "inquirer": "^12.0.0",       // Bundle: Interactive functionality
-    "@qlover/logger": "workspace:*"  // Bundle: Local dependency
+    "commander": "^12.0.0", // Bundle: CLI core functionality
+    "chalk": "^5.3.0", // Bundle: Output beautification
+    "inquirer": "^12.0.0", // Bundle: Interactive functionality
+    "@qlover/logger": "workspace:*" // Bundle: Local dependency
   },
   "devDependencies": {
-    "typescript": "~5.4.5",      // Don't bundle: Build tool
-    "@types/node": "^20.0.0"     // Don't bundle: Type definitions
+    "typescript": "~5.4.5", // Don't bundle: Build tool
+    "@types/node": "^20.0.0" // Don't bundle: Type definitions
   }
 }
 ```
 
 **Build configuration**:
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs'],
   target: 'node18',
-  bundle: true,        // Bundle all dependencies
-  minify: true,        // Compress code
-  sourcemap: false,    // CLI tools usually don't need sourcemaps
+  bundle: true, // Bundle all dependencies
+  minify: true, // Minify code
+  sourcemap: false, // CLI tools usually don't need sourcemap
   clean: true
 });
 ```
@@ -485,56 +525,58 @@ export default defineConfig({
 ```json
 {
   "dependencies": {
-    "@qlover/logger": "workspace:*"  // Bundle: Local dependency
+    "@qlover/logger": "workspace:*" // Bundle: Local dependency
   },
   "devDependencies": {
-    "lodash": "^4.17.21",           // Don't bundle: Common dependency
-    "typescript": "~5.4.5",         // Don't bundle: Build tool
-    "@types/lodash": "^4.14.0"      // Don't bundle: Type definitions
+    "lodash": "^4.17.21", // Don't bundle: Common dependency
+    "typescript": "~5.4.5", // Don't bundle: Build tool
+    "@types/lodash": "^4.14.0" // Don't bundle: Type definitions
   },
   "peerDependencies": {
-    "lodash": ">=4.0.0"             // User provides: Avoid duplication
+    "lodash": ">=4.0.0" // User provides: Avoid duplication
   }
 }
 ```
 
 **Build configuration**:
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   target: ['node18', 'es2020'],
-  external: ['lodash'],    // Externalize common dependencies
-  dts: true,              // Generate type definitions
-  sourcemap: true,        // Provide sourcemaps
+  external: ['lodash'], // Externalize common dependencies
+  dts: true, // Generate type definitions
+  sourcemap: true, // Provide sourcemap
   clean: true
 });
 ```
 
 #### 3. Component Library Package Strategy
 
-**Characteristics**: React/Vue components, framework dependent
+**Characteristics**: React/Vue components, depends on frameworks
 
 ```json
 {
   "dependencies": {
-    "classnames": "^2.3.0",        // Bundle: Small utility library
+    "classnames": "^2.3.0", // Bundle: Small utility library
     "@qlover/logger": "workspace:*" // Bundle: Local dependency
   },
   "devDependencies": {
-    "react": "^18.0.0",            // Don't bundle: Development use
-    "react-dom": "^18.0.0",        // Don't bundle: Development use
-    "@types/react": "^18.0.0"      // Don't bundle: Type definitions
+    "react": "^18.0.0", // Don't bundle: Used during development
+    "react-dom": "^18.0.0", // Don't bundle: Used during development
+    "@types/react": "^18.0.0" // Don't bundle: Type definitions
   },
   "peerDependencies": {
-    "react": ">=16.8.0",           // User provides: Framework dependency
-    "react-dom": ">=16.8.0"        // User provides: Framework dependency
+    "react": ">=16.8.0", // User provides: Framework dependency
+    "react-dom": ">=16.8.0" // User provides: Framework dependency
   }
 }
 ```
 
 **Build configuration**:
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
@@ -542,16 +584,17 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   target: 'es2020',
   external: ['react', 'react-dom'], // Externalize framework dependencies
-  jsx: 'preserve',                  // Preserve JSX
+  jsx: 'preserve', // Preserve JSX
   dts: true,
   sourcemap: true,
   clean: true
 });
 ```
 
-### Dependency Externalization Strategies
+### Dependency Externalization Strategy
 
 #### 1. Automatic Externalization
+
 ```typescript
 // tsup.config.ts
 import { defineConfig } from 'tsup';
@@ -560,30 +603,34 @@ export default defineConfig({
   external: [
     // Auto-externalize all dependencies
     ...Object.keys(pkg.dependencies || {}),
-    
-    // Auto-externalize all peerDependencies  
+
+    // Auto-externalize all peerDependencies
     ...Object.keys(pkg.peerDependencies || {}),
-    
+
     // Node.js built-in modules
-    'fs', 'path', 'url', 'util'
+    'fs',
+    'path',
+    'url',
+    'util'
   ]
 });
 ```
 
 #### 2. Selective Externalization
+
 ```typescript
 export default defineConfig({
   external: [
     // Externalize large dependencies
     'lodash',
-    'moment', 
+    'moment',
     'react',
     'react-dom',
-    
-    // Externalize Node.js specific dependencies
+
+    // Externalize Node.js-specific dependencies
     'fs-extra',
-    'glob',
-    
+    'glob'
+
     // Keep local dependencies bundled
     // '@qlover/logger' not in external
   ]
@@ -591,6 +638,7 @@ export default defineConfig({
 ```
 
 #### 3. Conditional Externalization
+
 ```typescript
 export default defineConfig([
   // Browser version: externalize more dependencies
@@ -600,70 +648,74 @@ export default defineConfig([
     platform: 'browser',
     external: ['react', 'react-dom', 'lodash']
   },
-  
+
   // Node.js version: bundle more dependencies
   {
-    entry: ['src/index.ts'], 
+    entry: ['src/index.ts'],
     format: ['cjs'],
     platform: 'node',
-    external: ['fs', 'path'] // Only externalize Node.js built-ins
+    external: ['fs', 'path'] // Only externalize Node.js built-in modules
   }
 ]);
 ```
 
 ## Dependency Version Management
 
-### Version Range Strategies
+### Version Range Strategy
 
 #### 1. Exact Version vs Range Version
+
 ```json
 {
   "dependencies": {
     // ✅ Recommended: Use range versions, allow patch updates
     "lodash": "^4.17.21",
-    
-    // ⚠️ Caution: Exact versions, can't get security updates
+
+    // ⚠️ Caution: Exact version, can't get security updates
     "axios": "1.6.0",
-    
-    // ✅ Appropriate: Major version lock, allow minor updates
+
+    // ✅ Appropriate: Lock major version, allow minor version updates
     "react": "^18.0.0"
   }
 }
 ```
 
 #### 2. Version Range Meanings
+
 ```json
 {
   "dependencies": {
-    "package-a": "1.2.3",      // Exact version
-    "package-b": "^1.2.3",     // >=1.2.3 <2.0.0
-    "package-c": "~1.2.3",     // >=1.2.3 <1.3.0  
-    "package-d": ">=1.2.3",    // >=1.2.3
-    "package-e": "1.2.x",      // >=1.2.0 <1.3.0
-    "package-f": "*"           // Latest version (not recommended)
+    "package-a": "1.2.3", // Exact version
+    "package-b": "^1.2.3", // >=1.2.3 <2.0.0
+    "package-c": "~1.2.3", // >=1.2.3 <1.3.0
+    "package-d": ">=1.2.3", // >=1.2.3
+    "package-e": "1.2.x", // >=1.2.0 <1.3.0
+    "package-f": "*" // Latest version (not recommended)
   }
 }
 ```
 
 ### Unified Version Management
 
-#### 1. Root Level Version Management
+#### 1. Root-level Version Management
+
 ```json
 // Root package.json
 {
   "pnpm": {
     "overrides": {
-      "typescript": "~5.4.5",      // Unify TS version
-      "eslint": "^8.57.0",         // Unify ESLint version
-      "@types/node": "^20.0.0"     // Unify Node.js type version
+      "typescript": "~5.4.5", // Unified TS version
+      "eslint": "^8.57.0", // Unified ESLint version
+      "@types/node": "^20.0.0" // Unified Node.js type version
     }
   }
 }
 ```
 
 #### 2. Version Sync Checking
+
 ```bash
-# Check for inconsistent dependency versions
+# Check dependencies with version inconsistencies
 pnpm list --depth=0 | grep -E "different|mismatch"
 
 # Update all packages to latest versions
@@ -674,6 +726,7 @@ pnpm outdated -r
 ```
 
 #### 3. Lock File Management
+
 ```bash
 # Generate exact lock file
 pnpm install --frozen-lockfile
@@ -685,11 +738,12 @@ pnpm install --no-frozen-lockfile
 pnpm install --audit
 ```
 
-## Security and Optimization
+## Dependency Security & Optimization
 
 ### Security Auditing
 
 #### 1. Regular Security Checks
+
 ```bash
 # Check for known security vulnerabilities
 pnpm audit
@@ -702,20 +756,22 @@ pnpm audit --json > security-report.json
 ```
 
 #### 2. Dependency Analysis
+
 ```bash
 # Analyze dependency tree
 pnpm list --depth=3
 
-# Check why specific package is installed
+# Check specific package dependencies
 pnpm why package-name
 
-# Check for duplicate dependencies
+# Check duplicate dependencies
 pnpm list --depth=0 | sort | uniq -d
 ```
 
 ### Performance Optimization
 
 #### 1. Reduce Dependency Count
+
 ```typescript
 // ❌ Import entire library
 import _ from 'lodash';
@@ -728,6 +784,7 @@ import merge from 'lodash.merge';
 ```
 
 #### 2. Lazy Loading
+
 ```typescript
 // ❌ Static import of all functionality
 import { format, parse, isValid } from 'date-fns';
@@ -740,6 +797,7 @@ const formatDate = async (date: Date) => {
 ```
 
 #### 3. Bundle Analysis
+
 ```bash
 # Analyze package size
 npm pack --dry-run
@@ -756,6 +814,7 @@ npx webpack-bundle-analyzer dist/
 ### Dependency Management Principles
 
 #### 1. Minimization Principle
+
 ```json
 {
   "dependencies": {
@@ -771,12 +830,13 @@ npx webpack-bundle-analyzer dist/
 ```
 
 #### 2. Version Compatibility Principle
+
 ```json
 {
   "peerDependencies": {
     // ✅ Use loose version ranges
     "react": ">=16.8.0",
-    
+
     // ✅ Support multiple major versions
     "typescript": ">=4.0.0"
   }
@@ -784,12 +844,13 @@ npx webpack-bundle-analyzer dist/
 ```
 
 #### 3. Security Principle
+
 ```json
 {
   "dependencies": {
     // ✅ Regular updates, fix security vulnerabilities
-    "axios": "^1.6.0",
-    
+    "axios": "^1.6.0"
+
     // ✅ Avoid deprecated packages
     // "request": "^2.88.0"  // Deprecated, use axios instead
   }
@@ -799,11 +860,12 @@ npx webpack-bundle-analyzer dist/
 ### Development Workflow Best Practices
 
 #### 1. Dependency Addition Process
+
 ```bash
 # 1. Analyze dependency type
-# Runtime required? -> dependencies
-# Only development needed? -> devDependencies  
-# User usually has it? -> peerDependencies
+# Runtime needed? -> dependencies
+# Only development needed? -> devDependencies
+# Users typically have it? -> peerDependencies
 
 # 2. Add dependency
 pnpm add lodash                    # dependencies
@@ -818,6 +880,7 @@ pnpm build && pnpm test
 ```
 
 #### 2. Dependency Update Process
+
 ```bash
 # 1. Check outdated dependencies
 pnpm outdated
@@ -836,6 +899,7 @@ git add pnpm-lock.yaml
 ```
 
 #### 3. Dependency Cleanup Process
+
 ```bash
 # 1. Find unused dependencies
 npx depcheck
@@ -850,14 +914,16 @@ rm -rf node_modules && pnpm install
 pnpm build
 ```
 
-## Common Questions
+## Common Issues
 
 ### Dependency Resolution Issues
 
 #### Q: `Cannot find module '@qlover/logger'`
+
 **Cause**: Local package dependency not properly built or linked
 
 **Solution**:
+
 ```bash
 # 1. Check if package exists
 ls packages/logger/
@@ -873,11 +939,13 @@ pnpm install --force
 ```
 
 #### Q: Version conflict errors
+
 **Cause**: Different packages depend on incompatible versions of the same library
 
 **Solution**:
+
 ```bash
-# 1. Check conflicting dependencies
+# 1. View conflicting dependencies
 pnpm list package-name
 
 # 2. Use overrides to unify versions
@@ -894,27 +962,31 @@ pnpm list package-name
 rm pnpm-lock.yaml && pnpm install
 ```
 
-### Bundling Configuration Issues
+### Build Configuration Issues
 
 #### Q: Dependencies incorrectly bundled/externalized
+
 **Cause**: Incorrect external settings in build configuration
 
 **Solution**:
+
 ```typescript
 // tsup.config.ts
 export default defineConfig({
-  // ✅ Correct: Externalize peer dependencies
-  external: Object.keys(pkg.peerDependencies || {}),
-  
-  // ✅ Correct: Bundle local dependencies
+  // ✅ Correct: externalize peer dependencies
+  external: Object.keys(pkg.peerDependencies || {})
+
+  // ✅ Correct: bundle local dependencies
   // Don't put workspace:* dependencies in external
 });
 ```
 
 #### Q: Missing type definitions
+
 **Cause**: Dependency type definitions not properly handled
 
 **Solution**:
+
 ```bash
 # 1. Install type definitions
 pnpm add -D @types/package-name
@@ -932,10 +1004,12 @@ pnpm build
 
 ### Performance Issues
 
-#### Q: Slow dependency installation
-**Cause**: Network issues or large dependency tree
+#### Q: Dependency installation is slow
+
+**Cause**: Network issues or dependency tree too large
 
 **Solution**:
+
 ```bash
 # 1. Use domestic mirror
 pnpm config set registry https://registry.npmmirror.com/
@@ -950,10 +1024,12 @@ pnpm config set network-concurrency 10
 pnpm store prune
 ```
 
-#### Q: Large build output size
+#### Q: Build output size too large
+
 **Cause**: Unnecessary dependencies being bundled
 
 **Solution**:
+
 ```bash
 # 1. Analyze package contents
 npm pack --dry-run
@@ -962,7 +1038,7 @@ npm pack --dry-run
 npx depcheck
 
 # 3. Optimize build configuration
-# Add more external dependencies in tsup.config.ts
+# Add more external in tsup.config.ts
 
 # 4. Use tree-shaking
 export default defineConfig({
@@ -974,15 +1050,20 @@ export default defineConfig({
 ## 📚 Related Documentation
 
 - [Project Build System](./project-build-system.md) - Learn about build system architecture
-- [Build Formats & Configuration](./build-formats-config.md) - Learn about packaging configurations
-- [Build Guide Index](./index.md) - Return to guide home
+- [Build Formats & Configuration](./build-formats-config.md) - Learn about build configuration
+- [Builder Guide Home](./index.md) - Return to guide home
 
 ## 🔗 External Resources
 
 - [pnpm Dependency Management Documentation](https://pnpm.io/cli/add)
-- [npm Dependency Types Explanation](https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file)
+- [npm Dependency Types Documentation](https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file)
 - [Semantic Versioning Specification](https://semver.org/)
+
+## 🌐 Other Language Versions
+
+- **[🇨🇳 中文](../../zh/builder-guide/dependency-management.md)** - Chinese version of this document
+- **[🏠 Home](../index.md)** - Return to English documentation home
 
 ---
 
-*Proper dependency management is the foundation of healthy project development. Follow best practices and regularly audit and optimize dependencies.* 
+_Proper dependency management is the foundation of healthy project development. Follow best practices, regularly audit and optimize dependencies._

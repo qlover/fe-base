@@ -10,7 +10,7 @@ fe-base uses an automated release process based on the [@qlover/fe-release](http
 2. **ReleasePR Stage** - Generate changelog and version numbers
 3. **Release Stage** - Automatically publish to GitHub and npm
 
-## 🔄 Detailed Release Process
+## 🔄 Release Process Details
 
 ### Step 1: Create Feature Branch and Pull Request
 
@@ -31,27 +31,27 @@ git commit -m "feat: add new feature"
 git push origin feature/your-feature-name
 ```
 
-> 💡 **Commit Convention**: Please refer to the [Commit Convention Guide](./commit-convention.md) for detailed commit message format requirements.
+> 💡 **Commit Conventions**: Please refer to [Commit Convention Guide](./commit-convention.md) for detailed commit message format requirements.
 
 #### 1.2 Create Pull Request
 
 Create a Pull Request on GitHub with `master` as the target branch.
 
-#### 1.3 Add Version Increment Labels (Optional)
+#### 1.3 Add Version Increment Tags (Optional)
 
-Add the following labels to the PR to control version number increments:
+Add the following tags to the PR to control version number increments:
 
 - `increment:major` - Major version increment (1.0.0 → 2.0.0)
-- `increment:minor` - Minor version increment (1.0.0 → 1.1.0)  
+- `increment:minor` - Minor version increment (1.0.0 → 1.1.0)
 - `increment:patch` - Patch version increment (1.0.0 → 1.0.1) **[Default]**
 
 ### Step 2: MergePR Automation
 
-When the PR is merged into the master branch, GitHub Actions automatically performs the following operations:
+When the PR is merged into the master branch, GitHub Actions will automatically perform the following operations:
 
 #### 2.1 Detect Package Changes
 
-The system automatically analyzes file changes in the `packages/` directory and adds tags for each modified package:
+The system will automatically analyze file changes in the `packages/` directory and add tags for each modified package:
 
 ```
 changes:packages/fe-corekit
@@ -62,7 +62,7 @@ changes:packages/fe-scripts
 
 ```bash
 # Automatically executed check process
-pnpm lint      # Code style check
+pnpm lint      # Code style checks
 pnpm test      # Run test suite
 pnpm build     # Build all packages
 ```
@@ -70,6 +70,7 @@ pnpm build     # Build all packages
 #### 2.3 Generate ReleasePR
 
 If all checks pass, the system will:
+
 - Automatically generate changelog for each package
 - Update version numbers
 - Create ReleasePR
@@ -83,17 +84,18 @@ Based on the `autoMergeReleasePR` configuration in `fe-config.json`:
 ```json
 {
   "release": {
-    "autoMergeReleasePR": true  // Auto-merge ReleasePR
+    "autoMergeReleasePR": true // Auto-merge ReleasePR
   }
 }
 ```
 
 #### 3.2 Publish to GitHub and npm
 
-After ReleasePR is merged, the system automatically:
-- Creates Git tags
-- Publishes GitHub Release
-- Publishes packages to npm registry
+After ReleasePR is merged, the system will automatically:
+
+- Create Git tags
+- Publish GitHub Release
+- Publish packages to npm registry
 
 ## ⚙️ Release Configuration
 
@@ -137,7 +139,7 @@ After ReleasePR is merged, the system automatically:
 - **commitArgs**: Additional arguments for Git commits
 - **pushChangedLabels**: Whether to push change labels
 - **formatTemplate**: Changelog format template
-- **types**: Commit type configuration, controls changelog grouping and display
+- **types**: Commit type configuration, controlling changelog grouping and display
 
 ### GitHub Actions Configuration
 
@@ -158,7 +160,7 @@ jobs:
     if: |
       github.event.pull_request.merged == true && 
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
-    
+
   release:
     # Execute when PR is merged and contains CI-Release label
     if: |
@@ -166,9 +168,9 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'CI-Release')
 ```
 
-### Environment Variables Configuration
+### Environment Variable Configuration
 
-Configure the following Secrets in GitHub repository settings:
+The following Secrets need to be configured in GitHub repository settings:
 
 ```bash
 # GitHub Personal Access Token (for creating PRs and Releases)
@@ -178,7 +180,7 @@ PAT_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 NPM_TOKEN=npm_xxxxxxxxxxxxxxxxxxxx
 ```
 
-## 📝 Commit Convention
+## 📝 Commit Conventions
 
 ### Conventional Commits
 
@@ -194,15 +196,15 @@ The project uses [Conventional Commits](https://www.conventionalcommits.org/) sp
 
 #### Commit Types
 
-| Type | Description | Example |
-|------|------|------|
-| `feat` | New feature | `feat(fe-corekit): add resize animation` |
-| `fix` | Bug fix | `fix(fe-corekit): resolve memory leak` |
-| `docs` | Documentation update | `docs(fe-corekit): update API documentation` |
-| `style` | Code formatting | `style(fe-corekit): fix code formatting` |
-| `refactor` | Refactoring | `refactor(fe-corekit): optimize performance` |
-| `test` | Test related | `test(fe-corekit): add unit tests` |
-| `chore` | Build/tools | `chore(fe-corekit): update dependencies` |
+| Type       | Description          | Example                                      |
+| ---------- | -------------------- | -------------------------------------------- |
+| `feat`     | New feature          | `feat(fe-corekit): add resize animation`     |
+| `fix`      | Bug fix              | `fix(fe-corekit): resolve memory leak`       |
+| `docs`     | Documentation update | `docs(fe-corekit): update API documentation` |
+| `style`    | Code formatting      | `style(fe-corekit): fix code formatting`     |
+| `refactor` | Refactoring          | `refactor(fe-corekit): optimize performance` |
+| `test`     | Testing related      | `test(fe-corekit): add unit tests`           |
+| `chore`    | Build/tools          | `chore(fe-corekit): update dependencies`     |
 
 #### Scope
 
@@ -231,7 +233,7 @@ chore(fe-corekit): bump dependencies
 
 ### Using Commitizen
 
-The project is configured with Commitizen to help generate standardized commit messages:
+The project has configured Commitizen to help generate standardized commit messages:
 
 ```bash
 # Use interactive commit
@@ -241,27 +243,27 @@ pnpm commit
 git cz
 ```
 
-## 🏷️ Label Management
+## 🏷️ Tag Management
 
-### Automatic Labels
+### Automatic Tags
 
-The system automatically adds labels for packages with changes:
+The system will automatically add tags for packages with changes:
 
 ```
-changes:packages/fe-corekit    # Package change label
-increment:minor                   # Version increment label
-CI-Release                       # Release label (automatically added by system)
+changes:packages/fe-corekit    # Package change tag
+increment:minor                # Version increment tag
+CI-Release                     # Release tag (automatically added by system)
 ```
 
-### Manual Label Management
+### Manual Tag Management
 
-If a package doesn't need to be released, you can manually remove the corresponding `changes:` label:
+If a package doesn't need to be published, you can manually remove the corresponding `changes:` tag:
 
-1. Find the label on the GitHub PR page
-2. Click the ❌ next to the label to remove it
+1. Find the tag on the GitHub PR page
+2. Click the ❌ next to the tag to remove it
 3. That package will not be included in this release
 
-## 📦 Package Release Strategy
+## 📦 Package Publishing Strategy
 
 ### Independent Version Management
 
@@ -275,30 +277,30 @@ Each package has an independent version number, not affecting each other:
 
 ### Dependency Relationship Handling
 
-- **Internal Dependencies**: Inter-package dependencies automatically update version numbers
-- **External Dependencies**: Need manual version range management
+- **Internal dependencies**: Inter-package dependencies will automatically update version numbers
+- **External dependencies**: Need manual version range management
 
 ### Release Scope Control
 
-You can control which packages participate in the release through labels:
+You can control which packages participate in the release through tags:
 
 ```bash
-# Only release fe-corekit package
-# Remove changes: labels for other packages, keep changes:packages/fe-corekit
+# Only publish fe-corekit package
+# Remove other packages' changes: tags, keep changes:packages/fe-corekit
 ```
 
 ## 🔍 Release Status Monitoring
 
 ### GitHub Actions Status
 
-View in the GitHub repository's Actions page:
+Check in the Actions page of the GitHub repository:
 
 - ✅ Build status
-- ✅ Test results  
+- ✅ Test results
 - ✅ Release status
 - ❌ Failure reasons
 
-### npm Release Status
+### npm Publishing Status
 
 Check if packages are successfully published to npm:
 
@@ -312,7 +314,7 @@ npm view @qlover/fe-corekit version
 
 ### GitHub Release
 
-View in the GitHub repository's Releases page:
+Check in the Releases page of the GitHub repository:
 
 - 📋 Release Notes
 - 📦 List of published packages
@@ -326,11 +328,13 @@ View in the GitHub repository's Releases page:
 #### 1. Release Failed: Insufficient Permissions
 
 **Error Message**:
+
 ```
 npm ERR! 403 Forbidden - PUT https://registry.npmjs.org/@qlover/fe-corekit
 ```
 
 **Solution**:
+
 - Check if `NPM_TOKEN` is correctly configured
 - Confirm npm account has publishing permissions
 - Verify package name is not already taken
@@ -338,35 +342,41 @@ npm ERR! 403 Forbidden - PUT https://registry.npmjs.org/@qlover/fe-corekit
 #### 2. GitHub Actions Failed
 
 **Error Message**:
+
 ```
 Error: Resource not accessible by integration
 ```
 
 **Solution**:
+
 - Check `PAT_TOKEN` permission settings
 - Confirm token includes `repo` and `write:packages` permissions
 
 #### 3. Version Conflict
 
 **Error Message**:
+
 ```
 npm ERR! 409 Conflict - PUT https://registry.npmjs.org/@qlover/fe-corekit
 ```
 
 **Solution**:
-- Check if trying to publish an existing version
+
+- Check if attempting to publish an existing version
 - Manually update version number or use changeset
 
 #### 4. Build Failed
 
 **Error Message**:
+
 ```
 Build failed with exit code 1
 ```
 
 **Solution**:
+
 - Check TypeScript compilation errors
-- Confirm all dependencies are properly installed
+- Confirm all dependencies are correctly installed
 - Review detailed build logs
 
 ### Manual Release Process
@@ -391,7 +401,7 @@ git tag @qlover/fe-corekit@x.x.x
 git push origin --tags
 ```
 
-### Rollback Release
+### Release Rollback
 
 If you need to rollback a published version:
 
@@ -410,9 +420,9 @@ git push origin :refs/tags/@qlover/fe-corekit@x.x.x
 
 ### 1. Pre-release Checklist
 
-- [ ] Code passes all tests
-- [ ] Documentation is updated
-- [ ] Commit messages follow [commit convention](./commit-convention.md)
+- [ ] Code has passed all tests
+- [ ] Documentation has been updated
+- [ ] Commit messages follow [commit conventions](./commit-convention.md)
 - [ ] CHANGELOG format is correct
 - [ ] Version numbers follow semantic versioning
 - [ ] Dependencies are correctly configured
@@ -431,7 +441,7 @@ git push origin :refs/tags/@qlover/fe-corekit@x.x.x
 
 ### 4. Rollback Strategy
 
-If release issues occur, you can:
+If there are issues with the release, you can:
 
 ```bash
 # 1. Unpublish npm package (within 24 hours)
@@ -449,7 +459,7 @@ npm publish
 - [Commit Convention Guide](./commit-convention.md)
 - [@qlover/fe-release Documentation](https://www.npmjs.com/package/@qlover/fe-release)
 - [Conventional Commits Specification](https://www.conventionalcommits.org/)
-- [Semantic Versioning](https://semver.org/)
+- [Semantic Versioning Specification](https://semver.org/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [npm Publishing Guide](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry)
 
@@ -499,7 +509,7 @@ npm view @qlover/fe-corekit
 
 ### Local Testing
 
-Before releasing, it's recommended to perform comprehensive local testing:
+It's recommended to perform complete testing locally before release:
 
 ```bash
 # Install dependencies
@@ -518,7 +528,7 @@ pnpm --filter @qlover/fe-corekit test
 pnpm changeset status
 ```
 
-### Release Pre-check
+### Pre-release Checks
 
 ```bash
 # Check package publishing configuration
@@ -533,19 +543,19 @@ npm ls @qlover/fe-corekit
 
 ## 📊 Release Statistics
 
-### Recommended Release Frequency
+### Release Frequency Recommendations
 
 - **Patch versions**: 1-2 times per week
-- **Minor versions**: 1-2 times per month  
+- **Minor versions**: 1-2 times per month
 - **Major versions**: Once per quarter or half-year
 
-### Release Quality Checklist
+### Release Quality Checks
 
 Ensure before each release:
 
 - [ ] All tests pass
 - [ ] Code coverage meets standards
-- [ ] Documentation is updated
+- [ ] Documentation has been updated
 - [ ] CHANGELOG accurately describes changes
 - [ ] Version numbers follow semantic versioning
 - [ ] Breaking changes are documented
@@ -554,5 +564,10 @@ Ensure before each release:
 
 - [Commit Convention Guide](./commit-convention.md)
 - [How to Add a Subpackage](./how-to-add-a-subpackage.md)
-- [Project Builder and Dependency Management](./project-builder.md)
+- [Project Build and Dependency Management](./project-builder.md)
 - [Testing Guide](./testing-guide.md)
+
+## 🌐 Other Language Versions
+
+- **[🇨🇳 中文](../zh/project-release.md)** - Chinese version of this document
+- **[🏠 Back to Home](./index.md)** - Return to English documentation home
