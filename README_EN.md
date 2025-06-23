@@ -6,6 +6,21 @@ Frontend Base Toolkit - A Powerful Collection of Tools Designed for Frontend App
 
 ---
 
+## 📖 Table of Content
+
+- [Project Overview](#-Project-Overview)
+- [Features](#-Features)
+- [Quick Start](#-Quick-Start)
+- [Package List](#-Package-List)
+- [开发指南](./docs//en/index.md)
+  - [Project Build System](./docs/en/builder-guide/project-build-system.md)
+  - [Dependency Management Strategy](./docs/en/builder-guide/dependency-management.md)
+  - [Build Formats & Configuration Guide](./docs/en/builder-guide/build-formats-config.md)
+  - [Commit Convention Guide](./docs/en/commit-convention.md)
+  - [Project Release Guide](./docs/en/project-release.md)
+  - [How to Add a Subpackage](./docs/en/how-to-add-a-subpackage.md)
+  - [Testing Guide](./docs/en/testing-guide.md)
+
 ## 📋 Project Overview
 
 fe-base is a collection of toolkits designed specifically for frontend applications, adopting a monorepo architecture to provide modular frontend solutions. The project includes multiple practical toolkits ranging from core utility libraries to development scripts, from logging systems to code generation tools.
@@ -61,16 +76,16 @@ pnpm build
 
 | Package                                                                   | Version                                                           | Description                                                               |
 | ------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| [@qlover/fe-corekit](./packages/fe-corekit/README_EN.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-corekit)           | Frontend core toolkit providing storage, serialization, request features  |
+| [@qlover/fe-corekit](./packages/fe-corekit/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/fe-corekit)           | Frontend core toolkit providing storage, serialization, request features  |
 | [@qlover/fe-scripts](./packages/fe-scripts/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-scripts)           | Frontend development script tools including clean, commit, check commands |
-| [@qlover/fe-code2markdown](./packages/fe-code2markdown/README_EN.md)         | ![npm](https://img.shields.io/npm/v/@qlover/fe-code2markdown)     | Code to Markdown documentation generation tool                            |
-| [@qlover/fe-release](./packages/fe-release/README_EN.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-release)           | Project release management tool                                           |
-| [@qlover/logger](./packages/logger/README_EN.md)                             | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | Flexible logging system                                                   |
-| [@qlover/env-loader](./packages/env-loader/README_EN.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | Environment variable loading tool                                         |
-| [@qlover/fe-standard](./packages/fe-standard/README_EN.md)                   | ![npm](https://img.shields.io/npm/v/@qlover/fe-standard)          | Frontend development standards and specifications                         |
+| [@qlover/fe-code2markdown](./packages/fe-code2markdown/README_EN.md)      | ![npm](https://img.shields.io/npm/v/@qlover/fe-code2markdown)     | Code to Markdown documentation generation tool                            |
+| [@qlover/fe-release](./packages/fe-release/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/fe-release)           | Project release management tool                                           |
+| [@qlover/logger](./packages/logger/README_EN.md)                          | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | Flexible logging system                                                   |
+| [@qlover/env-loader](./packages/env-loader/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | Environment variable loading tool                                         |
+| [@qlover/fe-standard](./packages/fe-standard/README_EN.md)                | ![npm](https://img.shields.io/npm/v/@qlover/fe-standard)          | Frontend development standards and specifications                         |
 | [@qlover/eslint-plugin-fe-dev](./packages/eslint-plugin-fe-dev/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin-fe-dev) | Frontend development ESLint plugin                                        |
 | [@qlover/scripts-context](./packages/scripts-context/README.md)           | ![npm](https://img.shields.io/npm/v/@qlover/scripts-context)      | Script execution context tool                                             |
-| [@qlover/corekit-bridge](./packages/corekit-bridge/README_EN.md)             | ![npm](https://img.shields.io/npm/v/@qlover/corekit-bridge)       | Core toolkit bridge                                                       |
+| [@qlover/corekit-bridge](./packages/corekit-bridge/README_EN.md)          | ![npm](https://img.shields.io/npm/v/@qlover/corekit-bridge)       | Core toolkit bridge                                                       |
 | [@qlover/corekit-node](./packages/corekit-node/README.md)                 | ![npm](https://img.shields.io/npm/v/@qlover/corekit-node)         | Node.js environment core tools                                            |
 | [@qlover/create-app](./packages/create-app/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/create-app)           | Application scaffolding generation tool                                   |
 
