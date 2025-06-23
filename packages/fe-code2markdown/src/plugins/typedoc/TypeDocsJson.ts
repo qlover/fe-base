@@ -217,13 +217,13 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       throw new Error('Failed to convert project');
     }
 
-    this.context.setConfig({ projectReflection: project });
+    this.context.setOptions({ projectReflection: project });
 
     await this.writeToFile(project);
 
     const tableData = this.convertProjectToCommentTableData(project);
     const cleanData = this.removeCircularReferences(tableData);
-    this.writeJSON({ data: cleanData }, './typedoc.json');
+    this.writeJSON({ data: cleanData }, './typedoc-data.json');
   }
 
   /**

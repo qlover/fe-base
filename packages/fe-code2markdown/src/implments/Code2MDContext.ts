@@ -1,4 +1,8 @@
-import { FeScriptContextOptions, ScriptContext } from '@qlover/scripts-context';
+import {
+  FeScriptContextOptions,
+  ScriptShared,
+  ScriptContext
+} from '@qlover/scripts-context';
 import { ProjectReflection } from 'typedoc';
 import { ReaderOutput } from '../plugins/reader';
 
@@ -6,7 +10,7 @@ export interface Code2MDContextOptions<
   T extends Code2MDContextConfig = Code2MDContextConfig
 > extends Omit<FeScriptContextOptions<T>, 'constructor'> {}
 
-export interface Code2MDContextConfig {
+export interface Code2MDContextConfig extends ScriptShared {
   entryPoints: string[];
   outputJSONFilePath: string;
   generatePath: string;

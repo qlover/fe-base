@@ -43,7 +43,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     });
 
     this.logger.info('Read entry:', JSON.stringify(outputs, null, 2));
-    this.context.setConfig({
+    this.context.setOptions({
       readerOutputs: outputs
     });
   }
