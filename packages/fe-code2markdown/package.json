@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "node ./dist/cli.js -p example/example.ts",
+    "build:docs": "node ./dist/cli.js -p example",
     "build:docs:json": "node ./dist/cli.js -p example/example.ts --onlyJson"
   },
   "repository": {
@@ -51,12 +51,12 @@
   "devDependencies": {
     "@qlover/logger": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
-    "commander": "^11.0.0",
     "lodash": "^4.17.21"
   },
   "dependencies": {
     "@qlover/env-loader": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
+    "commander": "^11.0.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
     "typedoc": "~0.25.0",

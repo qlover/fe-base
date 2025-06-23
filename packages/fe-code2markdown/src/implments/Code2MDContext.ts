@@ -1,5 +1,4 @@
-import { FeScriptContextOptions } from '@qlover/scripts-context';
-import { ScriptContext } from '../scripts-plugin';
+import { FeScriptContextOptions, ScriptContext } from '@qlover/scripts-context';
 import { ProjectReflection } from 'typedoc';
 import { ReaderOutput } from '../plugins/reader';
 

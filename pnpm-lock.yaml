@@ -232,6 +232,9 @@ importers:
       '@qlover/scripts-context':
         specifier: workspace:*
         version: link:../scripts-context
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.0
@@ -251,9 +254,6 @@ importers:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
-      commander:
-        specifier: ^11.0.0
-        version: 11.1.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -388,6 +388,9 @@ importers:
 
   packages/scripts-context:
     dependencies:
+      '@qlover/fe-corekit':
+        specifier: ^1.4.1
+        version: 1.4.1
       chalk:
         specifier: ^5.3.0
         version: 5.4.1
@@ -1922,6 +1925,9 @@ packages:
   '@pkgr/core@0.2.4':
     resolution: {integrity: sha512-ROFF39F6ZrnzSUEmQQZUar0Jt4xVoP9WnDRdWwF4NNcXs3xBTLgBUDoOwW141y1jP+S8nahIbdxbFC7IShw9Iw==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
+
+  '@qlover/fe-corekit@1.4.1':
+    resolution: {integrity: sha512-EcUZqdMstSDjdu9OTz9s1K5lSMVDSGbGDvK0N+vNeL3HfaGW/1K0ktgPbMN4jmKbelJGaxSDch/TYKABRBOGIQ==}
 
   '@qlover/slice-store@1.2.6':
     resolution: {integrity: sha512-HlHCkFBCsQzOFKnc+lPLO7MtUrj2kb2GpBWZQCr6kuZXMpCP7gmitu1yV5itYO+7Bq4PeMmjQbXKW/802cJ5JA==}
@@ -7129,6 +7135,11 @@ snapshots:
     optional: true
 
   '@pkgr/core@0.2.4': {}
+
+  '@qlover/fe-corekit@1.4.1':
+    dependencies:
+      lodash: 4.17.21
+      merge: 2.1.1
 
   '@qlover/slice-store@1.2.6': {}
 

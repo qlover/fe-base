@@ -11,7 +11,7 @@ import {
   TSConfigReader,
   TypeDocReader
 } from 'typedoc';
-import { ScriptPlugin } from '../../scripts-plugin';
+import { ScriptPlugin } from '@qlover/scripts-context';
 import { ReflectionKindName } from '../../type';
 import fsExtra from 'fs-extra';
 import Code2MDContext from '../../implments/Code2MDContext';
