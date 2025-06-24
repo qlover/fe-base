@@ -4,6 +4,7 @@
  * @document ./test/index.ts
  */
 export * from './ExampleClass';
-export * from './ExampleFUnction';
+export * from './ExampleFunction';
 export * from './ExampleOptionsInterface';
 export * from './ExampleOptionsType';
+export * from './ExampleEnum';

@@ -5,6 +5,7 @@ import {
 } from '@qlover/scripts-context';
 import { ProjectReflection } from 'typedoc';
 import { ReaderOutput } from '../plugins/reader';
+import { FormatProjectValue } from '../plugins/typeDocs';
 
 export interface Code2MDContextOptions<
   T extends Code2MDContextConfig = Code2MDContextConfig
@@ -12,7 +13,15 @@ export interface Code2MDContextOptions<
 
 export interface Code2MDContextConfig extends ScriptShared {
   entryPoints: string[];
+
+  /**
+   * 输出 JSON 文件路径
+   */
   outputJSONFilePath: string;
+
+  /**
+   * 生成路径
+   */
   generatePath: string;
   /**
    * typedoc parse base path
@@ -39,7 +48,28 @@ export interface Code2MDContextConfig extends ScriptShared {
    */
   projectReflection?: ProjectReflection;
 
+  /**
+   * typedoc project reflection
+   * @private
+   */
+  formatProject?: FormatProjectValue[];
+
+  /**
+   * reader outputs
+   * @private
+   */
   readerOutputs?: ReaderOutput[];
 }
 
-export default class Code2MDContext extends ScriptContext<Code2MDContextConfig> {}
+export default class Code2MDContext extends ScriptContext<Code2MDContextConfig> {
+  constructor(options: Code2MDContextOptions) {
+    super({
+      ...options,
+      // @ts-expect-error
+      options: {
+        ...options.options,
+        rootPropName: 'code2md'
+      }
+    });
+  }
+}

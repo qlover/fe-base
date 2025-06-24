@@ -26,7 +26,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     const { entryPoints } = this.context.options;
     this.logger.info(`Reading entry: ${entryPoints}`);
     const entryAllFiles = this.getEntryAllFiles(entryPoints);
-    this.logger.info('Read entry:', JSON.stringify(entryAllFiles, null, 2));
+    this.logger.debug('Read entry:', JSON.stringify(entryAllFiles, null, 2));
 
     const outputs = entryAllFiles.map((entryFile) => {
       const relativePath = relative(process.cwd(), entryFile);
@@ -42,7 +42,6 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
       } as ReaderOutput;
     });
 
-    this.logger.info('Read entry:', JSON.stringify(outputs, null, 2));
     this.context.setOptions({
       readerOutputs: outputs
     });
