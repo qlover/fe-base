@@ -4,7 +4,8 @@ import { resolve } from 'path';
 import { Command } from 'commander';
 import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
 import pkg from '../package.json';
-import { ReflectionGenerater } from './ReflectionGenerater';
+import { Code2MDContextOptions } from './implments/Code2MDContext';
+import { Code2MDTask } from './implments/Code2MDTask';
 
 const DEFAULT_GENERATE_PATH = './docs.output';
 const DEFAULT_OUTPUT_JSON_FILE_PATH = DEFAULT_GENERATE_PATH + '/code2md.json';
@@ -14,7 +15,16 @@ const DEFAULT_HBS_ROOT_DIR = './hbs';
 const program = new Command();
 
 program
-  .version(pkg.version)
+  .version(pkg.version, '-v, --version', 'Show version')
+  .description(pkg.description)
+  .requiredOption('-p, --entryPoints <paths>', 'Entry points', (value) =>
+    value.split(',')
+  )
+  .option(
+    '-d, --dry-run',
+    'Do not touch or write anything, but show the commands'
+  )
+  .option('-V, --verbose', 'Show more information')
   .requiredOption('-p, --entryPoints <paths>', 'Entry points', (value) =>
     value.split(',')
   )
@@ -54,18 +64,20 @@ const main = async () => {
     hbsRootDir
   };
 
-  const generater = new ReflectionGenerater({
+  const code2mdOptions: Code2MDContextOptions = {
     logger: new Logger({
-      level: (opts.debug ?? verbose) ? 'debug' : 'info',
+      level: verbose ? 'debug' : 'info',
       name: 'code2md',
       handlers: new ConsoleHandler(new TimestampFormatter())
     }),
     verbose: opts.debug ?? verbose,
     dryRun: dryRun,
     options: generaterOptions
-  });
+  };
 
-  await generater.generate(opts.onlyJson);
+  const task = new Code2MDTask(code2mdOptions);
+
+  await task.run();
 };
 
 main();

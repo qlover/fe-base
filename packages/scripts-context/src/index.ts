@@ -5,3 +5,5 @@ export * from './implement/ColorFormatter';
 export * from './implement/Shell';
 
 export * from './interface/ShellInterface';
+
+export * from './plugin';

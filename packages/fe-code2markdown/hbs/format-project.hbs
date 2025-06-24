@@ -1,0 +1,106 @@
+# {{#if packageName}}{{packageName}}{{else}}项目文档{{/if}}
+
+{{#if readme}}
+{{#each readme}}
+{{#if (eq kind "text")}}{{text}}{{/if}}
+{{#if (eq kind "code")}}{{text}}{{/if}}
+{{/each}}
+{{/if}}
+
+---
+
+## 目录
+
+{{#each this}}
+- [{{name}}](#{{toLowerCase name}}) - {{kindName}}
+{{/each}}
+
+---
+
+{{#each this}}
+
+## {{name}}
+
+{{#if source}}
+📁 **源文件**: [`{{source.fileName}}:{{source.line}}`]({{source.url}})
+{{/if}}
+
+🏷️ **类型**: {{kindName}} | **ID**: {{id}}
+
+{{#if typeString}}
+📝 **签名**: `{{typeString}}`
+{{/if}}
+
+{{#if deprecated}}
+⚠️ **已废弃**
+{{/if}}
+
+{{#if since}}
+📅 **版本**: {{since}}
+{{/if}}
+
+{{#if defaultValue}}
+🔧 **默认值**: `{{defaultValue}}`
+{{/if}}
+
+### 描述
+
+{{#each descriptions}}
+{{#if (eq tag "@summary")}}
+{{#each content}}{{text}}{{/each}}
+{{/if}}
+{{/each}}
+
+{{#each descriptions}}
+{{#unless (eq tag "@summary")}}
+**{{tag}}**{{#if name}} ({{name}}){{/if}}:
+{{#each content}}
+{{#if (eq kind "text")}}{{text}}{{/if}}
+{{#if (eq kind "code")}}
+```
+{{text}}
+```
+{{/if}}
+{{/each}}
+
+{{/unless}}
+{{/each}}
+
+{{#if parametersList}}
+### 参数
+
+| 参数 | 类型 | 描述 | 默认值 | 状态 |
+|------|------|------|--------|------|
+{{#each parametersList}}
+| `{{name}}` | `{{typeString}}` | {{#each descriptions}}{{#each content}}{{text}}{{/each}}{{/each}} | {{#if defaultValue}}`{{defaultValue}}`{{else}}-{{/if}} | {{#if deprecated}}⚠️{{else}}✅{{/if}} |
+{{/each}}
+{{/if}}
+
+{{#if children}}
+### 成员
+
+{{#each children}}
+#### {{name}}
+
+{{#if source}}
+📁 [`{{source.fileName}}:{{source.line}}`]({{source.url}})
+{{/if}}
+
+🏷️ {{kindName}} | 📝 `{{typeString}}`{{#if deprecated}} | ⚠️ 已废弃{{/if}}
+
+{{#each descriptions}}
+{{#if (eq tag "@summary")}}
+{{#each content}}{{text}}{{/each}}
+{{/if}}
+{{/each}}
+
+{{#if parametersList}}
+**参数**: {{#each parametersList}}`{{name}}: {{typeString}}`{{#unless @last}}, {{/unless}}{{/each}}
+{{/if}}
+
+{{/each}}
+{{/if}}
+
+---
+
+{{/each}}
