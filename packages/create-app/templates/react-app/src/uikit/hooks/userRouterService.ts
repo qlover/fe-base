@@ -1,18 +1,12 @@
-import { useEffect } from 'react';
+import { RouteService } from '@/base/services/RouteService';
 import { IOC } from '@/core/IOC';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RouteService } from '../../base/services/RouteService';
 
-export function RouterServiceProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export function useRouterService() {
   const navigate = useNavigate();
 
   useEffect(() => {
     IOC(RouteService).setDependencies({ navigate });
   }, [navigate]);
-
-  return children;
 }

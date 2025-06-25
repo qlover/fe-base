@@ -55,10 +55,6 @@ export class UserService
     success: (state: UserServiceState) => state.success
   };
 
-  setState(state: Partial<UserServiceState>): void {
-    this.emit({ ...this.state, ...state });
-  }
-
   /**
    * @override
    */
@@ -75,7 +71,7 @@ export class UserService
 
     const userInfo = await this.userApi.getUserInfo();
 
-    this.setState({
+    this.emit({
       success: true,
       userInfo: userInfo.data
     });
@@ -109,21 +105,13 @@ export class UserService
 
     const userInfo = await this.userApi.getUserInfo();
 
-    this.setState({
+    this.emit({
       success: true,
       userInfo: userInfo.data
     });
 
     return userInfo;
   }
-
-  // onSuccess(): void {
-  //   this.routerService.changeRoutes(
-  //     this.routerService
-  //       .getRoutes()
-  //       .filter((route) => route.meta?.category !== 'auth')
-  //   );
-  // }
 
   /**
    * @override

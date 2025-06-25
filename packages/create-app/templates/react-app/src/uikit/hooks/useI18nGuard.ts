@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
  *
  * TODO: if language not found, use default language
  */
-function useLanguageGuard() {
+export function useI18nGuard() {
   const { lng } = useParams<{ lng: I18nServiceLocale }>();
   const navigate = useNavigate();
 
@@ -21,10 +21,4 @@ function useLanguageGuard() {
       navigate('/404', { replace: true });
     }
   }, [lng, navigate]);
-}
-
-export function I18nGuideProvider({ children }: { children: React.ReactNode }) {
-  useLanguageGuard();
-
-  return <>{children}</>;
 }

@@ -1,12 +1,9 @@
-import { RouterServiceProvider } from './RouterServiceProvider';
-import { I18nGuideProvider } from './I18nGuideProvider';
 import { UserAuthProvider } from './UserAuthProvider';
 import { useStrictEffect } from '../hooks/useStrictEffect';
 import { IOC } from '@/core/IOC';
 import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
-import { UserService } from '@/base/services/UserService';
-import { useStore } from '../hooks/useStore';
-import { Loading } from '../components/Loading';
+import { useI18nGuard } from '../hooks/useI18nGuard';
+import { useRouterService } from '../hooks/userRouterService';
 
 export function ProcessExecutorProvider({
   children
@@ -14,21 +11,14 @@ export function ProcessExecutorProvider({
   children: React.ReactNode;
 }) {
   const processerExecutor = IOC(ProcesserExecutor);
-  const userService = IOC(UserService);
 
-  useStore(userService);
+  useI18nGuard();
+
+  useRouterService();
 
   useStrictEffect(() => {
     processerExecutor.starup();
   }, []);
 
-  return (
-    <RouterServiceProvider>
-      <I18nGuideProvider>
-        <UserAuthProvider>
-          {!userService.isAuthenticated() ? <Loading fullscreen /> : children}
-        </UserAuthProvider>
-      </I18nGuideProvider>
-    </RouterServiceProvider>
-  );
+  return <UserAuthProvider>{children}</UserAuthProvider>;
 }
