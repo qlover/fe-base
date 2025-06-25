@@ -1,6 +1,6 @@
 import { localJsonStorage } from '../globals';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
-import { ProcesserService } from '@/base/services/ProcesserService';
+import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import { UserService } from '@/base/services/UserService';
 import { InversifyRegisterInterface } from '../IOC';
 import { InversifyContainer } from '../IOC';
@@ -13,7 +13,7 @@ export class RegisterControllers implements InversifyRegisterInterface {
     container.bind(JSONStorageController, jsonStorageController);
 
     container
-      .get(ProcesserService)
+      .get(ProcesserExecutor)
       .use(container.get(I18nKeyErrorPlugin))
       .use(container.get(UserService));
   }

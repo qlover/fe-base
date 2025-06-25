@@ -4,10 +4,7 @@ import * as identifier from './Identifier';
 export const baseRoutes: RouteConfigValue[] = [
   {
     path: '/',
-    element: 'base/RedirectPathname',
-    meta: {
-      category: 'main'
-    }
+    element: 'base/RedirectPathname'
   },
   {
     path: '/:lng',

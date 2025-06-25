@@ -69,7 +69,7 @@ export class RegisterCommon implements InversifyRegisterInterface {
     container.bind(
       RouteService,
       new RouteService({
-        config: { routes: baseRoutes },
+        routes: baseRoutes,
         logger
       })
     );

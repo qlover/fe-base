@@ -1,10 +1,10 @@
 import BaseHeader from '../../uikit/components/BaseHeader';
 import { Outlet } from 'react-router-dom';
-import { ProcessProvider } from '@/uikit/providers/ProcessProvider';
+import { ProcessExecutorProvider } from '@/uikit/providers/ProcessExecutorProvider';
 
 export default function Layout() {
   return (
-    <ProcessProvider>
+    <ProcessExecutorProvider>
       <div
         data-testid="basic-layout"
         className="text-base min-h-screen bg-primary"
@@ -15,6 +15,6 @@ export default function Layout() {
           <Outlet />
         </div>
       </div>
-    </ProcessProvider>
+    </ProcessExecutorProvider>
   );
 }

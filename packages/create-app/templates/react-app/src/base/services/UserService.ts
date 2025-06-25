@@ -44,7 +44,7 @@ export class UserService
 
   constructor(
     @inject(UserApi) private userApi: UserApi,
-    @inject(RouteService) private routerController: RouteService,
+    @inject(RouteService) private routerService: RouteService,
     @inject(IOCIdentifier.FeApiToken)
     private userToken: StorageTokenInterface<string>
   ) {
@@ -59,14 +59,14 @@ export class UserService
     this.emit({ ...this.state, ...state });
   }
 
-  enabled(): boolean {
-    return !this.isAuthenticated();
-  }
-
   /**
    * @override
    */
   async onBefore(): Promise<void> {
+    if (this.isAuthenticated()) {
+      return;
+    }
+
     const userToken = this.userToken.getToken();
 
     if (!userToken) {
@@ -81,11 +81,12 @@ export class UserService
     });
   }
 
-  /**
-   * @override
-   */
-  async onError(): Promise<void> {
-    this.logout();
+  onSuccess(): void | Promise<void> {
+    if (this.isAuthenticated()) {
+      this.emit({ ...this.state, success: true });
+    } else {
+      this.logout();
+    }
   }
 
   /**
@@ -116,12 +117,21 @@ export class UserService
     return userInfo;
   }
 
+  // onSuccess(): void {
+  //   this.routerService.changeRoutes(
+  //     this.routerService
+  //       .getRoutes()
+  //       .filter((route) => route.meta?.category !== 'auth')
+  //   );
+  // }
+
   /**
    * @override
    */
   logout(): void {
     this.reset();
-    this.routerController.gotoLogin();
+    this.routerService.reset();
+    this.routerService.gotoLogin();
   }
 
   /**
