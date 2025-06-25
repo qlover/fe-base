@@ -1,11 +1,4 @@
 /**
- * @description IOC 未实现
- * @localZh IOC 未实现
- * @localEn IOC not implemented
- */
-export const APP_IOC_NOT_IMPLEMENTED = 'err.ioc.not.implemented';
-
-/**
  * @description 本地未找到 user token
  * @localZh 本地未找到 user token
  * @localEn Local no user token
@@ -31,4 +24,11 @@ export const WITHIN_PAGE_PROVIDER = 'err.within.page.provider';
  * @localZh 响应内容没有 token 值
  * @localEn Response not token value
  */
-export const RES_NO_TOKEN = 'response.no.token';
+export const RES_NO_TOKEN = 'err.response.no.token';
+
+/**
+ * @description 未找到组件
+ * @localZh 未找到组件
+ * @localEn Not found component
+ */
+export const NOT_FOUND_COMPONENT = 'err.not.found.component';

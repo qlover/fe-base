@@ -2,7 +2,7 @@ import { IOC } from '@/core/IOC';
 import { UserService } from '@/base/services/UserService';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useStore } from '@/uikit/hooks/useStore';
-import BaseHeader from '../base/components/BaseHeader';
+import BaseHeader from '../../uikit/components/BaseHeader';
 
 export default function Layout() {
   const userService = IOC(UserService);

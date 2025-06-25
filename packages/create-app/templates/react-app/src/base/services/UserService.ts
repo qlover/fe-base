@@ -1,21 +1,34 @@
-import { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
 import type {
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouteService } from './RouteService';
-import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
+import {
+  StoreInterface,
+  StoreStateInterface,
+  type StorageTokenInterface
+} from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
-import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
-import * as errKeys from '@config/Identifier/Error';
+import * as errKeys from '@config/Identifier/error';
+
+export type UserServiceUserInfo =
+  UserApiGetUserInfoTransaction['response']['data'];
+
+export interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
 
 class UserServiceState implements StoreStateInterface {
   success: boolean = false;
-  userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
+  userInfo: UserServiceUserInfo = {
     name: '',
     email: '',
     picture: ''
@@ -25,28 +38,30 @@ class UserServiceState implements StoreStateInterface {
 @injectable()
 export class UserService
   extends StoreInterface<UserServiceState>
-  implements ExecutorPlugin, LoginInterface
+  implements ExecutorPlugin
 {
   readonly pluginName = 'UserService';
 
   constructor(
     @inject(UserApi) private userApi: UserApi,
-    @inject(RouteService) private routerController: RouteService,
+    @inject(RouteService) private routerService: RouteService,
     @inject(IOCIdentifier.FeApiToken)
     private userToken: StorageTokenInterface<string>
   ) {
     super(() => new UserServiceState());
   }
 
-  setState(state: Partial<UserServiceState>): void {
-    this.emit({ ...this.state, ...state });
-  }
+  selector = {
+    success: (state: UserServiceState) => state.success
+  };
 
   /**
    * @override
    */
   async onBefore(): Promise<void> {
-    await ThreadUtil.sleep(1000);
+    if (this.isAuthenticated()) {
+      return;
+    }
 
     const userToken = this.userToken.getToken();
 
@@ -56,19 +71,18 @@ export class UserService
 
     const userInfo = await this.userApi.getUserInfo();
 
-    this.setState({
+    this.emit({
       success: true,
       userInfo: userInfo.data
     });
   }
 
-  /**
-   * @override
-   */
-  async onError(): Promise<void> {
-    this.logout();
-
-    this.routerController.gotoLogin();
+  onSuccess(): void | Promise<void> {
+    if (this.isAuthenticated()) {
+      this.emit({ ...this.state, success: true });
+    } else {
+      this.logout();
+    }
   }
 
   /**
@@ -91,7 +105,7 @@ export class UserService
 
     const userInfo = await this.userApi.getUserInfo();
 
-    this.setState({
+    this.emit({
       success: true,
       userInfo: userInfo.data
     });
@@ -104,6 +118,8 @@ export class UserService
    */
   logout(): void {
     this.reset();
+    this.routerService.reset();
+    this.routerService.gotoLogin();
   }
 
   /**

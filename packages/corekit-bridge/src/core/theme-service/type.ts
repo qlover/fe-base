@@ -1,8 +1,9 @@
 import { JSONStorage } from '@qlover/fe-corekit';
+import { StoreStateInterface } from '../store-state';
 
-export type ThemeServiceState = {
+export interface ThemeServiceState extends StoreStateInterface {
   theme: string;
-};
+}
 
 export type ThemeConfig = {
   /**

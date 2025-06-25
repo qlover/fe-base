@@ -7,6 +7,7 @@ import { RouteService } from './base/services/RouteService';
 import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 import { routerPrefix } from '@config/common';
+import { useStore } from './uikit/hooks/useStore';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -28,15 +29,15 @@ const routerLoader = new RouterLoader({
 });
 
 function App() {
+  const routes = useStore(IOC(RouteService), (state) => state.routes);
+
   const routerBase = useMemo(() => {
-    const routes = IOC(RouteService)
-      .getRoutes()
-      .map((route) => routerLoader.toRoute(route));
-    const router = createBrowserRouter(routes, {
+    const routeList = routes.map((route) => routerLoader.toRoute(route));
+    const router = createBrowserRouter(routeList, {
       basename: routerPrefix
     });
     return router;
-  }, []);
+  }, [routes]);
 
   return (
     <AntdThemeProvider

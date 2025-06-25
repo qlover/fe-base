@@ -11,6 +11,7 @@ import { AiApiBootstarp } from '@/base/apis/AiApi';
 import { printBootstrap } from './PrintBootstrap';
 import { IOCIdentifier, type IOCIdentifierMap } from '../IOC';
 import { I18nService } from '@/base/services/I18nService';
+import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 
 export class BootstrapsRegistry {
   constructor(
@@ -29,7 +30,8 @@ export class BootstrapsRegistry {
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,
-      new BootstrapApp()
+      new BootstrapApp(),
+      IOC(I18nKeyErrorPlugin)
     ];
 
     if (this.appConfig.env !== 'production') {

@@ -5,7 +5,7 @@ import { IOC } from '@/core/IOC';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { useStore } from '@/uikit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.executor';
 
 interface Task {
   id: string;
@@ -20,7 +20,7 @@ interface Task {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
 }
 
-export default function Executor() {
+export default function ExecutorPage() {
   const { t } = useBaseRoutePage();
   const executorController = IOC(ExecutorController);
   const jSONStorageController = IOC(JSONStorageController);
@@ -250,7 +250,7 @@ export default function Executor() {
           </h2>
           <div className="space-y-4">
             <div className="text-text-secondary">
-              {t(i18nKeys.PAGE_REQUEST_TIMEOUT)}: {requestTimeout}
+              {t(i18nKeys.PAGE_EXECUTOR_REQUEST_TIMEOUT)}: {requestTimeout}
             </div>
             <div>
               {helloState.loading ? (

@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
  *
  * TODO: if language not found, use default language
  */
-export function useLanguageGuard() {
+export function useI18nGuard() {
   const { lng } = useParams<{ lng: I18nServiceLocale }>();
   const navigate = useNavigate();
 

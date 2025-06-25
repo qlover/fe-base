@@ -8,8 +8,8 @@ import {
 import { inject, injectable } from 'inversify';
 import {
   StoreInterface,
-  StoreStateInterface
-} from '@/base/port/StoreInterface';
+  type StoreStateInterface
+} from '@qlover/corekit-bridge';
 
 class ExecutorControllerState implements StoreStateInterface {
   helloState = {

@@ -1,8 +1,8 @@
 import { JSONStorage } from '@qlover/fe-corekit';
 import {
   StoreInterface,
-  StoreStateInterface
-} from '@/base/port/StoreInterface';
+  type StoreStateInterface
+} from '@qlover/corekit-bridge';
 import { random } from 'lodash';
 
 interface JSONStoragePageState extends StoreStateInterface {

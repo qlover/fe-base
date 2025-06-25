@@ -2,53 +2,23 @@ import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier';
+import { baseRoutes } from '@config/app.router';
 
-export default function Home() {
+const layoutRoutes = baseRoutes.filter(
+  (route) => route.element === 'base/Layout'
+);
+
+const navigationItems = layoutRoutes[0]!
+  .children!.filter((route) => !route.index)
+  .map((route) => ({
+    href: `/${route.path}`,
+    titleKey: route.meta!.title!,
+    descriptionKey: route.meta!.description!
+  }));
+
+export default function HomePage() {
   const { t } = useBaseRoutePage();
-
-  const navigationItems = [
-    {
-      href: '/about',
-      bgColor: 'bg-blue-50',
-      hoverColor: 'hover:bg-blue-100',
-      titleColor: 'text-blue-700',
-      titleKey: i18nKeys.PAGE_ABOUT_TITLE,
-      descriptionKey: i18nKeys.PAGE_ABOUT_DESCRIPTION
-    },
-    {
-      href: '/jsonstorage',
-      bgColor: 'bg-green-50',
-      hoverColor: 'hover:bg-green-100',
-      titleColor: 'text-green-700',
-      titleKey: i18nKeys.PAGE_JSONSTORAGE_TITLE,
-      descriptionKey: i18nKeys.PAGE_JSONSTORAGE_DESCRIPTION
-    },
-    {
-      href: '/request',
-      bgColor: 'bg-red-50',
-      hoverColor: 'hover:bg-red-100',
-      titleColor: 'text-red-700',
-      titleKey: i18nKeys.PAGE_REQUEST_TITLE,
-      descriptionKey: i18nKeys.PAGE_REQUEST_DESCRIPTION
-    },
-    {
-      href: '/executor',
-      bgColor: 'bg-purple-50',
-      hoverColor: 'hover:bg-purple-100',
-      titleColor: 'text-purple-700',
-      titleKey: i18nKeys.PAGE_EXECUTOR_TITLE,
-      descriptionKey: i18nKeys.PAGE_EXECUTOR_DESCRIPTION
-    },
-    {
-      href: '/errorIdentifier',
-      bgColor: 'bg-amber-50',
-      hoverColor: 'hover:bg-amber-100',
-      titleColor: 'text-amber-700',
-      titleKey: i18nKeys.PAGE_ERROR_IDENTIFIER_TITLE,
-      descriptionKey: i18nKeys.PAGE_ERROR_IDENTIFIER_DESCRIPTION
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-primary">

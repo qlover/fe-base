@@ -5,7 +5,7 @@ import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
 import merge from 'lodash/merge';
 import i18nConfig from '@config/i18n';
-import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/Error';
+import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/error';
 
 const { defaultNS } = i18nConfig;
 

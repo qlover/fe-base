@@ -4,12 +4,11 @@ import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
-import { UserService } from '@/base/services/UserService';
+import { RegisterFormData, UserService } from '@/base/services/UserService';
 import { useStore } from '@/uikit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/I18n';
-import type { RegisterFormData } from '@/base/port/LoginInterface';
+import * as i18nKeys from '@config/Identifier/page.register';
 
-export default function Register() {
+export default function RegisterPage() {
   const { t } = useBaseRoutePage();
   const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');
