@@ -1,5 +1,19 @@
 # @qlover/fe-release
 
+## 2.3.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **fe-release:** migrate build process to tsup and introduce project configuration ([a2d9e95](https://github.com/qlover/fe-base/commit/a2d9e954883323a74ff09d9656fcf68bd70129d9)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Updated the build script in `package.json` to use `tsup`, replacing the previous Rollup configuration.
+  - Added a new `project.json` file to define build targets and improve integration with NX.
+  - Created a new `tsup.config.ts` file for configuring the build process, supporting both ESM and CommonJS formats.
+  - Removed the obsolete `rollup.config.js` file to streamline the project structure.
+
+  These changes enhance the build orchestration and configuration for the fe-release package.
+
 ## 2.3.4
 
 ### Patch Changes
@@ -7,7 +21,6 @@
 #### ✨ Features
 
 - **pather:** add cross-platform path utility and comprehensive tests ([b87a269](https://github.com/qlover/fe-base/commit/b87a269c9215c34df3646e5511792c5c6818e736)) ([#445](https://github.com/qlover/fe-base/pull/445))
-
   - Introduced the Pather class for reliable path normalization and comparison across Windows and POSIX systems, providing methods like `toLocalPath`, `isSubPath`, `startsWith`, and `containsPath`.
   - Added extensive unit tests for the Pather class to ensure functionality and edge case handling.
   - Updated Changelog and GithubChangelog plugins to utilize the new Pather utility for improved path handling in commit filtering.
@@ -25,14 +38,12 @@
 #### ✨ Features
 
 - add tabify method to format commit body in GitChangelog ([5670b78](https://github.com/qlover/fe-base/commit/5670b78b1cb06a730d2cbd7ac1f5bd7e9e7df490)) ([#422](https://github.com/qlover/fe-base/pull/422))
-
   - Introduced a new `tabify` method to format the body of commit messages by adding indentation.
   - Updated `parseCommitlint` to utilize the `tabify` method for improved body formatting.
 
 #### 🐞 Bug Fixes
 
 - update @qlover/create-app to use ES module format ([5e9dffb](https://github.com/qlover/fe-base/commit/5e9dffb4d9e54dc2457588a81b11159820196067)) ([#422](https://github.com/qlover/fe-base/pull/422))
-
   - Changed the entry point in package.json from "dist/index.cjs" to "dist/index.js" to align with ES module standards.
   - Updated tsup.config.ts to output in ES module format instead of CommonJS.
   - Refactored index.ts to use fileURLToPath for resolving the root path, enhancing compatibility with ES modules.
@@ -44,7 +55,6 @@
 #### 🐞 Bug Fixes
 
 - **changelog:** conditionally execute git restore for unchanged packages ([b419a2a](https://github.com/qlover/fe-base/commit/b419a2a42d810c89a6d5c04be61fc100724f43ad)) ([#403](https://github.com/qlover/fe-base/pull/403))
-
   - Added a check to ensure that the git restore command is only executed if there are packages that have not changed, improving the efficiency of the Changelog plugin.
 
 ## 2.3.0
@@ -54,7 +64,6 @@
 #### ✨ Features
 
 - **changelog:** add support for commit body in changelog generation ([5383055](https://github.com/qlover/fe-base/commit/5383055d2abb095df40575ce2d40e4c40827e422)) ([#398](https://github.com/qlover/fe-base/pull/398))
-
   - Updated GitChangelog to parse and include commit body along with the title.
   - Enhanced GitChangelogFormatter to conditionally format and display commit body in the changelog.
   - Introduced commitBody option in GitChangelogOptions to control the inclusion of commit body in the output.
@@ -113,7 +122,6 @@
 #### ✨ Features
 
 - add option to ignore non-updated packages and enhance workspace handling (#385)
-
   - Introduced `--changelog.ignore-non-updated-packages` CLI option to allow skipping non-updated packages in changelog generation.
   - Updated `ChangelogProps` to include `ignoreNonUpdatedPackages` configuration.
   - Enhanced `WorkspacesProps` to manage `changedPaths` and `packages` more effectively.
@@ -135,21 +143,18 @@
 #### ✨ Features
 
 - integrate @qlover/logger into scripts-context package (#371)
-
   - Added @qlover/logger as a dependency, replacing the previous logger from @qlover/fe-corekit.
   - Updated Shell, ScriptContext, and ScriptsLogger to utilize the new LoggerInterface from @qlover/logger.
   - Enhanced logging capabilities with a new ColorFormatter for improved log output.
   - Updated tests to reflect changes in logger implementation, ensuring compatibility and functionality.
 
 - update logger package configuration and add mock (#371)
-
   - Added 'logger' to the Vite alias configuration for improved module resolution.
   - Updated package.json to include a 'default' export alongside 'require'.
   - Refactored tsup configuration for cleaner setup and ensured TypeScript definitions are generated.
   - Introduced a mock for the logger package to facilitate testing.
 
 - integrate @qlover/logger into fe-release package (#371)
-
   - Added @qlover/logger as a dependency in package.json and pnpm-lock.yaml.
   - Updated logger type references from @qlover/fe-corekit to LoggerInterface from @qlover/logger.
   - Refactored logging calls from verbose to debug level for consistency across the codebase.
@@ -166,7 +171,6 @@
 #### ♻️ Refactors
 
 - restructure implementation files and remove deprecated dependencies (#371)
-
   - Moved implementation files for ConfigSearch, Shell, and related utilities to a new 'implement' directory for better organization.
   - Removed the dependency on '@qlover/fe-corekit' from pnpm-lock.yaml.
   - Updated test files to reflect the new import paths and ensure compatibility with the refactored structure.
@@ -185,13 +189,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -200,7 +202,6 @@
 #### ♻️ Refactors
 
 - Enhance createRelease method with error handling and logging improvements (#364)
-
   - Updated the createRelease method to include a try-catch block for better error management during release creation.
   - Modified logging messages to indicate dry run status and success or failure of the release creation process.
   - Cleaned up the method signature for clarity.
@@ -208,17 +209,14 @@
   Co-authored-by: QRJ <renjie.qin@brain.im>
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -232,13 +230,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -247,7 +243,6 @@
 #### ♻️ Refactors
 
 - Enhance createRelease method with error handling and logging improvements (#364)
-
   - Updated the createRelease method to include a try-catch block for better error management during release creation.
   - Modified logging messages to indicate dry run status and success or failure of the release creation process.
   - Cleaned up the method signature for clarity.
@@ -255,17 +250,14 @@
   Co-authored-by: QRJ <renjie.qin@brain.im>
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -279,13 +271,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -294,17 +284,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -354,14 +341,12 @@
 #### ✨ Features
 
 - implement GitChangelog for improved changelog generation (#351)
-
   - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
   - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
   - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
   - Enhanced default options for changelog types and formatting.
 
 - add option to push changed labels to release PRs and update dependencies (#350)
-
   - Introduced a new command-line option `--githubPR.push-change-labels` to allow pushing changed labels to the release PR.
   - Updated the `GithubPR` class to handle the new option and push relevant labels if specified.
   - Updated dependencies in `pnpm-lock.yaml` to ensure compatibility with the latest versions.
@@ -409,7 +394,6 @@
 - ## 1.0.9 (2025-04-23)
 
   #### Bug Fixes
-
   - no workspace tagname ([#333](https://github.com/qlover/fe-base/issues/333)) ([595fefe](https://github.com/qlover/fe-base/commit/595fefe4e1bce4f97ade1899a5691af39c55e67d))
 
 ### Patch Changes
@@ -417,7 +401,6 @@
 - ## 1.0.8 (2025-04-22)
 
   ### Features
-
   - use changset publish/release ([#329](https://github.com/qlover/fe-base/issues/329)) ([#330](https://github.com/qlover/fe-base/issues/330)) ([8ef77ba](https://github.com/qlover/fe-base/commit/8ef77ba7f0ecf4eb2fa4b52d92ee89aa27b4285a))
 
 ## [1.0.8](https://github.com/qlover/fe-base/compare/@qlover/fe-release-v1.0.5...@qlover/fe-release-v1.0.8) (2025-04-17)
