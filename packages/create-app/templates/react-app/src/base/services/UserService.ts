@@ -1,4 +1,4 @@
-import { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
 import type {
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
@@ -7,18 +7,24 @@ import { RouteService } from './RouteService';
 import {
   StoreInterface,
   StoreStateInterface,
-  ThreadUtil,
   type StorageTokenInterface
 } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
-import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
 import * as errKeys from '@config/Identifier/error';
 
 export type UserServiceUserInfo =
   UserApiGetUserInfoTransaction['response']['data'];
+
+export interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
 
 class UserServiceState implements StoreStateInterface {
   success: boolean = false;
@@ -32,7 +38,7 @@ class UserServiceState implements StoreStateInterface {
 @injectable()
 export class UserService
   extends StoreInterface<UserServiceState>
-  implements ExecutorPlugin, LoginInterface
+  implements ExecutorPlugin
 {
   readonly pluginName = 'UserService';
 
@@ -45,16 +51,22 @@ export class UserService
     super(() => new UserServiceState());
   }
 
+  selector = {
+    success: (state: UserServiceState) => state.success
+  };
+
   setState(state: Partial<UserServiceState>): void {
     this.emit({ ...this.state, ...state });
+  }
+
+  enabled(): boolean {
+    return !this.isAuthenticated();
   }
 
   /**
    * @override
    */
   async onBefore(): Promise<void> {
-    await ThreadUtil.sleep(1000);
-
     const userToken = this.userToken.getToken();
 
     if (!userToken) {
@@ -74,8 +86,6 @@ export class UserService
    */
   async onError(): Promise<void> {
     this.logout();
-
-    this.routerController.gotoLogin();
   }
 
   /**
@@ -111,6 +121,7 @@ export class UserService
    */
   logout(): void {
     this.reset();
+    this.routerController.gotoLogin();
   }
 
   /**

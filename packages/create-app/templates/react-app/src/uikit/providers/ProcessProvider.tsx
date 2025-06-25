@@ -17,12 +17,12 @@ export function ProcessProvider({ children }: { children: React.ReactNode }) {
   useLanguageGuard();
   const userService = IOC(UserService);
   const pageProcesser = IOC(ProcesserService);
-  const success = useStore(userService, (state) => state.success);
+  const success = useStore(pageProcesser, pageProcesser.selector.success);
 
   const navigate = useNavigate();
 
   useStrictEffect(() => {
-    pageProcesser.init();
+    pageProcesser.starup();
   }, []);
 
   useEffect(() => {
