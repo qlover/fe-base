@@ -4,6 +4,14 @@
  * @localEn Create Account
  */
 export const PAGE_REGISTER_TITLE = 'page.register.title';
+
+/**
+ * @description Register page description
+ * @localZh 创建账号页面描述
+ * @localEn Create Account Page Description
+ */
+export const PAGE_REGISTER_DESCRIPTION = 'page.register.description';
+
 /**
  * @description Register page title
  * @localZh 创建账号

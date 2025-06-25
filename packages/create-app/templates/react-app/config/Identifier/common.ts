@@ -24,25 +24,39 @@ export const HEADER_THEME_PINK = 'header.theme.pink';
  * @localZh 登出
  * @localEn Logout
  */
-export const AUTH_LOGOUT_DIALOG_TITLE = 'Logout';
+export const AUTH_LOGOUT_DIALOG_TITLE = 'auth.logout.dialog.title';
 
 /**
  * @description logout dialog content
  * @localZh 确定要登出吗？
  * @localEn Are you sure you want to logout?
  */
-export const AUTH_LOGOUT_DIALOG_CONTENT = 'Are you sure you want to logout?';
+export const AUTH_LOGOUT_DIALOG_CONTENT = 'auth.logout.dialog.content';
 
 /**
  * @description 404 page title
- * @localZh 404 页面
- * @localEn 404 Page
+ * @localZh 404 页面未找到
+ * @localEn 404 Page Not Found
  */
 export const PAGE_404_TITLE = 'page.404.title';
 
 /**
+ * @description 404 page description
+ * @localZh 404 页面描述
+ * @localEn 404 Page Description
+ */
+export const PAGE_404_DESCRIPTION = 'page.404.description';
+
+/**
  * @description 500 page title
- * @localZh 500 页面
- * @localEn 500 Page
+ * @localZh 500 页面错误
+ * @localEn 500 Page Error
  */
 export const PAGE_500_TITLE = 'page.500.title';
+
+/**
+ * @description 500 page description
+ * @localZh 500 页面描述
+ * @localEn 500 Page Description
+ */
+export const PAGE_500_DESCRIPTION = 'page.500.description';

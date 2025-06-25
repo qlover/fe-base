@@ -21,6 +21,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'base/home/HomePage',
         meta: {
           title: identifier.PAGE_HOME_TITLE,
+          description: identifier.PAGE_HOME_DESCRIPTION,
           icon: 'home',
           localNamespace: 'common'
         }
@@ -30,6 +31,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'base/about/AboutPage',
         meta: {
           title: identifier.PAGE_ABOUT_TITLE,
+          description: identifier.PAGE_ABOUT_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -39,6 +41,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'base/jsonStorage/JSONStoragePage',
         meta: {
           title: identifier.PAGE_JSONSTORAGE_TITLE,
+          description: identifier.PAGE_JSONSTORAGE_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -48,6 +51,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'base/request/RequestPage',
         meta: {
           title: identifier.PAGE_REQUEST_TITLE,
+          description: identifier.PAGE_REQUEST_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -57,15 +61,17 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'base/executor/ExecutorPage',
         meta: {
           title: identifier.PAGE_EXECUTOR_TITLE,
+          description: identifier.PAGE_EXECUTOR_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
       },
       {
         path: 'errorIdentifier',
-        element: 'base/errorIdentifier/errorIdentifierPage',
+        element: 'base/errorIdentifier/ErrorIdentifierPage',
         meta: {
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
+          description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -76,6 +82,7 @@ export const baseRoutes: RouteConfigValue[] = [
         meta: {
           category: 'common',
           title: identifier.PAGE_404_TITLE,
+          description: identifier.PAGE_404_DESCRIPTION,
           localNamespace: 'common'
         }
       },
@@ -85,6 +92,7 @@ export const baseRoutes: RouteConfigValue[] = [
         meta: {
           category: 'common',
           title: identifier.PAGE_500_TITLE,
+          description: identifier.PAGE_500_DESCRIPTION,
           localNamespace: 'common'
         }
       }
@@ -107,6 +115,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'auth/LoginPage',
         meta: {
           title: identifier.PAGE_LOGIN_TITLE,
+          description: identifier.PAGE_LOGIN_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -116,6 +125,7 @@ export const baseRoutes: RouteConfigValue[] = [
         element: 'auth/Register',
         meta: {
           title: identifier.PAGE_REGISTER_TITLE,
+          description: identifier.PAGE_REGISTER_DESCRIPTION,
           icon: 'info',
           localNamespace: 'common'
         }
@@ -129,6 +139,7 @@ export const baseRoutes: RouteConfigValue[] = [
     meta: {
       category: 'common',
       title: identifier.PAGE_404_TITLE,
+      description: identifier.PAGE_404_DESCRIPTION,
       localNamespace: 'common'
     }
   },
@@ -138,6 +149,7 @@ export const baseRoutes: RouteConfigValue[] = [
     meta: {
       category: 'common',
       title: identifier.PAGE_500_TITLE,
+      description: identifier.PAGE_500_DESCRIPTION,
       localNamespace: 'common'
     }
   },
@@ -147,6 +159,7 @@ export const baseRoutes: RouteConfigValue[] = [
     meta: {
       category: 'common',
       title: identifier.PAGE_404_TITLE,
+      description: identifier.PAGE_404_DESCRIPTION,
       localNamespace: 'common'
     }
   }

@@ -6,6 +6,13 @@
 export const PAGE_HOME_TITLE = 'page.home.title';
 
 /**
+ * @description Home page description
+ * @localZh 一个现代前端实用库集合，提供各种实用工具和组件
+ * @localEn A modern frontend utility library collection providing various practical tools and components
+ */
+export const PAGE_HOME_DESCRIPTION = 'page.home.description';
+
+/**
  * @description Home page welcome message
  * @localZh 欢迎来到主页
  * @localEn Welcome to the home page

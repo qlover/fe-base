@@ -5,6 +5,12 @@
  */
 export const PAGE_LOGIN_TITLE = 'page.login.title';
 /**
+ * @description Login page description
+ * @localZh 登录页面描述
+ * @localEn Login Page Description
+ */
+export const PAGE_LOGIN_DESCRIPTION = 'page.login.description';
+/**
  * @description Login page title
  * @localZh 登录
  * @localEn Login

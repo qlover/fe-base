@@ -45,6 +45,11 @@ export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
     title?: string;
 
     /**
+     * The description of the route
+     */
+    description?: string;
+
+    /**
      * The icon of the route
      */
     icon?: string;
