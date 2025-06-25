@@ -6,8 +6,14 @@
     "inlineSources": false,
     "importHelpers": false,
     "declaration": true,
-    "outDir": "dist",
+    "outDir": "dist"
   },
-  "include": ["src/build/**/*.ts"],
-  "exclude": ["src/core", "node_modules", "dist"]
+  "include": [
+    "src/build/**/*.ts"
+  ],
+  "exclude": [
+    "src/core",
+    "node_modules",
+    "dist"
+  ]
 }

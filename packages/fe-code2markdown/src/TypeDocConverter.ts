@@ -162,8 +162,7 @@ export class TypeDocConverter {
   ): TemplateSummary {
     return {
       ...summary,
-      [`is${DisplayPartsKindName[summary.kind as keyof typeof DisplayPartsKindName]}`]:
-        true,
+      [`is${DisplayPartsKindName[summary.kind as keyof typeof DisplayPartsKindName]}`]: true,
       tag,
       title: tag?.replace('@', '') || ''
     } as TemplateSummary;
