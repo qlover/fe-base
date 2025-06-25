@@ -88,9 +88,6 @@
     "vite": "^6.1.0",
     "vitest": "^3.0.5"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"

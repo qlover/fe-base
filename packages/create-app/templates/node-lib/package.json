@@ -55,12 +55,12 @@
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/node": "^22.13.2",
-    "commander": "^11.0.0",
     "release-it": "^17.10.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript2": "^0.36.0"
   },
   "dependencies": {
-    "@qlover/fe-corekit": "latest"
+    "@qlover/fe-corekit": "latest",
+    "commander": "^11.0.0"
   }
 }

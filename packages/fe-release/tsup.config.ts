@@ -13,9 +13,9 @@ export default defineConfig([
     format: ['esm', 'cjs'],
     dts: false,
     clean: true,
-    minify: true,
-    external,
-    platform: 'node'
+    minify: false,
+    splitting: false,
+    external
   },
   {
     entry: ['src/index.ts'],
