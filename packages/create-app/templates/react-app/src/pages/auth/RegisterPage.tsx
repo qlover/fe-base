@@ -9,7 +9,7 @@ import { useStore } from '@/uikit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/page.register';
 import type { RegisterFormData } from '@/base/port/LoginInterface';
 
-export default function Register() {
+export default function RegisterPage() {
   const { t } = useBaseRoutePage();
   const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');

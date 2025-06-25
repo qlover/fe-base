@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import {
@@ -111,7 +112,7 @@ export default defineConfig({
       overriedCssFilePath: './src/styles/css/antd-themes/no-context.css',
       targetPath: './src/base/types/deprecated-antd.d.ts'
     })
-  ],
+  ] as any[],
   base: routerPrefix,
   envPrefix: envPrefix,
   publicDir: 'public',

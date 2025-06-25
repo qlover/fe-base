@@ -18,7 +18,7 @@ export const baseRoutes: RouteConfigValue[] = [
     children: [
       {
         index: true,
-        element: 'base/home/HomePage',
+        element: 'base/HomePage',
         meta: {
           title: identifier.PAGE_HOME_TITLE,
           description: identifier.PAGE_HOME_DESCRIPTION,
@@ -28,7 +28,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'about',
-        element: 'base/about/AboutPage',
+        element: 'base/AboutPage',
         meta: {
           title: identifier.PAGE_ABOUT_TITLE,
           description: identifier.PAGE_ABOUT_DESCRIPTION,
@@ -38,7 +38,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'jsonStorage',
-        element: 'base/jsonStorage/JSONStoragePage',
+        element: 'base/JSONStoragePage',
         meta: {
           title: identifier.PAGE_JSONSTORAGE_TITLE,
           description: identifier.PAGE_JSONSTORAGE_DESCRIPTION,
@@ -48,7 +48,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'request',
-        element: 'base/request/RequestPage',
+        element: 'base/RequestPage',
         meta: {
           title: identifier.PAGE_REQUEST_TITLE,
           description: identifier.PAGE_REQUEST_DESCRIPTION,
@@ -58,7 +58,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'executor',
-        element: 'base/executor/ExecutorPage',
+        element: 'base/ExecutorPage',
         meta: {
           title: identifier.PAGE_EXECUTOR_TITLE,
           description: identifier.PAGE_EXECUTOR_DESCRIPTION,
@@ -68,7 +68,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'errorIdentifier',
-        element: 'base/errorIdentifier/ErrorIdentifierPage',
+        element: 'base/ErrorIdentifierPage',
         meta: {
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
           description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,
@@ -122,7 +122,7 @@ export const baseRoutes: RouteConfigValue[] = [
       },
       {
         path: 'register',
-        element: 'auth/Register',
+        element: 'auth/RegisterPage',
         meta: {
           title: identifier.PAGE_REGISTER_TITLE,
           description: identifier.PAGE_REGISTER_DESCRIPTION,
