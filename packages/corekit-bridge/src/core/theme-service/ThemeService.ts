@@ -1,6 +1,6 @@
-import { SliceStore } from '@qlover/slice-store';
 import { ThemeConfig, ThemeServiceProps, ThemeServiceState } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
+import { StoreInterface } from '../store-state';
 
 export const defaultThemeConfig: ThemeConfig = {
   domAttribute: 'data-theme',
@@ -13,7 +13,7 @@ export const defaultThemeConfig: ThemeConfig = {
   cacheTarget: true
 };
 
-export class ThemeService extends SliceStore<ThemeServiceState> {
+export class ThemeService extends StoreInterface<ThemeServiceState> {
   private _target: HTMLElement | null = null;
 
   constructor(private props: ThemeServiceProps) {

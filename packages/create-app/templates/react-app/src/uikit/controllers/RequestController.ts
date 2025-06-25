@@ -3,7 +3,7 @@ import { FeApi } from '@/base/apis/feApi/FeApi';
 import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { aiHello } from '@/base/apis/AiApi';
-import { StoreInterface } from '@/base/port/StoreInterface';
+import { StoreInterface } from '@qlover/corekit-bridge';
 
 function createDefaultState() {
   return {

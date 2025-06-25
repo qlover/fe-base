@@ -4,18 +4,25 @@ import type {
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouteService } from './RouteService';
-import { ThreadUtil, type StorageTokenInterface } from '@qlover/corekit-bridge';
+import {
+  StoreInterface,
+  StoreStateInterface,
+  ThreadUtil,
+  type StorageTokenInterface
+} from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { IOCIdentifier } from '@/core/IOC';
 import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
 import * as errKeys from '@config/Identifier/error';
+
+export type UserServiceUserInfo =
+  UserApiGetUserInfoTransaction['response']['data'];
 
 class UserServiceState implements StoreStateInterface {
   success: boolean = false;
-  userInfo: UserApiGetUserInfoTransaction['response']['data'] = {
+  userInfo: UserServiceUserInfo = {
     name: '',
     email: '',
     picture: ''
