@@ -6,7 +6,7 @@ import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
 import { UserService } from '@/base/services/UserService';
 import { useStore } from '@/uikit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.register';
 import type { RegisterFormData } from '@/base/port/LoginInterface';
 
 export default function Register() {

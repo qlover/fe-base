@@ -1,4 +1,4 @@
-import BaseHeader from './components/BaseHeader';
+import BaseHeader from '../../uikit/components/BaseHeader';
 import { Outlet } from 'react-router-dom';
 import { ProcessProvider } from '@/uikit/providers/ProcessProvider';
 

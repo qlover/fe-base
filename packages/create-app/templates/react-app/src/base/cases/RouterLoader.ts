@@ -38,7 +38,27 @@ export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
    * Additional metadata for the route
    * @description Can store any route-specific data like permissions, titles, etc.
    */
-  meta?: Record<string, unknown>;
+  meta?: {
+    /**
+     * The title of the route
+     */
+    title?: string;
+
+    /**
+     * The icon of the route
+     */
+    icon?: string;
+
+    /**
+     * The local namespace of the route
+     */
+    localNamespace?: string;
+
+    /**
+     * The category of the route
+     */
+    category?: string;
+  };
 };
 
 /**

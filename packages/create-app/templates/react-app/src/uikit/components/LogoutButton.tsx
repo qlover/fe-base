@@ -3,7 +3,7 @@ import { IOC } from '@/core/IOC';
 import {
   AUTH_LOGOUT_DIALOG_CONTENT,
   AUTH_LOGOUT_DIALOG_TITLE
-} from '@config/Identifier/Auth';
+} from '@config/Identifier/common';
 import { Button } from 'antd';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

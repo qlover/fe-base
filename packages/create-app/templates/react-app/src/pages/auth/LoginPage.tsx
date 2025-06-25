@@ -6,7 +6,7 @@ import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
 import { UserService } from '@/base/services/UserService';
 import { useStore } from '@/uikit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 
 interface LoginFormData {
@@ -14,7 +14,7 @@ interface LoginFormData {
   password: string;
 }
 
-export default function Login() {
+export default function LoginPage() {
   const { t } = useBaseRoutePage();
   const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');

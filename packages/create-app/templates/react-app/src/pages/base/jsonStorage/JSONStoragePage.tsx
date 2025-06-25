@@ -4,9 +4,9 @@ import template from 'lodash/template';
 import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { useStore } from '@/uikit/hooks/useStore';
 import { Button, Input } from 'antd';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.jsonStorage';
 
-export default function JSONStorage() {
+export default function JSONStoragePage() {
   const jsonStorageController = IOC(JSONStorageController);
   const controllerState = useStore(jsonStorageController);
   const { t } = useBaseRoutePage();

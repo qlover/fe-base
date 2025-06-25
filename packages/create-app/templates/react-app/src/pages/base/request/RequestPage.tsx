@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useStore } from '@/uikit/hooks/useStore';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.request';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -23,7 +23,7 @@ function JSONValue({ value }: { value: unknown }) {
   );
 }
 
-export default function Request() {
+export default function RequestPage() {
   const requestController = IOC(RequestController);
   const requestControllerState = useStore(requestController);
   const jsonStorageControllerState = useStore(IOC(JSONStorageController));

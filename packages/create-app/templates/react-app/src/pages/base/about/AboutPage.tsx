@@ -1,5 +1,5 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/page.about';
 import {
   Button,
   Tooltip,
@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { useState } from 'react';
 
-export default function About() {
+export default function AboutPage() {
   const { t } = useBaseRoutePage();
   const [messageApi, contextHolder] = message.useMessage();
   const [notificationApi, contextHolder2] = notification.useNotification();
@@ -108,8 +108,8 @@ export default function About() {
           <Popconfirm
             title={t(i18nKeys.ABOUT_POPCONFIRM_TITLE)}
             description={t(i18nKeys.ABOUT_POPCONFIRM_DESC)}
-            okText={t(i18nKeys.COMMON_OK)}
-            cancelText={t(i18nKeys.COMMON_CANCEL)}
+            okText={t(i18nKeys.ABOUT_OK_TEXT)}
+            cancelText={t(i18nKeys.ABOUT_CANCEL_TEXT)}
           >
             <Button>{t(i18nKeys.ABOUT_BTN_POPCONFIRM)}</Button>
           </Popconfirm>

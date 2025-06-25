@@ -11,7 +11,7 @@ import { LoginInterface, RegisterFormData } from '@/base/port/LoginInterface';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
 import { StoreInterface, StoreStateInterface } from '../port/StoreInterface';
-import * as errKeys from '@config/Identifier/Error';
+import * as errKeys from '@config/Identifier/common.error';
 
 class UserServiceState implements StoreStateInterface {
   success: boolean = false;

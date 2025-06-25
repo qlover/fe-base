@@ -135,11 +135,11 @@ export default defineConfig({
       locales: i18nConfig.supportedLngs,
       options: [
         {
-          source: './config/Identifier/Error.ts',
+          source: './config/Identifier/error.ts',
           target: './public/locales/{{lng}}/common.json'
         },
         {
-          source: './config/Identifier/I18n.ts',
+          source: './config/Identifier/index.ts',
           target: './public/locales/{{lng}}/common.json'
         }
       ]
@@ -166,7 +166,7 @@ await i18nService.changeLanguage('zh');
 
 ```typescript
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier';
 
 function MyComponent() {
   const { t } = useBaseRoutePage();
@@ -200,8 +200,8 @@ function Header() {
 
 1. 国际化标识符管理：
 
-   - 在 `config/Identifier/I18n.ts` 中集中管理UI文本
-   - 在 `config/Identifier/Error.ts` 中集中管理错误信息
+   - 在 `config/Identifier/index.ts` 中集中管理UI文本
+   - 在 `config/Identifier/error.ts` 中集中管理错误信息
    - 使用有意义的 key 命名（如：'page.home.title'）
 
 2. TypeScript 注释规范：
@@ -217,7 +217,7 @@ function Header() {
 
 4. 组件开发：
    - 使用 `useBaseRoutePage` hook 获取翻译函数
-   - 从 `@config/Identifier/I18n` 引入国际化 key
+   - 从 `@config/Identifier` 引入国际化 key
    - 避免硬编码文本，始终使用国际化 key
 
 ### 主题系统

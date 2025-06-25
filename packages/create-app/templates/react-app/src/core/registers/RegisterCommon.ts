@@ -16,11 +16,11 @@ import {
 } from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import themeConfig from '@config/theme.json';
+import { themeConfig } from '@config/theme';
 import { localJsonStorage, logger } from '../globals';
 import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
-import { base as baseRoutes } from '@config/app.router.json';
+import { baseRoutes } from '@config/app.router';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(
@@ -30,10 +30,10 @@ export class RegisterCommon implements InversifyRegisterInterface {
   ): void {
     const AppConfig = container.get(IOCIdentifier.AppConfig);
 
-    const userToken = new UserToken(
-      AppConfig.userTokenStorageKey,
-      container.get(JSONStorage)
-    );
+    const userToken = new UserToken({
+      storageKey: AppConfig.userTokenStorageKey,
+      storage: container.get(JSONStorage)
+    });
     const feApiAbort = new FetchAbortPlugin();
     const feApiRequestCommonPlugin = new RequestCommonPlugin({
       tokenPrefix: AppConfig.openAiTokenPrefix,
@@ -69,7 +69,7 @@ export class RegisterCommon implements InversifyRegisterInterface {
     container.bind(
       RouteService,
       new RouteService({
-        config: baseRoutes,
+        config: { routes: baseRoutes },
         logger
       })
     );

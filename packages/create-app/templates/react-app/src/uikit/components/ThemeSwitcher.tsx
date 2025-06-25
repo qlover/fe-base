@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import * as i18nKeys from '@config/Identifier/I18n';
+import * as i18nKeys from '@config/Identifier/common';
 import { StoreInterface } from '@/base/port/StoreInterface';
 
 const colorMap: Record<
