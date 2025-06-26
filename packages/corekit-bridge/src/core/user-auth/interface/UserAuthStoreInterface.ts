@@ -1,4 +1,4 @@
-import { StorageTokenInterface } from '../storage';
+import type { SyncStorageInterface } from '../storage';
 
 export enum LOGIN_STATUS {
   LOADING = 'loading',
@@ -7,11 +7,10 @@ export enum LOGIN_STATUS {
 }
 
 export interface UserAuthStoreInterface<User> {
-  setUserToken(userToken: StorageTokenInterface<string>): void;
-  getUserToken(): StorageTokenInterface<string> | null;
+  setTokenStorage(userToken: SyncStorageInterface<string, User>): void;
 
-  setToken(token: string): void;
-  getToken(): string | null;
+  getTokenStorage(): SyncStorageInterface<string, User> | null;
+
   getLoginStatus(): LOGIN_STATUS | null;
 
   /**
@@ -36,7 +35,7 @@ export interface UserAuthStoreInterface<User> {
   /**
    * 认证成功
    */
-  authSuccess(): void;
+  authSuccess(userInfo?: User): void;
 
   /**
    * 认证失败

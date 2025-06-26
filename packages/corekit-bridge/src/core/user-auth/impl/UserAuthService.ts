@@ -1,19 +1,14 @@
-import {
-  UserToken,
-  type StorageTokenInterface,
-  type UserTokenOptions
-} from '../../storage';
-import type { AuthServiceInterface } from '../UserAuthInterface';
-import type {
-  LoginResponseData,
-  UserAuthApiInterface
-} from '../UserAuthApiInterface';
+import type { UserAuthApiInterface } from '../interface/UserAuthApiInterface';
 import {
   LOGIN_STATUS,
   type UserAuthStoreInterface
-} from '../UserAuthStoreInterface';
+} from '../interface/UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
-import { getURLProperty } from '../utils/getURLProperty';
+import {
+  SyncStorageInterface,
+  SyncStorageInterfaceOptions,
+  TokenStorage
+} from '../../storage';
 
 const defaultTokenType = {
   storageKey: 'user-auth-token',
@@ -59,7 +54,7 @@ export interface UserAuthOptions<User> {
    * Token storage implementation
    *
    * - A UserTokenOptions object, use to create a `UserToken` instance
-   * - A StorageTokenInterface implementation
+   * - A TokenStorage
    *
    * UserTokenOptions default is:
    *
@@ -78,7 +73,9 @@ export interface UserAuthOptions<User> {
    *
    * @optional Can be used to customize token storage strategy (e.g., localStorage, sessionStorage)
    */
-  storageToken?: Partial<UserTokenOptions> | StorageTokenInterface<string>;
+  storageToken?:
+    | Partial<SyncStorageInterfaceOptions<string, User>>
+    | SyncStorageInterface<User, string>;
 
   /**
    * URL for token extraction
@@ -107,15 +104,15 @@ export interface UserAuthOptions<User> {
   urlTokenKey?: string;
 }
 
-function isStorageTokenInterface(
+function isTokenStorageInterface<User>(
   obj: unknown
-): obj is StorageTokenInterface<string> {
+): obj is SyncStorageInterface<string, User> {
   return Boolean(
     obj &&
       typeof obj === 'object' &&
-      typeof (obj as Record<string, unknown>).getToken === 'function' &&
-      typeof (obj as Record<string, unknown>).setToken === 'function' &&
-      typeof (obj as Record<string, unknown>).removeToken === 'function'
+      typeof (obj as Record<string, unknown>).get === 'function' &&
+      typeof (obj as Record<string, unknown>).set === 'function' &&
+      typeof (obj as Record<string, unknown>).remove === 'function'
   );
 }
 
@@ -217,8 +214,7 @@ function isStorageTokenInterface(
 export class UserAuthService<
   User,
   Opt extends UserAuthOptions<User> = UserAuthOptions<User>
-> implements AuthServiceInterface<User>
-{
+> {
   /**
    * Initializes a new UserAuthService instance
    *
@@ -234,16 +230,27 @@ export class UserAuthService<
   constructor(protected options: Opt) {
     const { api: service, store, storageToken, href } = options;
 
-    const tokenStorage = this.getStorageToken(storageToken);
-    options.store = store || new UserAuthStore(tokenStorage);
-    options.api = service;
-
-    if (!options.store.getUserToken()) {
-      options.store.setUserToken(tokenStorage);
+    if (!service) {
+      throw new Error('UserAuthService: api is required');
     }
 
+    const persistentStrorage = this.getPersistStorage(storageToken);
+    options.store = store || new UserAuthStore(persistentStrorage);
+    options.api = service;
+
+    // If the token storage is not set, set default token storage
+    if (!options.store.getTokenStorage()) {
+      options.store.setTokenStorage(persistentStrorage);
+    }
+
+    // url token first
     if (href && options.urlTokenKey) {
-      options.store.setToken(getURLProperty(href, options.urlTokenKey));
+      const token = this.getURLProperty(href, options.urlTokenKey);
+
+      // Only has value set user info token?
+      if (token) {
+        options.store.setUserInfo({ token } as User);
+      }
     }
 
     if (options.store) {
@@ -251,17 +258,44 @@ export class UserAuthService<
     }
   }
 
-  getStorageToken(
+  protected getURLProperty(href: string, key: string): string {
+    try {
+      const queryString = href.split('?')[1];
+
+      if (!queryString) {
+        return '';
+      }
+
+      const params = new URLSearchParams(queryString);
+      const rawValue = params.get(key);
+
+      if (rawValue == null || rawValue === '') {
+        return '';
+      }
+
+      // Decode and guard against malformed URI sequences
+      try {
+        return decodeURIComponent(rawValue);
+      } catch {
+        return '';
+      }
+    } catch (error) {
+      console.warn('Failed to parse URL:', error);
+      return '';
+    }
+  }
+
+  protected getPersistStorage(
     storageToken:
-      | Partial<UserTokenOptions>
-      | StorageTokenInterface<string>
+      | Partial<SyncStorageInterfaceOptions<string, User>>
+      | SyncStorageInterface<User, string>
       | undefined
-  ): StorageTokenInterface<string> {
-    if (isStorageTokenInterface(storageToken)) {
+  ): SyncStorageInterface<string, User> {
+    if (isTokenStorageInterface<User>(storageToken)) {
       return storageToken;
     }
 
-    return new UserToken({
+    return new TokenStorage<string, User>({
       ...defaultTokenType,
       ...storageToken
     });
@@ -312,64 +346,48 @@ export class UserAuthService<
    *    - When token validation fails
    * @returns Promise with login response containing token
    */
-  async login(params: unknown): Promise<LoginResponseData> {
+  async login(
+    params: unknown,
+    options?: {
+      /**
+       * Skip login
+       *
+       * If true, the login will not be performed,
+       *
+       * Used for some scenarios, such as:
+       *
+       * 1. User has already logged in, just want to pull some information?
+       * 2. The second time entering the page, the user information is persistent, and the login is not needed? Just pull the user information?
+       *
+       * @default false
+       */
+      skipLogin?: boolean;
+    }
+  ): Promise<User> {
     this.store.startAuth();
 
     try {
-      let response: LoginResponseData;
+      let response;
 
-      if (typeof params === 'string') {
-        response = { token: params };
-      } else {
+      if (!options?.skipLogin) {
         response = await this.api.login(params);
+      } else {
+        response = this.store.getUserInfo();
       }
 
-      if (!response.token) {
-        throw new Error('login failed');
+      if (!response) {
+        throw new Error('UserAuthService: login response is empty');
       }
 
-      await this.fetchUserInfo(response.token);
+      const userInfo = await this.api.getUserInfo(response);
 
-      this.store.authSuccess();
+      this.store.authSuccess(userInfo);
 
-      return response;
+      return userInfo;
     } catch (error) {
       this.store.authFailed(error);
       throw error;
     }
-  }
-
-  /**
-   * Retrieves and stores user information
-   *
-   * Process:
-   * 1. Uses provided token or retrieves from store
-   * 2. Validates token existence
-   * 3. Fetches user information
-   * 4. Updates store with token and user info
-   *
-   * @param token - Optional authentication token
-   * @throws {Error}
-   *    - When token is not available
-   *    - When user info fetch fails
-   *    - When token is invalid
-   * @returns Promise with user information
-   */
-  async fetchUserInfo(token?: string): Promise<User> {
-    if (!token) {
-      token = this.store.getToken() || '';
-    }
-
-    if (!token) {
-      throw new Error('token is not set');
-    }
-
-    const response = await this.api.getUserInfo({ token });
-
-    this.store.setToken(token);
-    this.store.setUserInfo(response);
-
-    return response;
   }
 
   /**
@@ -385,9 +403,7 @@ export class UserAuthService<
     try {
       await this.api.logout();
     } finally {
-      if (this.isAuthenticated()) {
-        this.store.reset();
-      }
+      this.store.reset();
     }
   }
 
@@ -405,9 +421,6 @@ export class UserAuthService<
    * @returns true if user is authenticated, false otherwise
    */
   isAuthenticated(): boolean {
-    return (
-      this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS &&
-      !!this.store.getToken()
-    );
+    return this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS;
   }
 }

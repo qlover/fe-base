@@ -1,21 +1,16 @@
-import type { StorageTokenInterface } from '../../storage';
+import type { SyncStorageInterface } from '../../storage';
 import { StoreInterface } from '../../store-state';
 import {
   LOGIN_STATUS,
-  UserAuthStoreInterface
-} from '../UserAuthStoreInterface';
+  type UserAuthStoreInterface
+} from '../interface/UserAuthStoreInterface';
 
 export class UserAuthStoreState<User> {
-  constructor(
-    /**
-     * Save token in priority store
-     */
-    public token: string
-  ) {}
   /**
    * Save user info in priority store
    */
-  userInfo: User | null = null;
+  constructor(public userInfo: User | null = null) {}
+
   /**
    * Save login status in priority store
    */
@@ -37,30 +32,24 @@ export class UserAuthStore<User>
     /**
      * If not provided, the token will be stored in the priority store
      */
-    protected userToken: StorageTokenInterface<string> | null = null
+    protected persistent: SyncStorageInterface<string, User> | null = null
   ) {
-    super(() => new UserAuthStoreState(userToken?.getToken() || ''));
+    super(() => new UserAuthStoreState(persistent?.get()));
   }
 
-  setUserToken(userToken: StorageTokenInterface<string>): void {
-    this.userToken = userToken;
+  setTokenStorage(userToken: SyncStorageInterface<string, User>): void {
+    this.persistent = userToken;
   }
 
-  getUserToken(): StorageTokenInterface<string> | null {
-    return this.userToken;
-  }
-
-  setToken(token: string): void {
-    this.emit({ ...this.state, token });
-    this.userToken?.setToken(token);
-  }
-
-  getToken(): string | null {
-    return this.state.token;
+  getTokenStorage(): SyncStorageInterface<string, User> | null {
+    return this.persistent;
   }
 
   setUserInfo(params: User): void {
     this.emit({ ...this.state, userInfo: params });
+
+    // persist token
+    this.persistent?.set(params);
   }
 
   getUserInfo(): User | null {
@@ -73,7 +62,7 @@ export class UserAuthStore<User>
 
   override reset(): void {
     super.reset();
-    this.userToken?.removeToken();
+    this.persistent?.remove();
   }
 
   startAuth(): void {
@@ -84,12 +73,16 @@ export class UserAuthStore<User>
     });
   }
 
-  authSuccess(): void {
+  authSuccess(userInfo?: User): void {
     this.emit({
       ...this.state,
       loginStatus: LOGIN_STATUS.SUCCESS,
       error: null
     });
+
+    if (userInfo) {
+      this.setUserInfo(userInfo);
+    }
   }
 
   authFailed(error: unknown): void {
