@@ -405,6 +405,9 @@ export class UserAuthService<
    * @returns true if user is authenticated, false otherwise
    */
   isAuthenticated(): boolean {
-    return this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS;
+    return (
+      this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS &&
+      !!this.store.getToken()
+    );
   }
 }

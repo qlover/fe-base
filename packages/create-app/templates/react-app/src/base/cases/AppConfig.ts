@@ -102,4 +102,9 @@ export class AppConfig implements EnvConfigInterface {
 
   /** Flag indicating if AI service token is required */
   readonly aiApiRequireToken = true;
+
+  /**
+   * Project startup href, usually from window.location.href
+   */
+  readonly bootHref = '';
 }

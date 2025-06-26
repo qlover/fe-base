@@ -33,7 +33,7 @@ export default async function startup({
     },
     envOptions: {
       target: appConfig,
-      source: envSource,
+      source: { ...envSource, [envPrefix + 'BOOT_HREF']: root.location.href },
       prefix: envPrefix,
       blackList: envBlackList
     },

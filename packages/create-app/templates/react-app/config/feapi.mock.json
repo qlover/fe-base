@@ -19,6 +19,12 @@
   "POST /api/login": {
     "token": "/api/login-token-adfasdfasdf"
   },
+  "POST https://feapi.example.com/api/register": {
+    "token": "asdfasdf123123asdfasdf"
+  },
+  "POST /api/register": {
+    "token": "asdfasdf123123asdfasdf"
+  },
   "POST https://api.openai.com/v1/chat/completions": {
     "id": "chatcmpl-1234567890",
     "object": "chat.completion",

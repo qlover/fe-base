@@ -50,3 +50,14 @@ export type UserApiLoginTransaction = UserApiTransaction<
 >;
 
 export type UserApiTestApiCatchResultTransaction = UserApiGetRandomUser;
+
+export type UserApiRegisterTransaction = UserApiTransaction<
+  {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    agreeToTerms: boolean;
+  },
+  UserApiTransaction['response']['data']
+>;

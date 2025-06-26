@@ -1,19 +1,25 @@
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import {
+  ExecutorPlugin,
+  JSONStorage,
+  type SyncStorage
+} from '@qlover/fe-corekit';
 import type {
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction
 } from '@/base/apis/userApi/UserApiType';
 import { RouteService } from './RouteService';
 import {
-  StoreInterface,
-  StoreStateInterface,
-  type StorageTokenInterface
+  LoginResponseData,
+  type UserAuthApiInterface,
+  UserAuthService,
+  UserAuthStore
 } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
-import { IOCIdentifier } from '@/core/IOC';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
 import * as errKeys from '@config/Identifier/error';
+import { IOCIdentifier } from '@/core/IOC';
+import { AppConfig } from '../cases/AppConfig';
 
 export type UserServiceUserInfo =
   UserApiGetUserInfoTransaction['response']['data'];
@@ -26,34 +32,36 @@ export interface RegisterFormData {
   agreeToTerms: boolean;
 }
 
-class UserServiceState implements StoreStateInterface {
-  success: boolean = false;
-  userInfo: UserServiceUserInfo = {
-    name: '',
-    email: '',
-    picture: ''
-  };
-}
-
 @injectable()
 export class UserService
-  extends StoreInterface<UserServiceState>
+  extends UserAuthService<UserServiceUserInfo>
   implements ExecutorPlugin
 {
   readonly pluginName = 'UserService';
 
   constructor(
-    @inject(UserApi) private userApi: UserApi,
-    @inject(RouteService) private routerService: RouteService,
-    @inject(IOCIdentifier.FeApiToken)
-    private userToken: StorageTokenInterface<string>
+    @inject(RouteService) protected routerService: RouteService,
+    @inject(UserApi) userApi: UserAuthApiInterface<UserServiceUserInfo>,
+    @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
+    @inject(JSONStorage) storage: SyncStorage<string, string>
   ) {
-    super(() => new UserServiceState());
+    super({
+      api: userApi,
+      // urlTokenKey: appConfig.userTokenStorageKey,
+      // href: appConfig.bootHref,
+      storageToken: {
+        storage: storage,
+        storageKey: appConfig.userTokenStorageKey
+      }
+    });
   }
 
-  selector = {
-    success: (state: UserServiceState) => state.success
-  };
+  /**
+   * @override
+   */
+  override get store(): UserAuthStore<UserServiceUserInfo> {
+    return super.store as UserAuthStore<UserServiceUserInfo>;
+  }
 
   /**
    * @override
@@ -63,23 +71,25 @@ export class UserService
       return;
     }
 
-    const userToken = this.userToken.getToken();
+    const userToken = this.store.getToken();
 
     if (!userToken) {
       throw new AppError(errKeys.LOCAL_NO_USER_TOKEN);
     }
 
-    const userInfo = await this.userApi.getUserInfo();
+    if (userToken) {
+      this.store.authSuccess();
+    }
 
-    this.emit({
-      success: true,
-      userInfo: userInfo.data
-    });
+    await this.fetchUserInfo();
   }
 
-  onSuccess(): void | Promise<void> {
+  /**
+   * @override
+   */
+  onSuccess(): void {
     if (this.isAuthenticated()) {
-      this.emit({ ...this.state, success: true });
+      this.store.authSuccess();
     } else {
       this.logout();
     }
@@ -88,59 +98,27 @@ export class UserService
   /**
    * @override
    */
-  async login(
-    params: UserApiLoginTransaction['data']
-  ): Promise<UserApiGetUserInfoTransaction['response']> {
-    const response = await this.userApi.login(params);
+  override async logout(): Promise<void> {
+    await super.logout();
 
-    if (response.apiCatchResult) {
-      throw response.apiCatchResult;
-    }
-
-    if (!response.data.token) {
-      throw new AppError(errKeys.RES_NO_TOKEN);
-    }
-
-    this.userToken.setToken(response.data.token);
-
-    const userInfo = await this.userApi.getUserInfo();
-
-    this.emit({
-      success: true,
-      userInfo: userInfo.data
-    });
-
-    return userInfo;
-  }
-
-  /**
-   * @override
-   */
-  logout(): void {
-    this.reset();
     this.routerService.reset();
     this.routerService.gotoLogin();
   }
 
-  /**
-   * @override
-   */
-  reset(): void {
-    this.userToken.removeToken();
-    super.reset();
-  }
+  async register(params: RegisterFormData): Promise<LoginResponseData> {
+    const response = (await this.api.register(
+      params
+    )) as UserApiLoginTransaction['response'];
 
-  isAuthenticated(): boolean {
-    return this.state.success;
-  }
+    if (response.data?.token) {
+      try {
+        await this.fetchUserInfo(response.data?.token);
+        this.store.authSuccess();
+      } catch (error) {
+        this.store.authFailed(error);
+      }
+    }
 
-  /**
-   * @override
-   */
-  async register(params: RegisterFormData): Promise<unknown> {
-    return this.login({
-      username: params.username,
-      password: params.password
-    });
+    throw new AppError(errKeys.LOCAL_NO_USER_TOKEN);
   }
 }

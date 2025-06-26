@@ -21,6 +21,7 @@ import { localJsonStorage, logger } from '../globals';
 import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
 import { baseRoutes } from '@config/app.router';
+import { UserService } from '@/base/services/UserService';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(
@@ -38,7 +39,7 @@ export class RegisterCommon implements InversifyRegisterInterface {
     const feApiRequestCommonPlugin = new RequestCommonPlugin({
       tokenPrefix: AppConfig.openAiTokenPrefix,
       requiredToken: true,
-      token: () => userToken.getToken()
+      token: () => container.get(UserService).store.getToken()
     });
 
     container.bind(FetchAbortPlugin, feApiAbort);
