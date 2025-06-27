@@ -1,4 +1,4 @@
-import type { SyncStorageInterface } from '../storage';
+import type { SyncStorageInterface } from '../../storage';
 
 export enum LOGIN_STATUS {
   LOADING = 'loading',
