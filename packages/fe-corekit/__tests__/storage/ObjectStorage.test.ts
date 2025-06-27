@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ObjectStorage } from '../../src/storage/impl/ObjectStorage';
 import { JSONSerializer } from '../../src/serializer';
-import { SyncStorage } from '../../src/storage/Storage';
+import { SyncStorageInterface } from '../../src';
 
 /**
  * Simple mock storage for testing
  */
-class MockStorage implements SyncStorage<string, string> {
+class MockStorage implements SyncStorageInterface<string, string> {
   private data = new Map<string, string>();
   public calls: {
     setItem: Array<{ key: string; value: unknown }>;
@@ -507,7 +507,7 @@ describe('ObjectStorage', () => {
         clear: vi.fn(() => {
           throw new Error('Clear error');
         })
-      } as unknown as SyncStorage<string, string>;
+      } as unknown as SyncStorageInterface<string, string>;
 
       const robustStorage = new ObjectStorage(
         mockSerializer as any,

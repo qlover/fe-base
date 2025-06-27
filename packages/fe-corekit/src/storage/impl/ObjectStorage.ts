@@ -68,8 +68,11 @@ type StorageValue<Key, ValueType> = {
  *
  * @since 1.5.0
  */
-export class ObjectStorage<Key, ValueType = string>
-  implements SyncStorageInterface<Key, ValueType>
+export class ObjectStorage<
+  Key,
+  ValueType = string,
+  ST extends StorageValue<Key, ValueType> = StorageValue<Key, ValueType>
+> implements SyncStorageInterface<Key, ValueType>
 {
   /**
    * In-memory storage map for fast data access
@@ -104,10 +107,7 @@ export class ObjectStorage<Key, ValueType = string>
      * Main function: Serialize/deserialize storage values
      * Main purpose: Support type-safe storage operations
      */
-    protected readonly serializer: Serializer<
-      StorageValue<Key, ValueType>,
-      ValueType
-    >,
+    protected readonly serializer: Serializer<ST, ValueType>,
     /**
      * Optional persistent storage backend
      *
@@ -158,10 +158,7 @@ export class ObjectStorage<Key, ValueType = string>
    * ```
    */
   setItem<T>(key: Key, value: T, options?: unknown): void {
-    const parameters = { key, value } as unknown as StorageValue<
-      Key,
-      ValueType
-    >;
+    const parameters = { key, value } as unknown as ST;
 
     if (typeof options === 'number' && options > 0) {
       parameters.expire = options;
@@ -215,7 +212,7 @@ export class ObjectStorage<Key, ValueType = string>
 
     const value = this.serializer.deserialize(
       valueString as ValueType,
-      _dv as unknown as StorageValue<Key, ValueType>
+      _dv as unknown as ST
     );
 
     if (this.isStorageValue(value)) {

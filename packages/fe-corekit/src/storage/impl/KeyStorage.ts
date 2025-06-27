@@ -19,6 +19,19 @@ export interface KeyStorageOptions<Key, Value, EncryptedValue> {
 }
 
 /**
+ * KeyStorage is a storage that can be used to store a single value.
+ *
+ * Typical usage scenario: need to store a value and need to persist it:
+ *
+ * - token storage
+ * - user info storage
+ * - page theme, language
+ * - ...
+ *
+ * And support for data encryption, there are times when reporting errors in the local data can easily be tampered with, this time you can use encryption to protect the data!
+ *
+ * @since 1.5.0
+ *
  * @example basic usage
  *
  * use localStorage as storage, persist the value
@@ -46,7 +59,7 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
   protected value: Value | null = null;
 
   constructor(
-    protected readonly key: Key,
+    readonly key: Key,
     protected options: KeyStorageOptions<Key, Value, EncryptedValue> = {}
   ) {
     // init value
@@ -73,7 +86,7 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
     }
 
     if (storage) {
-      const val = storage.getItem(this.key);
+      let val = storage.getItem(this.key);
 
       // If the value is null, remove the item
       if (val == null) {
@@ -81,7 +94,12 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
         return null;
       }
 
-      return encrypt ? encrypt.decrypt(val as EncryptedValue) : val;
+      val = encrypt ? encrypt.decrypt(val as EncryptedValue) : val;
+
+      // set memory value
+      this.value = val;
+
+      return val;
     }
 
     return this.value;
