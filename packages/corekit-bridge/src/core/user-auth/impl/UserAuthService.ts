@@ -4,17 +4,12 @@ import {
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
-import {
-  SyncStorageInterface,
-  SyncStorageInterfaceOptions,
-  TokenStorage
-} from '../../storage';
 
-const defaultTokenType = {
-  storageKey: 'user-auth-token',
-  expiresIn: 'month',
-  storageToken: 'memory'
-} as const;
+// const defaultTokenType = {
+//   storageKey: 'user-auth-token',
+//   expiresIn: 'month',
+//   storageToken: 'memory'
+// } as const;
 
 /**
  * Configuration options for UserAuthService system
@@ -295,10 +290,9 @@ export class UserAuthService<
       return storageToken;
     }
 
-    return new TokenStorage<string, User>({
-      ...defaultTokenType,
-      ...storageToken
-    });
+    throw new Error(
+      'UserAuthService: storageToken is not a valid token storage'
+    );
   }
 
   /**

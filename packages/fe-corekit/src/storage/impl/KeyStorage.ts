@@ -55,7 +55,7 @@ export interface KeyStorageOptions<Key, Value, EncryptedValue> {
  * tokenStorage.remove(); // remove from localStorage
  * ```
  */
-export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
+export class KeyStorage<Key, Value, EncryptedValue = string> {
   protected value: Value | null = null;
 
   constructor(
@@ -86,7 +86,7 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
     }
 
     if (storage) {
-      let val = storage.getItem(this.key);
+      let val = storage.getItem(this.key, undefined, options);
 
       // If the value is null, remove the item
       if (val == null) {
@@ -117,7 +117,11 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
     this.value = token;
 
     if (storage) {
-      storage.setItem(this.key, encrypt ? encrypt.encrypt(token) : token);
+      storage.setItem(
+        this.key,
+        encrypt ? encrypt.encrypt(token) : token,
+        options
+      );
     }
   }
 
@@ -129,6 +133,6 @@ export class KeyStorage<Key = string, Value = string, EncryptedValue = string> {
 
     this.value = null;
 
-    storage?.removeItem(this.key);
+    storage?.removeItem(this.key, options);
   }
 }

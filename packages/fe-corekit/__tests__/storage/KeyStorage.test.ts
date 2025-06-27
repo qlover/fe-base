@@ -128,7 +128,9 @@ describe('KeyStorage', () => {
     });
 
     it('should create instance with key and storage', () => {
-      const keyStorage = new KeyStorage('test-key', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('test-key', {
+        storage: mockStorage
+      });
       expect(keyStorage).toBeInstanceOf(KeyStorage);
     });
 
@@ -142,7 +144,7 @@ describe('KeyStorage', () => {
 
     it('should initialize with existing value from storage', () => {
       mockStorage.directSet('existing-key', 'existing-value');
-      const keyStorage = new KeyStorage('existing-key', {
+      const keyStorage = new KeyStorage<string, string>('existing-key', {
         storage: mockStorage
       });
 
@@ -150,14 +152,16 @@ describe('KeyStorage', () => {
     });
 
     it('should initialize with null when no existing value', () => {
-      const keyStorage = new KeyStorage('new-key', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('new-key', {
+        storage: mockStorage
+      });
       expect(keyStorage.get()).toBeNull();
     });
   });
 
   describe('Basic Operations', () => {
     describe('Memory-only storage', () => {
-      let keyStorage: KeyStorage;
+      let keyStorage: KeyStorage<string, string>;
 
       beforeEach(() => {
         keyStorage = new KeyStorage('memory-key');
@@ -190,7 +194,7 @@ describe('KeyStorage', () => {
     });
 
     describe('With persistent storage', () => {
-      let keyStorage: KeyStorage;
+      let keyStorage: KeyStorage<string, string>;
 
       beforeEach(() => {
         keyStorage = new KeyStorage('persistent-key', {
@@ -223,7 +227,7 @@ describe('KeyStorage', () => {
         mockStorage.directSet('persistent-key', 'storage-value');
 
         // Create new instance that will load from storage
-        const newKeyStorage = new KeyStorage('persistent-key', {
+        const newKeyStorage = new KeyStorage<string, string>('persistent-key', {
           storage: mockStorage
         });
 
@@ -242,9 +246,12 @@ describe('KeyStorage', () => {
       });
 
       it('should handle null values from storage', () => {
-        const newKeyStorage = new KeyStorage('non-existent-key', {
-          storage: mockStorage
-        });
+        const newKeyStorage = new KeyStorage<string, string>(
+          'non-existent-key',
+          {
+            storage: mockStorage
+          }
+        );
 
         const result = newKeyStorage.get();
         expect(result).toBeNull();
@@ -253,7 +260,7 @@ describe('KeyStorage', () => {
   });
 
   describe('Encryption Support', () => {
-    let keyStorage: KeyStorage;
+    let keyStorage: KeyStorage<string, string>;
 
     beforeEach(() => {
       keyStorage = new KeyStorage('encrypted-key', {
@@ -324,7 +331,7 @@ describe('KeyStorage', () => {
   });
 
   describe('Options Merging', () => {
-    let baseKeyStorage: KeyStorage;
+    let baseKeyStorage: KeyStorage<string, string>;
 
     beforeEach(() => {
       baseKeyStorage = new KeyStorage('base-key', {
@@ -398,7 +405,9 @@ describe('KeyStorage', () => {
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle null and undefined values', () => {
-      const keyStorage = new KeyStorage('null-test', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('null-test', {
+        storage: mockStorage
+      });
 
       keyStorage.set(null as any);
       expect(keyStorage.get()).toBe('null'); // KeyStorage stores as string
@@ -408,7 +417,9 @@ describe('KeyStorage', () => {
     });
 
     it('should handle empty string values', () => {
-      const keyStorage = new KeyStorage('empty-test', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('empty-test', {
+        storage: mockStorage
+      });
 
       keyStorage.set('');
       expect(keyStorage.get()).toBe('');
@@ -416,7 +427,9 @@ describe('KeyStorage', () => {
 
     it('should handle special characters in keys', () => {
       const specialKey = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-      const keyStorage = new KeyStorage(specialKey, { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>(specialKey, {
+        storage: mockStorage
+      });
 
       keyStorage.set('special-value');
       expect(keyStorage.get()).toBe('special-value');
@@ -424,14 +437,18 @@ describe('KeyStorage', () => {
     });
 
     it('should handle numeric keys', () => {
-      const keyStorage = new KeyStorage(123 as any, { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>(123 as any, {
+        storage: mockStorage
+      });
 
       keyStorage.set('numeric-key-value');
       expect(keyStorage.get()).toBe('numeric-key-value');
     });
 
     it('should handle large data values', () => {
-      const keyStorage = new KeyStorage('large-data', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('large-data', {
+        storage: mockStorage
+      });
       const largeValue = 'x'.repeat(10000);
 
       keyStorage.set(largeValue);
@@ -439,7 +456,9 @@ describe('KeyStorage', () => {
     });
 
     it('should handle concurrent operations', () => {
-      const keyStorage = new KeyStorage('concurrent', { storage: mockStorage });
+      const keyStorage = new KeyStorage<string, string>('concurrent', {
+        storage: mockStorage
+      });
 
       // Simulate concurrent set operations
       keyStorage.set('value1');
@@ -481,7 +500,7 @@ describe('KeyStorage', () => {
       // Set up storage with null value
       mockStorage.directSet('auto-remove-key', 'some-value');
 
-      const keyStorage = new KeyStorage('auto-remove-key', {
+      const keyStorage = new KeyStorage<string, string>('auto-remove-key', {
         storage: mockStorage
       });
 
@@ -572,7 +591,7 @@ describe('KeyStorage', () => {
     });
 
     it('should work as user preference storage', () => {
-      const themeStorage = new KeyStorage('user-theme', {
+      const themeStorage = new KeyStorage<string, string>('user-theme', {
         storage: mockStorage
       });
 
