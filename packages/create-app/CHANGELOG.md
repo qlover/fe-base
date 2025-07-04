@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 0.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-app:** enhance user authentication and error handling ([ee00e24](https://github.com/qlover/fe-base/commit/ee00e24ce1c713aff91100ff30f9c84d8b523c80)) ([#458](https://github.com/qlover/fe-base/pull/458))
+  - Updated package.json to reference local corekit dependencies for improved development.
+  - Added new error identifiers in common.error.ts for better error management.
+  - Refactored UserApi to implement registration and improved login handling with token validation.
+  - Introduced common error handling in UserService and updated related components to utilize new error identifiers.
+  - Enhanced storage management by integrating new storage interfaces and updating related services.
+
+  These changes aim to streamline user authentication processes and improve error reporting across the application.
+
 ## 0.4.6
 
 ### Patch Changes

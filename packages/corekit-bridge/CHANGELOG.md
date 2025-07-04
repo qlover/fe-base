@@ -1,5 +1,20 @@
 # @qlover/corekit-bridge
 
+## 1.2.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **corekit-bridge:** restructure storage and authentication modules ([f03c3fd](https://github.com/qlover/fe-base/commit/f03c3fd6147771689087d37904069d58d3e3704f)) ([#458](https://github.com/qlover/fe-base/pull/458))
+  - Removed outdated UserToken and StorageTokenInterface implementations to streamline the storage system.
+  - Introduced new CookieStorage and TokenStorage classes, enhancing storage capabilities and flexibility.
+  - Added comprehensive test suites for CookieStorage, TokenStorage, and QuickerTime utilities to ensure robust functionality.
+  - Updated UserAuthService and UserAuthStore to utilize the new storage implementations, improving authentication flow and state management.
+  - Enhanced InjectEnv plugin to prevent overwriting existing configuration values, ensuring better environment variable handling.
+
+  These changes aim to improve the overall architecture and maintainability of the corekit-bridge package.
+
 ## 1.1.3
 
 ### Patch Changes
