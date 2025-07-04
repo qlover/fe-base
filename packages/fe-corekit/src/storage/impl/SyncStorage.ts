@@ -172,7 +172,7 @@ export class SyncStorage<Key, Opt = unknown>
       processedValue = this.storage.getRawValue(processedValue, options) as T;
     }
 
-    return processedValue as T;
+    return (processedValue ?? null) as T;
   }
 
   /**

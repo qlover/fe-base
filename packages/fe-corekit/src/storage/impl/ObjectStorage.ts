@@ -152,7 +152,7 @@ export class ObjectStorage<
    * ```
    */
   setItem<T>(key: Key, value: T, options?: ObjectStorageOptions): unknown {
-    const parameters = { key, value } as StorageValue<Key, T>;
+    const parameters = { key, value: value ?? null } as StorageValue<Key, T>;
 
     if (typeof options?.expires === 'number' && options.expires > 0) {
       parameters.expires = options.expires;
@@ -222,7 +222,7 @@ export class ObjectStorage<
       return (value?.value ?? defaultValue) as T;
     }
 
-    return (defaultValue ?? null) as T;
+    return (value ?? defaultValue ?? null) as T;
   }
 
   /**
