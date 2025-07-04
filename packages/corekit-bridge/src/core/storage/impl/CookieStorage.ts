@@ -1,4 +1,4 @@
-import { SyncStorage } from '@qlover/fe-corekit';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import Cookies, { type CookieAttributes } from 'js-cookie';
 
 /**
@@ -26,7 +26,9 @@ import Cookies, { type CookieAttributes } from 'js-cookie';
  * storage.clear();                                       // remove every cookie under the current path/domain
  * ```
  */
-export class CookieStorage implements SyncStorage<string, string> {
+export class CookieStorage
+  implements SyncStorageInterface<string, CookieAttributes>
+{
   private readonly defaultAttrs: CookieAttributes | undefined;
 
   constructor(attrs?: CookieAttributes) {

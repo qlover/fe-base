@@ -1,4 +1,4 @@
-import { JSONStorage } from '@qlover/fe-corekit';
+import { SyncStorageInterface } from '@qlover/fe-corekit';
 import { StoreStateInterface } from '../store-state';
 
 export interface ThemeServiceState extends StoreStateInterface {
@@ -60,5 +60,5 @@ export type ThemeConfig = {
 
 export interface ThemeServiceProps extends ThemeConfig {
   /** */
-  storage?: JSONStorage;
+  storage?: SyncStorageInterface<string, string>;
 }

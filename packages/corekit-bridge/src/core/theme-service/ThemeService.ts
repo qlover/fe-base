@@ -64,7 +64,10 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
 
     const { storage, storageKey } = this.props;
     if (storage && storageKey) {
-      storage.setItem(storageKey, theme);
+      const storageValue = storage.getItem(storageKey);
+      if (storageValue !== theme) {
+        storage.setItem(storageKey, theme);
+      }
     }
   }
 

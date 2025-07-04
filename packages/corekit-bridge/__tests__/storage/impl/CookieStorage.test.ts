@@ -12,7 +12,7 @@
  */
 
 import { describe, beforeEach, it, expect, vi } from 'vitest';
-import { CookieStorage } from '../../src/core/storage/CookieStorage';
+import { CookieStorage } from '../../../src/core/storage/impl/CookieStorage';
 
 /* ------------------------------------------------------------------ */
 /*                     js-cookie mock (self-contained)                */
