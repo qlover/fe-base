@@ -1,4 +1,33 @@
-import { Serializer } from './Serializer';
+import { SerializerIneterface } from './SerializerIneterface';
+
+export interface JSONSerializerOptions {
+  /**
+   * Enable pretty printing of JSON output
+   * Adds automatic indentation and line breaks for better readability
+   *
+   * @since 1.0.10
+   * @default false
+   */
+  pretty?: boolean;
+
+  /**
+   * Number of spaces to use for indentation when pretty printing
+   * Only used when pretty is true
+   *
+   * @since 1.0.10
+   * @default 2
+   */
+  indent?: number;
+
+  /**
+   * Custom replacer function for JSON.stringify
+   * Allows custom transformation during serialization
+   * Note: Will be wrapped to handle line endings
+   *
+   * @since 1.0.10
+   */
+  replacer?: (this: unknown, key: string, value: unknown) => unknown;
+}
 
 /**
  * Enhanced JSON serialization implementation that combines standard JSON API with additional features
@@ -21,7 +50,7 @@ import { Serializer } from './Serializer';
  * 3. Configuration file parsing with error handling
  * 4. Cross-platform data exchange
  *
- * @implements {Serializer<unknown, string>} - Generic serialization interface
+ * @implements {SerializerIneterface<unknown, string>} - Generic serialization interface
  * @implements {JSON} - Standard JSON interface compatibility
  * @todo - If circular reference is detected, the error message is not very friendly, can use [flatted](https://www.npmjs.com/package/flatted) to improve it
  * @since 1.0.10
@@ -58,42 +87,34 @@ import { Serializer } from './Serializer';
  * JSON.parse('{ "name": "test" }'); // same as JSON.parse('{ "name": "test" }')
  * ```
  */
-export class JSONSerializer implements Serializer<unknown, string>, JSON {
+export class JSONSerializer<
+    T = unknown,
+    Opt extends JSONSerializerOptions = JSONSerializerOptions
+  >
+  implements SerializerIneterface<T, string>, JSON
+{
   /**
    * Implements Symbol.toStringTag to properly identify this class
    * Required by JSON interface
+   *
+   * When this object calls toString, it returns this value
+   *
+   * @example
+   * ```typescript
+   * const serializer = new JSONSerializer();
+   * serializer.toString(); // returns '[object JSONSerializer]'
+   * ```
    */
   readonly [Symbol.toStringTag] = 'JSONSerializer';
 
   constructor(
-    private options: {
-      /**
-       * Enable pretty printing of JSON output
-       * Adds automatic indentation and line breaks for better readability
-       *
-       * @since 1.0.10
-       * @default false
-       */
-      pretty?: boolean;
-
-      /**
-       * Number of spaces to use for indentation when pretty printing
-       * Only used when pretty is true
-       *
-       * @since 1.0.10
-       * @default 2
-       */
-      indent?: number;
-
-      /**
-       * Custom replacer function for JSON.stringify
-       * Allows custom transformation during serialization
-       * Note: Will be wrapped to handle line endings
-       *
-       * @since 1.0.10
-       */
-      replacer?: (this: unknown, key: string, value: unknown) => unknown;
-    } = {}
+    /**
+     * Options for JSONSerializer
+     *
+     * @since 1.5.0
+     * @default `{}`
+     */
+    protected options: Opt = {} as Opt
   ) {}
 
   /**
@@ -109,12 +130,11 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
    * 2. Function replacer - Wrapped to handle line endings
    * 3. Null/undefined - Creates default line ending handler
    *
-   * @private
    * @param replacer - Custom replacer function or array of properties to include
    * @returns Replacer function or array of properties to include
    * @since 1.0.10
    */
-  private createReplacer(
+  protected createReplacer(
     replacer?:
       | ((this: unknown, key: string, value: unknown) => unknown)
       | (number | string)[]
@@ -244,11 +264,11 @@ export class JSONSerializer implements Serializer<unknown, string>, JSON {
    * @since 1.0.10
    * @returns Parsed value
    */
-  deserialize(data: string, defaultValue?: unknown): unknown {
+  deserialize(data: string, defaultValue?: T): T {
     try {
-      return this.parse(data);
+      return this.parse(data) as T;
     } catch {
-      return defaultValue;
+      return defaultValue as T;
     }
   }
 
