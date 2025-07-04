@@ -5,14 +5,12 @@ import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RouteService } from '@/base/services/RouteService';
 import { RegisterFormData, UserService } from '@/base/services/UserService';
-import { useStore } from '@/uikit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/page.register';
 
 export default function RegisterPage() {
   const { t } = useBaseRoutePage();
   const userService = IOC(UserService);
   const AppConfig = IOC('AppConfig');
-  useStore(userService);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 

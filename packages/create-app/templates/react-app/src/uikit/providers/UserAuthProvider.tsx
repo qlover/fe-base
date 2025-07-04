@@ -6,7 +6,7 @@ import { useStore } from '../hooks/useStore';
 export function UserAuthProvider({ children }: { children: React.ReactNode }) {
   const userService = IOC(UserService);
 
-  useStore(userService);
+  useStore(userService.store);
 
   if (!userService.isAuthenticated()) {
     return <Loading fullscreen />;

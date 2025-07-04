@@ -1,6 +1,17 @@
 // ! global variables, don't import any dependencies and don't have side effects
-import { JSONStorage, JSONSerializer, SyncStorage } from '@qlover/fe-corekit';
-import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
+import {
+  Base64Serializer,
+  JSONSerializer,
+  ObjectStorage,
+  SyncStorage,
+  SyncStorageInterface
+} from '@qlover/fe-corekit';
+import {
+  ColorFormatter,
+  ConsoleHandler,
+  CookieStorage,
+  Logger
+} from '@qlover/corekit-bridge';
 import { DialogHandler } from '@/base/cases/DialogHandler';
 import { loggerStyles } from '@config/common';
 import { AppConfig } from '@/base/cases/AppConfig';
@@ -26,9 +37,14 @@ export const logger = new Logger({
 export const JSON = new JSONSerializer();
 
 /**
- * Override JSONStorage to use the global local storage
+ * Override localStorage to use the global local storage
  */
-export const localJsonStorage = new JSONStorage(
-  localStorage as SyncStorage<string, string>,
-  JSON
-);
+export const localStorage = new SyncStorage(new ObjectStorage(), [
+  JSON,
+  new Base64Serializer(),
+  window.localStorage as unknown as SyncStorageInterface<string>
+]);
+
+export const localStorageEncrypt = localStorage;
+
+export const cookieStorage = new CookieStorage();
