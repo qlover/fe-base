@@ -1,5 +1,5 @@
 export * from './common';
-export * from './error';
+export * from './common.error';
 export * from './page.about';
 export * from './page.executor';
 export * from './page.home';

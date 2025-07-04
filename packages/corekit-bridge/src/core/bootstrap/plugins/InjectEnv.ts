@@ -61,8 +61,16 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
       const value = config[key as keyof typeof config];
 
-      config[key as keyof typeof config] = this.env(key, value);
+      const envValue = this.env(key, value);
+
+      if (!this.isEmpty(envValue) && envValue !== value) {
+        config[key as keyof typeof config] = envValue;
+      }
     }
+  }
+
+  isEmpty(value: unknown): boolean {
+    return value === null || value === undefined || value === '';
   }
 
   onBefore(): void {

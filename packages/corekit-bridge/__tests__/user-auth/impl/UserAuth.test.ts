@@ -1,719 +1,770 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  LoginResponseData,
-  UserAuthStore,
+  UserAuthService,
+  type UserAuthOptions
+} from '../../../src/core/user-auth/impl/UserAuthService';
+import {
   LOGIN_STATUS,
-  UserAuthApiInterface,
-  UserAuthService
-} from '../../../src/core/user-auth';
+  type UserAuthStoreInterface
+} from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
 import {
-  ExpiresInType,
-  StorageTokenInterface
-} from '../../../src/core/storage';
+  type LoginResponseData,
+  type UserAuthApiInterface
+} from '../../../src/core/user-auth/interface/UserAuthApiInterface';
+import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
+import { TokenStorage } from '../../../src/core/storage';
 
-// Mock interfaces and types
-interface MockUser {
+/**
+ * Test user interface for authentication testing
+ *
+ * Significance: Standardized user data structure for consistent testing
+ * Core idea: Simple user model representing authenticated user state
+ * Main function: Provide type-safe user data for authentication test scenarios
+ * Main purpose: Enable comprehensive testing of user authentication operations
+ *
+ * @example
+ * const testUser: TestUser = {
+ *   id: '123',
+ *   username: 'testuser',
+ *   email: 'test@example.com',
+ *   token: 'auth-token-123'
+ * };
+ *
+ * // Use in tests
+ * mockApi.getUserInfo.mockResolvedValue(testUser);
+ */
+interface TestUser {
+  /** Unique user identifier */
   id: string;
-  name: string;
-  email: string;
-}
-
-interface MockLoginParams {
+  /** User's display name */
   username: string;
-  password: string;
+  /** User's email address */
+  email: string;
+  /** Optional authentication token */
+  token?: string;
 }
 
-// Mock implementations
-class MockStorageToken implements StorageTokenInterface<string> {
-  private token: string = '';
+/**
+ * Test suite for UserAuthService
+ *
+ * Significance: Comprehensive testing of authentication service functionality
+ * Core idea: Test all authentication operations and edge cases
+ * Main function: Verify authentication service behavior under various conditions
+ * Main purpose: Ensure reliable authentication system with proper error handling
+ */
+describe('UserAuthService', () => {
+  let mockApi: UserAuthApiInterface<TestUser>;
+  let mockStore: UserAuthStoreInterface<TestUser>;
+  let authService: UserAuthService<TestUser>;
 
-  getToken(): string {
-    return this.token;
-  }
-
-  setToken(token: string, _expiresIn?: ExpiresInType): void {
-    this.token = token;
-  }
-
-  removeToken(): void {
-    this.token = '';
-  }
-}
-
-class MockAuthService implements UserAuthApiInterface<MockUser> {
-  setUserAuthStore(): void {}
-  private validToken = 'valid-token';
-  private validUser: MockUser = {
-    id: '1',
-    name: 'Test User',
-    email: 'test@example.com'
+  // Test data constants
+  const testUser: TestUser = {
+    id: '123',
+    username: 'testuser',
+    email: 'test@example.com',
+    token: 'auth-token-123'
   };
 
-  async login(params: MockLoginParams): Promise<LoginResponseData> {
-    if (params.username === 'valid@user.com' && params.password === 'correct') {
-      return { token: this.validToken };
-    }
-    throw new Error('Invalid credentials');
-  }
+  const loginCredentials = {
+    email: 'test@example.com',
+    password: 'password123'
+  };
 
-  async getUserInfo({ token }: { token: string }): Promise<MockUser> {
-    if (token === this.validToken) {
-      return this.validUser;
-    }
-    throw new Error('Invalid token');
-  }
+  const loginResponse: LoginResponseData = {
+    token: 'auth-token-123',
+    refreshToken: 'refresh-token-456'
+  };
 
-  async register(): Promise<LoginResponseData> {
-    return { token: this.validToken };
-  }
-
-  async logout(): Promise<void> {
-    // Mock implementation
-  }
-}
-
-describe('UserAuth', () => {
-  let authApi: MockAuthService;
-  let storageToken: MockStorageToken;
-  let userAuth: UserAuthService<MockUser>;
+  const registerData = {
+    email: 'newuser@example.com',
+    password: 'password123',
+    username: 'newuser'
+  };
 
   beforeEach(() => {
-    authApi = new MockAuthService();
-    storageToken = new MockStorageToken();
-    userAuth = new UserAuthService({
-      api: authApi,
-      storageToken
-    });
+    // Create comprehensive mock API
+    mockApi = {
+      getStore: vi.fn().mockReturnValue(null),
+      setStore: vi.fn(),
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      getUserInfo: vi.fn()
+    };
+
+    // Create comprehensive mock store
+    mockStore = {
+      setUserStorage: vi.fn(),
+      getUserStorage: vi.fn().mockReturnValue(null),
+      setCredentialStorage: vi.fn(),
+      getCredentialStorage: vi.fn().mockReturnValue(null),
+      getLoginStatus: vi.fn(),
+      setUserInfo: vi.fn(),
+      getUserInfo: vi.fn(),
+      setCredential: vi.fn(),
+      getCredential: vi.fn(),
+      reset: vi.fn(),
+      startAuth: vi.fn(),
+      authSuccess: vi.fn(),
+      authFailed: vi.fn()
+    };
   });
 
-  describe('Initialization', () => {
-    it('should initialize with required service', () => {
-      expect(userAuth).toBeDefined();
-      expect(userAuth.api).toBeDefined();
-      expect(userAuth.store).toBeDefined();
-    });
-
-    it('should initialize with custom store', () => {
-      const customStore = new UserAuthStore(storageToken);
-      const auth = new UserAuthService({
-        api: authApi,
-        store: customStore
-      });
-      expect(auth.store).toBe(customStore);
-    });
-
-    it('should handle URL token initialization', () => {
-      const auth = new UserAuthService({
-        api: authApi,
-        href: 'https://example.com?token=test-token',
-        urlTokenKey: 'token'
-      });
-      expect(auth.store.getToken()).toBe('test-token');
-    });
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  describe('Login', () => {
-    it('should successfully login with valid credentials', async () => {
-      const response = await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      expect(response.token).toBeDefined();
-      expect(userAuth.isAuthenticated()).toBe(true);
+  /**
+   * Test suite for UserAuthService constructor
+   *
+   * Tests initialization logic, parameter validation, and setup processes
+   */
+  describe('Constructor', () => {
+    it('should create instance with required api parameter', () => {
+      authService = new UserAuthService({ api: mockApi });
+
+      expect(authService.api).toBe(mockApi);
+      expect(authService.store).toBeInstanceOf(UserAuthStore);
     });
 
-    it('should fail login with invalid credentials', async () => {
-      await expect(
-        userAuth.login({
-          username: 'invalid@user.com',
-          password: 'wrong'
-        })
-      ).rejects.toThrow('Invalid credentials');
+    it('should throw error when api parameter is missing', () => {
+      expect(() => {
+        new UserAuthService({} as UserAuthOptions<TestUser>);
+      }).toThrow('UserAuthService: api is required');
     });
 
-    it('should handle direct token login', async () => {
-      const response = await userAuth.login('valid-token');
-      expect(response.token).toBe('valid-token');
-      expect(userAuth.isAuthenticated()).toBe(true);
-    });
-
-    it('should update login status during login process', async () => {
-      const loginPromise = userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.LOADING);
-      await loginPromise;
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
-    });
-  });
-
-  describe('User Information', () => {
-    it('should fetch user info with valid token', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should use provided store when given', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
 
-      const userInfo = await userAuth.fetchUserInfo();
-      expect(userInfo).toEqual({
-        id: '1',
-        name: 'Test User',
-        email: 'test@example.com'
+      expect(authService.store).toBe(mockStore);
+    });
+
+    it('should create default UserAuthStore when store not provided', () => {
+      authService = new UserAuthService({ api: mockApi });
+
+      expect(authService.store).toBeInstanceOf(UserAuthStore);
+    });
+
+    it('should setup user storage with custom configuration', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        userStorage: { key: 'custom-user-key' }
       });
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getUserStorage()).toBeTruthy();
     });
 
-    it('should reject fetching user info with invalid token', async () => {
-      await expect(userAuth.fetchUserInfo('invalid-token')).rejects.toThrow(
-        'Invalid token'
-      );
-    });
-
-    it('should reject fetching user info without token', async () => {
-      await expect(userAuth.fetchUserInfo()).rejects.toThrow(
-        'token is not set'
-      );
-    });
-  });
-
-  describe('Token Management', () => {
-    it('should store token after successful login', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should setup credential storage with custom configuration', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        credentialStorage: { key: 'custom-credential-key' }
       });
-      expect(userAuth.store.getToken()).toBeDefined();
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getCredentialStorage()).toBeTruthy();
     });
 
-    it('should clear token after logout', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should disable user storage when set to false', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        userStorage: false
       });
-      userAuth.logout();
-      expect(userAuth.store.getToken()).toBe('valid-token');
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getUserStorage()).toBeNull();
     });
 
-    it('should handle token persistence', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should disable credential storage when set to false', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        credentialStorage: false
       });
-      const token = userAuth.store.getToken();
 
-      // Create new instance with same storage
-      const newAuth = new UserAuthService({
-        api: authApi,
-        storageToken
-      });
-      expect(newAuth.store.getToken()).toBe(token);
-    });
-  });
-
-  describe('Authentication State', () => {
-    it('should correctly report authenticated state', async () => {
-      expect(userAuth.isAuthenticated()).toBe(false);
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      expect(userAuth.isAuthenticated()).toBe(true);
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getCredentialStorage()).toBeNull();
     });
 
-    it('should handle authentication state after logout', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should extract token from URL when href and tokenKey provided', () => {
+      const href = 'https://example.com?auth_token=url-token-123&other=value';
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'auth_token'
       });
-      await userAuth.logout();
-      expect(userAuth.isAuthenticated()).toBe(false);
+
+      expect(mockStore.setCredential).toHaveBeenCalledWith('url-token-123');
     });
 
-    it('should maintain authentication state across user info fetches', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      await userAuth.fetchUserInfo();
-      expect(userAuth.isAuthenticated()).toBe(true);
-    });
-  });
+    it('should handle URL without query parameters gracefully', () => {
+      const href = 'https://example.com';
 
-  describe('Store State Management', () => {
-    it('should properly update store state during login process', async () => {
-      expect(userAuth.store.getLoginStatus()).toBeNull();
-      const loginPromise = userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'auth_token'
       });
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.LOADING);
-      await loginPromise;
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
-      expect(userAuth.store.getToken()).toBe('valid-token');
+
+      expect(mockStore.setCredential).not.toHaveBeenCalled();
     });
 
-    it('should update store state on login failure', async () => {
-      expect(userAuth.store.getLoginStatus()).toBeNull();
-      try {
-        await userAuth.login({
-          username: 'invalid@user.com',
-          password: 'wrong'
+    it('should handle malformed URLs gracefully', () => {
+      const href = 'not-a-valid-url';
+
+      expect(() => {
+        authService = new UserAuthService({
+          api: mockApi,
+          store: mockStore,
+          href,
+          tokenKey: 'auth_token'
         });
-      } catch {
-        expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.FAILED);
-        expect(userAuth.store.getToken()).toBe('');
-      }
+      }).not.toThrow();
     });
 
-    it('should reset store state on logout', async () => {
-      await userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should set store to api when api has no store', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
-      expect(userAuth.store.getToken()).toBeDefined();
-      await userAuth.logout();
-      expect(userAuth.store.getLoginStatus()).toBeNull();
-      expect(userAuth.store.getToken()).toBe('valid-token');
+
+      expect(mockApi.setStore).toHaveBeenCalledWith(mockStore);
     });
 
-    it('should maintain store state consistency during concurrent operations', async () => {
-      const loginPromise = userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
+    it('should not override existing api store', () => {
+      const existingStore = new UserAuthStore<TestUser>();
+      vi.mocked(mockApi.getStore).mockReturnValue(existingStore);
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.LOADING);
-      // Attempt concurrent login
-      const concurrentLoginPromise = userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      await Promise.all([loginPromise, concurrentLoginPromise]);
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
-      expect(userAuth.store.getToken()).toBeDefined();
+
+      expect(mockApi.setStore).not.toHaveBeenCalled();
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle network errors during login', async () => {
-      const api: UserAuthApiInterface<MockUser> = {
-        login: () => Promise.reject(new Error('Network error')),
-        getUserInfo: async () => ({ id: '', name: '', email: '' }),
-        register: async () => ({ token: '' }),
-        logout: async () => {},
-        setUserAuthStore: () => {}
-      };
-      const authWithFailingService = new UserAuthService({
-        api
-      });
-      await expect(
-        authWithFailingService.login({
-          username: 'valid@user.com',
-          password: 'correct'
-        })
-      ).rejects.toThrow('Network error');
-      expect(authWithFailingService.store.getLoginStatus()).toBe(
-        LOGIN_STATUS.FAILED
-      );
-    });
-
-    it('should handle network errors during user info fetch', async () => {
-      const api: UserAuthApiInterface<MockUser> = {
-        login: async () => ({ token: '' }),
-        getUserInfo: () => Promise.reject(new Error('Network error')),
-        register: async () => ({ token: '' }),
-        logout: async () => {},
-        setUserAuthStore: () => {}
-      };
-      const authWithFailingService = new UserAuthService({
-        api
-      });
-      await expect(
-        authWithFailingService.fetchUserInfo('valid-token')
-      ).rejects.toThrow('Network error');
-      expect(authWithFailingService.store.getLoginStatus()).toBe(null);
-    });
-
-    it('should handle missing token in login response', async () => {
-      const api: UserAuthApiInterface<MockUser> = {
-        login: async () => ({}),
-        getUserInfo: async () => ({ id: '', name: '', email: '' }),
-        register: async () => ({ token: '' }),
-        logout: async () => {},
-        setUserAuthStore: () => {}
-      };
-      const authWithBadService = new UserAuthService({
-        api
-      });
-      await expect(
-        authWithBadService.login({
-          username: 'valid@user.com',
-          password: 'correct'
-        })
-      ).rejects.toThrow('login failed');
-      expect(authWithBadService.store.getLoginStatus()).toBe(
-        LOGIN_STATUS.FAILED
-      );
-    });
-
-    it('should handle invalid token format', async () => {
-      await expect(userAuth.login('invalid-format-token')).rejects.toThrow();
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.FAILED);
-    });
-
-    it('should handle empty credentials', async () => {
-      await expect(
-        userAuth.login({
-          username: '',
-          password: ''
-        })
-      ).rejects.toThrow();
-      expect(userAuth.store.getLoginStatus()).toBe(LOGIN_STATUS.FAILED);
-    });
-
-    it('should handle errors during logout', async () => {
-      const api: UserAuthApiInterface<MockUser> = {
-        login: async () => ({ token: 'valid-token' }),
-        getUserInfo: async () => ({ id: '', name: '', email: '' }),
-        register: async () => ({ token: '' }),
-        logout: () => Promise.reject(new Error('Logout failed')),
-        setUserAuthStore: () => {}
-      };
-      const authWithFailingService = new UserAuthService({
-        api
-      });
-      await authWithFailingService.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-
-      expect(authWithFailingService.isAuthenticated()).toBe(true);
-      expect(authWithFailingService.store.getLoginStatus()).toBe(
-        LOGIN_STATUS.SUCCESS
-      );
-
-      await expect(authWithFailingService.logout()).rejects.toThrow(
-        'Logout failed'
-      );
-
-      expect(authWithFailingService.isAuthenticated()).toBe(false);
-      expect(authWithFailingService.store.getLoginStatus()).toBe(null);
-    });
-
-    it('should handle malformed user info response', async () => {
-      const api: UserAuthApiInterface<MockUser> = {
-        login: async () => ({ token: 'valid-token' }),
-        getUserInfo: async () => {
-          throw new Error('Malformed user data');
-        },
-        register: async () => ({ token: '' }),
-        logout: async () => {},
-        setUserAuthStore: () => {}
-      };
-      const authWithBadService = new UserAuthService({
-        api
-      });
-      await expect(
-        authWithBadService.fetchUserInfo('valid-token')
-      ).rejects.toThrow('Malformed user data');
-      expect(authWithBadService.store.getLoginStatus()).toBe(null);
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle multiple concurrent login attempts', async () => {
-      const loginPromises = [
-        userAuth.login({
-          username: 'valid@user.com',
-          password: 'correct'
-        }),
-        userAuth.login({
-          username: 'valid@user.com',
-          password: 'correct'
-        })
-      ];
-      await expect(Promise.all(loginPromises)).resolves.toBeDefined();
-    });
-
-    it('should handle login attempts with empty credentials', async () => {
-      await expect(
-        userAuth.login({
-          username: '',
-          password: ''
-        })
-      ).rejects.toThrow();
-    });
-
-    it('should handle malformed tokens', async () => {
-      await expect(userAuth.login('malformed-token')).rejects.toThrow();
-    });
-
-    it('should handle rapid login/logout sequences', async () => {
-      const loginPromise = userAuth.login({
-        username: 'valid@user.com',
-        password: 'correct'
-      });
-      userAuth.logout();
-      await loginPromise;
-      expect(userAuth.isAuthenticated()).toBe(true);
-    });
-  });
-});
-
-class CustomUserAuthService implements UserAuthApiInterface<MockUser> {
-  private validToken = 'valid-test-token';
-  private expiredToken = 'expired-test-token';
-  private registeredUsers: Set<string> = new Set();
-  private tokenToUser: Map<string, MockUser> = new Map();
-
-  constructor() {
-    // Initialize with a default user
-    this.tokenToUser.set(this.validToken, {
-      id: '1',
-      name: 'Test User',
-      email: 'test@example.com'
-    });
-  }
-  setUserAuthStore(): void {}
-
-  async login(params: MockLoginParams): Promise<LoginResponseData> {
-    if (!params || !params.username || !params.password) {
-      throw new Error(
-        'Invalid credentials: username and password are required'
-      );
-    }
-
-    if (params.username === 'invalid@test.com') {
-      throw new Error('Invalid credentials');
-    }
-
-    if (
-      params.username === 'special@test.com' &&
-      params.password.includes('<script>')
-    ) {
-      throw new Error('Invalid characters in credentials');
-    }
-
-    return { token: this.validToken };
-  }
-
-  async getUserInfo({ token }: { token: string }): Promise<MockUser> {
-    if (!token) {
-      throw new Error('Token is required');
-    }
-
-    if (token === this.expiredToken) {
-      throw new Error('Token has expired');
-    }
-
-    const user = this.tokenToUser.get(token);
-    if (!user) {
-      throw new Error('Invalid token');
-    }
-
-    return user;
-  }
-
-  async register(params: {
-    username: string;
-    password: string;
-  }): Promise<LoginResponseData> {
-    if (!params || !params.username || !params.password) {
-      throw new Error('Invalid registration data');
-    }
-
-    if (this.registeredUsers.has(params.username)) {
-      throw new Error('User already exists');
-    }
-
-    this.registeredUsers.add(params.username);
-    const newToken = `register-token-${params.username}`;
-    this.tokenToUser.set(newToken, {
-      id: Math.random().toString(36).substr(2, 9),
-      name: params.username,
-      email: params.username
-    });
-
-    return { token: newToken };
-  }
-
-  async logout(): Promise<void> {
-    // Simulating async operation
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-}
-
-class MemoryStorageToken implements StorageTokenInterface<string> {
-  private token: string = '';
-
-  getToken(): string {
-    return this.token;
-  }
-
-  setToken(token: string, _expiresIn?: ExpiresInType): void {
-    this.token = token;
-  }
-
-  removeToken(): void {
-    this.token = '';
-  }
-}
-
-describe('Custom UserAuthService', () => {
-  let memoryStorageToken: MemoryStorageToken;
-  let userAuth: UserAuthService<MockUser>;
-  let api: CustomUserAuthService;
-
-  beforeEach(() => {
-    memoryStorageToken = new MemoryStorageToken();
-    api = new CustomUserAuthService();
-    userAuth = new UserAuthService({
-      api,
-      storageToken: memoryStorageToken
-    });
-  });
-
+  /**
+   * Test suite for login functionality
+   *
+   * Tests authentication flow, error handling, and state management
+   */
   describe('Login', () => {
-    it('should successfully login with valid credentials', async () => {
-      await userAuth.login({
-        username: 'test@example.com',
-        password: 'valid-password'
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
-
-      expect(userAuth.store.getToken()).toBe('valid-test-token');
-      expect(memoryStorageToken.getToken()).toBe('valid-test-token');
-      expect(userAuth.isAuthenticated()).toBe(true);
     });
 
-    it('should reject login with invalid credentials', async () => {
-      await expect(
-        userAuth.login({
-          username: 'invalid@test.com',
-          password: 'wrong-password'
-        })
-      ).rejects.toThrow('Invalid credentials');
+    it('should perform successful login flow', async () => {
+      // Setup mocks
+      vi.mocked(mockApi.login).mockResolvedValue(loginResponse);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
+
+      const result = await authService.login(loginCredentials);
+
+      expect(mockStore.startAuth).toHaveBeenCalled();
+      expect(mockApi.login).toHaveBeenCalledWith(loginCredentials);
+      expect(mockApi.getUserInfo).toHaveBeenCalledWith(loginResponse);
+      expect(mockStore.authSuccess).toHaveBeenCalledWith(
+        testUser,
+        loginResponse
+      );
+      expect(result).toBe(loginResponse);
     });
 
-    it('should reject login with empty credentials', async () => {
-      await expect(
-        userAuth.login({
-          username: '',
-          password: ''
-        })
-      ).rejects.toThrow(
-        'Invalid credentials: username and password are required'
+    it('should merge stored user info with API response', async () => {
+      const storedUser = {
+        id: '123',
+        username: 'stored',
+        email: 'stored@example.com'
+      };
+      const apiUser = {
+        id: '123',
+        username: 'updated',
+        email: 'updated@example.com'
+      };
+
+      vi.mocked(mockApi.login).mockResolvedValue(loginResponse);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(apiUser);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(storedUser);
+
+      await authService.login(loginCredentials);
+
+      expect(mockStore.authSuccess).toHaveBeenCalledWith(
+        { ...storedUser, ...apiUser },
+        loginResponse
       );
     });
 
-    it('should reject login with special characters', async () => {
-      await expect(
-        userAuth.login({
-          username: 'special@test.com',
-          password: '<script>alert("xss")</script>'
-        })
-      ).rejects.toThrow('Invalid characters in credentials');
-    });
+    it('should handle login API failure', async () => {
+      const loginError = new Error('Invalid credentials');
+      vi.mocked(mockApi.login).mockRejectedValue(loginError);
 
-    it('should handle multiple concurrent login requests', async () => {
-      const loginPromises = Array(3)
-        .fill(null)
-        .map(() =>
-          userAuth.login({
-            username: 'test@example.com',
-            password: 'valid-password'
-          })
-        );
-
-      await expect(Promise.all(loginPromises)).resolves.toBeDefined();
-      expect(userAuth.isAuthenticated()).toBe(true);
-    });
-  });
-
-  describe('User Information', () => {
-    it('should fetch user info with valid token', async () => {
-      await userAuth.login({
-        username: 'test@example.com',
-        password: 'valid-password'
-      });
-
-      const userInfo = await userAuth.fetchUserInfo();
-      expect(userInfo).toEqual({
-        id: '1',
-        name: 'Test User',
-        email: 'test@example.com'
-      });
-    });
-
-    it('should reject fetching user info with invalid token', async () => {
-      await expect(userAuth.fetchUserInfo('invalid-token')).rejects.toThrow(
-        'Invalid token'
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        'Invalid credentials'
       );
+
+      expect(mockStore.startAuth).toHaveBeenCalled();
+      expect(mockStore.authFailed).toHaveBeenCalledWith(loginError);
+      expect(mockStore.authSuccess).not.toHaveBeenCalled();
     });
 
-    it('should reject fetching user info without token', async () => {
-      await expect(userAuth.fetchUserInfo()).rejects.toThrow(
-        'token is not set'
+    it('should handle user info fetch failure after successful login', async () => {
+      const userInfoError = new Error('Failed to fetch user info');
+      vi.mocked(mockApi.login).mockResolvedValue(loginResponse);
+      vi.mocked(mockApi.getUserInfo).mockRejectedValue(userInfoError);
+
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        'Failed to fetch user info'
       );
+
+      expect(mockStore.startAuth).toHaveBeenCalled();
+      expect(mockApi.login).toHaveBeenCalledWith(loginCredentials);
+      expect(mockStore.authFailed).toHaveBeenCalledWith(userInfoError);
+    });
+
+    it('should handle network timeout errors', async () => {
+      const timeoutError = new Error('Request timeout');
+      vi.mocked(mockApi.login).mockRejectedValue(timeoutError);
+
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        'Request timeout'
+      );
+
+      expect(mockStore.authFailed).toHaveBeenCalledWith(timeoutError);
     });
   });
 
-  describe('Registration', () => {
-    it('should successfully register new user', async () => {
-      const response = await api.register({
-        username: 'new@example.com',
-        password: 'new-password'
+  /**
+   * Test suite for registration functionality
+   *
+   * Tests user registration flow and automatic login
+   */
+  describe('Register', () => {
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
-
-      expect(response.token).toContain('register-token-new@example.com');
     });
 
-    it('should reject duplicate registration', async () => {
-      await api.register({
-        username: 'duplicate@example.com',
-        password: 'password'
-      });
+    it('should perform successful registration flow', async () => {
+      vi.mocked(mockApi.register).mockResolvedValue(loginResponse);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
 
-      await expect(
-        api.register({
-          username: 'duplicate@example.com',
-          password: 'another-password'
-        })
-      ).rejects.toThrow('User already exists');
+      const result = await authService.register(registerData);
+
+      expect(mockStore.startAuth).toHaveBeenCalled();
+      expect(mockApi.register).toHaveBeenCalledWith(registerData);
+      expect(mockApi.getUserInfo).toHaveBeenCalledWith(loginResponse);
+      expect(mockStore.authSuccess).toHaveBeenCalled();
+      expect(result).toBe(loginResponse);
     });
 
-    it('should reject registration with invalid data', async () => {
-      await expect(
-        api.register({
-          username: '',
-          password: ''
-        })
-      ).rejects.toThrow('Invalid registration data');
+    it('should handle registration failure', async () => {
+      const registrationError = new Error('Email already exists');
+      vi.mocked(mockApi.register).mockRejectedValue(registrationError);
+
+      await expect(authService.register(registerData)).rejects.toThrow(
+        'Email already exists'
+      );
+
+      expect(mockStore.startAuth).toHaveBeenCalled();
+      expect(mockStore.authFailed).toHaveBeenCalledWith(registrationError);
+    });
+
+    it('should handle validation errors', async () => {
+      const validationError = new Error('Password too weak');
+      vi.mocked(mockApi.register).mockRejectedValue(validationError);
+
+      await expect(authService.register(registerData)).rejects.toThrow(
+        'Password too weak'
+      );
+
+      expect(mockStore.authFailed).toHaveBeenCalledWith(validationError);
     });
   });
 
+  /**
+   * Test suite for user info functionality
+   *
+   * Tests user information retrieval and merging
+   */
+  describe('UserInfo', () => {
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
+      });
+    });
+
+    it('should fetch and merge user information', async () => {
+      const storedUser = {
+        id: '123',
+        username: 'stored',
+        email: 'stored@example.com'
+      };
+      const apiUser = {
+        id: '123',
+        username: 'updated',
+        email: 'updated@example.com'
+      };
+
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(storedUser);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(apiUser);
+
+      const result = await authService.userInfo();
+
+      expect(mockApi.getUserInfo).toHaveBeenCalledWith(undefined);
+      expect(result).toEqual({ ...storedUser, ...apiUser });
+    });
+
+    it('should pass login data to API when provided', async () => {
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+
+      await authService.userInfo(loginResponse);
+
+      expect(mockApi.getUserInfo).toHaveBeenCalledWith(loginResponse);
+    });
+
+    it('should handle user info fetch failure', async () => {
+      const fetchError = new Error('Unauthorized');
+      vi.mocked(mockApi.getUserInfo).mockRejectedValue(fetchError);
+
+      await expect(authService.userInfo()).rejects.toThrow('Unauthorized');
+    });
+
+    it('should handle null stored user info', async () => {
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+
+      const result = await authService.userInfo();
+
+      expect(result).toEqual(testUser);
+    });
+  });
+
+  /**
+   * Test suite for logout functionality
+   *
+   * Tests logout flow and state cleanup
+   */
   describe('Logout', () => {
-    it('should successfully logout', async () => {
-      await userAuth.login({
-        username: 'test@example.com',
-        password: 'valid-password'
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
       });
-
-      await userAuth.logout();
-      expect(userAuth.isAuthenticated()).toBe(false);
-      expect(memoryStorageToken.getToken()).toBe('');
     });
 
-    it('should handle multiple logout requests', async () => {
-      await userAuth.login({
-        username: 'test@example.com',
-        password: 'valid-password'
+    it('should perform successful logout', async () => {
+      vi.mocked(mockApi.logout).mockResolvedValue();
+
+      await authService.logout();
+
+      expect(mockApi.logout).toHaveBeenCalled();
+      expect(mockStore.reset).toHaveBeenCalled();
+    });
+
+    it('should reset store even if API logout fails', async () => {
+      const logoutError = new Error('Server error');
+      vi.mocked(mockApi.logout).mockRejectedValue(logoutError);
+
+      await expect(authService.logout()).rejects.toThrow('Server error');
+
+      expect(mockStore.reset).toHaveBeenCalled();
+    });
+
+    it('should handle network errors during logout', async () => {
+      const networkError = new Error('Network unavailable');
+      vi.mocked(mockApi.logout).mockRejectedValue(networkError);
+
+      await expect(authService.logout()).rejects.toThrow('Network unavailable');
+
+      expect(mockStore.reset).toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * Test suite for authentication status checking
+   *
+   * Tests authentication state verification logic
+   */
+  describe('isAuthenticated', () => {
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
+      });
+    });
+
+    it('should return true when login status is SUCCESS and user info exists', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(LOGIN_STATUS.SUCCESS);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+
+      expect(authService.isAuthenticated()).toBe(true);
+    });
+
+    it('should return false when login status is not SUCCESS', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(LOGIN_STATUS.LOADING);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+
+      expect(authService.isAuthenticated()).toBe(false);
+    });
+
+    it('should return false when login status is SUCCESS but no user info', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(LOGIN_STATUS.SUCCESS);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
+
+      expect(authService.isAuthenticated()).toBe(false);
+    });
+
+    it('should return false when login status is FAILED', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(LOGIN_STATUS.FAILED);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+
+      expect(authService.isAuthenticated()).toBe(false);
+    });
+
+    it('should return false when login status is null', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(null);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+
+      expect(authService.isAuthenticated()).toBe(false);
+    });
+
+    it('should return false when both login status and user info are null', () => {
+      vi.mocked(mockStore.getLoginStatus).mockReturnValue(null);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
+
+      expect(authService.isAuthenticated()).toBe(false);
+    });
+  });
+
+  /**
+   * Test suite for URL token extraction
+   *
+   * Tests URL parameter parsing and token extraction functionality
+   */
+  describe('URL Token Extraction', () => {
+    it('should extract token from URL query parameters', () => {
+      const href = 'https://example.com/callback?access_token=abc123&state=xyz';
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'access_token'
       });
 
-      const logoutPromises = Array(3)
-        .fill(null)
-        .map(() => userAuth.logout());
+      expect(mockStore.setCredential).toHaveBeenCalledWith('abc123');
+    });
 
-      await expect(Promise.all(logoutPromises)).resolves.toBeDefined();
-      expect(userAuth.isAuthenticated()).toBe(false);
+    it('should handle URL encoded tokens', () => {
+      const encodedToken = encodeURIComponent('token with spaces');
+      const href = `https://example.com/callback?token=${encodedToken}`;
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'token'
+      });
+
+      expect(mockStore.setCredential).toHaveBeenCalledWith('token with spaces');
+    });
+
+    it('should handle multiple query parameters', () => {
+      const href =
+        'https://example.com/callback?param1=value1&auth_token=token123&param2=value2';
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'auth_token'
+      });
+
+      expect(mockStore.setCredential).toHaveBeenCalledWith('token123');
+    });
+
+    it('should not extract token when parameter is missing', () => {
+      const href = 'https://example.com/callback?other_param=value';
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'auth_token'
+      });
+
+      expect(mockStore.setCredential).not.toHaveBeenCalled();
+    });
+
+    it('should not extract empty token values', () => {
+      const href = 'https://example.com/callback?auth_token=';
+
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore,
+        href,
+        tokenKey: 'auth_token'
+      });
+
+      expect(mockStore.setCredential).not.toHaveBeenCalled();
+    });
+
+    it('should handle malformed URL gracefully', () => {
+      const href = 'not-a-url';
+
+      expect(() => {
+        authService = new UserAuthService({
+          api: mockApi,
+          store: mockStore,
+          href,
+          tokenKey: 'auth_token'
+        });
+      }).not.toThrow();
+
+      expect(mockStore.setCredential).not.toHaveBeenCalled();
+    });
+  });
+
+  /**
+   * Test suite for storage configuration
+   *
+   * Tests different storage backend configurations and behaviors
+   */
+  describe('Storage Configuration', () => {
+    it('should use TokenStorage instance directly when provided', () => {
+      const customUserStorage = new TokenStorage<string, TestUser>(
+        'custom-user'
+      );
+      const customCredentialStorage = new TokenStorage<string, string>(
+        'custom-credential'
+      );
+
+      authService = new UserAuthService({
+        api: mockApi,
+        userStorage: customUserStorage,
+        credentialStorage: customCredentialStorage
+      });
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getUserStorage()).toBe(customUserStorage);
+      expect(store.getCredentialStorage()).toBe(customCredentialStorage);
+    });
+
+    it('should create TokenStorage from configuration object', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        userStorage: {
+          key: 'user-config',
+          expiresIn: 'week'
+        },
+        credentialStorage: {
+          key: 'credential-config',
+          expiresIn: 'day'
+        }
+      });
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      expect(store.getUserStorage()).toBeInstanceOf(TokenStorage);
+      expect(store.getCredentialStorage()).toBeInstanceOf(TokenStorage);
+    });
+
+    it('should handle storage configuration with all options', () => {
+      authService = new UserAuthService({
+        api: mockApi,
+        userStorage: {
+          key: 'full-config-user',
+          expiresIn: 'month'
+        }
+      });
+
+      const store = authService.store as UserAuthStore<TestUser>;
+      const userStorage = store.getUserStorage() as TokenStorage<
+        string,
+        TestUser
+      >;
+      expect(userStorage).toBeInstanceOf(TokenStorage);
+    });
+  });
+
+  /**
+   * Test suite for error handling and edge cases
+   *
+   * Tests various error scenarios and edge cases
+   */
+  describe('Error Handling', () => {
+    beforeEach(() => {
+      authService = new UserAuthService({
+        api: mockApi,
+        store: mockStore
+      });
+    });
+
+    it('should handle concurrent login attempts', async () => {
+      vi.mocked(mockApi.login).mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve(loginResponse), 100)
+          )
+      );
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+
+      const promise1 = authService.login(loginCredentials);
+      const promise2 = authService.login(loginCredentials);
+
+      await Promise.all([promise1, promise2]);
+
+      expect(mockStore.startAuth).toHaveBeenCalledTimes(2);
+      expect(mockApi.login).toHaveBeenCalledTimes(2);
+    });
+
+    it('should handle partial login response data', async () => {
+      const partialResponse = { token: 'partial-token' };
+      vi.mocked(mockApi.login).mockResolvedValue(partialResponse);
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue(testUser);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(null);
+
+      const result = await authService.login(loginCredentials);
+
+      expect(mockStore.authSuccess).toHaveBeenCalledWith(
+        testUser,
+        partialResponse
+      );
+      expect(result).toBe(partialResponse);
+    });
+
+    it('should handle API methods returning null/undefined', async () => {
+      vi.mocked(mockApi.getUserInfo).mockResolvedValue({} as TestUser);
+      vi.mocked(mockStore.getUserInfo).mockReturnValue(testUser);
+
+      const result = await authService.userInfo();
+
+      expect(result).toEqual({ ...testUser, ...{} });
+    });
+
+    it('should handle store methods throwing errors', async () => {
+      const storeError = new Error('Store error');
+      vi.mocked(mockStore.startAuth).mockImplementation(() => {
+        throw storeError;
+      });
+
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        'Store error'
+      );
     });
   });
 });

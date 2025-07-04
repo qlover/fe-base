@@ -6,7 +6,7 @@ import BaseHeader from '../../uikit/components/BaseHeader';
 
 export default function Layout() {
   const userService = IOC(UserService);
-  useStore(userService, (state) => state.success);
+  useStore(userService.store);
 
   // If user is authenticated, redirect to home page
   if (userService.isAuthenticated()) {

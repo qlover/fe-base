@@ -12,7 +12,7 @@
  * @example
  * ```typescript
  * // JSON serialization implementation
- * class JSONSerializer implements Serializer {
+ * class JSONSerializer implements SerializerIneterface {
  *   serialize(data: any): string {
  *     return JSON.stringify(data);
  *   }
@@ -23,7 +23,7 @@
  * }
  * ```
  */
-export interface Serializer<T = unknown, R = string> {
+export interface SerializerIneterface<T = unknown, R = string> {
   /**
    * Serializes data into a target format
    * @since 1.0.10

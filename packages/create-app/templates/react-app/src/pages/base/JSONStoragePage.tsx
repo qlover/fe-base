@@ -46,7 +46,7 @@ export default function JSONStoragePage() {
                     {t(i18nKeys.PAGE_JSONSTORAGE_CURRENT_VALUE)}:{' '}
                   </span>
                   <span className="font-semibold text-text">
-                    {controllerState.testKey1}
+                    {JSON.stringify(controllerState.testKey1)}
                   </span>
                 </div>
               </div>
