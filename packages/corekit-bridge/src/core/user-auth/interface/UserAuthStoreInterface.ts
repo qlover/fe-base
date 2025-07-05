@@ -1,5 +1,6 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import { LoginResponseData } from './UserAuthApiInterface';
+import { PickUser, UserAuthState } from '../impl/UserAuthState';
 
 /**
  * Login status enumeration
@@ -30,6 +31,11 @@ export interface UserAuthStoreOptions<User> {
    * init Credential value
    */
   credential?: string;
+
+  /**
+   * Initial user information
+   */
+  userInfo?: User;
 }
 
 /**
@@ -51,18 +57,26 @@ export interface UserAuthStoreOptions<User> {
  *   }
  * }
  */
-export interface UserAuthStoreInterface<User> {
+export interface UserAuthStoreInterface<State extends UserAuthState<unknown>> {
+  /**
+   * Get the current state of the user authentication store
+   * @returns The current state of the user authentication store
+   */
+  getDefaultState(options: UserAuthStoreOptions<PickUser<State>>): State;
+
   /**
    * Set the key storage implementation
-   * @param keyStorage - The key-value storage implementation for persistence
+   * @param userStorage - The key-value storage implementation for persistence
    */
-  setUserStorage(keyStorage: KeyStorageInterface<string, User>): void;
+  setUserStorage(
+    userStorage: KeyStorageInterface<string, PickUser<State>>
+  ): void;
 
   /**
    * Get the current key storage implementation
    * @returns The key storage instance or null if not set
    */
-  getUserStorage(): KeyStorageInterface<string, User> | null;
+  getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null;
 
   /**
    * Set the credential storage implementation
@@ -88,13 +102,13 @@ export interface UserAuthStoreInterface<User> {
    * Set user information
    * @param params - The user information to store
    */
-  setUserInfo(params: User): void;
+  setUserInfo(params: PickUser<State> | null): void;
 
   /**
    * Get stored user information
    * @returns The stored user information or null if not available
    */
-  getUserInfo(): User | null;
+  getUserInfo(): PickUser<State> | null;
 
   /**
    * Set credential
@@ -125,7 +139,10 @@ export interface UserAuthStoreInterface<User> {
    * @param userInfo - Optional user information to store
    * @param credential - Optional credential to store
    */
-  authSuccess(userInfo?: User, credential?: string | LoginResponseData): void;
+  authSuccess(
+    userInfo?: PickUser<State>,
+    credential?: string | LoginResponseData
+  ): void;
 
   /**
    * Mark authentication as failed

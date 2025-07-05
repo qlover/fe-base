@@ -1,57 +1,12 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import type { KeyStorageInterface } from '@qlover/fe-corekit';
 import { StoreInterface } from '../../store-state';
+import type { LoginResponseData } from '../interface/UserAuthApiInterface';
+import { UserAuthState, PickUser } from './UserAuthState';
 import {
   LOGIN_STATUS,
   UserAuthStoreOptions,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
-import { LoginResponseData } from '../interface/UserAuthApiInterface';
-
-/**
- * User authentication store state container
- *
- * Significance: Encapsulates all authentication-related state in a single object
- * Core idea: Immutable state container for user authentication data
- * Main function: Hold user information, credentials, login status, and error state
- * Main purpose: Provide type-safe state management for authentication operations
- *
- * @example
- * const state = new UserAuthStoreState<User>(
- *   { id: '123', name: 'John' },
- *   'auth-token-123'
- * );
- * console.log(state.userInfo); // { id: '123', name: 'John' }
- * console.log(state.credential); // 'auth-token-123'
- */
-export class UserAuthStoreState<User> {
-  constructor(
-    /**
-     * User information object containing profile data
-     * @param userInfo - The user profile data or null if not authenticated
-     */
-    public userInfo: User | null = null,
-
-    /**
-     * Authentication credential (typically a token)
-     * @param credential - The authentication credential string or null if not available
-     */
-    public credential: string | null = null
-  ) {}
-
-  /**
-   * Current authentication status
-   * Tracks the state of authentication operations (loading, success, failed)
-   */
-  loginStatus: LOGIN_STATUS | null = null;
-
-  /**
-   * Authentication error information
-   *
-   * Stores error details when authentication operations fail,
-   * such as login failures, network errors, or user info fetch errors
-   */
-  error: unknown | null = null;
-}
 
 /**
  * User authentication store implementation
@@ -81,9 +36,9 @@ export class UserAuthStoreState<User> {
  *   console.log('User is authenticated');
  * }
  */
-export class UserAuthStore<User>
-  extends StoreInterface<UserAuthStoreState<User>>
-  implements UserAuthStoreInterface<User>
+export class UserAuthStore<State extends UserAuthState<unknown>>
+  extends StoreInterface<State>
+  implements UserAuthStoreInterface<State>
 {
   /**
    * Initialize user authentication store
@@ -93,14 +48,41 @@ export class UserAuthStore<User>
    * @param options.credentialStorage - Storage interface for credential persistence
    * @param options.credential - Initial credential value
    */
-  constructor(protected options: UserAuthStoreOptions<User> = {}) {
-    super(
-      () =>
-        new UserAuthStoreState(
-          options.userStorage?.get(),
-          options.credentialStorage?.get() || options.credential
-        )
-    );
+  constructor(
+    protected readonly options: UserAuthStoreOptions<PickUser<State>> = {}
+  ) {
+    super(() => {
+      const state = this.getDefaultState(options);
+
+      if (
+        state == null ||
+        typeof state !== 'object' ||
+        !(state instanceof UserAuthState)
+      ) {
+        throw new Error(
+          'Please check the state is a instance of UserAuthState'
+        );
+      }
+
+      return state;
+    });
+  }
+
+  /**
+   * Get default state for the user authentication store
+   *
+   * @param options - Configuration options for storage and initial state
+   * @returns The default state for the user authentication store
+   */
+  getDefaultState(options: UserAuthStoreOptions<PickUser<State>>): State {
+    const { userStorage, credentialStorage, credential, userInfo } = options;
+
+    const defaultCredential = credential ?? credentialStorage?.get();
+    const defaultUserInfo = userInfo ?? userStorage?.get();
+
+    const state = new UserAuthState(defaultUserInfo, defaultCredential);
+
+    return state as State;
   }
 
   /**
@@ -108,9 +90,11 @@ export class UserAuthStore<User>
    *
    * @param userStorage - Storage interface for user information persistence
    */
-  setUserStorage(userStorage: KeyStorageInterface<string, User>): void {
-    if (this.options.userStorage !== userStorage) {
-      this.setUserInfo(userStorage.get() as User);
+  setUserStorage(
+    userStorage: KeyStorageInterface<string, PickUser<State>>
+  ): void {
+    if (this.getUserStorage() !== userStorage) {
+      this.setUserInfo(userStorage.get()!);
     }
 
     this.options.userStorage = userStorage;
@@ -121,7 +105,7 @@ export class UserAuthStore<User>
    *
    * @returns The user storage interface or null if not configured
    */
-  getUserStorage(): KeyStorageInterface<string, User> | null {
+  getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
     return this.options.userStorage || null;
   }
 
@@ -133,7 +117,7 @@ export class UserAuthStore<User>
   setCredentialStorage(
     credentialStorage: KeyStorageInterface<string, string>
   ): void {
-    if (this.options.credentialStorage !== credentialStorage) {
+    if (this.getCredentialStorage() !== credentialStorage) {
       this.setCredential(credentialStorage.get() as string);
     }
 
@@ -157,9 +141,12 @@ export class UserAuthStore<User>
    *
    * @param params - User information object to store
    */
-  setUserInfo(params: User): void {
+  setUserInfo(params: PickUser<State> | null): void {
     this.emit({ ...this.state, userInfo: params });
-    this.getUserStorage()?.set(params);
+
+    if (params) {
+      this.getUserStorage()?.set(params);
+    }
   }
 
   /**
@@ -167,8 +154,8 @@ export class UserAuthStore<User>
    *
    * @returns The stored user information or null if not available
    */
-  getUserInfo(): User | null {
-    return this.state.userInfo;
+  getUserInfo(): PickUser<State> | null {
+    return (this.state.userInfo ?? null) as PickUser<State>;
   }
 
   /**
@@ -237,7 +224,10 @@ export class UserAuthStore<User>
    * @param userInfo - Optional user information to store upon successful authentication
    * @param credential - Optional credential to store (string token or login response object)
    */
-  authSuccess(userInfo?: User, credential?: string | LoginResponseData): void {
+  authSuccess(
+    userInfo?: PickUser<State>,
+    credential?: string | LoginResponseData
+  ): void {
     this.emit({
       ...this.state,
       loginStatus: LOGIN_STATUS.SUCCESS,

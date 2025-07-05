@@ -10,6 +10,7 @@ import {
 import { UserAuthStore } from './UserAuthStore';
 import { AuthServiceInterface } from '../interface/UserAuthInterface';
 import { TokenStorage, TokenStorageOptions } from '../../storage';
+import { PickUser, UserAuthState } from './UserAuthState';
 
 /**
  * Token storage value type definition
@@ -63,7 +64,10 @@ type TokenStorageValueType<Key, Value> =
  *   tokenKey: 'access_token'
  * };
  */
-export interface UserAuthOptions<User, Key = string> {
+export interface UserAuthOptions<
+  State extends UserAuthState<unknown>,
+  Key = string
+> {
   /**
    * Authentication API service implementation
    *
@@ -75,7 +79,7 @@ export interface UserAuthOptions<User, Key = string> {
    *
    * @param api - API service implementing UserAuthApiInterface
    */
-  api: UserAuthApiInterface<User>;
+  api: UserAuthApiInterface<State>;
 
   /**
    * Authentication state store implementation
@@ -88,7 +92,7 @@ export interface UserAuthOptions<User, Key = string> {
    *
    * @param store - Store implementation, defaults to UserAuthStore if not provided
    */
-  store?: UserAuthStoreInterface<User>;
+  store?: UserAuthStoreInterface<State>;
 
   /**
    * User information storage configuration
@@ -103,7 +107,7 @@ export interface UserAuthOptions<User, Key = string> {
    * @param userStorage - Storage configuration or false to disable
    * @default TokenStorage with memory backend
    */
-  userStorage?: TokenStorageValueType<Key, User> | false;
+  userStorage?: TokenStorageValueType<Key, PickUser<State>> | false;
 
   /**
    * Authentication credential storage configuration
@@ -247,10 +251,8 @@ function getURLProperty(href: string, key: string): string {
  *   console.error('Login failed:', error);
  * }
  */
-export class UserAuthService<
-  User,
-  Opt extends UserAuthOptions<User> = UserAuthOptions<User>
-> implements AuthServiceInterface<User>
+export class UserAuthService<State extends UserAuthState<unknown>>
+  implements AuthServiceInterface<State>
 {
   /**
    * Initialize user authentication service
@@ -272,28 +274,19 @@ export class UserAuthService<
    *   credentialStorage: { key: 'token', storage: sessionStorage }
    * });
    */
-  constructor(protected readonly options: Opt = {} as Opt) {
-    const {
-      api,
-      store,
-      tokenKey,
-      userStorage,
-      credentialStorage,
-      href = ''
-    } = options;
+  constructor(protected readonly options: UserAuthOptions<State>) {
+    const { api, store, tokenKey, userStorage, credentialStorage, href } =
+      options;
 
     // Validate required API service
     if (!api) {
       throw new Error('UserAuthService: api is required');
     }
 
-    const _userStorage = this.parseStorage<User>(userStorage);
+    const _userStorage = this.parseStorage(userStorage);
     const _credentialStorage = this.parseStorage<string>(credentialStorage);
 
     const _store = store || new UserAuthStore();
-
-    // Assign the store to options so the getter can access it
-    this.options.store = _store;
 
     if (!_store.getUserStorage() && _userStorage) {
       _store.setUserStorage(_userStorage);
@@ -315,6 +308,9 @@ export class UserAuthService<
     if (!options.api.getStore()) {
       options.api.setStore(_store);
     }
+
+    // Assign the store to options so the getter can access it
+    options.store = _store;
   }
 
   /**
@@ -363,7 +359,7 @@ export class UserAuthService<
    *
    * @returns The configured user authentication store
    */
-  get store(): UserAuthStoreInterface<User> {
+  get store(): UserAuthStoreInterface<State> {
     return this.options.store!;
   }
 
@@ -372,7 +368,7 @@ export class UserAuthService<
    *
    * @returns The configured user authentication API service
    */
-  get api(): UserAuthApiInterface<User> {
+  get api(): UserAuthApiInterface<State> {
     return this.options.api!;
   }
 
@@ -438,13 +434,12 @@ export class UserAuthService<
    *   email: user.email
    * });
    */
-  async userInfo(loginData?: LoginResponseData): Promise<User> {
+  async userInfo(loginData?: LoginResponseData): Promise<PickUser<State>> {
     const result = await this.api.getUserInfo(loginData);
 
-    return {
-      ...this.store.getUserInfo(),
-      ...result
-    };
+    const userInfo = this.store.getUserInfo();
+
+    return Object.assign({}, userInfo, result) as PickUser<State>;
   }
 
   /**
@@ -511,7 +506,11 @@ export class UserAuthService<
 
       const user = await this.userInfo(result as LoginResponseData);
 
-      this.store.authSuccess({ ...(result as LoginResponseData), ...user });
+      if (!user) {
+        throw new Error('UserAuthService: userInfo is null');
+      }
+
+      this.store.authSuccess(user, result);
 
       return result as LoginResponseData;
     } catch (error) {
