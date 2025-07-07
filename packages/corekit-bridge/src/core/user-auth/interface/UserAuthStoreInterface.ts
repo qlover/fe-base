@@ -1,5 +1,6 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import { LoginResponseData } from './UserAuthApiInterface';
+import { UserAuthState } from '../impl/UserAuthState';
 
 /**
  * Login status enumeration
@@ -27,9 +28,9 @@ export interface UserAuthStoreOptions<User> {
   credentialStorage?: KeyStorageInterface<string, string> | null;
 
   /**
-   * init Credential value
+   * Create a new state instance
    */
-  credential?: string;
+  createState?: (userInfo?: User, credential?: string) => UserAuthState<User>;
 }
 
 /**
@@ -54,9 +55,9 @@ export interface UserAuthStoreOptions<User> {
 export interface UserAuthStoreInterface<User> {
   /**
    * Set the key storage implementation
-   * @param keyStorage - The key-value storage implementation for persistence
+   * @param userStorage - The key-value storage implementation for persistence
    */
-  setUserStorage(keyStorage: KeyStorageInterface<string, User>): void;
+  setUserStorage(userStorage: KeyStorageInterface<string, User>): void;
 
   /**
    * Get the current key storage implementation
@@ -88,7 +89,7 @@ export interface UserAuthStoreInterface<User> {
    * Set user information
    * @param params - The user information to store
    */
-  setUserInfo(params: User): void;
+  setUserInfo(params: User | null): void;
 
   /**
    * Get stored user information

@@ -1,4 +1,3 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
 import type {
   LoginResponseData,
   UserAuthApiInterface
@@ -7,38 +6,9 @@ import {
   LOGIN_STATUS,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
-import { UserAuthStore } from './UserAuthStore';
 import { AuthServiceInterface } from '../interface/UserAuthInterface';
-import { TokenStorage, TokenStorageOptions } from '../../storage';
-
-/**
- * Token storage value type definition
- *
- * Significance: Provides flexible storage configuration options
- * Core idea: Union type supporting both direct storage instances and configuration objects
- * Main function: Enable pluggable storage strategies for authentication tokens
- * Main purpose: Support different storage backends (localStorage, sessionStorage, memory, etc.)
- *
- * @example
- * // Using direct storage instance
- * const storage: TokenStorageValueType<string, User> = new TokenStorage('user_key');
- *
- * // Using configuration object
- * const storageConfig: TokenStorageValueType<string, User> = {
- *   key: 'user_data',
- *   expiresIn: 'month',
- *   storage: localStorage
- * };
- */
-type TokenStorageValueType<Key, Value> =
-  | KeyStorageInterface<Key, Value>
-  | (TokenStorageOptions<Key> & {
-      /**
-       * Storage key identifier
-       * @default `auth_token`
-       */
-      key: Key;
-    });
+import { PickUser, UserAuthState } from './UserAuthState';
+import { createStore, TokenStorageValueType } from './createStore';
 
 /**
  * User authentication service configuration options
@@ -49,34 +19,66 @@ type TokenStorageValueType<Key, Value> =
  * Main purpose: Provide flexible authentication service initialization
  *
  * @example
- * const options: UserAuthOptions<User> = {
- *   api: new UserAuthApi(),
+ * // Basic configuration
+ * const basicOptions: UserAuthOptions<User> = {};
+ *
+ * // Complete configuration with all options
+ * const completeOptions: UserAuthOptions<User> = {
+ *   store: customStore,
  *   userStorage: {
  *     key: 'user_profile',
+ *     storage: localStorage,
  *     expiresIn: 'week'
  *   },
  *   credentialStorage: {
  *     key: 'auth_token',
+ *     storage: sessionStorage,
+ *     expiresIn: 'day'
+ *   },
+ *   href: 'https://app.example.com/callback?access_token=abc123&user_id=456',
+ *   tokenKey: 'access_token'
+ * };
+ *
+ * // OAuth configuration
+ * const oauthOptions: UserAuthOptions<User> = {
+ *   userStorage: {
+ *     key: 'oauth_user',
+ *     storage: localStorage,
  *     expiresIn: 'month'
+ *   },
+ *   credentialStorage: {
+ *     key: 'oauth_token',
+ *     storage: localStorage,
+ *     expiresIn: 'week'
  *   },
  *   href: window.location.href,
  *   tokenKey: 'access_token'
  * };
+ *
+ * // Session-only configuration (no persistence)
+ * const sessionOptions: UserAuthOptions<User> = {
+ *   userStorage: false,
+ *   credentialStorage: false
+ * };
+ *
+ * // Custom storage backends
+ * const customStorageOptions: UserAuthOptions<User> = {
+ *   userStorage: {
+ *     key: 'encrypted_user',
+ *     storage: new EncryptedStorage(),
+ *     expiresIn: 'week'
+ *   },
+ *   credentialStorage: {
+ *     key: 'secure_token',
+ *     storage: new SecureStorage(),
+ *     expiresIn: 'day'
+ *   }
+ * };
  */
-export interface UserAuthOptions<User, Key = string> {
-  /**
-   * Authentication API service implementation
-   *
-   * Handles HTTP requests for authentication operations including:
-   * - User login and registration
-   * - User information retrieval
-   * - Token validation and refresh
-   * - Logout operations
-   *
-   * @param api - API service implementing UserAuthApiInterface
-   */
-  api: UserAuthApiInterface<User>;
-
+export interface UserAuthOptions<
+  State extends UserAuthState<unknown>,
+  Key = string
+> {
   /**
    * Authentication state store implementation
    *
@@ -87,8 +89,18 @@ export interface UserAuthOptions<User, Key = string> {
    * - Error state handling
    *
    * @param store - Store implementation, defaults to UserAuthStore if not provided
+   *
+   * @example
+   * // Use default store
+   * const options1: UserAuthOptions<User> = {};
+   *
+   * // Use custom store
+   * const customStore = new CustomUserAuthStore();
+   * const options2: UserAuthOptions<User> = {
+   *   store: customStore
+   * };
    */
-  store?: UserAuthStoreInterface<User>;
+  store?: UserAuthStoreInterface<PickUser<State>>;
 
   /**
    * User information storage configuration
@@ -102,8 +114,38 @@ export interface UserAuthOptions<User, Key = string> {
    *
    * @param userStorage - Storage configuration or false to disable
    * @default TokenStorage with memory backend
+   *
+   * @example
+   * // localStorage with 1 week expiration
+   * userStorage: {
+   *   key: 'user_profile',
+   *   storage: localStorage,
+   *   expiresIn: 'week'
+   * }
+   *
+   * // sessionStorage (expires when tab closes)
+   * userStorage: {
+   *   key: 'session_user',
+   *   storage: sessionStorage
+   * }
+   *
+   * // Custom storage with numeric expiration (milliseconds)
+   * userStorage: {
+   *   key: 'app_user',
+   *   storage: customStorage,
+   *   expiresIn: 7 * 24 * 60 * 60 * 1000 // 1 week in ms
+   * }
+   *
+   * // Disable user storage (memory only)
+   * userStorage: false
+   *
+   * // Memory storage with expiration
+   * userStorage: {
+   *   key: 'temp_user',
+   *   expiresIn: 'day'
+   * }
    */
-  userStorage?: TokenStorageValueType<Key, User> | false;
+  userStorage?: TokenStorageValueType<Key, PickUser<State>> | false;
 
   /**
    * Authentication credential storage configuration
@@ -118,8 +160,40 @@ export interface UserAuthOptions<User, Key = string> {
    *
    * @param credentialStorage - Storage configuration or false to disable
    * @default TokenStorage with memory backend
+   *
+   * @example
+   * // Secure token storage with sessionStorage
+   * credentialStorage: {
+   *   key: 'auth_token',
+   *   storage: sessionStorage,
+   *   expiresIn: 'day'
+   * }
+   *
+   * // Long-term token storage
+   * credentialStorage: {
+   *   key: 'refresh_token',
+   *   storage: localStorage,
+   *   expiresIn: 'month'
+   * }
+   *
+   * // Short-term token storage (15 minutes)
+   * credentialStorage: {
+   *   key: 'access_token',
+   *   storage: sessionStorage,
+   *   expiresIn: 15 * 60 * 1000 // 15 minutes in ms
+   * }
+   *
+   * // Disable credential storage (memory only)
+   * credentialStorage: false
+   *
+   * // Custom secure storage
+   * credentialStorage: {
+   *   key: 'jwt_token',
+   *   storage: new EncryptedStorage(),
+   *   expiresIn: 'week'
+   * }
    */
-  credentialStorage?: TokenStorageValueType<Key, string> | false;
+  credentialStorage?: TokenStorageValueType<string, string> | false;
 
   /**
    * URL for token extraction
@@ -131,7 +205,22 @@ export interface UserAuthOptions<User, Key = string> {
    * - Automatically stores extracted token in credential storage
    *
    * @param href - Complete URL string containing token parameters
-   * @example 'https://app.example.com/callback?access_token=abc123'
+   *
+   * @example
+   * // OAuth callback URL
+   * href: 'https://app.example.com/callback?access_token=abc123&state=xyz'
+   *
+   * // Magic link URL
+   * href: 'https://app.example.com/verify?token=magic_token_456&email=user@example.com'
+   *
+   * // Current page URL (for SPA routing)
+   * href: window.location.href
+   *
+   * // URL with multiple parameters
+   * href: 'https://app.example.com/auth?access_token=jwt_token&refresh_token=refresh_jwt&expires_in=3600'
+   *
+   * // URL with fragment (hash-based routing)
+   * href: 'https://app.example.com/#/callback?access_token=hash_token'
    */
   href?: string;
 
@@ -145,77 +234,50 @@ export interface UserAuthOptions<User, Key = string> {
    *
    * @param tokenKey - Parameter name in URL query string
    * @default credentialStorage.key || 'auth_token'
+   *
    * @example
-   * // For URL: https://example.com?access_token=123
+   * // Standard OAuth token parameter
    * tokenKey: 'access_token'
+   * // URL: https://example.com?access_token=123
+   *
+   * // Custom token parameter
+   * tokenKey: 'jwt'
+   * // URL: https://example.com?jwt=eyJhbGciOiJIUzI1NiJ9...
+   *
+   * // Magic link token
+   * tokenKey: 'verification_token'
+   * // URL: https://example.com?verification_token=magic_123
+   *
+   * // API key parameter
+   * tokenKey: 'api_key'
+   * // URL: https://example.com?api_key=key_123
+   *
+   * // Session token
+   * tokenKey: 'session_id'
+   * // URL: https://example.com?session_id=sess_456
    */
   tokenKey?: string;
 }
 
-const defaultCredentialKey = 'auth_token';
-
-/**
- * Extract property value from URL query parameters
- *
- * Significance: Utility function for secure URL parameter extraction
- * Core idea: Safe parsing of URL query parameters with error handling
- * Main function: Extract and decode specific parameter values from URLs
- * Main purpose: Support OAuth redirects and magic link authentication flows
- *
- * @param href - Complete URL string to parse
- * @param key - Parameter name to extract
- * @returns Decoded parameter value or empty string if not found/invalid
- *
- * @example
- * const token = getURLProperty(
- *   'https://app.com/callback?token=abc123&state=xyz',
- *   'token'
- * );
- * console.log(token); // 'abc123'
- */
-function getURLProperty(href: string, key: string): string {
-  try {
-    const queryString = href.split('?')[1];
-
-    if (!queryString) {
-      return '';
-    }
-
-    const params = new URLSearchParams(queryString);
-    const rawValue = params.get(key);
-
-    if (rawValue == null || rawValue === '') {
-      return '';
-    }
-
-    // Decode and guard against malformed URI sequences
-    try {
-      return decodeURIComponent(rawValue);
-    } catch {
-      return '';
-    }
-  } catch {
-    return '';
-  }
-}
+export type InferState<T> =
+  T extends UserAuthState<unknown>
+    ? T // If T is a State, use it directly
+    : UserAuthState<T>;
 
 /**
  * User authentication service implementation
  *
- * Significance: Core orchestration service for complete authentication lifecycle
- * Core idea: Unified service layer coordinating API calls, state management, and storage
- * Main function: Provide high-level authentication operations with consistent error handling
- * Main purpose: Simplify authentication integration with pluggable architecture
+ * Significance: Core orchestration service for complete authentication lifecycle management
+ * Core idea: Unified service layer that coordinates API calls, state management, and persistent storage
+ * Main function: Provide high-level authentication operations with consistent error handling and state synchronization
+ * Main purpose: Simplify authentication integration with pluggable architecture supporting various backends and storage options
  *
  * @example
- * // Basic setup
- * const authService = new UserAuthService({
- *   api: new UserAuthApi()
- * });
+ * // Basic setup with minimal configuration
+ * const authService = new UserAuthService(new UserAuthApi(), {});
  *
- * // Advanced setup with custom storage
- * const authService = new UserAuthService({
- *   api: new UserAuthApi(),
+ * // Advanced setup with custom storage and OAuth support
+ * const authService = new UserAuthService(new UserAuthApi(), {
  *   userStorage: {
  *     key: 'user_profile',
  *     storage: localStorage,
@@ -225,172 +287,180 @@ function getURLProperty(href: string, key: string): string {
  *     key: 'auth_token',
  *     storage: sessionStorage,
  *     expiresIn: 'day'
- *   }
- * });
- *
- * // OAuth redirect handling
- * const authService = new UserAuthService({
- *   api: new UserAuthApi(),
+ *   },
  *   href: window.location.href,
  *   tokenKey: 'access_token'
  * });
  *
- * // Usage
+ * // OAuth integration setup
+ * const oauthService = new UserAuthService(new OAuthApi(), {
+ *   userStorage: {
+ *     key: 'oauth_user',
+ *     storage: localStorage,
+ *     expiresIn: 'month'
+ *   },
+ *   credentialStorage: {
+ *     key: 'oauth_token',
+ *     storage: localStorage,
+ *     expiresIn: 'week'
+ *   },
+ *   href: 'https://app.example.com/oauth/callback?access_token=oauth_123&user_id=456',
+ *   tokenKey: 'access_token'
+ * });
+ *
+ * // Session-only setup (no persistence)
+ * const sessionService = new UserAuthService(new SessionApi(), {
+ *   userStorage: false,
+ *   credentialStorage: false
+ * });
+ *
+ * // Enterprise setup with encrypted storage
+ * const enterpriseService = new UserAuthService(new EnterpriseApi(), {
+ *   userStorage: {
+ *     key: 'enterprise_user',
+ *     storage: new EncryptedStorage(),
+ *     expiresIn: 'day'
+ *   },
+ *   credentialStorage: {
+ *     key: 'enterprise_token',
+ *     storage: new SecureStorage(),
+ *     expiresIn: 'hour'
+ *   }
+ * });
+ *
+ * // Complete authentication flow
  * try {
  *   await authService.login({ email: 'user@example.com', password: 'password' });
- *
  *   if (authService.isAuthenticated()) {
  *     const user = await authService.userInfo();
  *     console.log('Logged in as:', user.name);
  *   }
  * } catch (error) {
- *   console.error('Login failed:', error);
+ *   console.error('Authentication failed:', error);
  * }
  */
-export class UserAuthService<
-  User,
-  Opt extends UserAuthOptions<User> = UserAuthOptions<User>
-> implements AuthServiceInterface<User>
-{
+export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
   /**
    * Initialize user authentication service
    *
-   * Performs comprehensive setup of the authentication system:
-   * 1. Validates required API service
-   * 2. Configures storage implementations
-   * 3. Initializes store with storage backends
-   * 4. Extracts tokens from URL if configured
-   * 5. Links API service with store
+   * Significance: Essential constructor that establishes the complete authentication system
+   * Core idea: Comprehensive setup orchestrating API, storage, and state management components
+   * Main function: Validate dependencies, configure storage backends, and initialize authentication store
+   * Main purpose: Create a fully functional authentication service with proper error handling and state synchronization
    *
-   * @param options - Authentication service configuration options
+   * @param api - Authentication API service implementing UserAuthApiInterface for HTTP operations
+   * @param options - Configuration options for storage, URL token extraction, and service behavior
    * @throws {Error} When required API service is not provided
    *
    * @example
-   * const authService = new UserAuthService({
-   *   api: new UserAuthApi(),
-   *   userStorage: { key: 'user', storage: localStorage },
-   *   credentialStorage: { key: 'token', storage: sessionStorage }
+   * // Basic initialization
+   * const authService = new UserAuthService(new UserAuthApi(), {});
+   *
+   * // Advanced initialization with custom storage
+   * const authService = new UserAuthService(new UserAuthApi(), {
+   *   userStorage: { key: 'user', storage: localStorage, expiresIn: 'week' },
+   *   credentialStorage: { key: 'token', storage: sessionStorage, expiresIn: 'day' },
+   *   href: window.location.href,
+   *   tokenKey: 'access_token'
+   * });
+   *
+   * // OAuth callback initialization
+   * const oauthService = new UserAuthService(new OAuthApi(), {
+   *   userStorage: {
+   *     key: 'oauth_user',
+   *     storage: localStorage,
+   *     expiresIn: 'month'
+   *   },
+   *   credentialStorage: {
+   *     key: 'oauth_token',
+   *     storage: localStorage,
+   *     expiresIn: 'week'
+   *   },
+   *   href: 'https://myapp.com/oauth/callback?access_token=abc123&refresh_token=def456',
+   *   tokenKey: 'access_token'
+   * });
+   *
+   * // Enterprise initialization with encrypted storage
+   * const enterpriseService = new UserAuthService(new EnterpriseApi(), {
+   *   userStorage: {
+   *     key: 'enterprise_user',
+   *     storage: new EncryptedStorage(),
+   *     expiresIn: 'day'
+   *   },
+   *   credentialStorage: {
+   *     key: 'enterprise_token',
+   *     storage: new SecureStorage(),
+   *     expiresIn: 'hour'
+   *   }
+   * });
+   *
+   * // Session-only initialization (no persistence)
+   * const sessionService = new UserAuthService(new SessionApi(), {
+   *   userStorage: false,
+   *   credentialStorage: false
+   * });
+   *
+   * // Custom store initialization
+   * const customStore = new CustomUserAuthStore();
+   * const customService = new UserAuthService(new UserAuthApi(), {
+   *   store: customStore,
+   *   userStorage: { key: 'custom_user', expiresIn: 'week' }
    * });
    */
-  constructor(protected readonly options: Opt = {} as Opt) {
-    const {
-      api,
-      store,
-      tokenKey,
-      userStorage,
-      credentialStorage,
-      href = ''
-    } = options;
-
+  constructor(
+    public readonly api: UserAuthApiInterface<InferState<T>>,
+    protected readonly options: UserAuthOptions<InferState<T>>
+  ) {
     // Validate required API service
     if (!api) {
       throw new Error('UserAuthService: api is required');
     }
 
-    const _userStorage = this.parseStorage<User>(userStorage);
-    const _credentialStorage = this.parseStorage<string>(credentialStorage);
+    const _store = createStore<T>(options);
 
-    const _store = store || new UserAuthStore();
+    if (!api.getStore()) {
+      api.setStore(_store as UserAuthStoreInterface<InferState<T>>);
+    }
 
     // Assign the store to options so the getter can access it
     this.options.store = _store;
-
-    if (!_store.getUserStorage() && _userStorage) {
-      _store.setUserStorage(_userStorage);
-    }
-
-    if (!_store.getCredentialStorage() && _credentialStorage) {
-      _store.setCredentialStorage(_credentialStorage);
-    }
-
-    const urlCredential = this.getURLCredential(
-      href,
-      tokenKey || _credentialStorage?.key || defaultCredentialKey
-    );
-
-    if (urlCredential) {
-      _store.setCredential(urlCredential);
-    }
-
-    if (!options.api.getStore()) {
-      options.api.setStore(_store);
-    }
-  }
-
-  /**
-   * Extract authentication credential from URL
-   *
-   * @param href - URL string to parse for credentials
-   * @param key - Parameter name to extract from URL
-   * @returns Extracted credential or empty string if not found
-   */
-  protected getURLCredential(href?: string, key?: string): string {
-    if (!href || !key) {
-      return '';
-    }
-
-    return getURLProperty(href, key);
-  }
-
-  /**
-   * Parse and create storage implementation from configuration
-   *
-   * Converts storage configuration into concrete storage instances:
-   * - Returns null if storage is disabled (false)
-   * - Returns existing instance if already a storage implementation
-   * - Creates new TokenStorage instance from configuration object
-   *
-   * @param value - Storage configuration, instance, or false to disable
-   * @returns Storage implementation or null if disabled
-   */
-  protected parseStorage<Value>(
-    value?: TokenStorageValueType<string, Value> | false
-  ): KeyStorageInterface<string, Value> | null {
-    if (value === false) {
-      return null;
-    }
-
-    if (value instanceof KeyStorageInterface) {
-      return value;
-    }
-
-    const { key, ...options } = value ?? {};
-    return new TokenStorage(key!, options);
   }
 
   /**
    * Get the authentication store instance
    *
-   * @returns The configured user authentication store
-   */
-  get store(): UserAuthStoreInterface<User> {
-    return this.options.store!;
-  }
-
-  /**
-   * Get the authentication API instance
+   * Significance: Provides access to the centralized authentication state management
+   * Core idea: Expose the configured store for direct state access and manipulation
+   * Main function: Return the properly configured UserAuthStore instance
+   * Main purpose: Enable direct access to authentication state for advanced use cases
    *
-   * @returns The configured user authentication API service
+   * @returns The configured user authentication store instance
+   *
+   * @example
+   * const store = authService.store;
+   * const loginStatus = store.getLoginStatus();
+   * const userInfo = store.getUserInfo();
    */
-  get api(): UserAuthApiInterface<User> {
-    return this.options.api!;
+  get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
+    return this.options.store as UserAuthStoreInterface<
+      PickUser<InferState<T>>
+    >;
   }
 
   /**
    * Authenticate user with credentials
    *
-   * Performs complete login flow with state management:
-   * 1. Sets authentication status to loading
-   * 2. Calls API login endpoint with credentials
-   * 3. Fetches complete user information
-   * 4. Updates store with success state and user data
-   * 5. Handles errors and updates store accordingly
+   * Significance: Primary authentication method for user login operations
+   * Core idea: Complete login flow with comprehensive state management and error handling
+   * Main function: Orchestrate API login call, user info retrieval, and state updates
+   * Main purpose: Provide secure, reliable user authentication with proper state synchronization
    *
-   * @param params - Login credentials (email/password, OAuth tokens, etc.)
-   * @returns Promise resolving to login response data containing tokens
-   * @throws {Error} When login fails due to invalid credentials or network issues
+   * @param params - Login credentials including email/password, OAuth tokens, or other authentication data
+   * @returns Promise resolving to login response data containing authentication tokens and metadata
+   * @throws {Error} When login fails due to invalid credentials, network issues, or user info retrieval errors
    *
    * @example
+   * // Email/password login
    * try {
    *   const response = await authService.login({
    *     email: 'user@example.com',
@@ -400,6 +470,88 @@ export class UserAuthService<
    * } catch (error) {
    *   console.error('Login failed:', error.message);
    * }
+   *
+   * // OAuth token login
+   * try {
+   *   const response = await authService.login({
+   *     oauthToken: 'oauth-token-from-provider',
+   *     provider: 'google'
+   *   });
+   *   console.log('OAuth login successful');
+   * } catch (error) {
+   *   console.error('OAuth login failed:', error.message);
+   * }
+   *
+   * // Username/password login
+   * try {
+   *   const response = await authService.login({
+   *     username: 'johndoe',
+   *     password: 'mypassword123'
+   *   });
+   * } catch (error) {
+   *   console.error('Username login failed:', error.message);
+   * }
+   *
+   * // Phone number login with OTP
+   * try {
+   *   const response = await authService.login({
+   *     phoneNumber: '+1234567890',
+   *     otp: '123456'
+   *   });
+   * } catch (error) {
+   *   console.error('Phone login failed:', error.message);
+   * }
+   *
+   * // Magic link login
+   * try {
+   *   const response = await authService.login({
+   *     magicToken: 'magic-link-token-from-email'
+   *   });
+   * } catch (error) {
+   *   console.error('Magic link login failed:', error.message);
+   * }
+   *
+   * // Social login with additional data
+   * try {
+   *   const response = await authService.login({
+   *     socialToken: 'facebook-access-token',
+   *     provider: 'facebook',
+   *     grantedScopes: ['email', 'public_profile']
+   *   });
+   * } catch (error) {
+   *   console.error('Social login failed:', error.message);
+   * }
+   *
+   * // Enterprise SSO login
+   * try {
+   *   const response = await authService.login({
+   *     samlResponse: 'base64-encoded-saml-response',
+   *     relayState: 'original-url'
+   *   });
+   * } catch (error) {
+   *   console.error('SSO login failed:', error.message);
+   * }
+   *
+   * // API key login
+   * try {
+   *   const response = await authService.login({
+   *     apiKey: 'api-key-123',
+   *     apiSecret: 'api-secret-456'
+   *   });
+   * } catch (error) {
+   *   console.error('API key login failed:', error.message);
+   * }
+   *
+   * // Two-factor authentication login
+   * try {
+   *   const response = await authService.login({
+   *     email: 'user@example.com',
+   *     password: 'password123',
+   *     totpCode: '123456'
+   *   });
+   * } catch (error) {
+   *   console.error('2FA login failed:', error.message);
+   * }
    */
   async login(params: unknown): Promise<LoginResponseData> {
     this.store.startAuth();
@@ -408,6 +560,10 @@ export class UserAuthService<
       const result = await this.api.login(params);
 
       const user = await this.userInfo(result);
+
+      if (!user) {
+        throw new Error('UserAuthService: userInfo is null');
+      }
 
       this.store.authSuccess(user, result);
 
@@ -421,28 +577,63 @@ export class UserAuthService<
   /**
    * Get current user information
    *
-   * Fetches fresh user data from API and merges with stored information:
-   * - Calls API to get latest user information
-   * - Merges API response with locally stored user data
-   * - Prioritizes API data over stored data for conflicts
+   * Significance: Essential method for retrieving and synchronizing user profile data
+   * Core idea: Fetch fresh user data from API and intelligently merge with stored information
+   * Main function: Call API for latest user info and merge with local data using API data precedence
+   * Main purpose: Ensure user information is current while preserving local modifications and handling data conflicts
    *
-   * @param loginData - Optional login response data containing tokens for API calls
-   * @returns Promise resolving to complete user information object
-   * @throws {Error} When user info fetch fails or user is not authenticated
+   * @param loginData - Optional login response data containing tokens for API authentication
+   * @returns Promise resolving to complete user information object with merged data
+   * @throws {Error} When user info fetch fails due to network issues, authentication errors, or API failures
    *
    * @example
-   * const user = await authService.userInfo();
-   * console.log('User profile:', {
-   *   id: user.id,
-   *   name: user.name,
-   *   email: user.email
-   * });
+   * // Get current user info
+   * try {
+   *   const user = await authService.userInfo();
+   *   console.log('User profile:', {
+   *     id: user.id,
+   *     name: user.name,
+   *     email: user.email,
+   *     roles: user.roles
+   *   });
+   * } catch (error) {
+   *   console.error('Failed to fetch user info:', error.message);
+   * }
+   *
+   * // Get user info with specific login data
+   * const loginResponse = await authService.login(credentials);
+   * const user = await authService.userInfo(loginResponse);
+   *
+   * // Get user info with custom login data
+   * const customLoginData = {
+   *   token: 'custom-jwt-token',
+   *   refreshToken: 'custom-refresh-token',
+   *   expiresIn: 3600
+   * };
+   * const user = await authService.userInfo(customLoginData);
+   *
+   * // Get user info with OAuth response
+   * const oauthResponse = {
+   *   token: 'oauth-access-token',
+   *   refreshToken: 'oauth-refresh-token',
+   *   expiresIn: 7200,
+   *   scope: 'read write'
+   * };
+   * const user = await authService.userInfo(oauthResponse);
+   *
+   * // Get user info after token refresh
+   * const refreshedData = await tokenService.refreshToken();
+   * const user = await authService.userInfo(refreshedData);
    */
-  async userInfo(loginData?: LoginResponseData): Promise<User> {
+  async userInfo(
+    loginData?: LoginResponseData
+  ): Promise<PickUser<InferState<T>>> {
     const result = await this.api.getUserInfo(loginData);
 
+    const userInfo = this.store.getUserInfo();
+
     return {
-      ...this.store.getUserInfo(),
+      ...userInfo,
       ...result
     };
   }
@@ -450,22 +641,51 @@ export class UserAuthService<
   /**
    * Logout current user
    *
-   * Performs complete logout flow:
-   * 1. Calls API logout endpoint to invalidate server-side session
-   * 2. Clears all local authentication state
-   * 3. Removes data from persistent storage
-   * 4. Resets store to initial state
+   * Significance: Critical security operation for terminating user sessions
+   * Core idea: Complete logout flow ensuring both server-side and client-side session termination
+   * Main function: Call API logout endpoint and comprehensively clear all local authentication state
+   * Main purpose: Provide secure logout that invalidates sessions and removes sensitive data from storage
    *
-   * @returns Promise that resolves when logout is complete
-   * @throws {Error} When logout API call fails (local state is still cleared)
+   * @returns Promise that resolves when logout process is complete
+   * @throws {Error} When logout API call fails (note: local state is still cleared for security)
    *
    * @example
+   * // Standard logout
    * try {
    *   await authService.logout();
    *   console.log('Successfully logged out');
+   *   // Redirect to login page
    * } catch (error) {
-   *   console.error('Logout error:', error.message);
-   *   // User is still logged out locally even if API call failed
+   *   console.error('Logout API error:', error.message);
+   *   // User is still logged out locally for security
+   * }
+   *
+   * // Logout with cleanup
+   * await authService.logout();
+   * localStorage.removeItem('user-preferences');
+   * sessionStorage.clear();
+   * window.location.href = '/login';
+   *
+   * // Logout with error handling
+   * try {
+   *   await authService.logout();
+   *   // Successful logout
+   *   showSuccessMessage('Logged out successfully');
+   * } catch (error) {
+   *   // API error, but user is still logged out locally
+   *   console.warn('Logout API failed, but user logged out locally');
+   * } finally {
+   *   // Always redirect after logout attempt
+   *   router.push('/login');
+   * }
+   *
+   * // Logout from all devices (if API supports it)
+   * try {
+   *   await authService.logout();
+   *   // API call to invalidate all user sessions
+   *   await api.logoutAllDevices();
+   * } catch (error) {
+   *   console.error('Failed to logout from all devices:', error.message);
    * }
    */
   async logout(): Promise<void> {
@@ -480,27 +700,133 @@ export class UserAuthService<
   /**
    * Register a new user account
    *
-   * Performs complete registration flow with automatic login:
-   * 1. Sets authentication status to loading
-   * 2. Calls API register endpoint with user data
-   * 3. Fetches complete user information for new account
-   * 4. Updates store with success state and user data
-   * 5. Handles errors and updates store accordingly
+   * Significance: Essential method for user onboarding and account creation
+   * Core idea: Complete registration flow with automatic authentication upon successful account creation
+   * Main function: Call API register endpoint, fetch user info, and establish authenticated session
+   * Main purpose: Streamline user registration by combining account creation with immediate authentication
    *
-   * @param params - Registration data (email, password, profile info, etc.)
-   * @returns Promise resolving to registration response data (same structure as login)
-   * @throws {Error} When registration fails due to validation errors or conflicts
+   * @param params - Registration data including email, password, profile information, and validation data
+   * @returns Promise resolving to registration response data with same structure as login response
+   * @throws {Error} When registration fails due to validation errors, conflicts, or user info retrieval issues
    *
    * @example
+   * // Basic user registration
    * try {
    *   const response = await authService.register({
    *     email: 'newuser@example.com',
    *     password: 'securePassword123',
-   *     name: 'John Doe'
+   *     name: 'John Doe',
+   *     acceptTerms: true
    *   });
    *   console.log('Registration successful, token:', response.token);
    * } catch (error) {
    *   console.error('Registration failed:', error.message);
+   * }
+   *
+   * // Registration with profile data
+   * try {
+   *   const response = await authService.register({
+   *     email: 'user@example.com',
+   *     password: 'password123',
+   *     profile: {
+   *       firstName: 'John',
+   *       lastName: 'Doe',
+   *       company: 'Acme Corp',
+   *       phone: '+1234567890'
+   *     },
+   *     preferences: {
+   *       newsletter: true,
+   *       notifications: false
+   *     }
+   *   });
+   * } catch (error) {
+   *   if (error.message.includes('email already exists')) {
+   *     console.error('Email already registered');
+   *   }
+   * }
+   *
+   * // Registration with username
+   * try {
+   *   const response = await authService.register({
+   *     username: 'johndoe123',
+   *     email: 'john@example.com',
+   *     password: 'mypassword123',
+   *     displayName: 'John Doe'
+   *   });
+   * } catch (error) {
+   *   console.error('Username registration failed:', error.message);
+   * }
+   *
+   * // Registration with phone number
+   * try {
+   *   const response = await authService.register({
+   *     phoneNumber: '+1234567890',
+   *     password: 'password123',
+   *     name: 'John Doe',
+   *     countryCode: 'US'
+   *   });
+   * } catch (error) {
+   *   console.error('Phone registration failed:', error.message);
+   * }
+   *
+   * // Social registration
+   * try {
+   *   const response = await authService.register({
+   *     socialToken: 'google-oauth-token',
+   *     provider: 'google',
+   *     additionalInfo: {
+   *       referralCode: 'FRIEND123',
+   *       source: 'social_media'
+   *     }
+   *   });
+   * } catch (error) {
+   *   console.error('Social registration failed:', error.message);
+   * }
+   *
+   * // Registration with validation
+   * try {
+   *   const response = await authService.register({
+   *     email: 'user@example.com',
+   *     password: 'password123',
+   *     passwordConfirmation: 'password123',
+   *     name: 'John Doe',
+   *     birthDate: '1990-01-01',
+   *     acceptTerms: true,
+   *     acceptPrivacy: true,
+   *     emailVerificationRequired: true
+   *   });
+   * } catch (error) {
+   *   console.error('Registration validation failed:', error.message);
+   * }
+   *
+   * // Enterprise registration
+   * try {
+   *   const response = await authService.register({
+   *     email: 'admin@company.com',
+   *     password: 'enterprisePassword123',
+   *     organizationName: 'Acme Corporation',
+   *     organizationDomain: 'acme.com',
+   *     role: 'admin',
+   *     inviteCode: 'ENTERPRISE_INVITE_123'
+   *   });
+   * } catch (error) {
+   *   console.error('Enterprise registration failed:', error.message);
+   * }
+   *
+   * // Registration with custom fields
+   * try {
+   *   const response = await authService.register({
+   *     email: 'user@example.com',
+   *     password: 'password123',
+   *     customFields: {
+   *       department: 'Engineering',
+   *       jobTitle: 'Software Developer',
+   *       experience: '5-10 years',
+   *       skills: ['JavaScript', 'React', 'Node.js']
+   *     }
+   *   });
+   * } catch (error) {
+   *   console.error('Custom field registration failed:', error.message);
    * }
    */
   async register(params: unknown): Promise<LoginResponseData> {
@@ -511,7 +837,11 @@ export class UserAuthService<
 
       const user = await this.userInfo(result as LoginResponseData);
 
-      this.store.authSuccess({ ...(result as LoginResponseData), ...user });
+      if (!user) {
+        throw new Error('UserAuthService: userInfo is null');
+      }
+
+      this.store.authSuccess(user, result);
 
       return result as LoginResponseData;
     } catch (error) {
@@ -523,22 +853,40 @@ export class UserAuthService<
   /**
    * Check if user is currently authenticated
    *
-   * Performs comprehensive authentication verification:
-   * 1. Checks if login status is SUCCESS
-   * 2. Verifies user information exists in store
-   * 3. Both conditions must be true for authenticated state
+   * Significance: Critical method for authentication state verification and access control
+   * Core idea: Comprehensive authentication check combining login status and user data presence
+   * Main function: Verify both successful login status and valid user information existence
+   * Main purpose: Provide reliable authentication state check for routing, UI rendering, and API access decisions
    *
-   * @returns True if user is fully authenticated, false otherwise
+   * @returns True if user is fully authenticated with valid session, false otherwise
    *
    * @example
+   * // Basic authentication check
    * if (authService.isAuthenticated()) {
-   *   // User is logged in, can access protected resources
+   *   // User is logged in, show authenticated UI
    *   const user = await authService.userInfo();
    *   console.log('Welcome back,', user.name);
    * } else {
    *   // User needs to log in
    *   console.log('Please log in to continue');
+   *   window.location.href = '/login';
    * }
+   *
+   * // Route protection
+   * const protectedRoute = () => {
+   *   if (!authService.isAuthenticated()) {
+   *     throw new Error('Authentication required');
+   *   }
+   *   return renderDashboard();
+   * };
+   *
+   * // API call protection
+   * const makeApiCall = async () => {
+   *   if (!authService.isAuthenticated()) {
+   *     await authService.login(savedCredentials);
+   *   }
+   *   return api.getData();
+   * };
    */
   isAuthenticated(): boolean {
     return (
