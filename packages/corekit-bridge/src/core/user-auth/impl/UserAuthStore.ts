@@ -1,116 +1,103 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import type { KeyStorageInterface } from '@qlover/fe-corekit';
 import { StoreInterface } from '../../store-state';
+import type { LoginResponseData } from '../interface/UserAuthApiInterface';
+import { UserAuthState, PickUser } from './UserAuthState';
 import {
   LOGIN_STATUS,
   UserAuthStoreOptions,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
-import { LoginResponseData } from '../interface/UserAuthApiInterface';
-
-/**
- * User authentication store state container
- *
- * Significance: Encapsulates all authentication-related state in a single object
- * Core idea: Immutable state container for user authentication data
- * Main function: Hold user information, credentials, login status, and error state
- * Main purpose: Provide type-safe state management for authentication operations
- *
- * @example
- * const state = new UserAuthStoreState<User>(
- *   { id: '123', name: 'John' },
- *   'auth-token-123'
- * );
- * console.log(state.userInfo); // { id: '123', name: 'John' }
- * console.log(state.credential); // 'auth-token-123'
- */
-export class UserAuthStoreState<User> {
-  constructor(
-    /**
-     * User information object containing profile data
-     * @param userInfo - The user profile data or null if not authenticated
-     */
-    public userInfo: User | null = null,
-
-    /**
-     * Authentication credential (typically a token)
-     * @param credential - The authentication credential string or null if not available
-     */
-    public credential: string | null = null
-  ) {}
-
-  /**
-   * Current authentication status
-   * Tracks the state of authentication operations (loading, success, failed)
-   */
-  loginStatus: LOGIN_STATUS | null = null;
-
-  /**
-   * Authentication error information
-   *
-   * Stores error details when authentication operations fail,
-   * such as login failures, network errors, or user info fetch errors
-   */
-  error: unknown | null = null;
-}
+import { createState } from './createState';
 
 /**
  * User authentication store implementation
  *
- * Significance: Central state management for user authentication system
- * Core idea: Reactive store with persistent storage capabilities for auth state
- * Main function: Manage authentication state, user data, and credential persistence
- * Main purpose: Provide reliable state management with storage synchronization for authentication
+ * Significance: Central state management system for user authentication with persistent storage capabilities
+ * Core idea: Reactive store that synchronizes authentication state between memory and persistent storage
+ * Main function: Manage authentication state, user data, and credential persistence with real-time updates
+ * Main purpose: Provide reliable, observable state management with automatic storage synchronization for authentication systems
  *
  * @example
+ * // Basic store setup
  * const authStore = new UserAuthStore<User>({
  *   userStorage: new LocalStorage('user'),
  *   credentialStorage: new SessionStorage('token')
  * });
  *
- * // Set user info and persist to storage
- * authStore.setUserInfo({ id: '123', name: 'John' });
- *
- * // Start authentication process
+ * // Complete authentication flow
  * authStore.startAuth();
- *
- * // Handle successful authentication
- * authStore.authSuccess(userInfo, 'auth-token');
+ * authStore.setUserInfo({ id: '123', name: 'John Doe' });
+ * authStore.setCredential('auth-token-123');
+ * authStore.authSuccess();
  *
  * // Check authentication status
  * if (authStore.getLoginStatus() === LOGIN_STATUS.SUCCESS) {
- *   console.log('User is authenticated');
+ *   console.log('User authenticated:', authStore.getUserInfo());
  * }
+ *
+ * // Subscribe to state changes
+ * authStore.subscribe((state) => {
+ *   console.log('Auth state changed:', state);
+ * });
  */
-export class UserAuthStore<User>
-  extends StoreInterface<UserAuthStoreState<User>>
-  implements UserAuthStoreInterface<User>
+export class UserAuthStore<State extends UserAuthState<unknown>>
+  extends StoreInterface<State>
+  implements UserAuthStoreInterface<PickUser<State>>
 {
   /**
    * Initialize user authentication store
    *
-   * @param options - Configuration options for storage and initial state
+   * Significance: Essential constructor that establishes the complete authentication state management system
+   * Core idea: Comprehensive setup that initializes reactive state with optional persistent storage backends
+   * Main function: Configure storage interfaces, initialize state, and establish storage synchronization
+   * Main purpose: Create a fully functional authentication store with proper state management and persistence
+   *
+   * @param options - Configuration options for storage backends and initial state setup
    * @param options.userStorage - Storage interface for user information persistence
    * @param options.credentialStorage - Storage interface for credential persistence
-   * @param options.credential - Initial credential value
+   * @param options.createState - Optional custom state creation function
+   *
+   * @example
+   * // Basic initialization
+   * const store = new UserAuthStore<User>({});
+   *
+   * // Advanced initialization with custom storage
+   * const store = new UserAuthStore<User>({
+   *   userStorage: new LocalStorage('user_profile'),
+   *   credentialStorage: new SessionStorage('auth_token'),
+   *   createState: (user, credential) => new CustomUserAuthState(user, credential)
+   * });
    */
-  constructor(protected options: UserAuthStoreOptions<User> = {}) {
-    super(
-      () =>
-        new UserAuthStoreState(
-          options.userStorage?.get(),
-          options.credentialStorage?.get() || options.credential
-        )
-    );
+  constructor(
+    protected readonly options: UserAuthStoreOptions<PickUser<State>> = {}
+  ) {
+    super(() => createState(options));
   }
 
   /**
    * Set user storage implementation
    *
+   * Significance: Critical method for configuring persistent user data storage
+   * Core idea: Dynamic storage configuration with automatic data synchronization
+   * Main function: Replace current user storage and sync existing data with new storage
+   * Main purpose: Enable flexible storage backend switching while maintaining data consistency
+   *
    * @param userStorage - Storage interface for user information persistence
+   *
+   * @example
+   * // Switch to localStorage
+   * const localStorage = new LocalStorage('user_profile');
+   * authStore.setUserStorage(localStorage);
+   *
+   * // Switch to encrypted storage
+   * const encryptedStorage = new EncryptedStorage('secure_user');
+   * authStore.setUserStorage(encryptedStorage);
    */
-  setUserStorage(userStorage: KeyStorageInterface<string, User>): void {
-    if (this.options.userStorage !== userStorage) {
-      this.setUserInfo(userStorage.get() as User);
+  setUserStorage(
+    userStorage: KeyStorageInterface<string, PickUser<State>>
+  ): void {
+    if (this.getUserStorage() !== userStorage) {
+      this.setUserInfo(userStorage.get()!);
     }
 
     this.options.userStorage = userStorage;
@@ -119,21 +106,47 @@ export class UserAuthStore<User>
   /**
    * Get current user storage implementation
    *
+   * Significance: Provides access to the configured user data storage interface
+   * Core idea: Expose storage interface for direct access and configuration inspection
+   * Main function: Return the currently configured user storage interface
+   * Main purpose: Enable direct storage operations and configuration verification
+   *
    * @returns The user storage interface or null if not configured
+   *
+   * @example
+   * const storage = authStore.getUserStorage();
+   * if (storage) {
+   *   console.log('Storage key:', storage.key);
+   *   const userData = storage.get();
+   * }
    */
-  getUserStorage(): KeyStorageInterface<string, User> | null {
+  getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
     return this.options.userStorage || null;
   }
 
   /**
    * Set credential storage implementation
    *
+   * Significance: Critical method for configuring persistent credential storage
+   * Core idea: Dynamic credential storage configuration with automatic synchronization
+   * Main function: Replace current credential storage and sync existing credentials with new storage
+   * Main purpose: Enable flexible credential storage backend switching while maintaining security
+   *
    * @param credentialStorage - Storage interface for credential persistence
+   *
+   * @example
+   * // Switch to sessionStorage for security
+   * const sessionStorage = new SessionStorage('auth_token');
+   * authStore.setCredentialStorage(sessionStorage);
+   *
+   * // Switch to secure storage
+   * const secureStorage = new SecureStorage('credentials');
+   * authStore.setCredentialStorage(secureStorage);
    */
   setCredentialStorage(
     credentialStorage: KeyStorageInterface<string, string>
   ): void {
-    if (this.options.credentialStorage !== credentialStorage) {
+    if (this.getCredentialStorage() !== credentialStorage) {
       this.setCredential(credentialStorage.get() as string);
     }
 
@@ -143,7 +156,22 @@ export class UserAuthStore<User>
   /**
    * Get current credential storage implementation
    *
+   * Significance: Provides access to the configured credential storage interface
+   * Core idea: Expose credential storage interface for direct access and security operations
+   * Main function: Return the currently configured credential storage interface
+   * Main purpose: Enable direct credential operations and security configuration verification
+   *
    * @returns The credential storage interface or null if not configured
+   *
+   * @example
+   * const storage = authStore.getCredentialStorage();
+   * if (storage) {
+   *   console.log('Credential storage configured');
+   *   const token = storage.get();
+   *   if (token) {
+   *     console.log('Token exists in storage');
+   *   }
+   * }
    */
   getCredentialStorage(): KeyStorageInterface<string, string> | null {
     return this.options.credentialStorage || null;
@@ -152,32 +180,82 @@ export class UserAuthStore<User>
   /**
    * Set user information and persist to storage
    *
-   * Updates both the in-memory state and persistent storage with user information.
-   * Triggers state change notification to subscribers.
+   * Significance: Primary method for updating user profile data with automatic persistence
+   * Core idea: Atomic update operation that synchronizes memory state with persistent storage
+   * Main function: Update in-memory user data and automatically persist to configured storage
+   * Main purpose: Ensure user information consistency between memory and storage with state change notifications
    *
-   * @param params - User information object to store
+   * @param params - User information object to store, or null to clear user data
+   *
+   * @example
+   * // Set complete user profile
+   * authStore.setUserInfo({
+   *   id: '123',
+   *   name: 'John Doe',
+   *   email: 'john@example.com',
+   *   roles: ['user', 'admin']
+   * });
+   *
+   * // Clear user information
+   * authStore.setUserInfo(null);
+   *
+   * // Update partial user data
+   * const currentUser = authStore.getUserInfo();
+   * authStore.setUserInfo({
+   *   ...currentUser,
+   *   lastLogin: new Date().toISOString()
+   * });
    */
-  setUserInfo(params: User): void {
+  setUserInfo(params: PickUser<State> | null): void {
     this.emit({ ...this.state, userInfo: params });
-    this.getUserStorage()?.set(params);
+
+    if (params) {
+      this.getUserStorage()?.set(params);
+    }
   }
 
   /**
    * Get current user information
    *
+   * Significance: Essential method for retrieving stored user profile data
+   * Core idea: Simple accessor for current user information from memory state
+   * Main function: Return the currently stored user information object
+   * Main purpose: Provide consistent access to user data for UI rendering and business logic
+   *
    * @returns The stored user information or null if not available
+   *
+   * @example
+   * const user = authStore.getUserInfo();
+   * if (user) {
+   *   console.log('Current user:', user.name);
+   *   console.log('User roles:', user.roles);
+   * } else {
+   *   console.log('No user logged in');
+   * }
    */
-  getUserInfo(): User | null {
-    return this.state.userInfo;
+  getUserInfo(): PickUser<State> | null {
+    return (this.state.userInfo ?? null) as PickUser<State>;
   }
 
   /**
    * Set authentication credential and persist to storage
    *
-   * Updates both the in-memory state and persistent storage with the credential.
-   * Triggers state change notification to subscribers.
+   * Significance: Critical security method for managing authentication tokens
+   * Core idea: Secure credential storage with automatic persistence and state synchronization
+   * Main function: Update in-memory credential and automatically persist to secure storage
+   * Main purpose: Maintain authentication token security while ensuring availability across sessions
    *
-   * @param credential - Authentication credential string (typically a token)
+   * @param credential - Authentication credential string (typically a JWT token)
+   *
+   * @example
+   * // Set authentication token
+   * authStore.setCredential('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+   *
+   * // Set OAuth token
+   * authStore.setCredential('oauth_token_from_provider');
+   *
+   * // Clear credential (logout)
+   * authStore.setCredential('');
    */
   setCredential(credential: string): void {
     this.emit({ ...this.state, credential });
@@ -187,7 +265,22 @@ export class UserAuthStore<User>
   /**
    * Get current authentication credential
    *
+   * Significance: Essential method for retrieving stored authentication tokens
+   * Core idea: Secure accessor for current authentication credential from memory state
+   * Main function: Return the currently stored authentication credential
+   * Main purpose: Provide secure access to authentication tokens for API calls and session management
+   *
    * @returns The stored credential or null if not available
+   *
+   * @example
+   * const token = authStore.getCredential();
+   * if (token) {
+   *   // Use token for API calls
+   *   api.setAuthToken(token);
+   * } else {
+   *   // Redirect to login
+   *   router.push('/login');
+   * }
    */
   getCredential(): string | null {
     return this.state.credential;
@@ -196,7 +289,28 @@ export class UserAuthStore<User>
   /**
    * Get current login status
    *
+   * Significance: Essential method for checking authentication state
+   * Core idea: Simple accessor for current authentication status from memory state
+   * Main function: Return the current login status enumeration value
+   * Main purpose: Enable authentication state checking for UI rendering and access control
+   *
    * @returns The current authentication status or null if not set
+   *
+   * @example
+   * const status = authStore.getLoginStatus();
+   * switch (status) {
+   *   case LOGIN_STATUS.LOADING:
+   *     console.log('Authentication in progress...');
+   *     break;
+   *   case LOGIN_STATUS.SUCCESS:
+   *     console.log('User authenticated');
+   *     break;
+   *   case LOGIN_STATUS.FAILED:
+   *     console.log('Authentication failed');
+   *     break;
+   *   default:
+   *     console.log('Not authenticated');
+   * }
    */
   getLoginStatus(): LOGIN_STATUS | null {
     return this.state.loginStatus;
@@ -205,8 +319,20 @@ export class UserAuthStore<User>
   /**
    * Reset all authentication state and clear storage
    *
-   * Clears in-memory state, removes data from persistent storage,
-   * and resets to initial state. This is typically called during logout.
+   * Significance: Critical security method for complete authentication state cleanup
+   * Core idea: Comprehensive state reset that clears both memory and persistent storage
+   * Main function: Clear all authentication data from memory and remove from persistent storage
+   * Main purpose: Ensure complete logout with no residual authentication data for security
+   *
+   * @example
+   * // Complete logout with cleanup
+   * authStore.reset();
+   * console.log('All authentication data cleared');
+   *
+   * // Verify cleanup
+   * console.log('User info:', authStore.getUserInfo()); // null
+   * console.log('Credential:', authStore.getCredential()); // null
+   * console.log('Login status:', authStore.getLoginStatus()); // null
    */
   override reset(): void {
     this.getUserStorage()?.remove();
@@ -217,8 +343,20 @@ export class UserAuthStore<User>
   /**
    * Start authentication process
    *
-   * Sets the login status to LOADING and clears any previous error state.
-   * This should be called at the beginning of login/register operations.
+   * Significance: Essential method for initiating authentication operations
+   * Core idea: Set loading state and clear previous errors to prepare for authentication
+   * Main function: Update login status to LOADING and clear any previous error state
+   * Main purpose: Provide consistent authentication state management for UI loading indicators
+   *
+   * @example
+   * // Start login process
+   * authStore.startAuth();
+   * console.log('Status:', authStore.getLoginStatus()); // LOGIN_STATUS.LOADING
+   *
+   * // UI can show loading spinner
+   * if (authStore.getLoginStatus() === LOGIN_STATUS.LOADING) {
+   *   showLoadingSpinner();
+   * }
    */
   startAuth(): void {
     this.emit({
@@ -231,13 +369,35 @@ export class UserAuthStore<User>
   /**
    * Mark authentication as successful
    *
-   * Sets login status to SUCCESS, clears error state, and optionally
-   * updates user information and credentials.
+   * Significance: Critical method for completing successful authentication operations
+   * Core idea: Update state to success status and optionally store user data and credentials
+   * Main function: Set success status, clear errors, and optionally update user info and credentials
+   * Main purpose: Provide consistent successful authentication state management with optional data updates
    *
    * @param userInfo - Optional user information to store upon successful authentication
    * @param credential - Optional credential to store (string token or login response object)
+   *
+   * @example
+   * // Mark authentication successful with user data
+   * authStore.authSuccess(
+   *   { id: '123', name: 'John Doe', email: 'john@example.com' },
+   *   'auth-token-123'
+   * );
+   *
+   * // Mark successful without updating data
+   * authStore.authSuccess();
+   *
+   * // With login response object
+   * authStore.authSuccess(userInfo, {
+   *   token: 'jwt-token',
+   *   refreshToken: 'refresh-token',
+   *   expiresIn: 3600
+   * });
    */
-  authSuccess(userInfo?: User, credential?: string | LoginResponseData): void {
+  authSuccess(
+    userInfo?: PickUser<State>,
+    credential?: string | LoginResponseData
+  ): void {
     this.emit({
       ...this.state,
       loginStatus: LOGIN_STATUS.SUCCESS,
@@ -260,10 +420,30 @@ export class UserAuthStore<User>
   /**
    * Mark authentication as failed
    *
-   * Sets login status to FAILED and stores the error information.
-   * This should be called when authentication operations encounter errors.
+   * Significance: Critical method for handling authentication failures
+   * Core idea: Update state to failed status and store error information for debugging
+   * Main function: Set failed status and store error details for user feedback and debugging
+   * Main purpose: Provide consistent failed authentication state management with error tracking
    *
    * @param error - Optional error information to store for debugging or user feedback
+   *
+   * @example
+   * // Mark authentication failed with error
+   * try {
+   *   await api.login(credentials);
+   * } catch (error) {
+   *   authStore.authFailed(error);
+   *   console.log('Login failed:', error.message);
+   * }
+   *
+   * // Mark failed with custom error
+   * authStore.authFailed(new Error('Invalid credentials'));
+   *
+   * // Check error state
+   * if (authStore.getLoginStatus() === LOGIN_STATUS.FAILED) {
+   *   const error = authStore.state.error;
+   *   console.log('Authentication error:', error);
+   * }
    */
   authFailed(error?: unknown): void {
     this.emit({ ...this.state, loginStatus: LOGIN_STATUS.FAILED, error });

@@ -1,3 +1,4 @@
+import { PickUser, UserAuthState } from '../impl/UserAuthState';
 import type {
   LoginResponseData,
   UserAuthApiInterface
@@ -34,18 +35,18 @@ import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
  * // Logout
  * await userAuth.logout();
  */
-export interface AuthServiceInterface<User> {
+export interface AuthServiceInterface<State extends UserAuthState<unknown>> {
   /**
    * Get the store instance
    * @returns The user authentication store
    */
-  get store(): UserAuthStoreInterface<User>;
+  get store(): UserAuthStoreInterface<PickUser<State>>;
 
   /**
    * Get the API instance
    * @returns The user authentication API
    */
-  get api(): UserAuthApiInterface<User>;
+  get api(): UserAuthApiInterface<State>;
 
   /**
    * Authenticate user with credentials
@@ -66,7 +67,7 @@ export interface AuthServiceInterface<User> {
    * @param loginData - Optional login data to use for fetching user info
    * @returns Promise resolving to user information
    */
-  userInfo(loginData?: LoginResponseData): Promise<User>;
+  userInfo(loginData?: LoginResponseData): Promise<PickUser<State>>;
 
   /**
    * Logout current user

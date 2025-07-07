@@ -15,7 +15,8 @@ import { UserApiConfig } from './UserApiBootstarp';
 import {
   LoginResponseData,
   UserAuthApiInterface,
-  UserAuthStoreInterface
+  UserAuthStoreInterface,
+  UserAuthState
 } from '@qlover/corekit-bridge';
 import {
   RegisterFormData,
@@ -23,6 +24,8 @@ import {
 } from '@/base/services/UserService';
 import { RES_NO_TOKEN } from '@config/Identifier';
 import { AppError } from '@/base/cases/AppError';
+
+export type UserApiState = UserAuthState<UserServiceUserInfo>;
 
 /**
  * UserApi
@@ -34,9 +37,9 @@ import { AppError } from '@/base/cases/AppError';
 @injectable()
 export class UserApi
   extends RequestTransaction<UserApiConfig>
-  implements UserAuthApiInterface<UserServiceUserInfo>
+  implements UserAuthApiInterface<UserApiState>
 {
-  protected store: UserAuthStoreInterface<UserServiceUserInfo> | null = null;
+  protected store: UserAuthStoreInterface<UserApiState> | null = null;
 
   constructor(
     @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
@@ -45,7 +48,7 @@ export class UserApi
     super(adapter);
   }
 
-  getStore(): UserAuthStoreInterface<UserServiceUserInfo> | null {
+  getStore(): UserAuthStoreInterface<UserApiState> | null {
     return this.store;
   }
 
@@ -53,7 +56,7 @@ export class UserApi
    * @override
    * @param store
    */
-  setStore(store: UserAuthStoreInterface<UserServiceUserInfo>): void {
+  setStore(store: UserAuthStoreInterface<UserApiState>): void {
     this.store = store;
   }
 

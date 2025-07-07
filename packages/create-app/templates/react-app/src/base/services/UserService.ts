@@ -8,6 +8,7 @@ import {
   LoginResponseData,
   type UserAuthApiInterface,
   UserAuthService,
+  UserAuthState,
   UserAuthStore
 } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
@@ -16,6 +17,7 @@ import { AppError } from '@/base/cases/AppError';
 import * as errKeys from '@config/Identifier/common.error';
 import { IOCIdentifier } from '@/core/IOC';
 import { AppConfig } from '../cases/AppConfig';
+import { UserApiState } from '../apis/userApi/UserApi';
 
 export type UserServiceUserInfo =
   UserApiGetUserInfoTransaction['response']['data'];
@@ -37,13 +39,13 @@ export class UserService
 
   constructor(
     @inject(RouteService) protected routerService: RouteService,
-    @inject(UserApi) userApi: UserAuthApiInterface<UserServiceUserInfo>,
+    @inject(UserApi)
+    userApi: UserAuthApiInterface<UserAuthState<UserServiceUserInfo>>,
     @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
     @inject(IOCIdentifier.LocalStorageEncrypt)
     storage: SyncStorageInterface<string, string>
   ) {
-    super({
-      api: userApi,
+    super(userApi, {
       userStorage: {
         key: appConfig.userInfoStorageKey,
         storage: storage
@@ -53,17 +55,13 @@ export class UserService
         storage: storage
       }
     });
-
-    // FIXME:
-    // load credential from storage
-    // this.store.setCredential(this.store.getCredentialStorage()?.get() ?? '');
   }
 
   /**
    * @override
    */
-  override get store(): UserAuthStore<UserServiceUserInfo> {
-    return super.store as UserAuthStore<UserServiceUserInfo>;
+  override get store(): UserAuthStore<UserApiState> {
+    return super.store as UserAuthStore<UserApiState>;
   }
 
   getToken(): string | null {
@@ -95,13 +93,7 @@ export class UserService
   /**
    * @override
    */
-  onSuccess(): void {
-    // if (this.isAuthenticated()) {
-    //   this.store.authSuccess();
-    // } else {
-    //   this.logout();
-    // }
-  }
+  onSuccess(): void {}
 
   /**
    * @override
