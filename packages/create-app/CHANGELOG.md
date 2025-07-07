@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 0.6.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **react-app:** update package dependencies and refactor UserApi and UserService ([35e58e4](https://github.com/qlover/fe-base/commit/35e58e4e618082b5dee16351d7d78bbd54ca9e83)) ([#460](https://github.com/qlover/fe-base/pull/460))
+  - Changed dependencies in package.json to use the latest versions of @qlover/corekit-bridge and @qlover/fe-corekit for improved stability.
+  - Refactored UserApi to utilize UserAuthState for better state management and type safety.
+  - Updated UserService to align with the new UserApi structure, enhancing type definitions and simplifying state handling.
+  - Removed outdated comments and streamlined the code for better readability and maintainability.
+
+  These changes aim to enhance the overall functionality and reliability of the user authentication system within the react-app template.
+
 ## 0.5.0
 
 ### Minor Changes
