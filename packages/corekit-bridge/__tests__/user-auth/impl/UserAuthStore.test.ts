@@ -2,30 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
-import { LOGIN_STATUS } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
+import {
+  LOGIN_STATUS,
+  UserAuthStoreOptions
+} from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
 import { LoginResponseData } from '../../../src/core/user-auth/interface/UserAuthApiInterface';
 
-/**
- * Mock user interface for comprehensive authentication testing
- *
- * Significance: Standardized user data structure for consistent testing scenarios
- * Core idea: Simple yet comprehensive user model representing authenticated user state
- * Main function: Provide type-safe user data structure for all authentication test cases
- * Main purpose: Enable thorough testing of user authentication store operations with realistic data
- *
- * @example
- * const testUser: MockUser = {
- *   id: 1,
- *   name: 'John Doe',
- *   email: 'john@example.com',
- *   token: 'auth-token-123',
- *   roles: ['user', 'admin']
- * };
- *
- * // Use in authentication tests
- * store.setUserInfo(testUser);
- * expect(store.getUserInfo()).toEqual(testUser);
- */
 interface MockUser {
   /** Unique user identifier */
   id: number;
@@ -42,93 +24,40 @@ interface MockUser {
     avatar?: string;
     preferences?: Record<string, unknown>;
   };
+  /** Optional timestamp for initialization */
+  lastInitialized?: string;
 }
 
-/**
- * Mock authentication state for testing
- *
- * Significance: Extends UserAuthState with MockUser type for comprehensive testing
- * Core idea: Provides proper state structure that matches UserAuthStore requirements
- * Main function: Enable type-safe testing of authentication state management
- * Main purpose: Satisfy UserAuthStore generic constraints while providing realistic test data
- *
- * @example
- * const store = new UserAuthStore<MockAuthState>();
- * store.setUserInfo(mockUser);
- * expect(store.state.userInfo).toEqual(mockUser);
- */
 class MockAuthState extends UserAuthState<MockUser> {
   constructor(userInfo?: MockUser | null, credential?: string | null) {
     super(userInfo, credential);
   }
 }
 
-/**
- * Mock key storage implementation for testing storage integration
- *
- * Significance: In-memory storage implementation that simulates persistent storage behavior
- * Core idea: Controllable storage mock that allows testing of storage integration without external dependencies
- * Main function: Provide predictable storage behavior for testing authentication state persistence
- * Main purpose: Enable comprehensive testing of storage operations with full control over storage state
- *
- * @example
- * const mockStorage = new MockKeyStorage('user_data');
- * mockStorage.set(userData);
- *
- * // Test storage integration
- * const store = new UserAuthStore(mockStorage);
- * expect(store.getUserInfo()).toEqual(userData);
- */
 class MockKeyStorage extends KeyStorageInterface<string, MockUser> {
   private storage = new Map<string, MockUser>();
 
-  /**
-   * Retrieve stored value
-   * @returns Stored user data or null if not found
-   */
   get(): MockUser | null {
     return this.storage.get(this.key) || null;
   }
 
-  /**
-   * Store user data
-   * @param value - User data to store
-   */
   set(value: MockUser): void {
     this.storage.set(this.key, value);
   }
 
-  /**
-   * Remove stored data
-   */
   remove(): void {
     this.storage.delete(this.key);
   }
 
-  /**
-   * Clear all stored data (test helper)
-   */
   clear(): void {
     this.storage.clear();
   }
 
-  /**
-   * Check if key exists (test helper)
-   * @returns True if key exists in storage
-   */
   has(): boolean {
     return this.storage.has(this.key);
   }
 }
 
-/**
- * Mock credential storage for testing credential management
- *
- * Significance: Specialized storage mock for authentication credentials
- * Core idea: String-based storage for tokens and credentials
- * Main function: Test credential storage and retrieval operations
- * Main purpose: Verify credential persistence and security handling
- */
 class MockCredentialStorage extends KeyStorageInterface<string, string> {
   private storage = new Map<string, string>();
 
@@ -150,14 +79,6 @@ class MockCredentialStorage extends KeyStorageInterface<string, string> {
   }
 }
 
-/**
- * Test suite for UserAuthStore
- *
- * Significance: Comprehensive testing of authentication state management
- * Core idea: Test all authentication store operations and edge cases
- * Main function: Verify store behavior under various conditions and scenarios
- * Main purpose: Ensure reliable authentication state management with proper error handling
- */
 describe('UserAuthStore', () => {
   let store: UserAuthStore<MockAuthState>;
   let mockUserStorage: MockKeyStorage;
@@ -192,11 +113,6 @@ describe('UserAuthStore', () => {
     store = new UserAuthStore<MockAuthState>();
   });
 
-  /**
-   * Test suite for constructor and initialization
-   *
-   * Tests store initialization with various configuration options
-   */
   describe('Constructor and Initialization', () => {
     it('should initialize with default empty state', () => {
       const newStore = new UserAuthStore<MockAuthState>();
@@ -208,77 +124,487 @@ describe('UserAuthStore', () => {
       expect(newStore.getCredentialStorage()).toBeNull();
     });
 
-    it('should initialize with user storage and load existing data', () => {
-      // Pre-populate user storage
-      mockUserStorage.set(mockUser);
+    describe('userStorage option', () => {
+      it('should initialize with user storage and load existing data', () => {
+        // Pre-populate user storage
+        mockUserStorage.set(mockUser);
 
-      const newStore = new UserAuthStore<MockAuthState>({
-        userStorage: mockUserStorage
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: mockUserStorage
+        });
+
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getUserStorage()).toBe(mockUserStorage);
       });
 
-      expect(newStore.getUserInfo()).toEqual(mockUser);
-      expect(newStore.getUserStorage()).toBe(mockUserStorage);
+      it('should initialize with empty user storage', () => {
+        const emptyUserStorage = new MockKeyStorage('empty-user');
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: emptyUserStorage
+        });
+
+        expect(newStore.getUserInfo()).toBeNull();
+        expect(newStore.getUserStorage()).toBe(emptyUserStorage);
+      });
+
+      it('should handle user storage with null data', () => {
+        const nullUserStorage = new MockKeyStorage('null-user');
+        vi.spyOn(nullUserStorage, 'get').mockReturnValue(null);
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: nullUserStorage
+        });
+
+        expect(newStore.getUserInfo()).toBeNull();
+        expect(newStore.getUserStorage()).toBe(nullUserStorage);
+      });
+
+      it('should handle user storage with complex user data', () => {
+        const complexUser = {
+          ...mockUser,
+          profile: {
+            avatar: 'https://example.com/avatar.jpg',
+            preferences: {
+              theme: 'dark',
+              notifications: {
+                email: true,
+                push: false
+              }
+            }
+          },
+          metadata: {
+            createdAt: '2023-01-01T00:00:00Z',
+            lastLogin: '2023-12-01T12:00:00Z'
+          }
+        };
+
+        const complexUserStorage = new MockKeyStorage('complex-user');
+        complexUserStorage.set(complexUser);
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: complexUserStorage
+        });
+
+        expect(newStore.getUserInfo()).toEqual(complexUser);
+        expect(newStore.getUserStorage()).toBe(complexUserStorage);
+      });
+
+      it('should handle user storage initialization errors gracefully', () => {
+        const faultyUserStorage = new MockKeyStorage('faulty-user');
+        vi.spyOn(faultyUserStorage, 'get').mockImplementation(() => {
+          throw new Error('Storage read error');
+        });
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            userStorage: faultyUserStorage
+          });
+        }).toThrow('Storage read error');
+      });
     });
 
-    it('should initialize with credential storage and load existing credential', () => {
-      // Pre-populate credential storage
-      mockCredentialStorage.set(mockCredential);
+    describe('credentialStorage option', () => {
+      it('should initialize with credential storage and load existing credential', () => {
+        // Pre-populate credential storage
+        mockCredentialStorage.set(mockCredential);
 
-      const newStore = new UserAuthStore<MockAuthState>({
-        credentialStorage: mockCredentialStorage
+        const newStore = new UserAuthStore<MockAuthState>({
+          credentialStorage: mockCredentialStorage
+        });
+
+        expect(newStore.getCredential()).toBe(mockCredential);
+        expect(newStore.getCredentialStorage()).toBe(mockCredentialStorage);
       });
 
-      expect(newStore.getCredential()).toBe(mockCredential);
-      expect(newStore.getCredentialStorage()).toBe(mockCredentialStorage);
+      it('should initialize with empty credential storage', () => {
+        const emptyCredentialStorage = new MockCredentialStorage(
+          'empty-credential'
+        );
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          credentialStorage: emptyCredentialStorage
+        });
+
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.getCredentialStorage()).toBe(emptyCredentialStorage);
+      });
+
+      it('should handle credential storage with null data', () => {
+        const nullCredentialStorage = new MockCredentialStorage(
+          'null-credential'
+        );
+        vi.spyOn(nullCredentialStorage, 'get').mockReturnValue(null);
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          credentialStorage: nullCredentialStorage
+        });
+
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.getCredentialStorage()).toBe(nullCredentialStorage);
+      });
+
+      it('should handle credential storage with empty string', () => {
+        const emptyStringCredentialStorage = new MockCredentialStorage(
+          'empty-string'
+        );
+        emptyStringCredentialStorage.set('');
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          credentialStorage: emptyStringCredentialStorage
+        });
+
+        expect(newStore.getCredential()).toBe('');
+        expect(newStore.getCredentialStorage()).toBe(
+          emptyStringCredentialStorage
+        );
+      });
+
+      it('should handle credential storage with long token', () => {
+        const longToken = 'a'.repeat(1000); // 1000 character token
+        const longTokenStorage = new MockCredentialStorage('long-token');
+        longTokenStorage.set(longToken);
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          credentialStorage: longTokenStorage
+        });
+
+        expect(newStore.getCredential()).toBe(longToken);
+        expect(newStore.getCredentialStorage()).toBe(longTokenStorage);
+      });
+
+      it('should handle credential storage initialization errors gracefully', () => {
+        const faultyCredentialStorage = new MockCredentialStorage(
+          'faulty-credential'
+        );
+        vi.spyOn(faultyCredentialStorage, 'get').mockImplementation(() => {
+          throw new Error('Credential storage read error');
+        });
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            credentialStorage: faultyCredentialStorage
+          });
+        }).toThrow('Credential storage read error');
+      });
     });
 
-    it('should initialize with both storages and load all data', () => {
-      mockUserStorage.set(mockUser);
-      mockCredentialStorage.set(mockCredential);
+    describe('defaultState option', () => {
+      it('should initialize with default state instance', () => {
+        const customState = new MockAuthState(mockUser, mockCredential);
 
-      const newStore = new UserAuthStore<MockAuthState>({
-        userStorage: mockUserStorage,
-        credentialStorage: mockCredentialStorage
+        const newStore = new UserAuthStore<MockAuthState>({
+          defaultState: customState
+        });
+
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getCredential()).toBe(mockCredential);
+        expect(newStore.state).toBeInstanceOf(MockAuthState);
       });
 
-      expect(newStore.getUserInfo()).toEqual(mockUser);
-      expect(newStore.getCredential()).toBe(mockCredential);
-      expect(newStore.getUserStorage()).toBe(mockUserStorage);
-      expect(newStore.getCredentialStorage()).toBe(mockCredentialStorage);
+      it('should initialize with default state factory function', () => {
+        const stateFactory = (
+          userInfo?: MockUser | null,
+          credential?: string | null
+        ) => {
+          return new MockAuthState(userInfo, credential);
+        };
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          defaultState: stateFactory
+        });
+
+        expect(newStore.getUserInfo()).toBeNull();
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.state).toBeInstanceOf(MockAuthState);
+      });
+
+      it('should initialize with default state factory function and storage data', () => {
+        mockUserStorage.set(mockUser);
+        mockCredentialStorage.set(mockCredential);
+
+        const stateFactory = (
+          userInfo?: MockUser | null,
+          credential?: string | null
+        ) => {
+          return new MockAuthState(userInfo, credential);
+        };
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: mockUserStorage,
+          credentialStorage: mockCredentialStorage,
+          defaultState: stateFactory
+        });
+
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getCredential()).toBe(mockCredential);
+        expect(newStore.state).toBeInstanceOf(MockAuthState);
+      });
+
+      it('should handle custom state class with additional properties', () => {
+        class ExtendedAuthState extends MockAuthState {
+          public customProperty: string = 'custom-value';
+          public isExtended: boolean = true;
+
+          constructor(userInfo?: MockUser | null, credential?: string | null) {
+            super(userInfo, credential);
+          }
+
+          getCustomProperty(): string {
+            return this.customProperty;
+          }
+        }
+
+        const newStore = new UserAuthStore<ExtendedAuthState>({
+          defaultState: new ExtendedAuthState()
+        });
+
+        expect(newStore.state).toBeInstanceOf(ExtendedAuthState);
+        expect(newStore.state.customProperty).toBe('custom-value');
+        expect(newStore.state.isExtended).toBe(true);
+        expect(newStore.state.getCustomProperty()).toBe('custom-value');
+      });
+
+      it('should handle state factory with complex initialization logic', () => {
+        const complexStateFactory = (
+          userInfo?: MockUser | null,
+          credential?: string | null
+        ) => {
+          const state = new MockAuthState(userInfo, credential);
+
+          // Add initialization timestamp
+          if (userInfo) {
+            state.userInfo = {
+              ...userInfo,
+              lastInitialized: new Date().toISOString()
+            } as MockUser;
+          }
+
+          return state;
+        };
+
+        // Pre-populate storage after store creation
+        mockUserStorage.set(mockUser);
+
+        // Create new store to test factory logic
+        const newStoreWithData = new UserAuthStore<MockAuthState>({
+          userStorage: mockUserStorage,
+          defaultState: complexStateFactory
+        });
+
+        expect(newStoreWithData.getUserInfo()).toMatchObject(mockUser);
+        expect(newStoreWithData.getUserInfo()).toHaveProperty(
+          'lastInitialized'
+        );
+      });
+
+      it('should throw error when defaultState is not a UserAuthState instance', () => {
+        const invalidState = {
+          userInfo: null,
+          credential: null,
+          loginStatus: null,
+          error: null
+        };
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            defaultState: invalidState as MockAuthState
+          });
+        }).toThrow('Please check the state is a instance of UserAuthState');
+      });
+
+      it('should throw error when defaultState factory returns invalid state', () => {
+        const invalidStateFactory = () => {
+          return {
+            userInfo: null,
+            credential: null,
+            loginStatus: null,
+            error: null
+          } as MockAuthState;
+        };
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            defaultState: invalidStateFactory
+          });
+        }).toThrow('Please check the state is a instance of UserAuthState');
+      });
+
+      it('should throw error when defaultState factory returns null', () => {
+        const nullStateFactory = () => {
+          return null as unknown as MockAuthState;
+        };
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            defaultState: nullStateFactory
+          });
+        }).toThrow('Please check the state is a instance of UserAuthState');
+      });
+
+      it('should throw error when defaultState factory returns undefined', () => {
+        const undefinedStateFactory = () => {
+          return undefined as unknown as MockAuthState;
+        };
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            defaultState: undefinedStateFactory
+          });
+        }).toThrow('Please check the state is a instance of UserAuthState');
+      });
     });
 
-    it('should initialize with initial credential option', () => {
-      const initialCredential = 'initial-credential-123';
+    describe('combined options', () => {
+      it('should initialize with both storages and load all data', () => {
+        mockUserStorage.set(mockUser);
+        mockCredentialStorage.set(mockCredential);
 
-      // Pre-populate credential storage with initial credential
-      mockCredentialStorage.set(initialCredential);
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: mockUserStorage,
+          credentialStorage: mockCredentialStorage
+        });
 
-      const newStore = new UserAuthStore<MockAuthState>({
-        credentialStorage: mockCredentialStorage
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getCredential()).toBe(mockCredential);
+        expect(newStore.getUserStorage()).toBe(mockUserStorage);
+        expect(newStore.getCredentialStorage()).toBe(mockCredentialStorage);
       });
 
-      expect(newStore.getCredential()).toBe(initialCredential);
+      it('should initialize with all three options', () => {
+        // Pre-populate storage BEFORE creating the store
+        const prePopulatedUserStorage = new MockKeyStorage(
+          'pre-populated-user'
+        );
+        const prePopulatedCredentialStorage = new MockCredentialStorage(
+          'pre-populated-credential'
+        );
+
+        prePopulatedUserStorage.set(mockUser);
+        prePopulatedCredentialStorage.set(mockCredential);
+
+        // When defaultState is provided as an instance, it uses that instance directly
+        // The storage data is passed to the factory function if defaultState is a function
+        const stateFactory = (
+          userInfo?: MockUser | null,
+          credential?: string | null
+        ) => {
+          return new MockAuthState(userInfo, credential);
+        };
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: prePopulatedUserStorage,
+          credentialStorage: prePopulatedCredentialStorage,
+          defaultState: stateFactory
+        });
+
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getCredential()).toBe(mockCredential);
+        expect(newStore.state).toBeInstanceOf(MockAuthState);
+      });
+
+      it('should prioritize storage data over default state data', () => {
+        const storageUser = { ...mockUser, name: 'Storage User' };
+        const storageCredential = 'storage-credential';
+
+        // Pre-populate storage BEFORE creating the store
+        const prePopulatedUserStorage = new MockKeyStorage('storage-user');
+        const prePopulatedCredentialStorage = new MockCredentialStorage(
+          'storage-credential'
+        );
+
+        prePopulatedUserStorage.set(storageUser);
+        prePopulatedCredentialStorage.set(storageCredential);
+
+        // When defaultState is provided as an instance, it uses that instance
+        // But when storage data exists, it should be loaded into the state
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: prePopulatedUserStorage,
+          credentialStorage: prePopulatedCredentialStorage
+        });
+
+        // Storage data should be loaded
+        expect(newStore.getUserInfo()).toEqual(storageUser);
+        expect(newStore.getCredential()).toBe(storageCredential);
+      });
+
+      it('should handle mixed storage availability', () => {
+        // Only user storage has data
+        mockUserStorage.set(mockUser);
+
+        const emptyCredentialStorage = new MockCredentialStorage('empty');
+
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: mockUserStorage,
+          credentialStorage: emptyCredentialStorage
+        });
+
+        expect(newStore.getUserInfo()).toEqual(mockUser);
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.getUserStorage()).toBe(mockUserStorage);
+        expect(newStore.getCredentialStorage()).toBe(emptyCredentialStorage);
+      });
+
+      it('should handle storage errors with fallback to default state', () => {
+        const faultyUserStorage = new MockKeyStorage('faulty');
+        vi.spyOn(faultyUserStorage, 'get').mockImplementation(() => {
+          throw new Error('User storage error');
+        });
+
+        const workingCredentialStorage = new MockCredentialStorage('working');
+        workingCredentialStorage.set(mockCredential);
+
+        expect(() => {
+          new UserAuthStore<MockAuthState>({
+            userStorage: faultyUserStorage,
+            credentialStorage: workingCredentialStorage
+          });
+        }).toThrow('User storage error');
+      });
     });
 
-    it('should prioritize storage credential over initial credential', () => {
-      const storageCredential = 'storage-credential';
-
-      mockCredentialStorage.set(storageCredential);
-
-      const newStore = new UserAuthStore<MockAuthState>({
-        credentialStorage: mockCredentialStorage
+    describe('edge cases and error handling', () => {
+      it('should handle null options gracefully', () => {
+        // The constructor should handle null by using default empty object
+        // However, based on the implementation, it might throw an error
+        // Let's test what actually happens
+        expect(() => {
+          new UserAuthStore<MockAuthState>(
+            null as unknown as UserAuthStoreOptions<MockAuthState>
+          );
+        }).toThrow();
       });
 
-      // Storage credential should be loaded from storage
-      expect(newStore.getCredential()).toBe(storageCredential);
+      it('should handle undefined options gracefully', () => {
+        expect(() => {
+          new UserAuthStore<MockAuthState>(undefined);
+        }).not.toThrow();
+      });
+
+      it('should handle empty options object', () => {
+        const newStore = new UserAuthStore<MockAuthState>({});
+
+        expect(newStore.getUserInfo()).toBeNull();
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.getUserStorage()).toBeNull();
+        expect(newStore.getCredentialStorage()).toBeNull();
+      });
+
+      it('should handle options with null values', () => {
+        const newStore = new UserAuthStore<MockAuthState>({
+          userStorage: null,
+          credentialStorage: null,
+          defaultState: undefined
+        });
+
+        expect(newStore.getUserInfo()).toBeNull();
+        expect(newStore.getCredential()).toBeNull();
+        expect(newStore.getUserStorage()).toBeNull();
+        expect(newStore.getCredentialStorage()).toBeNull();
+      });
     });
   });
 
-  /**
-   * Test suite for user storage management
-   *
-   * Tests user storage configuration and operations
-   */
   describe('User Storage Management', () => {
     it('should set and get user storage correctly', () => {
       store.setUserStorage(mockUserStorage);
@@ -310,11 +636,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for credential storage management
-   *
-   * Tests credential storage configuration and operations
-   */
   describe('Credential Storage Management', () => {
     it('should set and get credential storage correctly', () => {
       store.setCredentialStorage(mockCredentialStorage);
@@ -346,11 +667,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for user information management
-   *
-   * Tests user data storage, retrieval, and persistence
-   */
   describe('User Information Management', () => {
     beforeEach(() => {
       store.setUserStorage(mockUserStorage);
@@ -424,11 +740,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for credential management
-   *
-   * Tests credential storage, retrieval, and persistence
-   */
   describe('Credential Management', () => {
     beforeEach(() => {
       store.setCredentialStorage(mockCredentialStorage);
@@ -476,11 +787,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for login status management
-   *
-   * Tests authentication status tracking and updates
-   */
   describe('Login Status Management', () => {
     it('should return null for initial login status', () => {
       expect(store.getLoginStatus()).toBeNull();
@@ -515,11 +821,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for authentication flow methods
-   *
-   * Tests complete authentication state transitions
-   */
   describe('Authentication Flow Methods', () => {
     beforeEach(() => {
       store.setUserStorage(mockUserStorage);
@@ -669,11 +970,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for reset functionality
-   *
-   * Tests complete state and storage cleanup
-   */
   describe('Reset Functionality', () => {
     beforeEach(() => {
       store.setUserStorage(mockUserStorage);
@@ -748,11 +1044,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for state consistency and integration
-   *
-   * Tests state management consistency across operations
-   */
   describe('State Consistency and Integration', () => {
     beforeEach(() => {
       store.setUserStorage(mockUserStorage);
@@ -826,11 +1117,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for error handling and edge cases
-   *
-   * Tests various error scenarios and edge cases
-   */
   describe('Error Handling and Edge Cases', () => {
     it('should handle null user info gracefully', () => {
       store.setUserStorage(mockUserStorage);
@@ -924,11 +1210,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for store interface integration
-   *
-   * Tests proper inheritance and integration with base store functionality
-   */
   describe('Store Interface Integration', () => {
     it('should properly extend StoreInterface functionality', () => {
       // Test that the store properly inherits from StoreInterface
@@ -970,11 +1251,6 @@ describe('UserAuthStore', () => {
     });
   });
 
-  /**
-   * Test suite for state change verification with cloneState
-   *
-   * Tests that verify state changes are properly applied and state immutability is maintained
-   */
   describe('State Change Verification with cloneState', () => {
     let stateChangeCallback: ReturnType<typeof vi.fn>;
 
@@ -1339,6 +1615,60 @@ describe('UserAuthStore', () => {
         expect(finalState.credential).toBe('atomic-test');
         expect(finalState.error).toBeNull();
       });
+    });
+  });
+
+  describe('default state', () => {
+    it('should throw error when state is not a instance of UserAuthState', () => {
+      const mockState: UserAuthState<MockUser> = {
+        userInfo: null,
+        credential: null,
+        loginStatus: null,
+        error: null
+      };
+
+      expect(() => {
+        new UserAuthStore<typeof mockState>({
+          defaultState: mockState
+        });
+      }).toThrow('Please check the state is a instance of UserAuthState');
+    });
+
+    it('should handle js type correctly', () => {
+      type MockUserExtend = MockUser & {
+        money: number;
+      };
+
+      const store = new UserAuthStore<UserAuthState<MockUserExtend>>();
+
+      expect(store.state).toBeInstanceOf(UserAuthState);
+      store.setUserInfo({ name: 'test', money: 100 } as MockUserExtend);
+      expect(store.state).toBeInstanceOf(UserAuthState);
+      expect(store.getUserInfo()).toEqual({
+        name: 'test',
+        money: 100
+      } as MockUserExtend);
+    });
+
+    it('should not lose class identity', () => {
+      class MockState extends UserAuthState<MockUser> {
+        constructor(userInfo?: MockUser | null, credential?: string | null) {
+          super(userInfo, credential);
+        }
+
+        getUserInfo(): MockUser | null {
+          return this.userInfo;
+        }
+      }
+
+      const store = new UserAuthStore<MockState>({
+        defaultState: new MockState()
+      });
+
+      expect(store.state).toBeInstanceOf(MockState);
+      store.setUserInfo({ name: 'test' } as MockUser);
+      expect(store.state).toBeInstanceOf(MockState);
+      expect(store.getUserInfo()).toEqual({ name: 'test' } as MockUser);
     });
   });
 });

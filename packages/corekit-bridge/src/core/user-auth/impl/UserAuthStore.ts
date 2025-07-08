@@ -55,11 +55,6 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Configure storage interfaces, initialize state, and establish storage synchronization
    * Main purpose: Create a fully functional authentication store with proper state management and persistence
    *
-   * @param options - Configuration options for storage backends and initial state setup
-   * @param options.userStorage - Storage interface for user information persistence
-   * @param options.credentialStorage - Storage interface for credential persistence
-   * @param options.createState - Optional custom state creation function
-   *
    * @example
    * // Basic initialization
    * const store = new UserAuthStore<User>({});
@@ -68,12 +63,10 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * const store = new UserAuthStore<User>({
    *   userStorage: new LocalStorage('user_profile'),
    *   credentialStorage: new SessionStorage('auth_token'),
-   *   createState: (user, credential) => new CustomUserAuthState(user, credential)
+   *   defaultState: (user, credential) => new CustomUserAuthState(user, credential)
    * });
    */
-  constructor(
-    protected readonly options: UserAuthStoreOptions<PickUser<State>> = {}
-  ) {
+  constructor(protected readonly options: UserAuthStoreOptions<State> = {}) {
     super(() => createState(options));
   }
 

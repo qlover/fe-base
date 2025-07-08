@@ -8,76 +8,22 @@ import type {
 } from '../../../src/core/user-auth/interface/UserAuthApiInterface';
 import type { UserAuthStoreInterface } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
 
-/**
- * Mock user interface for comprehensive authentication testing
- *
- * Significance: Standardized user data structure for consistent testing scenarios
- * Core idea: Simple yet comprehensive user model representing authenticated user state
- * Main function: Provide type-safe user data structure for all authentication test cases
- * Main purpose: Enable thorough testing of user authentication service operations with realistic data
- *
- * @example
- * const testUser: MockUser = {
- *   id: 1,
- *   name: 'John Doe',
- *   email: 'john@example.com',
- *   roles: ['user', 'admin']
- * };
- *
- * // Use in authentication tests
- * service.login(credentials);
- * expect(service.store.getUserInfo()).toEqual(testUser);
- */
 interface MockUser {
-  /** Unique user identifier */
   id: number;
-  /** User's display name */
   name: string;
-  /** User's email address */
   email: string;
-  /** Optional user roles for authorization testing */
   roles?: string[];
-  /** Optional user profile data */
   profile?: {
     avatar?: string;
     preferences?: Record<string, unknown>;
   };
 }
-
-/**
- * Mock authentication state for testing
- *
- * Significance: Extends UserAuthState with MockUser type for comprehensive testing
- * Core idea: Provides proper state structure that matches UserAuthService requirements
- * Main function: Enable type-safe testing of authentication state management
- * Main purpose: Satisfy UserAuthService generic constraints while providing realistic test data
- *
- * @example
- * const service = new UserAuthService<MockAuthState>(mockApi, {});
- * await service.login(credentials);
- * expect(service.store.state.userInfo).toEqual(mockUser);
- */
 class MockAuthState extends UserAuthState<MockUser> {
   constructor(userInfo?: MockUser | null, credential?: string | null) {
     super(userInfo, credential);
   }
 }
 
-/**
- * Mock API implementation for testing authentication operations
- *
- * Significance: Controllable API mock that simulates various authentication scenarios
- * Core idea: Provides predictable API responses for comprehensive testing
- * Main function: Enable testing of service behavior under various API conditions
- * Main purpose: Test authentication flow without external dependencies
- *
- * @example
- * const mockApi = new MockUserAuthApi();
- * mockApi.mockLogin.mockResolvedValue({ token: 'test-token' });
- *
- * const service = new UserAuthService(mockApi, {});
- * await service.login(credentials);
- */
 class MockUserAuthApi implements UserAuthApiInterface<MockAuthState> {
   private store: UserAuthStoreInterface<MockAuthState> | null = null;
 
@@ -112,14 +58,6 @@ class MockUserAuthApi implements UserAuthApiInterface<MockAuthState> {
   }
 }
 
-/**
- * Test suite for UserAuthService
- *
- * Significance: Comprehensive testing of authentication service orchestration
- * Core idea: Test all authentication operations and integration scenarios
- * Main function: Verify service behavior under various conditions and edge cases
- * Main purpose: Ensure reliable authentication service with proper error handling
- */
 describe('UserAuthService', () => {
   let service: UserAuthService<MockAuthState>;
   let mockApi: MockUserAuthApi;
