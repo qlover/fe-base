@@ -76,7 +76,7 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
       theme = ThemeStateGetter.getSystemTheme();
     }
 
-    this.emit({ ...this.state, theme });
+    this.emit(this.cloneState({ theme }));
 
     this.bindToTheme();
   }

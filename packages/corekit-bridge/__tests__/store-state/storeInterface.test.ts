@@ -14,10 +14,10 @@ class CounterStore extends StoreInterface<CounterState> {
     super(() => new CounterState());
   }
   increment(): void {
-    this.emit({ ...this.state, count: this.state.count + 1 });
+    this.emit(this.cloneState({ count: this.state.count + 1 }));
   }
   setMeta(updated: boolean): void {
-    this.emit({ ...this.state, meta: { updated } });
+    this.emit(this.cloneState({ meta: { updated } }));
   }
 }
 
