@@ -68,7 +68,7 @@ export abstract class StoreInterface<
    * @returns T - the new cloned state
    * @since 1.3.1
    */
-  cloneState(source: Partial<T>): T {
+  cloneState(source?: Partial<T>): T {
     const cloned = clone(this.state);
     if (typeof cloned === 'object' && cloned !== null) {
       Object.assign(cloned, source);

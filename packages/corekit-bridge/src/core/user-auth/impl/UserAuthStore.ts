@@ -35,10 +35,13 @@ import { createState } from './createState';
  *   console.log('User authenticated:', authStore.getUserInfo());
  * }
  *
- * // Subscribe to state changes
- * authStore.subscribe((state) => {
+ * // observer to state changes
+ * const off = authStore.observe((state) => {
  *   console.log('Auth state changed:', state);
  * });
+ *
+ * // stop observing
+ * off();
  */
 export class UserAuthStore<State extends UserAuthState<unknown>>
   extends StoreInterface<State>
@@ -258,7 +261,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * authStore.setCredential('');
    */
   setCredential(credential: string): void {
-    this.emit({ ...this.state, credential });
+    this.emit(this.cloneState({ credential } as Partial<State>));
     this.getCredentialStorage()?.set(credential);
   }
 
@@ -337,7 +340,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
   override reset(): void {
     this.getUserStorage()?.remove();
     this.getCredentialStorage()?.remove();
-    this.resetState();
+    super.reset();
   }
 
   /**
@@ -359,11 +362,12 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * }
    */
   startAuth(): void {
-    this.emit({
-      ...this.state,
-      loginStatus: LOGIN_STATUS.LOADING,
-      error: null
-    });
+    this.emit(
+      this.cloneState({
+        loginStatus: LOGIN_STATUS.LOADING,
+        error: null
+      } as Partial<State>)
+    );
   }
 
   /**
@@ -398,11 +402,12 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
     userInfo?: PickUser<State>,
     credential?: string | LoginResponseData
   ): void {
-    this.emit({
-      ...this.state,
-      loginStatus: LOGIN_STATUS.SUCCESS,
-      error: null
-    });
+    this.emit(
+      this.cloneState({
+        loginStatus: LOGIN_STATUS.SUCCESS,
+        error: null
+      } as Partial<State>)
+    );
 
     if (userInfo) {
       this.setUserInfo(userInfo);
@@ -446,6 +451,11 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * }
    */
   authFailed(error?: unknown): void {
-    this.emit({ ...this.state, loginStatus: LOGIN_STATUS.FAILED, error });
+    this.emit(
+      this.cloneState({
+        loginStatus: LOGIN_STATUS.FAILED,
+        error
+      } as Partial<State>)
+    );
   }
 }
