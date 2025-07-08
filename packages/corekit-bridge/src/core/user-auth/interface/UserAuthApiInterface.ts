@@ -1,4 +1,3 @@
-import { PickUser, UserAuthState } from '../impl/UserAuthState';
 import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
 
 /**
@@ -32,18 +31,18 @@ export interface LoginResponseData {
  *   }
  * }
  */
-export interface UserAuthApiInterface<State extends UserAuthState<unknown>> {
+export interface UserAuthApiInterface<User> {
   /**
    * Get the current store instance
    * @returns The user authentication store or null if not set
    */
-  getStore(): UserAuthStoreInterface<State> | null;
+  getStore(): UserAuthStoreInterface<User> | null;
 
   /**
    * Set the user authentication store
    * @param store - The user authentication store instance
    */
-  setStore(store: UserAuthStoreInterface<State>): void;
+  setStore(store: UserAuthStoreInterface<User>): void;
 
   /**
    * Authenticate user with credentials
@@ -70,5 +69,5 @@ export interface UserAuthApiInterface<State extends UserAuthState<unknown>> {
    * @param params - Optional parameters for fetching user info (e.g., login data)
    * @returns Promise resolving to user information
    */
-  getUserInfo(params?: unknown): Promise<PickUser<State>>;
+  getUserInfo(params?: unknown): Promise<User>;
 }

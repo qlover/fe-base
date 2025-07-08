@@ -1,6 +1,6 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import { LoginResponseData } from './UserAuthApiInterface';
-import { UserAuthState } from '../impl/UserAuthState';
+import { PickUser, UserAuthState } from '../impl/UserAuthState';
 
 /**
  * Login status enumeration
@@ -16,11 +16,11 @@ export enum LOGIN_STATUS {
   FAILED = 'failed'
 }
 
-export interface UserAuthStoreOptions<User> {
+export interface UserAuthStoreOptions<State extends UserAuthState<unknown>> {
   /**
    * User storage implementation
    */
-  userStorage?: KeyStorageInterface<string, User> | null;
+  userStorage?: KeyStorageInterface<string, PickUser<State>> | null;
 
   /**
    * Credential storage implementation
@@ -30,7 +30,9 @@ export interface UserAuthStoreOptions<User> {
   /**
    * Create a new state instance
    */
-  createState?: (userInfo?: User, credential?: string) => UserAuthState<User>;
+  defaultState?:
+    | State
+    | ((userInfo?: PickUser<State>, credential?: string) => State);
 }
 
 /**

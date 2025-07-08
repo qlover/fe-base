@@ -4,6 +4,7 @@ import type {
 } from '../interface/UserAuthApiInterface';
 import {
   LOGIN_STATUS,
+  UserAuthStoreOptions,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
 import { AuthServiceInterface } from '../interface/UserAuthInterface';
@@ -100,7 +101,7 @@ export interface UserAuthOptions<
    *   store: customStore
    * };
    */
-  store?: UserAuthStoreInterface<PickUser<State>>;
+  store?: UserAuthStoreInterface<PickUser<State>> | UserAuthStoreOptions<State>;
 
   /**
    * User information storage configuration
@@ -260,7 +261,8 @@ export interface UserAuthOptions<
 }
 
 export type InferState<T> =
-  T extends UserAuthState<unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends UserAuthState<any>
     ? T // If T is a State, use it directly
     : UserAuthState<T>;
 
@@ -272,11 +274,15 @@ export type InferState<T> =
  * Main function: Provide high-level authentication operations with consistent error handling and state synchronization
  * Main purpose: Simplify authentication integration with pluggable architecture supporting various backends and storage options
  *
- * @example
- * // Basic setup with minimal configuration
- * const authService = new UserAuthService(new UserAuthApi(), {});
+ * @example Basic setup with minimal configuration
  *
- * // Advanced setup with custom storage and OAuth support
+ * ```ts
+ * const authService = new UserAuthService(new UserAuthApi(), {});
+ * ```
+ *
+ * @example Advanced setup with custom storage and OAuth support
+ *
+ * ```ts
  * const authService = new UserAuthService(new UserAuthApi(), {
  *   userStorage: {
  *     key: 'user_profile',
@@ -291,8 +297,11 @@ export type InferState<T> =
  *   href: window.location.href,
  *   tokenKey: 'access_token'
  * });
+ * ```
  *
- * // OAuth integration setup
+ * @example OAuth integration setup
+ *
+ * ```ts
  * const oauthService = new UserAuthService(new OAuthApi(), {
  *   userStorage: {
  *     key: 'oauth_user',
@@ -307,14 +316,20 @@ export type InferState<T> =
  *   href: 'https://app.example.com/oauth/callback?access_token=oauth_123&user_id=456',
  *   tokenKey: 'access_token'
  * });
+ * ```
  *
- * // Session-only setup (no persistence)
+ * @example Session-only setup (no persistence)
+ *
+ * ```ts
  * const sessionService = new UserAuthService(new SessionApi(), {
  *   userStorage: false,
  *   credentialStorage: false
  * });
+ * ```
  *
- * // Enterprise setup with encrypted storage
+ * @example Enterprise setup with encrypted storage
+ *
+ * ```ts
  * const enterpriseService = new UserAuthService(new EnterpriseApi(), {
  *   userStorage: {
  *     key: 'enterprise_user',
@@ -327,8 +342,11 @@ export type InferState<T> =
  *     expiresIn: 'hour'
  *   }
  * });
+ * ```
  *
- * // Complete authentication flow
+ * @example Complete authentication flow
+ *
+ * ```ts
  * try {
  *   await authService.login({ email: 'user@example.com', password: 'password' });
  *   if (authService.isAuthenticated()) {
@@ -338,8 +356,11 @@ export type InferState<T> =
  * } catch (error) {
  *   console.error('Authentication failed:', error);
  * }
+ * ```
  */
 export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
+  protected readonly _store: UserAuthStoreInterface<PickUser<InferState<T>>>;
+
   /**
    * Initialize user authentication service
    *
@@ -408,22 +429,24 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * });
    */
   constructor(
-    public readonly api: UserAuthApiInterface<InferState<T>>,
-    protected readonly options: UserAuthOptions<InferState<T>>
+    public readonly api: UserAuthApiInterface<PickUser<InferState<T>>>,
+    options: UserAuthOptions<InferState<T>>
   ) {
+    // Ensure options is not undefined or null
+    options = options || {};
+
     // Validate required API service
     if (!api) {
       throw new Error('UserAuthService: api is required');
     }
 
-    const _store = createStore<T>(options);
+    const _store = createStore(options);
 
     if (!api.getStore()) {
-      api.setStore(_store as UserAuthStoreInterface<InferState<T>>);
+      api.setStore(_store);
     }
 
-    // Assign the store to options so the getter can access it
-    this.options.store = _store;
+    this._store = _store;
   }
 
   /**
@@ -442,9 +465,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * const userInfo = store.getUserInfo();
    */
   get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
-    return this.options.store as UserAuthStoreInterface<
-      PickUser<InferState<T>>
-    >;
+    return this._store;
   }
 
   /**

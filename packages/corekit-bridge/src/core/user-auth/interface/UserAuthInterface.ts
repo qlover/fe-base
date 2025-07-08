@@ -35,7 +35,8 @@ import type { UserAuthStoreInterface } from './UserAuthStoreInterface';
  * // Logout
  * await userAuth.logout();
  */
-export interface AuthServiceInterface<State extends UserAuthState<unknown>> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface AuthServiceInterface<State extends UserAuthState<any>> {
   /**
    * Get the store instance
    * @returns The user authentication store
@@ -46,7 +47,7 @@ export interface AuthServiceInterface<State extends UserAuthState<unknown>> {
    * Get the API instance
    * @returns The user authentication API
    */
-  get api(): UserAuthApiInterface<State>;
+  get api(): UserAuthApiInterface<PickUser<State>>;
 
   /**
    * Authenticate user with credentials

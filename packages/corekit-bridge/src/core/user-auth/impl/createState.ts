@@ -8,18 +8,20 @@ import { PickUser, UserAuthState } from './UserAuthState';
  * @returns The default state for the user authentication store
  */
 export function createState<State extends UserAuthState<unknown>>(
-  options: UserAuthStoreOptions<PickUser<State>>
+  options: UserAuthStoreOptions<State>
 ): State {
-  const { userStorage, credentialStorage, createState } = options;
+  const { userStorage, credentialStorage, defaultState } = options;
 
   const defaultCredential = credentialStorage?.get();
   const defaultUserInfo = userStorage?.get();
 
-  const state = createState
-    ? createState(
-        defaultUserInfo as PickUser<State>,
-        defaultCredential as string
-      )
+  const state = defaultState
+    ? typeof defaultState === 'function'
+      ? defaultState(
+          defaultUserInfo as PickUser<State>,
+          defaultCredential as string
+        )
+      : defaultState
     : new UserAuthState(defaultUserInfo, defaultCredential);
 
   if (

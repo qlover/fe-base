@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createState } from '../../../src/core/user-auth/impl/createState';
-import {
-  UserAuthState,
-  PickUser
-} from '../../../src/core/user-auth/impl/UserAuthState';
+import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import {
   UserAuthStoreOptions,
   LOGIN_STATUS
@@ -51,7 +48,7 @@ describe('createState', () => {
 
   describe('default state creation', () => {
     it('should create default state with empty options', () => {
-      const options: UserAuthStoreOptions<TestUser> = {};
+      const options: UserAuthStoreOptions<TestState> = {};
 
       const state = createState<TestState>(options);
 
@@ -64,7 +61,7 @@ describe('createState', () => {
     });
 
     it('should create state with null storage values', () => {
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage: null,
         credentialStorage: null
       };
@@ -82,7 +79,7 @@ describe('createState', () => {
     it('should initialize state with user info from storage', () => {
       userStorage.set(testUser);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage
       };
 
@@ -96,7 +93,7 @@ describe('createState', () => {
     it('should initialize state with credential from storage', () => {
       credentialStorage.set(testCredential);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         credentialStorage
       };
 
@@ -111,7 +108,7 @@ describe('createState', () => {
       userStorage.set(testUser);
       credentialStorage.set(testCredential);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage,
         credentialStorage
       };
@@ -125,7 +122,7 @@ describe('createState', () => {
 
     it('should handle undefined values from storage', () => {
       // Storage returns undefined when no value is set
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage,
         credentialStorage
       };
@@ -150,8 +147,8 @@ describe('createState', () => {
         return state as TestState;
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState
+      const options: UserAuthStoreOptions<TestState> = {
+        defaultState: customCreateState
       };
 
       const state = createState<TestState>(options);
@@ -175,10 +172,10 @@ describe('createState', () => {
         return state as TestState;
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage,
         credentialStorage,
-        createState: customCreateState
+        defaultState: customCreateState
       };
 
       const state = createState<TestState>(options);
@@ -197,8 +194,8 @@ describe('createState', () => {
         return new ExtendedUserAuthState(userInfo || null, credential || null);
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState
+      const options: UserAuthStoreOptions<ExtendedUserAuthState<TestUser>> = {
+        defaultState: customCreateState
       };
 
       const state = createState<ExtendedUserAuthState<TestUser>>(options);
@@ -217,8 +214,8 @@ describe('createState', () => {
         return null;
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState as unknown as (
+      const options: UserAuthStoreOptions<TestState> = {
+        defaultState: customCreateState as unknown as (
           userInfo?: TestUser,
           credential?: string
         ) => TestState
@@ -234,8 +231,8 @@ describe('createState', () => {
         return undefined;
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState as unknown as (
+      const options: UserAuthStoreOptions<TestState> = {
+        defaultState: customCreateState as unknown as (
           userInfo?: TestUser,
           credential?: string
         ) => TestState
@@ -251,8 +248,8 @@ describe('createState', () => {
         return 'not an object';
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState as unknown as (
+      const options: UserAuthStoreOptions<TestState> = {
+        defaultState: customCreateState as unknown as (
           userInfo?: TestUser,
           credential?: string
         ) => TestState
@@ -268,8 +265,8 @@ describe('createState', () => {
         return { userInfo: null, credential: null };
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
-        createState: customCreateState as unknown as (
+      const options: UserAuthStoreOptions<TestState> = {
+        defaultState: customCreateState as unknown as (
           userInfo?: TestUser,
           credential?: string
         ) => TestState
@@ -291,7 +288,7 @@ describe('createState', () => {
 
       userStorage.set(complexUser);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage
       };
 
@@ -308,7 +305,7 @@ describe('createState', () => {
       const longCredential = 'a'.repeat(1000) + '_token_' + 'b'.repeat(500);
       credentialStorage.set(longCredential);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         credentialStorage
       };
 
@@ -344,10 +341,10 @@ describe('createState', () => {
         return state as TestState;
       };
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage,
         credentialStorage,
-        createState: customCreateState
+        defaultState: customCreateState
       };
 
       const state = createState<TestState>(options);
@@ -381,7 +378,7 @@ describe('createState', () => {
       );
       customUserStorage.set(customUser);
 
-      const options: UserAuthStoreOptions<CustomUser> = {
+      const options: UserAuthStoreOptions<UserAuthState<CustomUser>> = {
         userStorage: customUserStorage
       };
 
@@ -400,9 +397,7 @@ describe('createState', () => {
     });
 
     it('should work with PickUser type utility', () => {
-      type ExtractedUser = PickUser<TestState>;
-
-      const options: UserAuthStoreOptions<ExtractedUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage
       };
 
@@ -424,7 +419,7 @@ describe('createState', () => {
         key: 'faulty'
       } as unknown as TokenStorage<string, TestUser>;
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         userStorage: faultyStorage
       };
 
@@ -437,7 +432,7 @@ describe('createState', () => {
     it('should handle empty string credentials', () => {
       credentialStorage.set('');
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         credentialStorage
       };
 
@@ -451,7 +446,7 @@ describe('createState', () => {
       const whitespaceCredential = '   \t\n   ';
       credentialStorage.set(whitespaceCredential);
 
-      const options: UserAuthStoreOptions<TestUser> = {
+      const options: UserAuthStoreOptions<TestState> = {
         credentialStorage
       };
 

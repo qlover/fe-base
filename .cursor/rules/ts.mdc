@@ -1,6 +1,6 @@
 ---
 description: 
-globs: **/**/*.ts,**/**/*.tsx,**/**/*.js
+globs: **/**/*.ts,**/**/*.tsx,**/**/*.js,!**/**/*.test.ts,!**/**/*.test.tsx,!**/**/*.test.js
 alwaysApply: false
 ---
 ## Code Comment Standards
@@ -17,6 +17,7 @@ alwaysApply: false
   - `@param`: type, purpose, constraints
   - `@returns`: type and description
 - All comments must be in English
+- Test rules [testing-guide.md](mdc:docs/en/testing-guide.md)
 
 ### Example
 
@@ -34,3 +35,5 @@ alwaysApply: false
  * await authService.login(credentials);
  */
 ```
+
+**Test files can be annotated without documentation,(*.test.ts)**
