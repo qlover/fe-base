@@ -4,7 +4,7 @@ import {
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
-import { PickUser } from './UserAuthState';
+import { PickUser, UserAuthState } from './UserAuthState';
 import { InferState, UserAuthOptions } from './UserAuthService';
 import { TokenStorage, TokenStorageOptions } from '../../storage';
 
@@ -86,10 +86,14 @@ function getURLProperty(href: string, key: string): string {
   }
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 function isUserAuthStore<User>(
   store: unknown
 ): store is UserAuthStoreInterface<User> {
-  if (store == null || typeof store !== 'object') {
+  if (!isObject(store)) {
     return false;
   }
 
@@ -121,7 +125,7 @@ function isUserAuthStore<User>(
 function parseStorage<Value>(
   value?: TokenStorageValueType<string, Value> | false
 ): KeyStorageInterface<string, Value> | null {
-  if (value === false || value === undefined) {
+  if (value === false || value == null) {
     return null;
   }
 
@@ -129,7 +133,12 @@ function parseStorage<Value>(
     return value;
   }
 
-  const { key, ...options } = value;
+  const { key, ...options } = value || {};
+
+  if (!key) {
+    throw new Error('Invalid storage configuration: key is required');
+  }
+
   return new TokenStorage(key, options);
 }
 
@@ -167,36 +176,48 @@ function parseStorage<Value>(
  *   tokenKey: 'access_token'
  * });
  */
-export function createStore<T>(
-  options: UserAuthOptions<InferState<T>>
-): UserAuthStoreInterface<PickUser<InferState<T>>> {
-  const { store, userStorage, credentialStorage, href, tokenKey } = options;
+export function createStore<
+  T,
+  State extends UserAuthState<unknown> = InferState<T>
+>(options: UserAuthOptions<State>): UserAuthStoreInterface<PickUser<State>> {
+  const { store, userStorage, credentialStorage, href, tokenKey } =
+    options || {};
 
   // Create or use existing store
-  let _store: UserAuthStoreInterface<PickUser<InferState<T>>>;
+  let _store: UserAuthStoreInterface<PickUser<State>>;
 
-  // Parse storage configurations
-  const _userStorage = parseStorage<PickUser<InferState<T>>>(userStorage);
-  const _credentialStorage = parseStorage<string>(credentialStorage);
+  // Parse credential storage
+  const _credentialStorage = parseStorage(
+    // default credential storage
+    credentialStorage
+      ? credentialStorage
+      : credentialStorage === false
+        ? false
+        : {
+            key: defaultCredentialKey
+          }
+  );
 
-  if (isUserAuthStore<PickUser<InferState<T>>>(store)) {
+  if (isUserAuthStore<PickUser<State>>(store)) {
     // Use existing store instance
     _store = store;
   } else {
     // Create new UserAuthStore from configuration
-    const storeOptions = store || {};
+    const storeOptions: UserAuthStoreOptions<State> = isObject(store)
+      ? store
+      : {};
+
+    // Parse storage configurations
+    const _userStorage = parseStorage(userStorage);
 
     // Create UserAuthStore with parsed storage options
-    const userAuthStoreOptions: UserAuthStoreOptions<PickUser<InferState<T>>> =
-      {
-        userStorage: _userStorage,
-        credentialStorage: _credentialStorage,
-        ...storeOptions
-      };
+    const userAuthStoreOptions: UserAuthStoreOptions<State> = {
+      userStorage: _userStorage,
+      credentialStorage: _credentialStorage,
+      ...storeOptions
+    };
 
-    _store = new UserAuthStore(userAuthStoreOptions) as UserAuthStoreInterface<
-      PickUser<InferState<T>>
-    >;
+    _store = new UserAuthStore(userAuthStoreOptions);
   }
 
   // Set credential storage if not already configured

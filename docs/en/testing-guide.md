@@ -59,9 +59,63 @@ export default defineConfig({
 
 ---
 
+## Test Strategy
+
+### Test Grouping
+
+The entire file is a test file, with test content organized into groups. For example, describe represents a group of tests. Typically, a test file has only one root describe.
+
+The content is tested from "small to large." For example, if the source file contains a class, the tests are grouped by the constructor parameters, the constructor itself, and each member method.
+
+- From covering various parameter types for each method to the overall flow affected by method calls.
+- As well as comprehensive flow testing and boundary testing.
+
+Source file (TestClass.ts):
+
+```ts
+type TestClassOptions = {
+  name: string;
+};
+
+class TestClass {
+  constructor(options: TestClassOptions) {}
+
+  getName(): string {
+    return this.options.name;
+  }
+
+  setName(name: string): void {
+    this.options.name = name;
+  }
+}
+```
+
+Test file (TestClass.test.ts):
+
+```ts
+describe('TestClass', () => {
+  describe('TestClass.constructor', () => {
+    // ...
+  });
+  describe('TestClass.getName', () => {
+    // ...
+  });
+
+  describe('Overall flow or boundary testing', () => {
+    it('should keep getName consistent after modifying the name', () => {
+      const testClass = new TestClass({ name: 'test' });
+      testClass.setName('test2');
+      expect(testClass.getName()).toBe('test2');
+    });
+  });
+});
+```
+
+---
+
 ## Mock Strategy
 
-1. ****mocks** Directory**: Each package can expose a subdirectory with the same name, providing persistent mocks for automatic use by other packages during testing.
+1. \***\*mocks** Directory\*\*: Each package can expose a subdirectory with the same name, providing persistent mocks for automatic use by other packages during testing.
 2. **vi.mock()**: Dynamically replace modules within a single test file, suitable for temporary behavioral differences.
 
 Example: In `packages/fe-corekit/__mocks__/index.ts`, expose the same API as the real implementation and use `vi.fn()` to generate assertable functions.

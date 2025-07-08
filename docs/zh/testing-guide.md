@@ -59,9 +59,63 @@ export default defineConfig({
 
 ---
 
+## 测试策略
+
+### 测试分组
+
+整个文件为一个测试文件, 测试内容以分组为单位，比如describe为一组测试，一般一个测试文件根只有一个describe
+
+内容按照从"小到大测试", 比如: 源文件中是 class 那么从构造器传递参数，构造器，每个成员方法为分组进行测试
+
+- 小到每个方法传递各种参数类型的覆盖，大到调用方法时影响的整体流程
+- 以及整体的流程测试，边界测试
+
+源文件(TestClass.ts):
+
+```ts
+type TestClassOptions = {
+  name: string;
+};
+
+class TestClass {
+  constructor(options: TestClassOptions) {}
+
+  getName(): string {
+    return this.options.name;
+  }
+
+  setName(name: string): void {
+    this.options.name = name;
+  }
+}
+```
+
+测试文件(TestClass.test.ts):
+
+```ts
+describe('TestClass', () => {
+  describe('TestClass.constructor', () => {
+    // ...
+  });
+  describe('TestClass.getName', () => {
+    // ...
+  });
+
+  describe('整体流程或边界测试', () => {
+    it('应该在修改name后，getName保持一致', () => {
+      const testClass = new TestClass({ name: 'test' });
+      testClass.setName('test2');
+      expect(testClass.getName()).toBe('test2');
+    });
+  });
+});
+```
+
+---
+
 ## Mock 策略
 
-1. **__mocks__ 目录**：每个包可暴露同名子目录，提供持久 Mock，供其他包在测试时自动使用。
+1. \***\*mocks** 目录\*\*：每个包可暴露同名子目录，提供持久 Mock，供其他包在测试时自动使用。
 2. **vi.mock()**：在单个测试文件内动态替换模块，适用于临时行为差异。
 
 示例：在 `packages/fe-corekit/__mocks__/index.ts` 中暴露与真实实现相同的 API，并使用 `vi.fn()` 生成可断言函数。
@@ -108,8 +162,8 @@ pnpm test:coverage
 
 ## 覆盖率目标
 
-| 指标 | 目标 |
-| ---- | ---- |
+| 指标 | 目标  |
+| ---- | ----- |
 | 语句 | ≥ 80% |
 | 分支 | ≥ 75% |
 | 函数 | ≥ 85% |
@@ -147,6 +201,7 @@ pnpm test:coverage
 ## 常见问题解答 (FAQ)
 
 ### Q1 : 如何 Mock 浏览器 API？
+
 使用 `vi.mock()` 或在 `setupFiles` 中全局覆写，例如：
 
 ```typescript
@@ -159,6 +214,7 @@ globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 16);
 - 拆分长时间集成流程为独立单元测试。
 
 ### Q3 : 如何测试 TypeScript 类型？
+
 利用 `expectTypeOf`：
 
 ```typescript

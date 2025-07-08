@@ -24,8 +24,8 @@ class MockAuthState extends UserAuthState<MockUser> {
   }
 }
 
-class MockUserAuthApi implements UserAuthApiInterface<MockAuthState> {
-  private store: UserAuthStoreInterface<MockAuthState> | null = null;
+class MockUserAuthApi implements UserAuthApiInterface<MockUser> {
+  private store: UserAuthStoreInterface<MockUser> | null = null;
 
   // Mock methods for testing
   public mockLogin: Mock = vi.fn();
@@ -33,11 +33,11 @@ class MockUserAuthApi implements UserAuthApiInterface<MockAuthState> {
   public mockLogout: Mock = vi.fn();
   public mockGetUserInfo: Mock = vi.fn();
 
-  getStore(): UserAuthStoreInterface<MockAuthState> | null {
+  getStore(): UserAuthStoreInterface<MockUser> | null {
     return this.store;
   }
 
-  setStore(store: UserAuthStoreInterface<MockAuthState>): void {
+  setStore(store: UserAuthStoreInterface<MockUser>): void {
     this.store = store;
   }
 
@@ -114,7 +114,7 @@ describe('UserAuthService', () => {
     it('should throw error when API is not provided', () => {
       expect(() => {
         new UserAuthService<MockAuthState>(
-          null as unknown as UserAuthApiInterface<MockAuthState>,
+          null as unknown as UserAuthApiInterface<MockUser>,
           {}
         );
       }).toThrow('UserAuthService: api is required');
@@ -131,7 +131,7 @@ describe('UserAuthService', () => {
     });
 
     it('should not override existing store in API', () => {
-      const existingStore = {} as UserAuthStoreInterface<MockAuthState>;
+      const existingStore = {} as UserAuthStoreInterface<MockUser>;
       mockApi.setStore(existingStore);
 
       new UserAuthService<MockAuthState>(mockApi, {});
