@@ -8,7 +8,7 @@ import {
 } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
+import envConfig from '@qlover/corekit-bridge/vite-env-config';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
