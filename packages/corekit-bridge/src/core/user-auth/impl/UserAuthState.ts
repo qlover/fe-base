@@ -1,4 +1,5 @@
 import { LOGIN_STATUS } from '../interface/UserAuthStoreInterface';
+import { StoreStateInterface } from '../../store-state';
 
 export type PickUser<T> = T extends UserAuthState<infer U> ? U : never;
 
@@ -18,7 +19,7 @@ export type PickUser<T> = T extends UserAuthState<infer U> ? U : never;
  * console.log(state.userInfo); // { id: '123', name: 'John' }
  * console.log(state.credential); // 'auth-token-123'
  */
-export class UserAuthState<User> {
+export class UserAuthState<User> implements StoreStateInterface {
   constructor(
     /**
      * User information object containing profile data

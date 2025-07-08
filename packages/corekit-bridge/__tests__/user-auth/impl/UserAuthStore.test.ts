@@ -969,4 +969,376 @@ describe('UserAuthStore', () => {
       expect(emitSpy).toHaveBeenCalled();
     });
   });
+
+  /**
+   * Test suite for state change verification with cloneState
+   *
+   * Tests that verify state changes are properly applied and state immutability is maintained
+   */
+  describe('State Change Verification with cloneState', () => {
+    let stateChangeCallback: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      store.setUserStorage(mockUserStorage);
+      store.setCredentialStorage(mockCredentialStorage);
+
+      // Mock state change callback
+      stateChangeCallback = vi.fn();
+      store.observe(stateChangeCallback);
+    });
+
+    describe('setCredential state changes', () => {
+      it('should create new state object when setting credential', () => {
+        const previousState = store.state;
+        const testCredential = 'test-credential-123';
+
+        store.setCredential(testCredential);
+
+        // Verify state object is new (immutability)
+        expect(store.state).not.toBe(previousState);
+
+        // Verify credential is updated
+        expect(store.state.credential).toBe(testCredential);
+        expect(store.getCredential()).toBe(testCredential);
+
+        // Verify other properties remain unchanged
+        expect(store.state.userInfo).toBe(previousState.userInfo);
+        expect(store.state.loginStatus).toBe(previousState.loginStatus);
+        expect(store.state.error).toBe(previousState.error);
+
+        // Verify state change callback was called
+        expect(stateChangeCallback).toHaveBeenCalledWith(store.state);
+      });
+
+      it('should handle empty credential correctly', () => {
+        const previousState = store.state;
+
+        store.setCredential('');
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.credential).toBe('');
+        expect(store.getCredential()).toBe('');
+      });
+
+      it('should persist credential to storage when setting', () => {
+        const testCredential = 'persistent-credential';
+
+        store.setCredential(testCredential);
+
+        expect(mockCredentialStorage.get()).toBe(testCredential);
+      });
+
+      it('should maintain state consistency across multiple credential changes', () => {
+        const credentials = ['cred1', 'cred2', 'cred3'];
+        const states: MockAuthState[] = [];
+
+        credentials.forEach((credential) => {
+          store.setCredential(credential);
+          states.push({ ...store.state });
+        });
+
+        // Verify each state change created new state object
+        for (let i = 0; i < states.length - 1; i++) {
+          expect(states[i]).not.toBe(states[i + 1]);
+        }
+
+        // Verify final state has correct credential
+        expect(store.getCredential()).toBe(credentials[credentials.length - 1]);
+        expect(stateChangeCallback).toHaveBeenCalledTimes(credentials.length);
+      });
+    });
+
+    describe('startAuth state changes', () => {
+      it('should create new state object when starting auth', () => {
+        const previousState = store.state;
+
+        store.startAuth();
+
+        // Verify state object is new
+        expect(store.state).not.toBe(previousState);
+
+        // Verify login status is updated
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.LOADING);
+        expect(store.getLoginStatus()).toBe(LOGIN_STATUS.LOADING);
+
+        // Verify error is cleared
+        expect(store.state.error).toBeNull();
+
+        // Verify other properties remain unchanged
+        expect(store.state.userInfo).toBe(previousState.userInfo);
+        expect(store.state.credential).toBe(previousState.credential);
+
+        // Verify state change callback was called
+        expect(stateChangeCallback).toHaveBeenCalledWith(store.state);
+      });
+
+      it('should clear previous error when starting auth', () => {
+        // Set an error first
+        store.authFailed('previous error');
+        expect(store.state.error).toBe('previous error');
+
+        const previousState = store.state;
+
+        store.startAuth();
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.error).toBeNull();
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.LOADING);
+      });
+
+      it('should preserve user info and credentials when starting auth', () => {
+        // Set up existing data
+        store.setUserInfo(mockUser);
+        store.setCredential(mockCredential);
+
+        const previousState = store.state;
+
+        store.startAuth();
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.userInfo).toEqual(mockUser);
+        expect(store.state.credential).toBe(mockCredential);
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.LOADING);
+        expect(store.state.error).toBeNull();
+      });
+    });
+
+    describe('authSuccess state changes', () => {
+      it('should create new state object when auth succeeds', () => {
+        const previousState = store.state;
+
+        store.authSuccess();
+
+        // Verify state object is new
+        expect(store.state).not.toBe(previousState);
+
+        // Verify login status is updated
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+        expect(store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
+
+        // Verify error is cleared
+        expect(store.state.error).toBeNull();
+
+        // Verify state change callback was called
+        expect(stateChangeCallback).toHaveBeenCalledWith(store.state);
+      });
+
+      it('should clear previous error when auth succeeds', () => {
+        // Set an error first
+        store.authFailed('auth error');
+        expect(store.state.error).toBe('auth error');
+
+        const previousState = store.state;
+
+        store.authSuccess();
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.error).toBeNull();
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+      });
+
+      it('should handle user info and credential updates correctly', () => {
+        const previousState = store.state;
+        const testCredential = 'success-credential';
+
+        store.authSuccess(mockUser, testCredential);
+
+        // Verify state changes from authSuccess
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+        expect(store.state.error).toBeNull();
+
+        // Verify user info and credential are set (through separate method calls)
+        expect(store.getUserInfo()).toEqual(mockUser);
+        expect(store.getCredential()).toBe(testCredential);
+
+        // Verify multiple state changes occurred (authSuccess + setUserInfo + setCredential)
+        expect(stateChangeCallback).toHaveBeenCalledTimes(3);
+      });
+
+      it('should handle LoginResponseData credential parameter', () => {
+        const previousState = store.state;
+
+        store.authSuccess(mockUser, loginResponse);
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+        expect(store.getCredential()).toBe(loginResponse.token);
+      });
+    });
+
+    describe('authFailed state changes', () => {
+      it('should create new state object when auth fails', () => {
+        const previousState = store.state;
+        const testError = 'Authentication failed';
+
+        store.authFailed(testError);
+
+        // Verify state object is new
+        expect(store.state).not.toBe(previousState);
+
+        // Verify login status is updated
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.FAILED);
+        expect(store.getLoginStatus()).toBe(LOGIN_STATUS.FAILED);
+
+        // Verify error is set
+        expect(store.state.error).toBe(testError);
+
+        // Verify other properties remain unchanged
+        expect(store.state.userInfo).toBe(previousState.userInfo);
+        expect(store.state.credential).toBe(previousState.credential);
+
+        // Verify state change callback was called
+        expect(stateChangeCallback).toHaveBeenCalledWith(store.state);
+      });
+
+      it('should handle different error types correctly', () => {
+        const errorTypes = [
+          'string error',
+          new Error('Error object'),
+          { message: 'Custom error', code: 500 },
+          null,
+          undefined
+        ];
+
+        errorTypes.forEach((error) => {
+          const previousState = store.state;
+
+          store.authFailed(error);
+
+          expect(store.state).not.toBe(previousState);
+          expect(store.state.loginStatus).toBe(LOGIN_STATUS.FAILED);
+          expect(store.state.error).toBe(error);
+        });
+
+        expect(stateChangeCallback).toHaveBeenCalledTimes(errorTypes.length);
+      });
+
+      it('should preserve user info and credentials when auth fails', () => {
+        // Set up existing data
+        store.setUserInfo(mockUser);
+        store.setCredential(mockCredential);
+
+        const previousState = store.state;
+
+        store.authFailed('Network error');
+
+        expect(store.state).not.toBe(previousState);
+        expect(store.state.userInfo).toEqual(mockUser);
+        expect(store.state.credential).toBe(mockCredential);
+        expect(store.state.loginStatus).toBe(LOGIN_STATUS.FAILED);
+        expect(store.state.error).toBe('Network error');
+      });
+    });
+
+    describe('State transition sequences', () => {
+      it('should maintain state immutability through complete auth flow', () => {
+        const states: MockAuthState[] = [];
+
+        // Capture each state change
+        const captureState = () => states.push({ ...store.state });
+
+        // Complete authentication flow
+        captureState(); // Initial state
+
+        store.startAuth();
+        captureState(); // Loading state
+
+        store.setCredential('flow-credential');
+        captureState(); // With credential
+
+        store.authSuccess(mockUser);
+        captureState(); // Success state
+
+        store.authFailed('Network error');
+        captureState(); // Failed state
+
+        // Verify each state is a new object
+        for (let i = 0; i < states.length - 1; i++) {
+          expect(states[i]).not.toBe(states[i + 1]);
+        }
+
+        // Verify final state
+        expect(store.getLoginStatus()).toBe(LOGIN_STATUS.FAILED);
+        expect(store.state.error).toBe('Network error');
+        expect(store.getUserInfo()).toEqual(mockUser);
+        expect(store.getCredential()).toBe('flow-credential');
+      });
+
+      it('should handle rapid state changes correctly', () => {
+        const operations = [
+          () => store.startAuth(),
+          () => store.setCredential('rapid-1'),
+          () => store.authSuccess(),
+          () => store.setCredential('rapid-2'),
+          () => store.authFailed('rapid-error'),
+          () => store.startAuth(),
+          () => store.authSuccess(mockUser, 'rapid-3')
+        ];
+
+        const statesBefore: MockAuthState[] = [];
+        const statesAfter: MockAuthState[] = [];
+
+        operations.forEach((operation) => {
+          statesBefore.push({ ...store.state });
+          operation();
+          statesAfter.push({ ...store.state });
+        });
+
+        // Verify each operation created a new state
+        for (let i = 0; i < operations.length; i++) {
+          expect(statesBefore[i]).not.toBe(statesAfter[i]);
+        }
+
+        // Verify final state is correct
+        expect(store.getLoginStatus()).toBe(LOGIN_STATUS.SUCCESS);
+        expect(store.getUserInfo()).toEqual(mockUser);
+        expect(store.getCredential()).toBe('rapid-3');
+        expect(store.state.error).toBeNull();
+      });
+    });
+
+    describe('State consistency verification', () => {
+      it('should maintain consistent state between getter methods and direct state access', () => {
+        // Set up complex state
+        store.setUserInfo(mockUser);
+        store.setCredential(mockCredential);
+        store.authSuccess();
+
+        // Verify consistency
+        expect(store.getUserInfo()).toEqual(store.state.userInfo);
+        expect(store.getCredential()).toBe(store.state.credential);
+        expect(store.getLoginStatus()).toBe(store.state.loginStatus);
+      });
+
+      it('should ensure state changes are atomic', () => {
+        const stateSnapshots: MockAuthState[] = [];
+
+        // Subscribe to capture every state change
+        store.observe((state: MockAuthState) => {
+          stateSnapshots.push({ ...state });
+        });
+
+        // Perform operations
+        store.startAuth();
+        store.setCredential('atomic-test');
+        store.authSuccess(mockUser);
+
+        // Verify each snapshot represents a complete, valid state
+        stateSnapshots.forEach((snapshot) => {
+          expect(snapshot).toHaveProperty('userInfo');
+          expect(snapshot).toHaveProperty('credential');
+          expect(snapshot).toHaveProperty('loginStatus');
+          expect(snapshot).toHaveProperty('error');
+        });
+
+        // Verify final state
+        const finalState = stateSnapshots[stateSnapshots.length - 1];
+        expect(finalState.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+        expect(finalState.userInfo).toEqual(mockUser);
+        expect(finalState.credential).toBe('atomic-test');
+        expect(finalState.error).toBeNull();
+      });
+    });
+  });
 });
