@@ -1,5 +1,29 @@
 # @qlover/corekit-bridge
 
+## 1.3.3
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** enhance testing and documentation for user authentication ([b557082](https://github.com/qlover/fe-base/commit/b557082f2d8a0989c7a793614fe2f320d7811c95)) ([#466](https://github.com/qlover/fe-base/pull/466))
+  - Updated the testing guide to include a comprehensive test strategy and examples for organizing test files and grouping tests effectively.
+  - Modified the TypeScript rules to exclude test files from documentation generation, allowing for cleaner documentation output.
+  - Introduced a new mock storage implementation for testing user authentication, improving the flexibility and reliability of tests.
+  - Enhanced the createStore function to support various store configurations, ensuring better handling of user and credential storage options.
+
+  These changes improve the clarity and usability of the user authentication system within the corekit-bridge package, while also enhancing test coverage and documentation.
+
+#### ♻️ Refactors
+
+- **corekit-bridge:** update UserAuthStore and createState for improved state management ([6ab3aa9](https://github.com/qlover/fe-base/commit/6ab3aa9f2ae48af9bd3f9a469e310351dfc27cec)) ([#466](https://github.com/qlover/fe-base/pull/466))
+  - Refactored UserAuthStore to utilize a defaultState option instead of createState, enhancing clarity and flexibility in state initialization.
+  - Updated createState function to support both direct state instances and factory functions for state creation, improving usability.
+  - Adjusted UserAuthStoreOptions interface to reflect changes in state management options, ensuring type safety and consistency.
+  - Enhanced test coverage for UserAuthStore and createState, validating various initialization scenarios and error handling.
+
+  These changes improve the overall architecture and maintainability of the user authentication system within the corekit-bridge package.
+
 ## 1.3.2
 
 ### Patch Changes

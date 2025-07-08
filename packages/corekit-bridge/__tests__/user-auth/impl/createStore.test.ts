@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createStore } from '../../../src/core/user-auth/impl/createStore';
 import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
