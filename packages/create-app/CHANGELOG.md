@@ -1,5 +1,16 @@
 # @qlover/create-app
 
+## 0.6.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **vite.config:** update import path for vite-env-config to remove index file reference ([251ae17](https://github.com/qlover/fe-base/commit/251ae178c26238070fa6663826425d188e30745f)) ([#464](https://github.com/qlover/fe-base/pull/464))
+  - Modified the import statement for envConfig in vite.config.ts to streamline the path by removing the explicit '/index' reference, improving clarity and consistency in module imports.
+
+  This change enhances the maintainability of the configuration file within the react-app template.
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @qlover/corekit-bridge
 
+## 1.3.2
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **corekit-bridge:** state emission in store interfaces to utilize cloneState method for immutability ([4f886c0](https://github.com/qlover/fe-base/commit/4f886c0d7520a95d3381de6d45fbd6ee476b33ae)) ([#464](https://github.com/qlover/fe-base/pull/464))
+  - Updated CounterStore, ThemeService, and UserAuthStore to emit state changes using the cloneState method, enhancing immutability and ensuring consistent state management.
+  - Adjusted method parameters in UserAuthStore for clarity, changing 'params' to 'userInfo' in the setUserInfo method.
+
+  These changes improve the reliability of state management across the corekit-bridge package.
+
 ## 1.3.1
 
 ### Patch Changes
