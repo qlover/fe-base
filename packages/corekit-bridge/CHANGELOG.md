@@ -1,5 +1,27 @@
 # @qlover/corekit-bridge
 
+## 1.3.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** implement shallow clone utility and add tests for store state management ([fc596f3](https://github.com/qlover/fe-base/commit/fc596f33b91b3f457ab9d4c1e066b897c70c7f25)) ([#462](https://github.com/qlover/fe-base/pull/462))
+  - Introduced a `clone` utility for shallow cloning objects, arrays, and special instances (Date, RegExp, Set, Map).
+  - Added comprehensive tests for the `clone` function, ensuring correct behavior with various data types and structures.
+  - Implemented a `StoreInterface` with state management capabilities, including `resetState` and `cloneState` methods.
+  - Developed tests for `StoreInterface` to validate state initialization, cloning, and resetting functionality, ensuring robust state management.
+
+  These changes enhance the corekit-bridge package by providing essential cloning utilities and improving state management through comprehensive testing.
+
+- **corekit-bridge:** enhance UserAuthStore with comprehensive state change tests ([efb673f](https://github.com/qlover/fe-base/commit/efb673f1a05335af6183981cab77d168c63c70c9)) ([#462](https://github.com/qlover/fe-base/pull/462))
+  - Added a new test suite for verifying state changes in UserAuthStore, focusing on immutability and consistency during credential and authentication state transitions.
+  - Implemented tests for various scenarios including setting credentials, starting authentication, handling success and failure states, and ensuring state consistency across multiple changes.
+  - Updated UserAuthStore methods to utilize cloneState for state management, ensuring immutability and proper state transitions.
+  - Enhanced StoreInterface with optional source parameter in cloneState method for improved flexibility.
+
+  These changes improve the reliability and robustness of the user authentication state management within the corekit-bridge package.
+
 ## 1.3.0
 
 ### Minor Changes
