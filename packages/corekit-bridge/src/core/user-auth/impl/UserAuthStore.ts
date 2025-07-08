@@ -188,7 +188,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Update in-memory user data and automatically persist to configured storage
    * Main purpose: Ensure user information consistency between memory and storage with state change notifications
    *
-   * @param params - User information object to store, or null to clear user data
+   * @param userInfo - User information object to store, or null to clear user data
    *
    * @example
    * // Set complete user profile
@@ -209,11 +209,11 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   lastLogin: new Date().toISOString()
    * });
    */
-  setUserInfo(params: PickUser<State> | null): void {
-    this.emit({ ...this.state, userInfo: params });
+  setUserInfo(userInfo: PickUser<State> | null): void {
+    this.emit(this.cloneState({ userInfo } as Partial<State>));
 
-    if (params) {
-      this.getUserStorage()?.set(params);
+    if (userInfo) {
+      this.getUserStorage()?.set(userInfo);
     }
   }
 
