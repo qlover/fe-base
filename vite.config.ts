@@ -14,8 +14,15 @@ export default defineConfig({
     watch: false,
     include: ['packages/**/__tests__/**/*.test.{ts,tsx}'],
     exclude: [
-      './packages/create-app/templates/**',
-      // workspace:* case link to local package, has __tests__ folder
+      '.changelog',
+      '.github',
+      '.husky',
+      '.vscode',
+      '.nx',
+      'node_modules',
+      'dist',
+      'build',
+      'packages/create-app/templates',
       'packages/**/node_modules/**'
     ],
     alias: {

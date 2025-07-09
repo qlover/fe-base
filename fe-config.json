@@ -1,6 +1,7 @@
 {
   "protectedBranches": ["master", "develop"],
   "release": {
+    "plugins": [["./make/release/ReleaseCDN.js"]],
     "githubPR": {
       "commitArgs": ["--no-verify"],
       "pushChangedLabels": true

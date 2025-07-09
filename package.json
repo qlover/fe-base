@@ -52,6 +52,7 @@
     "@qlover/fe-code2markdown": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
+    "@qlover/fe-release": "workspace:*",
     "@qlover/scripts-context": "workspace:*",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-json": "^6.1.0",
