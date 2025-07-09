@@ -70,7 +70,7 @@ export default tseslint.config([
   },
 
   {
-    files: ['packages/**/*.{js,jsx,ts,tsx}'],
+    files: ['packages/**/*.{js,jsx,ts,tsx}', 'make/**/*.{js,jsx,ts,tsx}'],
     extends: [js.configs.recommended, commonConfig],
     plugins: {
       prettier: prettier
@@ -83,7 +83,7 @@ export default tseslint.config([
   },
 
   {
-    files: ['packages/**/*.{ts,tsx}'],
+    files: ['packages/**/*.{ts,tsx}', 'make/**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
     plugins: {
       'fe-dev': feDev
