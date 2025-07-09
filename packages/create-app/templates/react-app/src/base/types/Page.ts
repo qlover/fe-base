@@ -10,12 +10,22 @@ export interface BasePageProvider {
 type RouteCategory = 'main' | 'auth' | 'common';
 
 export interface RouteMeta {
-  category?: RouteCategory;
   /**
-   * from app.router.json
+   * The title of the route
    */
   title?: string;
+
+  /**
+   * The description of the route
+   */
+  description?: string;
+
+  /**
+   * The icon of the route
+   */
   icon?: string;
+
+  category?: RouteCategory;
   /**
    * from app.router.json
    *

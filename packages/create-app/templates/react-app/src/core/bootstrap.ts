@@ -4,7 +4,7 @@ import { IOC } from './IOC';
 import * as globals from '@/core/globals';
 import { IocRegister } from './registers';
 import { BootstrapsRegistry } from './bootstraps';
-import { GLOBAL_NO_WINDOW } from '@config/Identifier/Error';
+import { GLOBAL_NO_WINDOW } from '@config/Identifier/common.error';
 
 export default async function startup({
   root,
@@ -33,7 +33,7 @@ export default async function startup({
     },
     envOptions: {
       target: appConfig,
-      source: envSource,
+      source: { ...envSource, [envPrefix + 'BOOT_HREF']: root.location.href },
       prefix: envPrefix,
       blackList: envBlackList
     },

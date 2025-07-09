@@ -1,15 +1,22 @@
-import { Serializer } from './Serializer';
+import { SerializerIneterface } from './SerializerIneterface';
 
 /**
  * Base64 serialization implementation
- * Provides string-to-base64 encoding/decoding with optional compression
+ * Cross-platform string-to-base64 encoding/decoding for both browser and Node.js
+ *
+ * Significance: Provides universal Base64 serialization across different JavaScript environments
+ * Core idea: Environment-aware Base64 encoding with consistent API
+ * Main function: Convert strings to/from Base64 with optional URL-safe encoding
+ * Main purpose: Enable cross-platform data serialization with Base64 encoding
  *
  * Features:
+ * - Cross-platform compatibility (Browser + Node.js)
  * - Base64 encoding/decoding
  * - UTF-8 support
  * - URL-safe encoding option
+ * - Robust error handling
  *
- * @implements {Serializer<string, string>}
+ * @implements {SerializerIneterface<string, string>}
  *
  * @since 1.0.10
  *
@@ -18,13 +25,13 @@ import { Serializer } from './Serializer';
  * const serializer = new Base64Serializer({ urlSafe: true });
  *
  * // Encode string to base64
- * const encoded = serializer.stringify("Hello World!");
+ * const encoded = serializer.serialize("Hello World!");
  *
  * // Decode base64 back to string
- * const decoded = serializer.parse(encoded);
+ * const decoded = serializer.deserialize(encoded);
  * ```
  */
-export class Base64Serializer implements Serializer<string, string> {
+export class Base64Serializer implements SerializerIneterface<string, string> {
   constructor(
     private options: {
       /**
@@ -38,22 +45,87 @@ export class Base64Serializer implements Serializer<string, string> {
   ) {}
 
   /**
-   * Serializes string to base64
+   * Detects if running in Node.js environment
+   * @private
+   * @returns True if in Node.js, false if in browser
+   */
+  private isNodeEnvironment(): boolean {
+    return (
+      typeof process !== 'undefined' &&
+      process.versions &&
+      !!process.versions.node
+    );
+  }
+
+  /**
+   * Validates if a string is a valid Base64 encoded string
+   * @private
+   * @param value - The string to validate
+   * @returns True if valid Base64, false otherwise
+   */
+  private isValidBase64(value: string): boolean {
+    try {
+      // Check if string contains only valid Base64 characters
+      const base64Regex = /^[A-Za-z0-9+/\-_]*={0,2}$/;
+      if (!base64Regex.test(value)) {
+        return false;
+      }
+
+      // Check if length is valid (must be multiple of 4 after padding)
+      const normalizedValue = this.options.urlSafe
+        ? this.makeUrlUnsafe(value)
+        : value;
+      if (normalizedValue.length % 4 !== 0) {
+        return false;
+      }
+
+      // Try to decode to verify it's valid
+      if (this.isNodeEnvironment()) {
+        Buffer.from(normalizedValue, 'base64').toString('utf8');
+      } else {
+        atob(normalizedValue);
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Serializes string to base64 using environment-appropriate method
    * @override
    * @since 1.0.10
    * @param data - String to encode
    * @returns Base64 encoded string
    */
   serialize(data: string): string {
-    const base64 = Buffer.from(data, 'utf8').toString('base64');
-    if (this.options.urlSafe) {
-      return this.makeUrlSafe(base64);
+    try {
+      let base64: string;
+
+      if (this.isNodeEnvironment()) {
+        // Node.js environment
+        base64 = Buffer.from(data, 'utf8').toString('base64');
+      } else {
+        // Browser environment
+        const utf8Bytes = new TextEncoder().encode(data);
+        const binaryString = Array.from(utf8Bytes, (byte) =>
+          String.fromCharCode(byte)
+        ).join('');
+        base64 = btoa(binaryString);
+      }
+
+      if (this.options.urlSafe) {
+        return this.makeUrlSafe(base64);
+      }
+      return base64;
+    } catch {
+      // Return empty string on error for consistency
+      return '';
     }
-    return base64;
   }
 
   /**
-   * Deserializes base64 string back to original
+   * Deserializes base64 string back to original using environment-appropriate method
    * @override
    * @since 1.0.10
    * @param data - Base64 string to decode
@@ -62,14 +134,38 @@ export class Base64Serializer implements Serializer<string, string> {
    */
   deserialize(data: string, defaultValue?: string): string {
     try {
-      if (!/^[A-Za-z0-9+/]*={0,2}$/.test(data)) {
+      // Input validation
+      if (typeof data !== 'string') {
         return defaultValue ?? '';
       }
 
-      if (this.options.urlSafe) {
-        data = this.makeUrlUnsafe(data);
+      if (data.length === 0) {
+        return '';
       }
-      return Buffer.from(data, 'base64').toString('utf8');
+
+      // Validate Base64 format
+      if (!this.isValidBase64(data)) {
+        return defaultValue ?? '';
+      }
+
+      // Convert URL-safe to standard if needed
+      let normalizedData = data;
+      if (this.options.urlSafe) {
+        normalizedData = this.makeUrlUnsafe(data);
+      }
+
+      if (this.isNodeEnvironment()) {
+        // Node.js environment
+        return Buffer.from(normalizedData, 'base64').toString('utf8');
+      } else {
+        // Browser environment
+        const binaryString = atob(normalizedData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return new TextDecoder().decode(bytes);
+      }
     } catch {
       return defaultValue ?? '';
     }

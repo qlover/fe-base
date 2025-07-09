@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import {
@@ -7,7 +8,7 @@ import {
 } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from '@qlover/corekit-bridge/vite-env-config/index';
+import envConfig from '@qlover/corekit-bridge/vite-env-config';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
@@ -111,7 +112,7 @@ export default defineConfig({
       overriedCssFilePath: './src/styles/css/antd-themes/no-context.css',
       targetPath: './src/base/types/deprecated-antd.d.ts'
     })
-  ],
+  ] as any[],
   base: routerPrefix,
   envPrefix: envPrefix,
   publicDir: 'public',

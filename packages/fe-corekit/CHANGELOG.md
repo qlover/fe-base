@@ -1,5 +1,39 @@
 # @qlover/fe-corekit
 
+## 1.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **fe-corekit:** add comprehensive tests for Base64Serializer and introduce KeyStorage and ObjectStorage implementations ([6073a99](https://github.com/qlover/fe-base/commit/6073a9982aeb6b7a71db25a1dbd179ff89c4a8f1)) ([#458](https://github.com/qlover/fe-base/pull/458))
+  - Added a new test suite for Base64Serializer, covering serialization and deserialization of strings, UTF-8 characters, empty strings, and long strings.
+  - Implemented URL-safe encoding tests to ensure correct handling of special characters.
+  - Introduced performance tests for large data handling and regression tests for backward compatibility.
+  - Created new test files for KeyStorage and ObjectStorage, implementing various storage functionalities and ensuring type safety.
+  - Removed the outdated JSONStorage test file to streamline the test suite.
+
+  These changes enhance the testing coverage and reliability of the serialization and storage functionalities within the corekit package.
+
+- **fe-corekit:** migrate build process to tsup and update package configuration ([0dd27fa](https://github.com/qlover/fe-base/commit/0dd27fa29a710e6c297c1f12b27661e6708fc199)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Changed the main entry point in `package.json` to `index.cjs` for CommonJS compatibility.
+  - Added a "browser" field in `package.json` to support IIFE format.
+  - Replaced the build script in `package.json` to utilize `tsup`, enhancing the build process.
+  - Introduced a new `project.json` file to define build targets and improve integration with NX.
+  - Created a new `tsup.config.ts` file for configuring the build process, supporting both ESM and CommonJS formats.
+  - Removed the obsolete `rollup.config.js` file to streamline the project structure.
+  - Updated dependency management by replacing `merge` with `lodash/merge` for consistency.
+
+  These changes enhance the build orchestration and configuration for the fe-corekit package.
+
+#### 🐞 Bug Fixes
+
+- **storage:** handle null values in ObjectStorage and SyncStorage retrieval ([5878afb](https://github.com/qlover/fe-base/commit/5878afbd8dabe2dceef6543882c64108355f4853)) ([#458](https://github.com/qlover/fe-base/pull/458))
+  - Updated ObjectStorage and SyncStorage implementations to ensure that null values are correctly handled when setting and retrieving items.
+  - Modified the setItem method to default to null if the value is undefined, and adjusted the getItem method to return null if no value is found.
+
+  These changes improve the robustness of the storage system by ensuring consistent behavior when dealing with null values.
+
 ## 1.4.1
 
 ### Patch Changes
@@ -7,7 +41,6 @@
 #### ✨ Features
 
 - **RequestScheduler:** enhance request type handling and add new test case ([585e09f](https://github.com/qlover/fe-base/commit/585e09fc7a957f3cadc374c334a6d227c70bcd13)) ([#436](https://github.com/qlover/fe-base/pull/436))
-
   - Updated the RequestScheduler methods to swap the generic parameters for Request and Response, improving clarity and consistency in type usage.
   - Added a new test case to validate the correct handling of response and request types in the RequestScheduler, ensuring robust type safety and functionality.
 
@@ -20,7 +53,6 @@
 #### ♻️ Refactors
 
 - **fe-corekit:** update documentation structure and enhance build scripts ([b886224](https://github.com/qlover/fe-base/commit/b886224881bf3a2fc7ae46699d19842b196661c7)) ([#401](https://github.com/qlover/fe-base/pull/401))
-
   - Removed outdated documentation files and added new markdown files for various components.
   - Updated package.json scripts for documentation generation to reflect new paths and formats.
   - Enhanced the build process for documentation to include new type aliases and interfaces.
@@ -43,13 +75,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -58,17 +88,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -82,13 +109,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -97,17 +122,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -136,7 +158,6 @@
 #### ✨ Features
 
 - implement GitChangelog for improved changelog generation (#351)
-
   - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
   - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
   - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.

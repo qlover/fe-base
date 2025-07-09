@@ -1,5 +1,125 @@
 # @qlover/create-app
 
+## 0.6.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **vite.config:** update import path for vite-env-config to remove index file reference ([251ae17](https://github.com/qlover/fe-base/commit/251ae178c26238070fa6663826425d188e30745f)) ([#464](https://github.com/qlover/fe-base/pull/464))
+  - Modified the import statement for envConfig in vite.config.ts to streamline the path by removing the explicit '/index' reference, improving clarity and consistency in module imports.
+
+  This change enhances the maintainability of the configuration file within the react-app template.
+
+## 0.6.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **react-app:** update package dependencies and refactor UserApi and UserService ([35e58e4](https://github.com/qlover/fe-base/commit/35e58e4e618082b5dee16351d7d78bbd54ca9e83)) ([#460](https://github.com/qlover/fe-base/pull/460))
+  - Changed dependencies in package.json to use the latest versions of @qlover/corekit-bridge and @qlover/fe-corekit for improved stability.
+  - Refactored UserApi to utilize UserAuthState for better state management and type safety.
+  - Updated UserService to align with the new UserApi structure, enhancing type definitions and simplifying state handling.
+  - Removed outdated comments and streamlined the code for better readability and maintainability.
+
+  These changes aim to enhance the overall functionality and reliability of the user authentication system within the react-app template.
+
+## 0.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-app:** enhance user authentication and error handling ([ee00e24](https://github.com/qlover/fe-base/commit/ee00e24ce1c713aff91100ff30f9c84d8b523c80)) ([#458](https://github.com/qlover/fe-base/pull/458))
+  - Updated package.json to reference local corekit dependencies for improved development.
+  - Added new error identifiers in common.error.ts for better error management.
+  - Refactored UserApi to implement registration and improved login handling with token validation.
+  - Introduced common error handling in UserService and updated related components to utilize new error identifiers.
+  - Enhanced storage management by integrating new storage interfaces and updating related services.
+
+  These changes aim to streamline user authentication processes and improve error reporting across the application.
+
+## 0.4.6
+
+### Patch Changes
+
+#### ✨ Features
+
+- **router:** add descriptions to route metadata and update identifiers ([9fe2025](https://github.com/qlover/fe-base/commit/9fe20251d9b38f42d9fc1417587636181844ac96)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Enhanced the routing configuration by adding descriptions to various route metadata, improving clarity and accessibility for developers.
+  - Updated internationalization identifiers for pages, including home, login, register, and error pages, to include corresponding descriptions in both English and Chinese.
+  - Refactored the import paths for error identifiers to streamline the codebase and improve maintainability.
+
+  These changes aim to enhance the user experience by providing more context in the routing structure and improving the overall organization of internationalization resources.
+
+- **pages:** add new pages and update routing configuration ([6ba6e19](https://github.com/qlover/fe-base/commit/6ba6e19ec32f243d51e8b819dfc07965ceac07a0)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Introduced new pages including RegisterPage, AboutPage, ErrorIdentifierPage, ExecutorPage, HomePage, JSONStoragePage, and RequestPage to enhance the application structure and user navigation.
+  - Updated routing configuration to reflect changes in page paths, ensuring consistency and clarity in navigation.
+  - Refactored existing routes to align with new page structures, improving maintainability and readability of the routing setup.
+
+  These changes aim to enrich the user experience by providing additional functionality and a more organized navigation system.
+
+- **i18n:** introduce I18nKeyErrorPlugin and refactor user services ([0575403](https://github.com/qlover/fe-base/commit/0575403692758dac10624eb9425fad0138536513)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Added I18nKeyErrorPlugin to handle error messages as internationalization keys, improving error reporting and localization.
+  - Refactored ProcesserService to extend StoreInterface, enhancing state management and type safety.
+  - Moved RegisterFormData interface to UserService for better organization and removed the obsolete LoginInterface.
+  - Updated RegisterPage and ProcessProvider to utilize new service methods and improve application flow.
+
+  These changes aim to enhance internationalization support and streamline service interactions within the application.
+
+- **router:** refactor routing configuration and introduce ProcesserExecutor ([6a5a7a5](https://github.com/qlover/fe-base/commit/6a5a7a5a3ccbbd3c68da558f95c06c12e8a3c2f0)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Simplified the routing configuration by removing unnecessary metadata from base routes, enhancing clarity.
+  - Introduced the ProcesserExecutor class to manage asynchronous execution processes, improving the handling of page processing.
+  - Updated RouteService to extend StoreInterface, enhancing state management and type safety.
+  - Refactored user services to utilize the new ProcessExecutorProvider, streamlining the authentication flow and loading states.
+  - Removed the obsolete ProcessProvider, consolidating the process management into the new structure.
+
+  These changes aim to improve the routing architecture and enhance the overall application flow.
+
+- **create-app:** update dependencies and introduce project configuration ([8431f66](https://github.com/qlover/fe-base/commit/8431f6682a40660d7996ca918bc318ecf0d09aa4)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Added `commander` and updated `ignore` in `devDependencies` for enhanced functionality.
+  - Removed `ora` from `devDependencies` and `dependencies` for better clarity.
+  - Introduced a new `project.json` file to define build targets and streamline the build process using NX.
+  - Updated `tsup.config.ts` to enable minification, improving the build output.
+
+  These changes enhance the configuration and build orchestration for the create-app package.
+
+- **create-app:** enhance asset management and update build configuration ([8578e7f](https://github.com/qlover/fe-base/commit/8578e7f5b1fa82fd08f5a472b0a401ef3972f63f)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Added support for ignoring specific patterns during asset copying in the `copyAssets` utility.
+  - Updated `tsup.config.ts` to copy configuration and template files to the `dist` directory after the build process.
+  - Removed obsolete references to `configs` and `templates` in `package.json` for clarity.
+  - Adjusted the CLI to resolve paths for templates and configs using `resolve` for better compatibility.
+
+  These changes improve the asset management capabilities and streamline the build process for the create-app package.
+
+#### ♻️ Refactors
+
+- restructure internationalization and routing configuration ([006affa](https://github.com/qlover/fe-base/commit/006affa0e78b4ae9dd42dd4c79d29301212ffb9a)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Updated the internationalization identifiers by consolidating them into a single index file for easier management and access.
+  - Renamed and reorganized error and common identifiers for clarity and consistency.
+  - Replaced the JSON router configuration with a TypeScript-based router for improved type safety and maintainability.
+  - Removed outdated theme configuration files and migrated to a TypeScript-based theme configuration.
+  - Enhanced the README documentation to reflect the changes in the project structure and configuration.
+
+  These changes aim to streamline the internationalization process and improve the overall architecture of the routing and theming systems.
+
+- **theme:** update ThemeService to extend StoreInterface and enhance type definitions ([7e647f6](https://github.com/qlover/fe-base/commit/7e647f6e5979aa6e37e239fcd9039fb3bd52ee2b)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Refactored ThemeService to extend StoreInterface instead of SliceStore, improving consistency across the codebase.
+  - Updated ThemeServiceState to implement StoreStateInterface, enhancing type safety and maintainability.
+  - Removed the obsolete StoreInterface file to streamline the project structure.
+  - Adjusted import paths in various components and services to reflect the new StoreInterface location, ensuring proper integration.
+
+  These changes aim to improve the overall architecture and type management within the theme service implementation.
+
+- **user-service:** simplify state management and introduce language guard ([e7a433f](https://github.com/qlover/fe-base/commit/e7a433f1887c22c1fca77182e73aeba49b7afc8c)) ([#455](https://github.com/qlover/fe-base/pull/455))
+  - Removed the setState method from UserService, directly emitting state changes instead.
+  - Added useI18nGuard hook to handle language validation and redirection to a 404 page if the language is invalid.
+  - Introduced useRouterService hook to manage routing dependencies.
+  - Deleted the obsolete I18nGuideProvider, consolidating language guard functionality.
+
+  These changes aim to streamline user service state management and enhance internationalization handling within the application.
+
 ## 0.4.5
 
 ### Patch Changes
@@ -7,7 +127,6 @@
 #### ✨ Features
 
 - **create-app:** implement logout functionality and enhance localization ([c49f956](https://github.com/qlover/fe-base/commit/c49f956aecbc11a6b96b28309d112f7219a7dcca)) ([#438](https://github.com/qlover/fe-base/pull/438))
-
   - Added a new LogoutButton component to handle user logout with a confirmation dialog.
   - Introduced localization keys for logout dialog titles and content in both English and Chinese.
   - Updated BaseHeader to conditionally display the logout button based on the layout context.
@@ -23,7 +142,6 @@
 #### ✨ Features
 
 - **create-app:** add error identifiers and localization support for new components ([0ec3780](https://github.com/qlover/fe-base/commit/0ec3780a7972acd855e1b4d2ae866575534dc094)) ([#434](https://github.com/qlover/fe-base/pull/434))
-
   - Introduced new error identifiers in Error.ts for handling various application states, including IOC not implemented and token absence.
   - Added extensive localization keys in I18n.ts for various pages and components, enhancing user experience across different languages.
   - Improved error handling and messaging consistency throughout the application.
@@ -31,7 +149,6 @@
   This update enhances the application's localization capabilities and error management, providing clearer feedback to users.
 
 - **create-app:** enhance TypeScript configuration and linting ([f049395](https://github.com/qlover/fe-base/commit/f049395c90ee2c13a33d7358098a87251ef40913)) ([#434](https://github.com/qlover/fe-base/pull/434))
-
   - Updated the TypeScript configuration by introducing a new `tsconfig.app.json` for better modularity and organization.
   - Modified `tsconfig.json` to reference the new app configuration and streamline project structure.
   - Enhanced `tsconfig.node.json` with improved compiler options for better compatibility and performance.
@@ -43,7 +160,6 @@
 #### ♻️ Refactors
 
 - **create-app:** remove unused error identifiers and localization keys ([3b19f19](https://github.com/qlover/fe-base/commit/3b19f193b839c1e97fa727c1847a4bbd5ff84211)) ([#434](https://github.com/qlover/fe-base/pull/434))
-
   - Deleted Error.ts and I18n.ts files as they contained unused error identifiers and localization keys.
   - This cleanup improves the overall codebase by removing unnecessary files, enhancing maintainability and reducing clutter.
 
@@ -56,7 +172,6 @@
 #### ✨ Features
 
 - **create-app:** enhance environment configuration and localization support ([76e5e22](https://github.com/qlover/fe-base/commit/76e5e22e41fe23ce109c303ca3974103f8a85cf6)) ([#432](https://github.com/qlover/fe-base/pull/432))
-
   - Updated .gitignore to include .env files and added .env.template to the repository.
   - Introduced a new .env.template file for environment variable configuration in the react-app template.
   - Enhanced package.json scripts for development modes: added staging and production modes.
@@ -73,7 +188,6 @@
 #### ✨ Features
 
 - **create-app:** enhance routing and configuration with router prefix and new services ([b32795d](https://github.com/qlover/fe-base/commit/b32795d02af4234d4708a5bdcb111bf8d2a54bd6)) ([#430](https://github.com/qlover/fe-base/pull/430))
-
   - Introduced a router prefix in the configuration to manage asset paths and API routes more effectively.
   - Updated the application to utilize the new RouteService for routing logic, replacing the previous RouterController.
   - Refactored user authentication handling to use UserService, improving modularity and maintainability.
@@ -84,7 +198,6 @@
   This update enhances the overall structure and flexibility of the application, paving the way for future improvements.
 
 - **create-app:** enhance login and registration features with improved localization and form handling ([a3724e5](https://github.com/qlover/fe-base/commit/a3724e5e75c8708dd00684ece563d9e1c63c0d00)) ([#430](https://github.com/qlover/fe-base/pull/430))
-
   - Updated routing configuration to include localized titles for various pages, enhancing user experience.
   - Added new keys for login and registration in localization files for both English and Chinese.
   - Implemented a registration form with validation and user feedback, integrating with the UserService for account creation.
@@ -94,7 +207,6 @@
   This update significantly improves the user interface and experience for authentication processes within the application.
 
 - **create-app:** refactor internationalization and store management ([c86ed98](https://github.com/qlover/fe-base/commit/c86ed9818d844d4059878c11897051a6c504a333)) ([#430](https://github.com/qlover/fe-base/pull/430))
-
   - Updated file structure for internationalization resources, moving identifiers to a new directory for better organization.
   - Introduced new error and i18n identifier files to enhance localization support.
   - Refactored store management by implementing a new StoreInterface, improving state management across services.
@@ -126,7 +238,6 @@
 #### 🐞 Bug Fixes
 
 - **create-app:** update dependencies and tsup configuration for @qlover/create-app ([4a5fa84](https://github.com/qlover/fe-base/commit/4a5fa846ae6c3df97c73df5e594c3adb4fb7cda9)) ([#424](https://github.com/qlover/fe-base/pull/424))
-
   - Reorganized package.json to move "commander" and "ora" to dependencies from devDependencies, ensuring they are included in the production build.
   - Updated tsup.config.ts to enhance build configuration by defining external modules and adjusting minification and splitting settings for improved performance.
 
@@ -137,14 +248,12 @@
 #### ✨ Features
 
 - add tabify method to format commit body in GitChangelog ([5670b78](https://github.com/qlover/fe-base/commit/5670b78b1cb06a730d2cbd7ac1f5bd7e9e7df490)) ([#422](https://github.com/qlover/fe-base/pull/422))
-
   - Introduced a new `tabify` method to format the body of commit messages by adding indentation.
   - Updated `parseCommitlint` to utilize the `tabify` method for improved body formatting.
 
 #### 🐞 Bug Fixes
 
 - update @qlover/create-app to use ES module format ([5e9dffb](https://github.com/qlover/fe-base/commit/5e9dffb4d9e54dc2457588a81b11159820196067)) ([#422](https://github.com/qlover/fe-base/pull/422))
-
   - Changed the entry point in package.json from "dist/index.cjs" to "dist/index.js" to align with ES module standards.
   - Updated tsup.config.ts to output in ES module format instead of CommonJS.
   - Refactored index.ts to use fileURLToPath for resolving the root path, enhancing compatibility with ES modules.
@@ -204,18 +313,14 @@
   Co-authored-by: QRJ <renjie.qin@brain.im>
 
 - integrate @brain-toolkit/antd-theme-override for improved Ant D… ([4ebb081](https://github.com/qlover/fe-base/commit/4ebb081d89397424c459dd7f885817152098e322)) ([#414](https://github.com/qlover/fe-base/pull/414))
-
   - feat: integrate @brain-toolkit/antd-theme-override for improved Ant Design support
-
   * Added @brain-toolkit/antd-theme-override as a dependency to enhance theming capabilities.
   * Updated imports to utilize the new theming library, replacing the deprecated antd-overried references.
   * Removed outdated files related to the previous Ant Design integration to streamline the codebase.
   * Refactored components to leverage the new theme provider and static API interface for notifications and modals.
 
   Co-authored-by: QRJ <renjie.qin@brain.im>
-
   - feat(I18nService): add translation method for improved localization support
-
   * Implemented a new `t` method in the I18nService class to facilitate key-based translations.
   * The method accepts a translation key and optional parameters, returning the translated value or the key if no translation is found.
   * Enhanced localization handling to improve user experience across the application.
@@ -231,14 +336,12 @@
 #### ✨ Features
 
 - **LanguageSwitcher:** add language switcher component to enhance localization ([72edba8](https://github.com/qlover/fe-base/commit/72edba8a71dabba00608fceafc355cf4bc2dfd63)) ([#411](https://github.com/qlover/fe-base/pull/411))
-
   - Introduced a new LanguageSwitcher component that allows users to change the application language.
   - Integrated the component into BaseHeader for improved accessibility.
   - Utilized Ant Design's Select component for a user-friendly interface.
   - Implemented language change functionality that updates the URL and i18n configuration accordingly.
 
 - **Login:** integrate Ant Design components for enhanced user experience ([d380157](https://github.com/qlover/fe-base/commit/d380157d3360ad5b9e96d0e3edeb2639a3a6ba9f)) ([#408](https://github.com/qlover/fe-base/pull/408))
-
   - Added Ant Design library to the project dependencies.
   - Refactored the Login component to utilize Ant Design's Form, Input, and Button components, improving the UI and UX.
   - Implemented a structured login form with validation and Google sign-in option.
@@ -273,7 +376,6 @@
 #### ♻️ Refactors
 
 - **Bootstrap:** update dependencies and refactor core components ([9aeff78](https://github.com/qlover/fe-base/commit/9aeff78209925a9e3e6e4cdf1e5a7cbbcecb07f8)) ([#411](https://github.com/qlover/fe-base/pull/411))
-
   - Upgraded @qlover/corekit-bridge to version ^1.0.3 in package.json.
   - Refactored startup function to use 'root' instead of 'window' for better compatibility.
   - Removed InversifyIocInterface.ts as it was no longer needed.
@@ -283,7 +385,6 @@
   - Added printBootstrap for logging successful bootstrap initialization.
 
 - **Home, JSONStorage, Layout, BaseHeader:** enhance UI with Ant Design components and improve theming ([8023e01](https://github.com/qlover/fe-base/commit/8023e0179729859a1406f5dabf013f529c1a2b58)) ([#408](https://github.com/qlover/fe-base/pull/408))
-
   - Replaced button elements with Ant Design's Button component for a consistent UI experience.
   - Updated layout and background colors to utilize CSS variables for better theming.
   - Refactored navigation items in Home component for improved structure and readability.
@@ -307,7 +408,6 @@
 - Enhanced the Home and About components with improved localization support.
 
 - **Loading:** update loading component with animated bouncing dots ([83ede4b](https://github.com/qlover/fe-base/commit/83ede4b644a01843dd64e2d3e5254730f115d1ec)) ([#408](https://github.com/qlover/fe-base/pull/408))
-
   - Replaced the SVG spinner with a new loading animation using bouncing dots for improved visual appeal.
   - Utilized the clsx library for conditional class management, enhancing readability and maintainability.
   - Adjusted styles to support dark mode and added backdrop blur for fullscreen loading state.
@@ -329,7 +429,6 @@
 #### ✨ Features
 
 - integrate @qlover/logger into corekit-bridge (#373)
-
   - Added @qlover/logger as a dependency across multiple files, replacing the previous logger from @qlover/fe-corekit.
   - Updated type references to LoggerInterface in Bootstrap, ApiCatchPlugin, and ApiMockPlugin.
   - Introduced ColorFormatter for enhanced logging capabilities, with tests added for ColorFormatter and ColorLogger.
@@ -339,7 +438,6 @@
 #### 🐞 Bug Fixes
 
 - update ColorFormatter tests to utilize LogContext (#373)
-
   - Modified ColorFormatter tests to use the new LogContext class for improved context handling.
   - Adjusted the test setup to ensure proper formatting of color segments with the updated LogContext structure.
   - Exported LogContext from the logger package for broader accessibility.
@@ -347,14 +445,12 @@
 #### ♻️ Refactors
 
 - enhance context handling and update ColorFormatter tests (#373)
-
   - Refactored logger context handling to utilize a new LogContext class for better type safety and clarity.
   - Updated ColorFormatter tests to use logger.context for passing context objects.
   - Adjusted ColorFormatter methods to improve handling of color segments and context.
   - Improved documentation for context usage in logger methods.
 
 - replace ConsoleAppender with ConsoleHandler (#373)
-
   - Updated tests and implementation to utilize ConsoleHandler instead of ConsoleAppender for improved logging functionality.
   - Introduced ConsoleHandler class to manage log events and formatting.
   - Adjusted Logger integration to reflect the new handler structure across various test files and implementations.
@@ -370,13 +466,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -385,17 +479,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -409,13 +500,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -424,17 +513,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -463,7 +549,6 @@
 #### ✨ Features
 
 - implement GitChangelog for improved changelog generation (#351)
-
   - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
   - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
   - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.

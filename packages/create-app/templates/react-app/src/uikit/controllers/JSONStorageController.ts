@@ -1,9 +1,9 @@
-import { JSONStorage } from '@qlover/fe-corekit';
 import {
   StoreInterface,
-  StoreStateInterface
-} from '@/base/port/StoreInterface';
-import { random } from 'lodash';
+  type StoreStateInterface
+} from '@qlover/corekit-bridge';
+import { SyncStorageInterface } from '@qlover/fe-corekit';
+import random from 'lodash/random';
 
 interface JSONStoragePageState extends StoreStateInterface {
   testKey1?: number;
@@ -17,7 +17,7 @@ export class JSONStorageController extends StoreInterface<JSONStoragePageState> 
     requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
   };
 
-  constructor(private storage: JSONStorage) {
+  constructor(private storage: SyncStorageInterface<string, number>) {
     super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,
       testKey2: storage.getItem('testKey2') ?? 0,

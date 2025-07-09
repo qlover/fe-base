@@ -3,23 +3,23 @@ import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
+import { StoreInterface, StoreStateInterface } from '@qlover/corekit-bridge';
 
 export type RouterServiceDependencies = {
   navigate: NavigateFunction;
 };
 
 export type RouterServiceOptions = {
-  config: {
-    routes: RouteConfigValue[];
-  };
+  routes: RouteConfigValue[];
   logger: LoggerInterface;
 };
 
-export type RouterServiceState = {
-  routes: RouteConfigValue[];
-};
+export class RouterServiceState implements StoreStateInterface {
+  constructor(public routes: RouteConfigValue[] = []) {}
+}
 
 export class RouteService
+  extends StoreInterface<RouterServiceState>
   implements UIDependenciesInterface<RouterServiceDependencies>
 {
   /**
@@ -27,12 +27,8 @@ export class RouteService
    */
   dependencies?: RouterServiceDependencies;
 
-  state: RouterServiceState;
-
   constructor(private options: RouterServiceOptions) {
-    this.state = {
-      routes: options.config.routes
-    };
+    super(() => new RouterServiceState(options.routes));
   }
 
   get logger(): LoggerInterface {
@@ -43,7 +39,9 @@ export class RouteService
     const navigate = this.dependencies?.navigate;
 
     if (!navigate) {
-      this.logger.debug('navigate is not set');
+      this.logger.debug(
+        'Please use `RouterServiceProvider` to set dependencies'
+      );
     }
 
     return navigate;
@@ -69,7 +67,7 @@ export class RouteService
   }
 
   changeRoutes(routes: RouteConfigValue[]): void {
-    this.state.routes = routes;
+    this.emit({ routes });
   }
 
   goto(path: string, options?: NavigateOptions): void {

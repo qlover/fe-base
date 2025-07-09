@@ -1,4 +1,4 @@
-import { FetchAbortPlugin, JSONStorage } from '@qlover/fe-corekit';
+import { FetchAbortPlugin } from '@qlover/fe-corekit';
 import { Logger } from '@qlover/logger';
 import {
   InversifyContainer,
@@ -7,20 +7,21 @@ import {
   IocRegisterOptions
 } from '@/core/IOC';
 import {
-  UserToken,
   RequestCommonPlugin,
   ApiMockPlugin,
   ApiCatchPlugin,
   ThemeService,
-  IOCManagerInterface
+  IOCManagerInterface,
+  TokenStorage
 } from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import themeConfig from '@config/theme.json';
-import { localJsonStorage, logger } from '../globals';
+import { themeConfig } from '@config/theme';
+import { localStorage, logger } from '../globals';
 import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
-import { base as baseRoutes } from '@config/app.router.json';
+import { baseRoutes } from '@config/app.router';
+import { UserService } from '@/base/services/UserService';
 
 export class RegisterCommon implements InversifyRegisterInterface {
   register(
@@ -30,21 +31,19 @@ export class RegisterCommon implements InversifyRegisterInterface {
   ): void {
     const AppConfig = container.get(IOCIdentifier.AppConfig);
 
-    const userToken = new UserToken(
-      AppConfig.userTokenStorageKey,
-      container.get(JSONStorage)
-    );
+    const feApiToken = new TokenStorage(AppConfig.userTokenStorageKey, {
+      storage: container.get(IOCIdentifier.LocalStorageEncrypt)
+    });
     const feApiAbort = new FetchAbortPlugin();
     const feApiRequestCommonPlugin = new RequestCommonPlugin({
       tokenPrefix: AppConfig.openAiTokenPrefix,
       requiredToken: true,
-      token: () => userToken.getToken()
+      token: () => container.get(UserService).getToken()
     });
 
     container.bind(FetchAbortPlugin, feApiAbort);
-    container.bind(UserToken, userToken);
 
-    container.bind(IOCIdentifier.FeApiToken, userToken);
+    container.bind(IOCIdentifier.FeApiToken, feApiToken);
     container.bind(IOCIdentifier.FeApiCommonPlugin, feApiRequestCommonPlugin);
     container.bind(
       IOCIdentifier.ApiMockPlugin,
@@ -62,14 +61,14 @@ export class RegisterCommon implements InversifyRegisterInterface {
       ThemeService,
       new ThemeService({
         ...themeConfig,
-        storage: localJsonStorage
+        storage: localStorage
       })
     );
 
     container.bind(
       RouteService,
       new RouteService({
-        config: baseRoutes,
+        routes: baseRoutes,
         logger
       })
     );

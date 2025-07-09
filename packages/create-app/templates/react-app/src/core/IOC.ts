@@ -2,14 +2,15 @@
 import {
   ApiMockPlugin,
   EnvConfigInterface,
-  StorageTokenInterface,
   RequestCommonPlugin,
   ApiCatchPlugin,
   IOCContainerInterface,
   createIOCFunction,
-  ServiceIdentifier
+  ServiceIdentifier,
+  TokenStorage,
+  CookieStorage
 } from '@qlover/corekit-bridge';
-import type { JSONSerializer, JSONStorage } from '@qlover/fe-corekit';
+import type { JSONSerializer, ObjectStorage } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import type { AppConfig } from '@/base/cases/AppConfig';
 import { Container } from 'inversify';
@@ -69,7 +70,9 @@ export class InversifyContainer implements IOCContainerInterface {
  */
 export const IOCIdentifier = Object.freeze({
   JSON: 'JSON',
-  JSONStorage: 'JSONStorage',
+  LocalStorage: 'LocalStorage',
+  LocalStorageEncrypt: 'LocalStorageEncrypt',
+  CookieStorage: 'CookieStorage',
   Logger: 'Logger',
   FeApiToken: 'FeApiToken',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
@@ -84,9 +87,11 @@ export const IOCIdentifier = Object.freeze({
  */
 export interface IOCIdentifierMap {
   [IOCIdentifier.JSON]: JSONSerializer;
-  [IOCIdentifier.JSONStorage]: JSONStorage;
+  [IOCIdentifier.LocalStorage]: ObjectStorage<string, string>;
+  [IOCIdentifier.LocalStorageEncrypt]: ObjectStorage<string, string>;
+  [IOCIdentifier.CookieStorage]: CookieStorage;
   [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.FeApiToken]: StorageTokenInterface<string>;
+  [IOCIdentifier.FeApiToken]: TokenStorage<string>;
   [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
   [IOCIdentifier.AppConfig]: EnvConfigInterface;
   [IOCIdentifier.ApiMockPlugin]: ApiMockPlugin;

@@ -56,6 +56,12 @@ export class AppConfig implements EnvConfigInterface {
   readonly userTokenStorageKey = '__fe_user_token__';
 
   /**
+   * Storage key for user information
+   * @description Injected from VITE_USER_INFO_STORAGE_KEY environment variable
+   */
+  readonly userInfoStorageKey = '__fe_user_info__';
+
+  /**
    * Available OpenAI model configurations
    * @description List of supported OpenAI models for the application
    */
@@ -102,4 +108,9 @@ export class AppConfig implements EnvConfigInterface {
 
   /** Flag indicating if AI service token is required */
   readonly aiApiRequireToken = true;
+
+  /**
+   * Project startup href, usually from window.location.href
+   */
+  readonly bootHref = '';
 }
