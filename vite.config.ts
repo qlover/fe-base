@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import viteMockPackage, { parsePackagesMap } from './make/vite-mock-package';
+import { parsePackagesMap } from './make/vite-mock-package/index';
 
 export default defineConfig({
   // plugins: [
@@ -14,9 +14,15 @@ export default defineConfig({
     watch: false,
     include: ['packages/**/__tests__/**/*.test.{ts,tsx}'],
     exclude: [
-      './packages/create-app/templates/**',
-      // workspace:* case link to local package, has __tests__ folder
-      'packages/**/node_modules/**'
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.changelog/**',
+      '**/.github/**',
+      '**/.husky/**',
+      '**/.vscode/**',
+      '**/.nx/**',
+      '**/packages/create-app/templates/**'
     ],
     alias: {
       ...parsePackagesMap({

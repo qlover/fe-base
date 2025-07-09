@@ -41,6 +41,9 @@ importers:
       '@qlover/fe-code2markdown':
         specifier: workspace:*
         version: link:packages/fe-code2markdown
+      '@qlover/fe-release':
+        specifier: workspace:*
+        version: link:packages/fe-release
       '@qlover/fe-scripts':
         specifier: workspace:*
         version: link:packages/fe-scripts
