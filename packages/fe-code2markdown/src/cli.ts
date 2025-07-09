@@ -49,7 +49,7 @@ const main = async () => {
     ? resolve(opts.tplPath)
     : resolve(opts.generatePath, DEFAULT_TPL_PATH);
 
-  const hbsRootDir = resolve(DEFAULT_HBS_ROOT_DIR);
+  const hbsRootDir = DEFAULT_HBS_ROOT_DIR;
 
   // TODO: 检验参数
   const generaterOptions = {
