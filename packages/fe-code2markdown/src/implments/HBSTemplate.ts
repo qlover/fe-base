@@ -1,5 +1,5 @@
 import fsExtra from 'fs-extra';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import Handlebars from 'handlebars';
 import { ReflectionKind } from 'typedoc';
 import { ReflectionKindName } from '../type';
@@ -23,8 +23,10 @@ export class HBSTemplate {
   }) {
     const tplFile = name.includes('.hbs') ? name : name + '.hbs';
 
+    // 在使用时 resolve 路径
+    const resolvedHbsRootDir = resolve(hbsRootDir);
     this.templateContent = fsExtra.readFileSync(
-      join(hbsRootDir, tplFile),
+      join(resolvedHbsRootDir, tplFile),
       'utf-8'
     );
 

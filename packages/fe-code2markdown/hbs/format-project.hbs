@@ -4,12 +4,38 @@
 ⚠️ **Deprecated**
 {{/if}}
 
-{{#each descriptions}}
+{{#if typeString}}
+**Type:** `{{typeString}}`
+{{/if}}
 
+{{#if source}}
+**Source:** `{{source.fileName}}:{{source.line}}`
+{{/if}}
+
+{{#if since}}
+**Since:** `{{since}}`
+{{/if}}
+
+{{#if defaultValue}}
+**Default:** `{{defaultValue}}`
+{{/if}}
+
+{{#each descriptions}}
 ### {{tag}}
 {{#each content}}
 {{text}}
 {{/each}}
 {{/each}}
+
+{{#if parametersList}}
+### Parameters
+
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+{{#each parametersList}}
+| `{{name}}` | `{{typeString}}` | {{#if optional}}✅{{else}}❌{{/if}} | {{#if defaultValue}}`{{defaultValue}}`{{else}}-{{/if}} | {{#if since}}`{{since}}`{{else}}-{{/if}} | {{#if deprecated}}⚠️{{else}}-{{/if}} | {{#each descriptions}}{{#each content}}{{text}}{{/each}}{{/each}} |
+{{/each}}
+
+{{/if}}
 
 ---

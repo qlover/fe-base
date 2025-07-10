@@ -4,3 +4,5 @@
  * @document ./test/index.ts
  */
 export * from './test';
+
+export * from './ExampleTypeArgs';

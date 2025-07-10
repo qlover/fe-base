@@ -11,6 +11,7 @@ import {
 import { ScriptPlugin } from '@qlover/scripts-context';
 import { ReflectionKindName } from '../type';
 import fsExtra from 'fs-extra';
+import { resolve } from 'path';
 import Code2MDContext from '../implments/Code2MDContext';
 
 export interface FormatProjectValue {
@@ -82,6 +83,10 @@ export interface FormatProjectValue {
   defaultValue?: string;
   since?: string;
   deprecated?: boolean;
+  /**
+   * 是否可选
+   */
+  optional?: boolean;
 }
 
 export type FormatProjectKindName =
@@ -175,9 +180,16 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
     const app = await Application.bootstrap(
       {
         // typedoc options here
-        basePath: this.context.options.basePath,
-        entryPoints: this.context.options.entryPoints,
-        skipErrorChecking: true
+        basePath: resolve(this.context.options.basePath || process.cwd()),
+        entryPoints: this.context.options.entryPoints.map((entry) =>
+          resolve(entry)
+        ),
+        skipErrorChecking: true,
+        // 确保包含所有成员
+        includeVersion: true,
+        excludePrivate: false,
+        excludeProtected: false,
+        excludeExternals: false
       },
       [new TSConfigReader(), new TypeDocReader()]
     );
@@ -233,7 +245,9 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
 
     const app = await this.getApp();
 
-    this.writeJSON(app.serializer.projectToObject(project, './'), path);
+    // 在使用时 resolve 路径
+    const resolvedPath = resolve(path);
+    this.writeJSON(app.serializer.projectToObject(project, './'), resolvedPath);
   }
 
   /**
@@ -262,7 +276,12 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
 
     this.context.setOptions({ projectReflection: project, formatProject });
 
-    this.writeJSON(formatProject, this.context.options.tplPath);
+    // 在使用时 resolve 路径
+    const resolvedTplPath = resolve(
+      this.context.options.generatePath,
+      this.context.options.tplPath
+    );
+    this.writeJSON(formatProject, resolvedTplPath);
   }
 
   /**
@@ -328,20 +347,46 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       );
     }
 
-    // 处理签名作为子元素
-    if (reflection.signatures && reflection.signatures.length > 0) {
-      const signatureChildren = reflection.signatures.map((signature: any) =>
-        this.convertReflectionToFormatValue(signature)
+    // 处理 type.declaration.children（用于 type 类型）
+    if (
+      reflection.type?.type === 'reflection' &&
+      reflection.type.declaration?.children
+    ) {
+      const typeChildren = reflection.type.declaration.children.map(
+        (child: any) => this.convertReflectionToFormatValue(child)
       );
-      children = children
-        ? [...children, ...signatureChildren]
-        : signatureChildren;
+      children = children ? [...children, ...typeChildren] : typeChildren;
+    }
+
+    // 处理签名作为子元素
+    // 对于构造函数，将签名信息直接包含在构造函数对象中，不作为子元素
+    if (reflection.signatures && reflection.signatures.length > 0) {
+      if (reflection.kind === ReflectionKind.Constructor) {
+        // 对于构造函数，将第一个签名的参数信息直接包含在构造函数中
+        const firstSignature = reflection.signatures[0];
+        if (firstSignature.parameters) {
+          parametersList = this.formatParameters(firstSignature.parameters);
+        }
+        // 修改构造函数的名称，使其包含类名
+        if (firstSignature.name && firstSignature.name.startsWith('new ')) {
+          reflection.name = firstSignature.name;
+        }
+      } else {
+        // 对于其他类型，将签名作为子元素
+        const signatureChildren = reflection.signatures.map((signature: any) =>
+          this.convertReflectionToFormatValue(signature)
+        );
+        children = children
+          ? [...children, ...signatureChildren]
+          : signatureChildren;
+      }
     }
 
     // 获取额外属性
     const defaultValue = this.getDefaultValue(reflection);
     const since = this.getSinceVersion(reflection);
     const deprecated = this.isDeprecated(reflection);
+    const optional = this.isOptional(reflection);
 
     return {
       id: reflection.id,
@@ -355,7 +400,8 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       children,
       defaultValue,
       since,
-      deprecated
+      deprecated,
+      optional
     };
   }
 
@@ -373,6 +419,7 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
         return reflection.type.name;
       }
       if (reflection.type.type === 'reference') {
+        // 对于引用类型，返回完整的类型名称
         return reflection.type.name || 'Reference';
       }
       if (reflection.type.type === 'literal') {
@@ -382,6 +429,20 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       }
       if (reflection.type.type === 'reflection') {
         return 'Object';
+      }
+      if (reflection.type.type === 'union') {
+        return (
+          reflection.type.types
+            ?.map((t: any) => this.getTypeString({ type: t }))
+            .join(' | ') || 'Union'
+        );
+      }
+      if (reflection.type.type === 'intersection') {
+        return (
+          reflection.type.types
+            ?.map((t: any) => this.getTypeString({ type: t }))
+            .join(' & ') || 'Intersection'
+        );
       }
     }
 
@@ -463,6 +524,48 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
+   * 检查是否可选
+   *
+   * @description 检查参数是否可选（有 ? 标记、默认值或 @optional 标签）
+   *
+   * @param reflection TypeDoc 反射对象
+   * @returns boolean 是否可选
+   */
+  private isOptional(reflection: any): boolean {
+    // 检查是否有 ? 标记（可选参数）
+    if (reflection.flags?.isOptional) {
+      return true;
+    }
+
+    // 检查是否有默认值
+    if (reflection.defaultValue !== undefined) {
+      return true;
+    }
+
+    // 检查 @default 标签
+    if (reflection.comment?.blockTags) {
+      const hasDefaultTag = reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@default'
+      );
+      if (hasDefaultTag) {
+        return true;
+      }
+    }
+
+    // 检查 @optional 标签
+    if (reflection.comment?.blockTags) {
+      const hasOptionalTag = reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@optional'
+      );
+      if (hasOptionalTag) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * 格式化描述信息
    *
    * @description 将 TypeDoc 注释转换为 FormatProjectDescription 格式
@@ -522,19 +625,68 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       return [];
     }
 
-    return parameters.map((param: any) => ({
-      id: param.id,
-      kind: param.kind,
-      kindName: ReflectionKindName[
-        param.kind as keyof typeof ReflectionKindName
-      ] as any,
-      name: param.name,
-      typeString: this.getTypeString(param),
-      descriptions: this.formatDescription(param.comment),
-      defaultValue: this.getDefaultValue(param),
-      since: this.getSinceVersion(param),
-      deprecated: this.isDeprecated(param)
-    }));
+    const result: FormatProjectValue[] = [];
+
+    parameters.forEach((param: any) => {
+      // 检查参数是否是对象类型（如 options）
+      if (
+        param.type?.type === 'reflection' &&
+        param.type.declaration?.children
+      ) {
+        // 先添加对象参数本身
+        result.push({
+          id: param.id,
+          kind: param.kind,
+          kindName: ReflectionKindName[
+            param.kind as keyof typeof ReflectionKindName
+          ] as any,
+          name: param.name,
+          typeString: this.getTypeString(param),
+          descriptions: this.formatDescription(param.comment),
+          defaultValue: this.getDefaultValue(param),
+          since: this.getSinceVersion(param),
+          deprecated: this.isDeprecated(param),
+          optional: this.isOptional(param)
+        });
+
+        // 然后展开其属性
+        const objectChildren = param.type.declaration.children;
+        objectChildren.forEach((child: any) => {
+          result.push({
+            id: child.id,
+            kind: child.kind,
+            kindName: ReflectionKindName[
+              child.kind as keyof typeof ReflectionKindName
+            ] as any,
+            name: `${param.name}.${child.name}`, // 使用 options.name 格式
+            typeString: this.getTypeString(child),
+            descriptions: this.formatDescription(child.comment),
+            defaultValue: this.getDefaultValue(child),
+            since: this.getSinceVersion(child),
+            deprecated: this.isDeprecated(child),
+            optional: this.isOptional(child)
+          });
+        });
+      } else {
+        // 普通参数
+        result.push({
+          id: param.id,
+          kind: param.kind,
+          kindName: ReflectionKindName[
+            param.kind as keyof typeof ReflectionKindName
+          ] as any,
+          name: param.name,
+          typeString: this.getTypeString(param),
+          descriptions: this.formatDescription(param.comment),
+          defaultValue: this.getDefaultValue(param),
+          since: this.getSinceVersion(param),
+          deprecated: this.isDeprecated(param),
+          optional: this.isOptional(param)
+        });
+      }
+    });
+
+    return result;
   }
 
   /**

@@ -43,6 +43,15 @@ export interface Code2MDContextConfig extends ScriptShared {
   removePrefix?: boolean;
 
   /**
+   * Format tool for output directory
+   *
+   * @description 指定用于格式化输出目录的工具
+   * @default `undefined` (不格式化)
+   * @since 0.1.0
+   */
+  formatOutput?: 'eslint' | 'prettier';
+
+  /**
    * typedoc project reflection
    * @private
    */

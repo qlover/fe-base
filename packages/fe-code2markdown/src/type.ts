@@ -1,12 +1,6 @@
-import {
-  CommentDisplayPart,
-  ParameterReflection,
-  ReflectionKind,
-  SourceReference
-} from 'typedoc';
-import { FeScriptContext } from '@qlover/scripts-context';
+import { ReflectionKind } from 'typedoc';
 
-type ValueOf<T> = T[keyof T];
+export type ValueOf<T> = T[keyof T];
 /**
  * FIXME: hbs无法识别 kind 数字类型, 手动转成字符串
  */
@@ -35,55 +29,3 @@ export const ReflectionKindName = {
   [ReflectionKind.TypeAlias]: 'TypeAlias',
   [ReflectionKind.Reference]: 'Reference'
 } as const;
-
-export type FileSource = string;
-export type HBSTemplateContextMap = Record<
-  ValueOf<typeof ReflectionKindName>,
-  HBSTemplateContext[]
->;
-export type ParserContextMap = Record<FileSource, HBSTemplateContextMap>;
-export type IsKindObjects = {
-  [key in `is${keyof typeof ReflectionKind}`]: boolean | undefined;
-};
-export type HBSTemplateContext = IsKindObjects & {
-  id: number;
-  kind: number;
-  name: string;
-  type: string | undefined;
-  kindName: string;
-  summaryList: CommentDisplayPart[];
-  blockTagsList: CommentDisplayPart[];
-  parametersList: ParameterReflection[] | undefined;
-  descriptionList: CommentDisplayPart[];
-  returnValue: string | undefined;
-  source: SourceReference;
-  members: object[];
-  hasMembers: boolean;
-};
-
-export type ReflectionGeneraterOptions = {
-  entryPoints: string[];
-  outputJSONFilePath: string;
-  generatePath: string;
-  /**
-   * typedoc parse base path
-   */
-  basePath?: string;
-  tplPath: string;
-
-  /**
-   * hbs template root dir
-   */
-  hbsRootDir: string;
-
-  /**
-   * Whether to remove the prefix of the entry point
-   *
-   * @default `false`
-   * @since 0.1.0
-   */
-  removePrefix?: boolean;
-};
-
-export type ReflectionGeneraterContext =
-  FeScriptContext<ReflectionGeneraterOptions>;
