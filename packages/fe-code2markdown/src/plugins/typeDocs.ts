@@ -568,7 +568,7 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   /**
    * 格式化描述信息
    *
-   * @description 将 TypeDoc 注释转换为 FormatProjectDescription 格式
+   * @description 将 TypeDoc 注释转换为 FormatProjectDescription 格式，过滤掉已单独提取的标签
    *
    * @param comment TypeDoc 注释对象
    * @returns FormatProjectDescription[] 格式化后的描述数组
@@ -585,6 +585,16 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
 
     const descriptions: FormatProjectDescription[] = [];
 
+    // 动态获取需要过滤掉的标签（优先 context 配置）
+    const filteredTags = (this.context.options.filterTags as string[]) || [
+      '@default',
+      '@since',
+      '@deprecated',
+      '@optional'
+    ];
+    // 定义优先显示的标签
+    const priorityTags = ['@summary', '@description'];
+
     // 处理 summary
     if (comment.summary && comment.summary.length > 0) {
       descriptions.push({
@@ -593,9 +603,22 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       });
     }
 
-    // 处理 blockTags
+    // 处理 blockTags，过滤掉已单独提取的标签
     if (comment.blockTags && comment.blockTags.length > 0) {
-      comment.blockTags.forEach((tag: any) => {
+      const validTags = comment.blockTags.filter(
+        (tag: any) => !filteredTags.includes(tag.tag)
+      );
+
+      // 按优先级排序：优先标签在前，其他按原顺序
+      const sortedTags = validTags.sort((a: any, b: any) => {
+        const aPriority = priorityTags.includes(a.tag);
+        const bPriority = priorityTags.includes(b.tag);
+        if (aPriority && !bPriority) return -1;
+        if (!aPriority && bPriority) return 1;
+        return 0;
+      });
+
+      sortedTags.forEach((tag: any) => {
         descriptions.push({
           tag: tag.tag,
           name: tag.name,

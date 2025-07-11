@@ -1,15 +1,7 @@
-## `{{name}}` {{#if kindName}}({{kindName}}){{/if}}
-
-{{#if deprecated}}
-⚠️ **Deprecated**
-{{/if}}
+{{#repeat (add level 2)}}#{{/repeat}} `{{name}}` {{#if kindName}}({{kindName}}){{/if}}{{#if deprecated}}⚠️{{/if}}
 
 {{#if typeString}}
 **Type:** `{{typeString}}`
-{{/if}}
-
-{{#if source}}
-**Source:** `{{source.fileName}}:{{source.line}}`
 {{/if}}
 
 {{#if since}}
@@ -21,14 +13,15 @@
 {{/if}}
 
 {{#each descriptions}}
-### {{tag}}
+{{#unless (or (eq tag "@summary") (eq tag "@description"))}}{{tag}}{{/unless}}
+
 {{#each content}}
 {{text}}
 {{/each}}
 {{/each}}
 
 {{#if parametersList}}
-### Parameters
+{{#repeat 4}}#{{/repeat}} Parameters
 
 | Name | Type | Optional | Default | Since | Deprecated | Description |
 |------|------|----------|---------|-------|------------|-------------|

@@ -52,6 +52,13 @@ export interface Code2MDContextConfig extends ScriptShared {
   formatOutput?: 'eslint' | 'prettier';
 
   /**
+   * Filter out specific JSDoc tags (e.g. ["@default", "@since"])
+   *
+   * @default ["@default", "@since", "@deprecated", "@optional"]
+   */
+  filterTags?: string[];
+
+  /**
    * typedoc project reflection
    * @private
    */

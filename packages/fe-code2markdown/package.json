@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "node ./dist/cli.js -p example",
+    "build:docs": "node ./dist/cli.js -p example --formatOutput prettier",
     "build:docs:json": "node ./dist/cli.js -p example/index.ts --onlyJson",
     "build:docs:remove-prefix": "node ./dist/cli.js -p example --removePrefix",
     "build:docs:prettier": "node ./dist/cli.js -p example --formatOutput prettier",

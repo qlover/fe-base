@@ -5,6 +5,7 @@ import { HBSTemplate } from '../implments/HBSTemplate';
 import fsExtra from 'fs-extra';
 import { join, dirname, resolve } from 'path';
 import { mkdirSync } from 'fs';
+import { hbsHelpers } from '../implments/hbsHelper';
 
 export class Formats extends ScriptPlugin<Code2MDContext> {
   private hbsTemplate: HBSTemplate;
@@ -14,7 +15,8 @@ export class Formats extends ScriptPlugin<Code2MDContext> {
 
     this.hbsTemplate = new HBSTemplate({
       name: 'format-project',
-      hbsRootDir: this.context.options.hbsRootDir
+      hbsRootDir: this.context.options.hbsRootDir,
+      hbsHelpers: hbsHelpers
     });
   }
 
@@ -56,29 +58,14 @@ export class Formats extends ScriptPlugin<Code2MDContext> {
   formatProjectValue(data: FormatProjectValue, level: number = 0): string {
     const content: string[] = [];
 
-    // 渲染当前元素
-    const compiledContent = this.hbsTemplate.compile(data);
+    // 渲染当前元素，传递 level 参数
+    const dataWithLevel = { ...data, level };
+    const compiledContent = this.hbsTemplate.compile(dataWithLevel);
     const decodedContent = this.decodeHtmlEntities(compiledContent);
     content.push(decodedContent);
 
     // 如果有子元素，递归渲染
     if (data.children && data.children.length > 0) {
-      // 根据层级生成不同的标题级别
-      const titleLevel = Math.min(3 + level, 6); // 从 ### 开始，最多到 ######
-      const titlePrefix = '#'.repeat(titleLevel);
-
-      // 根据层级生成不同的标题文本
-      let sectionTitle: string;
-      if (level === 0) {
-        sectionTitle = 'Members';
-      } else if (level === 1) {
-        sectionTitle = 'Nested Members';
-      } else {
-        sectionTitle = `Level ${level + 1} Members`;
-      }
-
-      content.push(`${titlePrefix} ${sectionTitle}`);
-
       for (const child of data.children) {
         const childContent = this.formatProjectValue(child, level + 1);
         content.push(childContent);

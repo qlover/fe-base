@@ -16,10 +16,12 @@ export class HBSTemplate {
 
   constructor({
     name = 'context',
-    hbsRootDir
+    hbsRootDir,
+    hbsHelpers
   }: {
     name?: string;
     hbsRootDir: string;
+    hbsHelpers?: Record<string, Handlebars.HelperDelegate>;
   }) {
     const tplFile = name.includes('.hbs') ? name : name + '.hbs';
 
@@ -30,15 +32,11 @@ export class HBSTemplate {
       'utf-8'
     );
 
-    // Register helpers
-    Handlebars.registerHelper('toLowerCase', function (str) {
-      return str?.toLowerCase();
-    });
-
-    // Register eq helper for string comparison
-    Handlebars.registerHelper('eq', function (a, b) {
-      return a === b;
-    });
+    if (hbsHelpers) {
+      Object.entries(hbsHelpers).forEach(([key, value]) => {
+        Handlebars.registerHelper(key, value);
+      });
+    }
   }
 
   getTemplate(): string {

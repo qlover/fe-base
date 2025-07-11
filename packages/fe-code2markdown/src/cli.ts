@@ -5,7 +5,27 @@ import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
 import pkg from '../package.json';
 import { Code2MDContextOptions } from './implments/Code2MDContext';
 import { Code2MDTask } from './implments/Code2MDTask';
-import { dirname, join } from 'path';
+import { dirname, join, resolve } from 'path';
+
+/**
+ * Get the current file path in a cross-platform and module-system compatible way
+ */
+function getCurrentFilePath(): string {
+  if (typeof __dirname !== 'undefined') {
+    // CJS 环境
+    return __filename;
+  } else {
+    // ESM 环境，使用 process.argv[1] 获取脚本路径
+    let scriptPath = process.argv[1];
+
+    // 如果路径是相对路径，转换为绝对路径
+    if (!scriptPath.startsWith('/') && !scriptPath.match(/^[A-Z]:/)) {
+      scriptPath = resolve(process.cwd(), scriptPath);
+    }
+
+    return scriptPath;
+  }
+}
 
 const DEFAULT_GENERATE_PATH = './docs.output';
 const DEFAULT_OUTPUT_JSON_FILE_PATH = DEFAULT_GENERATE_PATH + '/code2md.json';
@@ -37,6 +57,11 @@ program
   .option(
     '--formatOutput <tool>',
     'Format output directory with eslint or prettier'
+  )
+  .option(
+    '--filterTags <tags>',
+    'Filter out specific JSDoc tags (comma-separated)',
+    (value) => value.split(',').map((tag) => tag.trim())
   );
 
 program.parse(process.argv);
@@ -46,21 +71,15 @@ const options = program.opts();
 const main = async () => {
   const { dryRun, verbose, ...opts } = options;
 
-  // 获取项目根目录路径（兼容 CJS 和 ESM）
-  let projectRoot: string;
-  if (typeof __dirname !== 'undefined') {
-    // CJS 环境
-    projectRoot = dirname(__dirname);
-  } else {
-    // ESM 环境，使用 process.argv[1] 获取脚本路径
-    const scriptPath = process.argv[1];
-    const scriptDir = dirname(scriptPath);
-    projectRoot = dirname(scriptDir);
-  }
+  // 获取当前文件的绝对路径
+  const currentFilePath = getCurrentFilePath();
+
+  // 获取当前文件所在目录
+  const currentFileDir = dirname(currentFilePath);
 
   // 保持原始值，不进行 resolve
   const tplPath = opts.tplPath || DEFAULT_TPL_PATH;
-  const hbsRootDir = join(projectRoot, 'hbs');
+  const hbsRootDir = join(currentFileDir, 'hbs');
 
   // TODO: 检验参数
   const generaterOptions = {
@@ -72,7 +91,8 @@ const main = async () => {
     basePath: process.cwd(),
     hbsRootDir,
     removePrefix: opts.removePrefix || false, // 添加 removePrefix 选项
-    formatOutput: opts.formatOutput || undefined // 添加 formatOutput 选项
+    formatOutput: opts.formatOutput || undefined, // 添加 formatOutput 选项
+    filterTags: opts.filterTags
   };
 
   const code2mdOptions: Code2MDContextOptions = {
