@@ -1,23 +1,49 @@
 #!/usr/bin/env node
 
-import { resolve } from 'path';
 import { Command } from 'commander';
 import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
 import pkg from '../package.json';
-import { ReflectionGenerater } from './ReflectionGenerater';
+import { Code2MDContextOptions } from './implments/Code2MDContext';
+import { Code2MDTask } from './implments/Code2MDTask';
+import { dirname, join, resolve } from 'path';
+
+/**
+ * Get the current file path in a cross-platform and module-system compatible way
+ */
+function getCurrentFilePath(): string {
+  if (typeof __dirname !== 'undefined') {
+    // CJS 环境
+    return __filename;
+  } else {
+    // ESM 环境，使用 process.argv[1] 获取脚本路径
+    let scriptPath = process.argv[1];
+
+    // 如果路径是相对路径，转换为绝对路径
+    if (!scriptPath.startsWith('/') && !scriptPath.match(/^[A-Z]:/)) {
+      scriptPath = resolve(process.cwd(), scriptPath);
+    }
+
+    return scriptPath;
+  }
+}
 
 const DEFAULT_GENERATE_PATH = './docs.output';
 const DEFAULT_OUTPUT_JSON_FILE_PATH = DEFAULT_GENERATE_PATH + '/code2md.json';
 const DEFAULT_TPL_PATH = './code2md.tpl.json';
-const DEFAULT_HBS_ROOT_DIR = './hbs';
 
 const program = new Command();
 
 program
-  .version(pkg.version)
+  .version(pkg.version, '-v, --version', 'Show version')
+  .description(pkg.description)
   .requiredOption('-p, --entryPoints <paths>', 'Entry points', (value) =>
     value.split(',')
   )
+  .option(
+    '-d, --dry-run',
+    'Do not touch or write anything, but show the commands'
+  )
+  .option('-V, --verbose', 'Show more information')
   .option(
     '-o, --outputJSONFilePath <path>',
     'Output JSON file path',
@@ -27,7 +53,16 @@ program
   .option('-t, --tplPath <path>', 'Template path')
   .option('--onlyJson', 'Only generate JSON file')
   .option('-d, --debug', 'Debug mode')
-  .option('--removePrefix', 'Remove prefix of the entry point');
+  .option('--removePrefix', 'Remove prefix of the entry point')
+  .option(
+    '--formatOutput <tool>',
+    'Format output directory with eslint or prettier'
+  )
+  .option(
+    '--filterTags <tags>',
+    'Filter out specific JSDoc tags (comma-separated)',
+    (value) => value.split(',').map((tag) => tag.trim())
+  );
 
 program.parse(process.argv);
 
@@ -35,37 +70,45 @@ const options = program.opts();
 
 const main = async () => {
   const { dryRun, verbose, ...opts } = options;
-  const tplPath = opts.tplPath
-    ? resolve(opts.tplPath)
-    : resolve(opts.generatePath, DEFAULT_TPL_PATH);
 
-  const hbsRootDir = resolve(DEFAULT_HBS_ROOT_DIR);
+  // 获取当前文件的绝对路径
+  const currentFilePath = getCurrentFilePath();
+
+  // 获取当前文件所在目录
+  const currentFileDir = dirname(currentFilePath);
+
+  // 保持原始值，不进行 resolve
+  const tplPath = opts.tplPath || DEFAULT_TPL_PATH;
+  const hbsRootDir = join(currentFileDir, 'hbs');
 
   // TODO: 检验参数
   const generaterOptions = {
     ...opts,
-    entryPoints: (opts.entryPoints as string[]).map((entry) => resolve(entry)),
-    outputJSONFilePath: opts.outputJSONFilePath
-      ? resolve(opts.outputJSONFilePath)
-      : '',
-    generatePath: resolve(opts.generatePath),
-    tplPath,
+    entryPoints: opts.entryPoints as string[], // 保持原始路径数组
+    outputJSONFilePath: opts.outputJSONFilePath || '', // 保持原始路径
+    generatePath: opts.generatePath, // 保持原始路径
+    tplPath, // 保持原始路径
     basePath: process.cwd(),
-    hbsRootDir
+    hbsRootDir,
+    removePrefix: opts.removePrefix || false, // 添加 removePrefix 选项
+    formatOutput: opts.formatOutput || undefined, // 添加 formatOutput 选项
+    filterTags: opts.filterTags
   };
 
-  const generater = new ReflectionGenerater({
+  const code2mdOptions: Code2MDContextOptions = {
     logger: new Logger({
-      level: (opts.debug ?? verbose) ? 'debug' : 'info',
+      level: verbose ? 'debug' : 'info',
       name: 'code2md',
       handlers: new ConsoleHandler(new TimestampFormatter())
     }),
     verbose: opts.debug ?? verbose,
     dryRun: dryRun,
     options: generaterOptions
-  });
+  };
 
-  await generater.generate(opts.onlyJson);
+  const task = new Code2MDTask(code2mdOptions);
+
+  await task.run();
 };
 
 main();

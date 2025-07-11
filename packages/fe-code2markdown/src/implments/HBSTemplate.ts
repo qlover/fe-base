@@ -1,29 +1,42 @@
 import fsExtra from 'fs-extra';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import Handlebars from 'handlebars';
 import { ReflectionKind } from 'typedoc';
-import {
-  HBSTemplateContext,
-  HBSTemplateContextMap,
-  ReflectionKindName
-} from './type';
+import { ReflectionKindName } from '../type';
+import { FormatProjectValue } from '../plugins/typeDocs';
+import { ValueOf } from '@qlover/fe-corekit';
+
+export type FormatProjectValueMap = Record<
+  ValueOf<typeof ReflectionKindName>,
+  FormatProjectValue[]
+>;
 
 export class HBSTemplate {
   private templateContent: string;
 
   constructor({
     name = 'context',
-    hbsRootDir
+    hbsRootDir,
+    hbsHelpers
   }: {
     name?: string;
     hbsRootDir: string;
+    hbsHelpers?: Record<string, Handlebars.HelperDelegate>;
   }) {
     const tplFile = name.includes('.hbs') ? name : name + '.hbs';
 
+    // 在使用时 resolve 路径
+    const resolvedHbsRootDir = resolve(hbsRootDir);
     this.templateContent = fsExtra.readFileSync(
-      join(hbsRootDir, tplFile),
+      join(resolvedHbsRootDir, tplFile),
       'utf-8'
     );
+
+    if (hbsHelpers) {
+      Object.entries(hbsHelpers).forEach(([key, value]) => {
+        Handlebars.registerHelper(key, value);
+      });
+    }
   }
 
   getTemplate(): string {
@@ -31,19 +44,21 @@ export class HBSTemplate {
   }
 
   compile(
-    context: HBSTemplateContext,
+    context: FormatProjectValue,
     options?: Handlebars.RuntimeOptions
   ): string {
     return Handlebars.compile(this.templateContent)(context, options);
   }
 
-  compileSource(contextMap: HBSTemplateContextMap): string {
+  compileSource(contextMap: FormatProjectValueMap): string {
     const output: string[] = [];
-    // class -> interface -> type
     const types = [
-      ReflectionKindName[ReflectionKind.Class],
       ReflectionKindName[ReflectionKind.Interface],
-      ReflectionKindName[ReflectionKind.TypeAlias]
+      ReflectionKindName[ReflectionKind.TypeAlias],
+      ReflectionKindName[ReflectionKind.Class],
+      ReflectionKindName[ReflectionKind.Function],
+      ReflectionKindName[ReflectionKind.Variable],
+      ReflectionKindName[ReflectionKind.Enum]
     ];
     types.forEach((type) => {
       if (contextMap[type as keyof typeof contextMap]) {

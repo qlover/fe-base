@@ -5,9 +5,7 @@
   "private": true,
   "type": "module",
   "files": [
-    "bin",
     "dist",
-    "example",
     "package.json",
     "README.md"
   ],
@@ -26,8 +24,11 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "node ./dist/cli.js -p example/example.ts",
-    "build:docs:json": "node ./dist/cli.js -p example/example.ts --onlyJson"
+    "build:docs": "node ./dist/cli.js -p example --formatOutput prettier",
+    "build:docs:json": "node ./dist/cli.js -p example/index.ts --onlyJson",
+    "build:docs:remove-prefix": "node ./dist/cli.js -p example --removePrefix",
+    "build:docs:prettier": "node ./dist/cli.js -p example --formatOutput prettier",
+    "build:docs:eslint": "node ./dist/cli.js -p example --formatOutput eslint"
   },
   "repository": {
     "type": "git",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@qlover/logger": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
     "lodash": "^4.17.21"
   },
   "dependencies": {
