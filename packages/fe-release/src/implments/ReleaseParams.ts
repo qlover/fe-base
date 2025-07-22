@@ -1,6 +1,5 @@
-import type { Shell } from '@qlover/scripts-context';
+import { Shell } from '@qlover/scripts-context';
 import type { LoggerInterface } from '@qlover/logger';
-import { SharedReleaseOptions } from '../interface/ShreadReleaseOptions';
 import {
   BATCH_PR_BODY,
   DEFAULT_PR_TITLE,
@@ -10,6 +9,7 @@ import {
 } from '../defaults';
 import { TemplateContext } from '../type';
 import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
+import { ReleaseContextConfig } from './ReleaseContext';
 
 export type ReleaseBranchParams = {
   tagName: string;
@@ -78,7 +78,6 @@ const DEFAULT_RELEASE_CONFIG: ReleaseParamsConfig = {
 export class ReleaseParams {
   private config: ReleaseParamsConfig;
   constructor(
-    private shell: Shell,
     private logger: LoggerInterface,
     config: Partial<ReleaseParamsConfig> = {}
   ) {
@@ -91,7 +90,7 @@ export class ReleaseParams {
   getReleaseBranchName(
     releaseName: string,
     tagName: string,
-    shared: SharedReleaseOptions
+    shared: ReleaseContextConfig
   ): string {
     const branchNameTpl = shared.branchName || 'release-${tagName}';
 
@@ -101,7 +100,7 @@ export class ReleaseParams {
 
     this.logger.debug('Release Branch template is:', branchNameTpl);
 
-    return this.shell.format(branchNameTpl, {
+    return Shell.format(branchNameTpl, {
       pkgName: releaseName,
       releaseName: releaseName,
       tagName,
@@ -113,7 +112,7 @@ export class ReleaseParams {
   getBatchReleaseBranchName(
     releaseName: string,
     tagName: string,
-    shared: SharedReleaseOptions,
+    shared: ReleaseContextConfig,
     length: number
   ): string {
     const branchNameTpl = this.config.batchBranchName;
@@ -124,7 +123,7 @@ export class ReleaseParams {
 
     this.logger.debug('Release Batch Branch template is:', branchNameTpl);
 
-    return this.shell.format(branchNameTpl, {
+    return Shell.format(branchNameTpl, {
       pkgName: releaseName,
       releaseName: releaseName,
       tagName,
@@ -158,7 +157,7 @@ export class ReleaseParams {
 
     const { batchTagName } = this.config;
 
-    return this.shell.format(batchTagName, {
+    return Shell.format(batchTagName, {
       length: composeWorkspaces.length,
       timestamp: Date.now()
     });
@@ -166,7 +165,7 @@ export class ReleaseParams {
 
   getReleaseBranchParams(
     composeWorkspaces: WorkspaceValue[],
-    shared: SharedReleaseOptions
+    shared: ReleaseContextConfig
   ): ReleaseBranchParams {
     const releaseTagName = this.getReleaseTagName(composeWorkspaces);
     const releaseName = this.getReleaseName(composeWorkspaces);
@@ -193,7 +192,7 @@ export class ReleaseParams {
   ): string {
     const prTitleTpl = this.config.PRTitle || DEFAULT_PR_TITLE;
 
-    return this.shell.format(prTitleTpl, {
+    return Shell.format(prTitleTpl, {
       ...context,
       tagName: releaseBranchParams.tagName,
       pkgName: releaseBranchParams.releaseBranch
@@ -217,7 +216,7 @@ export class ReleaseParams {
       composeWorkspaces.length > 1
         ? composeWorkspaces
             .map((workspace) => {
-              return this.shell.format(
+              return Shell.format(
                 BATCH_PR_BODY,
                 workspace as unknown as Record<string, unknown>
               );
@@ -238,7 +237,7 @@ export class ReleaseParams {
             )
             .join(' ');
 
-    return this.shell.format(PRBodyTpl, {
+    return Shell.format(PRBodyTpl, {
       ...context,
       tagName,
       changelog

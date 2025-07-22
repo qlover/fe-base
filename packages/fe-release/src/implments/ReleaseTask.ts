@@ -1,8 +1,13 @@
-import type { ReleaseContextOptions } from '../type';
-import type Plugin from '../plugins/Plugin';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import type {
+  ScriptContext,
+  ScriptPlugin,
+  ScriptPluginProps
+} from '@qlover/scripts-context';
 import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
 import { AsyncExecutor } from '@qlover/fe-corekit';
-import ReleaseContext from './ReleaseContext';
+import ReleaseContext, { ReleaseContextOptions } from './ReleaseContext';
 import GithubPR from '../plugins/githubPR/GithubPR';
 import Workspaces from '../plugins/workspaces/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';
@@ -14,14 +19,16 @@ const innerTuples: PluginTuple<PluginClass>[] = [
   tuple(GithubPR, {})
 ];
 
+const defaultName = 'release';
+
 export default class ReleaseTask {
   protected context: ReleaseContext;
   constructor(
-    options: ReleaseContextOptions = {},
+    options: Partial<ReleaseContextOptions> = {},
     private executor: AsyncExecutor = new AsyncExecutor(),
     private defaultTuples: PluginTuple<PluginClass>[] = innerTuples
   ) {
-    this.context = new ReleaseContext(options);
+    this.context = new ReleaseContext(defaultName, options);
   }
 
   getContext(): ReleaseContext {
@@ -30,8 +37,8 @@ export default class ReleaseTask {
 
   async usePlugins(
     externalTuples?: PluginTuple<PluginClass>[]
-  ): Promise<Plugin[]> {
-    externalTuples = externalTuples || this.context.shared.plugins || [];
+  ): Promise<ScriptPlugin<ScriptContext<any>, ScriptPluginProps>[]> {
+    externalTuples = externalTuples || this.context.options.plugins || [];
 
     const plugins = await loaderPluginsFromPluginTuples(this.context, [
       ...this.defaultTuples,

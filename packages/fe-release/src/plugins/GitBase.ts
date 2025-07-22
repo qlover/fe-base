@@ -1,12 +1,13 @@
 import isString from 'lodash/isString';
-import Plugin from './Plugin';
+import ReleaseContext from '../implments/ReleaseContext';
+import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
 
 type UserInfoType = {
   repoName: string;
   authorName: string;
 };
 
-export interface GitBaseProps {
+export interface GitBaseProps extends ScriptPluginProps {
   /**
    * The token for the GitHub API
    *
@@ -20,7 +21,10 @@ export interface GitBaseProps {
   timeout?: number;
 }
 
-export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
+export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
+  ReleaseContext,
+  T
+> {
   override async onBefore(): Promise<void> {
     const repoInfo = await this.getUserInfo();
 
@@ -28,7 +32,7 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
       throw new Error('Failed to get repoInfo');
     }
 
-    let currentBranch = this.context.shared.currentBranch;
+    let currentBranch = this.context.options.currentBranch;
     if (!currentBranch) {
       currentBranch = await this.getCurrentBranch();
     }
@@ -40,7 +44,7 @@ export default class GitBase<T extends GitBaseProps> extends Plugin<T> {
       });
     }
 
-    this.context.setShared({
+    this.context.setOptions({
       repoName: repoInfo.repoName,
       authorName: repoInfo.authorName,
       currentBranch

@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
 import { tuple } from '../../src/utils/tuple';
-import Plugin from '../../src/plugins/Plugin';
+import {
+  ScriptContext,
+  ScriptPlugin,
+  ScriptPluginProps
+} from '@qlover/scripts-context';
 
-class TestPlugin extends Plugin {
-  // eslint-disable-next-line
+class TestPlugin extends ScriptPlugin<ScriptContext<any>, ScriptPluginProps> {
   constructor(context: any, option1: string, option2: number) {
     super(context, 'test');
     this.option1 = option1;
@@ -35,8 +39,10 @@ describe('tuple utils', () => {
     });
 
     it('should work with no arguments', () => {
-      class SimplePlugin extends Plugin {
-        // eslint-disable-next-line
+      class SimplePlugin extends ScriptPlugin<
+        ScriptContext<any>,
+        ScriptPluginProps
+      > {
         constructor(context: any) {
           super(context, 'simple-plugin');
         }

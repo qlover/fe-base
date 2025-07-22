@@ -3,11 +3,14 @@ import {
   ReleaseParams,
   type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
-import ReleaseContext from '../../implments/ReleaseContext';
+import ReleaseContext, {
+  ReleaseContextConfig
+} from '../../implments/ReleaseContext';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
 import GithubChangelog from './GithubChangelog';
+import { Shell } from '@qlover/scripts-context';
 
 export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   /**
@@ -124,9 +127,9 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
 
     this.githubManager = new GithubManager(this.context);
-    this.releaseParams = new ReleaseParams(context.shell, context.logger, {
-      PRTitle: this.getConfig('PRTitle', this.context.shared.PRTitle),
-      PRBody: this.getConfig('PRBody', this.context.shared.PRBody),
+    this.releaseParams = new ReleaseParams(context.logger, {
+      PRTitle: this.getConfig('PRTitle', this.context.options.PRTitle),
+      PRBody: this.getConfig('PRBody', this.context.options.PRBody),
       ...this.props
     });
   }
@@ -165,7 +168,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     await super.onBefore();
 
     if (this.isPublish) {
-      const npmToken = this.getEnv('NPM_TOKEN');
+      const npmToken = this.context.getEnv('NPM_TOKEN');
       if (!npmToken) {
         throw new Error('NPM_TOKEN is not set');
       }
@@ -180,7 +183,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     const workspaces = this.context.workspaces!;
 
     const githubChangelog = new GithubChangelog(
-      this.context.getConfig('changelog'),
+      this.context.getOptions('changelog'),
       this.githubManager
     );
 
@@ -284,7 +287,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     workspace: WorkspaceValue,
     commitArgs: string[] = []
   ): Promise<string> {
-    const commitMessage = this.shell.format(
+    const commitMessage = Shell.format(
       this.getConfig('commitMessage', DEFAULT_COMMIT_MESSAGE),
       workspace as unknown as Record<string, unknown>
     );
@@ -307,6 +310,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
   ): Promise<ReleaseBranchParams> {
     const params = this.releaseParams.getReleaseBranchParams(
       workspaces,
+      // @ts-expect-error TODO: fix this
       this.context.getTemplateContext()
     );
 
@@ -316,7 +320,8 @@ export default class GithubPR extends GitBase<GithubPRProps> {
       throw new Error('Tag name is not a string');
     }
 
-    const { sourceBranch, currentBranch } = this.context.shared;
+    const { sourceBranch, currentBranch } =
+      this.context.getOptions() as ReleaseContextConfig;
 
     this.context.logger.debug('PR TagName is:', tagName);
     this.context.logger.debug('PR CurrentBranch is:', currentBranch);
@@ -367,7 +372,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
 
     // if pushChangeLabels is true, then push the changed labels to the release PR
     if (this.getConfig('pushChangeLabels')) {
-      const changeLabels = this.context.getConfig('workspaces.changeLabels');
+      const changeLabels = this.context.getOptions('workspaces.changeLabels');
       if (Array.isArray(changeLabels) && changeLabels.length > 0) {
         labels.push(...changeLabels);
       }

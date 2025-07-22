@@ -1,4 +1,4 @@
-import type { Shell } from '@qlover/scripts-context';
+import type { ShellInterface } from '@qlover/scripts-context';
 import type {
   BaseCommit,
   ChangeLogInterface,
@@ -31,7 +31,7 @@ export const CHANGELOG_ALL_FIELDS: CommitField[] = [
 ];
 
 export interface GitChangelogProps extends GitChangelogOptions {
-  shell: Shell;
+  shell: ShellInterface;
   logger: LoggerInterface;
 }
 
@@ -45,7 +45,7 @@ export class GitChangelog implements ChangeLogInterface {
    * @returns
    */
   async getGitLog(options: GitChangelogOptions = {}): Promise<BaseCommit[]> {
-    const { directory, noMerges = true, fileds } = options;
+    const { directory, noMerges = true, fields } = options;
 
     const from = await this.resolveTag(options.from, 'root');
     const to = await this.resolveTag(options.to, 'HEAD');
@@ -55,7 +55,7 @@ export class GitChangelog implements ChangeLogInterface {
     const gitLogOptions: GitlogOptions<CommitField> = {
       repo: '.',
       number: 1000,
-      fields: fileds,
+      fields: fields,
       branch: range,
       file: directory,
       nameStatus: false,

@@ -1,14 +1,18 @@
 import type ReleaseTask from '../../implments/ReleaseTask';
-import type { DeepPartial, PackageJson } from '../../type';
 import { join, resolve, relative } from 'node:path';
 import ReleaseContext from '../../implments/ReleaseContext';
-import Plugin from '../Plugin';
 import { MANIFEST_PATH } from '../../defaults';
 import { ReleaseLabel } from '../../implments/ReleaseLabel';
 import { findWorkspaces } from 'find-workspaces';
 import { WorkspaceCreator } from './WorkspaceCreator';
+import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
 
-export interface WorkspacesProps {
+export type PackageJson = Record<string, unknown>;
+export type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
+
+export interface WorkspacesProps extends ScriptPluginProps {
   /**
    * Whether to skip workspaces
    *
@@ -96,10 +100,13 @@ export interface WorkspaceValue {
   changelog?: string;
 }
 
-export default class Workspaces extends Plugin<WorkspacesProps> {
+export default class Workspaces extends ScriptPlugin<
+  ReleaseContext,
+  WorkspacesProps
+> {
   protected releaseTask: ReleaseTask | null = null;
 
-  private workspacesList: WorkspaceValue[] = [];
+  protected workspacesList: WorkspaceValue[] = [];
 
   private _skip = false;
 
@@ -110,8 +117,8 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
     this.releaseLabel = new ReleaseLabel({
       changePackagesLabel:
-        this.context.shared.changePackagesLabel || 'change:${name}',
-      packagesDirectories: this.context.shared.packagesDirectories || [],
+        this.context.options.changePackagesLabel || 'change:${name}',
+      packagesDirectories: this.context.options.packagesDirectories || [],
       compare: (changedFilePath, packagePath) =>
         resolve(changedFilePath).startsWith(resolve(packagePath))
     });
@@ -138,7 +145,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     }
 
     // If has publishPath, use the workspace
-    const { publishPath } = this.context.shared;
+    const publishPath = this.context.getOptions('publishPath') as string;
     if (publishPath) {
       const targetWorkspace = workspaces.find(
         (workspace) => resolve(workspace.root) === resolve(publishPath)
@@ -188,14 +195,14 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     workspace: WorkspaceValue,
     workspaces?: WorkspaceValue[]
   ): void {
-    this.context.setShared({
+    this.context.setOptions({
       publishPath: workspace.path
     });
 
     this.setConfig({
       workspace: workspace,
       workspaces
-    } as DeepPartial<WorkspacesProps>);
+    } as Partial<WorkspacesProps>);
   }
 
   private async getGitWorkspaces(): Promise<string[]> {
@@ -235,7 +242,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
 
   private getProjectWorkspaces(): WorkspaceValue[] {
     const rootPath = this.context.rootPath;
-    const packagesDirectories = this.context.shared.packagesDirectories;
+    const packagesDirectories = this.context.options.packagesDirectories;
 
     if (Array.isArray(packagesDirectories) && packagesDirectories.length > 0) {
       return packagesDirectories.map((path) =>
@@ -265,7 +272,7 @@ export default class Workspaces extends Plugin<WorkspacesProps> {
     this.setConfig({
       packages,
       changedPaths,
-      projectWorkspaces: projectWorkspaces as DeepPartial<WorkspaceValue>[]
+      projectWorkspaces: projectWorkspaces
     });
 
     this.logger.debug('changedPaths', changedPaths);

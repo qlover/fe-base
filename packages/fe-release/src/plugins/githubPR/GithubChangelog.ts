@@ -99,12 +99,12 @@ export default class GithubChangelog extends GitChangelog {
   ): Promise<WorkspaceValue[]> {
     const githubRootPath = [
       DOMAIN,
-      context.shared.authorName!,
-      context.shared.repoName!
+      context.getOptions('authorName'),
+      context.getOptions('repoName')
     ].join('/');
 
     const changelogProps = {
-      ...(context.getConfig('changelog') as GitChangelogOptions),
+      ...context.getOptions<GitChangelogOptions>('changelog'),
       githubRootPath,
       mergePRcommit: true,
       shell: context.shell,
@@ -121,7 +121,7 @@ export default class GithubChangelog extends GitChangelog {
         const changelog = await githubChangelog.getFullCommit({
           from: workspace.lastTag ?? '',
           directory: workspace.path,
-          fileds: CHANGELOG_ALL_FIELDS
+          fields: CHANGELOG_ALL_FIELDS
         });
 
         if (typeof changelog === 'string') {
