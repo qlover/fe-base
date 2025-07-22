@@ -1,202 +1,261 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Application,
-  CommentDisplayPart,
   ParameterReflection,
   ProjectReflection,
   ReflectionKind,
   TSConfigReader,
+  TypeDocOptions,
   TypeDocReader
 } from 'typedoc';
-import { ScriptPlugin } from '@qlover/scripts-context';
-import { ReflectionKindName } from '../type';
+import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
+import {
+  FormatProjectDescription,
+  FormatProjectSource,
+  FormatProjectValue,
+  ReflectionKindName
+} from '../type';
 import fsExtra from 'fs-extra';
+import { resolve } from 'path';
 import Code2MDContext from '../implments/Code2MDContext';
 
-export interface FormatProjectValue {
-  /**
-   * 唯一标识
-   */
-  id: number;
-  /**
-   * 解析类型
-   */
-  kind: ReflectionKind;
-  /**
-   * 解析出的类型名
-   *
-   * 例如：Class,Interface,Constructor,Property ...
-   */
-  kindName: FormatProjectKindName;
-  /**
-   * 名称
-   */
-  name: string;
-
-  /**
-   * 类型字符串
-   *
-   * 例如：`string`
-   */
-  typeString: string;
-
-  /**
-   * 描述内容
-   *
-   * 包含所有 @ 标签和 summary
-   */
-  descriptions: FormatProjectDescription[];
-
-  /**
-   * 源文件信息
-   *
-   * 记录该元素来自哪个文件的哪一行
-   */
-  source?: FormatProjectSource;
-
-  /**
-   * 参数列表
-   *
-   * 比如方法的参数，是一个列表, 至少有以下：
-   *
-   * 1. 参数名
-   * 2. 参数类型
-   * 3. 参数描述
-   * 4. 参数默认值
-   * 5. 参数是否已废弃
-   * 6. 来自那个版本
-   */
-  parametersList?: FormatProjectValue[];
-
-  /**
-   * 子元素
-   *
-   * - 声明为 interface,class 的成员当作子元素
-   * - 声明为 type 的成员，也应该是子元素
-   * - 声明为 enum 的成员，只当作属性(后期可考虑换成表格表示)
-   * - signatures 也是当作子元素
-   */
-  children?: FormatProjectValue[];
-
-  // 当有parametersList时，以下属性为必填
-  defaultValue?: string;
-  since?: string;
-  deprecated?: boolean;
-}
-
-export type FormatProjectKindName =
-  (typeof ReflectionKindName)[keyof typeof ReflectionKindName];
-
-export interface FormatProjectDescription {
-  /**
-   * if comment.summary tag is `@summary`
-   */
-  tag: string;
-
-  name?: string;
-
-  content: CommentDisplayPart[];
-}
-
 /**
- * 源文件信息
- *
- * @description 用于记录代码元素的来源文件信息
+ * Configuration options for the TypeDocs plugin
  */
-export interface FormatProjectSource {
+export interface TypeDocsProps extends ScriptPluginProps {
   /**
-   * 文件名
+   * Output JSON file path for TypeDoc project data
+   *
+   * When specified, the plugin will write the raw TypeDoc project data
+   * to this file for debugging or external processing purposes.
    */
-  fileName: string;
+  outputJSONFilePath?: string;
 
   /**
-   * 行号
+   * Base path for TypeDoc parsing operations
+   *
+   * This path is used as the root directory for TypeDoc to resolve
+   * relative imports and file references. Should match the project root.
+   *
+   * @default `process.cwd()`
    */
-  line: number;
+  basePath?: string;
 
   /**
-   * 字符位置
+   * Handlebars template data file path
+   *
+   * When specified, the plugin will write the formatted project data
+   * to this file for use with Handlebars templates in the formats plugin.
+   *
+   * @default `./docs.output/code2md.tpl.json`
    */
-  character: number;
+  tplPath?: string;
 
   /**
-   * 源码链接 URL（如果有）
+   * JSDoc tags to filter out from descriptions
+   *
+   * These tags will be excluded from the formatted descriptions
+   * as they are handled separately (e.g., `@default`, `@since`, `@deprecated`).
+   * This prevents duplicate information in the generated documentation.
+   *
+   * @default `["@default", "@since", "@deprecated", "@optional"]`
    */
-  url?: string;
+  filterTags?: string[];
 }
 
+const SEPARATORS_UNION = ' \\| ';
+const SEPARATORS_INTERSECTION = ' & ';
+const SEPARATORS_PARAMS = ', ';
+
 /**
- * TypeDocJson 插件类
+ * TypeDocs plugin for parsing TypeScript code and generating structured documentation data
  *
- * @description 用于将 TypeDoc 项目数据转换为 JSON 格式并输出到文件
+ * Core Responsibilities:
+ * - Parse TypeScript source files using TypeDoc library
+ * - Convert TypeDoc reflection objects to standardized format
+ * - Extract JSDoc comments, types, and metadata
+ * - Generate JSON output for debugging and template processing
+ * - Handle complex TypeScript types and nested structures
+ * - Process function signatures, parameters, and return types
  *
- * @purpose
- * - 解析 TypeScript 项目并生成 TypeDoc 数据
- * - 将项目数据转换为 CommentTableData 格式
- * - 输出结构化的 JSON 文件供后续处理
+ * Design Considerations:
+ * - Uses TypeDoc for accurate TypeScript parsing and reflection
+ * - Converts complex reflection objects to simplified format
+ * - Handles nested object types and union/intersection types
+ * - Filters JSDoc tags to prevent information duplication
+ * - Supports both raw JSON output and template data generation
+ * - Maintains source file information for debugging
  *
- * @workflow
- * 1. 初始化 TypeDoc Application
- * 2. 转换项目为 ProjectReflection
- * 3. 将数据转换为 CommentTableData 格式
- * 4. 写入 JSON 文件
- *
- * @example
+ * @example Basic Usage
  * ```typescript
- * const plugin = new TypeDocJson(context);
- * await plugin.onBefore(); // 自动执行转换和文件写入
+ * const typeDocs = new TypeDocJson(context);
+ * await typeDocs.onBefore(); // Parse TypeScript files
+ * ```
+ *
+ * @example With Configuration
+ * ```typescript
+ * const typeDocs = new TypeDocJson(context);
+ * typeDocs.setConfig({
+ *   outputJSONFilePath: './debug/typedoc.json',
+ *   filterTags: ['@internal', '@private']
+ * });
+ * await typeDocs.onBefore();
  * ```
  */
-export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
-  private app?: Application;
-
+export default class TypeDocJson extends ScriptPlugin<
+  Code2MDContext,
+  TypeDocsProps
+> {
+  /**
+   * Initialize the TypeDocs plugin
+   *
+   * @param context - Code2MD context containing source file information
+   */
   constructor(context: Code2MDContext) {
     super(context, 'typeDocs');
   }
 
   /**
-   * 获取或创建 TypeDoc Application 实例
+   * Main execution method that parses TypeScript files and generates documentation data
    *
-   * @description 创建并配置 TypeDoc 应用程序实例，用于解析 TypeScript 项目
+   * Implementation Details:
+   * 1. Extracts entry points from reader outputs
+   * 2. Initializes TypeDoc application with project configuration
+   * 3. Converts TypeScript files to reflection objects
+   * 4. Optionally writes raw TypeDoc JSON for debugging
+   * 5. Converts reflection objects to standardized format
+   * 6. Optionally writes template data for Handlebars processing
+   * 7. Stores formatted project data in context for downstream plugins
    *
-   * @returns Promise<Application> TypeDoc 应用程序实例
+   * Business Rules:
+   * - Uses reader outputs as entry points for TypeDoc processing
+   * - Excludes private members but includes protected and external members
+   * - Skips error checking for faster processing
+   * - Includes version information in reflection objects
+   * - Generates both raw and formatted output based on configuration
+   * - Preserves source file information for debugging
+   *
+   * @throws {Error} When TypeDoc project conversion fails
+   * @throws {Error} When file writing operations fail
    *
    * @example
    * ```typescript
-   * const app = await this.getApp();
-   * const project = await app.convert();
+   * await typeDocs.onBefore();
+   * // Parses all TypeScript files and generates documentation data
    * ```
    */
-  async getApp(): Promise<Application> {
-    if (this.app) {
-      return this.app;
-    }
-
-    const app = await Application.bootstrap(
-      {
-        // typedoc options here
-        basePath: this.context.options.basePath,
-        entryPoints: this.context.options.entryPoints,
-        skipErrorChecking: true
-      },
-      [new TSConfigReader(), new TypeDocReader()]
+  override async onBefore(): Promise<void> {
+    const entryPoints = this.context.options.readerOutputs!.map(
+      (output) => output.relativePath
     );
 
-    this.app = app;
-    return app;
+    const [project, app] = await this.getTypeDocsProject({
+      basePath: resolve(this.getConfig('basePath', process.cwd())),
+      entryPoints: entryPoints,
+      skipErrorChecking: true,
+      includeVersion: true,
+      excludePrivate: true,
+      excludeProtected: false,
+      excludeExternals: false
+    });
+
+    const outputPath = this.getConfig('outputJSONFilePath', '');
+    if (outputPath) {
+      this.writeJSON(app.serializer.projectToObject(project, './'), outputPath);
+    }
+
+    const formatProject = this.formats(project);
+
+    const tplPath = this.getConfig('tplPath', '');
+    if (tplPath) {
+      this.writeJSON(formatProject, tplPath);
+    }
+
+    this.context.setOptions({ formatProject });
   }
 
   /**
-   * 写入 JSON 数据到文件
+   * Initialize TypeDoc application and convert TypeScript files to reflection objects
    *
-   * @description 将数据序列化为 JSON 并写入指定文件
+   * Implementation Details:
+   * 1. Bootstraps TypeDoc application with provided options
+   * 2. Configures TSConfig and TypeDoc readers for project parsing
+   * 3. Converts TypeScript files to reflection objects
+   * 4. Validates conversion success and returns project data
    *
-   * @param value 要写入的数据
-   * @param path 文件路径
+   * Business Rules:
+   * - Uses TSConfigReader for TypeScript configuration parsing
+   * - Uses TypeDocReader for TypeDoc-specific configuration
+   * - Throws error if project conversion fails
+   * - Returns both project reflection and application instance
+   * - Supports partial TypeDoc options for flexible configuration
+   *
+   * @param options - TypeDoc configuration options
+   * @returns Promise resolving to [ProjectReflection, Application] tuple
+   *
+   * @throws {Error} When TypeDoc application bootstrap fails
+   * @throws {Error} When project conversion fails
+   *
+   * @example
+   * ```typescript
+   * const [project, app] = await typeDocs.getTypeDocsProject({
+   *   entryPoints: ['src/index.ts'],
+   *   excludePrivate: true
+   * });
+   * ```
+   */
+  async getTypeDocsProject(
+    options: Partial<TypeDocOptions>
+  ): Promise<[ProjectReflection, Application]> {
+    const app = await Application.bootstrap(options, [
+      new TSConfigReader(),
+      new TypeDocReader()
+    ]);
+
+    const project = await app.convert();
+
+    if (!project) {
+      throw new Error('Failed to convert project');
+    }
+
+    return [project, app];
+  }
+
+  /**
+   * Write data to JSON file with proper formatting
+   *
+   * Implementation Details:
+   * 1. Validates that output path is provided
+   * 2. Removes existing file if it exists
+   * 3. Ensures parent directory structure exists
+   * 4. Serializes data to JSON with 2-space indentation
+   * 5. Writes formatted JSON to file with UTF-8 encoding
+   *
+   * Business Rules:
+   * - Skips writing if path is empty or invalid
+   * - Overwrites existing files without warning
+   * - Creates parent directories as needed
+   * - Uses consistent JSON formatting for readability
+   * - Logs warning for empty paths
+   *
+   * @param value - Data to serialize and write
+   * @param path - Output file path
+   *
+   * @throws {Error} When file system operations fail
    *
    * @example
    * ```typescript
    * this.writeJSON(data, '/path/to/output.json');
+   * ```
+   *
+   * @example Error Handling
+   * ```typescript
+   * try {
+   *   this.writeJSON(projectData, './output.json');
+   * } catch (error) {
+   *   // Handle file system errors
+   *   console.error('Failed to write JSON:', error.message);
+   * }
    * ```
    */
   writeJSON(value: unknown, path: string): void {
@@ -208,74 +267,37 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
     fsExtra.removeSync(path);
     fsExtra.ensureFileSync(path);
     fsExtra.writeFileSync(path, JSON.stringify(value, null, 2), 'utf-8');
-    this.logger.info('Generate JSON file success', path);
   }
 
   /**
-   * 将项目数据写入文件
+   * Convert TypeDoc ProjectReflection to standardized FormatProjectValue array
    *
-   * @description 将 ProjectReflection 转换为 CommentTableData 格式并写入 JSON 文件
+   * Implementation Details:
+   * 1. Validates that project has children elements
+   * 2. Maps each child reflection to standardized format
+   * 3. Uses convertReflectionToFormatValue for individual conversion
+   * 4. Returns empty array if no children exist
    *
-   * @param project TypeDoc 项目反射对象
+   * Business Rules:
+   * - Returns empty array for projects without children
+   * - Processes all top-level reflections in project
+   * - Maintains original order of reflections
+   * - Handles null/undefined children gracefully
+   * - Delegates complex conversion to specialized method
    *
-   * @example
-   * ```typescript
-   * await this.writeToFile(project);
-   * ```
-   */
-  async writeToFile(project: ProjectReflection): Promise<void> {
-    const path = this.context.options.outputJSONFilePath;
-
-    if (!path) {
-      this.logger.warn('ProjectReader writeTo Output path is empty!');
-      return;
-    }
-
-    const app = await this.getApp();
-
-    this.writeJSON(app.serializer.projectToObject(project, './'), path);
-  }
-
-  /**
-   * 插件执行前的钩子方法
-   *
-   * @description 在插件执行前调用，负责转换项目并写入文件
-   *
-   * @throws {Error} 当项目转换失败时抛出错误
-   *
-   * @example
-   * ```typescript
-   * await plugin.onBefore();
-   * ```
-   */
-  override async onBefore(): Promise<void> {
-    const app = await this.getApp();
-    const project = await app.convert();
-
-    if (!project) {
-      throw new Error('Failed to convert project');
-    }
-
-    await this.writeToFile(project);
-
-    const formatProject = this.formats(project);
-
-    this.context.setOptions({ projectReflection: project, formatProject });
-
-    this.writeJSON(formatProject, this.context.options.tplPath);
-  }
-
-  /**
-   * 将 ProjectReflection 转换为 FormatProjectValue 格式
-   *
-   * @description 递归转换 TypeDoc 项目数据为标准化格式
-   *
-   * @param project TypeDoc 项目反射对象
-   * @returns FormatProjectValue[] 格式化后的项目数据数组
+   * @param project - TypeDoc project reflection object
+   * @returns Array of standardized FormatProjectValue objects
    *
    * @example
    * ```typescript
    * const formatData = this.formats(project);
+   * // Returns: [{ id: 1, kind: 1, name: 'UserService', ... }, ...]
+   * ```
+   *
+   * @example Empty Project
+   * ```typescript
+   * const formatData = this.formats(emptyProject);
+   * // Returns: []
    * ```
    */
   formats(project: ProjectReflection): FormatProjectValue[] {
@@ -289,12 +311,48 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 将单个 Reflection 转换为 FormatProjectValue
+   * Convert individual TypeDoc reflection to standardized FormatProjectValue
    *
-   * @description 转换 TypeDoc 反射对象为 FormatProjectValue 格式
+   * Implementation Details:
+   * 1. Extracts reflection kind and maps to readable name
+   * 2. Generates type string representation for the reflection
+   * 3. Formats JSDoc comments and descriptions
+   * 4. Extracts source file information
+   * 5. Processes function parameters and signatures
+   * 6. Handles nested children and type declarations
+   * 7. Extracts metadata (default value, since, deprecated, optional)
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns FormatProjectValue 格式化后的数据
+   * Business Rules:
+   * - Maps reflection kinds to human-readable names
+   * - Handles complex TypeScript types (union, intersection, reflection)
+   * - Processes function signatures with parameters and return types
+   * - Flattens nested object types for better documentation
+   * - Filters JSDoc tags to prevent information duplication
+   * - Preserves source file information for debugging
+   * - Handles constructor signatures specially
+   *
+   * Type Processing:
+   * - Intrinsic types: string, number, boolean, etc.
+   * - Reference types: class names, interface names
+   * - Literal types: string literals, number literals
+   * - Union types: string | number | boolean
+   * - Intersection types: A & B & C
+   * - Reflection types: object types with properties
+   *
+   * @param reflection - TypeDoc reflection object to convert
+   * @returns Standardized FormatProjectValue object
+   *
+   * @example
+   * ```typescript
+   * const formatValue = this.convertReflectionToFormatValue(classReflection);
+   * // Returns: { id: 1, kind: 1, kindName: 'Class', name: 'UserService', ... }
+   * ```
+   *
+   * @example Function with Parameters
+   * ```typescript
+   * const formatValue = this.convertReflectionToFormatValue(functionReflection);
+   * // Returns: { name: 'login', parametersList: [...], typeString: '(user: User) => Promise<AuthResult>' }
+   * ```
    */
   private convertReflectionToFormatValue(reflection: any): FormatProjectValue {
     const kindName =
@@ -328,20 +386,46 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       );
     }
 
-    // 处理签名作为子元素
-    if (reflection.signatures && reflection.signatures.length > 0) {
-      const signatureChildren = reflection.signatures.map((signature: any) =>
-        this.convertReflectionToFormatValue(signature)
+    // 处理 type.declaration.children（用于 type 类型）
+    if (
+      reflection.type?.type === 'reflection' &&
+      reflection.type.declaration?.children
+    ) {
+      const typeChildren = reflection.type.declaration.children.map(
+        (child: any) => this.convertReflectionToFormatValue(child)
       );
-      children = children
-        ? [...children, ...signatureChildren]
-        : signatureChildren;
+      children = children ? [...children, ...typeChildren] : typeChildren;
+    }
+
+    // 处理签名作为子元素
+    // 对于构造函数，将签名信息直接包含在构造函数对象中，不作为子元素
+    if (reflection.signatures && reflection.signatures.length > 0) {
+      if (reflection.kind === ReflectionKind.Constructor) {
+        // 对于构造函数，将第一个签名的参数信息直接包含在构造函数中
+        const firstSignature = reflection.signatures[0];
+        if (firstSignature.parameters) {
+          parametersList = this.formatParameters(firstSignature.parameters);
+        }
+        // 修改构造函数的名称，使其包含类名
+        if (firstSignature.name && firstSignature.name.startsWith('new ')) {
+          reflection.name = firstSignature.name;
+        }
+      } else {
+        // 对于其他类型，将签名作为子元素
+        const signatureChildren = reflection.signatures.map((signature: any) =>
+          this.convertReflectionToFormatValue(signature)
+        );
+        children = children
+          ? [...children, ...signatureChildren]
+          : signatureChildren;
+      }
     }
 
     // 获取额外属性
     const defaultValue = this.getDefaultValue(reflection);
     const since = this.getSinceVersion(reflection);
     const deprecated = this.isDeprecated(reflection);
+    const optional = this.isOptional(reflection);
 
     return {
       id: reflection.id,
@@ -355,17 +439,54 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       children,
       defaultValue,
       since,
-      deprecated
+      deprecated,
+      optional
     };
   }
 
   /**
-   * 获取类型字符串
+   * Extract and format type information as a readable string
    *
-   * @description 从 TypeDoc 反射对象中提取类型信息
+   * Implementation Details:
+   * 1. Checks if reflection has type information
+   * 2. Handles different type categories (intrinsic, reference, literal, etc.)
+   * 3. Processes complex types (union, intersection, reflection)
+   * 4. Generates function signatures with parameters and return types
+   * 5. Falls back to 'unknown' for unrecognized types
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns string 类型字符串
+   * Business Rules:
+   * - Intrinsic types: returns type name directly (string, number, boolean)
+   * - Reference types: returns type name or 'Reference' fallback
+   * - Literal types: wraps string values in quotes, converts others to string
+   * - Union types: joins with ' | ' separator
+   * - Intersection types: joins with ' & ' separator
+   * - Reflection types: returns 'Object' for object types
+   * - Function types: generates parameter list and return type
+   * - Unknown types: returns 'unknown' fallback
+   *
+   * Type Categories:
+   * - Intrinsic: string, number, boolean, any, void, etc.
+   * - Reference: class names, interface names, type aliases
+   * - Literal: "hello", 42, true, etc.
+   * - Union: string | number | boolean
+   * - Intersection: A & B & C
+   * - Reflection: object types with properties
+   * - Function: (param: type) => returnType
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns Formatted type string representation
+   *
+   * @example
+   * ```typescript
+   * this.getTypeString({ type: { type: 'intrinsic', name: 'string' } });
+   * // Returns: 'string'
+   * ```
+   *
+   * @example Complex Types
+   * ```typescript
+   * this.getTypeString({ type: { type: 'union', types: [...] } });
+   * // Returns: 'string | number | boolean'
+   * ```
    */
   private getTypeString(reflection: any): string {
     if (reflection.type) {
@@ -373,7 +494,21 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
         return reflection.type.name;
       }
       if (reflection.type.type === 'reference') {
-        return reflection.type.name || 'Reference';
+        // 对于引用类型，返回完整的类型名称
+        let typeName = reflection.type.name || 'Reference';
+
+        // 处理泛型类型参数
+        if (
+          reflection.type.typeArguments &&
+          reflection.type.typeArguments.length > 0
+        ) {
+          const typeArgs = reflection.type.typeArguments
+            .map((arg: any) => this.getTypeString({ type: arg }))
+            .join(SEPARATORS_PARAMS);
+          typeName += `<${typeArgs}>`;
+        }
+
+        return typeName;
       }
       if (reflection.type.type === 'literal') {
         return typeof reflection.type.value === 'string'
@@ -383,6 +518,27 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       if (reflection.type.type === 'reflection') {
         return 'Object';
       }
+      if (reflection.type.type === 'array') {
+        const elementType = this.getTypeString({
+          type: reflection.type.elementType
+        });
+        return `${elementType}[]`;
+      }
+      if (reflection.type.type === 'union') {
+        const unionTypes = reflection.type.types
+          ?.map((t: any) => this.getTypeString({ type: t }))
+          .filter(Boolean);
+        return unionTypes.length > 0
+          ? unionTypes.join(SEPARATORS_UNION)
+          : 'Union';
+      }
+      if (reflection.type.type === 'intersection') {
+        return (
+          reflection.type.types
+            ?.map((t: any) => this.getTypeString({ type: t }))
+            .join(SEPARATORS_INTERSECTION) || 'Intersection'
+        );
+      }
     }
 
     // 对于方法/函数，返回函数签名
@@ -391,7 +547,7 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       const params =
         signature.parameters
           ?.map((p: any) => `${p.name}: ${this.getTypeString(p)}`)
-          .join(', ') || '';
+          .join(SEPARATORS_PARAMS) || '';
       const returnType = this.getTypeString(signature);
       return `(${params}) => ${returnType}`;
     }
@@ -400,12 +556,40 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 获取默认值
+   * Extract default value from reflection object
    *
-   * @description 从反射对象中提取默认值信息
+   * Implementation Details:
+   * 1. Checks reflection.defaultValue property first
+   * 2. Searches for `@default` JSDoc tag in comment block tags
+   * 3. Extracts text content from `@default` tag
+   * 4. Removes backticks from default value for clean formatting
+   * 5. Returns undefined if no default value found
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns string | undefined 默认值
+   * Business Rules:
+   * - Prioritizes reflection.defaultValue over JSDoc `@default` tag
+   * - Converts default value to string representation
+   * - Removes markdown backticks from JSDoc default values
+   * - Returns undefined for missing default values
+   * - Handles both primitive and object default values
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns Default value as string, or undefined if not found
+   *
+   * @example
+   * ```typescript
+   * this.getDefaultValue({ defaultValue: 'hello' });
+   * // Returns: 'hello'
+   * ```
+   *
+   * @example JSDoc Default Tag
+   * ```typescript
+   * this.getDefaultValue({
+   *   comment: {
+   *     blockTags: [{ tag: '@default', content: [{ text: '`42`' }] }]
+   *   }
+   * });
+   * // Returns: '42'
+   * ```
    */
   private getDefaultValue(reflection: any): string | undefined {
     if (reflection.defaultValue !== undefined) {
@@ -426,12 +610,33 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 获取版本信息
+   * Extract `@since` version information from reflection object
    *
-   * @description 从反射对象中提取 @since 标签信息
+   * Implementation Details:
+   * 1. Searches for `@since` JSDoc tag in comment block tags
+   * 2. Extracts text content from the first `@since` tag found
+   * 3. Returns undefined if no `@since` tag exists
+   * 4. Handles multiple `@since` tags by using the first one
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns string | undefined 版本信息
+   * Business Rules:
+   * - Only processes `@since` tags from JSDoc comments
+   * - Returns the first `@since` tag found (ignores duplicates)
+   * - Returns undefined for missing `@since` tags
+   * - Preserves original text content without modification
+   * - Handles empty or malformed `@since` tags gracefully
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns Version string from `@since` tag, or undefined if not found
+   *
+   * @example
+   * ```typescript
+   * this.getSinceVersion({
+   *   comment: {
+   *     blockTags: [{ tag: '@since', content: [{ text: '1.2.0' }] }]
+   *   }
+   * });
+   * // Returns: '1.2.0'
+   * ```
    */
   private getSinceVersion(reflection: any): string | undefined {
     if (reflection.comment?.blockTags) {
@@ -446,12 +651,39 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 检查是否已废弃
+   * Check if reflection is marked as deprecated
    *
-   * @description 从反射对象中检查 @deprecated 标签
+   * Implementation Details:
+   * 1. Searches for `@deprecated` JSDoc tag in comment block tags
+   * 2. Returns true if `@deprecated` tag is found
+   * 3. Returns false if no `@deprecated` tag exists
+   * 4. Ignores `@deprecated` tag content (only checks presence)
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns boolean 是否已废弃
+   * Business Rules:
+   * - Only checks for `@deprecated` tags in JSDoc comments
+   * - Returns boolean true/false based on tag presence
+   * - Ignores `@deprecated` tag content and parameters
+   * - Handles multiple `@deprecated` tags (any presence = true)
+   * - Returns false for reflections without comments
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns True if `@deprecated` tag is present, false otherwise
+   *
+   * @example
+   * ```typescript
+   * this.isDeprecated({
+   *   comment: {
+   *     blockTags: [{ tag: '@deprecated' }]
+   *   }
+   * });
+   * // Returns: true
+   * ```
+   *
+   * @example Not Deprecated
+   * ```typescript
+   * this.isDeprecated({ comment: { blockTags: [] } });
+   * // Returns: false
+   * ```
    */
   private isDeprecated(reflection: any): boolean {
     if (reflection.comment?.blockTags) {
@@ -463,16 +695,131 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 格式化描述信息
+   * Check if reflection represents an optional parameter or property
    *
-   * @description 将 TypeDoc 注释转换为 FormatProjectDescription 格式
+   * Implementation Details:
+   * 1. Checks reflection.flags.isOptional for TypeScript optional syntax (`?`)
+   * 2. Checks reflection.defaultValue for default value presence
+   * 3. Searches for `@default` JSDoc tag in comment block tags
+   * 4. Searches for `@optional` JSDoc tag in comment block tags
+   * 5. Returns true if any optional indicator is found
    *
-   * @param comment TypeDoc 注释对象
-   * @returns FormatProjectDescription[] 格式化后的描述数组
+   * Business Rules:
+   * - TypeScript optional syntax (`?`) takes highest priority
+   * - Default values indicate optional parameters
+   * - `@default` JSDoc tag indicates optional parameters
+   * - `@optional` JSDoc tag explicitly marks as optional
+   * - Returns true if any optional indicator is present
+   * - Returns false only if no optional indicators found
+   *
+   * Optional Indicators:
+   * - reflection.flags.isOptional: TypeScript `?` syntax
+   * - reflection.defaultValue: Default value assigned
+   * - `@default` JSDoc tag: Default value documented
+   * - `@optional` JSDoc tag: Explicitly marked optional
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns True if parameter/property is optional, false otherwise
+   *
+   * @example TypeScript Optional Syntax
+   * ```typescript
+   * this.isOptional({ flags: { isOptional: true } });
+   * // Returns: true
+   * ```
+   *
+   * @example Default Value
+   * ```typescript
+   * this.isOptional({ defaultValue: 'hello' });
+   * // Returns: true
+   * ```
+   *
+   * @example JSDoc Tags
+   * ```typescript
+   * this.isOptional({
+   *   comment: {
+   *     blockTags: [{ tag: '@optional' }]
+   *   }
+   * });
+   * // Returns: true
+   * ```
+   */
+  private isOptional(reflection: any): boolean {
+    // 检查是否有 ? 标记（可选参数）
+    if (reflection.flags?.isOptional) {
+      return true;
+    }
+
+    // 检查是否有默认值
+    if (reflection.defaultValue !== undefined) {
+      return true;
+    }
+
+    // 检查 @default 标签
+    if (reflection.comment?.blockTags) {
+      const hasDefaultTag = reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@default'
+      );
+      if (hasDefaultTag) {
+        return true;
+      }
+    }
+
+    // 检查 @optional 标签
+    if (reflection.comment?.blockTags) {
+      const hasOptionalTag = reflection.comment.blockTags.some(
+        (tag: any) => tag.tag === '@optional'
+      );
+      if (hasOptionalTag) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Format TypeDoc comments into standardized description format
+   *
+   * Implementation Details:
+   * 1. Processes comment.summary for main description
+   * 2. Filters out specified JSDoc tags to prevent duplication
+   * 3. Sorts remaining tags by priority (summary/description first)
+   * 4. Converts each tag to FormatProjectDescription format
+   * 5. Returns array of formatted descriptions
+   *
+   * Business Rules:
+   * - Summary content is always included as `@summary` tag
+   * - Filters out tags specified in filterTags configuration
+   * - Prioritizes `@summary` and `@description` tags
+   * - Preserves original tag order for non-priority tags
+   * - Handles missing or empty comments gracefully
+   * - Maintains tag names and content structure
+   *
+   * Filtered Tags (default):
+   * - `@default`: Handled separately by getDefaultValue
+   * - `@since`: Handled separately by getSinceVersion
+   * - `@deprecated`: Handled separately by isDeprecated
+   * - `@optional`: Handled separately by isOptional
+   *
+   * Priority Tags:
+   * - `@summary`: Always displayed first
+   * - `@description`: Displayed after summary
+   * - Other tags: Displayed in original order
+   *
+   * @param comment - TypeDoc comment object
+   * @returns Array of formatted description objects
    *
    * @example
    * ```typescript
    * const descriptions = this.formatDescription(reflection.comment);
+   * // Returns: [{ tag: '@summary', content: [...] }, { tag: '@param', name: 'user', content: [...] }]
+   * ```
+   *
+   * @example With Filtered Tags
+   * ```typescript
+   * // `@default`, `@since`, `@deprecated`, `@optional` are filtered out
+   * const descriptions = this.formatDescription(comment);
+   * // Only returns non-filtered tags like `@param`, `@returns`, `@example`
    * ```
    */
   formatDescription(comment: any): FormatProjectDescription[] {
@@ -482,7 +829,18 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
 
     const descriptions: FormatProjectDescription[] = [];
 
-    // 处理 summary
+    const filterTags = this.getConfig('filterTags') as string[] | undefined;
+    // Dynamic get tags to filter out (priority context configuration)
+    const filteredTags = filterTags || [
+      '@default',
+      '@since',
+      '@deprecated',
+      '@optional'
+    ];
+    // Define tags to display first
+    const priorityTags = ['@summary', '@description'];
+
+    // Process summary
     if (comment.summary && comment.summary.length > 0) {
       descriptions.push({
         tag: '@summary',
@@ -490,9 +848,22 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       });
     }
 
-    // 处理 blockTags
+    // Process blockTags, filter out tags that have been extracted separately
     if (comment.blockTags && comment.blockTags.length > 0) {
-      comment.blockTags.forEach((tag: any) => {
+      const validTags = comment.blockTags.filter(
+        (tag: any) => !filteredTags.includes(tag.tag)
+      );
+
+      // Sort by priority: priority tags first, others in original order
+      const sortedTags = validTags.sort((a: any, b: any) => {
+        const aPriority = priorityTags.includes(a.tag);
+        const bPriority = priorityTags.includes(b.tag);
+        if (aPriority && !bPriority) return -1;
+        if (!aPriority && bPriority) return 1;
+        return 0;
+      });
+
+      sortedTags.forEach((tag: any) => {
         descriptions.push({
           tag: tag.tag,
           name: tag.name,
@@ -505,16 +876,57 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
   }
 
   /**
-   * 格式化参数列表
+   * Format TypeDoc parameters into standardized FormatProjectValue array
    *
-   * @description 将 TypeDoc 参数数组转换为 FormatProjectValue 格式
+   * Implementation Details:
+   * 1. Validates input parameters array
+   * 2. Processes each parameter individually
+   * 3. Handles object-type parameters by flattening their properties
+   * 4. Generates nested property names for object parameters
+   * 5. Extracts metadata for each parameter (default, since, deprecated, optional)
    *
-   * @param parameters TypeDoc 参数数组
-   * @returns FormatProjectValue[] 格式化后的参数数组
+   * Business Rules:
+   * - Returns empty array for invalid or empty parameter arrays
+   * - Processes object parameters by flattening their properties
+   * - Uses dot notation for nested object properties (e.g., options.name)
+   * - Extracts all metadata for each parameter
+   * - Maintains original parameter order
+   * - Handles both simple and complex parameter types
    *
-   * @example
+   * Object Parameter Handling:
+   * - Detects reflection-type parameters with children
+   * - Adds parent parameter as first element
+   * - Flattens child properties with parent prefix
+   * - Preserves all metadata for both parent and children
+   *
+   * @param parameters - TypeDoc parameter reflection array
+   * @returns Array of standardized FormatProjectValue objects
+   *
+   * @example Simple Parameters
    * ```typescript
-   * const params = this.formatParameters(signature.parameters);
+   * const params = this.formatParameters([
+   *   { name: 'user', type: { type: 'intrinsic', name: 'string' } }
+   * ]);
+   * // Returns: [{ name: 'user', typeString: 'string', ... }]
+   * ```
+   *
+   * @example Object Parameters
+   * ```typescript
+   * const params = this.formatParameters([
+   *   {
+   *     name: 'options',
+   *     type: {
+   *       type: 'reflection',
+   *       declaration: {
+   *         children: [{ name: 'name', type: {...} }]
+   *       }
+   *     }
+   *   }
+   * ]);
+   * // Returns: [
+   * //   { name: 'options', typeString: 'Object', ... },
+   * //   { name: 'options.name', typeString: 'string', ... }
+   * // ]
    * ```
    */
   formatParameters(parameters: ParameterReflection[]): FormatProjectValue[] {
@@ -522,31 +934,128 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       return [];
     }
 
-    return parameters.map((param: any) => ({
-      id: param.id,
-      kind: param.kind,
-      kindName: ReflectionKindName[
-        param.kind as keyof typeof ReflectionKindName
-      ] as any,
-      name: param.name,
-      typeString: this.getTypeString(param),
-      descriptions: this.formatDescription(param.comment),
-      defaultValue: this.getDefaultValue(param),
-      since: this.getSinceVersion(param),
-      deprecated: this.isDeprecated(param)
-    }));
+    const result: FormatProjectValue[] = [];
+
+    parameters.forEach((param: any) => {
+      // Check if the parameter is an object type (e.g., options)
+      if (
+        param.type?.type === 'reflection' &&
+        param.type.declaration?.children
+      ) {
+        // First add the object parameter itself
+        result.push({
+          id: param.id,
+          kind: param.kind,
+          kindName: ReflectionKindName[
+            param.kind as keyof typeof ReflectionKindName
+          ] as any,
+          name: param.name,
+          typeString: this.getTypeString(param),
+          descriptions: this.formatDescription(param.comment),
+          defaultValue: this.getDefaultValue(param),
+          since: this.getSinceVersion(param),
+          deprecated: this.isDeprecated(param),
+          optional: this.isOptional(param)
+        });
+
+        // Then expand its properties
+        const objectChildren = param.type.declaration.children;
+        objectChildren.forEach((child: any) => {
+          result.push({
+            id: child.id,
+            kind: child.kind,
+            kindName: ReflectionKindName[
+              child.kind as keyof typeof ReflectionKindName
+            ] as any,
+            name: `${param.name}.${child.name}`, // Use options.name format
+            typeString: this.getTypeString(child),
+            descriptions: this.formatDescription(child.comment),
+            defaultValue: this.getDefaultValue(child),
+            since: this.getSinceVersion(child),
+            deprecated: this.isDeprecated(child),
+            optional: this.isOptional(child)
+          });
+        });
+      } else {
+        // Normal parameter
+        result.push({
+          id: param.id,
+          kind: param.kind,
+          kindName: ReflectionKindName[
+            param.kind as keyof typeof ReflectionKindName
+          ] as any,
+          name: param.name,
+          typeString: this.getTypeString(param),
+          descriptions: this.formatDescription(param.comment),
+          defaultValue: this.getDefaultValue(param),
+          since: this.getSinceVersion(param),
+          deprecated: this.isDeprecated(param),
+          optional: this.isOptional(param)
+        });
+      }
+    });
+
+    return result;
   }
 
   /**
-   * 获取源文件信息
+   * Extract source file information from TypeDoc reflection object
    *
-   * @description 从 TypeDoc 反射对象中提取源文件信息
+   * Implementation Details:
+   * 1. Checks reflection.sources array for source file information
+   * 2. Uses first source in array if multiple sources exist
+   * 3. Falls back to reflection.source property if sources array is empty
+   * 4. Returns undefined if no source information is available
+   * 5. Extracts fileName, line, character, and url information
    *
-   * @param reflection TypeDoc 反射对象
-   * @returns FormatProjectSource | undefined 源文件信息
+   * Business Rules:
+   * - Prioritizes reflection.sources array over reflection.source
+   * - Uses first source when multiple sources exist
+   * - Returns undefined for reflections without source information
+   * - Preserves all source metadata (file, line, character, url)
+   * - Handles both single and multiple source scenarios
+   *
+   * Source Information:
+   * - fileName: Source file path
+   * - line: Line number in source file
+   * - character: Character position on line
+   * - url: Generated URL for source location
+   *
+   * @param reflection - TypeDoc reflection object
+   * @returns Source file information object, or undefined if not available
+   *
+   * @example With Sources Array
+   * ```typescript
+   * this.getSourceInfo({
+   *   sources: [{
+   *     fileName: 'src/user.ts',
+   *     line: 10,
+   *     character: 5
+   *   }]
+   * });
+   * // Returns: { fileName: 'src/user.ts', line: 10, character: 5, url: undefined }
+   * ```
+   *
+   * @example With Single Source
+   * ```typescript
+   * this.getSourceInfo({
+   *   source: {
+   *     fileName: 'src/auth.ts',
+   *     line: 25,
+   *     character: 10
+   *   }
+   * });
+   * // Returns: { fileName: 'src/auth.ts', line: 25, character: 10, url: undefined }
+   * ```
+   *
+   * @example No Source Information
+   * ```typescript
+   * this.getSourceInfo({ name: 'UserService' });
+   * // Returns: undefined
+   * ```
    */
   private getSourceInfo(reflection: any): FormatProjectSource | undefined {
-    // 优先从 sources 数组中获取第一个源文件信息
+    // Get first source file information from sources array first
     if (
       reflection.sources &&
       Array.isArray(reflection.sources) &&
@@ -561,7 +1070,7 @@ export default class TypeDocJson extends ScriptPlugin<Code2MDContext> {
       };
     }
 
-    // 如果没有 sources，尝试从 source 属性获取
+    // If there are no sources, try to get source information from the source property
     if (reflection.source) {
       return {
         fileName: reflection.source.fileName,

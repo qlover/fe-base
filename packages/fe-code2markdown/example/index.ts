@@ -1,6 +1,8 @@
 /**
  * This is example root file.
  *
- * @document ./test/index.ts
+ * @module example
  */
 export * from './test';
+
+export * from './ExampleTypeArgs';

@@ -5,9 +5,7 @@
   "private": true,
   "type": "module",
   "files": [
-    "bin",
     "dist",
-    "example",
     "package.json",
     "README.md"
   ],
@@ -26,8 +24,8 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "node ./dist/cli.js -p example",
-    "build:docs:json": "node ./dist/cli.js -p example/example.ts --onlyJson"
+    "build:docs": "node ./dist/cli.js -p src -g docs --removePrefix --formatOutput prettier",
+    "build:docs:example": "node ./dist/cli.js -p example/index.ts --formatOutput prettier"
   },
   "repository": {
     "type": "git",
@@ -49,7 +47,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/logger": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "lodash": "^4.17.21"
   },
