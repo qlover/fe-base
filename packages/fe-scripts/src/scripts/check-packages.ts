@@ -1,11 +1,15 @@
 // #!/usr/bin/env node
 
 import { execSync } from 'child_process';
-import { FeScriptContext } from '@qlover/scripts-context';
+import {
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
 import { findWorkspaces } from 'find-workspaces';
 import { relative, join } from 'path';
 
-export interface CheckPackagesOptions {
+export interface CheckPackagesOptions extends ScriptSharedInterface {
   /**
    * The base branch to check
    */
@@ -38,7 +42,7 @@ function githubLog(value: unknown, key = 'githubLog'): void {
 }
 
 function getWorkspacePackages(
-  context: FeScriptContext<CheckPackagesOptions>
+  context: ScriptContextInterface<CheckPackagesOptions>
 ): string[] {
   const packagesDirectories =
     context.feConfig.release?.packagesDirectories || [];
@@ -55,7 +59,7 @@ function getWorkspacePackages(
 }
 
 function getChangePackageNames(
-  context: FeScriptContext<CheckPackagesOptions>
+  context: ScriptContextInterface<CheckPackagesOptions>
 ): string[] {
   const { baseRef } = context.options;
   const changedFiles = execSync(
@@ -76,7 +80,7 @@ function getChangePackageNames(
 }
 
 async function addChangePackagePRLables(
-  context: FeScriptContext<CheckPackagesOptions>
+  context: ScriptContextInterface<CheckPackagesOptions>
 ): Promise<void> {
   const { repository, issueNumber, changePackageNames } = context.options;
   const [owner, repo] = repository.split('/');
@@ -112,9 +116,9 @@ async function addChangePackagePRLables(
 }
 
 export async function checkPackages(
-  options: Partial<FeScriptContext<CheckPackagesOptions>>
+  options: ScriptContextInterface<CheckPackagesOptions>
 ): Promise<void> {
-  const context = new FeScriptContext(options);
+  const context = new ScriptContext('fe-scripts-check-packages', options);
 
   context.logger.debug('feconfig', context.feConfig);
 

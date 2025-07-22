@@ -1,13 +1,14 @@
+import {
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import {
-  FeScriptContext,
-  FeScriptContextOptions
-} from '@qlover/scripts-context';
 
-export interface CommitOptions {
+export interface CommitOptions extends ScriptSharedInterface {
   /**
    * Absolute path to cz-conventional-changelog
    */
@@ -40,8 +41,8 @@ function getModuleRoot(moduleName: string): string | null {
   }
 }
 
-export function commit(options: FeScriptContextOptions<CommitOptions>): void {
-  const context = new FeScriptContext(options);
+export function commit(options: ScriptContextInterface<CommitOptions>): void {
+  const context = new ScriptContext('fe-scripts-commit', options);
   const { logger, shell } = context;
   const { defaultCzPath } = context.options;
 

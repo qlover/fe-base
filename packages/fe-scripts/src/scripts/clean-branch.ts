@@ -1,11 +1,15 @@
 import { execSync } from 'child_process';
 import { createInterface } from 'readline';
-import { FeScriptContext } from '@qlover/scripts-context';
+import {
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
 import lodash from 'lodash';
 
 const { union } = lodash;
 
-export interface CleanBranchOptions {
+export interface CleanBranchOptions extends ScriptSharedInterface {
   /**
    * Protected branches that should not be deleted
    * @default `fe-config.protectedBranches``
@@ -20,7 +24,7 @@ export interface CleanBranchOptions {
 }
 
 function composeBranches(
-  context: FeScriptContext<CleanBranchOptions>
+  context: ScriptContextInterface<CleanBranchOptions>
 ): string[] {
   const defaultBranches = context.feConfig?.protectedBranches || [];
   const { protectedBranches = [], merge = false } = context.options || {};
@@ -33,9 +37,9 @@ function composeBranches(
 }
 
 export function cleanBranch(
-  options: Partial<FeScriptContext<CleanBranchOptions>>
+  options: ScriptContextInterface<CleanBranchOptions>
 ): void {
-  const context = new FeScriptContext(options);
+  const context = new ScriptContext('fe-scripts-clean-branch', options);
   const { logger, verbose, dryRun } = context;
 
   const protectedBranches = composeBranches(context);

@@ -2,11 +2,12 @@ import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import ignore, { Ignore } from 'ignore';
 import {
-  FeScriptContext,
-  FeScriptContextOptions
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
 } from '@qlover/scripts-context';
 
-export interface CleanOptions {
+export interface CleanOptions extends ScriptSharedInterface {
   /**
    * Files to be cleaned
    * @default `fe-config.cleanFiles`
@@ -62,9 +63,9 @@ function getIgnoredFiles(
 }
 
 export async function clean(
-  options: FeScriptContextOptions<CleanOptions>
+  options: ScriptContextInterface<CleanOptions>
 ): Promise<void> {
-  const context = new FeScriptContext(options);
+  const context = new ScriptContext('fe-scripts-clean', options);
   const { logger, feConfig, dryRun } = context;
   const { gitignore, recursion = false } = context.options;
   let files = context.options.files || [];
