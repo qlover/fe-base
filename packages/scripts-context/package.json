@@ -40,7 +40,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "build:docs": "fe-code2md --removePrefix -p ./src -g ./docs --formatOutput prettier"
   },
   "devDependencies": {
     "@commitlint/types": "^19.8.0",

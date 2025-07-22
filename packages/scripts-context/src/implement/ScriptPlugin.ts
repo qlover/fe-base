@@ -1,7 +1,7 @@
-import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
-import type ScriptContext from './ScriptContext';
+import type { ScriptContext } from './ScriptContext';
 import type { ShellInterface } from '../interface/ShellInterface';
+import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
 import merge from 'lodash/merge';
 
 /**
@@ -132,7 +132,7 @@ export interface ScriptPluginProps {
  * }
  * ```
  */
-export default abstract class ScriptPlugin<
+export abstract class ScriptPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Context extends ScriptContext<any>,
   Props extends ScriptPluginProps = ScriptPluginProps
@@ -540,8 +540,10 @@ export default abstract class ScriptPlugin<
    * 3. Log success or error
    * 4. Return task result or throw error
    *
-   * @param label - Human-readable label for the step
-   * @param task - Async function that performs the step work
+   * @param options - Step configuration object
+   * @param {string} options.label - Human-readable label for the step
+   * @param {() => Promise<T>} options.task - Async function that performs the step work
+   * @param {boolean} [options.enabled] - Whether the step should be executed (default: true)
    * @returns The result of the task execution
    *
    * @throws {Error} When the task function throws an error
@@ -582,14 +584,14 @@ export default abstract class ScriptPlugin<
    * });
    * ```
    */
-  async step<T>({ label, task }: StepOption<T>): Promise<T> {
+  async step<T>(options: StepOption<T>): Promise<T> {
     this.logger.log();
-    this.logger.info(label);
+    this.logger.info(options.label);
     this.logger.log();
 
     try {
-      const res = await task();
-      this.logger.info(`${label} - success`);
+      const res = await options.task();
+      this.logger.info(`${options.label} - success`);
       return res;
     } catch (e) {
       this.logger.error(e);
