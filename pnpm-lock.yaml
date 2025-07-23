@@ -32,15 +32,15 @@ importers:
       '@nx/js':
         specifier: 20.6.4
         version: 20.6.4(@babel/traverse@7.27.4)(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.4.5))(@swc/core@1.5.29(@swc/helpers@0.5.17))(nx@20.6.4(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@swc/types@0.1.23)(typescript@5.4.5))(@swc/core@1.5.29(@swc/helpers@0.5.17)))
+      '@qlover/code2markdown':
+        specifier: workspace:*
+        version: link:packages/code2markdown
       '@qlover/env-loader':
         specifier: workspace:*
         version: link:packages/env-loader
       '@qlover/eslint-plugin-fe-dev':
         specifier: workspace:*
         version: link:packages/eslint-plugin-fe-dev
-      '@qlover/fe-code2markdown':
-        specifier: workspace:*
-        version: link:packages/fe-code2markdown
       '@qlover/fe-release':
         specifier: workspace:*
         version: link:packages/fe-release
@@ -156,6 +156,37 @@ importers:
         specifier: ^3.0.5
         version: 3.2.4(@types/node@22.15.33)(jiti@2.4.2)(terser@5.43.1)(yaml@2.8.0)
 
+  packages/code2markdown:
+    dependencies:
+      '@qlover/env-loader':
+        specifier: workspace:*
+        version: link:../env-loader
+      '@qlover/scripts-context':
+        specifier: workspace:*
+        version: link:../scripts-context
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.3.0
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      typedoc:
+        specifier: ~0.25.0
+        version: 0.25.13(typescript@5.4.5)
+      typescript:
+        specifier: ~5.4.0
+        version: 5.4.5
+    devDependencies:
+      '@qlover/fe-corekit':
+        specifier: workspace:*
+        version: link:../fe-corekit
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+
   packages/corekit-bridge:
     dependencies:
       '@qlover/fe-corekit':
@@ -226,37 +257,6 @@ importers:
         version: link:../logger
 
   packages/eslint-plugin-fe-dev: {}
-
-  packages/fe-code2markdown:
-    dependencies:
-      '@qlover/env-loader':
-        specifier: workspace:*
-        version: link:../env-loader
-      '@qlover/scripts-context':
-        specifier: workspace:*
-        version: link:../scripts-context
-      commander:
-        specifier: ^11.0.0
-        version: 11.1.0
-      fs-extra:
-        specifier: ^11.2.0
-        version: 11.3.0
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.8
-      typedoc:
-        specifier: ~0.25.0
-        version: 0.25.13(typescript@5.4.5)
-      typescript:
-        specifier: ~5.4.0
-        version: 5.4.5
-    devDependencies:
-      '@qlover/fe-corekit':
-        specifier: workspace:*
-        version: link:../fe-corekit
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
 
   packages/fe-corekit:
     dependencies:

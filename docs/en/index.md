@@ -80,7 +80,7 @@ pnpm add @qlover/logger
 ### Development Tools
 
 - **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - Frontend development script toolkit
-- **[@qlover/fe-code2markdown](../../packages/fe-code2markdown/README.md)** - Code to Markdown documentation generation tool
+- **[@qlover/code2markdown](../../packages/fe-code2markdown/README.md)** - Code to Markdown documentation generation tool
 - **[@qlover/fe-release](../../packages/fe-release/README.md)** - Project release management tool
 - **[@qlover/create-app](../../packages/create-app/README.md)** - Application scaffolding generation tool
 

@@ -80,7 +80,7 @@ pnpm add @qlover/logger
 ### 开发工具
 
 - **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - 前端开发脚本工具集
-- **[@qlover/fe-code2markdown](../../packages/fe-code2markdown/README.md)** - 代码转 Markdown 文档生成工具
+- **[@qlover/code2markdown](../../packages/fe-code2markdown/README.md)** - 代码转 Markdown 文档生成工具
 - **[@qlover/fe-release](../../packages/fe-release/README.md)** - 项目发布管理工具
 - **[@qlover/create-app](../../packages/create-app/README.md)** - 应用脚手架生成工具
 
