@@ -1,4 +1,4 @@
-import { Shell } from '@qlover/scripts-context';
+import { Shell, type ShellInterface } from '@qlover/scripts-context';
 import {
   ChangelogFormatter,
   CommitValue,
@@ -16,7 +16,7 @@ export interface Options extends GitChangelogOptions {
 export class GitChangelogFormatter implements ChangelogFormatter {
   constructor(
     protected options: Options & {
-      shell: Shell;
+      shell: ShellInterface;
     }
   ) {}
 
@@ -84,7 +84,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
         )
       : '';
 
-    return this.options.shell.format(formatTemplate, {
+    return Shell.format(formatTemplate, {
       ...commit,
       scopeHeader: scopeHeader,
       commitLink: hashLink,

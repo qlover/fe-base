@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { GitChangelog } from '../../../src/implments/changelog/GitChangeLog';
-import { createTestShell } from '../../helpers';
+import { createTestLogger, createTestShell } from '../../helpers';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import type { BaseCommit } from '../../../src/interface/ChangeLog';
 
 describe('GitChangelog', () => {
   const mockShell = createTestShell();
+  const mockLogger = createTestLogger();
   let gitChangelog: GitChangelog;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    gitChangelog = new GitChangelog({ shell: mockShell });
+    gitChangelog = new GitChangelog({
+      shell: mockShell,
+      logger: mockLogger
+    });
   });
 
   describe('parseCommitlint', () => {

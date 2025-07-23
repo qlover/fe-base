@@ -1,13 +1,11 @@
 {
-  "name": "@qlover/fe-code2markdown",
+  "name": "@qlover/code2markdown",
   "description": "A tool to convert code to markdown",
   "version": "0.1.1",
-  "private": true,
+  "private": false,
   "type": "module",
   "files": [
-    "bin",
     "dist",
-    "example",
     "package.json",
     "README.md"
   ],
@@ -26,19 +24,19 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "node ./dist/cli.js -p example/example.ts",
-    "build:docs:json": "node ./dist/cli.js -p example/example.ts --onlyJson"
+    "build:docs": "node ./dist/cli.js -p src -g docs --removePrefix --formatOutput prettier",
+    "build:docs:example": "node ./dist/cli.js -p example/index.ts --formatOutput prettier"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qlover/fe-base.git",
-    "directory": "packages/fe-code2markdown"
+    "directory": "packages/code2markdown"
   },
-  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/fe-code2markdown#readme",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/code2markdown#readme",
   "keywords": [
     "utils",
     "code to markdown",
-    "fe-code2markdown"
+    "code2markdown"
   ],
   "bin": {
     "fe-code2md": "dist/cli.js"
@@ -49,7 +47,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@qlover/logger": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
     "lodash": "^4.17.21"
   },
   "dependencies": {

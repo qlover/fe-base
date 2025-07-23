@@ -5,8 +5,7 @@ import type {
   ReleaseContextOptions
 } from '../src/type';
 import type { LoggerInterface } from '@qlover/logger';
-import type { FeScriptContextOptions, Shell } from '@qlover/scripts-context';
-import { ReleaseContext } from '../src';
+import type { ScriptContextInterface, Shell } from '@qlover/scripts-context';
 import merge from 'lodash/merge';
 import { defaultFeConfig } from '@qlover/scripts-context';
 import template from 'lodash/template';
@@ -29,14 +28,13 @@ import template from 'lodash/template';
  * });
  * ```
  */
-export function createTestReleaseContext(
+export function createTestReleaseOptions(
   overrideOptions: DeepPartial<ReleaseContextOptions> = {}
-): ReleaseContext {
+): ReleaseContextOptions {
   const logger = createTestLogger();
   const shell = createTestShell();
 
   const defaultOptions: Required<ReleaseContextOptions> = {
-    // @ts-expect-error
     logger,
     shell,
     dryRun: false,
@@ -45,8 +43,7 @@ export function createTestReleaseContext(
     feConfig: defaultFeConfig
   };
 
-  const mergedOptions = merge({}, defaultOptions, overrideOptions);
-  return new ReleaseContext(mergedOptions);
+  return merge({}, defaultOptions, overrideOptions) as ReleaseContextOptions;
 }
 
 /**
@@ -96,23 +93,15 @@ export function createTestShell(): Shell {
  * ```
  */
 export function createMockFeScriptContext(
-  options: Partial<FeScriptContextOptions<ReleaseConfig>> = {}
+  options: Partial<ScriptContextInterface<ReleaseConfig>> = {}
 ) {
-  const defaultOptions: Required<FeScriptContextOptions<ReleaseConfig>> = {
-    // @ts-expect-error
+  const defaultOptions: Required<ScriptContextInterface<ReleaseConfig>> = {
     logger: createTestLogger(),
     shell: createTestShell(),
     feConfig: {},
     dryRun: false,
     verbose: false,
-    options: {},
-    shared: {
-      packageJson: {
-        name: 'test-package',
-        version: '0.9.0'
-      },
-      releasePR: false
-    }
+    options: {}
   };
 
   const mergedOptions = merge({}, defaultOptions, options);

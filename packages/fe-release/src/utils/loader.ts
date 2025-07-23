@@ -1,6 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PluginTuple } from './tuple';
 import type { PluginClass } from './tuple';
-import type Plugin from '../plugins/Plugin';
+import type {
+  ScriptContext,
+  ScriptPlugin,
+  ScriptPluginProps
+} from '@qlover/scripts-context';
 import type ReleaseContext from '../implments/ReleaseContext';
 import { join, parse } from 'node:path';
 import { createRequire } from 'node:module';
@@ -38,7 +43,9 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
   return [getPluginName(pluginName), plugin];
 }
 
-export async function loaderPluginsFromPluginTuples<T extends Plugin<unknown>>(
+export async function loaderPluginsFromPluginTuples<
+  T extends ScriptPlugin<ScriptContext<any>, ScriptPluginProps>
+>(
   context: ReleaseContext,
   pluginsTuples: PluginTuple<PluginClass>[],
   maxLimit = 5
@@ -47,7 +54,7 @@ export async function loaderPluginsFromPluginTuples<T extends Plugin<unknown>>(
   const loadAndCreatePlugin = async (
     pluginClassOrString: PluginClass | string,
     ...args: unknown[]
-  ): Promise<Plugin> => {
+  ): Promise<ScriptPlugin<ScriptContext<any>, ScriptPluginProps>> => {
     if (typeof pluginClassOrString === 'string') {
       const [, pluginClass] = await load<PluginClass>(pluginClassOrString);
       return factory(pluginClass, context, ...args);

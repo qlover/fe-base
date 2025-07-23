@@ -1,7 +1,6 @@
-import type { Shell } from '@qlover/scripts-context';
+import { Shell, ShellInterface } from '@qlover/scripts-context';
 import type ReleaseContext from '../../implments/ReleaseContext';
 import type { LoggerInterface } from '@qlover/logger';
-import type { SharedReleaseOptions } from '../../interface/ShreadReleaseOptions';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
@@ -9,6 +8,7 @@ import {
 } from '../../defaults';
 import { GithubPRProps } from './GithubPR';
 import { WorkspaceValue } from '../workspaces/Workspaces';
+import { ReleaseContextConfig } from '../../implments/ReleaseContext';
 
 export interface PullRequestManagerOptions {
   token: string;
@@ -50,7 +50,8 @@ export default class GithubManager {
   constructor(private context: ReleaseContext) {}
 
   getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
-    const { authorName, repoName } = this.context.shared;
+    const { authorName, repoName } =
+      this.context.getOptions<ReleaseContextConfig>();
 
     if (!authorName || !repoName) {
       throw new Error('Author name or repo name is not set');
@@ -64,7 +65,7 @@ export default class GithubManager {
 
   getToken(): string {
     const { tokenRef = 'GITHUB_TOKEN' } =
-      this.context.getConfig<GithubPRProps>('githubPR');
+      this.context.getOptions<GithubPRProps>('githubPR');
 
     const token = this.context.env.get(tokenRef);
 
@@ -82,7 +83,7 @@ export default class GithubManager {
       return this._octokit;
     }
 
-    const { timeout } = this.context.getConfig<GithubPRProps>('githubPR');
+    const { timeout } = this.context.getOptions<GithubPRProps>('githubPR');
 
     const options = {
       auth: this.getToken(),
@@ -100,7 +101,7 @@ export default class GithubManager {
     return this.context.logger;
   }
 
-  get shell(): Shell {
+  get shell(): ShellInterface {
     return this.context.shell;
   }
 
@@ -109,8 +110,11 @@ export default class GithubManager {
    *
    * @default `squash`
    */
-  get autoMergeType(): SharedReleaseOptions['autoMergeType'] {
-    return this.context.shared.autoMergeType || DEFAULT_AUTO_MERGE_TYPE;
+  get autoMergeType(): ReleaseContextConfig['autoMergeType'] {
+    return (
+      this.context.getOptions<ReleaseContextConfig>().autoMergeType ||
+      DEFAULT_AUTO_MERGE_TYPE
+    );
   }
 
   /**
@@ -119,7 +123,7 @@ export default class GithubManager {
    * @default `999999`
    */
   get dryRunPRNumber(): string {
-    return this.context.getConfig('githubPR.dryRunPRNumber', '999999');
+    return this.context.getOptions('githubPR.dryRunPRNumber', '999999');
   }
 
   /**
@@ -129,7 +133,8 @@ export default class GithubManager {
    */
   get autoMergeReleasePR(): boolean {
     return (
-      this.context.shared.autoMergeReleasePR || DEFAULT_AUTO_MERGE_RELEASE_PR
+      this.context.getOptions('autoMergeReleasePR') ||
+      DEFAULT_AUTO_MERGE_RELEASE_PR
     );
   }
 
@@ -148,7 +153,8 @@ export default class GithubManager {
     const mergeMethod = this.autoMergeType;
 
     if (this.context.dryRun) {
-      const { repoName, authorName } = this.context.shared!;
+      const { repoName, authorName } =
+        this.context.getOptions<ReleaseContextConfig>();
       this.logger.info(
         `[DRY RUN] Would merge PR #${prNumber} with method '${mergeMethod}' in repo ${authorName}/${repoName}, branch ${releaseBranch}`
       );
@@ -227,8 +233,8 @@ export default class GithubManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel(): Promise<SharedReleaseOptions['label']> {
-    const label = this.context.shared.label;
+  async createReleasePRLabel(): Promise<ReleaseContextConfig['label']> {
+    const label = this.context.getOptions<ReleaseContextConfig>().label;
 
     if (!label || !label.name || !label.description || !label.color) {
       throw new Error('Label is not valid, skipping creation');
@@ -268,7 +274,7 @@ export default class GithubManager {
    * @throws If the creation fails or if the pull request already exists.
    */
   async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
-    const dryRunCreatePR = this.context.getConfig('githubPR.dryRunCreatePR');
+    const dryRunCreatePR = this.context.getOptions('githubPR.dryRunCreatePR');
 
     if (dryRunCreatePR || this.context.dryRun) {
       this.logger.info(`[DRY RUN] Would create PR with:`, {
@@ -335,7 +341,7 @@ export default class GithubManager {
       makeLatest = true,
       releaseNotes,
       discussionCategoryName = undefined
-    } = this.context.getConfig<GithubPRProps>('githubPR');
+    } = this.context.getOptions<GithubPRProps>('githubPR');
 
     const name = releaseName;
     const body = autoGenerate ? '' : this.truncateBody(String(releaseNotes));
@@ -360,7 +366,7 @@ export default class GithubManager {
       body: workspace.changelog
     });
 
-    meragedOptions.name = this.shell.format(
+    meragedOptions.name = Shell.format(
       meragedOptions.name,
       workspace as unknown as Record<string, string>
     );

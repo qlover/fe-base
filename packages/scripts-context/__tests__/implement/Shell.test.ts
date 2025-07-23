@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Mock } from 'vitest';
-import { Shell, ShellConfig } from '../src/implement/Shell';
-import { ShellExecOptions } from '../src/interface/ShellInterface';
+import { Shell, ShellConfig } from '../../src/implement/Shell';
+import { ShellExecOptions } from '../../src/interface/ShellInterface';
 
 describe('Shell', () => {
   let logger: any;

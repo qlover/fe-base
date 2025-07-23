@@ -1,0 +1,35 @@
+{{#repeat (add level 2)}}#{{/repeat}} `{{name}}` {{#if kindName}}({{kindName}}){{/if}}{{#if deprecated}}⚠️{{/if}}
+
+{{#if typeString}}
+**Type:** `{{typeString}}`
+{{/if}}
+
+{{#if since}}
+**Since:** `{{since}}`
+{{/if}}
+
+{{#if defaultValue}}
+**Default:** `{{defaultValue}}`
+{{/if}}
+
+{{#each descriptions}}
+
+{{#unless (or (eq tag "@summary") (eq tag "@description"))}}**{{formatTag tag}}:** {{name}}{{/unless}}
+
+{{#each content}}
+{{text}}
+{{/each}}
+{{/each}}
+
+{{#if parametersList}}
+{{#repeat 4}}#{{/repeat}} Parameters
+
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+{{#each parametersList}}
+| `{{name}}` | `{{typeString}}` | {{#if optional}}✅{{else}}❌{{/if}} | {{#if defaultValue}}`{{defaultValue}}`{{else}}-{{/if}} | {{#if since}}`{{since}}`{{else}}-{{/if}} | {{#if deprecated}}⚠️{{else}}-{{/if}} | {{#each descriptions}}{{#each content}}{{text}}{{/each}}{{/each}} |
+{{/each}}
+
+{{/if}}
+
+---

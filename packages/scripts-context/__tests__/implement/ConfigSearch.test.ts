@@ -1,4 +1,4 @@
-import { ConfigSearch } from '../src/implement/ConfigSearch';
+import { ConfigSearch } from '../../src/implement/ConfigSearch';
 import { cosmiconfigSync } from 'cosmiconfig';
 import fs from 'fs';
 import path from 'path';

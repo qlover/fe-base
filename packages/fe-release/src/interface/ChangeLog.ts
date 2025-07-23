@@ -22,7 +22,7 @@ export interface GitChangelogOptions {
    * gitlog default fields
    * @default ["abbrevHash", "hash", "subject", "authorName", "authorDate"]
    */
-  fileds?: CommitField[];
+  fields?: CommitField[];
 
   /**
    * not include merge commit

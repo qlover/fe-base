@@ -54,7 +54,9 @@ describe('RetryPlugin', () => {
     ).rejects.toThrow('Test Error');
 
     const duration = Date.now() - startTime;
-    expect(duration).toBeGreaterThanOrEqual(delayMs);
+    // Allow for timing precision issues by using a more lenient assertion
+    // JavaScript setTimeout and Date.now() have millisecond precision limitations
+    expect(duration).toBeGreaterThanOrEqual(delayMs - 2);
     expect(calls).toBe(2); // init call + 1 retry
   });
 

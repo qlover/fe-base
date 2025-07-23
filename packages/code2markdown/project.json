@@ -1,13 +1,13 @@
 {
-  "name": "@qlover/fe-code2markdown",
-  "sourceRoot": "packages/fe-code2markdown/src",
+  "name": "@qlover/code2markdown",
+  "sourceRoot": "packages/code2markdown/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm build",
-        "cwd": "packages/fe-code2markdown"
+        "cwd": "packages/code2markdown"
       },
       "inputs": [
         "{projectRoot}/src/**/*.ts",

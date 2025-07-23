@@ -1,6 +1,5 @@
 #! /usr/bin/env node
 
-import type { ReleaseContextOptions } from './type';
 import { Command } from 'commander';
 import { version, description } from '../package.json';
 import semver from 'semver';
@@ -80,19 +79,13 @@ function programArgs() {
 
   program.parse();
 
-  return reduceOptions(program.opts(), 'shared');
+  return reduceOptions(program.opts(), 'global');
 }
 
 async function main() {
-  const { shared: commonOptions, ...allOptions } = programArgs();
-  const { dryRun, verbose, ...shared } = commonOptions;
+  const { global, ...allOptions } = programArgs();
 
-  const options: ReleaseContextOptions['options'] = Object.assign(
-    allOptions,
-    {}
-  );
-
-  await new ReleaseTask({ dryRun, verbose, options, shared }).exec();
+  await new ReleaseTask({ ...global, options: allOptions }).exec();
 }
 
 main().catch((e) => {

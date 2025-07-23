@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReleaseContext } from '../../src';
 import { load, loaderPluginsFromPluginTuples } from '../../src/utils/loader';
-import Plugin from '../../src/plugins/Plugin';
 import { tuple } from '../../src/utils/tuple';
-import { createTestReleaseContext } from '../helpers';
+import { createTestReleaseOptions } from '../helpers';
+import { ScriptPlugin } from '@qlover/scripts-context';
 
 vi.mock('node:module', () => ({
   createRequire: vi.fn(() => ({
@@ -27,7 +27,7 @@ vi.mock('./test-plugin', () => ({
   default: TestPlugin
 }));
 
-class TestPlugin extends Plugin {
+class TestPlugin extends ScriptPlugin<ReleaseContext> {
   option1: string;
   option2: number;
 
@@ -58,7 +58,7 @@ describe('loader utils', () => {
 
     process.env = { ...process.env };
 
-    releaseContext = createTestReleaseContext();
+    releaseContext = new ReleaseContext('release', createTestReleaseOptions());
   });
 
   describe('load function', () => {

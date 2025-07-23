@@ -40,17 +40,19 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "build:docs": "fe-code2md --removePrefix -p ./src -g ./docs --formatOutput prettier"
   },
   "devDependencies": {
-    "@types/shelljs": "^0.8.15",
+    "@commitlint/types": "^19.8.0",
     "@qlover/env-loader": "workspace:*",
     "@qlover/logger": "workspace:*",
     "@types/lodash": "^4.17.16",
-    "@commitlint/types": "^19.8.0",
+    "@types/shelljs": "^0.8.15",
     "lodash": "^4.17.21"
   },
   "dependencies": {
+    "@qlover/fe-corekit": "^1.4.1",
     "chalk": "^5.3.0",
     "cosmiconfig": "^9.0.0"
   }

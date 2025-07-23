@@ -20,6 +20,7 @@ Frontend Base Toolkit - A Powerful Collection of Tools Designed for Frontend App
   - [Project Release Guide](./docs/en/project-release.md)
   - [How to Add a Subpackage](./docs/en/how-to-add-a-subpackage.md)
   - [Testing Guide](./docs/en/testing-guide.md)
+  - [Code Comments Guide](./docs/zh/code-comments-guide.md)
 
 ## 📋 Project Overview
 
@@ -78,7 +79,7 @@ pnpm build
 | ------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | [@qlover/fe-corekit](./packages/fe-corekit/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/fe-corekit)           | Frontend core toolkit providing storage, serialization, request features  |
 | [@qlover/fe-scripts](./packages/fe-scripts/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-scripts)           | Frontend development script tools including clean, commit, check commands |
-| [@qlover/fe-code2markdown](./packages/fe-code2markdown/README_EN.md)      | ![npm](https://img.shields.io/npm/v/@qlover/fe-code2markdown)     | Code to Markdown documentation generation tool                            |
+| [@qlover/code2markdown](./packages/fe-code2markdown/README_EN.md)      | ![npm](https://img.shields.io/npm/v/@qlover/code2markdown)     | Code to Markdown documentation generation tool                            |
 | [@qlover/fe-release](./packages/fe-release/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/fe-release)           | Project release management tool                                           |
 | [@qlover/logger](./packages/logger/README_EN.md)                          | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | Flexible logging system                                                   |
 | [@qlover/env-loader](./packages/env-loader/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | Environment variable loading tool                                         |

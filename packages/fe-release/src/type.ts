@@ -1,8 +1,10 @@
 import type { ExecutorContext } from '@qlover/fe-corekit';
 import type ReleaseContext from './implments/ReleaseContext';
 import type { GithubPRProps } from './plugins/githubPR/GithubPR';
-import type { FeScriptContextOptions } from '@qlover/scripts-context';
-import type { SharedReleaseOptions } from './interface/ShreadReleaseOptions';
+import type {
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
 import type {
   WorkspacesProps,
   WorkspaceValue
@@ -22,15 +24,13 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export interface ReleaseConfig {
+export interface ReleaseConfig extends ScriptSharedInterface {
   githubPR?: GithubPRProps;
   workspaces?: WorkspacesProps;
 }
 
 export interface ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig>
-  extends Omit<FeScriptContextOptions<T>, 'constructor'> {
-  shared?: SharedReleaseOptions;
-}
+  extends ScriptContextInterface<T> {}
 
 export type StepOption<T> = {
   label: string;
@@ -40,7 +40,7 @@ export type StepOption<T> = {
 
 export type PackageJson = Record<string, unknown>;
 
-export interface TemplateContext extends SharedReleaseOptions, WorkspaceValue {
+export interface TemplateContext extends ReleaseContextOptions, WorkspaceValue {
   publishPath: string;
 
   /**

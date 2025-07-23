@@ -1,8 +1,12 @@
 import { resolve, join } from 'node:path';
 import { writeFileSync, readFileSync } from 'node:fs';
-import { FeScriptContext } from '@qlover/scripts-context';
+import {
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
 
-export interface SetupHuskyOptions {
+export interface SetupHuskyOptions extends ScriptSharedInterface {
   /**
    * Path to commitlint config
    */
@@ -15,9 +19,9 @@ export interface SetupHuskyOptions {
 }
 
 export async function setupHusky(
-  options: Partial<FeScriptContext<SetupHuskyOptions>>
+  options: ScriptContextInterface<SetupHuskyOptions>
 ): Promise<void> {
-  const context = new FeScriptContext(options);
+  const context = new ScriptContext('fe-scripts-setup-husky', options);
   const { logger, shell } = context;
   const { commitlintPath = '' } = context.options;
   const relativePath = resolve('./');

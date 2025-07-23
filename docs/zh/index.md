@@ -19,6 +19,7 @@
 
 - **[提交规范](./commit-convention.md)** - Git 提交信息规范和工具配置
 - **[测试指南](./testing-guide.md)** - 测试策略、工具使用和最佳实践
+- **[代码注释](./code-comments-guide.md)** - 代码注释，格式使用指南
 
 ### 🚀 项目管理
 
@@ -79,7 +80,7 @@ pnpm add @qlover/logger
 ### 开发工具
 
 - **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - 前端开发脚本工具集
-- **[@qlover/fe-code2markdown](../../packages/fe-code2markdown/README.md)** - 代码转 Markdown 文档生成工具
+- **[@qlover/code2markdown](../../packages/fe-code2markdown/README.md)** - 代码转 Markdown 文档生成工具
 - **[@qlover/fe-release](../../packages/fe-release/README.md)** - 项目发布管理工具
 - **[@qlover/create-app](../../packages/create-app/README.md)** - 应用脚手架生成工具
 

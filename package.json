@@ -49,7 +49,7 @@
     "@nx/js": "20.6.4",
     "@qlover/env-loader": "workspace:*",
     "@qlover/eslint-plugin-fe-dev": "workspace:*",
-    "@qlover/fe-code2markdown": "workspace:*",
+    "@qlover/code2markdown": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",
     "@qlover/fe-release": "workspace:*",

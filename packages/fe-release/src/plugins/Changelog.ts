@@ -1,5 +1,4 @@
 import ReleaseContext from '../implments/ReleaseContext';
-import Plugin from './Plugin';
 import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
@@ -12,8 +11,13 @@ import {
   GitChangelogProps
 } from '../implments/changelog/GitChangeLog';
 import { GitChangelogFormatter } from '../implments/changelog/GitChangelogFormatter';
+import {
+  ScriptPlugin,
+  ScriptPluginProps,
+  Shell
+} from '@qlover/scripts-context';
 
-export interface ChangelogProps extends GitChangelogOptions {
+export interface ChangelogProps extends GitChangelogOptions, ScriptPluginProps {
   /**
    * The increment of the changelog
    * @default 'patch'
@@ -78,7 +82,10 @@ const contentTmplate = "---\n'${name}': '${increment}'\n---\n\n${changelog}";
  * @description
  * @extends Plugin
  */
-export default class Changelog extends Plugin<ChangelogProps> {
+export default class Changelog extends ScriptPlugin<
+  ReleaseContext,
+  ChangelogProps
+> {
   constructor(context: ReleaseContext, props: ChangelogProps) {
     super(context, 'changelog', {
       increment: 'patch',
@@ -178,7 +185,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
   }
 
   async restoreIgnorePackages(): Promise<void> {
-    const { changedPaths = [], packages = [] } = this.context.getConfig(
+    const { changedPaths = [], packages = [] } = this.context.getOptions(
       'workspaces'
     ) as WorkspacesProps;
 
@@ -198,7 +205,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
   }
 
   getTagPrefix(workspace: WorkspaceValue): string {
-    return this.shell.format(
+    return Shell.format(
       this.getConfig('tagPrefix') as string,
       workspace as unknown as Record<string, string>
     );
@@ -220,8 +227,8 @@ export default class Changelog extends Plugin<ChangelogProps> {
       ...baseConfig,
       from: tagName,
       directory: workspace.path,
-      shell: this.shell,
-      fileds: CHANGELOG_ALL_FIELDS,
+      shell: this.context.shell,
+      fields: CHANGELOG_ALL_FIELDS,
       logger: this.logger
     };
 
@@ -242,7 +249,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
     try {
       const tagTemplate = this.getConfig('tagTemplate') as string;
 
-      return this.shell.format(
+      return Shell.format(
         tagTemplate,
         workspace as unknown as Record<string, string>
       );
@@ -255,7 +262,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
   async getTagName(workspace: WorkspaceValue): Promise<string> {
     try {
       const currentTagPattern = this.generateTagName(workspace);
-      const tagMatch = this.shell.format(
+      const tagMatch = Shell.format(
         this.getConfig('tagMatch') as string,
         workspace as unknown as Record<string, string>
       );
@@ -288,7 +295,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
   }
 
   getIncrement(): string {
-    const lables = this.context.getConfig('workspaces.changeLabels');
+    const lables = this.context.getOptions('workspaces.changeLabels');
 
     if (Array.isArray(lables) && lables.length > 0) {
       if (lables.includes('increment:major')) {
@@ -315,7 +322,7 @@ export default class Changelog extends Plugin<ChangelogProps> {
 
     this.logger.debug('increment is:', [increment]);
 
-    const fileContent = this.shell.format(contentTmplate, {
+    const fileContent = Shell.format(contentTmplate, {
       ...workspace,
       increment
     });

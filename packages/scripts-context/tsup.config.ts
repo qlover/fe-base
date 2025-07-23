@@ -10,15 +10,19 @@ export default defineConfig([
     clean: true,
     silent: true,
     outDir: 'dist',
-    external: Object.keys(pkg.dependencies),
-    noExternal: Object.keys(pkg.devDependencies)
+    external: [...Object.keys(pkg.dependencies), '@qlover/env-loader'],
+    noExternal: Object.keys(pkg.devDependencies).filter(
+      (dep) => dep !== '@qlover/env-loader'
+    )
   },
   {
     entry: ['src/index.ts'],
     format: 'esm',
     dts: true,
     outDir: 'dist',
-    external: Object.keys(pkg.dependencies),
-    noExternal: Object.keys(pkg.devDependencies)
+    external: [...Object.keys(pkg.dependencies), '@qlover/env-loader'],
+    noExternal: Object.keys(pkg.devDependencies).filter(
+      (dep) => dep !== '@qlover/env-loader'
+    )
   }
 ]);

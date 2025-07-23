@@ -1,86 +1,113 @@
-import type { SharedReleaseOptions } from '../interface/ShreadReleaseOptions';
-import type {
-  DeepPartial,
-  ReleaseConfig,
-  ReleaseContextOptions,
-  TemplateContext
-} from '../type';
-import { FeScriptContext } from '@qlover/scripts-context';
-import merge from 'lodash/merge';
+import type { TemplateContext } from '../type';
 import get from 'lodash/get';
-import { Env } from '@qlover/env-loader';
 import { DEFAULT_SOURCE_BRANCH } from '../defaults';
-import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
+import {
+  WorkspacesProps,
+  WorkspaceValue
+} from '../plugins/workspaces/Workspaces';
+import {
+  FeReleaseConfig,
+  ScriptContext,
+  ScriptContextInterface,
+  ScriptSharedInterface
+} from '@qlover/scripts-context';
+import { GithubPRProps } from '../plugins/githubPR/GithubPR';
+import { PluginClass, PluginTuple } from '../utils/tuple';
 
-const DEFAULT_ENV_ORDER = ['.env.local', '.env'];
+export interface ReleaseContextOptions
+  extends ScriptContextInterface<ReleaseContextConfig> {}
 
-export default class ReleaseContext<
-  T extends ReleaseConfig = ReleaseConfig
-> extends FeScriptContext<T> {
-  protected readonly _env: Env;
+export interface ReleaseContextConfig
+  extends FeReleaseConfig,
+    ScriptSharedInterface {
+  /**
+   * The github PR of the project
+   * @private
+   */
+  githubPR?: GithubPRProps;
 
   /**
-   * Shared Config
+   * The workspaces of the project
+   * @private
    */
-  public shared: SharedReleaseOptions;
+  workspaces?: WorkspacesProps;
 
-  constructor(context: ReleaseContextOptions<T>) {
-    super(context);
+  /**
+   * The environment of the project
+   *
+   * default:
+   * - first, get from `FE_RELEASE_ENV`
+   * - second, get from `NODE_ENV`
+   * - `development`
+   */
+  releaseEnv?: string;
 
-    this._env = Env.searchEnv({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger: this.logger as any,
-      preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
-    });
+  /**
+   * Plugins
+   */
+  plugins?: PluginTuple<PluginClass<unknown[]>>[];
 
-    // don't use deep merge, because the shared options will be overwritten by the default options
-    this.shared = Object.assign(
-      {},
-      this.feConfig.release,
-      this.getDefaultShreadOptions(context.shared)
-    );
-  }
+  /**
+   * The name of the repository
+   */
+  repoName?: string;
 
-  private getDefaultShreadOptions(
-    props?: SharedReleaseOptions
-  ): SharedReleaseOptions {
-    return {
-      rootPath: process.cwd(),
-      // use currentBranch by default
-      sourceBranch:
-        this._env.get('FE_RELEASE_BRANCH') ||
-        this._env.get('FE_RELEASE_SOURCE_BRANCH') ||
-        DEFAULT_SOURCE_BRANCH,
-      releaseEnv:
-        this._env.get('FE_RELEASE_ENV') ||
-        this._env.get('NODE_ENV') ||
-        'development',
-      ...props
-    };
+  /**
+   * The name of the author
+   */
+  authorName?: string;
+
+  /**
+   * The current branch of the project
+   */
+  currentBranch?: string;
+}
+
+export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> {
+  constructor(name: string, options: Partial<ReleaseContextOptions>) {
+    super(name, options);
+
+    if (!this.options.rootPath) {
+      this.setOptions({ rootPath: process.cwd() });
+    }
+
+    if (!this.options.sourceBranch) {
+      this.setOptions({
+        sourceBranch:
+          this.env.get('FE_RELEASE_BRANCH') ||
+          this.env.get('FE_RELEASE_SOURCE_BRANCH') ||
+          DEFAULT_SOURCE_BRANCH
+      });
+    }
+
+    if (!this.options.releaseEnv) {
+      this.setOptions({
+        releaseEnv:
+          this.env.get('FE_RELEASE_ENV') ||
+          this.env.get('NODE_ENV') ||
+          'development'
+      });
+    }
   }
 
   get rootPath(): string {
-    return this.shared.rootPath!;
+    return this.getOptions('rootPath');
   }
 
   get sourceBranch(): string {
-    return this.shared.sourceBranch!;
+    return this.getOptions('sourceBranch');
   }
 
   get releaseEnv(): string {
-    return this.shared.releaseEnv!;
-  }
-
-  get env(): Env {
-    return this._env;
+    return this.getOptions('releaseEnv');
   }
 
   get workspaces(): WorkspaceValue[] | undefined {
-    return this.getConfig('workspaces.workspaces');
+    return this.getOptions('workspaces.workspaces');
   }
 
   get workspace(): WorkspaceValue | undefined {
-    return this.getConfig('workspaces.workspace');
+    return this.getOptions('workspaces.workspace');
   }
 
   setWorkspaces(workspaces: WorkspaceValue[]): void {
@@ -88,18 +115,6 @@ export default class ReleaseContext<
       ...this.options.workspaces,
       workspaces
     };
-  }
-
-  setConfig(config: DeepPartial<ReleaseConfig>): void {
-    this.options = merge(this.options, config);
-  }
-
-  getConfig<T = unknown>(key: string | string[], defaultValue?: T): T {
-    return get(this.options, key, defaultValue);
-  }
-
-  setShared(shared: Partial<SharedReleaseOptions>): void {
-    this.shared = merge(this.shared, shared);
   }
 
   getPkg<T>(key?: string, defaultValue?: T): T {
@@ -118,7 +133,7 @@ export default class ReleaseContext<
 
   getTemplateContext(): TemplateContext {
     return {
-      ...this.shared,
+      ...this.getOptions(),
       ...this.workspace!,
       publishPath: this.workspace?.path || '',
       // deprecated

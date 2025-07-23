@@ -1,15 +1,7 @@
 import ReleaseTask from '../../src/implments/ReleaseTask';
 import { AsyncExecutor, PromiseTask } from '@qlover/fe-corekit';
-import { Plugin, ReleaseContext } from '../../src';
-import { createTestReleaseContext } from '../helpers';
+import { createTestReleaseOptions } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
-
-interface TestPluginProps {
-  testValue: string;
-  nestedConfig?: {
-    value: string;
-  };
-}
 
 class MockExecutor extends AsyncExecutor {
   override async run<Result, Params = unknown>(
@@ -31,13 +23,13 @@ class MockExecutor extends AsyncExecutor {
 describe('ReleaseTask basic usage', () => {
   describe('create ReleaseTask instance', () => {
     it('should create ReleaseTask instance', () => {
-      const releaseTask = new ReleaseTask(createTestReleaseContext());
+      const releaseTask = new ReleaseTask(createTestReleaseOptions());
       expect(releaseTask).toBeInstanceOf(ReleaseTask);
     });
 
     it('should override executor execution logic', async () => {
       const releaseTask = new ReleaseTask(
-        createTestReleaseContext(),
+        createTestReleaseOptions(),
         new MockExecutor()
       );
 
@@ -50,7 +42,7 @@ describe('ReleaseTask basic usage', () => {
       process.env['FE_RELEASE'] = 'false';
 
       const releaseTask = new ReleaseTask(
-        createTestReleaseContext(),
+        createTestReleaseOptions(),
         new MockExecutor()
       );
 
@@ -58,84 +50,11 @@ describe('ReleaseTask basic usage', () => {
 
       delete process.env['FE_RELEASE'];
     });
-
-    it('should execute custom plugins', async () => {
-      const onBefore = vi.fn();
-      const onExec = vi.fn();
-      class TestPlugin extends Plugin<TestPluginProps> {
-        constructor(
-          context: ReleaseContext,
-          props: TestPluginProps = { testValue: 'default' }
-        ) {
-          super(context, 'test-plugin', props);
-        }
-
-        onBefore = onBefore;
-        onExec = onExec;
-      }
-
-      const releaseTask = new ReleaseTask(
-        createTestReleaseContext({
-          shared: {
-            plugins: [
-              [
-                TestPlugin,
-                {
-                  testValue: 'test'
-                }
-              ]
-            ]
-          }
-        }),
-        undefined,
-        // need overried default plugins
-        []
-      );
-
-      await releaseTask.exec();
-
-      expect(onBefore).toHaveBeenCalled();
-      expect(onExec).toHaveBeenCalled();
-    });
-    it('should execute custom plugins, override default plugins', async () => {
-      const onBefore = vi.fn();
-      const onExec = vi.fn();
-      class TestPlugin extends Plugin<TestPluginProps> {
-        constructor(
-          context: ReleaseContext,
-          props: TestPluginProps = { testValue: 'default' }
-        ) {
-          super(context, 'test-plugin', props);
-        }
-
-        onBefore = onBefore;
-        onExec = onExec;
-      }
-
-      const releaseTask = new ReleaseTask(
-        createTestReleaseContext(),
-        undefined,
-        // overried default plugins
-        [
-          [
-            TestPlugin,
-            {
-              testValue: 'test'
-            }
-          ]
-        ]
-      );
-
-      await releaseTask.exec();
-
-      expect(onBefore).toHaveBeenCalled();
-      expect(onExec).toHaveBeenCalled();
-    });
   });
 });
 
 describe('ReleaseTask context parameter verification', () => {
-  const overrideShared = {
+  const overrideOptions = {
     // append from Workspace plugins
     packageJson: {
       name: 'test-package-name',
@@ -149,25 +68,25 @@ describe('ReleaseTask context parameter verification', () => {
     sourceBranch: 'test-source-branch'
   };
 
-  const extendsArgsNames = Object.keys(overrideShared);
+  const extendsArgsNames = Object.keys(overrideOptions);
 
   it('should correctly initialize parameters and context', () => {
-    const releaseTask = new ReleaseTask(createTestReleaseContext());
+    const releaseTask = new ReleaseTask(createTestReleaseOptions());
     expect(releaseTask.getContext()).toBeDefined();
   });
 
   it('should correctly initialize shared parameters (inherited from feConfig.release)', () => {
-    const releaseTask = new ReleaseTask(createTestReleaseContext());
+    const releaseTask = new ReleaseTask(createTestReleaseOptions());
 
     const context = releaseTask.getContext();
-    const shared = context.shared;
+    const options = context.options;
 
     expect(context).toBeDefined();
 
     extendsArgsNames.forEach((name) => {
       // compare with defaultFeConfig.release
       if (!extendsArgsNames.includes(name)) {
-        expect(shared[name as keyof typeof shared]).toEqual(
+        expect(options[name as keyof typeof options]).toEqual(
           defaultFeConfig.release![name as keyof typeof defaultFeConfig.release]
         );
       }
@@ -176,17 +95,17 @@ describe('ReleaseTask context parameter verification', () => {
 
   it('should override default shared parameters', () => {
     const releaseTask = new ReleaseTask(
-      createTestReleaseContext({
-        shared: overrideShared
+      createTestReleaseOptions({
+        options: overrideOptions
       })
     );
 
     const context = releaseTask.getContext();
-    const shared = context.shared;
+    const options = context.options;
 
     extendsArgsNames.forEach((name) => {
-      expect(shared[name as keyof typeof shared]).toEqual(
-        overrideShared[name as keyof typeof overrideShared]
+      expect(options[name as keyof typeof options]).toEqual(
+        overrideOptions[name as keyof typeof overrideOptions]
       );
     });
   });

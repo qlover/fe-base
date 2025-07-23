@@ -1,21 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Plugin from '../../src/plugins/Plugin';
-import { createTestReleaseContext } from '../helpers';
-import type { ReleaseContext } from '../../src';
+import { createTestReleaseOptions } from '../helpers';
+import { ReleaseContext } from '../../src';
 import type { DeepPartial } from '../../src/type';
+import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
 
-interface TestPluginProps {
+interface TestPluginProps extends ScriptPluginProps {
   testValue: string;
   nestedConfig?: {
     value: string;
   };
 }
 
-class TestPlugin extends Plugin<TestPluginProps> {
-  constructor(
-    context: ReleaseContext,
-    props: TestPluginProps = { testValue: 'default' }
-  ) {
+class TestPlugin extends ScriptPlugin<ReleaseContext, TestPluginProps> {
+  constructor(context: ReleaseContext, props?: TestPluginProps) {
     super(context, 'test-plugin', props);
   }
 
@@ -30,7 +27,7 @@ describe('Plugin Class', () => {
   let defaultProps: TestPluginProps;
 
   beforeEach(() => {
-    context = createTestReleaseContext();
+    context = new ReleaseContext('release', createTestReleaseOptions());
     defaultProps = { testValue: 'test-value' };
     plugin = new TestPlugin(context, defaultProps);
   });
@@ -46,7 +43,7 @@ describe('Plugin Class', () => {
     });
 
     it('should merge command line config and plugin config', () => {
-      const contextWithOptions = createTestReleaseContext({
+      const contextWithOptions = createTestReleaseOptions({
         options: {
           // @ts-expect-error
           'test-plugin': {
@@ -55,16 +52,14 @@ describe('Plugin Class', () => {
         }
       });
 
-      const pluginWithCliConfig = new TestPlugin(
-        contextWithOptions,
-        defaultProps
-      );
-      expect(pluginWithCliConfig.options.testValue).toBe('cli-value');
+      const context = new ReleaseContext('release', contextWithOptions);
+      const pluginWithCliConfig = new TestPlugin(context);
+      expect(pluginWithCliConfig.getConfig('testValue')).toBe('cli-value');
     });
 
     it('getInitialProps should correctly merge config items', () => {
       const props = { testValue: 'prop-value' };
-      const contextWithOptions = createTestReleaseContext({
+      const contextWithOptions = createTestReleaseOptions({
         options: {
           // @ts-expect-error
           'test-plugin': {
@@ -75,7 +70,10 @@ describe('Plugin Class', () => {
         }
       });
 
-      const pluginWithMergedConfig = new TestPlugin(contextWithOptions, props);
+      const pluginWithMergedConfig = new TestPlugin(
+        new ReleaseContext('release', contextWithOptions),
+        props
+      );
 
       expect(pluginWithMergedConfig.options.testValue).toBe('prop-value');
       expect(pluginWithMergedConfig.options.nestedConfig?.value).toBe(
@@ -108,7 +106,7 @@ describe('Plugin Class', () => {
         testValue: 'new-value'
       };
 
-      plugin.setConfig(newConfig);
+      plugin.setConfig(newConfig as Partial<TestPluginProps>);
       expect(plugin.getConfig('testValue')).toBe('new-value');
     });
   });
@@ -128,7 +126,8 @@ describe('Plugin Class', () => {
       const mockEnvValue = 'test-env-value';
       vi.spyOn(context.env, 'get').mockReturnValue(mockEnvValue);
 
-      expect(plugin.getEnv('TEST_KEY')).toBe(mockEnvValue);
+      // @ts-expect-error
+      expect(plugin.context.getEnv('TEST_KEY')).toBe(mockEnvValue);
       expect(context.env.get).toHaveBeenCalledWith('TEST_KEY');
     });
 
@@ -136,7 +135,8 @@ describe('Plugin Class', () => {
       const defaultEnvValue = 'default-env-value';
       vi.spyOn(context.env, 'get').mockReturnValue(undefined);
 
-      expect(plugin.getEnv('NON_EXISTENT_KEY', defaultEnvValue)).toBe(
+      // @ts-expect-error
+      expect(plugin.context.getEnv('NON_EXISTENT_KEY', defaultEnvValue)).toBe(
         defaultEnvValue
       );
     });
@@ -144,7 +144,8 @@ describe('Plugin Class', () => {
 
   describe('lifecycle methods', () => {
     it('default enabled method should return true', () => {
-      expect(plugin.enabled()).toBe(true);
+      // @ts-expect-error
+      expect(plugin.enabled('onBefore', {})).toBe(true);
     });
 
     it('should have optional lifecycle methods', () => {
