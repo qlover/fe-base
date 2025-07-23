@@ -1,5 +1,19 @@
 # @qlover/code2markdown
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **code2markdown:** add Code Comments Guide and enhance documentation structure ([982dd1c](https://github.com/qlover/fe-base/commit/982dd1c1b7cd30996f7fcbc38ccc4edba5e06188)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Introduced a new Code Comments Guide in both English and Chinese, detailing best practices for writing effective comments.
+  - Updated README files to include links to the new guide, improving accessibility to documentation resources.
+  - Enhanced the index files in the documentation to reflect the addition of the Code Comments Guide.
+  - Created a CHANGELOG.md for the code2markdown package to track changes and updates.
+
+  These changes aim to standardize code commenting practices and improve the overall documentation framework across the project.
+
 ## 0.1.1
 
 ### Patch Changes
