@@ -1,5 +1,53 @@
 # @qlover/scripts-context
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **fe-code2markdown:** update dependencies and enhance project structure ([bf46bd1](https://github.com/qlover/fe-base/commit/bf46bd1da340ac6b4e9f42c98099af49f74f6fb3)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Added `@qlover/fe-corekit` as a dependency in `pnpm-lock.yaml` and `package.json` to improve functionality and integration.
+  - Updated the `build:docs` script in `package.json` for better documentation generation.
+  - Introduced a new `typedoc.json` file to support TypeDoc configuration for improved documentation output.
+  - Refactored imports in `Code2MDContext.ts` and `reader.ts` to streamline code and enhance maintainability.
+  - Removed the obsolete `ScriptContext.ts` file and integrated its functionality into the new plugin structure.
+
+  These changes aim to enhance the overall usability and maintainability of the fe-code2markdown package.
+
+- **scriptPlugin:** remove outdated test files and enhance ScriptContext and ScriptPlugin implementations ([27435a0](https://github.com/qlover/fe-base/commit/27435a0a2282c0724323fff1c74d653a86b68c7b)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Deleted `ScriptContext.test.ts` and `ScriptPlugin.test.ts` files to streamline the test suite.
+  - Refactored `ScriptContext` to improve environment management, configuration merging, and logging capabilities.
+  - Enhanced `ScriptPlugin` with better lifecycle management, configuration handling, and structured logging for execution steps.
+  - Updated documentation within the code to clarify usage examples and design considerations.
+
+  These changes improve the maintainability and clarity of the codebase, ensuring a more robust testing and execution environment.
+
+- **scripts-context:** add documentation generation script and refactor test structure ([24cebc0](https://github.com/qlover/fe-base/commit/24cebc0392594de546c08da7ff717dbae4132105)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Introduced a new script `build:docs` in `package.json` for generating documentation from source code.
+  - Refactored the mock implementation in `__mocks__/index.ts` to export all from the source, simplifying the mock structure.
+  - Deleted outdated test file `ExecPromiseShell.test.ts` to streamline the test suite.
+  - Added new test files for `ColorFormatter`, `ConfigSearch`, `ScriptContext`, `ScriptPlugin`, and `Shell`, enhancing test coverage and organization.
+
+  These changes improve the documentation process and enhance the overall test suite, ensuring better maintainability and clarity in the codebase.
+
+- **scripts-context:** migrate build process to tsup and add project configuration ([fd507fa](https://github.com/qlover/fe-base/commit/fd507fae9b78a0798aab95b744da08e818967d6c)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Updated the build script in `package.json` to use `tsup`, replacing the previous Rollup configuration.
+  - Introduced a new `project.json` file to define build targets for NX integration.
+  - Created a new `tsup.config.ts` file for configuring the build process, supporting both ESM and CommonJS formats.
+  - Removed the obsolete `rollup.config.js` file to streamline the project structure.
+
+  These changes enhance the build orchestration and configuration for the scripts-context package.
+
+#### ♻️ Refactors
+
+- **fe-code2markdown:** update context configuration and streamline imports ([0a63677](https://github.com/qlover/fe-base/commit/0a63677961b43a1474da74d8dd0a1197aef3616a)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Refactored `Code2MDContext.ts` to extend `ScriptShared`, enhancing configuration options.
+  - Updated method calls in `reader.ts` and `TypeDocsJson.ts` to use `setOptions` instead of `setConfig`, improving consistency in context management.
+  - Added `ScriptShared` export in `index.ts` of `scripts-context` for better modularity.
+
+  These changes aim to improve code clarity and maintainability across the fe-code2markdown package.
+
 ## 0.2.1
 
 ## 0.2.0
@@ -9,7 +57,6 @@
 #### ✨ Features
 
 - integrate @qlover/logger into corekit-bridge (#373)
-
   - Added @qlover/logger as a dependency across multiple files, replacing the previous logger from @qlover/fe-corekit.
   - Updated type references to LoggerInterface in Bootstrap, ApiCatchPlugin, and ApiMockPlugin.
   - Introduced ColorFormatter for enhanced logging capabilities, with tests added for ColorFormatter and ColorLogger.
@@ -19,7 +66,6 @@
 #### 🐞 Bug Fixes
 
 - update ColorFormatter tests to utilize LogContext (#373)
-
   - Modified ColorFormatter tests to use the new LogContext class for improved context handling.
   - Adjusted the test setup to ensure proper formatting of color segments with the updated LogContext structure.
   - Exported LogContext from the logger package for broader accessibility.
@@ -27,14 +73,12 @@
 #### ♻️ Refactors
 
 - enhance context handling and update ColorFormatter tests (#373)
-
   - Refactored logger context handling to utilize a new LogContext class for better type safety and clarity.
   - Updated ColorFormatter tests to use logger.context for passing context objects.
   - Adjusted ColorFormatter methods to improve handling of color segments and context.
   - Improved documentation for context usage in logger methods.
 
 - replace ConsoleAppender with ConsoleHandler (#373)
-
   - Updated tests and implementation to utilize ConsoleHandler instead of ConsoleAppender for improved logging functionality.
   - Introduced ConsoleHandler class to manage log events and formatting.
   - Adjusted Logger integration to reflect the new handler structure across various test files and implementations.
@@ -48,21 +92,18 @@
 #### ✨ Features
 
 - integrate @qlover/logger into scripts-context package (#371)
-
   - Added @qlover/logger as a dependency, replacing the previous logger from @qlover/fe-corekit.
   - Updated Shell, ScriptContext, and ScriptsLogger to utilize the new LoggerInterface from @qlover/logger.
   - Enhanced logging capabilities with a new ColorFormatter for improved log output.
   - Updated tests to reflect changes in logger implementation, ensuring compatibility and functionality.
 
 - update logger package configuration and add mock (#371)
-
   - Added 'logger' to the Vite alias configuration for improved module resolution.
   - Updated package.json to include a 'default' export alongside 'require'.
   - Refactored tsup configuration for cleaner setup and ensured TypeScript definitions are generated.
   - Introduced a mock for the logger package to facilitate testing.
 
 - integrate @qlover/logger into fe-release package (#371)
-
   - Added @qlover/logger as a dependency in package.json and pnpm-lock.yaml.
   - Updated logger type references from @qlover/fe-corekit to LoggerInterface from @qlover/logger.
   - Refactored logging calls from verbose to debug level for consistency across the codebase.
@@ -79,7 +120,6 @@
 #### ♻️ Refactors
 
 - restructure implementation files and remove deprecated dependencies (#371)
-
   - Moved implementation files for ConfigSearch, Shell, and related utilities to a new 'implement' directory for better organization.
   - Removed the dependency on '@qlover/fe-corekit' from pnpm-lock.yaml.
   - Updated test files to reflect the new import paths and ensure compatibility with the refactored structure.
@@ -98,13 +138,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -113,17 +151,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -148,9 +183,7 @@
 ### Patch Changes
 
 - ### ✨ Features
-
   - implement GitChangelog for improved changelog generation (#351)
-
     - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
     - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
     - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
@@ -161,7 +194,6 @@
   - add script-context (#213)
 
   ### 🐞 Bug Fixes
-
   - add option to push changed labels to release PRs in workflow (#353)
   - find module root path (#297)
   - merge search config (#224)

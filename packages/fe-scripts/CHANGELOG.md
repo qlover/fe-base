@@ -1,5 +1,26 @@
 # @qlover/fe-scripts
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **fe-scripts:** add project configuration and build target for NX integration ([dafe66a](https://github.com/qlover/fe-base/commit/dafe66a69762e25186774dfd23397cad6682ab6b)) ([#451](https://github.com/qlover/fe-base/pull/451))
+  - Introduced a new `project.json` file for the `@qlover/fe-scripts` package to define build targets.
+  - Configured the build process to utilize `pnpm build`, enhancing integration with NX and streamlining the build orchestration.
+
+  These changes improve the project structure and build management for the fe-scripts package.
+
+#### ♻️ Refactors
+
+- **scripts:** update context interfaces to use ScriptContext and enhance options structure ([b86a733](https://github.com/qlover/fe-base/commit/b86a7330466f193ea3536a72f09e56bf72afd62f)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Replaced instances of FeScriptContext with ScriptContext and ScriptContextInterface across multiple script files, including check-packages, clean-branch, clean, commit, and setup-husky.
+  - Extended existing options interfaces to inherit from ScriptSharedInterface, improving consistency and maintainability.
+  - Updated the instantiation of context objects to align with the new ScriptContext structure, enhancing clarity in the codebase.
+
+  These changes streamline the script implementations and improve the overall structure of the context handling within the project.
+
 ## 0.11.6
 
 ### Patch Changes
@@ -13,7 +34,6 @@
 #### 🐞 Bug Fixes
 
 - update build script to include rebuild step (#377)
-
   - Modified the build script in package.json to append a rebuild command, ensuring that dependencies are rebuilt after the main build process.
 
   ***
@@ -21,7 +41,6 @@
 #### ♻️ Refactors
 
 - migrate build system from Rollup to tsup (#377)
-
   - Updated package.json to change entry points and output directories for the new build system.
   - Removed Rollup configuration file and replaced it with tsup configuration for better performance and simplicity.
   - Added new CLI scripts for various functionalities, including check-packages, clean-branch, clean, commit, and setup-husky.
@@ -29,7 +48,6 @@
   - Removed deprecated files and dependencies related to the previous build system.
 
 - update CLI script paths and build configuration (#377)
-
   - Changed CLI script file extensions from .mjs to .js in package.json for consistency.
   - Updated tsup configuration to output only ESM format and removed unnecessary outExtension logic.
   - Adjusted output directory settings for better organization of build artifacts.
@@ -45,21 +63,18 @@
 #### ✨ Features
 
 - integrate @qlover/logger into scripts-context package (#371)
-
   - Added @qlover/logger as a dependency, replacing the previous logger from @qlover/fe-corekit.
   - Updated Shell, ScriptContext, and ScriptsLogger to utilize the new LoggerInterface from @qlover/logger.
   - Enhanced logging capabilities with a new ColorFormatter for improved log output.
   - Updated tests to reflect changes in logger implementation, ensuring compatibility and functionality.
 
 - update logger package configuration and add mock (#371)
-
   - Added 'logger' to the Vite alias configuration for improved module resolution.
   - Updated package.json to include a 'default' export alongside 'require'.
   - Refactored tsup configuration for cleaner setup and ensured TypeScript definitions are generated.
   - Introduced a mock for the logger package to facilitate testing.
 
 - integrate @qlover/logger into fe-release package (#371)
-
   - Added @qlover/logger as a dependency in package.json and pnpm-lock.yaml.
   - Updated logger type references from @qlover/fe-corekit to LoggerInterface from @qlover/logger.
   - Refactored logging calls from verbose to debug level for consistency across the codebase.
@@ -76,7 +91,6 @@
 #### ♻️ Refactors
 
 - restructure implementation files and remove deprecated dependencies (#371)
-
   - Moved implementation files for ConfigSearch, Shell, and related utilities to a new 'implement' directory for better organization.
   - Removed the dependency on '@qlover/fe-corekit' from pnpm-lock.yaml.
   - Updated test files to reflect the new import paths and ensure compatibility with the refactored structure.
@@ -95,13 +109,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -110,17 +122,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -134,13 +143,11 @@
 #### ✨ Features
 
 - Update ReleaseParams to include batchTagName and modify batchBranchName format (#362)
-
   - Added `batchTagName` for batch release tagging with a new default format.
   - Updated `batchBranchName` format to improve clarity and consistency.
   - Enhanced the logic for generating release tags in the ReleaseParams class.
 
 - Introduce viteMockPackage plugin and add mock implementations for env-loader and fe-corekit (#362)
-
   - Added a new viteMockPackage plugin to facilitate mocking of specified packages in Vite tests.
   - Implemented mock classes for Env in @qlover/env-loader and Logger in @qlover/fe-corekit.
   - Updated vite.config.ts to include alias mappings for the mocked packages.
@@ -149,17 +156,14 @@
 #### ♻️ Refactors
 
 - Simplify getDependencyReleaseLine function to return an empty string (#362)
-
   - Removed unnecessary parameters and streamlined the function for better clarity and performance.
 
 - Update GitChangelogOptions interface and improve comments (#362)
-
   - Translated comments from Chinese to English for better clarity.
   - Enhanced the GitChangelogOptions interface by adding a new `formatter` property and updating existing descriptions for consistency.
   - Cleaned up comments in the GitChangelog class for improved readability.
 
 - Enhance viteMockPackage to support dynamic alias mapping (#362)
-
   - Introduced `parsePackagesMap` function to dynamically generate alias mappings for specified packages in vite.config.ts.
   - Updated vite.config.ts to utilize the new function, improving maintainability and flexibility of package mocking.
   - Removed hardcoded alias mappings for a more scalable approach to package management.
@@ -188,7 +192,6 @@
 #### ✨ Features
 
 - implement GitChangelog for improved changelog generation (#351)
-
   - Introduced a new GitChangelog class to facilitate the generation of changelogs based on Git commit history.
   - Added interfaces for PRCommit, CommitInfo, and FlatCommit to structure commit data.
   - Updated Changelog plugin to utilize GitChangelog for fetching and formatting PR commits, replacing the previous conventional-changelog implementation.
