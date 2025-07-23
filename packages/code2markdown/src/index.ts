@@ -1,9 +1,9 @@
 /**
- * @module fe-code2markdown
+ * @module code2markdown
  *
  * @example
  * ```typescript
- * import { Code2MDContext, Code2MDTask, Formats, Reader, TypeDocJson } from '@qlover/fe-code2markdown';
+ * import { Code2MDContext, Code2MDTask, Formats, Reader, TypeDocJson } from '@qlover/code2markdown';
  * ```
  */
 export * from './implments/Code2MDContext';

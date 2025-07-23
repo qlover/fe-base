@@ -19,6 +19,7 @@ Project development standards and best practices:
 
 - **[Commit Convention](./commit-convention.md)** - Git commit message standards and tool configuration
 - **[Testing Guide](./testing-guide.md)** - Testing strategies, tool usage and best practices
+- **[Code Comments](./code-comments-guide.md)** - Code Comments, Format Usage Guide
 
 ### 🚀 Project Management
 

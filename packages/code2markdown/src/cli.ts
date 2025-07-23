@@ -38,32 +38,32 @@
  *
  * @example Basic Usage
  * ```bash
- * npx fe-code2markdown -p src
+ * npx code2markdown -p src
  * ```
  *
  * @example Custom Output Path
  * ```bash
- * npx fe-code2markdown -p src -g docs/api --removePrefix
+ * npx code2markdown -p src -g docs/api --removePrefix
  * ```
  *
  * @example Custom Template and Formatting
  * ```bash
- * npx fe-code2markdown -p src -t custom.tpl.json --formatOutput prettier
+ * npx code2markdown -p src -t custom.tpl.json --formatOutput prettier
  * ```
  *
  * @example Filter JSDoc Tags
  * ```bash
- * npx fe-code2markdown -p src --filterTags "internal,deprecated,private"
+ * npx code2markdown -p src --filterTags "internal,deprecated,private"
  * ```
  *
  * @example Debug Mode
  * ```bash
- * npx fe-code2markdown -p src --debug --verbose
+ * npx code2markdown -p src --debug --verbose
  * ```
  *
  * @example Dry Run Preview
  * ```bash
- * npx fe-code2markdown -p src --dry-run
+ * npx code2markdown -p src --dry-run
  * ```
  */
 
@@ -226,7 +226,7 @@ const main = async () => {
   };
 
   // Configure Code2MDTask with all options
-  const code2mdOptions: Code2MDContextOptions = {
+  const code2mdOptions: Partial<Code2MDContextOptions> = {
     verbose: opts.debug ?? verbose,
     dryRun: dryRun,
     options: generaterOptions

@@ -20,6 +20,7 @@ Frontend Base Toolkit - A Powerful Collection of Tools Designed for Frontend App
   - [Project Release Guide](./docs/en/project-release.md)
   - [How to Add a Subpackage](./docs/en/how-to-add-a-subpackage.md)
   - [Testing Guide](./docs/en/testing-guide.md)
+  - [Code Comments Guide](./docs/zh/code-comments-guide.md)
 
 ## 📋 Project Overview
 

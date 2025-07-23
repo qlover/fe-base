@@ -116,7 +116,7 @@ export class Code2MDTask {
    * ```
    */
   constructor(
-    options: Code2MDContextOptions,
+    options: Partial<Code2MDContextOptions>,
     private executor: AsyncExecutor = new AsyncExecutor()
   ) {
     // Create context with task name and configuration

@@ -20,6 +20,7 @@
   - [项目发布](./docs/zh/project-release.md)
   - [如何增加一个子包](./docs/zh/how-to-add-a-subpackage.md)
   - [测试指南](./docs/zh/testing-guide.md)
+  - [代码注释指南](./docs/zh/code-comments-guide.md)
 
 ## 📋 项目简介
 

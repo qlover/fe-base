@@ -1,4 +1,4 @@
-# fe-code2markdown
+# code2markdown
 
 A tool to convert code to markdown.
 
