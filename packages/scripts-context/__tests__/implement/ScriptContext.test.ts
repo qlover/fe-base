@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import ScriptContext from '../../src/implement/ScriptContext';
+import { ScriptContext } from '../../src/implement/ScriptContext';
 import { Env } from '@qlover/env-loader';
 import { Logger } from '@qlover/logger';
 import { Shell } from '../../src/implement/Shell';

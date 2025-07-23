@@ -4,8 +4,8 @@ import Workspaces, {
   type WorkspaceValue
 } from '../../src/plugins/workspaces/Workspaces';
 import { WorkspaceCreator } from '../../src/plugins/workspaces/WorkspaceCreator';
-import { createTestReleaseContext } from '../helpers';
-import type { ReleaseContext } from '../../src';
+import { createTestReleaseOptions } from '../helpers';
+import { ReleaseContext } from '../../src';
 import type ReleaseTask from '../../src/implments/ReleaseTask';
 
 describe('Workspaces Plugin', () => {
@@ -14,12 +14,15 @@ describe('Workspaces Plugin', () => {
   let mockReleaseTask: ReleaseTask;
 
   beforeEach(() => {
-    context = createTestReleaseContext({
-      shared: {
-        // @ts-expect-error test case
-        packagesDirectories: ['packages/package-a', 'packages/package-b']
-      }
-    });
+    context = new ReleaseContext(
+      'release',
+      createTestReleaseOptions({
+        options: {
+          // @ts-expect-error test case
+          packagesDirectories: ['packages/package-a', 'packages/package-b']
+        }
+      })
+    );
 
     workspaces = new Workspaces(context);
 
@@ -99,6 +102,7 @@ describe('Workspaces Plugin', () => {
     });
 
     it('when shell.exec returns non-string, should return empty array', async () => {
+      // @ts-expect-error test case
       vi.spyOn(workspaces.shell, 'exec').mockResolvedValue(null);
 
       // @ts-expect-error call private method for testing
@@ -136,7 +140,7 @@ describe('Workspaces Plugin', () => {
       workspaces.setCurrentWorkspace(workspace);
 
       expect(workspaces.getConfig('workspace')).toEqual(workspace);
-      expect((context.shared as any).publishPath).toBe('path/to/workspace');
+      expect(context.getOptions('publishPath')).toBe('path/to/workspace');
       expect(context.workspace!.packageJson).toEqual({
         name: 'test-workspace',
         version: '1.1.0'

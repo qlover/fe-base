@@ -3,8 +3,8 @@ import type { ExecutorContext } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import type { ShellInterface } from '../../src/interface/ShellInterface';
 import type { ScriptSharedInterface } from '../../src/interface/ScriptSharedInterface';
-import ScriptPlugin from '../../src/implement/ScriptPlugin';
-import ScriptContext from '../../src/implement/ScriptContext';
+import { ScriptPlugin } from '../../src/implement/ScriptPlugin';
+import { ScriptContext } from '../../src/implement/ScriptContext';
 import { LogContext } from '@qlover/logger';
 
 /**
