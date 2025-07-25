@@ -1,4 +1,15 @@
-## Class `RequestManager`
+## `src/request/managers/RequestManager` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `RequestManager` (Class)
+
+**Type:** `unknown`
+
+**Since:** `1.2.2`
+
 Represents a manager for handling HTTP requests.
 
 This interface defines a manager that contains an adapter and an executor.
@@ -10,47 +21,97 @@ Why this is an abstract class?
   so we need to reasonably flexibly control it.
 - So we need to redefine the request type when implementing the current class.
 
-@since 
+---
 
-1.2.2
+#### `new RequestManager` (Constructor)
 
-
-## Members
-
-### constructor
-
+**Type:** `(adapter: RequestAdapterInterface<Config>, executor: AsyncExecutor<ExecutorConfigInterface>) => RequestManager<Config>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  adapter  |  | `RequestAdapterInterface<Config>` |  |  |
-|  executor  |  | `AsyncExecutor<unknown>` | ... |  |
 
+| Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
 
-### request
+---
+
+#### `adapter` (Property)
+
+**Type:** `RequestAdapterInterface<Config>`
+
+---
+
+#### `executor` (Property)
+
+**Type:** `AsyncExecutor<ExecutorConfigInterface>`
+
+**Default:** `...`
+
+---
+
+#### `request` (Method)
+
+**Type:** `(config: unknown) => Promise<unknown>`
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                        |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `config` | `unknown` | ❌       | -       | -     | -          | The configuration for the request. |
+
+---
+
+##### `request` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Executes a request with the given configuration.
 
 This method need to be overridden by the subclass, override type definition of request method.
 
 Of course, you can also override its logic.
 
+**Returns:**
+
+A promise that resolves to the response of the request.
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | The configuration for the request. | `unknown` |  |  |
 
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                        |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `config` | `unknown` | ❌       | -       | -     | -          | The configuration for the request. |
 
-### usePlugin
+---
+
+#### `usePlugin` (Method)
+
+**Type:** `(plugin: ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]) => this`
+
+#### Parameters
+
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                            |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `plugin` | `ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | The plugin to be used by the executor. |
+
+---
+
+##### `usePlugin` (CallSignature)
+
+**Type:** `this`
+
+**Since:** `1.2.2`
+
 Adds a plugin to the executor.
 
-**@since** 
+**Returns:**
 
-1.2.2
-
+The current instance of RequestManagerInterface for chaining.
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  plugin  | The plugin to be used by the executor. | `ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]` |  |  |
 
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                            |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `plugin` | `ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | The plugin to be used by the executor. |
+
+---

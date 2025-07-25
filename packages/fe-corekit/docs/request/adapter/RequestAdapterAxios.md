@@ -1,42 +1,102 @@
-## Class `RequestAdapterAxios`
+## `src/request/adapter/RequestAdapterAxios` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `RequestAdapterAxios` (Class)
+
+**Type:** `unknown`
+
+**Since:** `1.0.14`
+
 Axios request adapter
 
 Only base config is supported
 
-@since 
+---
 
-1.0.14
+#### `new RequestAdapterAxios` (Constructor)
 
-
-## Members
-
-### constructor
-
+**Type:** `(axios: AxiosStatic, config: AxiosRequestConfig<any>) => RequestAdapterAxios`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  axios  |  | `AxiosStatic` |  |  |
-|  config  |  | `AxiosRequestConfig<any>` | {} |  |
 
+| Name     | Type                      | Optional | Default | Since | Deprecated | Description |
+| -------- | ------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `axios`  | `AxiosStatic`             | ❌       | -       | -     | -          |             |
+| `config` | `AxiosRequestConfig<any>` | ✅       | `{}`    | -     | -          |             |
 
-### getConfig
+---
 
+#### `config` (Property)
 
+**Type:** `AxiosRequestConfig<any>`
 
+**Default:** `{}`
 
-### request
-Sends a request using the specified options and returns a promise with the response.
+The configuration for the request adapter.
 
-**@example** 
+---
+
+#### `getConfig` (Method)
+
+**Type:** `() => AxiosRequestConfig<any>`
+
+Retrieves the current configuration of the request adapter.
+
+**Returns:**
+
+The current configuration.
+
+**Example:**
 
 ```typescript
-adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(response));
+const config = adapter.getConfig();
 ```
 
+---
+
+##### `getConfig` (CallSignature)
+
+**Type:** `AxiosRequestConfig<any>`
+
+---
+
+#### `request` (Method)
+
+**Type:** `(config: AxiosRequestConfig<Request>) => Promise<RequestAdapterResponse<Request, Response>>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | The configuration options for the request. | `AxiosRequestConfig<Request>` |  |  |
 
+| Name     | Type                          | Optional | Default | Since | Deprecated | Description                                |
+| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
+
+---
+
+##### `request` (CallSignature)
+
+**Type:** `Promise<RequestAdapterResponse<Request, Response>>`
+
+Sends a request using the specified options and returns a promise with the response.
+
+**Returns:**
+
+A promise that resolves to the response of the request.
+
+**Example:**
+
+```typescript
+adapter
+  .request({ url: '/users', method: 'GET' })
+  .then((response) => console.log(response));
+```
+
+#### Parameters
+
+| Name     | Type                          | Optional | Default | Since | Deprecated | Description                                |
+| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
+
+---

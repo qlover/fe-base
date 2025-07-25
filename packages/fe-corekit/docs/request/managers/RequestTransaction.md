@@ -1,41 +1,52 @@
-## Class `RequestTransaction`
+## `src/request/managers/RequestTransaction` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `RequestTransaction` (Class)
+
+**Type:** `unknown`
+
+**Since:** `1.2.2`
+
 Represents a transaction for managing HTTP requests.
 
-Now 
+Now
 `RequestTransaction`
- and 
+and
 `RequestScheduler`
- have the same purpose, only different in form.
+have the same purpose, only different in form.
 
-If you want to override the return type of the request, you can use 
+If you want to override the return type of the request, you can use
 `RequestTransaction`
 .
 
-If you don't consider type, you can also use 
+If you don't consider type, you can also use
 `requestScheduler`
 , just manually declare the return type.
 
-If you have the need to override the response or execution context, it is recommended to use 
+If you have the need to override the response or execution context, it is recommended to use
 `RequestTransaction`
 ,
 because it can match the type through typescript.
 
-The 
+The
 `request`
- method of 
+method of
 `RequestTransaction`
- can do the following:
+can do the following:
+
 1. Directly declare the return type through generics
 2. Declare the config type through generics
-3. Declare the request parameters and return values through 
-`RequestTransactionInterface`
+3. Declare the request parameters and return values through
+   `RequestTransactionInterface`
 
-
-Currently, it does not support passing parameters through generics, but you can use 
+Currently, it does not support passing parameters through generics, but you can use
 `RequestTransactionInterface`
 .
 
-@example Directly declare the return type through generics
+**Example:** Directly declare the return type through generics
 
 ```typescript
 const client = new RequestTransaction<CustomConfig>(new RequestAdapterFetch());
@@ -43,13 +54,17 @@ const client = new RequestTransaction<CustomConfig>(new RequestAdapterFetch());
 client
   .request<{
     list: string[];
-  }>({ url: 'https://api.example.com/data', method: 'GET', hasCatchError: true })
+  }>({
+    url: 'https://api.example.com/data',
+    method: 'GET',
+    hasCatchError: true
+  })
   .then((response) => {
     console.log(response.data.list);
   });
 ```
 
-@example Declare the config type through generics
+**Example:** Declare the config type through generics
 
 ```typescript
 const client = new RequestTransaction<
@@ -64,7 +79,7 @@ client.request({
 });
 ```
 
-@example You can also extend the config type
+**Example:** You can also extend the config type
 
 ```typescript
 interface CustomConfig extends RequestAdapterConfig {
@@ -81,7 +96,7 @@ client.request({
 });
 ```
 
-@example Directly declare the request parameters and return values through `RequestTransactionInterface`
+**Example:** Directly declare the request parameters and return values through `RequestTransactionInterface`
 
 ```typescript
 interface CustomConfig extends RequestAdapterConfig {
@@ -109,7 +124,7 @@ client
   });
 ```
 
-@example Finally, you can also use `RequestTransaction` to create a complete api client
+**Example:** Finally, you can also use `RequestTransaction` to create a complete api client
 
 ```typescript
 // catch plugin
@@ -148,7 +163,9 @@ class ApiClient extends RequestTransaction<ApiClientConfig> {
   }
 
   // Displayly declare
-  test2(data: ApiTestTransaction['request']): Promise<ApiTestTransaction['response']> {
+  test2(
+    data: ApiTestTransaction['request']
+  ): Promise<ApiTestTransaction['response']> {
     return this.request({
       url: 'https://api.example.com/data',
       method: 'GET',
@@ -170,95 +187,256 @@ req.test().then((response) => {
 });
 ```
 
-
-If you are not satisfied with 
+If you are not satisfied with
 `RequestTransaction`
-, you can completely rewrite your own 
+, you can completely rewrite your own
 `RequestTransaction`
 .
 
-Only need to inherit 
+Only need to inherit
 `RequestManager`
- and override the 
+and override the
 `request`
- method.
+method.
 
-Finally, if you don't need typescript support, then it's basically the same as 
+Finally, if you don't need typescript support, then it's basically the same as
 `RequestScheduler`
 ,
 except that some of the shortcuts have different parameters.
 
-@since 
+---
 
-1.2.2
+#### `new RequestTransaction` (Constructor)
 
+**Type:** `(adapter: RequestAdapterInterface<Config>, executor: AsyncExecutor<ExecutorConfigInterface>) => RequestTransaction<Config>`
 
-## Members
+#### Parameters
 
-### delete
+| Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+
+---
+
+#### `adapter` (Property)
+
+**Type:** `RequestAdapterInterface<Config>`
+
+---
+
+#### `executor` (Property)
+
+**Type:** `AsyncExecutor<ExecutorConfigInterface>`
+
+**Default:** `...`
+
+---
+
+#### `delete` (Method)
+
+**Type:** `(url: string, config: Omit<Config, "method" \| "url">) => Promise<unknown>`
+
+#### Parameters
+
+| Name     | Type                              | Optional | Default | Since | Deprecated | Description                      |
+| -------- | --------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `url`    | `string`                          | ❌       | -       | -     | -          | The URL to send the request to   |
+| `config` | `Omit<Config, "method" \| "url">` | ✅       | -       | -     | -          | Additional configuration options |
+
+---
+
+##### `delete` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Sends a DELETE request
 
+#### Parameters
+
+| Name     | Type                              | Optional | Default | Since | Deprecated | Description                      |
+| -------- | --------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `url`    | `string`                          | ❌       | -       | -     | -          | The URL to send the request to   |
+| `config` | `Omit<Config, "method" \| "url">` | ✅       | -       | -     | -          | Additional configuration options |
+
+---
+
+#### `get` (Method)
+
+**Type:** `(url: string, config: Omit<Config, "method" \| "url">) => Promise<unknown>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | The URL to send the request to | `string` |  |  |
-|  config  | Additional configuration options | `Omit<Config, "method" \| "url">` |  |  |
 
+| Name     | Type                              | Optional | Default | Since | Deprecated | Description                      |
+| -------- | --------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `url`    | `string`                          | ❌       | -       | -     | -          | The URL to send the request to   |
+| `config` | `Omit<Config, "method" \| "url">` | ✅       | -       | -     | -          | Additional configuration options |
 
-### get
+---
+
+##### `get` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Sends a GET request
 
+#### Parameters
+
+| Name     | Type                              | Optional | Default | Since | Deprecated | Description                      |
+| -------- | --------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `url`    | `string`                          | ❌       | -       | -     | -          | The URL to send the request to   |
+| `config` | `Omit<Config, "method" \| "url">` | ✅       | -       | -     | -          | Additional configuration options |
+
+---
+
+#### `patch` (Method)
+
+**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | The URL to send the request to | `string` |  |  |
-|  config  | Additional configuration options | `Omit<Config, "method" \| "url">` |  |  |
 
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
-### patch
+---
+
+##### `patch` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Sends a PATCH request
 
+#### Parameters
+
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
+
+---
+
+#### `post` (Method)
+
+**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | The URL to send the request to | `string` |  |  |
-|  data  | The data to be sent in the request body | `Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction<Transaction>["request"]["data"] : Config["data"]` |  |  |
-|  config  | Additional configuration options | `Omit<Config, "method" \| "url" \| "data">` |  |  |
 
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
-### post
+---
+
+##### `post` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Sends a POST request
 
+#### Parameters
+
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
+
+---
+
+#### `put` (Method)
+
+**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | The URL to send the request to | `string` |  |  |
-|  data  | The data to be sent in the request body | `Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction<Transaction>["request"]["data"] : Config["data"]` |  |  |
-|  config  | Additional configuration options | `Omit<Config, "method" \| "url" \| "data">` |  |  |
 
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
-### put
+---
+
+##### `put` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Sends a PUT request
 
+#### Parameters
+
+| Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
+| -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
+| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
+
+---
+
+#### `request` (Method)
+
+**Type:** `(config: unknown) => Promise<unknown>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | The URL to send the request to | `string` |  |  |
-|  data  | The data to be sent in the request body | `Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction<Transaction>["request"]["data"] : Config["data"]` |  |  |
-|  config  | Additional configuration options | `Omit<Config, "method" \| "url" \| "data">` |  |  |
 
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------- |
+| `config` | `unknown` | ❌       | -       | -     | -          | Request configuration object |
 
-### request
+---
+
+##### `request` (CallSignature)
+
+**Type:** `Promise<unknown>`
+
 Makes an HTTP request with flexible type definitions
 
+**Returns:**
+
+Promise of response data
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | Request configuration object | `Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction<Transaction>["request"] : Config` |  |  |
 
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------- |
+| `config` | `unknown` | ❌       | -       | -     | -          | Request configuration object |
+
+---
+
+#### `usePlugin` (Method)
+
+**Type:** `(plugin: ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]) => this`
+
+#### Parameters
+
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                            |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `plugin` | `ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | The plugin to be used by the executor. |
+
+---
+
+##### `usePlugin` (CallSignature)
+
+**Type:** `this`
+
+**Since:** `1.2.2`
+
+Adds a plugin to the executor.
+
+**Returns:**
+
+The current instance of RequestManagerInterface for chaining.
+
+#### Parameters
+
+| Name     | Type                                                   | Optional | Default | Since | Deprecated | Description                            |
+| -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `plugin` | `ExecutorPlugin<unknown> \| ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | The plugin to be used by the executor. |
+
+---

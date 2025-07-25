@@ -1,212 +1,278 @@
-## Interface `RequestAdapterConfig`
+## `src/request/interface/RequestAdapter` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `RequestAdapterConfig` (Interface)
+
+**Type:** `unknown`
+
+**Since:** `1.0.14`
+
 Request adapter configuration
 
 This type defines the configuration options for a request adapter.
 It includes properties for URL, method, headers, and other request details.
 The main purpose is to provide a flexible structure for configuring HTTP requests.
 
-@since 
+---
 
-1.0.14
+#### `baseURL` (Property)
 
+**Type:** `string`
 
-## Members
-
-### baseURL
 Base URL for all requests
 Will be prepended to the request URL
 
-**@example** 
+**Example:**
 
 ```typescript
-baseURL: 'https://api.example.com'
+baseURL: 'https://api.example.com';
 // url = /users/1 => https://api.example.com/users/1
 // url = users/1 => https://api.example.com/users/1
 ```
 
+---
 
+#### `data` (Property)
 
+**Type:** `RequestData`
 
-### data
 Request body data
 
-Mapping fetch 
+Mapping fetch
 `body`
 
-**@typeParam** RequestData
+**TypeParam:** RequestData
 
 The type of the request body data.
 
-**@example** 
+**Example:**
 
 ```typescript
-data: { name: 'John Doe' }
+data: {
+  name: 'John Doe';
+}
 ```
 
+---
 
+#### `headers` (Property)
 
+**Type:** `Object`
 
-### headers
 Request headers
 
-**@example** 
+**Example:**
 
 ```typescript
 headers: { 'Content-Type': 'application/json' }
 ```
 
+---
 
+#### `method` (Property)
 
+**Type:** `string`
 
-### method
 HTTP request methods supported by the executor
 Follows standard HTTP method definitions
 
-**@see** 
+**See:**
 
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 
-**@example** 
+**Example:**
 
 ```typescript
-method: 'GET'
+method: 'GET';
 ```
 
+---
 
+#### `params` (Property)
 
+**Type:** `Record<string, unknown>`
 
-### params
 URL query parameters
 Will be serialized and appended to the URL
 
-**@example** 
+**Example:**
 
 ```typescript
-params: { search: 'query' }
+params: {
+  search: 'query';
+}
 ```
 
+---
 
+#### `requestId` (Property)
 
+**Type:** `string`
 
-### requestId
 Request ID, used to identify the request in the abort plugin.
 
+---
 
+#### `responseType` (Property)
 
+**Type:** `"arraybuffer" \| "blob" \| "document" \| "json" \| "text" \| "stream" \| "formdata"`
 
-### responseType
 Response type
 
 Specifies the type of data that the server will respond with.
 
-**@example** 
+**Example:**
 
 ```typescript
-responseType: 'json'
+responseType: 'json';
 ```
 
+---
 
+#### `url` (Property)
 
+**Type:** `string`
 
-### url
 Request URL path
 Will be combined with baseURL if provided
 
 Processed by FetchURLPlugin during request
 
-**@todo** 
+**Todo:**
 
-Change to URL | Request, add attribute 
+Change to URL | Request, add attribute
 `input`
 
-**@example** 
+**Example:**
 
 ```typescript
-url: '/users/1'
+url: '/users/1';
 ```
 
+---
 
+### `RequestAdapterInterface` (Interface)
 
+**Type:** `unknown`
 
-## Interface `RequestAdapterInterface`
 Request adapter interface
 
 This interface defines the contract for request adapters.
 Adapters are responsible for handling the specific details of a request,
 such as URL construction, headers, and response handling.
 
+---
 
-## Members
+#### `config` (Property)
 
-### config
+**Type:** `Config`
+
 The configuration for the request adapter.
 
+---
 
+#### `getConfig` (Property)
 
+**Type:** `Object`
 
-### getConfig
 Retrieves the current configuration of the request adapter.
 
-**@example** 
+**Returns:**
+
+The current configuration.
+
+**Example:**
 
 ```typescript
 const config = adapter.getConfig();
 ```
 
+---
 
+#### `request` (Method)
 
-
-### request
-Sends a request using the specified options and returns a promise with the response.
-
-**@example** 
-
-```typescript
-adapter.request({ url: '/users', method: 'GET' }).then(response => console.log(response));
-```
-
+**Type:** `(options: RequestAdapterConfig<Request>) => Promise<RequestAdapterResponse<Request, Response>>`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  options  | The configuration options for the request. | `RequestAdapterConfig<Request>` |  |  |
 
+| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                |
+| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `options` | `RequestAdapterConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
 
-## Interface `RequestAdapterResponse`
+---
+
+##### `request` (CallSignature)
+
+**Type:** `Promise<RequestAdapterResponse<Request, Response>>`
+
+Sends a request using the specified options and returns a promise with the response.
+
+**Returns:**
+
+A promise that resolves to the response of the request.
+
+**Example:**
+
+```typescript
+adapter
+  .request({ url: '/users', method: 'GET' })
+  .then((response) => console.log(response));
+```
+
+#### Parameters
+
+| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                |
+| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `options` | `RequestAdapterConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
+
+---
+
+### `RequestAdapterResponse` (Interface)
+
+**Type:** `unknown`
+
 Request adapter response
 
 This type defines the structure of a response from a request adapter.
 It includes the response data, status, headers, and the original request configuration.
 
+---
 
-## Members
+#### `config` (Property)
 
-### config
+**Type:** `RequestAdapterConfig<Req>`
 
+---
 
+#### `data` (Property)
 
+**Type:** `Res`
 
-### data
+---
 
+#### `headers` (Property)
 
+**Type:** `Object`
 
+---
 
-### headers
+#### `response` (Property)
 
+**Type:** `Response`
 
+---
 
+#### `status` (Property)
 
-### response
+**Type:** `number`
 
+---
 
+#### `statusText` (Property)
 
+**Type:** `string`
 
-### status
-
-
-
-
-### statusText
-
-
-
+---
