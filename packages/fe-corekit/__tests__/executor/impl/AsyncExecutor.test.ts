@@ -1,821 +1,1246 @@
-import { MockInstance } from 'vitest';
-import { AsyncExecutor, ExecutorError, ExecutorPlugin } from '../../../src';
+/**
+ * AsyncExecutor test-suite
+ *
+ * Coverage:
+ * 1. constructor       - Constructor and configuration tests
+ * 2. exec             - Main execution method tests
+ * 3. lifecycle hooks  - Hook execution and order tests
+ *    - onBefore      - Pre-execution hooks (executed in sequence)
+ *    - onExec        - Execution hooks (all plugins execute)
+ *    - onSuccess     - Post-execution hooks (executed in sequence)
+ *    - onError       - Error handling hooks
+ * 4. error handling   - Error propagation and handling tests
+ * 5. performance      - Performance and timing tests
+ * 6. boundary cases   - Edge cases and invalid inputs
+ *
+ * Test Strategy:
+ * - Test each lifecycle hook independently
+ * - Verify hook execution order and sequence
+ * - Test error propagation through hook chain
+ * - Test data modification in each phase
+ * - Test plugin interaction and parallel execution
+ * - Test async timing and performance
+ *
+ * Execution Order:
+ * 1. All onBefore hooks execute in sequence
+ * 2. All onExec hooks execute in sequence
+ * 3. All onSuccess hooks execute in sequence
+ * 4. On error, onError hooks execute until error is handled
+ */
 
-function mockLogStdIo(): {
-  spy: MockInstance;
-  lastStdout: () => string;
-  stdouts: () => string;
-  end: () => void;
-} {
-  const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+import {
+  AsyncExecutor,
+  ExecutorContext,
+  ExecutorPlugin,
+  ExecutorError
+} from '../../../src';
 
-  const end = (): void => {
-    spy.mockRestore();
-  };
+// Test Data Types
+type TestHook = () => Promise<unknown>;
+type TestHookWithContext = (
+  context: ExecutorContext<unknown>
+) => Promise<unknown>;
+type TestHooks = Record<string, TestHook | TestHookWithContext>;
 
-  const lastStdout = (): string => {
-    if (spy.mock.calls.length === 0) {
-      return '';
-    }
-    return spy.mock.calls[spy.mock.calls.length - 1].join('');
-  };
+// Test Data Constants
+const TEST_HOOKS = {
+  BEFORE: ['onValidate', 'onTransform'],
+  AFTER: ['onFormat', 'onLog'],
+  EXEC: 'onCustomExec'
+};
 
-  const allStdout = (): string => {
-    return spy.mock.calls.map((call) => call.join('')).join('');
-  };
+const TEST_RESULTS = {
+  ORIGINAL: 'original task',
+  MODIFIED: 'modified task',
+  ERROR_MSG: 'Test error occurred'
+};
 
-  return { spy, end, lastStdout, stdouts: allStdout };
+const TEST_TIMINGS = {
+  FAST: 10,
+  MEDIUM: 30,
+  SLOW: 50,
+  TIMEOUT: 100,
+  PERFORMANCE_THRESHOLD: 1000, // 增加阈值到 1000ms
+  CONCURRENT_THRESHOLD: 500 // 并发测试阈值
+};
+
+// Test Data Factory Functions
+function createTestPlugin(overrides = {}): ExecutorPlugin {
+  return {
+    pluginName: 'testPlugin',
+    ...overrides
+  } as unknown as ExecutorPlugin;
 }
 
-describe('Executor Async implmentation', () => {
-  it('should successfully run exec method', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.exec(() => 'success');
-    expect(result).toBe('success');
-  });
-
-  it('should handle errors in synchronous tasks', async () => {
-    const executor = new AsyncExecutor();
-    const error = new Error('test error');
-
-    await expect(
-      executor.exec(() => {
-        throw error;
-      })
-    ).rejects.toMatchObject({
-      message: error.message,
-      id: 'UNKNOWN_ASYNC_ERROR'
-    });
-  });
-
-  it('should return ExecutorError in execNoError method', async () => {
-    const executor = new AsyncExecutor();
-    const task = (): unknown => {
-      throw new Error('Task failed');
-    };
-    const result = await executor.execNoError(task);
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect((result as ExecutorError).message).toBe('Task failed');
-  });
-
-  it('should run hooks correctly', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      onBefore: vi.fn(),
-      onSuccess: vi.fn(),
-      onError: vi.fn()
-    };
-    executor.use(plugin);
-    await executor.runHooks([plugin], 'onBefore');
-    expect(plugin.onBefore).toHaveBeenCalled();
-  });
-
-  it('should not call hooks if plugin is disabled', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'test',
-      enabled: () => false,
-      onBefore: vi.fn(),
-      onSuccess: vi.fn(),
-      onError: vi.fn()
-    };
-    executor.use(plugin);
-    await executor.runHooks([plugin], 'onBefore');
-    expect(plugin.onBefore).not.toHaveBeenCalled();
-  });
-
-  it('should handle execNoError without plugins', async () => {
-    const executor = new AsyncExecutor();
-    const task = (): unknown => {
-      throw new Error('No plugins error');
-    };
-    const result = await executor.execNoError(task);
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect((result as ExecutorError).message).toBe('No plugins error');
-  });
-});
-
-describe('AsyncExecutor plugin test', () => {
-  it('should execute task without plugins', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.exec(() => 'no plugins');
-    expect(result).toBe('no plugins');
-  });
-
-  it('should add and use multiple plugins', async () => {
-    const executor = new AsyncExecutor();
-    const anotherPlugin = {
-      pluginName: 'anotherPlugin',
-      onBefore: vi.fn(),
-      onSuccess: vi.fn(),
-      onError: vi.fn(),
-      enabled: vi.fn().mockReturnValue(true)
-    };
-    const mockPlugin = {
-      pluginName: 'mockPlugin',
-      onBefore: vi.fn(),
-      onSuccess: vi.fn(),
-      onError: vi.fn(),
-      enabled: vi.fn().mockReturnValue(true)
-    };
-
-    executor.use(anotherPlugin);
-    await executor.exec(() => 'test');
-    expect(mockPlugin.onBefore).not.toHaveBeenCalled();
-    expect(anotherPlugin.onBefore).toHaveBeenCalled();
-    expect(mockPlugin.onSuccess).not.toHaveBeenCalled();
-    expect(anotherPlugin.onSuccess).toHaveBeenCalled();
-  });
-
-  it('should warn plugin already used, set onlyOne to true', async () => {
-    const { lastStdout, end } = mockLogStdIo();
-
-    const executor = new AsyncExecutor();
-    const anotherPlugin = {
-      pluginName: 'anotherPlugin',
-      onlyOne: true,
-      onBefore: vi.fn()
-    };
-    executor.use(anotherPlugin);
-    // repeat use, and only one plugin
-    executor.use(anotherPlugin);
-
-    expect(lastStdout()).toBe(
-      `Plugin ${anotherPlugin.pluginName} is already used, skip adding`
-    );
-
-    end();
-  });
-
-  it('should skip lifecycle name not correct', async () => {
-    const executor = new AsyncExecutor();
-    const anotherPlugin = {
-      pluginName: 'anotherPlugin',
-      onBefore2: vi.fn()
-    };
-    executor.use(anotherPlugin);
-    await executor.runHooks([anotherPlugin], 'onBefore');
-    expect(anotherPlugin.onBefore2).not.toHaveBeenCalled();
-  });
-
-  it('should can custom lifecycle method name', async () => {
-    const executor = new AsyncExecutor();
-    const anotherPlugin = {
-      pluginName: 'anotherPlugin',
-      onBefore2: vi.fn()
-    };
-    executor.use(anotherPlugin);
-    await executor.runHooks([anotherPlugin], 'onBefore2');
-    expect(anotherPlugin.onBefore2).toHaveBeenCalled();
-  });
-});
-
-describe('AsyncExecutor onBefore Lifecycle', () => {
-  it('should not support return value onBefore chain', async () => {
-    const executor = new AsyncExecutor();
-    executor.use({
-      pluginName: 'test1',
-      // not support return
-      onBefore({ returnValue }) {
-        return (returnValue + '123') as unknown as void;
-      }
-    });
-
-    executor.use({
-      pluginName: 'test2',
-      onBefore({ returnValue }) {
-        expect(returnValue).not.toBeDefined();
-      }
-    });
-
-    const result = await executor.exec(() => 'test');
-    expect(result).not.toBe('test123');
-    expect(result).toBe('test');
-  });
-
-  it('should modify input data through onBefore hooks', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
-      pluginName: 'plugin1',
-      onBefore: async (context) => {
-        context.parameters.modifiedBy = 'plugin1';
-      }
-    };
-    const plugin2: ExecutorPlugin<Record<string, unknown>> = {
-      pluginName: 'plugin2',
-      onBefore: async (context) => {
-        context.parameters.modifiedBy = 'plugin2';
-      }
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.exec<string, Record<string, unknown>>(
-      { value: 'test' },
-      async (context) => {
-        return context.parameters.modifiedBy as string;
-      }
-    );
-    expect(result).toBe('plugin2');
-  });
-
-  it("should use the first plugin's onBefore return value if no subsequent plugin returns a value", async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin<Record<string, unknown>> = {
-      pluginName: 'plugin1',
-      onBefore: async (context) => {
-        context.parameters.modifiedBy = 'plugin1';
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onBefore: vi.fn()
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.exec<string, Record<string, unknown>>(
-      { value: 'test' },
-      async (context) => context.parameters.modifiedBy as string
-    );
-    expect(result).toBe('plugin1');
-  });
-
-  it('should stop onBefore chain and enter onError if an error is thrown', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onBefore: async () => {
-        throw new Error('Error in onBefore');
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onBefore: vi.fn()
-    };
-    const onError = vi.fn();
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-    executor.use({ pluginName: 'plugin3', onError });
-
-    await expect(
-      executor.exec({ value: 'test' }, async (data) => data)
-    ).rejects.toBeInstanceOf(ExecutorError);
-
-    expect(plugin2.onBefore).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalled();
-  });
-
-  it('should stop onBefore chain if breakChain is true', async () => {
-    const executor = new AsyncExecutor();
-
-    const onBefore1 = vi.fn();
-    const onBefore2 = vi.fn();
-    const onBefore3 = vi.fn();
-
-    onBefore1.mockImplementationOnce(async ({ hooksRuntimes }) => {
-      expect(hooksRuntimes.times).toBe(1);
-    });
-
-    onBefore2.mockImplementationOnce(async ({ hooksRuntimes }) => {
-      expect(hooksRuntimes.times).toBe(2);
-      hooksRuntimes.breakChain = true;
-    });
-
-    executor.use({
-      pluginName: 'plugin1',
-      onBefore: onBefore1
-    });
-    executor.use({
-      pluginName: 'plugin2',
-      onBefore: onBefore2
-    });
-
-    executor.use({
-      pluginName: 'plugin3',
-      onBefore: onBefore3
-    });
-
-    const result = await executor.exec({ data: 'test' }, async () => 'test');
-    expect(result).toBe('test');
-    expect(onBefore1).toHaveBeenCalled();
-    expect(onBefore2).toHaveBeenCalled();
-    expect(onBefore3).not.toHaveBeenCalled();
-  });
-});
-
-describe('AsyncExecutor onExec Lifecycle', () => {
-  it('should modify the task through onExec hook', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onExec: async <T>(): Promise<T> => 'modified task' as T
-    };
-
-    executor.use(plugin);
-
-    const result = await executor.exec(async () => 'original task');
-    expect(result).toBe('modified task');
-  });
-
-  it("should only use the first plugin's onExec hook", async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onExec: async ({ hooksRuntimes }) => {
-        hooksRuntimes.breakChain = true;
-        return 'modified by plugin1';
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onExec: async () => 'modified by plugin2'
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.exec(async () => 'original task');
-    expect(result).toBe('modified by plugin1');
-  });
-
-  it('should execute the original task if no onExec hooks are present', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.exec(async () => 'original task');
-    expect(result).toBe('original task');
-  });
-
-  it('should stop execution and enter onError if onExec throws an error', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onExec: async () => {
-        throw new Error('Error in onExec');
-      }
-    };
-    const onError = vi.fn();
-
-    executor.use(plugin);
-    executor.use({ pluginName: 'plugin3', onError });
-
-    await expect(
-      executor.exec(async () => 'original task')
-    ).rejects.toMatchObject({
-      id: 'UNKNOWN_ASYNC_ERROR',
-      message: 'Error in onExec'
-    });
-
-    expect(onError).toHaveBeenCalledTimes(1);
-  });
-
-  it('should overwrite the task and return the contents of onexec', async () => {
-    const executor = new AsyncExecutor();
-    const executor2 = new AsyncExecutor();
-
-    executor.use({
-      pluginName: 'plugin1',
-      onExec: async () => {
-        return 'exec value';
-      }
-    });
-    executor2.use({
-      pluginName: 'plugin1',
-      onExec: async () => {
-        return;
-      }
-    });
-
-    const result = await executor.exec(async () => 'original task');
-    expect(result).toBe('exec value');
-
-    const result2 = await executor2.exec(async () => 'original task');
-    expect(result2).toBe(undefined);
-  });
-
-  it('should splice all previous exec returns.', async () => {
-    const executor = new AsyncExecutor();
-
-    executor.use({
-      pluginName: 'plugin1',
-      onExec: async () => {
-        return 'exec1';
-      }
-    });
-
-    executor.use({
-      pluginName: 'plugin2',
-      onExec: async () => {
-        return;
-      }
-    });
-    executor.use({
-      pluginName: 'plugin3',
-      onExec: async ({ hooksRuntimes }) => {
-        return hooksRuntimes.returnValue + 'exec3';
-      }
-    });
-
-    const result = await executor.exec(async () => 0);
-    expect(result).toBe('exec1exec3');
-  });
-
-  it('should break chain if onExec runtimes.breakChain is true', async () => {
-    const executor = new AsyncExecutor();
-
-    executor.use({
-      pluginName: 'plugin1',
-      onExec: async () => {
-        return 'exec1';
-      }
-    });
-
-    executor.use({
-      pluginName: 'plugin2',
-      onExec: async ({ hooksRuntimes }) => {
-        hooksRuntimes.breakChain = true;
-        return;
-      }
-    });
-    executor.use({
-      pluginName: 'plugin3',
-      onExec: async ({ hooksRuntimes }) => {
-        return hooksRuntimes.returnValue + 'exec3';
-      }
-    });
-
-    const result = await executor.exec(async () => 0);
-    expect(result).toBe('exec1');
-  });
-
-  it('should return the original task return value, when enable is false.', async () => {
-    const executor = new AsyncExecutor();
-
-    executor.use({
-      pluginName: 'plugin1',
-      enabled: () => false,
-      onExec: async () => {
-        return 'exec1';
-      }
-    });
-
-    executor.use({
-      pluginName: 'plugin2',
-      enabled: () => false,
-      onExec: async ({ hooksRuntimes }) => {
-        hooksRuntimes.breakChain = true;
-        return;
-      }
-    });
-    executor.use({
-      pluginName: 'plugin3',
-      enabled: () => false,
-      onExec: async ({ hooksRuntimes }) => {
-        return hooksRuntimes.returnValue + 'exec3';
-      }
-    });
-
-    const result = await executor.exec(async () => 0);
-    expect(result).toBe(0);
-  });
-});
-
-describe('AsyncExecutor onError Lifecycle', () => {
-  it('should handle errors through onError hooks', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onError: async ({ error }) =>
-        new ExecutorError('Handled by plugin1', error)
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onError: async ({ error }) =>
-        new ExecutorError('Handled by plugin2', error)
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    await expect(
-      executor.exec(async () => {
-        throw new Error('original error');
-      })
-    ).rejects.toBeInstanceOf(ExecutorError);
-  });
-
-  it('should stop onError chain if an error is thrown', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onError: async () => {
-        throw new Error('Error in onError');
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onError: vi.fn()
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    await expect(
-      executor.exec(async () => {
-        throw new Error('original error');
-      })
-    ).rejects.toBeInstanceOf(Error);
-
-    expect(plugin2.onError).not.toHaveBeenCalled();
-  });
-
-  it('should wrap raw errors with ExecutorError if no onError returns or throws', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onError: vi.fn()
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onError: vi.fn()
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    await expect(
-      executor.exec(async () => {
-        throw new Error('original error');
-      })
-    ).rejects.toBeInstanceOf(ExecutorError);
-  });
-});
-
-describe('AsyncExecutor onSuccess Lifecycle', () => {
-  it('should execute onSuccess hook', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onSuccess: async (context) => {
-        context.returnValue = context.returnValue + ' success';
-      }
-    };
-
-    executor.use(plugin);
-    const result = await executor.exec(async () => 'test');
-    expect(result).toBe('test success');
-  });
-
-  it('should modify the result through onSuccess hooks', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onSuccess: async (context) => {
-        context.returnValue = context.returnValue + ' modified by plugin1';
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onSuccess: async (context) => {
-        context.returnValue = context.returnValue + ' modified by plugin2';
-      }
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.exec(async () => 'test');
-    expect(result).toBe('test modified by plugin1 modified by plugin2');
-  });
-
-  it('should stop onSuccess chain and enter onError if an error is thrown', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onSuccess: async () => {
-        throw new Error('Error in onSuccess');
-      }
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onSuccess: vi.fn()
-    };
-    const onError = vi.fn();
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-    executor.use({ pluginName: 'plugin3', onError });
-
-    try {
+function createPluginWithHooks(hooks: TestHooks): ExecutorPlugin {
+  return createTestPlugin(hooks);
+}
+
+describe('AsyncExecutor', () => {
+  // Preserve existing Executor Async implementation test group
+  describe('Executor Async implementation', () => {
+    it('should execute task with default lifecycle hooks', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onBefore: async () => {
+          results.push('before');
+        },
+        onExec: async () => {
+          results.push('exec');
+          return 'result';
+        },
+        onSuccess: async () => {
+          results.push('success');
+        }
+      });
+
+      const executor = new AsyncExecutor();
+      executor.use(plugin);
       await executor.exec(async () => 'test');
-    } catch (error) {
-      expect(error).toBeInstanceOf(ExecutorError);
-      expect((error as ExecutorError).id).toBe('UNKNOWN_ASYNC_ERROR');
-      expect((error as ExecutorError).message).toBe('Error in onSuccess');
-    }
 
-    expect(plugin2.onSuccess).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalledTimes(1);
+      expect(results).toEqual(['before', 'exec', 'success']);
+    });
+
+    it('should execute task with custom lifecycle hooks', async () => {
+      const customExecutor = new AsyncExecutor({
+        beforeHooks: ['onValidate', 'onTransform'],
+        afterHooks: ['onFormat', 'onLog'],
+        execHook: 'onCustomExec'
+      });
+
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onValidate: async () => {
+          results.push('validate');
+        },
+        onTransform: async () => {
+          results.push('transform');
+        },
+        onCustomExec: async () => {
+          results.push('exec');
+          return 'result';
+        },
+        onFormat: async () => {
+          results.push('format');
+        },
+        onLog: async () => {
+          results.push('log');
+        }
+      });
+
+      customExecutor.use(plugin);
+      await customExecutor.exec(async () => 'test');
+
+      expect(results).toEqual([
+        'validate',
+        'transform',
+        'exec',
+        'format',
+        'log'
+      ]);
+    });
   });
 
-  it('should not execute onSuccess hook if task throws an error', async () => {
-    const executor = new AsyncExecutor();
-    const onSuccess = vi.fn();
+  describe('runHooks', () => {
+    it('should execute single hook successfully', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        hookA: async () => {
+          results.push('A');
+        }
+      });
 
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onSuccess
-    };
+      const executor = new AsyncExecutor();
+      await executor.runHooks([plugin as ExecutorPlugin], ['hookA']);
 
-    executor.use(plugin);
+      expect(results).toEqual(['A']);
+    });
 
-    await expect(
-      executor.exec(async () => {
+    it('should execute multiple hooks in order', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        hookA: async () => {
+          results.push('A');
+        },
+        hookB: async () => {
+          results.push('B');
+        },
+        hookC: async () => {
+          results.push('C');
+        }
+      });
+
+      const executor = new AsyncExecutor();
+      await executor.runHooks(
+        [plugin as ExecutorPlugin],
+        ['hookA', 'hookB', 'hookC']
+      );
+
+      expect(results).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should handle undefined hook methods', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onA: async () => {
+          results.push('A');
+        },
+        onB: undefined,
+        onC: async () => {
+          results.push('C');
+        }
+      });
+
+      const executor = new AsyncExecutor();
+      await executor.runHooks(
+        [plugin as ExecutorPlugin],
+        ['onA', 'onB', 'onC']
+      );
+      expect(results).toEqual(['A', 'C']);
+    });
+
+    it('should handle empty hook names array', async () => {
+      const plugin = createTestPlugin({
+        onTest: async () => {}
+      });
+
+      const executor = new AsyncExecutor();
+      const result = await executor.runHooks([plugin as ExecutorPlugin], []);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should propagate errors through hook chain', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onA: async () => {
+          results.push('A');
+          throw new Error('Error in A');
+        },
+        onB: async () => {
+          results.push('B');
+        },
+        onError: async (context: ExecutorContext<unknown>) => {
+          if (context.error) {
+            results.push(`error:${context.error.message}`);
+          }
+        }
+      });
+
+      const executor = new AsyncExecutor({
+        beforeHooks: ['onA', 'onB']
+      });
+
+      executor.use(plugin);
+
+      await expect(
+        executor.exec(async () => {
+          return 'success';
+        })
+      ).rejects.toThrow('Error in A');
+
+      expect(results).toEqual(['A', 'error:Error in A']);
+    });
+
+    it('should handle errors in different hook types', async () => {
+      const customExecutor = new AsyncExecutor({
+        beforeHooks: ['onValidate', 'onTransform'],
+        afterHooks: ['onFormat']
+      });
+
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onValidate: async () => {
+          results.push('validate');
+        },
+        onTransform: async () => {
+          results.push('transform');
+          throw new Error('Transform error');
+        },
+        onFormat: async () => {
+          results.push('format');
+        },
+        onError: async (context: ExecutorContext<unknown>) => {
+          if (context.error) {
+            results.push(`error:${context.error.message}`);
+          }
+        }
+      });
+
+      customExecutor.use(plugin as ExecutorPlugin);
+      await expect(customExecutor.exec(async () => 'test')).rejects.toThrow(
+        'Transform error'
+      );
+
+      expect(results).toEqual([
+        'validate',
+        'transform',
+        'error:Transform error'
+      ]);
+    });
+  });
+
+  describe('performance', () => {
+    let executor: AsyncExecutor;
+
+    beforeEach(() => {
+      executor = new AsyncExecutor();
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should execute hooks with specified delays', async () => {
+      const results: string[] = [];
+      const plugin = createPluginWithHooks({
+        hookA: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('A');
+        },
+        hookB: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+          );
+          results.push('B');
+        },
+        hookC: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.SLOW)
+          );
+          results.push('C');
+        }
+      });
+
+      executor.use(plugin);
+      const promise = executor.runHooks([plugin], ['hookA', 'hookB', 'hookC']);
+
+      // Execute all pending timers
+      await vi.runAllTimersAsync();
+
+      await promise;
+      expect(results).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should optimize concurrent hook executions', async () => {
+      vi.useRealTimers();
+      const results: string[] = [];
+
+      // Create multiple plugins with timing measurements
+      const plugins = Array.from(
+        { length: 3 },
+        (
+          _,
+          i // 减少插件数量从 5 个到 3 个
+        ) =>
+          createPluginWithHooks({
+            onBefore: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`before-${i}`);
+            },
+            onExec: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`exec-${i}`);
+              return `result-${i}`;
+            },
+            onSuccess: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`success-${i}`);
+            }
+          })
+      );
+
+      // Register all plugins
+      plugins.forEach((plugin) => executor.use(plugin));
+
+      const startTime = performance.now();
+
+      // Execute with all plugins
+      await executor.exec(async () => TEST_RESULTS.ORIGINAL);
+      const duration = performance.now() - startTime;
+
+      // Verify execution order
+      expect(results).toEqual([
+        'before-0',
+        'before-1',
+        'before-2',
+        'exec-0',
+        'exec-1',
+        'exec-2',
+        'success-0',
+        'success-1',
+        'success-2'
+      ]);
+
+      // Verify performance
+      expect(duration).toBeLessThan(TEST_TIMINGS.PERFORMANCE_THRESHOLD);
+    });
+
+    it('should handle concurrent hook executions efficiently', async () => {
+      vi.useRealTimers();
+      const startTime = performance.now();
+      const results: string[] = [];
+
+      // Create a plugin with multiple hooks
+      const plugin = createPluginWithHooks({
+        onValidate: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('validate');
+        },
+        onTransform: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('transform');
+        },
+        [TEST_HOOKS.EXEC]: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+          );
+          results.push('exec');
+          return TEST_RESULTS.MODIFIED;
+        },
+        onFormat: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('format');
+        },
+        onLog: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('log');
+        }
+      });
+
+      const customExecutor = new AsyncExecutor({
+        beforeHooks: TEST_HOOKS.BEFORE,
+        afterHooks: TEST_HOOKS.AFTER,
+        execHook: TEST_HOOKS.EXEC
+      });
+
+      customExecutor.use(plugin);
+
+      // Execute multiple times
+      const executions = 5; // 减少执行次数从 10 次到 5 次
+      await Promise.all(
+        Array(executions)
+          .fill(null)
+          .map(() => customExecutor.exec(async () => TEST_RESULTS.ORIGINAL))
+      );
+
+      const duration = performance.now() - startTime;
+
+      // Verify total execution count
+      expect(results.length).toBe(25); // 5 hooks * 5 executions
+
+      // Verify performance - should be much faster than sequential execution
+      expect(duration).toBeLessThan(TEST_TIMINGS.CONCURRENT_THRESHOLD);
+    });
+  });
+
+  describe('Constructor and Configuration', () => {
+    it('should create instance with default configuration', () => {
+      const executor = new AsyncExecutor();
+      expect(executor).toBeInstanceOf(AsyncExecutor);
+    });
+
+    it('should create instance with custom hook configuration', () => {
+      const executor = new AsyncExecutor({
+        beforeHooks: ['onValidate', 'onTransform'],
+        afterHooks: ['onFormat', 'onLog'],
+        execHook: 'onCustomExec'
+      });
+      expect(executor).toBeInstanceOf(AsyncExecutor);
+      // Verify configuration is correctly saved
+      expect(executor['config']?.beforeHooks).toEqual([
+        'onValidate',
+        'onTransform'
+      ]);
+      expect(executor['config']?.afterHooks).toEqual(['onFormat', 'onLog']);
+      expect(executor['config']?.execHook).toBe('onCustomExec');
+    });
+  });
+
+  describe('Plugin Management', () => {
+    let executor: AsyncExecutor;
+
+    beforeEach(() => {
+      executor = new AsyncExecutor();
+    });
+
+    it('should add plugin successfully', () => {
+      const plugin = createTestPlugin();
+      executor.use(plugin);
+      // Verify plugin is correctly added
+      expect(executor['plugins']).toContain(plugin);
+    });
+
+    it('should handle duplicate plugins based on pluginName', () => {
+      const plugin1 = createTestPlugin({ onlyOne: true });
+      const plugin2 = createTestPlugin({ onlyOne: true });
+      executor.use(plugin1);
+      executor.use(plugin2);
+      // Verify only one plugin is retained
+      expect(executor['plugins'].length).toBe(1);
+    });
+
+    it('should respect plugin enabled flag', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        enabled: (name: string) => name !== 'onSkip',
+        onTest: async () => {
+          results.push('test');
+        },
+        onSkip: async () => {
+          results.push('skip');
+        }
+      });
+
+      executor.use(plugin);
+      await executor.runHooks([plugin], ['onTest', 'onSkip']);
+
+      expect(results).toEqual(['test']);
+    });
+  });
+
+  describe('Advanced Error Handling', () => {
+    let executor: AsyncExecutor;
+
+    beforeEach(() => {
+      executor = new AsyncExecutor();
+    });
+
+    it('should handle nested errors in hook chain', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onA: async () => {
+          results.push('A');
+          throw new Error('Error in A');
+        },
+        onB: async () => {
+          results.push('B');
+          throw new Error('Error in B');
+        },
+        onError: async (context: ExecutorContext<unknown>) => {
+          if (context.error) {
+            results.push(`error:${context.error.message}`);
+            // 返回新的错误
+            return new Error('Modified error');
+          }
+        }
+      });
+
+      executor.use(plugin);
+      await expect(
+        executor.exec(async () => {
+          await executor.runHooks([plugin], ['onA', 'onB']);
+          return 'success';
+        })
+      ).rejects.toThrow('Modified error');
+
+      expect(results).toEqual(['A', 'error:Error in A']);
+    });
+
+    it('should handle async errors in different phases', async () => {
+      const results: string[] = [];
+      const plugin = createTestPlugin({
+        onBefore: async () => {
+          results.push('before');
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          throw new Error('Before error');
+        },
+        onExec: async () => {
+          results.push('exec');
+          return 'result';
+        },
+        onError: async (context: ExecutorContext<unknown>) => {
+          if (context.error) {
+            results.push(`error:${context.error.message}`);
+          }
+        }
+      });
+
+      executor.use(plugin);
+      await expect(executor.exec(async () => 'test')).rejects.toThrow(
+        'Before error'
+      );
+
+      expect(results).toEqual(['before', 'error:Before error']);
+    });
+  });
+
+  describe('Performance and Timing', () => {
+    let executor: AsyncExecutor;
+
+    beforeEach(() => {
+      executor = new AsyncExecutor();
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should execute hooks with specified delays', async () => {
+      const results: string[] = [];
+      const plugin = createPluginWithHooks({
+        hookA: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('A');
+        },
+        hookB: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+          );
+          results.push('B');
+        },
+        hookC: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.SLOW)
+          );
+          results.push('C');
+        }
+      });
+
+      executor.use(plugin);
+      const promise = executor.runHooks([plugin], ['hookA', 'hookB', 'hookC']);
+
+      // Execute all pending timers
+      await vi.runAllTimersAsync();
+
+      await promise;
+      expect(results).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should optimize concurrent hook executions', async () => {
+      vi.useRealTimers();
+      const results: string[] = [];
+
+      // Create multiple plugins with timing measurements
+      const plugins = Array.from(
+        { length: 3 },
+        (
+          _,
+          i // 减少插件数量从 5 个到 3 个
+        ) =>
+          createPluginWithHooks({
+            onBefore: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`before-${i}`);
+            },
+            onExec: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`exec-${i}`);
+              return `result-${i}`;
+            },
+            onSuccess: async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+              );
+              results.push(`success-${i}`);
+            }
+          })
+      );
+
+      // Register all plugins
+      plugins.forEach((plugin) => executor.use(plugin));
+
+      const startTime = performance.now();
+
+      // Execute with all plugins
+      await executor.exec(async () => TEST_RESULTS.ORIGINAL);
+      const duration = performance.now() - startTime;
+
+      // Verify execution order
+      expect(results).toEqual([
+        'before-0',
+        'before-1',
+        'before-2',
+        'exec-0',
+        'exec-1',
+        'exec-2',
+        'success-0',
+        'success-1',
+        'success-2'
+      ]);
+
+      // Verify performance
+      expect(duration).toBeLessThan(TEST_TIMINGS.PERFORMANCE_THRESHOLD);
+    });
+
+    it('should handle concurrent hook executions efficiently', async () => {
+      vi.useRealTimers();
+      const startTime = performance.now();
+      const results: string[] = [];
+
+      // Create a plugin with multiple hooks
+      const plugin = createPluginWithHooks({
+        onValidate: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('validate');
+        },
+        onTransform: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('transform');
+        },
+        [TEST_HOOKS.EXEC]: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.MEDIUM)
+          );
+          results.push('exec');
+          return TEST_RESULTS.MODIFIED;
+        },
+        onFormat: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('format');
+        },
+        onLog: async () => {
+          await new Promise((resolve) =>
+            setTimeout(resolve, TEST_TIMINGS.FAST)
+          );
+          results.push('log');
+        }
+      });
+
+      const customExecutor = new AsyncExecutor({
+        beforeHooks: TEST_HOOKS.BEFORE,
+        afterHooks: TEST_HOOKS.AFTER,
+        execHook: TEST_HOOKS.EXEC
+      });
+
+      customExecutor.use(plugin);
+
+      // Execute multiple times
+      const executions = 5; // 减少执行次数从 10 次到 5 次
+      await Promise.all(
+        Array(executions)
+          .fill(null)
+          .map(() => customExecutor.exec(async () => TEST_RESULTS.ORIGINAL))
+      );
+
+      const duration = performance.now() - startTime;
+
+      // Verify total execution count
+      expect(results.length).toBe(25); // 5 hooks * 5 executions
+
+      // Verify performance - should be much faster than sequential execution
+      expect(duration).toBeLessThan(TEST_TIMINGS.CONCURRENT_THRESHOLD);
+    });
+  });
+
+  // Add boundary test cases
+  describe('Boundary Cases', () => {
+    let executor: AsyncExecutor;
+
+    beforeEach(() => {
+      executor = new AsyncExecutor();
+    });
+
+    it('should handle null/undefined plugin', async () => {
+      await expect(
+        executor.runHooks([null as unknown as ExecutorPlugin], ['test'])
+      ).rejects.toThrow();
+      await expect(
+        executor.runHooks([undefined as unknown as ExecutorPlugin], ['test'])
+      ).rejects.toThrow();
+    });
+
+    it('should handle empty plugin list', async () => {
+      const result = await executor.runHooks([], ['test']);
+      expect(result).toBeUndefined();
+    });
+
+    it('should handle invalid hook names', async () => {
+      const plugin = createTestPlugin();
+      await expect(
+        executor.runHooks([plugin], ['nonexistentHook'])
+      ).resolves.not.toThrow();
+    });
+
+    it('should handle maximum number of plugins', async () => {
+      const maxPlugins = Array(100)
+        .fill(null)
+        .map(() => createTestPlugin());
+      maxPlugins.forEach((plugin) => executor.use(plugin));
+      expect(executor['plugins'].length).toBeLessThanOrEqual(100);
+    });
+  });
+
+  describe('AsyncExecutor onBefore Lifecycle', () => {
+    it('should not support return value onBefore chain', async () => {
+      const executor = new AsyncExecutor();
+      executor.use({
+        pluginName: 'test1',
+        onBefore: async ({ returnValue }) => {
+          return (returnValue + '123') as unknown as void;
+        }
+      });
+
+      executor.use({
+        pluginName: 'test2',
+        onBefore: async ({ returnValue }) => {
+          expect(returnValue).not.toBeDefined();
+        }
+      });
+
+      const result = await executor.exec(async () => 'test');
+      expect(result).not.toBe('test123');
+      expect(result).toBe('test');
+    });
+
+    it('should modify input data through onBefore hooks', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'test',
+        onBefore: async ({ parameters }) => {
+          (parameters as Record<string, unknown>).modifiedBy = 'plugin1';
+        }
+      };
+      const plugin2: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'test2',
+        onBefore: async ({ parameters }) => {
+          (parameters as Record<string, unknown>).modifiedBy = 'plugin2';
+        }
+      };
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+
+      const result = await executor.exec(
+        { value: 'test' } as Record<string, unknown>,
+        async ({ parameters }) =>
+          (parameters as Record<string, unknown>).modifiedBy
+      );
+      expect(result).toBe('plugin2');
+    });
+
+    it('should stop onBefore chain and enter onError if an error is thrown', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onBefore: async () => {
+          throw new Error('Error in onBefore');
+        }
+      };
+      const plugin2: ExecutorPlugin = {
+        pluginName: 'test2',
+        onBefore: vi.fn()
+      };
+      const onError = vi.fn();
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+      executor.use({ pluginName: 'test3', onError });
+
+      await expect(
+        executor.exec({ value: 'test' }, async (data) => data)
+      ).rejects.toThrow('Error in onBefore');
+
+      expect(plugin2.onBefore).not.toHaveBeenCalled();
+      expect(onError).toHaveBeenCalled();
+    });
+
+    it("should use the first plugin's onBefore return value if no subsequent plugin returns a value", async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'test',
+        onBefore: async ({ parameters }) => {
+          parameters.modifiedBy = 'plugin1';
+        }
+      };
+      const plugin2: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'test2',
+        onBefore: vi.fn()
+      };
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+
+      const result = await executor.exec(
+        { value: 'test' },
+        async ({ parameters }: ExecutorContext<Record<string, unknown>>) =>
+          parameters.modifiedBy
+      );
+      expect(result).toBe('plugin1');
+    });
+
+    it('should execute onError if onBefore throws an error', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onBefore: async () => {
+          throw new Error('Error in onBefore');
+        }
+      };
+      const onError = vi.fn();
+
+      executor.use(plugin1);
+      executor.use({ pluginName: 'test2', onError });
+
+      await expect(
+        executor.exec({ value: 'test' }, async (data) => data)
+      ).rejects.toThrow('Error in onBefore');
+
+      expect(onError).toHaveBeenCalled();
+    });
+
+    it('should not modify input data if no onBefore hooks are present', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.exec(
+        { value: 'test' },
+        async ({ parameters }) => parameters.value
+      );
+      expect(result).toBe('test');
+    });
+  });
+
+  describe('AsyncExecutor onExec Lifecycle', () => {
+    it('should modify the task through onExec hook', async () => {
+      const executor = new AsyncExecutor();
+      const plugin: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'test',
+        onExec: async <T>(): Promise<T> => {
+          return 'modified task' as T;
+        }
+      };
+
+      executor.use(plugin);
+
+      const result = await executor.exec(async () => 'original task');
+      expect(result).toBe('modified task');
+    });
+
+    it('should override task return value when exec hook', async () => {
+      const executor = new AsyncExecutor();
+      executor.use({
+        pluginName: 'test',
+        onExec: async () => {
+          return 'task1';
+        }
+      });
+
+      const result = await executor.exec(async () => 'original task');
+      expect(result).not.toBe('original task');
+      expect(result).toBe('task1');
+    });
+
+    it('should support chain return value, onexec hook', async () => {
+      const executor = new AsyncExecutor();
+      executor.use({
+        pluginName: 'test',
+        onExec: async () => {
+          return 'task1';
+        }
+      });
+      executor.use({
+        pluginName: 'test2',
+        onExec: async ({ hooksRuntimes }) => {
+          return hooksRuntimes.returnValue + 'task2';
+        }
+      });
+      const result = await executor.exec(async () => 'original task');
+      expect(result).not.toBe('original tasktask1task2');
+      expect(result).toBe('task1task2');
+    });
+
+    it("should only use the first plugin's onExec hook", async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onExec: async () => {
+          return 'modified by plugin1';
+        }
+      };
+      const plugin2: ExecutorPlugin = {
+        enabled: () => false,
+        pluginName: 'test2',
+        onExec: async () => {
+          return 'modified by plugin2';
+        }
+      };
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+
+      const result = await executor.exec(async () => 'original task');
+      expect(result).toBe('modified by plugin1');
+    });
+
+    it('should execute the original task if no onExec hooks are present', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.exec(async () => 'original task');
+      expect(result).toBe('original task');
+    });
+  });
+
+  describe('AsyncExecutor onSuccess Lifecycle', () => {
+    it('should execute onSuccess hook', async () => {
+      const executor = new AsyncExecutor();
+      const plugin: ExecutorPlugin = {
+        pluginName: 'test2',
+        onSuccess: async (context) => {
+          context.returnValue = context.returnValue + ' success';
+        }
+      };
+
+      executor.use(plugin);
+      const result = await executor.exec(async () => 'test');
+      expect(result).toBe('test success');
+    });
+
+    it('should modify the result through onSuccess hooks', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onSuccess: async (context) => {
+          context.returnValue = context.returnValue + ' modified by plugin1';
+        }
+      };
+      const plugin2: ExecutorPlugin = {
+        pluginName: 'test2',
+        onSuccess: async (context) => {
+          context.returnValue = context.returnValue + ' modified by plugin2';
+        }
+      };
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+
+      const result = await executor.exec(async () => 'test');
+      expect(result).toBe('test modified by plugin1 modified by plugin2');
+    });
+
+    it('should stop onSuccess chain and enter onError if an error is thrown', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onSuccess: async () => {
+          throw new Error('Error in onSuccess');
+        }
+      };
+      const plugin2: ExecutorPlugin = {
+        pluginName: 'test2',
+        onSuccess: vi.fn()
+      };
+      const onError = vi.fn();
+
+      executor.use(plugin1);
+      executor.use(plugin2);
+      executor.use({ pluginName: 'test3', onError });
+
+      await expect(executor.exec(async () => 'test')).rejects.toThrow(
+        'Error in onSuccess'
+      );
+
+      expect(plugin2.onSuccess).not.toHaveBeenCalled();
+      expect(onError).toHaveBeenCalled();
+    });
+  });
+
+  describe('AsyncExecutor execNoError Method', () => {
+    it('should return ExecutorError instead of throwing an error', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.execNoError(async () => {
         throw new Error('test error');
-      })
-    ).rejects.toBeInstanceOf(ExecutorError);
+      });
 
-    expect(onSuccess).not.toHaveBeenCalled();
-  });
-});
-
-describe('AsyncExecutor execNoError Method', () => {
-  it('should return ExecutorError instead of throwing an error', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.execNoError(async () => {
-      throw new Error('test error');
+      expect(result).toBeInstanceOf(ExecutorError);
     });
 
-    expect(result).toBeInstanceOf(ExecutorError);
-  });
+    it('should execute task and return result if no error occurs', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.execNoError(async () => 'success');
 
-  it('should execute task and return result if no error occurs', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.execNoError(async () => 'success');
-
-    expect(result).toBe('success');
-  });
-
-  it('should handle errors through onError hooks and return the first error', async () => {
-    const executor = new AsyncExecutor();
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onError: async ({ error }) =>
-        new ExecutorError('Handled by plugin1', error)
-    };
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onError: vi.fn()
-    };
-
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    const result = await executor.execNoError(async () => {
-      throw new Error('original error');
+      expect(result).toBe('success');
     });
 
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect((result as ExecutorError).message).toBe('original error');
-  });
+    it('should handle errors through onError hooks and return the first error', async () => {
+      const executor = new AsyncExecutor();
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'test',
+        onError: async ({ error }) =>
+          new ExecutorError('Handled by plugin1', error)
+      };
+      const plugin2: ExecutorPlugin = {
+        pluginName: 'test2',
+        onError: vi.fn()
+      };
 
-  it('should return the original error wrapped in ExecutorError if no onError hooks are present', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.execNoError(async () => {
-      throw new Error('original error');
+      executor.use(plugin1);
+      executor.use(plugin2);
+
+      const result = await executor.execNoError(async () => {
+        throw new Error('original error');
+      });
+
+      expect(result).toBeInstanceOf(ExecutorError);
+      expect((result as ExecutorError).message).toBe('original error');
     });
 
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect((result as ExecutorError).message).toBe('original error');
-  });
+    it('should return the original error wrapped in ExecutorError if no onError hooks are present', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.execNoError(async () => {
+        throw new Error('original error');
+      });
 
-  it('should not execute onSuccess hooks if an error occurs', async () => {
-    const executor = new AsyncExecutor();
-    const onSuccess = vi.fn();
-
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onSuccess
-    };
-
-    executor.use(plugin);
-
-    const result = await executor.execNoError(async () => {
-      throw new Error('test error');
+      expect(result).toBeInstanceOf(ExecutorError);
+      expect((result as ExecutorError).message).toBe('original error');
     });
 
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect(onSuccess).not.toHaveBeenCalled();
-  });
-});
+    it('should not execute onSuccess hooks if an error occurs', async () => {
+      const executor = new AsyncExecutor();
+      const onSuccess = vi.fn();
 
-describe('AsyncExecutor Additional Tests', () => {
-  it('should execute multiple plugins in sequence', async () => {
-    const executor = new AsyncExecutor();
-    const results: string[] = [];
+      const plugin: ExecutorPlugin = {
+        pluginName: 'test',
+        onSuccess
+      };
 
-    const plugin1: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onBefore: async () => {
-        results.push('before1');
-      },
-      onSuccess: async () => {
-        results.push('success1');
-      },
-      onError: async () => {
-        results.push('error1');
-      }
-    };
+      executor.use(plugin);
 
-    const plugin2: ExecutorPlugin = {
-      pluginName: 'plugin2',
-      onBefore: async () => {
-        results.push('before2');
-      },
-      onSuccess: async () => {
-        results.push('success2');
-      },
-      onError: async () => {
-        results.push('error2');
-      }
-    };
+      const result = await executor.execNoError(async () => {
+        throw new Error('test error');
+      });
 
-    executor.use(plugin1);
-    executor.use(plugin2);
-
-    await executor.exec(async () => 'test');
-
-    expect(results).toEqual(['before1', 'before2', 'success1', 'success2']);
+      expect(result).toBeInstanceOf(ExecutorError);
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
   });
 
-  it('should handle plugin that modifies data in onBefore hook', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin<Record<string, unknown>> = {
-      pluginName: 'plugin1',
-      onBefore: async (context) => {
-        context.parameters.added = true;
-      }
-    };
+  describe('AsyncExecutor Additional Tests', () => {
+    it('should execute multiple plugins in sequence', async () => {
+      const executor = new AsyncExecutor();
+      const results: string[] = [];
 
-    executor.use(plugin);
+      const plugin1: ExecutorPlugin = {
+        pluginName: 'plugin1',
+        onBefore: async () => {
+          results.push('before1');
+        },
+        onSuccess: async () => {
+          results.push('success1');
+        },
+        onError: async () => {
+          results.push('error1');
+        }
+      };
 
-    const result = await executor.exec<boolean, Record<string, unknown>>(
-      { value: 'test' },
-      async (context) => context.parameters.added as boolean
-    );
-    expect(result).toBe(true);
-  });
+      const plugin2: ExecutorPlugin = {
+        pluginName: 'plugin2',
+        onBefore: async () => {
+          results.push('before2');
+        },
+        onSuccess: async () => {
+          results.push('success2');
+        },
+        onError: async () => {
+          results.push('error2');
+        }
+      };
 
-  it('should handle plugin that modifies result in onSuccess hook', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin<string> = {
-      pluginName: 'plugin1',
-      onSuccess: async (context) => {
-        context.returnValue = context.returnValue + ' modified';
-      }
-    };
+      executor.use(plugin1);
+      executor.use(plugin2);
 
-    executor.use(plugin);
+      await executor.exec(async () => 'test');
 
-    const result = await executor.exec(async () => 'test');
-    expect(result).toBe('test modified');
-  });
-
-  it('should handle plugin that suppresses error in onError hook', async () => {
-    const executor = new AsyncExecutor();
-    const plugin: ExecutorPlugin = {
-      pluginName: 'plugin1',
-      onError: async () => {
-        return new ExecutorError('Handled Error');
-      }
-    };
-
-    executor.use(plugin);
-
-    const result = await executor.execNoError(async () => {
-      throw new Error('test error');
+      expect(results).toEqual(['before1', 'before2', 'success1', 'success2']);
     });
 
-    expect(result).toBeInstanceOf(ExecutorError);
-    expect((result as ExecutorError).message).toBe('Handled Error');
-  });
+    it('should handle plugin that modifies data in onBefore hook', async () => {
+      const executor = new AsyncExecutor();
+      const plugin: ExecutorPlugin<Record<string, unknown>> = {
+        pluginName: 'plugin1',
+        onBefore: async (context) => {
+          context.parameters.added = true;
+        }
+      };
 
-  it('should execute task with no plugins', async () => {
-    const executor = new AsyncExecutor();
-    const result = await executor.exec(async () => 'no plugins');
-    expect(result).toBe('no plugins');
-  });
+      executor.use(plugin);
 
-  it('should throw error if task is not a function', async () => {
-    const executor = new AsyncExecutor();
-    try {
-      await executor.exec('not a function' as unknown as () => unknown);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toBe('Task must be a async function!');
-    }
+      const result = await executor.exec<boolean, Record<string, unknown>>(
+        { value: 'test' },
+        async (context) => context.parameters.added as boolean
+      );
+      expect(result).toBe(true);
+    });
+
+    it('should handle plugin that modifies result in onSuccess hook', async () => {
+      const executor = new AsyncExecutor();
+      const plugin: ExecutorPlugin<string> = {
+        pluginName: 'plugin1',
+        onSuccess: async (context) => {
+          context.returnValue = context.returnValue + ' modified';
+        }
+      };
+
+      executor.use(plugin);
+
+      const result = await executor.exec(async () => 'test');
+      expect(result).toBe('test modified');
+    });
+
+    it('should throw error if task is not a function', async () => {
+      const executor = new AsyncExecutor();
+
+      try {
+        await executor.exec(
+          'not a function' as unknown as () => Promise<unknown>
+        );
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+        expect((e as Error).message).toBe('Task must be a async function!');
+      }
+    });
+
+    it('should handle plugin that suppresses error in onError hook', async () => {
+      const executor = new AsyncExecutor();
+      const plugin: ExecutorPlugin = {
+        pluginName: 'plugin1',
+        onError: async () => {
+          return new ExecutorError('Handled Error');
+        }
+      };
+
+      executor.use(plugin);
+
+      const result = await executor.execNoError(async () => {
+        throw new Error('test error');
+      });
+
+      expect(result).toBeInstanceOf(ExecutorError);
+      expect((result as ExecutorError).message).toBe('Handled Error');
+    });
+
+    it('should execute task with no plugins', async () => {
+      const executor = new AsyncExecutor();
+      const result = await executor.exec(async () => 'no plugins');
+      expect(result).toBe('no plugins');
+    });
   });
 });

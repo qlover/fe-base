@@ -224,6 +224,122 @@ describe('ClassName', () => {
 });
 ```
 
+### Function Testing
+
+Function tests should cover the following aspects:
+
+1. **Parameter Combination Testing**
+
+```typescript
+interface TestParams {
+  key1?: string;
+  key2?: number;
+  key3?: boolean;
+}
+
+function testFunction({ key1, key2, key3 }: TestParams): string {
+  // Implementation...
+}
+
+describe('testFunction', () => {
+  describe('Parameter Combination Testing', () => {
+    it('should handle case with all parameters present', () => {
+      expect(testFunction({ key1: 'test', key2: 1, key3: true }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key1, key2 only', () => {
+      expect(testFunction({ key1: 'test', key2: 1 }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key1, key3 only', () => {
+      expect(testFunction({ key1: 'test', key3: true }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key2, key3 only', () => {
+      expect(testFunction({ key2: 1, key3: true }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key1 only', () => {
+      expect(testFunction({ key1: 'test' }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key2 only', () => {
+      expect(testFunction({ key2: 1 }))
+        .toBe('expected result');
+    });
+
+    it('should handle case with key3 only', () => {
+      expect(testFunction({ key3: true }))
+        .toBe('expected result');
+    });
+
+    it('should handle empty object case', () => {
+      expect(testFunction({}))
+        .toBe('expected result');
+    });
+  });
+
+  describe('Boundary Value Testing', () => {
+    it('should handle extreme values', () => {
+      expect(testFunction({
+        key1: '', // Empty string
+        key2: Number.MAX_SAFE_INTEGER, // Maximum safe integer
+        key3: false
+      })).toBe('expected result');
+
+      expect(testFunction({
+        key1: 'a'.repeat(1000), // Very long string
+        key2: Number.MIN_SAFE_INTEGER, // Minimum safe integer
+        key3: true
+      })).toBe('expected result');
+    });
+
+    it('should handle special values', () => {
+      expect(testFunction({
+        key1: '   ', // All spaces string
+        key2: 0, // Zero value
+        key3: false
+      })).toBe('expected result');
+
+      expect(testFunction({
+        key1: null as any, // null value
+        key2: NaN, // NaN value
+        key3: undefined as any // undefined value
+      })).toBe('expected result');
+    });
+
+    it('should handle invalid values', () => {
+      expect(() => testFunction({
+        key1: Symbol() as any, // Invalid type
+        key2: {} as any, // Invalid type
+        key3: 42 as any // Invalid type
+      })).toThrow();
+    });
+  });
+});
+```
+
+This test suite demonstrates:
+
+1. **Complete Parameter Combination Coverage**:
+   - Tests all possible parameter combinations (2^n combinations, where n is the number of parameters)
+   - Includes cases with all parameters present, partial parameters, and empty object
+
+2. **Boundary Value Testing**:
+   - Tests parameter limit values (maximum, minimum)
+   - Tests special values (empty string, null, undefined, NaN)
+   - Tests invalid values (type errors)
+
+3. **Test Case Organization**:
+   - Uses nested describe blocks to clearly organize test scenarios
+   - Each test case has a clear description
+   - Related test cases are grouped together
+
 ### Test Data Management
 
 ```typescript

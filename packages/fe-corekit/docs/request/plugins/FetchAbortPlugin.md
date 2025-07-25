@@ -1,4 +1,13 @@
-## Class `FetchAbortPlugin`
+## `src/request/plugins/FetchAbortPlugin` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `FetchAbortPlugin` (Class)
+
+**Type:** `unknown`
+
 Plugin for handling request cancellation
 Provides abort functionality for fetch requests
 
@@ -7,12 +16,14 @@ Provides abort functionality for fetch requests
 - Main Purpose: Improve control over network requests and resource management.
 
 Features:
+
 - Request cancellation support
 - Automatic cleanup of aborted requests
 - Multiple concurrent request handling
 - Custom abort callbacks
 
 **Not Support**
+
 - Abort signal from outside
 
 Request parameters serialized to be used as unique identifiers.
@@ -20,10 +31,9 @@ Or you can pass in a specific requestid.
 
 You can also manually specify an onAbort callback that will be executed after termination.
 
-@implements 
+**Implements:**
 
-
-@example 
+**Example:**
 
 ```typescript
 // Basic usage
@@ -39,10 +49,9 @@ abortPlugin.abort(config);
 abortPlugin.abortAll();
 ```
 
-@example 
+**Example:**
 
 Use RequestId to identify the request
-
 
 ```typescript
 const abortPlugin = new AbortPlugin();
@@ -56,19 +65,57 @@ abortPlugin.abort(config);
 abortPlugin.abort('123');
 ```
 
+---
 
-## Members
+#### `new FetchAbortPlugin` (Constructor)
 
-### constructor
+**Type:** `() => FetchAbortPlugin`
 
+---
 
+#### `onlyOne` (Property)
 
+**Type:** `true`
 
-### abort
+**Default:** `true`
+
+Indicates if only one instance of this plugin should exist in the executor
+When true, attempting to add duplicate plugins will result in a warning
+
+---
+
+#### `pluginName` (Property)
+
+**Type:** `"FetchAbortPlugin"`
+
+**Default:** `'FetchAbortPlugin'`
+
+The pluginName of the plugin.
+
+Plugins with the same pluginName will be merged.
+
+---
+
+#### `abort` (Method)
+
+**Type:** `(config: string \| RequestAdapterConfig<unknown>) => void`
+
+#### Parameters
+
+| Name     | Type                                      | Optional | Default | Since | Deprecated | Description                       |
+| -------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `config` | `string \| RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration of request to abort |
+
+---
+
+##### `abort` (CallSignature)
+
+**Type:** `void`
+
 Aborts a specific request
 Triggers abort callback if provided
 
-**@example** 
+**Example:**
 
 ```typescript
 abortPlugin.abort({
@@ -79,18 +126,28 @@ abortPlugin.abort({
 });
 ```
 
-
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | Configuration of request to abort | `string \| RequestAdapterConfig<unknown>` |  |  |
 
+| Name     | Type                                      | Optional | Default | Since | Deprecated | Description                       |
+| -------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `config` | `string \| RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration of request to abort |
 
-### abortAll
+---
+
+#### `abortAll` (Method)
+
+**Type:** `() => void`
+
+---
+
+##### `abortAll` (CallSignature)
+
+**Type:** `void`
+
 Aborts all pending requests
 Clears all stored controllers
 
-**@example** 
+**Example:**
 
 ```typescript
 // Cancel all requests when component unmounts
@@ -99,81 +156,143 @@ useEffect(() => {
 }, []);
 ```
 
+---
 
+#### `isSameAbortError` (Method)
 
-
-### generateRequestKey
-Generates unique key for request identification
-Combines method, URL, params, and body to create unique identifier
-
-**@example** 
-
-```typescript
-const key = abortPlugin.generateRequestKey(config);
-```
-
+**Type:** `(error: Error) => boolean`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterConfig<unknown>` |  |  |
 
+| Name    | Type    | Optional | Default | Since | Deprecated | Description        |
+| ------- | ------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `error` | `Error` | ✅       | -       | -     | -          | The error to check |
 
-### isSameAbortError
+---
+
+##### `isSameAbortError` (CallSignature)
+
+**Type:** `boolean`
+
 Determines if the given error is an abort error.
 
 - Identify errors that are related to request abortion.
 - Check error properties to determine if it's an abort error.
 - Provide a unified method to recognize abort errors.
 
+**Returns:**
+
+True if the error is an abort error, false otherwise
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  error  | The error to check | `Error` |  |  |
 
+| Name    | Type    | Optional | Default | Since | Deprecated | Description        |
+| ------- | ------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `error` | `Error` | ✅       | -       | -     | -          | The error to check |
 
-### onBefore
+---
+
+#### `onBefore` (Method)
+
+**Type:** `(context: ExecutorContext<RequestAdapterConfig<unknown>>) => void`
+
+#### Parameters
+
+| Name      | Type                                             | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `onBefore` (CallSignature)
+
+**Type:** `void`
+
 Pre-request hook that sets up abort handling
 Creates new AbortController and cancels any existing request with same key
 
-**@example** 
+**Returns:**
+
+Modified configuration with abort control
+
+**Example:**
 
 ```typescript
 const modifiedConfig = abortPlugin.onBefore(config);
 ```
 
+#### Parameters
+
+| Name      | Type                                             | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `onError` (Method)
+
+**Type:** `(__namedParameters: ExecutorContext<RequestAdapterConfig<unknown>>) => void \| RequestError`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  context  |  | `ExecutorContext<RequestAdapterConfig<unknown>>` |  |  |
 
+| Name                | Type                                             | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `__namedParameters` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
 
-### onError
+---
+
+##### `onError` (CallSignature)
+
+**Type:** `void \| RequestError`
+
 Error handling hook for abort scenarios
 Processes different types of abort errors and cleans up resources
 
-**@example** 
+**Returns:**
+
+RequestError or void
+
+**Example:**
 
 ```typescript
 const error = abortPlugin.onError(new Error('AbortError'), config);
 ```
 
+#### Parameters
+
+| Name                | Type                                             | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `__namedParameters` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `onSuccess` (Method)
+
+**Type:** `(__namedParameters: ExecutorContext<RequestAdapterConfig<unknown>>) => void`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig<unknown>>` |  |  |
 
+| Name                | Type                                             | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `__namedParameters` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
 
-### onSuccess
+---
+
+##### `onSuccess` (CallSignature)
+
+**Type:** `void`
+
 Hook executed after successful task completion
 Can transform the task result
 
+**Returns:**
+
+Modified result or Promise of modified result
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  __namedParameters  |  | `ExecutorContext<RequestAdapterConfig<unknown>>` |  |  |
 
+| Name                | Type                                             | Optional | Default | Since | Deprecated | Description |
+| ------------------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `__namedParameters` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---

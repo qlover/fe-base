@@ -1,23 +1,41 @@
 import {
   Executor,
+  ExecutorConfigInterface,
   ExecutorContext,
   ExecutorError,
   ExecutorPlugin,
+  HookType,
   PromiseTask
 } from '../interface';
+import { ContextHandler, createContext } from './ContextHandler';
+
+type PluginMethod<Params = unknown> = (
+  context: ExecutorContext<Params>,
+  ...args: unknown[]
+) => Promise<unknown>;
 
 /**
  * Asynchronous implementation of the Executor pattern
  *
- * - Purpose: Provides asynchronous task execution with plugin support
- * - Core Concept: Async execution pipeline with plugin hooks
- * - Main Features:
- *  - Asynchronous plugin hook execution
- *  - Promise-based task handling
- *  - Error handling with plugin support
- * - Primary Use: Handling async operations with extensible middleware
+ * Core concept:
+ * Asynchronous execution pipeline with plugin lifecycle management
  *
- * @example
+ * Main features:
+ * - Asynchronous plugin hook execution: All operations are Promise-based
+ * - Plugin lifecycle management: Support for onBefore, onExec, onSuccess, onError hooks
+ * - Configurable hook execution: Customizable beforeHooks, afterHooks, and execHook
+ * - Chain breaking support: Plugins can interrupt execution chain
+ * - Error handling: Comprehensive error handling with plugin support
+ *
+ * Use this executor when:
+ * - Operations involve async operations (API calls, file I/O, etc.)
+ * - You need to handle Promise-based workflows
+ * - Performance allows for async overhead
+ * - Async operations are involved
+ *
+ * @extends Executor
+ *
+ * @example Basic usage
  * ```typescript
  * const executor = new AsyncExecutor();
  * executor.use(new LogPlugin());
@@ -28,121 +46,214 @@ import {
  * });
  * ```
  *
+ * @example With custom configuration
+ * ```typescript
+ * const executor = new AsyncExecutor({
+ *   beforeHooks: ['onBefore', 'onValidate'],
+ *   afterHooks: ['onSuccess', 'onLog'],
+ *   execHook: 'onCustomExec'
+ * });
+ *
+ * const result = await executor.exec(data, async (input) => {
+ *   return await fetchUserData(input.userId);
+ * });
+ * ```
+ *
  * @category AsyncExecutor
  */
 export class AsyncExecutor<
-  ExecutorConfig = unknown
+  ExecutorConfig extends ExecutorConfigInterface = ExecutorConfigInterface
 > extends Executor<ExecutorConfig> {
+  protected contextHandler: ContextHandler = new ContextHandler();
+
   /**
-   * Execute plugin hook functions asynchronously
+   * Execute a single plugin hook function asynchronously
    *
-   * - Purpose: Orchestrates asynchronous plugin hook execution
-   * - Core Concept: Sequential async plugin pipeline
-   * - Main Features:
-   *  - Plugin enablement checking
-   *  - Result chaining
-   *  - Error hook special handling
-   * - Primary Use: Internal plugin lifecycle management
+   * Core concept:
+   * Sequential async plugin execution with chain breaking and return value handling
    *
-   * Plugin execution flow:
+   * Execution flow:
    * 1. Check if plugin is enabled for the hook
    * 2. Execute plugin hook if available
    * 3. Handle plugin results and chain breaking conditions
+   * 4. Continue to next plugin or break chain
+   *
+   * Key features:
+   * - Plugin enablement checking
+   * - Chain breaking support
+   * - Return value management
+   * - Runtime tracking
+   * - Async execution with await
    *
    * @param plugins - Array of plugins to execute
    * @param hookName - Name of the hook function to execute
-   * @param args - Arguments to pass to the hook function
-   * @returns Promise resolving to the hook execution result
+   * @param context - Execution context containing data and runtime information
+   * @param args - Additional arguments to pass to the hook function
+   * @returns Promise resolving to the result of the hook function execution
+   * @since 2.1.0
    *
-   * @example
+   * @example Internal usage
    * ```typescript
    * const result = await this.runHook(
    *   this.plugins,
-   *   'beforeExec',
-   *   { userId: 123 }
+   *   'onBefore',
+   *   context,
+   *   data
    * );
    * ```
    */
-  async runHooks<Params>(
+  protected async runHook<Params>(
     plugins: ExecutorPlugin[],
     /**
-     * allow any string as hook name.
-     * if the hook name is not a function, it will be skipped
+     * Hook name to execute
+     *
+     * Allows any string as hook name. If the hook name is not a function,
+     * the plugin will be skipped for this hook execution.
      *
      * @since 1.1.3
      */
-    hookName: string,
+    hookName: HookType,
     context?: ExecutorContext<Params>,
     ...args: unknown[]
-  ): Promise<unknown> {
+  ): Promise<Params> {
     let _index = -1;
-    let returnValue: unknown;
+    let returnValue: Params | undefined;
 
-    const _context: ExecutorContext<Params> = context || {
-      parameters: undefined as Params,
-      hooksRuntimes: {}
-    };
+    const _context = context || createContext({} as Params);
 
-    // reset hooksRuntimes times and index
-    _context.hooksRuntimes.times = 0;
-    _context.hooksRuntimes.index = undefined;
+    this.contextHandler.resetHooksRuntimes(_context.hooksRuntimes);
 
     for (const plugin of plugins) {
       _index++;
 
+      // Skip plugin if hook name is not a function or plugin is disabled
       if (
-        typeof plugin[hookName as keyof ExecutorPlugin] !== 'function' ||
-        (typeof plugin.enabled == 'function' &&
-          !plugin.enabled(hookName as keyof ExecutorPlugin, context))
+        this.contextHandler.shouldSkipPluginHook(plugin, hookName, _context)
       ) {
         continue;
       }
 
-      // if breakChain is true, stop the chain
-      if (_context.hooksRuntimes?.breakChain) {
+      // Break chain if breakChain flag is set
+      if (this.contextHandler.shouldBreakChain(_context)) {
         break;
       }
 
-      _context.hooksRuntimes.pluginName = plugin.pluginName;
-      _context.hooksRuntimes.hookName = hookName;
-      _context.hooksRuntimes.times++;
-      _context.hooksRuntimes.index = _index;
+      this.contextHandler.runtimes(_context, plugin, hookName, _index);
 
-      // @ts-expect-error
-      const pluginReturn = await plugin[hookName](context, ...args);
+      const pluginReturn = await (
+        plugin[hookName as keyof ExecutorPlugin] as PluginMethod<Params>
+      )(_context, ...args);
 
       if (pluginReturn !== undefined) {
-        returnValue = pluginReturn;
-        // set runtimes returnValue
-        _context.hooksRuntimes.returnValue = pluginReturn;
+        returnValue = pluginReturn as Params;
 
-        // When returnBreakChain is true, stop the chain
-        if (_context.hooksRuntimes.returnBreakChain) {
+        this.contextHandler.runtimeReturnValue(_context, pluginReturn);
+
+        // Break chain if returnBreakChain flag is set
+        if (this.contextHandler.shouldBreakChainOnReturn(_context)) {
           return returnValue;
         }
       }
     }
 
-    return returnValue;
+    return returnValue as Params;
+  }
+
+  /**
+   * Execute multiple plugin hook functions asynchronously
+   * Supports executing multiple hook names in sequence
+   *
+   * Core concept:
+   * Sequential execution of multiple hooks with chain breaking support
+   *
+   * Execution flow:
+   * 1. For each hook name, check if plugin is enabled
+   * 2. Execute plugin hook if available
+   * 3. Handle plugin results and chain breaking conditions
+   * 4. Continue to next hook name if chain is not broken
+   *
+   * Key features:
+   * - Supports multiple hook names in sequence
+   * - Chain breaking support for each hook
+   * - Return value management across hooks
+   * - Backward compatibility with single hook execution
+   * - Async execution with await
+   *
+   * @param plugins - Array of plugins to execute
+   * @param hookNames - Single hook name or array of hook names to execute in sequence
+   * @param context - Execution context containing data and runtime information
+   * @param args - Additional arguments to pass to the hook functions
+   * @returns Promise resolving to the result of the last executed hook function
+   *
+   * @example Execute multiple hooks in sequence
+   * ```typescript
+   * const result = await this.runHooks(
+   *   this.plugins,
+   *   ['onBefore', 'onValidate', 'onProcess'],
+   *   context,
+   *   data
+   * );
+   * ```
+   *
+   * @example Execute single hook (backward compatibility)
+   * ```typescript
+   * const result = await this.runHooks(
+   *   this.plugins,
+   *   'onBefore',
+   *   context,
+   *   data
+   * );
+   * ```
+   */
+  public override async runHooks<Params>(
+    plugins: ExecutorPlugin[],
+    hookNames: HookType | HookType[],
+    context?: ExecutorContext<Params>,
+    ...args: unknown[]
+  ): Promise<Params> {
+    // Convert single hook name to array for unified processing
+    const hookNameArray = Array.isArray(hookNames) ? hookNames : [hookNames];
+    let lastReturnValue: Params | undefined;
+
+    // Execute each hook name in sequence
+    for (const hookName of hookNameArray) {
+      const result = await this.runHook(plugins, hookName, context, ...args);
+
+      // Update the last return value
+      if (result !== undefined) {
+        lastReturnValue = result;
+      }
+
+      // Check if we should break the chain after this hook
+      if (context && this.contextHandler.shouldBreakChain(context)) {
+        break;
+      }
+    }
+
+    return lastReturnValue as Params;
   }
 
   /**
    * Execute task without throwing errors
    *
-   * - Purpose: Safe execution of async tasks
-   * - Core Concept: Error wrapping and handling
-   * - Main Features:
-   *  - Catches all execution errors
-   *  - Wraps errors in ExecutorError
-   *  - Returns either result or error object
-   * - Primary Use: When you want to handle errors without try-catch
+   * Core concept:
+   * Error-safe execution pipeline that returns errors instead of throwing
    *
-   * @template T - Type of task return value
+   * Advantages over try-catch:
+   * - Standardized error handling
+   * - No exception propagation
+   * - Consistent error types
+   * - Plugin error handling support
+   *
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
    * @param dataOrTask - Task data or task function
-   * @param task - Task function (optional)
-   * @returns Promise resolving to either result or ExecutorError
+   * @param task - Task function (optional when dataOrTask is a function)
+   * @returns Promise resolving to task result or ExecutorError if execution fails
    *
-   * @example
+   * @throws Never throws - all errors are wrapped in ExecutorError
+   *
+   * @example Basic usage
    * ```typescript
    * const result = await executor.execNoError(async () => {
    *   const response = await riskyOperation();
@@ -153,9 +264,17 @@ export class AsyncExecutor<
    *   console.error('Operation failed:', result);
    * }
    * ```
+   *
+   * @example With input data
+   * ```typescript
+   * const result = await executor.execNoError(
+   *   { userId: 123 },
+   *   async (data) => await fetchUserData(data.userId)
+   * );
+   * ```
    */
-  async execNoError<Result, Params = unknown>(
-    dataOrTask: unknown | PromiseTask<Result, Params>,
+  public override async execNoError<Result, Params = unknown>(
+    dataOrTask: Params | PromiseTask<Result, Params>,
     task?: PromiseTask<Result, Params>
   ): Promise<Result | ExecutorError> {
     try {
@@ -172,41 +291,56 @@ export class AsyncExecutor<
   /**
    * Execute asynchronous task with full plugin pipeline
    *
-   * - Purpose: Primary method for executing async tasks
-   * - Core Concept: Full plugin pipeline execution
-   * - Main Features:
-   *  - Plugin hook integration
-   *  - Task validation
-   *  - Custom execution support
-   * - Primary Use: Running async tasks with plugin support
+   * Core concept:
+   * Complete execution pipeline with plugin lifecycle management
    *
    * Execution flow:
    * 1. Validate and prepare task
-   * 2. Check for custom execution plugins
-   * 3. Execute task with plugin pipeline
+   * 2. Execute beforeHooks (configured or default 'onBefore')
+   * 3. Execute core task logic with execHook support
+   * 4. Execute afterHooks (configured or default 'onSuccess')
+   * 5. Handle errors with onError hooks if needed
    *
-   * @template T - Type of task return value
-   * @template D - Type of task data
+   * Performance considerations:
+   * - Async overhead for Promise handling
+   * - Sequential execution path
+   * - Plugin chain optimization
+   *
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
    * @param dataOrTask - Task data or task function
-   * @param task - Task function (optional)
+   * @param task - Task function (optional when dataOrTask is a function)
    * @throws {Error} When task is not an async function
-   * @returns Promise resolving to task result
+   * @throws {ExecutorError} When task execution fails
+   * @returns Promise resolving to task execution result
    *
-   * @example
+   * @example Basic task execution
    * ```typescript
-   * // With separate data and task
+   * const result = await executor.exec(async (data) => {
+   *   const response = await fetch('https://api.example.com/data');
+   *   return response.json();
+   * });
+   * ```
+   *
+   * @example With input data
+   * ```typescript
    * const data = { userId: 123 };
    * const result = await executor.exec(data, async (input) => {
    *   return await fetchUserData(input.userId);
    * });
+   * ```
    *
-   * // With combined task
-   * const result = await executor.exec(async () => {
-   *   return await fetchData();
+   * @example With validation
+   * ```typescript
+   * const result = await executor.exec(async (data) => {
+   *   if (typeof data !== 'string') {
+   *     throw new Error('Data must be string');
+   *   }
+   *   return await processData(data);
    * });
    * ```
    */
-  exec<Result, Params = unknown>(
+  public override exec<Result, Params = unknown>(
     dataOrTask: Params | PromiseTask<Result, Params>,
     task?: PromiseTask<Result, Params>
   ): Promise<Result> {
@@ -221,93 +355,114 @@ export class AsyncExecutor<
   }
 
   /**
+   * Execute core task logic with execHook support
+   *
+   * Core concept:
+   * Handles the execution phase with optional plugin intervention
+   *
+   * Execution logic:
+   * 1. Execute configured execHook (default: 'onExec')
+   * 2. If no execHook was executed, run the actual task
+   * 3. Otherwise, use the return value from execHook
+   *
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
+   * @param context - Execution context
+   * @param actualTask - Task function to execute
+   */
+  protected async runExec<Result, Params = unknown>(
+    context: ExecutorContext<Params>,
+    actualTask: PromiseTask<Result, Params>
+  ): Promise<void> {
+    const execHook = this.config?.execHook || 'onExec';
+
+    await this.runHook(this.plugins, execHook, context, actualTask);
+
+    // If exec times is 0, then execute task, otherwise return the result of the last hook
+    context.returnValue = !context.hooksRuntimes.times
+      ? await actualTask(context)
+      : context.hooksRuntimes.returnValue;
+  }
+
+  /**
    * Core task execution method with plugin hooks
    *
-   * - Purpose: Implements the complete execution pipeline
-   * - Core Concept: Sequential hook execution with error handling
-   * - Main Features:
-   *  - Before/After hooks
-   *  - Error handling hooks
-   *  - Result transformation
-   * - Primary Use: Internal pipeline orchestration
+   * Core concept:
+   * Complete execution pipeline with configurable hook lifecycle
    *
    * Pipeline stages:
-   * 1. onBefore hooks - Pre-process input data
-   * 2. Task execution - Run the actual task
-   * 3. onSuccess hooks - Post-process results
+   * 1. beforeHooks - Pre-process input data (configurable, default: 'onBefore')
+   * 2. Task execution - Run the actual task with execHook support
+   * 3. afterHooks - Post-process results (configurable, default: 'onSuccess')
    * 4. onError hooks - Handle any errors
    *
-   * @template T - Type of task return value
-   * @template D - Type of task data
-   * @param data - Input data for the task
-   * @param actualTask - Task function to execute
-   * @throws {ExecutorError} When task execution fails
-   * @returns Promise resolving to task result(context.returnValue)
+   * Error handling strategy:
+   * - Catches all errors
+   * - Passes errors through plugin chain
+   * - Wraps unhandled errors in ExecutorError
+   * - Supports plugin error handling
    *
-   * @example
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
+   * @param data - Data to pass to the task
+   * @param actualTask - Actual task function to execute
+   * @throws {ExecutorError} When task execution fails
+   * @returns Promise resolving to task execution result
+   *
+   * @example Internal implementation
    * ```typescript
-   * private async run(data, task) {
+   * protected async run(data, task) {
    *   try {
-   *     const preparedData = await this.runHook(this.plugins, 'onBefore', data);
-   *     const result = await task(preparedData);
-   *     return await this.runHook(this.plugins, 'onSuccess', result);
+   *     // Execute beforeHooks (configurable)
+   *     await this.runHooks(this.plugins, beforeHooks, context);
+   *
+   *     // Execute core logic with execHook support
+   *     await this.runExec(context, actualTask);
+   *
+   *     // Execute afterHooks (configurable)
+   *     await this.runHooks(this.plugins, afterHooks, context);
+   *
+   *     return context.returnValue;
    *   } catch (error) {
-   *     const handledError = await this.runHook(
-   *       this.plugins,
-   *       'onError',
-   *       error,
-   *       data
-   *     );
-   *     throw new ExecutorError('EXECUTION_FAILED', handledError);
+   *     // Handle errors with onError hooks
+   *     await this.runHook(this.plugins, 'onError', context);
    *   }
    * }
    * ```
    */
-  async run<Result, Params = unknown>(
+  protected async run<Result, Params = unknown>(
     data: Params,
     actualTask: PromiseTask<Result, Params>
   ): Promise<Result> {
-    const context: ExecutorContext<Params> = {
-      parameters: data,
-      returnValue: undefined,
-      error: undefined,
-      hooksRuntimes: {
-        pluginName: '',
-        hookName: '',
-        returnValue: undefined,
-        returnBreakChain: false,
-        times: 0
-      }
-    };
+    const context: ExecutorContext<Params> = createContext(data);
 
-    const runExec = async (ctx: ExecutorContext<Params>): Promise<void> => {
-      await this.runHooks(this.plugins, 'onExec', ctx, actualTask);
-
-      // if exec times is 0, then execute task, otherwise return the result of the last hook
-      if (ctx.hooksRuntimes.times === 0) {
-        ctx.returnValue = await actualTask(ctx);
-        return;
-      }
-
-      ctx.returnValue = ctx.hooksRuntimes.returnValue;
-    };
+    // Use configured hooks or defaults
+    const beforeHooks = this.config?.beforeHooks || 'onBefore';
+    const afterHooks = this.config?.afterHooks || 'onSuccess';
 
     try {
-      await this.runHooks(this.plugins, 'onBefore', context);
+      // Execute beforeHooks (configurable)
+      await this.runHooks(this.plugins, beforeHooks, context);
 
-      await runExec(context);
+      // Execute core logic with execHook support
+      await this.runExec(context, actualTask);
 
-      await this.runHooks(this.plugins, 'onSuccess', context);
+      // Execute afterHooks (configurable)
+      await this.runHooks(this.plugins, afterHooks, context);
 
       return context.returnValue as Result;
     } catch (error) {
-      context.error = error as Error;
+      this.contextHandler.setError(context, error as Error);
 
-      await this.runHooks(this.plugins, 'onError', context);
+      // Handle errors with onError hooks
+      await this.runHook(this.plugins, 'onError', context);
 
-      // if onError hook return a ExecutorError, then throw it
+      // If onError hook returns an ExecutorError, use it
       if (context.hooksRuntimes.returnValue) {
-        context.error = context.hooksRuntimes.returnValue as Error;
+        this.contextHandler.setError(
+          context,
+          context.hooksRuntimes.returnValue as Error
+        );
       }
 
       if (context.error instanceof ExecutorError) {
@@ -316,14 +471,7 @@ export class AsyncExecutor<
 
       throw new ExecutorError('UNKNOWN_ASYNC_ERROR', context.error);
     } finally {
-      // reset hooksRuntimes
-      context.hooksRuntimes = {
-        pluginName: '',
-        hookName: '',
-        returnValue: undefined,
-        returnBreakChain: false,
-        times: 0
-      };
+      this.contextHandler.reset(context);
     }
   }
 }

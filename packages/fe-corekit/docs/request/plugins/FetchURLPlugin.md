@@ -1,4 +1,13 @@
-## Class `FetchURLPlugin`
+## `src/request/plugins/FetchURLPlugin` (Module)
+
+**Type:** `unknown`
+
+---
+
+### `FetchURLPlugin` (Class)
+
+**Type:** `unknown`
+
 Plugin for URL manipulation and response handling
 Provides URL composition and response status checking
 
@@ -7,15 +16,15 @@ Provides URL composition and response status checking
 - Main Purpose: Ensure correct URL formation and response handling.
 
 Features:
+
 - URL normalization
 - Base URL handling
 - Query parameter management
 - Response status validation
 
-@implements 
+**Implements:**
 
-
-@example 
+**Example:**
 
 ```typescript
 // Basic usage
@@ -31,138 +40,288 @@ await client.get({
 });
 ```
 
+---
 
-## Members
+#### `new FetchURLPlugin` (Constructor)
 
-### constructor
+**Type:** `() => FetchURLPlugin`
 
+---
 
+#### `pluginName` (Property)
 
+**Type:** `"FetchURLPlugin"`
 
-### appendQueryParams
+**Default:** `'FetchURLPlugin'`
+
+The pluginName of the plugin.
+
+Plugins with the same pluginName will be merged.
+
+---
+
+#### `appendQueryParams` (Method)
+
+**Type:** `(url: string, params: Record<string, unknown>) => string`
+
+#### Parameters
+
+| Name     | Type                      | Optional | Default | Since | Deprecated | Description          |
+| -------- | ------------------------- | -------- | ------- | ----- | ---------- | -------------------- |
+| `url`    | `string`                  | ❌       | -       | -     | -          | Base URL             |
+| `params` | `Record<string, unknown>` | ✅       | `{}`    | -     | -          | Parameters to append |
+
+---
+
+##### `appendQueryParams` (CallSignature)
+
+**Type:** `string`
+
 Appends query parameters to URL
 Handles existing query parameters in URL
 
-**@example** 
+**Returns:**
+
+URL with query parameters
+
+**Example:**
 
 ```typescript
-const url = urlPlugin.appendQueryParams(
-  'https://api.example.com/users',
-  { role: 'admin', status: 'active' }
-);
+const url = urlPlugin.appendQueryParams('https://api.example.com/users', {
+  role: 'admin',
+  status: 'active'
+});
 ```
 
+#### Parameters
+
+| Name     | Type                      | Optional | Default | Since | Deprecated | Description          |
+| -------- | ------------------------- | -------- | ------- | ----- | ---------- | -------------------- |
+| `url`    | `string`                  | ❌       | -       | -     | -          | Base URL             |
+| `params` | `Record<string, unknown>` | ✅       | `{}`    | -     | -          | Parameters to append |
+
+---
+
+#### `buildUrl` (Method)
+
+**Type:** `(config: RequestAdapterConfig<unknown>) => string`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | Base URL | `string` |  |  |
-|  params  | Parameters to append | `Record<string, unknown>` | {} |  |
 
+| Name     | Type                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | ------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Request configuration |
 
-### buildUrl
+---
+
+##### `buildUrl` (CallSignature)
+
+**Type:** `string`
+
 Builds complete URL from configuration.
 
 Handles base URL, path normalization, and query parameters.
 
-**@example** 
+**Returns:**
+
+Complete URL
+
+**Example:**
 
 ```typescript
 const completeUrl = urlPlugin.buildUrl(config);
 ```
 
+#### Parameters
+
+| Name     | Type                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | ------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Request configuration |
+
+---
+
+#### `connectBaseURL` (Method)
+
+**Type:** `(url: string, baseURL: string) => string`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | Request configuration | `RequestAdapterConfig<unknown>` |  |  |
 
+| Name      | Type     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `url`     | `string` | ❌       | -       | -     | -          | URL path    |
+| `baseURL` | `string` | ❌       | -       | -     | -          | Base URL    |
 
-### connectBaseURL
+---
+
+##### `connectBaseURL` (CallSignature)
+
+**Type:** `string`
+
 Combines base URL with path.
 
 Ensures proper slash handling
 
-**@example** 
+**Returns:**
+
+Combined URL
+
+**Example:**
 
 ```typescript
 const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
 ```
 
+#### Parameters
+
+| Name      | Type     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `url`     | `string` | ❌       | -       | -     | -          | URL path    |
+| `baseURL` | `string` | ❌       | -       | -     | -          | Base URL    |
+
+---
+
+#### `isFullURL` (Method)
+
+**Type:** `(url: string) => boolean`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | URL path | `string` |  |  |
-|  baseURL  | Base URL | `string` |  |  |
 
+| Name  | Type     | Optional | Default | Since | Deprecated | Description  |
+| ----- | -------- | -------- | ------- | ----- | ---------- | ------------ |
+| `url` | `string` | ❌       | -       | -     | -          | URL to check |
 
-### isFullURL
+---
+
+##### `isFullURL` (CallSignature)
+
+**Type:** `boolean`
+
 Checks if URL is absolute (starts with http:// or https://)
 
-**@example** 
+**Returns:**
+
+Boolean indicating if URL is absolute
+
+**Example:**
 
 ```typescript
 const isAbsolute = urlPlugin.isFullURL('https://example.com');
 ```
 
+#### Parameters
+
+| Name  | Type     | Optional | Default | Since | Deprecated | Description  |
+| ----- | -------- | -------- | ------- | ----- | ---------- | ------------ |
+| `url` | `string` | ❌       | -       | -     | -          | URL to check |
+
+---
+
+#### `onBefore` (Method)
+
+**Type:** `(config: ExecutorContext<RequestAdapterConfig<unknown>>) => void`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  url  | URL to check | `string` |  |  |
 
+| Name     | Type                                             | Optional | Default | Since | Deprecated | Description           |
+| -------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Request configuration |
 
-### onBefore
+---
+
+##### `onBefore` (CallSignature)
+
+**Type:** `void`
+
 Pre-request hook that builds complete URL
 
-**@example** 
+**Example:**
 
 ```typescript
 urlPlugin.onBefore(config);
 ```
 
+#### Parameters
+
+| Name     | Type                                             | Optional | Default | Since | Deprecated | Description           |
+| -------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Request configuration |
+
+---
+
+#### `onError` (Method)
+
+**Type:** `(error: ExecutorContext<unknown>) => RequestError`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  config  | Request configuration | `ExecutorContext<RequestAdapterConfig<unknown>>` |  |  |
 
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description    |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------- |
+| `error` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          | Original error |
 
-### onError
+---
+
+##### `onError` (CallSignature)
+
+**Type:** `RequestError`
+
 Error handling hook
 Wraps non-RequestError errors
 
-**@example** 
+**Returns:**
+
+RequestError
+
+**Example:**
 
 ```typescript
 const error = urlPlugin.onError(new Error('Network Error'));
 ```
 
+#### Parameters
+
+| Name    | Type                       | Optional | Default | Since | Deprecated | Description    |
+| ------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------- |
+| `error` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          | Original error |
+
+---
+
+#### `onSuccess` (Method)
+
+**Type:** `(result: ExecutorContext<unknown>) => void`
 
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  error  | Original error | `ExecutorContext<unknown>` |  |  |
 
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description    |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------- |
+| `result` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          | Fetch response |
 
-### onSuccess
+---
+
+##### `onSuccess` (CallSignature)
+
+**Type:** `void`
+
 Success hook that validates response status
 Throws error for non-OK responses
 
-**@throws** 
+**Returns:**
+
+Response if OK
+
+**Throws:**
 
 If response is not OK
 
-**@example** 
+**Example:**
 
 ```typescript
 const response = urlPlugin.onSuccess(fetchResponse);
 ```
 
-
 #### Parameters
-| Name | Description | Type | Default | Since |
-|------|------|---------|-------|------------|
-|  result  | Fetch response | `ExecutorContext<unknown>` |  |  |
 
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description    |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------- |
+| `result` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          | Fetch response |
+
+---

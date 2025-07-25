@@ -224,6 +224,122 @@ describe('ClassName', () => {
 });
 ```
 
+### 函数的测试
+
+函数测试应该覆盖以下几个方面：
+
+1. **参数组合测试**
+
+```typescript
+interface TestParams {
+  key1?: string;
+  key2?: number;
+  key3?: boolean;
+}
+
+function testFunction({ key1, key2, key3 }: TestParams): string {
+  // 实现...
+}
+
+describe('testFunction', () => {
+  describe('参数组合测试', () => {
+    it('应该处理所有参数都存在的情况', () => {
+      expect(testFunction({ key1: 'test', key2: 1, key3: true }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key1, key2 的情况', () => {
+      expect(testFunction({ key1: 'test', key2: 1 }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key1, key3 的情况', () => {
+      expect(testFunction({ key1: 'test', key3: true }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key2, key3 的情况', () => {
+      expect(testFunction({ key2: 1, key3: true }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key1 的情况', () => {
+      expect(testFunction({ key1: 'test' }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key2 的情况', () => {
+      expect(testFunction({ key2: 1 }))
+        .toBe('expected result');
+    });
+
+    it('应该处理只有 key3 的情况', () => {
+      expect(testFunction({ key3: true }))
+        .toBe('expected result');
+    });
+
+    it('应该处理空对象的情况', () => {
+      expect(testFunction({}))
+        .toBe('expected result');
+    });
+  });
+
+  describe('边界值测试', () => {
+    it('应该处理极限值情况', () => {
+      expect(testFunction({
+        key1: '', // 空字符串
+        key2: Number.MAX_SAFE_INTEGER, // 最大安全整数
+        key3: false
+      })).toBe('expected result');
+
+      expect(testFunction({
+        key1: 'a'.repeat(1000), // 超长字符串
+        key2: Number.MIN_SAFE_INTEGER, // 最小安全整数
+        key3: true
+      })).toBe('expected result');
+    });
+
+    it('应该处理特殊值情况', () => {
+      expect(testFunction({
+        key1: '   ', // 全空格字符串
+        key2: 0, // 零值
+        key3: false
+      })).toBe('expected result');
+
+      expect(testFunction({
+        key1: null as any, // null 值
+        key2: NaN, // NaN 值
+        key3: undefined as any // undefined 值
+      })).toBe('expected result');
+    });
+
+    it('应该处理无效值情况', () => {
+      expect(() => testFunction({
+        key1: Symbol() as any, // 无效类型
+        key2: {} as any, // 无效类型
+        key3: 42 as any // 无效类型
+      })).toThrow();
+    });
+  });
+});
+```
+
+这个测试套件展示了：
+
+1. **完整的参数组合覆盖**：
+   - 测试所有可能的参数组合（2^n 种组合，n 为参数个数）
+   - 包括全部参数存在、部分参数存在和空对象的情况
+
+2. **边界值测试**：
+   - 测试参数的极限值（最大值、最小值）
+   - 测试特殊值（空字符串、null、undefined、NaN）
+   - 测试无效值（类型错误）
+
+3. **测试用例组织**：
+   - 使用嵌套 describe 清晰组织测试场景
+   - 每个测试用例都有明确的描述
+   - 相关的测试用例组织在一起
+
 ### 测试数据管理
 
 ```typescript
