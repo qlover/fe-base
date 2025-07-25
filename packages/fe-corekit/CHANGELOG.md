@@ -1,5 +1,32 @@
 # @qlover/fe-corekit
 
+## 2.0.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **tests:** enhance testing guide with comprehensive function testing strategies ([3a94940](https://github.com/qlover/fe-base/commit/3a949404316a66afe334e1b369c5095ce872cdbc)) ([#470](https://github.com/qlover/fe-base/pull/470))
+  - Added a new section on function testing to the testing guide, covering parameter combination testing and boundary value testing.
+  - Included detailed examples for various test cases, demonstrating how to handle different parameter combinations and edge cases.
+  - Organized test cases using nested describe blocks for better clarity and structure.
+  - Updated both English and Chinese versions of the testing guide to ensure consistency across documentation.
+
+  These changes aim to improve the testing framework and provide clearer guidelines for developers on how to effectively test functions.
+
+#### 📝 Documentation
+
+- add @since 2.1.0 annotations to AsyncExecutor, SyncExecutor, ContextHandler, and Executor interfaces ([7f1cab3](https://github.com/qlover/fe-base/commit/7f1cab32f3f6510263c4982525792d07bb13d859)) ([#470](https://github.com/qlover/fe-base/pull/470))
+  - Updated documentation in AsyncExecutor, SyncExecutor, ContextHandler, and Executor interfaces to include a `@since 2.1.0` annotation, indicating the version in which these features were introduced.
+  - This change enhances clarity for developers regarding the version history of the codebase and improves overall documentation consistency.
+
+- update documentation for various modules in fe-corekit ([e996dcb](https://github.com/qlover/fe-base/commit/e996dcb2a9e195f30c56d3a5c61bb0b33c504651)) ([#470](https://github.com/qlover/fe-base/pull/470))
+  - Enhanced documentation for modules including `AsyncExecutor`, `SyncExecutor`, `ContextHandler`, and `Executor`, adding `@since` annotations to clarify version history.
+  - Improved structure and clarity in documentation for `RequestAdapter`, `RequestManager`, and storage-related interfaces, ensuring consistency across the codebase.
+  - Added new modules for `KeyStorage`, `ObjectStorage`, and `SyncStorage`, providing comprehensive details on their functionalities and usage examples.
+
+  These changes aim to improve the overall documentation quality and usability for developers working with the fe-corekit package.
+
 ## 2.0.0
 
 ### Major Changes
