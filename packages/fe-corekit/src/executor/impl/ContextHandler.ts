@@ -15,7 +15,7 @@ import { ExecutorContext, ExecutorPlugin, HookRuntimes } from '../interface';
  * @template Params - Type of context parameters
  * @param parameters - The parameters for the context
  * @returns A new context with shared hooksRuntimes
- *
+ * @since 2.1.0
  * @example Basic usage
  * ```typescript
  * const context = createContext({ userId: 123, data: 'test' });

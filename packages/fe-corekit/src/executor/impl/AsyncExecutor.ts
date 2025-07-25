@@ -90,6 +90,7 @@ export class AsyncExecutor<
    * @param context - Execution context containing data and runtime information
    * @param args - Additional arguments to pass to the hook function
    * @returns Promise resolving to the result of the hook function execution
+   * @since 2.1.0
    *
    * @example Internal usage
    * ```typescript

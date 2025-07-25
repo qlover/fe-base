@@ -97,6 +97,7 @@ export class SyncExecutor<
    * @param context - Execution context containing data and runtime information
    * @param args - Additional arguments to pass to the hook function
    * @returns Result of the hook function execution
+   * @since 2.1.0
    *
    * @example Internal usage
    * ```typescript

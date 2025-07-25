@@ -15,6 +15,8 @@ export type HookType = string;
  * - Execution flow control: Configure before/after execution hooks
  * - Plugin integration: Support for custom execution logic hooks
  *
+ * @since 2.1.0
+ *
  * @example Basic configuration
  * ```typescript
  * const config: ExecutorConfigInterface = {
