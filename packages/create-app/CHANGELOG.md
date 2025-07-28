@@ -1,5 +1,40 @@
 # @qlover/create-app
 
+## 0.6.3
+
+### Patch Changes
+
+#### ✨ Features
+
+- **react-app:** add comprehensive documentation for Bootstrap, environment variable injection, global variable injection, and IOC container ([6c9b8e2](https://github.com/qlover/fe-base/commit/6c9b8e220b4b246f4593f25bc6830381157c0744)) ([#473](https://github.com/qlover/fe-base/pull/473))
+  - Introduced detailed documentation for the Bootstrap system, explaining its purpose, implementation, and advantages in managing application initialization logic.
+  - Added sections on environment variable injection, outlining the process and configuration for managing different environments.
+  - Documented the global variable injection mechanism, detailing how core services can be accessed globally within the application.
+  - Included a thorough explanation of the IOC container, its implementation, and best practices for dependency management.
+
+  These additions aim to enhance developer understanding and usability of the framework, promoting best practices in application architecture.
+
+- **react-app:** enhance project documentation and update scripts ([2a07fc8](https://github.com/qlover/fe-base/commit/2a07fc82647b4965121df9c6d70cd5d1841ad2d4)) ([#473](https://github.com/qlover/fe-base/pull/473))
+  - Added a comprehensive English README file to provide an overview of the React app template, including features, requirements, and project structure.
+  - Introduced a new documentation structure with detailed guides on Bootstrap, environment variable injection, global variable injection, and the IOC container.
+  - Updated the existing Chinese README to include links to the new English documentation and expanded sections on development guidelines and core functionalities.
+  - Modified the package.json to include additional directories in the Prettier configuration for improved formatting.
+  - Enhanced CSS files for better readability and maintainability by formatting CSS variables.
+
+  These changes aim to improve developer experience and provide clearer guidance on using the React app template effectively.
+
+#### ♻️ Refactors
+
+- **react-app:** enhance build process and update TypeScript configurations ([c2065b9](https://github.com/qlover/fe-base/commit/c2065b9ac847fb53776b871fc5bf62ac948801b6)) ([#473](https://github.com/qlover/fe-base/pull/473))
+  - Updated the build script in package.json to run linting before building the project.
+  - Modified tsconfig files to exclude node_modules and dist directories, improving TypeScript compilation efficiency.
+  - Introduced a new IOCIdentifier.ts file to centralize dependency identifiers.
+  - Refactored imports across various files to utilize the new IOCIdentifier.
+  - Removed obsolete ApiTransactionInterface and RequestCatcherInterface files to streamline the codebase.
+  - Implemented a new InversifyContainer class for better dependency injection management.
+
+  These changes aim to improve the overall structure, maintainability, and build process of the react-app template.
+
 ## 0.6.2
 
 ### Patch Changes
