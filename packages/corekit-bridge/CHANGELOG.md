@@ -1,5 +1,18 @@
 # @qlover/corekit-bridge
 
+## 1.3.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **corekit-bridge:** streamline environment variable injection in Vite plugin ([bb6e7f1](https://github.com/qlover/fe-base/commit/bb6e7f1f1e608c652265963b50b85cd727cddf8b)) ([#472](https://github.com/qlover/fe-base/pull/472))
+  - Removed the injectPkgConfig function and integrated its functionality directly into the plugin's config method for better clarity and maintainability.
+  - Enhanced the config method to define environment variables for import.meta.env, improving the injection process.
+  - Updated the overall structure of the ViteEnvConfigOptions to simplify the configuration process.
+
+  These changes aim to improve the efficiency and readability of the environment variable management within the corekit-bridge package.
+
 ## 1.3.3
 
 ### Patch Changes
