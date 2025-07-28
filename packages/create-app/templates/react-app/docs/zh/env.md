@@ -239,7 +239,6 @@ VITE_CUSTOM_FEATURE=true
 function App() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isDebug = import.meta.env.VITE_DEBUG === 'true';
-
   return (
     <div>
       <p>API URL: {apiUrl}</p>
@@ -301,7 +300,6 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
   onBefore(): void {
     const { target, source, prefix, blackList } = this.options;
-
     // 遍历目标对象的属性
     for (const key in target) {
       if (blackList.includes(key)) {
@@ -402,7 +400,6 @@ export class AppConfig implements EnvConfigInterface {
 
   private validateRequiredEnvVars(): void {
     const required = ['VITE_API_BASE_URL', 'VITE_APP_NAME'];
-
     for (const envVar of required) {
       if (!import.meta.env[envVar]) {
         throw new Error(`Missing required environment variable: ${envVar}`);

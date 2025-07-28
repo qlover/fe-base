@@ -33,6 +33,8 @@ src/
 ├── base/
 │   └── types/
 │       └── global.d.ts         # 全局类型声明
+└── config/
+    └── common.ts               # 全局变量名称配置
 ```
 
 ## 项目中的实现

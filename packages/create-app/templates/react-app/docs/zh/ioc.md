@@ -304,7 +304,6 @@ export class UserService {
     @inject(UserApi) private userApi: UserApi,
     @inject(IOCIdentifier.AppConfig) private appConfig: AppConfig
   ) {}
-
   async getUserInfo(): Promise<UserInfo> {
     return this.userApi.getUserInfo();
   }
@@ -319,7 +318,6 @@ export class BadService {
     @inject(ThemeService) private themeService: ThemeService,
     @inject(I18nService) private i18nService: I18nService
   ) {}
-
   // 一个服务做了太多事情
   async handleUserAction(): Promise<void> {
     // 处理用户逻辑
