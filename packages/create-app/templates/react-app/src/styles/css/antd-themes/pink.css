@@ -4,7 +4,12 @@
   --fe-color-primary: #f472b6; /* pink-400 */
   --fe-color-primary-hover: #ec4899; /* pink-500 */
   --fe-color-primary-active: #db2777; /* pink-600 */
-  --fe-color-primary-bg: rgba(244, 114, 182, 0.1); /* pink-400 with 0.1 opacity */
+  --fe-color-primary-bg: rgba(
+    244,
+    114,
+    182,
+    0.1
+  ); /* pink-400 with 0.1 opacity */
   --fe-color-primary-border: #f472b6; /* pink-400 */
   --fe-color-primary-text: #f472b6; /* pink-400 */
   --fe-color-primary-text-hover: #ec4899; /* pink-500 */

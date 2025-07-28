@@ -23,6 +23,8 @@
 ### 3. 文件结构
 
 ```
+config/
+├── common.ts               # 全局变量名称配置
 src/
 ├── core/
 │   ├── globals.ts              # 全局变量定义
@@ -105,8 +107,8 @@ const bootstrap = new Bootstrap({
     register: new IocRegisterImpl({ pathname, appConfig })
   },
   globalOptions: {
-    sources: globals,           // 全局变量源
-    target: browserGlobalsName  // 注入目标名称
+    sources: globals, // 全局变量源
+    target: browserGlobalsName // 注入目标名称
   }
 });
 ```
@@ -131,7 +133,7 @@ export class InjectGlobal implements BootstrapExecutorPlugin {
 
   onBefore(context: BootstrapContext): void {
     const { sources, target } = this.config;
-    
+
     // 如果 target 是字符串，注入到 root 对象
     if (typeof target === 'string') {
       Object.assign(context.parameters.root!, {
@@ -192,13 +194,13 @@ window = {
 function someFunction() {
   // 访问全局日志器
   window.feGlobals.logger.info('这是一条日志');
-  
+
   // 访问应用配置
   const appName = window.feGlobals.appConfig.appName;
-  
+
   // 访问本地存储
   window.feGlobals.localStorage.set('key', 'value');
-  
+
   // 访问对话框处理器
   window.feGlobals.dialogHandler.showMessage('Hello World');
 }
@@ -213,16 +215,12 @@ function MyComponent() {
   const handleClick = () => {
     // 使用全局日志器
     window.feGlobals.logger.info('用户点击了按钮');
-    
+
     // 使用全局对话框
     window.feGlobals.dialogHandler.showMessage('操作成功');
   };
 
-  return (
-    <button onClick={handleClick}>
-      点击我
-    </button>
-  );
+  return <button onClick={handleClick}>点击我</button>;
 }
 ```
 
@@ -234,14 +232,14 @@ export class SomeService {
   async doSomething() {
     // 使用全局日志器记录操作
     window.feGlobals.logger.info('开始执行操作');
-    
+
     try {
       // 业务逻辑
       const result = await this.performOperation();
-      
+
       // 使用全局对话框显示结果
       window.feGlobals.dialogHandler.showMessage('操作完成');
-      
+
       return result;
     } catch (error) {
       // 使用全局日志器记录错误
@@ -260,10 +258,10 @@ export function saveUserData(data: any) {
   try {
     // 使用全局存储
     window.feGlobals.localStorage.set('userData', data);
-    
+
     // 使用全局日志器
     window.feGlobals.logger.info('用户数据已保存');
-    
+
     return true;
   } catch (error) {
     window.feGlobals.logger.error('保存用户数据失败:', error);
@@ -324,7 +322,7 @@ if (window.feGlobals) {
   // 扩展可以访问应用的全局服务
   const appConfig = window.feGlobals.appConfig;
   const logger = window.feGlobals.logger;
-  
+
   // 执行扩展逻辑
   logger.info('浏览器扩展已加载');
 }
@@ -337,10 +335,10 @@ if (window.feGlobals) {
 ```tsx
 // ✅ 好的设计：只暴露核心服务
 export const globals = {
-  appConfig,      // 应用配置
-  logger,         // 日志服务
-  localStorage,   // 存储服务
-  dialogHandler,  // 对话框服务
+  appConfig, // 应用配置
+  logger, // 日志服务
+  localStorage, // 存储服务
+  dialogHandler // 对话框服务
   // 其他核心服务...
 };
 
@@ -409,17 +407,19 @@ console.log('日志器:', window.feGlobals?.logger);
 ### 2. 常见问题
 
 **问题 1：全局变量未注入**
+
 ```tsx
 // 检查 Bootstrap 配置
 const bootstrap = new Bootstrap({
   globalOptions: {
-    sources: globals,           // 确保 sources 正确
-    target: browserGlobalsName  // 确保 target 正确
+    sources: globals, // 确保 sources 正确
+    target: browserGlobalsName // 确保 target 正确
   }
 });
 ```
 
 **问题 2：类型错误**
+
 ```tsx
 // 检查类型声明
 declare global {
@@ -430,6 +430,7 @@ declare global {
 ```
 
 **问题 3：全局变量被修改**
+
 ```tsx
 // 确保使用 Object.freeze
 Object.freeze(Object.assign({}, sources));
@@ -466,8 +467,8 @@ export const globals = {
   appConfig,
   logger,
   // 不要暴露 API 密钥、密码等敏感信息
-  apiKey: 'secret_key',  // 危险！
-  password: 'password'    // 危险！
+  apiKey: 'secret_key', // 危险！
+  password: 'password' // 危险！
 };
 
 // ✅ 只暴露必要的服务
@@ -507,4 +508,4 @@ export const browserGlobalsName = 'feGlobals'; // 而不是通用的 'globals'
 4. **第三方集成**：便于与第三方库集成
 5. **开发体验**：提升开发效率和调试体验
 
-通过合理使用全局变量注入，可以让应用的核心服务在任何地方都能方便地访问，同时保持代码的整洁和类型安全。 
+通过合理使用全局变量注入，可以让应用的核心服务在任何地方都能方便地访问，同时保持代码的整洁和类型安全。

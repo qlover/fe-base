@@ -48,7 +48,7 @@
     "dev:prod": "vite --mode production",
     "build": "npm run lint && vite build",
     "lint": "tsc -b --noEmit && eslint ./src --fix",
-    "prettier": "prettier --write ./src",
+    "prettier": "prettier --write ./src ./docs ./config",
     "preview": "vite preview",
     "test": "vitest run"
   },

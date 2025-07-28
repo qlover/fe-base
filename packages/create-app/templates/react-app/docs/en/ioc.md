@@ -1,40 +1,40 @@
-# IOC 容器
+# IOC Container
 
-## 什么是 IOC？
+## What is IOC?
 
-IOC（Inversion of Control，控制反转）是一种设计模式，它将对象的创建和依赖关系的管理交给容器来处理，而不是在代码中直接创建对象。
+IOC (Inversion of Control) is a design pattern that hands over the creation of objects and management of their dependencies to a container, rather than creating objects directly in the code.
 
-**简单来说**：就像工厂生产产品一样，你不需要知道产品是如何制造的，只需要告诉工厂你需要什么产品，工厂就会给你提供。
+**In simple terms**: Like a factory producing products, you don't need to know how products are manufactured; you just tell the factory what product you need, and the factory will provide it.
 
-## 项目中的 IOC 实现
+## IOC Implementation in Project
 
-### 核心技术栈
+### Core Technology Stack
 
-- **InversifyJS**：作为 IOC 容器的实现(你也可以手动实现自己的容器)
-- **TypeScript**：提供类型安全
-- **装饰器模式**：使用 `@injectable()` 和 `@inject()` 装饰器
+- **InversifyJS**: As the IOC container implementation (you can also manually implement your own container)
+- **TypeScript**: Provides type safety
+- **Decorator Pattern**: Uses `@injectable()` and `@inject()` decorators
 
-### 核心文件结构
+### Core File Structure
 
 ```
 config/
-├── IOCIdentifier.ts          # IOC 标识符定义
+├── IOCIdentifier.ts          # IOC identifier definitions
 src/
 ├── core/
-│   ├── IOC.ts                    # IOC 主入口
-│   ├── registers/                 # 注册器目录
-│   │   ├── RegisterGlobals.ts    # 全局服务注册
-│   │   ├── RegisterCommon.ts     # 通用服务注册
-│   │   └── RegisterControllers.ts # 控制器注册
-│   └── globals.ts                # 全局实例
+│   ├── IOC.ts                    # IOC main entry
+│   ├── registers/                 # Registers directory
+│   │   ├── RegisterGlobals.ts    # Global service registration
+│   │   ├── RegisterCommon.ts     # Common service registration
+│   │   └── RegisterControllers.ts # Controller registration
+│   └── globals.ts                # Global instances
 ├── base/
 │   └── cases/
-│       └── InversifyContainer.ts # Inversify 容器实现
+│       └── InversifyContainer.ts # Inversify container implementation
 ```
 
-## 基本概念
+## Basic Concepts
 
-### 1. IOC 标识符
+### 1. IOC Identifiers
 
 ```tsx
 // config/IOCIdentifier.ts
@@ -43,11 +43,11 @@ export const IOCIdentifier = Object.freeze({
   LocalStorage: 'LocalStorage',
   Logger: 'Logger',
   AppConfig: 'AppConfig'
-  // ... 更多标识符
+  // ... more identifiers
 });
 ```
 
-### 2. IOC 标识符映射
+### 2. IOC Identifier Mapping
 
 ```tsx
 // core/IOC.ts
@@ -59,11 +59,11 @@ export interface IOCIdentifierMap {
   >;
   [IOCIdentifier.Logger]: import('@qlover/logger').LoggerInterface;
   [IOCIdentifier.AppConfig]: import('@qlover/corekit-bridge').EnvConfigInterface;
-  // ... 更多映射
+  // ... more mappings
 }
 ```
 
-### 3. IOC 函数
+### 3. IOC Function
 
 ```tsx
 // core/IOC.ts
@@ -72,24 +72,24 @@ export const IOC = createIOCFunction<IOCIdentifierMap>(
 );
 ```
 
-## 使用方法
+## Usage
 
-### 1. 获取服务实例
+### 1. Getting Service Instances
 
 ```tsx
-// 使用类名获取
+// Using class name
 const userService = IOC(UserService);
 
-// 使用字符串标识符获取
+// Using string identifier
 const logger = IOC('Logger');
-// 或者
+// Or
 const logger = IOC(IOCIdentifier.Logger);
 
-// 使用 AppConfig
+// Using AppConfig
 const appConfig = IOC(IOCIdentifier.AppConfig);
 ```
 
-### 2. 在服务中使用依赖注入
+### 2. Using Dependency Injection in Services
 
 ```tsx
 import { inject, injectable } from 'inversify';
@@ -120,33 +120,33 @@ export class UserService extends UserAuthService<UserInfo> {
 }
 ```
 
-### 3. 在 Bootstrap 中使用
+### 3. Using in Bootstrap
 
 ```tsx
-// 在启动器中注册服务
+// Register services in bootstrapper
 bootstrap.use([
-  IOC(UserService), // 用户服务
-  IOC(I18nService), // 国际化服务
-  new UserApiBootstarp() // API 配置
+  IOC(UserService), // User service
+  IOC(I18nService), // Internationalization service
+  new UserApiBootstarp() // API configuration
 ]);
 ```
 
-## 服务注册
+## Service Registration
 
-### 1. 全局服务注册
+### 1. Global Service Registration
 
 ```tsx
 // core/registers/RegisterGlobals.ts
 export const RegisterGlobals: IOCRegister = {
   register(container, _, options): void {
-    // 注册应用配置
+    // Register application configuration
     container.bind(IOCIdentifier.AppConfig, options!.appConfig);
 
-    // 注册日志服务
+    // Register logging service
     container.bind(Logger, logger);
     container.bind(IOCIdentifier.Logger, logger);
 
-    // 注册存储服务
+    // Register storage services
     container.bind(IOCIdentifier.LocalStorage, localStorage);
     container.bind(IOCIdentifier.LocalStorageEncrypt, localStorageEncrypt);
     container.bind(IOCIdentifier.CookieStorage, cookieStorage);
@@ -154,7 +154,7 @@ export const RegisterGlobals: IOCRegister = {
 };
 ```
 
-### 2. 通用服务注册
+### 2. Common Service Registration
 
 ```tsx
 // core/registers/RegisterCommon.ts
@@ -162,7 +162,7 @@ export const RegisterCommon: IOCRegister = {
   register(container, _, options): void {
     const AppConfig = container.get(IOCIdentifier.AppConfig);
 
-    // 注册 API 相关服务
+    // Register API-related services
     const feApiToken = new TokenStorage(AppConfig.userTokenStorageKey, {
       storage: container.get(IOCIdentifier.LocalStorageEncrypt)
     });
@@ -170,7 +170,7 @@ export const RegisterCommon: IOCRegister = {
     container.bind(IOCIdentifier.FeApiToken, feApiToken);
     container.bind(IOCIdentifier.FeApiCommonPlugin, feApiRequestCommonPlugin);
 
-    // 注册主题服务
+    // Register theme service
     container.bind(
       ThemeService,
       new ThemeService({
@@ -179,7 +179,7 @@ export const RegisterCommon: IOCRegister = {
       })
     );
 
-    // 注册路由服务
+    // Register router service
     container.bind(
       RouteService,
       new RouteService({
@@ -188,13 +188,13 @@ export const RegisterCommon: IOCRegister = {
       })
     );
 
-    // 注册国际化服务
+    // Register i18n service
     container.bind(I18nService, new I18nService(options!.pathname));
   }
 };
 ```
 
-### 3. 控制器注册
+### 3. Controller Registration
 
 ```tsx
 // core/registers/RegisterControllers.ts
@@ -203,11 +203,11 @@ export class RegisterControllers implements IOCRegister {
     container: IOCContainer,
     _: IOCManagerInterface<IOCContainer>
   ): void {
-    // 注册控制器
+    // Register controllers
     const jsonStorageController = new JSONStorageController(localStorage);
     container.bind(JSONStorageController, jsonStorageController);
 
-    // 配置处理器
+    // Configure processor
     container
       .get(ProcesserExecutor)
       .use(container.get(I18nKeyErrorPlugin))
@@ -216,9 +216,9 @@ export class RegisterControllers implements IOCRegister {
 }
 ```
 
-## 实际应用场景
+## Practical Application Scenarios
 
-### 1. 用户认证服务
+### 1. User Authentication Service
 
 ```tsx
 @injectable()
@@ -258,14 +258,14 @@ export class UserService extends UserAuthService<UserInfo> {
 }
 ```
 
-### 2. API 配置服务
+### 2. API Configuration Service
 
 ```tsx
 export class UserApiBootstarp implements BootstrapExecutorPlugin {
   readonly pluginName = 'UserApiBootstarp';
 
   onBefore({ parameters: { ioc } }: BootstrapContext): void {
-    // 通过 IOC 获取 UserApi 实例并配置插件
+    // Get UserApi instance through IOC and configure plugins
     ioc
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())
@@ -275,41 +275,42 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
 }
 ```
 
-### 3. 在组件中使用
+### 3. Using in Components
 
 ```tsx
-// 在 React 组件中使用 IOC 服务
+// Using IOC services in React components
 function UserProfile() {
   const userService = IOC(UserService);
   const { user } = useStore(userService.store);
 
   return (
     <div>
-      <h1>欢迎, {user?.name}</h1>
-      <button onClick={() => userService.logout()}>退出登录</button>
+      <h1>Welcome, {user?.name}</h1>
+      <button onClick={() => userService.logout()}>Logout</button>
     </div>
   );
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 服务设计原则
+### 1. Service Design Principles
 
 ```tsx
-// ✅ 好的设计：单一职责
+// ✅ Good design: Single responsibility
 @injectable()
 export class UserService {
   constructor(
     @inject(UserApi) private userApi: UserApi,
     @inject(IOCIdentifier.AppConfig) private appConfig: AppConfig
   ) {}
+
   async getUserInfo(): Promise<UserInfo> {
     return this.userApi.getUserInfo();
   }
 }
 
-// ❌ 不好的设计：职责过多
+// ❌ Bad design: Too many responsibilities
 @injectable()
 export class BadService {
   constructor(
@@ -318,20 +319,21 @@ export class BadService {
     @inject(ThemeService) private themeService: ThemeService,
     @inject(I18nService) private i18nService: I18nService
   ) {}
-  // 一个服务做了太多事情
+
+  // One service doing too many things
   async handleUserAction(): Promise<void> {
-    // 处理用户逻辑
-    // 处理路由逻辑
-    // 处理主题逻辑
-    // 处理国际化逻辑
+    // Handle user logic
+    // Handle routing logic
+    // Handle theme logic
+    // Handle i18n logic
   }
 }
 ```
 
-### 2. 依赖注入的最佳实践
+### 2. Dependency Injection Best Practices
 
 ```tsx
-// ✅ 使用接口而不是具体实现
+// ✅ Use interfaces instead of concrete implementations
 @injectable()
 export class UserService {
   constructor(
@@ -339,7 +341,7 @@ export class UserService {
   ) {}
 }
 
-// ✅ 使用标识符而不是类名
+// ✅ Use identifiers instead of class names
 @injectable()
 export class SomeService {
   constructor(
@@ -349,7 +351,7 @@ export class SomeService {
 }
 ```
 
-### 3. 错误处理
+### 3. Error Handling
 
 ```tsx
 @injectable()
@@ -358,29 +360,29 @@ export class SafeService {
 
   async doSomething(): Promise<void> {
     try {
-      // 业务逻辑
+      // Business logic
     } catch (error) {
-      this.logger.error('操作失败:', error);
+      this.logger.error('Operation failed:', error);
       throw error;
     }
   }
 }
 ```
 
-## 调试和测试
+## Debugging and Testing
 
-### 1. 调试 IOC 容器
+### 1. Debugging IOC Container
 
 ```tsx
-// 检查服务是否已注册
+// Check if service is registered
 const container = IOC.implemention;
 const isRegistered = container.isBound(UserService);
 
-// 获取所有已注册的服务
+// Get all registered services
 const bindings = container.getAll(UserService);
 ```
 
-### 2. 单元测试
+### 2. Unit Testing
 
 ```tsx
 import { Container } from 'inversify';
@@ -392,7 +394,7 @@ describe('UserService', () => {
   beforeEach(() => {
     container = new Container();
 
-    // 注册测试依赖
+    // Register test dependencies
     container.bind('UserApiInterface').toConstantValue(mockUserApi);
     container.bind(IOCIdentifier.AppConfig).toConstantValue(mockAppConfig);
     container
@@ -409,14 +411,14 @@ describe('UserService', () => {
 });
 ```
 
-## 总结
+## Summary
 
-IOC 容器在项目中的作用：
+The role of IOC container in the project:
 
-1. **依赖管理**：统一管理所有服务的依赖关系
-2. **类型安全**：通过 TypeScript 提供编译时类型检查
-3. **可测试性**：便于进行单元测试和模拟
-4. **可维护性**：清晰的依赖关系，易于理解和修改
-5. **可扩展性**：轻松添加新的服务和依赖
+1. **Dependency Management**: Unified management of all service dependencies
+2. **Type Safety**: Compile-time type checking through TypeScript
+3. **Testability**: Easy to unit test and mock
+4. **Maintainability**: Clear dependency relationships, easy to understand and modify
+5. **Extensibility**: Easy to add new services and dependencies
 
-通过合理使用 IOC 容器，可以让代码更加模块化、可测试和可维护。
+Through proper use of the IOC container, code becomes more modular, testable, and maintainable.
