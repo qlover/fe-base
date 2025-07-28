@@ -29,28 +29,31 @@ export type ViteEnvConfigOptions = {
   records?: [string, string][];
 };
 
-function injectPkgConfig(options: [string, string][], envPrefix: string = '') {
-  options.forEach(([key, value]) => {
-    const envKey = `${envPrefix}${key}`;
-    if (!process.env[envKey]) {
-      process.env[envKey] = value;
-    }
-  });
-}
-
 export default (opts: ViteEnvConfigOptions = {}): Plugin => {
   const { envPops, envPrefix = '', records = [] } = opts;
+
   return {
     name: 'vite-env-config',
+    config() {
+      // Create define object for import.meta.env injection
+      const define: Record<string, string> = {};
+
+      records.forEach(([key, value]) => {
+        const envKey = `${envPrefix}${key}`;
+        // Define the environment variable for import.meta.env
+        define[`import.meta.env.${envKey}`] = JSON.stringify(value);
+      });
+
+      return {
+        define
+      };
+    },
     async configResolved() {
       if (envPops !== false) {
         const { Env } = await import('@qlover/env-loader');
         // load dotenv files
         Env.searchEnv(envPops !== true ? envPops : undefined);
       }
-
-      // add version and name to env
-      injectPkgConfig(records, envPrefix);
     }
   };
 };
