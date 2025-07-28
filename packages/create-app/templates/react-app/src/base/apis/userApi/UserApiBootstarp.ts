@@ -4,7 +4,8 @@ import {
   RequestAdapterResponse,
   RequestTransactionInterface
 } from '@qlover/fe-corekit';
-import { IOC, IOCIdentifier } from '@/core/IOC';
+import { IOC } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { RequestLogger } from '@/base/cases/RequestLogger';
 import { FetchURLPlugin } from '@qlover/fe-corekit';
 import {

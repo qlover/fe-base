@@ -1,104 +1,94 @@
 // ! dont't import tsx, only ts file
-import {
-  ApiMockPlugin,
-  EnvConfigInterface,
-  RequestCommonPlugin,
-  ApiCatchPlugin,
-  IOCContainerInterface,
-  createIOCFunction,
-  ServiceIdentifier,
-  TokenStorage,
-  CookieStorage
-} from '@qlover/corekit-bridge';
-import type { JSONSerializer, ObjectStorage } from '@qlover/fe-corekit';
-import type { LoggerInterface } from '@qlover/logger';
 import type { AppConfig } from '@/base/cases/AppConfig';
-import { Container } from 'inversify';
-import { IOCRegisterInterface } from '@qlover/corekit-bridge';
-import { DialogHandler } from '@/base/cases/DialogHandler';
-
-export type IocRegisterOptions = {
-  pathname: string;
-  appConfig: AppConfig;
-};
-
-export type InversifyRegisterContainer = Container;
-/**
- * Inversify register interface.
- */
-export interface InversifyRegisterInterface
-  extends IOCRegisterInterface<InversifyContainer, IocRegisterOptions> {}
-
-export class InversifyContainer implements IOCContainerInterface {
-  private container: Container;
-
-  constructor() {
-    this.container = new Container({
-      // allow `@injectable` decorator, auto bind injectable classes
-      autobind: true,
-      // use singleton scope
-      defaultScope: 'Singleton'
-    });
-  }
-
-  bind<T>(key: ServiceIdentifier<T>, value: T): void {
-    this.container.bind<T>(key).toConstantValue(value);
-  }
-
-  get<K extends keyof IOCIdentifierMap>(
-    serviceIdentifier: K
-  ): IOCIdentifierMap[K];
-  get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-  get<T, K extends keyof IOCIdentifierMap>(
-    serviceIdentifier: ServiceIdentifier<T> | K
-  ): T | IOCIdentifierMap[K] {
-    return this.container.get<T>(serviceIdentifier);
-  }
-}
-
-/**
- * IOC identifier
- *
- * @description
- * IOC identifier is used to identify the service in the IOC container.
- *
- * @example
- * ```ts
- * const a = IOC(IOCIdentifier.JSON);
- * const b = IOC('JSON');
- * ```
- */
-export const IOCIdentifier = Object.freeze({
-  JSON: 'JSON',
-  LocalStorage: 'LocalStorage',
-  LocalStorageEncrypt: 'LocalStorageEncrypt',
-  CookieStorage: 'CookieStorage',
-  Logger: 'Logger',
-  FeApiToken: 'FeApiToken',
-  FeApiCommonPlugin: 'FeApiCommonPlugin',
-  AppConfig: 'AppConfig',
-  ApiMockPlugin: 'ApiMockPlugin',
-  ApiCatchPlugin: 'ApiCatchPlugin',
-  DialogHandler: 'DialogHandler'
-});
+import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
+import { createIOCFunction } from '@qlover/corekit-bridge';
+import { InversifyContainer } from '@/base/cases/InversifyContainer';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 /**
  * IOC identifier map
+ *
+ * Define the implementation class corresponding to the string identifier
  */
 export interface IOCIdentifierMap {
-  [IOCIdentifier.JSON]: JSONSerializer;
-  [IOCIdentifier.LocalStorage]: ObjectStorage<string, string>;
-  [IOCIdentifier.LocalStorageEncrypt]: ObjectStorage<string, string>;
-  [IOCIdentifier.CookieStorage]: CookieStorage;
-  [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.FeApiToken]: TokenStorage<string>;
-  [IOCIdentifier.FeApiCommonPlugin]: RequestCommonPlugin;
-  [IOCIdentifier.AppConfig]: EnvConfigInterface;
-  [IOCIdentifier.ApiMockPlugin]: ApiMockPlugin;
-  [IOCIdentifier.ApiCatchPlugin]: ApiCatchPlugin;
-  [IOCIdentifier.DialogHandler]: DialogHandler;
+  [IOCIdentifier.JSON]: import('@qlover/fe-corekit').JSONSerializer;
+  [IOCIdentifier.LocalStorage]: import('@qlover/fe-corekit').ObjectStorage<
+    string,
+    string
+  >;
+  [IOCIdentifier.LocalStorageEncrypt]: import('@qlover/fe-corekit').ObjectStorage<
+    string,
+    string
+  >;
+  [IOCIdentifier.CookieStorage]: import('@qlover/corekit-bridge').CookieStorage;
+  [IOCIdentifier.Logger]: import('@qlover/logger').LoggerInterface;
+  [IOCIdentifier.FeApiToken]: import('@qlover/corekit-bridge').TokenStorage<string>;
+  [IOCIdentifier.FeApiCommonPlugin]: import('@qlover/corekit-bridge').RequestCommonPlugin;
+  [IOCIdentifier.AppConfig]: import('@qlover/corekit-bridge').EnvConfigInterface;
+  [IOCIdentifier.ApiMockPlugin]: import('@qlover/corekit-bridge').ApiMockPlugin;
+  [IOCIdentifier.ApiCatchPlugin]: import('@qlover/corekit-bridge').ApiCatchPlugin;
+  [IOCIdentifier.DialogHandler]: import('@/base/cases/DialogHandler').DialogHandler;
 }
 
+/**
+ * IOC register options
+ */
+export type IocRegisterOptions = {
+  /**
+   * The pathname of the current page
+   */
+  pathname: string;
+
+  /**
+   * The app config
+   */
+  appConfig: AppConfig;
+};
+
+/**
+ * IOC container
+ *
+ * This is a alias of IOCContainerInterface, use it without care about the implementation.
+ *
+ * Need to achieve the effect: when the implementation class on the right side of the equal sign changes, the IOCContainer will change automatically
+ */
+export type IOCContainer = InversifyContainer;
+
+/**
+ * IOC register interface.
+ *
+ * This is shortcut interface, implement this interface, you can use any IOC container.
+ *
+ * Need to achieve the effect: when the implementation class on the right side of the equal sign changes, the IOCContainer will change automatically
+ */
+export interface IOCRegister
+  extends IOCRegisterInterface<IOCContainer, IocRegisterOptions> {}
+
+/**
+ * IOC function
+ *
+ * This is the only and main exported content of the file
+ *
+ * @example use A class
+ * ```ts
+ * const userService = IOC(UserService);
+ * ```
+ *
+ * @example use A string identifier
+ *
+ * string identifier is shortcut for `IOCIdentifierMap` type, string key of `IOCIdentifier`
+ *
+ * ```ts
+ * const logger = IOC('Logger'); // Logger instance
+ *
+ * // or
+ * const logger = IOC(IOCIdentifier.Logger);
+ * ```
+ */
 export const IOC = createIOCFunction<IOCIdentifierMap>(
+  /**
+   * If not inversify, you can use any IOC container,
+   * then replace the InversifyContainer with your own IOC container
+   */
   new InversifyContainer()
 );

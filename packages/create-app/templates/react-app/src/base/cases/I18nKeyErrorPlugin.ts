@@ -1,14 +1,15 @@
 import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { I18nService } from '../services/I18nService';
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 /**
  * When throw error, it will be converted to i18n key
  *
  * If the error thrown is an i18n key, it will be converted to the corresponding text
  */
+@injectable()
 export class I18nKeyErrorPlugin implements ExecutorPlugin {
   readonly pluginName = 'I18nKeyErrorPlugin';
 

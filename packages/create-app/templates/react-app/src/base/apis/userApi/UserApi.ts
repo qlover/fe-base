@@ -7,25 +7,20 @@ import {
   GetIpInfoTransaction,
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction,
-  UserApiTestApiCatchResultTransaction
+  UserApiTestApiCatchResultTransaction,
+  UserInfo
 } from './UserApiType';
 import { inject, injectable } from 'inversify';
 import { UserApiAdapter } from './UserApiAdapter';
 import { UserApiConfig } from './UserApiBootstarp';
-import {
+import type {
   LoginResponseData,
   UserAuthApiInterface,
-  UserAuthStoreInterface,
-  UserAuthState
+  UserAuthStoreInterface
 } from '@qlover/corekit-bridge';
-import {
-  RegisterFormData,
-  UserServiceUserInfo
-} from '@/base/services/UserService';
+import { RegisterFormData } from '@/base/services/UserService';
 import { RES_NO_TOKEN } from '@config/Identifier';
 import { AppError } from '@/base/cases/AppError';
-
-export type UserApiState = UserAuthState<UserServiceUserInfo>;
 
 /**
  * UserApi
@@ -37,9 +32,9 @@ export type UserApiState = UserAuthState<UserServiceUserInfo>;
 @injectable()
 export class UserApi
   extends RequestTransaction<UserApiConfig>
-  implements UserAuthApiInterface<UserApiState>
+  implements UserAuthApiInterface<UserInfo>
 {
-  protected store: UserAuthStoreInterface<UserApiState> | null = null;
+  protected store: UserAuthStoreInterface<UserInfo> | null = null;
 
   constructor(
     @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
@@ -48,7 +43,7 @@ export class UserApi
     super(adapter);
   }
 
-  getStore(): UserAuthStoreInterface<UserApiState> | null {
+  getStore(): UserAuthStoreInterface<UserInfo> | null {
     return this.store;
   }
 
@@ -56,7 +51,7 @@ export class UserApi
    * @override
    * @param store
    */
-  setStore(store: UserAuthStoreInterface<UserApiState>): void {
+  setStore(store: UserAuthStoreInterface<UserInfo>): void {
     this.store = store;
   }
 
@@ -130,9 +125,7 @@ export class UserApi
    * @override
    * @returns
    */
-  async getUserInfo(): Promise<
-    UserApiGetUserInfoTransaction['response']['data']
-  > {
+  async getUserInfo(): Promise<UserInfo> {
     const response =
       await this.get<UserApiGetUserInfoTransaction>('/api/userinfo');
 

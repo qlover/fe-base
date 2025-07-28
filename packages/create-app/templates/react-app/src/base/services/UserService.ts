@@ -1,26 +1,24 @@
 import { ExecutorPlugin, type SyncStorageInterface } from '@qlover/fe-corekit';
 import type {
-  UserApiGetUserInfoTransaction,
-  UserApiLoginTransaction
+  UserApiLoginTransaction,
+  UserInfo
 } from '@/base/apis/userApi/UserApiType';
 import { RouteService } from './RouteService';
 import {
-  LoginResponseData,
   type UserAuthApiInterface,
+  type UserAuthState,
+  LoginResponseData,
   UserAuthService,
-  UserAuthState,
   UserAuthStore
 } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
 import * as errKeys from '@config/Identifier/common.error';
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { AppConfig } from '../cases/AppConfig';
-import { UserApiState } from '../apis/userApi/UserApi';
 
-export type UserServiceUserInfo =
-  UserApiGetUserInfoTransaction['response']['data'];
+export interface UserApiState extends UserAuthState<UserInfo> {}
 
 export interface RegisterFormData {
   username: string;
@@ -32,7 +30,7 @@ export interface RegisterFormData {
 
 @injectable()
 export class UserService
-  extends UserAuthService<UserServiceUserInfo>
+  extends UserAuthService<UserInfo>
   implements ExecutorPlugin
 {
   readonly pluginName = 'UserService';
@@ -40,7 +38,7 @@ export class UserService
   constructor(
     @inject(RouteService) protected routerService: RouteService,
     @inject(UserApi)
-    userApi: UserAuthApiInterface<UserAuthState<UserServiceUserInfo>>,
+    userApi: UserAuthApiInterface<UserInfo>,
     @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
     @inject(IOCIdentifier.LocalStorageEncrypt)
     storage: SyncStorageInterface<string, string>

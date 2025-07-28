@@ -17,7 +17,7 @@ export class JSONStorageController extends StoreInterface<JSONStoragePageState> 
     requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
   };
 
-  constructor(private storage: SyncStorageInterface<string, number>) {
+  constructor(private storage: SyncStorageInterface<string, unknown>) {
     super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,
       testKey2: storage.getItem('testKey2') ?? 0,

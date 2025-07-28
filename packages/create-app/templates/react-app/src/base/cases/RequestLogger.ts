@@ -1,4 +1,4 @@
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   type ExecutorPlugin,
   type ExecutorContext,

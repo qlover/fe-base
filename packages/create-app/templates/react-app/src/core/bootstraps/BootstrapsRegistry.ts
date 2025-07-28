@@ -4,14 +4,14 @@ import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
-import { BootstrapApp } from './BootstrapApp';
 import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
 import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
 import { AiApiBootstarp } from '@/base/apis/AiApi';
 import { printBootstrap } from './PrintBootstrap';
-import { IOCIdentifier, type IOCIdentifierMap } from '../IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { I18nService } from '@/base/services/I18nService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
+import { IOCIdentifierMap } from '../IOC';
 
 export class BootstrapsRegistry {
   constructor(
@@ -30,7 +30,6 @@ export class BootstrapsRegistry {
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,
-      new BootstrapApp(),
       IOC(I18nKeyErrorPlugin)
     ];
 
