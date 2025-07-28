@@ -1,5 +1,5 @@
 import { AsyncExecutor, ExecutorPlugin } from '@qlover/fe-corekit';
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 import { RouteService } from './RouteService';

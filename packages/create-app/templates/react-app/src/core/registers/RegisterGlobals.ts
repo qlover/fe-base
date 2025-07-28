@@ -1,5 +1,4 @@
 import { JSONSerializer } from '@qlover/fe-corekit';
-import type { IOCManagerInterface } from '@qlover/corekit-bridge';
 import {
   cookieStorage,
   dialogHandler,
@@ -8,22 +7,14 @@ import {
   localStorageEncrypt,
   logger
 } from '../globals';
-import {
-  type InversifyContainer,
-  type InversifyRegisterInterface,
-  IOCIdentifier,
-  IocRegisterOptions
-} from '@/core/IOC';
+import { IOCRegister } from '@/core/IOC';
 import { Logger } from '@qlover/logger';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
-export class RegisterGlobals implements InversifyRegisterInterface {
-  register(
-    container: InversifyContainer,
-    _: IOCManagerInterface<InversifyContainer>,
-    options: IocRegisterOptions
-  ): void {
+export const RegisterGlobals: IOCRegister = {
+  register(container, _, options): void {
     // inject AppConfig to IOC
-    container.bind(IOCIdentifier.AppConfig, options.appConfig);
+    container.bind(IOCIdentifier.AppConfig, options!.appConfig);
     container.bind(IOCIdentifier.DialogHandler, dialogHandler);
 
     container.bind(JSONSerializer, JSON);
@@ -36,4 +27,4 @@ export class RegisterGlobals implements InversifyRegisterInterface {
     container.bind(IOCIdentifier.LocalStorageEncrypt, localStorageEncrypt);
     container.bind(IOCIdentifier.CookieStorage, cookieStorage);
   }
-}
+};

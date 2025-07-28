@@ -1,17 +1,13 @@
-import { FetchAbortPlugin } from '@qlover/fe-corekit';
-import { Logger } from '@qlover/logger';
 import {
-  InversifyContainer,
-  InversifyRegisterInterface,
-  IOCIdentifier,
-  IocRegisterOptions
-} from '@/core/IOC';
+  FetchAbortPlugin,
+  type SyncStorageInterface
+} from '@qlover/fe-corekit';
+import { Logger } from '@qlover/logger';
 import {
   RequestCommonPlugin,
   ApiMockPlugin,
   ApiCatchPlugin,
   ThemeService,
-  IOCManagerInterface,
   TokenStorage
 } from '@qlover/corekit-bridge';
 import mockDataJson from '@config/feapi.mock.json';
@@ -22,13 +18,11 @@ import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
 import { baseRoutes } from '@config/app.router';
 import { UserService } from '@/base/services/UserService';
+import { IOCRegister } from '../IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
-export class RegisterCommon implements InversifyRegisterInterface {
-  register(
-    container: InversifyContainer,
-    _: IOCManagerInterface<InversifyContainer>,
-    options: IocRegisterOptions
-  ): void {
+export const RegisterCommon: IOCRegister = {
+  register(container, _, options): void {
     const AppConfig = container.get(IOCIdentifier.AppConfig);
 
     const feApiToken = new TokenStorage(AppConfig.userTokenStorageKey, {
@@ -61,7 +55,7 @@ export class RegisterCommon implements InversifyRegisterInterface {
       ThemeService,
       new ThemeService({
         ...themeConfig,
-        storage: localStorage
+        storage: localStorage as SyncStorageInterface<string, string>
       })
     );
 
@@ -73,6 +67,6 @@ export class RegisterCommon implements InversifyRegisterInterface {
       })
     );
 
-    container.bind(I18nService, new I18nService(options.pathname));
+    container.bind(I18nService, new I18nService(options!.pathname));
   }
-}
+};

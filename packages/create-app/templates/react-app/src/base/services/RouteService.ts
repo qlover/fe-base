@@ -3,7 +3,10 @@ import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
-import { StoreInterface, StoreStateInterface } from '@qlover/corekit-bridge';
+import {
+  StoreInterface,
+  type StoreStateInterface
+} from '@qlover/corekit-bridge';
 
 export type RouterServiceDependencies = {
   navigate: NavigateFunction;
@@ -40,7 +43,7 @@ export class RouteService
 
     if (!navigate) {
       this.logger.debug(
-        'Please use `RouterServiceProvider` to set dependencies'
+        'Please use `RouteService.setDependencies` to set dependencies'
       );
     }
 

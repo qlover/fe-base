@@ -1,5 +1,11 @@
 import { UserApiTransaction } from './UserApiBootstarp';
 
+export type UserInfo = {
+  name: string;
+  email: string;
+  picture: string;
+};
+
 export type GetIpInfoTransaction = UserApiTransaction<
   undefined,
   {
@@ -35,11 +41,7 @@ export type UserApiGetRandomUser = UserApiTransaction<
 
 export type UserApiGetUserInfoTransaction = UserApiTransaction<
   string,
-  {
-    name: string;
-    email: string;
-    picture: string;
-  }
+  UserInfo
 >;
 
 export type UserApiLoginTransaction = UserApiTransaction<

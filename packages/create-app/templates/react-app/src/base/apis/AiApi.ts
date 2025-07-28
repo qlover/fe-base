@@ -8,11 +8,11 @@ import {
   RequestCommonPlugin
 } from '@qlover/corekit-bridge';
 import { RequestLogger } from '../cases/RequestLogger';
-import { IOCIdentifier } from '@/core/IOC';
-import { appConfig } from '@/core/globals';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import type { AppConfig } from '../cases/AppConfig';
 
 const apiApiAdapter = new RequestAdapterFetch({
-  baseURL: appConfig.aiApiBaseUrl
+  responseType: 'json'
 });
 
 // 使用 RequestScheduler
@@ -24,6 +24,11 @@ const apiApi = new RequestScheduler(apiApiAdapter);
 export const AiApiBootstarp: BootstrapExecutorPlugin = {
   pluginName: 'AiApiBootstarp',
   onBefore({ parameters: { ioc } }) {
+    const appConfig = ioc.get<AppConfig>(IOCIdentifier.AppConfig);
+
+    // dynamic set baseURL
+    apiApiAdapter.config.baseURL = appConfig.aiApiBaseUrl;
+
     apiApiAdapter.usePlugin(new FetchURLPlugin());
     apiApiAdapter.usePlugin(
       new RequestCommonPlugin({
@@ -40,13 +45,13 @@ export function aiHello(data: {
   messages: { role: string; content: string }[];
 }) {
   return apiApi.request<
-    typeof data,
     {
       id: string;
       object: string;
       created: number;
       choices: { message: { role: string; content: string } }[];
-    }
+    },
+    typeof data
   >({
     url: '/chat/completions',
     method: 'POST',

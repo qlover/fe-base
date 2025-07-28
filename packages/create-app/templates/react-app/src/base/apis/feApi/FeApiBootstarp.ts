@@ -11,7 +11,7 @@ import {
   ApiPickDataPlugin
 } from '@qlover/corekit-bridge';
 import { FeApi } from './FeApi';
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { RequestLogger } from '@/base/cases/RequestLogger';
 
 /**

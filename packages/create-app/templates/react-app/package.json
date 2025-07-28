@@ -46,7 +46,7 @@
     "dev": "vite --mode localhost",
     "dev:staging": "vite --mode staging",
     "dev:prod": "vite --mode production",
-    "build": "vite build",
+    "build": "npm run lint && vite build",
     "lint": "tsc -b --noEmit && eslint ./src --fix",
     "prettier": "prettier --write ./src",
     "preview": "vite preview",

@@ -1,5 +1,5 @@
-import type { RequestCatcherInterface } from '@/base/port/RequestCatcherInterface';
-import { IOCIdentifier } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import type { RequestCatcherInterface } from '@qlover/corekit-bridge';
 import type { RequestAdapterResponse } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import { inject, injectable } from 'inversify';
