@@ -5,6 +5,7 @@
 Bootstrap 是一个应用启动器，它帮助我们在应用启动时统一管理各种初始化逻辑。
 
 **简单来说**：就像电脑开机时需要启动各种服务一样，我们的应用也需要在启动时做一些准备工作，比如：
+
 - 检查用户是否登录
 - 加载用户信息
 - 初始化 API 配置
@@ -19,6 +20,7 @@ Bootstrap 是一个应用启动器，它帮助我们在应用启动时统一管�
 **文件入口**：`src/core/bootstraps/BootstrapApp.ts`
 
 **主要组成部分**：
+
 1. [IOC 容器](./ioc.md) - 依赖注入管理
 2. [环境变量的注入](./env.md) - 配置管理
 3. [浏览器全局变量的注入](./global.md) - 浏览器全局属性
@@ -209,6 +211,7 @@ await bootstrap.start();
 ```
 
 **对比结果**：
+
 - ✅ 组件变得简洁，只负责渲染
 - ✅ 业务逻辑被分离到启动器中
 - ✅ 可以独立测试业务逻辑
@@ -293,6 +296,7 @@ await bootstrap.start();
 ```
 
 **关键点**：
+
 - `UserApiBootstarp`：负责配置 API 请求
 - `UserService`：负责处理用户认证逻辑
 - `Bootstrap`：统一管理所有插件
@@ -358,6 +362,7 @@ bootstrap.use([
 如果你想要快速体验 Bootstrap，可以按照以下步骤：
 
 #### 步骤 1：创建简单的插件
+
 ```tsx
 // 创建一个简单的插件
 export class SimplePlugin implements BootstrapExecutorPlugin {
@@ -370,6 +375,7 @@ export class SimplePlugin implements BootstrapExecutorPlugin {
 ```
 
 #### 步骤 2：在启动器中注册
+
 ```tsx
 const bootstrap = new Bootstrap({
   root: window,
@@ -386,6 +392,7 @@ await bootstrap.start();
 ```
 
 #### 步骤 3：查看效果
+
 打开浏览器控制台，你会看到 "SimplePlugin 启动成功！" 的日志。
 
 **提示**：这个简单的例子展示了 Bootstrap 的基本用法。随着你对项目的了解，可以逐步添加更复杂的业务逻辑。

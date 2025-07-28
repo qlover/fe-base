@@ -48,12 +48,13 @@ Vite 会按照以下优先级加载环境变量文件：
 ```
 
 **示例**：
+
 ```bash
 # 开发模式
 vite dev --mode development
 # 加载顺序：.env.local > .env.development > .env
 
-# 生产模式  
+# 生产模式
 vite build --mode production
 # 加载顺序：.env.local > .env.production > .env
 
@@ -94,15 +95,15 @@ import envConfig from '@qlover/corekit-bridge/vite-env-config';
 export default defineConfig({
   plugins: [
     envConfig({
-      envPops: true,                    // 启用环境变量加载
-      envPrefix: 'VITE_',              // 环境变量前缀
+      envPops: true, // 启用环境变量加载
+      envPrefix: 'VITE_', // 环境变量前缀
       records: [
-        ['APP_NAME', name],            // 注入应用名称
-        ['APP_VERSION', version]       // 注入应用版本
+        ['APP_NAME', name], // 注入应用名称
+        ['APP_VERSION', version] // 注入应用版本
       ]
     })
   ],
-  envPrefix: 'VITE_',                  // Vite 环境变量前缀
+  envPrefix: 'VITE_', // Vite 环境变量前缀
   server: {
     port: Number(process.env.VITE_SERVER_PORT || 3200)
   }
@@ -166,13 +167,13 @@ const bootstrap = new Bootstrap({
     register: new IocRegisterImpl({ pathname, appConfig })
   },
   envOptions: {
-    target: appConfig,                    // 注入目标
+    target: appConfig, // 注入目标
     source: {
-      ...import.meta.env,                // 环境变量源
+      ...import.meta.env, // 环境变量源
       [envPrefix + 'BOOT_HREF']: root.location.href
     },
-    prefix: envPrefix,                   // 环境变量前缀
-    blackList: envBlackList             // 黑名单（不注入的变量）
+    prefix: envPrefix, // 环境变量前缀
+    blackList: envBlackList // 黑名单（不注入的变量）
   }
 });
 ```
@@ -186,7 +187,7 @@ const bootstrap = new Bootstrap({
 {
   "scripts": {
     "dev": "vite --mode localhost",
-    "dev:staging": "vite --mode staging", 
+    "dev:staging": "vite --mode staging",
     "dev:prod": "vite --mode production"
   }
 }
@@ -238,7 +239,7 @@ VITE_CUSTOM_FEATURE=true
 function App() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isDebug = import.meta.env.VITE_DEBUG === 'true';
-  
+
   return (
     <div>
       <p>API URL: {apiUrl}</p>
@@ -254,14 +255,14 @@ function App() {
 // 通过 IOC 获取配置
 function UserService() {
   const appConfig = IOC(IOCIdentifier.AppConfig);
-  
+
   const apiUrl = appConfig.aiApiBaseUrl;
   const token = appConfig.aiApiToken;
-  
+
   // 使用配置进行 API 调用
   const response = await fetch(`${apiUrl}/chat`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`
     }
   });
 }
@@ -272,17 +273,15 @@ function UserService() {
 ```tsx
 @injectable()
 export class ApiService {
-  constructor(
-    @inject(IOCIdentifier.AppConfig) private appConfig: AppConfig
-  ) {}
+  constructor(@inject(IOCIdentifier.AppConfig) private appConfig: AppConfig) {}
 
   async makeRequest() {
     const baseUrl = this.appConfig.aiApiBaseUrl;
     const token = this.appConfig.aiApiToken;
-    
+
     return fetch(`${baseUrl}/api/endpoint`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
   }
@@ -302,7 +301,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
   onBefore(): void {
     const { target, source, prefix, blackList } = this.options;
-    
+
     // 遍历目标对象的属性
     for (const key in target) {
       if (blackList.includes(key)) {
@@ -326,13 +325,13 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 ```tsx
 env<D>(key: string, defaultValue?: D): D {
   const { prefix = '', source = {} } = this.options;
-  
+
   // 将驼峰命名转换为下划线命名
   const formattedKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
   const envKey = `${prefix}${formattedKey}`;
-  
+
   const value = source[envKey];
-  
+
   // 如果是 JSON 字符串，则解析
   if (typeof value === 'string' && InjectEnv.isJSONString(value)) {
     return JSON.parse(value);
@@ -403,7 +402,7 @@ export class AppConfig implements EnvConfigInterface {
 
   private validateRequiredEnvVars(): void {
     const required = ['VITE_API_BASE_URL', 'VITE_APP_NAME'];
-    
+
     for (const envVar of required) {
       if (!import.meta.env[envVar]) {
         throw new Error(`Missing required environment variable: ${envVar}`);
@@ -426,6 +425,7 @@ console.log('AppConfig:', IOC(IOCIdentifier.AppConfig));
 ### 2. 常见问题
 
 **问题 1：环境变量未注入**
+
 ```bash
 # 检查环境变量前缀
 # 确保使用 VITE_ 前缀
@@ -434,6 +434,7 @@ APP_NAME=MyApp       # ❌ 错误，不会被注入
 ```
 
 **问题 2：环境变量文件未加载**
+
 ```bash
 # 检查文件命名
 .env.development     # ✅ 正确
@@ -441,6 +442,7 @@ APP_NAME=MyApp       # ❌ 错误，不会被注入
 ```
 
 **问题 3：环境变量被黑名单过滤**
+
 ```tsx
 // 检查黑名单配置
 export const envBlackList = ['env', 'userNodeEnv'];
