@@ -1,34 +1,52 @@
-import { Bootstrap } from '@qlover/corekit-bridge';
+import {
+  Bootstrap,
+  IOCContainerInterface,
+  IOCFunctionInterface
+} from '@qlover/corekit-bridge';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
-import { IOC } from '../IOC';
 import * as globals from '../globals';
-import { GLOBAL_NO_WINDOW } from '@config/Identifier/common.error';
 import { IocRegisterImpl } from '../registers/IocRegisterImpl';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
+import { isObject } from 'lodash';
+import { IOCIdentifierMap } from '../IOC';
+
+export type BootstrapAppArgs = {
+  /**
+   * 启动的根节点，通常是window
+   */
+  root: unknown;
+  /**
+   * 启动的web地址
+   */
+  bootHref: string;
+  /**
+   * IOC容器
+   */
+  IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
+};
 
 export class BootstrapApp {
-  static async main(): Promise<void> {
-    const root = window;
+  static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
+    const { root, bootHref, IOC } = args;
 
-    if (!(typeof root !== 'undefined' && root instanceof Window)) {
-      throw new Error(GLOBAL_NO_WINDOW);
+    if (!isObject(root)) {
+      throw new Error('root is not an object');
     }
 
     const { logger, appConfig } = globals;
-    const { pathname } = root.location;
 
     const bootstrap = new Bootstrap({
       root,
       logger,
       ioc: {
         manager: IOC,
-        register: new IocRegisterImpl({ pathname, appConfig })
+        register: new IocRegisterImpl({ pathname: bootHref, appConfig })
       },
       envOptions: {
         target: appConfig,
         source: {
           ...import.meta.env,
-          [envPrefix + 'BOOT_HREF']: root.location.href
+          [envPrefix + 'BOOT_HREF']: bootHref
         },
         prefix: envPrefix,
         blackList: envBlackList
@@ -51,5 +69,7 @@ export class BootstrapApp {
     } catch (error) {
       logger.error(`${appConfig.appName} starup error:`, error);
     }
+
+    return args;
   }
 }

@@ -120,6 +120,7 @@ export default defineConfig({
     port: Number(process.env.VITE_SERVER_PORT || 3200)
   },
   test: {
+    watch: false,
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/setupTests.ts']

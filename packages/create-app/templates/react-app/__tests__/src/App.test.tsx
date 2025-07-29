@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import App from '../../src/App';
+import App from '@/App';
 
 // Mock the dependencies
 vi.mock('react-router-dom', async () => {
@@ -31,7 +31,7 @@ vi.mock('@brain-toolkit/antd-theme-override/react', () => ({
   ))
 }));
 
-vi.mock('../../src/core/IOC', () => ({
+vi.mock('@/core/IOC', () => ({
   IOC: vi.fn((service) => {
     if (service === 'RouteService') {
       return {
@@ -48,7 +48,7 @@ vi.mock('../../src/core/IOC', () => ({
   })
 }));
 
-vi.mock('../../src/uikit/hooks/useStore', () => ({
+vi.mock('@/uikit/hooks/useStore', () => ({
   useStore: vi.fn((service, selector) => {
     if (service && selector) {
       return [
@@ -60,7 +60,7 @@ vi.mock('../../src/uikit/hooks/useStore', () => ({
   })
 }));
 
-vi.mock('../../src/base/cases/RouterLoader', () => ({
+vi.mock('@/base/cases/RouterLoader', () => ({
   RouterLoader: vi.fn().mockImplementation(() => ({
     toRoute: vi.fn((route) => ({
       path: route.path,
@@ -123,7 +123,7 @@ describe('App Component', () => {
 
   it('should handle empty routes gracefully', async () => {
     // Mock useStore to return empty routes
-    const { useStore } = await import('../../src/uikit/hooks/useStore');
+    const { useStore } = await import('@/uikit/hooks/useStore');
     vi.mocked(useStore).mockReturnValueOnce([]);
 
     render(<App />);

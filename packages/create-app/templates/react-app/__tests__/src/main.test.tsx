@@ -1,7 +1,7 @@
-import { BootstrapApp } from '../../src/core/bootstraps/BootstrapApp';
+import { BootstrapApp } from '@/core/bootstraps/BootstrapApp';
 
 // Mock BootstrapApp
-vi.mock('../../src/core/bootstraps/BootstrapApp', () => ({
+vi.mock('@/core/bootstraps/BootstrapApp', () => ({
   BootstrapApp: {
     main: vi.fn()
   }
@@ -16,7 +16,7 @@ vi.mock('react-dom/client', () => ({
 }));
 
 // Mock App component
-vi.mock('../../src/App', () => ({
+vi.mock('@/App', () => ({
   default: vi.fn(() => 'MockedApp')
 }));
 
@@ -32,14 +32,14 @@ describe('main.tsx', () => {
 
   describe('BootstrapApp initialization', () => {
     it('should call BootstrapApp.main()', async () => {
-      await import('../../src/main');
+      await import('@/main');
       expect(BootstrapApp.main).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Module loading', () => {
     it('should load main module without errors', async () => {
-      const mainModule = await import('../../src/main');
+      const mainModule = await import('@/main');
       expect(mainModule).toBeDefined();
     });
   });
