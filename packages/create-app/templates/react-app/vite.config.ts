@@ -124,9 +124,5 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/setupTests.ts']
-  },
-  ssr: {
-    // Test for corekit-bridge
-    noExternal: ['@qlover/corekit-bridge', '@qlover/fe-corekit']
   }
 });

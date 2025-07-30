@@ -61,7 +61,6 @@ describe('BootstrapApp', () => {
 
       const result = await BootstrapApp.main(mockArgs);
 
-      console.log(result);
       expect(result.bootHref).toBe('http://localhost:3000');
       // // defualt inject env,globals var, ioc
       // expect(mockIOC).toHaveBeenCalled();
