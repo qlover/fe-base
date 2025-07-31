@@ -33,7 +33,7 @@ export class BootstrapsRegistry {
       IOC(I18nKeyErrorPlugin)
     ];
 
-    if (this.appConfig.env !== 'production') {
+    if (!this.appConfig.isProduction) {
       bootstrapList.push(printBootstrap);
     }
 

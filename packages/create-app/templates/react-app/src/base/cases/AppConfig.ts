@@ -28,6 +28,17 @@ import type { EnvConfigInterface } from '@qlover/corekit-bridge';
  * console.log(config.aiApiBaseUrl); // Value from VITE_AI_API_BASE_URL
  */
 export class AppConfig implements EnvConfigInterface {
+  constructor(
+    /**
+     * Current environment mode for Vite
+     * @description Represents the running environment (development, production, etc.)
+     * Automatically set based on the current .env file being used
+     *
+     * from vite.config `VITE_USER_NODE_ENV`
+     */
+    readonly env: string = import.meta.env.VITE_USER_NODE_ENV
+  ) {}
+
   /**
    * Application name identifier
    * @description Injected from VITE_APP_NAME environment variable
@@ -39,15 +50,6 @@ export class AppConfig implements EnvConfigInterface {
    * @description Injected from VITE_APP_VERSION environment variable
    */
   readonly appVersion = '';
-
-  /**
-   * Current environment mode for Vite
-   * @description Represents the running environment (development, production, etc.)
-   * Automatically set based on the current .env file being used
-   *
-   * from vite.config `mode`
-   */
-  readonly env: string = import.meta.env.MODE;
 
   /**
    * Storage key for user authentication token
@@ -113,4 +115,9 @@ export class AppConfig implements EnvConfigInterface {
    * Project startup href, usually from window.location.href
    */
   readonly bootHref = '';
+
+  /** Flag indicating if the current environment is production */
+  get isProduction(): boolean {
+    return this.env === 'production';
+  }
 }
