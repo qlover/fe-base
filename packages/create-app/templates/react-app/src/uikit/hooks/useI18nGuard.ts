@@ -1,4 +1,6 @@
-import { I18nService, I18nServiceLocale } from '@/base/services/I18nService';
+import { I18nServiceLocale } from '@/base/services/I18nService';
+import { RouteService } from '@/base/services/RouteService';
+import { IOC } from '@/core/IOC';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -15,10 +17,6 @@ export function useI18nGuard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!lng) {
-      navigate('/404', { replace: true });
-    } else if (!I18nService.isValidLanguage(lng)) {
-      navigate('/404', { replace: true });
-    }
+    IOC(RouteService).i18nGuard(lng as I18nServiceLocale, navigate);
   }, [lng, navigate]);
 }

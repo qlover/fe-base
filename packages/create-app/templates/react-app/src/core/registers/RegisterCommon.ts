@@ -16,7 +16,8 @@ import { themeConfig } from '@config/theme';
 import { localStorage, logger } from '../globals';
 import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
-import { baseRoutes } from '@config/app.router';
+import { baseRoutes, baseNoLocaleRoutes } from '@config/app.router';
+import { useLocaleRoutes } from '@config/common';
 import { UserService } from '@/base/services/UserService';
 import { IOCRegister } from '../IOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
@@ -62,8 +63,9 @@ export const RegisterCommon: IOCRegister = {
     container.bind(
       RouteService,
       new RouteService({
-        routes: baseRoutes,
-        logger
+        routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
+        logger,
+        hasLocalRoutes: useLocaleRoutes
       })
     );
 
