@@ -1,5 +1,23 @@
 # @qlover/create-app
 
+## 0.7.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **router:** implement locale routing and enhance route configuration ([c6ceec2](https://github.com/qlover/fe-base/commit/c6ceec28f83a6c3638872bb4bbb4d6534b02fca8)) ([#476](https://github.com/qlover/fe-base/pull/476))
+  - Added support for locale-based routing in the application, allowing routes to include language prefixes.
+  - Introduced `baseNoLocaleRoutes` to manage routes without localization, improving flexibility in route handling.
+  - Updated `I18nService` to conditionally cache user language based on locale routing settings.
+  - Enhanced `RouteService` to handle locale routes and added methods for redirection and language validation.
+  - Modified `RegisterCommon` to utilize the appropriate route configuration based on locale settings.
+  - Updated various components and hooks to integrate with the new routing logic, ensuring seamless navigation and language handling.
+
+  These changes aim to improve the user experience by providing localized routes and better language management.
+
+  Co-authored-by: QRJ <renjie.qin@brain.im>
+
 ## 0.6.3
 
 ### Patch Changes

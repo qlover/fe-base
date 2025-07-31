@@ -1,5 +1,20 @@
 # @qlover/corekit-bridge
 
+## 1.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** enhance user authentication state management ([1db2fba](https://github.com/qlover/fe-base/commit/1db2fba323e80b5f8750bb6282fe3be1a428b6ab)) ([#476](https://github.com/qlover/fe-base/pull/476))
+  - Added a new test case to verify that the login status is set to SUCCESS when both user info and credential are present.
+  - Updated the UserAuthState constructor to automatically set the login status to SUCCESS if user info and credential are provided.
+  - Improved documentation in UserAuthStore to clarify the behavior regarding login status.
+
+  These changes aim to improve the reliability of user authentication state handling and enhance test coverage.
+
+  Co-authored-by: QRJ <renjie.qin@brain.im>
+
 ## 1.3.4
 
 ### Patch Changes
