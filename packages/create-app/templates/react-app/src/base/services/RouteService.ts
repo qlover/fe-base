@@ -14,11 +14,20 @@ export type RouterServiceDependencies = {
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];
+  /**
+   * Whether to use locale routes
+   *
+   * @default `false`
+   */
+  hasLocalRoutes?: boolean;
   logger: LoggerInterface;
 };
 
 export class RouterServiceState implements StoreStateInterface {
-  constructor(public routes: RouteConfigValue[] = []) {}
+  constructor(
+    public routes: RouteConfigValue[] = [],
+    public localeRoutes: boolean = false
+  ) {}
 }
 
 export class RouteService
@@ -31,7 +40,9 @@ export class RouteService
   dependencies?: RouterServiceDependencies;
 
   constructor(private options: RouterServiceOptions) {
-    super(() => new RouterServiceState(options.routes));
+    super(
+      () => new RouterServiceState(options.routes, !!options.hasLocalRoutes)
+    );
   }
 
   get logger(): LoggerInterface {
@@ -51,8 +62,11 @@ export class RouteService
   }
 
   composePath(path: string): string {
-    const targetLang = I18nService.getCurrentLanguage();
-    return `/${targetLang}${path}`;
+    if (this.state.localeRoutes) {
+      const targetLang = I18nService.getCurrentLanguage();
+      return `/${targetLang}${path}`;
+    }
+    return path.startsWith('/') ? path : `/${path}`;
   }
 
   /**
@@ -70,13 +84,19 @@ export class RouteService
   }
 
   changeRoutes(routes: RouteConfigValue[]): void {
-    this.emit({ routes });
+    this.emit({ routes, localeRoutes: this.state.localeRoutes });
   }
 
-  goto(path: string, options?: NavigateOptions): void {
+  goto(
+    path: string,
+    options?: NavigateOptions & {
+      navigate?: NavigateFunction;
+    }
+  ): void {
+    const { navigate, ...rest } = options || {};
     path = this.composePath(path);
     this.logger.debug('Goto path => ', path);
-    this.navigate?.(path, options);
+    (navigate || this.navigate)?.(path, rest);
   }
 
   gotoLogin(): void {
@@ -85,5 +105,21 @@ export class RouteService
 
   replaceToHome(): void {
     this.goto('/', { replace: true });
+  }
+
+  redirectToDefault(navigate: NavigateFunction): void {
+    this.goto('/', { replace: true, navigate });
+  }
+
+  i18nGuard(lng: string, navigate: NavigateFunction): void {
+    if (!this.state.localeRoutes) {
+      return;
+    }
+
+    if (!lng) {
+      this.goto('/404', { replace: true, navigate });
+    } else if (!I18nService.isValidLanguage(lng)) {
+      this.goto('/404', { replace: true, navigate });
+    }
   }
 }
