@@ -4,9 +4,16 @@ on:
   push:
     branches-ignore:
       - master
-
+  pull_request:
+    branches-ignore:
+      - master
+      
 jobs:
   check-code:
+    # Skip if this is a PR targeting master
+    if: |
+      (github.event_name == 'push') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'master')
     runs-on: ubuntu-latest
 
     steps:

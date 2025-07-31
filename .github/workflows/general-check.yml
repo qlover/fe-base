@@ -8,9 +8,11 @@ on:
 
 jobs:
   check-code:
-    # if not CI-Release label, then run check
+    # Only run on PRs targeting master directly
     if: |
-      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
+      !contains(github.event.pull_request.labels.*.name, 'CI-Release') &&
+      github.event.pull_request.base.ref == 'master' &&
+      github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
