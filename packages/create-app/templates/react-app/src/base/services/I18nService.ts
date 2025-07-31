@@ -9,6 +9,8 @@ import {
   type StoreStateInterface,
   StoreInterface
 } from '@qlover/corekit-bridge';
+import { useLocaleRoutes } from '@config/common';
+
 const { supportedLngs, fallbackLng } = i18nConfig;
 
 export type I18nServiceLocale = (typeof supportedLngs)[number];
@@ -46,8 +48,10 @@ export class I18nService
         merge({}, i18nConfig, {
           debug,
           detection: {
-            order: ['pathLanguageDetector', 'navigator'], // use custom detector
-            caches: []
+            order: useLocaleRoutes
+              ? ['pathLanguageDetector', 'navigator', 'localStorage']
+              : ['localStorage', 'navigator'],
+            caches: useLocaleRoutes ? [] : ['localStorage']
           }
         })
       );
@@ -67,8 +71,11 @@ export class I18nService
 
         return fallbackLng;
       },
-      cacheUserLanguage() {
-        // no cache, because we get language from URL
+      cacheUserLanguage(lng: string) {
+        // Only cache language if not using locale routes
+        if (!useLocaleRoutes) {
+          localStorage.setItem('i18nextLng', lng);
+        }
       }
     };
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
@@ -76,6 +83,10 @@ export class I18nService
 
   async changeLanguage(language: I18nServiceLocale): Promise<void> {
     await i18n.changeLanguage(language);
+    // 如果不使用本地化路由，则保存语言设置到本地存储
+    if (!useLocaleRoutes) {
+      localStorage.setItem('i18nextLng', language);
+    }
   }
 
   changeLoading(loading: boolean): void {

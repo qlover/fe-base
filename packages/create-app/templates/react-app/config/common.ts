@@ -16,7 +16,7 @@ export const overrideAntdThemeMode: ViteDeprecatedAntdOptions['mode'] =
   'noGlobals';
 
 /**
- * bootstrap ,not inject env
+ * 启动器环境变量注入黑名单
  */
 export const envBlackList = ['env', 'userNodeEnv'];
 
@@ -37,3 +37,11 @@ export const loggerStyles = {
  * - 但是不能只有 /
  */
 export const routerPrefix = '/router-root';
+
+/**
+ * 是否使用本地化路由
+ *
+ * - true: 使用本地化路由，路由会带有语言前缀 (例如: /en/home)
+ * - false: 不使用本地化路由，直接使用路径 (例如: /home)
+ */
+export const useLocaleRoutes = true;
