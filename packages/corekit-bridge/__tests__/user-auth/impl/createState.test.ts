@@ -133,6 +133,23 @@ describe('createState', () => {
       expect(state.userInfo).toBeNull();
       expect(state.credential).toBeNull();
     });
+
+    it('should set login status to SUCCESS when both user info and credential are present', () => {
+      userStorage.set(testUser);
+      credentialStorage.set(testCredential);
+
+      const options: UserAuthStoreOptions<TestState> = {
+        userStorage,
+        credentialStorage
+      };
+
+      const state = createState<TestState>(options);
+
+      expect(state).toBeDefined();
+      expect(state.userInfo).toEqual(testUser);
+      expect(state.credential).toBe(testCredential);
+      expect(state.loginStatus).toBe(LOGIN_STATUS.SUCCESS);
+    });
   });
 
   describe('custom state creation', () => {

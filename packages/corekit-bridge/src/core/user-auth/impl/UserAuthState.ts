@@ -32,7 +32,12 @@ export class UserAuthState<User> implements StoreStateInterface {
      * @param credential - The authentication credential string or null if not available
      */
     public credential: string | null = null
-  ) {}
+  ) {
+    // If the user info and credential are provided, set the login status to success
+    if (this.userInfo && this.credential) {
+      this.loginStatus = LOGIN_STATUS.SUCCESS;
+    }
+  }
 
   /**
    * Current authentication status
