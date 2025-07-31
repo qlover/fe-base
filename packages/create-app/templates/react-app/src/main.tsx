@@ -4,8 +4,13 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import { BootstrapApp } from './core/bootstraps/BootstrapApp';
+import { IOC } from './core/IOC.ts';
 
-BootstrapApp.main();
+BootstrapApp.main({
+  root: window,
+  bootHref: window.location.href,
+  IOC: IOC
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

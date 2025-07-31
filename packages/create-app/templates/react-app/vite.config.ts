@@ -8,7 +8,7 @@ import {
 } from './config/common';
 import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from '@qlover/corekit-bridge/vite-env-config';
+import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import i18nConfig from './config/i18n';
 import tailwindcss from '@tailwindcss/vite';
@@ -120,8 +120,9 @@ export default defineConfig({
     port: Number(process.env.VITE_SERVER_PORT || 3200)
   },
   test: {
+    watch: false,
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/setupTests.ts']
+    setupFiles: ['./__tests__/setup/index.ts']
   }
 });

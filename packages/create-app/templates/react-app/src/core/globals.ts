@@ -16,8 +16,6 @@ import { DialogHandler } from '@/base/cases/DialogHandler';
 import { loggerStyles } from '@config/common';
 import { AppConfig } from '@/base/cases/AppConfig';
 
-const isProduction = import.meta.env.VITE_USER_NODE_ENV === 'production';
-
 export const appConfig = new AppConfig();
 
 export const dialogHandler = new DialogHandler();
@@ -27,7 +25,7 @@ export const dialogHandler = new DialogHandler();
  */
 export const logger = new Logger({
   handlers: new ConsoleHandler(new ColorFormatter(loggerStyles)),
-  silent: isProduction,
+  silent: appConfig.isProduction,
   level: 'debug'
 });
 
