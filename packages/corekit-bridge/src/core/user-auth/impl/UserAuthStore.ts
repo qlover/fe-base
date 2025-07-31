@@ -17,6 +17,8 @@ import { createState } from './createState';
  * Main function: Manage authentication state, user data, and credential persistence with real-time updates
  * Main purpose: Provide reliable, observable state management with automatic storage synchronization for authentication systems
  *
+ * If the default user info and credential are provided, set the login status to success
+ *
  * @example
  * // Basic store setup
  * const authStore = new UserAuthStore<User>({
