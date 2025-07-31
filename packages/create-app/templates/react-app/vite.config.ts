@@ -123,6 +123,6 @@ export default defineConfig({
     watch: false,
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/setupTests.ts']
+    setupFiles: ['./__tests__/setup/index.ts']
   }
 });

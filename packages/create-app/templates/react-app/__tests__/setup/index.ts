@@ -1,4 +1,4 @@
-import { vi, beforeEach, afterEach } from 'vitest';
+import { createMockGlobals } from '../__mocks__/createMockGlobals';
 
 // 设置测试环境
 beforeEach(() => {
@@ -46,3 +46,6 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn()
 }));
+
+// Mock globals
+vi.mock('@/core/globals', () => createMockGlobals());

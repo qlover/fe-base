@@ -12,6 +12,12 @@ export class PublicAssetsPath {
   constructor(protected prefix: string = routerPrefix) {}
 
   getPath(path: string): string {
-    return this.prefix + `/${path}`;
+    if (!this.prefix) {
+      return path.startsWith('/') ? path : `/${path}`;
+    }
+    const prefix = this.prefix.endsWith('/')
+      ? this.prefix.slice(0, -1)
+      : this.prefix;
+    return prefix + (path.startsWith('/') ? path : `/${path}`);
   }
 }

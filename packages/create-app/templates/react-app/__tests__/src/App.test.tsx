@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import App from '@/App';
+import { routerPrefix } from '@config/common';
 
 // Mock the dependencies
 vi.mock('react-router-dom', async () => {
@@ -8,7 +9,7 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     createBrowserRouter: vi.fn(() => ({
       routes: [],
-      basename: '/'
+      basename: routerPrefix
     })),
     RouterProvider: vi.fn(({ router }) => (
       <div data-testid="router-provider">
@@ -98,6 +99,9 @@ describe('App Component', () => {
 
     // Check router configuration
     expect(screen.getByTestId('router-basename')).toBeDefined();
+    expect(screen.getByTestId('router-basename').textContent).toBe(
+      routerPrefix
+    );
   });
 
   it('should render router provider with routes', () => {

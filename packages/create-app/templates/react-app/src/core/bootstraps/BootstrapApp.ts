@@ -67,6 +67,7 @@ export class BootstrapApp {
 
       await bootstrap.use(bootstrapsRegistry.register()).start();
     } catch (error) {
+      console.log(error);
       logger.error(`${appConfig.appName} starup error:`, error);
     }
 

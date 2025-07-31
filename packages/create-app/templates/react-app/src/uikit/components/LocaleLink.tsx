@@ -33,7 +33,7 @@ const LocaleLink: React.FC<LocaleLinkProps> = ({
   }
 
   return (
-    <RouterLink {...props} to={localizedHref}>
+    <RouterLink data-testid="locale-link" {...props} to={localizedHref}>
       {children}
     </RouterLink>
   );
