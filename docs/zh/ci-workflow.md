@@ -2,42 +2,33 @@
 
 ## 概述
 
-我们的 CI 系统包含两个主要工作流：
-
-- `branch-check.yml`：用于功能分支和非 master PR 的基本检查
-- `general-check.yml`：用于合并到 master 的 PR 的全面检查
+我们的 CI 系统使用单个工作流文件 `general-check.yml`，根据目标分支的不同执行不同的检查行为。
 
 ## 工作流触发条件
 
-### 分支检查 (`branch-check.yml`)
+工作流在以下情况下触发：
 
-这个工作流运行基本检查（lint、test、build），在以下情况触发：
+- 创建新的 PR
+- 更新现有的 PR
+- 重新打开 PR
 
-- 向任何非 master 分支推送代码
-- 创建/更新针对非 master 分支的 PR
+## 工作流行为
 
-示例场景：
+### 基本检查
 
-1. 当创建从 `feature` 到 `v0.7` 的 PR 时：
-   - ✅ 触发 `branch-check.yml`
-   - ❌ 不触发 `general-check.yml`
+对于所有 PR，无论目标分支是什么，都会运行以下检查：
 
-2. 当向 `feature` 或 `v0.7` 推送新的提交时：
-   - ✅ 触发 `branch-check.yml`
-   - ❌ 不触发 `general-check.yml`
+- 代码 lint 检查
+- 单元测试
+- 构建流程
+- 重新构建流程
 
-### 通用检查 (`general-check.yml`)
+### 包检查
 
-这个工作流运行全面检查（包括包检查），仅在以下情况触发：
+包检查是额外的验证步骤，仅在以下情况运行：
 
-- 创建/更新直接针对 master 分支的 PR
+- PR 的目标分支是 master
 - PR 没有 'CI-Release' 标签
-
-示例场景：
-
-1. 当创建从 `v0.7` 到 `master` 的 PR 时：
-   - ✅ 触发 `general-check.yml`
-   - ❌ 不触发 `branch-check.yml`
 
 ## 常见开发流程
 
@@ -47,20 +38,19 @@
 
    ```
    feature 分支 -> v0.7 (PR)
-   ├── 触发: branch-check.yml
-   └── 运行: lint, test, build
+   └── 运行: lint, test, build, rebuild
    ```
 
 2. 版本发布：
    ```
    v0.7 -> master (PR)
-   ├── 触发: general-check.yml
-   └── 运行: lint, test, build, package checks
+   ├── 运行: lint, test, build, rebuild
+   └── 额外运行: 包检查
    ```
 
 ## 重要说明
 
-1. 针对 master 的 PR 只会触发 `general-check.yml`，确保在合并到生产环境前进行全面检查。
-2. 所有其他开发工作（功能分支、版本分支）将触发 `branch-check.yml` 以获得更快的反馈。
-3. 这两个工作流是互斥的 - 单个 PR 永远不会同时触发两个工作流。
-4. 当功能 PR 合并到版本分支（如 v0.7）时，不会影响该版本分支到 master 的 PR 检查。
+1. 所有 PR 都会进行相同的基本质量检查（lint、test、build）。
+2. 对于不是合并到 master 的 PR，会自动跳过包检查。
+3. 如果需要跳过所有检查，可以使用 'CI-Release' 标签。
+4. 工作流设计确保了所有分支的一致性检查，同时为 master 分支提供额外的验证。

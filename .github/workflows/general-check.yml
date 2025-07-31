@@ -2,17 +2,13 @@ name: General check
 
 on:
   pull_request:
-    branches:
-      - master
     types: [opened, synchronize, reopened]
 
 jobs:
   check-code:
-    # Only run on PRs targeting master directly
+    # Skip if has CI-Release label
     if: |
-      !contains(github.event.pull_request.labels.*.name, 'CI-Release') &&
-      github.event.pull_request.base.ref == 'master' &&
-      github.event_name == 'pull_request'
+      !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +37,9 @@ jobs:
 
       - run: pnpm rebuild
 
+      # Only run package checks when targeting master
       - name: Check packages
+        if: github.event.pull_request.base.ref == 'master'
         run: |
           git fetch origin ${{ github.base_ref }}
           pnpm run check-packages -V -r ${{ github.repository }} -b ${{ github.base_ref }} -n ${{ github.event.pull_request.number }}
