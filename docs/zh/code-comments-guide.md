@@ -84,39 +84,90 @@
 1. **没有具体导出的文件**：当文件没有导出任何具体的函数、类或变量时
 2. **索引文件**：名为 `index.ts`、`index.js` 或类似的索引文件，作为入口点或重新导出模块
 
-在这些情况下，`@module` 标签对于提供文件用途和功能的上下文变得至关重要。
+对于 `index.ts` 文件，注释应包含以下关键要素：
+
+1. **模块概述**：
+   - 使用 `@module` 标签声明模块名称
+   - 简要描述模块的主要功能和用途
+   - 说明模块在整个项目中的角色
+
+2. **导出成员列表**：
+   - 列出所有重要的导出成员
+   - 对每个成员提供简短描述
+   - 标注废弃或实验性功能
+
+3. **使用示例**：
+   - 提供基本的导入和使用示例
+   - 展示常见的使用场景
+   - 说明配置选项（如果有）
+
+4. **文档链接**：
+   - 提供到详细文档的链接
+   - 引用相关的 API 文档
+   - 链接到具体功能的详细说明
+
+示例：
 
 ````typescript
 /**
- * @module UserService
- * @description 用户管理服务，处理用户数据的 CRUD 操作和业务逻辑
+ * @module UserModule
+ * @description 用户管理模块的主入口点
  *
- * 核心职责：
- * - 用户数据的增删改查
- * - 用户状态管理（激活、暂停、删除）
- * - 用户权限验证
- * - 用户数据缓存管理
+ * 此模块提供用户管理相关的所有核心功能，包括：
+ * - 用户认证和授权
+ * - 用户信息管理
+ * - 权限控制
+ * - 会话管理
  *
- * 设计考虑：
- * - 使用 Redis 缓存热点用户数据，减少数据库压力
- * - 实现软删除，保留用户历史数据
- * - 支持批量操作以提高性能
+ * ### 导出成员
  *
- * @example 基本使用
+ * - UserService: 用户服务主类，处理用户相关的所有操作
+ * - AuthService: 认证服务，处理登录、注册等认证流程
+ * - UserTypes: 用户相关的类型定义
+ * - UserUtils: 用户操作工具函数集
+ *
+ * ### 基础使用
  * ```typescript
- * const userService = new UserService(db, cache);
- * const user = await userService.getUserById('user-123');
+ * import { UserService, AuthService } from './user';
+ *
+ * // 初始化服务
+ * const userService = new UserService(config);
+ * const authService = new AuthService(config);
+ *
+ * // 用户登录
+ * await authService.login(credentials);
+ *
+ * // 获取用户信息
+ * const user = await userService.getCurrentUser();
  * ```
  *
- * @example 批量操作
+ * ### 高级配置
  * ```typescript
- * const users = await userService.getUsersByIds(['user-1', 'user-2']);
- * await userService.updateUserStatus(users, 'suspended');
+ * import { UserService } from './user';
+ *
+ * const userService = new UserService({
+ *   cache: true,
+ *   timeout: 5000,
+ *   retryAttempts: 3
+ * });
  * ```
+ *
+ * ### 相关文档
+ * - [用户认证流程](../auth/authentication.md)
+ * - [权限管理指南](../auth/authorization.md)
+ * - [API 文档](../api/user-service.md)
+ *
  */
-
-// 文件导入和实现...
 ````
+
+在 `index.ts` 文件中：
+
+- 使用 `@module` 标签标识模块名称
+- 提供清晰的模块描述
+- 列出并说明所有重要的导出成员
+- 提供实用的代码示例
+- 添加相关文档链接
+- 使用 `@see` 标签引用相关文档
 
 **必需示例：**
 
@@ -486,268 +537,4 @@ class UserService {
        *
        * @optional
        * @example `"123456"`
-       * @pattern `^\d{6}$`
-       */
-      mfaCode?: string;
-      /**
-       * 客户端设备信息
-       * 
-       * 用于安全审计和异常登录检测
-       * 包含设备类型、浏览器、IP 地址等信息
-       *
-       * @optional
-       * @example `{ deviceType: 'mobile', browser: 'Chrome', ip: '192.168.1.1' }`
-       */
-      deviceInfo?: {
-        /**
-         * 设备类型
-         * 
-         * @example `'desktop'` | `'mobile'` | `'tablet'`
-         */
-        deviceType: string;
-        /**
-         * 浏览器信息
-         * 
-         * @example `'Chrome 120.0.0'`
-         */
-        browser: string;
-        /**
-         * IP 地址
-         * 
-         * @example `'192.168.1.1'`
-         */
-        ip: string;
-      };
-    }
-  ): Promise<AuthResult> {}
-
-  /**
-   * 更新用户个人信息
-   *
-   * @param userId - 要更新的用户唯一标识符
-   * @param updates - 要更新的用户信息字段
-   * @returns 更新后的用户信息
-   */
-  async updateUser(
-    /**
-     * 用户唯一标识符
-     * 
-     * 必须是有效的 UUID v4 格式
-     * 系统会验证用户是否存在和当前用户是否有权限修改
-     *
-     * @example `"550e8400-e29b-41d4-a716-446655440000"`
-     * @pattern `^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`
-     */
-    userId: string,
-    /**
-     * 要更新的用户信息
-     * 
-     * 只更新提供的字段，其他字段保持不变
-     * 系统会自动验证字段格式和业务规则
-     */
-    updates: {
-      /**
-       * 用户显示名称
-       * 
-       * 用于界面显示，支持多语言
-       * 长度限制：2-50 个字符
-       *
-       * @optional
-       * @example `"张三"`
-       * @example `"John Doe"`
-       * @minLength 2
-       * @maxLength 50
-       */
-      displayName?: string;
-      /**
-       * 用户头像 URL
-       * 
-       * 必须是有效的图片 URL
-       * 支持格式：JPG、PNG、GIF、WebP
-       * 建议尺寸：200x200 像素
-       *
-       * @optional
-       * @example `"https://example.com/avatar.jpg"`
-       * @pattern `^https?://.*\.(jpg|jpeg|png|gif|webp)$`
-       */
-      avatar?: string;
-      /**
-       * 用户个人简介
-       * 
-       * 支持 Markdown 格式
-       * 长度限制：0-500 个字符
-       *
-       * @optional
-       * @example `"热爱编程的全栈开发者"`
-       * @maxLength 500
-       */
-      bio?: string;
-    }
-  ): Promise<User> {}
-}
-```
-
-## 业务逻辑注释
-
-### 配置注释
-
-```typescript
-const CONFIG = {
-  /**
-   * API 调用失败的最大重试次数
-   */
-  MAX_RETRIES: 3,
-
-  /**
-   * 请求超时时间（毫秒）
-   */
-  REQUEST_TIMEOUT: 5000,
-
-  /**
-   * 功能标志，用于渐进式发布
-   */
-  FEATURES: {
-    /**
-     * 发布日期：2024-04
-     */
-    NEW_UI: false,
-    /**
-     * 当前处于测试阶段
-     */
-    BETA_API: true
-  }
-};
-```
-
-### 算法注释
-
-```typescript
-/**
- * 实现优化的归并排序，包含以下优化：
- * 1. 对小数组（长度 < 10）使用插入排序
- * 2. 维护辅助数组以减少内存分配
- * 3. 检查数组是否已经排序
- *
- * 时间复杂度：O(n log n)
- * 空间复杂度：O(n)
- */
-```
-
-### 错误处理注释
-
-```typescript
-// 处理用户有权限但账户不活跃的边界情况
-// 这种情况可能发生在账户暂停或维护模式下
-if (hasPermissions && !isActive) {
-  throw new AccountStatusError('账户暂时不活跃');
-}
-```
-
-## TODO 注释
-
-- 始终包含工单/问题引用
-- 添加目标日期或版本（如果可能）
-- 简要解释上下文
-
-```typescript
-// TODO(JIRA-123): 实现 API 调用的速率限制
-// 目标：v2.1.0 (2024-04)
-
-// FIXME(JIRA-456): 当前实现不能处理并发更新
-// 阻塞 v2.0.0 发布
-```
-
-## 注释禁忌
-
-### 1. 避免显而易见的注释
-
-```typescript
-// ❌ 不好
-// 设置用户名
-user.name = 'John';
-
-// ✅ 好
-// 覆盖测试环境的用户名
-user.name = 'John';
-```
-
-### 2. 不要注释掉代码
-
-- 使用版本控制代替
-- 删除死代码
-- 如果是临时的，添加带解释的 TODO
-
-### 3. 避免冗余注释
-
-```typescript
-// ❌ 不好
-/**
- * 通过 ID 获取用户
- * @param id - 用户 ID
- * @returns 用户
- */
-
-// ✅ 好
-/**
- * 从数据库检索用户，带缓存
- * @param id - 唯一用户标识符（UUID v4）
- * @returns 用户对象，如果未找到则返回 null
- * @throws DatabaseError 如果连接失败
- */
-```
-
-## 维护
-
-### 1. 保持注释更新
-
-- 代码变更时更新注释
-- 删除过时的注释
-- 验证示例是否仍然有效
-
-### 2. 审查注释
-
-- 在代码审查中包含注释
-- 检查清晰度和准确性
-- 确保注释增加价值
-
-## 语言指南
-
-### 1. 使用英语的场景：
-
-- 所有代码注释
-- 函数和变量名
-- 文档字符串
-- 提交消息
-
-### 2. 使用中文的场景：
-
-- 业务需求文档
-- 团队沟通
-- 面向用户的内容
-
-## 工具和自动化
-
-### 1. ESLint 规则
-
-- 强制要求公共 API 的 JSDoc
-- 检查注释存在
-- 验证注释格式
-
-### 2. 文档生成
-
-- 使用 TypeDoc 生成 API 文档
-- 从注释生成文档
-- 在文档中包含示例
-
-## 总结
-
-记住：最好的注释往往是你不需要写的注释，因为代码本身已经足够清晰。当你确实需要写注释时，要确保它们提供有价值的上下文和见解，这些是仅通过代码无法表达的。
-
-### 关键要点：
-
-- ✅ 优先让代码自文档化
-- ✅ 注释解释"为什么"而不是"是什么"
-- ✅ 使用完整的 TSDoc/JSDoc 格式
-- ✅ 包含使用示例和边界情况
-- ✅ 保持注释与代码同步更新
-- ✅ 在代码审查中检查注释质量
+       * @pattern `

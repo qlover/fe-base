@@ -84,39 +84,89 @@ File-level TSDoc comments with `@module` tags are **optional** for most files bu
 1. **Files without specific exports**: When a file doesn't export any specific functions, classes, or variables
 2. **Index files**: Files named `index.ts`, `index.js`, or similar index files that serve as entry points or re-export modules
 
-In these cases, the `@module` tag becomes crucial for providing context about the file's purpose and functionality.
+For `index.ts` files, comments should include the following key elements:
+
+1. **Module Overview**:
+   - Use `@module` tag to declare module name
+   - Briefly describe the module's main functionality and purpose
+   - Explain the module's role in the overall project
+
+2. **Exported Members List**:
+   - List all important exported members
+   - Provide brief descriptions for each member
+   - Mark deprecated or experimental features
+
+3. **Usage Examples**:
+   - Provide basic import and usage examples
+   - Show common use cases
+   - Explain configuration options (if any)
+
+4. **Documentation Links**:
+   - Provide links to detailed documentation
+   - Reference related API documentation
+   - Link to detailed feature explanations
+
+Example:
 
 ````typescript
 /**
- * @module UserService
- * @description User management service, handling CRUD operations and business logic for user data
+ * @module UserModule
+ * @description Main entry point for user management module
  *
- * Core responsibilities:
- * - User data CRUD operations
- * - User status management (active, suspended, deleted)
- * - User permission validation
- * - User data cache management
+ * This module provides all core functionality for user management, including:
+ * - User authentication and authorization
+ * - User information management
+ * - Permission control
+ * - Session management
  *
- * Design considerations:
- * - Use Redis cache for hot user data to reduce database pressure
- * - Implement soft delete to preserve user historical data
- * - Support batch operations for improved performance
+ * ### Exported Members
  *
- * @example Basic usage
+ * - UserService: Main user service class handling all user operations
+ * - AuthService: Authentication service handling login, registration flows
+ * - UserTypes: User-related type definitions
+ * - UserUtils: User operation utility functions
+ *
+ * ### Basic Usage
  * ```typescript
- * const userService = new UserService(db, cache);
- * const user = await userService.getUserById('user-123');
+ * import { UserService, AuthService } from './user';
+ *
+ * // Initialize services
+ * const userService = new UserService(config);
+ * const authService = new AuthService(config);
+ *
+ * // User login
+ * await authService.login(credentials);
+ *
+ * // Get user information
+ * const user = await userService.getCurrentUser();
  * ```
  *
- * @example Batch operations
+ * ### Advanced Configuration
  * ```typescript
- * const users = await userService.getUsersByIds(['user-1', 'user-2']);
- * await userService.updateUserStatus(users, 'suspended');
+ * import { UserService } from './user';
+ *
+ * const userService = new UserService({
+ *   cache: true,
+ *   timeout: 5000,
+ *   retryAttempts: 3
+ * });
  * ```
+ *
+ * ### Related Documentation
+ * - [Authentication Flow](../auth/authentication.md)
+ * - [Authorization Guide](../auth/authorization.md)
+ * - [API Documentation](../api/user-service.md)
  */
-
-// File imports and implementation...
 ````
+
+In `index.ts` files:
+
+- Use `@module` tag to identify module name
+- Provide clear module description
+- List and explain all important exported members
+- Provide practical code examples
+- Add related documentation links
+- Use `@see` tags to reference related documentation
 
 **Required Examples:**
 

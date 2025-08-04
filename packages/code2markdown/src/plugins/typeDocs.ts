@@ -274,24 +274,34 @@ export default class TypeDocJson extends ScriptPlugin<
    *
    * Implementation Details:
    * 1. Validates that project has children elements
-   * 2. Maps each child reflection to standardized format
-   * 3. Uses convertReflectionToFormatValue for individual conversion
-   * 4. Returns empty array if no children exist
+   * 2. Filters out reflections from .d.ts declaration files
+   * 3. Maps remaining reflections to standardized format
+   * 4. Uses convertReflectionToFormatValue for individual conversion
+   * 5. Returns empty array if no children exist
    *
    * Business Rules:
    * - Returns empty array for projects without children
-   * - Processes all top-level reflections in project
-   * - Maintains original order of reflections
+   * - Excludes all reflections from .d.ts declaration files
+   * - Processes all remaining top-level reflections in project
+   * - Maintains original order of non-filtered reflections
    * - Handles null/undefined children gracefully
    * - Delegates complex conversion to specialized method
+   * - Preserves reflections without source information
+   *
+   * Filtering Rules:
+   * - Checks source file information for each reflection
+   * - Excludes reflections from files ending with .d.ts
+   * - Keeps reflections without source information (returns true)
+   * - Applies filtering before format conversion for better performance
    *
    * @param project - TypeDoc project reflection object
-   * @returns Array of standardized FormatProjectValue objects
+   * @returns Array of standardized FormatProjectValue objects, excluding .d.ts content
    *
    * @example
    * ```typescript
    * const formatData = this.formats(project);
    * // Returns: [{ id: 1, kind: 1, name: 'UserService', ... }, ...]
+   * // Note: Excludes any content from .d.ts files
    * ```
    *
    * @example Empty Project
@@ -305,9 +315,23 @@ export default class TypeDocJson extends ScriptPlugin<
       return [];
     }
 
-    return project.children.map((child: any) =>
-      this.convertReflectionToFormatValue(child)
-    );
+    return project.children
+      .filter((child) => {
+        const source = this.getSourceInfo(child);
+        return source ? !source.fileName.endsWith('.d.ts') : true;
+      })
+      .map((child) => {
+        const source = this.getSourceInfo(child);
+        const isIndexFile = source?.fileName.endsWith('index.ts');
+        // Convert the reflection to format value
+        const formatValue = this.convertReflectionToFormatValue(child);
+        // Remove children for index.ts files
+        if (isIndexFile) {
+          delete formatValue.children;
+          delete formatValue.parametersList;
+        }
+        return formatValue;
+      });
   }
 
   /**

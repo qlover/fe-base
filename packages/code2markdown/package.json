@@ -16,10 +16,12 @@
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./cli": {
-      "import": "./dist/cli.js"
+      "import": "./dist/cli.js",
+      "require": "./dist/cli.cjs"
     }
   },
   "scripts": {
