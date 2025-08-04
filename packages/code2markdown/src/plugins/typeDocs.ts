@@ -320,7 +320,18 @@ export default class TypeDocJson extends ScriptPlugin<
         const source = this.getSourceInfo(child);
         return source ? !source.fileName.endsWith('.d.ts') : true;
       })
-      .map((child) => this.convertReflectionToFormatValue(child));
+      .map((child) => {
+        const source = this.getSourceInfo(child);
+        const isIndexFile = source?.fileName.endsWith('index.ts');
+        // Convert the reflection to format value
+        const formatValue = this.convertReflectionToFormatValue(child);
+        // Remove children for index.ts files
+        if (isIndexFile) {
+          delete formatValue.children;
+          delete formatValue.parametersList;
+        }
+        return formatValue;
+      });
   }
 
   /**
