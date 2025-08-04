@@ -514,7 +514,6 @@ describe('TypeDocJson', () => {
 
   describe('error handling', () => {
     it('should handle TypeDoc conversion failure', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(Application.bootstrap).mockResolvedValueOnce({
         convert: vi.fn().mockResolvedValue(null),
         serializer: { projectToObject: vi.fn() }
@@ -542,7 +541,6 @@ describe('TypeDocJson', () => {
         name: 'Invalid'
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = typeDocJson['convertReflectionToFormatValue'](
         invalidReflection as any
       );

@@ -1,5 +1,26 @@
 # @qlover/code2markdown
 
+## 1.0.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **code2markdown:** enhance package.json and add comprehensive test suites ([75e8a56](https://github.com/qlover/fe-base/commit/75e8a56bdb18d3d390517b5445aa676c829d529b)) ([#481](https://github.com/qlover/fe-base/pull/481))
+  - Updated package.json to include CommonJS module support by adding "require" entries for both the main package and CLI.
+  - Introduced new test files for hbsHelper, HBSTemplate, Reader, and TypeDocJson plugins, covering various functionalities and edge cases.
+  - Implemented detailed test cases to ensure robust validation of helper functions, template compilation, file reading, and TypeDoc reflection conversion.
+
+  These changes aim to improve the overall functionality, maintainability, and test coverage of the code2markdown package.
+
+- **code2markdown:** enhance documentation and update index files ([93868f1](https://github.com/qlover/fe-base/commit/93868f1e499c128ac8da4ab2ce209c45338062c7)) ([#481](https://github.com/qlover/fe-base/pull/481))
+  - Expanded the code comments guide to include detailed instructions for `index.ts` files, emphasizing the importance of the `@module` tag and providing a structured format for module documentation.
+  - Added comprehensive CLI documentation for the `code2markdown` tool, outlining its core responsibilities, command options, and usage examples.
+  - Introduced new documentation files for various components, including `HBSTemplate`, `Code2MDContext`, and `Formats`, to improve clarity and usability for developers.
+  - Updated the main module index to reflect new features and provide clearer usage examples.
+
+  These changes aim to enhance the overall documentation quality and usability of the code2markdown package, ensuring developers have the necessary resources for effective implementation.
+
 ## 1.0.0
 
 ### Major Changes
