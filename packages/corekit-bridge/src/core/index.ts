@@ -2,6 +2,7 @@ export * from './bootstrap';
 export * from './color-log';
 export * from './ioc';
 export * from './request-plugins';
+export * from './response-stream';
 export * from './storage';
 export * from './store-state';
 export * from './theme-service';
