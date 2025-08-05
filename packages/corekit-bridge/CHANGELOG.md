@@ -1,5 +1,18 @@
 # @qlover/corekit-bridge
 
+## 1.5.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **response-stream:** add comprehensive test suites for stream processing components ([76cbd7e](https://github.com/qlover/fe-base/commit/76cbd7ee7185cfe74bb21e8bedc0b77332314433)) ([#484](https://github.com/qlover/fe-base/pull/484))
+  - Introduced test files for LineStreamProcessor, ResponseStream, SSEStreamProcessor, StreamEvent, and their respective functionalities.
+  - Implemented tests covering constructor behavior, chunk processing, final data handling, edge cases, and integration scenarios.
+  - Enhanced overall test coverage to ensure robust validation of stream processing logic and error handling.
+
+  These changes aim to improve the reliability and maintainability of the response-stream module.
+
 ## 1.4.0
 
 ### Minor Changes
