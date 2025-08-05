@@ -1,4 +1,3 @@
-export * from './ai-client';
 export * from './bootstrap';
 export * from './color-log';
 export * from './ioc';
