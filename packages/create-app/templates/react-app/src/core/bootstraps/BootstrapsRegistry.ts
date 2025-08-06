@@ -9,7 +9,6 @@ import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
 import { AiApiBootstarp } from '@/base/apis/AiApi';
 import { printBootstrap } from './PrintBootstrap';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { I18nService } from '@/base/services/I18nService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
 import { IocIdentifierTest } from './IocIdentifierTest';
@@ -27,7 +26,7 @@ export class BootstrapsRegistry {
     const IOC = this.IOC;
 
     const bootstrapList = [
-      IOC(I18nService),
+      IOC(IOCIdentifier.I18nServiceInterface),
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,

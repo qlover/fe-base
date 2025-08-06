@@ -1,7 +1,5 @@
 export const IOCIdentifier = Object.freeze({
   JSONSerializer: 'JSONSerializer',
-  JSON: 'JSON',
-  LoggerInterface: 'LoggerInterface',
   Logger: 'Logger',
   AppConfig: 'AppConfig',
   DialogHandler: 'DialogHandler',
@@ -36,5 +34,6 @@ export const IOCIdentifier = Object.freeze({
   FeApiToken: 'FeApiToken',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   ApiMockPlugin: 'ApiMockPlugin',
-  ApiCatchPlugin: 'ApiCatchPlugin'
+  ApiCatchPlugin: 'ApiCatchPlugin',
+  ThemeService: 'ThemeService'
 });

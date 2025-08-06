@@ -5,7 +5,7 @@ import {
 } from '@qlover/corekit-bridge';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
-import { IocRegisterImpl } from '../registers/IocRegisterImpl';
+import { IocRegisterImpl } from '../IocRegisterImpl';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
 import { IOCIdentifierMap } from '@config/IOCIdentifierMap';

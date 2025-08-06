@@ -23,8 +23,6 @@ export interface IOCIdentifierMap {
   // =============== globals
 
   [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
-  [IOCIdentifier.JSON]: FeCorekit.JSONSerializer;
-  [IOCIdentifier.LoggerInterface]: Logger.LoggerInterface;
   [IOCIdentifier.Logger]: Logger.Logger;
   [IOCIdentifier.AppConfig]: AppConfig;
   [IOCIdentifier.DialogHandler]: DialogHandler;
@@ -53,4 +51,5 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: CorekitBridge.ApiCatchPlugin;
+  [IOCIdentifier.ThemeService]: CorekitBridge.ThemeService;
 }

@@ -128,7 +128,7 @@ describe('IOC Container Tests', () => {
       const identifierMap: IOCIdentifierMap = {} as IOCIdentifierMap;
 
       // TypeScript should enforce that these keys exist
-      expect(IOCIdentifier.JSON in identifierMap).toBeDefined();
+      expect(IOCIdentifier.JSONSerializer in identifierMap).toBeDefined();
       expect(IOCIdentifier.LocalStorage in identifierMap).toBeDefined();
       expect(IOCIdentifier.Logger in identifierMap).toBeDefined();
       expect(IOCIdentifier.AppConfig in identifierMap).toBeDefined();
