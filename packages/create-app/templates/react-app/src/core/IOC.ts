@@ -3,7 +3,7 @@ import type { AppConfig } from '@/base/cases/AppConfig';
 import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
 import { createIOCFunction } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
+import { IOCIdentifierMap } from '@config/IOCIdentifier';
 
 /**
  * IOC register options

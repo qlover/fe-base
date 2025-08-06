@@ -6,20 +6,19 @@ import {
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
-import { RouteService } from './RouteService';
 import type { ProcesserExecutorInterface } from '../port/ProcesserExecutorInterface';
 import type { BootstrapContextValue } from '@qlover/corekit-bridge';
+import type { RouteServiceInterface } from '../port/RouteServiceInterface';
 
 @injectable()
-export class ProcesserExecutor
-  implements ProcesserExecutorInterface, ExecutorPlugin
-{
+export class ProcesserExecutor implements ProcesserExecutorInterface {
   pluginName = 'ProcesserExecutor';
   protected executor: AsyncExecutor = new AsyncExecutor();
 
   constructor(
-    @inject(IOCIdentifier.Logger) private logger: LoggerInterface,
-    @inject(RouteService) private routeService: RouteService
+    @inject(IOCIdentifier.Logger) protected logger: LoggerInterface,
+    @inject(IOCIdentifier.RouteServiceInterface)
+    protected routeService: RouteServiceInterface
   ) {}
 
   /**

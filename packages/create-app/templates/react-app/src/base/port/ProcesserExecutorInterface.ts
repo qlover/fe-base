@@ -1,6 +1,6 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
 
-export interface ProcesserExecutorInterface {
+export interface ProcesserExecutorInterface extends ExecutorPlugin {
   /**
    * 使用插件
    *

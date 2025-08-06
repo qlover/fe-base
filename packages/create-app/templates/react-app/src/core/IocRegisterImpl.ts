@@ -17,6 +17,8 @@ import { SyncStorageInterface } from '@qlover/fe-corekit';
 import { RouteService } from '@/base/services/RouteService';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import { UserService } from '@/base/services/UserService';
+import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
+import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}
@@ -78,6 +80,14 @@ export class IocRegisterImpl implements IOCRegister {
         )
       })
     );
+
+    ioc.bind(IOCIdentifier.I18nKeyErrorPlugin, ioc.get(I18nKeyErrorPlugin));
+    ioc.bind(
+      IOCIdentifier.ProcesserExecutorInterface,
+      ioc.get(ProcesserExecutor)
+    );
+
+    ioc.bind(IOCIdentifier.UserServiceInterface, ioc.get(UserService));
   }
 
   protected registerCommon(ioc: IOCContainer): void {
@@ -112,8 +122,7 @@ export class IocRegisterImpl implements IOCRegister {
     _manager: IOCManagerInterface<IOCContainer>
   ): void {
     this.registerGlobals(ioc);
-    this.registerImplement(ioc);
-
     this.registerCommon(ioc);
+    this.registerImplement(ioc);
   }
 }

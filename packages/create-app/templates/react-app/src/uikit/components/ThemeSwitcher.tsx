@@ -1,5 +1,4 @@
 import { IOC } from '@/core/IOC';
-import { ThemeService } from '@qlover/corekit-bridge';
 import { useStore } from '@/uikit/hooks/useStore';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
@@ -12,6 +11,7 @@ import {
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import * as i18nKeys from '@config/Identifier/common';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 const colorMap: Record<
   string,
@@ -35,10 +35,8 @@ const colorMap: Record<
 };
 
 export default function ThemeSwitcher() {
-  const themeService = IOC(ThemeService);
-  // FIXME:
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { theme } = useStore(themeService as any);
+  const themeService = IOC(IOCIdentifier.ThemeService);
+  const { theme } = useStore(themeService);
   const themes = themeService.getSupportedThemes();
   const { t } = useTranslation('common');
 

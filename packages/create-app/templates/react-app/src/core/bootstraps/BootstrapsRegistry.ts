@@ -8,9 +8,7 @@ import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
 import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
 import { AiApiBootstarp } from '@/base/apis/AiApi';
 import { printBootstrap } from './PrintBootstrap';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
+import { IOCIdentifier, IOCIdentifierMap } from '@config/IOCIdentifier';
 import { IocIdentifierTest } from './IocIdentifierTest';
 
 export class BootstrapsRegistry {
@@ -30,7 +28,7 @@ export class BootstrapsRegistry {
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,
-      IOC(I18nKeyErrorPlugin)
+      IOC(IOCIdentifier.I18nKeyErrorPlugin)
     ];
 
     if (!this.appConfig.isProduction) {
@@ -38,6 +36,7 @@ export class BootstrapsRegistry {
     }
 
     bootstrapList.push(IocIdentifierTest);
+    // TODO: 需要使用到
     bootstrapList.push(IOC(IOCIdentifier.ProcesserExecutorInterface));
 
     return bootstrapList;

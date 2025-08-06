@@ -3,10 +3,10 @@ import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { RouteService } from '@/base/services/RouteService';
 import { UserService } from '@/base/services/UserService';
 import * as i18nKeys from '@config/Identifier/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 interface LoginFormData {
   email: string;
@@ -26,7 +26,7 @@ export default function LoginPage() {
         username: values.email,
         password: values.password
       });
-      IOC(RouteService).replaceToHome();
+      IOC(IOCIdentifier.RouteServiceInterface).replaceToHome();
     } catch (error) {
       console.error(error);
     } finally {

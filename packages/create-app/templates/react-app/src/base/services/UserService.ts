@@ -3,7 +3,6 @@ import type {
   UserApiLoginTransaction,
   UserInfo
 } from '@/base/apis/userApi/UserApiType';
-import { RouteService } from './RouteService';
 import {
   type UserAuthApiInterface,
   type UserAuthState,
@@ -17,6 +16,7 @@ import * as errKeys from '@config/Identifier/common.error';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { AppConfig } from '../cases/AppConfig';
 import { UserServiceInterface } from '../port/UserServiceInterface';
+import { RouteServiceInterface } from '../port/RouteServiceInterface';
 
 export interface UserApiState extends UserAuthState<UserInfo> {}
 
@@ -31,7 +31,8 @@ export interface RegisterFormData {
 @injectable()
 export class UserService extends UserServiceInterface {
   constructor(
-    @inject(RouteService) protected routerService: RouteService,
+    @inject(IOCIdentifier.RouteServiceInterface)
+    protected routerService: RouteServiceInterface,
     @inject(UserApi)
     userApi: UserAuthApiInterface<UserInfo>,
     @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
