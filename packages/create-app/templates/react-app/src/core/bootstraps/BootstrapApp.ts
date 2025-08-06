@@ -8,7 +8,7 @@ import * as globals from '../globals';
 import { IocRegisterImpl } from '../registers/IocRegisterImpl';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
-import { IOCIdentifierMap } from '../IOC';
+import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
 
 export type BootstrapAppArgs = {
   /**

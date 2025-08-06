@@ -26,6 +26,26 @@ export const RegisterCommon: IOCRegister = {
   register(container, _, options): void {
     const AppConfig = container.get(IOCIdentifier.AppConfig);
 
+    container.bind(IOCIdentifier.EnvConfigInterface, AppConfig);
+
+    // container.bind(
+    //   IOCIdentifier.RequestCatcherInterface,
+    //   new ApiCatchPlugin(
+    //     container.get(Logger),
+    //     container.get(RequestStatusCatcher)
+    //   )
+    // );
+
+    // [IOCIdentifier.I18nServiceInterface]: I18nService;
+    // [IOCIdentifier.ProcesserExecutorInterface]: ProcesserExecutor;
+    // [IOCIdentifier.RouteServiceInterface]: RouteService;
+    // [IOCIdentifier.UserServiceInterface]: UserService;
+
+    // [IOCIdentifier.FeApiToken]: CorekitBridge.TokenStorage<string>;
+    // [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
+    // [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
+    // [IOCIdentifier.ApiCatchPlugin]: CorekitBridge.ApiCatchPlugin;
+
     const feApiToken = new TokenStorage(AppConfig.userTokenStorageKey, {
       storage: container.get(IOCIdentifier.LocalStorageEncrypt)
     });

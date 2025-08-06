@@ -3,10 +3,8 @@ import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
-import {
-  StoreInterface,
-  type StoreStateInterface
-} from '@qlover/corekit-bridge';
+import { type StoreStateInterface } from '@qlover/corekit-bridge';
+import { RouteServiceInterface } from '../port/RouteServiceInterface';
 
 export type RouterServiceDependencies = {
   navigate: NavigateFunction;
@@ -31,7 +29,7 @@ export class RouterServiceState implements StoreStateInterface {
 }
 
 export class RouteService
-  extends StoreInterface<RouterServiceState>
+  extends RouteServiceInterface
   implements UIDependenciesInterface<RouterServiceDependencies>
 {
   /**
@@ -45,11 +43,11 @@ export class RouteService
     );
   }
 
-  get logger(): LoggerInterface {
+  override get logger(): LoggerInterface {
     return this.options.logger;
   }
 
-  get navigate(): NavigateFunction | undefined {
+  override get navigate(): NavigateFunction | undefined {
     const navigate = this.dependencies?.navigate;
 
     if (!navigate) {
@@ -61,7 +59,7 @@ export class RouteService
     return navigate;
   }
 
-  composePath(path: string): string {
+  override composePath(path: string): string {
     if (this.state.localeRoutes) {
       const targetLang = I18nService.getCurrentLanguage();
       return `/${targetLang}${path}`;
@@ -79,15 +77,15 @@ export class RouteService
     ) as RouterServiceDependencies;
   }
 
-  getRoutes(): RouteConfigValue[] {
+  override getRoutes(): RouteConfigValue[] {
     return this.state.routes;
   }
 
-  changeRoutes(routes: RouteConfigValue[]): void {
+  override changeRoutes(routes: RouteConfigValue[]): void {
     this.emit({ routes, localeRoutes: this.state.localeRoutes });
   }
 
-  goto(
+  override goto(
     path: string,
     options?: NavigateOptions & {
       navigate?: NavigateFunction;
@@ -99,19 +97,19 @@ export class RouteService
     (navigate || this.navigate)?.(path, rest);
   }
 
-  gotoLogin(): void {
+  override gotoLogin(): void {
     this.goto('/login', { replace: true });
   }
 
-  replaceToHome(): void {
+  override replaceToHome(): void {
     this.goto('/', { replace: true });
   }
 
-  redirectToDefault(navigate: NavigateFunction): void {
+  override redirectToDefault(navigate: NavigateFunction): void {
     this.goto('/', { replace: true, navigate });
   }
 
-  i18nGuard(lng: string, navigate: NavigateFunction): void {
+  override i18nGuard(lng: string, navigate: NavigateFunction): void {
     if (!this.state.localeRoutes) {
       return;
     }

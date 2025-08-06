@@ -5,11 +5,11 @@ import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import i18nConfig from '@config/i18n';
 import {
-  type BootstrapExecutorPlugin,
   type StoreStateInterface,
   StoreInterface
 } from '@qlover/corekit-bridge';
 import { useLocaleRoutes } from '@config/common';
+import { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
@@ -22,7 +22,7 @@ export class I18nServiceState implements StoreStateInterface {
 
 export class I18nService
   extends StoreInterface<I18nServiceState>
-  implements BootstrapExecutorPlugin
+  implements I18nServiceInterface
 {
   readonly pluginName = 'I18nService';
 

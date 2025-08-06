@@ -3,9 +3,10 @@ import { IOCIdentifier } from '@config/IOCIdentifier';
 import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 import { RouteService } from './RouteService';
+import { ProcesserExecutorInterface } from '../port/ProcesserExecutorInterface';
 
 @injectable()
-export class ProcesserExecutor {
+export class ProcesserExecutor implements ProcesserExecutorInterface {
   protected executor: AsyncExecutor = new AsyncExecutor();
 
   constructor(

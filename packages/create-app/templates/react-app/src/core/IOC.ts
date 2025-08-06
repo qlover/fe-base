@@ -3,32 +3,7 @@ import type { AppConfig } from '@/base/cases/AppConfig';
 import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
 import { createIOCFunction } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-
-/**
- * IOC identifier map
- *
- * Define the implementation class corresponding to the string identifier
- */
-export interface IOCIdentifierMap {
-  [IOCIdentifier.JSON]: import('@qlover/fe-corekit').JSONSerializer;
-  [IOCIdentifier.LocalStorage]: import('@qlover/fe-corekit').ObjectStorage<
-    string,
-    string
-  >;
-  [IOCIdentifier.LocalStorageEncrypt]: import('@qlover/fe-corekit').ObjectStorage<
-    string,
-    string
-  >;
-  [IOCIdentifier.CookieStorage]: import('@qlover/corekit-bridge').CookieStorage;
-  [IOCIdentifier.Logger]: import('@qlover/logger').LoggerInterface;
-  [IOCIdentifier.FeApiToken]: import('@qlover/corekit-bridge').TokenStorage<string>;
-  [IOCIdentifier.FeApiCommonPlugin]: import('@qlover/corekit-bridge').RequestCommonPlugin;
-  [IOCIdentifier.AppConfig]: import('@qlover/corekit-bridge').EnvConfigInterface;
-  [IOCIdentifier.ApiMockPlugin]: import('@qlover/corekit-bridge').ApiMockPlugin;
-  [IOCIdentifier.ApiCatchPlugin]: import('@qlover/corekit-bridge').ApiCatchPlugin;
-  [IOCIdentifier.DialogHandler]: import('@/base/cases/DialogHandler').DialogHandler;
-}
+import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
 
 /**
  * IOC register options

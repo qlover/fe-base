@@ -11,7 +11,7 @@ import { printBootstrap } from './PrintBootstrap';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { I18nService } from '@/base/services/I18nService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import { IOCIdentifierMap } from '../IOC';
+import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
 
 export class BootstrapsRegistry {
   constructor(

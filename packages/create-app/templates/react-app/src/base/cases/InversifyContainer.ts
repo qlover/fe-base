@@ -1,4 +1,4 @@
-import { IOCIdentifierMap } from '@/core/IOC';
+import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
 import {
   IOCContainerInterface,
   ServiceIdentifier
