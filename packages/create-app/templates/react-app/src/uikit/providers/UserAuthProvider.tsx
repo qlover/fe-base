@@ -1,10 +1,10 @@
 import { IOC } from '@/core/IOC';
 import { Loading } from '../components/Loading';
-import { UserService } from '@/base/services/UserService';
 import { useStore } from '../hooks/useStore';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export function UserAuthProvider({ children }: { children: React.ReactNode }) {
-  const userService = IOC(UserService);
+  const userService = IOC(IOCIdentifier.UserServiceInterface);
 
   useStore(userService.store);
 

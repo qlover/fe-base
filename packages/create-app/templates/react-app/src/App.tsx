@@ -44,7 +44,7 @@ function App() {
 
   return (
     <AntdThemeProvider
-      staticApi={IOC('DialogHandler')}
+      staticApi={IOC('AntdStaticApiInterface')}
       theme={{
         cssVar: {
           key: 'fe-theme',

@@ -3,7 +3,6 @@ import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { UserService } from '@/base/services/UserService';
 import * as i18nKeys from '@config/Identifier/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { IOCIdentifier } from '@config/IOCIdentifier';
@@ -15,8 +14,8 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const { t } = useBaseRoutePage();
-  const userService = IOC(UserService);
-  const AppConfig = IOC('AppConfig');
+  const userService = IOC(IOCIdentifier.UserServiceInterface);
+  const AppConfig = IOC(IOCIdentifier.AppConfig);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormData) => {

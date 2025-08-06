@@ -1,9 +1,9 @@
-import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
 import {
   AUTH_LOGOUT_DIALOG_CONTENT,
   AUTH_LOGOUT_DIALOG_TITLE
 } from '@config/Identifier/common';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { Button } from 'antd';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ export default function LogoutButton() {
       title: tTitle,
       content: tContent,
       onOk: () => {
-        IOC(UserService).logout();
+        IOC(IOCIdentifier.UserServiceInterface).logout();
       }
     });
   }, [tTitle, tContent]);

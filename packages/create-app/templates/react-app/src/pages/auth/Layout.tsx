@@ -1,11 +1,11 @@
 import { IOC } from '@/core/IOC';
-import { UserService } from '@/base/services/UserService';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useStore } from '@/uikit/hooks/useStore';
 import BaseHeader from '../../uikit/components/BaseHeader';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export default function Layout() {
-  const userService = IOC(UserService);
+  const userService = IOC(IOCIdentifier.UserServiceInterface);
   useStore(userService.store);
 
   // If user is authenticated, redirect to home page
