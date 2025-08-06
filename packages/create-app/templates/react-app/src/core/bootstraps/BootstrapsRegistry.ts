@@ -12,6 +12,7 @@ import { IOCIdentifier } from '@config/IOCIdentifier';
 import { I18nService } from '@/base/services/I18nService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { IOCIdentifierMap } from '@config/IOCIdentifierMap';
+import { IocIdentifierTest } from './IocIdentifierTest';
 
 export class BootstrapsRegistry {
   constructor(
@@ -36,6 +37,9 @@ export class BootstrapsRegistry {
     if (!this.appConfig.isProduction) {
       bootstrapList.push(printBootstrap);
     }
+
+    bootstrapList.push(IocIdentifierTest);
+    bootstrapList.push(IOC(IOCIdentifier.ProcesserExecutorInterface));
 
     return bootstrapList;
   }

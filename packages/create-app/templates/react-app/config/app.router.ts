@@ -64,8 +64,8 @@ export const baseRoutes: RouteConfigValue[] = [
         }
       },
       {
-        path: 'errorIdentifier',
-        element: 'base/ErrorIdentifierPage',
+        path: 'identifier',
+        element: 'base/IdentifierPage',
         meta: {
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
           description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,

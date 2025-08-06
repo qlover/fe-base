@@ -9,6 +9,7 @@ import type { I18nService } from '@/base/services/I18nService';
 import type { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import type { RouteService } from '@/base/services/RouteService';
 import type { UserService } from '@/base/services/UserService';
+import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 
 /**
  * IOC identifier map
@@ -47,7 +48,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.ProcesserExecutorInterface]: ProcesserExecutor;
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
-
+  [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
   [IOCIdentifier.FeApiToken]: CorekitBridge.TokenStorage<string>;
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
