@@ -318,7 +318,15 @@ export default class TypeDocJson extends ScriptPlugin<
     return project.children
       .filter((child) => {
         const source = this.getSourceInfo(child);
-        return source ? !source.fileName.endsWith('.d.ts') : true;
+        // Filter out .d.ts files
+        if (source && source.fileName.endsWith('.d.ts')) {
+          return false;
+        }
+        // Filter out index.ts files without comments
+        if (source && source.fileName.endsWith('index.ts') && !child.comment) {
+          return false;
+        }
+        return true;
       })
       .map((child) => {
         const source = this.getSourceInfo(child);

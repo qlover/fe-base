@@ -58,7 +58,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "build:docs": "fe-code2md -p src/core -g docs --formatOutput prettier --removePrefix"
   },
   "dependencies": {
     "@qlover/fe-corekit": "workspace:*",
