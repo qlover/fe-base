@@ -1,5 +1,9 @@
 # @qlover/scripts-context
 
+## 1.1.2
+
+### Patch Changes
+
 ## 1.1.0
 
 ### Minor Changes
