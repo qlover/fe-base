@@ -22,7 +22,7 @@ import { LogEvent } from './LogEvent';
  *     const timestamp = new Date(event.timestamp).toISOString();
  *     const level = event.level.toUpperCase();
  *     const message = event.args.join(' ');
- *     
+ *
  *     return [`[${timestamp}] ${level}: ${message}`];
  *   }
  * }
@@ -58,7 +58,7 @@ import { LogEvent } from './LogEvent';
  *     const prefix = ctx
  *       ? `[${ctx.method} ${ctx.path}] [${ctx.requestId}]`
  *       : '';
- *     
+ *
  *     return [
  *       prefix,
  *       event.level.toUpperCase(),
@@ -82,7 +82,7 @@ import { LogEvent } from './LogEvent';
  *   format(event: LogEvent): unknown[] {
  *     const color = this.colors[event.level] || this.colors.reset;
  *     const timestamp = new Date(event.timestamp).toISOString();
- *     
+ *
  *     return [
  *       `${color}[${timestamp}] ${event.level.toUpperCase()}:${this.colors.reset}`,
  *       ...event.args
