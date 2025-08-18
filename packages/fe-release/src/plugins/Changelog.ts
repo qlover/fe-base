@@ -1,3 +1,39 @@
+/**
+ * @module Changelog
+ * @description Changelog generation and version management plugin
+ *
+ * This module provides a plugin for generating changelogs and managing
+ * version updates in a monorepo environment. It supports both single
+ * package and workspace-based repositories.
+ *
+ * Core Features:
+ * - Changelog generation from Git history
+ * - Version increment management
+ * - Changeset file generation
+ * - Tag management
+ * - Multi-workspace support
+ *
+ * @example Basic usage
+ * ```typescript
+ * const plugin = new Changelog(context, {
+ *   increment: 'minor',
+ *   tagTemplate: '${name}@${version}'
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ *
+ * @example Workspace configuration
+ * ```typescript
+ * const plugin = new Changelog(context, {
+ *   ignoreNonUpdatedPackages: true,
+ *   skipChangeset: false,
+ *   changesetRoot: '.changeset'
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ */
 import ReleaseContext from '../implments/ReleaseContext';
 import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
@@ -86,6 +122,31 @@ export default class Changelog extends ScriptPlugin<
   ReleaseContext,
   ChangelogProps
 > {
+  /**
+   * Creates a new Changelog plugin instance
+   *
+   * Initializes the plugin with default configuration values and
+   * merges them with provided options.
+   *
+   * Default values:
+   * - increment: 'patch'
+   * - changesetRoot: '.changeset'
+   * - tagTemplate: '${name}@${version}'
+   * - tagPrefix: '${name}'
+   * - tagMatch: '${name}@*'
+   *
+   * @param context - Release context
+   * @param props - Plugin configuration
+   *
+   * @example
+   * ```typescript
+   * const plugin = new Changelog(context, {
+   *   increment: 'minor',
+   *   changesetRoot: 'custom/changeset',
+   *   tagTemplate: 'v${version}'
+   * });
+   * ```
+   */
   constructor(context: ReleaseContext, props: ChangelogProps) {
     super(context, 'changelog', {
       increment: 'patch',
@@ -97,18 +158,81 @@ export default class Changelog extends ScriptPlugin<
     });
   }
 
+  /**
+   * Gets the absolute path to the changeset root directory
+   *
+   * Combines the project root path with the configured changeset
+   * directory path.
+   *
+   * @returns Absolute path to changeset directory
+   *
+   * @example
+   * ```typescript
+   * const root = plugin.changesetRoot;
+   * // '/path/to/project/.changeset'
+   * ```
+   */
   get changesetRoot(): string {
     return join(this.context.rootPath, this.getConfig('changesetRoot'));
   }
 
+  /**
+   * Gets the path to the changeset configuration file
+   *
+   * Returns the absolute path to the config.json file in the
+   * changeset directory.
+   *
+   * @returns Path to changeset config file
+   *
+   * @example
+   * ```typescript
+   * const configPath = plugin.changesetConfigPath;
+   * // '/path/to/project/.changeset/config.json'
+   * ```
+   */
   get changesetConfigPath(): string {
     return join(this.changesetRoot, 'config.json');
   }
 
+  /**
+   * Determines if the plugin should be enabled
+   *
+   * Plugin is enabled unless explicitly skipped via configuration.
+   * This allows for conditional changelog generation.
+   *
+   * @returns True if plugin should be enabled
+   *
+   * @example
+   * ```typescript
+   * const plugin = new Changelog(context, { skip: true });
+   * plugin.enabled(); // false
+   *
+   * const plugin2 = new Changelog(context, {});
+   * plugin2.enabled(); // true
+   * ```
+   */
   override enabled(): boolean {
     return !this.getConfig('skip');
   }
 
+  /**
+   * Plugin initialization hook
+   *
+   * Verifies that the changeset directory exists before proceeding
+   * with changelog generation.
+   *
+   * @throws Error if changeset directory does not exist
+   *
+   * @example
+   * ```typescript
+   * const plugin = new Changelog(context, {
+   *   changesetRoot: '.changeset'
+   * });
+   *
+   * await plugin.onBefore();
+   * // Throws if .changeset directory doesn't exist
+   * ```
+   */
   override async onBefore(): Promise<void> {
     if (!existsSync(this.changesetRoot)) {
       throw new Error(
@@ -119,6 +243,33 @@ export default class Changelog extends ScriptPlugin<
     this.logger.debug(`${this.changesetRoot} exists`);
   }
 
+  /**
+   * Updates workspace information with latest versions
+   *
+   * Reads the latest version information from each workspace's
+   * package.json and updates the workspace objects with new
+   * versions and tag names.
+   *
+   * @param workspaces - Array of workspace configurations
+   * @returns Updated workspace configurations
+   *
+   * @example
+   * ```typescript
+   * const workspaces = [
+   *   { name: 'pkg-a', path: 'packages/a', version: '1.0.0' }
+   * ];
+   *
+   * const updated = plugin.mergeWorkspaces(workspaces);
+   * // [
+   * //   {
+   * //     name: 'pkg-a',
+   * //     path: 'packages/a',
+   * //     version: '1.1.0',  // Updated version
+   * //     tagName: 'pkg-a@1.1.0'
+   * //   }
+   * // ]
+   * ```
+   */
   mergeWorkspaces(workspaces: WorkspaceValue[]): WorkspaceValue[] {
     return workspaces.map((workspace) => {
       const newPackgeJson = WorkspaceCreator.toWorkspace(
@@ -139,6 +290,25 @@ export default class Changelog extends ScriptPlugin<
     });
   }
 
+  /**
+   * Main plugin execution hook
+   *
+   * Generates changelogs for all workspaces in parallel and updates
+   * the context with the results.
+   *
+   * Process:
+   * 1. Generate changelogs for each workspace
+   * 2. Update context with new workspace information
+   *
+   * @param _context - Execution context
+   *
+   * @example
+   * ```typescript
+   * const plugin = new Changelog(context, {});
+   * await plugin.onExec(execContext);
+   * // Generates changelogs for all workspaces
+   * ```
+   */
   override async onExec(_context: ExecutorReleaseContext): Promise<void> {
     const workspaces = await this.step({
       label: 'Generate Changelogs',
@@ -153,6 +323,28 @@ export default class Changelog extends ScriptPlugin<
     this.context.setWorkspaces(workspaces);
   }
 
+  /**
+   * Success hook after plugin execution
+   *
+   * Handles post-changelog generation tasks:
+   * 1. Creates changeset files (if not skipped)
+   * 2. Updates package versions
+   * 3. Restores unchanged packages (if configured)
+   * 4. Updates workspace information
+   *
+   * @example
+   * ```typescript
+   * const plugin = new Changelog(context, {
+   *   skipChangeset: false,
+   *   ignoreNonUpdatedPackages: true
+   * });
+   *
+   * await plugin.onSuccess();
+   * // - Creates changeset files
+   * // - Updates versions
+   * // - Restores unchanged packages
+   * ```
+   */
   override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
     // create changeset files
@@ -184,6 +376,25 @@ export default class Changelog extends ScriptPlugin<
     this.context.setWorkspaces(newWorkspaces);
   }
 
+  /**
+   * Restores unchanged packages to their original state
+   *
+   * When ignoreNonUpdatedPackages is enabled, this method:
+   * 1. Identifies packages without changes
+   * 2. Uses git restore to revert them to original state
+   *
+   * @example
+   * ```typescript
+   * // With changed and unchanged packages
+   * context.options.workspaces = {
+   *   packages: ['pkg-a', 'pkg-b', 'pkg-c'],
+   *   changedPaths: ['pkg-a', 'pkg-b']
+   * };
+   *
+   * await plugin.restoreIgnorePackages();
+   * // Restores 'pkg-c' to original state
+   * ```
+   */
   async restoreIgnorePackages(): Promise<void> {
     const { changedPaths = [], packages = [] } = this.context.getOptions(
       'workspaces'
@@ -204,6 +415,27 @@ export default class Changelog extends ScriptPlugin<
     }
   }
 
+  /**
+   * Gets the tag prefix for a workspace
+   *
+   * Formats the configured tag prefix template with workspace
+   * information. Used for generating Git tag names.
+   *
+   * @param workspace - Workspace configuration
+   * @returns Formatted tag prefix
+   *
+   * @example
+   * ```typescript
+   * const workspace = {
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * };
+   *
+   * const prefix = plugin.getTagPrefix(workspace);
+   * // With default template: 'pkg-a'
+   * // With custom template: 'v1.0.0'
+   * ```
+   */
   getTagPrefix(workspace: WorkspaceValue): string {
     return Shell.format(
       this.getConfig('tagPrefix') as string,
@@ -211,6 +443,33 @@ export default class Changelog extends ScriptPlugin<
     );
   }
 
+  /**
+   * Generates a changelog for a workspace
+   *
+   * Creates a changelog by:
+   * 1. Getting the appropriate tag name
+   * 2. Retrieving commits since last tag
+   * 3. Formatting commits into changelog entries
+   *
+   * @param workspace - Workspace configuration
+   * @returns Updated workspace with changelog
+   *
+   * @example
+   * ```typescript
+   * const workspace = {
+   *   name: 'pkg-a',
+   *   path: 'packages/a',
+   *   version: '1.0.0'
+   * };
+   *
+   * const updated = await plugin.generateChangelog(workspace);
+   * // {
+   * //   ...workspace,
+   * //   lastTag: 'pkg-a@1.0.0',
+   * //   changelog: '- feat: new feature\n- fix: bug fix'
+   * // }
+   * ```
+   */
   async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {
     // FIXME: where to get the tagName?
     let tagName = await this.getTagName(workspace);
@@ -245,6 +504,32 @@ export default class Changelog extends ScriptPlugin<
     };
   }
 
+  /**
+   * Generates a tag name for a workspace
+   *
+   * Uses the configured tag template to generate a tag name
+   * for the workspace. Handles errors by providing a fallback.
+   *
+   * @param workspace - Workspace configuration
+   * @returns Generated tag name
+   *
+   * @example
+   * ```typescript
+   * // With default template
+   * const tag = plugin.generateTagName({
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * });
+   * // 'pkg-a@1.0.0'
+   *
+   * // With error (fallback)
+   * const tag = plugin.generateTagName({
+   *   name: 'pkg-a'
+   * });
+   * // 'pkg-a-v0.0.0'
+   * ```
+   * @private
+   */
   private generateTagName(workspace: WorkspaceValue): string {
     try {
       const tagTemplate = this.getConfig('tagTemplate') as string;
@@ -259,6 +544,38 @@ export default class Changelog extends ScriptPlugin<
     }
   }
 
+  /**
+   * Gets the appropriate tag name for a workspace
+   *
+   * Attempts to find the latest tag for the workspace, falling back
+   * to generating a new tag if none exists. Uses git commands to
+   * find and sort tags by creation date.
+   *
+   * Process:
+   * 1. Generate current tag pattern
+   * 2. Search for existing tags matching pattern
+   * 3. Return latest tag or generate new one
+   *
+   * @param workspace - Workspace configuration
+   * @returns Promise resolving to tag name
+   *
+   * @example
+   * ```typescript
+   * // With existing tags
+   * const tag = await plugin.getTagName({
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * });
+   * // Returns latest matching tag: 'pkg-a@0.9.0'
+   *
+   * // Without existing tags
+   * const tag = await plugin.getTagName({
+   *   name: 'pkg-b',
+   *   version: '1.0.0'
+   * });
+   * // Returns new tag: 'pkg-b@1.0.0'
+   * ```
+   */
   async getTagName(workspace: WorkspaceValue): Promise<string> {
     try {
       const currentTagPattern = this.generateTagName(workspace);
@@ -294,6 +611,31 @@ export default class Changelog extends ScriptPlugin<
     }
   }
 
+  /**
+   * Determines the version increment type
+   *
+   * Checks for increment labels in the following order:
+   * 1. 'increment:major' label
+   * 2. 'increment:minor' label
+   * 3. Configured increment value
+   * 4. Default to 'patch'
+   *
+   * @returns Version increment type
+   *
+   * @example
+   * ```typescript
+   * // With labels
+   * context.options.workspaces.changeLabels = ['increment:major'];
+   * plugin.getIncrement(); // 'major'
+   *
+   * // With configuration
+   * const plugin = new Changelog(context, { increment: 'minor' });
+   * plugin.getIncrement(); // 'minor'
+   *
+   * // Default
+   * plugin.getIncrement(); // 'patch'
+   * ```
+   */
   getIncrement(): string {
     const lables = this.context.getOptions('workspaces.changeLabels');
 
@@ -313,6 +655,43 @@ export default class Changelog extends ScriptPlugin<
     return increment;
   }
 
+  /**
+   * Generates a changeset file for a workspace
+   *
+   * Creates a changeset file containing version increment
+   * information and changelog content. Handles dry run mode
+   * and existing files.
+   *
+   * File format:
+   * ```yaml
+   * ---
+   * 'package-name': 'increment-type'
+   * ---
+   *
+   * changelog content
+   * ```
+   *
+   * @param workspace - Workspace configuration
+   *
+   * @example
+   * ```typescript
+   * const workspace = {
+   *   name: 'pkg-a',
+   *   version: '1.0.0',
+   *   changelog: '- feat: new feature'
+   * };
+   *
+   * await plugin.generateChangesetFile(workspace);
+   * // Creates .changeset/pkg-a-1.0.0.md
+   * ```
+   *
+   * @example Dry run
+   * ```typescript
+   * context.dryRun = true;
+   * await plugin.generateChangesetFile(workspace);
+   * // Logs file content without creating file
+   * ```
+   */
   async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
     const { name, version } = workspace;
     // eslint-disable-next-line no-useless-escape
