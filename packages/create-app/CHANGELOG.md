@@ -1,5 +1,16 @@
 # @qlover/create-app
 
+## 0.7.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **docs:** update references from @qlover/eslint-plugin-fe-dev to @qlover/eslint-plugin ([3c682cd](https://github.com/qlover/fe-base/commit/3c682cdbac17cc0e96166a45934899bad7c565cc)) ([#489](https://github.com/qlover/fe-base/pull/489))
+  - Replaced all instances of @qlover/eslint-plugin-fe-dev with @qlover/eslint-plugin in documentation and configuration files to reflect the new plugin structure.
+  - Ensured consistency across README and documentation files in both English and Chinese.
+  - Updated ESLint configuration files to use the new plugin name, enhancing clarity and maintainability.
+
 ## 0.7.0
 
 ### Minor Changes
