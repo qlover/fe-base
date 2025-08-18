@@ -132,7 +132,7 @@ describe('StoreInterface', () => {
       get double(): number {
         return this.value * 2;
       }
-      // eslint-disable-next-line fe-dev/ts-class-method-return
+      // eslint-disable-next-line @qlover-eslint/ts-class-method-return
       set double(v: number) {
         this.value = v / 2;
       }

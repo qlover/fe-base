@@ -1,0 +1,40 @@
+{
+  "name": "@qlover/eslint-plugin",
+  "version": "1.0.0",
+  "description": "ESLint plugin for qlover's TypeScript projects",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "typescript"
+  ],
+  "peerDependencies": {
+    "@typescript-eslint/parser": ">=6.0.0",
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.24.1",
+    "@typescript-eslint/types": "^8.39.1",
+    "@typescript-eslint/utils": "^8.24.1",
+    "@typescript-eslint/rule-tester": "^8.24.1",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

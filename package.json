@@ -13,6 +13,7 @@
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=4 run build && pnpm rebuild",
     "build:docs": "pnpm -r run build:docs",
+    "build:eslint-plugin": "pnpm --filter @qlover/eslint-plugin build",
     "build:fe-release": "pnpm --filter @qlover/fe-release build",
     "build:logger": "pnpm --filter @qlover/logger build",
     "dryrun:releasePR": "node ./packages/fe-release/dist/cli.js -V -P --githubPR.dry-run-create-PR",
@@ -49,7 +50,7 @@
     "@nx/esbuild": "20.6.4",
     "@nx/js": "20.6.4",
     "@qlover/env-loader": "workspace:*",
-    "@qlover/eslint-plugin-fe-dev": "workspace:*",
+    "@qlover/eslint-plugin": "workspace:*",
     "@qlover/code2markdown": "workspace:*",
     "@qlover/fe-scripts": "workspace:*",
     "@qlover/fe-standard": "workspace:*",

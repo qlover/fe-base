@@ -87,7 +87,7 @@ pnpm add @qlover/logger
 ### Configuration and Standards
 
 - **[@qlover/fe-standard](../../packages/fe-standard/README.md)** - Frontend development standards and specifications
-- **[@qlover/eslint-plugin-fe-dev](../../packages/eslint-plugin-fe-dev/README.md)** - Frontend development ESLint plugin
+- **[@qlover/eslint-plugin](../../packages/eslint-plugin/README.md)** - Frontend development ESLint plugin
 - **[@qlover/env-loader](../../packages/env-loader/README.md)** - Environment variable loading tool
 
 ### Support Tools
