@@ -1,3 +1,40 @@
+/**
+ * @module GithubPR
+ * @description GitHub Pull Request and Release Management
+ *
+ * This module provides functionality for managing GitHub pull requests
+ * and releases as part of the release process. It handles PR creation,
+ * release publishing, and changelog management.
+ *
+ * Core Features:
+ * - Pull request creation and management
+ * - Release publishing
+ * - Changelog integration
+ * - Tag management
+ * - Label management
+ * - Auto-merge support
+ *
+ * @example Basic usage
+ * ```typescript
+ * const plugin = new GithubPR(context, {
+ *   releasePR: true,
+ *   autoGenerate: true
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ *
+ * @example Release publishing
+ * ```typescript
+ * const plugin = new GithubPR(context, {
+ *   releasePR: false,
+ *   makeLatest: true,
+ *   preRelease: false
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ */
 import {
   ReleaseBranchParams,
   ReleaseParams,
@@ -110,13 +147,84 @@ export interface GithubPRProps extends ReleaseParamsConfig, GitBaseProps {
   pushChangeLabels?: boolean;
 }
 
+/**
+ * Default template for release names
+ * Variables:
+ * - ${name}: Package name
+ * - ${version}: Package version
+ */
 const DEFAULT_RELEASE_NAME = 'Release ${name} v${version}';
+
+/**
+ * Default template for commit messages
+ * Variables:
+ * - ${name}: Package name
+ * - ${version}: Package version
+ */
 const DEFAULT_COMMIT_MESSAGE = 'chore(tag): ${name} v${version}';
 
+/**
+ * GitHub Pull Request and Release Management Plugin
+ *
+ * Handles the creation and management of GitHub pull requests
+ * and releases. Supports both single package and workspace
+ * releases with customizable templates and options.
+ *
+ * Features:
+ * - PR creation with customizable titles and bodies
+ * - Release publishing with version tags
+ * - Changelog integration
+ * - Label management
+ * - Auto-merge support
+ * - NPM publishing integration
+ *
+ * @example Basic PR creation
+ * ```typescript
+ * const plugin = new GithubPR(context, {
+ *   releasePR: true,
+ *   commitMessage: 'chore: release v${version}',
+ *   pushChangeLabels: true
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ *
+ * @example Release publishing
+ * ```typescript
+ * const plugin = new GithubPR(context, {
+ *   draft: false,
+ *   preRelease: false,
+ *   makeLatest: true,
+ *   autoGenerate: true
+ * });
+ *
+ * await plugin.exec();
+ * ```
+ */
 export default class GithubPR extends GitBase<GithubPRProps> {
   private releaseParams: ReleaseParams;
   private githubManager: GithubManager;
 
+  /**
+   * Creates a new GithubPR plugin instance
+   *
+   * Initializes the plugin with GitHub-specific configuration and
+   * sets up release parameters and GitHub manager.
+   *
+   * @param context - Release context
+   * @param props - Plugin configuration
+   *
+   * @example
+   * ```typescript
+   * const plugin = new GithubPR(context, {
+   *   releasePR: true,
+   *   releaseName: 'Release v${version}',
+   *   commitMessage: 'chore: release v${version}',
+   *   draft: false,
+   *   preRelease: false
+   * });
+   * ```
+   */
   constructor(
     protected readonly context: ReleaseContext,
     props: GithubPRProps
@@ -134,6 +242,24 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
   }
 
+  /**
+   * Determines if the plugin should be enabled
+   *
+   * Plugin is enabled unless explicitly skipped via configuration.
+   * This allows for conditional PR creation and release publishing.
+   *
+   * @param _name - Plugin name (unused)
+   * @returns True if plugin should be enabled
+   *
+   * @example
+   * ```typescript
+   * const plugin = new GithubPR(context, { skip: true });
+   * plugin.enabled(); // false
+   *
+   * const plugin2 = new GithubPR(context, {});
+   * plugin2.enabled(); // true
+   * ```
+   */
   override enabled(_name: string): boolean {
     if (this.getConfig('skip')) {
       return false;
@@ -142,10 +268,44 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     return true;
   }
 
+  /**
+   * Determines if the plugin is in publish mode
+   *
+   * In publish mode, the plugin publishes releases directly.
+   * In non-publish mode (releasePR=true), it creates pull requests.
+   *
+   * @returns True if in publish mode
+   *
+   * @example
+   * ```typescript
+   * const plugin = new GithubPR(context, { releasePR: true });
+   * plugin.isPublish; // false (PR mode)
+   *
+   * const plugin2 = new GithubPR(context, { releasePR: false });
+   * plugin2.isPublish; // true (publish mode)
+   * ```
+   */
   get isPublish(): boolean {
     return !this.getConfig('releasePR');
   }
 
+  /**
+   * Checks if the current repository is a GitHub repository
+   *
+   * Verifies that the remote URL contains 'github.com' to ensure
+   * GitHub-specific features can be used.
+   *
+   * @returns Promise resolving to true if GitHub repository
+   *
+   * @example
+   * ```typescript
+   * const isGithub = await plugin.isGithubRepository();
+   * if (isGithub) {
+   *   // Use GitHub-specific features
+   * }
+   * ```
+   * @private
+   */
   private async isGithubRepository(): Promise<boolean> {
     try {
       const remoteUrl = await this.getRemoteUrl();
@@ -155,6 +315,24 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
   }
 
+  /**
+   * Plugin initialization hook
+   *
+   * Performs pre-execution setup:
+   * 1. Verifies repository is on GitHub
+   * 2. Runs parent class initialization
+   * 3. Sets up NPM token for publishing
+   *
+   * @throws Error if not a GitHub repository
+   * @throws Error if NPM_TOKEN missing in publish mode
+   *
+   * @example
+   * ```typescript
+   * const plugin = new GithubPR(context, {});
+   * await plugin.onBefore();
+   * // Throws if not GitHub repo or missing NPM token
+   * ```
+   */
   override async onBefore(): Promise<void> {
     this.logger.debug('GithubPR onBefore');
 
@@ -179,6 +357,24 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     }
   }
 
+  /**
+   * Main plugin execution hook
+   *
+   * Processes changelogs for all workspaces using GitHub-specific
+   * formatting and updates the context with the results.
+   *
+   * Process:
+   * 1. Initialize GitHub changelog processor
+   * 2. Transform workspace changelogs
+   * 3. Update context with new workspace info
+   *
+   * @example
+   * ```typescript
+   * const plugin = new GithubPR(context, {});
+   * await plugin.onExec();
+   * // Transforms changelogs with GitHub links
+   * ```
+   */
   override async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
@@ -195,6 +391,27 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     this.context.setWorkspaces(newWorkspaces);
   }
 
+  /**
+   * Success hook after plugin execution
+   *
+   * Handles either PR creation or release publishing based on
+   * configuration. In publish mode, publishes to NPM and creates
+   * GitHub releases. In PR mode, creates release pull requests.
+   *
+   * @example PR mode
+   * ```typescript
+   * const plugin = new GithubPR(context, { releasePR: true });
+   * await plugin.onSuccess();
+   * // Creates release PR
+   * ```
+   *
+   * @example Publish mode
+   * ```typescript
+   * const plugin = new GithubPR(context, { releasePR: false });
+   * await plugin.onSuccess();
+   * // Publishes to NPM and creates GitHub release
+   * ```
+   */
   override async onSuccess(): Promise<void> {
     if (this.isPublish) {
       await this.publishPR(this.context.workspaces!);
@@ -205,6 +422,28 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     await this.releasePR(this.context.workspaces!);
   }
 
+  /**
+   * Creates a release pull request
+   *
+   * Handles the complete process of creating a release PR:
+   * 1. Creates release commit
+   * 2. Creates release branch
+   * 3. Creates and configures pull request
+   *
+   * @param workspaces - Array of workspace configurations
+   *
+   * @example
+   * ```typescript
+   * const workspaces = [{
+   *   name: 'pkg-a',
+   *   version: '1.0.0',
+   *   changelog: '...'
+   * }];
+   *
+   * await plugin.releasePR(workspaces);
+   * // Creates PR with release changes
+   * ```
+   */
   async releasePR(workspaces: WorkspaceValue[]): Promise<void> {
     await this.step({
       label: 'Release Commit',
@@ -219,6 +458,28 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     await this.releasePullRequest(workspaces, releaseBranchParams);
   }
 
+  /**
+   * Publishes releases to NPM and GitHub
+   *
+   * In non-dry-run mode:
+   * 1. Publishes packages to NPM
+   * 2. Pushes tags to GitHub
+   * 3. Creates GitHub releases
+   *
+   * @param workspaces - Array of workspace configurations
+   *
+   * @example
+   * ```typescript
+   * const workspaces = [{
+   *   name: 'pkg-a',
+   *   version: '1.0.0',
+   *   changelog: '...'
+   * }];
+   *
+   * await plugin.publishPR(workspaces);
+   * // Publishes to NPM and creates GitHub releases
+   * ```
+   */
   async publishPR(workspaces: WorkspaceValue[]): Promise<void> {
     if (!this.getConfig('dryRunCreatePR')) {
       await this.context.runChangesetsCli('publish');
@@ -238,6 +499,34 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     });
   }
 
+  /**
+   * Creates release commit(s)
+   *
+   * Creates either a single commit for all workspaces or
+   * individual commits per workspace. Uses configured commit
+   * message template.
+   *
+   * @param workspaces - Array of workspace configurations
+   *
+   * @example Single workspace
+   * ```typescript
+   * await plugin.relesaeCommit([{
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * }]);
+   * // Creates: "chore(tag): pkg-a v1.0.0"
+   * ```
+   *
+   * @example Multiple workspaces
+   * ```typescript
+   * await plugin.relesaeCommit([
+   *   { name: 'pkg-a', version: '1.0.0' },
+   *   { name: 'pkg-b', version: '2.0.0' }
+   * ]);
+   * // Creates: "chore(tag): pkg-a v1.0.0,pkg-b v2.0.0"
+   * ```
+   * @private
+   */
   private async relesaeCommit(workspaces: WorkspaceValue[]): Promise<void> {
     const commitArgs: string[] = this.getConfig('commitArgs', []);
 
@@ -255,6 +544,34 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     await this.commit(commitMessage, commitArgs);
   }
 
+  /**
+   * Creates and optionally merges a release pull request
+   *
+   * Creates a PR with release changes and handles auto-merge
+   * if configured. Adds release and change labels to the PR.
+   *
+   * @param workspaces - Array of workspace configurations
+   * @param releaseBranchParams - Branch and tag information
+   *
+   * @example Manual merge
+   * ```typescript
+   * await plugin.releasePullRequest(
+   *   workspaces,
+   *   { releaseBranch: 'release-v1.0.0', tagName: 'v1.0.0' }
+   * );
+   * // Creates PR for manual merge
+   * ```
+   *
+   * @example Auto-merge
+   * ```typescript
+   * const plugin = new GithubPR(context, {
+   *   autoMergeReleasePR: true
+   * });
+   *
+   * await plugin.releasePullRequest(workspaces, params);
+   * // Creates and auto-merges PR
+   * ```
+   */
   async releasePullRequest(
     workspaces: WorkspaceValue[],
     releaseBranchParams: ReleaseBranchParams
@@ -283,6 +600,34 @@ export default class GithubPR extends GitBase<GithubPRProps> {
     );
   }
 
+  /**
+   * Creates a commit for a single workspace
+   *
+   * Uses the configured commit message template to create a
+   * commit for the workspace's changes.
+   *
+   * @param workspace - Workspace configuration
+   * @param commitArgs - Additional Git commit arguments
+   * @returns Promise resolving to commit output
+   *
+   * @example Basic commit
+   * ```typescript
+   * await plugin.commitWorkspace({
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * });
+   * // Creates: "chore(tag): pkg-a v1.0.0"
+   * ```
+   *
+   * @example With arguments
+   * ```typescript
+   * await plugin.commitWorkspace(
+   *   { name: 'pkg-a', version: '1.0.0' },
+   *   ['--no-verify']
+   * );
+   * ```
+   * @private
+   */
   private async commitWorkspace(
     workspace: WorkspaceValue,
     commitArgs: string[] = []
@@ -304,6 +649,37 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    *
    *
    * @returns The release branch.
+   */
+  /**
+   * Creates a release branch for changes
+   *
+   * Creates a new branch from the current branch for release
+   * changes. The branch name is generated from the configured
+   * template and workspace information.
+   *
+   * Process:
+   * 1. Generate branch parameters
+   * 2. Fetch required branches
+   * 3. Create and push release branch
+   *
+   * @param workspaces - Array of workspace configurations
+   * @returns Promise resolving to branch parameters
+   *
+   * @example
+   * ```typescript
+   * const params = await plugin.createReleaseBranch([{
+   *   name: 'pkg-a',
+   *   version: '1.0.0'
+   * }]);
+   * // {
+   * //   tagName: 'pkg-a@1.0.0',
+   * //   releaseBranch: 'release-pkg-a-1.0.0'
+   * // }
+   * ```
+   *
+   * @throws Error if tag name is invalid
+   * @throws Error if branch creation fails
+   * @private
    */
   private async createReleaseBranch(
     workspaces: WorkspaceValue[]
@@ -361,6 +737,42 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * @param workspaces - The compose workspaces.
    * @param releaseBranchParams - The release branch params.
    * @returns The created pull request number.
+   */
+  /**
+   * Creates a release pull request
+   *
+   * Creates a pull request with:
+   * 1. Release label
+   * 2. Change labels (if configured)
+   * 3. Generated title and body
+   * 4. Proper branch configuration
+   *
+   * @param workspaces - Array of workspace configurations
+   * @param releaseBranchParams - Branch and tag information
+   * @returns Promise resolving to PR number
+   *
+   * @example Basic PR
+   * ```typescript
+   * const prNumber = await plugin.createReleasePR(
+   *   workspaces,
+   *   { releaseBranch: 'release-v1.0.0', tagName: 'v1.0.0' }
+   * );
+   * // Creates PR with default labels
+   * ```
+   *
+   * @example With change labels
+   * ```typescript
+   * const plugin = new GithubPR(context, {
+   *   pushChangeLabels: true
+   * });
+   *
+   * const prNumber = await plugin.createReleasePR(
+   *   workspaces,
+   *   params
+   * );
+   * // Creates PR with release and change labels
+   * ```
+   * @private
    */
   private async createReleasePR(
     workspaces: WorkspaceValue[],

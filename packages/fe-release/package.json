@@ -46,6 +46,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix",
     "release": "node dist/cli.js",
     "release-pr": "node dist/cli.js -P",
     "dryrun:release": "node dist/cli.js --dry-run -V",
