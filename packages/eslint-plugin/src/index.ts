@@ -1,7 +1,5 @@
 import type { TSESLint } from '@typescript-eslint/utils';
-import tsClassMethodReturn, {
-  RULE_NAME
-} from './rules/ts-class-method-return';
+import tsClassMethodReturn, { RULE_NAME } from './rules/ts-class-method-return';
 
 const configs: {
   recommended: TSESLint.Linter.ConfigType;

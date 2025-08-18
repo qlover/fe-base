@@ -46,7 +46,10 @@ export default createEslintRule<Options, MessageIds>({
       allowPrivateMethods: false
     }
   ],
-  create(context: TSESLint.RuleContext<MessageIds, Options>, [options]: Options) {
+  create(
+    context: TSESLint.RuleContext<MessageIds, Options>,
+    [options]: Options
+  ) {
     const allowConstructors = options?.allowConstructors ?? true;
     const allowPrivateMethods = options?.allowPrivateMethods ?? false;
 
