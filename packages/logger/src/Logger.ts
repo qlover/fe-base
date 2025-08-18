@@ -8,14 +8,56 @@ import { LogContext } from './interface/LogContext';
  *
  * This defines the standard hierarchy of logging levels:
  * - fatal (0): System is unusable, application crashes
- * - error (1): Error events that might still allow the application to continue running
- * - warn (2): Potentially harmful situations that don't cause application failure
- * - info (3): Informational messages highlighting application progress
- * - debug (4): Detailed information useful for debugging
- * - trace (5): Most granular information for very detailed diagnostics
- * - log (6): General purpose logging (alias for info)
+ *   - Database connection permanently lost
+ *   - Critical system files corrupted
+ *   - Out of memory, system cannot allocate resources
+ *   - Security breach detected
+ *
+ * - error (10): Error events that might still allow the application to continue running
+ *   - API request failed after all retries
+ *   - Payment processing error
+ *   - File system operation failed
+ *   - Authentication/Authorization failures
+ *
+ * - warn (20): Potentially harmful situations that don't cause application failure
+ *   - API rate limit approaching threshold
+ *   - Memory usage above 80%
+ *   - Deprecated API usage detected
+ *   - Database connection pool running low
+ *
+ * - info (30): Informational messages highlighting application progress
+ *   - Application startup/shutdown
+ *   - User login/logout events
+ *   - Scheduled tasks execution
+ *   - Configuration changes
+ *
+ * - debug (40): Detailed information useful for debugging
+ *   - Function entry/exit points
+ *   - Variable state changes
+ *   - SQL queries
+ *   - API request/response details
+ *
+ * - trace (50): Most granular information for very detailed diagnostics
+ *   - Step-by-step algorithm execution
+ *   - Network packet details
+ *   - Memory allocations
+ *   - Performance metrics
+ *
+ * - log (60): General purpose logging (alias for info)
+ *   - Same priority as info level
+ *   - Used for backward compatibility
+ *   - Provides a familiar console.log-like interface
  *
  * @type {Object.<string, number>}
+ * @important Level numbers are spaced by 10 to allow insertion of custom levels between standard ones
+ * @example
+ * ```typescript
+ * // Custom level between error and warn
+ * const customLevels = {
+ *   ...defaultLevels,
+ *   security: 15  // Custom level for security events
+ * };
+ * ```
  */
 export const defaultLevels = {
   fatal: 0,
@@ -29,6 +71,58 @@ export const defaultLevels = {
 
 /**
  * Configuration options for the Logger
+ *
+ * Provides comprehensive configuration for logger behavior, including:
+ * - Log level control and customization
+ * - Silent mode for disabling all output
+ * - Handler management for output destinations
+ * - Logger instance identification
+ *
+ * @example Basic configuration
+ * ```typescript
+ * const options: LoggerOptions = {
+ *   level: 'info',
+ *   name: 'app-server',
+ *   handlers: [new ConsoleHandler()]
+ * };
+ * ```
+ *
+ * @example Advanced configuration with custom levels
+ * ```typescript
+ * const options: LoggerOptions = {
+ *   name: 'payment-service',
+ *   levels: {
+ *     emergency: 0,    // Custom highest priority
+ *     critical: 10,    // System critical issues
+ *     error: 20,       // Standard errors
+ *     warning: 30,     // Warnings
+ *     notice: 40,      // Important notices
+ *     info: 50,        // General information
+ *     debug: 60        // Debug information
+ *   },
+ *   level: 'notice',   // Set current threshold
+ *   handlers: [
+ *     new ConsoleHandler({ level: 'debug' }),
+ *     new FileHandler('errors.log', { level: 'error' }),
+ *     new AlertHandler({ level: 'critical' })
+ *   ]
+ * };
+ * ```
+ *
+ * @example Production configuration
+ * ```typescript
+ * const options: LoggerOptions = {
+ *   name: 'prod-api',
+ *   level: 'warn',     // Only log warnings and errors
+ *   handlers: [
+ *     new ConsoleHandler(),
+ *     new CloudWatchHandler({
+ *       region: 'us-east-1',
+ *       logGroupName: '/aws/api'
+ *     })
+ *   ]
+ * };
+ * ```
  */
 export type LoggerOptions = {
   /**
@@ -99,21 +193,120 @@ export type LoggerOptions = {
  * 2. Events are filtered according to configured level thresholds
  * 3. Approved events are passed to handlers for formatting and output
  *
+ * Core features:
+ * - Multiple output handlers support
+ * - Level-based filtering
+ * - Contextual logging
+ * - Silent mode
+ * - Custom log levels
+ * - Structured logging
+ *
  * @implements {LoggerInterface}
- * @example
- * // Basic usage
+ *
+ * @example Basic usage
+ * ```typescript
  * const logger = new Logger({ level: 'info' });
  * logger.addAppender(new ConsoleHandler());
  * logger.info('Application started');
+ * ```
  *
- * @example
- * // Advanced usage with context
- * logger.error('Payment failed', {
- *   userId: 123,
- *   amount: 50.25,
- *   currency: 'USD',
- *   error: new Error('Insufficient funds')
+ * @example Error handling with context
+ * ```typescript
+ * try {
+ *   await processPayment(order);
+ * } catch (error) {
+ *   logger.error('Payment failed', {
+ *     orderId: order.id,
+ *     amount: order.amount,
+ *     currency: order.currency,
+ *     error: error.message,
+ *     stack: error.stack
+ *   });
+ * }
+ * ```
+ *
+ * @example Multiple handlers for different purposes
+ * ```typescript
+ * const logger = new Logger({
+ *   name: 'payment-service',
+ *   level: 'info'
  * });
+ *
+ * // Console output for development
+ * logger.addAppender(new ConsoleHandler({
+ *   formatter: new TimestampFormatter('YYYY-MM-DD HH:mm:ss')
+ * }));
+ *
+ * // File output for errors
+ * logger.addAppender(new FileHandler('./logs/errors.log', {
+ *   level: 'error',
+ *   formatter: new JSONFormatter()
+ * }));
+ *
+ * // Metrics collection
+ * logger.addAppender(new MetricsHandler({
+ *   service: 'payment-api',
+ *   endpoint: 'https://metrics.example.com'
+ * }));
+ * ```
+ *
+ * @example Request logging middleware
+ * ```typescript
+ * app.use((req, res, next) => {
+ *   const startTime = Date.now();
+ *
+ *   // Log request
+ *   logger.info('Incoming request', {
+ *     method: req.method,
+ *     path: req.path,
+ *     query: req.query,
+ *     headers: req.headers
+ *   });
+ *
+ *   // Log response
+ *   res.on('finish', () => {
+ *     const duration = Date.now() - startTime;
+ *     logger.info('Request completed', {
+ *       method: req.method,
+ *       path: req.path,
+ *       statusCode: res.statusCode,
+ *       duration,
+ *       contentLength: res.get('Content-Length')
+ *     });
+ *   });
+ *
+ *   next();
+ * });
+ * ```
+ *
+ * @example Performance monitoring
+ * ```typescript
+ * class UserService {
+ *   async findUsers(criteria) {
+ *     const startTime = Date.now();
+ *     try {
+ *       const users = await this.userRepo.find(criteria);
+ *       const duration = Date.now() - startTime;
+ *
+ *       logger.debug('User search completed', {
+ *         criteria,
+ *         count: users.length,
+ *         duration,
+ *         cacheHit: this.userRepo.wasCacheHit()
+ *       });
+ *
+ *       return users;
+ *     } catch (error) {
+ *       logger.error('User search failed', {
+ *         criteria,
+ *         duration: Date.now() - startTime,
+ *         error: error.message
+ *       });
+ *       throw error;
+ *     }
+ *   }
+ * }
+ * ```
  */
 export class Logger implements LoggerInterface {
   /**

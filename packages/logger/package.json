@@ -22,7 +22,8 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix"
   },
   "repository": {
     "type": "git",
