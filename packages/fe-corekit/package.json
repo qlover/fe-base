@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json --formatOutput prettier && rimraf ./docs/**/index.md -g"
+    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json --formatOutput prettier && rimraf './doc/**/index.md' -g"
   },
   "dependencies": {
     "axios": "^1.7.9",

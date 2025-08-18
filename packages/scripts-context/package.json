@@ -41,7 +41,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "build:docs": "fe-code2md --removePrefix -p ./src -g ./docs --formatOutput prettier"
+    "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix"
   },
   "devDependencies": {
     "@commitlint/types": "^19.8.0",

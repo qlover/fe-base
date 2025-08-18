@@ -19,6 +19,16 @@
       ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
+    },
+    "build:docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build:docs",
+        "cwd": "packages/scripts-context"
+      },
+      "inputs": ["{projectRoot}/src/**/*.ts"],
+      "outputs": ["{projectRoot}/docs"],
+      "cache": true
     }
   }
 }

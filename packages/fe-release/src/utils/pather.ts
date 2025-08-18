@@ -73,7 +73,30 @@ export class Pather {
   }
 
   /**
-   * Normalised `startsWith` helper.
+   * Normalized path prefix check
+   *
+   * Checks if sourcePath starts with targetPath after normalization.
+   * Handles cross-platform path separators and trailing separators.
+   *
+   * @param sourcePath - Path to check
+   * @param targetPath - Prefix path to match
+   * @returns True if sourcePath starts with targetPath
+   *
+   * @example Basic usage
+   * ```typescript
+   * const pather = new Pather();
+   *
+   * pather.startsWith('src/utils/file.ts', 'src')     // true
+   * pather.startsWith('src\\utils\\file.ts', 'src')   // true
+   * pather.startsWith('lib/utils/file.ts', 'src')     // false
+   * ```
+   *
+   * @example Trailing separators
+   * ```typescript
+   * pather.startsWith('src/utils', 'src/')    // true
+   * pather.startsWith('src/utils/', 'src')    // true
+   * pather.startsWith('src2/utils', 'src')    // false
+   * ```
    */
   startsWith(sourcePath: string, targetPath: string): boolean {
     let src = this.toLocalPath(sourcePath);
@@ -91,7 +114,44 @@ export class Pather {
   }
 
   /**
-   * Segment-aware containment check (not mere substring).
+   * Segment-aware path containment check
+   *
+   * Checks if sourcePath contains targetPath as a complete path segment.
+   * Unlike simple substring matching, this ensures proper path boundaries.
+   * For example, 'src/abc' does not contain 'src/a' even though 'src/a'
+   * is a substring.
+   *
+   * Features:
+   * - Cross-platform path handling
+   * - Proper segment boundary checking
+   * - Trailing separator normalization
+   * - Exact match support
+   *
+   * @param sourcePath - Path to search in
+   * @param targetPath - Path to search for
+   * @returns True if sourcePath contains targetPath as a segment
+   *
+   * @example Basic usage
+   * ```typescript
+   * const pather = new Pather();
+   *
+   * pather.containsPath('src/utils/file.ts', 'utils')     // true
+   * pather.containsPath('src/utils/file.ts', 'src/utils') // true
+   * pather.containsPath('src/utils/file.ts', 'til')      // false
+   * ```
+   *
+   * @example Segment boundaries
+   * ```typescript
+   * pather.containsPath('src/abc/file.ts', 'src/a')     // false
+   * pather.containsPath('src/abc/file.ts', 'src/abc')   // true
+   * ```
+   *
+   * @example Trailing separators
+   * ```typescript
+   * pather.containsPath('src/utils/', 'utils')     // true
+   * pather.containsPath('src/utils', 'utils/')     // true
+   * pather.containsPath('src/utils/', 'utils/')    // true
+   * ```
    */
   containsPath(sourcePath: string, targetPath: string): boolean {
     let src = this.toLocalPath(sourcePath);
