@@ -4,7 +4,7 @@ import prettierConfig from '../../packages/node-lib/.prettierrc.js';
 import prettier from 'eslint-plugin-prettier';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import * as feDev from '@qlover/eslint-plugin-fe-dev';
+import qloverEslint from '@qlover/eslint-plugin';
 
 export default [
   {
@@ -29,7 +29,7 @@ export default [
     plugins: {
       prettier,
       '@typescript-eslint': tseslint,
-      'fe-dev': feDev
+      '@qlover-eslint': qloverEslint
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -44,7 +44,7 @@ export default [
           }
         }
       ],
-      'fe-dev/ts-class-method-return': 'error'
+      '@qlover-eslint/ts-class-method-return': 'error'
     }
   }
 ];

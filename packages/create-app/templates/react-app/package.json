@@ -64,7 +64,7 @@
   "devDependencies": {
     "@brain-toolkit/ts2locales": "^0.2.3",
     "@qlover/env-loader": "latest",
-    "@qlover/eslint-plugin-fe-dev": "^0.2.0",
+    "@qlover/eslint-plugin": "^0.2.0",
     "@qlover/fe-scripts": "latest",
     "@qlover/fe-standard": "^0.0.4",
     "@testing-library/react": "^16.3.0",

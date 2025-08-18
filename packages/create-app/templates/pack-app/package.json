@@ -38,7 +38,7 @@
     "@eslint/js": "^9.13.0",
     "@nx/js": "20.6.4",
     "@qlover/env-loader": "latest",
-    "@qlover/eslint-plugin-fe-dev": "latest",
+    "@qlover/eslint-plugin": "latest",
     "@qlover/fe-scripts": "latest",
     "@qlover/fe-standard": "latest",
     "@qlover/scripts-context": "latest",

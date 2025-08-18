@@ -87,7 +87,7 @@ pnpm add @qlover/logger
 ### 配置和标准
 
 - **[@qlover/fe-standard](../../packages/fe-standard/README.md)** - 前端开发标准和规范
-- **[@qlover/eslint-plugin-fe-dev](../../packages/eslint-plugin-fe-dev/README.md)** - 前端开发 ESLint 插件
+- **[@qlover/eslint-plugin](../../packages/eslint-plugin/README.md)** - 前端开发 ESLint 插件
 - **[@qlover/env-loader](../../packages/env-loader/README.md)** - 环境变量加载工具
 
 ### 支持工具
