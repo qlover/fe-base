@@ -1,16 +1,19 @@
 import type { TSESTree } from '@typescript-eslint/types';
 import { createEslintRule } from '../utils/createEslintRule';
+import type { TSESLint } from '@typescript-eslint/utils';
 
 type MessageIds = 'missingReturnType';
-type Options = [
+type Options = readonly [
   {
     allowConstructors?: boolean;
     allowPrivateMethods?: boolean;
   }
 ];
 
+export const RULE_NAME = 'ts-class-method-return';
+
 export default createEslintRule<Options, MessageIds>({
-  name: 'ts-class-method-return',
+  name: RULE_NAME,
   meta: {
     type: 'problem',
     docs: {
@@ -43,7 +46,7 @@ export default createEslintRule<Options, MessageIds>({
       allowPrivateMethods: false
     }
   ],
-  create(context, [options]) {
+  create(context: TSESLint.RuleContext<MessageIds, Options>, [options]: Options) {
     const allowConstructors = options?.allowConstructors ?? true;
     const allowPrivateMethods = options?.allowPrivateMethods ?? false;
 
@@ -71,7 +74,7 @@ export default createEslintRule<Options, MessageIds>({
                 : '<computed>';
 
           context.report({
-            node,
+            node: node.key,
             messageId: 'missingReturnType',
             data: {
               methodName,
