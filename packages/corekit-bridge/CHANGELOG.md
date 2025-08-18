@@ -1,5 +1,14 @@
 # @qlover/corekit-bridge
 
+## 1.6.3
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **tests:** update ESLint rule reference in storeInterface.test.ts ([da53d7b](https://github.com/qlover/fe-base/commit/da53d7b1ce9c697a4727869a22b51e225581c4c4)) ([#489](https://github.com/qlover/fe-base/pull/489))
+  - Changed the ESLint rule reference from `fe-dev/ts-class-method-return` to `@qlover-eslint/ts-class-method-return` to align with the recent ESLint configuration updates. This ensures consistent linting behavior across the codebase.
+
 ## 1.6.1
 
 ### Patch Changes
