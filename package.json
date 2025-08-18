@@ -12,6 +12,7 @@
   "files": [],
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=4 run build && pnpm rebuild",
+    "build:docs": "pnpm -r run build:docs",
     "build:fe-release": "pnpm --filter @qlover/fe-release build",
     "build:logger": "pnpm --filter @qlover/logger build",
     "dryrun:releasePR": "node ./packages/fe-release/dist/cli.js -V -P --githubPR.dry-run-create-PR",
