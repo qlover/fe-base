@@ -316,7 +316,7 @@ export interface CommitValue {
  * ```typescript
  * class MarkdownFormatter implements ChangelogFormatter {
  *   format(commits: CommitValue[]): string[] {
- *     return commits.map(commit => 
+ *     return commits.map(commit =>
  *       `- ${commit.commitlint.message} (#${commit.prNumber})`
  *     );
  *   }

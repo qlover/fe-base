@@ -1,5 +1,13 @@
 # @qlover/code2markdown
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **code2markdown:** Enhance TypeDocJson filtering logic to exclude .d.ts files and index.ts files without comments. This improves the accuracy of project child node processing by ensuring only relevant files are included. ([ce4b639](https://github.com/qlover/fe-base/commit/ce4b6397632de0a9ea8d55ec7b65531cffab78c6)) ([#483](https://github.com/qlover/fe-base/pull/483))
+
 ## 1.0.1
 
 ### Patch Changes

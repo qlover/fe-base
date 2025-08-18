@@ -1,5 +1,18 @@
 # @qlover/corekit-bridge
 
+## 1.6.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** add documentation generation script and enhance module documentation ([d413857](https://github.com/qlover/fe-base/commit/d413857cbfc87a887c6b90329e053fbf57ab2830)) ([#483](https://github.com/qlover/fe-base/pull/483))
+  - Introduced a new build script `build:docs` in package.json to generate documentation from source files using `fe-code2md`.
+  - Updated project.json to include a new build target for documentation generation, improving the build process.
+  - Expanded the documentation in `index.ts` to provide comprehensive details about the corekit-bridge module, including installation instructions, main features, and usage examples.
+
+  These changes aim to improve the usability and clarity of the corekit-bridge library for developers.
+
 ## 1.5.0
 
 ### Minor Changes
