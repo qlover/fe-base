@@ -24,7 +24,7 @@ interface Options {
 
 ```json
 {
-  "@qlover/ts-class-method-return": ["error", {
+  "@qlover-eslint/ts-class-method-return": ["error", {
     "allowConstructors": true,
     "allowPrivateMethods": false
   }]
