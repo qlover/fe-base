@@ -1,5 +1,9 @@
 # @qlover/fe-release
 
+## 3.1.2
+
+### Patch Changes
+
 ## 3.1.0
 
 ### Minor Changes
