@@ -100,7 +100,7 @@
   .ant-select,
   .ant-select-css-var {
     --fe-select-internal_fixed_item_margin: 2px;
-    --fe-select-z-index-popup: 1050;
+    --fe-select-z-index-popup: var(--zi-select);
     --fe-select-option-selected-color: rgba(190, 18, 60, 0.88);
     --fe-select-option-selected-font-weight: 600;
     --fe-select-option-selected-bg: var(--fe-color-primary-bg);
@@ -158,7 +158,7 @@
   /* Antd Message 组件变量 */
   .ant-message,
   .ant-message-css-var {
-    --fe-message-z-index-popup: 2010;
+    --fe-message-z-index-popup: var(--zi-message);
     --fe-message-content-bg: var(--ant-color-bg-container);
     --fe-message-content-padding: 9px 12px;
     --fe-message-notice-content-padding: 10px 16px;
