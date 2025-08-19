@@ -725,7 +725,12 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * ```
    */
   protected getDefaultOptions(options: Opt): Opt {
-    const env = this.options.env;
+    const env =
+      this.options.env ||
+      Env.searchEnv({
+        logger: this.logger,
+        preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
+      });
     const rootPath = options.rootPath || process.cwd();
     const sourceBranch =
       options.sourceBranch ||
@@ -737,12 +742,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
       ...options,
       sourceBranch,
       rootPath,
-      env:
-        env ||
-        Env.searchEnv({
-          logger: this.logger,
-          preloadList: this.feConfig.envOrder || DEFAULT_ENV_ORDER
-        })
+      env: env
     };
 
     return defaultOptions;
