@@ -161,6 +161,7 @@ export * from './storage';
 export * from './store-state';
 export * from './theme-service';
 export * from './thread';
+export * from './ui';
 export * from './user-auth';
 
 // export all the dependencies

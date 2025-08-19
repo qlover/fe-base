@@ -1,16 +1,12 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
-import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import { I18nService } from '@/base/services/I18nService';
 import {
   StoreInterface,
+  type UIBridgeInterface,
   type StoreStateInterface
 } from '@qlover/corekit-bridge';
-
-export type RouterServiceDependencies = {
-  navigate: NavigateFunction;
-};
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];
@@ -30,16 +26,11 @@ export class RouterServiceState implements StoreStateInterface {
   ) {}
 }
 
-export class RouteService
-  extends StoreInterface<RouterServiceState>
-  implements UIDependenciesInterface<RouterServiceDependencies>
-{
-  /**
-   * @override
-   */
-  dependencies?: RouterServiceDependencies;
-
-  constructor(private options: RouterServiceOptions) {
+export class RouteService extends StoreInterface<RouterServiceState> {
+  constructor(
+    protected uiBridge: UIBridgeInterface<NavigateFunction>,
+    protected options: RouterServiceOptions
+  ) {
     super(
       () => new RouterServiceState(options.routes, !!options.hasLocalRoutes)
     );
@@ -49,8 +40,8 @@ export class RouteService
     return this.options.logger;
   }
 
-  get navigate(): NavigateFunction | undefined {
-    const navigate = this.dependencies?.navigate;
+  get navigate(): NavigateFunction | null {
+    const navigate = this.uiBridge.getUIBridge();
 
     if (!navigate) {
       this.logger.debug(
@@ -67,16 +58,6 @@ export class RouteService
       return `/${targetLang}${path}`;
     }
     return path.startsWith('/') ? path : `/${path}`;
-  }
-
-  /**
-   * @override
-   */
-  setDependencies(dependencies: Partial<RouterServiceDependencies>): void {
-    this.dependencies = Object.assign(
-      this.dependencies || {},
-      dependencies
-    ) as RouterServiceDependencies;
   }
 
   getRoutes(): RouteConfigValue[] {
