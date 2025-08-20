@@ -1,0 +1,29 @@
+/* theme variables - for tailwind */
+@layer base {
+  [data-theme='pink'] {
+    /* 基础背景色 */
+    --color-bg-base: 255 241 242; /* rose-50 */
+    --color-bg-secondary: 255 228 230; /* rose-100 */
+    --color-bg-elevated: 254 205 211; /* rose-200 */
+
+    /* 文字颜色 */
+    --text-primary: 190 18 60; /* rose-700 */
+    --text-secondary: 225 29 72; /* rose-600 */
+    --text-tertiary: 244 63 94; /* rose-500 */
+
+    /* 边框颜色 */
+    --color-border: 254 205 211; /* rose-200 */
+
+    /* 品牌色 */
+    --color-brand: 225 29 72; /* rose-600 */
+    --color-brand-hover: 244 63 94; /* rose-500 */
+
+    /* 登录页特定样式 */
+    --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
+    --login-input-bg: var(--ant-color-bg-container);
+    --login-input-border: var(--ant-color-border);
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--ant-color-bg-container);
+    --login-social-button-border: var(--ant-color-border);
+  }
+}

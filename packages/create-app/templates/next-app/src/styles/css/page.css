@@ -1,0 +1,19 @@
+/**
+ * This file is used to define the page styles for the app.
+ * 
+ * @example --color-primary
+ * ```tsx
+ * <div className="bg-primary text-primary border-text-tertiary"></div>
+ * ```
+ */
+@theme {
+  --color-primary: rgba(var(--color-bg-base));
+  --color-secondary: rgba(var(--color-bg-secondary));
+  --color-elevated: rgba(var(--color-bg-elevated));
+  --color-text: rgba(var(--text-primary));
+  --color-text-secondary: rgba(var(--text-secondary));
+  --color-text-tertiary: rgba(var(--text-tertiary));
+  --color-border: rgba(var(--color-border));
+  --color-brand: rgba(var(--color-brand));
+  --color-brand-hover: rgba(var(--color-brand-hover));
+}

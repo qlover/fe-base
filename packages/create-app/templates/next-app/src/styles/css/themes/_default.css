@@ -1,0 +1,29 @@
+/* theme variables - for tailwind */
+@layer base {
+  :root {
+    /* 基础背景色 */
+    --color-bg-base: 255 255 255;
+    --color-bg-secondary: 241 245 249; /* slate-100 */
+    --color-bg-elevated: 248 250 252; /* slate-50 */
+
+    /* 文字颜色 */
+    --text-primary: 15 23 42; /* slate-900 */
+    --text-secondary: 71 85 105; /* slate-600 */
+    --text-tertiary: 100 116 139; /* slate-500 */
+
+    /* 边框颜色 */
+    --color-border: 226 232 240; /* slate-200 */
+
+    /* 品牌色 */
+    --color-brand: 37 99 235; /* blue-600 */
+    --color-brand-hover: 59 130 246; /* blue-500 */
+
+    /* 登录页特定样式 */
+    --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: var(--fe-color-border);
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: var(--fe-color-border);
+  }
+}

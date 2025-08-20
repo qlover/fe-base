@@ -1,6 +1,5 @@
-import { IOC } from '@/core/IOC';
-import { useStore } from '@/uikit/hooks/useStore';
-import { useTranslation } from 'react-i18next';
+'use client';
+
 import { Select } from 'antd';
 import {
   BulbOutlined,
@@ -9,8 +8,11 @@ import {
   HeartOutlined
 } from '@ant-design/icons';
 import clsx from 'clsx';
-import { useMemo } from 'react';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { themeConfig } from '@config/theme';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+const { supportedThemes } = themeConfig;
 
 const colorMap: Record<
   string,
@@ -34,42 +36,46 @@ const colorMap: Record<
 };
 
 export default function ThemeSwitcher() {
-  const themeService = IOC(IOCIdentifier.ThemeService);
-  const { theme } = useStore(themeService);
-  const themes = themeService.getSupportedThemes();
-  const { t } = useTranslation('common');
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
-  const themeOptions = useMemo(() => {
-    return themes.map((themeName) => {
-      const { i18nkey, colors, icons } =
-        colorMap[themeName] || colorMap.default;
-      const [currentColor, normalColor] = colors;
-      const [CurrentIcon, NormalIcon] = icons;
-      const isSelf = theme === themeName;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-      return {
-        key: themeName + i18nkey,
-        value: themeName,
-        label: (
-          <div
-            className={clsx(
-              'flex items-center gap-2',
-              isSelf ? currentColor : normalColor
-            )}
-          >
-            {isSelf ? <CurrentIcon /> : <NormalIcon />}
-            <span>{t(i18nkey)}</span>
-          </div>
-        )
-      };
-    });
-  }, [theme, themes, t]);
+  if (!mounted) {
+    return null;
+  }
+
+  const themeOptions = supportedThemes!.map((themeName) => {
+    const { i18nkey, colors, icons } = colorMap[themeName] || colorMap.default;
+    const [currentColor, normalColor] = colors;
+    const [CurrentIcon, NormalIcon] = icons;
+    const isSelf = theme === themeName;
+
+    return {
+      key: themeName + i18nkey,
+      value: themeName,
+      label: (
+        <div
+          className={clsx(
+            'flex items-center gap-2',
+            isSelf ? currentColor : normalColor
+          )}
+        >
+          {isSelf ? <CurrentIcon /> : <NormalIcon />}
+          {/* <span>{t(i18nkey)}</span> */}
+          <span>{i18nkey}</span>
+        </div>
+      )
+    };
+  });
 
   return (
     <div className="flex items-center gap-2">
       <Select
         value={theme}
-        onChange={(value) => themeService.changeTheme(value)}
+        onChange={(value) => setTheme(value)}
         options={themeOptions}
         style={{ width: 120 }}
         className="min-w-40 max-w-full"

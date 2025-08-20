@@ -1,5 +1,7 @@
-// import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
+'use client';
+
 import Link from 'next/link';
+import ThemeSwitcher from './ThemeSwitcher';
 
 export default function BaseHeader() {
   return (
@@ -28,7 +30,7 @@ export default function BaseHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          {/* <ThemeSwitcher /> */}
+          <ThemeSwitcher />
         </div>
       </div>
     </header>
