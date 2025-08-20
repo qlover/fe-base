@@ -7,7 +7,7 @@ import {
   type IOCManagerInterface
 } from '@qlover/corekit-bridge';
 import * as globals from './globals';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import mockDataJson from '@config/feapi.mock.json';
 import { I18nService } from '@/base/services/I18nService';
 import { themeConfig } from '@config/theme';
@@ -38,16 +38,16 @@ export class IocRegisterImpl implements IOCRegister {
     const { appConfig } = this.options;
     const { dialogHandler, localStorageEncrypt, JSON, logger } = globals;
 
-    ioc.bind(IOCIdentifier.JSONSerializer, JSON);
-    ioc.bind(IOCIdentifier.Logger, logger);
-    ioc.bind(IOCIdentifier.AppConfig, appConfig);
-    ioc.bind(IOCIdentifier.EnvConfigInterface, appConfig);
-    ioc.bind(IOCIdentifier.DialogHandler, dialogHandler);
-    ioc.bind(IOCIdentifier.UIDialogInterface, dialogHandler);
-    ioc.bind(IOCIdentifier.AntdStaticApiInterface, dialogHandler);
-    ioc.bind(IOCIdentifier.LocalStorage, globals.localStorage);
-    ioc.bind(IOCIdentifier.LocalStorageEncrypt, localStorageEncrypt);
-    ioc.bind(IOCIdentifier.CookieStorage, globals.cookieStorage);
+    ioc.bind(I.JSONSerializer, JSON);
+    ioc.bind(I.Logger, logger);
+    ioc.bind(I.AppConfig, appConfig);
+    ioc.bind(I.EnvConfigInterface, appConfig);
+    ioc.bind(I.DialogHandler, dialogHandler);
+    ioc.bind(I.UIDialogInterface, dialogHandler);
+    ioc.bind(I.AntdStaticApiInterface, dialogHandler);
+    ioc.bind(I.LocalStorage, globals.localStorage);
+    ioc.bind(I.LocalStorageEncrypt, localStorageEncrypt);
+    ioc.bind(I.CookieStorage, globals.cookieStorage);
   }
 
   /**
@@ -61,54 +61,39 @@ export class IocRegisterImpl implements IOCRegister {
    * @param ioc
    */
   protected registerImplement(ioc: IOCContainer): void {
+    ioc.bind(I.I18nServiceInterface, new I18nService(this.options.pathname));
     ioc.bind(
-      IOCIdentifier.RouteServiceInterface,
-      new RouteService(ioc.get(NavigateBridge), {
-        routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
-        logger: ioc.get(IOCIdentifier.Logger),
-        hasLocalRoutes: useLocaleRoutes
-      })
+      I.RouteServiceInterface,
+      new RouteService(
+        ioc.get(NavigateBridge),
+        ioc.get(I.I18nServiceInterface),
+        {
+          routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
+          logger: ioc.get(I.Logger),
+          hasLocalRoutes: useLocaleRoutes
+        }
+      )
     );
-
     ioc.bind(
-      IOCIdentifier.I18nServiceInterface,
-      new I18nService(this.options.pathname)
-    );
-
-    ioc.bind(
-      IOCIdentifier.ThemeService,
+      I.ThemeService,
       new ThemeService({
         ...themeConfig,
-        storage: ioc.get<SyncStorageInterface<string, string>>(
-          IOCIdentifier.LocalStorage
-        )
+        storage: ioc.get<SyncStorageInterface<string, string>>(I.LocalStorage)
       })
     );
 
-    ioc.bind(IOCIdentifier.I18nKeyErrorPlugin, ioc.get(I18nKeyErrorPlugin));
-    ioc.bind(
-      IOCIdentifier.ProcesserExecutorInterface,
-      ioc.get(ProcesserExecutor)
-    );
-
-    ioc.bind(IOCIdentifier.UserServiceInterface, ioc.get(UserService));
-    ioc.bind(
-      IOCIdentifier.ExecutorPageBridgeInterface,
-      ioc.get(ExecutorPageBridge)
-    );
-    ioc.bind(
-      IOCIdentifier.JSONStoragePageInterface,
-      ioc.get(JSONStoragePageBridge)
-    );
-    ioc.bind(
-      IOCIdentifier.RequestPageBridgeInterface,
-      ioc.get(RequestPageBridge)
-    );
+    ioc.bind(I.I18nKeyErrorPlugin, ioc.get(I18nKeyErrorPlugin));
+    ioc.bind(I.ProcesserExecutorInterface, ioc.get(ProcesserExecutor));
+    ioc.bind(I.UserServiceInterface, ioc.get(UserService));
+    ioc.bind(I.RequestCatcherInterface, ioc.get(RequestStatusCatcher));
+    ioc.bind(I.ExecutorPageBridgeInterface, ioc.get(ExecutorPageBridge));
+    ioc.bind(I.JSONStoragePageInterface, ioc.get(JSONStoragePageBridge));
+    ioc.bind(I.RequestPageBridgeInterface, ioc.get(RequestPageBridge));
   }
 
   protected registerCommon(ioc: IOCContainer): void {
     const { appConfig } = this.options;
-    const logger = ioc.get(IOCIdentifier.Logger);
+    const logger = ioc.get(I.Logger);
 
     const feApiRequestCommonPlugin = new RequestCommonPlugin({
       tokenPrefix: appConfig.openAiTokenPrefix,
@@ -121,9 +106,9 @@ export class IocRegisterImpl implements IOCRegister {
       ioc.get(RequestStatusCatcher)
     );
 
-    ioc.bind(IOCIdentifier.FeApiCommonPlugin, feApiRequestCommonPlugin);
-    ioc.bind(IOCIdentifier.ApiMockPlugin, apiMockPlugin);
-    ioc.bind(IOCIdentifier.ApiCatchPlugin, apiCatchPlugin);
+    ioc.bind(I.FeApiCommonPlugin, feApiRequestCommonPlugin);
+    ioc.bind(I.ApiMockPlugin, apiMockPlugin);
+    ioc.bind(I.ApiCatchPlugin, apiCatchPlugin);
   }
 
   /**

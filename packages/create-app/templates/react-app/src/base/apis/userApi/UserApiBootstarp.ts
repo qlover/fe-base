@@ -16,6 +16,7 @@ import {
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
 import { UserApi } from './UserApi';
+import { RequestLanguages } from '../../cases/RequestLanguages';
 
 /**
  * UserApiConfig
@@ -68,6 +69,9 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())
       .usePlugin(IOC.get(IOCIdentifier.FeApiCommonPlugin))
+      .usePlugin(
+        new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface))
+      )
       .usePlugin(IOC.get(IOCIdentifier.ApiMockPlugin))
       .usePlugin(IOC.get(RequestLogger))
       .usePlugin(IOC.get(FetchAbortPlugin))

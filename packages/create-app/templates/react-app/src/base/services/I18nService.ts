@@ -64,7 +64,7 @@ export class I18nService
         const paths = this.pathname.split('/');
 
         for (const path of paths) {
-          if (I18nService.isValidLanguage(path)) {
+          if (this.isValidLanguage(path)) {
             return path;
           }
         }
@@ -93,7 +93,7 @@ export class I18nService
     this.emit({ ...this.state, loading });
   }
 
-  static getCurrentLanguage(): I18nServiceLocale {
+  getCurrentLanguage(): I18nServiceLocale {
     return i18n.language as I18nServiceLocale;
   }
 
@@ -102,8 +102,12 @@ export class I18nService
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
-  static isValidLanguage(language: string): language is I18nServiceLocale {
+  isValidLanguage(language: string): language is I18nServiceLocale {
     return supportedLngs.includes(language as I18nServiceLocale);
+  }
+
+  getSupportedLanguages(): I18nServiceLocale[] {
+    return [...supportedLngs];
   }
 
   /**

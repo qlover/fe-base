@@ -33,7 +33,6 @@ export const IOCIdentifier = Object.freeze({
   RouteServiceInterface: 'RouteServiceInterface',
   UserServiceInterface: 'UserServiceInterface',
   I18nKeyErrorPlugin: 'I18nKeyErrorPlugin',
-  FeApiToken: 'FeApiToken',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   ApiMockPlugin: 'ApiMockPlugin',
   ApiCatchPlugin: 'ApiCatchPlugin',
@@ -76,7 +75,6 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
-  [IOCIdentifier.FeApiToken]: CorekitBridge.TokenStorage<string>;
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: CorekitBridge.ApiCatchPlugin;
