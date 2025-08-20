@@ -87,7 +87,7 @@ describe('I18nService', () => {
         expect.objectContaining({
           debug: false,
           detection: {
-            order: ['pathLanguageDetector', 'navigator'],
+            order: ['pathLanguageDetector', 'navigator', 'localStorage'],
             caches: []
           }
         })

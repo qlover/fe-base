@@ -1,5 +1,5 @@
-import { RouteService } from '@/base/services/RouteService';
 import { IOC } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ const RedirectToDefault = () => {
 
   useEffect(() => {
     // Redirect to the default language path
-    IOC(RouteService).redirectToDefault(navigate);
+    IOC(IOCIdentifier.RouteServiceInterface).redirectToDefault(navigate);
   }, [navigate]);
 
   return null;

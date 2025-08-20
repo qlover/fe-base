@@ -3,11 +3,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, useMemo } from 'react';
 import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
 import { IOC } from './core/IOC';
-import { RouteService } from './base/services/RouteService';
 import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 import { routerPrefix } from '@config/common';
 import { useStore } from './uikit/hooks/useStore';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -29,7 +29,10 @@ const routerLoader = new RouterLoader({
 });
 
 function App() {
-  const routes = useStore(IOC(RouteService), (state) => state.routes);
+  const routes = useStore(
+    IOC(IOCIdentifier.RouteServiceInterface),
+    (state) => state.routes
+  );
 
   const routerBase = useMemo(() => {
     const routeList = routes.map((route) => routerLoader.toRoute(route));
@@ -41,7 +44,7 @@ function App() {
 
   return (
     <AntdThemeProvider
-      staticApi={IOC('DialogHandler')}
+      staticApi={IOC('AntdStaticApiInterface')}
       theme={{
         cssVar: {
           key: 'fe-theme',

@@ -269,7 +269,7 @@ export default function ExecutorPage() {
                 <div className="text-red-500">{helloState.error.message}</div>
               ) : (
                 <pre className="text-text-secondary">
-                  {IOC('JSON').stringify(helloState.result?.data)}
+                  {IOC('JSONSerializer').stringify(helloState.result?.data)}
                 </pre>
               )}
             </div>

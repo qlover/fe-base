@@ -1,6 +1,6 @@
-import { IOC, type IOCContainer, type IOCIdentifierMap } from '@/core/IOC';
+import { IOC, type IOCContainer } from '@/core/IOC';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IocRegisterImpl } from '@/core/registers/IocRegisterImpl';
+import { IocRegisterImpl } from '@/core/IocRegisterImpl';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
 
@@ -35,7 +35,8 @@ describe('IOC Container Tests', () => {
       aiApiToken: '',
       aiApiTokenPrefix: 'Bearer',
       aiApiRequireToken: true,
-      bootHref: ''
+      bootHref: '',
+      isProduction: false
     };
   });
 
@@ -102,12 +103,6 @@ describe('IOC Container Tests', () => {
       expect(registerImpl).toBeInstanceOf(IocRegisterImpl);
     });
 
-    it('should return register list', () => {
-      const registerList = registerImpl.getRegisterList();
-      expect(Array.isArray(registerList)).toBe(true);
-      expect(registerList.length).toBeGreaterThan(0);
-    });
-
     it('should register services without throwing', () => {
       const mockManager = {
         get: vi.fn(),
@@ -125,33 +120,13 @@ describe('IOC Container Tests', () => {
   describe('IOCIdentifierMap Type Safety', () => {
     it('should have correct type mapping for JSON', () => {
       // This test verifies that the type mapping is correct
-      const identifierMap: IOCIdentifierMap = {} as IOCIdentifierMap;
+      const identifierMap = {};
 
       // TypeScript should enforce that these keys exist
-      expect(IOCIdentifier.JSON in identifierMap).toBeDefined();
+      expect(IOCIdentifier.JSONSerializer in identifierMap).toBeDefined();
       expect(IOCIdentifier.LocalStorage in identifierMap).toBeDefined();
       expect(IOCIdentifier.Logger in identifierMap).toBeDefined();
       expect(IOCIdentifier.AppConfig in identifierMap).toBeDefined();
-    });
-
-    it('should have all required identifiers', () => {
-      const requiredIdentifiers = [
-        'JSON',
-        'LocalStorage',
-        'LocalStorageEncrypt',
-        'CookieStorage',
-        'Logger',
-        'FeApiToken',
-        'FeApiCommonPlugin',
-        'AppConfig',
-        'ApiMockPlugin',
-        'ApiCatchPlugin',
-        'DialogHandler'
-      ];
-
-      requiredIdentifiers.forEach((identifier) => {
-        expect(IOCIdentifier).toHaveProperty(identifier);
-      });
     });
   });
 

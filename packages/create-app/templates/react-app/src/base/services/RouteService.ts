@@ -1,12 +1,12 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 import type { LoggerInterface } from '@qlover/logger';
-import { I18nService } from '@/base/services/I18nService';
-import {
-  StoreInterface,
-  type UIBridgeInterface,
-  type StoreStateInterface
+import { RouteServiceInterface } from '../port/RouteServiceInterface';
+import type {
+  UIBridgeInterface,
+  StoreStateInterface
 } from '@qlover/corekit-bridge';
+import { I18nService } from '@/base/services/I18nService';
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];
@@ -26,7 +26,7 @@ export class RouterServiceState implements StoreStateInterface {
   ) {}
 }
 
-export class RouteService extends StoreInterface<RouterServiceState> {
+export class RouteService extends RouteServiceInterface {
   constructor(
     protected uiBridge: UIBridgeInterface<NavigateFunction>,
     protected options: RouterServiceOptions
@@ -36,7 +36,7 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     );
   }
 
-  get logger(): LoggerInterface {
+  override get logger(): LoggerInterface {
     return this.options.logger;
   }
 
@@ -48,15 +48,15 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     return path.startsWith('/') ? path : `/${path}`;
   }
 
-  getRoutes(): RouteConfigValue[] {
+  override getRoutes(): RouteConfigValue[] {
     return this.state.routes;
   }
 
-  changeRoutes(routes: RouteConfigValue[]): void {
+  override changeRoutes(routes: RouteConfigValue[]): void {
     this.emit(this.cloneState({ routes }));
   }
 
-  goto(
+  override goto(
     path: string,
     options?: NavigateOptions & {
       navigate?: NavigateFunction;
@@ -69,19 +69,19 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     (navigate || this.uiBridge.getUIBridge())?.(path, rest);
   }
 
-  gotoLogin(): void {
+  override gotoLogin(): void {
     this.goto('/login', { replace: true });
   }
 
-  replaceToHome(): void {
+  override replaceToHome(): void {
     this.goto('/', { replace: true });
   }
 
-  redirectToDefault(navigate?: NavigateFunction): void {
+  override redirectToDefault(navigate?: NavigateFunction): void {
     this.goto('/', { replace: true, navigate });
   }
 
-  i18nGuard(lng: string, navigate?: NavigateFunction): void {
+  override i18nGuard(lng: string, navigate?: NavigateFunction): void {
     if (!this.state.localeRoutes) {
       return;
     }
