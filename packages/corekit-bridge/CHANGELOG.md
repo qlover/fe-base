@@ -1,5 +1,30 @@
 # @qlover/corekit-bridge
 
+## 1.6.4
+
+### Patch Changes
+
+#### ✨ Features
+
+- **ui:** introduce UI bridge interfaces and notification system ([6969561](https://github.com/qlover/fe-base/commit/6969561b3f4603bb51ae7ad5fdca9e539d75209b)) ([#499](https://github.com/qlover/fe-base/pull/499))
+  - Added UIBridgeInterface for decoupling business logic from UI components.
+  - Implemented UINotificationInterface and UIDialogInterface for standardized notification handling.
+  - Created NavigateBridge to facilitate navigation integration with React Router.
+  - Updated RouteService to utilize the new UIBridgeInterface for improved dependency management.
+  - Introduced useNavigateBridge hook for setting up navigation in React components.
+  - Removed obsolete UIDependenciesInterface to streamline the codebase.
+
+- **dialog:** enhance UIDialogInterface and integrate into DialogHandler ([d9d2cdd](https://github.com/qlover/fe-base/commit/d9d2cdd68ff2a68675a2abdd7339c7be0c706724)) ([#499](https://github.com/qlover/fe-base/pull/499))
+  - Updated UIDialogInterface to use generic types for notification options, improving flexibility.
+  - Integrated UIDialogInterface into DialogHandler for better type safety and consistency in dialog handling.
+  - Adjusted RouteService to streamline navigation handling and improve code clarity.
+  - Updated package.json to reference local paths for corekit-bridge and fe-corekit for development.
+
+#### 🐞 Bug Fixes
+
+- **tests:** update ESLint rule reference in storeInterface.test.ts ([da53d7b](https://github.com/qlover/fe-base/commit/da53d7b1ce9c697a4727869a22b51e225581c4c4)) ([#489](https://github.com/qlover/fe-base/pull/489))
+  - Changed the ESLint rule reference from `fe-dev/ts-class-method-return` to `@qlover-eslint/ts-class-method-return` to align with the recent ESLint configuration updates. This ensures consistent linting behavior across the codebase.
+
 ## 1.6.3
 
 ### Patch Changes
