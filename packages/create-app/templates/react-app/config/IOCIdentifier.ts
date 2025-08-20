@@ -9,6 +9,9 @@ import type { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import type { RouteService } from '@/base/services/RouteService';
 import type { UserService } from '@/base/services/UserService';
 import type { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
+import type { ExecutorPageBridgeInterface } from '@/base/port/ExecutorPageBridgeInterface';
+import type { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
+import type { RequestPageBridgeInterface } from '@/base/port/RequestPageBridgeInterface';
 
 /**
  * IOC identifier
@@ -22,7 +25,7 @@ export const IOCIdentifier = Object.freeze({
   LocalStorageEncrypt: 'LocalStorageEncrypt',
   CookieStorage: 'CookieStorage',
   EnvConfigInterface: 'EnvConfigInterface',
-  InteractionHubInterface: 'InteractionHubInterface',
+  UIDialogInterface: 'UIDialogInterface',
   AntdStaticApiInterface: 'AntdStaticApiInterface',
   RequestCatcherInterface: 'RequestCatcherInterface',
   I18nServiceInterface: 'I18nServiceInterface',
@@ -30,12 +33,16 @@ export const IOCIdentifier = Object.freeze({
   RouteServiceInterface: 'RouteServiceInterface',
   UserServiceInterface: 'UserServiceInterface',
   I18nKeyErrorPlugin: 'I18nKeyErrorPlugin',
-  FeApiToken: 'FeApiToken',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   ApiMockPlugin: 'ApiMockPlugin',
   ApiCatchPlugin: 'ApiCatchPlugin',
-  ThemeService: 'ThemeService'
+  ThemeService: 'ThemeService',
+  ExecutorPageBridgeInterface: 'ExecutorPageBridgeInterface',
+  JSONStoragePageInterface: 'JSONStoragePageInterface',
+  RequestPageBridgeInterface: 'RequestPageBridgeInterface'
 });
+
+export const I = IOCIdentifier;
 
 /**
  * IOC identifier map
@@ -60,7 +67,7 @@ export interface IOCIdentifierMap {
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.EnvConfigInterface]: AppConfig;
-  [IOCIdentifier.InteractionHubInterface]: DialogHandler;
+  [IOCIdentifier.UIDialogInterface]: DialogHandler;
   [IOCIdentifier.AntdStaticApiInterface]: DialogHandler;
   [IOCIdentifier.RequestCatcherInterface]: RequestStatusCatcher;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
@@ -68,9 +75,11 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
-  [IOCIdentifier.FeApiToken]: CorekitBridge.TokenStorage<string>;
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: CorekitBridge.ApiCatchPlugin;
   [IOCIdentifier.ThemeService]: CorekitBridge.ThemeService;
+  [IOCIdentifier.ExecutorPageBridgeInterface]: ExecutorPageBridgeInterface;
+  [IOCIdentifier.JSONStoragePageInterface]: JSONStoragePageBridgeInterface;
+  [IOCIdentifier.RequestPageBridgeInterface]: RequestPageBridgeInterface;
 }

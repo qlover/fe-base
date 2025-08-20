@@ -6,7 +6,7 @@ import {
 import { Container } from 'inversify';
 
 export class InversifyContainer implements IOCContainerInterface {
-  private container: Container;
+  protected container: Container;
 
   constructor() {
     this.container = new Container({

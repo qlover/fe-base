@@ -2,10 +2,9 @@ import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useState, useEffect } from 'react';
 import { IOC } from '@/core/IOC';
-import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
-import { ExecutorController } from '@/uikit/controllers/ExecutorController';
 import { useStore } from '@/uikit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/page.executor';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 interface Task {
   id: string;
@@ -22,17 +21,10 @@ interface Task {
 
 export default function ExecutorPage() {
   const { t } = useBaseRoutePage();
-  const executorController = IOC(ExecutorController);
-  const jSONStorageController = IOC(JSONStorageController);
-  const requestTimeout = useStore(
-    jSONStorageController,
-    jSONStorageController.selector.requestTimeout
-  );
-
-  const helloState = useStore(
-    executorController,
-    executorController.selector.helloState
-  );
+  const pageBridge = IOC(IOCIdentifier.ExecutorPageBridgeInterface);
+  const jspBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const requestTimeout = useStore(jspBridge, jspBridge.selector.requestTimeout);
+  const helloState = useStore(pageBridge, pageBridge.selector.helloState);
 
   const [tasks, setTasks] = useState<Task[]>([
     {
@@ -164,7 +156,7 @@ export default function ExecutorPage() {
     );
 
     try {
-      await executorController.onTestPlugins();
+      await pageBridge.onTestPlugins();
 
       setTasks((prevTasks) =>
         prevTasks.map((t) =>
@@ -256,10 +248,7 @@ export default function ExecutorPage() {
               {helloState.loading ? (
                 <div className="text-text-secondary">Loading...</div>
               ) : (
-                <Button
-                  type="primary"
-                  onClick={executorController.onTestPlugins}
-                >
+                <Button type="primary" onClick={pageBridge.onTestPlugins}>
                   {t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE)}
                 </Button>
               )}

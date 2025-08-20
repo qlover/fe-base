@@ -1,5 +1,5 @@
 import { IOC } from '@/core/IOC';
-import { Loading } from '../components/Loading';
+import { Loading } from './Loading';
 import { useStore } from '../hooks/useStore';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 

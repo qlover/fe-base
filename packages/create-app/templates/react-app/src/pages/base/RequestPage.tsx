@@ -1,12 +1,11 @@
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
-import { RequestController } from '@/uikit/controllers/RequestController';
 import { useMemo } from 'react';
 import { useStore } from '@/uikit/hooks/useStore';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as i18nKeys from '@config/Identifier/page.request';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -24,9 +23,10 @@ function JSONValue({ value }: { value: unknown }) {
 }
 
 export default function RequestPage() {
-  const requestController = IOC(RequestController);
-  const requestControllerState = useStore(requestController);
-  const jsonStorageControllerState = useStore(IOC(JSONStorageController));
+  const pageBridge = IOC(IOCIdentifier.RequestPageBridgeInterface);
+  const pageState = useStore(pageBridge);
+  const jsonStoragePageBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const jsonStoragePageState = useStore(jsonStoragePageBridge);
   const { t } = useBaseRoutePage();
 
   return (
@@ -38,7 +38,7 @@ export default function RequestPage() {
             {t(i18nKeys.PAGE_REQUEST_TIMEOUT)}
           </h2>
           <div className="text-sm text-text-secondary font-mono bg-base p-2 rounded">
-            {jsonStorageControllerState.requestTimeout}
+            {jsonStoragePageState.requestTimeout}
           </div>
         </div>
 
@@ -53,10 +53,10 @@ export default function RequestPage() {
           </p>
           <Button
             type="primary"
-            onClick={requestController.onHello}
-            loading={requestControllerState.helloState.loading}
+            onClick={pageBridge.onHello}
+            loading={pageState.helloState.loading}
           >
-            {requestControllerState.helloState.loading
+            {pageState.helloState.loading
               ? t(i18nKeys.REQUEST_LOADING)
               : t(i18nKeys.PAGE_REQUEST_HELLO_BUTTON)}
           </Button>
@@ -66,14 +66,14 @@ export default function RequestPage() {
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_HELLO_RESULT)}:
               </p>
-              <JSONValue value={requestControllerState.helloState.result} />
+              <JSONValue value={pageState.helloState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_HELLO_ERROR)}:
               </p>
-              <JSONValue value={requestControllerState.helloState.error} />
+              <JSONValue value={pageState.helloState.error} />
             </div>
           </div>
         </div>
@@ -89,10 +89,10 @@ export default function RequestPage() {
           </p>
           <Button
             type="primary"
-            onClick={requestController.onIpInfo}
-            loading={requestControllerState.ipInfoState.loading}
+            onClick={pageBridge.onIpInfo}
+            loading={pageState.ipInfoState.loading}
           >
-            {requestControllerState.ipInfoState.loading
+            {pageState.ipInfoState.loading
               ? t(i18nKeys.REQUEST_LOADING)
               : t(i18nKeys.REQUEST_IP_INFO)}
           </Button>
@@ -101,7 +101,7 @@ export default function RequestPage() {
             <p className="text-sm font-medium text-text">
               {t(i18nKeys.REQUEST_IP_INFO_RESULT)}:
             </p>
-            <JSONValue value={requestControllerState.ipInfoState.result} />
+            <JSONValue value={pageState.ipInfoState.result} />
           </div>
         </div>
 
@@ -115,10 +115,10 @@ export default function RequestPage() {
           </p>
           <Button
             type="primary"
-            onClick={requestController.onRandomUser}
-            loading={requestControllerState.randomUserState.loading}
+            onClick={pageBridge.onRandomUser}
+            loading={pageState.randomUserState.loading}
           >
-            {requestControllerState.randomUserState.loading
+            {pageState.randomUserState.loading
               ? t(i18nKeys.REQUEST_LOADING)
               : t(i18nKeys.REQUEST_RANDOM_USER)}
           </Button>
@@ -128,16 +128,14 @@ export default function RequestPage() {
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_RANDOM_USER_RESULT)}:
               </p>
-              <JSONValue
-                value={requestControllerState.randomUserState.result}
-              />
+              <JSONValue value={pageState.randomUserState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_RANDOM_USER_ERROR)}:
               </p>
-              <JSONValue value={requestControllerState.randomUserState.error} />
+              <JSONValue value={pageState.randomUserState.error} />
             </div>
           </div>
         </div>
@@ -148,16 +146,12 @@ export default function RequestPage() {
             {t(i18nKeys.PAGE_REQUEST_API_CATCH_TITLE)}
           </h2>
           <Button
-            type={
-              requestControllerState.apiCatchResultState.loading
-                ? 'primary'
-                : 'primary'
-            }
-            danger={requestControllerState.apiCatchResultState.loading}
-            onClick={requestController.onTriggerApiCatchResult}
-            loading={requestControllerState.apiCatchResultState.loading}
+            type={pageState.apiCatchResultState.loading ? 'primary' : 'primary'}
+            danger={pageState.apiCatchResultState.loading}
+            onClick={pageBridge.onTriggerApiCatchResult}
+            loading={pageState.apiCatchResultState.loading}
           >
-            {requestControllerState.apiCatchResultState.loading
+            {pageState.apiCatchResultState.loading
               ? t(i18nKeys.PAGE_REQUEST_STOP_API_CATCH)
               : t(i18nKeys.PAGE_REQUEST_TRIGGER_API_CATCH)}
           </Button>
@@ -167,18 +161,14 @@ export default function RequestPage() {
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_ABORT_RESULT)}:
               </p>
-              <JSONValue
-                value={requestControllerState.apiCatchResultState.result}
-              />
+              <JSONValue value={pageState.apiCatchResultState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_ABORT_ERROR)}:
               </p>
-              <JSONValue
-                value={requestControllerState.apiCatchResultState.error}
-              />
+              <JSONValue value={pageState.apiCatchResultState.error} />
             </div>
           </div>
         </div>
@@ -189,14 +179,12 @@ export default function RequestPage() {
             {t(i18nKeys.PAGE_REQUEST_ABORT_TITLE)}
           </h2>
           <Button
-            type={
-              requestControllerState.abortState.loading ? 'primary' : 'primary'
-            }
-            danger={requestControllerState.abortState.loading}
-            onClick={requestController.onTriggerAbortRequest}
+            type={pageState.abortState.loading ? 'primary' : 'primary'}
+            danger={pageState.abortState.loading}
+            onClick={pageBridge.onTriggerAbortRequest}
           >
-            {requestControllerState.abortState.loading && <LoadingOutlined />}
-            {requestControllerState.abortState.loading
+            {pageState.abortState.loading && <LoadingOutlined />}
+            {pageState.abortState.loading
               ? t(i18nKeys.PAGE_REQUEST_STOP_ABORT)
               : t(i18nKeys.PAGE_REQUEST_TRIGGER_ABORT)}
           </Button>
@@ -206,14 +194,14 @@ export default function RequestPage() {
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_ABORT_RESULT)}:
               </p>
-              <JSONValue value={requestControllerState.abortState.result} />
+              <JSONValue value={pageState.abortState.result} />
             </div>
 
             <div>
               <p className="text-sm font-medium text-text">
                 {t(i18nKeys.REQUEST_ABORT_ERROR)}:
               </p>
-              <JSONValue value={requestControllerState.abortState.error} />
+              <JSONValue value={pageState.abortState.error} />
             </div>
           </div>
         </div>

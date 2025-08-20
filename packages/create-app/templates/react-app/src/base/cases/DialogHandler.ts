@@ -4,12 +4,11 @@ import type {
   ModalApi,
   NotificationApi
 } from '@brain-toolkit/antd-theme-override/react';
-import { UIDialogInterface } from '@qlover/corekit-bridge';
+import { UIDialogInterface, NotificationOptions } from '@qlover/corekit-bridge';
 import { ModalFuncProps } from 'antd';
-import { InteractionOptions } from '../port/InteractionHubInterface';
 
 export interface DialogHandlerOptions
-  extends InteractionOptions,
+  extends NotificationOptions,
     ModalFuncProps {
   content: string;
 }
@@ -38,7 +37,7 @@ export interface DialogHandlerOptions
 export class DialogHandler
   implements UIDialogInterface<DialogHandlerOptions>, AntdStaticApiInterface
 {
-  private antds: {
+  protected antds: {
     message?: MessageApi;
     modal?: ModalApi;
     notification?: NotificationApi;
@@ -59,28 +58,28 @@ export class DialogHandler
   /**
    * Formats error message from various error types
    */
-  private formatErrorMessage(error: unknown): string {
+  protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
     if (typeof error === 'string') return error;
     return 'An unknown error occurred';
   }
 
-  public success(msg: string, options?: InteractionOptions): void {
+  public success(msg: string, options?: NotificationOptions): void {
     this.antds.message?.success({ content: msg, ...options });
   }
 
-  public error(msg: string, options?: InteractionOptions): void {
+  public error(msg: string, options?: NotificationOptions): void {
     this.antds.message?.error({
       content: options?.error ? this.formatErrorMessage(options.error) : msg,
       ...options
     });
   }
 
-  public info(msg: string, options?: InteractionOptions): void {
+  public info(msg: string, options?: NotificationOptions): void {
     this.antds.message?.info({ content: msg, ...options });
   }
 
-  public warn(msg: string, options?: InteractionOptions): void {
+  public warn(msg: string, options?: NotificationOptions): void {
     this.antds.message?.warning({ content: msg, ...options });
   }
 

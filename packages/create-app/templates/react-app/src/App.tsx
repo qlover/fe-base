@@ -8,6 +8,7 @@ import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 import { routerPrefix } from '@config/common';
 import { useStore } from './uikit/hooks/useStore';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { logger } from './core/globals';
 
 function getAllPages() {
   const modules = import.meta.glob('./pages/**/*.tsx');
@@ -25,7 +26,8 @@ function getAllPages() {
 
 const routerLoader = new RouterLoader({
   componentMaps: getAllPages(),
-  render: RouterRenderComponent
+  render: RouterRenderComponent,
+  logger: logger
 });
 
 function App() {

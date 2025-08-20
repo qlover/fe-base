@@ -44,10 +44,9 @@ export class BootstrapApp {
       },
       envOptions: {
         target: appConfig,
-        source: {
-          ...import.meta.env,
+        source: Object.assign({}, import.meta.env, {
           [envPrefix + 'BOOT_HREF']: bootHref
-        },
+        }),
         prefix: envPrefix,
         blackList: envBlackList
       },

@@ -6,7 +6,7 @@ import type {
   UIBridgeInterface,
   StoreStateInterface
 } from '@qlover/corekit-bridge';
-import { I18nService } from '@/base/services/I18nService';
+import { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];
@@ -29,6 +29,7 @@ export class RouterServiceState implements StoreStateInterface {
 export class RouteService extends RouteServiceInterface {
   constructor(
     protected uiBridge: UIBridgeInterface<NavigateFunction>,
+    protected i18nService: I18nServiceInterface,
     protected options: RouterServiceOptions
   ) {
     super(
@@ -42,7 +43,7 @@ export class RouteService extends RouteServiceInterface {
 
   protected composePath(path: string): string {
     if (this.state.localeRoutes) {
-      const targetLang = I18nService.getCurrentLanguage();
+      const targetLang = this.i18nService.getCurrentLanguage();
       return `/${targetLang}${path}`;
     }
     return path.startsWith('/') ? path : `/${path}`;
@@ -88,7 +89,7 @@ export class RouteService extends RouteServiceInterface {
 
     if (!lng) {
       this.goto('/404', { replace: true, navigate });
-    } else if (!I18nService.isValidLanguage(lng)) {
+    } else if (!this.i18nService.isValidLanguage(lng)) {
       this.goto('/404', { replace: true, navigate });
     }
   }
