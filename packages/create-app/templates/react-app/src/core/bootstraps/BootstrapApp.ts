@@ -3,12 +3,12 @@ import {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
-import { IocRegisterImpl } from '../registers/IocRegisterImpl';
+import { IocRegisterImpl } from '../IocRegisterImpl';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
-import { IOCIdentifierMap } from '../IOC';
 
 export type BootstrapAppArgs = {
   /**
@@ -44,10 +44,9 @@ export class BootstrapApp {
       },
       envOptions: {
         target: appConfig,
-        source: {
-          ...import.meta.env,
+        source: Object.assign({}, import.meta.env, {
           [envPrefix + 'BOOT_HREF']: bootHref
-        },
+        }),
         prefix: envPrefix,
         blackList: envBlackList
       },
@@ -67,7 +66,6 @@ export class BootstrapApp {
 
       await bootstrap.use(bootstrapsRegistry.register()).start();
     } catch (error) {
-      console.log(error);
       logger.error(`${appConfig.appName} starup error:`, error);
     }
 

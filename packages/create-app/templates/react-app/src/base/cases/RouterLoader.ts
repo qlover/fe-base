@@ -2,6 +2,7 @@ import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 import { RouteObject } from 'react-router-dom';
 import isString from 'lodash/isString';
 import { RouteMeta } from '../types/Page';
+import { LoggerInterface } from '@qlover/logger';
 
 /**
  * Component mapping type for lazy-loaded components
@@ -79,6 +80,11 @@ export type RouterLoaderOptions = {
    * @required
    */
   render: RouterLoaderRender;
+
+  /**
+   * Logger
+   */
+  logger?: LoggerInterface;
 };
 
 /**
@@ -107,7 +113,7 @@ export type RouterLoaderOptions = {
  * });
  */
 export class RouterLoader {
-  constructor(private readonly options: RouterLoaderOptions) {
+  constructor(protected options: RouterLoaderOptions) {
     if (!options.render) {
       throw new Error('RouterLoader render is required');
     }
@@ -149,7 +155,7 @@ export class RouterLoader {
     const { element, children, ...rest } = route;
 
     if (!element || !isString(element)) {
-      console.warn(
+      this.options.logger?.warn(
         `Invalid route, path is: ${route.path}, element is: ${element}`
       );
     }

@@ -37,7 +37,7 @@ export class UserApi
   protected store: UserAuthStoreInterface<UserInfo> | null = null;
 
   constructor(
-    @inject(FetchAbortPlugin) private abortPlugin: FetchAbortPlugin,
+    @inject(FetchAbortPlugin) protected abortPlugin: FetchAbortPlugin,
     @inject(UserApiAdapter) adapter: RequestAdapterFetch
   ) {
     super(adapter);

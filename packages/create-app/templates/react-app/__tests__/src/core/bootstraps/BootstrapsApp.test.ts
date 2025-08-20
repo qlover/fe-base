@@ -2,7 +2,7 @@ import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { BootstrapApp } from '@/core/bootstraps/BootstrapApp';
 import type { BootstrapAppArgs } from '@/core/bootstraps/BootstrapApp';
 import { createIOCFunction } from '@qlover/corekit-bridge';
-import type { IOCIdentifierMap } from '@/core/IOC';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { name, version } from '../../../../package.json';
 import { browserGlobalsName } from '@config/common';
 

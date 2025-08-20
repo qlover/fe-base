@@ -1,14 +1,12 @@
-import { ExecutorPlugin, type SyncStorageInterface } from '@qlover/fe-corekit';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
 import type {
   UserApiLoginTransaction,
   UserInfo
 } from '@/base/apis/userApi/UserApiType';
-import { RouteService } from './RouteService';
 import {
   type UserAuthApiInterface,
   type UserAuthState,
   LoginResponseData,
-  UserAuthService,
   UserAuthStore
 } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
@@ -17,6 +15,8 @@ import { AppError } from '@/base/cases/AppError';
 import * as errKeys from '@config/Identifier/common.error';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { AppConfig } from '../cases/AppConfig';
+import { UserServiceInterface } from '../port/UserServiceInterface';
+import { RouteServiceInterface } from '../port/RouteServiceInterface';
 
 export interface UserApiState extends UserAuthState<UserInfo> {}
 
@@ -29,14 +29,10 @@ export interface RegisterFormData {
 }
 
 @injectable()
-export class UserService
-  extends UserAuthService<UserInfo>
-  implements ExecutorPlugin
-{
-  readonly pluginName = 'UserService';
-
+export class UserService extends UserServiceInterface {
   constructor(
-    @inject(RouteService) protected routerService: RouteService,
+    @inject(IOCIdentifier.RouteServiceInterface)
+    protected routerService: RouteServiceInterface,
     @inject(UserApi)
     userApi: UserAuthApiInterface<UserInfo>,
     @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
@@ -62,7 +58,7 @@ export class UserService
     return super.store as UserAuthStore<UserApiState>;
   }
 
-  getToken(): string | null {
+  override getToken(): string | null {
     return this.store.getCredential();
   }
 
@@ -88,14 +84,6 @@ export class UserService
     this.store.authSuccess();
   }
 
-  /**
-   * @override
-   */
-  onSuccess(): void {}
-
-  /**
-   * @override
-   */
   override async logout(): Promise<void> {
     await super.logout();
 
@@ -103,7 +91,9 @@ export class UserService
     this.routerService.gotoLogin();
   }
 
-  async register(params: RegisterFormData): Promise<LoginResponseData> {
+  override async register(
+    params: RegisterFormData
+  ): Promise<LoginResponseData> {
     const response = (await this.api.register(
       params
     )) as UserApiLoginTransaction['response'];

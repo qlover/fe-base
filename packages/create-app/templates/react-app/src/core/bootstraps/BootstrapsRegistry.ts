@@ -8,10 +8,8 @@ import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
 import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
 import { AiApiBootstarp } from '@/base/apis/AiApi';
 import { printBootstrap } from './PrintBootstrap';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { I18nService } from '@/base/services/I18nService';
-import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import { IOCIdentifierMap } from '../IOC';
+import { IOCIdentifier, IOCIdentifierMap } from '@config/IOCIdentifier';
+import { IocIdentifierTest } from './IocIdentifierTest';
 
 export class BootstrapsRegistry {
   constructor(
@@ -26,16 +24,20 @@ export class BootstrapsRegistry {
     const IOC = this.IOC;
 
     const bootstrapList = [
-      IOC(I18nService),
+      IOC(IOCIdentifier.I18nServiceInterface),
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,
-      IOC(I18nKeyErrorPlugin)
+      IOC(IOCIdentifier.I18nKeyErrorPlugin)
     ];
 
     if (!this.appConfig.isProduction) {
       bootstrapList.push(printBootstrap);
     }
+
+    bootstrapList.push(IocIdentifierTest);
+    // TODO: 需要使用到
+    bootstrapList.push(IOC(IOCIdentifier.ProcesserExecutorInterface));
 
     return bootstrapList;
   }

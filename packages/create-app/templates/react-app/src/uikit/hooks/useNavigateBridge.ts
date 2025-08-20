@@ -1,12 +1,12 @@
-import { RouteService } from '@/base/services/RouteService';
 import { IOC } from '@/core/IOC';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { NavigateBridge } from '../bridges/NavigateBridge';
 
-export function useRouterService() {
+export function useNavigateBridge() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    IOC(RouteService).setDependencies({ navigate });
+    IOC(NavigateBridge).setUIBridge(navigate);
   }, [navigate]);
 }

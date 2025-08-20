@@ -4,11 +4,14 @@ import type {
   ModalApi,
   NotificationApi
 } from '@brain-toolkit/antd-theme-override/react';
-import type {
-  InteractionHubInterface,
-  InteractionOptions,
-  ConfirmOptions
-} from '../port/InteractionHubInterface';
+import { UIDialogInterface, NotificationOptions } from '@qlover/corekit-bridge';
+import { ModalFuncProps } from 'antd';
+
+export interface DialogHandlerOptions
+  extends NotificationOptions,
+    ModalFuncProps {
+  content: string;
+}
 
 /**
  * Dialog Handler Implementation
@@ -32,9 +35,9 @@ import type {
  * });
  */
 export class DialogHandler
-  implements InteractionHubInterface, AntdStaticApiInterface
+  implements UIDialogInterface<DialogHandlerOptions>, AntdStaticApiInterface
 {
-  private antds: {
+  protected antds: {
     message?: MessageApi;
     modal?: ModalApi;
     notification?: NotificationApi;
@@ -55,32 +58,32 @@ export class DialogHandler
   /**
    * Formats error message from various error types
    */
-  private formatErrorMessage(error: unknown): string {
+  protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
     if (typeof error === 'string') return error;
     return 'An unknown error occurred';
   }
 
-  public success(msg: string, options?: InteractionOptions): void {
+  public success(msg: string, options?: NotificationOptions): void {
     this.antds.message?.success({ content: msg, ...options });
   }
 
-  public error(msg: string, options?: InteractionOptions): void {
+  public error(msg: string, options?: NotificationOptions): void {
     this.antds.message?.error({
       content: options?.error ? this.formatErrorMessage(options.error) : msg,
       ...options
     });
   }
 
-  public info(msg: string, options?: InteractionOptions): void {
+  public info(msg: string, options?: NotificationOptions): void {
     this.antds.message?.info({ content: msg, ...options });
   }
 
-  public warn(msg: string, options?: InteractionOptions): void {
+  public warn(msg: string, options?: NotificationOptions): void {
     this.antds.message?.warning({ content: msg, ...options });
   }
 
-  public confirm(options: ConfirmOptions): void {
+  public confirm(options: DialogHandlerOptions): void {
     this.antds.modal?.confirm(options);
   }
 }

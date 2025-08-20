@@ -3,14 +3,15 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { RouteService } from '@/base/services/RouteService';
-import { RegisterFormData, UserService } from '@/base/services/UserService';
+import { RegisterFormData } from '@/base/services/UserService';
 import * as i18nKeys from '@config/Identifier/page.register';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export default function RegisterPage() {
   const { t } = useBaseRoutePage();
-  const userService = IOC(UserService);
-  const AppConfig = IOC('AppConfig');
+  const AppConfig = IOC(IOCIdentifier.AppConfig);
+  const userService = IOC(IOCIdentifier.UserServiceInterface);
+  const routeService = IOC(IOCIdentifier.RouteServiceInterface);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -18,9 +19,9 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await userService.register(values);
-      IOC(RouteService).replaceToHome();
+      routeService.replaceToHome();
     } catch (error) {
-      console.error(error);
+      IOC(IOCIdentifier.Logger).error(error);
     } finally {
       setLoading(false);
     }
@@ -28,7 +29,7 @@ export default function RegisterPage() {
 
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    IOC(RouteService).gotoLogin();
+    routeService.gotoLogin();
   };
 
   return (

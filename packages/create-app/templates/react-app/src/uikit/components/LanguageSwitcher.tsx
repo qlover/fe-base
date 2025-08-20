@@ -3,15 +3,16 @@ import { GlobalOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import i18nConfig from '@config/i18n';
 import { IOC } from '@/core/IOC';
-import { I18nService, I18nServiceLocale } from '@/base/services/I18nService';
+import { I18nServiceLocale } from '@/base/services/I18nService';
 import { useCallback } from 'react';
 import { useStore } from '@/uikit/hooks/useStore';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 const { supportedLngs } = i18nConfig;
 
 export default function LanguageSwitcher() {
   const navigate = useNavigate();
-  const i18nService = IOC(I18nService);
+  const i18nService = IOC(IOCIdentifier.I18nServiceInterface);
   const loading = useStore(i18nService, i18nService.selector.loading);
   const { lng } = useParams<{ lng: I18nServiceLocale }>();
   const { pathname } = useLocation();

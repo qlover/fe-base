@@ -1,16 +1,12 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
-import type { UIDependenciesInterface } from '@/base/port/UIDependenciesInterface';
 import type { LoggerInterface } from '@qlover/logger';
-import { I18nService } from '@/base/services/I18nService';
-import {
-  StoreInterface,
-  type StoreStateInterface
+import { RouteServiceInterface } from '../port/RouteServiceInterface';
+import type {
+  UIBridgeInterface,
+  StoreStateInterface
 } from '@qlover/corekit-bridge';
-
-export type RouterServiceDependencies = {
-  navigate: NavigateFunction;
-};
+import { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];
@@ -30,64 +26,38 @@ export class RouterServiceState implements StoreStateInterface {
   ) {}
 }
 
-export class RouteService
-  extends StoreInterface<RouterServiceState>
-  implements UIDependenciesInterface<RouterServiceDependencies>
-{
-  /**
-   * @override
-   */
-  dependencies?: RouterServiceDependencies;
-
-  constructor(private options: RouterServiceOptions) {
+export class RouteService extends RouteServiceInterface {
+  constructor(
+    protected uiBridge: UIBridgeInterface<NavigateFunction>,
+    protected i18nService: I18nServiceInterface,
+    protected options: RouterServiceOptions
+  ) {
     super(
       () => new RouterServiceState(options.routes, !!options.hasLocalRoutes)
     );
   }
 
-  get logger(): LoggerInterface {
+  override get logger(): LoggerInterface {
     return this.options.logger;
   }
 
-  get navigate(): NavigateFunction | undefined {
-    const navigate = this.dependencies?.navigate;
-
-    if (!navigate) {
-      this.logger.debug(
-        'Please use `RouteService.setDependencies` to set dependencies'
-      );
-    }
-
-    return navigate;
-  }
-
-  composePath(path: string): string {
+  protected composePath(path: string): string {
     if (this.state.localeRoutes) {
-      const targetLang = I18nService.getCurrentLanguage();
+      const targetLang = this.i18nService.getCurrentLanguage();
       return `/${targetLang}${path}`;
     }
     return path.startsWith('/') ? path : `/${path}`;
   }
 
-  /**
-   * @override
-   */
-  setDependencies(dependencies: Partial<RouterServiceDependencies>): void {
-    this.dependencies = Object.assign(
-      this.dependencies || {},
-      dependencies
-    ) as RouterServiceDependencies;
-  }
-
-  getRoutes(): RouteConfigValue[] {
+  override getRoutes(): RouteConfigValue[] {
     return this.state.routes;
   }
 
-  changeRoutes(routes: RouteConfigValue[]): void {
-    this.emit({ routes, localeRoutes: this.state.localeRoutes });
+  override changeRoutes(routes: RouteConfigValue[]): void {
+    this.emit(this.cloneState({ routes }));
   }
 
-  goto(
+  override goto(
     path: string,
     options?: NavigateOptions & {
       navigate?: NavigateFunction;
@@ -96,29 +66,30 @@ export class RouteService
     const { navigate, ...rest } = options || {};
     path = this.composePath(path);
     this.logger.debug('Goto path => ', path);
-    (navigate || this.navigate)?.(path, rest);
+
+    (navigate || this.uiBridge.getUIBridge())?.(path, rest);
   }
 
-  gotoLogin(): void {
+  override gotoLogin(): void {
     this.goto('/login', { replace: true });
   }
 
-  replaceToHome(): void {
+  override replaceToHome(): void {
     this.goto('/', { replace: true });
   }
 
-  redirectToDefault(navigate: NavigateFunction): void {
+  override redirectToDefault(navigate?: NavigateFunction): void {
     this.goto('/', { replace: true, navigate });
   }
 
-  i18nGuard(lng: string, navigate: NavigateFunction): void {
+  override i18nGuard(lng: string, navigate?: NavigateFunction): void {
     if (!this.state.localeRoutes) {
       return;
     }
 
     if (!lng) {
       this.goto('/404', { replace: true, navigate });
-    } else if (!I18nService.isValidLanguage(lng)) {
+    } else if (!this.i18nService.isValidLanguage(lng)) {
       this.goto('/404', { replace: true, navigate });
     }
   }

@@ -5,11 +5,11 @@ import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import i18nConfig from '@config/i18n';
 import {
-  type BootstrapExecutorPlugin,
   type StoreStateInterface,
   StoreInterface
 } from '@qlover/corekit-bridge';
 import { useLocaleRoutes } from '@config/common';
+import { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
@@ -22,7 +22,7 @@ export class I18nServiceState implements StoreStateInterface {
 
 export class I18nService
   extends StoreInterface<I18nServiceState>
-  implements BootstrapExecutorPlugin
+  implements I18nServiceInterface
 {
   readonly pluginName = 'I18nService';
 
@@ -30,7 +30,7 @@ export class I18nService
     loading: (state: I18nServiceState) => state.loading
   };
 
-  constructor(private pathname: string) {
+  constructor(protected pathname: string) {
     super(() => new I18nServiceState(i18n.language as I18nServiceLocale));
   }
 
@@ -64,7 +64,7 @@ export class I18nService
         const paths = this.pathname.split('/');
 
         for (const path of paths) {
-          if (I18nService.isValidLanguage(path)) {
+          if (this.isValidLanguage(path)) {
             return path;
           }
         }
@@ -93,7 +93,7 @@ export class I18nService
     this.emit({ ...this.state, loading });
   }
 
-  static getCurrentLanguage(): I18nServiceLocale {
+  getCurrentLanguage(): I18nServiceLocale {
     return i18n.language as I18nServiceLocale;
   }
 
@@ -102,8 +102,12 @@ export class I18nService
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
-  static isValidLanguage(language: string): language is I18nServiceLocale {
+  isValidLanguage(language: string): language is I18nServiceLocale {
     return supportedLngs.includes(language as I18nServiceLocale);
+  }
+
+  getSupportedLanguages(): I18nServiceLocale[] {
+    return [...supportedLngs];
   }
 
   /**
