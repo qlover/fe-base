@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
-  "homepage": "",
+  "homepage": "https://github.com/qlover/fe-base/tree/master/packages/create-app/templates/react-app#readme",
   "author": "qlover",
   "license": "ISC",
   "repository": {
@@ -26,9 +26,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": {
-    "fe-release": "./bin/release.js"
-  },
   "scripts": {
     "dev": "vite --mode localhost",
     "dev:staging": "vite --mode staging",
@@ -44,7 +41,7 @@
     "@qlover/corekit-bridge": "latest",
     "@qlover/fe-corekit": "latest",
     "@qlover/logger": "^0.1.1",
-    "@qlover/slice-store-react": "^1.2.6",
+    "@qlover/slice-store-react": "^1.4.1",
     "@tailwindcss/postcss": "^4.1.8",
     "@tailwindcss/vite": "^4.1.8",
     "antd": "^5.25.3",
@@ -64,9 +61,9 @@
   "devDependencies": {
     "@brain-toolkit/ts2locales": "^0.2.3",
     "@qlover/env-loader": "latest",
-    "@qlover/eslint-plugin": "^0.2.0",
+    "@qlover/eslint-plugin": "latest",
     "@qlover/fe-scripts": "latest",
-    "@qlover/fe-standard": "^0.0.4",
+    "@qlover/fe-standard": "latest",
     "@testing-library/react": "^16.3.0",
     "@types/lodash": "^4.17.13",
     "@types/react": "^18.3.11",

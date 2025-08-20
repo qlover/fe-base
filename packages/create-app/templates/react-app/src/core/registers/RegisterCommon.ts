@@ -21,6 +21,7 @@ import { useLocaleRoutes } from '@config/common';
 import { UserService } from '@/base/services/UserService';
 import { IOCRegister } from '../IOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
 
 export const RegisterCommon: IOCRegister = {
   register(container, _, options): void {
@@ -62,7 +63,7 @@ export const RegisterCommon: IOCRegister = {
 
     container.bind(
       RouteService,
-      new RouteService({
+      new RouteService(container.get(NavigateBridge), {
         routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
         logger,
         hasLocalRoutes: useLocaleRoutes

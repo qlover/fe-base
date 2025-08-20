@@ -1,3 +1,11 @@
+/**
+ * This file is used to define the page styles for the app.
+ * 
+ * @example --color-primary
+ * ```tsx
+ * <div className="bg-primary text-primary border-text-tertiary"></div>
+ * ```
+ */
 @theme {
   --color-primary: rgba(var(--color-bg-base));
   --color-secondary: rgba(var(--color-bg-secondary));

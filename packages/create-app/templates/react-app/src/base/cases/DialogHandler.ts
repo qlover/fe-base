@@ -4,11 +4,15 @@ import type {
   ModalApi,
   NotificationApi
 } from '@brain-toolkit/antd-theme-override/react';
-import type {
-  InteractionHubInterface,
-  InteractionOptions,
-  ConfirmOptions
-} from '../port/InteractionHubInterface';
+import { UIDialogInterface } from '@qlover/corekit-bridge';
+import { ModalFuncProps } from 'antd';
+import { InteractionOptions } from '../port/InteractionHubInterface';
+
+export interface DialogHandlerOptions
+  extends InteractionOptions,
+    ModalFuncProps {
+  content: string;
+}
 
 /**
  * Dialog Handler Implementation
@@ -32,7 +36,7 @@ import type {
  * });
  */
 export class DialogHandler
-  implements InteractionHubInterface, AntdStaticApiInterface
+  implements UIDialogInterface<DialogHandlerOptions>, AntdStaticApiInterface
 {
   private antds: {
     message?: MessageApi;
@@ -80,7 +84,7 @@ export class DialogHandler
     this.antds.message?.warning({ content: msg, ...options });
   }
 
-  public confirm(options: ConfirmOptions): void {
+  public confirm(options: DialogHandlerOptions): void {
     this.antds.modal?.confirm(options);
   }
 }
