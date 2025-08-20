@@ -1,5 +1,9 @@
 # @qlover/fe-scripts
 
+## 1.0.2
+
+### Patch Changes
+
 ## 1.0.0
 
 ### Major Changes

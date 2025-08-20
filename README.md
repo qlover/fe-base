@@ -84,7 +84,7 @@ pnpm build
 | [@qlover/logger](./packages/logger/README.md)                             | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | 灵活的日志记录系统                             |
 | [@qlover/env-loader](./packages/env-loader/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | 环境变量加载工具                               |
 | [@qlover/fe-standard](./packages/fe-standard/README.md)                   | ![npm](https://img.shields.io/npm/v/@qlover/fe-standard)          | 前端开发标准和规范                             |
-| [@qlover/eslint-plugin-fe-dev](./packages/eslint-plugin-fe-dev/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin-fe-dev) | 前端开发 ESLint 插件                           |
+| [@qlover/eslint-plugin](./packages/eslint-plugin/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin) | 前端开发 ESLint 插件                           |
 | [@qlover/scripts-context](./packages/scripts-context/README.md)           | ![npm](https://img.shields.io/npm/v/@qlover/scripts-context)      | 脚本执行上下文工具                             |
 | [@qlover/corekit-bridge](./packages/corekit-bridge/README.md)             | ![npm](https://img.shields.io/npm/v/@qlover/corekit-bridge)       | 核心工具包桥接器                               |
 | [@qlover/corekit-node](./packages/corekit-node/README.md)                 | ![npm](https://img.shields.io/npm/v/@qlover/corekit-node)         | Node.js 环境核心工具                           |

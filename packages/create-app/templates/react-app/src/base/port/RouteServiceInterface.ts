@@ -13,9 +13,7 @@ export interface RouteServiceStateInterface extends StoreStateInterface {
 
 export abstract class RouteServiceInterface extends StoreInterface<RouteServiceStateInterface> {
   abstract get logger(): LoggerInterface;
-  abstract get navigate(): NavigateFunction | undefined;
 
-  abstract composePath(path: string): string;
   abstract getRoutes(): RouteConfigValue[];
   abstract changeRoutes(routes: RouteConfigValue[]): void;
   abstract goto(

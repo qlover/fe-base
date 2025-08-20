@@ -1,5 +1,22 @@
 # @qlover/scripts-context
 
+## 1.1.3
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **ScriptContext:** streamline environment option retrieval in getDefaultOptions method ([6fe72ec](https://github.com/qlover/fe-base/commit/6fe72ecf2d4d0414fa3c2b07549f4e6c4b6d91e2)) ([#495](https://github.com/qlover/fe-base/pull/495))
+  - Updated the getDefaultOptions method to simplify the logic for retrieving the environment variable. The environment is now set directly from this.options.env or fetched using Env.searchEnv if not provided, improving code clarity and maintainability.
+
+## 1.1.2
+
+### Patch Changes
+
+## 1.1.0
+
+### Minor Changes
+
 ## 1.0.0
 
 ### Major Changes

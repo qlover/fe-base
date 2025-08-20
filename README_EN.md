@@ -84,7 +84,7 @@ pnpm build
 | [@qlover/logger](./packages/logger/README_EN.md)                          | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | Flexible logging system                                                   |
 | [@qlover/env-loader](./packages/env-loader/README_EN.md)                  | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | Environment variable loading tool                                         |
 | [@qlover/fe-standard](./packages/fe-standard/README_EN.md)                | ![npm](https://img.shields.io/npm/v/@qlover/fe-standard)          | Frontend development standards and specifications                         |
-| [@qlover/eslint-plugin-fe-dev](./packages/eslint-plugin-fe-dev/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin-fe-dev) | Frontend development ESLint plugin                                        |
+| [@qlover/eslint-plugin](./packages/eslint-plugin/README.md) | ![npm](https://img.shields.io/npm/v/@qlover/eslint-plugin) | Frontend development ESLint plugin                                        |
 | [@qlover/scripts-context](./packages/scripts-context/README.md)           | ![npm](https://img.shields.io/npm/v/@qlover/scripts-context)      | Script execution context tool                                             |
 | [@qlover/corekit-bridge](./packages/corekit-bridge/README_EN.md)          | ![npm](https://img.shields.io/npm/v/@qlover/corekit-bridge)       | Core toolkit bridge                                                       |
 | [@qlover/corekit-node](./packages/corekit-node/README.md)                 | ![npm](https://img.shields.io/npm/v/@qlover/corekit-node)         | Node.js environment core tools                                            |

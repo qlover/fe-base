@@ -1,3 +1,41 @@
+/**
+ * @module GithubChangelog
+ * @description GitHub-specific changelog generation
+ *
+ * This module extends the base changelog functionality with
+ * GitHub-specific features like PR linking, commit filtering
+ * by directory, and workspace-aware changelog generation.
+ *
+ * Core Features:
+ * - PR-aware commit gathering
+ * - Directory-based filtering
+ * - GitHub link generation
+ * - Workspace changelog transformation
+ * - Markdown formatting
+ *
+ * @example Basic usage
+ * ```typescript
+ * const changelog = new GithubChangelog({
+ *   shell,
+ *   logger,
+ *   githubRootPath: 'https://github.com/org/repo'
+ * }, githubManager);
+ *
+ * const commits = await changelog.getFullCommit({
+ *   from: 'v1.0.0',
+ *   directory: 'packages/pkg-a'
+ * });
+ * ```
+ *
+ * @example Workspace transformation
+ * ```typescript
+ * const workspaces = await changelog.transformWorkspace(
+ *   [{ name: 'pkg-a', path: 'packages/a' }],
+ *   context
+ * );
+ * // Adds formatted changelog to each workspace
+ * ```
+ */
 import ReleaseContext from '../../implments/ReleaseContext';
 import { WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
@@ -17,8 +55,65 @@ export interface GithubChangelogProps extends GitChangelogProps {
   githubRootPath?: string;
 }
 
+/**
+ * GitHub-specific changelog generator
+ *
+ * Extends the base changelog generator with GitHub-specific
+ * features like PR linking, directory filtering, and workspace
+ * transformation.
+ *
+ * Features:
+ * - PR commit aggregation
+ * - Directory-based filtering
+ * - GitHub link generation
+ * - Workspace changelog transformation
+ * - Markdown formatting
+ *
+ * @example Basic usage
+ * ```typescript
+ * const changelog = new GithubChangelog({
+ *   shell,
+ *   logger,
+ *   githubRootPath: 'https://github.com/org/repo'
+ * }, githubManager);
+ *
+ * const commits = await changelog.getFullCommit({
+ *   from: 'v1.0.0',
+ *   directory: 'packages/pkg-a'
+ * });
+ * ```
+ *
+ * @example With PR merging
+ * ```typescript
+ * const changelog = new GithubChangelog({
+ *   mergePRcommit: true,
+ *   githubRootPath: 'https://github.com/org/repo'
+ * }, githubManager);
+ *
+ * // Will include PR commits in changelog
+ * const commits = await changelog.getFullCommit();
+ * ```
+ */
 export default class GithubChangelog extends GitChangelog {
+  /** Path manipulation utility */
   private pather = new Pather();
+
+  /**
+   * Creates a new GitHub changelog generator
+   *
+   * @param options - Changelog generation options
+   * @param githubManager - GitHub API manager
+   *
+   * @example
+   * ```typescript
+   * const changelog = new GithubChangelog({
+   *   shell,
+   *   logger,
+   *   mergePRcommit: true,
+   *   githubRootPath: 'https://github.com/org/repo'
+   * }, githubManager);
+   * ```
+   */
   constructor(
     protected options: GithubChangelogProps,
     protected githubManager: GithubManager
@@ -27,11 +122,25 @@ export default class GithubChangelog extends GitChangelog {
   }
 
   /**
-   * Filter commits by directory
-   * @param commits - commits
-   * @param directory - directory
-   * @returns filtered commits
+   * Filters commits by directory
+   *
+   * Filters commits based on whether they contain changes in
+   * the specified directory. Uses GitHub API to get detailed
+   * commit information.
+   *
+   * @param commits - Array of commits to filter
+   * @param directory - Directory path to filter by
+   * @returns Promise resolving to filtered commits
    * @since 2.4.0
+   *
+   * @example
+   * ```typescript
+   * const commits = await changelog.filterCommitsByDirectory(
+   *   allCommits,
+   *   'packages/pkg-a'
+   * );
+   * // Only commits that modified files in packages/pkg-a
+   * ```
    */
   async filterCommitsByDirectory(
     commits: CommitValue[],
@@ -56,6 +165,41 @@ export default class GithubChangelog extends GitChangelog {
     return result;
   }
 
+  /**
+   * Gets complete commit information with PR details
+   *
+   * Retrieves commits and enhances them with pull request
+   * information. For commits associated with PRs, includes
+   * all PR commits and filters by directory.
+   *
+   * Process:
+   * 1. Get base commits
+   * 2. Extract PR numbers
+   * 3. Fetch PR commits
+   * 4. Filter by directory
+   * 5. Flatten results
+   *
+   * @param options - Changelog options
+   * @returns Promise resolving to enhanced commits
+   *
+   * @example Basic usage
+   * ```typescript
+   * const commits = await changelog.getFullCommit({
+   *   from: 'v1.0.0',
+   *   directory: 'packages/pkg-a'
+   * });
+   * // Returns commits with PR information
+   * ```
+   *
+   * @example With PR merging
+   * ```typescript
+   * const commits = await changelog.getFullCommit({
+   *   mergePRcommit: true,
+   *   directory: 'packages/pkg-a'
+   * });
+   * // Includes all PR commits
+   * ```
+   */
   async getFullCommit(options?: GitChangelogOptions): Promise<CommitValue[]> {
     const _options = { ...this.options, ...options };
 
@@ -93,6 +237,41 @@ export default class GithubChangelog extends GitChangelog {
     return newallCommits.flat();
   }
 
+  /**
+   * Transforms workspaces with GitHub changelogs
+   *
+   * Processes each workspace to add GitHub-specific changelog
+   * information. Includes:
+   * - GitHub repository URL
+   * - PR-aware commit history
+   * - Formatted changelog with links
+   *
+   * Process:
+   * 1. Build GitHub root path
+   * 2. Configure changelog options
+   * 3. Get commits for each workspace
+   * 4. Format changelog with links
+   * 5. Update workspace objects
+   *
+   * @param workspaces - Array of workspaces to process
+   * @param context - Release context
+   * @returns Promise resolving to updated workspaces
+   *
+   * @example
+   * ```typescript
+   * const workspaces = await changelog.transformWorkspace(
+   *   [
+   *     {
+   *       name: 'pkg-a',
+   *       path: 'packages/a',
+   *       lastTag: 'v1.0.0'
+   *     }
+   *   ],
+   *   context
+   * );
+   * // Returns workspaces with GitHub-formatted changelogs
+   * ```
+   */
   async transformWorkspace(
     workspaces: WorkspaceValue[],
     context: ReleaseContext

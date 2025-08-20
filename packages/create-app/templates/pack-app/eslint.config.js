@@ -7,7 +7,7 @@ import prettierConfig from './.prettierrc.js';
 import prettier from 'eslint-plugin-prettier';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import * as feDev from '@qlover/eslint-plugin-fe-dev';
+import qloverEslint from '@qlover/eslint-plugin';
 import vitestPlugin from 'eslint-plugin-vitest';
 
 const allowedGlobals = {
@@ -43,7 +43,7 @@ export default [
       'react-refresh': reactRefresh,
       prettier,
       '@typescript-eslint': tseslint,
-      'fe-dev': feDev
+      '@qlover-eslint': qloverEslint
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -68,7 +68,7 @@ export default [
         }
       ],
       'react-hooks/exhaustive-deps': 'off',
-      'fe-dev/ts-class-method-return': 'error'
+      '@qlover-eslint/ts-class-method-return': 'error'
     }
   },
   {

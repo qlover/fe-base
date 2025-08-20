@@ -2,8 +2,8 @@ import { UserAuthProvider } from './UserAuthProvider';
 import { useStrictEffect } from '../hooks/useStrictEffect';
 import { IOC } from '@/core/IOC';
 import { useI18nGuard } from '../hooks/useI18nGuard';
-import { useRouterService } from '../hooks/userRouterService';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useNavigateBridge } from '../hooks/useNavigateBridge';
 
 export function ProcessExecutorProvider({
   children
@@ -14,7 +14,7 @@ export function ProcessExecutorProvider({
 
   useI18nGuard();
 
-  useRouterService();
+  useNavigateBridge();
 
   useStrictEffect(() => {
     processerExecutor.starup();

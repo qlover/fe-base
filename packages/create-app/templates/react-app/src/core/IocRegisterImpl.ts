@@ -19,6 +19,7 @@ import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import { UserService } from '@/base/services/UserService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
+import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}
@@ -59,7 +60,7 @@ export class IocRegisterImpl implements IOCRegister {
   protected registerImplement(ioc: IOCContainer): void {
     ioc.bind(
       IOCIdentifier.RouteServiceInterface,
-      new RouteService({
+      new RouteService(ioc.get(NavigateBridge), {
         routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
         logger: ioc.get(IOCIdentifier.Logger),
         hasLocalRoutes: useLocaleRoutes

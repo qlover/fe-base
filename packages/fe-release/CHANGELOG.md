@@ -1,5 +1,23 @@
 # @qlover/fe-release
 
+## 3.1.2
+
+### Patch Changes
+
+## 3.1.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **release:** streamline ReleaseContext and plugin integration ([95c7383](https://github.com/qlover/fe-base/commit/95c738321045b6c5523753dbe62fa43e519cb5ca)) ([#454](https://github.com/qlover/fe-base/pull/454))
+  - Refactored ReleaseContext to extend ScriptContext, enhancing the options structure and improving consistency across the codebase.
+  - Updated various plugins to inherit from ScriptPlugin, ensuring better lifecycle management and configuration handling.
+  - Removed the outdated Plugin class, consolidating plugin functionality under the new ScriptPlugin structure.
+  - Enhanced the handling of shared options and context initialization, improving clarity and maintainability.
+
+  These changes improve the overall architecture of the release process, ensuring a more robust and organized codebase.
+
 ## 3.0.0
 
 ### Major Changes
