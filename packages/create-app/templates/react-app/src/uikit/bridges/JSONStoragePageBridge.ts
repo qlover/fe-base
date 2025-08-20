@@ -8,7 +8,7 @@ import random from 'lodash/random';
 export class JSONStoragePageBridge extends JSONStoragePageBridgeInterface {
   constructor(
     @inject(IOCIdentifier.LocalStorage)
-    private storage: SyncStorageInterface<string, unknown>
+    protected storage: SyncStorageInterface<string, unknown>
   ) {
     super(() => ({
       testKey1: storage.getItem('testKey1') ?? 0,
@@ -18,23 +18,23 @@ export class JSONStoragePageBridge extends JSONStoragePageBridgeInterface {
     }));
   }
 
-  changeRandomTestKey1 = (): void => {
+  override changeRandomTestKey1 = (): void => {
     const value = random(100, 9000);
     this.storage.setItem('testKey1', value);
     this.emit({ ...this.state, testKey1: value });
   };
 
-  onChangeRandomTestKey2 = (): void => {
+  override onChangeRandomTestKey2 = (): void => {
     const value = random(100, 9000);
     this.storage.setItem('testKey2', value, Date.now() + this.state.expireTime);
     this.emit({ ...this.state, testKey2: value });
   };
 
-  changeExpireTime = (expireTime: number): void => {
+  override changeExpireTime = (expireTime: number): void => {
     this.emit({ ...this.state, expireTime });
   };
 
-  changeRequestTimeout = (requestTimeout: number): void => {
+  override changeRequestTimeout = (requestTimeout: number): void => {
     this.storage.setItem('requestTimeout', requestTimeout);
     this.emit({ ...this.state, requestTimeout });
   };

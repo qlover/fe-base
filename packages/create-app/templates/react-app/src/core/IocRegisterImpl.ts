@@ -110,10 +110,6 @@ export class IocRegisterImpl implements IOCRegister {
     const { appConfig } = this.options;
     const logger = ioc.get(IOCIdentifier.Logger);
 
-    // const feApiToken = new TokenStorage(appConfig.userTokenStorageKey, {
-    //   storage: ioc.get(IOCIdentifier.LocalStorageEncrypt)
-    // });
-
     const feApiRequestCommonPlugin = new RequestCommonPlugin({
       tokenPrefix: appConfig.openAiTokenPrefix,
       requiredToken: true,

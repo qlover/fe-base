@@ -9,9 +9,9 @@ export class RequestStatusCatcher
   implements RequestCatcherInterface<RequestAdapterResponse>
 {
   constructor(
-    @inject(IOCIdentifier.Logger)
-    private readonly logger: LoggerInterface
+    @inject(IOCIdentifier.Logger) protected logger: LoggerInterface
   ) {}
+
   /**
    * default handler
    * @override

@@ -43,6 +43,8 @@ export const IOCIdentifier = Object.freeze({
   RequestPageBridgeInterface: 'RequestPageBridgeInterface'
 });
 
+export const I = IOCIdentifier;
+
 /**
  * IOC identifier map
  *

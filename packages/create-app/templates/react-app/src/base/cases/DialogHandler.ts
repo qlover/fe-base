@@ -37,7 +37,7 @@ export interface DialogHandlerOptions
 export class DialogHandler
   implements UIDialogInterface<DialogHandlerOptions>, AntdStaticApiInterface
 {
-  private antds: {
+  protected antds: {
     message?: MessageApi;
     modal?: ModalApi;
     notification?: NotificationApi;
@@ -58,7 +58,7 @@ export class DialogHandler
   /**
    * Formats error message from various error types
    */
-  private formatErrorMessage(error: unknown): string {
+  protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
     if (typeof error === 'string') return error;
     return 'An unknown error occurred';

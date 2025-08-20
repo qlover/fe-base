@@ -21,7 +21,7 @@ export default function RegisterPage() {
       await userService.register(values);
       routeService.replaceToHome();
     } catch (error) {
-      console.error(error);
+      IOC(IOCIdentifier.Logger).error(error);
     } finally {
       setLoading(false);
     }

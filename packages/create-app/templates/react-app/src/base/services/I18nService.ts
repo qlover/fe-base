@@ -30,7 +30,7 @@ export class I18nService
     loading: (state: I18nServiceState) => state.loading
   };
 
-  constructor(private pathname: string) {
+  constructor(protected pathname: string) {
     super(() => new I18nServiceState(i18n.language as I18nServiceLocale));
   }
 

@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import { FeApi } from '@/base/apis/feApi/FeApi';
-import { logger } from '@/core/globals';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { aiHello } from '@/base/apis/AiApi';
 import {
@@ -8,6 +7,8 @@ import {
   RequestPageStateInterface
 } from '@/base/port/RequestPageBridgeInterface';
 import { RequestState } from '@/base/cases/RequestState';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import type { LoggerInterface } from '@qlover/logger';
 
 function createDefaultState(): RequestPageStateInterface {
   return {
@@ -24,8 +25,9 @@ export type RequestControllerState = ReturnType<typeof createDefaultState>;
 @injectable()
 export class RequestPageBridge extends RequestPageBridgeInterface {
   constructor(
-    @inject(FeApi) private readonly feApi: FeApi,
-    @inject(UserApi) private readonly userApi: UserApi
+    @inject(FeApi) protected feApi: FeApi,
+    @inject(UserApi) protected userApi: UserApi,
+    @inject(IOCIdentifier.Logger) protected logger: LoggerInterface
   ) {
     super(createDefaultState);
   }
@@ -43,7 +45,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
       });
       this.emitState({ helloState: new RequestState(false, result).end() });
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       this.emitState({
         helloState: new RequestState(false, null, error).end()
       });
@@ -61,7 +63,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
       const result = await this.feApi.getIpInfo();
       this.emitState({ ipInfoState: new RequestState(false, result).end() });
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       this.emitState({
         ipInfoState: new RequestState(false, null, error).end()
       });
@@ -80,7 +82,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
         randomUserState: new RequestState(false, result).end()
       });
     } catch (error) {
-      logger.error(error);
+      this.logger.error(error);
       this.emitState({
         randomUserState: new RequestState(false, null, error).end()
       });

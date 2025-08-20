@@ -14,9 +14,9 @@ export class I18nKeyErrorPlugin implements ExecutorPlugin {
   readonly pluginName = 'I18nKeyErrorPlugin';
 
   constructor(
-    @inject(IOCIdentifier.Logger) private logger: LoggerInterface,
+    @inject(IOCIdentifier.Logger) protected logger: LoggerInterface,
     @inject(IOCIdentifier.I18nServiceInterface)
-    private i18nService: I18nServiceInterface
+    protected i18nService: I18nServiceInterface
   ) {}
 
   onError(context: ExecutorContext<unknown>): Error | void {

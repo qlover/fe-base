@@ -32,7 +32,7 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
 
 @injectable()
 export class ExecutorPageBridge extends ExecutorPageBridgeInterface {
-  constructor(@inject(FeApi) private feApi: FeApi) {
+  constructor(@inject(FeApi) protected feApi: FeApi) {
     super(() => new ExecutorPageBridgeState());
 
     // FIXME: not cloneDeep, create a new instance

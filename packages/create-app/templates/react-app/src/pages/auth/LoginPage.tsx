@@ -27,7 +27,7 @@ export default function LoginPage() {
       });
       IOC(IOCIdentifier.RouteServiceInterface).replaceToHome();
     } catch (error) {
-      console.error(error);
+      IOC(IOCIdentifier.Logger).error(error);
     } finally {
       setLoading(false);
     }
