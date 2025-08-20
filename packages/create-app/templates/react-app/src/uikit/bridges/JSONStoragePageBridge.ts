@@ -1,25 +1,11 @@
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import {
-  StoreInterface,
-  type StoreStateInterface
-} from '@qlover/corekit-bridge';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
+import { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import random from 'lodash/random';
 
-interface JSONStoragePageState extends StoreStateInterface {
-  testKey1?: number;
-  testKey2?: number;
-  expireTime: number;
-  requestTimeout: number;
-}
-
 @injectable()
-export class JSONStorageController extends StoreInterface<JSONStoragePageState> {
-  selector = {
-    requestTimeout: (state: JSONStoragePageState) => state.requestTimeout
-  };
-
+export class JSONStoragePageBridge extends JSONStoragePageBridgeInterface {
   constructor(
     @inject(IOCIdentifier.LocalStorage)
     private storage: SyncStorageInterface<string, unknown>

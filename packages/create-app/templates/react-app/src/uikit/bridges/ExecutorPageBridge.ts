@@ -7,16 +7,13 @@ import {
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import {
-  StoreInterface,
-  type StoreStateInterface
-} from '@qlover/corekit-bridge';
+  ExecutorPageBridgeInterface,
+  ExecutorPageStateInterface
+} from '@/base/port/ExecutorPageBridgeInterface';
+import { RequestState } from '@/base/cases/RequestState';
 
-class ExecutorControllerState implements StoreStateInterface {
-  helloState = {
-    loading: false,
-    result: null as Record<string, unknown> | null,
-    error: null as unknown
-  };
+class ExecutorPageBridgeState implements ExecutorPageStateInterface {
+  helloState = new RequestState();
 }
 
 const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
@@ -34,13 +31,9 @@ const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
 };
 
 @injectable()
-export class ExecutorController extends StoreInterface<ExecutorControllerState> {
-  selector = {
-    helloState: (state: ExecutorControllerState) => state.helloState
-  };
-
+export class ExecutorPageBridge extends ExecutorPageBridgeInterface {
   constructor(@inject(FeApi) private feApi: FeApi) {
-    super(ExecutorController.create);
+    super(() => new ExecutorPageBridgeState());
 
     // FIXME: not cloneDeep, create a new instance
     this.feApi = cloneDeep(feApi);
@@ -48,18 +41,10 @@ export class ExecutorController extends StoreInterface<ExecutorControllerState> 
     this.feApi.usePlugin(TestPlugin);
   }
 
-  static create(): ExecutorControllerState {
-    return new ExecutorControllerState();
-  }
-
-  onTestPlugins = async () => {
+  override onTestPlugins = async () => {
     this.emit({
       ...this.state,
-      helloState: {
-        loading: true,
-        result: null,
-        error: null
-      }
+      helloState: new RequestState(true)
     });
 
     try {
@@ -69,20 +54,12 @@ export class ExecutorController extends StoreInterface<ExecutorControllerState> 
 
       this.emit({
         ...this.state,
-        helloState: {
-          loading: false,
-          result: res,
-          error: null
-        }
+        helloState: new RequestState(false, res).end()
       });
     } catch (error) {
       this.emit({
         ...this.state,
-        helloState: {
-          loading: false,
-          result: null,
-          error
-        }
+        helloState: new RequestState(false, null, error).end()
       });
     }
   };

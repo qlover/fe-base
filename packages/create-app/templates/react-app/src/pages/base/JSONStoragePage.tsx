@@ -1,14 +1,14 @@
 import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
-import { JSONStorageController } from '@/uikit/controllers/JSONStorageController';
 import { useStore } from '@/uikit/hooks/useStore';
 import { Button, Input } from 'antd';
 import * as i18nKeys from '@config/Identifier/page.jsonStorage';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export default function JSONStoragePage() {
-  const jsonStorageController = IOC(JSONStorageController);
-  const controllerState = useStore(jsonStorageController);
+  const pageBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const pageState = useStore(pageBridge);
   const { t } = useBaseRoutePage();
 
   return (
@@ -36,7 +36,7 @@ export default function JSONStoragePage() {
               <div className="flex flex-col items-center space-y-4">
                 <Button
                   type="primary"
-                  onClick={jsonStorageController.changeRandomTestKey1}
+                  onClick={pageBridge.changeRandomTestKey1}
                 >
                   {t(i18nKeys.PAGE_JSONSTORAGE_SET_RANDOM)}
                 </Button>
@@ -46,7 +46,7 @@ export default function JSONStoragePage() {
                     {t(i18nKeys.PAGE_JSONSTORAGE_CURRENT_VALUE)}:{' '}
                   </span>
                   <span className="font-semibold text-text">
-                    {JSON.stringify(controllerState.testKey1)}
+                    {JSON.stringify(pageState.testKey1)}
                   </span>
                 </div>
               </div>
@@ -69,11 +69,9 @@ export default function JSONStoragePage() {
                 <div className="flex items-center space-x-4">
                   <Input
                     type="number"
-                    value={controllerState.expireTime}
+                    value={pageState.expireTime}
                     onChange={(e) =>
-                      jsonStorageController.changeExpireTime(
-                        Number(e.target.value)
-                      )
+                      pageBridge.changeExpireTime(Number(e.target.value))
                     }
                     className="w-32"
                     min="1000"
@@ -86,7 +84,7 @@ export default function JSONStoragePage() {
 
                 <Button
                   type="primary"
-                  onClick={jsonStorageController.onChangeRandomTestKey2}
+                  onClick={pageBridge.onChangeRandomTestKey2}
                 >
                   {t(i18nKeys.PAGE_JSONSTORAGE_SET_EXPIRE)}
                 </Button>
@@ -96,7 +94,7 @@ export default function JSONStoragePage() {
                     {t(i18nKeys.PAGE_JSONSTORAGE_CURRENT_VALUE)}:{' '}
                   </span>
                   <span className="font-semibold text-text">
-                    {controllerState.testKey2}
+                    {pageState.testKey2}
                   </span>
                 </div>
               </div>
@@ -110,11 +108,9 @@ export default function JSONStoragePage() {
               <div className="flex items-center space-x-4">
                 <Input
                   type="number"
-                  value={controllerState.requestTimeout}
+                  value={pageState.requestTimeout}
                   onChange={(e) =>
-                    jsonStorageController.changeRequestTimeout(
-                      Number(e.target.value)
-                    )
+                    pageBridge.changeRequestTimeout(Number(e.target.value))
                   }
                   className="w-32"
                   min="1000"

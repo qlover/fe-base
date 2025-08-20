@@ -20,6 +20,9 @@ import { UserService } from '@/base/services/UserService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
+import { ExecutorPageBridge } from '@/uikit/bridges/ExecutorPageBridge';
+import { JSONStoragePageBridge } from '@/uikit/bridges/JSONStoragePageBridge';
+import { RequestPageBridge } from '@/uikit/bridges/RequestPageBridge';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}
@@ -40,7 +43,7 @@ export class IocRegisterImpl implements IOCRegister {
     ioc.bind(IOCIdentifier.AppConfig, appConfig);
     ioc.bind(IOCIdentifier.EnvConfigInterface, appConfig);
     ioc.bind(IOCIdentifier.DialogHandler, dialogHandler);
-    ioc.bind(IOCIdentifier.InteractionHubInterface, dialogHandler);
+    ioc.bind(IOCIdentifier.UIDialogInterface, dialogHandler);
     ioc.bind(IOCIdentifier.AntdStaticApiInterface, dialogHandler);
     ioc.bind(IOCIdentifier.LocalStorage, globals.localStorage);
     ioc.bind(IOCIdentifier.LocalStorageEncrypt, localStorageEncrypt);
@@ -89,6 +92,18 @@ export class IocRegisterImpl implements IOCRegister {
     );
 
     ioc.bind(IOCIdentifier.UserServiceInterface, ioc.get(UserService));
+    ioc.bind(
+      IOCIdentifier.ExecutorPageBridgeInterface,
+      ioc.get(ExecutorPageBridge)
+    );
+    ioc.bind(
+      IOCIdentifier.JSONStoragePageInterface,
+      ioc.get(JSONStoragePageBridge)
+    );
+    ioc.bind(
+      IOCIdentifier.RequestPageBridgeInterface,
+      ioc.get(RequestPageBridge)
+    );
   }
 
   protected registerCommon(ioc: IOCContainer): void {
