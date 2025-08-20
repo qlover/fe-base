@@ -3,25 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "cross-env APP_ENV=development next dev --turbopack",
+    "dev:test": "cross-env APP_ENV=test next dev --turbopack",
+    "dev:prod": "cross-env APP_ENV=production next dev --turbopack",
     "build": "next build --turbopack",
+    "build:test": "cross-env APP_ENV=test next build --turbopack",
+    "build:prod": "cross-env APP_ENV=production next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@brain-toolkit/bridge": "^0.0.1",
+    "@qlover/corekit-bridge": "^1.6.4",
+    "@qlover/fe-corekit": "^2.1.0",
+    "@qlover/slice-store-react": "^1.4.1",
+    "antd": "^5.27.1",
+    "clsx": "^2.1.1",
+    "inversify": "^7.8.1",
+    "next": "15.5.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.0"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
