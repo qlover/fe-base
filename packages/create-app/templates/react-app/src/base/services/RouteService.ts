@@ -40,19 +40,7 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     return this.options.logger;
   }
 
-  get navigate(): NavigateFunction | null {
-    const navigate = this.uiBridge.getUIBridge();
-
-    if (!navigate) {
-      this.logger.debug(
-        'Please use `RouteService.setDependencies` to set dependencies'
-      );
-    }
-
-    return navigate;
-  }
-
-  composePath(path: string): string {
+  protected composePath(path: string): string {
     if (this.state.localeRoutes) {
       const targetLang = I18nService.getCurrentLanguage();
       return `/${targetLang}${path}`;
@@ -65,7 +53,7 @@ export class RouteService extends StoreInterface<RouterServiceState> {
   }
 
   changeRoutes(routes: RouteConfigValue[]): void {
-    this.emit({ routes, localeRoutes: this.state.localeRoutes });
+    this.emit(this.cloneState({ routes }));
   }
 
   goto(
@@ -77,7 +65,8 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     const { navigate, ...rest } = options || {};
     path = this.composePath(path);
     this.logger.debug('Goto path => ', path);
-    (navigate || this.navigate)?.(path, rest);
+
+    (navigate || this.uiBridge.getUIBridge())?.(path, rest);
   }
 
   gotoLogin(): void {
@@ -88,11 +77,11 @@ export class RouteService extends StoreInterface<RouterServiceState> {
     this.goto('/', { replace: true });
   }
 
-  redirectToDefault(navigate: NavigateFunction): void {
+  redirectToDefault(navigate?: NavigateFunction): void {
     this.goto('/', { replace: true, navigate });
   }
 
-  i18nGuard(lng: string, navigate: NavigateFunction): void {
+  i18nGuard(lng: string, navigate?: NavigateFunction): void {
     if (!this.state.localeRoutes) {
       return;
     }

@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@brain-toolkit/antd-theme-override": "^0.0.3",
-    "@qlover/corekit-bridge": "latest",
-    "@qlover/fe-corekit": "latest",
+    "@qlover/corekit-bridge": "file:../../../corekit-bridge",
+    "@qlover/fe-corekit": "file:../../../fe-corekit",
     "@qlover/logger": "^0.1.1",
     "@qlover/slice-store-react": "^1.4.1",
     "@tailwindcss/postcss": "^4.1.8",
