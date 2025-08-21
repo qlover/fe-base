@@ -5,14 +5,8 @@ export const i18nConfig = {
   },
   fallbackLng: 'en',
   debug: false,
-  interpolation: {
-    escapeValue: false
-  },
-  ns: ['common'],
-  defaultNS: 'common',
-  backend: {
-    loadPath: '/locales/{{lng}}/{{ns}}.json'
-  },
-  supportedLngs: ['en', 'zh'],
-  localeDetection: false,
+  supportedLngs: ['en', 'zh'] as const,
+  localeDetection: true
 } as const;
+
+export type LocaleType = (typeof i18nConfig.supportedLngs)[number];

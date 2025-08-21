@@ -5,7 +5,7 @@ import {
 } from '@qlover/corekit-bridge';
 
 export type SupportedLocale = (typeof i18nConfig.supportedLngs)[number];
-export type SupportedNamespace = typeof i18nConfig.defaultNS;
+export type SupportedNamespace = typeof i18nConfig.fallbackLng;
 export type I18nServiceLocale = SupportedLocale;
 
 export class I18nServiceState implements StoreStateInterface {

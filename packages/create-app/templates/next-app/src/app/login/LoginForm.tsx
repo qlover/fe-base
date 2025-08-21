@@ -3,11 +3,11 @@
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import * as i18nKeys from '@config/Identifier/page.login';
-import { identity as t } from 'lodash';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
+import { useTranslations } from 'next-intl';
 
 interface LoginFormData {
   email: string;
@@ -17,6 +17,7 @@ interface LoginFormData {
 export default function LoginForm() {
   const userService = IOC(UserService);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('common');
 
   const handleLogin = async (values: LoginFormData) => {
     try {
