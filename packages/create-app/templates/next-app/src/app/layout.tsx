@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
 import '@/styles/css/index.css';
-import { ThemeProvider } from 'next-themes';
 import { themeConfig } from '@config/theme';
 import BaseHeader from '@/uikit/components/BaseHeader';
-import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import { BootstrapsApp } from '@/uikit/components/BootstrapsApp';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { headers } from 'next/headers';
 import { i18nConfig } from '@config/i18n';
 import { SupportedLocale } from '@/base/port/I18nServiceInterface';
+import { ComboProvider } from '@/uikit/components/ComboProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -36,32 +33,13 @@ export default async function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <body>
-        <AntdThemeProvider
-          theme={{
-            cssVar: {
-              key: 'fe-theme',
-              prefix: 'fe'
-            }
-          }}
-        >
-          <ThemeProvider
-            attribute={themeConfig.domAttribute}
-            defaultTheme={themeConfig.defaultTheme}
-            enableSystem
-            enableColorScheme={false}
-            storageKey={themeConfig.storageKey}
-          >
-            <BootstrapsApp>
-              <AntdRegistry>
-                <div className="min-h-screen bg-secondary">
-                  <BaseHeader />
+        <ComboProvider themeConfig={themeConfig}>
+          <div className="min-h-screen bg-secondary">
+            <BaseHeader />
 
-                  {children}
-                </div>
-              </AntdRegistry>
-            </BootstrapsApp>
-          </ThemeProvider>
-        </AntdThemeProvider>
+            {children}
+          </div>
+        </ComboProvider>
       </body>
     </html>
   );

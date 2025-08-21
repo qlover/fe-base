@@ -2,13 +2,15 @@ import {
   Bootstrap,
   EnvConfigInterface,
   IOCContainerInterface,
-  IOCFunctionInterface
+  IOCFunctionInterface,
+  IOCManagerInterface
 } from '@qlover/corekit-bridge';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
+import { createIOC, IOCContainer, IOCRegister } from '../IOC';
 import { IocRegisterImpl } from '../IocRegisterImpl';
 
 export type BootstrapAppArgs = {
@@ -23,6 +25,17 @@ export type BootstrapAppArgs = {
 };
 
 export class BootstrapClient {
+  static registerIoc(
+    ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>,
+    register: IOCRegister
+  ) {
+    register.register(
+      ioc.implemention as IOCContainer,
+      ioc as IOCManagerInterface<IOCContainer>
+    );
+    return ioc;
+  }
+
   static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
     const { root, IOC } = args;
 
@@ -35,12 +48,6 @@ export class BootstrapClient {
     const bootstrap = new Bootstrap({
       root,
       logger,
-      ioc: {
-        manager: IOC,
-        register: new IocRegisterImpl({
-          appConfig: appConfig as EnvConfigInterface
-        })
-      },
       globalOptions: {
         sources: globals,
         target: browserGlobalsName

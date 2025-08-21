@@ -56,10 +56,14 @@ export type IOCRegister = IOCRegisterInterface<
  * const logger = IOC(IOCIdentifier.Logger);
  * ```
  */
-export const IOC = createIOCFunction<IOCIdentifierMap>(
-  /**
-   * If not inversify, you can use any IOC container,
-   * then replace the InversifyContainer with your own IOC container
-   */
-  new InversifyContainer()
-);
+export const IOC = createIOC();
+
+export function createIOC() {
+  return createIOCFunction<IOCIdentifierMap>(
+    /**
+     * If not inversify, you can use any IOC container,
+     * then replace the InversifyContainer with your own IOC container
+     */
+    new InversifyContainer()
+  );
+}

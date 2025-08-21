@@ -1,5 +1,4 @@
 'use client';
-import '@ant-design/v5-patch-for-react-19';
 
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
