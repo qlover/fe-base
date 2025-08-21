@@ -7,7 +7,7 @@ import LocaleLink from '@/uikit/components/LocaleLink';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
-import { identity as t } from 'lodash';
+import { useTranslations } from 'next-intl';
 
 interface LoginFormData {
   email: string;
@@ -15,6 +15,7 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const t = useTranslations();
   const userService = IOC(UserService);
   const [loading, setLoading] = useState(false);
 

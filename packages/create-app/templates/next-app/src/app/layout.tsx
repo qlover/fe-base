@@ -4,6 +4,7 @@ import { i18nConfig } from '@config/i18n';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import { themeConfig } from '@config/theme';
 import '@/styles/css/index.css';
+import BaseHeader from '@/uikit/components/BaseHeader';
 
 export default async function RootLayout({
   children
@@ -17,7 +18,12 @@ export default async function RootLayout({
     <html lang={'en'} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <ComboProvider themeConfig={themeConfig}>{children}</ComboProvider>
+          <ComboProvider themeConfig={themeConfig}>
+            <div className="flex flex-col min-h-screen ">
+              <BaseHeader />
+              <div className="flex flex-col">{children}</div>
+            </div>
+          </ComboProvider>
         </NextIntlClientProvider>
       </body>
     </html>

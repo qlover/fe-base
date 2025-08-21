@@ -1,9 +1,10 @@
 import * as i18nKeys from '@config/Identifier/page.login';
 import FeatureItem from './FeatureItem';
 import LoginForm from './LoginForm';
-import { identity as t } from 'lodash';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+  const t = useTranslations();
   return (
     <div className="flex text-xs1 bg-primary min-h-screen">
       {/* Left side - Brand section */}
