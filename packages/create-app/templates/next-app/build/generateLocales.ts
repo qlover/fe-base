@@ -5,7 +5,7 @@ import { readdirSync } from 'fs';
 
 export async function generateLocales() {
   const locales = i18nConfig.supportedLngs as unknown as string[];
-  const options = readdirSync(join(__dirname, './config/Identifier'))
+  const options = readdirSync('./config/Identifier')
     .map((file) => ({
       file,
       name: file.replace('.ts', ''),

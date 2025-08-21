@@ -1,5 +1,11 @@
 import type { NextConfig } from 'next';
 import { i18nConfig } from './config/i18n';
+import { generateLocales } from './build/generateLocales';
+
+// 在构建开始时生成本地化文件
+generateLocales().catch(error => {
+  console.error('Failed to generate locales:', error);
+});
 
 const nextConfig: NextConfig = {
   env: {
