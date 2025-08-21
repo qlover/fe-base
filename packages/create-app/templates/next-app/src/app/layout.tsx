@@ -1,22 +1,22 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { notFound } from 'next/navigation';
 import { getMessages } from 'next-intl/server';
 import { i18nConfig } from '@config/i18n';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import { themeConfig } from '@config/theme';
+import '@/styles/css/index.css';
 
 export default async function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const locale = i18nConfig.fallbackLng;
-  const messages = await getMessages({ locale });
-console.log('jj messages', messages)
+  const messages = await getMessages({ locale: 'en' });
+
+  // TODO: suppressHydrationWarning 暂时解决 hydration 问题
   return (
-    <html lang={locale}>
+    <html lang={'en'} suppressHydrationWarning>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider messages={messages}>
           <ComboProvider themeConfig={themeConfig}>{children}</ComboProvider>
         </NextIntlClientProvider>
       </body>
