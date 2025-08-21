@@ -4,6 +4,8 @@ import Link from 'next/link';
 import ThemeSwitcher from './ThemeSwitcher';
 import { IOC } from '@/core/IOC';
 import { AppConfig } from '@/base/cases/AppConfig';
+import LanguageSwitcher from './LanguageSwitcher';
+import { I18nService } from '@/base/services/I18nService';
 
 export default function BaseHeader() {
   return (
@@ -32,6 +34,7 @@ export default function BaseHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
+          <LanguageSwitcher />
           <ThemeSwitcher />
         </div>
       </div>
