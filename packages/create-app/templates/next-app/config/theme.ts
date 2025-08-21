@@ -1,6 +1,7 @@
-import { ThemeConfig } from '@qlover/corekit-bridge';
-
-export const themeConfig: ThemeConfig = {
+/**
+ * @type {import('@qlover/corekit-bridge').ThemeConfig}
+ */
+export const themeConfig = {
   domAttribute: 'data-theme',
   defaultTheme: 'system',
   target: 'html',
@@ -8,4 +9,4 @@ export const themeConfig: ThemeConfig = {
   storageKey: 'fe_theme',
   init: true,
   prioritizeStore: true
-};
+} as const;
