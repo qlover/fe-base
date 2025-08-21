@@ -4,6 +4,7 @@ import { ThemeProvider } from 'next-themes';
 import { themeConfig } from '@config/theme';
 import BaseHeader from '@/uikit/components/BaseHeader';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
+import { BootstrapsApp } from '@/uikit/components/BootstrapsApp';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -33,11 +34,13 @@ export default function RootLayout({
             enableColorScheme={false}
             storageKey={themeConfig.storageKey}
           >
-            <div className="min-h-screen bg-secondary">
-              <BaseHeader />
+            <BootstrapsApp>
+              <div className="min-h-screen bg-secondary">
+                <BaseHeader />
 
-              {children}
-            </div>
+                {children}
+              </div>
+            </BootstrapsApp>
           </ThemeProvider>
         </AntdThemeProvider>
       </body>

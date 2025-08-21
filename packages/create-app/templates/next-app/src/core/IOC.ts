@@ -9,11 +9,6 @@ import { IOCIdentifierMap } from '@config/IOCIdentifier';
  */
 export type IocRegisterOptions = {
   /**
-   * The pathname of the current page
-   */
-  pathname: string;
-
-  /**
    * The app config
    */
   appConfig: Record<string, unknown>;

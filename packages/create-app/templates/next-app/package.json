@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env APP_ENV=development next dev --turbopack",
-    "dev:test": "cross-env APP_ENV=test next dev --turbopack",
+    "dev": "cross-env APP_ENV=localhost next dev --turbopack",
+    "dev:staging": "cross-env APP_ENV=staging next dev --turbopack",
     "dev:prod": "cross-env APP_ENV=production next dev --turbopack",
-    "build": "next build --turbopack",
-    "build:test": "cross-env APP_ENV=test next build --turbopack",
+    "build": "cross-env APP_ENV=localhost next build --turbopack",
+    "build:staging": "cross-env APP_ENV=staging next build --turbopack",
     "build:prod": "cross-env APP_ENV=production next build --turbopack",
     "start": "next start",
     "lint": "eslint"

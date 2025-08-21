@@ -1,3 +1,4 @@
+import { AppConfig } from '@/base/cases/AppConfig';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
@@ -37,4 +38,5 @@ export interface IOCIdentifierMap {
     FeCorekit.ObjectStorageOptions
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
+  [IOCIdentifier.AppConfig]: AppConfig;
 }

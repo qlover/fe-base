@@ -2,6 +2,9 @@
 import { JSONSerializer } from '@qlover/fe-corekit';
 import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
 import { loggerStyles } from '@config/common';
+import { AppConfig } from '@/base/cases/AppConfig';
+
+export const appConfig = new AppConfig();
 
 /**
  * Global logger

@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import ThemeSwitcher from './ThemeSwitcher';
+import { IOC } from '@/core/IOC';
+import { AppConfig } from '@/base/cases/AppConfig';
 
 export default function BaseHeader() {
   return (
@@ -25,7 +27,7 @@ export default function BaseHeader() {
               data-testid="base-header-app-name"
               className="ml-2 text-lg font-semibold text-text"
             >
-              {"IOC('AppConfig').appName"}
+              {IOC(AppConfig).appName}
             </span>
           </Link>
         </div>
