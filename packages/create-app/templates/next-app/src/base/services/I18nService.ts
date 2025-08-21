@@ -6,7 +6,7 @@ import {
   I18nServiceLocale
 } from '../port/I18nServiceInterface';
 import { injectable } from 'inversify';
-import { useTranslations } from 'next-intl';
+import type { useTranslations } from 'next-intl';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
