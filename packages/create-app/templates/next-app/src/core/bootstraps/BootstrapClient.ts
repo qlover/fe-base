@@ -48,6 +48,9 @@ export class BootstrapClient {
     const bootstrap = new Bootstrap({
       root,
       logger,
+      ioc: {
+        manager: IOC,
+      },
       globalOptions: {
         sources: globals,
         target: browserGlobalsName

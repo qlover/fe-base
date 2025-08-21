@@ -1,6 +1,12 @@
 // ! dont't import tsx, only ts file
-import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
-import { createIOCFunction } from '@qlover/corekit-bridge';
+import type {
+  IOCContainerInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge';
+import {
+  createIOCFunction,
+  IOCFunctionInterface
+} from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { IOCIdentifierMap } from '@config/IOCIdentifier';
 
@@ -35,6 +41,25 @@ export type IOCRegister = IOCRegisterInterface<
   IocRegisterOptions
 >;
 
+let _ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> | null =
+  null;
+
+export function createIOC() {
+  if (_ioc) {
+    return _ioc;
+  }
+
+  _ioc = createIOCFunction<IOCIdentifierMap>(
+    /**
+     * If not inversify, you can use any IOC container,
+     * then replace the InversifyContainer with your own IOC container
+     */
+    new InversifyContainer()
+  );
+
+  return _ioc;
+}
+
 /**
  * IOC function
  *
@@ -57,13 +82,3 @@ export type IOCRegister = IOCRegisterInterface<
  * ```
  */
 export const IOC = createIOC();
-
-export function createIOC() {
-  return createIOCFunction<IOCIdentifierMap>(
-    /**
-     * If not inversify, you can use any IOC container,
-     * then replace the InversifyContainer with your own IOC container
-     */
-    new InversifyContainer()
-  );
-}
