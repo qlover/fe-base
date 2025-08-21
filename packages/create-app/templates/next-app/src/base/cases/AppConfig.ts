@@ -10,4 +10,6 @@ export class AppConfig implements EnvConfigInterface {
   readonly env: string = process.env.APP_ENV!;
   readonly appName: string = name;
   readonly appVersion: string = version;
+
+  readonly userTokenKey: string = '_user_token';
 }

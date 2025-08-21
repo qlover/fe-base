@@ -1,4 +1,5 @@
 'use client';
+import '@ant-design/v5-patch-for-react-19';
 
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
@@ -7,6 +8,7 @@ import { identity as t } from 'lodash';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
+import { IOC } from '@/core/IOC';
 
 interface LoginFormData {
   email: string;
@@ -14,18 +16,16 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const userService = IOC(UserService);
   const [loading, setLoading] = useState(false);
-  const userService = new UserService();
 
   const handleLogin = async (values: LoginFormData) => {
     try {
       setLoading(true);
       await userService.login({
-        username: values.email,
+        email: values.email,
         password: values.password
       });
-      // For now, we'll just redirect to home page
-      window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error);
     } finally {
@@ -35,20 +35,15 @@ export default function LoginForm() {
 
   return (
     <Form
+      data-testid="login-form"
       name="login"
-      initialValues={{
-        email: 'admin@example.com',
-        password: '123456'
-      }}
       onFinish={handleLogin}
       layout="vertical"
       className="space-y-4"
     >
       <Form.Item
         name="email"
-        rules={[
-          { required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }
-        ]}
+        rules={[{ required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }]}
       >
         <Input
           prefix={<UserOutlined className="text-text-tertiary" />}

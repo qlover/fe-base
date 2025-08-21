@@ -1,12 +1,18 @@
 import { ImagicaAuthService } from '@brain-toolkit/bridge';
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
+import { AppConfig } from '../cases/AppConfig';
+import { CookieStorage } from '@qlover/corekit-bridge';
 
 @injectable()
 export class UserService extends ImagicaAuthService {
-  constructor() {
+  constructor(@inject(AppConfig) protected appConfig: AppConfig) {
     super({
+      credentialStorage: {
+        key: appConfig.userTokenKey,
+        storage: new CookieStorage()
+      },
       requestConfig: {
-        env: 'development'
+        env: appConfig.env !== 'production' ? 'development' : 'production'
       }
     });
   }

@@ -31,4 +31,4 @@ export const routerPrefix = '/router-root';
  * - true: 使用本地化路由，路由会带有语言前缀 (例如: /en/home)
  * - false: 不使用本地化路由，直接使用路径 (例如: /home)
  */
-export const useLocaleRoutes = true;
+export const useLocaleRoutes = false;
