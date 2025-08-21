@@ -19,6 +19,10 @@ export type BootstrapAppArgs = {
    */
   root: unknown;
   /**
+   * 当前路径
+   */
+  pathname: string;
+  /**
    * IOC容器
    */
   IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
@@ -60,7 +64,7 @@ export class BootstrapClient {
     try {
       await bootstrap.initialize();
 
-      const bootstrapsRegistry = new BootstrapsRegistry(IOC);
+      const bootstrapsRegistry = new BootstrapsRegistry(args);
 
       await bootstrap.use(bootstrapsRegistry.register()).start();
     } catch (error) {

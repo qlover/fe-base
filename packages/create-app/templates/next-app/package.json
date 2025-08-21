@@ -35,6 +35,7 @@
     "react-i18next": "^15.7.1"
   },
   "devDependencies": {
+    "@brain-toolkit/ts2locales": "^0.2.3",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

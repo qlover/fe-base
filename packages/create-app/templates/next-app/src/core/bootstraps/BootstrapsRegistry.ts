@@ -1,4 +1,5 @@
 import type {
+  BootstrapContextValue,
   BootstrapExecutorPlugin,
   EnvConfigInterface,
   IOCContainerInterface,
@@ -7,11 +8,14 @@ import type {
 import { printBootstrap } from './PrintBootstrap';
 import { IOCIdentifier, IOCIdentifierMap } from '@config/IOCIdentifier';
 import { IocIdentifierTest } from './IocIdentifierTest';
+import { BootstrapAppArgs } from './BootstrapClient';
 
 export class BootstrapsRegistry {
-  constructor(
-    protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
-  ) {}
+  constructor(protected args: BootstrapAppArgs) {}
+
+  get IOC(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
+    return this.args.IOC;
+  }
 
   get appConfig(): EnvConfigInterface {
     return this.IOC(IOCIdentifier.AppConfig);
@@ -20,8 +24,11 @@ export class BootstrapsRegistry {
   register(): BootstrapExecutorPlugin[] {
     const IOC = this.IOC;
 
-    const bootstrapList = [
-      // IOC(IOCIdentifier.I18nServiceInterface),
+    const i18nService = IOC(IOCIdentifier.I18nServiceInterface);
+    i18nService.setPathname(this.args.pathname);
+
+    const bootstrapList: BootstrapExecutorPlugin[] = [
+      i18nService
       // new UserApiBootstarp(),
       // new FeApiBootstarp(),
       // AiApiBootstarp,

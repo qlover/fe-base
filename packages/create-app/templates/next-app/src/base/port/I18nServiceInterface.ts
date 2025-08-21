@@ -16,10 +16,10 @@ export abstract class I18nServiceInterface
   extends StoreInterface<I18nServiceState>
   implements I18nServiceInterface
 {
-  abstract t(key: string, params?: Record<string, unknown>): string;
-  abstract changeLanguage(language: string): void;
+  abstract t(key: string, params?: Record<string, unknown>): Promise<string>;
+  abstract changeLanguage(language: I18nServiceLocale): Promise<void>;
   abstract changeLoading(loading: boolean): void;
-  abstract getCurrentLanguage(): string;
-  abstract isValidLanguage(language: string): boolean;
-  abstract getSupportedLanguages(): string[];
+  abstract getCurrentLanguage(): Promise<I18nServiceLocale>;
+  abstract isValidLanguage(language: string): language is I18nServiceLocale;
+  abstract getSupportedLanguages(): I18nServiceLocale[];
 }

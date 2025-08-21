@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n, { i18n as I18nInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
@@ -15,19 +15,37 @@ import { injectable } from 'inversify';
 @injectable()
 export class I18nService extends I18nServiceInterface {
   readonly pluginName = 'I18nService';
+  private i18nInstance: I18nInstance;
+  private initialized: boolean = false;
+  private pathname: string = '';
+  constructor() {
+    super(() => new I18nServiceState(i18nConfig.fallbackLng));
+    this.i18nInstance = i18n.createInstance();
+  }
 
-  constructor(protected pathname: string) {
-    super(() => new I18nServiceState(i18n.language as I18nServiceLocale));
+  private async ensureInitialized() {
+    if (!this.initialized) {
+      throw new Error('I18nService not initialized');
+    }
+  }
+
+  setPathname(pathname: string): void {
+    this.pathname = pathname;
   }
 
   /**
    * @override
    */
-  onBefore(): void {
+  async onBefore(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    this.initialized = true;
     const debug = false;
 
     const newConfig = cloneDeep(i18nConfig);
-    i18n
+    await this.i18nInstance
       .use(HttpApi)
       .use(LanguageDetector)
       .use(initReactI18next)
@@ -63,25 +81,39 @@ export class I18nService extends I18nServiceInterface {
         }
       }
     };
-    i18n.services.languageDetector.addDetector(pathLanguageDetector);
-  }
+    this.i18nInstance.services.languageDetector.addDetector(
+      pathLanguageDetector
+    );
 
-  async changeLanguage(language: I18nServiceLocale): Promise<void> {
-    await i18n.changeLanguage(language);
-
-    this.emit({ ...this.state, language });
-    // 如果不使用本地化路由，则保存语言设置到本地存储
-    if (!useLocaleRoutes && typeof window !== 'undefined') {
-      window.localStorage.setItem('i18nextLng', language);
+    // Set initial language state
+    const currentLang = this.i18nInstance.language as I18nServiceLocale;
+    if (this.isValidLanguage(currentLang)) {
+      this.emit({ ...this.state, language: currentLang });
     }
   }
 
-  changeLoading(loading: boolean): void {
+  override async changeLanguage(language: I18nServiceLocale): Promise<void> {
+    try {
+      this.changeLoading(true);
+      await this.ensureInitialized();
+      await this.i18nInstance.changeLanguage(language);
+      this.emit({ ...this.state, language });
+      // 如果不使用本地化路由，则保存语言设置到本地存储
+      if (!useLocaleRoutes && typeof window !== 'undefined') {
+        window.localStorage.setItem('i18nextLng', language);
+      }
+    } finally {
+      this.changeLoading(false);
+    }
+  }
+
+  override changeLoading(loading: boolean): void {
     this.emit({ ...this.state, loading });
   }
 
-  getCurrentLanguage(): I18nServiceLocale {
-    return i18n.language as I18nServiceLocale;
+  override async getCurrentLanguage(): Promise<I18nServiceLocale> {
+    await this.ensureInitialized();
+    return this.i18nInstance.language as I18nServiceLocale;
   }
 
   /**
@@ -89,11 +121,11 @@ export class I18nService extends I18nServiceInterface {
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
-  isValidLanguage(language: string): language is I18nServiceLocale {
+  override isValidLanguage(language: string): language is I18nServiceLocale {
     return i18nConfig.supportedLngs.includes(language as I18nServiceLocale);
   }
 
-  getSupportedLanguages(): I18nServiceLocale[] {
+  override getSupportedLanguages(): I18nServiceLocale[] {
     return [...i18nConfig.supportedLngs];
   }
 
@@ -103,9 +135,13 @@ export class I18nService extends I18nServiceInterface {
    * @param params - params to pass to the translation
    * @returns translated value
    */
-  t(key: string, params?: Record<string, unknown>): string {
-    const i18nValue = i18n.t(key, {
-      lng: i18n.language,
+  override async t(
+    key: string,
+    params?: Record<string, unknown>
+  ): Promise<string> {
+    await this.ensureInitialized();
+    const i18nValue = this.i18nInstance.t(key, {
+      lng: this.i18nInstance.language,
       ...params
     });
 

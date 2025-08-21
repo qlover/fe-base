@@ -1,4 +1,5 @@
 import { AppConfig } from '@/base/cases/AppConfig';
+import { I18nService } from '@/base/services/I18nService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
@@ -13,7 +14,8 @@ export const IOCIdentifier = Object.freeze({
   DialogHandler: 'DialogHandler',
   LocalStorage: 'LocalStorage',
   LocalStorageEncrypt: 'LocalStorageEncrypt',
-  CookieStorage: 'CookieStorage'
+  CookieStorage: 'CookieStorage',
+  I18nServiceInterface: 'I18nServiceInterface'
 });
 
 export const I = IOCIdentifier;
@@ -39,4 +41,5 @@ export interface IOCIdentifierMap {
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.I18nServiceInterface]: I18nService;
 }

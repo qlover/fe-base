@@ -22,6 +22,7 @@ export function BootstrapsProvider(props: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       BootstrapClient.main({
         root: window,
+        pathname: window.location.pathname,
         IOC: IOC
       });
     }

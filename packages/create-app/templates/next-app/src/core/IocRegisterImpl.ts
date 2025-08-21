@@ -2,6 +2,7 @@ import { IOCManagerInterface } from '@qlover/corekit-bridge';
 import type { IOCContainer, IOCRegister, IocRegisterOptions } from './IOC';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { logger, JSON } from './globals';
+import { I18nService } from '@/base/services/I18nService';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}
@@ -38,7 +39,7 @@ export class IocRegisterImpl implements IOCRegister {
    * @param ioc
    */
   protected registerImplement(ioc: IOCContainer): void {
-    // ioc.bind(I.I18nServiceInterface, new I18nService(this.options.pathname));
+    ioc.bind(I.I18nServiceInterface, ioc.get(I18nService));
     // ioc.bind(
     //   I.RouteServiceInterface,
     //   new RouteService(
