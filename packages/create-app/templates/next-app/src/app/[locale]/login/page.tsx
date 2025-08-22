@@ -1,7 +1,39 @@
+import type { Metadata } from 'next';
 import FeatureItem from './FeatureItem';
 import LoginForm from './LoginForm';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { loginI18n } from '@config/i18ns/loginI18n';
+import { i18nConfig } from '@config/i18n';
+import { useServerI18n } from '@/server/useServerI18n';
+
+// Generate static params for all supported locales (used for SSG)
+export async function generateStaticParams() {
+  // Return one entry for each supported locale
+  return i18nConfig.supportedLngs.map((locale) => ({ locale }));
+}
+
+// Allow Next.js to statically generate this page if possible (default behavior)
+export const dynamic = 'auto'; // Enable static generation when possible, fallback to dynamic if needed
+
+// Optional: Use revalidate if you want ISR (Incremental Static Regeneration)
+// export const revalidate = 3600; // Rebuild every hour (optional)
+
+// Generate localized SEO metadata per locale (Next.js 15+ best practice)
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  const tt = await useServerI18n({
+    locale,
+    i18nInterface: loginI18n
+  });
+
+  // Return localized SEO metadata
+  return tt;
+}
 
 export default function LoginPage() {
   const tt = useI18nInterface(loginI18n);
