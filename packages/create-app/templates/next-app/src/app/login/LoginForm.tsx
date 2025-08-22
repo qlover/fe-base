@@ -2,20 +2,19 @@
 
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import * as i18nKeys from '@config/Identifier/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
-import { useTranslations } from 'next-intl';
+import { LoginI18nInterface } from '@config/i18ns/loginI18n';
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-export default function LoginForm() {
-  const t = useTranslations();
+export default function LoginForm(props: { tt: LoginI18nInterface }) {
+  const { tt } = props;
   const userService = IOC(UserService);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +34,7 @@ export default function LoginForm() {
 
   return (
     <Form
-      data-testid="login-form"
+      data-testid="LoginForm"
       name="login"
       onFinish={handleLogin}
       layout="vertical"
@@ -43,26 +42,24 @@ export default function LoginForm() {
     >
       <Form.Item
         name="email"
-        rules={[{ required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }]}
+        rules={[{ required: true, message: tt.emailRequired }]}
       >
         <Input
           prefix={<UserOutlined className="text-text-tertiary" />}
-          placeholder={t(i18nKeys.LOGIN_EMAIL)}
-          title={t(i18nKeys.LOGIN_EMAIL_TITLE)}
+          placeholder={tt.email}
+          title={tt.emailTitle}
           className="h-12 text-base bg-secondary border-border"
         />
       </Form.Item>
 
       <Form.Item
         name="password"
-        rules={[
-          { required: true, message: t(i18nKeys.LOGIN_PASSWORD_REQUIRED) }
-        ]}
+        rules={[{ required: true, message: tt.passwordRequired }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder={t(i18nKeys.LOGIN_PASSWORD)}
-          title={t(i18nKeys.LOGIN_PASSWORD_TITLE)}
+          placeholder={tt.password}
+          title={tt.passwordTitle}
           className="h-12 text-base"
         />
       </Form.Item>
@@ -71,9 +68,9 @@ export default function LoginForm() {
         <LocaleLink
           href="#"
           className="text-brand hover:text-brand-hover"
-          title={t(i18nKeys.LOGIN_FORGOT_PASSWORD_TITLE)}
+          title={tt.forgotPasswordTitle}
         >
-          {t(i18nKeys.LOGIN_FORGOT_PASSWORD)}
+          {tt.forgotPassword}
         </LocaleLink>
       </div>
 
@@ -82,35 +79,33 @@ export default function LoginForm() {
           type="primary"
           htmlType="submit"
           loading={loading}
-          title={t(i18nKeys.LOGIN_BUTTON_TITLE)}
+          title={tt.buttonTitle}
           className="w-full h-12 text-base"
         >
-          {t(i18nKeys.LOGIN_BUTTON)}
+          {tt.button}
         </Button>
       </Form.Item>
 
       <div className="text-center text-text-tertiary my-4">
-        {t(i18nKeys.LOGIN_CONTINUE_WITH)}
+        {tt.continueWith}
       </div>
 
       <Button
         icon={<GoogleOutlined />}
         className="w-full h-12 text-base"
-        title={t(i18nKeys.LOGIN_WITH_GOOGLE_TITLE)}
+        title={tt.withGoogleTitle}
       >
-        {t(i18nKeys.LOGIN_WITH_GOOGLE)}
+        {tt.withGoogle}
       </Button>
 
       <div className="text-center mt-6">
-        <span className="text-text-tertiary">
-          {t(i18nKeys.LOGIN_NO_ACCOUNT)}{' '}
-        </span>
+        <span className="text-text-tertiary">{tt.noAccount} </span>
         <LocaleLink
           href="/register"
           className="text-brand hover:text-brand-hover"
-          title={t(i18nKeys.LOGIN_CREATE_ACCOUNT_TITLE) as string}
+          title={tt.createAccountTitle}
         >
-          {t(i18nKeys.LOGIN_CREATE_ACCOUNT)}
+          {tt.createAccount}
         </LocaleLink>
       </div>
     </Form>

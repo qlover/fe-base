@@ -11,6 +11,19 @@ export const PAGE_LOGIN_TITLE = 'page__login__title';
  */
 export const PAGE_LOGIN_DESCRIPTION = 'page__login__description';
 /**
+ * @description Login page content
+ * @localZh 登录页面内容
+ * @localEn Login Page Content
+ */
+export const PAGE_LOGIN_CONTENT = 'page__login__content';
+/**
+ * @description Login page keywords
+ * @localZh 登录页面关键词
+ * @localEn Login Page Keywords
+ */
+export const PAGE_LOGIN_KEYWORDS = 'page__login__keywords';
+
+/**
  * @description Login page title
  * @localZh 登录
  * @localEn Login

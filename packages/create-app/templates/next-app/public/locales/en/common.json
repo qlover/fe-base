@@ -177,5 +177,7 @@
   "page__request__trigger_abort": "Trigger Abort Request",
   "page__request__stop_abort": "Stop Abort Request",
   "page__request__trigger_api_catch": "Trigger API Catch Result",
-  "page__request__stop_api_catch": "Stop API Catch Result"
+  "page__request__stop_api_catch": "Stop API Catch Result",
+  "page__login__content": "Login Page Content",
+  "page__login__keywords": "Login Page Keywords"
 }

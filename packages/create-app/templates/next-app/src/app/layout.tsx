@@ -19,7 +19,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <ComboProvider themeConfig={themeConfig}>
-            <div className="flex flex-col min-h-screen ">
+            <div className="flex flex-col min-h-screen">
               <BaseHeader />
               <div className="flex flex-col">{children}</div>
             </div>
