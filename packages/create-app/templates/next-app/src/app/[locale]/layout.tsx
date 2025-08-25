@@ -28,7 +28,7 @@ export default async function RootLayout({
 
   // TODO: suppressHydrationWarning 暂时解决 hydration 问题
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html data-testid='RootLayout' lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages}>
           <ComboProvider themeConfig={themeConfig}>

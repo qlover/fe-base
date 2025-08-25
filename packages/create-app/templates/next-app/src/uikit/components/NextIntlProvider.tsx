@@ -10,7 +10,11 @@ export function NextIntlProvider({ children, locale }: Props) {
   const messages = useMessages();
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider
+      data-testid='NextIntlProvider'
+      locale={locale}
+      messages={messages}
+    >
       {children}
     </NextIntlClientProvider>
   );

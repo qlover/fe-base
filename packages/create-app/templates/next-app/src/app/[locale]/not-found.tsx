@@ -4,7 +4,10 @@ import { Link } from '@/i18n/routing'; // i18n-aware Link component
 
 export default function NotFound() {
   return (
-    <div className='space-y-6 py-24 flex flex-col items-center'>
+    <div
+      data-testid='NotFound'
+      className='space-y-6 py-24 flex flex-col items-center'
+    >
       {/* Large translated 404 headline */}
       <h1 className='text-4xl font-bold text-center'>{'title'}</h1>
       {/* Description text, translated */}

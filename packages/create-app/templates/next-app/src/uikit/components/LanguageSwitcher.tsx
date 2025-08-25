@@ -37,6 +37,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select
+      data-testid='LanguageSwitcher'
       loading={loading}
       value={currentLocale}
       onChange={handleLanguageChange}

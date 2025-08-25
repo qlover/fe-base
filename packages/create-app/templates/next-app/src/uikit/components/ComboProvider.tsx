@@ -24,7 +24,10 @@ export function ComboProvider(props: {
   const { themeConfig, children } = props;
 
   return (
-    <AntdThemeProvider theme={themeConfig.antdTheme}>
+    <AntdThemeProvider
+      data-testid='ComboProvider'
+      theme={themeConfig.antdTheme}
+    >
       <ThemeProvider
         themes={themeConfig.supportedThemes as unknown as string[]}
         attribute={themeConfig.domAttribute}

@@ -4,6 +4,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
 import unusedImports from 'eslint-plugin-unused-imports';
+import { eslintPluginTestId } from './plugins/eslint-plugin-testid.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -92,7 +93,8 @@ const eslintConfig = [
     plugins: {
       'unused-imports': unusedImports,
       import: importPlugin,
-      prettier: prettierPlugin
+      prettier: prettierPlugin,
+      testid: eslintPluginTestId
     },
     rules: {
       // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
@@ -155,7 +157,8 @@ const eslintConfig = [
         }
       ],
       // 默认禁用 export default
-      'import/no-default-export': 'error'
+      'import/no-default-export': 'error',
+      'testid/require-root-testid': 'error'
     }
   },
   // 为特定文件允许 default export

@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "fix": "npm run format && npm run lint:fix"
+    "fix": "npm run lint:fix && npm run format"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

@@ -73,6 +73,7 @@ export function ThemeSwitcher() {
 
   return (
     <Select
+      data-testid='ThemeSwitcher'
       loading={!mounted}
       value={mounted ? theme : themeOptions[0]?.key}
       onChange={setTheme}
