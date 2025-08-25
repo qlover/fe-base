@@ -1,4 +1,4 @@
-import { PageI18nInterface } from '@config/i18ns/PageI18nInterface';
+import { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 

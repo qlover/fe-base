@@ -6,7 +6,7 @@ import LocaleLink from '@/uikit/components/LocaleLink';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
-import { LoginI18nInterface } from '@config/i18ns/loginI18n';
+import { LoginI18nInterface } from '@config/i18n/loginI18n';
 
 interface LoginFormData {
   email: string;

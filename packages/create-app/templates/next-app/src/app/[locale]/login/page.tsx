@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import FeatureItem from './FeatureItem';
 import LoginForm from './LoginForm';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
-import { loginI18n } from '@config/i18ns/loginI18n';
-import { i18nConfig } from '@config/i18n';
+import { loginI18n, i18nConfig } from '@config/i18n';
 import { useServerI18n } from '@/server/useServerI18n';
 
 // Generate static params for all supported locales (used for SSG)

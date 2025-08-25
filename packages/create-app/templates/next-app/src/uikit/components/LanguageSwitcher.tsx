@@ -1,29 +1,43 @@
 'use client';
 
 import { Select } from 'antd';
-import { i18nConfig } from '@config/i18n';
+import { i18nConfig, LocaleType } from '@config/i18n';
 import { useCallback } from 'react';
 import { useStore } from '../hook/useStore';
 import { I18nService } from '@/base/services/I18nService';
 import { useIOC } from '../hook/useIOC';
 import { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
+import { usePathname, useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
 
 export default function LanguageSwitcher() {
   const i18nService = useIOC(I18nService);
-  const { language, loading } = useStore(i18nService);
+  const { loading } = useStore(i18nService);
+  const pathname = usePathname(); // current pathname, aware of i18n
 
-  const handleLanguageChange = useCallback(async (value: string) => {
-    try {
-      await i18nService.changeLanguage(value as I18nServiceLocale);
-    } catch (error) {
-      console.error('Failed to change language:', error);
-    }
-  }, [i18nService]);
+  const router = useRouter(); // i18n-aware router instance
+  const currentLocale = useLocale() as LocaleType; // currently active locale
+
+  const handleLanguageChange = useCallback(
+    async (value: string) => {
+      // Set a persistent cookie with the user's preferred locale (valid for 1 year)
+      document.cookie = `NEXT_LOCALE=${value}; path=/; max-age=31536000; SameSite=Lax`;
+      // Route to the same page in the selected locale
+      router.replace(pathname, { locale: value });
+
+      try {
+        await i18nService.changeLanguage(value as I18nServiceLocale);
+      } catch (error) {
+        console.error('Failed to change language:', error);
+      }
+    },
+    [i18nService]
+  );
 
   return (
     <Select
       loading={loading}
-      value={language}
+      value={currentLocale}
       onChange={handleLanguageChange}
       options={i18nConfig.supportedLngs.map((lang) => ({
         value: lang,
