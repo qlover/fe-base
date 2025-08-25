@@ -1,5 +1,4 @@
 import * as i18nKeys from '../Identifier/page.login';
-import type { PageI18nInterface } from './PageI18nInterface';
 
 /**
  * Login page i18n interface
@@ -7,33 +6,9 @@ import type { PageI18nInterface } from './PageI18nInterface';
  * @description
  * - welcome: welcome message
  */
-export interface LoginI18nInterface extends PageI18nInterface {
-  welcome: string;
-  subtitle: string;
-  feature_ai_paths: string;
-  feature_smart_recommendations: string;
-  feature_progress_tracking: string;
-  title: string;
+export type LoginI18nInterface = typeof loginI18n;
 
-  emailRequired: string;
-  email: string;
-  emailTitle: string;
-  passwordRequired: string;
-  password: string;
-  passwordTitle: string;
-  forgotPasswordTitle: string;
-  forgotPassword: string;
-  buttonTitle: string;
-  button: string;
-  continueWith: string;
-  withGoogleTitle: string;
-  withGoogle: string;
-  noAccount: string;
-  createAccountTitle: string;
-  createAccount: string;
-}
-
-export const loginI18n: LoginI18nInterface = {
+export const loginI18n = Object.freeze({
   // basic meta properties
   title: i18nKeys.PAGE_LOGIN_TITLE,
   description: i18nKeys.PAGE_LOGIN_DESCRIPTION,
@@ -64,4 +39,4 @@ export const loginI18n: LoginI18nInterface = {
   noAccount: i18nKeys.LOGIN_NO_ACCOUNT,
   createAccountTitle: i18nKeys.LOGIN_CREATE_ACCOUNT_TITLE,
   createAccount: i18nKeys.LOGIN_CREATE_ACCOUNT
-};
+});

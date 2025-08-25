@@ -11,7 +11,7 @@ import { useIOC } from '../hook/useIOC';
 import { useStore } from '../hook/useStore';
 import type { LocaleType } from '@config/i18n';
 
-export default function LanguageSwitcher() {
+export function LanguageSwitcher() {
   const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
   const { loading } = useStore(i18nService);
   const pathname = usePathname(); // current pathname, aware of i18n
@@ -40,7 +40,7 @@ export default function LanguageSwitcher() {
       loading={loading}
       value={currentLocale}
       onChange={handleLanguageChange}
-      options={i18nConfig.supportedLngs.map(lang => ({
+      options={i18nConfig.supportedLngs.map((lang) => ({
         value: lang,
         label:
           i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]

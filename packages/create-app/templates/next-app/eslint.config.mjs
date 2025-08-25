@@ -151,10 +151,25 @@ const eslintConfig = [
         {
           singleQuote: true,
           trailingComma: 'none',
-          arrowParens: 'avoid',
           endOfLine: 'lf'
         }
-      ]
+      ],
+      // 默认禁用 export default
+      'import/no-default-export': 'error'
+    }
+  },
+  // 为特定文件允许 default export
+  {
+    files: [
+      'src/app/**/page.tsx',
+      'src/app/**/layout.tsx',
+      'src/app/**/not-found.tsx',
+      'src/i18n/request.ts',
+      'src/middleware.ts',
+      '**/*.config.*'
+    ],
+    rules: {
+      'import/no-default-export': 'off'
     }
   }
 ];

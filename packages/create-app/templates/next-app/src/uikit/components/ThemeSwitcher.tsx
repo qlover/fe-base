@@ -10,7 +10,6 @@ import {
 import { Select } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 import { themeConfig } from '@config/theme';
 import { useMountedClient } from '../hook/useMountedClient';
 
@@ -42,20 +41,18 @@ const colorMap: Record<
   }
 };
 
-export default function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
+export function ThemeSwitcher() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMountedClient();
-  const [currentTheme, setCurrentTheme] = useState<string>(theme || 'system');
 
-  useEffect(() => {
-    setCurrentTheme(theme || 'system');
-  }, [theme]);
-
-  const themeOptions = ['system', ...supportedThemes!].map(themeName => {
+  const themeOptions = ['system', ...supportedThemes!].map((themeName) => {
     const { i18nkey, colors, icons } = colorMap[themeName] || colorMap.light;
     const [currentColor, normalColor] = colors;
     const [CurrentIcon, NormalIcon] = icons;
-    const isSelf = currentTheme === themeName;
+
+    const isCurrentTheme =
+      theme === themeName ||
+      (themeName === resolvedTheme && theme === 'system');
 
     return {
       key: themeName,
@@ -64,10 +61,10 @@ export default function ThemeSwitcher() {
         <div
           className={clsx(
             'flex items-center gap-2',
-            isSelf ? currentColor : normalColor
+            isCurrentTheme ? currentColor : normalColor
           )}
         >
-          {isSelf ? <CurrentIcon /> : <NormalIcon />}
+          {isCurrentTheme ? <CurrentIcon /> : <NormalIcon />}
           <span>{i18nkey}</span>
         </div>
       )
@@ -75,16 +72,14 @@ export default function ThemeSwitcher() {
   });
 
   return (
-    <div className='flex items-center gap-2'>
-      {mounted && (
-        <Select
-          value={currentTheme}
-          onChange={value => setTheme(value)}
-          options={themeOptions}
-          style={{ width: 120 }}
-          className='min-w-40 max-w-full'
-        />
-      )}
-    </div>
+    <Select
+      loading={!mounted}
+      value={mounted ? theme : themeOptions[0]?.key}
+      onChange={setTheme}
+      options={themeOptions}
+      style={{ width: 120 }}
+      className='min-w-40 max-w-full'
+      disabled={!mounted}
+    />
   );
 }

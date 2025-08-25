@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
-import BaseHeader from '@/uikit/components/BaseHeader';
+import { BaseHeader } from '@/uikit/components/BaseHeader';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import type { LocaleType } from '@config/i18n';
 import '@/styles/css/index.css';

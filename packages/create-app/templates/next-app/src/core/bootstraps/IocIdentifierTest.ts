@@ -6,7 +6,7 @@ export const IocIdentifierTest: BootstrapExecutorPlugin = {
   onSuccess({ parameters: { logger, ioc } }) {
     const errorList: string[] = [];
     const keyList: string[] = Object.keys(IOCIdentifier);
-    keyList.forEach(key => {
+    keyList.forEach((key) => {
       try {
         const value = ioc.get(key);
         if (value === undefined) {

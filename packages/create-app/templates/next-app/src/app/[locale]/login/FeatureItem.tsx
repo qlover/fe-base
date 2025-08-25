@@ -3,7 +3,7 @@ interface FeatureItemProps {
   text: string;
 }
 
-export default function FeatureItem({ icon, text }: FeatureItemProps) {
+export function FeatureItem({ icon, text }: FeatureItemProps) {
   return (
     <div data-testid='FeatureItem' className='flex items-start gap-4'>
       <div className='text-2xl'>{icon}</div>

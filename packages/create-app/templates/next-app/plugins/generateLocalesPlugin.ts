@@ -1,6 +1,7 @@
 import { generateLocales } from '../build/generateLocales';
+import type { NextConfig } from 'next';
 
-export function withGenerateLocales(nextConfig = {}) {
+export function withGenerateLocales(nextConfig: NextConfig = {}) {
   return {
     ...nextConfig,
     onDevelopmentStart: async () => {
@@ -16,7 +17,7 @@ export function withGenerateLocales(nextConfig = {}) {
 
       // 在生产构建开始时生成本地化文件
       if (!dev && isServer) {
-        generateLocales().catch(error => {
+        generateLocales().catch((error) => {
           console.error('❌ Failed to generate locales:', error);
         });
       }

@@ -1,14 +1,14 @@
 import { loginI18n, i18nConfig } from '@config/i18n';
 import { getServerI18n } from '@/server/getServerI18n';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
-import FeatureItem from './FeatureItem';
-import LoginForm from './LoginForm';
+import { FeatureItem } from './FeatureItem';
+import { LoginForm } from './LoginForm';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
 export async function generateStaticParams() {
   // Return one entry for each supported locale
-  return i18nConfig.supportedLngs.map(locale => ({ locale }));
+  return i18nConfig.supportedLngs.map((locale) => ({ locale }));
 }
 
 // Allow Next.js to statically generate this page if possible (default behavior)

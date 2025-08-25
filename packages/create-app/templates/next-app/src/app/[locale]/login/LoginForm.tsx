@@ -5,7 +5,7 @@ import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
-import LocaleLink from '@/uikit/components/LocaleLink';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
 
 interface LoginFormData {
@@ -13,7 +13,7 @@ interface LoginFormData {
   password: string;
 }
 
-export default function LoginForm(props: { tt: LoginI18nInterface }) {
+export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const userService = IOC(UserService);
   const [loading, setLoading] = useState(false);
@@ -49,6 +49,7 @@ export default function LoginForm(props: { tt: LoginI18nInterface }) {
           placeholder={tt.email}
           title={tt.emailTitle}
           className='h-12 text-base bg-secondary border-border'
+          autoComplete='off'
         />
       </Form.Item>
 
@@ -61,6 +62,7 @@ export default function LoginForm(props: { tt: LoginI18nInterface }) {
           placeholder={tt.password}
           title={tt.passwordTitle}
           className='h-12 text-base'
+          autoComplete='new-password'
         />
       </Form.Item>
 

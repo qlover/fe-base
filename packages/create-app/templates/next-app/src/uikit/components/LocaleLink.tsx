@@ -20,7 +20,7 @@ interface LocaleLinkProps
   className?: string;
 }
 
-const LocaleLink: React.FC<LocaleLinkProps> = ({
+export const LocaleLink: React.FC<LocaleLinkProps> = ({
   href,
   locale,
   children,
@@ -48,5 +48,3 @@ const LocaleLink: React.FC<LocaleLinkProps> = ({
     </Link>
   );
 };
-
-export default LocaleLink;

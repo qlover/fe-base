@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { AppConfig } from '@/base/cases/AppConfig';
 import { IOC } from '@/core/IOC';
-import LanguageSwitcher from './LanguageSwitcher';
-import ThemeSwitcher from './ThemeSwitcher';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { ThemeSwitcher } from './ThemeSwitcher';
 
-export default function BaseHeader() {
+export function BaseHeader() {
   return (
     <header
       data-testid='base-header'
