@@ -19,7 +19,7 @@ export class I18nService extends I18nServiceInterface {
     super(() => new I18nServiceState(i18nConfig.fallbackLng));
   }
 
-  private async ensureInitialized() {
+  private async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       throw new Error('I18nService not initialized');
     }
@@ -29,7 +29,7 @@ export class I18nService extends I18nServiceInterface {
     this.pathname = pathname;
   }
 
-  setTranslator(translator: TranslationFunction) {
+  setTranslator(translator: TranslationFunction): void {
     this.translator = translator;
   }
 

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useLocaleRoutes } from '@config/common';
+import { i18nConfig } from '@config/i18n';
 import type { LinkProps } from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -27,7 +28,7 @@ export const LocaleLink: React.FC<LocaleLinkProps> = ({
   defaultLocale,
   ...props
 }) => {
-  locale = locale || 'en';
+  locale = locale || i18nConfig.fallbackLng;
 
   const isDefaultLocale = locale === defaultLocale;
   const shouldAddLocale = useLocaleRoutes && !isDefaultLocale;

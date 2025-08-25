@@ -4,7 +4,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
 import unusedImports from 'eslint-plugin-unused-imports';
-import { eslintPluginTestId } from './plugins/eslint-plugin-testid.mjs';
+import qloverEslint from '@qlover/eslint-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -94,9 +94,11 @@ const eslintConfig = [
       'unused-imports': unusedImports,
       import: importPlugin,
       prettier: prettierPlugin,
-      testid: eslintPluginTestId
+      '@qlover-eslint': qloverEslint
     },
     rules: {
+      '@qlover-eslint/ts-class-method-return': 'error',
+      '@qlover-eslint/require-root-testid': 'error',
       // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
       '@typescript-eslint/no-unused-vars': 'off',
       // 强制使用 import type 导入类型
@@ -158,7 +160,6 @@ const eslintConfig = [
       ],
       // 默认禁用 export default
       'import/no-default-export': 'error',
-      'testid/require-root-testid': 'error'
     }
   },
   // 为特定文件允许 default export

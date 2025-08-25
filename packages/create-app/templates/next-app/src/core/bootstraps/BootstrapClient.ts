@@ -36,7 +36,10 @@ export class BootstrapClient {
     IOCContainerInterface
   > | null = null;
 
-  static createSingletonIOC() {
+  static createSingletonIOC(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
     if (BootstrapClient._ioc) {
       return BootstrapClient._ioc;
     }
