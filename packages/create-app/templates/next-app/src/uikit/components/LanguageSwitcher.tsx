@@ -3,12 +3,13 @@
 import { Select } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback } from 'react';
-import { i18nConfig, LocaleType } from '@config/i18n';
+import { i18nConfig } from '@config/i18n';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
+import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { useIOC } from '../hook/useIOC';
 import { useStore } from '../hook/useStore';
+import type { LocaleType } from '@config/i18n';
 
 export default function LanguageSwitcher() {
   const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
@@ -39,12 +40,12 @@ export default function LanguageSwitcher() {
       loading={loading}
       value={currentLocale}
       onChange={handleLanguageChange}
-      options={i18nConfig.supportedLngs.map((lang) => ({
+      options={i18nConfig.supportedLngs.map(lang => ({
         value: lang,
         label:
           i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
       }))}
-      className="w-24"
+      className='w-24'
     />
   );
 }

@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { i18nConfig, LocaleType } from '@config/i18n';
+import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
 import BaseHeader from '@/uikit/components/BaseHeader';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
+import type { LocaleType } from '@config/i18n';
 import '@/styles/css/index.css';
 
 export default async function RootLayout({
@@ -31,9 +32,9 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <ComboProvider themeConfig={themeConfig}>
-            <div className="flex flex-col min-h-screen">
+            <div className='flex flex-col min-h-screen'>
               <BaseHeader />
-              <div className="flex flex-col">{children}</div>
+              <div className='flex flex-col'>{children}</div>
             </div>
           </ComboProvider>
         </NextIntlClientProvider>

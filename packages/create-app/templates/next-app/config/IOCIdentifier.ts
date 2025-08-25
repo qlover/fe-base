@@ -1,5 +1,5 @@
-import { AppConfig } from '@/base/cases/AppConfig';
-import { I18nService } from '@/base/services/I18nService';
+import type { AppConfig } from '@/base/cases/AppConfig';
+import type { I18nService } from '@/base/services/I18nService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';

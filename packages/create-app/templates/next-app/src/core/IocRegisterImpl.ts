@@ -1,8 +1,8 @@
-import { IOCManagerInterface } from '@qlover/corekit-bridge';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { I18nService } from '@/base/services/I18nService';
 import { logger, JSON } from './globals';
 import type { IOCContainer, IOCRegister, IocRegisterOptions } from './IOC';
+import type { IOCManagerInterface } from '@qlover/corekit-bridge';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}

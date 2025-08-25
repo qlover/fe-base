@@ -51,7 +51,7 @@ export default function ThemeSwitcher() {
     setCurrentTheme(theme || 'system');
   }, [theme]);
 
-  const themeOptions = ['system', ...supportedThemes!].map((themeName) => {
+  const themeOptions = ['system', ...supportedThemes!].map(themeName => {
     const { i18nkey, colors, icons } = colorMap[themeName] || colorMap.light;
     const [currentColor, normalColor] = colors;
     const [CurrentIcon, NormalIcon] = icons;
@@ -75,14 +75,14 @@ export default function ThemeSwitcher() {
   });
 
   return (
-    <div className="flex items-center gap-2">
+    <div className='flex items-center gap-2'>
       {mounted && (
         <Select
           value={currentTheme}
-          onChange={(value) => setTheme(value)}
+          onChange={value => setTheme(value)}
           options={themeOptions}
           style={{ width: 120 }}
-          className="min-w-40 max-w-full"
+          className='min-w-40 max-w-full'
         />
       )}
     </div>

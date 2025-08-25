@@ -1,6 +1,6 @@
 'use server';
 import { getTranslations } from 'next-intl/server';
-import { PageI18nInterface } from '@config/i18n/PageI18nInterface';
+import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 
 export async function getServerI18n<T extends PageI18nInterface>(params: {
   locale: string;

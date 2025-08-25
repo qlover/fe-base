@@ -2,9 +2,9 @@ import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
   I18nServiceInterface,
-  I18nServiceState,
-  I18nServiceLocale
+  I18nServiceState
 } from '../port/I18nServiceInterface';
+import type { I18nServiceLocale } from '../port/I18nServiceInterface';
 import type { useTranslations } from 'next-intl';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;

@@ -1,5 +1,5 @@
-import { EnvConfigInterface } from '@qlover/corekit-bridge';
 import { name, version } from '../../../package.json';
+import type { EnvConfigInterface } from '@qlover/corekit-bridge';
 
 export class AppConfig implements EnvConfigInterface {
   /**

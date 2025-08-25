@@ -1,11 +1,9 @@
 // ! dont't import tsx, only ts file
-import {
-  IOCFunctionInterface
-} from '@qlover/corekit-bridge';
-import { IOCIdentifierMap } from '@config/IOCIdentifier';
-import { InversifyContainer } from '@/base/cases/InversifyContainer';
+import type { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { BootstrapClient } from './bootstraps/BootstrapClient';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type {
+  IOCFunctionInterface,
   IOCContainerInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
@@ -41,8 +39,10 @@ export type IOCRegister = IOCRegisterInterface<
   IocRegisterOptions
 >;
 
-const _ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> | null =
-  null;
+const _ioc: IOCFunctionInterface<
+  IOCIdentifierMap,
+  IOCContainerInterface
+> | null = null;
 
 /**
  * IOC function

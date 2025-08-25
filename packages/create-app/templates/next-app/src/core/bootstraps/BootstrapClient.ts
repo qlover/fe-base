@@ -1,20 +1,19 @@
-import {
-  Bootstrap,
-  createIOCFunction,
-  EnvConfigInterface,
-  IOCContainerInterface,
-  IOCFunctionInterface,
-  IOCManagerInterface
-} from '@qlover/corekit-bridge';
+import { Bootstrap, createIOCFunction } from '@qlover/corekit-bridge';
 import { isObject } from 'lodash';
 import { browserGlobalsName } from '@config/common';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import * as globals from '../globals';
 import { appConfig } from '../globals';
-import { IOCContainer } from '../IOC';
 import { IocRegisterImpl } from '../IocRegisterImpl';
+import type { IOCContainer } from '../IOC';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type {
+  EnvConfigInterface,
+  IOCContainerInterface,
+  IOCFunctionInterface,
+  IOCManagerInterface
+} from '@qlover/corekit-bridge';
 
 export type BootstrapAppArgs = {
   /**

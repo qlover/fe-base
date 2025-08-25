@@ -1,12 +1,12 @@
-import { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const IocIdentifierTest: BootstrapExecutorPlugin = {
   pluginName: 'IocIdentifierTest',
   onSuccess({ parameters: { logger, ioc } }) {
     const errorList: string[] = [];
     const keyList: string[] = Object.keys(IOCIdentifier);
-    keyList.forEach((key) => {
+    keyList.forEach(key => {
       try {
         const value = ioc.get(key);
         if (value === undefined) {

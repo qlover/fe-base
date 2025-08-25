@@ -1,4 +1,4 @@
-import { ThemeConfig } from 'antd';
+import type { ThemeConfig } from 'antd';
 
 /**
  * @type {import('@qlover/corekit-bridge').ThemeConfig}

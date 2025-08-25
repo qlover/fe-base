@@ -1,6 +1,6 @@
-import { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import { browserGlobalsName } from '@config/common';
 import { AppConfig } from '@/base/cases/AppConfig';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',

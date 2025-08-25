@@ -108,7 +108,8 @@ export const PAGE_REQUEST_HELLO_TITLE = 'page__request__hello__title';
  * @localZh 函数式 api, 使用了 FetchURLPlugin, RequestCommonPlugin, ApiMockPlugin, RequestLogger 插件
  * @localEn Functional API using FetchURLPlugin, RequestCommonPlugin, ApiMockPlugin, RequestLogger plugins
  */
-export const PAGE_REQUEST_HELLO_DESCRIPTION = 'page__request__hello__description';
+export const PAGE_REQUEST_HELLO_DESCRIPTION =
+  'page__request__hello__description';
 /**
  * @description Request page hello button text
  * @localZh Hello
@@ -133,7 +134,8 @@ export const PAGE_REQUEST_IP_INFO_DESCRIPTION =
  * @localZh UserApi: Random User
  * @localEn UserApi: Random User
  */
-export const PAGE_REQUEST_RANDOM_USER_TITLE = 'page__request__random_user__title';
+export const PAGE_REQUEST_RANDOM_USER_TITLE =
+  'page__request__random_user__title';
 /**
  * @description Request page random user description
  * @localZh RequestTransaction 类式 api, 使用了 FetchURLPlugin, RequestCommonPlugin, ApiMockPlugin, FetchAbortPlugin, RequestLogger, ApiCatchPlugin 插件, 其中 FetchAbortPlugin 可以中止请求, ApiCatchPlugin 可以将捕获的错误统一到 apiCatchResult 字段
@@ -170,7 +172,8 @@ export const PAGE_REQUEST_STOP_ABORT = 'page__request__stop_abort';
  * @localZh 触发 API 捕获结果
  * @localEn Trigger API Catch Result
  */
-export const PAGE_REQUEST_TRIGGER_API_CATCH = 'page__request__trigger_api_catch';
+export const PAGE_REQUEST_TRIGGER_API_CATCH =
+  'page__request__trigger_api_catch';
 /**
  * @description Request page stop api catch result button
  * @localZh 停止 API 捕获结果

@@ -13,7 +13,7 @@ export function withGenerateLocales(nextConfig = {}) {
     },
     webpack: (config, options) => {
       const { dev, isServer } = options;
-      
+
       // 在生产构建开始时生成本地化文件
       if (!dev && isServer) {
         generateLocales().catch(error => {

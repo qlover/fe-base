@@ -1,8 +1,8 @@
-import {
+import { useSliceStore, type SliceStore } from '@qlover/slice-store-react';
+import type {
   StoreInterface,
-  type StoreStateInterface
+  StoreStateInterface
 } from '@qlover/corekit-bridge';
-import { SliceStore, useSliceStore } from '@qlover/slice-store-react';
 
 export function useStore<
   C extends StoreInterface<StoreStateInterface>,

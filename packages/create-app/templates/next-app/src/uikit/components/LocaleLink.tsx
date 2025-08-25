@@ -1,6 +1,7 @@
-import Link, { LinkProps } from 'next/link';
-import { ReactNode } from 'react';
+import Link from 'next/link';
 import { useLocaleRoutes } from '@config/common';
+import type { LinkProps } from 'next/link';
+import type { ReactNode } from 'react';
 
 interface LocaleLinkProps
   extends Omit<LinkProps, 'href'>,
@@ -42,7 +43,7 @@ const LocaleLink: React.FC<LocaleLinkProps> = ({
   }
 
   return (
-    <Link data-testid="locale-link" {...props} href={localizedHref}>
+    <Link data-testid='locale-link' {...props} href={localizedHref}>
       {children}
     </Link>
   );

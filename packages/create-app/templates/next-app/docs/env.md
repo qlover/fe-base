@@ -13,6 +13,7 @@
 - `.env.test` - 测试环境配置
 
 加载优先级（从高到低）：
+
 1. `.env.local`
 2. `.env.[environment]`
 3. `.env`
@@ -51,6 +52,7 @@ APP_ENV=test npm run test
 ## 在代码中使用环境变量
 
 1. 服务端和客户端都可访问的变量：
+
 ```typescript
 // 在 .env 文件中定义
 PUBLIC_API_URL=http://api.example.com
@@ -60,25 +62,27 @@ console.log(process.env.PUBLIC_API_URL)
 ```
 
 2. 仅服务端可访问的变量：
+
 ```typescript
 // 在 .env 文件中定义（以 PRIVATE_ 开头）
-PRIVATE_API_KEY=secret_key
+PRIVATE_API_KEY = secret_key;
 
 // 在服务端代码中使用
-console.log(process.env.PRIVATE_API_KEY)
+console.log(process.env.PRIVATE_API_KEY);
 ```
 
 3. 使用运行时配置：
-```typescript
-import getConfig from 'next/config'
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+```typescript
+import getConfig from 'next/config';
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 
 // 服务端配置
-console.log(serverRuntimeConfig.mySecret)
+console.log(serverRuntimeConfig.mySecret);
 
 // 公共配置
-console.log(publicRuntimeConfig.appEnv)
+console.log(publicRuntimeConfig.appEnv);
 ```
 
 ## 注意事项

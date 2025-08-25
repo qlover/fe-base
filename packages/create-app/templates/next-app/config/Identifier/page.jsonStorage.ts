@@ -37,7 +37,8 @@ export const PAGE_JSONSTORAGE_EXPIRE_TITLE = 'page__jsonstorage__expire_title';
  * @localZh 请求超时时间设置
  * @localEn Request Timeout Setting
  */
-export const PAGE_JSONSTORAGE_TIMEOUT_TITLE = 'page__jsonstorage__timeout_title';
+export const PAGE_JSONSTORAGE_TIMEOUT_TITLE =
+  'page__jsonstorage__timeout_title';
 /**
  * @description JSONStorage format title template
  * @localZh 测试 key: ${key}, 随机值范围: ${min}~${max}
@@ -55,7 +56,8 @@ export const PAGE_JSONSTORAGE_SET_RANDOM = 'page__jsonstorage__set_random';
  * @localZh 当前值
  * @localEn Current Value
  */
-export const PAGE_JSONSTORAGE_CURRENT_VALUE = 'page__jsonstorage__current_value';
+export const PAGE_JSONSTORAGE_CURRENT_VALUE =
+  'page__jsonstorage__current_value';
 /**
  * @description JSONStorage set expire time button
  * @localZh 设置随机值(带过期时间)

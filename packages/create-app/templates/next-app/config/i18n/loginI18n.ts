@@ -1,5 +1,5 @@
-import { PageI18nInterface } from './PageI18nInterface';
 import * as i18nKeys from '../Identifier/page.login';
+import type { PageI18nInterface } from './PageI18nInterface';
 
 /**
  * Login page i18n interface

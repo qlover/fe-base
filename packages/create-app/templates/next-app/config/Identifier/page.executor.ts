@@ -79,7 +79,8 @@ export const PAGE_EXECUTOR_TASK_TYPE_DATA_SYNC =
  * @localZh 报告生成
  * @localEn Report Generation
  */
-export const PAGE_EXECUTOR_TASK_TYPE_REPORT = 'page__executor__task__type__report';
+export const PAGE_EXECUTOR_TASK_TYPE_REPORT =
+  'page__executor__task__type__report';
 
 /**
  * @description Executor task type system maintenance
@@ -94,7 +95,8 @@ export const PAGE_EXECUTOR_TASK_TYPE_MAINTENANCE =
  * @localZh 数据备份
  * @localEn Backup
  */
-export const PAGE_EXECUTOR_TASK_TYPE_BACKUP = 'page__executor__task__type__backup';
+export const PAGE_EXECUTOR_TASK_TYPE_BACKUP =
+  'page__executor__task__type__backup';
 
 /**
  * @description Executor task duration unit
@@ -161,7 +163,8 @@ export const PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED =
  * @localZh 自定义任务 %{method} %{url}
  * @localEn Custom Task %{method} %{url}
  */
-export const PAGE_EXECUTOR_CUSTOM_TASK_NAME = 'page__executor__custom_task__name';
+export const PAGE_EXECUTOR_CUSTOM_TASK_NAME =
+  'page__executor__custom_task__name';
 
 /**
  * @description Executor create custom task title
@@ -197,7 +200,8 @@ export const PAGE_EXECUTOR_TASK_LIST_TITLE = 'page__executor__task_list__title';
  * @localZh 总任务数
  * @localEn Total Tasks
  */
-export const PAGE_EXECUTOR_TASK_STATS_TOTAL = 'page__executor__task_stats__total';
+export const PAGE_EXECUTOR_TASK_STATS_TOTAL =
+  'page__executor__task_stats__total';
 
 /**
  * @description Executor task statistics running tasks
@@ -243,7 +247,8 @@ export const PAGE_EXECUTOR_HELP_TITLE = 'page__executor__help__title';
  * @localZh 遇到问题？查看我们的任务执行指南或联系支持团队
  * @localEn Having issues? Check our task execution guide or contact support
  */
-export const PAGE_EXECUTOR_HELP_DESCRIPTION = 'page__executor__help__description';
+export const PAGE_EXECUTOR_HELP_DESCRIPTION =
+  'page__executor__help__description';
 
 /**
  * @description Executor view guide button
