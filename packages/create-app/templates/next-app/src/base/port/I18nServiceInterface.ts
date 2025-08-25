@@ -1,8 +1,8 @@
-import type { i18nConfig } from '@config/i18n';
 import {
   StoreInterface,
   type StoreStateInterface
 } from '@qlover/corekit-bridge';
+import type { i18nConfig } from '@config/i18n';
 
 export type SupportedLocale = (typeof i18nConfig.supportedLngs)[number];
 export type SupportedNamespace = typeof i18nConfig.fallbackLng;

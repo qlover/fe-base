@@ -1,8 +1,8 @@
 // src/i18n/routing.ts
 
 // Import helpers to define i18n routing and navigation from next-intl
-import { defineRouting } from 'next-intl/routing';
 import { createNavigation } from 'next-intl/navigation';
+import { defineRouting } from 'next-intl/routing';
 import { i18nConfig } from '@config/i18n';
 
 // List of all supported locales for the application

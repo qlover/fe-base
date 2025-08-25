@@ -1,8 +1,8 @@
 import { IOCManagerInterface } from '@qlover/corekit-bridge';
-import type { IOCContainer, IOCRegister, IocRegisterOptions } from './IOC';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
-import { logger, JSON } from './globals';
 import { I18nService } from '@/base/services/I18nService';
+import { logger, JSON } from './globals';
+import type { IOCContainer, IOCRegister, IocRegisterOptions } from './IOC';
 
 export class IocRegisterImpl implements IOCRegister {
   constructor(protected options: IocRegisterOptions) {}
@@ -68,7 +68,7 @@ export class IocRegisterImpl implements IOCRegister {
     // ioc.bind(I.RequestPageBridgeInterface, ioc.get(RequestPageBridge));
   }
 
-  protected registerCommon(ioc: IOCContainer): void {
+  protected registerCommon(_ioc: IOCContainer): void {
     // const { appConfig } = this.options;
     // const logger = ioc.get(I.Logger);
     // const feApiRequestCommonPlugin = new RequestCommonPlugin({

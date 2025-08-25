@@ -1,10 +1,10 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import type { CommonThemeConfig } from '@config/theme';
 import { ThemeProvider } from 'next-themes';
 import { BootstrapsProvider } from './BootstrapsProvider';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
+import type { CommonThemeConfig } from '@config/theme';
 
 /**
  * CommonProvider is a provider for the common components

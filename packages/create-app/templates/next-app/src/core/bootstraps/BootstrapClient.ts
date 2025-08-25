@@ -6,15 +6,15 @@ import {
   IOCFunctionInterface,
   IOCManagerInterface
 } from '@qlover/corekit-bridge';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
-import { browserGlobalsName } from '@config/common';
-import * as globals from '../globals';
-import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
+import { browserGlobalsName } from '@config/common';
+import { InversifyContainer } from '@/base/cases/InversifyContainer';
+import { BootstrapsRegistry } from './BootstrapsRegistry';
+import * as globals from '../globals';
+import { appConfig } from '../globals';
 import { IOCContainer } from '../IOC';
 import { IocRegisterImpl } from '../IocRegisterImpl';
-import { appConfig } from '../globals';
-import { InversifyContainer } from '@/base/cases/InversifyContainer';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 
 export type BootstrapAppArgs = {
   /**

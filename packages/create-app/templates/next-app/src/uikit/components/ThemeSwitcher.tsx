@@ -1,6 +1,5 @@
 'use client';
 
-import { Select } from 'antd';
 import {
   BulbOutlined,
   BulbFilled,
@@ -8,10 +7,11 @@ import {
   HeartOutlined,
   DesktopOutlined
 } from '@ant-design/icons';
-import clsx from 'clsx';
-import { themeConfig } from '@config/theme';
+import { Select } from 'antd';
+import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { themeConfig } from '@config/theme';
 import { useMountedClient } from '../hook/useMountedClient';
 
 const { supportedThemes } = themeConfig;

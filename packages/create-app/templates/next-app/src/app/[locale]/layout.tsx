@@ -1,11 +1,11 @@
+import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { i18nConfig, LocaleType } from '@config/i18n';
-import { ComboProvider } from '@/uikit/components/ComboProvider';
 import { themeConfig } from '@config/theme';
-import '@/styles/css/index.css';
 import BaseHeader from '@/uikit/components/BaseHeader';
-import { notFound } from 'next/navigation';
+import { ComboProvider } from '@/uikit/components/ComboProvider';
+import '@/styles/css/index.css';
 
 export default async function RootLayout({
   children,

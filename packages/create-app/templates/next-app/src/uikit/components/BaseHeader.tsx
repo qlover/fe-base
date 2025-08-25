@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import ThemeSwitcher from './ThemeSwitcher';
-import { IOC } from '@/core/IOC';
 import { AppConfig } from '@/base/cases/AppConfig';
+import { IOC } from '@/core/IOC';
 import LanguageSwitcher from './LanguageSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 
 export default function BaseHeader() {
   return (

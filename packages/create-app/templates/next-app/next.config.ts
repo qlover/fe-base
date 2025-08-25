@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import type { NextConfig } from 'next';
 import { generateLocales } from './build/generateLocales';
+import type { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin();
 

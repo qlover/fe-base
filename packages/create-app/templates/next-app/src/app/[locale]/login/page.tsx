@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
+import { loginI18n, i18nConfig } from '@config/i18n';
+import { getServerI18n } from '@/server/getServerI18n';
+import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import FeatureItem from './FeatureItem';
 import LoginForm from './LoginForm';
-import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
-import { loginI18n, i18nConfig } from '@config/i18n';
-import { useServerI18n } from '@/server/useServerI18n';
+import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
 export async function generateStaticParams() {
@@ -25,7 +25,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
 
-  const tt = await useServerI18n({
+  const tt = await getServerI18n({
     locale,
     i18nInterface: loginI18n
   });

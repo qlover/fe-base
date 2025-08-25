@@ -1,14 +1,14 @@
 'use client';
 
 import { Select } from 'antd';
-import { i18nConfig, LocaleType } from '@config/i18n';
+import { useLocale } from 'next-intl';
 import { useCallback } from 'react';
-import { useStore } from '../hook/useStore';
-import { useIOC } from '../hook/useIOC';
+import { i18nConfig, LocaleType } from '@config/i18n';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { useLocale } from 'next-intl';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '../hook/useIOC';
+import { useStore } from '../hook/useStore';
 
 export default function LanguageSwitcher() {
   const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
@@ -31,7 +31,7 @@ export default function LanguageSwitcher() {
         console.error('Failed to change language:', error);
       }
     },
-    [i18nService]
+    [i18nService, pathname, router]
   );
 
   return (

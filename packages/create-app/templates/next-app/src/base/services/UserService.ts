@@ -1,7 +1,6 @@
-import { ImagicaAuthService } from '@brain-toolkit/bridge';
+import { CookieStorage } from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
 import { AppConfig } from '../cases/AppConfig';
-import { CookieStorage } from '@qlover/corekit-bridge';
 import { UserServiceInterface } from '../port/UserServiceInterface';
 
 @injectable()

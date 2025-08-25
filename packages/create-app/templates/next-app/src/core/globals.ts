@@ -1,6 +1,6 @@
 // ! global variables, don't import any dependencies and don't have side effects
-import { JSONSerializer } from '@qlover/fe-corekit';
 import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
+import { JSONSerializer } from '@qlover/fe-corekit';
 import { loggerStyles } from '@config/common';
 import { AppConfig } from '@/base/cases/AppConfig';
 

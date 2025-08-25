@@ -1,12 +1,12 @@
 'use client';
 
-import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import LocaleLink from '@/uikit/components/LocaleLink';
+import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
+import { LoginI18nInterface } from '@config/i18n/loginI18n';
 import { UserService } from '@/base/services/UserService';
 import { IOC } from '@/core/IOC';
-import { LoginI18nInterface } from '@config/i18n/loginI18n';
+import LocaleLink from '@/uikit/components/LocaleLink';
 
 interface LoginFormData {
   email: string;

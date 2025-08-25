@@ -1,5 +1,5 @@
-import { i18nConfig, LocaleType } from '@config/i18n';
 import { useLocaleRoutes } from '@config/common';
+import { i18nConfig } from '@config/i18n';
 import {
   I18nServiceInterface,
   I18nServiceState,
@@ -98,7 +98,7 @@ export class I18nService extends I18nServiceInterface {
 
   override async t(
     key: string,
-    params?: Record<string, unknown>
+    params?: Record<string, string | number | Date>
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -107,8 +107,8 @@ export class I18nService extends I18nServiceInterface {
     }
 
     try {
-      return this.translator(key, params as any);
-    } catch (error) {
+      return this.translator(key, params);
+    } catch {
       return key;
     }
   }
