@@ -1,6 +1,8 @@
 // ! dont't import tsx, only ts file
 import type {
+  EnvConfigInterface,
   IOCContainerInterface,
+  IOCManagerInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 import {
@@ -9,6 +11,9 @@ import {
 } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { IOCIdentifierMap } from '@config/IOCIdentifier';
+import { IocRegisterImpl } from './IocRegisterImpl';
+import { appConfig } from './globals';
+import { BootstrapClient } from './bootstraps/BootstrapClient';
 
 /**
  * IOC register options
@@ -44,22 +49,6 @@ export type IOCRegister = IOCRegisterInterface<
 let _ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> | null =
   null;
 
-export function createIOC() {
-  if (_ioc) {
-    return _ioc;
-  }
-
-  _ioc = createIOCFunction<IOCIdentifierMap>(
-    /**
-     * If not inversify, you can use any IOC container,
-     * then replace the InversifyContainer with your own IOC container
-     */
-    new InversifyContainer()
-  );
-
-  return _ioc;
-}
-
 /**
  * IOC function
  *
@@ -81,4 +70,4 @@ export function createIOC() {
  * const logger = IOC(IOCIdentifier.Logger);
  * ```
  */
-export const IOC = createIOC();
+export const IOC = BootstrapClient.createSingletonIOC();

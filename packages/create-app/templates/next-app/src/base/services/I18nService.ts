@@ -5,12 +5,10 @@ import {
   I18nServiceState,
   I18nServiceLocale
 } from '../port/I18nServiceInterface';
-import { injectable } from 'inversify';
 import type { useTranslations } from 'next-intl';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
-@injectable()
 export class I18nService extends I18nServiceInterface {
   readonly pluginName = 'I18nService';
   private initialized: boolean = false;

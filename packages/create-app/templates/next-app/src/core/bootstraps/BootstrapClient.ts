@@ -1,5 +1,6 @@
 import {
   Bootstrap,
+  createIOCFunction,
   EnvConfigInterface,
   IOCContainerInterface,
   IOCFunctionInterface,
@@ -10,8 +11,10 @@ import { browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
-import { createIOC, IOCContainer, IOCRegister } from '../IOC';
+import { IOCContainer } from '../IOC';
 import { IocRegisterImpl } from '../IocRegisterImpl';
+import { appConfig } from '../globals';
+import { InversifyContainer } from '@/base/cases/InversifyContainer';
 
 export type BootstrapAppArgs = {
   /**
@@ -29,15 +32,32 @@ export type BootstrapAppArgs = {
 };
 
 export class BootstrapClient {
-  static registerIoc(
-    ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>,
-    register: IOCRegister
-  ) {
-    register.register(
-      ioc.implemention as IOCContainer,
-      ioc as IOCManagerInterface<IOCContainer>
+  private static _ioc: IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > | null = null;
+
+  static createSingletonIOC() {
+    if (BootstrapClient._ioc) {
+      return BootstrapClient._ioc;
+    }
+
+    BootstrapClient._ioc = createIOCFunction<IOCIdentifierMap>(
+      /**
+       * If not inversify, you can use any IOC container,
+       * then replace the InversifyContainer with your own IOC container
+       */
+      new InversifyContainer()
     );
-    return ioc;
+
+    new IocRegisterImpl({
+      appConfig: appConfig as EnvConfigInterface
+    }).register(
+      BootstrapClient._ioc.implemention as IOCContainer,
+      BootstrapClient._ioc as IOCManagerInterface<IOCContainer>
+    );
+
+    return BootstrapClient._ioc;
   }
 
   static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
@@ -53,7 +73,7 @@ export class BootstrapClient {
       root,
       logger,
       ioc: {
-        manager: IOC,
+        manager: IOC
       },
       globalOptions: {
         sources: globals,

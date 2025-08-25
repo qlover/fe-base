@@ -39,7 +39,7 @@ export class IocRegisterImpl implements IOCRegister {
    * @param ioc
    */
   protected registerImplement(ioc: IOCContainer): void {
-    ioc.bind(I.I18nServiceInterface, ioc.get(I18nService));
+    ioc.bind(I.I18nServiceInterface, new I18nService());
     // ioc.bind(
     //   I.RouteServiceInterface,
     //   new RouteService(

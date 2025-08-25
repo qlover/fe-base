@@ -4,14 +4,14 @@ import { Select } from 'antd';
 import { i18nConfig, LocaleType } from '@config/i18n';
 import { useCallback } from 'react';
 import { useStore } from '../hook/useStore';
-import { I18nService } from '@/base/services/I18nService';
 import { useIOC } from '../hook/useIOC';
 import { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export default function LanguageSwitcher() {
-  const i18nService = useIOC(I18nService);
+  const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
   const { loading } = useStore(i18nService);
   const pathname = usePathname(); // current pathname, aware of i18n
 
