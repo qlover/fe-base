@@ -1,5 +1,5 @@
 import { RuleTester } from '@typescript-eslint/rule-tester';
-import rule, { RULE_NAME } from '../../src/rules/ts-class-method-return';
+import { tsClassMethodReturn as rule, RULE_NAME } from '../../src/rules/ts-class-method-return';
 
 const ruleTester = new RuleTester();
 
