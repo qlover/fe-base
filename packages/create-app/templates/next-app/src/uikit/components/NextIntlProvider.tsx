@@ -11,7 +11,7 @@ export function NextIntlProvider({ children, locale }: Props) {
 
   return (
     <NextIntlClientProvider
-      data-testid='NextIntlProvider'
+      data-testid="NextIntlProvider"
       locale={locale}
       messages={messages}
     >

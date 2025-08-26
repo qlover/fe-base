@@ -37,7 +37,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select
-      data-testid='LanguageSwitcher'
+      data-testid="LanguageSwitcher"
       loading={loading}
       value={currentLocale}
       onChange={handleLanguageChange}
@@ -46,7 +46,7 @@ export function LanguageSwitcher() {
         label:
           i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
       }))}
-      className='w-24'
+      className="w-24"
     />
   );
 }

@@ -73,13 +73,13 @@ export function ThemeSwitcher() {
 
   return (
     <Select
-      data-testid='ThemeSwitcher'
+      data-testid="ThemeSwitcher"
       loading={!mounted}
       value={mounted ? theme : themeOptions[0]?.key}
       onChange={setTheme}
       options={themeOptions}
       style={{ width: 120 }}
-      className='min-w-40 max-w-full'
+      className="min-w-40 max-w-full"
       disabled={!mounted}
     />
   );
