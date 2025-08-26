@@ -12,7 +12,7 @@ type Options = readonly [
 
 export const RULE_NAME = 'ts-class-method-return';
 
-export default createEslintRule<Options, MessageIds>({
+export const tsClassMethodReturn = createEslintRule<Options, MessageIds>({
   name: RULE_NAME,
   meta: {
     type: 'problem',
