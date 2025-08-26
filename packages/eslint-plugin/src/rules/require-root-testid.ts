@@ -62,7 +62,9 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
                     current.type === AST_NODE_TYPES.FunctionDeclaration ||
                     current.type === AST_NODE_TYPES.VariableDeclarator
                   ) {
-                    componentName = (current as any).id?.name || '';
+                    componentName =
+                      (current as TSESTree.FunctionDeclarationWithName).id
+                        .name || '';
                     break;
                   }
                   current = current.parent;

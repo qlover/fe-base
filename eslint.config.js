@@ -111,6 +111,7 @@ export default tseslint.config([
   // react tsx
   {
     files: ['packages/**/*.{ts,tsx}'],
+    ignores: ['packages/create-app/templates/next-app/src/app/**/*.tsx'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser
