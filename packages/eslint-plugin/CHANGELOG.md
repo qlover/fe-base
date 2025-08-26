@@ -1,5 +1,34 @@
 # @qlover/eslint-plugin
 
+## 1.0.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **eslint-plugin:** add require-root-testid rule to enforce data-testid attributes on root TSX elements ([367b2e2](https://github.com/qlover/fe-base/commit/367b2e28f22aed61233feed21860da7fd1b8ee36)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Introduced a new ESLint rule that requires root elements of TSX components to have a data-testid attribute, enhancing testability.
+  - Updated ESLint configuration to include the new rule, ensuring consistent enforcement across the codebase.
+  - Added documentation for the new rule, including examples of correct and incorrect usage.
+
+  These changes aim to improve the testing capabilities of the application by ensuring that components are easily identifiable in tests.
+
+#### 🐞 Bug Fixes
+
+- **tests:** update import statement for tsClassMethodReturn rule ([a5e1983](https://github.com/qlover/fe-base/commit/a5e198395f4cb618b6d0c4b0c9e07c963712ae9f)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Changed the import statement for the tsClassMethodReturn rule to use named exports for improved clarity and consistency in the test file.
+
+  This change aims to enhance the maintainability of the test suite by aligning with the updated export structure of the ESLint rules.
+
+#### ♻️ Refactors
+
+- **eslint-plugin:** improve rule exports and update ESLint configurations ([c142834](https://github.com/qlover/fe-base/commit/c142834bbabbeec3e5e3f92c6646bc0dc960379a)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Refactored the export statements for ESLint rules to use named exports for better clarity and consistency.
+  - Enhanced the ESLint configuration to improve the handling of unused variables and enforce stricter linting rules.
+  - Updated the `require-root-testid` rule to ensure proper formatting and documentation.
+
+  These changes aim to enhance the maintainability and readability of the ESLint plugin while ensuring consistent rule enforcement across the codebase.
+
 ## 1.0.4
 
 ### Patch Changes

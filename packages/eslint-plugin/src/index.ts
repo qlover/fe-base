@@ -1,6 +1,12 @@
 import type { TSESLint } from '@typescript-eslint/utils';
-import { tsClassMethodReturn, RULE_NAME as TS_CLASS_METHOD_RETURN } from './rules/ts-class-method-return';
-import { requireRootTestid, RULE_NAME as REQUIRE_ROOT_TESTID } from './rules/require-root-testid';
+import {
+  tsClassMethodReturn,
+  RULE_NAME as TS_CLASS_METHOD_RETURN
+} from './rules/ts-class-method-return';
+import {
+  requireRootTestid,
+  RULE_NAME as REQUIRE_ROOT_TESTID
+} from './rules/require-root-testid';
 
 const configs: {
   recommended: TSESLint.Linter.ConfigType;

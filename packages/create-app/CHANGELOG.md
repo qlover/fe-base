@@ -1,5 +1,242 @@
 # @qlover/create-app
 
+## 0.7.7
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** initialize Next.js application template with essential configurations and files ([a6c37ed](https://github.com/qlover/fe-base/commit/a6c37edee416989a72c04a0c3ef77fe296308399)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added ESLint configuration for Next.js with TypeScript support.
+  - Created Next.js configuration file for application settings.
+  - Included package.json with scripts and dependencies for React, Next.js, TypeScript, and Tailwind CSS.
+  - Set up PostCSS configuration for Tailwind CSS integration.
+  - Added README.md for project setup instructions and resources.
+  - Configured TypeScript settings in tsconfig.json.
+  - Included global CSS styles and layout structure for the application.
+  - Created initial page component with example content and links to documentation.
+  - Added SVG assets for branding and icons.
+
+  This commit establishes a foundational structure for a new Next.js application, enabling developers to quickly start building their projects.
+
+- **next-app:** enhance Next.js application template with new features and configurations ([1b65acf](https://github.com/qlover/fe-base/commit/1b65acf89cd88c34ac61480435196fe427d760ba)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added .env.template for environment variable management.
+  - Updated package.json scripts to support different environments (development, test, production).
+  - Introduced common configuration files for better organization and maintainability.
+  - Created new components for login functionality and base header structure.
+  - Implemented Inversify container for dependency injection and service management.
+  - Enhanced TypeScript configuration with additional path mappings.
+  - Added documentation for environment configuration and usage.
+
+  These changes aim to improve the overall structure and functionality of the Next.js application template, facilitating easier development and deployment.
+
+- **next-app:** integrate theme management and enhance styling capabilities ([081e736](https://github.com/qlover/fe-base/commit/081e736c7e126b8e4fb6a38f29a68cd4a28929ac)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added `next-themes` package for theme management.
+  - Introduced `theme.ts` configuration for theme settings.
+  - Updated `layout.tsx` to include `ThemeProvider` for theme context.
+  - Created multiple CSS files for theme styles, including default, dark, and pink themes.
+  - Implemented `ThemeSwitcher` component for user theme selection.
+  - Enhanced global styles with new CSS imports for better organization.
+
+  These changes aim to improve the user experience by allowing dynamic theme switching and providing a more organized styling structure.
+
+- **next-app:** add Tailwind CSS configuration and enhance theme management ([22320fd](https://github.com/qlover/fe-base/commit/22320fd81a1565339762fe9d60efe0279caaf7b9)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Introduced `tailwind.config.ts` for Tailwind CSS setup.
+  - Updated `theme.ts` to include JSDoc type annotations for better clarity.
+  - Removed obsolete `globals.css` in favor of a more modular CSS structure.
+  - Modified `layout.tsx` to integrate new theme configurations and CSS imports.
+  - Enhanced `LoginPage` with improved styling and layout adjustments.
+  - Added `useMountedClient` hook for better theme management in `ThemeSwitcher`.
+
+  These changes aim to streamline the styling process and improve the overall user experience with dynamic theming capabilities.
+
+- **next-app:** enhance application configuration and bootstrap process ([8fc5264](https://github.com/qlover/fe-base/commit/8fc5264d6b4ebe21fe7b8fca1dee075264c43755)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Updated package.json scripts to support localhost and staging environments.
+  - Introduced AppConfig class for managing application configuration and environment settings.
+  - Enhanced IOC registration with new IocRegisterImpl for improved dependency management.
+  - Added BootstrapsApp component to initialize the bootstrap process in the application.
+  - Implemented BootstrapsRegistry for managing bootstrap plugins and configurations.
+  - Updated BaseHeader to dynamically display the application name from AppConfig.
+
+  These changes aim to improve the application's configuration management and streamline the bootstrap process for better maintainability and flexibility.
+
+- **next-app:** enhance configuration and update dependencies ([76024eb](https://github.com/qlover/fe-base/commit/76024eb9d40122864e6727d46a0e94d2ca4c88d6)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added environment variable support in next.config.ts for better configuration management.
+  - Updated package.json to include new dependencies: @ant-design/nextjs-registry and @ant-design/v5-patch-for-react-19 for improved UI components.
+  - Enhanced TypeScript configuration in tsconfig.json with experimental decorators and metadata emission.
+  - Modified common.ts to disable localized routes for a more straightforward routing approach.
+  - Refactored layout.tsx to integrate AntdRegistry for better theme management and component structure.
+  - Updated LoginForm.tsx to utilize IOC for user service instantiation and improved login handling.
+
+  These changes aim to streamline application configuration, enhance UI capabilities, and improve overall code organization.
+
+- **next-app:** implement internationalization support and update routing ([9554899](https://github.com/qlover/fe-base/commit/9554899b1b0da7ae064494f870eb7019be6fc9b8)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added i18n configuration in a new i18n.ts file to manage localization settings.
+  - Updated next.config.ts to include internationalization settings for default locale and supported languages.
+  - Modified common.ts to enable localized routes for improved routing experience.
+  - Introduced LanguageSwitcher component for dynamic language selection in the UI.
+  - Enhanced I18nService to manage language detection and translation functionalities.
+  - Updated BaseHeader to include the LanguageSwitcher for user accessibility.
+
+  These changes aim to enhance the application's internationalization capabilities, providing a better user experience for multilingual support.
+
+- **next-app:** refactor theme management and enhance IOC integration ([3006a26](https://github.com/qlover/fe-base/commit/3006a2625870458285e2193c0b7c43c0730059d2)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Updated tsconfig.json to include source files from the src directory for better TypeScript support.
+  - Enhanced theme configuration in theme.ts by adding antdTheme settings for improved theme management.
+  - Refactored layout.tsx to utilize ComboProvider for streamlined theme and bootstrap context integration.
+  - Removed obsolete BootstrapsApp component and replaced it with BootstrapsProvider for better structure.
+  - Introduced ComboProvider to encapsulate multiple providers, including AntdThemeProvider and ThemeProvider.
+  - Added IOCContext for better dependency injection management across components.
+  - Created useIOC hook for easier access to the IOC context in functional components.
+
+  These changes aim to improve the modularity and maintainability of the application by enhancing theme management and dependency injection practices.
+
+- **next-app:** enhance TypeScript configuration and improve IOC integration ([f721e1b](https://github.com/qlover/fe-base/commit/f721e1b9cbfcccc84660d0d7c6973513c26805ac)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Updated tsconfig.json to include .next/types/\*_/_.ts for better type support.
+  - Refactored IOC.ts to streamline dependency injection and introduced a new createIOC function for improved IOC management.
+  - Modified BootstrapClient to integrate IOC into the bootstrap process.
+  - Updated BootstrapsProvider to utilize the createIOC function for better dependency handling.
+
+  These changes aim to enhance TypeScript support and improve the modularity of the IOC system within the application.
+
+- **next-app:** enhance internationalization support and improve IOC integration ([d706df8](https://github.com/qlover/fe-base/commit/d706df89b16a3cc75741ae4baa478f7ed4a3b5f8)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added I18nService and I18nServiceInterface for better language management.
+  - Updated IOCIdentifier to include I18nServiceInterface for dependency injection.
+  - Refactored I18nService methods to return promises for asynchronous operations.
+  - Modified BootstrapsRegistry and BootstrapClient to support pathname handling.
+  - Enhanced LanguageSwitcher component for dynamic language selection.
+
+  These changes aim to improve the application's internationalization capabilities and streamline the integration of the IOC system.
+
+- **next-app:** enhance localization support and streamline locale generation ([4ba5934](https://github.com/qlover/fe-base/commit/4ba5934f02c46dc64edf485c41a4f6d67d0e3d3c)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Integrated locale generation into the build process by adding a generateLocales function.
+  - Updated next.config.ts to automatically generate localization files at build start.
+  - Created a new plugin to handle locale generation during development and production builds.
+  - Added English and Chinese localization files for common application messages.
+
+  These changes aim to improve the application's internationalization capabilities by automating locale management and providing essential translations for better user experience.
+
+- **next-app:** refactor internationalization implementation and enhance localization features ([d95a8bf](https://github.com/qlover/fe-base/commit/d95a8bf52cc70d2b5d0d0bcee894c6455bbe54b7)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Replaced i18next with next-intl for improved localization support.
+  - Updated next.config.ts to integrate next-intl plugin for locale management.
+  - Refactored i18n configuration to streamline language detection and fallback settings.
+  - Enhanced LoginForm and LoginPage components to utilize next-intl for translations.
+  - Introduced NextIntlProvider component for better context management of translations.
+
+  These changes aim to simplify the internationalization process and improve the user experience with more efficient localization handling.
+
+- **next-app:** implement middleware and enhance internationalization routing ([08e6d0b](https://github.com/qlover/fe-base/commit/08e6d0be99c508df5242a389211937cc16173026)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added middleware for locale detection and internationalized routing using next-intl.
+  - Refactored layout.tsx to streamline message retrieval and improve locale handling.
+  - Updated LoginForm and LoginPage components to utilize lodash for translation functions.
+  - Introduced new i18n request configuration for dynamic message loading based on request locale.
+  - Created routing.ts to define supported locales and localized pathnames for improved navigation.
+
+  These changes aim to enhance the application's internationalization capabilities and provide a more robust routing experience.
+
+- **next-app:** enhance layout structure and improve localization in login components ([1bfa104](https://github.com/qlover/fe-base/commit/1bfa1045dbe224a2e45b510d3b41d21f3a38c0be)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Integrated BaseHeader into the RootLayout for consistent header display across the application.
+  - Updated LoginForm and LoginPage components to utilize next-intl for translation handling, replacing lodash.
+  - Refactored layout structure to ensure proper rendering of children components within a flex container.
+
+  These changes aim to improve the user interface and enhance the internationalization support in the login flow.
+
+- **next-app:** add login internationalization interface and refactor login components ([e2fe74a](https://github.com/qlover/fe-base/commit/e2fe74a9639809749df985ca3dc9e97334c43a29)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Introduced `LoginI18nInterface` for managing localization keys specific to the login page.
+  - Created `PageI18nInterface` to standardize SEO meta properties across pages.
+  - Refactored `LoginForm` and `LoginPage` components to utilize the new i18n structure, enhancing translation handling.
+  - Updated `FeatureItem` component to include a data-testid for improved testing capabilities.
+  - Implemented `useI18nInterface` hook for streamlined access to localized strings.
+
+  These changes aim to improve the internationalization support for the login flow and enhance the overall structure of the components.
+
+- **next-app:** add initial locale support and layout structure for next-app ([32f60e6](https://github.com/qlover/fe-base/commit/32f60e6d529584bf542a04029a06102393bb3874)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Introduced new layout structure in `layout.tsx` to support internationalization with `NextIntlClientProvider`.
+  - Added `favicon.ico` for branding consistency across locales.
+  - Created `not-found.tsx` for handling 404 errors with localized messages.
+  - Developed `page.tsx` for the home page, featuring a welcoming layout and links to documentation and deployment.
+  - Implemented login components including `LoginForm`, `FeatureItem`, and `LoginPage` to facilitate user authentication with localization support.
+  - Added `useServerI18n.ts` for server-side translation handling.
+
+  These changes lay the groundwork for a multilingual application experience, enhancing user engagement through localized content.
+
+- **next-app:** enhance internationalization support with new i18n configuration and components ([3706b88](https://github.com/qlover/fe-base/commit/3706b880d6245dd51c4bfdef8e37ba52779d196d)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added `i18nConfig` for managing locale settings and fallback languages.
+  - Introduced `PageI18nInterface` and `LoginI18nInterface` to standardize localization keys for SEO and login components.
+  - Created new files for login internationalization, including `loginI18n.ts` and `i18nConfig.ts`.
+  - Implemented middleware for locale detection and routing in `middleware.ts`.
+  - Updated TypeScript configuration to include new source paths for better type support.
+
+  These changes aim to improve the application's internationalization capabilities and provide a more structured approach to localization.
+
+- **next-app:** enhance ESLint configuration with new plugins and rules ([87775e4](https://github.com/qlover/fe-base/commit/87775e4c1d31788fe83457399c876415af27fe54)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added eslint-plugin-import and eslint-plugin-unused-imports to improve import management and unused variable detection.
+  - Updated ESLint configuration to include recommended settings for import ordering and unused imports.
+  - Introduced a new lint:fix script for automatic code formatting and cleanup.
+
+  These changes aim to improve code quality and maintainability by enforcing stricter linting rules.
+
+- **next-app:** add Prettier and ESLint configurations for improved code formatting ([e7f1e72](https://github.com/qlover/fe-base/commit/e7f1e72983759cd18f0cc16c49d5a0f3f95994ea)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Introduced .prettierignore and .prettierrc.js files to define formatting rules and ignore patterns for Prettier.
+  - Updated ESLint configuration to include prettier integration, enhancing code quality and consistency.
+  - Added new scripts for formatting and linting in package.json to streamline development processes.
+
+  These changes aim to enforce consistent code style and improve maintainability across the project.
+
+- **next-app:** integrate custom ESLint plugin for data-testid enforcement and enhance component testing ([51ebeea](https://github.com/qlover/fe-base/commit/51ebeea8b875179fde6dbe49d64960e8902534fb)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Added a new ESLint plugin to enforce the presence of data-testid attributes on root elements of TSX components, improving testability.
+  - Updated ESLint configuration to include the new plugin and enforce its rules.
+  - Modified several components to include data-testid attributes, enhancing their compatibility with testing frameworks.
+  - Adjusted the order of linting and formatting scripts in package.json for better workflow efficiency.
+
+  These changes aim to improve the testing capabilities of the application by ensuring that components are easily identifiable in tests.
+
+- **next-app:** integrate @qlover/eslint-plugin and update ESLint rules for improved testing ([9bda32f](https://github.com/qlover/fe-base/commit/9bda32fc610753b863557f4f90fa90fe001fb928)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Replaced the custom eslint-plugin-testid with @qlover/eslint-plugin to enhance testability of components.
+  - Updated ESLint configuration to include new rules for enforcing data-testid attributes on root elements.
+  - Refactored I18nService and BootstrapClient to specify return types for better type safety.
+
+  These changes aim to improve the testing capabilities and maintainability of the application by ensuring consistent ESLint rules and enhancing type definitions.
+
+#### ♻️ Refactors
+
+- **next-app:** update error identifiers and localization keys for consistency ([5ce5894](https://github.com/qlover/fe-base/commit/5ce5894abe73e10b4a42ac6c6b89c5a2d7dcb45e)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Refactored error identifiers and localization keys across various components to use a consistent naming convention with double underscores.
+  - Updated keys in common.error.ts, common.ts, and various page identifier files to enhance readability and maintainability.
+  - Adjusted localization files to reflect the new key structure, ensuring alignment with the updated identifiers.
+
+  These changes aim to improve the clarity and consistency of localization keys throughout the application.
+
+- **next-app:** streamline IOC integration and enhance I18nService usage ([ee888ce](https://github.com/qlover/fe-base/commit/ee888ceee1f94e4ad6f38cb0c816dc9888011290)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Removed the @injectable() decorator from I18nService for simplified instantiation.
+  - Updated IOC creation logic in BootstrapClient to use a singleton pattern for better resource management.
+  - Refactored IocRegisterImpl to directly instantiate I18nService, improving clarity in service registration.
+  - Adjusted BootstrapsProvider to utilize the new IOC creation method, ensuring consistent IOC management across components.
+
+  These changes aim to enhance the modularity and efficiency of the IOC system while improving the integration of the I18nService.
+
+- **next-app:** reorganize imports and enhance i18n integration ([7f57af0](https://github.com/qlover/fe-base/commit/7f57af00627b3838ab19d3f1b5683b738fc2f12c)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Cleaned up import statements across various components for better readability and consistency.
+  - Introduced a new `getServerI18n` function to streamline server-side translation handling.
+  - Updated layout and component files to utilize the new i18n structure, improving localization support.
+  - Adjusted type imports and ensured proper usage of the `next-intl` library for internationalization.
+
+  These changes aim to enhance the modularity and clarity of the codebase while improving the internationalization capabilities of the application.
+
+- **next-app:** update component exports and ESLint rules for improved consistency ([e7836e5](https://github.com/qlover/fe-base/commit/e7836e5f8c4119fdc52f362c9c18e66e24d3a97f)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Changed default exports to named exports for several components, enhancing import clarity and consistency.
+  - Updated ESLint configuration to enforce no default exports, with exceptions for specific files to maintain flexibility.
+  - Cleaned up import statements across various files for better readability and adherence to coding standards.
+
+  These changes aim to improve code maintainability and enforce a more consistent coding style across the project.
+
+- **eslint-plugin:** improve rule exports and update ESLint configurations ([c142834](https://github.com/qlover/fe-base/commit/c142834bbabbeec3e5e3f92c6646bc0dc960379a)) ([#504](https://github.com/qlover/fe-base/pull/504))
+  - Refactored the export statements for ESLint rules to use named exports for better clarity and consistency.
+  - Enhanced the ESLint configuration to improve the handling of unused variables and enforce stricter linting rules.
+  - Updated the `require-root-testid` rule to ensure proper formatting and documentation.
+
+  These changes aim to enhance the maintainability and readability of the ESLint plugin while ensuring consistent rule enforcement across the codebase.
+
 ## 0.7.6
 
 ### Patch Changes

@@ -44,7 +44,7 @@ export const LocaleLink: React.FC<LocaleLinkProps> = ({
   }
 
   return (
-    <Link data-testid='locale-link' {...props} href={localizedHref}>
+    <Link data-testid="locale-link" {...props} href={localizedHref}>
       {children}
     </Link>
   );

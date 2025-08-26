@@ -28,13 +28,13 @@ export default async function RootLayout({
 
   // TODO: suppressHydrationWarning 暂时解决 hydration 问题
   return (
-    <html data-testid='RootLayout' lang={locale} suppressHydrationWarning>
+    <html data-testid="RootLayout" lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages}>
           <ComboProvider themeConfig={themeConfig}>
-            <div className='flex flex-col min-h-screen'>
+            <div className="flex flex-col min-h-screen">
               <BaseHeader />
-              <div className='flex flex-col'>{children}</div>
+              <div className="flex flex-col">{children}</div>
             </div>
           </ComboProvider>
         </NextIntlClientProvider>

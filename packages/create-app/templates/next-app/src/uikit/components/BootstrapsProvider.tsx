@@ -18,7 +18,7 @@ export function BootstrapsProvider(props: { children: React.ReactNode }) {
   }, [IOC]);
 
   return (
-    <IOCContext.Provider data-testid='BootstrapsProvider' value={IOC}>
+    <IOCContext.Provider data-testid="BootstrapsProvider" value={IOC}>
       {props.children}
     </IOCContext.Provider>
   );

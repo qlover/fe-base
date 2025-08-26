@@ -25,7 +25,7 @@ export function ComboProvider(props: {
 
   return (
     <AntdThemeProvider
-      data-testid='ComboProvider'
+      data-testid="ComboProvider"
       theme={themeConfig.antdTheme}
     >
       <ThemeProvider

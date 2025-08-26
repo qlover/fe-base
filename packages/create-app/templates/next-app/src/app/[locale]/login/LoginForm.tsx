@@ -34,42 +34,42 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
   return (
     <Form
-      data-testid='LoginForm'
-      name='login'
+      data-testid="LoginForm"
+      name="login"
       onFinish={handleLogin}
-      layout='vertical'
-      className='space-y-4'
+      layout="vertical"
+      className="space-y-4"
     >
       <Form.Item
-        name='email'
+        name="email"
         rules={[{ required: true, message: tt.emailRequired }]}
       >
         <Input
-          prefix={<UserOutlined className='text-text-tertiary' />}
+          prefix={<UserOutlined className="text-text-tertiary" />}
           placeholder={tt.email}
           title={tt.emailTitle}
-          className='h-12 text-base bg-secondary border-border'
-          autoComplete='off'
+          className="h-12 text-base bg-secondary border-border"
+          autoComplete="off"
         />
       </Form.Item>
 
       <Form.Item
-        name='password'
+        name="password"
         rules={[{ required: true, message: tt.passwordRequired }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
           placeholder={tt.password}
           title={tt.passwordTitle}
-          className='h-12 text-base'
-          autoComplete='new-password'
+          className="h-12 text-base"
+          autoComplete="new-password"
         />
       </Form.Item>
 
-      <div className='flex justify-end'>
+      <div className="flex justify-end">
         <LocaleLink
-          href='#'
-          className='text-brand hover:text-brand-hover'
+          href="#"
+          className="text-brand hover:text-brand-hover"
           title={tt.forgotPasswordTitle}
         >
           {tt.forgotPassword}
@@ -78,33 +78,33 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
       <Form.Item>
         <Button
-          type='primary'
-          htmlType='submit'
+          type="primary"
+          htmlType="submit"
           loading={loading}
           title={tt.buttonTitle}
-          className='w-full h-12 text-base'
+          className="w-full h-12 text-base"
         >
           {tt.button}
         </Button>
       </Form.Item>
 
-      <div className='text-center text-text-tertiary my-4'>
+      <div className="text-center text-text-tertiary my-4">
         {tt.continueWith}
       </div>
 
       <Button
         icon={<GoogleOutlined />}
-        className='w-full h-12 text-base'
+        className="w-full h-12 text-base"
         title={tt.withGoogleTitle}
       >
         {tt.withGoogle}
       </Button>
 
-      <div className='text-center mt-6'>
-        <span className='text-text-tertiary'>{tt.noAccount} </span>
+      <div className="text-center mt-6">
+        <span className="text-text-tertiary">{tt.noAccount} </span>
         <LocaleLink
-          href='/register'
-          className='text-brand hover:text-brand-hover'
+          href="/register"
+          className="text-brand hover:text-brand-hover"
           title={tt.createAccountTitle}
         >
           {tt.createAccount}
