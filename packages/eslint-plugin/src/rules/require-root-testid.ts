@@ -1,4 +1,4 @@
-import type { TSESLint, TSESTree } from '@typescript-eslint/utils';
+import type { TSESTree } from '@typescript-eslint/utils';
 import { AST_NODE_TYPES } from '@typescript-eslint/utils';
 import { createEslintRule } from '../utils/createEslintRule';
 
@@ -7,17 +7,19 @@ export const RULE_NAME = 'require-root-testid';
 type MessageIds = 'missingTestId';
 type Options = [];
 
-export default createEslintRule<Options, MessageIds>({
+export const requireRootTestid = createEslintRule<Options, MessageIds>({
   name: RULE_NAME,
   meta: {
     type: 'problem',
     docs: {
-      description: 'Enforce data-testid attribute on root elements of TSX components'
+      description:
+        'Enforce data-testid attribute on root elements of TSX components'
     },
     fixable: 'code',
     schema: [],
     messages: {
-      missingTestId: 'Root element of a component must have a data-testid attribute'
+      missingTestId:
+        'Root element of a component must have a data-testid attribute'
     }
   },
   defaultOptions: [],
@@ -76,10 +78,11 @@ export default createEslintRule<Options, MessageIds>({
                 if (hasAttributes) {
                   // If has other attributes, add before first attribute
                   const firstAttribute = openingElement.attributes[0];
-                  const indent = sourceCode
-                    .getText()
-                    .slice(0, firstAttribute.range[0])
-                    .match(/\s*$/)?.[0] || '';
+                  const indent =
+                    sourceCode
+                      .getText()
+                      .slice(0, firstAttribute.range[0])
+                      .match(/\s*$/)?.[0] || '';
                   return fixer.insertTextBefore(
                     firstAttribute,
                     `data-testid="${componentName || 'component'}"${indent}`
@@ -98,4 +101,4 @@ export default createEslintRule<Options, MessageIds>({
       }
     };
   }
-}); 
+});

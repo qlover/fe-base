@@ -94,7 +94,12 @@ export default tseslint.config([
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' }
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_'
+        }
       ],
       '@typescript-eslint/ban-ts-comment': 'off'
     }
