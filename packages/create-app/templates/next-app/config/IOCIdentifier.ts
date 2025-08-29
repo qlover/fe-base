@@ -1,5 +1,6 @@
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type { I18nService } from '@/base/services/I18nService';
+import type { UserService } from '@/base/services/UserService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
@@ -15,6 +16,7 @@ export const IOCIdentifier = Object.freeze({
   LocalStorage: 'LocalStorage',
   LocalStorageEncrypt: 'LocalStorageEncrypt',
   CookieStorage: 'CookieStorage',
+  UserServiceInterface: 'UserServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface'
 });
 
@@ -41,5 +43,10 @@ export interface IOCIdentifierMap {
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
+}
+
+export interface IOCIdentifierMapServer {
+  [IOCIdentifier.AppConfig]: AppConfig;
 }

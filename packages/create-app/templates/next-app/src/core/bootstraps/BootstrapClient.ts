@@ -3,16 +3,14 @@ import { isObject } from 'lodash';
 import { browserGlobalsName } from '@config/common';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
+import { ClientIOCRegister } from '../clientIoc/ClientIOCRegister';
 import * as globals from '../globals';
 import { appConfig } from '../globals';
-import { IocRegisterImpl } from '../IocRegisterImpl';
-import type { IOCContainer } from '../IOC';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type {
   EnvConfigInterface,
   IOCContainerInterface,
-  IOCFunctionInterface,
-  IOCManagerInterface
+  IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
 export type BootstrapAppArgs = {
@@ -52,12 +50,9 @@ export class BootstrapClient {
       new InversifyContainer()
     );
 
-    new IocRegisterImpl({
+    new ClientIOCRegister({
       appConfig: appConfig as EnvConfigInterface
-    }).register(
-      BootstrapClient._ioc.implemention as IOCContainer,
-      BootstrapClient._ioc as IOCManagerInterface<IOCContainer>
-    );
+    }).register(BootstrapClient._ioc.implemention!, BootstrapClient._ioc);
 
     return BootstrapClient._ioc;
   }

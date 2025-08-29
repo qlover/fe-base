@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { AppConfig } from '@/base/cases/AppConfig';
-import { IOC } from '@/core/IOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hook/useIOC';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeSwitcher } from './ThemeSwitcher';
 
 export function BaseHeader() {
+  const appConfig = useIOC(IOCIdentifier.AppConfig);
   return (
     <header
       data-testid="base-header"
@@ -28,7 +29,7 @@ export function BaseHeader() {
               data-testid="base-header-app-name"
               className="ml-2 text-lg font-semibold text-text"
             >
-              {IOC(AppConfig).appName}
+              {appConfig.appName}
             </span>
           </Link>
         </div>
