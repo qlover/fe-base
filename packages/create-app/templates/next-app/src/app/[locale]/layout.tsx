@@ -1,30 +1,15 @@
-import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
+import { PageParams } from '@/base/cases/PageParams';
+import type { PageProps } from '@/base/types/PageProps';
 import { BaseHeader } from '@/uikit/components/BaseHeader';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
-import type { LocaleType } from '@config/i18n';
 import '@/styles/css/index.css';
 
-export default async function RootLayout({
-  children,
-  params
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
-  // Extract the locale from the route params (async for Next.js App Router)
-  const { locale } = await params;
-
-  // Validate that the requested locale is supported
-  if (!i18nConfig.supportedLngs.includes(locale as LocaleType)) {
-    notFound();
-  }
-
-  // Load the translation messages for the selected locale
-  const messages = await getMessages({ locale });
+export default async function RootLayout({ children, params }: PageProps) {
+  const pageParams = new PageParams(await params!);
+  const locale = pageParams.getI18nWithNotFound();
+  const messages = await pageParams.getI18nMessages();
 
   // TODO: suppressHydrationWarning 暂时解决 hydration 问题
   return (

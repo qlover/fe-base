@@ -1,5 +1,5 @@
 import { loginI18n, i18nConfig } from '@config/i18n';
-import { getServerI18n } from '@/server/getServerI18n';
+import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { FeatureItem } from './FeatureItem';
 import { LoginForm } from './LoginForm';
@@ -21,16 +21,12 @@ export const dynamic = 'auto'; // Enable static generation when possible, fallba
 export async function generateMetadata({
   params
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<PageParamsType>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const pageParams = new PageParams(await params);
 
-  const tt = await getServerI18n({
-    locale,
-    i18nInterface: loginI18n
-  });
+  const tt = await pageParams.getI18nInterface(loginI18n);
 
-  // Return localized SEO metadata
   return tt;
 }
 
