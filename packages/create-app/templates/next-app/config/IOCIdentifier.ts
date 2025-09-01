@@ -3,7 +3,7 @@ import type { I18nService } from '@/base/services/I18nService';
 import type { UserService } from '@/base/services/UserService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
-import type * as Logger from '@qlover/logger';
+import type { LoggerInterface } from '@qlover/logger';
 
 /**
  * IOC identifier
@@ -32,7 +32,7 @@ export const I = IOCIdentifier;
  */
 export interface IOCIdentifierMap {
   [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
-  [IOCIdentifier.Logger]: Logger.Logger;
+  [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.LocalStorage]: FeCorekit.SyncStorage<
     unknown,
     FeCorekit.ObjectStorageOptions
@@ -49,4 +49,5 @@ export interface IOCIdentifierMap {
 
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.Logger]: LoggerInterface;
 }

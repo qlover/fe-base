@@ -15,8 +15,11 @@ export const config = {
   matcher: [
     '/', // Match the root path explicitly
 
-    // Match all paths except for API routes, Next.js internals, static assets, favicon, and sitemap.xml
-    // This prevents middleware from rewriting or interfering with these special paths
-    '/((?!api|_next/static|_next/image|icon|favicon.ico|sitemap.xml|sitemap-0.xml).*)'
+    // Match all paths except for:
+    // - API routes
+    // - Next.js internals (_next/*)
+    // - Static files (*.svg, *.png, *.jpg, *.jpeg, *.gif, *.ico)
+    // - Other static assets and special files
+    '/((?!api|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml).*)'
   ]
 };

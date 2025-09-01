@@ -15,7 +15,7 @@ export async function generateLocales() {
       source: path,
       // You can use namespace
       // target: `./public/locales/{{lng}}/{{${name}}}.json`
-      target: `./public/locales/{{lng}}/common.json`
+      target: `./public/locales/{{lng}}.json`
     }));
 
   const ts2Locale = new Ts2Locales(locales);

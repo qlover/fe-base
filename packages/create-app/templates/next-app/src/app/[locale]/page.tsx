@@ -1,6 +1,15 @@
 import Image from 'next/image';
+import { ServerAuthPlugin } from '@/base/cases/ServerAuthPlugin';
+import { ServerErrorHandler } from '@/base/cases/ServerErrorHandler';
+import type { PageProps } from '@/base/types/PageProps';
+import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 
-export default async function Home() {
+export default async function Home({ params }: PageProps) {
+  await new BootstrapServer(await params!)
+    .use(new ServerAuthPlugin())
+    .use(new ServerErrorHandler())
+    .main();
+
   return (
     <div
       data-testid="Home"

@@ -32,3 +32,10 @@ export const RES_NO_TOKEN = 'err__response__no__token';
  * @localEn Not found component
  */
 export const NOT_FOUND_COMPONENT = 'err__not__found__component';
+
+/**
+ * @description 服务器认证错误
+ * @localZh 服务器认证错误
+ * @localEn Server auth error
+ */
+export const SERVER_AUTH_ERROR = 'err__server__auth__error';
