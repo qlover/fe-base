@@ -3,10 +3,10 @@ import {
   type IOCContainerInterface,
   type IOCFunctionInterface
 } from '@qlover/corekit-bridge';
+import { AppConfig } from '@/base/cases/AppConfig';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import type { IOCInterface } from '@/base/port/IOCInterface';
 import { ServerIOCRegister } from './ServerIOCRegister';
-import { appConfig } from '../globals';
 import type { IOCIdentifierMapServer } from '@config/IOCIdentifier';
 
 export class ServerIOC
@@ -30,7 +30,7 @@ export class ServerIOC
     );
 
     const register = new ServerIOCRegister({
-      appConfig: appConfig
+      appConfig: new AppConfig()
     });
 
     register.register(this.ioc.implemention!, this.ioc);

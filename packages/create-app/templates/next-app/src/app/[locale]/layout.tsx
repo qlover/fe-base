@@ -1,15 +1,13 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { themeConfig } from '@config/theme';
-import { PageParams } from '@/base/cases/PageParams';
 import type { PageProps } from '@/base/types/PageProps';
+import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { BaseHeader } from '@/uikit/components/BaseHeader';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import '@/styles/css/index.css';
 
 export default async function RootLayout({ children, params }: PageProps) {
-  const pageParams = new PageParams(await params!);
-  const locale = pageParams.getI18nWithNotFound();
-  const messages = await pageParams.getI18nMessages();
+  const { locale, messages } = await new BootstrapServer().main({ params });
 
   // TODO: suppressHydrationWarning 暂时解决 hydration 问题
   return (

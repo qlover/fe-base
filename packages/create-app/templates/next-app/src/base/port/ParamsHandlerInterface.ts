@@ -1,6 +1,6 @@
 import type { PageI18nInterface } from '@config/i18n';
 
-export interface PageHandlerInterface {
+export interface ParamsHandlerInterface {
   getLocale(defaultLocale?: string): string;
   getI18nWithNotFound(): string;
   getI18nMessages(): Promise<Record<string, string>>;

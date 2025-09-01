@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { i18nConfig } from '@config/i18n';
-import type { PageHandlerInterface } from '../port/PageHandlerInterface';
+import type { ParamsHandlerInterface as ParamsHandlerInterface } from '../port/ParamsHandlerInterface';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
 
 export interface PageWithParams {
@@ -15,7 +15,7 @@ export interface PageParamsType {
 /**
  * Handler Page Params
  */
-export class PageParams implements PageHandlerInterface {
+export class PageParams implements ParamsHandlerInterface {
   private locale: string | null;
 
   constructor(protected readonly params: PageParamsType) {
