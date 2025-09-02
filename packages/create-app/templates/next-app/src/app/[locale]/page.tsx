@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { ServerAuth } from '@/base/cases/ServerAuth';
-import type { PageProps } from '@/base/types/PageProps';
+import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
 
-export default async function Home({ params }: PageProps) {
+export default async function Home({ params }: PageParamsProps) {
   const server = new BootstrapServer(await params!);
 
   const { locale } = await server.main();

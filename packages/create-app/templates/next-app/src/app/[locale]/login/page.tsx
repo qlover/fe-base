@@ -1,6 +1,10 @@
+import { notFound } from 'next/navigation';
 import { loginI18n, i18nConfig } from '@config/i18n';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
-import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
+import { ServerAuth } from '@/base/cases/ServerAuth';
+import type { PageParamsProps } from '@/base/types/PageProps';
+import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
+import { redirect } from '@/i18n/routing';
 import { FeatureItem } from './FeatureItem';
 import { LoginForm } from './LoginForm';
 import type { Metadata } from 'next';
@@ -30,8 +34,20 @@ export async function generateMetadata({
   return tt;
 }
 
-export default function LoginPage() {
-  const tt = useI18nInterface(loginI18n);
+export default async function LoginPage(props: PageParamsProps) {
+  if (!props.params) {
+    return notFound();
+  }
+
+  const params = await props.params;
+
+  const server = new BootstrapServer(params);
+
+  if (await new ServerAuth(server).hasAuth()) {
+    return redirect({ href: '/', locale: params.locale! });
+  }
+
+  const tt = await server.getI18nInterface(loginI18n);
 
   return (
     <div

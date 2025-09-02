@@ -11,6 +11,7 @@ import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import type { ParamsHandlerInterface } from '@/base/port/ParamsHandlerInterface';
 import type { ServerInterface } from '@/base/port/ServerInterface';
 import { ServerIOC } from '../serverIoc/ServerIOC';
+import type { PageI18nInterface } from '@config/i18n';
 
 export interface BootstrapServerResult {
   locale: string;
@@ -78,6 +79,13 @@ export class BootstrapServer implements ServerInterface {
 
     this.executor.use(plugin as ExecutorPlugin<unknown>);
     return this;
+  }
+
+  async getI18nInterface<T extends PageI18nInterface>(
+    i18nInterface: T,
+    namespace?: string
+  ): Promise<T> {
+    return this.paramsHandler.getI18nInterface(i18nInterface, namespace);
   }
 
   getContext(): BootstrapContextValue {
