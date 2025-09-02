@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
 
-export function BaseHeader() {
+export function BaseHeader(props: { showLogoutButton?: boolean }) {
+  const { showLogoutButton } = props;
   const appConfig = useIOC(IOCIdentifier.AppConfig);
   return (
     <header
@@ -36,6 +38,8 @@ export function BaseHeader() {
         <div className="flex items-center gap-4">
           <LanguageSwitcher />
           <ThemeSwitcher />
+
+          {showLogoutButton && <LogoutButton />}
         </div>
       </div>
     </header>

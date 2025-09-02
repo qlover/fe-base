@@ -1,8 +1,9 @@
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
+import { RouterService } from '@/base/cases/RouterService';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import { I18nService } from '@/base/services/I18nService';
 import { UserService } from '@/base/services/UserService';
-import { logger, JSON } from '../globals';
+import { dialogHandler, logger, JSON } from '../globals';
 import type {
   IOCContainerInterface,
   IOCManagerInterface,
@@ -27,7 +28,7 @@ export class ClientIOCRegister
     ioc.bind(I.Logger, logger);
     ioc.bind(I.AppConfig, appConfig);
     // ioc.bind(I.EnvConfigInterface, appConfig);
-    // ioc.bind(I.DialogHandler, dialogHandler);
+    ioc.bind(I.DialogHandler, dialogHandler);
     // ioc.bind(I.UIDialogInterface, dialogHandler);
     // ioc.bind(I.AntdStaticApiInterface, dialogHandler);
     // ioc.bind(I.LocalStorage, globals.localStorage);
@@ -47,18 +48,7 @@ export class ClientIOCRegister
    */
   protected registerImplement(ioc: IOCContainerInterface): void {
     ioc.bind(I.I18nServiceInterface, new I18nService());
-    // ioc.bind(
-    //   I.RouteServiceInterface,
-    //   new RouteService(
-    //     ioc.get(NavigateBridge),
-    //     ioc.get(I.I18nServiceInterface),
-    //     {
-    //       routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
-    //       logger: ioc.get(I.Logger),
-    //       hasLocalRoutes: useLocaleRoutes
-    //     }
-    //   )
-    // );
+    ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     // ioc.bind(
     //   I.ThemeService,
     //   new ThemeService({

@@ -3,6 +3,8 @@ import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 import { ThemeProvider } from 'next-themes';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { clientIOC } from '@/core/clientIoc/ClientIOC';
 import { BootstrapsProvider } from './BootstrapsProvider';
 import type { CommonThemeConfig } from '@config/theme';
 
@@ -23,10 +25,13 @@ export function ComboProvider(props: {
 }) {
   const { themeConfig, children } = props;
 
+  const IOC = clientIOC.create();
+
   return (
     <AntdThemeProvider
       data-testid="ComboProvider"
       theme={themeConfig.antdTheme}
+      staticApi={IOC(IOCIdentifier.DialogHandler)}
     >
       <ThemeProvider
         themes={themeConfig.supportedThemes as unknown as string[]}

@@ -8,7 +8,6 @@ import {
 } from '@qlover/corekit-bridge';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
-import { UserService } from '@/base/services/UserService';
 
 export class ServerIOCRegister
   implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
@@ -46,9 +45,7 @@ export class ServerIOCRegister
     );
   }
 
-  protected registerImplement(ioc: IOCContainerInterface): void {
-    ioc.bind(I.UserServiceInterface, ioc.get(UserService));
-  }
+  protected registerImplement(_ioc: IOCContainerInterface): void {}
 
   protected registerCommon(_ioc: IOCContainerInterface): void {}
 

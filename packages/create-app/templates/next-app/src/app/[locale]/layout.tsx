@@ -16,10 +16,10 @@ export default async function RootLayout({
   return (
     <html data-testid="RootLayout" lang={locale} suppressHydrationWarning>
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ComboProvider themeConfig={themeConfig}>
             <div className="flex flex-col min-h-screen">
-              <BaseHeader />
+              <BaseHeader showLogoutButton />
               <div className="flex flex-col">{children}</div>
             </div>
           </ComboProvider>
