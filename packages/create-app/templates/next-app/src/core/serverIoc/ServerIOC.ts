@@ -38,5 +38,3 @@ export class ServerIOC
     return this.ioc;
   }
 }
-
-export const serverIOC = new ServerIOC();

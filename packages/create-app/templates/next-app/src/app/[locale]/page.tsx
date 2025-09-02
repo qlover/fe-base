@@ -1,14 +1,17 @@
 import Image from 'next/image';
-import { ServerAuthPlugin } from '@/base/cases/ServerAuthPlugin';
-import { ServerErrorHandler } from '@/base/cases/ServerErrorHandler';
+import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
+import { redirect } from '@/i18n/routing';
 
 export default async function Home({ params }: PageProps) {
-  await new BootstrapServer(await params!)
-    .use(new ServerAuthPlugin())
-    .use(new ServerErrorHandler())
-    .main();
+  const server = new BootstrapServer(await params!);
+
+  const { locale } = await server.main();
+
+  if (!(await new ServerAuth(server).hasAuth())) {
+    redirect({ href: '/login', locale });
+  }
 
   return (
     <div

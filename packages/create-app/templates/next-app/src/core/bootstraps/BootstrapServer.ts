@@ -9,7 +9,8 @@ import { AsyncExecutor, type ExecutorPlugin } from '@qlover/fe-corekit';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import type { ParamsHandlerInterface } from '@/base/port/ParamsHandlerInterface';
-import { serverIOC } from '../serverIoc/ServerIOC';
+import type { ServerInterface } from '@/base/port/ServerInterface';
+import { ServerIOC } from '../serverIoc/ServerIOC';
 
 export interface BootstrapServerResult {
   locale: string;
@@ -21,29 +22,46 @@ export interface BootstrapServerContextValue extends BootstrapContextValue {
   messages: Record<string, string>;
 }
 
-export class BootstrapServer extends AsyncExecutor {
-  protected ioc: IOCFunctionInterface<
+export class BootstrapServer implements ServerInterface {
+  protected executor: AsyncExecutor;
+  protected root: Record<string, unknown> = {};
+  protected IOC: IOCFunctionInterface<
     IOCIdentifierMapServer,
     IOCContainerInterface
   >;
-  protected root: Record<string, unknown>;
   protected logger: LoggerInterface;
   protected paramsHandler: ParamsHandlerInterface;
 
   constructor(params: PageParamsType) {
-    super();
-
+    const serverIOC = new ServerIOC();
     const ioc = serverIOC.create();
-    const root = {};
     const logger = ioc(I.Logger);
 
+    this.executor = new AsyncExecutor();
     this.paramsHandler = new PageParams(params);
-    this.root = root;
-    this.ioc = ioc;
+    this.IOC = ioc;
     this.logger = logger;
   }
 
-  override use(
+  getIOC(): IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
+  getIOC<T extends keyof IOCIdentifierMapServer>(
+    identifier: T
+  ): IOCIdentifierMapServer[T];
+  getIOC(
+    identifier?: keyof IOCIdentifierMapServer
+  ):
+    | IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>
+    | IOCIdentifierMapServer[keyof IOCIdentifierMapServer] {
+    if (identifier === undefined) {
+      return this.IOC;
+    }
+    return this.IOC(identifier);
+  }
+
+  /**
+   * @override
+   */
+  use(
     plugin:
       | BootstrapExecutorPlugin
       | BootstrapExecutorPlugin[]
@@ -55,16 +73,16 @@ export class BootstrapServer extends AsyncExecutor {
         ) => BootstrapExecutorPlugin)
   ): this {
     if (typeof plugin === 'function') {
-      plugin = plugin(this.ioc);
+      plugin = plugin(this.IOC);
     }
 
-    super.use(plugin as ExecutorPlugin<unknown>);
+    this.executor.use(plugin as ExecutorPlugin<unknown>);
     return this;
   }
 
   getContext(): BootstrapContextValue {
     return {
-      ioc: this.ioc,
+      ioc: this.IOC,
       root: this.root,
       logger: this.logger
     };
@@ -83,7 +101,7 @@ export class BootstrapServer extends AsyncExecutor {
     const newContext = Object.assign(context, ctx);
 
     try {
-      await this.exec(newContext, () => Promise.resolve(newContext));
+      await this.executor.exec(newContext, () => Promise.resolve(newContext));
     } catch (error) {
       if (errorHandler) {
         await errorHandler(error, newContext);

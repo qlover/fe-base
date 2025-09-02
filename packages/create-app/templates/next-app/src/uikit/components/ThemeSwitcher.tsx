@@ -45,6 +45,21 @@ export function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMountedClient();
 
+  // 如果组件未挂载，返回空的 Select 以避免闪烁
+  if (!mounted) {
+    return (
+      <Select
+        data-testid="ThemeSwitcher"
+        loading
+        value="system"
+        options={[]}
+        style={{ width: 120 }}
+        className="min-w-40 max-w-full"
+        disabled
+      />
+    );
+  }
+
   const themeOptions = ['system', ...supportedThemes!].map((themeName) => {
     const { i18nkey, colors, icons } = colorMap[themeName] || colorMap.light;
     const [currentColor, normalColor] = colors;
@@ -74,13 +89,11 @@ export function ThemeSwitcher() {
   return (
     <Select
       data-testid="ThemeSwitcher"
-      loading={!mounted}
-      value={mounted ? theme : themeOptions[0]?.key}
+      value={theme}
       onChange={setTheme}
       options={themeOptions}
       style={{ width: 120 }}
       className="min-w-40 max-w-full"
-      disabled={!mounted}
     />
   );
 }
