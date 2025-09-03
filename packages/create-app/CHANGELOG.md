@@ -1,5 +1,96 @@
 # @qlover/create-app
 
+## 0.7.8
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** enhance internationalization support with new localization files and refactor layout structure ([9d73643](https://github.com/qlover/fe-base/commit/9d7364337c18bac196a554b50e2342a51e15154d)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Added English and Chinese localization files for common application messages to improve internationalization.
+  - Refactored layout.tsx to streamline locale handling and message retrieval using the new PageParams class.
+  - Removed the obsolete getServerI18n function to simplify the localization setup.
+  - Updated LoginPage and related components to utilize the new i18n structure for better translation handling.
+
+  These changes aim to enhance the user experience by providing comprehensive localization support and improving the overall structure of the application.
+
+- **next-app:** enhance IOC integration and introduce new service interfaces ([688ec8e](https://github.com/qlover/fe-base/commit/688ec8e11f94fd92a13257dbdd7ba6359f4a2efc)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Added UserService interface to IOCIdentifier for improved dependency management.
+  - Updated IOCIdentifierMap to include UserService, facilitating better service registration.
+  - Refactored LoginForm to utilize the useIOC hook for accessing UserService, enhancing component modularity.
+  - Introduced new IOCInterface for defining IOC registration options and container interactions.
+  - Created ClientIOC and ServerIOC classes for managing client and server-side IOC functionalities, improving overall architecture.
+
+  These changes aim to streamline dependency injection and enhance the modularity of the application, providing a clearer structure for service interactions.
+
+- **next-app:** refactor layout and enhance parameter handling with BootstrapServer ([3bf30c4](https://github.com/qlover/fe-base/commit/3bf30c4aee2b44a717a67ab26f1a7f36b8dc19e9)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Updated RootLayout to utilize BootstrapServer for locale and message retrieval, improving internationalization support.
+  - Refactored PageParams to implement ParamsHandlerInterface, streamlining parameter management.
+  - Introduced BootstrapServer class for better server-side parameter handling and integration with IOC.
+  - Created ParamsHandlerInterface to standardize parameter handling across the application.
+
+  These changes aim to enhance the modularity and maintainability of the application while improving the internationalization experience.
+
+- **next-app:** enhance localization and error handling in application ([1b1c7ab](https://github.com/qlover/fe-base/commit/1b1c7ab534657a88d14524ce25432bc4042ec26c)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Updated generateLocales function to output locale files in a simplified format.
+  - Refactored IOCIdentifier to replace Logger type with LoggerInterface for better type safety.
+  - Added SERVER_AUTH_ERROR identifier to common error messages for improved error handling.
+  - Integrated new error messages into English and Chinese localization files.
+  - Removed obsolete common.json files to streamline localization structure.
+  - Introduced ServerAuthPlugin and ServerErrorHandler for enhanced server-side authentication and error management.
+
+  These changes aim to improve the application's internationalization capabilities and error handling processes, providing a more robust user experience.
+
+- **next-app:** refactor authentication handling and streamline server integration ([c17bc24](https://github.com/qlover/fe-base/commit/c17bc242067e4a01a50c89832c9060e130ca5291)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Replaced ServerAuthPlugin with a new ServerAuth class for improved authentication management.
+  - Updated Home page to utilize the new ServerAuth class for checking user authentication and redirecting to the login page if necessary.
+  - Removed obsolete ServerAuthPlugin file to clean up the codebase.
+  - Introduced ServerInterface and ServerAuthInterface for better abstraction and type safety in server interactions.
+
+  These changes aim to enhance the authentication flow and improve the overall structure of the server-side logic in the application.
+
+- **next-app:** enhance routing and dialog handling with new services and components ([944ded9](https://github.com/qlover/fe-base/commit/944ded9c93223d4230d1911552ba17e90a23fd57)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Introduced RouterService and NavigateBridge for improved navigation management within the application.
+  - Added DialogHandler for standardized dialog and notification handling using Ant Design components.
+  - Updated IOCIdentifier to include new services and interfaces for better dependency management.
+  - Refactored LoginForm to utilize the new RouterService for navigation after login.
+  - Enhanced BaseHeader to conditionally display a logout button, improving user experience.
+  - Integrated new components and services into the application structure for better modularity and maintainability.
+
+  These changes aim to streamline navigation and dialog interactions, enhancing the overall user experience and application architecture.
+
+- **next-app:** refactor page properties and enhance server integration ([ce49da5](https://github.com/qlover/fe-base/commit/ce49da573ccd621559d3d5cbcea448db93998e66)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Renamed PageProps to PageParamsProps for clarity in parameter handling.
+  - Updated Home and LoginPage components to utilize the new PageParamsProps interface for improved type safety.
+  - Enhanced BootstrapServer to include a method for retrieving internationalization interfaces, streamlining localization support.
+  - Added error handling in LoginPage to manage missing parameters effectively.
+
+  These changes aim to improve the structure and clarity of page properties while enhancing server-side integration for better localization management.
+
+- **next-app:** refactor server integration and enhance parameter handling ([bd3cd12](https://github.com/qlover/fe-base/commit/bd3cd12cec6f0dc1b2b660e977f5e81cb18951ab)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Updated layout and page components to utilize the new PageParams class for improved locale and message retrieval.
+  - Refactored BootstrapServer to streamline server initialization and removed obsolete methods for better clarity.
+  - Enhanced LoginPage to utilize PageParams for internationalization interface retrieval, improving localization support.
+
+  These changes aim to improve the structure and maintainability of server interactions while enhancing the internationalization experience across the application.
+
+#### 🐞 Bug Fixes
+
+- **next-app:** update eslint-plugin dependency to latest version ([2fea1ab](https://github.com/qlover/fe-base/commit/2fea1ab9c94cc52ffe34e82d2980baf99de55aae)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Changed the @qlover/eslint-plugin dependency in package.json from a local file reference to the latest version. This update ensures that the project uses the most recent features and fixes available in the eslint-plugin package.
+
+  This change aims to improve code quality and maintainability by leveraging the latest enhancements in the eslint-plugin.
+
+#### ♻️ Refactors
+
+- **next-app:** remove obsolete ESLint plugin and streamline localization setup ([d1c81b4](https://github.com/qlover/fe-base/commit/d1c81b4185131bad25f497e0004ebc48001ac9fe)) ([#506](https://github.com/qlover/fe-base/pull/506))
+  - Deleted the custom eslint-plugin-testid as it has been replaced by @qlover/eslint-plugin for better testability.
+  - Removed the generateLocalesPlugin as its functionality is now integrated into the build process.
+  - Added English and Chinese localization files for common application messages to enhance internationalization support.
+  - Updated the i18n request configuration to dynamically load the appropriate locale files based on the selected language.
+
+  These changes aim to simplify the localization setup and improve the overall structure of the internationalization implementation.
+
 ## 0.7.7
 
 ### Patch Changes
