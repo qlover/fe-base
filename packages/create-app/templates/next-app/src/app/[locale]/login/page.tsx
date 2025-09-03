@@ -29,9 +29,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const pageParams = new PageParams(await params);
 
-  const tt = await pageParams.getI18nInterface(loginI18n);
-
-  return tt;
+  return await pageParams.getI18nInterface(loginI18n);
 }
 
 export default async function LoginPage(props: PageParamsProps) {

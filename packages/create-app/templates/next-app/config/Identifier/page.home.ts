@@ -13,6 +13,13 @@ export const PAGE_HOME_TITLE = 'page__home__title';
 export const PAGE_HOME_DESCRIPTION = 'page__home__description';
 
 /**
+ * @description Home page keywords
+ * @localZh 现代前端实用库, 实用工具, 组件
+ * @localEn Modern frontend utility library, practical tools, components
+ */
+export const PAGE_HOME_KEYWORDS = 'page__home__keywords';
+
+/**
  * @description Home page welcome message
  * @localZh 欢迎来到主页
  * @localEn Welcome to the home page

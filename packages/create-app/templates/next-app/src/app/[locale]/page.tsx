@@ -1,119 +1,110 @@
-import Image from 'next/image';
-import { PageParams } from '@/base/cases/PageParams';
+import { Button } from 'antd';
+import { i18nConfig } from '@config/i18n';
+import { homeI18n } from '@config/i18n/HomeI18n ';
+import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import type { Metadata } from 'next';
+
+// const navigationItems = [
+//   {
+//     href: '/identifier',
+//     titleKey: 'HOME_IDENTIFIER',
+//     descriptionKey: 'HOME_IDENTIFIER_DESCRIPTION'
+//   }
+// ];
+
+// Generate static params for all supported locales (used for SSG)
+export async function generateStaticParams() {
+  // Return one entry for each supported locale
+  return i18nConfig.supportedLngs.map((locale) => ({ locale }));
+}
+
+// Allow Next.js to statically generate this page if possible (default behavior)
+export const dynamic = 'auto'; // Enable static generation when possible, fallback to dynamic if needed
+
+// Optional: Use revalidate if you want ISR (Incremental Static Regeneration)
+// export const revalidate = 3600; // Rebuild every hour (optional)
+
+// Generate localized SEO metadata per locale (Next.js 15+ best practice)
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<PageParamsType>;
+}): Promise<Metadata> {
+  const pageParams = new PageParams(await params);
+  return await pageParams.getI18nInterface(homeI18n);
+}
 
 export default async function Home({ params }: PageParamsProps) {
   const server = new BootstrapServer();
   const pageParams = new PageParams(await params!);
   const locale = pageParams.getLocale();
+  const tt = await pageParams.getI18nInterface(homeI18n);
 
   if (!(await new ServerAuth(server).hasAuth())) {
     return redirect({ href: '/login', locale });
   }
 
   return (
-    <div
-      data-testid="Home"
-      className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20"
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div data-testid="HomePage" className="min-h-screen bg-primary">
+      {/* Hero Section */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
+            {tt.welcome}
+          </h1>
+          <p className="text-xl text-text-secondary mb-8">{tt.description}</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Navigation Grid */}
+      <section className="max-w-6xl mx-auto px-4 py-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* {navigationItems.map((item) => (
+            <LocaleLink
+              data-testid={`HomePage-navigation-${item.href}`}
+              key={item.href}
+              title={item.titleKey}
+              className={clsx(
+              href={item.href}
+                'block rounded-lg p-6',
+                'bg-secondary',
+                'border border-border',
+                'hover:bg-elevated',
+                'transition-colors duration-200'
+              )}
+            >
+              <h3 className={`text-xl font-semibold mb-3 text-text`}>
+                {t(item.titleKey)}
+              </h3>
+              <p className="text-text-secondary mb-4">
+                {t(item.descriptionKey)}
+              </p>
+              <Button type="primary" className="w-full">
+                {t(i18nKeys.HOME_EXPLORE)}
+              </Button>
+            </LocaleLink>
+          ))} */}
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-16 px-4 bg-elevated">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4 text-text">
+            {tt.getStartedTitle}
+          </h2>
+          <p className="text-lg text-text-secondary mb-8">
+            {tt.getStartedDescription}
+          </p>
+          <Button type="primary" size="large" className="px-8">
+            {tt.getStartedButton}
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
