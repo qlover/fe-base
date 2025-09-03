@@ -12,10 +12,22 @@ import type { IOCIdentifierMapServer } from '@config/IOCIdentifier';
 export class ServerIOC
   implements IOCInterface<IOCIdentifierMapServer, IOCContainerInterface>
 {
+  static instance: ServerIOC | null = null;
+
   protected ioc: IOCFunctionInterface<
     IOCIdentifierMapServer,
     IOCContainerInterface
   > | null = null;
+
+  static create(): ServerIOC {
+    if (this.instance) {
+      return this.instance;
+    }
+
+    this.instance = new ServerIOC();
+
+    return this.instance;
+  }
 
   create(): IOCFunctionInterface<
     IOCIdentifierMapServer,

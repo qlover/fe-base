@@ -40,14 +40,15 @@ export default async function LoginPage(props: PageParamsProps) {
   }
 
   const params = await props.params;
+  const pageParams = new PageParams(params);
 
-  const server = new BootstrapServer(params);
+  const server = new BootstrapServer();
 
   if (await new ServerAuth(server).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
-  const tt = await server.getI18nInterface(loginI18n);
+  const tt = await pageParams.getI18nInterface(loginI18n);
 
   return (
     <div

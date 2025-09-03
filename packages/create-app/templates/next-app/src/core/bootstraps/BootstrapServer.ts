@@ -7,11 +7,8 @@ import {
 } from '@qlover/corekit-bridge';
 import { AsyncExecutor, type ExecutorPlugin } from '@qlover/fe-corekit';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
-import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
-import type { ParamsHandlerInterface } from '@/base/port/ParamsHandlerInterface';
 import type { ServerInterface } from '@/base/port/ServerInterface';
 import { ServerIOC } from '../serverIoc/ServerIOC';
-import type { PageI18nInterface } from '@config/i18n';
 
 export interface BootstrapServerResult {
   locale: string;
@@ -30,16 +27,14 @@ export class BootstrapServer implements ServerInterface {
     IOCIdentifierMapServer,
     IOCContainerInterface
   >;
-  protected logger: LoggerInterface;
-  protected paramsHandler: ParamsHandlerInterface;
+  readonly logger: LoggerInterface;
 
-  constructor(params: PageParamsType) {
-    const serverIOC = new ServerIOC();
+  constructor() {
+    const serverIOC = ServerIOC.create();
     const ioc = serverIOC.create();
     const logger = ioc(I.Logger);
 
     this.executor = new AsyncExecutor();
-    this.paramsHandler = new PageParams(params);
     this.IOC = ioc;
     this.logger = logger;
   }
@@ -79,43 +74,5 @@ export class BootstrapServer implements ServerInterface {
 
     this.executor.use(plugin as ExecutorPlugin<unknown>);
     return this;
-  }
-
-  async getI18nInterface<T extends PageI18nInterface>(
-    i18nInterface: T,
-    namespace?: string
-  ): Promise<T> {
-    return this.paramsHandler.getI18nInterface(i18nInterface, namespace);
-  }
-
-  getContext(): BootstrapContextValue {
-    return {
-      ioc: this.IOC,
-      root: this.root,
-      logger: this.logger
-    };
-  }
-
-  async main(
-    errorHandler?: (
-      error: unknown,
-      context: BootstrapServerContextValue
-    ) => Promise<void>
-  ): Promise<BootstrapServerResult> {
-    const locale = this.paramsHandler.getI18nWithNotFound();
-    const messages = await this.paramsHandler.getI18nMessages();
-    const ctx = { locale, messages };
-    const context = this.getContext();
-    const newContext = Object.assign(context, ctx);
-
-    try {
-      await this.executor.exec(newContext, () => Promise.resolve(newContext));
-    } catch (error) {
-      if (errorHandler) {
-        await errorHandler(error, newContext);
-      }
-    }
-
-    return newContext;
   }
 }
