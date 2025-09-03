@@ -3,9 +3,9 @@
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
-import { UserService } from '@/base/services/UserService';
-import { IOC } from '@/core/IOC';
+import { I } from '@config/IOCIdentifier';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { useIOC } from '@/uikit/hook/useIOC';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
 
 interface LoginFormData {
@@ -15,16 +15,15 @@ interface LoginFormData {
 
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
-  const userService = IOC(UserService);
+  const userService = useIOC(I.UserServiceInterface);
+  const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormData) => {
     try {
       setLoading(true);
-      await userService.login({
-        email: values.email,
-        password: values.password
-      });
+      await userService.login(values);
+      routerService.gotoHome();
     } catch (error) {
       console.error('Login error:', error);
     } finally {

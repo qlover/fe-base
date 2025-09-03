@@ -1,6 +1,19 @@
 import Image from 'next/image';
+import { PageParams } from '@/base/cases/PageParams';
+import { ServerAuth } from '@/base/cases/ServerAuth';
+import type { PageParamsProps } from '@/base/types/PageProps';
+import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
+import { redirect } from '@/i18n/routing';
 
-export default async function Home() {
+export default async function Home({ params }: PageParamsProps) {
+  const server = new BootstrapServer();
+  const pageParams = new PageParams(await params!);
+  const locale = pageParams.getLocale();
+
+  if (!(await new ServerAuth(server).hasAuth())) {
+    return redirect({ href: '/login', locale });
+  }
+
   return (
     <div
       data-testid="Home"

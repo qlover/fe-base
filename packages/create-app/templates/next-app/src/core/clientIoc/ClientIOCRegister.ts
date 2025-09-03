@@ -1,10 +1,18 @@
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
+import { RouterService } from '@/base/cases/RouterService';
+import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import { I18nService } from '@/base/services/I18nService';
-import { logger, JSON } from './globals';
-import type { IOCContainer, IOCRegister, IocRegisterOptions } from './IOC';
-import type { IOCManagerInterface } from '@qlover/corekit-bridge';
+import { UserService } from '@/base/services/UserService';
+import { dialogHandler, logger, JSON } from '../globals';
+import type {
+  IOCContainerInterface,
+  IOCManagerInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge';
 
-export class IocRegisterImpl implements IOCRegister {
+export class ClientIOCRegister
+  implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
+{
   constructor(protected options: IocRegisterOptions) {}
 
   /**
@@ -14,13 +22,13 @@ export class IocRegisterImpl implements IOCRegister {
    *
    * @param ioc - IOC container
    */
-  protected registerGlobals(ioc: IOCContainer): void {
+  protected registerGlobals(ioc: IOCContainerInterface): void {
     const { appConfig } = this.options;
     ioc.bind(I.JSONSerializer, JSON);
     ioc.bind(I.Logger, logger);
     ioc.bind(I.AppConfig, appConfig);
     // ioc.bind(I.EnvConfigInterface, appConfig);
-    // ioc.bind(I.DialogHandler, dialogHandler);
+    ioc.bind(I.DialogHandler, dialogHandler);
     // ioc.bind(I.UIDialogInterface, dialogHandler);
     // ioc.bind(I.AntdStaticApiInterface, dialogHandler);
     // ioc.bind(I.LocalStorage, globals.localStorage);
@@ -38,20 +46,9 @@ export class IocRegisterImpl implements IOCRegister {
    *
    * @param ioc
    */
-  protected registerImplement(ioc: IOCContainer): void {
+  protected registerImplement(ioc: IOCContainerInterface): void {
     ioc.bind(I.I18nServiceInterface, new I18nService());
-    // ioc.bind(
-    //   I.RouteServiceInterface,
-    //   new RouteService(
-    //     ioc.get(NavigateBridge),
-    //     ioc.get(I.I18nServiceInterface),
-    //     {
-    //       routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
-    //       logger: ioc.get(I.Logger),
-    //       hasLocalRoutes: useLocaleRoutes
-    //     }
-    //   )
-    // );
+    ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     // ioc.bind(
     //   I.ThemeService,
     //   new ThemeService({
@@ -61,14 +58,14 @@ export class IocRegisterImpl implements IOCRegister {
     // );
     // ioc.bind(I.I18nKeyErrorPlugin, ioc.get(I18nKeyErrorPlugin));
     // ioc.bind(I.ProcesserExecutorInterface, ioc.get(ProcesserExecutor));
-    // ioc.bind(I.UserServiceInterface, ioc.get(UserService));
+    ioc.bind(I.UserServiceInterface, ioc.get(UserService));
     // ioc.bind(I.RequestCatcherInterface, ioc.get(RequestStatusCatcher));
     // ioc.bind(I.ExecutorPageBridgeInterface, ioc.get(ExecutorPageBridge));
     // ioc.bind(I.JSONStoragePageInterface, ioc.get(JSONStoragePageBridge));
     // ioc.bind(I.RequestPageBridgeInterface, ioc.get(RequestPageBridge));
   }
 
-  protected registerCommon(_ioc: IOCContainer): void {
+  protected registerCommon(_ioc: IOCContainerInterface): void {
     // const { appConfig } = this.options;
     // const logger = ioc.get(I.Logger);
     // const feApiRequestCommonPlugin = new RequestCommonPlugin({
@@ -90,8 +87,8 @@ export class IocRegisterImpl implements IOCRegister {
    * @override
    */
   register(
-    ioc: IOCContainer,
-    _manager: IOCManagerInterface<IOCContainer>
+    ioc: IOCContainerInterface,
+    _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {
     this.registerGlobals(ioc);
     this.registerCommon(ioc);

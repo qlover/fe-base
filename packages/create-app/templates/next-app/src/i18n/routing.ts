@@ -19,9 +19,9 @@ export const routing = defineRouting({
       en: '/',
       zh: '/'
     },
-    '/about': {
-      en: '/about',
-      zh: '/about'
+    '/login': {
+      en: '/login',
+      zh: '/login'
     }
   }
 });

@@ -3,8 +3,11 @@ import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
 import { JSONSerializer } from '@qlover/fe-corekit';
 import { loggerStyles } from '@config/common';
 import { AppConfig } from '@/base/cases/AppConfig';
+import { DialogHandler } from '@/base/cases/DialogHandler';
 
 export const appConfig = new AppConfig();
+
+export const dialogHandler = new DialogHandler();
 
 /**
  * Global logger

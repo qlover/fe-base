@@ -179,5 +179,6 @@
   "page__request__trigger_api_catch": "触发 API 捕获结果",
   "page__request__stop_api_catch": "停止 API 捕获结果",
   "page__login__content": "登录页面内容",
-  "page__login__keywords": "登录页面关键词"
+  "page__login__keywords": "登录页面关键词",
+  "err__server__auth__error": "服务器认证错误"
 }

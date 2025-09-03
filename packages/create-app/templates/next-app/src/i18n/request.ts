@@ -16,7 +16,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Dynamically import the translation messages for the selected locale
   return {
     locale,
-    messages: (await import(`../../public/locales/${locale}/common.json`))
-      .default
+    messages: (await import(`../../public/locales/${locale}.json`)).default
   };
 });

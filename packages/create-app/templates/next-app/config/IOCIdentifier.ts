@@ -1,8 +1,11 @@
 import type { AppConfig } from '@/base/cases/AppConfig';
+import type { DialogHandler } from '@/base/cases/DialogHandler';
+import type { RouterService } from '@/base/cases/RouterService';
 import type { I18nService } from '@/base/services/I18nService';
+import type { UserService } from '@/base/services/UserService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
-import type * as Logger from '@qlover/logger';
+import type { LoggerInterface } from '@qlover/logger';
 
 /**
  * IOC identifier
@@ -15,6 +18,8 @@ export const IOCIdentifier = Object.freeze({
   LocalStorage: 'LocalStorage',
   LocalStorageEncrypt: 'LocalStorageEncrypt',
   CookieStorage: 'CookieStorage',
+  UserServiceInterface: 'UserServiceInterface',
+  RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface'
 });
 
@@ -30,7 +35,7 @@ export const I = IOCIdentifier;
  */
 export interface IOCIdentifierMap {
   [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
-  [IOCIdentifier.Logger]: Logger.Logger;
+  [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.LocalStorage]: FeCorekit.SyncStorage<
     unknown,
     FeCorekit.ObjectStorageOptions
@@ -41,5 +46,13 @@ export interface IOCIdentifierMap {
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
   [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.UserServiceInterface]: UserService;
+  [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
+  [IOCIdentifier.DialogHandler]: DialogHandler;
+}
+
+export interface IOCIdentifierMapServer {
+  [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.Logger]: LoggerInterface;
 }
