@@ -6,6 +6,7 @@ import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import { BaseLayout } from '@/uikit/components/BaseLayout';
 import type { Metadata } from 'next';
 
 // const navigationItems = [
@@ -49,7 +50,7 @@ export default async function Home({ params }: PageParamsProps) {
   }
 
   return (
-    <div data-testid="HomePage" className="min-h-screen bg-primary">
+    <BaseLayout data-testid="HomePage">
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -105,6 +106,6 @@ export default async function Home({ params }: PageParamsProps) {
           </Button>
         </div>
       </section>
-    </div>
+    </BaseLayout>
   );
 }

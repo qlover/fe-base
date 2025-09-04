@@ -47,7 +47,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           prefix={<UserOutlined className="text-text-tertiary" />}
           placeholder={tt.email}
           title={tt.emailTitle}
-          className="h-12 text-base bg-secondary border-border"
+          className="h-12 text-base bg-secondary border-c-border"
           autoComplete="off"
         />
       </Form.Item>
@@ -66,11 +66,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       </Form.Item>
 
       <div className="flex justify-end">
-        <LocaleLink
-          href="#"
-          className="text-brand hover:text-brand-hover"
-          title={tt.forgotPasswordTitle}
-        >
+        <LocaleLink href="#" title={tt.forgotPasswordTitle}>
           {tt.forgotPassword}
         </LocaleLink>
       </div>
@@ -101,11 +97,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
       <div className="text-center mt-6">
         <span className="text-text-tertiary">{tt.noAccount} </span>
-        <LocaleLink
-          href="/register"
-          className="text-brand hover:text-brand-hover"
-          title={tt.createAccountTitle}
-        >
+        <LocaleLink href="/register" title={tt.createAccountTitle}>
           {tt.createAccount}
         </LocaleLink>
       </div>

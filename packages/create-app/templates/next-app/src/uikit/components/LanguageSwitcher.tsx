@@ -1,23 +1,32 @@
 'use client';
 
+import { GlobalOutlined } from '@ant-design/icons';
 import { Select } from 'antd';
 import { useLocale } from 'next-intl';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { i18nConfig } from '@config/i18n';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
+import type {
+  I18nServiceInterface,
+  I18nServiceLocale
+} from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { useIOC } from '../hook/useIOC';
 import { useStore } from '../hook/useStore';
 import type { LocaleType } from '@config/i18n';
 
-export function LanguageSwitcher() {
-  const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
+export function LanguageSwitcher(props: { i18nService: I18nServiceInterface }) {
+  const { i18nService } = props;
   const { loading } = useStore(i18nService);
   const pathname = usePathname(); // current pathname, aware of i18n
 
   const router = useRouter(); // i18n-aware router instance
   const currentLocale = useLocale() as LocaleType; // currently active locale
+
+  const options = useMemo(() => {
+    return i18nConfig.supportedLngs.map((lang) => ({
+      value: lang,
+      label: i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
+    }));
+  }, []);
 
   const handleLanguageChange = useCallback(
     async (value: string) => {
@@ -35,18 +44,34 @@ export function LanguageSwitcher() {
     [i18nService, pathname, router]
   );
 
+  const nextLocale = useMemo(() => {
+    const targetIndex = i18nConfig.supportedLngs.indexOf(currentLocale) + 1;
+    return i18nConfig.supportedLngs[
+      targetIndex % i18nConfig.supportedLngs.length
+    ];
+  }, [currentLocale]);
+
   return (
-    <Select
-      data-testid="LanguageSwitcher"
-      loading={loading}
-      value={currentLocale}
-      onChange={handleLanguageChange}
-      options={i18nConfig.supportedLngs.map((lang) => ({
-        value: lang,
-        label:
-          i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
-      }))}
-      className="w-24"
-    />
+    <>
+      <span
+        data-testid="LanguageSwitcher"
+        className="hidden overflow-hidden md:inline-block"
+      >
+        <Select
+          loading={loading}
+          value={currentLocale}
+          onChange={handleLanguageChange}
+          options={options}
+        />
+      </span>
+
+      <span
+        data-testid="LanguageSwitcherMobile"
+        className="inline-block md:hidden text-c-brand hover:text-c-brand-hover cursor-pointer text-lg transition-colors"
+        onClick={() => handleLanguageChange(nextLocale)}
+      >
+        <GlobalOutlined />
+      </span>
+    </>
   );
 }
