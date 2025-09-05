@@ -236,4 +236,16 @@ html,
     --fe-message-info-color: var(--fe-color-primary);
     --fe-message-loading-color: var(--fe-color-primary);
   }
+
+  .ant-dropdown-css-var {
+    /* Control Variables - Default Theme */
+    --fe-control-outline-width: 2px;
+    --fe-control-interactive-size: 16px;
+    --fe-control-item-bg-hover: rgba(0, 0, 0, 0.04);
+    --fe-control-item-bg-active: #e6f4ff;
+    --fe-control-item-bg-active-hover: #bae0ff;
+    --fe-control-item-bg-active-disabled: rgba(0, 0, 0, 0.15);
+    --fe-control-tmp-outline: rgba(0, 0, 0, 0.02);
+    --fe-control-outline: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
+  }
 }

@@ -5,6 +5,7 @@ import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from './FeatureItem';
 import { LoginForm } from './LoginForm';
 import type { Metadata } from 'next';
@@ -29,9 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const pageParams = new PageParams(await params);
 
-  const tt = await pageParams.getI18nInterface(loginI18n);
-
-  return tt;
+  return await pageParams.getI18nInterface(loginI18n);
 }
 
 export default async function LoginPage(props: PageParamsProps) {
@@ -51,18 +50,11 @@ export default async function LoginPage(props: PageParamsProps) {
   const tt = await pageParams.getI18nInterface(loginI18n);
 
   return (
-    <div
+    <BaseLayout
       data-testid="LoginPage"
-      className="flex text-xs1 bg-primary min-h-screen"
+      className="text-xs1 bg-primary flex flex-col min-h-screen"
     >
-      {/* Left side - Brand section */}
       <div className="hidden lg:flex bg-secondary lg:w-1/2 p-12 flex-col">
-        <div className="flex items-center gap-3 mb-12">
-          <div className="w-10 h-10 bg-brand rounded-lg"></div>
-          <span className="text-2xl font-semibold text-text">
-            {'AppConfig.appName'}
-          </span>
-        </div>
         <h1 className="text-4xl font-bold text-text mb-4">{tt.welcome}</h1>
         <p className="text-text-secondary text-lg mb-8">{tt.subtitle}</p>
         <div className="space-y-4">
@@ -72,7 +64,6 @@ export default async function LoginPage(props: PageParamsProps) {
         </div>
       </div>
 
-      {/* Right side - Login form */}
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
           <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title}</h2>
@@ -81,6 +72,6 @@ export default async function LoginPage(props: PageParamsProps) {
           <LoginForm tt={tt} />
         </div>
       </div>
-    </div>
+    </BaseLayout>
   );
 }

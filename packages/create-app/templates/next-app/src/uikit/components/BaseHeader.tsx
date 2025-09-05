@@ -10,10 +10,12 @@ import { ThemeSwitcher } from './ThemeSwitcher';
 export function BaseHeader(props: { showLogoutButton?: boolean }) {
   const { showLogoutButton } = props;
   const appConfig = useIOC(IOCIdentifier.AppConfig);
+  const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
+
   return (
     <header
-      data-testid="base-header"
-      className="h-14 bg-secondary border-b border-border sticky top-0 z-50"
+      data-testid="BaseHeader"
+      className="h-14 bg-secondary border-b border-c-border sticky top-0 z-50"
     >
       <div className="flex items-center justify-between h-full px-4 mx-auto max-w-7xl">
         <div className="flex items-center">
@@ -21,12 +23,6 @@ export function BaseHeader(props: { showLogoutButton?: boolean }) {
             href="/"
             className="flex items-center hover:opacity-80 transition-opacity"
           >
-            {/* <img
-              data-testid="base-header-logo"
-              src={IOC(PublicAssetsPath).getPath('/logo.svg')}
-              alt="logo"
-              className="h-8 w-auto"
-            /> */}
             <span
               data-testid="base-header-app-name"
               className="ml-2 text-lg font-semibold text-text"
@@ -35,10 +31,9 @@ export function BaseHeader(props: { showLogoutButton?: boolean }) {
             </span>
           </Link>
         </div>
-        <div className="flex items-center gap-4">
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher i18nService={i18nService} />
           <ThemeSwitcher />
-
           {showLogoutButton && <LogoutButton />}
         </div>
       </div>

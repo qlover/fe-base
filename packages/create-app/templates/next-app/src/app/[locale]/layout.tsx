@@ -2,7 +2,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { themeConfig } from '@config/theme';
 import { PageParams } from '@/base/cases/PageParams';
 import type { PageLayoutProps } from '@/base/types/PageProps';
-import { BaseHeader } from '@/uikit/components/BaseHeader';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import '@/styles/css/index.css';
 
@@ -19,12 +18,7 @@ export default async function RootLayout({
     <html data-testid="RootLayout" lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ComboProvider themeConfig={themeConfig}>
-            <div className="flex flex-col min-h-screen">
-              <BaseHeader showLogoutButton />
-              <div className="flex flex-col">{children}</div>
-            </div>
-          </ComboProvider>
+          <ComboProvider themeConfig={themeConfig}>{children}</ComboProvider>
         </NextIntlClientProvider>
       </body>
     </html>

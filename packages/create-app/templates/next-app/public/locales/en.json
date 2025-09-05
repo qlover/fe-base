@@ -180,5 +180,6 @@
   "page__request__stop_api_catch": "Stop API Catch Result",
   "page__login__content": "Login Page Content",
   "page__login__keywords": "Login Page Keywords",
-  "err__server__auth__error": "Server auth error"
+  "err__server__auth__error": "Server auth error",
+  "page__home__keywords": "Modern frontend utility library, practical tools, components"
 }
