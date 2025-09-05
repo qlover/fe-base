@@ -1,5 +1,35 @@
 # @qlover/create-app
 
+## 0.7.9
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** enhance home page internationalization and SEO support ([54d7714](https://github.com/qlover/fe-base/commit/54d77146f26ce132ddd20edace52a1a10eb03149)) ([#508](https://github.com/qlover/fe-base/pull/508))
+  - Added PAGE_HOME_KEYWORDS constant to improve SEO with relevant keywords for the home page.
+  - Created HomeI18nInterface to manage internationalization for the home page, incorporating keywords and welcome messages.
+  - Updated English and Chinese localization files to include new keywords for the home page, enhancing multilingual support.
+  - Refactored Home component to utilize the new i18n structure for better localization handling.
+
+  These changes aim to improve the user experience by providing comprehensive localization and SEO enhancements for the home page.
+
+- **next-app:** enhance login components and improve styling consistency ([59b8b85](https://github.com/qlover/fe-base/commit/59b8b85179e78f29f1eca5b8e7e375b6b8c660eb)) ([#508](https://github.com/qlover/fe-base/pull/508))
+  - Updated LoginForm component to use new border color variable for improved styling consistency.
+  - Simplified LocaleLink components in LoginForm for cleaner code and better readability.
+  - Refactored LoginPage to remove unnecessary elements, streamlining the layout.
+  - Enhanced CSS variables in page.css for better color management across the application.
+
+  These changes aim to improve the user interface and maintain a consistent design across the login components.
+
+- **next-app:** update scripts, enhance theme support, and improve styling ([aebcdfa](https://github.com/qlover/fe-base/commit/aebcdfaeb5bae706ac96dc410056f3064eb1e8e9)) ([#508](https://github.com/qlover/fe-base/pull/508))
+  - Updated package.json scripts to specify ports for development and production environments.
+  - Added new CSS variables for hover states and improved theme management in various CSS files.
+  - Enhanced the LanguageSwitcher and ThemeSwitcher components to utilize dropdowns for better user experience.
+  - Refactored BaseLayout to include a background color for the main content area.
+
+  These changes aim to improve the application's usability and maintainability by enhancing the theme management and user interface components.
+
 ## 0.7.8
 
 ### Patch Changes
