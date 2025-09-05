@@ -19,7 +19,7 @@ export function BaseLayout({
       {...props}
     >
       <BaseHeader showLogoutButton={showLogoutButton} />
-      <main className="flex flex-1" {...mainProps}>
+      <main className="flex flex-1 flex-col bg-primary" {...mainProps}>
         {children}
       </main>
     </div>

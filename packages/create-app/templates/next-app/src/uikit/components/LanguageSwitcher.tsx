@@ -1,7 +1,7 @@
 'use client';
 
-import { GlobalOutlined } from '@ant-design/icons';
-import { Select } from 'antd';
+import { TranslationOutlined } from '@ant-design/icons';
+import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo } from 'react';
 import { i18nConfig } from '@config/i18n';
@@ -10,22 +10,27 @@ import type {
   I18nServiceLocale
 } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { useStore } from '../hook/useStore';
 import type { LocaleType } from '@config/i18n';
+import type { ItemType } from 'antd/es/menu/interface';
 
 export function LanguageSwitcher(props: { i18nService: I18nServiceInterface }) {
   const { i18nService } = props;
-  const { loading } = useStore(i18nService);
   const pathname = usePathname(); // current pathname, aware of i18n
 
   const router = useRouter(); // i18n-aware router instance
   const currentLocale = useLocale() as LocaleType; // currently active locale
 
-  const options = useMemo(() => {
-    return i18nConfig.supportedLngs.map((lang) => ({
-      value: lang,
-      label: i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
-    }));
+  const options: ItemType[] = useMemo(() => {
+    return i18nConfig.supportedLngs.map(
+      (lang) =>
+        ({
+          type: 'item',
+          key: lang,
+          value: lang,
+          label:
+            i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
+        }) as ItemType
+    );
   }, []);
 
   const handleLanguageChange = useCallback(
@@ -52,26 +57,24 @@ export function LanguageSwitcher(props: { i18nService: I18nServiceInterface }) {
   }, [currentLocale]);
 
   return (
-    <>
+    <Dropdown
+      data-testid="LanguageSwitcherDropdown"
+      trigger={['hover']}
+      menu={{
+        selectedKeys: [currentLocale],
+        items: options,
+        onClick: ({ key }) => {
+          handleLanguageChange(key);
+        }
+      }}
+    >
       <span
         data-testid="LanguageSwitcher"
-        className="hidden overflow-hidden md:inline-block"
-      >
-        <Select
-          loading={loading}
-          value={currentLocale}
-          onChange={handleLanguageChange}
-          options={options}
-        />
-      </span>
-
-      <span
-        data-testid="LanguageSwitcherMobile"
-        className="inline-block md:hidden text-c-brand hover:text-c-brand-hover cursor-pointer text-lg transition-colors"
+        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
         onClick={() => handleLanguageChange(nextLocale)}
       >
-        <GlobalOutlined />
+        <TranslationOutlined />
       </span>
-    </>
+    </Dropdown>
   );
 }

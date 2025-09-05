@@ -20,4 +20,5 @@ export const themeConfig = {
   } as ThemeConfig
 } as const;
 
+export type SupportedTheme = (typeof themeConfig.supportedThemes)[number];
 export type CommonThemeConfig = typeof themeConfig;

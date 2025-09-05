@@ -11,6 +11,7 @@
   --color-secondary: rgba(var(--color-bg-secondary));
   --color-elevated: rgba(var(--color-bg-elevated));
   --color-text: rgba(var(--text-primary));
+  --color-text-hover: rgba(var(--text-primary-hover));
   --color-text-secondary: rgba(var(--text-secondary));
   --color-text-tertiary: rgba(var(--text-tertiary));
   --color-c-border: rgba(var(--color-border));

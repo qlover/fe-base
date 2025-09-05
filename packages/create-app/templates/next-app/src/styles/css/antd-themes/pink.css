@@ -201,4 +201,20 @@
       0 9px 28px 8px rgba(244, 114, 182, 0.05);
     --fe-modal-mask-bg: rgba(244, 114, 182, 0.45);
   }
+  .ant-dropdown-css-var {
+    /* Control Variables - Pink Theme */
+    --fe-control-outline-width: 2px;
+    --fe-control-interactive-size: 16px;
+    --fe-control-item-bg-hover: rgba(0, 0, 0, 0.04);
+    --fe-control-item-bg-active: #fce7f3; /* pink-100 */
+    --fe-control-item-bg-active-hover: #fbcfe8; /* pink-200 */
+    --fe-control-item-bg-active-disabled: rgba(0, 0, 0, 0.15);
+    --fe-control-tmp-outline: rgba(0, 0, 0, 0.02);
+    --fe-control-outline: rgba(
+      244,
+      114,
+      182,
+      0.1
+    ); /* pink-400 with 0.1 opacity */
+  }
 }
