@@ -1,4 +1,5 @@
 import {
+  type ServiceIdentifier,
   type BootstrapContextValue,
   type BootstrapExecutorPlugin,
   type IOCContainerInterface,
@@ -43,11 +44,12 @@ export class BootstrapServer implements ServerInterface {
   getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier: T
   ): IOCIdentifierMapServer[T];
-  getIOC(
-    identifier?: keyof IOCIdentifierMapServer
+  getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  getIOC<T extends keyof IOCIdentifierMapServer>(
+    identifier?: T
   ):
     | IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>
-    | IOCIdentifierMapServer[keyof IOCIdentifierMapServer] {
+    | IOCIdentifierMapServer[T] {
     if (identifier === undefined) {
       return this.IOC;
     }

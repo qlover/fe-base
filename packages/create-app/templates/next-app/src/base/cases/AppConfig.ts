@@ -12,4 +12,7 @@ export class AppConfig implements EnvConfigInterface {
   readonly appVersion: string = version;
 
   readonly userTokenKey: string = '_user_token';
+
+  readonly supabaseUrl: string = process.env.SUPABASE_URL!;
+  readonly supabaseAnonKey: string = process.env.SUPABASE_ANON_KEY!;
 }

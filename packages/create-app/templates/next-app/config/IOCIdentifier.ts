@@ -1,6 +1,7 @@
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type { DialogHandler } from '@/base/cases/DialogHandler';
 import type { RouterService } from '@/base/cases/RouterService';
+import { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
 import type { UserService } from '@/base/services/UserService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
@@ -20,7 +21,8 @@ export const IOCIdentifier = Object.freeze({
   CookieStorage: 'CookieStorage',
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
-  I18nServiceInterface: 'I18nServiceInterface'
+  I18nServiceInterface: 'I18nServiceInterface',
+  DBBridgeInterface: 'DBBridgeInterface'
 });
 
 export const I = IOCIdentifier;
@@ -55,4 +57,5 @@ export interface IOCIdentifierMap {
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: AppConfig;
   [IOCIdentifier.Logger]: LoggerInterface;
+  [IOCIdentifier.DBBridgeInterface]: DBBridgeInterface;
 }
