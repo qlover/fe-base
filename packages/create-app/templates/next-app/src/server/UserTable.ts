@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
+import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
+import type { DBTableInterface } from '@/base/port/DBTableInterface';
 import { SupabaseBridge } from './SupabaseBridge';
-import type { DBBridgeInterface } from '../port/DBBridgeInterface';
-import type { DBTableInterface } from '../port/DBTableInterface';
 
 @injectable()
 export class UserTable implements DBTableInterface {
@@ -10,6 +10,6 @@ export class UserTable implements DBTableInterface {
   constructor(@inject(SupabaseBridge) protected dbBridge: DBBridgeInterface) {}
 
   getAll(): Promise<unknown> {
-    return this.dbBridge.get(this.name);
+    return this.dbBridge.get({ table: this.name });
   }
 }
