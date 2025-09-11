@@ -1,9 +1,9 @@
-CREATE TABLE IF NOT EXISTS fe_tpl_migrations (
+CREATE TABLE IF NOT EXISTS fe_users (
   id BIGSERIAL PRIMARY KEY,
-  migration_name TEXT NOT NULL,
-  sql_executed TEXT NOT NULL,
-  executed_by TEXT,
-  executed_at TIMESTAMPTZ DEFAULT NOW(),
-  status TEXT DEFAULT 'success',
-  error_message TEXT
+  role TEXT NOT NULL,
+  email TEXT NOT NULL,
+  password TEXT NOT NULL,
+  email_confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );

@@ -8,8 +8,19 @@ import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type {
   BridgeEvent,
-  DBBridgeInterface
+  DBBridgeInterface,
+  Where
 } from '@/base/port/DBBridgeInterface';
+import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
+
+const whereHandlerMaps = {
+  '=': 'eq',
+  '!=': 'neq',
+  '>': 'gt',
+  '<': 'lt',
+  '>=': 'gte',
+  '<=': 'lte'
+};
 
 @injectable()
 export class SupabaseBridge implements DBBridgeInterface {
@@ -40,7 +51,29 @@ export class SupabaseBridge implements DBBridgeInterface {
     return result;
   }
 
-  async add(event: BridgeEvent): Promise<unknown> {
+  protected handleWhere(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
+    wheres: Where[]
+  ): void {
+    for (const where of wheres) {
+      const [key, operator, value] = where;
+      const opr = whereHandlerMaps[operator];
+      if (!opr) {
+        throw new Error(`Unsupported where operation: ${value}`);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof (handler as any)[opr] !== 'function') {
+        throw new Error(`Unsupported where operation: ${value}`);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (handler as any)[opr](key, value);
+    }
+  }
+
+  async add(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
     const { table, data } = event;
     if (!data) {
       throw new Error('Data is required for add operation');
@@ -48,33 +81,42 @@ export class SupabaseBridge implements DBBridgeInterface {
     const res = await this.supabase.from(table).insert(data).select().single();
     return this.catch(res);
   }
-  async update(event: BridgeEvent): Promise<unknown> {
-    const { table, id, data } = event;
-    if (!id) {
-      throw new Error('ID is required for update operation');
-    }
+
+  async update(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+    const { table, data, where } = event;
     if (!data) {
       throw new Error('Data is required for update operation');
     }
-    const res = await this.supabase
-      .from(table)
-      .update(data)
-      .eq('id', id)
-      .select()
-      .single();
-    return this.catch(res);
+
+    const handler = this.supabase.from(table).update(data);
+
+    this.handleWhere(handler, where ?? []);
+
+    const result = await handler.single();
+
+    return this.catch(result);
   }
-  async delete(event: BridgeEvent): Promise<void> {
-    const { table, id } = event;
-    if (!id) {
-      throw new Error('ID is required for delete operation');
-    }
-    await this.supabase.from(table).delete().eq('id', id);
+
+  async delete(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+    const { table, where } = event;
+    const handler = this.supabase.from(table).delete();
+
+    this.handleWhere(handler, where ?? []);
+
+    const result = await handler;
+
+    return this.catch(result);
   }
+
   async get(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
-    const { table, fields = '*' } = event;
+    const { table, fields = '*', where } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
-    const res = await this.supabase.from(table).select(selectFields).single();
-    return this.catch(res);
+    const handler = this.supabase.from(table).select(selectFields);
+
+    this.handleWhere(handler, where ?? []);
+
+    const result = await handler.single();
+
+    return this.catch(result);
   }
 }
