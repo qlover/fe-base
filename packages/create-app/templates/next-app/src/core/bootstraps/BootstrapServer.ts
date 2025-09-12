@@ -6,7 +6,12 @@ import {
   type IOCFunctionInterface,
   type LoggerInterface
 } from '@qlover/corekit-bridge';
-import { AsyncExecutor, type ExecutorPlugin } from '@qlover/fe-corekit';
+import {
+  AsyncExecutor,
+  type ExecutorError,
+  type PromiseTask,
+  type ExecutorPlugin
+} from '@qlover/fe-corekit';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import type { ServerInterface } from '@/base/port/ServerInterface';
 import { ServerIOC } from '../serverIoc/ServerIOC';
@@ -19,6 +24,12 @@ export interface BootstrapServerResult {
 export interface BootstrapServerContextValue extends BootstrapContextValue {
   locale: string;
   messages: Record<string, string>;
+}
+
+interface BootstrapServerContext {
+  logger: LoggerInterface;
+  root: Record<string, unknown>;
+  IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
 }
 
 export class BootstrapServer implements ServerInterface {
@@ -76,5 +87,17 @@ export class BootstrapServer implements ServerInterface {
 
     this.executor.use(plugin as ExecutorPlugin<unknown>);
     return this;
+  }
+
+  execNoError<Result>(
+    task?: PromiseTask<Result, BootstrapServerContext>
+  ): Promise<Result | ExecutorError> {
+    const context = {
+      logger: this.logger,
+      root: this.root,
+      IOC: this.IOC
+    };
+
+    return this.executor.execNoError(context, task);
   }
 }

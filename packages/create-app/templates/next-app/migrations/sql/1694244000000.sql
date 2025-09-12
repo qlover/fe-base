@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS fe_users (
   role TEXT NOT NULL,
   email TEXT NOT NULL,
   password TEXT NOT NULL,
+  credential_token TEXT,
   email_confirmed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

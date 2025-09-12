@@ -181,5 +181,7 @@
   "page__login__content": "Login Page Content",
   "page__login__keywords": "Login Page Keywords",
   "err__server__auth__error": "Server auth error",
-  "page__home__keywords": "Modern frontend utility library, practical tools, components"
+  "page__home__keywords": "Modern frontend utility library, practical tools, components",
+  "api__user__not_found": "User not found",
+  "api__user__already_exists": "User already exists"
 }

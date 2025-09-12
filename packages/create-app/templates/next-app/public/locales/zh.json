@@ -181,5 +181,7 @@
   "page__login__content": "登录页面内容",
   "page__login__keywords": "登录页面关键词",
   "err__server__auth__error": "服务器认证错误",
-  "page__home__keywords": "现代前端实用库, 实用工具, 组件"
+  "page__home__keywords": "现代前端实用库, 实用工具, 组件",
+  "api__user__not_found": "用户未找到",
+  "api__user__already_exists": "用户已存在"
 }

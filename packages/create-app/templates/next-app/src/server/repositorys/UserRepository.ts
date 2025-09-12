@@ -6,7 +6,7 @@ import type { UserSchema } from '@migrations/schema/UserSchema';
 
 @injectable()
 export class UserRepository implements UserRepositoryInterface {
-  readonly name = 'users';
+  readonly name = 'fe_users';
 
   constructor(@inject(SupabaseBridge) protected dbBridge: DBBridgeInterface) {}
 

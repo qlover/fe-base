@@ -1,3 +1,4 @@
+import { ExecutorError } from '@qlover/fe-corekit';
 import { NextResponse } from 'next/server';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import type { UserServiceInterface } from '@/server/port/UserServiceInterface';
@@ -8,19 +9,26 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   const server = new BootstrapServer();
-  const userService: UserServiceInterface = server.getIOC(UserService);
 
-  try {
-    const user = await userService.login(body);
+  const result = await server.execNoError(({ parameters: { IOC } }) => {
+    const userService: UserServiceInterface = IOC(UserService);
 
-    return NextResponse.json({
-      success: true,
-      data: user
-    });
-  } catch (error) {
-    return NextResponse.json({
-      success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return userService.login(body);
+  });
+
+  if (result instanceof ExecutorError) {
+    return NextResponse.json(
+      {
+        success: false,
+        errorId: result.id,
+        message: result.message
+      },
+      { status: 400 }
+    );
   }
+
+  return NextResponse.json({
+    success: true,
+    data: result
+  });
 }
