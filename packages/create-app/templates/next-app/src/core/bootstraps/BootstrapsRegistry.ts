@@ -1,4 +1,5 @@
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { I, IOCIdentifier } from '@config/IOCIdentifier';
+import { AppUserApiBootstrap } from '@/base/services/appApi/AppUserApiBootstrap';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import type { BootstrapAppArgs } from './BootstrapClient';
@@ -28,8 +29,8 @@ export class BootstrapsRegistry {
     i18nService.setPathname(this.args.pathname);
 
     const bootstrapList: BootstrapExecutorPlugin[] = [
-      i18nService
-      // new UserApiBootstarp(),
+      i18nService,
+      new AppUserApiBootstrap(IOC(I.JSONSerializer))
       // new FeApiBootstarp(),
       // AiApiBootstarp,
       // IOC(IOCIdentifier.I18nKeyErrorPlugin)

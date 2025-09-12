@@ -11,3 +11,10 @@ export const API_USER_NOT_FOUND = 'api__user__not_found';
  * @localEn User already exists
  */
 export const API_USER_ALREADY_EXISTS = 'api__user__already_exists';
+
+/**
+ * @description 响应不正确
+ * @localZh 响应不正确
+ * @localEn Response not correct
+ */
+export const API_RESPONSE_NOT_OK = 'RESPONSE_NOT_OK';

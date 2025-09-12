@@ -183,5 +183,6 @@
   "err__server__auth__error": "Server auth error",
   "page__home__keywords": "Modern frontend utility library, practical tools, components",
   "api__user__not_found": "User not found",
-  "api__user__already_exists": "User already exists"
+  "api__user__already_exists": "User already exists",
+  "RESPONSE_NOT_OK": "Response not correct"
 }

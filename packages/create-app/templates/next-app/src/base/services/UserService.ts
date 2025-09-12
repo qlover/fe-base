@@ -1,18 +1,19 @@
-import { CookieStorage } from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
 import { AppConfig } from '../cases/AppConfig';
+import { UserServiceApi } from '../cases/UserServiceApi';
 import { UserServiceInterface } from '../port/UserServiceInterface';
+import type { UserSchema } from '@migrations/schema/UserSchema';
+import type { UserAuthApiInterface } from '@qlover/corekit-bridge';
 
 @injectable()
 export class UserService extends UserServiceInterface {
-  constructor(@inject(AppConfig) protected appConfig: AppConfig) {
-    super({
+  constructor(
+    @inject(AppConfig) protected appConfig: AppConfig,
+    @inject(UserServiceApi) protected userApi: UserAuthApiInterface<UserSchema>
+  ) {
+    super(userApi, {
       credentialStorage: {
-        key: appConfig.userTokenKey,
-        storage: new CookieStorage()
-      },
-      requestConfig: {
-        env: appConfig.env !== 'production' ? 'development' : 'production'
+        key: appConfig.userTokenKey
       }
     });
   }

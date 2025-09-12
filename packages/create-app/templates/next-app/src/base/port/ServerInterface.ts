@@ -11,10 +11,10 @@ export interface ServerInterface {
   readonly logger: LoggerInterface;
 
   getIOC(): IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
-  getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
   getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier: T
   ): IOCIdentifierMapServer[T];
+  getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
 
   execNoError<Result>(
     task?: PromiseTask<Result, unknown>

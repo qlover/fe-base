@@ -183,5 +183,6 @@
   "err__server__auth__error": "服务器认证错误",
   "page__home__keywords": "现代前端实用库, 实用工具, 组件",
   "api__user__not_found": "用户未找到",
-  "api__user__already_exists": "用户已存在"
+  "api__user__already_exists": "用户已存在",
+  "RESPONSE_NOT_OK": "响应不正确"
 }

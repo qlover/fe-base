@@ -1,8 +1,9 @@
-import { ImagicaAuthService } from '@brain-toolkit/bridge';
+import { UserAuthService } from '@qlover/corekit-bridge';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export abstract class UserServiceInterface
-  extends ImagicaAuthService
+  extends UserAuthService<UserSchema>
   implements ExecutorPlugin
 {
   readonly pluginName = 'UserService';

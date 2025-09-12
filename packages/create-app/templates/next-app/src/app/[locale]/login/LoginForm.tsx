@@ -16,6 +16,7 @@ interface LoginFormData {
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const userService = useIOC(I.UserServiceInterface);
+  const logger = useIOC(I.Logger);
   const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +26,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       await userService.login(values);
       routerService.gotoHome();
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error(error);
     } finally {
       setLoading(false);
     }
