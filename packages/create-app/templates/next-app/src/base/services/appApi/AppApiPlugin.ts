@@ -18,6 +18,7 @@ export class AppApiPlugin implements ExecutorPlugin {
   onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
     const response = context.returnValue;
 
+    console.trace('onSuccess', response);
     if (this.isAppApiErrorInterface(response)) {
       throw new Error(response.id);
     }

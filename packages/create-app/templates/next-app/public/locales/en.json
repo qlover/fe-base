@@ -189,5 +189,11 @@
   "validator_email_invalid": "Invalid email format validation message",
   "validator_password_min_length": "Password minimum length validation message(6)",
   "validator_password_max_length": "Password maximum length validation message(50)",
-  "validator_password_special_chars": "Password cannot contain whitespace characters validation message"
+  "validator_password_special_chars": "Password cannot contain whitespace characters validation message",
+  "page__register__content": "Create Account Page Content",
+  "page__register__keywords": "Create Account Page Keywords",
+  "register__welcome": "Welcome to our platform",
+  "register__feature__ai_paths": "AI Paths",
+  "register__feature__smart_recommendations": "Smart Recommendations",
+  "register__feature__progress_tracking": "Progress Tracking"
 }

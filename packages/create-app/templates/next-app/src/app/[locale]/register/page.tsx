@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { loginI18n, i18nConfig } from '@config/i18n';
+import { i18nConfig, register18n } from '@config/i18n';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
@@ -7,7 +7,7 @@ import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
-import { LoginForm } from './LoginForm';
+import { RegisterForm } from './RegisterForm';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const pageParams = new PageParams(await params);
 
-  return await pageParams.getI18nInterface(loginI18n);
+  return await pageParams.getI18nInterface(register18n);
 }
 
 export default async function LoginPage(props: PageParamsProps) {
@@ -47,11 +47,11 @@ export default async function LoginPage(props: PageParamsProps) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
-  const tt = await pageParams.getI18nInterface(loginI18n);
+  const tt = await pageParams.getI18nInterface(register18n);
 
   return (
     <BaseLayout
-      data-testid="LoginPage"
+      data-testid="RegisterPage"
       mainProps={{
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
@@ -71,7 +71,7 @@ export default async function LoginPage(props: PageParamsProps) {
           <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title}</h2>
           <p className="text-text-secondary mb-8">{tt.subtitle}</p>
 
-          <LoginForm tt={tt} />
+          <RegisterForm tt={tt} />
         </div>
       </div>
     </BaseLayout>

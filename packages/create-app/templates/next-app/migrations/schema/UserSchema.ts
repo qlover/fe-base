@@ -1,5 +1,5 @@
 export interface UserSchema {
-  id: string;
+  id: number;
   role: string;
   email: string;
   password: string;

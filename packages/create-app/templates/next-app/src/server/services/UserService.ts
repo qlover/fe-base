@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { isEmpty } from 'lodash';
 import {
   API_USER_NOT_FOUND,
   API_USER_ALREADY_EXISTS
@@ -22,7 +23,7 @@ export class UserService implements UserServiceInterface {
   async register(params: { email: string; password: string }): Promise<void> {
     const user = await this.userRepository.getUserByEmail(params.email);
 
-    if (user) {
+    if (!isEmpty(user)) {
       throw new Error(API_USER_ALREADY_EXISTS);
     }
 

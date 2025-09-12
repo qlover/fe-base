@@ -11,6 +11,7 @@ import type {
   DBBridgeInterface,
   Where
 } from '@/base/port/DBBridgeInterface';
+import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 const whereHandlerMaps = {
@@ -26,7 +27,10 @@ const whereHandlerMaps = {
 export class SupabaseBridge implements DBBridgeInterface {
   protected supabase: SupabaseClient;
 
-  constructor(@inject(I.AppConfig) appConfig: AppConfig) {
+  constructor(
+    @inject(I.AppConfig) appConfig: AppConfig,
+    @inject(I.Logger) protected logger: LoggerInterface
+  ) {
     this.supabase = createClient(
       appConfig.supabaseUrl,
       appConfig.supabaseAnonKey
@@ -46,6 +50,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     result: PostgrestSingleResponse<unknown>
   ): Promise<PostgrestSingleResponse<unknown>> {
     if (result.error) {
+      this.logger.info(result);
       throw new Error(result.error.message);
     }
     return result;
@@ -78,7 +83,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     if (!data) {
       throw new Error('Data is required for add operation');
     }
-    const res = await this.supabase.from(table).insert(data).select().single();
+    const res = await this.supabase
+      .from(table)
+      .insert(Array.isArray(data) ? data : [data])
+      .select();
     return this.catch(res);
   }
 
@@ -92,9 +100,7 @@ export class SupabaseBridge implements DBBridgeInterface {
 
     this.handleWhere(handler, where ?? []);
 
-    const result = await handler.single();
-
-    return this.catch(result);
+    return this.catch(await handler);
   }
 
   async delete(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
@@ -103,9 +109,7 @@ export class SupabaseBridge implements DBBridgeInterface {
 
     this.handleWhere(handler, where ?? []);
 
-    const result = await handler;
-
-    return this.catch(result);
+    return this.catch(await handler);
   }
 
   async get(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
@@ -115,8 +119,6 @@ export class SupabaseBridge implements DBBridgeInterface {
 
     this.handleWhere(handler, where ?? []);
 
-    const result = await handler.single();
-
-    return this.catch(result);
+    return this.catch(await handler);
   }
 }

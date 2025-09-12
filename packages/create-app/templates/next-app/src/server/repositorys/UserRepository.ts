@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { isEmpty } from 'lodash';
 import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
@@ -23,8 +24,8 @@ export class UserRepository implements UserRepositoryInterface {
       where: [['email', '=', email]]
     });
 
-    if (result.error) {
-      throw result.error;
+    if (isEmpty(result.data)) {
+      return null;
     }
 
     return result.data as UserSchema;
@@ -41,6 +42,10 @@ export class UserRepository implements UserRepositoryInterface {
       table: this.name,
       data: params
     });
+
+    if (isEmpty(result.data)) {
+      return null;
+    }
 
     return result.data as UserSchema;
   }

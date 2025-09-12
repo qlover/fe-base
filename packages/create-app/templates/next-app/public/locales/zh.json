@@ -189,5 +189,11 @@
   "validator_email_invalid": "邮箱格式无效的验证消息",
   "validator_password_min_length": "密码最小长度验证消息(6)",
   "validator_password_max_length": "密码最大长度验证消息(50)",
-  "validator_password_special_chars": "密码不能包含空格的验证消息"
+  "validator_password_special_chars": "密码不能包含空格的验证消息",
+  "page__register__content": "创建账号页面内容",
+  "page__register__keywords": "创建账号页面关键词",
+  "register__welcome": "欢迎来到我们的平台",
+  "register__feature__ai_paths": "AI路径",
+  "register__feature__smart_recommendations": "智能推荐",
+  "register__feature__progress_tracking": "进度跟踪"
 }

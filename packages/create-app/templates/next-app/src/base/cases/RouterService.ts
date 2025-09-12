@@ -25,6 +25,10 @@ export class RouterService implements RouterInterface {
     this.goto('/');
   }
 
+  gotoLogin(): void {
+    this.goto('/login');
+  }
+
   setLocale(locale: string): void {
     this.locale = locale;
   }

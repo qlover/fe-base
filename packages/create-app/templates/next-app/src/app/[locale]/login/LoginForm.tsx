@@ -42,7 +42,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       onFinish={handleLogin}
       layout="vertical"
       className="space-y-4"
-      validateTrigger="submit"
+      validateTrigger="onSubmit"
     >
       <Form.Item
         name="email"
