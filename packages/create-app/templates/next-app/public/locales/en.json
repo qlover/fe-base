@@ -114,7 +114,7 @@
   "login__with_google": "Sign in with Google",
   "login__no_account": "Don't have an account?",
   "login__create_account": "Create one here",
-  "login__email_required": "Please input your email!",
+  "login__email_required": "Please input a valid email!",
   "login__password_required": "Please input your password!",
   "login__feature__ai_paths": "AI-powered personalized learning paths",
   "login__feature__smart_recommendations": "Smart content recommendations",
@@ -184,5 +184,10 @@
   "page__home__keywords": "Modern frontend utility library, practical tools, components",
   "api__user__not_found": "User not found",
   "api__user__already_exists": "User already exists",
-  "RESPONSE_NOT_OK": "Response not correct"
+  "RESPONSE_NOT_OK": "Response not correct",
+  "v_login_params_required": "Not a valid login parameter",
+  "validator_email_invalid": "Invalid email format validation message",
+  "validator_password_min_length": "Password minimum length validation message(6)",
+  "validator_password_max_length": "Password maximum length validation message(50)",
+  "validator_password_special_chars": "Password cannot contain whitespace characters validation message"
 }

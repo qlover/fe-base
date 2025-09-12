@@ -38,11 +38,10 @@ export class AppUserApi
   async login(
     params: UserApiLoginTransaction['data']
   ): Promise<AppApiResponse<unknown>> {
-    const response = await this.request<UserApiLoginTransaction>({
-      url: '/user/login',
-      method: 'POST',
-      data: params
-    });
+    const response = await this.post<UserApiLoginTransaction>(
+      '/user/login',
+      params
+    );
 
     return response.data;
   }
@@ -50,11 +49,10 @@ export class AppUserApi
   async register(
     params: UserApiRegisterTransaction['data']
   ): Promise<AppApiResponse<unknown>> {
-    const response = await this.request<UserApiRegisterTransaction>({
-      url: '/user/register',
-      method: 'POST',
-      data: params
-    });
+    const response = await this.post<UserApiRegisterTransaction>(
+      '/user/register',
+      params
+    );
 
     return response.data;
   }

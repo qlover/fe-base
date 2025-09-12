@@ -1,3 +1,4 @@
+export * from './api';
 export * from './common';
 export * from './common.error';
 export * from './page.about';
@@ -8,3 +9,4 @@ export * from './page.jsonStorage';
 export * from './page.login';
 export * from './page.register';
 export * from './page.request';
+export * from './validator';
