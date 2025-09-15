@@ -20,6 +20,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
   const t = useTranslations();
   const userService = useIOC(I.UserServiceInterface);
   const logger = useIOC(I.Logger);
+  const appConfig = useIOC(I.AppConfig);
   const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +44,10 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       layout="vertical"
       className="space-y-4"
       validateTrigger="onSubmit"
+      initialValues={{
+        email: appConfig.testLoginEmail,
+        password: appConfig.testLoginPassword
+      }}
     >
       <Form.Item
         name="email"
@@ -53,7 +58,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           placeholder={tt.email}
           title={tt.emailTitle}
           className="h-12 text-base bg-secondary border-c-border"
-          autoComplete="off"
         />
       </Form.Item>
 
@@ -62,13 +66,13 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
         rules={[
           { required: true, message: tt.passwordRequired },
           {
-            validator(rule, value, callback) {
+            validator(_, value) {
               const validator = new LoginValidator();
               const result = validator.validatePassword(value);
               if (result != null) {
-                callback(t(result.message));
+                return Promise.reject(t(result.message));
               }
-              callback();
+              return Promise.resolve();
             }
           }
         ]}
@@ -78,7 +82,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
           placeholder={tt.password}
           title={tt.passwordTitle}
           className="h-12 text-base"
-          autoComplete="new-password"
         />
       </Form.Item>
 

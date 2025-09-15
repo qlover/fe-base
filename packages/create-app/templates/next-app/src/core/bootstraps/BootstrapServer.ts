@@ -13,7 +13,7 @@ import {
   type ExecutorPlugin
 } from '@qlover/fe-corekit';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
-import type { ServerInterface } from '@/base/port/ServerInterface';
+import type { ServerInterface } from '@/server/port/ServerInterface';
 import { ServerIOC } from '../serverIoc/ServerIOC';
 
 export interface BootstrapServerResult {

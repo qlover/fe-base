@@ -2,10 +2,10 @@ import { Button } from 'antd';
 import { i18nConfig } from '@config/i18n';
 import { homeI18n } from '@config/i18n/HomeI18n ';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
-import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import type { Metadata } from 'next';
 
@@ -45,7 +45,7 @@ export default async function Home({ params }: PageParamsProps) {
   const locale = pageParams.getLocale();
   const tt = await pageParams.getI18nInterface(homeI18n);
 
-  if (!(await new ServerAuth(server).hasAuth())) {
+  if (!(await server.getIOC(ServerAuth).hasAuth())) {
     return redirect({ href: '/login', locale });
   }
 

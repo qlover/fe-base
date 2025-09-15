@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         );
       }
     } catch {
-      return new ExecutorError(
+      throw new ExecutorError(
         'encrypt_password_failed',
         'Encrypt password failed'
       );
@@ -32,14 +32,12 @@ export async function POST(req: NextRequest) {
 
     const userService: UserServiceInterface = IOC(UserService);
 
-    await userService.register({
+    const user = await userService.register({
       email: body.email,
       password: body.password
     });
 
-    return {
-      token: '1234567890'
-    };
+    return user;
   });
 
   if (result instanceof ExecutorError) {

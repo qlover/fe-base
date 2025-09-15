@@ -42,7 +42,7 @@ export class UserServiceApi implements UserAuthApiInterface<UserSchema> {
     throw new Error('Method not implemented.');
   }
 
-  getUserInfo(): Promise<UserSchema> {
-    throw new Error('Method not implemented.');
+  getUserInfo(loginData: LoginResponseData): Promise<UserSchema> {
+    return Promise.resolve(loginData as unknown as UserSchema);
   }
 }

@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { isEmpty } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
@@ -28,7 +28,7 @@ export class UserRepository implements UserRepositoryInterface {
       return null;
     }
 
-    return result.data as UserSchema;
+    return last(result.data as UserSchema[]) ?? null;
   }
 
   /**
@@ -37,7 +37,7 @@ export class UserRepository implements UserRepositoryInterface {
   async add(params: {
     email: string;
     password: string;
-  }): Promise<UserSchema | null> {
+  }): Promise<UserSchema[] | null> {
     const result = await this.dbBridge.add({
       table: this.name,
       data: params
@@ -47,6 +47,17 @@ export class UserRepository implements UserRepositoryInterface {
       return null;
     }
 
-    return result.data as UserSchema;
+    return result.data as UserSchema[];
+  }
+
+  async updateById(
+    id: number,
+    params: Partial<Omit<UserSchema, 'id' | 'created_at'>>
+  ): Promise<void> {
+    await this.dbBridge.update({
+      table: this.name,
+      data: params,
+      where: [['id', '=', id]]
+    });
   }
 }

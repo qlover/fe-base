@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { loginI18n, i18nConfig } from '@config/i18n';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
-import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
 import { LoginForm } from './LoginForm';
@@ -43,7 +43,7 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const server = new BootstrapServer();
 
-  if (await new ServerAuth(server).hasAuth()) {
+    if (await server.getIOC(ServerAuth).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 

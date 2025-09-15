@@ -18,7 +18,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
     try {
       setLoading(true);
       await userService.register(values);
-      routerService.gotoHome();
+      routerService.gotoLogin();
     } catch (error) {
       logger.error(error);
     } finally {

@@ -1,11 +1,16 @@
 import { inject, injectable } from 'inversify';
-import { isEmpty } from 'lodash';
+import { isEmpty, last, omit } from 'lodash';
 import {
   API_USER_NOT_FOUND,
   API_USER_ALREADY_EXISTS
 } from '@config/Identifier/api';
 import { PasswordEncrypt } from '../PasswordEncrypt';
 import { UserRepository } from '../repositorys/UserRepository';
+import {
+  UserCredentialToken,
+  type UserCredentialTokenValue
+} from '../UserCredentialToken';
+import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
@@ -17,10 +22,15 @@ export class UserService implements UserServiceInterface {
     @inject(UserRepository)
     protected userRepository: UserRepositoryInterface,
     @inject(PasswordEncrypt)
-    protected encryptor: Encryptor<string, string>
+    protected encryptor: Encryptor<string, string>,
+    @inject(UserCredentialToken)
+    protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>
   ) {}
 
-  async register(params: { email: string; password: string }): Promise<void> {
+  async register(params: {
+    email: string;
+    password: string;
+  }): Promise<UserSchema> {
     const user = await this.userRepository.getUserByEmail(params.email);
 
     if (!isEmpty(user)) {
@@ -32,9 +42,12 @@ export class UserService implements UserServiceInterface {
       password: this.encryptor.encrypt(params.password)
     });
 
-    if (!result) {
+    const target = last(result);
+    if (!target) {
       throw new Error(API_USER_NOT_FOUND);
     }
+
+    return omit(target, 'password') as UserSchema;
   }
 
   async login(params: {
@@ -53,6 +66,14 @@ export class UserService implements UserServiceInterface {
       throw new Error(API_USER_NOT_FOUND);
     }
 
-    return user;
+    const credentialToken = await this.credentialToken.generateToken(user);
+
+    await this.userRepository.updateById(user.id, {
+      credential_token: credentialToken
+    });
+
+    return Object.assign(omit(user, 'password') as UserSchema, {
+      credential_token: credentialToken
+    });
   }
 }

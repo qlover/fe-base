@@ -5,8 +5,10 @@ import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { AppErrorApi } from '@/server/AppErrorApi';
 import { AppSuccessApi } from '@/server/AppSuccessApi';
 import type { UserServiceInterface } from '@/server/port/UserServiceInterface';
+import { ServerAuth } from '@/server/ServerAuth';
 import { UserService } from '@/server/services/UserService';
 import { LoginValidator } from '@/server/validators/LoginValidator';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import type { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -22,20 +24,20 @@ export async function POST(req: NextRequest) {
         );
       }
     } catch {
-      return new ExecutorError(
+      throw new ExecutorError(
         'encrypt_password_failed',
         'Encrypt password failed'
       );
     }
-    const body = IOC(LoginValidator).getThrow(await req.json());
+    const body = IOC(LoginValidator).getThrow(requestBody);
 
     const userService: UserServiceInterface = IOC(UserService);
 
-    await userService.login(body);
+    const user = (await userService.login(body)) as UserSchema;
 
-    return {
-      token: '1234567890'
-    };
+    await IOC(ServerAuth).setAuth(user.credential_token);
+
+    return user;
   });
 
   if (result instanceof ExecutorError) {
