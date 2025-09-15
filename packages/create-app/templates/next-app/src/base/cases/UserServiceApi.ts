@@ -38,8 +38,8 @@ export class UserServiceApi implements UserAuthApiInterface<UserSchema> {
     return (response as AppApiSuccessInterface).data as LoginResponseData;
   }
 
-  logout(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async logout(): Promise<void> {
+    await this.appUserApi.logout();
   }
 
   getUserInfo(loginData: LoginResponseData): Promise<UserSchema> {

@@ -6,11 +6,13 @@ import {
 } from '@config/Identifier/api';
 import { PasswordEncrypt } from '../PasswordEncrypt';
 import { UserRepository } from '../repositorys/UserRepository';
+import { ServerAuth } from '../ServerAuth';
 import {
   UserCredentialToken,
   type UserCredentialTokenValue
 } from '../UserCredentialToken';
 import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
+import type { UserAuthInterface } from '../port/UserAuthInterface';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
@@ -21,6 +23,8 @@ export class UserService implements UserServiceInterface {
   constructor(
     @inject(UserRepository)
     protected userRepository: UserRepositoryInterface,
+    @inject(ServerAuth)
+    protected userAuth: UserAuthInterface,
     @inject(PasswordEncrypt)
     protected encryptor: Encryptor<string, string>,
     @inject(UserCredentialToken)
@@ -75,5 +79,27 @@ export class UserService implements UserServiceInterface {
     return Object.assign(omit(user, 'password') as UserSchema, {
       credential_token: credentialToken
     });
+  }
+
+  async logout(): Promise<void> {
+    const auth = await this.userAuth.getAuth();
+
+    if (!auth) {
+      return;
+    }
+
+    try {
+      const user = await this.credentialToken.parseToken(auth);
+
+      console.log('user', user);
+
+      await this.userRepository.updateById(user.id, {
+        credential_token: ''
+      });
+    } catch {
+      return;
+    }
+
+    await this.userAuth.clear();
   }
 }

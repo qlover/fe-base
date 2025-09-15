@@ -60,4 +60,13 @@ export class AppUserApi
 
     return response.data;
   }
+
+  async logout(): Promise<AppApiResponse<unknown>> {
+    const response = await this.request({
+      url: '/user/logout',
+      method: 'POST'
+    });
+
+    return response.data as AppApiResponse<unknown>;
+  }
 }

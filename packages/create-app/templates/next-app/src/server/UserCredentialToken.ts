@@ -24,16 +24,24 @@ export class UserCredentialToken
   ): Promise<string> {
     const { expiresIn = '30 days' } = options;
 
-    return jwt.sign(data, this.jwtSecret, {
-      expiresIn: expiresIn as jwt.SignOptions['expiresIn']
+    return jwt.sign({ i: data.id, e: data.email }, this.jwtSecret, {
+      expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
+      algorithm: 'HS256',
+      noTimestamp: true
     });
   }
 
   async parseToken(token: string): Promise<UserCredentialTokenValue> {
     try {
-      const decoded = jwt.verify(token, this.jwtSecret);
+      const decoded = jwt.verify(token, this.jwtSecret) as {
+        i: UserSchema['id'];
+        e: string;
+      };
 
-      return decoded as UserCredentialTokenValue;
+      return {
+        id: decoded.i,
+        email: decoded.e
+      };
     } catch {
       throw new Error('Invalid token');
     }

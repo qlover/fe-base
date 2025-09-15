@@ -31,7 +31,7 @@ export function BaseHeader(props: { showLogoutButton?: boolean }) {
             </span>
           </Link>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:gap-4">
           <LanguageSwitcher i18nService={i18nService} />
           <ThemeSwitcher />
           {showLogoutButton && <LogoutButton />}

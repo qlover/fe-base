@@ -23,4 +23,14 @@ export class ServerAuth implements UserAuthInterface {
 
     return !!token;
   }
+
+  async getAuth(): Promise<string> {
+    const cookieStore = await cookies();
+    return cookieStore.get(this.userTokenKey)?.value || '';
+  }
+
+  async clear(): Promise<void> {
+    const cookieStore = await cookies();
+    cookieStore.delete(this.userTokenKey);
+  }
 }

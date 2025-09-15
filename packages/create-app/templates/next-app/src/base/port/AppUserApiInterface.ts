@@ -10,4 +10,6 @@ export interface AppUserApiInterface {
     email: string;
     password: string;
   }): Promise<AppApiResponse<unknown>>;
+
+  logout(): Promise<AppApiResponse<unknown>>;
 }
