@@ -7,10 +7,10 @@ import { inject, injectable } from 'inversify';
 import type { AppApiResponse } from '@/base/port/AppApiInterface';
 import type { AppUserApiInterface } from '@/base/port/AppUserApiInterface';
 import type {
+  UserApiConfig,
   UserApiLoginTransaction,
   UserApiRegisterTransaction
 } from './AppUserType';
-import type { RequestAdapterConfig } from '@qlover/fe-corekit';
 
 /**
  * UserApi
@@ -21,7 +21,7 @@ import type { RequestAdapterConfig } from '@qlover/fe-corekit';
  */
 @injectable()
 export class AppUserApi
-  extends RequestTransaction<RequestAdapterConfig>
+  extends RequestTransaction<UserApiConfig>
   implements AppUserApiInterface
 {
   constructor(
@@ -38,10 +38,12 @@ export class AppUserApi
   async login(
     params: UserApiLoginTransaction['data']
   ): Promise<AppApiResponse<unknown>> {
-    const response = await this.post<UserApiLoginTransaction>(
-      '/user/login',
-      params
-    );
+    const response = await this.request<UserApiLoginTransaction>({
+      url: '/user/login',
+      method: 'POST',
+      data: params,
+      encryptProps: 'password'
+    });
 
     return response.data;
   }
@@ -49,10 +51,12 @@ export class AppUserApi
   async register(
     params: UserApiRegisterTransaction['data']
   ): Promise<AppApiResponse<unknown>> {
-    const response = await this.post<UserApiRegisterTransaction>(
-      '/user/register',
-      params
-    );
+    const response = await this.request<UserApiRegisterTransaction>({
+      url: '/user/register',
+      method: 'POST',
+      data: params,
+      encryptProps: 'password'
+    });
 
     return response.data;
   }

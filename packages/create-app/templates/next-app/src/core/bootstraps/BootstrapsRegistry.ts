@@ -1,4 +1,5 @@
 import { I, IOCIdentifier } from '@config/IOCIdentifier';
+import { StringEncryptor } from '@/base/cases/StringEncryptor';
 import { AppUserApiBootstrap } from '@/base/services/appApi/AppUserApiBootstrap';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';

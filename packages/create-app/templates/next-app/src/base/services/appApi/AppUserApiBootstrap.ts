@@ -1,17 +1,16 @@
 import { RequestCommonPlugin } from '@qlover/corekit-bridge';
 import { FetchURLPlugin } from '@qlover/fe-corekit';
 import { DialogErrorPlugin } from '@/base/cases/DialogErrorPlugin';
+import { RequestEncryptPlugin } from '@/base/cases/RequestEncryptPlugin';
+import { StringEncryptor } from '@/base/cases/StringEncryptor';
 import { AppApiPlugin } from './AppApiPlugin';
 import { AppUserApi } from './AppUserApi';
+import type { UserApiConfig } from './AppUserType';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge';
-import type {
-  ExecutorContext,
-  RequestAdapterConfig,
-  SerializerIneterface
-} from '@qlover/fe-corekit';
+import type { ExecutorContext, SerializerIneterface } from '@qlover/fe-corekit';
 
 export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
   readonly pluginName = 'AppUserApiBootstrap';
@@ -22,6 +21,7 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
     const appUserApi = ioc.get<AppUserApi>(AppUserApi);
 
     appUserApi.usePlugin(new FetchURLPlugin());
+    appUserApi.usePlugin(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
     appUserApi.usePlugin(
       new RequestCommonPlugin({
         requestDataSerializer: this.requestDataSerializer.bind(this)
@@ -33,7 +33,7 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
 
   protected requestDataSerializer(
     data: unknown,
-    context: ExecutorContext<RequestAdapterConfig>
+    context: ExecutorContext<UserApiConfig>
   ): unknown {
     if (data instanceof FormData) {
       return data;

@@ -1,3 +1,4 @@
+import type { RequestEncryptPluginProps } from '@/base/cases/RequestEncryptPlugin';
 import type { AppApiResponse } from '@/base/port/AppApiInterface';
 import type {
   RequestAdapterConfig,
@@ -5,7 +6,9 @@ import type {
   RequestTransactionInterface
 } from '@qlover/fe-corekit';
 
-export type UserApiConfig<Request = unknown> = RequestAdapterConfig<Request>;
+export interface UserApiConfig<Request = unknown>
+  extends RequestAdapterConfig<Request>,
+    RequestEncryptPluginProps<Request> {}
 
 /**
  * UserApiResponse

@@ -15,4 +15,7 @@ export class AppConfig implements EnvConfigInterface {
 
   readonly supabaseUrl: string = process.env.SUPABASE_URL!;
   readonly supabaseAnonKey: string = process.env.SUPABASE_ANON_KEY!;
+
+  readonly stringEncryptorKey: string =
+    process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY!;
 }

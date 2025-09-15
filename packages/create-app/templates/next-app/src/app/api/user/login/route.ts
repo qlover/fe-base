@@ -1,5 +1,6 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { NextResponse } from 'next/server';
+import { StringEncryptor } from '@/base/cases/StringEncryptor';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { AppErrorApi } from '@/server/AppErrorApi';
 import { AppSuccessApi } from '@/server/AppSuccessApi';
@@ -12,6 +13,20 @@ export async function POST(req: NextRequest) {
   const server = new BootstrapServer();
 
   const result = await server.execNoError(async ({ parameters: { IOC } }) => {
+    const requestBody = await req.json();
+
+    try {
+      if (requestBody.password) {
+        requestBody.password = IOC(StringEncryptor).decrypt(
+          requestBody.password
+        );
+      }
+    } catch {
+      return new ExecutorError(
+        'encrypt_password_failed',
+        'Encrypt password failed'
+      );
+    }
     const body = IOC(LoginValidator).getThrow(await req.json());
 
     const userService: UserServiceInterface = IOC(UserService);
