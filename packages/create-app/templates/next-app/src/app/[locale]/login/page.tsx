@@ -43,7 +43,7 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const server = new BootstrapServer();
 
-    if (await server.getIOC(ServerAuth).hasAuth()) {
+  if (await server.getIOC(ServerAuth).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
