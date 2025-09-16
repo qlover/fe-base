@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
+import { AppConfig } from '@/base/cases/AppConfig';
 import type { CrentialTokenInterface } from './port/CrentialTokenInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
-import { AppConfig } from '@/base/cases/AppConfig';
 
 export type UserCredentialTokenValue = Pick<UserSchema, 'id' | 'email'>;
 

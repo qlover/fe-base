@@ -2,12 +2,17 @@ import { inject, injectable } from 'inversify';
 import { cookies } from 'next/headers';
 import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
+import { UserCredentialToken } from './UserCredentialToken';
 import type { UserAuthInterface } from './port/UserAuthInterface';
 
 @injectable()
 export class ServerAuth implements UserAuthInterface {
   protected userTokenKey: string;
-  constructor(@inject(I.AppConfig) protected server: AppConfig) {
+  constructor(
+    @inject(I.AppConfig) protected server: AppConfig,
+    @inject(UserCredentialToken)
+    protected userCredentialToken: UserCredentialToken
+  ) {
     this.userTokenKey = server.userTokenKey;
   }
 
@@ -18,10 +23,19 @@ export class ServerAuth implements UserAuthInterface {
   }
 
   async hasAuth(): Promise<boolean> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(this.userTokenKey);
+    const token = await this.getAuth();
 
-    return !!token;
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const user = await this.userCredentialToken.parseToken(token);
+
+      return !!user;
+    } catch {
+      return false;
+    }
   }
 
   async getAuth(): Promise<string> {
