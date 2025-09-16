@@ -2,8 +2,10 @@
 
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { Form, Input, Button } from 'antd';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { I } from '@config/IOCIdentifier';
+import { LoginValidator } from '@/server/validators/LoginValidator';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
@@ -15,7 +17,10 @@ interface LoginFormData {
 
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
+  const t = useTranslations();
   const userService = useIOC(I.UserServiceInterface);
+  const logger = useIOC(I.Logger);
+  const appConfig = useIOC(I.AppConfig);
   const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +30,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       await userService.login(values);
       routerService.gotoHome();
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error(error);
     } finally {
       setLoading(false);
     }
@@ -38,30 +43,45 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       onFinish={handleLogin}
       layout="vertical"
       className="space-y-4"
+      validateTrigger="onSubmit"
+      initialValues={{
+        email: appConfig.testLoginEmail,
+        password: appConfig.testLoginPassword
+      }}
     >
       <Form.Item
         name="email"
-        rules={[{ required: true, message: tt.emailRequired }]}
+        rules={[{ required: true, type: 'email', message: tt.emailRequired }]}
       >
         <Input
           prefix={<UserOutlined className="text-text-tertiary" />}
           placeholder={tt.email}
           title={tt.emailTitle}
           className="h-12 text-base bg-secondary border-c-border"
-          autoComplete="off"
         />
       </Form.Item>
 
       <Form.Item
         name="password"
-        rules={[{ required: true, message: tt.passwordRequired }]}
+        rules={[
+          { required: true, message: tt.passwordRequired },
+          {
+            validator(_, value) {
+              const validator = new LoginValidator();
+              const result = validator.validatePassword(value);
+              if (result != null) {
+                return Promise.reject(t(result.message));
+              }
+              return Promise.resolve();
+            }
+          }
+        ]}
       >
         <Input.Password
           prefix={<LockOutlined />}
           placeholder={tt.password}
           title={tt.passwordTitle}
           className="h-12 text-base"
-          autoComplete="new-password"
         />
       </Form.Item>
 

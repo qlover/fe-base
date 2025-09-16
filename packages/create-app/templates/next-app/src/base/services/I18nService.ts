@@ -1,4 +1,3 @@
-import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import {
   I18nServiceInterface,
@@ -11,18 +10,11 @@ type TranslationFunction = ReturnType<typeof useTranslations>;
 
 export class I18nService extends I18nServiceInterface {
   readonly pluginName = 'I18nService';
-  private initialized: boolean = false;
-  private pathname: string = '';
-  private translator: TranslationFunction | null = null;
+  protected pathname: string = '';
+  protected translator: TranslationFunction | null = null;
 
   constructor() {
     super(() => new I18nServiceState(i18nConfig.fallbackLng));
-  }
-
-  private async ensureInitialized(): Promise<void> {
-    if (!this.initialized) {
-      throw new Error('I18nService not initialized');
-    }
   }
 
   setPathname(pathname: string): void {
@@ -36,44 +28,19 @@ export class I18nService extends I18nServiceInterface {
   /**
    * @override
    */
-  async onBefore(): Promise<void> {
-    if (this.initialized) {
-      return;
-    }
-
-    this.initialized = true;
-
-    // 初始化语言状态
-    const currentLang = this.getCurrentLanguageFromPath();
-    if (this.isValidLanguage(currentLang)) {
-      this.emit({ ...this.state, language: currentLang });
-    }
-  }
-
-  private getCurrentLanguageFromPath(): string {
-    const paths = this.pathname.split('/');
-
-    for (const path of paths) {
-      if (this.isValidLanguage(path)) {
-        return path;
-      }
-    }
-
-    return i18nConfig.fallbackLng;
-  }
+  async onBefore(): Promise<void> {}
 
   override async changeLanguage(language: I18nServiceLocale): Promise<void> {
     try {
       this.changeLoading(true);
-      await this.ensureInitialized();
 
       // 在这里我们只需要更新状态，因为实际的语言切换会通过路由处理
       this.emit({ ...this.state, language });
 
       // 如果不使用本地化路由，则保存语言设置到本地存储
-      if (!useLocaleRoutes && typeof window !== 'undefined') {
-        window.localStorage.setItem('i18nextLng', language);
-      }
+      // if (!useLocaleRoutes && typeof window !== 'undefined') {
+      //   window.localStorage.setItem('i18nextLng', language);
+      // }
     } finally {
       this.changeLoading(false);
     }
@@ -84,8 +51,7 @@ export class I18nService extends I18nServiceInterface {
   }
 
   override async getCurrentLanguage(): Promise<I18nServiceLocale> {
-    await this.ensureInitialized();
-    return this.getCurrentLanguageFromPath() as I18nServiceLocale;
+    return this.state.language;
   }
 
   override isValidLanguage(language: string): language is I18nServiceLocale {
@@ -96,12 +62,10 @@ export class I18nService extends I18nServiceInterface {
     return [...i18nConfig.supportedLngs];
   }
 
-  override async t(
+  override t(
     key: string,
     params?: Record<string, string | number | Date>
-  ): Promise<string> {
-    await this.ensureInitialized();
-
+  ): string {
     if (!this.translator) {
       return key;
     }

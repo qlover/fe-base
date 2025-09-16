@@ -22,13 +22,15 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["./config/*"]
+      "@config/*": ["./config/*"],
+      "@migrations/*": ["./migrations/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "migrations/**/*.ts",
     ".next/types/**/*.ts",
     "config/**/*.ts"
   ],

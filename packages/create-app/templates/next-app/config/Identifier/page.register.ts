@@ -13,17 +13,56 @@ export const PAGE_REGISTER_TITLE = 'page__register__title';
 export const PAGE_REGISTER_DESCRIPTION = 'page__register__description';
 
 /**
- * @description Register page title
- * @localZh 创建账号
- * @localEn Create Account
+ * @description Register page content
+ * @localZh 创建账号页面内容
+ * @localEn Create Account Page Content
  */
-export const REGISTER_TITLE = 'register__title';
+export const PAGE_REGISTER_CONTENT = 'page__register__content';
+
+/**
+ * @description Register page keywords
+ * @localZh 创建账号页面关键词
+ * @localEn Create Account Page Keywords
+ */
+export const PAGE_REGISTER_KEYWORDS = 'page__register__keywords';
+
+/**
+ * @description Register page welcome
+ * @localZh 欢迎来到我们的平台
+ * @localEn Welcome to our platform
+ */
+export const REGISTER_WELCOME = 'register__welcome';
+
 /**
  * @description Register page subtitle
  * @localZh 开始您的学习之旅
  * @localEn Start your learning journey
  */
 export const REGISTER_SUBTITLE = 'register__subtitle';
+
+/**
+ * @description Register page feature ai paths
+ * @localZh AI路径
+ * @localEn AI Paths
+ */
+export const REGISTER_FEATURE_AI_PATHS = 'register__feature__ai_paths';
+
+/**
+ * @description Register page feature smart recommendations
+ * @localZh 智能推荐
+ * @localEn Smart Recommendations
+ */
+export const REGISTER_FEATURE_SMART_RECOMMENDATIONS =
+  'register__feature__smart_recommendations';
+
+/**
+ * @description Register page feature progress tracking
+ * @localZh 进度跟踪
+ * @localEn Progress Tracking
+ */
+export const REGISTER_FEATURE_PROGRESS_TRACKING =
+  'register__feature__progress_tracking';
+
 /**
  * @description Register page username field
  * @localZh 用户名
@@ -121,24 +160,6 @@ export const REGISTER_HAVE_ACCOUNT = 'register__have_account';
  * @localEn Sign in
  */
 export const REGISTER_LOGIN_LINK = 'register__login_link';
-/**
- * @description Register page feature item - Personalized Learning
- * @localZh 个性化学习体验
- * @localEn Personalized Learning Experience
- */
-export const REGISTER_FEATURE_PERSONALIZED = 'register__feature__personalized';
-/**
- * @description Register page feature item - Expert Support
- * @localZh 专家支持和指导
- * @localEn Expert Support and Guidance
- */
-export const REGISTER_FEATURE_SUPPORT = 'register__feature__support';
-/**
- * @description Register page feature item - Learning Community
- * @localZh 活跃的学习社区
- * @localEn Active Learning Community
- */
-export const REGISTER_FEATURE_COMMUNITY = 'register__feature__community';
 /**
  * @description Register page terms agreement required message
  * @localZh 请同意服务条款和隐私政策

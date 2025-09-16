@@ -97,8 +97,8 @@ export const LOGIN_NO_ACCOUNT = 'login__no_account';
 export const LOGIN_CREATE_ACCOUNT = 'login__create_account';
 /**
  * @description Login page email validation message
- * @localZh 请输入您的邮箱！
- * @localEn Please input your email!
+ * @localZh 请输入正确的邮箱！
+ * @localEn Please input a valid email!
  */
 export const LOGIN_EMAIL_REQUIRED = 'login__email_required';
 /**

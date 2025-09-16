@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
 import { loginI18n, i18nConfig } from '@config/i18n';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
-import { ServerAuth } from '@/base/cases/ServerAuth';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
+import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
-import { FeatureItem } from './FeatureItem';
+import { FeatureItem } from '@/uikit/components/FeatureItem';
 import { LoginForm } from './LoginForm';
 import type { Metadata } from 'next';
 
@@ -43,7 +43,7 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const server = new BootstrapServer();
 
-  if (await new ServerAuth(server).hasAuth()) {
+    if (await server.getIOC(ServerAuth).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
@@ -52,7 +52,9 @@ export default async function LoginPage(props: PageParamsProps) {
   return (
     <BaseLayout
       data-testid="LoginPage"
-      className="text-xs1 bg-primary flex flex-col min-h-screen"
+      mainProps={{
+        className: 'text-xs1 bg-primary flex min-h-screen'
+      }}
     >
       <div className="hidden lg:flex bg-secondary lg:w-1/2 p-12 flex-col">
         <h1 className="text-4xl font-bold text-text mb-4">{tt.welcome}</h1>
