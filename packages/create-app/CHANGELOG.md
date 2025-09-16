@@ -1,5 +1,115 @@
 # @qlover/create-app
 
+## 0.7.10
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** integrate Supabase for database interactions and enhance configuration ([bd3a557](https://github.com/qlover/fe-base/commit/bd3a557998ae1d77db5a5ff5ea145c067eba0cc8)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Added Supabase dependencies to package.json for authentication and database management.
+  - Introduced DBBridgeInterface for defining database operations and implemented SupabaseBridge for handling database interactions.
+  - Updated AppConfig to include Supabase URL and anon key for configuration.
+  - Created AdminPage component to demonstrate database bridge usage within the application.
+
+  These changes aim to enhance the application's data management capabilities and streamline interactions with the Supabase backend.
+
+- **next-app:** implement migration system and integrate Supabase for database management ([5732fbf](https://github.com/qlover/fe-base/commit/5732fbfb97960162cddd8d35602d09141e8a805a)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Added Supabase dependency to package.json for enhanced database interactions.
+  - Created migration logs table in a new SQL migration file to track migration history.
+  - Developed AdminLayout and AdminMigrationsPage components for managing database migrations.
+  - Introduced MigrationExecutor and SupabaseMigration classes to handle migration operations.
+  - Updated DBBridgeInterface and added DBMigrationInterface for improved database operation definitions.
+
+  These changes aim to streamline database management and provide a robust migration system within the application.
+
+- **next-app:** enhance user management and database schema ([d2457a8](https://github.com/qlover/fe-base/commit/d2457a82e1c028be3d2da4dd5c163adde19ee778)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Updated tsconfig.json to include new path mappings for migrations.
+  - Added UserSchema interface for defining user attributes in migrations.
+  - Created UserRepository and UserService for handling user-related operations, including registration and login.
+  - Implemented PasswordEncrypt class for password hashing.
+  - Developed API constants for user-related error messages.
+  - Refactored SupabaseBridge to support dynamic where conditions in database operations.
+  - Introduced new SQL migration for user table creation.
+
+  These changes aim to improve user management functionality and streamline interactions with the database.
+
+- **next-app:** enhance user management and localization support ([f182328](https://github.com/qlover/fe-base/commit/f182328779cf5db569d3d5d43562ca990c59f2de)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Added `credential_token` field to the `fe_users` table in the SQL migration for improved user authentication.
+  - Updated English and Chinese localization files to include new error messages for user-related operations: "User not found" and "User already exists".
+  - Refactored the user login API to utilize a new error handling structure, improving response consistency and clarity.
+  - Introduced `AppApiResponse` interface for standardized API response handling across the application.
+
+  These changes aim to strengthen user management features and enhance localization for better user experience.
+
+- **next-app:** enhance user service and error handling ([a7627d7](https://github.com/qlover/fe-base/commit/a7627d7c9a73f584b6940f4cd406b4ba55168474)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Refactored user service to utilize new `UserServiceApi` for improved API interactions.
+  - Introduced `AppErrorApi` and `AppSuccessApi` classes for standardized API response handling.
+  - Added `DialogErrorPlugin` for enhanced error dialog management in the application.
+  - Updated localization files to include new error messages and response handling keys.
+  - Improved logging in the `LoginForm` component by integrating a logger service.
+
+  These changes aim to strengthen user management features, improve error handling, and enhance localization support across the application.
+
+- **next-app:** enhance login validation and localization support ([506c42c](https://github.com/qlover/fe-base/commit/506c42c0bc3b4b75b4af168524bfece09eaddfd9)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Added `zod` for improved validation handling in the login process.
+  - Introduced `LoginValidator` class to validate email and password inputs with detailed error messages.
+  - Updated localization files to reflect changes in validation messages for both English and Chinese.
+  - Enhanced `LoginForm` component to utilize the new validation logic, ensuring better user feedback on input errors.
+
+  These changes aim to strengthen the login functionality by providing robust validation and clearer user guidance through localization.
+
+- **next-app:** implement registration page and enhance localization support ([bc67534](https://github.com/qlover/fe-base/commit/bc67534dd7864172fa0d7b3d447e62d8bef62dae)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Created a new registration page with a corresponding RegisterForm component for user sign-up.
+  - Added localization keys for registration page content, keywords, and features in both English and Chinese.
+  - Introduced a new i18n interface for the registration page to manage translations effectively.
+  - Updated API routes to handle user registration with improved error handling and response structure.
+  - Enhanced the RouterService to support navigation to the login page from the registration form.
+
+  These changes aim to provide a seamless user experience for account creation and improve localization for better accessibility.
+
+- **next-app:** implement password encryption and enhance API error handling ([afb9bdb](https://github.com/qlover/fe-base/commit/afb9bdbc7da975bf10e63a2ac8da3308d74456d4)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Introduced StringEncryptor for encrypting and decrypting passwords in user login and registration processes.
+  - Updated API routes for user login and registration to handle encrypted passwords, improving security.
+  - Enhanced error handling in the DialogErrorPlugin to prioritize runtime errors.
+  - Added RequestEncryptPlugin to automatically encrypt specified properties in API requests.
+  - Updated AppConfig to include a key for the StringEncryptor, ensuring secure configuration.
+
+  These changes aim to strengthen user authentication security and improve error management across the application.
+
+- **next-app:** enhance authentication and user management features ([e67dc6d](https://github.com/qlover/fe-base/commit/e67dc6d05f41c329bbebf26653ea5374529c009c)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Updated .env.template to include JWT_SECRET for token management.
+  - Refactored UserSchema to rename reauthentication_token to credential_token for clarity.
+  - Introduced ServerAuth class for managing user authentication and token handling.
+  - Enhanced UserService to generate and manage user credential tokens during login and registration.
+  - Updated API routes for user login and registration to return user data with credential tokens.
+  - Improved error handling and response structure in user-related API interactions.
+
+  These changes aim to strengthen user authentication processes and improve overall user management within the application.
+
+- **next-app:** implement logout functionality and enhance user interface ([7765694](https://github.com/qlover/fe-base/commit/776569462d5488c07dfe13cca6f825cf610bd200)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Added a new API route for user logout, handling session termination and response management.
+  - Refactored UserService to implement the logout method, clearing user credentials and updating the repository.
+  - Updated AppUserApi to include a logout method for API interaction.
+  - Enhanced the LogoutButton component to trigger the logout process with a confirmation dialog.
+  - Modified BaseHeader to conditionally display the logout button based on user authentication state.
+
+  These changes aim to improve user experience by providing a seamless logout process and enhancing the overall user interface.
+
+- **next-app:** enhance server authentication with user credential token integration ([bcb8bdc](https://github.com/qlover/fe-base/commit/bcb8bdc846ffa7c1c6f89f1395f9756241b031b4)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Updated ServerAuth class to include UserCredentialToken for improved token parsing and validation.
+  - Refactored hasAuth method to utilize the new user credential token for authentication checks.
+  - Minor adjustments in UserCredentialToken file for consistency and clarity.
+
+  These changes aim to strengthen the authentication process by ensuring more reliable token management and validation.
+
+#### ♻️ Refactors
+
+- **bootstraps:** remove unused StringEncryptor import from BootstrapsRegistry.ts ([d7000ea](https://github.com/qlover/fe-base/commit/d7000ea93a5c7cc53a2ccb244424b41ba3ce6fb5)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Eliminated the import of StringEncryptor as it is no longer utilized in the BootstrapsRegistry file.
+
+  This change aims to clean up the code by removing unnecessary dependencies, improving maintainability.
+
 ## 0.7.9
 
 ### Patch Changes

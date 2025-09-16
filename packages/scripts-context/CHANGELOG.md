@@ -1,5 +1,16 @@
 # @qlover/scripts-context
 
+## 1.1.4
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **scripts-context:** add missing env-loader dependency to package.json ([821e2da](https://github.com/qlover/fe-base/commit/821e2daa5a2d37eb3ffaf1c83f42b990b8a763b9)) ([#510](https://github.com/qlover/fe-base/pull/510))
+  - Restored the @qlover/env-loader dependency in the devDependencies section of package.json to ensure proper environment variable loading during development.
+
+  This change aims to maintain the functionality of the scripts context by including the necessary dependency for environment management.
+
 ## 1.1.3
 
 ### Patch Changes
