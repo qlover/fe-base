@@ -1,9 +1,9 @@
 import { injectable } from 'inversify';
-import { AdminPageInterface } from '../port/AdminPageInterface';
+import { AdminLayoutInterface } from '../port/AdminLayoutInterface';
 import type {
   NavItemInterface,
   AdminPageState
-} from '../port/AdminPageInterface';
+} from '../port/AdminLayoutInterface';
 
 class AdminPageManagerState implements AdminPageState {
   collapsedSidebar = false;
@@ -12,7 +12,7 @@ class AdminPageManagerState implements AdminPageState {
 }
 
 @injectable()
-export class AdminPageManager extends AdminPageInterface {
+export class AdminPageManager extends AdminLayoutInterface {
   constructor() {
     super(() => new AdminPageManagerState());
   }

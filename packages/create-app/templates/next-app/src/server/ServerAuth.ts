@@ -1,12 +1,14 @@
+import { ExecutorError } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { cookies } from 'next/headers';
+import { API_NOT_AUTHORIZED } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
 import { UserCredentialToken } from './UserCredentialToken';
-import type { UserAuthInterface } from './port/UserAuthInterface';
+import type { ServerAuthInterface } from './port/ServerAuthInterface';
 
 @injectable()
-export class ServerAuth implements UserAuthInterface {
+export class ServerAuth implements ServerAuthInterface {
   protected userTokenKey: string;
   constructor(
     @inject(I.AppConfig) protected server: AppConfig,
@@ -46,5 +48,13 @@ export class ServerAuth implements UserAuthInterface {
   async clear(): Promise<void> {
     const cookieStore = await cookies();
     cookieStore.delete(this.userTokenKey);
+  }
+
+  async throwIfNotAuth(): Promise<void> {
+    const hasAuth = await this.hasAuth();
+
+    if (!hasAuth) {
+      throw new ExecutorError(API_NOT_AUTHORIZED, 'Not authorized');
+    }
   }
 }

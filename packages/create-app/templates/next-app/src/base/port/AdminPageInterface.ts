@@ -1,25 +1,22 @@
-import { StoreInterface } from '@qlover/corekit-bridge';
-import type { StoreStateInterface } from '@qlover/corekit-bridge';
+import type { PaginationInterface } from './PaginationInterface';
 
-export interface NavItemInterface {
-  key: string;
+/**
+ * 后台管理页面接口
+ *
+ * 包含以下:
+ *
+ * 1. 初始化
+ * 2. 获取列表
+ */
+export interface AdminPageInterface {
   /**
-   * 可以是 i18n key
+   * 初始化
    */
-  i18nKey: string;
+  initialize(): Promise<unknown>;
 
-  pathname?: string;
-}
-
-export interface AdminPageState extends StoreStateInterface {
-  navItems: NavItemInterface[];
-  collapsedSidebar: boolean;
-}
-
-export abstract class AdminPageInterface extends StoreInterface<AdminPageState> {
-  public readonly selectors = {
-    collapsedSidebar: (state: AdminPageState) => state.collapsedSidebar
-  };
-
-  abstract toggleSidebar(): void;
+  /**
+   * 获取列表
+   * @param params
+   */
+  fetchList(params: unknown): Promise<PaginationInterface<unknown>>;
 }

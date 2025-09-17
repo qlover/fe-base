@@ -196,5 +196,7 @@
   "register__feature__ai_paths": "AI路径",
   "register__feature__smart_recommendations": "智能推荐",
   "register__feature__progress_tracking": "进度跟踪",
-  "page__head__admin__title": "管理后台"
+  "page__head__admin__title": "管理后台",
+  "api__not_authorized": "未授权",
+  "api__page__invalid": "页码不正确"
 }

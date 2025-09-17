@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { isEmpty, last } from 'lodash';
 import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
+import type { PaginationInterface } from '@/base/port/PaginationInterface';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
@@ -59,5 +60,23 @@ export class UserRepository implements UserRepositoryInterface {
       data: params,
       where: [['id', '=', id]]
     });
+  }
+
+  async pagination(params: {
+    page: number;
+    pageSize: number;
+  }): Promise<PaginationInterface<UserSchema>> {
+    const result = await this.dbBridge.pagination({
+      table: this.name,
+      page: params.page,
+      pageSize: params.pageSize
+    });
+
+    return {
+      list: result.data as UserSchema[],
+      total: result.count ?? 0,
+      page: params.page,
+      pageSize: params.pageSize
+    };
   }
 }

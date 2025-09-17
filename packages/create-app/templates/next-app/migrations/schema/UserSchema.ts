@@ -1,6 +1,13 @@
+export const UserRoleType = {
+  ADMIN: 0,
+  USER: 1
+} as const;
+
+export type UserRoleType = (typeof UserRoleType)[keyof typeof UserRoleType];
+
 export interface UserSchema {
   id: number;
-  role: string;
+  role: UserRoleType;
   email: string;
   password: string;
   /**

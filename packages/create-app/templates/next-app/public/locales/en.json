@@ -196,5 +196,7 @@
   "register__feature__ai_paths": "AI Paths",
   "register__feature__smart_recommendations": "Smart Recommendations",
   "register__feature__progress_tracking": "Progress Tracking",
-  "page__head__admin__title": "Admin Backend"
+  "page__head__admin__title": "Admin Backend",
+  "api__not_authorized": "Not authorized",
+  "api__page__invalid": "Page number is incorrect"
 }
