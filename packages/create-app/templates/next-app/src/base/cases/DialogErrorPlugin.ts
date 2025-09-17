@@ -28,8 +28,19 @@ export class DialogErrorPlugin implements ExecutorPlugin {
     const handleError = runtimesError || error;
 
     if (handleError instanceof ExecutorError) {
-      const message = this.i18nService.t(handleError.id);
-      this.dialogHandler.error(message);
+      if (this.isI18nMessage(handleError.message)) {
+        const message = this.i18nService.t(handleError.id);
+        this.dialogHandler.error(message);
+      } else {
+        this.dialogHandler.error(handleError.message);
+      }
     }
+  }
+
+  protected isI18nMessage(message: string): boolean {
+    // Check if message follows the pattern of underscore-separated format
+    // e.g., "namespace_key" or "namespace__key"
+    const pattern = /^[a-zA-Z]+(?:_[a-zA-Z]+)+$|^[a-zA-Z]+(?:__[a-zA-Z]+)+$/;
+    return pattern.test(message);
   }
 }

@@ -50,7 +50,7 @@ export default async function Home({ params }: PageParamsProps) {
   }
 
   return (
-    <BaseLayout data-testid="HomePage" showLogoutButton>
+    <BaseLayout data-testid="HomePage" showLogoutButton showAdminButton>
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">

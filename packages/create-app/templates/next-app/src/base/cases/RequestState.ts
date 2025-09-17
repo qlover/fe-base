@@ -1,6 +1,6 @@
 import type { AsyncStateInterface } from '@/base/port/AsyncStateInterface';
 
-export class RequestState<T> implements AsyncStateInterface<T> {
+export class RequestState<T = unknown> implements AsyncStateInterface<T> {
   startTime: number;
   endTime: number;
 

@@ -54,6 +54,10 @@ export function BaseHeader(props: {
   );
 
   const RenderLeft = useMemo(() => {
+    if (!renderLeft) {
+      return leftDefault;
+    }
+
     if (typeof renderLeft === 'function') {
       return renderLeft({ locale, defaultElement: leftDefault });
     }

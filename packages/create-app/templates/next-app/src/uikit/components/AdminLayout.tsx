@@ -3,68 +3,31 @@
 import {
   DashboardOutlined,
   UserOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  FileOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, type MenuProps } from 'antd';
+import { Layout, Menu } from 'antd';
 import { clsx } from 'clsx';
-import React, { useCallback, type HTMLAttributes } from 'react';
+import React, { useCallback, useMemo, type HTMLAttributes } from 'react';
 import { AdminPageManager } from '@/base/cases/AdminPageManager';
 import { BaseHeader } from './BaseHeader';
+import { LocaleLink } from './LocaleLink';
 import { useIOC } from '../hook/useIOC';
 import { useStore } from '../hook/useStore';
 import type { RenderLeftFunction } from './BaseHeader';
+import type { ItemType } from 'antd/es/menu/interface';
 
 const { Sider } = Layout;
+
+const IconMap = {
+  dashboard: <DashboardOutlined />,
+  users: <UserOutlined />
+};
 
 export interface AdminLayoutProps extends HTMLAttributes<HTMLDivElement> {
   mainClassName?: string;
   children: React.ReactNode;
 }
-
-const items: MenuProps['items'] = [
-  {
-    key: 'dashboard',
-    icon: <DashboardOutlined />,
-    label: 'Dashboard',
-    path: '/admin'
-  },
-  {
-    key: 'users',
-    icon: <UserOutlined />,
-    label: 'User Management',
-    path: '/admin/users'
-  },
-  {
-    key: 'teams',
-    icon: <TeamOutlined />,
-    label: 'Team Management',
-    path: '/admin/teams'
-  },
-  {
-    key: 'files',
-    icon: <FileOutlined />,
-    label: 'File Management',
-    path: '/admin/files'
-  },
-  {
-    key: 'settings',
-    icon: <SettingOutlined />,
-    label: 'System Settings',
-    path: '/admin/settings'
-  }
-].map((item) => ({
-  key: item.key,
-  icon: item.icon,
-  label: item.label,
-  onClick: () => {
-    // 这里可以通过路由服务进行导航
-    window.location.href = item.path;
-  }
-}));
 
 export function AdminLayout(props: AdminLayoutProps) {
   const { children, className, mainClassName, ...rest } = props;
@@ -72,6 +35,30 @@ export function AdminLayout(props: AdminLayoutProps) {
   const page = useIOC(AdminPageManager);
 
   const collapsedSidebar = useStore(page, page.selectors.collapsedSidebar);
+  const navItems = useStore(page, page.selectors.navItems);
+
+  const sidebarItems = useMemo(() => {
+    return navItems.map((item) => {
+      // TODO: use i18n
+      const title = item.i18nKey;
+      const icon = IconMap[item.key as keyof typeof IconMap];
+
+      return {
+        key: item.key,
+        label: (
+          <LocaleLink
+            href={item.pathname!}
+            title={title}
+            className="flex items-center gap-2"
+          >
+            {icon}
+            <span>{title}</span>
+          </LocaleLink>
+        ),
+        link: item.pathname
+      } as ItemType;
+    });
+  }, [navItems]);
 
   const renderHeaderLeft: RenderLeftFunction = useCallback(
     ({ defaultElement }) => (
@@ -102,7 +89,7 @@ export function AdminLayout(props: AdminLayoutProps) {
             theme="dark"
             mode="inline"
             defaultSelectedKeys={['4']}
-            items={items}
+            items={sidebarItems}
           />
         </Sider>
       </div>

@@ -8,15 +8,16 @@ import { ApiUserService } from '@/server/services/ApiUserService';
 import { PaginationValidator } from '@/server/validators/PaginationValidator';
 import type { NextRequest } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const server = new BootstrapServer();
 
   const result = await server
     .use(new AdminAuthPlugin())
     .execNoError(async ({ parameters: { IOC } }) => {
-      const paginationParams = IOC(PaginationValidator).getThrow(
-        await req.json()
+      const searchParams = Object.fromEntries(
+        req.nextUrl.searchParams.entries()
       );
+      const paginationParams = IOC(PaginationValidator).getThrow(searchParams);
 
       const apiUserService = IOC(ApiUserService);
 

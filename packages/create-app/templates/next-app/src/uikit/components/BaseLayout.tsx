@@ -3,12 +3,14 @@ import type { HTMLAttributes } from 'react';
 
 export interface BaseLayoutProps extends HTMLAttributes<HTMLDivElement> {
   showLogoutButton?: boolean;
+  showAdminButton?: boolean;
   mainProps?: HTMLAttributes<HTMLElement>;
 }
 
 export function BaseLayout({
   children,
   showLogoutButton,
+  showAdminButton,
   mainProps,
   ...props
 }: BaseLayoutProps) {
@@ -18,7 +20,10 @@ export function BaseLayout({
       className="flex flex-col min-h-screen"
       {...props}
     >
-      <BaseHeader showLogoutButton={showLogoutButton} />
+      <BaseHeader
+        showLogoutButton={showLogoutButton}
+        showAdminButton={showAdminButton}
+      />
       <main className="flex flex-1 flex-col bg-primary" {...mainProps}>
         {children}
       </main>

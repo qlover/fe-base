@@ -18,7 +18,8 @@ export interface AdminPageState extends StoreStateInterface {
 
 export abstract class AdminLayoutInterface extends StoreInterface<AdminPageState> {
   public readonly selectors = {
-    collapsedSidebar: (state: AdminPageState) => state.collapsedSidebar
+    collapsedSidebar: (state: AdminPageState) => state.collapsedSidebar,
+    navItems: (state: AdminPageState) => state.navItems
   };
 
   abstract toggleSidebar(): void;

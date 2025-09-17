@@ -4,23 +4,16 @@ import {
   RequestTransaction
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
-import type { AdminApiConfig } from './AdminApiType';
+import type { AppApiConfig } from '../appApi/AppApiRequester';
 
-/**
- * UserApi
- *
- * @description
- * UserApi is a client for the user API.
- *
- */
 @injectable()
-export class AdminApi extends RequestTransaction<AdminApiConfig> {
+export class AdminApiRequester extends RequestTransaction<AppApiConfig> {
   constructor(
     @inject(FetchAbortPlugin) protected abortPlugin: FetchAbortPlugin
   ) {
     super(
       new RequestAdapterFetch({
-        baseURL: '/api',
+        baseURL: '/api/admin',
         responseType: 'json'
       })
     );

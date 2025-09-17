@@ -5,10 +5,23 @@ import type {
   AdminPageState
 } from '../port/AdminLayoutInterface';
 
+const defaultNavItems: NavItemInterface[] = [
+  {
+    key: 'dashboard',
+    i18nKey: 'Dashboard',
+    pathname: '/admin'
+  },
+  {
+    key: 'users',
+    i18nKey: 'User Management',
+    pathname: '/admin/users'
+  }
+];
+
 class AdminPageManagerState implements AdminPageState {
   collapsedSidebar = false;
 
-  navItems: NavItemInterface[] = [];
+  navItems: NavItemInterface[] = defaultNavItems;
 }
 
 @injectable()

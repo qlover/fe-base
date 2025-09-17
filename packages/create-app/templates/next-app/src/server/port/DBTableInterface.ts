@@ -1,4 +1,4 @@
-import type { PaginationInterface } from './PaginationInterface';
+import type { PaginationInterface } from '@/base/port/PaginationInterface';
 
 export interface DBTableInterface {
   readonly name: string;

@@ -1,22 +1,23 @@
 import { inject, injectable } from 'inversify';
-import { AdminApi } from './adminApi/AdminApi';
-import type { AdminPageInterface } from '../port/AdminPageInterface';
+import {
+  AdminPageInterface,
+  type AdminPageListParams,
+  AdminPageState
+} from '../port/AdminPageInterface';
+import { AdminUserApi } from './adminApi/AdminUserApi';
 import type { PaginationInterface } from '../port/PaginationInterface';
 
 @injectable()
-export class AdminUserService implements AdminPageInterface {
-  constructor(@inject(AdminApi) protected adminApi: AdminApi) {}
-
-  async initialize(): Promise<unknown> {
-    return Promise.resolve();
+export class AdminUserService extends AdminPageInterface<AdminPageState> {
+  constructor(@inject(AdminUserApi) protected adminUserApi: AdminUserApi) {
+    super(() => new AdminPageState());
   }
 
-  async fetchList(_params: unknown): Promise<PaginationInterface<unknown>> {
-    return Promise.resolve({
-      list: [],
-      total: 0,
-      page: 1,
-      pageSize: 10
-    });
+  override async fetchList(
+    params: Partial<AdminPageListParams>
+  ): Promise<PaginationInterface<unknown>> {
+    return this.adminUserApi.getUserList(
+      Object.assign({}, this.state.listParams, params)
+    );
   }
 }
