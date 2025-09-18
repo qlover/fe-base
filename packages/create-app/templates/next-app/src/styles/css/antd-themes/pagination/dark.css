@@ -1,0 +1,32 @@
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme {
+  /* Antd Pagination 组件变量 */
+  .ant-pagination-css-var {
+    --fe-pagination-item-bg: rgb(var(--color-bg-secondary));
+    --fe-pagination-item-size: 32px;
+    --fe-pagination-item-size-sm: 24px;
+    --fe-pagination-item-active-bg: rgb(var(--color-bg-secondary));
+    --fe-pagination-item-link-bg: rgb(var(--color-bg-secondary));
+    --fe-pagination-item-active-color-disabled: rgb(var(--text-tertiary));
+    --fe-pagination-item-active-bg-disabled: rgba(var(--text-primary), 0.15);
+    --fe-pagination-item-input-bg: rgb(var(--color-bg-secondary));
+    --fe-pagination-mini-options-size-changer-top: 0px;
+    --fe-pagination-padding-block: 4px;
+    --fe-pagination-padding-block-sm: 0px;
+    --fe-pagination-padding-block-lg: 7px;
+    --fe-pagination-padding-inline: 11px;
+    --fe-pagination-padding-inline-sm: 7px;
+    --fe-pagination-padding-inline-lg: 11px;
+    --fe-pagination-addon-bg: rgba(var(--text-primary), 0.02);
+    --fe-pagination-active-border-color: rgb(var(--color-brand));
+    --fe-pagination-hover-border-color: rgb(var(--color-brand-hover));
+    --fe-pagination-active-shadow: 0 0 0 2px rgba(var(--color-brand), 0.2);
+    --fe-pagination-error-active-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    --fe-pagination-warning-active-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    --fe-pagination-hover-bg: rgb(var(--color-bg-elevated));
+    --fe-pagination-active-bg: rgb(var(--color-bg-elevated));
+    --fe-pagination-input-font-size: 14px;
+    --fe-pagination-input-font-size-lg: 16px;
+    --fe-pagination-input-font-size-sm: 14px;
+  }
+} 

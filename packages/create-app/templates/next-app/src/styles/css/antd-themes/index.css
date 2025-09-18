@@ -1,3 +1,3 @@
-@import './_default.css';
-@import './dark.css';
-@import './pink.css';
+@import './_common/index.css';
+@import './table/index.css';
+@import './pagination/index.css';

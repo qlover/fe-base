@@ -44,6 +44,7 @@ html,
   --fe-color-text-tertiary: rgba(15 23 42 / 0.35);
   --fe-color-text-quaternary: rgba(15 23 42 / 0.15);
   --fe-color-text-placeholder: rgba(15 23 42 / 0.25);
+  --fe-color-text-disabled: rgba(15 23 42 / 0.25); /* 禁用状态文本颜色 */
   --fe-color-border: rgb(226 232 240);
 
   /* Antd 组件通用变量 */
@@ -247,5 +248,49 @@ html,
     --fe-control-item-bg-active-disabled: rgba(0, 0, 0, 0.15);
     --fe-control-tmp-outline: rgba(0, 0, 0, 0.02);
     --fe-control-outline: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
+  }
+
+  /* 滚动条样式变量 */
+  --fe-scrollbar-size: 6px;
+  --fe-scrollbar-thumb-bg: rgba(15 23 42 / 0.2);
+  --fe-scrollbar-thumb-hover-bg: rgba(15 23 42 / 0.3);
+  --fe-scrollbar-track-bg: transparent;
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: var(--fe-scrollbar-size);
+    height: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--fe-scrollbar-track-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--fe-scrollbar-thumb-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fe-scrollbar-thumb-hover-bg);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 可选的细滚动条样式 */
+  .scrollbar-thin {
+    --fe-scrollbar-size: 4px;
+  }
+
+  /* 隐藏滚动条但保持可滚动 */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

@@ -76,4 +76,12 @@ export abstract class AdminPageInterface<
       } as Partial<S>)
     );
   }
+
+  changeListParams(params: Partial<AdminPageListParams>): void {
+    this.emit(
+      this.cloneState({
+        listParams: params
+      } as Partial<S>)
+    );
+  }
 }

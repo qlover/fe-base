@@ -1,0 +1,44 @@
+/* custom variables - for antd and custom css */
+html,
+.fe-theme {
+  /* Antd Table 组件变量 */
+  .ant-table-css-var {
+    --fe-table-header-bg: rgb(var(--color-bg-elevated));
+    --fe-table-header-color: rgb(var(--text-primary));
+    --fe-table-header-sort-active-bg: rgb(var(--color-bg-secondary));
+    --fe-table-header-sort-hover-bg: rgb(var(--color-bg-secondary));
+    --fe-table-body-sort-bg: rgb(var(--color-bg-elevated));
+    --fe-table-row-hover-bg: rgb(var(--color-bg-secondary));
+    --fe-table-row-selected-bg: rgba(var(--color-brand), 0.1);
+    --fe-table-row-selected-hover-bg: rgba(var(--color-brand-hover), 0.2);
+    --fe-table-row-expanded-bg: rgba(var(--text-primary), 0.02);
+    --fe-table-cell-padding-block: 16px;
+    --fe-table-cell-padding-inline: 16px;
+    --fe-table-cell-padding-block-md: 12px;
+    --fe-table-cell-padding-inline-md: 8px;
+    --fe-table-cell-padding-block-sm: 8px;
+    --fe-table-cell-padding-inline-sm: 8px;
+    --fe-table-border-color: rgb(var(--color-border));
+    --fe-table-header-border-radius: 8px;
+    --fe-table-footer-bg: rgb(var(--color-bg-elevated));
+    --fe-table-footer-color: rgb(var(--text-primary));
+    --fe-table-cell-font-size: 14px;
+    --fe-table-cell-font-size-md: 14px;
+    --fe-table-cell-font-size-sm: 14px;
+    --fe-table-header-split-color: rgb(var(--color-border));
+    --fe-table-fixed-header-sort-active-bg: rgb(var(--color-bg-secondary));
+    --fe-table-header-filter-hover-bg: rgba(var(--text-primary), 0.06);
+    --fe-table-filter-dropdown-menu-bg: rgb(var(--color-bg-base));
+    --fe-table-filter-dropdown-bg: rgb(var(--color-bg-base));
+    --fe-table-expand-icon-bg: rgb(var(--color-bg-base));
+    --fe-table-selection-column-width: 32px;
+    --fe-table-sticky-scroll-bar-bg: rgba(var(--text-primary), 0.25);
+    --fe-table-sticky-scroll-bar-border-radius: 100px;
+    --fe-table-expand-icon-margin-top: 2.5px;
+    --fe-table-header-icon-color: rgb(var(--text-tertiary));
+    --fe-table-header-icon-hover-color: rgb(var(--text-secondary));
+    --fe-table-expand-icon-half-inner: 7px;
+    --fe-table-expand-icon-size: 17px;
+    --fe-table-expand-icon-scale: 0.9411764705882353;
+  }
+}
