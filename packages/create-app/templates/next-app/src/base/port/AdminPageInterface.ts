@@ -34,6 +34,8 @@ export abstract class AdminPageInterface<
     try {
       const result = await this.fetchList(this.state.listParams);
 
+      console.log('jj result', result);
+
       this.emit(
         this.cloneState({
           initState: new RequestState(false, result).end()
@@ -66,4 +68,12 @@ export abstract class AdminPageInterface<
   abstract fetchList(
     params: Partial<AdminPageListParams>
   ): Promise<PaginationInterface<unknown>>;
+
+  changeListState(state: RequestState<unknown>): void {
+    this.emit(
+      this.cloneState({
+        listState: state
+      } as Partial<S>)
+    );
+  }
 }

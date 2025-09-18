@@ -29,6 +29,7 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
     );
     appUserApi.usePlugin(new AppApiPlugin());
     appUserApi.usePlugin(ioc.get(DialogErrorPlugin));
+    console.log('jj AppUserApiBootstrap success');
   }
 
   protected requestDataSerializer(

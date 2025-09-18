@@ -13,11 +13,9 @@ export default function UsersPage() {
   const mouted = useRef(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (!mouted.current) {
-        mouted.current = true;
-        adminUserService.initialize();
-      }
+    if (!mouted.current) {
+      mouted.current = true;
+      adminUserService.initialize();
     }
   }, []);
 

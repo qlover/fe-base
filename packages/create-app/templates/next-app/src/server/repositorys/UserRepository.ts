@@ -10,6 +10,17 @@ import type { UserSchema } from '@migrations/schema/UserSchema';
 export class UserRepository implements UserRepositoryInterface {
   readonly name = 'fe_users';
 
+  protected safeFields = [
+    'created_at',
+    // 'credential_token',
+    'email',
+    'email_confirmed_at',
+    'id',
+    // 'password',
+    'role',
+    'updated_at'
+  ];
+
   constructor(@inject(SupabaseBridge) protected dbBridge: DBBridgeInterface) {}
 
   getAll(): Promise<unknown> {
@@ -62,14 +73,15 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  async pagination(params: {
+  async pagination<UserSchema>(params: {
     page: number;
     pageSize: number;
   }): Promise<PaginationInterface<UserSchema>> {
     const result = await this.dbBridge.pagination({
       table: this.name,
       page: params.page,
-      pageSize: params.pageSize
+      pageSize: params.pageSize,
+      fields: this.safeFields
     });
 
     return {

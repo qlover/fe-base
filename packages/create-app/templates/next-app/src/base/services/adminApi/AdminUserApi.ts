@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import type { AdminPageListParams } from '@/base/port/AdminPageInterface';
 import type { PaginationInterface } from '@/base/port/PaginationInterface';
-import { AdminApiRequester } from './AdminApiRequester';
 import {
   AppApiRequester,
   type AppApiConfig,
@@ -23,13 +22,13 @@ export class AdminUserApi {
 
   async getUserList(
     params: AdminPageListParams
-  ): Promise<PaginationInterface<unknown>> {
+  ): Promise<AdminUserListTransaction['response']> {
     const response = await this.client.request<AdminUserListTransaction>({
-      url: '/api/admin/users',
+      url: '/admin/users',
       method: 'GET',
       params: params as unknown as Record<string, unknown>
     });
 
-    return response.data;
+    return response;
   }
 }
