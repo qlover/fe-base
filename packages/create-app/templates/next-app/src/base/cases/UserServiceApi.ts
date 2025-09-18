@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import { AppUserApi } from '../services/appApi/AppUserApi';
 import type { AppApiSuccessInterface } from '../port/AppApiInterface';
 import type { AppUserApiInterface } from '../port/AppUserApiInterface';
-import type { UserSchema } from '@migrations/schema/UserSchema';
 import type {
   LoginResponseData,
   UserAuthApiInterface,

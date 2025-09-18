@@ -56,8 +56,12 @@
     --fe-menu-dark-item-hover-bg: transparent;
     --fe-menu-dark-group-title-color: rgba(255, 255, 255, 0.65);
     --fe-menu-dark-item-hover-color: rgb(255 255 255);
-    --fe-menu-dark-danger-item-hover-color: color-mix(in srgb, var(--fe-color-error) 90%, white);
+    --fe-menu-dark-danger-item-hover-color: color-mix(
+      in srgb,
+      var(--fe-color-error) 90%,
+      white
+    );
     --fe-menu-dark-danger-item-selected-color: rgb(255 255 255);
     --fe-menu-dark-danger-item-active-bg: var(--fe-color-error);
   }
-} 
+}

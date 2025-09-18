@@ -45,7 +45,12 @@
   --fe-color-text-tertiary: rgba(255, 255, 255, 0.35);
   --fe-color-text-quaternary: rgba(255, 255, 255, 0.15);
   --fe-color-text-placeholder: rgba(255, 255, 255, 0.25);
-  --fe-color-text-disabled: rgba(255, 255, 255, 0.25); /* 暗色主题禁用状态文本颜色 */
+  --fe-color-text-disabled: rgba(
+    255,
+    255,
+    255,
+    0.25
+  ); /* 暗色主题禁用状态文本颜色 */
   --fe-color-border: rgb(51 65 85);
 
   /* Antd 图标相关变量 */

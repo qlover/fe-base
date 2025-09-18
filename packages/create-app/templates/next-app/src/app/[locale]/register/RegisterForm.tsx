@@ -3,9 +3,9 @@
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useState } from 'react';
-import { I } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { RegisterI18nInterface } from '@config/i18n';
+import { I } from '@config/IOCIdentifier';
 
 export function RegisterForm(props: { tt: RegisterI18nInterface }) {
   const { tt } = props;

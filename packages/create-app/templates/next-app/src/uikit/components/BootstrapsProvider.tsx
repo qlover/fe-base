@@ -3,11 +3,11 @@ import '@ant-design/v5-patch-for-react-19';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
-import { I } from '@config/IOCIdentifier';
 import { NavigateBridge } from '@/base/cases/NavigateBridge';
 import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
 import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 import { clientIOC } from '@/core/clientIoc/ClientIOC';
+import { I } from '@config/IOCIdentifier';
 import { IOCContext } from '../context/IOCContext';
 
 export function BootstrapsProvider(props: { children: React.ReactNode }) {

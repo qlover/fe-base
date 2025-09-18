@@ -247,7 +247,12 @@ html,
     --fe-control-item-bg-active-hover: #bae0ff;
     --fe-control-item-bg-active-disabled: rgba(0, 0, 0, 0.15);
     --fe-control-tmp-outline: rgba(0, 0, 0, 0.02);
-    --fe-control-outline: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
+    --fe-control-outline: rgba(
+      96,
+      165,
+      250,
+      0.1
+    ); /* blue-400 with 0.1 opacity */
   }
 
   /* Antd Layout 组件变量 */

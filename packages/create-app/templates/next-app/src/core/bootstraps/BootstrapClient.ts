@@ -1,9 +1,9 @@
 import { Bootstrap } from '@qlover/corekit-bridge';
 import { isObject } from 'lodash';
 import { browserGlobalsName } from '@config/common';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import * as globals from '../globals';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface

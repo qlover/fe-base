@@ -3,9 +3,9 @@
 import { TeamOutlined } from '@ant-design/icons';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
+import { useIOC } from '@/uikit/hook/useIOC';
 import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hook/useIOC';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';

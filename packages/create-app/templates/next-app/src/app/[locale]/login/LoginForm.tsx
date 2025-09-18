@@ -4,11 +4,11 @@ import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { Form, Input, Button } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { I } from '@config/IOCIdentifier';
 import { LoginValidator } from '@/server/validators/LoginValidator';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
+import { I } from '@config/IOCIdentifier';
 
 interface LoginFormData {
   email: string;

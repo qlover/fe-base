@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { isEmpty, last, omit } from 'lodash';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import {
   API_USER_NOT_FOUND,
   API_USER_ALREADY_EXISTS
@@ -15,7 +16,6 @@ import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
-import type { UserSchema } from '@migrations/schema/UserSchema';
 import type { Encryptor } from '@qlover/fe-corekit';
 
 @injectable()

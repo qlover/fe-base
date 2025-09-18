@@ -5,13 +5,13 @@ import {
   type PostgrestResponse
 } from '@supabase/supabase-js';
 import { injectable, inject } from 'inversify';
-import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type {
   BridgeEvent,
   DBBridgeInterface,
   Where
 } from '@/base/port/DBBridgeInterface';
+import { I } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 

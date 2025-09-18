@@ -43,7 +43,9 @@
   --ant-color-text-tertiary: rgba(190 18 60 / 0.35);
   --ant-color-text-quaternary: rgba(190 18 60 / 0.15);
   --ant-color-text-placeholder: rgba(190 18 60 / 0.25);
-  --fe-color-text-disabled: rgba(190 18 60 / 0.25); /* 粉色主题禁用状态文本颜色 */
+  --fe-color-text-disabled: rgba(
+    190 18 60 / 0.25
+  ); /* 粉色主题禁用状态文本颜色 */
   --ant-color-border: rgb(254 205 211);
 
   /* Antd 图标相关变量 */

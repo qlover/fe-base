@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import { UserRepository } from '../repositorys/UserRepository';
 import { PaginationValidator } from '../validators/PaginationValidator';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { ValidatorInterface } from '../port/ValidatorInterface';
-import type { UserSchema } from '@migrations/schema/UserSchema';
 
 @injectable()
 export class ApiUserService {
