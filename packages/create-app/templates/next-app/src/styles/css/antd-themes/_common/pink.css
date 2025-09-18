@@ -219,6 +219,29 @@
     ); /* pink-400 with 0.1 opacity */
   }
 
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fe-layout-color-bg-header: var(--ant-color-bg-container);
+    --fe-layout-color-bg-body: rgb(255 241 242);
+    --fe-layout-color-bg-trigger: var(--ant-color-bg-elevated);
+    --fe-layout-body-bg: rgb(255 241 242);
+    --fe-layout-header-bg: var(--ant-color-bg-container);
+    --fe-layout-header-height: 64px;
+    --fe-layout-header-padding: 0 50px;
+    --fe-layout-header-color: var(--ant-color-text);
+    --fe-layout-footer-padding: 24px 50px;
+    --fe-layout-footer-bg: rgb(255 241 242);
+    --fe-layout-sider-bg: var(--ant-color-bg-container);
+    --fe-layout-trigger-height: 48px;
+    --fe-layout-trigger-bg: var(--ant-color-bg-elevated);
+    --fe-layout-trigger-color: var(--ant-color-text);
+    --fe-layout-zero-trigger-width: 40px;
+    --fe-layout-zero-trigger-height: 40px;
+    --fe-layout-light-sider-bg: var(--ant-color-bg-container);
+    --fe-layout-light-trigger-bg: var(--ant-color-bg-container);
+    --fe-layout-light-trigger-color: var(--ant-color-text);
+  }
+
   /* 滚动条样式变量 */
   --fe-scrollbar-size: 6px;
   --fe-scrollbar-thumb-bg: rgba(244 114 182 / 0.3);

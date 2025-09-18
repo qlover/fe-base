@@ -85,12 +85,7 @@ export function AdminLayout(props: AdminLayoutProps) {
           collapsed={collapsedSidebar}
         >
           <div className="demo-logo-vertical" />
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={['4']}
-            items={sidebarItems}
-          />
+          <Menu mode="inline" items={sidebarItems} />
         </Sider>
       </div>
 

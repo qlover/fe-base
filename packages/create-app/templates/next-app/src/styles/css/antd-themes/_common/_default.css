@@ -250,6 +250,29 @@ html,
     --fe-control-outline: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
   }
 
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fe-layout-color-bg-header: rgb(var(--color-bg-base));
+    --fe-layout-color-bg-body: rgb(var(--color-bg-secondary));
+    --fe-layout-color-bg-trigger: rgb(var(--color-bg-elevated));
+    --fe-layout-body-bg: rgb(var(--color-bg-secondary));
+    --fe-layout-header-bg: rgb(var(--color-bg-base));
+    --fe-layout-header-height: 64px;
+    --fe-layout-header-padding: 0 50px;
+    --fe-layout-header-color: rgb(var(--text-primary));
+    --fe-layout-footer-padding: 24px 50px;
+    --fe-layout-footer-bg: rgb(var(--color-bg-secondary));
+    --fe-layout-sider-bg: rgb(var(--color-bg-base));
+    --fe-layout-trigger-height: 48px;
+    --fe-layout-trigger-bg: rgb(var(--color-bg-elevated));
+    --fe-layout-trigger-color: rgb(var(--text-primary));
+    --fe-layout-zero-trigger-width: 40px;
+    --fe-layout-zero-trigger-height: 40px;
+    --fe-layout-light-sider-bg: rgb(var(--color-bg-base));
+    --fe-layout-light-trigger-bg: rgb(var(--color-bg-base));
+    --fe-layout-light-trigger-color: rgb(var(--text-primary));
+  }
+
   /* 滚动条样式变量 */
   --fe-scrollbar-size: 6px;
   --fe-scrollbar-thumb-bg: rgba(15 23 42 / 0.2);
