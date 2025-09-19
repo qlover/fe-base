@@ -6,8 +6,8 @@ import {
 import { AppConfig } from '@/base/cases/AppConfig';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import type { IOCInterface } from '@/base/port/IOCInterface';
-import { ServerIOCRegister } from './ServerIOCRegister';
 import type { IOCIdentifierMapServer } from '@config/IOCIdentifier';
+import { ServerIOCRegister } from './ServerIOCRegister';
 
 export class ServerIOC
   implements IOCInterface<IOCIdentifierMapServer, IOCContainerInterface>

@@ -5,7 +5,7 @@ import {
   type ExecutorPlugin
 } from '@qlover/fe-corekit';
 import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
-import type { UserApiConfig } from './AppUserType';
+import type { AppApiConfig } from './AppApiRequester';
 
 export class AppApiPlugin implements ExecutorPlugin {
   readonly pluginName = 'AppApiPlugin';
@@ -30,7 +30,7 @@ export class AppApiPlugin implements ExecutorPlugin {
   }
 
   async onError(
-    context: ExecutorContext<UserApiConfig>
+    context: ExecutorContext<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;
 

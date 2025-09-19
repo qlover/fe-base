@@ -43,6 +43,9 @@
   --ant-color-text-tertiary: rgba(190 18 60 / 0.35);
   --ant-color-text-quaternary: rgba(190 18 60 / 0.15);
   --ant-color-text-placeholder: rgba(190 18 60 / 0.25);
+  --fe-color-text-disabled: rgba(
+    190 18 60 / 0.25
+  ); /* 粉色主题禁用状态文本颜色 */
   --ant-color-border: rgb(254 205 211);
 
   /* Antd 图标相关变量 */
@@ -216,5 +219,72 @@
       182,
       0.1
     ); /* pink-400 with 0.1 opacity */
+  }
+
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fe-layout-color-bg-header: var(--ant-color-bg-container);
+    --fe-layout-color-bg-body: rgb(255 241 242);
+    --fe-layout-color-bg-trigger: var(--ant-color-bg-elevated);
+    --fe-layout-body-bg: rgb(255 241 242);
+    --fe-layout-header-bg: var(--ant-color-bg-container);
+    --fe-layout-header-height: 64px;
+    --fe-layout-header-padding: 0 50px;
+    --fe-layout-header-color: var(--ant-color-text);
+    --fe-layout-footer-padding: 24px 50px;
+    --fe-layout-footer-bg: rgb(255 241 242);
+    --fe-layout-sider-bg: var(--ant-color-bg-container);
+    --fe-layout-trigger-height: 48px;
+    --fe-layout-trigger-bg: var(--ant-color-bg-elevated);
+    --fe-layout-trigger-color: var(--ant-color-text);
+    --fe-layout-zero-trigger-width: 40px;
+    --fe-layout-zero-trigger-height: 40px;
+    --fe-layout-light-sider-bg: var(--ant-color-bg-container);
+    --fe-layout-light-trigger-bg: var(--ant-color-bg-container);
+    --fe-layout-light-trigger-color: var(--ant-color-text);
+  }
+
+  /* 滚动条样式变量 */
+  --fe-scrollbar-size: 6px;
+  --fe-scrollbar-thumb-bg: rgba(244 114 182 / 0.3);
+  --fe-scrollbar-thumb-hover-bg: rgba(244 114 182 / 0.4);
+  --fe-scrollbar-track-bg: transparent;
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: var(--fe-scrollbar-size);
+    height: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--fe-scrollbar-track-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--fe-scrollbar-thumb-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fe-scrollbar-thumb-hover-bg);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 可选的细滚动条样式 */
+  .scrollbar-thin {
+    --fe-scrollbar-size: 4px;
+  }
+
+  /* 隐藏滚动条但保持可滚动 */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

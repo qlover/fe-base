@@ -1,9 +1,9 @@
-import { I, IOCIdentifier } from '@config/IOCIdentifier';
 import { AppUserApiBootstrap } from '@/base/services/appApi/AppUserApiBootstrap';
+import { I, IOCIdentifier } from '@config/IOCIdentifier';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
 import type { BootstrapAppArgs } from './BootstrapClient';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type {
   BootstrapExecutorPlugin,
   EnvConfigInterface,

@@ -1,16 +1,17 @@
 import {
   createClient,
   type PostgrestSingleResponse,
-  type SupabaseClient
+  type SupabaseClient,
+  type PostgrestResponse
 } from '@supabase/supabase-js';
 import { injectable, inject } from 'inversify';
-import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type {
   BridgeEvent,
   DBBridgeInterface,
   Where
 } from '@/base/port/DBBridgeInterface';
+import { I } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
@@ -120,5 +121,39 @@ export class SupabaseBridge implements DBBridgeInterface {
     this.handleWhere(handler, where ?? []);
 
     return this.catch(await handler);
+  }
+
+  async pagination(event: BridgeEvent): Promise<PostgrestResponse<unknown>> {
+    const { table, fields = '*', where, page = 1, pageSize = 10 } = event;
+    const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
+
+    // 获取总数
+    const countHandler = this.supabase
+      .from(table)
+      .select('*', { count: 'exact', head: true });
+
+    this.handleWhere(countHandler, where ?? []);
+    const countResult = await this.catch(await countHandler);
+
+    // 获取分页数据
+    const handler = this.supabase
+      .from(table)
+      .select(selectFields)
+      .range((page - 1) * pageSize, page * pageSize - 1);
+
+    this.handleWhere(handler, where ?? []);
+    const result = await this.catch(await handler);
+
+    if (result.error) {
+      return result as PostgrestResponse<unknown>;
+    }
+
+    return {
+      data: Array.isArray(result.data) ? result.data : [],
+      error: null,
+      count: countResult.count,
+      status: result.status,
+      statusText: result.statusText
+    };
   }
 }

@@ -18,3 +18,17 @@ export const API_USER_ALREADY_EXISTS = 'api__user__already_exists';
  * @localEn Response not correct
  */
 export const API_RESPONSE_NOT_OK = 'RESPONSE_NOT_OK';
+
+/**
+ * @description 未授权
+ * @localZh 未授权
+ * @localEn Not authorized
+ */
+export const API_NOT_AUTHORIZED = 'api__not_authorized';
+
+/**
+ * @description 页码不正确
+ * @localZh 页码不正确
+ * @localEn Page number is incorrect
+ */
+export const API_PAGE_INVALID = 'api__page__invalid';

@@ -44,6 +44,7 @@ html,
   --fe-color-text-tertiary: rgba(15 23 42 / 0.35);
   --fe-color-text-quaternary: rgba(15 23 42 / 0.15);
   --fe-color-text-placeholder: rgba(15 23 42 / 0.25);
+  --fe-color-text-disabled: rgba(15 23 42 / 0.25); /* 禁用状态文本颜色 */
   --fe-color-border: rgb(226 232 240);
 
   /* Antd 组件通用变量 */
@@ -246,6 +247,78 @@ html,
     --fe-control-item-bg-active-hover: #bae0ff;
     --fe-control-item-bg-active-disabled: rgba(0, 0, 0, 0.15);
     --fe-control-tmp-outline: rgba(0, 0, 0, 0.02);
-    --fe-control-outline: rgba(96, 165, 250, 0.1); /* blue-400 with 0.1 opacity */
+    --fe-control-outline: rgba(
+      96,
+      165,
+      250,
+      0.1
+    ); /* blue-400 with 0.1 opacity */
+  }
+
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fe-layout-color-bg-header: rgb(var(--color-bg-base));
+    --fe-layout-color-bg-body: rgb(var(--color-bg-secondary));
+    --fe-layout-color-bg-trigger: rgb(var(--color-bg-elevated));
+    --fe-layout-body-bg: rgb(var(--color-bg-secondary));
+    --fe-layout-header-bg: rgb(var(--color-bg-base));
+    --fe-layout-header-height: 64px;
+    --fe-layout-header-padding: 0 50px;
+    --fe-layout-header-color: rgb(var(--text-primary));
+    --fe-layout-footer-padding: 24px 50px;
+    --fe-layout-footer-bg: rgb(var(--color-bg-secondary));
+    --fe-layout-sider-bg: rgb(var(--color-bg-base));
+    --fe-layout-trigger-height: 48px;
+    --fe-layout-trigger-bg: rgb(var(--color-bg-elevated));
+    --fe-layout-trigger-color: rgb(var(--text-primary));
+    --fe-layout-zero-trigger-width: 40px;
+    --fe-layout-zero-trigger-height: 40px;
+    --fe-layout-light-sider-bg: rgb(var(--color-bg-base));
+    --fe-layout-light-trigger-bg: rgb(var(--color-bg-base));
+    --fe-layout-light-trigger-color: rgb(var(--text-primary));
+  }
+
+  /* 滚动条样式变量 */
+  --fe-scrollbar-size: 6px;
+  --fe-scrollbar-thumb-bg: rgba(15 23 42 / 0.2);
+  --fe-scrollbar-thumb-hover-bg: rgba(15 23 42 / 0.3);
+  --fe-scrollbar-track-bg: transparent;
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: var(--fe-scrollbar-size);
+    height: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--fe-scrollbar-track-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--fe-scrollbar-thumb-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fe-scrollbar-thumb-hover-bg);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 可选的细滚动条样式 */
+  .scrollbar-thin {
+    --fe-scrollbar-size: 4px;
+  }
+
+  /* 隐藏滚动条但保持可滚动 */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

@@ -1,4 +1,4 @@
-export interface UserAuthInterface {
+export interface ServerAuthInterface {
   setAuth(credential_token: string): Promise<void>;
 
   getAuth(): Promise<string>;
@@ -6,4 +6,6 @@ export interface UserAuthInterface {
   clear(): Promise<void>;
 
   hasAuth(): Promise<boolean>;
+
+  throwIfNotAuth(): Promise<void>;
 }

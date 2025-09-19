@@ -4,12 +4,12 @@ import { TranslationOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo } from 'react';
-import { i18nConfig } from '@config/i18n';
 import type {
   I18nServiceInterface,
   I18nServiceLocale
 } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
+import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import type { ItemType } from 'antd/es/menu/interface';
 

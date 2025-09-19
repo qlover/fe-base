@@ -9,6 +9,6 @@ export interface AppApiSuccessInterface<T = unknown> {
   data?: T;
 }
 
-export type AppApiResponse<T = unknown> =
+export type AppApiResult<T = unknown> =
   | AppApiErrorInterface
   | AppApiSuccessInterface<T>;

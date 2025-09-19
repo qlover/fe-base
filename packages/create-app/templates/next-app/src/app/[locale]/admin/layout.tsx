@@ -1,8 +1,9 @@
 import { PageParams } from '@/base/cases/PageParams';
 import type { PageLayoutProps } from '@/base/types/PageProps';
 import '@/styles/css/index.css';
+import { AdminLayout } from '@/uikit/components/AdminLayout';
 
-export default async function AdminLayout({
+export default async function AdminRootLayout({
   children,
   params
 }: PageLayoutProps) {
@@ -10,12 +11,8 @@ export default async function AdminLayout({
   const locale = pageParams.getLocale();
 
   return (
-    <div
-      data-testid="AdminRootLayout"
-      lang={locale}
-      className="min-h-screen bg-primary text-text"
-    >
+    <AdminLayout data-testid="AdminRootLayout" lang={locale}>
       {children}
-    </div>
+    </AdminLayout>
   );
 }

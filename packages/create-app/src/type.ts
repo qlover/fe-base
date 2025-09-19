@@ -1,8 +1,9 @@
+import { ScriptSharedInterface } from '@qlover/scripts-context';
 import { DistinctQuestion } from 'inquirer';
 
 export type GeneratorPrompt = DistinctQuestion;
 
-export type GeneratorOptions = {
+export interface GeneratorOptions extends ScriptSharedInterface {
   prompts?: GeneratorPrompt[];
   /**
    * template root path
@@ -18,7 +19,7 @@ export type GeneratorOptions = {
    * whether to copy config files
    */
   config?: boolean;
-};
+}
 
 export interface GeneratorContext extends GeneratorOptions {
   /**

@@ -1,8 +1,8 @@
-import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { RouterService } from '@/base/cases/RouterService';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import { I18nService } from '@/base/services/I18nService';
 import { UserService } from '@/base/services/UserService';
+import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { dialogHandler, logger, JSON } from '../globals';
 import type {
   IOCContainerInterface,

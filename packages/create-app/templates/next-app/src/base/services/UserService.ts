@@ -1,8 +1,8 @@
 import { injectable, inject } from 'inversify';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import { AppConfig } from '../cases/AppConfig';
 import { UserServiceApi } from '../cases/UserServiceApi';
 import { UserServiceInterface } from '../port/UserServiceInterface';
-import type { UserSchema } from '@migrations/schema/UserSchema';
 import type { UserAuthApiInterface } from '@qlover/corekit-bridge';
 
 @injectable()

@@ -8,6 +8,8 @@ export interface BridgeEvent {
   fields?: string | string[];
   where?: Where[];
   data?: unknown;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface DBBridgeInterface {
@@ -15,4 +17,5 @@ export interface DBBridgeInterface {
   update(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
   delete(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
   get(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
+  pagination(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
 }

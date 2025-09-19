@@ -1,16 +1,24 @@
-import {
-  FetchAbortPlugin,
-  RequestTransaction,
-  RequestAdapterFetch
-} from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
-import type { AppApiResponse } from '@/base/port/AppApiInterface';
+import type { AppApiResult } from '@/base/port/AppApiInterface';
 import type { AppUserApiInterface } from '@/base/port/AppUserApiInterface';
-import type {
-  UserApiConfig,
-  UserApiLoginTransaction,
-  UserApiRegisterTransaction
-} from './AppUserType';
+import { AppApiRequester } from './AppApiRequester';
+import type { AppApiConfig, AppApiTransaction } from './AppApiRequester';
+import type { RequestTransaction } from '@qlover/fe-corekit';
+
+export type UserApiLoginTransaction = AppApiTransaction<
+  { email: string; password: string },
+  {
+    token: string;
+  }
+>;
+
+export type UserApiRegisterTransaction = AppApiTransaction<
+  {
+    email: string;
+    password: string;
+  },
+  AppApiTransaction['response']['data']
+>;
 
 /**
  * UserApi
@@ -20,25 +28,16 @@ import type {
  *
  */
 @injectable()
-export class AppUserApi
-  extends RequestTransaction<UserApiConfig>
-  implements AppUserApiInterface
-{
+export class AppUserApi implements AppUserApiInterface {
   constructor(
-    @inject(FetchAbortPlugin) protected abortPlugin: FetchAbortPlugin
-  ) {
-    super(
-      new RequestAdapterFetch({
-        baseURL: '/api',
-        responseType: 'json'
-      })
-    );
-  }
+    @inject(AppApiRequester)
+    protected client: RequestTransaction<AppApiConfig>
+  ) {}
 
   async login(
     params: UserApiLoginTransaction['data']
-  ): Promise<AppApiResponse<unknown>> {
-    const response = await this.request<UserApiLoginTransaction>({
+  ): Promise<AppApiResult<unknown>> {
+    const response = await this.client.request<UserApiLoginTransaction>({
       url: '/user/login',
       method: 'POST',
       data: params,
@@ -50,8 +49,8 @@ export class AppUserApi
 
   async register(
     params: UserApiRegisterTransaction['data']
-  ): Promise<AppApiResponse<unknown>> {
-    const response = await this.request<UserApiRegisterTransaction>({
+  ): Promise<AppApiResult<unknown>> {
+    const response = await this.client.request<UserApiRegisterTransaction>({
       url: '/user/register',
       method: 'POST',
       data: params,
@@ -61,12 +60,12 @@ export class AppUserApi
     return response.data;
   }
 
-  async logout(): Promise<AppApiResponse<unknown>> {
-    const response = await this.request({
+  async logout(): Promise<AppApiResult<unknown>> {
+    const response = await this.client.request({
       url: '/user/logout',
       method: 'POST'
     });
 
-    return response.data as AppApiResponse<unknown>;
+    return response.data as AppApiResult<unknown>;
   }
 }

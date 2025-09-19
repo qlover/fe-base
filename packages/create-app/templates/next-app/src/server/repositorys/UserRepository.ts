@@ -1,13 +1,25 @@
 import { inject, injectable } from 'inversify';
 import { isEmpty, last } from 'lodash';
 import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
+import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
-import type { UserSchema } from '@migrations/schema/UserSchema';
 
 @injectable()
 export class UserRepository implements UserRepositoryInterface {
   readonly name = 'fe_users';
+
+  protected safeFields = [
+    'created_at',
+    // 'credential_token',
+    'email',
+    'email_confirmed_at',
+    'id',
+    // 'password',
+    'role',
+    'updated_at'
+  ];
 
   constructor(@inject(SupabaseBridge) protected dbBridge: DBBridgeInterface) {}
 
@@ -59,5 +71,24 @@ export class UserRepository implements UserRepositoryInterface {
       data: params,
       where: [['id', '=', id]]
     });
+  }
+
+  async pagination<UserSchema>(params: {
+    page: number;
+    pageSize: number;
+  }): Promise<PaginationInterface<UserSchema>> {
+    const result = await this.dbBridge.pagination({
+      table: this.name,
+      page: params.page,
+      pageSize: params.pageSize,
+      fields: this.safeFields
+    });
+
+    return {
+      list: result.data as UserSchema[],
+      total: result.count ?? 0,
+      page: params.page,
+      pageSize: params.pageSize
+    };
   }
 }

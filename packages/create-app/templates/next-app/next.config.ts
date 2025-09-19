@@ -10,6 +10,7 @@ generateLocales().catch((error) => {
 });
 
 const nextConfig: NextConfig = {
+  // reactStrictMode: false,
   turbopack: {
     root: __dirname // 明确指定根目录
   },

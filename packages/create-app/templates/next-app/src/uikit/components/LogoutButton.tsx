@@ -1,6 +1,7 @@
 import { LogoutOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useCallback } from 'react';
+import type { PageI18nInterface } from '@config/i18n';
 import {
   AUTH_LOGOUT_DIALOG_CONTENT,
   AUTH_LOGOUT_DIALOG_TITLE
@@ -8,7 +9,6 @@ import {
 import { I } from '@config/IOCIdentifier';
 import { useI18nInterface } from '../hook/useI18nInterface';
 import { useIOC } from '../hook/useIOC';
-import type { PageI18nInterface } from '@config/i18n';
 
 export function LogoutButton() {
   const dialogHandler = useIOC(I.DialogHandler);

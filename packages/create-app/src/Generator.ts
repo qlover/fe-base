@@ -1,5 +1,5 @@
 import type { LoggerInterface } from '@qlover/logger';
-import { FeScriptContext } from '@qlover/scripts-context';
+import { ScriptContext } from '@qlover/scripts-context';
 import inquirer from 'inquirer';
 import { createDefaultPrompts, createPackagePrompts } from './prompts';
 import { join } from 'path';
@@ -12,12 +12,12 @@ import { Compose } from './Compose';
 const packages = ['pack-app'];
 export class Generator {
   private ora: typeof oraPromise;
-  protected context: FeScriptContext<GeneratorOptions>;
+  protected context: ScriptContext<GeneratorOptions>;
   private subPackages: string[];
   private copyer: Copyer;
   private compose: Compose;
 
-  constructor(context: Partial<FeScriptContext<GeneratorOptions>>) {
+  constructor(context: Partial<ScriptContext<GeneratorOptions>>) {
     const templatePath = context.options?.templateRootPath;
 
     if (!templatePath) {
@@ -30,9 +30,9 @@ export class Generator {
     }
 
     this.ora = oraPromise;
-    this.context = new FeScriptContext(context);
+    this.context = new ScriptContext('create-app', context);
     // this.prompts = context.options?.prompts || defaultPrompts;
-    this.subPackages = ['node-lib', 'react-app'];
+    this.subPackages = ['node-lib', 'react-app', 'next-app'];
 
     // use _common as ignore target path
     this.copyer = new Copyer(

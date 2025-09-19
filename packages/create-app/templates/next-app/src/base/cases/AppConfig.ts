@@ -1,6 +1,6 @@
-import type { StringValue } from 'ms';
 import { name, version } from '../../../package.json';
 import type { EnvConfigInterface } from '@qlover/corekit-bridge';
+import type { StringValue } from 'ms';
 
 export class AppConfig implements EnvConfigInterface {
   /**

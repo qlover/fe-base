@@ -60,3 +60,10 @@ export const PAGE_500_TITLE = 'page__500__title';
  * @localEn 500 Page Description
  */
 export const PAGE_500_DESCRIPTION = 'page__500__description';
+
+/**
+ * @description Admin page title
+ * @localZh 管理后台
+ * @localEn Admin Backend
+ */
+export const PAGE_HEAD_ADMIN_TITLE = 'page__head__admin__title';

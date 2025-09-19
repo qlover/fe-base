@@ -1,0 +1,43 @@
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme {
+  /* Antd Table 组件变量 */
+  .ant-table-css-var {
+    --fe-table-header-bg: var(--ant-color-bg-container);
+    --fe-table-header-color: var(--ant-color-text);
+    --fe-table-header-sort-active-bg: var(--ant-color-bg-elevated);
+    --fe-table-header-sort-hover-bg: var(--ant-color-bg-elevated);
+    --fe-table-body-sort-bg: var(--ant-color-bg-container);
+    --fe-table-row-hover-bg: var(--ant-color-bg-elevated);
+    --fe-table-row-selected-bg: var(--fe-color-primary-bg);
+    --fe-table-row-selected-hover-bg: rgba(var(--fe-color-primary-hover), 0.2);
+    --fe-table-row-expanded-bg: rgba(var(--ant-color-text), 0.02);
+    --fe-table-cell-padding-block: 16px;
+    --fe-table-cell-padding-inline: 16px;
+    --fe-table-cell-padding-block-md: 12px;
+    --fe-table-cell-padding-inline-md: 8px;
+    --fe-table-cell-padding-block-sm: 8px;
+    --fe-table-cell-padding-inline-sm: 8px;
+    --fe-table-border-color: var(--ant-color-border);
+    --fe-table-header-border-radius: 8px;
+    --fe-table-footer-bg: var(--ant-color-bg-container);
+    --fe-table-footer-color: var(--ant-color-text);
+    --fe-table-cell-font-size: 14px;
+    --fe-table-cell-font-size-md: 14px;
+    --fe-table-cell-font-size-sm: 14px;
+    --fe-table-header-split-color: var(--ant-color-border);
+    --fe-table-fixed-header-sort-active-bg: var(--ant-color-bg-elevated);
+    --fe-table-header-filter-hover-bg: rgba(var(--ant-color-text), 0.06);
+    --fe-table-filter-dropdown-menu-bg: var(--ant-color-bg-container);
+    --fe-table-filter-dropdown-bg: var(--ant-color-bg-container);
+    --fe-table-expand-icon-bg: var(--ant-color-bg-container);
+    --fe-table-selection-column-width: 32px;
+    --fe-table-sticky-scroll-bar-bg: rgba(var(--ant-color-text), 0.25);
+    --fe-table-sticky-scroll-bar-border-radius: 100px;
+    --fe-table-expand-icon-margin-top: 2.5px;
+    --fe-table-header-icon-color: var(--fe-color-icon);
+    --fe-table-header-icon-hover-color: var(--fe-color-icon-hover);
+    --fe-table-expand-icon-half-inner: 7px;
+    --fe-table-expand-icon-size: 17px;
+    --fe-table-expand-icon-scale: 0.9411764705882353;
+  }
+}
