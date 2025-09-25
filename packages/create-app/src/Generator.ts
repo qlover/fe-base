@@ -166,8 +166,14 @@ export class Generator {
       return;
     }
 
+    const configPath = join(configsRootPath, configName);
+    if (!existsSync(configPath)) {
+      this.logger.debug(`Config path not found: ${configPath}`);
+      return;
+    }
+
     await this.copyer.copyPaths({
-      sourcePath: join(configsRootPath, configName),
+      sourcePath: configPath,
       targetPath,
       copyCallback
     });
