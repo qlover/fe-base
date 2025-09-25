@@ -1,6 +1,6 @@
 {
   "name": "@qlover/create-app",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "description": "Create a new app with a single command",
   "private": false,
   "type": "module",
