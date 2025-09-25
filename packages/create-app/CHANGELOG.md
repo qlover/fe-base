@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 0.7.12
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **create-app:** structure and update entry points ([ea404c7](https://github.com/qlover/fe-base/commit/ea404c74fdea09a3122a10e0e0c649cfc5510b97)) ([#514](https://github.com/qlover/fe-base/pull/514))
+  - Changed the entry point in tsup.config.ts from 'src/index.ts' to 'src/index.mts' for better module support.
+  - Introduced a new CLI interface in src/cli.ts to handle command-line arguments and application logic.
+  - Created a new entry file src/index.mts that imports and executes the main function from the CLI, enhancing modularity and clarity.
+  - Removed the old main function from src/index.ts, streamlining the codebase and improving maintainability.
+
+  These changes aim to improve the application's structure and facilitate better command-line interactions.
+
 ## 0.7.11
 
 ### Patch Changes
