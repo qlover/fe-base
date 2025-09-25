@@ -1,4 +1,4 @@
-import type { DBTableInterface } from '@/base/port/DBTableInterface';
+import type { DBTableInterface } from '@/server/port/DBTableInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
 
 export interface UserRepositoryInterface extends DBTableInterface {

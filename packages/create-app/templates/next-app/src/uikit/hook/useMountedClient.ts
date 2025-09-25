@@ -4,7 +4,13 @@ export const useMountedClient = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+
+    return () => {
+      cancelAnimationFrame(timer);
+    };
   }, []);
 
   return mounted;

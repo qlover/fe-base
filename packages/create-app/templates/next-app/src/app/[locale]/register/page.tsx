@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { i18nConfig, register18n } from '@config/i18n';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
@@ -7,6 +6,7 @@ import { redirect } from '@/i18n/routing';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
+import { i18nConfig, register18n } from '@config/i18n';
 import { RegisterForm } from './RegisterForm';
 import type { Metadata } from 'next';
 

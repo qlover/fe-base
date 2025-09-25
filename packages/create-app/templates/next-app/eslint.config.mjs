@@ -96,6 +96,13 @@ const eslintConfig = [
       prettier: prettierPlugin,
       '@qlover-eslint': qloverEslint
     },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.json'
+        }
+      }
+    },
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/require-root-testid': 'error',
@@ -138,6 +145,16 @@ const eslintConfig = [
           pathGroups: [
             {
               pattern: '@/**',
+              group: 'internal',
+              position: 'after'
+            },
+            {
+              pattern: '@migrations/**',
+              group: 'internal',
+              position: 'after'
+            },
+            {
+              pattern: '@config/**',
               group: 'internal',
               position: 'after'
             }

@@ -1,12 +1,12 @@
 import { Button } from 'antd';
-import { i18nConfig } from '@config/i18n';
-import { homeI18n } from '@config/i18n/HomeI18n ';
 import { PageParams, type PageParamsType } from '@/base/cases/PageParams';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
+import { i18nConfig } from '@config/i18n';
+import { homeI18n } from '@config/i18n/HomeI18n ';
 import type { Metadata } from 'next';
 
 // const navigationItems = [
@@ -50,7 +50,7 @@ export default async function Home({ params }: PageParamsProps) {
   }
 
   return (
-    <BaseLayout data-testid="HomePage" showLogoutButton>
+    <BaseLayout data-testid="HomePage" showLogoutButton showAdminButton>
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">

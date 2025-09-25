@@ -5,9 +5,9 @@ import {
 } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import type { IOCInterface } from '@/base/port/IOCInterface';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { ClientIOCRegister } from './ClientIOCRegister';
 import { appConfig } from '../globals';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 
 export class ClientIOC
   implements IOCInterface<IOCIdentifierMap, IOCContainerInterface>

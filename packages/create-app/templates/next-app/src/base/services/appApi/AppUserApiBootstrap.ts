@@ -4,8 +4,8 @@ import { DialogErrorPlugin } from '@/base/cases/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/base/cases/RequestEncryptPlugin';
 import { StringEncryptor } from '@/base/cases/StringEncryptor';
 import { AppApiPlugin } from './AppApiPlugin';
-import { AppUserApi } from './AppUserApi';
-import type { UserApiConfig } from './AppUserType';
+import { AppApiRequester } from './AppApiRequester';
+import type { AppApiConfig } from './AppApiRequester';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin
@@ -18,7 +18,7 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
   constructor(protected serializer: SerializerIneterface) {}
 
   onBefore({ parameters: { ioc } }: BootstrapContext): void | Promise<void> {
-    const appUserApi = ioc.get<AppUserApi>(AppUserApi);
+    const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
 
     appUserApi.usePlugin(new FetchURLPlugin());
     appUserApi.usePlugin(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
@@ -29,11 +29,12 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
     );
     appUserApi.usePlugin(new AppApiPlugin());
     appUserApi.usePlugin(ioc.get(DialogErrorPlugin));
+    console.log('jj AppUserApiBootstrap success');
   }
 
   protected requestDataSerializer(
     data: unknown,
-    context: ExecutorContext<UserApiConfig>
+    context: ExecutorContext<AppApiConfig>
   ): unknown {
     if (data instanceof FormData) {
       return data;

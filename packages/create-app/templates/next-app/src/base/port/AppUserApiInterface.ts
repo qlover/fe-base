@@ -1,15 +1,15 @@
-import type { AppApiResponse } from './AppApiInterface';
+import type { AppApiResult } from './AppApiInterface';
 
 export interface AppUserApiInterface {
   login(params: {
     email: string;
     password: string;
-  }): Promise<AppApiResponse<unknown>>;
+  }): Promise<AppApiResult<unknown>>;
 
   register(params: {
     email: string;
     password: string;
-  }): Promise<AppApiResponse<unknown>>;
+  }): Promise<AppApiResult<unknown>>;
 
-  logout(): Promise<AppApiResponse<unknown>>;
+  logout(): Promise<AppApiResult<unknown>>;
 }

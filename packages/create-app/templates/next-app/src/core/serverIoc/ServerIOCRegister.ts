@@ -6,8 +6,8 @@ import {
   type IOCManagerInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge';
-import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
+import { IOCIdentifier as I } from '@config/IOCIdentifier';
 
 export class ServerIOCRegister
   implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>

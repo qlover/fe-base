@@ -1,0 +1,67 @@
+[data-theme='dark'],
+[data-theme='dark'] .fe-theme {
+  &.ant-menu-css-var {
+    /* 文字颜色 */
+    --fe-menu-color-item-text: rgb(var(--text-primary));
+    --fe-menu-item-color: rgb(var(--text-primary));
+    --fe-menu-color-item-text-hover: rgb(var(--text-primary));
+    --fe-menu-item-hover-color: rgb(var(--text-primary));
+    --fe-menu-color-group-title: rgb(var(--text-secondary));
+    --fe-menu-group-title-color: rgb(var(--text-secondary));
+    --fe-menu-color-item-text-disabled: rgb(var(--text-disabled));
+    --fe-menu-item-disabled-color: rgb(var(--text-disabled));
+
+    /* 选中和激活状态 */
+    --fe-menu-color-item-text-selected: rgb(var(--color-brand));
+    --fe-menu-item-selected-color: rgb(var(--color-brand));
+    --fe-menu-sub-menu-item-selected-color: rgb(var(--color-brand));
+    --fe-menu-color-item-text-selected-horizontal: rgb(var(--color-brand));
+    --fe-menu-horizontal-item-selected-color: rgb(var(--color-brand));
+
+    /* 背景颜色 */
+    --fe-menu-color-item-bg: rgb(var(--color-bg-base));
+    --fe-menu-item-bg: rgb(var(--color-bg-base));
+    --fe-menu-color-item-bg-hover: rgba(255 255 255 / 0.08);
+    --fe-menu-item-hover-bg: rgba(255 255 255 / 0.08);
+    --fe-menu-color-item-bg-active: rgba(255 255 255 / 0.08);
+    --fe-menu-item-active-bg: rgba(var(--color-brand), 0.2);
+    --fe-menu-color-sub-item-bg: rgba(255 255 255 / 0.04);
+    --fe-menu-sub-menu-item-bg: rgba(255 255 255 / 0.04);
+    --fe-menu-color-item-bg-selected: rgba(var(--color-brand), 0.2);
+    --fe-menu-item-selected-bg: rgba(var(--color-brand), 0.2);
+    --fe-menu-popup-bg: rgb(var(--color-bg-base));
+
+    /* 危险项样式 */
+    --fe-menu-color-danger-item-text: var(--fe-color-error);
+    --fe-menu-danger-item-color: var(--fe-color-error);
+    --fe-menu-color-danger-item-text-hover: var(--fe-color-error);
+    --fe-menu-danger-item-hover-color: var(--fe-color-error);
+    --fe-menu-color-danger-item-text-selected: var(--fe-color-error);
+    --fe-menu-danger-item-selected-color: var(--fe-color-error);
+    --fe-menu-color-danger-item-bg-active: rgba(var(--fe-color-error), 0.2);
+    --fe-menu-danger-item-active-bg: rgba(var(--fe-color-error), 0.2);
+    --fe-menu-color-danger-item-bg-selected: rgba(var(--fe-color-error), 0.2);
+    --fe-menu-danger-item-selected-bg: rgba(var(--fe-color-error), 0.2);
+
+    /* 暗色主题特殊样式 */
+    --fe-menu-dark-item-disabled-color: rgba(255, 255, 255, 0.25);
+    --fe-menu-dark-item-color: rgba(255, 255, 255, 0.65);
+    --fe-menu-dark-danger-item-color: var(--fe-color-error);
+    --fe-menu-dark-item-bg: rgb(15 23 42);
+    --fe-menu-dark-popup-bg: rgb(15 23 42);
+    --fe-menu-dark-sub-menu-item-bg: rgb(30 41 59);
+    --fe-menu-dark-item-selected-color: rgb(255 255 255);
+    --fe-menu-dark-item-selected-bg: rgb(var(--color-brand));
+    --fe-menu-dark-danger-item-selected-bg: var(--fe-color-error);
+    --fe-menu-dark-item-hover-bg: transparent;
+    --fe-menu-dark-group-title-color: rgba(255, 255, 255, 0.65);
+    --fe-menu-dark-item-hover-color: rgb(255 255 255);
+    --fe-menu-dark-danger-item-hover-color: color-mix(
+      in srgb,
+      var(--fe-color-error) 90%,
+      white
+    );
+    --fe-menu-dark-danger-item-selected-color: rgb(255 255 255);
+    --fe-menu-dark-danger-item-active-bg: var(--fe-color-error);
+  }
+}
