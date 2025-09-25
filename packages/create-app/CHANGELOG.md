@@ -1,5 +1,16 @@
 # @qlover/create-app
 
+## 0.7.13
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **generator:** update config path handling in Generator class ([63528b5](https://github.com/qlover/fe-base/commit/63528b52cfca15ccc1db2020369c3ea402da3163)) ([#516](https://github.com/qlover/fe-base/pull/516))
+  - Modified the sourcePath in the copyPaths method to use a validated configPath, ensuring that the configuration file exists before proceeding with the copy operation. This change improves error handling and logging for missing configuration files.
+
+  These updates aim to enhance the reliability of the Generator class by preventing operations on non-existent paths.
+
 ## 0.7.12
 
 ### Patch Changes
