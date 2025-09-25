@@ -1,5 +1,79 @@
 # @qlover/create-app
 
+## 0.7.11
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** enhance admin layout and localization support ([35badca](https://github.com/qlover/fe-base/commit/35badcacbe2aec0af4b91641b89ac621456e2ee7)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Introduced AdminLayout component for improved admin page structure and navigation.
+  - Added PAGE_HEAD_ADMIN_TITLE constant for localization of the admin page title in English and Chinese.
+  - Updated localization files to include new keys for the admin page title.
+  - Refactored AdminPage component to simplify its structure and enhance readability.
+  - Created AdminPageManager for managing admin page state, including sidebar collapse functionality.
+
+  These changes aim to improve the user experience in the admin section by providing a structured layout and better localization support.
+
+- **next-app:** enhance user management and API integration ([2123e76](https://github.com/qlover/fe-base/commit/2123e76cc856c145e8f5a3772e3ac150fb617ed7)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Added new API constants for user-related error messages, including not authorized and page number invalid.
+  - Introduced UserRoleType for better role management in the UserSchema.
+  - Created UsersPage component for admin user management, integrating AdminUserService for user initialization.
+  - Implemented pagination support in UserRepository and ApiUserService for user data retrieval.
+  - Developed AdminAuthPlugin for server-side authentication checks before executing requests.
+
+  These changes aim to improve user management functionality, enhance API interactions, and streamline the admin interface for better usability.
+
+- **next-app:** enhance admin user management and layout features ([e9f8a20](https://github.com/qlover/fe-base/commit/e9f8a203ef1078724e9774d3eb32b5daf0a99a79)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Updated UsersPage component to include loading state and improved user interface with a spinner.
+  - Enhanced BaseLayout to conditionally display an admin button for better navigation.
+  - Refactored AdminPageManager to initialize navigation items for the admin layout.
+  - Introduced AdminApiRequester for streamlined API requests related to admin functionalities.
+  - Updated AdminUserService to utilize new API structure for fetching user data.
+
+  These changes aim to improve the user experience in the admin section by providing better loading indicators and navigation options, while also enhancing the underlying API interactions.
+
+- **next-app:** improve admin user service and component structure ([c9c31d8](https://github.com/qlover/fe-base/commit/c9c31d8a96323057ff33b43fa47c433c07dcfa81)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Refactored UsersPage component to streamline user initialization logic.
+  - Enhanced AdminUserService to manage loading states and error handling during user data fetching.
+  - Updated AdminUserApi to return a more structured response for user list requests.
+  - Introduced safeFields in UserRepository for better data handling during pagination.
+  - Added useMountedClient hook to ensure components render only after client initialization.
+
+  These changes aim to enhance the user management experience in the admin section by improving data handling, error management, and component rendering logic.
+
+- **next-app:** enhance ESLint configuration and user schema validation ([c00639f](https://github.com/qlover/fe-base/commit/c00639f470caf6480e34b41bd912faa76c3356c7)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Added TypeScript resolver settings to ESLint configuration for improved module resolution.
+  - Introduced new import patterns for migrations and configuration in ESLint rules.
+  - Refactored UserSchema to utilize Zod for validation, enhancing type safety and data integrity.
+  - Updated UsersPage component to integrate the new user schema and improve data handling.
+  - Enhanced pagination and table components with new CSS variables for better theming support.
+
+  These changes aim to improve code quality, validation processes, and user interface consistency in the admin section.
+
+- **next-app:** enhance Ant Design theme support with menu styles ([1431f73](https://github.com/qlover/fe-base/commit/1431f73ea98ec97254b553b56dde9896623dbc79)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Added new CSS variables for Ant Design layout components in common theme files.
+  - Introduced menu styles for default, dark, and pink themes, enhancing customization options.
+  - Updated AdminLayout component to utilize the new menu styles, improving the overall UI consistency.
+
+  These changes aim to provide a more cohesive theming experience across the application, particularly for the menu component.
+
+- **next-app:** refactor imports and enhance component structure ([61539d3](https://github.com/qlover/fe-base/commit/61539d348595e04a8b8cafa5d8ec7cf25d8cdd32)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Reorganized imports across various components to improve clarity and maintainability.
+  - Updated layout and page components to include necessary configurations for internationalization and theming.
+  - Enhanced AdminPage structure by introducing a client component for better separation of concerns.
+  - Improved CSS variable formatting in theme files for better readability and consistency.
+
+  These changes aim to streamline the codebase, enhance component organization, and improve the overall theming experience in the application.
+
+#### ♻️ Refactors
+
+- **create-app:** update context imports and enhance type definitions ([be587b4](https://github.com/qlover/fe-base/commit/be587b40d04785309bc34fe41ffb5054c6698818)) ([#512](https://github.com/qlover/fe-base/pull/512))
+  - Replaced FeScriptContext with ScriptContext in Generator class for consistency with updated context structure.
+  - Modified GeneratorOptions to extend ScriptSharedInterface, improving type safety and integration with the scripts context.
+
+  These changes aim to streamline the codebase and ensure better alignment with the latest context definitions.
+
 ## 0.7.10
 
 ### Patch Changes
