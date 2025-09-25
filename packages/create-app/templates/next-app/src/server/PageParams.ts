@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
-import type { ParamsHandlerInterface as ParamsHandlerInterface } from '../port/ParamsHandlerInterface';
+import type { ParamsHandlerInterface as ParamsHandlerInterface } from './port/ParamsHandlerInterface';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { isEmpty, last } from 'lodash';
-import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';

@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { PageParams } from '@/base/cases/PageParams';
 import type { PageLayoutProps } from '@/base/types/PageProps';
+import { PageParams } from '@/server/PageParams';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
 import { themeConfig } from '@config/theme';
 import '@/styles/css/index.css';

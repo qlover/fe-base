@@ -10,7 +10,7 @@ import type {
   BridgeEvent,
   DBBridgeInterface,
   Where
-} from '@/base/port/DBBridgeInterface';
+} from '@/server/port/DBBridgeInterface';
 import { I } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';

@@ -1,9 +1,9 @@
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type { DialogHandler } from '@/base/cases/DialogHandler';
 import type { RouterService } from '@/base/cases/RouterService';
-import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
 import type { UserService } from '@/base/services/UserService';
+import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
