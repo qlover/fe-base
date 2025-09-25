@@ -20,7 +20,7 @@ export default defineConfig([
     platform: 'node'
   },
   {
-    entry: ['src/index.ts'],
+    entry: ['src/index.mts'],
     format: 'esm',
     minify: true,
     dts: true,
