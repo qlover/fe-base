@@ -1,4 +1,5 @@
 import { BaseHeader } from './BaseHeader';
+import { ChatRoot } from './ChatRoot';
 import type { HTMLAttributes } from 'react';
 
 export interface BaseLayoutProps extends HTMLAttributes<HTMLDivElement> {
@@ -27,6 +28,8 @@ export function BaseLayout({
       <main className="flex flex-1 flex-col bg-primary" {...mainProps}>
         {children}
       </main>
+
+      <ChatRoot />
     </div>
   );
 }
