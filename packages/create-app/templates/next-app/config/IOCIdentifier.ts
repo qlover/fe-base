@@ -22,6 +22,19 @@ export const IOCIdentifier = Object.freeze({
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
+  /**
+   * 数据库桥接接口
+   *
+   * 你可以实现不同的例如：
+   *
+   * - Vercel Postgres
+   * - supabase
+   * - mysql
+   * - postgresql
+   * - mongodb
+   * - redis
+   * - sqllite
+   */
   DBBridgeInterface: 'DBBridgeInterface'
 });
 

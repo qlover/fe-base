@@ -1,5 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { AppErrorApi } from '@/server/AppErrorApi';
 import { AppSuccessApi } from '@/server/AppSuccessApi';
@@ -22,6 +22,7 @@ export async function GET() {
   });
 
   if (result instanceof ExecutorError) {
+    console.log(result);
     return NextResponse.json(new AppErrorApi(result.id, result.message), {
       status: 400
     });

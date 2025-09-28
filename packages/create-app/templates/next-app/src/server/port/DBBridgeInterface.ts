@@ -1,5 +1,3 @@
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
-
 export type WhereOperation = '=' | '!=' | '>' | '<' | '>=' | '<=';
 export type Where = [string, WhereOperation, string | number];
 
@@ -12,10 +10,22 @@ export interface BridgeEvent {
   pageSize?: number;
 }
 
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface DBBridgeResponse<T> {
+  error?: unknown;
+  data: T;
+  pagination?: PaginationInfo;
+}
+
 export interface DBBridgeInterface {
-  add(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
-  update(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
-  delete(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
-  get(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
-  pagination(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>>;
+  add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
+  update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
+  delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
+  get(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
+  pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>>;
 }

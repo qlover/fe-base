@@ -9,6 +9,7 @@ import type { AppConfig } from '@/base/cases/AppConfig';
 import type {
   BridgeEvent,
   DBBridgeInterface,
+  DBBridgeResponse,
   Where
 } from '@/server/port/DBBridgeInterface';
 import { I } from '@config/IOCIdentifier';
@@ -23,6 +24,9 @@ const whereHandlerMaps = {
   '>=': 'gte',
   '<=': 'lte'
 };
+
+export type SupabaseBridgeResponse<T> = DBBridgeResponse<T> &
+  PostgrestResponse<T>;
 
 @injectable()
 export class SupabaseBridge implements DBBridgeInterface {
@@ -42,19 +46,20 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.supabase;
   }
 
-  async execSql(sql: string): Promise<PostgrestSingleResponse<unknown>> {
+  async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
     const res = await this.supabase.rpc('exec_sql', { sql });
     return this.catch(res);
   }
 
   protected async catch(
     result: PostgrestSingleResponse<unknown>
-  ): Promise<PostgrestSingleResponse<unknown>> {
+  ): Promise<SupabaseBridgeResponse<unknown>> {
     if (result.error) {
       this.logger.info(result);
       throw new Error(result.error.message);
     }
-    return result;
+
+    return result as SupabaseBridgeResponse<unknown>;
   }
 
   protected handleWhere(
@@ -79,7 +84,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  async add(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+  async add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data } = event;
     if (!data) {
       throw new Error('Data is required for add operation');
@@ -91,7 +96,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(res);
   }
 
-  async update(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+  async update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data, where } = event;
     if (!data) {
       throw new Error('Data is required for update operation');
@@ -104,7 +109,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async delete(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+  async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, where } = event;
     const handler = this.supabase.from(table).delete();
 
@@ -113,7 +118,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async get(event: BridgeEvent): Promise<PostgrestSingleResponse<unknown>> {
+  async get(event: BridgeEvent): Promise<SupabaseBridgeResponse<unknown>> {
     const { table, fields = '*', where } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
     const handler = this.supabase.from(table).select(selectFields);
@@ -123,7 +128,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async pagination(event: BridgeEvent): Promise<PostgrestResponse<unknown>> {
+  async pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>> {
     const { table, fields = '*', where, page = 1, pageSize = 10 } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
 
@@ -145,7 +150,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     const result = await this.catch(await handler);
 
     if (result.error) {
-      return result as PostgrestResponse<unknown>;
+      return result as DBBridgeResponse<unknown[]>;
     }
 
     return {
@@ -154,6 +159,6 @@ export class SupabaseBridge implements DBBridgeInterface {
       count: countResult.count,
       status: result.status,
       statusText: result.statusText
-    };
+    } as DBBridgeResponse<unknown[]>;
   }
 }

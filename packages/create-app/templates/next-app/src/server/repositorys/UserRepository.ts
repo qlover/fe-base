@@ -3,7 +3,7 @@ import { isEmpty, last } from 'lodash';
 import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
-import { SupabaseBridge } from '../SupabaseBridge';
+import { I } from '@config/IOCIdentifier';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 
 @injectable()
@@ -21,7 +21,9 @@ export class UserRepository implements UserRepositoryInterface {
     'updated_at'
   ];
 
-  constructor(@inject(SupabaseBridge) protected dbBridge: DBBridgeInterface) {}
+  constructor(
+    @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface
+  ) {}
 
   getAll(): Promise<unknown> {
     return this.dbBridge.get({ table: this.name });

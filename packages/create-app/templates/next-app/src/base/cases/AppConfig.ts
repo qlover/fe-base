@@ -32,6 +32,6 @@ export class AppConfig implements EnvConfigInterface {
    */
   readonly jwtExpiresIn: StringValue = '30 days';
 
-  readonly openaiBaseUrl: string = process.env.ANTHROPIC_BASE_URL!;
-  readonly openaiApiKey: string = process.env.ANTHROPIC_API_KEY!;
+  readonly openaiBaseUrl: string = process.env.CEREBRAS_BASE_URL!;
+  readonly openaiApiKey: string = process.env.CEREBRAS_API_KEY!;
 }
