@@ -6,9 +6,12 @@ import {
 } from '@qlover/fe-corekit';
 import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
 import type { AppApiConfig } from './AppApiRequester';
+import type { LoggerInterface } from '@qlover/logger';
 
 export class AppApiPlugin implements ExecutorPlugin {
   readonly pluginName = 'AppApiPlugin';
+
+  constructor(protected logger: LoggerInterface) {}
 
   isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
     return (
@@ -21,8 +24,16 @@ export class AppApiPlugin implements ExecutorPlugin {
     );
   }
 
-  onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
+  onSuccess(context: ExecutorContext<AppApiConfig>): void | Promise<void> {
     const response = context.returnValue;
+    const { parameters } = context;
+
+    this.logger.info(
+      `%c[AppApi ${parameters.method} ${parameters.url}]%c - ${new Date().toLocaleString()}`,
+      'color: #0f0;',
+      'color: inherit;',
+      response
+    );
 
     if (this.isAppApiErrorInterface(response)) {
       throw new Error(response.message || response.id);
@@ -33,6 +44,8 @@ export class AppApiPlugin implements ExecutorPlugin {
     context: ExecutorContext<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;
+
+    this.loggerError(parameters, error);
 
     if (error instanceof RequestError && parameters.responseType === 'json') {
       // @ts-expect-error response is not defined in Error
@@ -59,5 +72,14 @@ export class AppApiPlugin implements ExecutorPlugin {
     } catch {
       return {};
     }
+  }
+
+  protected loggerError(config: AppApiConfig, error: unknown): void {
+    this.logger.error(
+      `%c[AppApi ${config.method} ${config.url}]%c - ${new Date().toLocaleString()}`,
+      'color: #f00;',
+      'color: inherit;',
+      error
+    );
   }
 }

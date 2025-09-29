@@ -5,8 +5,7 @@ import { redirect } from '@/i18n/routing';
 import { PageParams, type PageParamsType } from '@/server/PageParams';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
-import { i18nConfig } from '@config/i18n';
-import { homeI18n } from '@config/i18n/HomeI18n ';
+import { i18nConfig, homeI18n } from '@config/i18n';
 import type { Metadata } from 'next';
 
 // const navigationItems = [

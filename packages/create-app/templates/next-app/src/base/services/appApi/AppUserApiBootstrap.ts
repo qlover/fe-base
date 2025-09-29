@@ -3,6 +3,7 @@ import { FetchURLPlugin } from '@qlover/fe-corekit';
 import { DialogErrorPlugin } from '@/base/cases/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/base/cases/RequestEncryptPlugin';
 import { StringEncryptor } from '@/base/cases/StringEncryptor';
+import { I } from '@config/IOCIdentifier';
 import { AppApiPlugin } from './AppApiPlugin';
 import { AppApiRequester } from './AppApiRequester';
 import type { AppApiConfig } from './AppApiRequester';
@@ -27,7 +28,7 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
         requestDataSerializer: this.requestDataSerializer.bind(this)
       })
     );
-    appUserApi.usePlugin(new AppApiPlugin());
+    appUserApi.usePlugin(new AppApiPlugin(ioc.get(I.Logger)));
     appUserApi.usePlugin(ioc.get(DialogErrorPlugin));
   }
 
