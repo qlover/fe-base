@@ -1,22 +1,20 @@
-import type { Metadata } from 'next';
+'use client';
 
-function AdminPageClient() {
-  return <div data-testid="AdminPage">Admin Page</div>;
-}
-
-export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Admin dashboard for managing application resources',
-  robots: {
-    index: false,
-    follow: false
-  }
-};
+import { ClientSeo } from '@/uikit/components/ClientSeo';
+import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
+import { admin18n } from '@config/i18n';
 
 export default function AdminPage() {
+  const tt = useI18nInterface(admin18n);
+
   return (
-    <div data-testid="AdminPageWrapper">
-      <AdminPageClient />
-    </div>
+    <>
+      <ClientSeo i18nInterface={tt} />
+      <div data-testid="AdminPageWrapper">
+        <div data-testid="AdminPage">
+          <h1>{tt.welcome}</h1>
+        </div>
+      </div>
+    </>
   );
 }

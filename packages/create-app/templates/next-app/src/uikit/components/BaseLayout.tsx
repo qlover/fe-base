@@ -4,7 +4,6 @@ import { useMemo, type HTMLAttributes } from 'react';
 import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
 import { BaseHeader } from './BaseHeader';
-import { ChatRoot } from './ChatRoot';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';
@@ -63,8 +62,6 @@ export function BaseLayout({
       <main className="flex flex-1 flex-col bg-primary" {...mainProps}>
         {children}
       </main>
-
-      <ChatRoot />
     </div>
   );
 }
