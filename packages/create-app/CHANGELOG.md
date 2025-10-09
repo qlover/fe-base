@@ -1,5 +1,64 @@
 # @qlover/create-app
 
+## 0.7.14
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** integrate SupabaseBridge and update database handling ([5d84568](https://github.com/qlover/fe-base/commit/5d84568849170c998c81b663f0eb5f5f144d8da3)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Added SupabaseBridge for managing database interactions, implementing the DBBridgeInterface for standardized operations.
+  - Updated UserRepository to utilize the new DBBridgeInterface for database operations.
+  - Enhanced AppConfig to switch OpenAI configuration to Cerebras.
+  - Refactored UserSchema validation to improve type safety with Zod.
+  - Introduced new pagination handling in DBBridgeInterface for better data management.
+
+  These changes aim to enhance database management capabilities and improve the overall structure of data handling within the application.
+
+- **next-app:** add HomeI18n for localization and enhance layout components ([390a637](https://github.com/qlover/fe-base/commit/390a6375b458c57ca69517d3e4cf1b938f7b4aea)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Introduced HomeI18n interface and constants for home page localization, improving internationalization support.
+  - Updated index.ts to export HomeI18n for easier access across the application.
+  - Refactored page.tsx to integrate homeI18n, enhancing metadata handling for the home page.
+  - Improved AdminLayout and BaseHeader components by adding right action buttons for language switching, theme toggling, and logout functionality.
+  - Enhanced BaseLayout to conditionally render admin navigation elements, improving user experience in the admin section.
+
+  These changes aim to provide better localization support and enhance the overall structure and usability of the application.
+
+- **next-app:** add admin page localization and SEO components ([d8ca688](https://github.com/qlover/fe-base/commit/d8ca68861c5b2dc80763622b2f37de6ea0cfb437)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Introduced new localization constants for the admin page, enhancing internationalization support.
+  - Created admin18n interface for managing admin page metadata and content.
+  - Added ClientSeo component for improved SEO handling on the admin page.
+  - Updated admin page structure to utilize new localization and SEO features, enhancing user experience.
+  - Refactored localization files to include new keys for admin page content in both English and Chinese.
+
+  These changes aim to improve the admin page's usability and visibility through better localization and SEO practices.
+
+#### 🐞 Bug Fixes
+
+- **create-app:** change build to make ([ea48d14](https://github.com/qlover/fe-base/commit/ea48d140e6f7684efc2e3097046bce82b6448d14)) ([#518](https://github.com/qlover/fe-base/pull/518))
+
+#### ♻️ Refactors
+
+- **next-app:** reorganize imports and migrate PageParams to server ([fb6a47b](https://github.com/qlover/fe-base/commit/fb6a47b5b3a293b7d3e8488690e13b1509e9cfde)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Updated import paths for PageParams and DBBridgeInterface to reflect new server structure.
+  - Removed obsolete migration-related interfaces and classes to streamline the codebase.
+  - Introduced new PageParams class in the server directory to handle localization and parameter management.
+
+  These changes aim to enhance code organization and improve the clarity of parameter handling within the application.
+
+- **next-app:** update PaginationInterface imports and add new file ([dfd9866](https://github.com/qlover/fe-base/commit/dfd98660ea51989e604cb7d78d935590473bc05b)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Changed import paths for PaginationInterface across multiple files to reflect its new location in the server directory.
+  - Introduced a new PaginationInterface file in the server port directory, defining the structure for pagination handling.
+
+  These changes aim to improve code organization and maintainability by centralizing pagination-related definitions.
+
+- **next-app:** reorganize imports and update dependencies ([a1049f4](https://github.com/qlover/fe-base/commit/a1049f4bd61b012ca1938c803bdc3a4c43ef0c9a)) ([#518](https://github.com/qlover/fe-base/pull/518))
+  - Removed duplicate import statements in generateLocales.ts for cleaner code.
+  - Updated useEffect dependency array in UsersPage to include adminUserService, ensuring proper initialization.
+  - Cleaned up globals.ts by removing unnecessary comments, enhancing readability.
+
+  These changes aim to improve code organization and maintainability across the application.
+
 ## 0.7.13
 
 ### Patch Changes
