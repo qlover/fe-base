@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import type { AdminPageListParams } from '@/base/port/AdminPageInterface';
-import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import {
   AppApiRequester,
   type AppApiConfig,

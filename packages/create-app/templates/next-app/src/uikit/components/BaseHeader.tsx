@@ -1,15 +1,12 @@
 'use client';
 
-import { TeamOutlined } from '@ant-design/icons';
+import { clsx } from 'clsx';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
-import { LogoutButton } from './LogoutButton';
-import { ThemeSwitcher } from './ThemeSwitcher';
 
 export type RenderLeftFunction = (props: {
   locale: string;
@@ -18,13 +15,12 @@ export type RenderLeftFunction = (props: {
 
 export function BaseHeader(props: {
   href?: string;
-  showLogoutButton?: boolean;
-  showAdminButton?: boolean;
   renderLeft?: React.ReactNode | RenderLeftFunction;
+  rightActions?: React.ReactNode;
+  className?: string;
 }) {
-  const { href = '/', showLogoutButton, showAdminButton, renderLeft } = props;
+  const { href = '/', className, renderLeft, rightActions } = props;
   const appConfig = useIOC(IOCIdentifier.AppConfig);
-  const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
   const locale = useLocale();
   const t = useTranslations();
 
@@ -44,7 +40,7 @@ export function BaseHeader(props: {
       >
         <span
           data-testid="base-header-app-name"
-          className="ml-2 text-lg font-semibold text-text"
+          className="text-lg font-semibold text-text"
         >
           {tt.title}
         </span>
@@ -69,24 +65,14 @@ export function BaseHeader(props: {
       data-testid="BaseHeader"
       className="h-14 bg-secondary border-b border-c-border sticky top-0 z-50"
     >
-      <div className="flex items-center justify-between h-full px-4 mx-auto max-w-7xl">
+      <div
+        className={clsx(
+          'flex items-center justify-between h-full px-4 mx-auto max-w-7xl',
+          className
+        )}
+      >
         <div className="flex items-center">{RenderLeft}</div>
-        <div className="flex items-center gap-2 md:gap-4">
-          {showAdminButton && (
-            <LocaleLink
-              href="/admin"
-              title={tt.admin}
-              locale={locale}
-              className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
-            >
-              <TeamOutlined className="text-lg text-text" />
-            </LocaleLink>
-          )}
-
-          <LanguageSwitcher i18nService={i18nService} />
-          <ThemeSwitcher />
-          {showLogoutButton && <LogoutButton />}
-        </div>
+        <div className="flex items-center gap-2 md:gap-4">{rightActions}</div>
       </div>
     </header>
   );

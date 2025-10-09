@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import {
   AdminPageInterface,
   type AdminPageListParams,
@@ -6,7 +7,6 @@ import {
 } from '../port/AdminPageInterface';
 import { AdminUserApi } from './adminApi/AdminUserApi';
 import { RequestState } from '../cases/RequestState';
-import type { PaginationInterface } from '../port/PaginationInterface';
 
 @injectable()
 export class AdminUserService extends AdminPageInterface<AdminPageState> {

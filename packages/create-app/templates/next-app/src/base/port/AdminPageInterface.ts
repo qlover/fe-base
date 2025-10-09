@@ -1,6 +1,6 @@
 import { StoreInterface } from '@qlover/corekit-bridge';
 import { RequestState } from '../cases/RequestState';
-import type { PaginationInterface } from './PaginationInterface';
+import type { PaginationInterface } from '../../server/port/PaginationInterface';
 import type { StoreStateInterface } from '@qlover/corekit-bridge';
 
 export interface AdminPageListParams {
@@ -33,8 +33,6 @@ export abstract class AdminPageInterface<
 
     try {
       const result = await this.fetchList(this.state.listParams);
-
-      console.log('jj result', result);
 
       this.emit(
         this.cloneState({

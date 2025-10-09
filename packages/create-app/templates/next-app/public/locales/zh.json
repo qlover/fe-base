@@ -198,5 +198,12 @@
   "register__feature__progress_tracking": "进度跟踪",
   "page__head__admin__title": "管理后台",
   "api__not_authorized": "未授权",
-  "api__page__invalid": "页码不正确"
+  "api__page__invalid": "页码不正确",
+  "page__admin__title": "管理员页面",
+  "page__admin__description": "管理员页面",
+  "page__admin__keywords": "管理员页面关键词",
+  "admin__welcome": "欢迎来到管理员页面",
+  "page__admin__users__title": "后台管理 - 管理员用户页面",
+  "page__admin__users__description": "后台管理 - 管理员用户页面",
+  "page__admin__users__keywords": "后台管理 - 管理员用户页面关键词"
 }

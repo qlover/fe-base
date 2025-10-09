@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
+import 'reflect-metadata';
+
 // ! global variables, don't import any dependencies and don't have side effects
 import { ColorFormatter, ConsoleHandler, Logger } from '@qlover/corekit-bridge';
 import { JSONSerializer } from '@qlover/fe-corekit';

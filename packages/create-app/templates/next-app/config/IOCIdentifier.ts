@@ -1,9 +1,9 @@
 import type { AppConfig } from '@/base/cases/AppConfig';
 import type { DialogHandler } from '@/base/cases/DialogHandler';
 import type { RouterService } from '@/base/cases/RouterService';
-import type { DBBridgeInterface } from '@/base/port/DBBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
 import type { UserService } from '@/base/services/UserService';
+import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
@@ -22,6 +22,19 @@ export const IOCIdentifier = Object.freeze({
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
+  /**
+   * 数据库桥接接口
+   *
+   * 你可以实现不同的例如：
+   *
+   * - Vercel Postgres
+   * - supabase
+   * - mysql
+   * - postgresql
+   * - mongodb
+   * - redis
+   * - sqllite
+   */
   DBBridgeInterface: 'DBBridgeInterface'
 });
 

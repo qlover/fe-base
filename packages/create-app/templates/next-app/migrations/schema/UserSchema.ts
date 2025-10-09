@@ -9,8 +9,8 @@ export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 export const userSchema = z.object({
   id: z.number(),
-  role: z.enum(UserRole),
-  email: z.email(),
+  role: z.nativeEnum(UserRole),
+  email: z.string().email(),
   password: z.string(),
   /**
    * 加密的token, 包含token, 过期时间

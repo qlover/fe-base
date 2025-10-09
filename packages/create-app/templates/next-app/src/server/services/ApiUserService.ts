@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
 import { UserRepository } from '../repositorys/UserRepository';
 import { PaginationValidator } from '../validators/PaginationValidator';

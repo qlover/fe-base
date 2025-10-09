@@ -17,13 +17,13 @@ export interface LoginValidatorData {
   password: string;
 }
 
-const emailSchema = z.email({ error: V_EMAIL_INVALID });
+const emailSchema = z.string().email({ message: V_EMAIL_INVALID });
 
 const passwordSchema = z
   .string()
-  .min(6, { error: V_PASSWORD_MIN_LENGTH })
-  .max(50, { error: V_PASSWORD_MAX_LENGTH })
-  .regex(/^\S+$/, { error: V_PASSWORD_SPECIAL_CHARS });
+  .min(6, { message: V_PASSWORD_MIN_LENGTH })
+  .max(50, { message: V_PASSWORD_MAX_LENGTH })
+  .regex(/^\S+$/, { message: V_PASSWORD_SPECIAL_CHARS });
 
 interface ExtendedExecutorError extends ExecutorError {
   issues?: ValidationFaildResult[];

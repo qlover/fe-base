@@ -7,6 +7,7 @@ import {
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
+import { SupabaseBridge } from '@/server/sqlBridges/SupabaseBridge';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 
 export class ServerIOCRegister
@@ -45,7 +46,9 @@ export class ServerIOCRegister
     );
   }
 
-  protected registerImplement(_ioc: IOCContainerInterface): void {}
+  protected registerImplement(ioc: IOCContainerInterface): void {
+    ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
+  }
 
   protected registerCommon(_ioc: IOCContainerInterface): void {}
 
