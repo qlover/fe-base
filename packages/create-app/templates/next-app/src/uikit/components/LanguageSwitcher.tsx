@@ -4,17 +4,16 @@ import { TranslationOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo } from 'react';
-import type {
-  I18nServiceInterface,
-  I18nServiceLocale
-} from '@/base/port/I18nServiceInterface';
+import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
+import { I } from '@config/IOCIdentifier';
+import { useIOC } from '../hook/useIOC';
 import type { ItemType } from 'antd/es/menu/interface';
 
-export function LanguageSwitcher(props: { i18nService: I18nServiceInterface }) {
-  const { i18nService } = props;
+export function LanguageSwitcher() {
+  const i18nService = useIOC(I.I18nServiceInterface);
   const pathname = usePathname(); // current pathname, aware of i18n
 
   const router = useRouter(); // i18n-aware router instance

@@ -10,7 +10,6 @@ import { Layout, Menu } from 'antd';
 import { clsx } from 'clsx';
 import React, { useMemo, type HTMLAttributes } from 'react';
 import { AdminPageManager } from '@/base/cases/AdminPageManager';
-import { I } from '@config/IOCIdentifier';
 import { BaseHeader } from './BaseHeader';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
@@ -36,7 +35,6 @@ export function AdminLayout(props: AdminLayoutProps) {
   const { children, className, mainClassName, ...rest } = props;
 
   const page = useIOC(AdminPageManager);
-  const i18nService = useIOC(I.I18nServiceInterface);
   const collapsedSidebar = useStore(page, page.selectors.collapsedSidebar);
   const navItems = useStore(page, page.selectors.navItems);
 
@@ -65,11 +63,11 @@ export function AdminLayout(props: AdminLayoutProps) {
 
   const rightActions = useMemo(() => {
     return [
-      <LanguageSwitcher key="language-switcher" i18nService={i18nService} />,
+      <LanguageSwitcher key="language-switcher" />,
       <ThemeSwitcher key="theme-switcher" />,
       <LogoutButton key="logout-button" />
     ];
-  }, [i18nService]);
+  }, []);
 
   return (
     <Layout data-testid="AdminLayout" className={className} {...rest}>
