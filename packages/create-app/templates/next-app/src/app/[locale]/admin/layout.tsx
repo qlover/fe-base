@@ -1,5 +1,5 @@
-import { PageParams } from '@/base/cases/PageParams';
 import type { PageLayoutProps } from '@/base/types/PageProps';
+import { PageParams } from '@/server/PageParams';
 import '@/styles/css/index.css';
 import { AdminLayout } from '@/uikit/components/AdminLayout';
 

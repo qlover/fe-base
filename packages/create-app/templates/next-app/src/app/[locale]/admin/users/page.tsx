@@ -3,9 +3,12 @@
 import { Table } from 'antd';
 import { useEffect, useRef } from 'react';
 import { AdminUserService } from '@/base/services/AdminUserService';
+import { ClientSeo } from '@/uikit/components/ClientSeo';
+import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useStore } from '@/uikit/hook/useStore';
 import { userSchema, type UserSchema } from '@migrations/schema/UserSchema';
+import { adminUsers18n } from '@config/i18n';
 import type { ColumnsType } from 'antd/es/table';
 
 const baseColumns: ColumnsType<UserSchema> = Object.keys(
@@ -20,7 +23,7 @@ const baseColumns: ColumnsType<UserSchema> = Object.keys(
 
 export default function UsersPage() {
   const adminUserService = useIOC(AdminUserService);
-
+  const tt = useI18nInterface(adminUsers18n);
   const listParams = useStore(adminUserService, (state) => state.listParams);
   const listState = useStore(adminUserService, (state) => state.listState);
   const mouted = useRef(false);
@@ -28,9 +31,12 @@ export default function UsersPage() {
   useEffect(() => {
     if (!mouted.current) {
       mouted.current = true;
-      adminUserService.initialize();
+
+      requestAnimationFrame(() => {
+        adminUserService.initialize();
+      });
     }
-  }, []);
+  }, [adminUserService]);
 
   const dataSource = listState.result?.list as UserSchema[];
 
@@ -38,6 +44,7 @@ export default function UsersPage() {
 
   return (
     <div data-testid="UsersPage">
+      <ClientSeo i18nInterface={tt} />
       <Table
         rowKey="id"
         columns={columns}

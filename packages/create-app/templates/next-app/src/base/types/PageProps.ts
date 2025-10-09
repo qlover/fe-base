@@ -1,4 +1,4 @@
-import type { PageWithParams } from '@/base/cases/PageParams';
+import type { PageWithParams } from '@/server/PageParams';
 
 export interface PageParamsProps extends PageWithParams {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { PaginationInterface } from '@/base/port/PaginationInterface';
+import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import { API_PAGE_INVALID } from '@config/Identifier';
 import {
   type ValidationFaildResult,

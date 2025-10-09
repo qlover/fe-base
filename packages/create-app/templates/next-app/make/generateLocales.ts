@@ -1,7 +1,7 @@
+import { readdirSync } from 'fs';
+import { join } from 'path';
 import { Ts2Locales } from '@brain-toolkit/ts2locales';
 import { i18nConfig } from '../config/i18n';
-import { join } from 'path';
-import { readdirSync } from 'fs';
 
 export async function generateLocales() {
   const locales = i18nConfig.supportedLngs as unknown as string[];

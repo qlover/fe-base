@@ -2,6 +2,7 @@ export * from './api';
 export * from './common';
 export * from './common.error';
 export * from './page.about';
+export * from './page.admin';
 export * from './page.executor';
 export * from './page.home';
 export * from './page.identifiter';

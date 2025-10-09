@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Bootstrap } from '@qlover/corekit-bridge';
 import { isObject } from 'lodash';
 import { browserGlobalsName } from '@config/common';
