@@ -36,7 +36,7 @@ export default function UsersPage() {
         adminUserService.initialize();
       });
     }
-  }, []);
+  }, [adminUserService]);
 
   const dataSource = listState.result?.list as UserSchema[];
 
