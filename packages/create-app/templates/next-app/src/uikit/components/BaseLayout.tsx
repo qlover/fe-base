@@ -2,13 +2,11 @@ import { TeamOutlined } from '@ant-design/icons';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, type HTMLAttributes } from 'react';
 import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
-import { I } from '@config/IOCIdentifier';
 import { BaseHeader } from './BaseHeader';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
-import { useIOC } from '../hook/useIOC';
 
 export interface BaseLayoutProps extends HTMLAttributes<HTMLDivElement> {
   showLogoutButton?: boolean;
@@ -24,7 +22,6 @@ export function BaseLayout({
   ...props
 }: BaseLayoutProps) {
   const locale = useLocale();
-  const i18nService = useIOC(I.I18nServiceInterface);
   const t = useTranslations();
 
   const tt = {
@@ -45,11 +42,11 @@ export function BaseLayout({
             <TeamOutlined className="text-lg text-text" />
           </LocaleLink>
         ),
-        <LanguageSwitcher key="language-switcher" i18nService={i18nService} />,
+        <LanguageSwitcher key="language-switcher" />,
         <ThemeSwitcher key="theme-switcher" />,
         showLogoutButton && <LogoutButton key="logout-button" />
       ].filter(Boolean),
-    [showAdminButton, tt.admin, locale, i18nService, showLogoutButton]
+    [showAdminButton, tt.admin, locale, showLogoutButton]
   );
 
   return (

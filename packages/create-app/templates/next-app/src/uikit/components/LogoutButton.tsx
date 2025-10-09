@@ -1,3 +1,5 @@
+'use client';
+
 import { LogoutOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useCallback } from 'react';
