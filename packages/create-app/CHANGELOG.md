@@ -1,5 +1,28 @@
 # @qlover/create-app
 
+## 0.7.15
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** enhance README and documentation for full-stack application template ([198e829](https://github.com/qlover/fe-base/commit/198e829719dfabb2261aa939c6ae69cdba45c9f0)) ([#522](https://github.com/qlover/fe-base/pull/522))
+  - Translated README.md to Chinese and expanded content to provide a comprehensive overview of the Next.js full-stack application template.
+  - Added detailed sections on features, project structure, environment requirements, and quick start instructions.
+  - Introduced new documentation files covering API development, component development, database management, internationalization, and validation guidelines.
+  - Removed outdated env.md file and replaced it with a more comprehensive environment variable configuration guide.
+  - Improved organization and clarity of documentation to facilitate better understanding and onboarding for developers.
+
+  These changes aim to enhance the usability and accessibility of the project documentation, supporting developers in leveraging the full capabilities of the template.
+
+- **next-app:** add comprehensive documentation for full-stack application template ([50029df](https://github.com/qlover/fe-base/commit/50029df11026b5f7e7ea0ae49d0938ed955971d3)) ([#522](https://github.com/qlover/fe-base/pull/522))
+  - Introduced new documentation files covering API development, component architecture, database management, internationalization, and validation guidelines.
+  - Enhanced the README with detailed project features, structure, and quick start instructions.
+  - Added environment variable configuration guide to streamline setup across different environments.
+  - Improved organization and clarity of documentation to facilitate better understanding and onboarding for developers.
+
+  These changes aim to enhance the usability and accessibility of the project documentation, supporting developers in leveraging the full capabilities of the template.
+
 ## 0.7.14
 
 ### Patch Changes
