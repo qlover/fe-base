@@ -1,88 +1,88 @@
-# 验证器开发指南
+# Validator Development Guide
 
-## 目录
+## Table of Contents
 
-1. [验证器架构概述](#验证器架构概述)
-2. [验证器接口和抽象层](#验证器接口和抽象层)
-3. [具体验证器实现](#具体验证器实现)
-4. [验证器使用示例](#验证器使用示例)
-5. [自定义验证器示例](#自定义验证器示例)
-6. [最佳实践和扩展](#最佳实践和扩展)
+1. [Validator Architecture Overview](#validator-architecture-overview)
+2. [Validator Interfaces and Abstraction Layer](#validator-interfaces-and-abstraction-layer)
+3. [Concrete Validator Implementation](#concrete-validator-implementation)
+4. [Validator Usage Examples](#validator-usage-examples)
+5. [Custom Validator Examples](#custom-validator-examples)
+6. [Best Practices and Extensions](#best-practices-and-extensions)
 
-## 验证器架构概述
+## Validator Architecture Overview
 
-### 1. 整体架构
+### 1. Overall Architecture
 
-项目采用分层的验证器架构设计：
+The project adopts a layered validator architecture design:
 
 ```
-应用层                      验证层
+Application Layer          Validation Layer
 ┌──────────────┐          ┌──────────────┐
-│   业务服务   │          │  验证器接口  │
+│Business Service│          │Validator Interface│
 ├──────────────┤          ├──────────────┤
-│   参数处理   │    ◄─────┤  验证器实现  │
+│Param Processing│    ◄─────┤Validator Implement│
 ├──────────────┤          ├──────────────┤
-│   错误处理   │          │   验证规则   │
+│Error Handling │          │Validation Rules│
 └──────────────┘          └──────────────┘
 ```
 
-### 2. 核心组件
+### 2. Core Components
 
-- **验证器接口**：`ValidatorInterface`
-- **验证器实现**：`LoginValidator`, `PaginationValidator` 等
-- **验证规则**：使用 `zod` 库定义的验证规则
-- **错误处理**：统一的错误响应格式
+- **Validator Interface**: `ValidatorInterface`
+- **Validator Implementation**: `LoginValidator`, `PaginationValidator`, etc.
+- **Validation Rules**: Validation rules defined using `zod` library
+- **Error Handling**: Unified error response format
 
-### 3. 验证结果类型
+### 3. Validation Result Types
 
 ```typescript
-// 验证失败结果
+// Validation failure result
 interface ValidationFaildResult {
-  path: PropertyKey[]; // 验证失败的字段路径
-  message: string; // 错误消息
+  path: PropertyKey[]; // Path of failed validation field
+  message: string; // Error message
 }
 
-// 验证器接口
+// Validator interface
 interface ValidatorInterface {
-  // 验证数据并返回结果
+  // Validate data and return result
   validate(
     data: unknown
   ): Promise<void | ValidationFaildResult> | void | ValidationFaildResult;
 
-  // 验证数据，成功返回数据，失败抛出错误
+  // Validate data, return data if successful, throw error if failed
   getThrow(data: unknown): unknown;
 }
 ```
 
-## 验证器接口和抽象层
+## Validator Interfaces and Abstraction Layer
 
-### 1. 基础验证器接口
+### 1. Base Validator Interface
 
 ```typescript
 export interface ValidatorInterface {
   /**
-   * 验证数据并返回结果
-   * @param data - 要验证的数据
-   * @returns 如果验证通过返回 void，否则返回验证错误
+   * Validate data and return result
+   * @param data - Data to validate
+   * @returns void if validation passes, otherwise returns validation error
    */
   validate(
     data: unknown
   ): Promise<void | ValidationFaildResult> | void | ValidationFaildResult;
 
   /**
-   * 验证数据，成功返回数据，失败抛出错误
-   * @param data - 要验证的数据
-   * @returns 验证通过的数据
-   * @throws {ExecutorError} 如果数据无效，包含验证错误详情
+   * Validate data, return data if successful, throw error if failed
+   * @param data - Data to validate
+   * @returns Validated data
+   * @throws {ExecutorError} If data is invalid, includes validation error details
    */
   getThrow(data: unknown): unknown;
 }
 ```
 
-### 2. 验证规则定义
+### 2. Validation Rule Definition
 
 ```typescript
-// 使用 zod 定义验证规则
+// Define validation rules using zod
 const emailSchema = z.string().email({ message: V_EMAIL_INVALID });
 
 const passwordSchema = z
@@ -100,14 +100,14 @@ const pageSchema = z
   });
 ```
 
-## 具体验证器实现
+## Concrete Validator Implementation
 
-### 1. 登录验证器
+### 1. Login Validator
 
 ```typescript
 @injectable()
 export class LoginValidator implements ValidatorInterface {
-  // 验证邮箱
+  // Validate email
   validateEmail(data: unknown): void | ValidationFaildResult {
     const emailResult = emailSchema.safeParse(data);
     if (!emailResult.success) {
@@ -115,7 +115,7 @@ export class LoginValidator implements ValidatorInterface {
     }
   }
 
-  // 验证密码
+  // Validate password
   validatePassword(data: unknown): void | ValidationFaildResult {
     const passwordResult = passwordSchema.safeParse(data);
     if (!passwordResult.success) {
@@ -123,7 +123,7 @@ export class LoginValidator implements ValidatorInterface {
     }
   }
 
-  // 实现验证接口
+  // Implement validate interface
   validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
@@ -134,20 +134,20 @@ export class LoginValidator implements ValidatorInterface {
 
     const { email, password } = data as Record<string, unknown>;
 
-    // 验证邮箱
+    // Validate email
     let validateResult = this.validateEmail(email);
     if (validateResult != null) {
       return validateResult;
     }
 
-    // 验证密码
+    // Validate password
     validateResult = this.validatePassword(password);
     if (validateResult != null) {
       return validateResult;
     }
   }
 
-  // 实现 getThrow 接口
+  // Implement getThrow interface
   getThrow(data: unknown): LoginValidatorData {
     const result = this.validate(data);
     if (result == null) {
@@ -161,7 +161,7 @@ export class LoginValidator implements ValidatorInterface {
 }
 ```
 
-### 2. 分页验证器
+### 2. Pagination Validator
 
 ```typescript
 @injectable()
@@ -197,23 +197,23 @@ export class PaginationValidator implements ValidatorInterface {
 }
 ```
 
-## 验证器使用示例
+## Validator Usage Examples
 
-### 1. 在 API 路由中使用
+### 1. Using in API Routes
 
 ```typescript
 export async function POST(req: NextRequest) {
   const server = new BootstrapServer();
 
   const result = await server.execNoError(async ({ parameters: { IOC } }) => {
-    // 获取请求数据
+    // Get request data
     const data = await req.json();
 
-    // 使用验证器验证数据
+    // Use validator to validate data
     const loginValidator = IOC(LoginValidator);
     const validatedData = loginValidator.getThrow(data);
 
-    // 使用验证后的数据
+    // Use validated data
     const userService = IOC(UserService);
     return userService.login(validatedData);
   });
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-### 2. 在服务中使用
+### 2. Using in Services
 
 ```typescript
 @injectable()
@@ -237,51 +237,51 @@ export class UserService {
   ) {}
 
   async validateAndCreateUser(data: unknown): Promise<User> {
-    // 验证数据
+    // Validate data
     const validatedData = this.loginValidator.getThrow(data);
 
-    // 使用验证后的数据
+    // Use validated data
     return this.userRepository.add(validatedData);
   }
 }
 ```
 
-## 自定义验证器示例
+## Custom Validator Examples
 
-### 1. 创建自定义验证规则
+### 1. Create Custom Validation Rules
 
 ```typescript
-// 定义自定义验证规则
+// Define custom validation rules
 const phoneSchema = z
   .string()
-  .regex(/^1[3-9]\d{9}$/, { message: '手机号格式不正确' });
+  .regex(/^1[3-9]\d{9}$/, { message: 'Invalid phone number format' });
 
 const addressSchema = z.object({
-  province: z.string().min(1, '省份不能为空'),
-  city: z.string().min(1, '城市不能为空'),
-  detail: z.string().min(1, '详细地址不能为空')
+  province: z.string().min(1, 'Province cannot be empty'),
+  city: z.string().min(1, 'City cannot be empty'),
+  detail: z.string().min(1, 'Detailed address cannot be empty')
 });
 
-// 创建用户信息验证器
+// Create user info validator
 @injectable()
 export class UserInfoValidator implements ValidatorInterface {
   validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
-        message: '表单数据不能为空'
+        message: 'Form data cannot be empty'
       };
     }
 
     const { phone, address } = data as Record<string, unknown>;
 
-    // 验证手机号
+    // Validate phone number
     const phoneResult = phoneSchema.safeParse(phone);
     if (!phoneResult.success) {
       return phoneResult.error.issues[0];
     }
 
-    // 验证地址
+    // Validate address
     const addressResult = addressSchema.safeParse(address);
     if (!addressResult.success) {
       return addressResult.error.issues[0];
@@ -298,7 +298,7 @@ export class UserInfoValidator implements ValidatorInterface {
 }
 ```
 
-### 2. 组合多个验证器
+### 2. Combine Multiple Validators
 
 ```typescript
 @injectable()
@@ -309,11 +309,11 @@ export class UserProfileValidator implements ValidatorInterface {
   ) {}
 
   async validate(data: unknown): Promise<void | ValidationFaildResult> {
-    // 验证登录信息
+    // Validate login information
     const loginResult = this.loginValidator.validate(data);
     if (loginResult) return loginResult;
 
-    // 验证用户信息
+    // Validate user information
     const userInfoResult = this.userInfoValidator.validate(data);
     if (userInfoResult) return userInfoResult;
   }
@@ -328,12 +328,12 @@ export class UserProfileValidator implements ValidatorInterface {
 }
 ```
 
-## 最佳实践和扩展
+## Best Practices and Extensions
 
-### 1. 验证器组织
+### 1. Validator Organization
 
 ```typescript
-// 1. 按功能模块组织验证器
+// 1. Organize validators by feature modules
 src / validators / user / LoginValidator.ts;
 ProfileValidator.ts;
 SettingsValidator.ts;
@@ -342,21 +342,23 @@ UpdateValidator.ts;
 order / PlaceOrderValidator.ts;
 ```
 
-### 2. 验证规则复用
+### 2. Validation Rule Reuse
 
 ```typescript
-// 1. 创建共享验证规则
+// 1. Create shared validation rules
 const commonRules = {
-  email: z.string().email({ message: '邮箱格式不正确' }),
-  phone: z.string().regex(/^1[3-9]\d{9}$/, { message: '手机号格式不正确' }),
+  email: z.string().email({ message: 'Invalid email format' }),
+  phone: z
+    .string()
+    .regex(/^1[3-9]\d{9}$/, { message: 'Invalid phone number format' }),
   password: z
     .string()
-    .min(6, '密码至少6位')
-    .max(50, '密码最多50位')
-    .regex(/^\S+$/, '密码不能包含空格')
+    .min(6, 'Password must be at least 6 characters')
+    .max(50, 'Password must be at most 50 characters')
+    .regex(/^\S+$/, 'Password cannot contain spaces')
 };
 
-// 2. 在验证器中复用
+// 2. Reuse in validators
 export class UserValidator implements ValidatorInterface {
   validate(data: unknown): void | ValidationFaildResult {
     const schema = z.object({
@@ -373,10 +375,10 @@ export class UserValidator implements ValidatorInterface {
 }
 ```
 
-### 3. 错误处理增强
+### 3. Enhanced Error Handling
 
 ```typescript
-// 1. 创建验证错误基类
+// 1. Create validation error base class
 export class ValidationError extends Error {
   constructor(
     public readonly path: PropertyKey[],
@@ -387,7 +389,7 @@ export class ValidationError extends Error {
   }
 }
 
-// 2. 创建字段验证错误
+// 2. Create field validation error
 export class FieldValidationError extends ValidationError {
   constructor(
     public readonly field: string,
@@ -398,7 +400,7 @@ export class FieldValidationError extends ValidationError {
   }
 }
 
-// 3. 在验证器中使用
+// 3. Use in validators
 export class EnhancedValidator implements ValidatorInterface {
   getThrow(data: unknown): unknown {
     const result = this.validate(data);
@@ -410,7 +412,7 @@ export class EnhancedValidator implements ValidatorInterface {
 }
 ```
 
-### 4. 异步验证支持
+### 4. Async Validation Support
 
 ```typescript
 @injectable()
@@ -420,18 +422,18 @@ export class AsyncValidator implements ValidatorInterface {
   ) {}
 
   async validate(data: unknown): Promise<void | ValidationFaildResult> {
-    // 基本验证
+    // Basic validation
     const basicResult = this.validateBasicFields(data);
     if (basicResult) return basicResult;
 
-    // 异步验证（例如检查邮箱是否已存在）
+    // Async validation (e.g., check if email exists)
     const { email } = data as { email: string };
     const existingUser = await this.userRepository.getUserByEmail(email);
 
     if (existingUser) {
       return {
         path: ['email'],
-        message: '该邮箱已被注册'
+        message: 'Email is already registered'
       };
     }
   }
@@ -446,31 +448,31 @@ export class AsyncValidator implements ValidatorInterface {
 }
 ```
 
-## 总结
+## Summary
 
-项目的验证器设计遵循以下原则：
+The project's validator design follows these principles:
 
-1. **接口抽象**：
-   - 清晰的验证器接口定义
-   - 统一的验证结果格式
-   - 可扩展的验证器实现
+1. **Interface Abstraction**:
+   - Clear validator interface definitions
+   - Unified validation result format
+   - Extensible validator implementation
 
-2. **类型安全**：
-   - 使用 zod 提供类型安全的验证规则
-   - TypeScript 类型定义
-   - 运行时类型检查
+2. **Type Safety**:
+   - Use zod for type-safe validation rules
+   - TypeScript type definitions
+   - Runtime type checking
 
-3. **错误处理**：
-   - 统一的错误响应格式
-   - 详细的错误信息
-   - 错误链路追踪
+3. **Error Handling**:
+   - Unified error response format
+   - Detailed error messages
+   - Error chain tracking
 
-4. **可扩展性**：
-   - 支持自定义验证规则
-   - 支持验证器组合
-   - 支持异步验证
+4. **Extensibility**:
+   - Support for custom validation rules
+   - Support for validator composition
+   - Support for async validation
 
-5. **最佳实践**：
-   - 验证规则复用
-   - 模块化组织
-   - 错误处理增强
+5. **Best Practices**:
+   - Validation rule reuse
+   - Modular organization
+   - Enhanced error handling

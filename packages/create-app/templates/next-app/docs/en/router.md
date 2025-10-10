@@ -1,41 +1,41 @@
-# 路由系统开发指南
+# Router System Development Guide
 
-## 目录
+## Table of Contents
 
-1. [路由系统概述](#路由系统概述)
-2. [路由服务和接口](#路由服务和接口)
-3. [路由中间件和权限](#路由中间件和权限)
-4. [路由导航和钩子](#路由导航和钩子)
-5. [最佳实践和示例](#最佳实践和示例)
+1. [Router System Overview](#router-system-overview)
+2. [Router Services and Interfaces](#router-services-and-interfaces)
+3. [Router Middleware and Permissions](#router-middleware-and-permissions)
+4. [Router Navigation and Hooks](#router-navigation-and-hooks)
+5. [Best Practices and Examples](#best-practices-and-examples)
 
-## 路由系统概述
+## Router System Overview
 
-### 1. 路由架构
+### 1. Router Architecture
 
-项目采用 Next.js App Router 和自定义路由服务相结合的架构：
+The project combines Next.js App Router with custom router services:
 
 ```
-路由层                      服务层
+Router Layer               Service Layer
 ┌──────────────┐          ┌──────────────┐
-│   页面路由   │          │  路由服务    │
+│  Page Routes │          │Router Service│
 ├──────────────┤          ├──────────────┤
-│   中间件     │    ◄─────┤  导航服务    │
+│  Middleware  │    ◄─────┤   Navigation │
 ├──────────────┤          ├──────────────┤
-│   权限控制   │          │  权限服务    │
+│  Auth Control│          │Auth Service  │
 └──────────────┘          └──────────────┘
 ```
 
-### 2. 路由类型
+### 2. Route Types
 
 ```typescript
-// 1. 基础路由配置
+// 1. Basic route configuration
 export const routes = {
-  // 公共路由
+  // Public routes
   home: '/',
   login: '/login',
   register: '/register',
 
-  // 管理路由
+  // Admin routes
   admin: {
     root: '/admin',
     users: '/admin/users',
@@ -43,14 +43,14 @@ export const routes = {
   }
 };
 
-// 2. 路由元数据
+// 2. Route metadata
 interface RouteMetadata {
   title: string;
   auth?: boolean;
   roles?: string[];
 }
 
-// 3. 路由配置
+// 3. Route configuration
 const routeMetadata: Record<keyof typeof routes, RouteMetadata> = {
   home: {
     title: 'page.home.title'
@@ -66,40 +66,40 @@ const routeMetadata: Record<keyof typeof routes, RouteMetadata> = {
 };
 ```
 
-## 路由服务和接口
+## Router Services and Interfaces
 
-### 1. 路由服务接口
+### 1. Router Service Interface
 
 ```typescript
-// 1. 路由接口定义
+// 1. Router interface definition
 export interface RouterInterface {
-  // 导航方法
+  // Navigation methods
   navigate(path: string, options?: NavigateOptions): void;
   replace(path: string, options?: NavigateOptions): void;
   back(): void;
 
-  // 路由状态
+  // Route state
   getCurrentRoute(): string;
   getRouteParams(): Record<string, string>;
 
-  // 路由守卫
+  // Route guards
   beforeEach(guard: NavigationGuard): void;
   afterEach(hook: NavigationHook): void;
 }
 
-// 2. 导航选项
+// 2. Navigation options
 interface NavigateOptions {
   query?: Record<string, string>;
   state?: unknown;
   locale?: string;
 }
 
-// 3. 导航守卫
+// 3. Navigation guards
 type NavigationGuard = (to: string, from: string) => boolean | Promise<boolean>;
 type NavigationHook = (to: string, from: string) => void;
 ```
 
-### 2. 路由服务实现
+### 2. Router Service Implementation
 
 ```typescript
 @injectable()
@@ -109,17 +109,17 @@ export class RouterService implements RouterInterface {
     @inject(AuthService) private auth: AuthServiceInterface
   ) {}
 
-  // 导航到首页
+  // Navigate to home
   gotoHome(): void {
     this.navigate(routes.home);
   }
 
-  // 导航到登录页
+  // Navigate to login
   gotoLogin(): void {
     this.navigate(routes.login);
   }
 
-  // 基础导航方法
+  // Basic navigation method
   navigate(path: string, options?: NavigateOptions): void {
     const locale = options?.locale || this.i18n.currentLocale;
     const localePath = `/${locale}${path}`;
@@ -132,7 +132,7 @@ export class RouterService implements RouterInterface {
     }
   }
 
-  // 获取当前路由
+  // Get current route
   getCurrentRoute(): string {
     return window.location.pathname.replace(
       new RegExp(`^/${this.i18n.currentLocale}`),
@@ -142,9 +142,9 @@ export class RouterService implements RouterInterface {
 }
 ```
 
-## 路由中间件和权限
+## Router Middleware and Permissions
 
-### 1. 路由中间件
+### 1. Router Middleware
 
 ```typescript
 // middleware.ts
@@ -155,14 +155,14 @@ import { i18nConfig } from '@config/i18n';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. 语言中间件
+  // 1. Language middleware
   if (!i18nConfig.supportedLngs.some((lng) => pathname.startsWith(`/${lng}`))) {
     return NextResponse.redirect(
       new URL(`/${i18nConfig.defaultLocale}${pathname}`, request.url)
     );
   }
 
-  // 2. 认证中间件
+  // 2. Authentication middleware
   const token = request.cookies.get('token');
   if (pathname.startsWith('/admin') && !token) {
     const locale = pathname.split('/')[1];
@@ -170,16 +170,16 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// 配置中间件匹配路径
+// Configure middleware matching paths
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };
 ```
 
-### 2. 权限控制
+### 2. Permission Control
 
 ```typescript
-// 1. 权限组件
+// 1. Permission component
 export function PrivateRoute({
   children,
   roles
@@ -187,12 +187,12 @@ export function PrivateRoute({
   const auth = useAuth();
   const locale = useLocale();
 
-  // 检查认证状态
+  // Check authentication status
   if (!auth.isAuthenticated) {
     return redirect(`/${locale}/login`);
   }
 
-  // 检查角色权限
+  // Check role permissions
   if (roles && !roles.some(role => auth.hasRole(role))) {
     return redirect(`/${locale}/403`);
   }
@@ -200,7 +200,7 @@ export function PrivateRoute({
   return children;
 }
 
-// 2. 在页面中使用
+// 2. Use in page
 export default function AdminPage() {
   return (
     <PrivateRoute roles={['admin']}>
@@ -210,12 +210,12 @@ export default function AdminPage() {
 }
 ```
 
-## 路由导航和钩子
+## Router Navigation and Hooks
 
-### 1. 导航组件
+### 1. Navigation Components
 
 ```typescript
-// 1. 本地化链接组件
+// 1. Localized link component
 export function LocaleLink({
   href,
   locale,
@@ -232,7 +232,7 @@ export function LocaleLink({
   );
 }
 
-// 2. 导航菜单
+// 2. Navigation menu
 export function AdminNav() {
   const { navItems } = useStore(adminPageManager);
   const locale = useLocale();
@@ -252,16 +252,16 @@ export function AdminNav() {
 }
 ```
 
-### 2. 路由钩子
+### 2. Router Hooks
 
 ```typescript
-// 1. 使用路由钩子
+// 1. Use router hook
 export function useRouteGuard() {
   const router = useRouter();
   const auth = useAuth();
 
   useEffect(() => {
-    // 路由变化时检查认证状态
+    // Check authentication status on route change
     const handleRouteChange = (url: string) => {
       if (url.startsWith('/admin') && !auth.isAuthenticated) {
         router.push('/login');
@@ -275,43 +275,43 @@ export function useRouteGuard() {
   }, [router, auth]);
 }
 
-// 2. 在应用中使用
+// 2. Use in application
 export function App() {
   useRouteGuard();
 
   return (
     <RouterProvider>
-      {/* 应用内容 */}
+      {/* Application content */}
     </RouterProvider>
   );
 }
 ```
 
-## 最佳实践和示例
+## Best Practices and Examples
 
-### 1. 路由组织
+### 1. Route Organization
 
 ```typescript
-// 1. 按功能组织路由
+// 1. Organize routes by feature
 app /
   [locale] /
-  public / // 公共路由组
-  page.tsx; // 首页
+  public / // Public route group
+  page.tsx; // Homepage
 about /
   page.tsx(
-    // 关于页面
+    // About page
     auth
-  ) / // 认证路由组
+  ) / // Auth route group
   login /
   page.tsx;
 register /
-  page.tsx(admin) / // 管理路由组
+  page.tsx(admin) / // Admin route group
   admin /
-  layout.tsx; // 管理布局
-page.tsx; // 管理首页
-users / page.tsx; // 用户管理
+  layout.tsx; // Admin layout
+page.tsx; // Admin homepage
+users / page.tsx; // User management
 
-// 2. 路由常量
+// 2. Route constants
 export const ROUTES = {
   PUBLIC: {
     HOME: '/',
@@ -328,15 +328,15 @@ export const ROUTES = {
 } as const;
 ```
 
-### 2. 类型安全的路由
+### 2. Type-Safe Routes
 
 ```typescript
-// 1. 路由类型定义
+// 1. Route type definitions
 type Route = keyof typeof ROUTES;
 type PublicRoute = keyof typeof ROUTES.PUBLIC;
 type AdminRoute = keyof typeof ROUTES.ADMIN;
 
-// 2. 类型安全的导航
+// 2. Type-safe navigation
 function useTypedRouter() {
   const router = useRouter();
   const locale = useLocale();
@@ -351,20 +351,20 @@ function useTypedRouter() {
   };
 }
 
-// 3. 使用类型安全的路由
+// 3. Use type-safe routes
 function Navigation() {
   const router = useTypedRouter();
 
   const handleClick = () => {
-    router.push(ROUTES.ADMIN.USERS); // 类型安全
+    router.push(ROUTES.ADMIN.USERS); // Type-safe
   };
 }
 ```
 
-### 3. 路由元数据
+### 3. Route Metadata
 
 ```typescript
-// 1. 元数据类型
+// 1. Metadata type
 interface PageMetadata {
   title: string;
   description?: string;
@@ -372,7 +372,7 @@ interface PageMetadata {
   roles?: string[];
 }
 
-// 2. 路由元数据配置
+// 2. Route metadata configuration
 const pageMetadata: Record<Route, PageMetadata> = {
   [ROUTES.PUBLIC.HOME]: {
     title: 'page.home.title',
@@ -385,7 +385,7 @@ const pageMetadata: Record<Route, PageMetadata> = {
   }
 };
 
-// 3. 生成元数据
+// 3. Generate metadata
 export async function generateMetadata({
   params: { locale }
 }: {
@@ -402,26 +402,26 @@ export async function generateMetadata({
 }
 ```
 
-## 总结
+## Summary
 
-项目的路由系统遵循以下原则：
+The project's router system follows these principles:
 
-1. **分层架构**：
-   - 页面路由层
-   - 服务层
-   - 中间件层
+1. **Layered Architecture**:
+   - Page router layer
+   - Service layer
+   - Middleware layer
 
-2. **类型安全**：
-   - 路由常量
-   - 类型定义
-   - 编译时检查
+2. **Type Safety**:
+   - Route constants
+   - Type definitions
+   - Compile-time checking
 
-3. **权限控制**：
-   - 路由守卫
-   - 角色权限
-   - 中间件拦截
+3. **Permission Control**:
+   - Route guards
+   - Role permissions
+   - Middleware interception
 
-4. **最佳实践**：
-   - 路由组织
-   - 类型安全
-   - 元数据管理
+4. **Best Practices**:
+   - Route organization
+   - Type safety
+   - Metadata management

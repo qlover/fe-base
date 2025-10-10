@@ -1,141 +1,141 @@
-# Next.js 页面开发指南
+# Next.js Page Development Guide
 
-## 目录
+## Table of Contents
 
-1. [页面开发概述](#页面开发概述)
-2. [服务端组件详解](#服务端组件详解)
-3. [客户端组件详解](#客户端组件详解)
-4. [数据获取和状态管理](#数据获取和状态管理)
-5. [页面路由和元数据](#页面路由和元数据)
-6. [最佳实践和性能优化](#最佳实践和性能优化)
+1. [Page Development Overview](#page-development-overview)
+2. [Server Components in Detail](#server-components-in-detail)
+3. [Client Components in Detail](#client-components-in-detail)
+4. [Data Fetching and State Management](#data-fetching-and-state-management)
+5. [Page Routing and Metadata](#page-routing-and-metadata)
+6. [Best Practices and Performance Optimization](#best-practices-and-performance-optimization)
 
-## 页面开发概述
+## Page Development Overview
 
-### 1. 服务端组件 vs 客户端组件
+### 1. Server Components vs Client Components
 
-在 Next.js 13+ 中，所有组件默认都是服务端组件（Server Components），除非显式声明为客户端组件。
+In Next.js 13+, all components are Server Components by default unless explicitly declared as Client Components.
 
 ```typescript
-// 服务端组件（默认）
+// Server Component (default)
 // page.tsx
 export default function Page() {
-  return <div>服务端渲染的内容</div>;
+  return <div>Server-rendered content</div>;
 }
 
-// 客户端组件
-// 需要在文件顶部添加 'use client' 指令
+// Client Component
+// Requires 'use client' directive at the top of the file
 'use client';
 
 export function ClientComponent() {
-  return <div>客户端渲染的内容</div>;
+  return <div>Client-rendered content</div>;
 }
 ```
 
-### 2. 选择指南
+### 2. Selection Guide
 
-**使用服务端组件的场景**：
+**Use Server Components when**:
 
-- 需要直接访问后端资源
-- 包含敏感信息（API 密钥、tokens 等）
-- 依赖后端的重量级操作
-- 需要减少客户端 JavaScript 体积
-- 需要 SEO 优化
-- 页面级组件
-- 不需要客户端交互
-- 不需要浏览器 API
+- Direct access to backend resources is needed
+- Contains sensitive information (API keys, tokens, etc.)
+- Depends on heavy backend operations
+- Need to reduce client-side JavaScript bundle size
+- SEO optimization is required
+- For page-level components
+- No client-side interaction needed
+- No browser APIs needed
 
-**使用客户端组件的场景**：
+**Use Client Components when**:
 
-- 需要添加交互和事件处理
-- 使用浏览器 API
-- 使用 React hooks
-- 需要维护组件状态
-- 需要使用客户端特有的生命周期
-- 使用依赖浏览器 API 的第三方库
+- Need to add interactions and event handling
+- Using browser APIs
+- Using React hooks
+- Need to maintain component state
+- Need client-specific lifecycles
+- Using third-party libraries that depend on browser APIs
 
-## 服务端组件详解
+## Server Components in Detail
 
-### 1. 基本结构
+### 1. Basic Structure
 
 ```typescript
 // app/[locale]/login/page.tsx
 export default async function LoginPage(props: PageParamsProps) {
-  // 1. 参数验证
+  // 1. Parameter validation
   if (!props.params) {
     return notFound();
   }
 
-  // 2. 服务端初始化
+  // 2. Server initialization
   const params = await props.params;
   const pageParams = new PageParams(params);
   const server = new BootstrapServer();
 
-  // 3. 服务端数据获取和验证
+  // 3. Server-side data fetching and validation
   if (await server.getIOC(ServerAuth).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
-  // 4. 获取国际化文本
+  // 4. Get internationalized text
   const tt = await pageParams.getI18nInterface(loginI18n);
 
-  // 5. 渲染页面
+  // 5. Render page
   return (
     <BaseLayout>
-      <div>{/* 页面内容 */}</div>
-      <ClientComponent /> {/* 嵌入客户端组件 */}
+      <div>{/* Page content */}</div>
+      <ClientComponent /> {/* Embed client component */}
     </BaseLayout>
   );
 }
 ```
 
-### 2. 服务端数据获取
+### 2. Server-Side Data Fetching
 
 ```typescript
-// 直接在服务端组件中获取数据
+// Fetch data directly in server component
 export default async function UsersPage() {
   const server = new BootstrapServer();
 
   const result = await server
-    .use(new AdminAuthPlugin())  // 使用服务端中间件
+    .use(new AdminAuthPlugin())  // Use server middleware
     .execNoError(async ({ parameters: { IOC } }) => {
       const userService = IOC(UserService);
       return userService.getUsers();
     });
 
-  // 数据直接传递给客户端组件
+  // Pass data directly to client component
   return <UserList initialData={result.data} />;
 }
 ```
 
-### 3. 静态生成和动态渲染
+### 3. Static Generation and Dynamic Rendering
 
 ```typescript
-// 静态页面生成
-export const dynamic = 'force-static'; // 强制静态生成
-export const revalidate = 3600; // 每小时重新生成
+// Static page generation
+export const dynamic = 'force-static'; // Force static generation
+export const revalidate = 3600; // Regenerate every hour
 
-// 动态页面生成
-export const dynamic = 'force-dynamic'; // 强制动态生成
+// Dynamic page generation
+export const dynamic = 'force-dynamic'; // Force dynamic generation
 
-// 生成静态路由参数
+// Generate static route parameters
 export async function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'zh' }];
 }
 ```
 
-## 客户端组件详解
+## Client Components in Detail
 
-### 1. 基本结构
+### 1. Basic Structure
 
 ```typescript
-'use client';  // 声明为客户端组件
+'use client';  // Declare as client component
 
 export function LoginForm(props: { tt: LoginI18nInterface }) {
-  // 1. Hooks 使用
+  // 1. Hooks usage
   const [loading, setLoading] = useState(false);
   const userService = useIOC(I.UserServiceInterface);
 
-  // 2. 事件处理
+  // 2. Event handling
   const handleLogin = async (values: LoginFormData) => {
     try {
       setLoading(true);
@@ -148,32 +148,32 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
     }
   };
 
-  // 3. 渲染 UI
+  // 3. Render UI
   return (
     <Form onFinish={handleLogin}>
-      {/* 表单内容 */}
+      {/* Form content */}
     </Form>
   );
 }
 ```
 
-### 2. 客户端状态管理
+### 2. Client-Side State Management
 
 ```typescript
 'use client';
 
 export function UserProfile() {
-  // 1. 本地状态
+  // 1. Local state
   const [isEditing, setIsEditing] = useState(false);
 
-  // 2. 服务状态
+  // 2. Service state
   const userStore = useIOC(UserStore);
   const user = useStore(userStore, userStore.selector.currentUser);
 
-  // 3. 表单状态
+  // 3. Form state
   const [form] = Form.useForm();
 
-  // 4. 副作用
+  // 4. Side effects
   useEffect(() => {
     if (user) {
       form.setFieldsValue(user);
@@ -181,45 +181,45 @@ export function UserProfile() {
   }, [user, form]);
 
   return (
-    <div>{/* 组件内容 */}</div>
+    <div>{/* Component content */}</div>
   );
 }
 ```
 
-### 3. 与服务端组件交互
+### 3. Interaction with Server Components
 
 ```typescript
-// 1. 通过属性接收服务端数据
+// 1. Receive server data through props
 interface Props {
-  initialData: UserData;    // 从服务端获取的初始数据
-  tt: I18nInterface;        // 从服务端获取的翻译文本
+  initialData: UserData;    // Initial data from server
+  tt: I18nInterface;        // Translation text from server
 }
 
 'use client';
 export function UserList({ initialData, tt }: Props) {
   const [data, setData] = useState(initialData);
 
-  // 使用服务端数据初始化客户端状态
+  // Initialize client state with server data
   useEffect(() => {
     setData(initialData);
   }, [initialData]);
 
   return (
-    <div>{/* 组件内容 */}</div>
+    <div>{/* Component content */}</div>
   );
 }
 ```
 
-## 数据获取和状态管理
+## Data Fetching and State Management
 
-### 1. 服务端数据获取
+### 1. Server-Side Data Fetching
 
 ```typescript
-// 1. 在服务端组件中获取数据
+// 1. Fetch data in server component
 export default async function DashboardPage() {
   const server = new BootstrapServer();
 
-  // 并行数据获取
+  // Parallel data fetching
   const [userData, statsData] = await Promise.all([
     server.execNoError(async ({ IOC }) => IOC(UserService).getCurrentUser()),
     server.execNoError(async ({ IOC }) => IOC(StatsService).getStats())
@@ -233,9 +233,9 @@ export default async function DashboardPage() {
   );
 }
 
-// 2. 使用服务端 action
+// 2. Use server action
 export async function fetchUserData(userId: string) {
-  'use server';  // 声明为服务端 action
+  'use server';  // Declare as server action
 
   const server = new BootstrapServer();
   return server.execNoError(async ({ IOC }) => {
@@ -244,12 +244,12 @@ export async function fetchUserData(userId: string) {
 }
 ```
 
-### 2. 客户端状态管理
+### 2. Client-Side State Management
 
 ```typescript
 'use client';
 
-// 1. 使用 Store 管理状态
+// 1. Use Store for state management
 @injectable()
 export class UserProfileStore extends StoreInterface<UserProfileState> {
   constructor() {
@@ -271,7 +271,7 @@ export class UserProfileStore extends StoreInterface<UserProfileState> {
   }
 }
 
-// 2. 在组件中使用 Store
+// 2. Use Store in component
 export function UserProfile() {
   const store = useIOC(UserProfileStore);
   const user = useStore(store, store.selector.user);
@@ -285,9 +285,9 @@ export function UserProfile() {
 }
 ```
 
-## 页面路由和元数据
+## Page Routing and Metadata
 
-### 1. 动态路由
+### 1. Dynamic Routing
 
 ```typescript
 // app/[locale]/users/[id]/page.tsx
@@ -296,10 +296,10 @@ export default async function UserPage({
 }: {
   params: { locale: string; id: string };
 }) {
-  // 处理路由参数
+  // Handle route parameters
 }
 
-// 生成静态路由
+// Generate static routes
 export async function generateStaticParams() {
   const users = await fetchUsers();
 
@@ -310,16 +310,16 @@ export async function generateStaticParams() {
 }
 ```
 
-### 2. 元数据生成
+### 2. Metadata Generation
 
 ```typescript
-// 1. 静态元数据
+// 1. Static metadata
 export const metadata: Metadata = {
   title: 'User Profile',
   description: 'User profile page'
 };
 
-// 2. 动态元数据
+// 2. Dynamic metadata
 export async function generateMetadata({
   params
 }: {
@@ -335,38 +335,38 @@ export async function generateMetadata({
 }
 ```
 
-## 最佳实践和性能优化
+## Best Practices and Performance Optimization
 
-### 1. 组件分割原则
+### 1. Component Splitting Principles
 
 ```typescript
-// ❌ 错误：在一个组件中混合服务端和客户端逻辑
+// ❌ Wrong: Mixing server and client logic in one component
 export default function Page() {
-  const [state, setState] = useState();  // 错误：服务端组件不能使用 hooks
-  const data = await fetchData();        // 正确：服务端数据获取
+  const [state, setState] = useState();  // Error: Server components can't use hooks
+  const data = await fetchData();        // Correct: Server-side data fetching
 
   return <div>{/* ... */}</div>;
 }
 
-// ✅ 正确：分离服务端和客户端逻辑
-// page.tsx (服务端组件)
+// ✅ Correct: Separate server and client logic
+// page.tsx (Server Component)
 export default async function Page() {
-  const data = await fetchData();  // 服务端数据获取
+  const data = await fetchData();  // Server-side data fetching
   return <ClientComponent data={data} />;
 }
 
-// ClientComponent.tsx (客户端组件)
+// ClientComponent.tsx (Client Component)
 'use client';
 export function ClientComponent({ data }) {
-  const [state, setState] = useState();  // 客户端状态管理
+  const [state, setState] = useState();  // Client-side state management
   return <div>{/* ... */}</div>;
 }
 ```
 
-### 2. 性能优化策略
+### 2. Performance Optimization Strategies
 
 ```typescript
-// 1. 组件级缓存
+// 1. Component-level caching
 export default async function UserList() {
   const users = await fetchUsers();
 
@@ -381,10 +381,10 @@ export default async function UserList() {
   );
 }
 
-// 2. 路由级缓存
-export const revalidate = 3600;  // 缓存一小时
+// 2. Route-level caching
+export const revalidate = 3600;  // Cache for one hour
 
-// 3. 选择性水合
+// 3. Selective hydration
 export default function Page() {
   return (
     <>
@@ -397,10 +397,10 @@ export default function Page() {
 }
 ```
 
-### 3. 错误处理
+### 3. Error Handling
 
 ```typescript
-// 1. 错误边界
+// 1. Error boundary
 'use client';
 export function ErrorBoundary({
   error,
@@ -411,13 +411,13 @@ export function ErrorBoundary({
 }) {
   return (
     <div>
-      <h2>出错了！</h2>
-      <button onClick={reset}>重试</button>
+      <h2>Something went wrong!</h2>
+      <button onClick={reset}>Try again</button>
     </div>
   );
 }
 
-// 2. 加载状态
+// 2. Loading state
 export default async function Page() {
   return (
     <Suspense fallback={<Loading />}>
@@ -427,31 +427,31 @@ export default async function Page() {
 }
 ```
 
-## 总结
+## Summary
 
-Next.js 13+ 的页面开发需要注意以下几点：
+Key points for Next.js 13+ page development:
 
-1. **组件类型选择**：
-   - 默认使用服务端组件
-   - 只在必要时使用客户端组件
-   - 合理分割组件职责
+1. **Component Type Selection**:
+   - Use Server Components by default
+   - Use Client Components only when necessary
+   - Properly split component responsibilities
 
-2. **数据流处理**：
-   - 服务端优先获取数据
-   - 通过属性传递给客户端
-   - 使用 Store 管理客户端状态
+2. **Data Flow Handling**:
+   - Prioritize server-side data fetching
+   - Pass data to client through props
+   - Use Store for client-side state management
 
-3. **性能优化**：
-   - 合理使用缓存策略
-   - 实现选择性水合
-   - 优化加载性能
+3. **Performance Optimization**:
+   - Use caching strategies appropriately
+   - Implement selective hydration
+   - Optimize loading performance
 
-4. **开发体验**：
-   - 清晰的代码组织
-   - 类型安全
-   - 完善的错误处理
+4. **Development Experience**:
+   - Clear code organization
+   - Type safety
+   - Comprehensive error handling
 
-5. **最佳实践**：
-   - 遵循单一职责原则
-   - 实现优雅降级
-   - 保持代码可维护性
+5. **Best Practices**:
+   - Follow Single Responsibility Principle
+   - Implement graceful degradation
+   - Maintain code maintainability

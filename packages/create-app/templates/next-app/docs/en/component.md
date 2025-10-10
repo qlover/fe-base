@@ -1,52 +1,52 @@
-# 组件开发和状态管理指南
+# Component Development and State Management Guide
 
-## 目录
+## Table of Contents
 
-1. [组件架构概述](#组件架构概述)
-2. [组件架构和设计原则](#组件架构和设计原则)
-3. [状态管理系统](#状态管理系统)
-4. [组件通信和事件处理](#组件通信和事件处理)
-5. [组件测试和性能优化](#组件测试和性能优化)
-6. [最佳实践和示例](#最佳实践和示例)
+1. [Component Architecture Overview](#component-architecture-overview)
+2. [Component Architecture and Design Principles](#component-architecture-and-design-principles)
+3. [State Management System](#state-management-system)
+4. [Component Communication and Event Handling](#component-communication-and-event-handling)
+5. [Component Testing and Performance Optimization](#component-testing-and-performance-optimization)
+6. [Best Practices and Examples](#best-practices-and-examples)
 
-## 组件架构概述
+## Component Architecture Overview
 
-### 1. 整体架构
+### 1. Overall Architecture
 
-项目采用分层的组件架构设计：
+The project adopts a layered component architecture design:
 
 ```
-组件层                      状态层
+Component Layer             State Layer
 ┌──────────────┐          ┌──────────────┐
-│   UI 组件    │          │  状态接口    │
+│  UI Components│          │State Interface│
 ├──────────────┤          ├──────────────┤
-│   容器组件   │    ◄─────┤  状态实现    │
+│  Containers  │    ◄─────┤State Implement│
 ├──────────────┤          ├──────────────┤
-│   业务组件   │          │  状态动作    │
+│  Business    │          │State Actions  │
 └──────────────┘          └──────────────┘
 ```
 
-### 2. 核心概念
+### 2. Core Concepts
 
-- **UI 组件**：纯展示组件，不包含业务逻辑
-- **容器组件**：负责状态管理和业务逻辑
-- **业务组件**：特定业务场景的组件
-- **状态管理**：基于 Store 模式的状态管理系统
+- **UI Components**: Pure presentation components, no business logic
+- **Container Components**: Responsible for state management and business logic
+- **Business Components**: Components for specific business scenarios
+- **State Management**: Store pattern-based state management system
 
-### 3. 技术栈
+### 3. Technology Stack
 
-- **React + Next.js**：基础框架
-- **TypeScript**：类型系统
-- **Inversify**：依赖注入
-- **Ant Design**：UI 组件库
-- **Tailwind CSS**：样式系统
+- **React + Next.js**: Base framework
+- **TypeScript**: Type system
+- **Inversify**: Dependency injection
+- **Ant Design**: UI component library
+- **Tailwind CSS**: Styling system
 
-## 组件架构和设计原则
+## Component Architecture and Design Principles
 
-### 1. 组件分类
+### 1. Component Categories
 
 ```typescript
-// 1. UI 组件
+// 1. UI Component
 export function Button({ onClick, children }: ButtonProps) {
   return (
     <button
@@ -58,7 +58,7 @@ export function Button({ onClick, children }: ButtonProps) {
   );
 }
 
-// 2. 容器组件
+// 2. Container Component
 export function UserProfileContainer() {
   const userStore = useIOC(UserStore);
   const user = useStore(userStore, userStore.selector.user);
@@ -66,7 +66,7 @@ export function UserProfileContainer() {
   return <UserProfile user={user} />;
 }
 
-// 3. 业务组件
+// 3. Business Component
 export function LoginForm({ tt }: { tt: LoginI18nInterface }) {
   const userService = useIOC(I.UserServiceInterface);
 
@@ -76,16 +76,16 @@ export function LoginForm({ tt }: { tt: LoginI18nInterface }) {
 
   return (
     <Form onFinish={handleLogin}>
-      {/* 表单内容 */}
+      {/* Form content */}
     </Form>
   );
 }
 ```
 
-### 2. 组件提供者
+### 2. Component Providers
 
 ```typescript
-// 组合多个提供者
+// Combine multiple providers
 export function ComboProvider({
   themeConfig,
   children
@@ -110,21 +110,21 @@ export function ComboProvider({
 }
 ```
 
-### 3. 组件接口设计
+### 3. Component Interface Design
 
 ```typescript
-// 1. 组件接口定义
+// 1. Component interface definition
 interface ChatComponentInterface {
-  // 属性定义
+  // Property definitions
   messages: MessageInterface[];
   loading?: boolean;
 
-  // 事件处理
+  // Event handlers
   onSend: (message: string) => void;
   onClear: () => void;
 }
 
-// 2. 组件实现
+// 2. Component implementation
 @injectable()
 export class ChatComponent implements ChatComponentInterface {
   constructor(
@@ -132,7 +132,7 @@ export class ChatComponent implements ChatComponentInterface {
     @inject(I.Logger) private logger: LoggerInterface
   ) {}
 
-  // 实现接口方法
+  // Implement interface methods
   async onSend(message: string) {
     try {
       await this.store.sendMessage(message);
@@ -143,18 +143,18 @@ export class ChatComponent implements ChatComponentInterface {
 }
 ```
 
-## 状态管理系统
+## State Management System
 
-### 1. 状态接口
+### 1. State Interfaces
 
 ```typescript
-// 1. 状态接口定义
+// 1. State interface definition
 export interface StoreStateInterface {
   readonly loading?: boolean;
   readonly error?: Error | null;
 }
 
-// 2. 异步状态接口
+// 2. Async state interface
 export interface AsyncStateInterface<T> {
   loading: boolean;
   result: T | null;
@@ -163,7 +163,7 @@ export interface AsyncStateInterface<T> {
   endTime: number;
 }
 
-// 3. 请求状态实现
+// 3. Request state implementation
 export class RequestState<T = unknown> implements AsyncStateInterface<T> {
   startTime: number;
   endTime: number;
@@ -184,10 +184,10 @@ export class RequestState<T = unknown> implements AsyncStateInterface<T> {
 }
 ```
 
-### 2. Store 实现
+### 2. Store Implementation
 
 ```typescript
-// 1. Store 基类
+// 1. Store base class
 export abstract class StoreInterface<State extends StoreStateInterface> {
   protected state: State;
   protected subscribers: Set<(state: State) => void>;
@@ -197,20 +197,20 @@ export abstract class StoreInterface<State extends StoreStateInterface> {
     this.subscribers = new Set();
   }
 
-  // 状态更新
+  // State update
   protected emit(newState: State): void {
     this.state = newState;
     this.subscribers.forEach((subscriber) => subscriber(this.state));
   }
 
-  // 选择器
+  // Selectors
   selector = {
     loading: (state: State) => state.loading,
     error: (state: State) => state.error
   };
 }
 
-// 2. 具体 Store 实现
+// 2. Concrete Store implementation
 @injectable()
 export class UserStore extends StoreInterface<UserState> {
   constructor(@inject(UserService) private userService: UserServiceInterface) {
@@ -233,10 +233,10 @@ export class UserStore extends StoreInterface<UserState> {
 }
 ```
 
-### 3. 状态使用
+### 3. State Usage
 
 ```typescript
-// 1. 在组件中使用 Store
+// 1. Using Store in components
 export function UserProfile() {
   const userStore = useIOC(UserStore);
   const user = useStore(userStore, userStore.selector.user);
@@ -252,7 +252,7 @@ export function UserProfile() {
   return <UserInfo user={user} />;
 }
 
-// 2. 组合多个 Store
+// 2. Combining multiple Stores
 export function Dashboard() {
   const userStore = useIOC(UserStore);
   const statsStore = useIOC(StatsStore);
@@ -269,19 +269,19 @@ export function Dashboard() {
 }
 ```
 
-## 组件通信和事件处理
+## Component Communication and Event Handling
 
-### 1. 事件处理
+### 1. Event Handling
 
 ```typescript
-// 1. 定义事件接口
+// 1. Define event interface
 interface ChatEvents {
   onSend: (message: string) => void;
   onClear: () => void;
   onError: (error: Error) => void;
 }
 
-// 2. 实现事件处理
+// 2. Implement event handling
 export function ChatComponent({ onSend, onClear, onError }: ChatEvents) {
   const handleSend = useCallback(async (message: string) => {
     try {
@@ -300,10 +300,10 @@ export function ChatComponent({ onSend, onClear, onError }: ChatEvents) {
 }
 ```
 
-### 2. 组件通信
+### 2. Component Communication
 
 ```typescript
-// 1. 通过属性传递
+// 1. Through props
 export function ParentComponent() {
   const [data, setData] = useState<Data>();
 
@@ -315,7 +315,7 @@ export function ParentComponent() {
   );
 }
 
-// 2. 通过 Context 共享
+// 2. Through Context
 const ThemeContext = createContext<Theme>(defaultTheme);
 
 export function ThemeProvider({ children }: PropsWithChildren) {
@@ -329,12 +329,12 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 }
 ```
 
-## 组件测试和性能优化
+## Component Testing and Performance Optimization
 
-### 1. 组件测试
+### 1. Component Testing
 
 ```typescript
-// 1. 单元测试
+// 1. Unit testing
 describe('UserProfile', () => {
   it('should render user info', () => {
     const user = { id: '1', name: 'Test' };
@@ -349,7 +349,7 @@ describe('UserProfile', () => {
   });
 });
 
-// 2. 集成测试
+// 2. Integration testing
 describe('LoginForm', () => {
   it('should handle login flow', async () => {
     const mockLogin = jest.fn();
@@ -369,10 +369,10 @@ describe('LoginForm', () => {
 });
 ```
 
-### 2. 性能优化
+### 2. Performance Optimization
 
 ```typescript
-// 1. 使用 memo 优化渲染
+// 1. Using memo for render optimization
 const UserCard = memo(function UserCard({ user }: UserCardProps) {
   return (
     <div>
@@ -382,14 +382,14 @@ const UserCard = memo(function UserCard({ user }: UserCardProps) {
   );
 });
 
-// 2. 使用 useMemo 和 useCallback
+// 2. Using useMemo and useCallback
 function UserList({ users }: UserListProps) {
   const sortedUsers = useMemo(() => {
     return [...users].sort((a, b) => a.name.localeCompare(b.name));
   }, [users]);
 
   const handleUserClick = useCallback((userId: string) => {
-    // 处理用户点击
+    // Handle user click
   }, []);
 
   return (
@@ -406,13 +406,13 @@ function UserList({ users }: UserListProps) {
 }
 ```
 
-## 最佳实践和示例
+## Best Practices and Examples
 
-### 1. 组件设计原则
+### 1. Component Design Principles
 
 ```typescript
-// 1. 单一职责原则
-// ❌ 错误：组件职责过多
+// 1. Single Responsibility Principle
+// ❌ Wrong: Too many responsibilities
 function UserCard({ user, onEdit, onDelete, onShare }) {
   return (
     <div>
@@ -423,7 +423,7 @@ function UserCard({ user, onEdit, onDelete, onShare }) {
   );
 }
 
-// ✅ 正确：拆分为多个专注的组件
+// ✅ Correct: Split into focused components
 function UserCard({ user }) {
   return <UserInfo user={user} />;
 }
@@ -437,15 +437,15 @@ function UserActions({ user }) {
   );
 }
 
-// 2. 组合优于继承
-// ❌ 错误：使用继承
+// 2. Composition over Inheritance
+// ❌ Wrong: Using inheritance
 class SpecialButton extends Button {
   render() {
     return <button className="special">{this.props.children}</button>;
   }
 }
 
-// ✅ 正确：使用组合
+// ✅ Correct: Using composition
 function Button({ variant, children, ...props }) {
   return (
     <button className={`btn-${variant}`} {...props}>
@@ -455,13 +455,13 @@ function Button({ variant, children, ...props }) {
 }
 ```
 
-### 2. 状态管理最佳实践
+### 2. State Management Best Practices
 
 ```typescript
-// 1. 状态隔离
+// 1. State isolation
 @injectable()
 export class UserStore extends StoreInterface<UserState> {
-  // 将状态逻辑封装在 Store 中
+  // Encapsulate state logic in Store
   private async validateUser(user: User): Promise<boolean> {
     return this.validator.validate(user);
   }
@@ -473,7 +473,7 @@ export class UserStore extends StoreInterface<UserState> {
   }
 }
 
-// 2. 选择器模式
+// 2. Selector pattern
 @injectable()
 export class DashboardStore extends StoreInterface<DashboardState> {
   selector = {
@@ -486,10 +486,10 @@ export class DashboardStore extends StoreInterface<DashboardState> {
 }
 ```
 
-### 3. 性能优化示例
+### 3. Performance Optimization Examples
 
 ```typescript
-// 1. 虚拟列表
+// 1. Virtualized list
 function VirtualizedList({ items }: Props) {
   return (
     <VirtualScroller
@@ -507,7 +507,7 @@ function VirtualizedList({ items }: Props) {
   );
 }
 
-// 2. 懒加载组件
+// 2. Lazy loading components
 const LazyUserProfile = lazy(() => import('./UserProfile'));
 
 function App() {
@@ -519,26 +519,26 @@ function App() {
 }
 ```
 
-## 总结
+## Summary
 
-项目的组件和状态管理系统遵循以下原则：
+The project's component and state management system follows these principles:
 
-1. **组件设计**：
-   - 清晰的职责划分
-   - 可复用的组件接口
-   - 类型安全的属性定义
+1. **Component Design**:
+   - Clear responsibility separation
+   - Reusable component interfaces
+   - Type-safe property definitions
 
-2. **状态管理**：
-   - 集中的状态管理
-   - 响应式的状态更新
-   - 类型安全的状态定义
+2. **State Management**:
+   - Centralized state management
+   - Reactive state updates
+   - Type-safe state definitions
 
-3. **性能优化**：
-   - 组件级别的优化
-   - 状态更新的优化
-   - 资源加载的优化
+3. **Performance Optimization**:
+   - Component-level optimization
+   - State update optimization
+   - Resource loading optimization
 
-4. **最佳实践**：
-   - 单一职责原则
-   - 组合优于继承
-   - 状态隔离原则
+4. **Best Practices**:
+   - Single Responsibility Principle
+   - Composition over Inheritance
+   - State Isolation Principle

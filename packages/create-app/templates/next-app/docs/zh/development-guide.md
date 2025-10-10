@@ -51,6 +51,7 @@ src/
 客户端的启动流程由 `BootstrapClient` 类负责，主要包含以下步骤：
 
 1. **初始化 IOC 容器**
+
    ```typescript
    // 创建 IOC 容器实例
    const clientIOC = new ClientIOC();
@@ -60,6 +61,7 @@ src/
 2. **注册依赖**
    - 通过 `ClientIOCRegister` 注册全局依赖和服务
    - 主要包括三类注册：
+
      ```typescript
      // 1. 注册全局依赖
      registerGlobals(ioc: IOCContainerInterface) {
@@ -83,6 +85,7 @@ src/
      ```
 
 3. **启动应用**
+
    ```typescript
    export class BootstrapClient {
      static async main(args: BootstrapAppArgs) {
@@ -108,10 +111,10 @@ src/
    class BootstrapsRegistry {
      register(): BootstrapExecutorPlugin[] {
        return [
-         i18nService,                    // 国际化服务
-         new AppUserApiBootstrap(),      // 用户 API
-         printBootstrap,                 // 开发环境打印
-         IocIdentifierTest              // IOC 标识符测试
+         i18nService, // 国际化服务
+         new AppUserApiBootstrap(), // 用户 API
+         printBootstrap, // 开发环境打印
+         IocIdentifierTest // IOC 标识符测试
        ];
      }
    }
@@ -122,6 +125,7 @@ src/
 服务端的启动流程由 `BootstrapServer` 类负责，主要包含以下步骤：
 
 1. **初始化 IOC 容器**
+
    ```typescript
    export class ServerIOC {
      static create(): ServerIOC {
@@ -145,15 +149,19 @@ src/
 
 2. **注册服务端依赖**
    - 通过 `ServerIOCRegister` 注册服务端特有的依赖：
+
      ```typescript
      class ServerIOCRegister {
        // 1. 注册全局依赖
        registerGlobals(ioc: IOCContainerInterface) {
          ioc.bind(I.AppConfig, appConfig);
-         ioc.bind(I.Logger, new Logger({
-           handlers: new ConsoleHandler(new TimestampFormatter()),
-           level: appConfig.env === 'development' ? 'debug' : 'info'
-         }));
+         ioc.bind(
+           I.Logger,
+           new Logger({
+             handlers: new ConsoleHandler(new TimestampFormatter()),
+             level: appConfig.env === 'development' ? 'debug' : 'info'
+           })
+         );
        }
 
        // 2. 注册服务端实现
@@ -164,6 +172,7 @@ src/
      ```
 
 3. **服务器启动**
+
    ```typescript
    export class BootstrapServer implements ServerInterface {
      constructor() {
@@ -198,17 +207,19 @@ src/
 ### 3. IOC 容器使用
 
 #### 3.1 获取服务实例
+
 ```typescript
 // 在组件中使用
 function UserProfile() {
   const userService = IOC(UserService);
   const i18nService = IOC(I.I18nServiceInterface);
-  
+
   // 使用服务...
 }
 ```
 
 #### 3.2 注册新服务
+
 ```typescript
 // 1. 定义服务接口
 interface MyServiceInterface {

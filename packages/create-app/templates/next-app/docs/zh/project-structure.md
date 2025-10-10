@@ -20,6 +20,7 @@ next-app/
 ### 1. 客户端架构 (src/base)
 
 #### 1.1 接口层 (src/base/port)
+
 - `AdminLayoutInterface.ts` - 管理布局接口
 - `AdminPageInterface.ts` - 管理页面接口
 - `AppApiInterface.ts` - 应用API接口
@@ -31,6 +32,7 @@ next-app/
 - `UserServiceInterface.ts` - 用户服务接口
 
 #### 1.2 业务逻辑层 (src/base/cases)
+
 - 状态管理控制器
 - 对话框处理
 - 路由服务
@@ -38,6 +40,7 @@ next-app/
 - 加密服务
 
 #### 1.3 服务实现层 (src/base/services)
+
 - `AdminUserService.ts` - 管理用户服务
 - `I18nService.ts` - 国际化服务
 - `UserService.ts` - 用户服务
@@ -47,6 +50,7 @@ next-app/
 ### 2. 服务端架构 (src/server)
 
 #### 2.1 接口层 (src/server/port)
+
 - `CrentialTokenInterface.ts` - 凭证令牌接口
 - `DBBridgeInterface.ts` - 数据库桥接接口
 - `DBTableInterface.ts` - 数据表接口
@@ -58,22 +62,26 @@ next-app/
 - `ValidatorInterface.ts` - 验证器接口
 
 #### 2.2 核心实现
+
 - `AppErrorApi.ts` - API错误处理
 - `AppSuccessApi.ts` - API成功响应
 - `ServerAuth.ts` - 服务认证实现
 - `UserCredentialToken.ts` - 用户凭证令牌
 
 #### 2.3 服务层 (src/server/services)
+
 - `AdminAuthPlugin.ts` - 管理认证插件
 - `AIService.ts` - AI服务
 - `ApiUserService.ts` - API用户服务
 - `UserService.ts` - 用户服务
 
 #### 2.4 数据访问层
+
 - `repositorys/UserRepository.ts` - 用户数据仓库
 - `sqlBridges/SupabaseBridge.ts` - Supabase数据库桥接
 
 #### 2.5 验证器 (src/server/validators)
+
 - `LoginValidator.ts` - 登录验证
 - `PaginationValidator.ts` - 分页验证
 
@@ -105,6 +113,7 @@ api/
 ### 5. UI组件库 (src/uikit)
 
 #### 5.1 组件 (components)
+
 - `AdminLayout.tsx` - 管理布局
 - `BaseHeader.tsx` - 基础头部
 - `BaseLayout.tsx` - 基础布局
@@ -114,6 +123,7 @@ api/
 - 其他通用组件
 
 #### 5.2 Hooks和Context
+
 - `useI18nInterface.ts` - 国际化Hook
 - `useIOC.ts` - IOC容器Hook
 - `useStore.ts` - 状态管理Hook

@@ -1,64 +1,64 @@
-# API 开发指南
+# API Development Guide
 
-## 目录
+## Table of Contents
 
-1. [API 架构概述](#api-架构概述)
-2. [客户端 API 实现](#客户端-api-实现)
-3. [服务端 API 实现](#服务端-api-实现)
-4. [错误处理和验证](#错误处理和验证)
-5. [最佳实践和示例](#最佳实践和示例)
+1. [API Architecture Overview](#api-architecture-overview)
+2. [Client-Side API Implementation](#client-side-api-implementation)
+3. [Server-Side API Implementation](#server-side-api-implementation)
+4. [Error Handling and Validation](#error-handling-and-validation)
+5. [Best Practices and Examples](#best-practices-and-examples)
 
-## API 架构概述
+## API Architecture Overview
 
-### 1. 整体架构
+### 1. Overall Architecture
 
-项目采用分层的 API 架构设计：
+The project adopts a layered API architecture design:
 
 ```
-客户端层                     服务端层
+Client Layer                Server Layer
 ┌──────────────┐           ┌──────────────┐
-│   API 接口   │           │   API 路由   │
+│  API Interface│           │  API Routes  │
 ├──────────────┤           ├──────────────┤
-│  API 服务类  │   HTTP    │  服务层实现  │
-├──────────────┤   请求    ├──────────────┤
-│ API Requester│ ◄──────► │   验证层    │
+│ API Services │   HTTP    │  Service     │
+├──────────────┤ Requests  ├──────────────┤
+│API Requester │ ◄──────► │ Validation   │
 ├──────────────┤           ├──────────────┤
-│  插件系统   │           │   数据层    │
+│Plugin System │           │  Data Layer  │
 └──────────────┘           └──────────────┘
 ```
 
-### 2. 核心组件
+### 2. Core Components
 
-- **接口定义**：`AppApiInterface`, `AppUserApiInterface` 等
-- **请求客户端**：`AppApiRequester`, `AdminApiRequester`
-- **服务实现**：`AppUserApi`, `AdminUserApi` 等
-- **插件系统**：`AppApiPlugin`, `RequestEncryptPlugin` 等
+- **Interface Definitions**: `AppApiInterface`, `AppUserApiInterface`, etc.
+- **Request Clients**: `AppApiRequester`, `AdminApiRequester`
+- **Service Implementations**: `AppUserApi`, `AdminUserApi`, etc.
+- **Plugin System**: `AppApiPlugin`, `RequestEncryptPlugin`, etc.
 
-### 3. 统一响应格式
+### 3. Unified Response Format
 
 ```typescript
-// 成功响应
+// Success response
 interface AppApiSuccessInterface<T = unknown> {
   success: true;
   data?: T;
 }
 
-// 错误响应
+// Error response
 interface AppApiErrorInterface {
   success: false;
   id: string;
   message?: string;
 }
 
-// 统一响应类型
+// Unified response type
 type AppApiResult<T = unknown> =
   | AppApiSuccessInterface<T>
   | AppApiErrorInterface;
 ```
 
-## 客户端 API 实现
+## Client-Side API Implementation
 
-### 1. API 请求器
+### 1. API Requester
 
 ```typescript
 @injectable()
@@ -76,7 +76,7 @@ export class AppApiRequester extends RequestTransaction<AppApiConfig> {
 }
 ```
 
-### 2. API 服务实现
+### 2. API Service Implementation
 
 ```typescript
 @injectable()
@@ -91,7 +91,7 @@ export class AppUserApi implements AppUserApiInterface {
       url: '/user/login',
       method: 'POST',
       data: params,
-      encryptProps: 'password' // 自动加密密码字段
+      encryptProps: 'password' // Automatically encrypt password field
     });
 
     return response.data;
@@ -99,14 +99,14 @@ export class AppUserApi implements AppUserApiInterface {
 }
 ```
 
-### 3. API 插件系统
+### 3. API Plugin System
 
 ```typescript
 export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
   onBefore({ parameters: { ioc } }: BootstrapContext): void {
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
 
-    // 注册插件
+    // Register plugins
     appUserApi.usePlugin(new FetchURLPlugin());
     appUserApi.usePlugin(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
     appUserApi.usePlugin(
@@ -120,9 +120,9 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
 }
 ```
 
-## 服务端 API 实现
+## Server-Side API Implementation
 
-### 1. API 路由处理
+### 1. API Route Handling
 
 ```typescript
 // app/api/admin/users/route.ts
@@ -130,15 +130,15 @@ export async function GET(req: NextRequest) {
   const server = new BootstrapServer();
 
   const result = await server
-    .use(new AdminAuthPlugin()) // 使用认证插件
+    .use(new AdminAuthPlugin()) // Use authentication plugin
     .execNoError(async ({ parameters: { IOC } }) => {
-      // 1. 参数验证
+      // 1. Parameter validation
       const searchParams = Object.fromEntries(
         req.nextUrl.searchParams.entries()
       );
       const paginationParams = IOC(PaginationValidator).getThrow(searchParams);
 
-      // 2. 调用服务
+      // 2. Call service
       const apiUserService = IOC(ApiUserService);
       const result = await apiUserService.getUsers({
         page: paginationParams.page,
@@ -148,19 +148,19 @@ export async function GET(req: NextRequest) {
       return result;
     });
 
-  // 3. 错误处理
+  // 3. Error handling
   if (result instanceof ExecutorError) {
     return NextResponse.json(new AppErrorApi(result.id, result.message), {
       status: 400
     });
   }
 
-  // 4. 成功响应
+  // 4. Success response
   return NextResponse.json(new AppSuccessApi(result));
 }
 ```
 
-### 2. 服务层实现
+### 2. Service Layer Implementation
 
 ```typescript
 @injectable()
@@ -176,7 +176,7 @@ export class ApiUserService {
 }
 ```
 
-### 3. 认证和中间件
+### 3. Authentication and Middleware
 
 ```typescript
 export class AdminAuthPlugin implements BootstrapExecutorPlugin {
@@ -184,15 +184,15 @@ export class AdminAuthPlugin implements BootstrapExecutorPlugin {
     const { IOC } = context.parameters;
     const serverAuth = IOC(ServerAuth);
 
-    // 验证管理员权限
+    // Verify admin permissions
     await serverAuth.verifyAdmin();
   }
 }
 ```
 
-## 错误处理和验证
+## Error Handling and Validation
 
-### 1. 错误响应
+### 1. Error Response
 
 ```typescript
 export class AppErrorApi implements AppApiErrorInterface {
@@ -211,13 +211,13 @@ export class AppSuccessApi<T = unknown> implements AppApiSuccessInterface<T> {
 }
 ```
 
-### 2. 参数验证
+### 2. Parameter Validation
 
 ```typescript
 @injectable()
 export class PaginationValidator implements ValidatorInterface {
   validate(data: unknown): ValidationResult {
-    // 实现验证逻辑
+    // Implement validation logic
     const errors: ValidationError[] = [];
 
     if (!this.isValidPageNumber(data.page)) {
@@ -240,18 +240,18 @@ export class PaginationValidator implements ValidatorInterface {
 }
 ```
 
-## 最佳实践和示例
+## Best Practices and Examples
 
-### 1. API 接口定义
+### 1. API Interface Definition
 
 ```typescript
-// 1. 定义接口
+// 1. Define interface
 interface UserApiInterface {
   login(params: LoginParams): Promise<AppApiResult<LoginResult>>;
   logout(): Promise<AppApiResult<void>>;
 }
 
-// 2. 实现接口
+// 2. Implement interface
 @injectable()
 class UserApi implements UserApiInterface {
   constructor(
@@ -260,46 +260,46 @@ class UserApi implements UserApiInterface {
   ) {}
 
   async login(params: LoginParams): Promise<AppApiResult<LoginResult>> {
-    // 实现登录逻辑
+    // Implement login logic
   }
 
   async logout(): Promise<AppApiResult<void>> {
-    // 实现登出逻辑
+    // Implement logout logic
   }
 }
 ```
 
-### 2. 错误处理最佳实践
+### 2. Error Handling Best Practices
 
 ```typescript
-// 1. 使用统一的错误处理
+// 1. Use unified error handling
 try {
   const result = await userApi.login(params);
   if (!result.success) {
-    // 处理业务错误
+    // Handle business error
     handleBusinessError(result);
     return;
   }
-  // 处理成功响应
+  // Handle success response
   handleSuccess(result.data);
 } catch (error) {
-  // 处理网络错误等
+  // Handle network errors etc.
   handleNetworkError(error);
 }
 
-// 2. 使用错误插件
+// 2. Use error plugin
 class DialogErrorPlugin implements ExecutorPlugin {
   onError(error: Error, context: ExecutorContext): void {
-    // 显示错误对话框
+    // Show error dialog
     this.dialogHandler.showError({
-      title: '错误',
+      title: 'Error',
       content: error.message
     });
   }
 }
 ```
 
-### 3. API 测试示例
+### 3. API Testing Example
 
 ```typescript
 describe('UserApi', () => {
@@ -339,49 +339,49 @@ describe('UserApi', () => {
 });
 ```
 
-### 4. API 文档生成
+### 4. API Documentation Generation
 
-使用 TypeScript 类型和注释来生成 API 文档：
+Use TypeScript types and comments to generate API documentation:
 
 ```typescript
 /**
- * 用户登录 API
- * @param params - 登录参数
- * @param params.email - 用户邮箱
- * @param params.password - 用户密码（将自动加密）
- * @returns 登录结果，包含用户令牌
- * @throws {ValidationError} 当参数验证失败时
- * @throws {AuthError} 当认证失败时
+ * User login API
+ * @param params - Login parameters
+ * @param params.email - User email
+ * @param params.password - User password (will be automatically encrypted)
+ * @returns Login result containing user token
+ * @throws {ValidationError} When parameter validation fails
+ * @throws {AuthError} When authentication fails
  */
 async login(params: LoginParams): Promise<AppApiResult<LoginResult>>;
 ```
 
-## 总结
+## Summary
 
-项目的 API 设计遵循以下原则：
+The project's API design follows these principles:
 
-1. **分层架构**：
-   - 清晰的接口定义
-   - 服务层实现业务逻辑
-   - 统一的请求处理
-   - 插件化的功能扩展
+1. **Layered Architecture**:
+   - Clear interface definitions
+   - Service layer implements business logic
+   - Unified request handling
+   - Plugin-based feature extension
 
-2. **类型安全**：
-   - 完整的 TypeScript 类型定义
-   - 运行时参数验证
-   - 编译时类型检查
+2. **Type Safety**:
+   - Complete TypeScript type definitions
+   - Runtime parameter validation
+   - Compile-time type checking
 
-3. **错误处理**：
-   - 统一的错误响应格式
-   - 插件化的错误处理
-   - 完整的错误追踪
+3. **Error Handling**:
+   - Unified error response format
+   - Plugin-based error handling
+   - Complete error tracking
 
-4. **可扩展性**：
-   - 插件系统支持功能扩展
-   - 依赖注入实现松耦合
-   - 中间件支持横切关注点
+4. **Extensibility**:
+   - Plugin system supports feature extension
+   - Dependency injection achieves loose coupling
+   - Middleware supports cross-cutting concerns
 
-5. **安全性**：
-   - 自动的参数加密
-   - 统一的认证机制
-   - 参数验证和清洗
+5. **Security**:
+   - Automatic parameter encryption
+   - Unified authentication mechanism
+   - Parameter validation and sanitization

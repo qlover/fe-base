@@ -1,157 +1,157 @@
-# Next.js 环境变量配置指南
+# Next.js Environment Variable Configuration Guide
 
-## 什么是环境变量？
+## What are Environment Variables?
 
-环境变量是一种在不同环境（开发、测试、生产）中配置应用行为的方式。在 Next.js 中，环境变量的使用有其特殊性，尤其是在客户端和服务端的处理上。
+Environment variables are a way to configure application behavior across different environments (development, testing, production). In Next.js, environment variables have special characteristics, particularly in how they are handled on the client and server sides.
 
-**关键特点**：
+**Key Features**:
 
-- 客户端环境变量必须以 `NEXT_PUBLIC_` 开头
-- 服务端环境变量可以直接使用，无需特殊前缀
-- 支持多环境配置和本地覆盖
+- Client-side environment variables must start with `NEXT_PUBLIC_`
+- Server-side environment variables can be used directly without special prefix
+- Supports multi-environment configuration and local overrides
 
-## 环境变量加载优先级
+## Environment Variable Loading Priority
 
-Next.js 按照以下优先级加载环境变量：
+Next.js loads environment variables in the following priority order:
 
 ```
 .env.local → .env.development/.env.production → .env
 ```
 
-## 文件结构
+## File Structure
 
 ```
-项目根目录/
-├── .env                    # 默认环境变量
-├── .env.local             # 本地环境变量（git ignored）
-├── .env.development       # 开发环境变量
-├── .env.production        # 生产环境变量
-├── .env.test              # 测试环境变量
+project-root/
+├── .env                    # Default environment variables
+├── .env.local             # Local environment variables (git ignored)
+├── .env.development       # Development environment variables
+├── .env.production        # Production environment variables
+├── .env.test              # Test environment variables
 └── src/
     └── base/
         └── cases/
-            └── AppConfig.ts # 应用配置类
+            └── AppConfig.ts # Application configuration class
 ```
 
-## 环境变量文件
+## Environment Variable Files
 
-### 1. 环境变量文件示例
+### 1. Environment Variable File Examples
 
 ```bash
-# .env (默认配置)
-# 客户端可访问的环境变量（以 NEXT_PUBLIC_ 开头）
+# .env (default configuration)
+# Client-accessible environment variables (starting with NEXT_PUBLIC_)
 NEXT_PUBLIC_APP_NAME=MyApp
 NEXT_PUBLIC_API_BASE_URL=http://api.example.com
 NEXT_PUBLIC_ENABLE_ANALYTICS=false
 
-# 仅服务端可访问的环境变量
+# Server-side only environment variables
 DATABASE_URL=postgres://user:pass@localhost:5432/db
 JWT_SECRET=your-secret-key
 API_TOKEN=server-side-token
 
-# .env.development (开发环境)
+# .env.development (development environment)
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
 NEXT_PUBLIC_DEBUG=true
 DATABASE_URL=postgres://dev:pass@localhost:5432/dev_db
 
-# .env.production (生产环境)
+# .env.production (production environment)
 NEXT_PUBLIC_API_BASE_URL=https://api.production.com
 NEXT_PUBLIC_DEBUG=false
 DATABASE_URL=postgres://prod:pass@production:5432/prod_db
 
-# .env.local (本地覆盖，不提交到 git)
+# .env.local (local override, not committed to git)
 NEXT_PUBLIC_FEATURE_FLAG=true
 DATABASE_URL=postgres://local:pass@localhost:5432/local_db
 ```
 
-### 2. 环境变量使用规范
+### 2. Environment Variable Usage Guidelines
 
-#### 客户端环境变量
+#### Client-Side Environment Variables
 
-- 必须以 `NEXT_PUBLIC_` 开头
-- 会被打包到客户端代码中
-- 适用于公开的配置信息
+- Must start with `NEXT_PUBLIC_`
+- Will be bundled into client-side code
+- Suitable for public configuration information
 
 ```bash
-# ✅ 正确的客户端环境变量
+# ✅ Correct client-side environment variables
 NEXT_PUBLIC_API_URL=https://api.example.com
 NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=UA-XXXXX
 NEXT_PUBLIC_FEATURE_FLAGS={"newUI":true}
 
-# ❌ 错误的客户端环境变量（没有 NEXT_PUBLIC_ 前缀）
-API_URL=https://api.example.com  # 客户端无法访问
+# ❌ Incorrect client-side environment variables (missing NEXT_PUBLIC_ prefix)
+API_URL=https://api.example.com  # Client cannot access
 ```
 
-#### 服务端环境变量
+#### Server-Side Environment Variables
 
-- 无需特殊前缀
-- 只在服务端可用
-- 适用于敏感信息
+- No special prefix needed
+- Only available on server-side
+- Suitable for sensitive information
 
 ```bash
-# ✅ 正确的服务端环境变量
+# ✅ Correct server-side environment variables
 DATABASE_URL=postgres://user:pass@localhost:5432/db
 JWT_SECRET=your-secret-key
 API_TOKEN=your-api-token
 
-# ❌ 不应该以 NEXT_PUBLIC_ 开头的服务端敏感信息
-NEXT_PUBLIC_DATABASE_URL=postgres://user:pass@localhost:5432/db  # 安全风险！
+# ❌ Server-side sensitive information should not start with NEXT_PUBLIC_
+NEXT_PUBLIC_DATABASE_URL=postgres://user:pass@localhost:5432/db  # Security risk!
 ```
 
-## 项目中的实现
+## Implementation in Project
 
-### 1. 应用配置类
+### 1. Application Configuration Class
 
 ```typescript
 // src/base/cases/AppConfig.ts
 export class AppConfig implements EnvConfigInterface {
   /**
-   * 应用名称
-   * @description 从 NEXT_PUBLIC_APP_NAME 环境变量获取
+   * Application name
+   * @description Retrieved from NEXT_PUBLIC_APP_NAME environment variable
    */
   readonly appName = process.env.NEXT_PUBLIC_APP_NAME || '';
 
   /**
-   * API 基础 URL
-   * @description 从 NEXT_PUBLIC_API_BASE_URL 环境变量获取
+   * API base URL
+   * @description Retrieved from NEXT_PUBLIC_API_BASE_URL environment variable
    */
   readonly apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
   /**
-   * 是否为开发环境
+   * Whether in development environment
    */
   readonly isDevelopment = process.env.NODE_ENV === 'development';
 
   /**
-   * 是否为生产环境
+   * Whether in production environment
    */
   readonly isProduction = process.env.NODE_ENV === 'production';
 
   /**
-   * 数据库连接 URL（仅服务端可用）
+   * Database connection URL (server-side only)
    */
   readonly databaseUrl = process.env.DATABASE_URL;
 
   /**
-   * JWT 密钥（仅服务端可用）
+   * JWT secret (server-side only)
    */
   readonly jwtSecret = process.env.JWT_SECRET;
 
-  // ... 更多配置项
+  // ... more configuration items
 }
 ```
 
-### 2. 在客户端使用配置
+### 2. Using Configuration in Client
 
 ```typescript
-// 在组件中使用
+// Using in components
 function Analytics() {
-  // ✅ 正确：通过 IOC 获取配置对象
+  // ✅ Correct: Get configuration object through IOC
   const appConfig = IOC(IOCIdentifier.AppConfig);
 
   useEffect(() => {
     if (appConfig.analyticsId) {
-      // 初始化 analytics
+      // Initialize analytics
     }
   }, [appConfig.analyticsId]);
 
@@ -159,14 +159,14 @@ function Analytics() {
 }
 ```
 
-### 3. 在服务端使用配置
+### 3. Using Configuration in Server
 
 ```typescript
 // app/api/auth/[...nextauth]/route.ts
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // ✅ 正确：通过 IOC 获取配置对象
+  // ✅ Correct: Get configuration object through IOC
   const appConfig = IOC(IOCIdentifier.AppConfig);
 
   if (!appConfig.databaseUrl || !appConfig.jwtSecret) {
@@ -176,14 +176,14 @@ export async function GET() {
     );
   }
 
-  // 使用配置...
+  // Use configuration...
 }
 ```
 
-### 4. 在服务中使用配置
+### 4. Using Configuration in Services
 
 ```typescript
-// 定义服务类
+// Define service class
 @injectable()
 export class AdminService {
   constructor(
@@ -202,90 +202,90 @@ export class AdminService {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 环境变量命名规范
+### 1. Environment Variable Naming Conventions
 
 ```bash
-# ✅ 好的命名
+# ✅ Good naming
 NEXT_PUBLIC_APP_NAME=MyApp
 NEXT_PUBLIC_API_URL=https://api.example.com
 NEXT_PUBLIC_FEATURE_FLAGS={"darkMode":true}
 
-# ❌ 不好的命名
-next_public_app_name=MyApp      # 应该使用大写
-NEXT_PUBLIC_SECRET_KEY=xxx      # 敏感信息不应该用 NEXT_PUBLIC_
+# ❌ Bad naming
+next_public_app_name=MyApp      # Should use uppercase
+NEXT_PUBLIC_SECRET_KEY=xxx      # Sensitive info shouldn't use NEXT_PUBLIC_
 ```
 
-### 2. 配置类实现
+### 2. Configuration Class Implementation
 
 ```typescript
-// 定义配置接口
+// Define configuration interface
 interface EnvConfigInterface {
   readonly env: string;
   readonly appName: string;
   readonly appVersion: string;
-  // ... 其他配置项
+  // ... other configuration items
 }
 
-// 实现配置类
+// Implement configuration class
 @injectable()
 export class AppConfig implements EnvConfigInterface {
   /**
-   * 当前环境模式
-   * @description 基于当前使用的 .env 文件自动设置
+   * Current environment mode
+   * @description Automatically set based on current .env file
    */
   readonly env: string = process.env.APP_ENV!;
 
   /**
-   * 应用名称
+   * Application name
    */
   readonly appName: string = name;
 
   /**
-   * 应用版本
+   * Application version
    */
   readonly appVersion: string = version;
 
   /**
-   * 用户令牌存储键
+   * User token storage key
    */
   readonly userTokenKey: string = '_user_token';
 
   /**
-   * 数据库连接 URL（仅服务端）
+   * Database connection URL (server-side only)
    */
   readonly supabaseUrl: string = process.env.SUPABASE_URL!;
 
   /**
-   * 数据库匿名密钥（仅服务端）
+   * Database anonymous key (server-side only)
    */
   readonly supabaseAnonKey: string = process.env.SUPABASE_ANON_KEY!;
 
   /**
-   * JWT 密钥（仅服务端）
+   * JWT secret (server-side only)
    */
   readonly jwtSecret: string = process.env.JWT_SECRET!;
 
   /**
-   * JWT 过期时间
+   * JWT expiration time
    * @example '30 days'
    * @example '1 year'
    */
   readonly jwtExpiresIn: StringValue = '30 days';
 
   /**
-   * OpenAI API 配置（仅服务端）
+   * OpenAI API configuration (server-side only)
    */
   readonly openaiBaseUrl: string = process.env.CEREBRAS_BASE_URL!;
   readonly openaiApiKey: string = process.env.CEREBRAS_API_KEY!;
 }
 ```
 
-### 3. 配置验证
+### 3. Configuration Validation
 
 ```typescript
-// 定义配置验证器
+// Define configuration validator
 @injectable()
 export class ConfigValidator {
   constructor(
@@ -296,21 +296,21 @@ export class ConfigValidator {
   ) {}
 
   /**
-   * 验证所有必需的配置项
-   * @throws {Error} 当必需的配置项缺失时抛出错误
+   * Validate all required configuration items
+   * @throws {Error} When required configuration items are missing
    */
   validateRequiredConfig(): void {
-    // 验证基础配置
+    // Validate basic configuration
     this.validateBasicConfig();
 
-    // 根据运行环境验证不同的配置
+    // Validate different configurations based on runtime environment
     if (typeof window === 'undefined') {
       this.validateServerConfig();
     }
   }
 
   /**
-   * 验证基础配置项
+   * Validate basic configuration items
    */
   private validateBasicConfig(): void {
     const requiredConfigs: Array<keyof AppConfig> = [
@@ -328,7 +328,7 @@ export class ConfigValidator {
   }
 
   /**
-   * 验证服务端配置项
+   * Validate server-side configuration items
    */
   private validateServerConfig(): void {
     const requiredServerConfigs: Array<keyof AppConfig> = [
@@ -347,15 +347,15 @@ export class ConfigValidator {
   }
 
   /**
-   * 验证配置值的格式
+   * Validate configuration value formats
    */
   validateConfigFormat(): void {
-    // 验证 URL 格式
+    // Validate URL format
     if (!this.isValidUrl(this.appConfig.supabaseUrl)) {
       throw new Error('Invalid supabaseUrl format');
     }
 
-    // 验证 JWT 过期时间格式
+    // Validate JWT expiration time format
     if (!this.isValidDuration(this.appConfig.jwtExpiresIn)) {
       throw new Error('Invalid jwtExpiresIn format');
     }
@@ -373,29 +373,29 @@ export class ConfigValidator {
   }
 
   private isValidDuration(duration: string): boolean {
-    // 实现持续时间格式验证逻辑
+    // Implement duration format validation logic
     return /^\d+\s+(days?|weeks?|months?|years?)$/.test(duration);
   }
 }
 ```
 
-### 4. 敏感信息处理
+### 4. Handling Sensitive Information
 
 ```bash
-# .env.local (不提交到 git)
+# .env.local (not committed to git)
 DATABASE_URL=postgres://user:pass@localhost:5432/db
 JWT_SECRET=your-secret-key
 API_TOKEN=your-api-token
 
-# .env.template (提交到 git，作为模板)
+# .env.template (committed to git, as template)
 DATABASE_URL=postgres://user:password@localhost:5432/dbname
 JWT_SECRET=your-jwt-secret-here
 API_TOKEN=your-api-token-here
 ```
 
-## 调试和故障排除
+## Debugging and Troubleshooting
 
-### 1. 配置调试工具
+### 1. Configuration Debug Tool
 
 ```typescript
 @injectable()
@@ -408,19 +408,19 @@ export class ConfigDebugger {
   ) {}
 
   /**
-   * 打印配置信息
+   * Print configuration information
    */
   logConfig(): void {
     this.logger.group('Configuration Debug Info');
 
-    // 基础配置
+    // Basic configuration
     this.logger.info('Basic Config:', {
       env: this.appConfig.env,
       appName: this.appConfig.appName,
       appVersion: this.appConfig.appVersion
     });
 
-    // 如果在服务端，打印服务端配置
+    // If on server-side, print server configuration
     if (typeof window === 'undefined') {
       this.logger.info('Server Config:', {
         supabaseUrl: this.maskSensitiveInfo(this.appConfig.supabaseUrl),
@@ -432,16 +432,16 @@ export class ConfigDebugger {
   }
 
   /**
-   * 验证配置健康状态
+   * Validate configuration health status
    */
   async checkConfigHealth(): Promise<void> {
     try {
-      // 验证数据库连接
+      // Validate database connection
       if (typeof window === 'undefined') {
         await this.checkDatabaseConnection();
       }
 
-      // 验证其他配置项
+      // Validate other configuration items
       this.validateConfigValues();
 
       this.logger.info('Configuration health check passed');
@@ -452,11 +452,11 @@ export class ConfigDebugger {
   }
 
   private async checkDatabaseConnection(): Promise<void> {
-    // 实现数据库连接检查逻辑
+    // Implement database connection check logic
   }
 
   private validateConfigValues(): void {
-    // 实现配置值验证逻辑
+    // Implement configuration value validation logic
   }
 
   private maskSensitiveInfo(value: string): string {
@@ -465,17 +465,17 @@ export class ConfigDebugger {
 }
 ```
 
-### 2. 常见问题处理
+### 2. Common Issues Handling
 
-**问题 1：配置未正确注入**
+**Issue 1: Configuration Not Properly Injected**
 
 ```typescript
-// ❌ 错误：直接使用环境变量
+// ❌ Wrong: Using environment variables directly
 class UserService {
   private apiUrl = process.env.NEXT_PUBLIC_API_URL;
 }
 
-// ✅ 正确：通过配置类获取
+// ✅ Correct: Get through configuration class
 @injectable()
 class UserService {
   constructor(
@@ -485,10 +485,10 @@ class UserService {
 }
 ```
 
-**问题 2：配置验证失败**
+**Issue 2: Configuration Validation Failed**
 
 ```typescript
-// ❌ 错误：没有配置验证
+// ❌ Wrong: No configuration validation
 @injectable()
 class ApiService {
   constructor(
@@ -497,7 +497,7 @@ class ApiService {
   ) {}
 }
 
-// ✅ 正确：包含配置验证
+// ✅ Correct: Include configuration validation
 @injectable()
 class ApiService {
   constructor(
@@ -511,15 +511,15 @@ class ApiService {
 }
 ```
 
-**问题 3：配置类型处理**
+**Issue 3: Configuration Type Handling**
 
 ```typescript
-// ❌ 错误：手动类型转换
+// ❌ Wrong: Manual type conversion
 class FeatureService {
   private isDebug = process.env.NEXT_PUBLIC_DEBUG === 'true';
 }
 
-// ✅ 正确：在配置类中处理类型转换
+// ✅ Correct: Handle type conversion in configuration class
 @injectable()
 export class AppConfig implements EnvConfigInterface {
   readonly debug: boolean = this.parseBoolean(process.env.NEXT_PUBLIC_DEBUG);
@@ -530,34 +530,34 @@ export class AppConfig implements EnvConfigInterface {
 }
 ```
 
-## 总结
+## Summary
 
-面向对象的配置管理系统提供了：
+The object-oriented configuration management system provides:
 
-1. **配置封装**：
-   - 通过 `AppConfig` 类统一管理所有配置
-   - 实现 `EnvConfigInterface` 接口确保配置完整性
-   - 使用依赖注入实现配置的解耦
+1. **Configuration Encapsulation**:
+   - Unified management of all configurations through `AppConfig` class
+   - Implement `EnvConfigInterface` interface to ensure configuration completeness
+   - Use dependency injection to achieve configuration decoupling
 
-2. **类型安全**：
-   - 配置类中处理类型转换
-   - TypeScript 接口定义确保类型正确
-   - 编译时类型检查
+2. **Type Safety**:
+   - Handle type conversion in configuration class
+   - TypeScript interface definitions ensure type correctness
+   - Compile-time type checking
 
-3. **配置验证**：
-   - 专门的 `ConfigValidator` 类处理配置验证
-   - 运行时配置完整性检查
-   - 配置格式验证
+3. **Configuration Validation**:
+   - Dedicated `ConfigValidator` class handles configuration validation
+   - Runtime configuration completeness check
+   - Configuration format validation
 
-4. **最佳实践**：
-   - 依赖注入管理配置依赖
-   - 配置验证和调试工具
-   - 敏感信息保护
-   - 类型安全处理
+4. **Best Practices**:
+   - Dependency injection for configuration management
+   - Configuration validation and debugging tools
+   - Sensitive information protection
+   - Type-safe handling
 
-通过面向对象的方式管理配置，我们可以：
+Through object-oriented configuration management, we can:
 
-- 提高代码的可维护性和可测试性
-- 确保配置的类型安全和完整性
-- 方便地进行配置验证和调试
-- 更好地管理配置依赖关系
+- Improve code maintainability and testability
+- Ensure configuration type safety and completeness
+- Easily perform configuration validation and debugging
+- Better manage configuration dependencies

@@ -41,12 +41,14 @@ pnpm build
 ### 1. 客户端架构
 
 #### 接口定义 (src/base/port)
+
 - AppUserApiInterface: 用户API接口
 - AdminPageInterface: 管理页面接口
 - AsyncStateInterface: 异步状态接口
 - RouterInterface: 路由管理接口
 
 #### 核心实现
+
 - 控制器层：状态和业务逻辑管理
 - 服务层：API调用和数据处理
 - UI组件：可复用的展示组件
@@ -54,12 +56,14 @@ pnpm build
 ### 2. 服务端架构
 
 #### 接口定义 (src/server/port)
+
 - ServerAuthInterface: 认证接口
 - DBBridgeInterface: 数据库操作接口
 - UserRepositoryInterface: 用户仓库接口
 - ValidatorInterface: 数据验证接口
 
 #### 核心实现
+
 - API路由层：请求处理和响应
 - 服务层：业务逻辑实现
 - 数据访问层：仓库和数据库交互
@@ -84,16 +88,19 @@ pnpm build
 ### 3. 最佳实践
 
 #### 接口优先开发
+
 - 先定义接口，再实现具体类
 - 保持接口的单一职责
 - 使用依赖注入管理依赖
 
 #### 分层原则
+
 - 保持层级间的清晰边界
 - 通过接口进行层级间通信
 - 避免跨层级直接调用
 
 #### 状态管理
+
 - 使用控制器管理复杂状态
 - 保持状态的不可变性
 - 统一的状态更新流程
@@ -101,21 +108,25 @@ pnpm build
 ## 核心功能文档
 
 ### 基础架构
+
 - [项目结构说明](./project-structure.md)
 - [开发规范指南](./development-guide.md)
 - [环境配置指南](./env.md)
 
 ### 服务端开发
+
 - [API开发指南](./api.md)
 - [认证授权](./auth.md)
 - [数据访问层](./database.md)
 - [验证器开发](./validator.md)
 
 ### 客户端开发
+
 - [页面开发指南](./page.md)
 - [组件开发](./component.md)
 
 ### 功能模块
+
 - [国际化开发](./i18n.md)
 - [主题系统](./theme.md)
 - [路由管理](./router.md)

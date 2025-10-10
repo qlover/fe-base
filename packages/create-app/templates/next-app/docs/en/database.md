@@ -1,42 +1,42 @@
-# 数据库开发指南
+# Database Development Guide
 
-## 目录
+## Table of Contents
 
-1. [数据库架构概述](#数据库架构概述)
-2. [Supabase 实现](#supabase-实现)
-3. [数据库接口和抽象层](#数据库接口和抽象层)
-4. [仓库模式实现](#仓库模式实现)
-5. [MongoDB 实现示例](#mongodb-实现示例)
-6. [最佳实践和示例](#最佳实践和示例)
+1. [Database Architecture Overview](#database-architecture-overview)
+2. [Supabase Implementation](#supabase-implementation)
+3. [Database Interfaces and Abstraction Layer](#database-interfaces-and-abstraction-layer)
+4. [Repository Pattern Implementation](#repository-pattern-implementation)
+5. [MongoDB Implementation Example](#mongodb-implementation-example)
+6. [Best Practices and Examples](#best-practices-and-examples)
 
-## 数据库架构概述
+## Database Architecture Overview
 
-### 1. 整体架构
+### 1. Overall Architecture
 
-项目采用分层的数据库架构设计：
+The project adopts a layered database architecture design:
 
 ```
-应用层                      数据访问层
+Application Layer           Data Access Layer
 ┌──────────────┐          ┌──────────────┐
-│   业务服务   │          │  数据库接口  │
+│Business Service│          │   DB Interface│
 ├──────────────┤          ├──────────────┤
-│   仓库接口   │          │ 数据库桥接器 │
+│Repo Interface │          │   DB Bridge   │
 ├──────────────┤    ◄─────┤              │
-│   仓库实现   │          │  具体实现    │
+│Repo Implement │          │Implementation │
 └──────────────┘          └──────────────┘
 ```
 
-### 2. 核心组件
+### 2. Core Components
 
-- **数据库接口**：`DBBridgeInterface`
-- **数据库实现**：`SupabaseBridge`, `MongoDBBridge` 等
-- **仓库接口**：`UserRepositoryInterface` 等
-- **仓库实现**：`UserRepository` 等
+- **Database Interface**: `DBBridgeInterface`
+- **Database Implementation**: `SupabaseBridge`, `MongoDBBridge`, etc.
+- **Repository Interface**: `UserRepositoryInterface`, etc.
+- **Repository Implementation**: `UserRepository`, etc.
 
-### 3. 数据模型
+### 3. Data Models
 
 ```typescript
-// 用户模型示例
+// User model example
 interface UserSchema {
   id: number;
   email: string;
@@ -48,9 +48,9 @@ interface UserSchema {
 }
 ```
 
-## Supabase 实现
+## Supabase Implementation
 
-### 1. 数据库桥接器
+### 1. Database Bridge
 
 ```typescript
 @injectable()
@@ -61,14 +61,14 @@ export class SupabaseBridge implements DBBridgeInterface {
     @inject(I.AppConfig) appConfig: AppConfig,
     @inject(I.Logger) protected logger: LoggerInterface
   ) {
-    // 初始化 Supabase 客户端
+    // Initialize Supabase client
     this.supabase = createClient(
       appConfig.supabaseUrl,
       appConfig.supabaseAnonKey
     );
   }
 
-  // 查询实现
+  // Query implementation
   async get(event: BridgeEvent): Promise<SupabaseBridgeResponse<unknown>> {
     const { table, fields = '*', where } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
@@ -79,7 +79,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  // 分页查询实现
+  // Pagination query implementation
   async pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>> {
     const { table, fields = '*', where, page = 1, pageSize = 10 } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
@@ -94,7 +94,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  // WHERE 条件处理
+  // WHERE condition handling
   protected handleWhere(
     handler: PostgrestFilterBuilder<any, any, any>,
     where: Where[]
@@ -109,37 +109,37 @@ export class SupabaseBridge implements DBBridgeInterface {
 }
 ```
 
-### 2. 查询条件映射
+### 2. Query Condition Mapping
 
 ```typescript
-// Supabase 操作符映射
+// Supabase operator mapping
 const whereHandlerMaps = {
-  '=': 'eq', // 等于
-  '!=': 'neq', // 不等于
-  '>': 'gt', // 大于
-  '<': 'lt', // 小于
-  '>=': 'gte', // 大于等于
-  '<=': 'lte' // 小于等于
+  '=': 'eq', // Equal
+  '!=': 'neq', // Not equal
+  '>': 'gt', // Greater than
+  '<': 'lt', // Less than
+  '>=': 'gte', // Greater than or equal
+  '<=': 'lte' // Less than or equal
 };
 ```
 
-## 数据库接口和抽象层
+## Database Interfaces and Abstraction Layer
 
-### 1. 数据库桥接接口
+### 1. Database Bridge Interface
 
 ```typescript
 export interface DBBridgeInterface {
-  // 基础 CRUD 操作
+  // Basic CRUD operations
   add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   get(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
 
-  // 分页查询
+  // Pagination query
   pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>>;
 }
 
-// 查询事件定义
+// Query event definition
 export interface BridgeEvent {
   table: string;
   fields?: string | string[];
@@ -149,7 +149,7 @@ export interface BridgeEvent {
   pageSize?: number;
 }
 
-// 统一响应格式
+// Unified response format
 export interface DBBridgeResponse<T> {
   error?: unknown;
   data: T;
@@ -157,16 +157,16 @@ export interface DBBridgeResponse<T> {
 }
 ```
 
-### 2. 查询条件类型
+### 2. Query Condition Types
 
 ```typescript
-// 操作符类型
+// Operator types
 export type WhereOperation = '=' | '!=' | '>' | '<' | '>=' | '<=';
 
-// 查询条件类型
+// Query condition type
 export type Where = [string, WhereOperation, string | number];
 
-// 分页信息
+// Pagination information
 export interface PaginationInfo {
   total: number;
   page: number;
@@ -174,31 +174,31 @@ export interface PaginationInfo {
 }
 ```
 
-## 仓库模式实现
+## Repository Pattern Implementation
 
-### 1. 用户仓库接口
+### 1. User Repository Interface
 
 ```typescript
 export interface UserRepositoryInterface {
-  // 获取所有用户
+  // Get all users
   getAll(): Promise<unknown>;
 
-  // 通过邮箱查询用户
+  // Query user by email
   getUserByEmail(email: string): Promise<UserSchema | null>;
 
-  // 添加用户
+  // Add user
   add(params: {
     email: string;
     password: string;
   }): Promise<UserSchema[] | null>;
 
-  // 更新用户
+  // Update user
   updateById(
     id: number,
     params: Partial<Omit<UserSchema, 'id' | 'created_at'>>
   ): Promise<void>;
 
-  // 分页查询
+  // Pagination query
   pagination<UserSchema>(params: {
     page: number;
     pageSize: number;
@@ -206,14 +206,14 @@ export interface UserRepositoryInterface {
 }
 ```
 
-### 2. 用户仓库实现
+### 2. User Repository Implementation
 
 ```typescript
 @injectable()
 export class UserRepository implements UserRepositoryInterface {
   readonly name = 'fe_users';
 
-  // 安全字段列表（排除敏感信息）
+  // Safe field list (excluding sensitive information)
   protected safeFields = [
     'created_at',
     'email',
@@ -243,7 +243,7 @@ export class UserRepository implements UserRepositoryInterface {
       table: this.name,
       page: params.page,
       pageSize: params.pageSize,
-      fields: this.safeFields // 只返回安全字段
+      fields: this.safeFields // Only return safe fields
     });
 
     return {
@@ -256,9 +256,9 @@ export class UserRepository implements UserRepositoryInterface {
 }
 ```
 
-## MongoDB 实现示例
+## MongoDB Implementation Example
 
-### 1. MongoDB 桥接器
+### 1. MongoDB Bridge
 
 ```typescript
 @injectable()
@@ -325,29 +325,29 @@ export class MongoDBBridge implements DBBridgeInterface {
 }
 ```
 
-### 2. MongoDB 配置
+### 2. MongoDB Configuration
 
 ```typescript
-// 在 AppConfig 中添加 MongoDB 配置
+// Add MongoDB configuration in AppConfig
 export class AppConfig implements EnvConfigInterface {
   readonly mongodbUrl: string = process.env.MONGODB_URL!;
   readonly mongodbDatabase: string = process.env.MONGODB_DATABASE!;
 }
 
-// 注册 MongoDB 桥接器
+// Register MongoDB bridge
 export class ServerIOCRegister {
   protected registerImplement(ioc: IOCContainerInterface): void {
-    // 使用 MongoDB 实现
+    // Use MongoDB implementation
     ioc.bind(I.DBBridgeInterface, ioc.get(MongoDBBridge));
-    // 或使用 Supabase 实现
+    // Or use Supabase implementation
     // ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
   }
 }
 ```
 
-## 最佳实践和示例
+## Best Practices and Examples
 
-### 1. 仓库模式使用
+### 1. Repository Pattern Usage
 
 ```typescript
 @injectable()
@@ -361,7 +361,7 @@ export class UserService {
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) return null;
 
-    // 转换为业务模型
+    // Convert to business model
     return this.mapToUserProfile(user);
   }
 
@@ -378,7 +378,7 @@ export class UserService {
 }
 ```
 
-### 2. 事务处理
+### 2. Transaction Handling
 
 ```typescript
 @injectable()
@@ -399,7 +399,7 @@ export class TransactionManager {
   }
 }
 
-// 使用事务
+// Using transactions
 async createUserWithProfile(data: UserData): Promise<User> {
   return this.transactionManager.withTransaction(async (transaction) => {
     const user = await this.userRepository.add(data, transaction);
@@ -409,27 +409,27 @@ async createUserWithProfile(data: UserData): Promise<User> {
 }
 ```
 
-### 3. 查询优化
+### 3. Query Optimization
 
 ```typescript
 @injectable()
 export class OptimizedUserRepository extends UserRepository {
-  // 使用字段选择优化查询
+  // Use field selection to optimize queries
   async getUserProfile(id: number): Promise<UserProfile> {
     const result = await this.dbBridge.get({
       table: this.name,
-      fields: this.safeFields, // 只选择需要的字段
+      fields: this.safeFields, // Only select needed fields
       where: [['id', '=', id]]
     });
     return this.mapToProfile(result.data);
   }
 
-  // 使用索引优化查询
+  // Use index to optimize queries
   async searchUsers(query: string): Promise<User[]> {
     const result = await this.dbBridge.get({
       table: this.name,
       where: [
-        ['email', '=', query], // 假设 email 字段有索引
+        ['email', '=', query], // Assuming email field is indexed
         ['role', '=', 'user']
       ]
     });
@@ -438,7 +438,7 @@ export class OptimizedUserRepository extends UserRepository {
 }
 ```
 
-### 4. 缓存策略
+### 4. Caching Strategy
 
 ```typescript
 @injectable()
@@ -451,11 +451,11 @@ export class CachedUserRepository extends UserRepository {
   }
 
   async getUserByEmail(email: string): Promise<UserSchema | null> {
-    // 先查缓存
+    // Check cache first
     const cached = await this.cache.get(`user:${email}`);
     if (cached) return cached;
 
-    // 缓存未命中，查数据库
+    // Cache miss, query database
     const user = await super.getUserByEmail(email);
     if (user) {
       await this.cache.set(`user:${email}`, user, '1h');
@@ -466,31 +466,31 @@ export class CachedUserRepository extends UserRepository {
 }
 ```
 
-## 总结
+## Summary
 
-项目的数据库设计遵循以下原则：
+The project's database design follows these principles:
 
-1. **抽象分层**：
-   - 清晰的接口定义
-   - 数据库实现可替换
-   - 仓库模式封装业务逻辑
+1. **Abstraction Layers**:
+   - Clear interface definitions
+   - Replaceable database implementations
+   - Repository pattern encapsulating business logic
 
-2. **类型安全**：
-   - 完整的 TypeScript 类型定义
-   - 查询条件类型检查
-   - 响应数据类型验证
+2. **Type Safety**:
+   - Complete TypeScript type definitions
+   - Query condition type checking
+   - Response data type validation
 
-3. **安全性**：
-   - 字段级别的访问控制
-   - 参数化查询防注入
-   - 敏感数据过滤
+3. **Security**:
+   - Field-level access control
+   - Parameterized queries preventing injection
+   - Sensitive data filtering
 
-4. **可扩展性**：
-   - 支持多种数据库实现
-   - 插件化的功能扩展
-   - 统一的查询接口
+4. **Extensibility**:
+   - Support for multiple database implementations
+   - Plugin-based feature extension
+   - Unified query interface
 
-5. **性能优化**：
-   - 字段选择优化
-   - 查询条件优化
-   - 缓存策略支持
+5. **Performance Optimization**:
+   - Field selection optimization
+   - Query condition optimization
+   - Cache strategy support

@@ -1,71 +1,71 @@
-# 主题系统开发指南
+# Theme System Development Guide
 
-## 目录
+## Table of Contents
 
-1. [主题系统概述](#主题系统概述)
-2. [主题变量和样式系统](#主题变量和样式系统)
-3. [组件主题实现](#组件主题实现)
-4. [主题切换和状态管理](#主题切换和状态管理)
-5. [最佳实践和示例](#最佳实践和示例)
+1. [Theme System Overview](#theme-system-overview)
+2. [Theme Variables and Style System](#theme-variables-and-style-system)
+3. [Component Theme Implementation](#component-theme-implementation)
+4. [Theme Switching and State Management](#theme-switching-and-state-management)
+5. [Best Practices and Examples](#best-practices-and-examples)
 
-## 主题系统概述
+## Theme System Overview
 
-### 1. 主题架构
+### 1. Theme Architecture
 
-项目采用分层的主题系统设计：
+The project adopts a layered theme system design:
 
 ```
-样式层                      组件层
+Style Layer               Component Layer
 ┌──────────────┐          ┌──────────────┐
-│   CSS 变量   │          │  主题提供者  │
+│ CSS Variables│          │Theme Provider│
 ├──────────────┤          ├──────────────┤
-│  主题样式    │    ◄─────┤  主题消费者  │
+│Theme Styles  │    ◄─────┤Theme Consumer│
 ├──────────────┤          ├──────────────┤
-│  组件样式    │          │  主题切换器  │
+│Component Style│          │Theme Switcher│
 └──────────────┘          └──────────────┘
 ```
 
-### 2. 主题类型
+### 2. Theme Types
 
 ```typescript
 // config/theme.ts
 export const themeConfig = {
-  // 支持的主题
+  // Supported themes
   supportedThemes: ['light', 'dark', 'pink'] as const,
   defaultTheme: 'system',
 
-  // DOM 属性
+  // DOM attribute
   domAttribute: 'data-theme',
 
-  // 存储键
+  // Storage key
   storageKey: 'theme'
 };
 
-// 主题类型定义
+// Theme type definition
 export type ThemeMode = (typeof themeConfig.supportedThemes)[number];
 ```
 
-## 主题变量和样式系统
+## Theme Variables and Style System
 
-### 1. 基础变量定义
+### 1. Base Variable Definitions
 
 ```css
 /* styles/css/antd-themes/_common/_default.css */
 html,
 .fe-theme {
-  /* 主色调相关变量 */
+  /* Primary color related variables */
   --fe-color-primary: #60a5fa;
   --fe-color-primary-hover: #3b82f6;
   --fe-color-primary-active: #2563eb;
   --fe-color-primary-bg: rgba(96, 165, 250, 0.1);
 
-  /* 状态色 */
+  /* Status colors */
   --fe-color-success: #52c41a;
   --fe-color-warning: #faad14;
   --fe-color-error: #ff4d4f;
   --fe-color-info: var(--fe-color-primary);
 
-  /* 基础变量 */
+  /* Base variables */
   --fe-color-bg-container: rgb(255 255 255);
   --fe-color-bg-elevated: rgb(248 250 252);
   --fe-color-text-heading: rgb(15 23 42);
@@ -75,18 +75,18 @@ html,
 }
 ```
 
-### 2. 暗色主题变量
+### 2. Dark Theme Variables
 
 ```css
 /* styles/css/antd-themes/_common/dark.css */
 [data-theme='dark'],
 [data-theme='dark'] .fe-theme {
-  /* 主色调 - 紫色主题 */
+  /* Primary color - Purple theme */
   --fe-color-primary: #9333ea;
   --fe-color-primary-hover: #a855f7;
   --fe-color-primary-active: #7e22ce;
 
-  /* 基础变量覆盖 */
+  /* Base variable overrides */
   --fe-color-bg-container: rgb(30 41 59);
   --fe-color-bg-elevated: rgb(51 65 85);
   --fe-color-text-heading: rgb(241 245 249);
@@ -95,18 +95,18 @@ html,
 }
 ```
 
-### 3. 粉色主题变量
+### 3. Pink Theme Variables
 
 ```css
 /* styles/css/antd-themes/_common/pink.css */
 [data-theme='pink'],
 [data-theme='pink'] .fe-theme {
-  /* 主色调 - 玫瑰色主题 */
+  /* Primary color - Rose theme */
   --fe-color-primary: #f472b6;
   --fe-color-primary-hover: #ec4899;
   --fe-color-primary-active: #db2777;
 
-  /* 基础变量覆盖 */
+  /* Base variable overrides */
   --ant-color-bg-container: rgb(255 241 242);
   --ant-color-bg-elevated: rgb(254 205 211);
   --fe-color-text-heading: rgb(159 18 57);
@@ -114,46 +114,46 @@ html,
 }
 ```
 
-## Ant Design 主题系统
+## Ant Design Theme System
 
-### 1. 基础主题变量
+### 1. Base Theme Variables
 
 ```css
 /* styles/css/antd-themes/_common/_default.css */
 html,
 .fe-theme {
-  /* Antd 主色调相关变量 - 浅蓝色主题 */
+  /* Antd primary color related variables - Light blue theme */
   --fe-color-primary: #60a5fa; /* blue-400 */
   --fe-color-primary-hover: #3b82f6; /* blue-500 */
   --fe-color-primary-active: #2563eb; /* blue-600 */
   --fe-color-primary-bg: rgba(96, 165, 250, 0.1);
 
-  /* 状态色 */
+  /* Status colors */
   --fe-color-success: #52c41a;
   --fe-color-warning: #faad14;
   --fe-color-error: #ff4d4f;
   --fe-color-info: var(--fe-color-primary);
 
-  /* Antd 基础变量 */
+  /* Antd base variables */
   --fe-color-bg-container: rgb(255 255 255);
   --fe-color-bg-elevated: rgb(248 250 252);
   --fe-color-text-heading: rgb(15 23 42);
   --fe-color-text: rgba(15 23 42 / 0.85);
   --fe-color-border: rgb(226 232 240);
 
-  /* Antd 组件通用变量 */
+  /* Antd common component variables */
   --fe-line-width: 1px;
   --fe-border-radius: 6px;
   --fe-motion-duration-mid: 0.2s;
 }
 ```
 
-### 2. 暗色主题组件变量
+### 2. Dark Theme Component Variables
 
 ```css
 /* styles/css/antd-themes/_common/dark.css */
 [data-theme='dark'] {
-  /* Input 组件变量 */
+  /* Input component variables */
   .ant-input-css-var {
     --fe-input-hover-border-color: #4096ff;
     --fe-input-active-border-color: #1677ff;
@@ -161,21 +161,21 @@ html,
     --fe-input-active-bg: rgb(51 65 85);
   }
 
-  /* Button 组件变量 */
+  /* Button component variables */
   .ant-btn-css-var {
-    /* 紫色主题 */
+    /* Purple theme */
     --fe-button-primary-color: #fff;
     --fe-button-primary-bg: #8b5cf6;
     --fe-button-primary-hover-bg: #7c3aed;
     --fe-button-primary-active-bg: #6d28d9;
 
-    /* 默认按钮 */
+    /* Default button */
     --fe-button-default-color: rgba(255, 255, 255, 0.85);
     --fe-button-default-bg: rgb(30 41 59);
     --fe-button-default-border-color: rgb(51 65 85);
   }
 
-  /* Select 组件变量 */
+  /* Select component variables */
   .ant-select-css-var {
     --fe-select-dropdown-bg: rgb(30 41 59);
     --fe-select-item-selected-bg: rgba(147, 51, 234, 0.1);
@@ -183,32 +183,32 @@ html,
 }
 ```
 
-### 3. 粉色主题组件变量
+### 3. Pink Theme Component Variables
 
 ```css
 /* styles/css/antd-themes/_common/pink.css */
 [data-theme='pink'] {
-  /* 主色调 */
+  /* Primary color */
   --fe-color-primary: #f472b6; /* pink-400 */
   --fe-color-primary-hover: #ec4899; /* pink-500 */
   --fe-color-primary-active: #db2777; /* pink-600 */
 
-  /* 状态色 */
+  /* Status colors */
   --fe-color-error: #fb7185; /* rose-400 */
   --fe-color-warning-bg: #fff7e6;
   --fe-color-warning-border: #ffd591;
 
-  /* 基础变量 */
+  /* Base variables */
   --ant-color-bg-container: rgb(255 241 242);
   --ant-color-bg-elevated: rgb(254 205 211);
   --fe-color-text-heading: rgb(159 18 57);
 }
 ```
 
-### 4. Ant Design 组件覆盖
+### 4. Ant Design Component Override
 
 ```typescript
-// 1. 配置主题令牌
+// 1. Configure theme tokens
 const theme = {
   token: {
     colorPrimary: '#60a5fa',
@@ -220,7 +220,7 @@ const theme = {
   components: {
     Button: {
       colorPrimary: '#60a5fa',
-      algorithm: true  // 启用算法
+      algorithm: true  // Enable algorithm
     },
     Input: {
       colorBgContainer: '#ffffff',
@@ -229,7 +229,7 @@ const theme = {
   }
 };
 
-// 2. 使用主题提供者
+// 2. Use theme provider
 export function AntdProvider({ children }: PropsWithChildren) {
   return (
     <ConfigProvider theme={theme}>
@@ -239,42 +239,42 @@ export function AntdProvider({ children }: PropsWithChildren) {
 }
 ```
 
-## 组件主题实现
+## Component Theme Implementation
 
-### 1. 菜单组件主题
+### 1. Menu Component Theme
 
 ```css
 /* styles/css/antd-themes/menu/_default.css */
 .fe-theme {
   &.ant-menu-css-var {
-    /* 基础尺寸 */
+    /* Base dimensions */
     --fe-menu-item-height: 40px;
     --fe-menu-item-padding-inline: 16px;
     --fe-menu-radius-item: 8px;
 
-    /* 文字颜色 */
+    /* Text colors */
     --fe-menu-color-item-text: rgb(var(--text-primary));
     --fe-menu-color-item-text-hover: rgb(var(--text-primary));
     --fe-menu-color-group-title: rgb(var(--text-secondary));
 
-    /* 选中和激活状态 */
+    /* Selected and active states */
     --fe-menu-color-item-text-selected: rgb(var(--color-brand));
     --fe-menu-color-item-bg-selected: rgba(var(--color-brand), 0.1);
 
-    /* 背景颜色 */
+    /* Background colors */
     --fe-menu-color-item-bg: rgb(var(--color-bg-base));
     --fe-menu-color-item-bg-hover: rgba(var(--text-primary), 0.06);
   }
 }
 ```
 
-### 2. 表格组件主题
+### 2. Table Component Theme
 
 ```css
 /* styles/css/antd-themes/table/_default.css */
 .fe-theme {
   &.ant-table-css-var {
-    /* 表格样式变量 */
+    /* Table style variables */
     --fe-table-header-bg: var(--fe-color-bg-elevated);
     --fe-table-row-hover-bg: var(--fe-color-primary-bg);
     --fe-table-border-color: var(--fe-color-border);
@@ -282,10 +282,10 @@ export function AntdProvider({ children }: PropsWithChildren) {
 }
 ```
 
-### 3. 组件主题使用
+### 3. Component Theme Usage
 
 ```typescript
-// 1. 在组件中使用主题变量
+// 1. Use theme variables in components
 function ThemedButton({ children }: PropsWithChildren) {
   return (
     <button
@@ -304,7 +304,7 @@ function ThemedButton({ children }: PropsWithChildren) {
   );
 }
 
-// 2. 主题感知组件
+// 2. Theme-aware component
 function ThemedCard({ children }: PropsWithChildren) {
   return (
     <div className="
@@ -323,12 +323,12 @@ function ThemedCard({ children }: PropsWithChildren) {
 }
 ```
 
-## 主题切换和状态管理
+## Theme Switching and State Management
 
-### 1. 主题提供者
+### 1. Theme Provider
 
 ```typescript
-// 1. 主题配置提供者
+// 1. Theme configuration provider
 export function ThemeProvider({ children }: PropsWithChildren) {
   return (
     <NextThemesProvider
@@ -344,7 +344,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   );
 }
 
-// 2. 主题切换器
+// 2. Theme switcher
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
@@ -363,10 +363,10 @@ export function ThemeSwitcher() {
 }
 ```
 
-### 2. 主题状态管理
+### 2. Theme State Management
 
 ```typescript
-// 1. 主题 Store
+// 1. Theme Store
 @injectable()
 export class ThemeStore extends StoreInterface<ThemeState> {
   constructor() {
@@ -381,7 +381,7 @@ export class ThemeStore extends StoreInterface<ThemeState> {
     localStorage.setItem(themeConfig.storageKey, mode);
   }
 
-  // 监听系统主题变化
+  // Watch system theme changes
   watchSystemTheme() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = (e: MediaQueryListEvent) => {
@@ -396,7 +396,7 @@ export class ThemeStore extends StoreInterface<ThemeState> {
   }
 }
 
-// 2. 在组件中使用
+// 2. Use in components
 function ThemeAwareComponent() {
   const themeStore = useIOC(ThemeStore);
   const theme = useStore(themeStore, state => state.mode);
@@ -406,52 +406,52 @@ function ThemeAwareComponent() {
 
   return (
     <div className={`theme-${actualTheme}`}>
-      {/* 组件内容 */}
+      {/* Component content */}
     </div>
   );
 }
 ```
 
-## 最佳实践和示例
+## Best Practices and Examples
 
-### 1. 主题变量命名规范
+### 1. Theme Variable Naming Conventions
 
 ```css
-/* ✅ 好的命名规范 */
+/* ✅ Good naming conventions */
 --fe-color-primary
 --fe-color-text
 --fe-spacing-lg
 --fe-radius-sm
 
-/* ❌ 不好的命名规范 */
+/* ❌ Bad naming conventions */
 --primary
 --text
 --large-spacing
 --small-radius
 ```
 
-### 2. 主题样式组织
+### 2. Theme Style Organization
 
 ```
 styles/
   css/
-    antd-themes/           # Ant Design 主题
-      _common/            # 通用变量
-        _default.css     # 默认主题
-        dark.css        # 暗色主题
-        pink.css        # 粉色主题
-      menu/              # 菜单组件主题
-      table/             # 表格组件主题
-    themes/              # 自定义主题
+    antd-themes/           # Ant Design themes
+      _common/            # Common variables
+        _default.css     # Default theme
+        dark.css        # Dark theme
+        pink.css        # Pink theme
+      menu/              # Menu component theme
+      table/             # Table component theme
+    themes/              # Custom themes
       default.css
       dark.css
       pink.css
 ```
 
-### 3. 响应式主题
+### 3. Responsive Theme
 
 ```typescript
-// 1. 使用 Tailwind 的响应式主题
+// 1. Use Tailwind's responsive theme
 function ResponsiveCard() {
   return (
     <div className="
@@ -463,12 +463,12 @@ function ResponsiveCard() {
       shadow-sm
       dark:shadow-gray-700
     ">
-      {/* 卡片内容 */}
+      {/* Card content */}
     </div>
   );
 }
 
-// 2. 使用媒体查询
+// 2. Use media queries
 const styles = css`
   @media (prefers-color-scheme: dark) {
     :root {
@@ -486,10 +486,10 @@ const styles = css`
 `;
 ```
 
-### 4. 主题切换动画
+### 4. Theme Transition Animation
 
 ```css
-/* 添加主题切换动画 */
+/* Add theme transition animation */
 :root {
   --transition-duration: 200ms;
 }
@@ -501,32 +501,32 @@ const styles = css`
     border-color var(--transition-duration) ease;
 }
 
-/* 禁用特定元素的过渡效果 */
+/* Disable transition for specific elements */
 .no-theme-transition {
   transition: none !important;
 }
 ```
 
-## 总结
+## Summary
 
-项目的主题系统遵循以下原则：
+The project's theme system follows these principles:
 
-1. **变量系统**：
-   - 统一的变量命名规范
-   - 层次化的变量组织
-   - 完整的类型定义
+1. **Variable System**:
+   - Unified variable naming conventions
+   - Hierarchical variable organization
+   - Complete type definitions
 
-2. **组件支持**：
-   - 组件级别的主题变量
-   - 响应式的主题支持
-   - 平滑的主题切换
+2. **Component Support**:
+   - Component-level theme variables
+   - Responsive theme support
+   - Smooth theme switching
 
-3. **可扩展性**：
-   - 支持自定义主题
-   - 插件化的主题系统
-   - 组件级别的主题扩展
+3. **Extensibility**:
+   - Support for custom themes
+   - Plugin-based theme system
+   - Component-level theme extensions
 
-4. **最佳实践**：
-   - 清晰的文件组织
-   - 响应式设计
-   - 性能优化
+4. **Best Practices**:
+   - Clear file organization
+   - Responsive design
+   - Performance optimization
