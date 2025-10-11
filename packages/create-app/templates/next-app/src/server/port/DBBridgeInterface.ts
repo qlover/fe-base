@@ -19,6 +19,7 @@ export interface PaginationInfo {
 export interface DBBridgeResponse<T> {
   error?: unknown;
   data: T;
+  count?: number;
   pagination?: PaginationInfo;
 }
 
