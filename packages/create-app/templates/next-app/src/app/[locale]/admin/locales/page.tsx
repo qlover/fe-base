@@ -2,7 +2,7 @@
 
 import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
-import { useAdminTableInit } from '@/uikit/components/adminTable/useAdminTableInit';
+import { useAdminPageInit } from '@/uikit/components/adminTable/useAdminPage';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -20,11 +20,11 @@ const baseColumns: ColumnsType<LocalesSchema> = Object.keys(
   dataIndex: key
 }));
 
-export default function UsersPage() {
+export default function LocalesPage() {
   const adminUserService = useIOC(AdminLocalesService);
   const tt = useI18nInterface(adminLocales18n);
 
-  useAdminTableInit(adminUserService);
+  useAdminPageInit(adminUserService);
 
   const columns: ColumnsType<LocalesSchema> = baseColumns;
 

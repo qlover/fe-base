@@ -81,5 +81,7 @@ export abstract class AdminPageInterface<
         listParams: params
       } as Partial<S>)
     );
+
+    this.fetchList(this.state.listParams);
   }
 }

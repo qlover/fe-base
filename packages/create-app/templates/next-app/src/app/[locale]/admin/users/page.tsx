@@ -2,7 +2,7 @@
 
 import { AdminUserService } from '@/base/services/AdminUserService';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
-import { useAdminTableInit } from '@/uikit/components/adminTable/useAdminTableInit';
+import { useAdminPageInit } from '@/uikit/components/adminTable/useAdminPage';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -24,7 +24,7 @@ export default function UsersPage() {
   const adminUserService = useIOC(AdminUserService);
   const tt = useI18nInterface(adminUsers18n);
 
-  useAdminTableInit(adminUserService);
+  useAdminPageInit(adminUserService);
 
   const columns: ColumnsType<UserSchema> = baseColumns;
 

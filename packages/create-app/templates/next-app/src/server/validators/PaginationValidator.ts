@@ -6,7 +6,7 @@ import {
   type ValidatorInterface
 } from '../port/ValidatorInterface';
 
-const pageSchema = z
+const numberSchema = z
   .number()
   .or(z.string())
   .transform((val) => Number(val))
@@ -14,15 +14,13 @@ const pageSchema = z
     message: API_PAGE_INVALID
   });
 
+const paginationSchema = z.object({
+  page: numberSchema,
+  pageSize: numberSchema.optional().default(10)
+});
+
 export class PaginationValidator implements ValidatorInterface {
   protected defaultPageSize = 10;
-
-  validatePageSize(value: unknown): void | ValidationFaildResult {
-    const result = pageSchema.safeParse(value);
-    if (!result.success) {
-      return result.error.issues[0];
-    }
-  }
 
   validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
@@ -32,17 +30,23 @@ export class PaginationValidator implements ValidatorInterface {
       };
     }
 
-    return this.validatePageSize((data as Record<string, unknown>).page);
+    const result = paginationSchema.safeParse(data);
+    if (!result.success) {
+      return result.error.issues[0];
+    }
   }
 
   getThrow(
     data: unknown
   ): Pick<PaginationInterface<unknown>, 'page' | 'pageSize'> {
-    const result = this.validate(data);
-    if (result) {
-      throw new Error(result.message);
+    const result = paginationSchema.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.issues[0].message);
     }
 
-    return { page: 1, pageSize: 10 };
+    return {
+      page: result.data.page,
+      pageSize: result.data.pageSize
+    };
   }
 }

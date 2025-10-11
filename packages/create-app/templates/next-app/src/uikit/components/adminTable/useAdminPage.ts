@@ -4,7 +4,7 @@ import type {
   AdminPageState
 } from '@/base/port/AdminPageInterface';
 
-export function useAdminTableInit(
+export function useAdminPageInit(
   adminPageInterface: AdminPageInterface<AdminPageState>
 ) {
   const mouted = useRef(false);

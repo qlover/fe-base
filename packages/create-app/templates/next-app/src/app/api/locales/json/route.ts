@@ -5,6 +5,8 @@ import { ApiLocaleService } from '@/server/services/ApiLocaleService';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 
+export const revalidate = i18nConfig.localeCacheTime;
+
 export async function GET(req: NextRequest) {
   const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
   const locale = searchParams.locale as LocaleType;
@@ -32,5 +34,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  return NextResponse.json(result);
+  const response = NextResponse.json(result);
+  response.headers.set(
+    'Cache-Control',
+    `s-maxage=${i18nConfig.localeCacheTime}`
+  );
+  response.headers.set('x-cache-tag', `i18n-${locale}`);
+  return response;
 }
