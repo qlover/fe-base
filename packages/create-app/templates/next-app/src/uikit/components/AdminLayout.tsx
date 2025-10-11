@@ -2,6 +2,7 @@
 
 import {
   DashboardOutlined,
+  GlobalOutlined,
   UserOutlined,
   VerticalAlignBottomOutlined,
   VerticalAlignTopOutlined
@@ -23,7 +24,8 @@ const { Sider } = Layout;
 
 const IconMap = {
   dashboard: <DashboardOutlined />,
-  users: <UserOutlined />
+  users: <UserOutlined />,
+  locales: <GlobalOutlined />
 };
 
 export interface AdminLayoutProps extends HTMLAttributes<HTMLDivElement> {

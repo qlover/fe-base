@@ -1,32 +1,32 @@
 'use client';
 
-import { AdminUserService } from '@/base/services/AdminUserService';
+import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
 import { useAdminTableInit } from '@/uikit/components/adminTable/useAdminTableInit';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { userSchema, type UserSchema } from '@migrations/schema/UserSchema';
-import { adminUsers18n } from '@config/i18n';
+import {
+  localesSchema,
+  type LocalesSchema
+} from '@migrations/schema/LocalesSchema';
+import { adminLocales18n } from '@config/i18n';
 import type { ColumnsType } from 'antd/es/table';
 
-const baseColumns: ColumnsType<UserSchema> = Object.keys(
-  userSchema.omit({
-    password: true,
-    credential_token: true
-  }).shape
+const baseColumns: ColumnsType<LocalesSchema> = Object.keys(
+  localesSchema.shape
 ).map((key) => ({
   title: key,
   dataIndex: key
 }));
 
 export default function UsersPage() {
-  const adminUserService = useIOC(AdminUserService);
-  const tt = useI18nInterface(adminUsers18n);
+  const adminUserService = useIOC(AdminLocalesService);
+  const tt = useI18nInterface(adminLocales18n);
 
   useAdminTableInit(adminUserService);
 
-  const columns: ColumnsType<UserSchema> = baseColumns;
+  const columns: ColumnsType<LocalesSchema> = baseColumns;
 
   return (
     <div data-testid="UsersPage">

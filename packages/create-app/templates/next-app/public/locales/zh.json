@@ -205,5 +205,8 @@
   "admin__welcome": "欢迎来到管理员页面",
   "page__admin__users__title": "后台管理 - 管理员用户页面",
   "page__admin__users__description": "后台管理 - 管理员用户页面",
-  "page__admin__users__keywords": "后台管理 - 管理员用户页面关键词"
+  "page__admin__users__keywords": "后台管理 - 管理员用户页面关键词",
+  "page__admin__locales__title": "后台管理 - 管理员语言页面",
+  "page__admin__locales__description": "后台管理 - 管理员语言页面",
+  "page__admin__locales__keywords": "后台管理 - 管理员语言页面关键词"
 }
