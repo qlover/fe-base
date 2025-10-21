@@ -21,10 +21,10 @@ const baseColumns: ColumnsType<UserSchema> = Object.keys(
 }));
 
 export default function UsersPage() {
-  const adminUserService = useIOC(AdminUserService);
+  const pageService = useIOC(AdminUserService);
   const tt = useI18nInterface(adminUsers18n);
 
-  useAdminPageInit(adminUserService);
+  useAdminPageInit(pageService);
 
   const columns: ColumnsType<UserSchema> = baseColumns;
 
@@ -33,7 +33,7 @@ export default function UsersPage() {
       <ClientSeo i18nInterface={tt} />
       <AdminTable
         columns={columns as ColumnsType<unknown>}
-        adminPageInterface={adminUserService}
+        adminPageInterface={pageService}
       />
     </div>
   );

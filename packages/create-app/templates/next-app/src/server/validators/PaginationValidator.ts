@@ -5,6 +5,7 @@ import {
   type ValidationFaildResult,
   type ValidatorInterface
 } from '../port/ValidatorInterface';
+import type { BridgeOrderBy } from '../port/DBBridgeInterface';
 
 const numberSchema = z
   .number()
@@ -16,7 +17,9 @@ const numberSchema = z
 
 const paginationSchema = z.object({
   page: numberSchema,
-  pageSize: numberSchema.optional().default(10)
+  pageSize: numberSchema.optional().default(10),
+  orderBy: z.string().optional(),
+  order: z.string().optional().default('0')
 });
 
 export class PaginationValidator implements ValidatorInterface {
@@ -36,17 +39,26 @@ export class PaginationValidator implements ValidatorInterface {
     }
   }
 
-  getThrow(
-    data: unknown
-  ): Pick<PaginationInterface<unknown>, 'page' | 'pageSize'> {
+  getThrow(data: unknown): Pick<
+    PaginationInterface<unknown>,
+    'page' | 'pageSize'
+  > & {
+    orders: BridgeOrderBy;
+  } {
     const result = paginationSchema.safeParse(data);
     if (!result.success) {
       throw new Error(result.error.issues[0].message);
     }
 
+    const order = result.data.order;
+
     return {
       page: result.data.page,
-      pageSize: result.data.pageSize
+      pageSize: result.data.pageSize,
+      orders: [
+        result.data.orderBy || 'updated_at',
+        order == '0' || order == '1' ? (+order as 0 | 1) : 0
+      ]
     };
   }
 }

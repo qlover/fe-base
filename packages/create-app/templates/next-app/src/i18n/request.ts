@@ -22,13 +22,29 @@ export default getRequestConfig(async ({ requestLocale }) => {
     const data = await response.json();
     return {
       locale,
-      messages: data
+      messages: data,
+      // 将 MISSING_MESSAGE 错误转换为警告
+      onError: (error) => {
+        if (error.message.includes('MISSING_MESSAGE')) {
+          console.warn(`[i18n] Missing translation: ${error.message}`);
+          return error.key; // 返回 key 作为 fallback 文本
+        }
+        throw error; // 其他错误仍然抛出
+      }
     };
   }
 
   // Dynamically import the translation messages for the selected locale
   return {
     locale,
-    messages: (await import(`../../public/locales/${locale}.json`)).default
+    messages: (await import(`../../public/locales/${locale}.json`)).default,
+    // 将 MISSING_MESSAGE 错误转换为警告
+    onError: (error) => {
+      if (error.message.includes('MISSING_MESSAGE')) {
+        console.warn(`[i18n] Missing translation: ${error.message}`);
+        return error.key; // 返回 key 作为 fallback 文本
+      }
+      throw error; // 其他错误仍然抛出
+    }
   };
 });

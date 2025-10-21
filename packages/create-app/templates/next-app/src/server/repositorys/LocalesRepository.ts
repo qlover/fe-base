@@ -1,5 +1,9 @@
 import { inject, injectable } from 'inversify';
-import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
+import { Datetime } from '@/base/cases/Datetime';
+import type {
+  BridgeOrderBy,
+  DBBridgeInterface
+} from '@/server/port/DBBridgeInterface';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import {
   localesSchema,
@@ -15,7 +19,8 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   protected safeFields = Object.keys(localesSchema.shape);
 
   constructor(
-    @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface
+    @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface,
+    @inject(Datetime) protected datetime: Datetime
   ) {}
 
   async getAll(): Promise<LocalesSchema[]> {
@@ -26,10 +31,14 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return (result.data as LocalesSchema[]) || [];
   }
 
-  async getLocales(): Promise<LocalesSchema[]> {
+  async getLocales(
+    localeName: string,
+    orderBy?: BridgeOrderBy
+  ): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
       table: this.name,
-      fields: this.safeFields
+      fields: this.safeFields,
+      orderBy
     });
 
     const data = result.data as LocalesSchema[];
@@ -37,7 +46,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   }
 
   async add(params: LocalesSchema): Promise<LocalesSchema[] | null> {
-    const now = Date.now();
+    const now = this.datetime.timestampz();
     const data = {
       ...params,
       created_at: now,
@@ -59,7 +68,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   ): Promise<void> {
     const data = {
       ...params,
-      updated_at: Date.now()
+      updated_at: this.datetime.timestampz()
     };
 
     await this.dbBridge.update({
@@ -73,12 +82,14 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   async pagination<T = LocalesSchema>(params: {
     page: number;
     pageSize: number;
+    orderBy?: BridgeOrderBy;
   }): Promise<PaginationInterface<T>> {
     const result = await this.dbBridge.pagination({
       table: this.name,
       fields: this.safeFields,
       page: params.page,
-      pageSize: params.pageSize
+      pageSize: params.pageSize,
+      orderBy: params.orderBy
     });
 
     return {

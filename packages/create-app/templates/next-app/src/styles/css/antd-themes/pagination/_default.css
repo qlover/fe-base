@@ -1,6 +1,7 @@
 /* custom variables - for antd and custom css */
 html,
-.fe-theme {
+.fe-theme .ant-pagination-css-var,
+.fe-theme.ant-pagination {
   /* Antd Pagination 组件变量 */
   .ant-pagination-css-var {
     --fe-pagination-item-bg: rgb(var(--color-bg-base));

@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import type { AdminPageListParams } from '@/base/port/AdminPageInterface';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
+import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import {
   AppApiRequester,
   type AppApiConfig,
@@ -13,6 +14,11 @@ export type AdminLocalesListTransaction = AppApiTransaction<
   PaginationInterface<unknown>
 >;
 
+export type AdminLocalesUpdateTransaction = AppApiTransaction<
+  Partial<LocalesSchema>,
+  LocalesSchema
+>;
+
 @injectable()
 export class AdminLocalesApi {
   constructor(
@@ -20,15 +26,23 @@ export class AdminLocalesApi {
     protected client: RequestTransaction<AppApiConfig>
   ) {}
 
-  async getLocalesList(
+  getLocalesList(
     params: AdminPageListParams
   ): Promise<AdminLocalesListTransaction['response']> {
-    const response = await this.client.request<AdminLocalesListTransaction>({
+    return this.client.request<AdminLocalesListTransaction>({
       url: '/admin/locales',
       method: 'GET',
       params: params as unknown as Record<string, unknown>
     });
+  }
 
-    return response;
+  updateLocales(
+    data: Partial<LocalesSchema>
+  ): Promise<AdminLocalesUpdateTransaction['response']> {
+    return this.client.request<AdminLocalesUpdateTransaction>({
+      url: `/admin/locales/update`,
+      method: 'POST',
+      data
+    });
   }
 }

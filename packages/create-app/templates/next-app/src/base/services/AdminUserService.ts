@@ -17,7 +17,7 @@ export class AdminUserService extends AdminPageInterface<AdminPageState> {
   override async fetchList(
     params: Partial<AdminPageListParams>
   ): Promise<PaginationInterface<unknown>> {
-    this.changeListState(new RequestState(true));
+    this.changeListState(new RequestState(true, this.state.listState.result));
 
     try {
       const response = await this.adminUserApi.getUserList(
@@ -42,4 +42,6 @@ export class AdminUserService extends AdminPageInterface<AdminPageState> {
 
     return this.state.listState.result!;
   }
+
+  override async update(): Promise<void> {}
 }

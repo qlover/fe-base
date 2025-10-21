@@ -5,30 +5,20 @@ import { AppErrorApi } from '@/server/AppErrorApi';
 import { AppSuccessApi } from '@/server/AppSuccessApi';
 import { AdminAuthPlugin } from '@/server/services/AdminAuthPlugin';
 import { ApiLocaleService } from '@/server/services/ApiLocaleService';
-import { PaginationValidator } from '@/server/validators/PaginationValidator';
 import type { NextRequest } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const server = new BootstrapServer();
 
   const result = await server
     .use(new AdminAuthPlugin())
     .execNoError(async ({ parameters: { IOC } }) => {
-      const searchParams = Object.fromEntries(
-        req.nextUrl.searchParams.entries()
-      );
-
-      const paginationParams = IOC(PaginationValidator).getThrow(searchParams);
-
-      const apiUserService = IOC(ApiLocaleService);
-
-      const result = await apiUserService.getLocales({
-        page: paginationParams.page,
-        pageSize: paginationParams.pageSize,
-        orderBy: paginationParams.orders
-      });
-
-      return result;
+      const requestBody = await req.json();
+      const adminLocalesService = IOC(ApiLocaleService);
+      await adminLocalesService.update(requestBody);
+      return {
+        success: true
+      };
     });
 
   if (result instanceof ExecutorError) {
