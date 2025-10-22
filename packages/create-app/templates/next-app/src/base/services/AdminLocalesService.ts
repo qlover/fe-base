@@ -1,16 +1,20 @@
 import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
+import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import {
   AdminPageInterface,
   type AdminPageListParams,
   AdminPageState
 } from '../port/AdminPageInterface';
-import { AdminUserApi } from './adminApi/AdminUserApi';
+import { AdminLocalesApi } from './adminApi/AdminLocalesApi';
 import { RequestState } from '../cases/RequestState';
 
 @injectable()
-export class AdminUserService extends AdminPageInterface<AdminPageState> {
-  constructor(@inject(AdminUserApi) protected adminUserApi: AdminUserApi) {
+export class AdminLocalesService extends AdminPageInterface<AdminPageState> {
+  constructor(
+    @inject(AdminLocalesApi)
+    protected adminLocalesApi: AdminLocalesApi
+  ) {
     super(() => new AdminPageState());
   }
 
@@ -20,7 +24,7 @@ export class AdminUserService extends AdminPageInterface<AdminPageState> {
     this.changeListState(new RequestState(true, this.state.listState.result));
 
     try {
-      const response = await this.adminUserApi.getUserList(
+      const response = await this.adminLocalesApi.getLocalesList(
         Object.assign({}, this.state.listParams, params)
       );
 
@@ -43,5 +47,22 @@ export class AdminUserService extends AdminPageInterface<AdminPageState> {
     return this.state.listState.result!;
   }
 
-  override async update(): Promise<void> {}
+  override async update(data: Partial<LocalesSchema>): Promise<void> {
+    const response = await this.adminLocalesApi.updateLocales(data);
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    // 更新本地列表数据
+    const listResult = this.state.listState
+      .result as PaginationInterface<LocalesSchema>;
+    if (listResult && listResult.list) {
+      const updatedData = listResult.list.map((item) =>
+        item.id === data.id ? { ...item, ...data } : item
+      );
+      this.changeListState(
+        new RequestState(false, { ...listResult, list: updatedData })
+      );
+    }
+  }
 }

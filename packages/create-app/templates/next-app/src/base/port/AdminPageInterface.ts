@@ -6,12 +6,16 @@ import type { StoreStateInterface } from '@qlover/corekit-bridge';
 export interface AdminPageListParams {
   page: number;
   pageSize: number;
+  orderBy?: string;
+  order?: 0 | 1;
 }
 
 export class AdminPageState implements StoreStateInterface {
   listParams: AdminPageListParams = {
     page: 1,
-    pageSize: 10
+    pageSize: 10,
+    orderBy: 'updated_at',
+    order: 1
   };
   initState = new RequestState<unknown>();
   listState = new RequestState<PaginationInterface<unknown>>();
@@ -81,5 +85,9 @@ export abstract class AdminPageInterface<
         listParams: params
       } as Partial<S>)
     );
+
+    this.fetchList(this.state.listParams);
   }
+
+  abstract update(data: Partial<unknown>): Promise<void>;
 }

@@ -1,7 +1,7 @@
 'use client';
 import '@ant-design/v5-patch-for-react-19';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useEffect } from 'react';
 import { NavigateBridge } from '@/base/cases/NavigateBridge';
 import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
@@ -9,12 +9,13 @@ import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 import { clientIOC } from '@/core/clientIoc/ClientIOC';
 import { I } from '@config/IOCIdentifier';
 import { IOCContext } from '../context/IOCContext';
+import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 export function BootstrapsProvider(props: { children: React.ReactNode }) {
   const IOC = clientIOC.create();
   const locale = useLocale();
   const router = useRouter();
-  const t = useTranslations();
+  const t = useWarnTranslations();
 
   useEffect(() => {
     IOC(I.RouterServiceInterface).setLocale(locale);
