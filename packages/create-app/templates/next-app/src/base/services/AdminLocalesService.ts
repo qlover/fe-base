@@ -48,25 +48,21 @@ export class AdminLocalesService extends AdminPageInterface<AdminPageState> {
   }
 
   override async update(data: Partial<LocalesSchema>): Promise<void> {
-    try {
-      const response = await this.adminLocalesApi.updateLocales(data);
-      if (!response.data.success) {
-        throw new Error(response.data.message);
-      }
+    const response = await this.adminLocalesApi.updateLocales(data);
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
 
-      // 更新本地列表数据
-      const listResult = this.state.listState
-        .result as PaginationInterface<LocalesSchema>;
-      if (listResult && listResult.list) {
-        const updatedData = listResult.list.map((item) =>
-          item.id === data.id ? { ...item, ...data } : item
-        );
-        this.changeListState(
-          new RequestState(false, { ...listResult, list: updatedData })
-        );
-      }
-    } catch (error) {
-      throw error;
+    // 更新本地列表数据
+    const listResult = this.state.listState
+      .result as PaginationInterface<LocalesSchema>;
+    if (listResult && listResult.list) {
+      const updatedData = listResult.list.map((item) =>
+        item.id === data.id ? { ...item, ...data } : item
+      );
+      this.changeListState(
+        new RequestState(false, { ...listResult, list: updatedData })
+      );
     }
   }
 }
