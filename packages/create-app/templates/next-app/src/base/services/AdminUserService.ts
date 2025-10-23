@@ -1,47 +1,19 @@
+import { ResourceStore, type ResourceInterface } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
-import type { PaginationInterface } from '@/server/port/PaginationInterface';
-import {
-  AdminPageInterface,
-  type AdminPageListParams,
-  AdminPageState
-} from '../port/AdminPageInterface';
+import { ResourceService } from '@/base/services/ResourceService';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import { AdminUserApi } from './adminApi/AdminUserApi';
-import { RequestState } from '../cases/RequestState';
+import { ResourceState } from '../cases/ResourceState';
 
 @injectable()
-export class AdminUserService extends AdminPageInterface<AdminPageState> {
-  constructor(@inject(AdminUserApi) protected adminUserApi: AdminUserApi) {
-    super(() => new AdminPageState());
+export class AdminUserService extends ResourceService<UserSchema> {
+  constructor(
+    @inject(AdminUserApi) resourceApi: ResourceInterface<UserSchema>
+  ) {
+    super(
+      'adminUsers',
+      new ResourceStore(() => new ResourceState()),
+      resourceApi
+    );
   }
-
-  override async fetchList(
-    params: Partial<AdminPageListParams>
-  ): Promise<PaginationInterface<unknown>> {
-    this.changeListState(new RequestState(true, this.state.listState.result));
-
-    try {
-      const response = await this.adminUserApi.getUserList(
-        Object.assign({}, this.state.listParams, params)
-      );
-
-      if (response.data.success) {
-        const paginationData = response.data
-          .data as PaginationInterface<unknown>;
-
-        this.changeListState(new RequestState(false, paginationData));
-
-        return paginationData;
-      }
-
-      this.changeListState(
-        new RequestState(false, null, response.data.message)
-      );
-    } catch (error) {
-      this.changeListState(new RequestState(false, null, error));
-    }
-
-    return this.state.listState.result!;
-  }
-
-  override async update(): Promise<void> {}
 }
