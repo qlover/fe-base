@@ -2,8 +2,8 @@
 
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { AdminUserService } from '@/base/services/AdminUserService';
-import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
+import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useLifecycle } from '@/uikit/hook/useLifecycle';

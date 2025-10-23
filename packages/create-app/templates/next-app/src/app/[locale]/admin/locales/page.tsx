@@ -2,9 +2,9 @@
 
 import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
+import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
 import { EditableCell } from '@/uikit/components/adminTable/EditableCell';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
-import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useLifecycle } from '@/uikit/hook/useLifecycle';
