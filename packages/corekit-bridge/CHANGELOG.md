@@ -1,5 +1,29 @@
 # @qlover/corekit-bridge
 
+## 1.6.5
+
+### Patch Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** add RequestState class and related interfaces for async state management ([0785af0](https://github.com/qlover/fe-base/commit/0785af0f3d81437817cfaf452b3642a32a73ecc9)) ([#525](https://github.com/qlover/fe-base/pull/525))
+  - Introduced RequestState class implementing AsyncStateInterface to track the lifecycle of asynchronous requests, including loading states, results, errors, and timing.
+  - Added LifecycleInterface, ResourceInterface, ResourceServiceInterface, and ResourcesStore to manage resource operations and lifecycle events.
+  - Created AsyncStateInterface for tracking the state of async operations, enhancing error handling and performance monitoring.
+  - Implemented comprehensive resource query and state management capabilities, improving overall resource handling in the application.
+
+  These changes aim to provide a robust framework for managing asynchronous operations and resource states, facilitating better performance and error handling.
+
+#### 📝 Documentation
+
+- **corekit-bridge:** enhance documentation for resource and stream management ([0adc2d4](https://github.com/qlover/fe-base/commit/0adc2d4abc63aebdad8ff485579780082815f608)) ([#525](https://github.com/qlover/fe-base/pull/525))
+  - Added comprehensive documentation for new interfaces and classes including LifecycleInterface, ResourceInterface, ResourceServiceInterface, and ResourcesStore to improve resource management and lifecycle event handling.
+  - Introduced detailed documentation for stream processing with LineStreamProcessor, SSEStreamProcessor, and ResponseStream, outlining their functionalities and usage examples.
+  - Created AsyncStateInterface and RequestState documentation to facilitate better understanding of asynchronous state management.
+  - Enhanced UIBridgeInterface and notification interfaces to support better integration between business logic and UI components.
+
+  These updates aim to provide clear guidance and examples for developers, improving the usability and maintainability of the corekit-bridge module.
+
 ## 1.6.4
 
 ### Patch Changes

@@ -5,7 +5,6 @@ import {
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
 
-// eslint-disable-next-line
 export type ApiPickDataResponse<_Request, Response> = Response;
 
 /**
