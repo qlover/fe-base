@@ -1,8 +1,8 @@
+import { RequestState } from '@qlover/corekit-bridge';
 import { injectable } from 'inversify';
 
 import type { FocusBarStateInterface } from '@/uikit/components/chat/FocusBarActionInterface';
 import { FocusBarActionInterface } from '@/uikit/components/chat/FocusBarActionInterface';
-import { RequestState } from './RequestState';
 
 class FocusBarState implements FocusBarStateInterface {
   showHistoryArea = false;

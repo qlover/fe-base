@@ -14,7 +14,7 @@ import type { InputRef } from 'antd/lib/input';
 interface EditableCellProps {
   value: string;
   className?: string;
-  onSave?: (value: string) => Promise<void> | void;
+  onSave?: (value: string) => Promise<unknown> | unknown;
 }
 
 export const EditableCell: React.FC<EditableCellProps> = ({

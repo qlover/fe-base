@@ -43,7 +43,6 @@ pnpm build
 #### 接口定义 (src/base/port)
 
 - AppUserApiInterface: 用户API接口
-- AdminPageInterface: 管理页面接口
 - AsyncStateInterface: 异步状态接口
 - RouterInterface: 路由管理接口
 

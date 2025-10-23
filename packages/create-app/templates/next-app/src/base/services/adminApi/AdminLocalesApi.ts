@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import type { AdminPageListParams } from '@/base/port/AdminPageInterface';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import {
@@ -7,10 +6,11 @@ import {
   type AppApiConfig,
   type AppApiTransaction
 } from '../appApi/AppApiRequester';
+import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
 import type { RequestTransaction } from '@qlover/fe-corekit';
 
 export type AdminLocalesListTransaction = AppApiTransaction<
-  AdminPageListParams,
+  ResourceQuery,
   PaginationInterface<unknown>
 >;
 
@@ -20,14 +20,39 @@ export type AdminLocalesUpdateTransaction = AppApiTransaction<
 >;
 
 @injectable()
-export class AdminLocalesApi {
+export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   constructor(
     @inject(AppApiRequester)
     protected client: RequestTransaction<AppApiConfig>
   ) {}
 
-  getLocalesList(
-    params: AdminPageListParams
+  /**
+   * @override
+   */
+  create(data: LocalesSchema): Promise<unknown> {
+    return this.client.request<AdminLocalesListTransaction>({
+      url: '/admin/locales',
+      method: 'POST',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  /**
+   * @override
+   */
+  remove(data: Partial<LocalesSchema>): Promise<unknown> {
+    return this.client.request<AdminLocalesListTransaction>({
+      url: '/admin/locales',
+      method: 'DELETE',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  /**
+   * @override
+   */
+  search(
+    params: ResourceQuery
   ): Promise<AdminLocalesListTransaction['response']> {
     return this.client.request<AdminLocalesListTransaction>({
       url: '/admin/locales',
@@ -36,7 +61,21 @@ export class AdminLocalesApi {
     });
   }
 
-  updateLocales(
+  /**
+   * @override
+   */
+  export(data: LocalesSchema): Promise<unknown> {
+    return this.client.request<AdminLocalesListTransaction>({
+      url: '/admin/locales',
+      method: 'GET',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  /**
+   * @override
+   */
+  update(
     data: Partial<LocalesSchema>
   ): Promise<AdminLocalesUpdateTransaction['response']> {
     return this.client.request<AdminLocalesUpdateTransaction>({
