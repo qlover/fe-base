@@ -31,3 +31,13 @@ export const adminUsers18n = Object.freeze({
   // admin page
   welcome: i18nKeys.ADMIN_WELCOME
 });
+
+export type AdminLocalesI18nInterface = typeof adminLocales18n;
+
+export const adminLocales18n = Object.freeze({
+  // basic meta properties
+  title: i18nKeys.PAGE_ADMIN_LOCALES_TITLE,
+  description: i18nKeys.PAGE_ADMIN_LOCALES_DESCRIPTION,
+  content: i18nKeys.PAGE_ADMIN_LOCALES_DESCRIPTION,
+  keywords: i18nKeys.PAGE_ADMIN_LOCALES_KEYWORDS
+});

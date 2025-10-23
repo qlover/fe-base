@@ -1,5 +1,6 @@
 [data-theme='pink'],
-[data-theme='pink'] .fe-theme {
+[data-theme='pink'] .fe-theme .ant-pagination-css-var,
+[data-theme='pink'] .fe-theme.ant-pagination {
   /* Antd Pagination 组件变量 */
   .ant-pagination-css-var {
     --fe-pagination-item-bg: var(--ant-color-bg-container);

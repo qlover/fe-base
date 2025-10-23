@@ -22,7 +22,6 @@ next-app/
 #### 1.1 接口层 (src/base/port)
 
 - `AdminLayoutInterface.ts` - 管理布局接口
-- `AdminPageInterface.ts` - 管理页面接口
 - `AppApiInterface.ts` - 应用API接口
 - `AppUserApiInterface.ts` - 用户API接口
 - `AsyncStateInterface.ts` - 异步状态接口

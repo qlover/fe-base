@@ -1,8 +1,8 @@
 import {
   StoreInterface,
-  type StoreStateInterface
+  type StoreStateInterface,
+  type AsyncStateInterface
 } from '@qlover/corekit-bridge';
-import type { AsyncStateInterface } from '@/base/port/AsyncStateInterface';
 
 export interface FocusBarStateInterface extends StoreStateInterface {
   showHistoryArea: boolean;

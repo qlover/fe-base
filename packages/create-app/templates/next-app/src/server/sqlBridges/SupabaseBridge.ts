@@ -10,11 +10,15 @@ import type {
   BridgeEvent,
   DBBridgeInterface,
   DBBridgeResponse,
+  BridgeOrderBy,
   Where
 } from '@/server/port/DBBridgeInterface';
 import { I } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
-import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
+import type {
+  PostgrestFilterBuilder,
+  PostgrestResponseFailure
+} from '@supabase/postgrest-js';
 
 const whereHandlerMaps = {
   '=': 'eq',
@@ -55,11 +59,22 @@ export class SupabaseBridge implements DBBridgeInterface {
     result: PostgrestSingleResponse<unknown>
   ): Promise<SupabaseBridgeResponse<unknown>> {
     if (result.error) {
-      this.logger.info(result);
+      if (this.hasPausedProject(result)) {
+        throw new Error(
+          'Project is paused, Please Restore project: https://supabase.com/dashboard'
+        );
+      }
+
       throw new Error(result.error.message);
     }
 
     return result as SupabaseBridgeResponse<unknown>;
+  }
+
+  protected hasPausedProject(error: PostgrestResponseFailure): boolean {
+    return (
+      error.status === 0 && error.error.message === 'TypeError: fetch failed'
+    );
   }
 
   protected handleWhere(
@@ -81,6 +96,16 @@ export class SupabaseBridge implements DBBridgeInterface {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (handler as any)[opr](key, value);
+    }
+  }
+
+  protected handleOrderBy(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
+    orderBy?: BridgeOrderBy
+  ): void {
+    if (orderBy) {
+      handler.order(orderBy[0], { ascending: orderBy[1] === 0 });
     }
   }
 
@@ -119,17 +144,26 @@ export class SupabaseBridge implements DBBridgeInterface {
   }
 
   async get(event: BridgeEvent): Promise<SupabaseBridgeResponse<unknown>> {
-    const { table, fields = '*', where } = event;
+    const { table, fields = '*', where, orderBy } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
     const handler = this.supabase.from(table).select(selectFields);
 
     this.handleWhere(handler, where ?? []);
 
+    this.handleOrderBy(handler, orderBy);
+
     return this.catch(await handler);
   }
 
   async pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>> {
-    const { table, fields = '*', where, page = 1, pageSize = 10 } = event;
+    const {
+      table,
+      fields = '*',
+      where,
+      page = 1,
+      pageSize = 10,
+      orderBy
+    } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
 
     // 获取总数
@@ -141,10 +175,11 @@ export class SupabaseBridge implements DBBridgeInterface {
     const countResult = await this.catch(await countHandler);
 
     // 获取分页数据
-    const handler = this.supabase
-      .from(table)
-      .select(selectFields)
-      .range((page - 1) * pageSize, page * pageSize - 1);
+    const handler = this.supabase.from(table).select(selectFields);
+
+    this.handleOrderBy(handler, orderBy);
+
+    handler.range((page - 1) * pageSize, page * pageSize - 1);
 
     this.handleWhere(handler, where ?? []);
     const result = await this.catch(await handler);

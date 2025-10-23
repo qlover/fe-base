@@ -117,7 +117,6 @@ pnpm build
 #### 客户端接口 (src/base/port)
 
 - **AppUserApiInterface**: 用户认证相关API接口
-- **AdminPageInterface**: 管理页面基础接口
 - **AsyncStateInterface**: 异步状态管理接口
 - **RouterInterface**: 路由管理接口
 - **I18nServiceInterface**: 国际化服务接口

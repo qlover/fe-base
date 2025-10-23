@@ -46,3 +46,25 @@ export const PAGE_ADMIN_USERS_DESCRIPTION = 'page__admin__users__description';
  * @localEn Admin users page keywords
  */
 export const PAGE_ADMIN_USERS_KEYWORDS = 'page__admin__users__keywords';
+
+/**
+ * @description Admin locales page title
+ * @localZh 后台管理 - 管理员语言页面
+ * @localEn Admin locales page
+ */
+export const PAGE_ADMIN_LOCALES_TITLE = 'page__admin__locales__title';
+
+/**
+ * @description Admin locales page description
+ * @localZh 后台管理 - 管理员语言页面
+ * @localEn Admin locales page
+ */
+export const PAGE_ADMIN_LOCALES_DESCRIPTION =
+  'page__admin__locales__description';
+
+/**
+ * @description Admin locales page keywords
+ * @localZh 后台管理 - 管理员语言页面关键词
+ * @localEn Admin locales page keywords
+ */
+export const PAGE_ADMIN_LOCALES_KEYWORDS = 'page__admin__locales__keywords';

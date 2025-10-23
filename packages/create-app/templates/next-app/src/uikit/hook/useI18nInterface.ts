@@ -1,6 +1,6 @@
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
+import { useWarnTranslations } from './useWarnTranslations';
 
 /**
  * Hook to get the i18n interface
@@ -11,7 +11,7 @@ import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 export function useI18nInterface<T extends PageI18nInterface>(
   i18nInterface: T
 ): T {
-  const t = useTranslations();
+  const t = useWarnTranslations();
 
   const i18n = useMemo(() => {
     return Object.fromEntries(

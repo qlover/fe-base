@@ -117,7 +117,6 @@ The project adopts an interface-driven design pattern, achieving decoupling and 
 #### Client Interfaces (src/base/port)
 
 - **AppUserApiInterface**: User authentication related API interface
-- **AdminPageInterface**: Admin page base interface
 - **AsyncStateInterface**: Asynchronous state management interface
 - **RouterInterface**: Router management interface
 - **I18nServiceInterface**: Internationalization service interface

@@ -1,27 +1,28 @@
 import { inject, injectable } from 'inversify';
-import type { AdminPageListParams } from '@/base/port/AdminPageInterface';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
+import type { UserSchema } from '@migrations/schema/UserSchema';
 import {
   AppApiRequester,
   type AppApiConfig,
   type AppApiTransaction
 } from '../appApi/AppApiRequester';
+import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
 import type { RequestTransaction } from '@qlover/fe-corekit';
 
 export type AdminUserListTransaction = AppApiTransaction<
-  AdminPageListParams,
+  ResourceQuery,
   PaginationInterface<unknown>
 >;
 
 @injectable()
-export class AdminUserApi {
+export class AdminUserApi implements ResourceInterface<UserSchema> {
   constructor(
     @inject(AppApiRequester)
     protected client: RequestTransaction<AppApiConfig>
   ) {}
 
-  async getUserList(
-    params: AdminPageListParams
+  async search(
+    params: AdminUserListTransaction['request']
   ): Promise<AdminUserListTransaction['response']> {
     const response = await this.client.request<AdminUserListTransaction>({
       url: '/admin/users',
@@ -30,5 +31,37 @@ export class AdminUserApi {
     });
 
     return response;
+  }
+
+  create(data: UserSchema): Promise<unknown> {
+    return this.client.request<AdminUserListTransaction>({
+      url: '/admin/users',
+      method: 'POST',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  remove(data: UserSchema): Promise<unknown> {
+    return this.client.request<AdminUserListTransaction>({
+      url: '/admin/users',
+      method: 'DELETE',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  update(data: UserSchema): Promise<unknown> {
+    return this.client.request<AdminUserListTransaction>({
+      url: '/admin/users',
+      method: 'PUT',
+      data: data as unknown as Record<string, unknown>
+    });
+  }
+
+  export(data: UserSchema): Promise<unknown> {
+    return this.client.request<AdminUserListTransaction>({
+      url: '/admin/users',
+      method: 'GET',
+      data: data as unknown as Record<string, unknown>
+    });
   }
 }

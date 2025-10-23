@@ -205,5 +205,8 @@
   "admin__welcome": "Welcome to the admin page",
   "page__admin__users__title": "Admin users page",
   "page__admin__users__description": "Admin users page",
-  "page__admin__users__keywords": "Admin users page keywords"
+  "page__admin__users__keywords": "Admin users page keywords",
+  "page__admin__locales__title": "Admin locales page",
+  "page__admin__locales__description": "Admin locales page",
+  "page__admin__locales__keywords": "Admin locales page keywords"
 }
