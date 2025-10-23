@@ -22,7 +22,6 @@ next-app/
 #### 1.1 Interface Layer (src/base/port)
 
 - `AdminLayoutInterface.ts` - Admin layout interface
-- `AdminPageInterface.ts` - Admin page interface
 - `AppApiInterface.ts` - Application API interface
 - `AppUserApiInterface.ts` - User API interface
 - `AsyncStateInterface.ts` - Asynchronous state interface
