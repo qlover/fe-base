@@ -1,12 +1,27 @@
+import {
+  StoreInterface,
+  type ResourceQuery,
+  type StoreStateInterface
+} from '@qlover/corekit-bridge';
 import { injectable } from 'inversify';
 import type {
   AdminTableEventCommonParams,
   AdminTableEventInterface
 } from '@/uikit/components/adminTable/AdminTableEventInterface';
-import type { ResourceQuery } from '@qlover/corekit-bridge';
+
+export class AdminPageEventState implements StoreStateInterface {
+  selectedResource?: unknown;
+}
 
 @injectable()
-export class AdminPageEvent implements AdminTableEventInterface {
+export class AdminPageEvent
+  extends StoreInterface<AdminPageEventState>
+  implements AdminTableEventInterface
+{
+  constructor() {
+    super(() => new AdminPageEventState());
+  }
+
   onChangeParams(params: AdminTableEventCommonParams & ResourceQuery): void {
     const { resource, ...query } = params;
 
@@ -23,9 +38,18 @@ export class AdminPageEvent implements AdminTableEventInterface {
     throw new Error('Method not implemented.');
   }
   onDetail(_params: AdminTableEventCommonParams): void {
-    throw new Error('Method not implemented.');
+    const { dataSource } = _params;
+
+    if (!dataSource) {
+      return;
+    }
+
+    this.emit({ ...this.state, selectedResource: dataSource });
   }
   onEdited(_params: AdminTableEventCommonParams): void {
+    throw new Error('Method not implemented.');
+  }
+  onRefresh(_params: AdminTableEventCommonParams): void {
     throw new Error('Method not implemented.');
   }
 }

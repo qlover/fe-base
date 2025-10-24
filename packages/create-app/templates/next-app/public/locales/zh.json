@@ -208,5 +208,11 @@
   "page__admin__users__keywords": "后台管理 - 管理员用户页面关键词",
   "page__admin__locales__title": "后台管理 - 管理员语言页面",
   "page__admin__locales__description": "后台管理 - 管理员语言页面",
-  "page__admin__locales__keywords": "后台管理 - 管理员语言页面关键词"
+  "page__admin__locales__keywords": "后台管理 - 管理员语言页面关键词",
+  "admin__table__header__create": "新建",
+  "admin__table__header__refresh": "刷新",
+  "admin__table__header__search": "搜索",
+  "admin__table__header__reset": "重置",
+  "admin__table__header__export": "导出",
+  "admin__table__header__settings": "设置"
 }

@@ -3,6 +3,8 @@
 import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
+import { AdminTableHeader } from '@/uikit/components/adminTable/AdminTableHeader';
+import { adminTableI18n } from '@/uikit/components/adminTable/config';
 import { EditableCell } from '@/uikit/components/adminTable/EditableCell';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
@@ -21,6 +23,7 @@ export default function LocalesPage() {
   const pageService = useIOC(AdminLocalesService);
   const pageEvent = useIOC(AdminPageEvent);
   const tt = useI18nInterface(adminLocales18n);
+  const headerTT = useI18nInterface(adminTableI18n);
 
   useLifecycle(pageService);
 
@@ -51,6 +54,13 @@ export default function LocalesPage() {
   return (
     <div data-testid="LocalesPage">
       <ClientSeo i18nInterface={tt} />
+
+      <AdminTableHeader
+        tt={headerTT}
+        resource={pageService}
+        tableEvent={pageEvent}
+      />
+
       <AdminTable
         columns={columns as ColumnsType<unknown>}
         resource={pageService}

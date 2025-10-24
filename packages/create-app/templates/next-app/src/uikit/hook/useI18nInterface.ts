@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 import { useWarnTranslations } from './useWarnTranslations';
 
 /**
@@ -8,7 +7,7 @@ import { useWarnTranslations } from './useWarnTranslations';
  * @param i18nInterface - The i18n interface to get
  * @returns The i18n interface
  */
-export function useI18nInterface<T extends PageI18nInterface>(
+export function useI18nInterface<T extends Record<string, string>>(
   i18nInterface: T
 ): T {
   const t = useWarnTranslations();

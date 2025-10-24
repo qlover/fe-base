@@ -6,7 +6,10 @@ import { AdminLocalesApi } from './adminApi/AdminLocalesApi';
 import { ResourceState } from '../cases/ResourceState';
 
 @injectable()
-export class AdminLocalesService extends ResourceService<LocalesSchema> {
+export class AdminLocalesService extends ResourceService<
+  LocalesSchema,
+  ResourceStore<ResourceState>
+> {
   constructor(
     @inject(AdminLocalesApi)
     protected adminLocalesApi: AdminLocalesApi

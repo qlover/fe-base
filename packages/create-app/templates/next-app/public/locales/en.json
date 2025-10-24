@@ -208,5 +208,11 @@
   "page__admin__users__keywords": "Admin users page keywords",
   "page__admin__locales__title": "Admin locales page",
   "page__admin__locales__description": "Admin locales page",
-  "page__admin__locales__keywords": "Admin locales page keywords"
+  "page__admin__locales__keywords": "Admin locales page keywords",
+  "admin__table__header__create": "New",
+  "admin__table__header__refresh": "Refresh",
+  "admin__table__header__search": "Search",
+  "admin__table__header__reset": "Reset",
+  "admin__table__header__export": "Export",
+  "admin__table__header__settings": "Settings"
 }

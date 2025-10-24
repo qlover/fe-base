@@ -14,13 +14,16 @@ export interface AdminTableProps extends TableProps<unknown> {
   tableEvent?: AdminTableEventInterface;
 }
 
+const selectors = {
+  searchParams: (state: ResourceState) => state.searchParams,
+  listState: (state: ResourceState) => state.listState
+};
+
 export function AdminTable(props: AdminTableProps) {
   const { resource, tableEvent, ...tableProps } = props;
   const store = resource.getStore();
-
-  const searchParams = useStore(store, (state) => state.searchParams);
-  const listState = useStore(store, (state) => state.listState);
-
+  const searchParams = useStore(store, selectors.searchParams);
+  const listState = useStore(store, selectors.listState);
   const dataSource = listState.result?.list as unknown[];
 
   return (
