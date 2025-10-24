@@ -6,10 +6,11 @@ import { Table } from 'antd';
 import type { ResourceState } from '@/base/cases/ResourceState';
 import { useStore } from '@/uikit/hook/useStore';
 import type { AdminTableEventInterface } from './AdminTableEventInterface';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import type { AdminTableOption } from './AdminTableOption';
+import type { TableProps } from 'antd/es/table';
 
-export interface AdminTableProps extends TableProps<unknown> {
-  columns: ColumnsType<unknown>;
+export interface AdminTableProps<T> extends TableProps<T> {
+  columns: AdminTableOption<T>[];
   resource: ResourceServiceInterface<unknown, ResourceStore<ResourceState>>;
   tableEvent?: AdminTableEventInterface;
 }
@@ -19,12 +20,12 @@ const selectors = {
   listState: (state: ResourceState) => state.listState
 };
 
-export function AdminTable(props: AdminTableProps) {
+export function AdminTable<T>(props: AdminTableProps<T>) {
   const { resource, tableEvent, ...tableProps } = props;
   const store = resource.getStore();
   const searchParams = useStore(store, selectors.searchParams);
   const listState = useStore(store, selectors.listState);
-  const dataSource = listState.result?.list as unknown[];
+  const dataSource = listState.result?.list as T[];
 
   return (
     <Table

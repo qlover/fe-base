@@ -3,6 +3,7 @@
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { AdminUserService } from '@/base/services/AdminUserService';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
+import type { AdminTableOption } from '@/uikit/components/adminTable/AdminTableOption';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -28,13 +29,13 @@ export default function UsersPage() {
 
   useLifecycle(pageService);
 
-  const columns: ColumnsType<UserSchema> = baseColumns;
+  const options: AdminTableOption<UserSchema>[] = baseColumns;
 
   return (
     <div data-testid="UsersPage">
       <ClientSeo i18nInterface={tt} />
       <AdminTable
-        columns={columns as ColumnsType<unknown>}
+        columns={options}
         resource={pageService}
         tableEvent={pageEvent}
       />

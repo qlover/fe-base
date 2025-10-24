@@ -4,6 +4,8 @@ import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
 import { AdminTableHeader } from '@/uikit/components/adminTable/AdminTableHeader';
+import type { AdminTableOption } from '@/uikit/components/adminTable/AdminTableOption';
+import { AdminTablePopup } from '@/uikit/components/adminTable/AdminTablePopup';
 import { adminTableI18n } from '@/uikit/components/adminTable/config';
 import { EditableCell } from '@/uikit/components/adminTable/EditableCell';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
@@ -17,7 +19,7 @@ import {
 import { adminLocales18n } from '@config/i18n';
 import type { LocaleType } from '@config/i18n/i18nConfig';
 import { i18nConfig } from '@config/i18n/i18nConfig';
-import type { ColumnsType } from 'antd/es/table';
+import { LocalesFrom } from './LocalesFrom';
 
 export default function LocalesPage() {
   const pageService = useIOC(AdminLocalesService);
@@ -27,12 +29,12 @@ export default function LocalesPage() {
 
   useLifecycle(pageService);
 
-  const columns: ColumnsType<LocalesSchema> = Object.keys(
+  const options: AdminTableOption<LocalesSchema>[] = Object.keys(
     localesSchema.shape
   ).map((key) => ({
     title: key,
     dataIndex: key,
-    render: (text: string, record: LocalesSchema) => {
+    render: (text, record) => {
       if (i18nConfig.supportedLngs.includes(key as LocaleType)) {
         return (
           <EditableCell
@@ -62,10 +64,14 @@ export default function LocalesPage() {
       />
 
       <AdminTable
-        columns={columns as ColumnsType<unknown>}
+        columns={options}
         resource={pageService}
         tableEvent={pageEvent}
       />
+
+      <AdminTablePopup>
+        <LocalesFrom tableEvent={pageEvent} />
+      </AdminTablePopup>
     </div>
   );
 }
