@@ -30,6 +30,7 @@
     "fe-check-packages": "./dist/cli/check-packages.js"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup"
   },
   "repository": {

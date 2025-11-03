@@ -58,6 +58,7 @@
     "access": "public"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "fe-code2md -p src/core -g docs --formatOutput prettier --removePrefix"
   },

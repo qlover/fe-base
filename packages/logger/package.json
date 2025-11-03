@@ -22,6 +22,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix"
   },

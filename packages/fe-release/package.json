@@ -45,6 +45,7 @@
     "fe-release": "dist/cli.js"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix",
     "release": "node dist/cli.js",
