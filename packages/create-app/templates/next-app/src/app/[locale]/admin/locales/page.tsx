@@ -67,19 +67,28 @@ export default function LocalesPage() {
 
   const renderCell = useCallback(
     (key: string) => {
-      // eslint-disable-next-line react/display-name
-      return (value: unknown, record: LocalesSchema, _index: number) => (
-        <EditableCell
-          data-testid={`editable-cell-${key}`}
-          value={value as string}
-          onSave={(value) =>
-            pageService.update({
-              id: record.id,
-              [key]: value
-            })
-          }
-        />
-      );
+      const renderEditableCell = (
+        value: unknown,
+        record: LocalesSchema,
+        _index: number
+      ) => {
+        return (
+          <EditableCell
+            data-testid={`editable-cell-${key}`}
+            value={value as string}
+            onSave={(value) =>
+              pageService.update({
+                id: record.id,
+                [key]: value
+              })
+            }
+          />
+        );
+      };
+
+      renderEditableCell.displayName = `EditableCellWrapper-${key}`;
+
+      return renderEditableCell;
     },
     [pageService]
   );
