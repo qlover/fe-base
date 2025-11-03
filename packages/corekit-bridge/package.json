@@ -1,7 +1,7 @@
 {
   "name": "@qlover/corekit-bridge",
   "description": "fe-corekit Abstraction tool bridge for real development environments",
-  "version": "1.6.4",
+  "version": "1.6.6",
   "private": false,
   "type": "module",
   "files": [
@@ -58,6 +58,7 @@
     "access": "public"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "fe-code2md -p src/core -g docs --formatOutput prettier --removePrefix"
   },

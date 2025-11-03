@@ -25,6 +25,7 @@
     }
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "node ./dist/cli.js -p src -g docs --removePrefix --formatOutput prettier",
     "build:docs:example": "node ./dist/cli.js -p example/index.ts --formatOutput prettier"

@@ -41,6 +41,7 @@
     "access": "public"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json --formatOutput prettier && rimraf './doc/**/index.md' -g"
   },
