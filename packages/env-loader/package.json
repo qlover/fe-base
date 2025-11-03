@@ -36,6 +36,7 @@
     "access": "public"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup"
   },
   "devDependencies": {

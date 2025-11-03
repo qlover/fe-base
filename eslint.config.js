@@ -66,7 +66,13 @@ const commonConfig = createCommon();
  */
 export default tseslint.config([
   {
-    ignores: ['**/dist/**', '**/build/**', '**/node_modules/**']
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/node_modules/**',
+      // TODO: open templates later(pnpm lint command very slow)
+      'packages/**/templates/**'
+    ]
   },
 
   {

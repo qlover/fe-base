@@ -14,6 +14,7 @@
     "create-app": "dist/index.js"
   },
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup",
     "create:app": "node ./dist/index.js"
   },

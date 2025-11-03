@@ -17,6 +17,7 @@
     "package.json"
   ],
   "scripts": {
+    "lint": "eslint src --fix",
     "build": "tsup"
   },
   "publishConfig": {
