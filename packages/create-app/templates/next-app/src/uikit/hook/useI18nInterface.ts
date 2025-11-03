@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { useWarnTranslations } from './useWarnTranslations';
 
 /**
@@ -12,16 +13,10 @@ export function useI18nInterface<T extends Record<string, string>>(
 ): T {
   const t = useWarnTranslations();
 
-  const i18n = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(i18nInterface).map(([key, value]) => {
-        if (typeof value === 'string') {
-          return [key, t(value)];
-        }
-        return [key, value];
-      })
-    ) as T;
-  }, [i18nInterface, t]);
+  const i18n = useMemo(
+    () => TranslateI18nInterface.translate(i18nInterface, t),
+    [i18nInterface, t]
+  );
 
   return i18n;
 }

@@ -15,6 +15,6 @@ export class AdminLocalesService extends ResourceService<
     protected adminLocalesApi: AdminLocalesApi
   ) {
     const store = new ResourceStore(() => new ResourceState());
-    super('adminLocales', store, adminLocalesApi);
+    super('admin_locales', store, adminLocalesApi);
   }
 }

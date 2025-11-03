@@ -3,163 +3,157 @@
  * @localZh 登录
  * @localEn Login
  */
-export const PAGE_LOGIN_TITLE = 'page__login__title';
+export const PAGE_LOGIN_TITLE = 'page_login:title';
 /**
  * @description Login page description
  * @localZh 登录页面描述
  * @localEn Login Page Description
  */
-export const PAGE_LOGIN_DESCRIPTION = 'page__login__description';
+export const PAGE_LOGIN_DESCRIPTION = 'page_login:description';
 /**
  * @description Login page content
  * @localZh 登录页面内容
  * @localEn Login Page Content
  */
-export const PAGE_LOGIN_CONTENT = 'page__login__content';
+export const PAGE_LOGIN_CONTENT = 'page_login:content';
 /**
  * @description Login page keywords
  * @localZh 登录页面关键词
  * @localEn Login Page Keywords
  */
-export const PAGE_LOGIN_KEYWORDS = 'page__login__keywords';
+export const PAGE_LOGIN_KEYWORDS = 'page_login:keywords';
 
-/**
- * @description Login page title
- * @localZh 登录
- * @localEn Login
- */
-export const LOGIN_TITLE = 'login__title';
 /**
  * @description Email field label
  * @localZh 邮箱
  * @localEn Email
  */
-export const LOGIN_EMAIL = 'login__email';
+export const PAGE_LOGIN_EMAIL = 'page_login:email';
 /**
  * @description Username field label
  * @localZh 用户名
  * @localEn Username
  */
-export const LOGIN_USERNAME = 'login__username';
+export const PAGE_LOGIN_USERNAME = 'page_login:username';
 /**
  * @description Password field label
  * @localZh 密码
  * @localEn Password
  */
-export const LOGIN_PASSWORD = 'login__password';
+export const PAGE_LOGIN_PASSWORD = 'page_login:password';
 /**
  * @description Login button text
  * @localZh 登录
  * @localEn Login
  */
-export const LOGIN_BUTTON = 'login__login';
+export const PAGE_LOGIN_BUTTON = 'page_login:login';
 /**
  * @description Login page description
  * @localZh 欢迎来到未来学习
  * @localEn Welcome to the future of learning
  */
-export const LOGIN_WELCOME = 'login__welcome';
+export const PAGE_LOGIN_WELCOME = 'page_login:welcome';
 /**
  * @description Login page description
  * @localZh 解锁个性化 AI 驱动的学习体验，加速您的知识旅程。
  * @localEn Unlock personalized AI-powered learning experiences designed to accelerate your knowledge journey__
  */
-export const LOGIN_SUBTITLE = 'login__subtitle';
+export const PAGE_LOGIN_SUBTITLE = 'page_login:subtitle';
 /**
  * @description Login page forgot password text
  * @localZh 忘记密码？
  * @localEn Forgot your password?
  */
-export const LOGIN_FORGOT_PASSWORD = 'login__forgot_password';
+export const PAGE_LOGIN_FORGOT_PASSWORD = 'page_login:forgot_password';
 /**
  * @description Login page continue with text
  * @localZh 或继续使用
  * @localEn or continue with
  */
-export const LOGIN_CONTINUE_WITH = 'login__continue_with';
+export const PAGE_LOGIN_CONTINUE_WITH = 'page_login:continue_with';
 /**
  * @description Login with Google button text
  * @localZh 使用 Google 登录
  * @localEn Sign in with Google
  */
-export const LOGIN_WITH_GOOGLE = 'login__with_google';
+export const PAGE_LOGIN_WITH_GOOGLE = 'page_login:with_google';
 /**
  * @description Login page no account text
  * @localZh 还没有账号？
  * @localEn Don't have an account?
  */
-export const LOGIN_NO_ACCOUNT = 'login__no_account';
+export const PAGE_LOGIN_NO_ACCOUNT = 'page_login:no_account';
 /**
  * @description Login page create account link text
  * @localZh 在此创建
  * @localEn Create one here
  */
-export const LOGIN_CREATE_ACCOUNT = 'login__create_account';
+export const PAGE_LOGIN_CREATE_ACCOUNT = 'page_login:create_account';
 /**
  * @description Login page email validation message
  * @localZh 请输入正确的邮箱！
  * @localEn Please input a valid email!
  */
-export const LOGIN_EMAIL_REQUIRED = 'login__email_required';
+export const PAGE_LOGIN_EMAIL_REQUIRED = 'page_login:email_required';
 /**
  * @description Login page password validation message
  * @localZh 请输入您的密码！
  * @localEn Please input your password!
  */
-export const LOGIN_PASSWORD_REQUIRED = 'login__password_required';
+export const PAGE_LOGIN_PASSWORD_REQUIRED = 'page_login:password_required';
 /**
  * @description Login page feature item - AI learning paths
  * @localZh AI驱动的个性化学习路径
  * @localEn AI-powered personalized learning paths
  */
-export const LOGIN_FEATURE_AI_PATHS = 'login__feature__ai_paths';
+export const PAGE_LOGIN_FEATURE_AI_PATHS = 'page_login:feature__ai_paths';
 /**
  * @description Login page feature item - Smart recommendations
  * @localZh 智能内容推荐
  * @localEn Smart content recommendations
  */
-export const LOGIN_FEATURE_SMART_RECOMMENDATIONS =
-  'login__feature__smart_recommendations';
+export const PAGE_LOGIN_FEATURE_SMART = 'page_login:feature__smart';
 /**
  * @description Login page feature item - Progress tracking
  * @localZh 实时进度追踪
  * @localEn Real-time progress tracking
  */
-export const LOGIN_FEATURE_PROGRESS_TRACKING =
-  'login__feature__progress_tracking';
+export const PAGE_LOGIN_TRACKING = 'page_login:tracking';
 /**
  * @description Login page email input title
  * @localZh 输入邮箱
  * @localEn Enter email
  */
-export const LOGIN_EMAIL_TITLE = 'login__email__title';
+export const PAGE_LOGIN_EMAIL2 = 'page_login:email2';
+
 /**
  * @description Login page password input title
  * @localZh 输入密码
  * @localEn Enter password
  */
-export const LOGIN_PASSWORD_TITLE = 'login__password__title';
+export const PAGE_LOGIN_PASSWORD2 = 'page_login:password2';
+
 /**
  * @description Login page forgot password link title
  * @localZh 重置密码
  * @localEn Reset password
  */
-export const LOGIN_FORGOT_PASSWORD_TITLE = 'login__forgot_password__title';
+export const PAGE_LOGIN_FORGOT_PASSWORD2 = 'page_login:forgot_password2';
 /**
  * @description Login page submit button title
  * @localZh 登录账号
  * @localEn Sign in to account
  */
-export const LOGIN_BUTTON_TITLE = 'login__button__title';
+export const PAGE_LOGIN_BUTTON2 = 'page_login:button2';
 /**
  * @description Login page Google sign in button title
  * @localZh 使用Google账号登录
  * @localEn Sign in with Google account
  */
-export const LOGIN_WITH_GOOGLE_TITLE = 'login__with_google__title';
+export const PAGE_LOGIN_WITH_GOOGLE2 = 'page_login:with_google2';
 /**
  * @description Login page create account link title
  * @localZh 创建新账号
  * @localEn Create new account
  */
-export const LOGIN_CREATE_ACCOUNT_TITLE = 'login__create_account__title';
+export const PAGE_LOGIN_CREATE_ACCOUNT2 = 'page_login:create_account2';

@@ -1,11 +1,24 @@
 import { inject, injectable } from 'inversify';
 import { revalidateTag } from 'next/cache';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
+import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
+import { splitI18nKey } from '@config/i18n/i18nKeyScheam';
 import { LocalesRepository } from '../repositorys/LocalesRepository';
 import type { BridgeOrderBy } from '../port/DBBridgeInterface';
-import type { LocalesRepositoryInterface } from '../port/LocalesRepositoryInterface';
+import type {
+  LocalesRepositoryInterface,
+  UpsertResult
+} from '../port/LocalesRepositoryInterface';
 import type { PaginationInterface } from '../port/PaginationInterface';
+
+export type ImportLocalesData = {
+  namespace?: string;
+
+  values: {
+    [key in LocaleType]?: Record<string, string>;
+  };
+};
 
 @injectable()
 export class ApiLocaleService {
@@ -55,5 +68,55 @@ export class ApiLocaleService {
       await revalidateTag(`i18n-${locale}`);
     });
     await Promise.all(revalidatePromises);
+  }
+
+  async create(data: Partial<LocalesSchema>): Promise<void> {
+    await this.localesRepository.add(data as LocalesSchema);
+
+    // 清除所有支持的语言的缓存
+    const revalidatePromises = i18nConfig.supportedLngs.map(async (locale) => {
+      await revalidateTag(`i18n-${locale}`);
+    });
+    await Promise.all(revalidatePromises);
+  }
+
+  async importLocales(data: ImportLocalesData): Promise<UpsertResult> {
+    const { namespace = 'common', values } = data;
+
+    const result: Record<string, Record<string, string>> = {};
+
+    Object.entries(values).forEach(([locale, values2]) => {
+      Object.entries(values2).forEach(([key, value]) => {
+        if (!result[key]) {
+          result[key] = {};
+        }
+
+        result[key]!['value'] = key;
+        result[key]![locale] = value;
+
+        const { namespace: namespace2 } = splitI18nKey(key);
+        result[key]!['namespace'] = namespace2 || namespace;
+      });
+    });
+
+    const localesSchemas = Object.values(result) as Partial<LocalesSchema>[];
+
+    // Use batch upsert method with chunk processing
+    const upsertResult = await this.localesRepository.upsert(localesSchemas, {
+      chunkSize: 100, // 100 items per chunk
+      concurrency: 3 // max 3 concurrent requests
+    });
+
+    // Clear cache for all supported languages if any data was successfully imported
+    if (upsertResult.successCount > 0) {
+      const revalidatePromises = i18nConfig.supportedLngs.map(
+        async (locale) => {
+          await revalidateTag(`i18n-${locale}`);
+        }
+      );
+      await Promise.all(revalidatePromises);
+    }
+
+    return upsertResult;
   }
 }

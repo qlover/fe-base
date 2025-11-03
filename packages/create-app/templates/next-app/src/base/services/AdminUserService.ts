@@ -6,7 +6,10 @@ import { AdminUserApi } from './adminApi/AdminUserApi';
 import { ResourceState } from '../cases/ResourceState';
 
 @injectable()
-export class AdminUserService extends ResourceService<UserSchema> {
+export class AdminUserService extends ResourceService<
+  UserSchema,
+  ResourceStore<ResourceState>
+> {
   constructor(
     @inject(AdminUserApi) resourceApi: ResourceInterface<UserSchema>
   ) {

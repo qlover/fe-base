@@ -29,6 +29,7 @@ export interface DBBridgeResponse<T> {
 export interface DBBridgeInterface {
   add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
+  upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   get(event: BridgeEvent): Promise<DBBridgeResponse<unknown>>;
   pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>>;

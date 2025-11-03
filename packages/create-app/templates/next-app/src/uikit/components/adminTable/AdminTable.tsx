@@ -1,30 +1,54 @@
-import {
-  type ResourceServiceInterface,
-  type ResourceStore
-} from '@qlover/corekit-bridge';
 import { Table } from 'antd';
-import type { ResourceState } from '@/base/cases/ResourceState';
+import { useMemo } from 'react';
 import { useStore } from '@/uikit/hook/useStore';
+import { AdminTableAction, type AdminTableActionTT } from './AdminTableAction';
+import { resourceSelectors } from './config';
 import type { AdminTableEventInterface } from './AdminTableEventInterface';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import type { AdminTableOption } from './AdminTableOption';
+import type { TableColumnProps } from 'antd';
+import type { TableProps } from 'antd/es/table';
+import type { ColumnType } from 'antd/lib/table';
 
-export interface AdminTableProps extends TableProps<unknown> {
-  columns: ColumnsType<unknown>;
-  resource: ResourceServiceInterface<unknown, ResourceStore<ResourceState>>;
-  tableEvent?: AdminTableEventInterface;
+export interface AdminTableProps<T> extends TableProps<T> {
+  columns: AdminTableOption<T>[];
+  tableEvent: AdminTableEventInterface;
+  actionProps?: false | (TableColumnProps<T> & AdminTableActionTT);
 }
 
-const selectors = {
-  searchParams: (state: ResourceState) => state.searchParams,
-  listState: (state: ResourceState) => state.listState
-};
+export function AdminTable<T>(props: AdminTableProps<T>) {
+  const { tableEvent, columns, actionProps, ...tableProps } = props;
+  const resource = tableEvent.getResource();
+  const resourceStore = resource.getStore();
+  const searchParams = useStore(resourceStore, resourceSelectors.searchParams);
+  const listState = useStore(resourceStore, resourceSelectors.listState);
+  const dataSource = listState.result?.list as T[];
 
-export function AdminTable(props: AdminTableProps) {
-  const { resource, tableEvent, ...tableProps } = props;
-  const store = resource.getStore();
-  const searchParams = useStore(store, selectors.searchParams);
-  const listState = useStore(store, selectors.listState);
-  const dataSource = listState.result?.list as unknown[];
+  const innerColumns = useMemo(() => {
+    if (actionProps === false) {
+      return columns;
+    }
+
+    return [
+      ...columns,
+      {
+        title: 'Action',
+        dataIndex: 'action',
+        fixed: 'right',
+        width: 160,
+        render: (_, record: T) => (
+          <AdminTableAction
+            data-testid="innerColumns"
+            tableEvent={tableEvent}
+            record={record}
+            editText={actionProps!.editText}
+            deleteText={actionProps!.deleteText}
+            detailText={actionProps!.detailText}
+          />
+        ),
+        ...actionProps
+      }
+    ] as ColumnType<T>[];
+  }, [actionProps, columns, tableEvent]);
 
   return (
     <Table
@@ -34,6 +58,7 @@ export function AdminTable(props: AdminTableProps) {
       loading={listState.loading}
       scroll={{ x: true }}
       {...tableProps}
+      columns={innerColumns}
       pagination={{
         pageSizeOptions: [10, 20, 50],
         current: searchParams.page,

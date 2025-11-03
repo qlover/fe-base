@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import { useMemo } from 'react';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { LocaleLink } from './LocaleLink';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
@@ -27,7 +27,7 @@ export function BaseHeader(props: {
 
   const tt = {
     title: appConfig.appName,
-    admin: t(PAGE_HEAD_ADMIN_TITLE)
+    admin: t(COMMON_ADMIN_TITLE)
   };
 
   const leftDefault = useMemo(

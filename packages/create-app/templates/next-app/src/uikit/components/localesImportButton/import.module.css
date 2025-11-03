@@ -1,0 +1,6 @@
+.uploadRoot {
+  width: 100%;
+  :global(.ant-upload) {
+    width: 100%;
+  }
+}

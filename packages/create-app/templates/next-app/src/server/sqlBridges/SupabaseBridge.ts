@@ -65,7 +65,7 @@ export class SupabaseBridge implements DBBridgeInterface {
         );
       }
 
-      throw new Error(result.error.message);
+      throw new Error(result.error.details + ' ' + result.error.message);
     }
 
     return result as SupabaseBridgeResponse<unknown>;
@@ -116,8 +116,22 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
     const res = await this.supabase
       .from(table)
-      .insert(Array.isArray(data) ? data : [data])
-      .select();
+      .insert(Array.isArray(data) ? data : [data]);
+    return this.catch(res);
+  }
+
+  async upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+    const { table, data, fields = '*' } = event;
+    if (!data) {
+      throw new Error('Data is required for upsert operation');
+    }
+    const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
+    const res = await this.supabase
+      .from(table)
+      .upsert(Array.isArray(data) ? data : [data], {
+        onConflict: 'value'
+      })
+      .select(selectFields); // Request to return the upserted data
     return this.catch(res);
   }
 
