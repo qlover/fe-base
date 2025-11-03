@@ -1,7 +1,7 @@
 import { TeamOutlined } from '@ant-design/icons';
 import { useLocale } from 'next-intl';
 import { useMemo, type HTMLAttributes } from 'react';
-import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { BaseHeader } from './BaseHeader';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
@@ -26,7 +26,7 @@ export function BaseLayout({
   const t = useWarnTranslations();
 
   const tt = {
-    admin: t(PAGE_HEAD_ADMIN_TITLE)
+    admin: t(COMMON_ADMIN_TITLE)
   };
 
   const actions = useMemo(

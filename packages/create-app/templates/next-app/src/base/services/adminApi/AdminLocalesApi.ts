@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
+import type { LocaleType } from '@config/i18n';
 import {
   AppApiRequester,
   type AppApiConfig,
@@ -31,7 +32,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
    */
   create(data: LocalesSchema): Promise<unknown> {
     return this.client.request<AdminLocalesListTransaction>({
-      url: '/admin/locales',
+      url: '/admin/locales/create',
       method: 'POST',
       data: data as unknown as Record<string, unknown>
     });
@@ -82,6 +83,22 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
       url: `/admin/locales/update`,
       method: 'POST',
       data
+    });
+  }
+
+  import(data: {
+    [key in LocaleType]?: File;
+  }): Promise<unknown> {
+    const formdata = new FormData();
+    for (const [key, value] of Object.entries(data)) {
+      formdata.append(key, value);
+    }
+
+    return this.client.request({
+      url: '/admin/locales/import',
+      method: 'POST',
+      data: formdata,
+      responseType: 'formdata'
     });
   }
 }

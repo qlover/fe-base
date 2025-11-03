@@ -1,4 +1,4 @@
-import * as i18nKeys from '../Identifier/page.home';
+import * as i18nKeys from '../Identifier/pages/page.home';
 
 /**
  * Home page i18n interface
@@ -15,8 +15,8 @@ export const homeI18n = Object.freeze({
   content: i18nKeys.PAGE_HOME_DESCRIPTION,
   keywords: i18nKeys.PAGE_HOME_KEYWORDS,
 
-  welcome: i18nKeys.HOME_WELCOME,
-  getStartedTitle: i18nKeys.HOME_GET_STARTED_TITLE,
-  getStartedDescription: i18nKeys.HOME_GET_STARTED_DESCRIPTION,
-  getStartedButton: i18nKeys.HOME_GET_STARTED_BUTTON
+  welcome: i18nKeys.PAGE_HOME_WELCOME,
+  getStartedTitle: i18nKeys.PAGE_HOME_GET_STARTED,
+  getStartedDescription: i18nKeys.PAGE_HOME_GET_STARTED_DESCRIPTION,
+  getStartedButton: i18nKeys.PAGE_HOME_GET_STARTED_BUTTON
 });

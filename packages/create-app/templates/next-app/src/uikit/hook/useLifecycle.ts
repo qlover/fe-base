@@ -12,5 +12,11 @@ export function useLifecycle(lifecycle: LifecycleInterface) {
         lifecycle.created();
       });
     }
+
+    return () => {
+      if (mouted.current) {
+        lifecycle.destroyed();
+      }
+    };
   }, [lifecycle]);
 }
