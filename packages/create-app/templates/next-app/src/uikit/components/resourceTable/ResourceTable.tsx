@@ -1,26 +1,28 @@
+import { useSliceStore } from '@qlover/slice-store-react';
 import { Table } from 'antd';
 import { useMemo } from 'react';
-import { useStore } from '@/uikit/hook/useStore';
-import { AdminTableAction, type AdminTableActionTT } from './AdminTableAction';
 import { resourceSelectors } from './config';
-import type { AdminTableEventInterface } from './AdminTableEventInterface';
-import type { AdminTableOption } from './AdminTableOption';
-import type { TableColumnProps } from 'antd';
-import type { TableProps } from 'antd/es/table';
-import type { ColumnType } from 'antd/lib/table';
+import { ResourceTableAction } from './ResourceTableAction';
+import type { ResourceTableActionI18n } from './config';
+import type { ResourceTableEventInterface } from './ResourceTableEventInterface';
+import type { ResourceTableOption } from './ResourceTableOption';
+import type { TableColumnProps, TableProps } from 'antd';
 
-export interface AdminTableProps<T> extends TableProps<T> {
-  columns: AdminTableOption<T>[];
-  tableEvent: AdminTableEventInterface;
-  actionProps?: false | (TableColumnProps<T> & AdminTableActionTT);
+export interface ResourceTableProps<T> extends TableProps<T> {
+  columns: ResourceTableOption<T>[];
+  tableEvent: ResourceTableEventInterface;
+  actionProps?: false | (TableColumnProps<T> & ResourceTableActionI18n);
 }
 
-export function AdminTable<T>(props: AdminTableProps<T>) {
+export function ResourceTable<T>(props: ResourceTableProps<T>) {
   const { tableEvent, columns, actionProps, ...tableProps } = props;
   const resource = tableEvent.getResource();
   const resourceStore = resource.getStore();
-  const searchParams = useStore(resourceStore, resourceSelectors.searchParams);
-  const listState = useStore(resourceStore, resourceSelectors.listState);
+  const searchParams = useSliceStore(
+    resourceStore,
+    resourceSelectors.searchParams
+  );
+  const listState = useSliceStore(resourceStore, resourceSelectors.listState);
   const dataSource = listState.result?.list as T[];
 
   const innerColumns = useMemo(() => {
@@ -36,18 +38,16 @@ export function AdminTable<T>(props: AdminTableProps<T>) {
         fixed: 'right',
         width: 160,
         render: (_, record: T) => (
-          <AdminTableAction
+          <ResourceTableAction
             data-testid="innerColumns"
             tableEvent={tableEvent}
             record={record}
-            editText={actionProps!.editText}
-            deleteText={actionProps!.deleteText}
-            detailText={actionProps!.detailText}
+            settings={actionProps}
           />
         ),
         ...actionProps
       }
-    ] as ColumnType<T>[];
+    ] as TableProps<T>['columns'];
   }, [actionProps, columns, tableEvent]);
 
   return (

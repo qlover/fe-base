@@ -1,20 +1,21 @@
 'use client';
 
-import { Form } from 'antd';
+import { Form, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { ZodColumnBuilder } from '@/base/cases/ZodColumnBuilder';
 import type { AdminLocalesApi } from '@/base/services/adminApi/AdminLocalesApi';
 import { AdminLocalesService } from '@/base/services/AdminLocalesService';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
-import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
-import { AdminTableHeader } from '@/uikit/components/adminTable/AdminTableHeader';
-import { AdminTablePopup } from '@/uikit/components/adminTable/AdminTablePopup';
-import { AdminTableSchemaForm } from '@/uikit/components/adminTable/AdminTableSchemaForm';
-import { adminTableI18n } from '@/uikit/components/adminTable/config';
-import { EditableCell } from '@/uikit/components/adminTable/EditableCell';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
+import { EditableCell } from '@/uikit/components/EditableCell';
 import { LocalesImportButton } from '@/uikit/components/localesImportButton/LocalesImportButton';
 import { LocalesImportEvent } from '@/uikit/components/localesImportButton/LocalesImportEvent';
+import {
+  ResourceTable,
+  ResourceTableHeader,
+  ResourceTablePopup,
+  ResourceTableSchemaForm
+} from '@/uikit/components/resourceTable';
 import { useFactory } from '@/uikit/hook/useFactory';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -24,7 +25,7 @@ import {
   localesSchema,
   type LocalesSchema
 } from '@migrations/schema/LocalesSchema';
-import { adminLocales18n, i18nConfig } from '@config/i18n';
+import { adminLocales18n, adminTableI18n, i18nConfig } from '@config/i18n';
 import { I } from '@config/IOCIdentifier';
 
 const localesTT = {
@@ -105,7 +106,7 @@ export default function LocalesPage() {
     <div data-testid="LocalesPage">
       <ClientSeo i18nInterface={tt} />
 
-      <AdminTableHeader
+      <ResourceTableHeader
         settings={tt}
         tableEvent={pageEvent}
         actionLeft={
@@ -119,7 +120,7 @@ export default function LocalesPage() {
         }
       />
 
-      <AdminTable
+      <ResourceTable
         columns={options}
         tableEvent={pageEvent}
         actionProps={{
@@ -130,7 +131,7 @@ export default function LocalesPage() {
         }}
       />
 
-      <AdminTablePopup
+      <ResourceTablePopup
         tableEvent={pageEvent}
         tt={{
           create: tt.createTitle,
@@ -138,13 +139,16 @@ export default function LocalesPage() {
           detail: tt.detailTitle
         }}
       >
-        <AdminTableSchemaForm
+        <ResourceTableSchemaForm
+          formComponents={{
+            input: Input
+          }}
           formRef={schemaFormRef}
           options={options}
           tt={tt}
           tableEvent={pageEvent}
         />
-      </AdminTablePopup>
+      </ResourceTablePopup>
     </div>
   );
 }

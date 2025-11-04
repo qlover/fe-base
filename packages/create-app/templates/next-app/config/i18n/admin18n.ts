@@ -1,7 +1,24 @@
-import * as commonKeys from '../Identifier/common/common';
+import * as commonKeys from '../Identifier/common';
 import * as homeKeys from '../Identifier/pages/page.admin.home';
 import * as localesKeys from '../Identifier/pages/page.admin.locales';
 import * as userKeys from '../Identifier/pages/page.admin.user';
+
+export const adminTableHeaderI18n = {
+  create: commonKeys.COMMON_ADMIN_TABLE_CREATE,
+  refresh: commonKeys.COMMON_ADMIN_TABLE_REFRESH,
+  search: commonKeys.COMMON_ADMIN_TABLE_SEARCH,
+  reset: commonKeys.COMMON_ADMIN_TABLE_RESET,
+  export: commonKeys.COMMON_ADMIN_TABLE_EXPORT,
+  settings: commonKeys.COMMON_ADMIN_TABLE_SETTINGS
+} as const;
+
+export const adminTableI18n = {
+  ...adminTableHeaderI18n,
+  action: commonKeys.COMMON_ADMIN_TABLE_ACTION,
+  editText: commonKeys.COMMON_ADMIN_TABLE_EDIT,
+  deleteText: commonKeys.COMMON_ADMIN_TABLE_DELETE,
+  detailText: commonKeys.COMMON_ADMIN_TABLE_DETAIL
+} as const;
 
 export const admin18n = Object.freeze({
   // basic meta properties
