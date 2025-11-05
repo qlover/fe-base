@@ -1,5 +1,6 @@
 'use client';
 
+import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
 import { ResourceStore } from '@qlover/corekit-bridge';
 import { useMemo } from 'react';
 import { ResourceState } from '@/base/cases/ResourceState';
@@ -7,17 +8,14 @@ import { ZodColumnBuilder } from '@/base/cases/ZodColumnBuilder';
 import { AdminUserApi } from '@/base/services/adminApi/AdminUserApi';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { ResourceService } from '@/base/services/ResourceService';
-import { AdminTable } from '@/uikit/components/adminTable/AdminTable';
-import { AdminTableHeader } from '@/uikit/components/adminTable/AdminTableHeader';
-import { adminTableI18n } from '@/uikit/components/adminTable/config';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
-import { useFactory } from '@/uikit/hook/useFactory';
+import { ResourceTable } from '@/uikit/components/resourceTable/ResourceTable';
+import { ResourceTableHeader } from '@/uikit/components/resourceTable/ResourceTableHeader';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useLifecycle } from '@/uikit/hook/useLifecycle';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { userSchema } from '@migrations/schema/UserSchema';
-import { adminUsers18n } from '@config/i18n';
+import { adminUsers18n, adminTableI18n } from '@config/i18n';
 
 const ns = 'admin_users';
 
@@ -54,12 +52,12 @@ export default function UsersPage() {
     <div data-testid="UsersPage">
       <ClientSeo i18nInterface={tt} />
 
-      <AdminTableHeader
+      <ResourceTableHeader
         settings={Object.assign({}, tt, { create: false })}
         tableEvent={pageEvent}
       />
 
-      <AdminTable
+      <ResourceTable
         columns={options}
         tableEvent={pageEvent}
         actionProps={false}

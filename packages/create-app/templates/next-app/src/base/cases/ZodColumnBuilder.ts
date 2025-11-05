@@ -6,12 +6,11 @@ import {
   type ZodRawShape,
   type ZodType
 } from 'zod';
-
-import {
-  AdminTableFormMap,
-  type AdminTableOption,
-  type AdminTableFormType
-} from '@/uikit/components/adminTable/AdminTableOption';
+import type {
+  ResourceTableFormType,
+  ResourceTableOption
+} from '@/uikit/components/resourceTable';
+import { ResourceTableFormMap } from '@/uikit/components/resourceTable';
 import { joinI18nKey } from '@config/i18n/i18nKeyScheam';
 import type { ZodBuilderInterface } from '../port/ZodBuilderInterface';
 import type { NamePath } from 'antd/es/form/interface';
@@ -20,21 +19,21 @@ import type { useTranslations } from 'next-intl';
 type OptionMap<
   Value extends ZodRawShape,
   Input extends ZodObject<Value>
-> = Record<keyof Input['shape'], AdminTableOption<z.infer<Input>>>;
+> = Record<keyof Input['shape'], ResourceTableOption<z.infer<Input>>>;
 
 export const ZodType2RenderFormMap = {
-  [ZodFirstPartyTypeKind.ZodString]: AdminTableFormMap.input,
-  [ZodFirstPartyTypeKind.ZodNumber]: AdminTableFormMap.input,
-  [ZodFirstPartyTypeKind.ZodBigInt]: AdminTableFormMap.input,
-  [ZodFirstPartyTypeKind.ZodBoolean]: AdminTableFormMap.select,
-  [ZodFirstPartyTypeKind.ZodEnum]: AdminTableFormMap.select,
-  [ZodFirstPartyTypeKind.ZodNativeEnum]: AdminTableFormMap.select
+  [ZodFirstPartyTypeKind.ZodString]: ResourceTableFormMap.input,
+  [ZodFirstPartyTypeKind.ZodNumber]: ResourceTableFormMap.input,
+  [ZodFirstPartyTypeKind.ZodBigInt]: ResourceTableFormMap.input,
+  [ZodFirstPartyTypeKind.ZodBoolean]: ResourceTableFormMap.select,
+  [ZodFirstPartyTypeKind.ZodEnum]: ResourceTableFormMap.select,
+  [ZodFirstPartyTypeKind.ZodNativeEnum]: ResourceTableFormMap.select
 } as const;
 
 export class ZodColumnBuilder<
   Value extends ZodRawShape,
   Input extends ZodObject<Value>
-> implements ZodBuilderInterface<Input, AdminTableOption<z.infer<Input>>>
+> implements ZodBuilderInterface<Input, ResourceTableOption<z.infer<Input>>>
 {
   protected optionMap: OptionMap<Value, Input>;
 
@@ -47,7 +46,7 @@ export class ZodColumnBuilder<
     this.optionMap = optionMap ? merge(baseOptions, optionMap) : baseOptions;
   }
 
-  static zodType2RenderForm(zod: ZodType): AdminTableFormType | undefined {
+  static zodType2RenderForm(zod: ZodType): ResourceTableFormType | undefined {
     // @ts-expect-error - zod._def.typeName is not typed
     const typeName = zod._def?.typeName as ZodFirstPartyTypeKind;
 
@@ -67,7 +66,10 @@ export class ZodColumnBuilder<
     ];
   }
 
-  zod2BaseOption(key: string, zod: ZodType): AdminTableOption<z.infer<Input>> {
+  zod2BaseOption(
+    key: string,
+    zod: ZodType
+  ): ResourceTableOption<z.infer<Input>> {
     return {
       key: key,
       title: key,
@@ -105,7 +107,7 @@ export class ZodColumnBuilder<
 
   bind(
     key: keyof Input['shape'],
-    params?: Partial<AdminTableOption<z.infer<Input>>>
+    params?: Partial<ResourceTableOption<z.infer<Input>>>
   ): this {
     if (params) {
       const existingOption = this.optionMap[key];
@@ -170,7 +172,7 @@ export class ZodColumnBuilder<
    * @param params - Optional additional parameters to merge
    * @returns The built option
    */
-  build(key: string, params?: unknown): AdminTableOption<z.infer<Input>> {
+  build(key: string, params?: unknown): ResourceTableOption<z.infer<Input>> {
     const option = this.optionMap[key as keyof Input['shape']];
     if (!option) {
       throw new Error(`Option with key "${key}" not found`);
@@ -180,7 +182,7 @@ export class ZodColumnBuilder<
       return merge(
         {},
         option,
-        params as Partial<AdminTableOption<z.infer<Input>>>
+        params as Partial<ResourceTableOption<z.infer<Input>>>
       );
     }
 
@@ -192,7 +194,7 @@ export class ZodColumnBuilder<
    * @param params - Optional additional parameters (currently unused)
    * @returns Array of all built options
    */
-  buildAll(_params?: unknown): AdminTableOption<z.infer<Input>>[] {
+  buildAll(_params?: unknown): ResourceTableOption<z.infer<Input>>[] {
     return Object.values(this.optionMap);
   }
 }

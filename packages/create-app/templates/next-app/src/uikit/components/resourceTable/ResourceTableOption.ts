@@ -4,19 +4,19 @@ import type { ColumnType } from 'antd/es/table';
 import type { Key } from 'react';
 
 export type RenderForm<T> = (
-  option: Omit<AdminTableOption<T>, 'renderForm'>,
+  option: Omit<ResourceTableOption<T>, 'renderForm'>,
   index: number
 ) => React.ReactNode;
 
-export const AdminTableFormMap = {
+export const ResourceTableFormMap = {
   input: 'input',
   textarea: 'textarea',
   select: 'select'
 } as const;
 
-export type AdminTableFormType = ValueOf<typeof AdminTableFormMap>;
+export type ResourceTableFormType = ValueOf<typeof ResourceTableFormMap>;
 
-export interface AdminTableTT extends Record<string, string> {
+export interface ResourceTableTT extends Record<string, string> {
   /**
    * Table title
    */
@@ -41,18 +41,18 @@ export interface AdminTableTT extends Record<string, string> {
   formItemRequired: string;
 }
 
-export interface AdminTableOption<T> extends ColumnType<T> {
+export interface ResourceTableOption<T> extends ColumnType<T> {
   key: Key;
 
   /**
    * Translation interface
    */
-  tt: AdminTableTT;
+  tt: ResourceTableTT;
 
   /**
    * Render form component
    */
-  renderForm?: AdminTableFormType | RenderForm<T>;
+  renderForm?: ResourceTableFormType | RenderForm<T>;
   /**
    * Form item wrap props
    */

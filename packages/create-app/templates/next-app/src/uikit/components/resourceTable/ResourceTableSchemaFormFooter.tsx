@@ -1,30 +1,36 @@
+import { useSliceStore } from '@qlover/slice-store-react';
 import { Button, Form } from 'antd';
 import { useCallback, useMemo } from 'react';
-import { useStore } from '@/uikit/hook/useStore';
-import type { AdminLocalesI18nInterface } from '@config/i18n';
-import {
-  AdminTableEventAction,
-  type AdminTableEventInterface
-} from './AdminTableEventInterface';
 import { eventSelectos } from './config';
+import {
+  ResourceTableEventAction,
+  type ResourceTableEventInterface
+} from './ResourceTableEventInterface';
+import type { ResourceTableLocales } from './config';
 
-export function AdminTableSchemaFormFooter(props: {
-  tt: AdminLocalesI18nInterface;
-  tableEvent: AdminTableEventInterface;
+export function ResourceTableSchemaFormFooter(props: {
+  tt: ResourceTableLocales;
+  tableEvent: ResourceTableEventInterface;
 }) {
   const { tt, tableEvent } = props;
 
-  const action = useStore(tableEvent.store, eventSelectos.action);
-  const createLoading = useStore(tableEvent.store, eventSelectos.createLoading);
-  const editLoading = useStore(tableEvent.store, eventSelectos.editLoading);
+  const action = useSliceStore(tableEvent.store, eventSelectos.action);
+  const createLoading = useSliceStore(
+    tableEvent.store,
+    eventSelectos.createLoading
+  );
+  const editLoading = useSliceStore(
+    tableEvent.store,
+    eventSelectos.editLoading
+  );
 
   const okButtonText = useMemo(() => {
     switch (action) {
-      case AdminTableEventAction.CREATE:
+      case ResourceTableEventAction.CREATE:
         return tt.createButton;
-      case AdminTableEventAction.EDIT:
+      case ResourceTableEventAction.EDIT:
         return tt.saveButton;
-      case AdminTableEventAction.DETAIL:
+      case ResourceTableEventAction.DETAIL:
         return tt.editTitle;
       default:
         return tt.saveButton;
@@ -39,7 +45,7 @@ export function AdminTableSchemaFormFooter(props: {
         // case AdminTableEventAction.CREATE:
         //   break;
         // use onEdited to handle detail
-        case AdminTableEventAction.DETAIL:
+        case ResourceTableEventAction.DETAIL:
           tableEvent.onEdited({
             dataSource: tableEvent.store.state.selectedResource
           });
@@ -55,8 +61,8 @@ export function AdminTableSchemaFormFooter(props: {
 
   const loading = createLoading || editLoading;
   const htmlType = useMemo(() => {
-    return action === AdminTableEventAction.CREATE ||
-      action === AdminTableEventAction.EDIT
+    return action === ResourceTableEventAction.CREATE ||
+      action === ResourceTableEventAction.EDIT
       ? 'submit'
       : 'button';
   }, [action]);
