@@ -10,12 +10,12 @@ import {
   MoonFilled,
   HeartOutlined
 } from '@ant-design/icons';
+import { useMountedClient } from '@brain-toolkit/react-kit';
 import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
 import { useMemo } from 'react';
 import { type SupportedTheme, themeConfig } from '@config/theme';
-import { useMountedClient } from '../hook/useMountedClient';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { supportedThemes } = themeConfig;

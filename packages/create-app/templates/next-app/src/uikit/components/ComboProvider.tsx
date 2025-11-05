@@ -2,12 +2,12 @@
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
+import { useMountedClient } from '@brain-toolkit/react-kit';
 import { ThemeProvider } from 'next-themes';
 import { clientIOC } from '@/core/clientIoc/ClientIOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { CommonThemeConfig } from '@config/theme';
 import { BootstrapsProvider } from './BootstrapsProvider';
-import { useMountedClient } from '../hook/useMountedClient';
 
 /**
  * CommonProvider is a provider for the common components

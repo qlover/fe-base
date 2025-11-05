@@ -1,5 +1,6 @@
 'use client';
 
+import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
 import { Form, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { ZodColumnBuilder } from '@/base/cases/ZodColumnBuilder';
@@ -16,10 +17,8 @@ import {
   ResourceTablePopup,
   ResourceTableSchemaForm
 } from '@/uikit/components/resourceTable';
-import { useFactory } from '@/uikit/hook/useFactory';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useLifecycle } from '@/uikit/hook/useLifecycle';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import {
   localesSchema,
