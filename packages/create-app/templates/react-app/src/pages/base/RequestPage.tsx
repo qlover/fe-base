@@ -1,4 +1,3 @@
-import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useMemo } from 'react';
 import { useStore } from '@/uikit/hooks/useStore';
@@ -6,6 +5,7 @@ import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as i18nKeys from '@config/Identifier/page.request';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -23,9 +23,9 @@ function JSONValue({ value }: { value: unknown }) {
 }
 
 export default function RequestPage() {
-  const pageBridge = IOC(IOCIdentifier.RequestPageBridgeInterface);
+  const pageBridge = useIOC(IOCIdentifier.RequestPageBridgeInterface);
   const pageState = useStore(pageBridge);
-  const jsonStoragePageBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const jsonStoragePageBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
   const jsonStoragePageState = useStore(jsonStoragePageBridge);
   const { t } = useBaseRoutePage();
 

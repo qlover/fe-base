@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RegisterFormData } from '@/base/services/UserService';
 import * as i18nKeys from '@config/Identifier/page.register';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 export default function RegisterPage() {
   const { t } = useBaseRoutePage();
-  const AppConfig = IOC(IOCIdentifier.AppConfig);
-  const userService = IOC(IOCIdentifier.UserServiceInterface);
-  const routeService = IOC(IOCIdentifier.RouteServiceInterface);
+  const AppConfig = useIOC(IOCIdentifier.AppConfig);
+  const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
+  const logger = useIOC(IOCIdentifier.Logger);
+
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -21,7 +23,7 @@ export default function RegisterPage() {
       await userService.register(values);
       routeService.replaceToHome();
     } catch (error) {
-      IOC(IOCIdentifier.Logger).error(error);
+      logger.error(error);
     } finally {
       setLoading(false);
     }

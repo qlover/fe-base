@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import * as i18nKeys from '@config/Identifier/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface LoginFormData {
   email: string;
@@ -14,8 +14,11 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const { t } = useBaseRoutePage();
-  const userService = IOC(IOCIdentifier.UserServiceInterface);
-  const AppConfig = IOC(IOCIdentifier.AppConfig);
+  const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const AppConfig = useIOC(IOCIdentifier.AppConfig);
+  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
+  const logger = useIOC(IOCIdentifier.Logger);
+
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormData) => {
@@ -25,9 +28,9 @@ export default function LoginPage() {
         username: values.email,
         password: values.password
       });
-      IOC(IOCIdentifier.RouteServiceInterface).replaceToHome();
+      routeService.replaceToHome();
     } catch (error) {
-      IOC(IOCIdentifier.Logger).error(error);
+      logger.error(error);
     } finally {
       setLoading(false);
     }

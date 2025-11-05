@@ -1,4 +1,3 @@
-import { IOC } from '@/core/IOC';
 import { useStore } from '@/uikit/hooks/useStore';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
@@ -12,6 +11,7 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import * as i18nKeys from '@config/Identifier/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '../hooks/useIOC';
 
 const colorMap: Record<
   string,
@@ -35,7 +35,7 @@ const colorMap: Record<
 };
 
 export default function ThemeSwitcher() {
-  const themeService = IOC(IOCIdentifier.ThemeService);
+  const themeService = useIOC(IOCIdentifier.ThemeService);
   const { theme } = useStore(themeService);
   const themes = themeService.getSupportedThemes();
   const { t } = useTranslation('common');

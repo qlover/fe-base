@@ -1,10 +1,10 @@
 import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useState, useEffect } from 'react';
-import { IOC } from '@/core/IOC';
 import { useStore } from '@/uikit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/page.executor';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface Task {
   id: string;
@@ -21,8 +21,10 @@ interface Task {
 
 export default function ExecutorPage() {
   const { t } = useBaseRoutePage();
-  const pageBridge = IOC(IOCIdentifier.ExecutorPageBridgeInterface);
-  const jspBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const pageBridge = useIOC(IOCIdentifier.ExecutorPageBridgeInterface);
+  const jspBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
+  const dialogHandler = useIOC(IOCIdentifier.DialogHandler);
+  const jsonSerializer = useIOC(IOCIdentifier.JSONSerializer);
   const requestTimeout = useStore(jspBridge, jspBridge.selector.requestTimeout);
   const helloState = useStore(pageBridge, pageBridge.selector.helloState);
 
@@ -80,9 +82,7 @@ export default function ExecutorPage() {
   // 监听 helloState 变化，更新任务状态
   useEffect(() => {
     if (helloState.result) {
-      IOC('DialogHandler').success(
-        t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS)
-      );
+      dialogHandler.success(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS));
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -97,7 +97,7 @@ export default function ExecutorPage() {
         )
       );
     } else if (helloState.error) {
-      IOC('DialogHandler').error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
+      dialogHandler.error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -166,7 +166,7 @@ export default function ExecutorPage() {
         )
       );
 
-      IOC('DialogHandler').success(
+      dialogHandler.success(
         t(i18nKeys.PAGE_EXECUTOR_TASK_SUCCESS, { name: task.name })
       );
     } catch {
@@ -176,7 +176,7 @@ export default function ExecutorPage() {
         )
       );
 
-      IOC('DialogHandler').error(
+      dialogHandler.error(
         t(i18nKeys.PAGE_EXECUTOR_TASK_FAILURE, { name: task.name })
       );
     }
@@ -194,9 +194,7 @@ export default function ExecutorPage() {
 
   const handleCreateTask = () => {
     if (!customUrl) {
-      IOC('DialogHandler').error(
-        t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED)
-      );
+      dialogHandler.error(t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED));
       return;
     }
 
@@ -258,7 +256,7 @@ export default function ExecutorPage() {
                 <div className="text-red-500">{helloState.error.message}</div>
               ) : (
                 <pre className="text-text-secondary">
-                  {IOC('JSONSerializer').stringify(helloState.result?.data)}
+                  {jsonSerializer.stringify(helloState.result?.data)}
                 </pre>
               )}
             </div>

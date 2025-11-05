@@ -1,12 +1,12 @@
-import { IOC } from '@/core/IOC';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigateBridge } from '../bridges/NavigateBridge';
+import { useIOC } from './useIOC';
 
 export function useNavigateBridge() {
   const navigate = useNavigate();
-
+  const navigateBridge = useIOC(NavigateBridge);
   useEffect(() => {
-    IOC(NavigateBridge).setUIBridge(navigate);
+    navigateBridge.setUIBridge(navigate);
   }, [navigate]);
 }

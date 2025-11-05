@@ -1,13 +1,13 @@
-import { IOC } from '@/core/IOC';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
 import { useStore } from '@/uikit/hooks/useStore';
 import { Button, Input } from 'antd';
 import * as i18nKeys from '@config/Identifier/page.jsonStorage';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 export default function JSONStoragePage() {
-  const pageBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const pageBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
   const pageState = useStore(pageBridge);
   const { t } = useBaseRoutePage();
 

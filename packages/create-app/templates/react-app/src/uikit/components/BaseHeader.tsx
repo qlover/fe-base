@@ -2,14 +2,18 @@ import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
 import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
-import { IOC } from '@/core/IOC';
 import LogoutButton from './LogoutButton';
+import { useIOC } from '../hooks/useIOC';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 
 export default function BaseHeader({
   showLogoutButton
 }: {
   showLogoutButton?: boolean;
 }) {
+  const AppConfig = useIOC(IOCIdentifier.AppConfig);
+  const publicAssetsPath = useIOC(PublicAssetsPath);
+
   return (
     <header
       data-testid="base-header"
@@ -23,7 +27,7 @@ export default function BaseHeader({
           >
             <img
               data-testid="base-header-logo"
-              src={IOC(PublicAssetsPath).getPath('/logo.svg')}
+              src={publicAssetsPath.getPath('/logo.svg')}
               alt="logo"
               className="h-8 w-auto"
             />
@@ -31,7 +35,7 @@ export default function BaseHeader({
               data-testid="base-header-app-name"
               className="ml-2 text-lg font-semibold text-text"
             >
-              {IOC('AppConfig').appName}
+              {AppConfig.appName}
             </span>
           </LocaleLink>
         </div>
