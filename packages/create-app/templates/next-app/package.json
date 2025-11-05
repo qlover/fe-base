@@ -20,6 +20,7 @@
     "@ant-design/icons": "^6.0.0",
     "@ant-design/nextjs-registry": "^1.1.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@brain-toolkit/antd-blocks": "^0.0.1",
     "@brain-toolkit/antd-theme-override": "^0.0.3",
     "@brain-toolkit/bridge": "^0.0.1",
     "@qlover/corekit-bridge": "^1.6.5",

@@ -1,5 +1,7 @@
 'use client';
 
+import { ResourceTable } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTable';
+import { ResourceTableHeader } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTableHeader';
 import { ResourceStore } from '@qlover/corekit-bridge';
 import { useMemo } from 'react';
 import { ResourceState } from '@/base/cases/ResourceState';
@@ -8,8 +10,6 @@ import { AdminUserApi } from '@/base/services/adminApi/AdminUserApi';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { ResourceService } from '@/base/services/ResourceService';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
-import { ResourceTable } from '@/uikit/components/resourceTable/ResourceTable';
-import { ResourceTableHeader } from '@/uikit/components/resourceTable/ResourceTableHeader';
 import { useFactory } from '@/uikit/hook/useFactory';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';

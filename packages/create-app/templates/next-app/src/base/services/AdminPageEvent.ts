@@ -1,8 +1,8 @@
-import type { ResourceTableEventCommonParams } from '@/uikit/components/resourceTable';
-import { ResourceEvent } from '@/uikit/components/resourceTable';
+import { ResourceEvent } from '@brain-toolkit/antd-blocks/resourceTable/ResourceEvent';
 import type { ResourceService } from './ResourceService';
 import type { DialogHandlerOptions } from '../cases/DialogHandler';
 import type { ResourceState } from '../cases/ResourceState';
+import type { ResourceTableEventCommonParams } from '@brain-toolkit/antd-blocks';
 import type { UIDialogInterface, ResourceStore } from '@qlover/corekit-bridge';
 import type { FormInstance } from 'antd';
 
