@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@brain-toolkit/antd-theme-override": "^0.0.3",
+    "@brain-toolkit/react-kit": "^0.1.0",
     "@qlover/corekit-bridge": "latest",
     "@qlover/fe-corekit": "latest",
     "@qlover/logger": "^0.1.1",

@@ -6,9 +6,9 @@ import {
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
-import { IocRegisterImpl } from '../IocRegisterImpl';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
+import { ClientIOCRegister } from '../clientIoc/ClientIOCRegister';
 
 export type BootstrapAppArgs = {
   /**
@@ -25,7 +25,7 @@ export type BootstrapAppArgs = {
   IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
 };
 
-export class BootstrapApp {
+export class BootstrapClient {
   static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
     const { root, bootHref, IOC } = args;
 
@@ -40,7 +40,8 @@ export class BootstrapApp {
       logger,
       ioc: {
         manager: IOC,
-        register: new IocRegisterImpl({ pathname: bootHref, appConfig })
+        // move to clientIoc/ClientIOCRegister
+        register: new ClientIOCRegister({ pathname: bootHref, appConfig })
       },
       envOptions: {
         target: appConfig,

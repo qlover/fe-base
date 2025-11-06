@@ -1,48 +1,13 @@
 // ! dont't import tsx, only ts file
-import type { AppConfig } from '@/base/cases/AppConfig';
-import type { IOCRegisterInterface } from '@qlover/corekit-bridge';
-import { createIOCFunction } from '@qlover/corekit-bridge';
-import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IOCIdentifierMap } from '@config/IOCIdentifier';
-
-/**
- * IOC register options
- */
-export type IocRegisterOptions = {
-  /**
-   * The pathname of the current page
-   */
-  pathname: string;
-
-  /**
-   * The app config
-   */
-  appConfig: AppConfig;
-};
-
-/**
- * IOC container
- *
- * This is a alias of IOCContainerInterface, use it without care about the implementation.
- *
- * Need to achieve the effect: when the implementation class on the right side of the equal sign changes, the IOCContainer will change automatically
- */
-export type IOCContainer = InversifyContainer;
-
-/**
- * IOC register interface.
- *
- * This is shortcut interface, implement this interface, you can use any IOC container.
- *
- * Need to achieve the effect: when the implementation class on the right side of the equal sign changes, the IOCContainer will change automatically
- */
-export interface IOCRegister
-  extends IOCRegisterInterface<IOCContainer, IocRegisterOptions> {}
+import { clientIOC } from './clientIoc/ClientIOC';
 
 /**
  * IOC function
  *
  * This is the only and main exported content of the file
+ *
+ * - This is a global singleton instance of ClientIOC, and it is equivalent to clientIOC
+ * - It is not recommended to use this global variable, but to recommend using the useIOC hook in the ui component
  *
  * @example use A class
  * ```ts
@@ -60,10 +25,4 @@ export interface IOCRegister
  * const logger = IOC(IOCIdentifier.Logger);
  * ```
  */
-export const IOC = createIOCFunction<IOCIdentifierMap>(
-  /**
-   * If not inversify, you can use any IOC container,
-   * then replace the InversifyContainer with your own IOC container
-   */
-  new InversifyContainer()
-);
+export const IOC = clientIOC.create();

@@ -9,6 +9,11 @@ import type {
  */
 export type IocRegisterOptions = {
   /**
+   * The pathname of the current page
+   */
+  pathname: string;
+
+  /**
    * The app config
    */
   appConfig: EnvConfigInterface;

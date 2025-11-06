@@ -1,18 +1,15 @@
 import '@/styles/css/index.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { lazy, useMemo } from 'react';
-import { RouterRenderComponent } from './uikit/components/RouterRenderComponent';
-import { RouterLoader, type ComponentValue } from '@/base/cases/RouterLoader';
-import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import { routerPrefix } from '@config/common';
-import { useStore } from './uikit/hooks/useStore';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { logger } from './core/globals';
-import { useIOC } from './uikit/hooks/useIOC';
+import { AppRouterProvider } from './uikit/components/AppRouterProvider';
+import { lazy } from 'react';
+import { ComponentValue } from './base/cases/RouterLoader';
+import { themeConfig } from '@config/theme';
+import { ComboProvider } from './uikit/components/ComboProvider';
 
-function getAllPages() {
+const allPages = (function getAllPages() {
+  // !!! important, map to all pages in pages directory
   const modules = import.meta.glob('./pages/**/*.tsx');
   return Object.keys(modules).reduce((acc, path) => {
+    // !!! important, convert path to component name
     const componentName = path.replace(/^\.\/pages\/(.*)\.tsx$/, '$1');
     acc[componentName] = () =>
       lazy(
@@ -22,39 +19,13 @@ function getAllPages() {
       );
     return acc;
   }, {} as ComponentValue);
-}
-
-const routerLoader = new RouterLoader({
-  componentMaps: getAllPages(),
-  render: RouterRenderComponent,
-  logger: logger
-});
+})();
 
 function App() {
-  const routerService = useIOC(IOCIdentifier.RouteServiceInterface);
-  const antdStaticApi = useIOC(IOCIdentifier.AntdStaticApiInterface);
-  const routes = useStore(routerService, (state) => state.routes);
-
-  const routerBase = useMemo(() => {
-    const routeList = routes.map((route) => routerLoader.toRoute(route));
-    const router = createBrowserRouter(routeList, {
-      basename: routerPrefix
-    });
-    return router;
-  }, [routes]);
-
   return (
-    <AntdThemeProvider
-      staticApi={antdStaticApi}
-      theme={{
-        cssVar: {
-          key: 'fe-theme',
-          prefix: 'fe'
-        }
-      }}
-    >
-      <RouterProvider router={routerBase} />
-    </AntdThemeProvider>
+    <ComboProvider themeConfig={themeConfig}>
+      <AppRouterProvider pages={allPages} />
+    </ComboProvider>
   );
 }
 
