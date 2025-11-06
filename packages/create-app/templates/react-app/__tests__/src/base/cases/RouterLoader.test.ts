@@ -29,9 +29,19 @@ describe('RouterLoader', () => {
     createElement('div', null, route.element())
   );
 
+  let mockLogger: any;
   let defaultOptions: RouterLoaderOptions;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
+    mockLogger = {
+      warn: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn()
+    };
+
     defaultOptions = {
       routes: [
         {
@@ -50,10 +60,9 @@ describe('RouterLoader', () => {
         About: mockAboutComponent,
         '404': mockNotFoundComponent
       },
-      render: mockRender
+      render: mockRender,
+      logger: mockLogger
     };
-
-    vi.clearAllMocks();
   });
 
   describe('constructor', () => {
@@ -67,6 +76,13 @@ describe('RouterLoader', () => {
       expect(() => new RouterLoader(invalidOptions as any)).toThrow(
         'RouterLoader render is required'
       );
+    });
+
+    it('should accept logger in options', () => {
+      const loader = new RouterLoader(defaultOptions);
+      expect(loader).toBeInstanceOf(RouterLoader);
+      // Logger should be accessible through protected options
+      expect((loader as any).options.logger).toBe(mockLogger);
     });
   });
 
@@ -110,15 +126,14 @@ describe('RouterLoader', () => {
 
   describe('toRoute', () => {
     let loader: RouterLoader;
-    let consoleWarnSpy: any;
 
     beforeEach(() => {
       loader = new RouterLoader(defaultOptions);
-      consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     });
 
-    afterEach(() => {
-      consoleWarnSpy.mockRestore();
+    it('should have logger configured', () => {
+      expect(mockLogger).toBeDefined();
+      expect(mockLogger.warn).toBeDefined();
     });
 
     it('should transform route configuration correctly', () => {
@@ -161,7 +176,7 @@ describe('RouterLoader', () => {
 
       const result = loader.toRoute(route);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledWith(
         'Invalid route, path is: /invalid, element is: undefined'
       );
       expect(result.element).toBeTruthy();
@@ -221,15 +236,11 @@ describe('RouterLoader', () => {
         path: '/invalid'
       } as RouteConfigValue;
 
-      const consoleWarnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {});
       loader.toRoute(invalidRoute);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledWith(
         'Invalid route, path is: /invalid, element is: undefined'
       );
-      consoleWarnSpy.mockRestore();
     });
   });
 });

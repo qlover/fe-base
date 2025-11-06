@@ -2,12 +2,12 @@
  * I18nService test suite
  *
  * Coverage:
- * 1. constructor      - State initialization
- * 2. onBefore        - Plugin initialization
- * 3. changeLanguage  - Language switching
- * 4. changeLoading   - Loading state management
- * 5. static methods  - Language validation and retrieval
- * 6. translation     - Key translation with parameters
+ * 1. constructor       - State initialization
+ * 2. onBefore         - Plugin initialization
+ * 3. changeLanguage   - Language switching
+ * 4. changeLoading    - Loading state management
+ * 5. language methods - Language validation and retrieval
+ * 6. translation      - Key translation with parameters
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
@@ -160,22 +160,35 @@ describe('I18nService', () => {
     });
   });
 
-  describe('static methods', () => {
+  describe('language methods', () => {
     describe('getCurrentLanguage', () => {
       it('should return current i18n language', () => {
-        expect(I18nService.getCurrentLanguage()).toBe('en');
+        expect(service.getCurrentLanguage()).toBe('en');
       });
     });
 
     describe('isValidLanguage', () => {
       it('should validate supported languages', () => {
         for (const lang of supportedLngs) {
-          expect(I18nService.isValidLanguage(lang)).toBe(true);
+          expect(service.isValidLanguage(lang)).toBe(true);
         }
       });
 
       it('should reject unsupported languages', () => {
-        expect(I18nService.isValidLanguage('invalid')).toBe(false);
+        expect(service.isValidLanguage('invalid')).toBe(false);
+      });
+    });
+
+    describe('getSupportedLanguages', () => {
+      it('should return all supported languages', () => {
+        const languages = service.getSupportedLanguages();
+        expect(languages).toEqual(supportedLngs);
+      });
+
+      it('should return a copy of supported languages array', () => {
+        const languages1 = service.getSupportedLanguages();
+        const languages2 = service.getSupportedLanguages();
+        expect(languages1).not.toBe(languages2);
       });
     });
   });

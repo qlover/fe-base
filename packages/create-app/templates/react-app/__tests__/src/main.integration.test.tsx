@@ -41,7 +41,7 @@ describe('main.tsx Integration Tests', () => {
 
     // Check if it contains necessary imports
     expect(content).toContain('import');
-    expect(content).toContain('BootstrapApp');
+    expect(content).toContain('BootstrapClient');
     expect(content).toContain('createRoot');
   });
 
@@ -51,11 +51,11 @@ describe('main.tsx Integration Tests', () => {
     expect(existsSync(appPath)).toBe(true);
   });
 
-  it('should have BootstrapApp.ts file', () => {
-    // Test if BootstrapApp.ts file exists
+  it('should have BootstrapClient.ts file', () => {
+    // Test if BootstrapClient.ts file exists
     const bootstrapPath = join(
       process.cwd(),
-      'src/core/bootstraps/BootstrapApp.ts'
+      'src/core/bootstraps/BootstrapClient.ts'
     );
     expect(existsSync(bootstrapPath)).toBe(true);
   });

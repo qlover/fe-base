@@ -1,6 +1,6 @@
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { BootstrapApp } from '@/core/bootstraps/BootstrapApp';
-import type { BootstrapAppArgs } from '@/core/bootstraps/BootstrapApp';
+import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
+import type { BootstrapClientArgs } from '@/core/bootstraps/BootstrapClient';
 import { createIOCFunction } from '@qlover/corekit-bridge';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { name, version } from '../../../../package.json';
@@ -25,7 +25,7 @@ vi.mock('@/core/bootstraps/BootstrapsRegistry', () => ({
 }));
 
 describe('BootstrapApp', () => {
-  let mockArgs: BootstrapAppArgs;
+  let mockArgs: BootstrapClientArgs;
   let mockIOC: ReturnType<typeof createIOCFunction<IOCIdentifierMap>>;
 
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe('BootstrapApp', () => {
 
   describe('main', () => {
     it('should initialize bootstrap successfully', async () => {
-      const result = await BootstrapApp.main(mockArgs);
+      const result = await BootstrapClient.main(mockArgs);
 
       expect(result.bootHref).toBe('http://localhost:3000');
       // default inject env,globals var, ioc

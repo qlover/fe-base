@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import { ComponentValue } from './base/cases/RouterLoader';
 import { themeConfig } from '@config/theme';
 import { ComboProvider } from './uikit/components/ComboProvider';
+import { BootstrapsProvider } from './uikit/components/BootstrapsProvider';
 
 const allPages = (function getAllPages() {
   // !!! important, map to all pages in pages directory
@@ -23,9 +24,11 @@ const allPages = (function getAllPages() {
 
 function App() {
   return (
-    <ComboProvider themeConfig={themeConfig}>
-      <AppRouterProvider pages={allPages} />
-    </ComboProvider>
+    <BootstrapsProvider>
+      <ComboProvider themeConfig={themeConfig}>
+        <AppRouterProvider pages={allPages} />
+      </ComboProvider>
+    </BootstrapsProvider>
   );
 }
 

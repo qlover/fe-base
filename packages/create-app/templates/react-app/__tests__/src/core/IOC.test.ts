@@ -1,11 +1,11 @@
-import { IOC, type IOCContainer } from '@/core/IOC';
+import { IOC } from '@/core/IOC';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IocRegisterImpl } from '@/core/IocRegisterImpl';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
+import { ClientIOCRegister } from '@/core/clientIoc/ClientIOCRegister';
 
 describe('IOC Container Tests', () => {
-  let container: IOCContainer;
+  let container: InversifyContainer;
   let mockAppConfig: AppConfig;
 
   beforeEach(() => {
@@ -90,17 +90,17 @@ describe('IOC Container Tests', () => {
   });
 
   describe('IocRegisterImpl', () => {
-    let registerImpl: IocRegisterImpl;
+    let registerImpl: ClientIOCRegister;
 
     beforeEach(() => {
-      registerImpl = new IocRegisterImpl({
+      registerImpl = new ClientIOCRegister({
         pathname: '/test',
         appConfig: mockAppConfig
       });
     });
 
     it('should create register implementation correctly', () => {
-      expect(registerImpl).toBeInstanceOf(IocRegisterImpl);
+      expect(registerImpl).toBeInstanceOf(ClientIOCRegister);
     });
 
     it('should register services without throwing', () => {
@@ -132,7 +132,7 @@ describe('IOC Container Tests', () => {
 
   describe('Service Registration Integration', () => {
     it('should register global services correctly', async () => {
-      const registerImpl = new IocRegisterImpl({
+      const registerImpl = new ClientIOCRegister({
         pathname: '/test',
         appConfig: mockAppConfig
       });

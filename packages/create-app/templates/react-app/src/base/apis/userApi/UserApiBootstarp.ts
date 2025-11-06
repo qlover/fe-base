@@ -4,7 +4,6 @@ import {
   RequestAdapterResponse,
   RequestTransactionInterface
 } from '@qlover/fe-corekit';
-import { IOC } from '@/core/IOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { RequestLogger } from '@/base/cases/RequestLogger';
 import { FetchURLPlugin } from '@qlover/fe-corekit';
@@ -68,13 +67,13 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
     ioc
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())
-      .usePlugin(IOC.get(IOCIdentifier.FeApiCommonPlugin))
+      .usePlugin(ioc.get(IOCIdentifier.FeApiCommonPlugin))
       .usePlugin(
         new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface))
       )
-      .usePlugin(IOC.get(IOCIdentifier.ApiMockPlugin))
-      .usePlugin(IOC.get(RequestLogger))
-      .usePlugin(IOC.get(FetchAbortPlugin))
-      .usePlugin(IOC.get(IOCIdentifier.ApiCatchPlugin));
+      .usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin))
+      .usePlugin(ioc.get(RequestLogger))
+      .usePlugin(ioc.get(FetchAbortPlugin))
+      .usePlugin(ioc.get(IOCIdentifier.ApiCatchPlugin));
   }
 }
