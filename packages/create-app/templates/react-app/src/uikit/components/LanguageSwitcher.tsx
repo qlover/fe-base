@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import i18nConfig from '@config/i18n';
 import { I18nServiceLocale } from '@/base/services/I18nService';
 import { useCallback } from 'react';
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '../hooks/useIOC';
 

@@ -1,5 +1,5 @@
 import { StoreInterface, StoreStateInterface } from '@qlover/corekit-bridge';
-import { RequestState } from '../cases/RequestState';
+import { RequestState } from '@qlover/corekit-bridge';
 
 export interface ExecutorPageStateInterface extends StoreStateInterface {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

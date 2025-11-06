@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import BaseHeader from '../../uikit/components/BaseHeader';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';

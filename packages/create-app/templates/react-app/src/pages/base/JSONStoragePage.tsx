@@ -1,6 +1,6 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import template from 'lodash/template';
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { Button, Input } from 'antd';
 import * as i18nKeys from '@config/Identifier/page.jsonStorage';
 import { IOCIdentifier } from '@config/IOCIdentifier';

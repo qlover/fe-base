@@ -6,7 +6,7 @@ import {
   RequestPageBridgeInterface,
   RequestPageStateInterface
 } from '@/base/port/RequestPageBridgeInterface';
-import { RequestState } from '@/base/cases/RequestState';
+import { RequestState } from '@qlover/corekit-bridge';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
 

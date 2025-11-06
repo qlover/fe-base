@@ -10,7 +10,7 @@ import {
   ExecutorPageBridgeInterface,
   ExecutorPageStateInterface
 } from '@/base/port/ExecutorPageBridgeInterface';
-import { RequestState } from '@/base/cases/RequestState';
+import { RequestState } from '@qlover/corekit-bridge';
 
 class ExecutorPageBridgeState implements ExecutorPageStateInterface {
   helloState = new RequestState();

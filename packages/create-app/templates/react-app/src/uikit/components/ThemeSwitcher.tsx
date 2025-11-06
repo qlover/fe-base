@@ -1,4 +1,4 @@
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
 import {

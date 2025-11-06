@@ -1,6 +1,6 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useMemo } from 'react';
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as i18nKeys from '@config/Identifier/page.request';

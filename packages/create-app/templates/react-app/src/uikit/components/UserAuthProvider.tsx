@@ -1,6 +1,5 @@
-
 import { Loading } from './Loading';
-import { useStore } from '../hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '../hooks/useIOC';
 
