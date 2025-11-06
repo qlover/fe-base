@@ -1,6 +1,6 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { PAGE_404_TITLE } from '@config/Identifier/common';
-import { NOT_FOUND_COMPONENT } from '@config/Identifier/common.error';
+import { PAGE_404_TITLE } from '@config/Identifier/common/common';
+import { NOT_FOUND_COMPONENT } from '@config/Identifier/common/common.error';
 
 export default function NotFound({ route }: { route?: string }) {
   const { t } = useBaseRoutePage();

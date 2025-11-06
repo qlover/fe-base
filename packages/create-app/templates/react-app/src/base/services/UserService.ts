@@ -12,7 +12,7 @@ import {
 import { inject, injectable } from 'inversify';
 import { UserApi } from '@/base/apis/userApi/UserApi';
 import { AppError } from '@/base/cases/AppError';
-import * as errKeys from '@config/Identifier/common.error';
+import * as errKeys from '@config/Identifier/common/common.error';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { AppConfig } from '../cases/AppConfig';
 import { UserServiceInterface } from '../port/UserServiceInterface';

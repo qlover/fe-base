@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import * as i18nKeys from '@config/Identifier/page.request';
+import * as i18nKeys from '@config/Identifier/pages/page.request';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';
 

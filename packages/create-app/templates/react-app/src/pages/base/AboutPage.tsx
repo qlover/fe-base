@@ -1,5 +1,5 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/page.about';
+import * as i18nKeys from '@config/Identifier/pages/page.about';
 import {
   Button,
   Tooltip,

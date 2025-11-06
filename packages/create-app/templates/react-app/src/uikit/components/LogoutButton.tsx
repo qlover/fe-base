@@ -1,7 +1,7 @@
 import {
   AUTH_LOGOUT_DIALOG_CONTENT,
   AUTH_LOGOUT_DIALOG_TITLE
-} from '@config/Identifier/common';
+} from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { Button } from 'antd';
 import { useCallback } from 'react';

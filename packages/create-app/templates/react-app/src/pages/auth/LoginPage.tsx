@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/page.login';
+import * as i18nKeys from '@config/Identifier/pages/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';

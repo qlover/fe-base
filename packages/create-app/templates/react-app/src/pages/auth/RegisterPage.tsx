@@ -3,7 +3,7 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RegisterFormData } from '@/base/services/UserService';
-import * as i18nKeys from '@config/Identifier/page.register';
+import * as i18nKeys from '@config/Identifier/pages/page.register';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';
 

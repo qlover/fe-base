@@ -2,7 +2,7 @@ import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useState, useEffect } from 'react';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/page.executor';
+import * as i18nKeys from '@config/Identifier/pages/page.executor';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';
 

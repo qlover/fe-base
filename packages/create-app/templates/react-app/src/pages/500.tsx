@@ -1,5 +1,5 @@
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { PAGE_500_TITLE } from '@config/Identifier/common';
+import { PAGE_500_TITLE } from '@config/Identifier/common/common';
 
 export default function NotFound500() {
   const { t } = useBaseRoutePage();

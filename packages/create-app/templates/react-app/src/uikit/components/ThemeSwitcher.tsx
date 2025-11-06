@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import * as i18nKeys from '@config/Identifier/common';
+import * as i18nKeys from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '../hooks/useIOC';
 
