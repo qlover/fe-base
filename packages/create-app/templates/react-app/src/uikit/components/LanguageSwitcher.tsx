@@ -1,7 +1,7 @@
 import { Select } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import i18nConfig from '@config/i18n';
+import { i18nConfig } from '@config/i18n/i18nConfig';
 import { I18nServiceLocale } from '@/base/services/I18nService';
 import { useCallback } from 'react';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/pages/page.login';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';
+import { login18n } from '@config/i18n/login18n';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 
 interface LoginFormData {
   email: string;
@@ -13,7 +13,7 @@ interface LoginFormData {
 }
 
 export default function LoginPage() {
-  const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(login18n);
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
   const AppConfig = useIOC(IOCIdentifier.AppConfig);
   const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
@@ -46,34 +46,20 @@ export default function LoginPage() {
             {AppConfig.appName}
           </span>
         </div>
-        <h1 className="text-4xl font-bold text-text mb-4">
-          {t(i18nKeys.LOGIN_WELCOME)}
-        </h1>
-        <p className="text-text-secondary text-lg mb-8">
-          {t(i18nKeys.LOGIN_SUBTITLE)}
-        </p>
+        <h1 className="text-4xl font-bold text-text mb-4">{tt.welcome}</h1>
+        <p className="text-text-secondary text-lg mb-8">{tt.subtitle}</p>
         <div className="space-y-4">
-          <FeatureItem icon="🎯" text={t(i18nKeys.LOGIN_FEATURE_AI_PATHS)} />
-          <FeatureItem
-            icon="🎯"
-            text={t(i18nKeys.LOGIN_FEATURE_SMART_RECOMMENDATIONS)}
-          />
-          <FeatureItem
-            icon="📊"
-            text={t(i18nKeys.LOGIN_FEATURE_PROGRESS_TRACKING)}
-          />
+          <FeatureItem icon="🎯" text={tt.featureAiPaths} />
+          <FeatureItem icon="🎯" text={tt.featureSmartRecommendations} />
+          <FeatureItem icon="📊" text={tt.featureProgressTracking} />
         </div>
       </div>
 
       {/* Right side - Login form */}
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
-          <h2 className="text-2xl font-semibold mb-2 text-text">
-            {t(i18nKeys.LOGIN_TITLE)}
-          </h2>
-          <p className="text-text-secondary mb-8">
-            {t(i18nKeys.LOGIN_SUBTITLE)}
-          </p>
+          <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title2}</h2>
+          <p className="text-text-secondary mb-8">{tt.subtitle}</p>
 
           <Form
             name="login"
@@ -87,28 +73,24 @@ export default function LoginPage() {
           >
             <Form.Item
               name="email"
-              rules={[
-                { required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }
-              ]}
+              rules={[{ required: true, message: tt.emailRequired }]}
             >
               <Input
                 prefix={<UserOutlined className="text-text-tertiary" />}
-                placeholder={t(i18nKeys.LOGIN_EMAIL)}
-                title={t(i18nKeys.LOGIN_EMAIL_TITLE)}
+                placeholder={tt.email}
+                title={tt.emailTitle}
                 className="h-12 text-base bg-secondary border-border"
               />
             </Form.Item>
 
             <Form.Item
               name="password"
-              rules={[
-                { required: true, message: t(i18nKeys.LOGIN_PASSWORD_REQUIRED) }
-              ]}
+              rules={[{ required: true, message: tt.passwordRequired }]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder={t(i18nKeys.LOGIN_PASSWORD)}
-                title={t(i18nKeys.LOGIN_PASSWORD_TITLE)}
+                placeholder={tt.password}
+                title={tt.passwordTitle}
                 className="h-12 text-base"
               />
             </Form.Item>
@@ -117,9 +99,9 @@ export default function LoginPage() {
               <a
                 href="#"
                 className="text-brand hover:text-brand-hover"
-                title={t(i18nKeys.LOGIN_FORGOT_PASSWORD_TITLE)}
+                title={tt.forgotPasswordTitle}
               >
-                {t(i18nKeys.LOGIN_FORGOT_PASSWORD)}
+                {tt.forgotPassword}
               </a>
             </div>
 
@@ -128,35 +110,33 @@ export default function LoginPage() {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                title={t(i18nKeys.LOGIN_BUTTON_TITLE)}
+                title={tt.buttonTitle}
                 className="w-full h-12 text-base"
               >
-                {t(i18nKeys.LOGIN_BUTTON)}
+                {tt.button}
               </Button>
             </Form.Item>
 
             <div className="text-center text-text-tertiary my-4">
-              {t(i18nKeys.LOGIN_CONTINUE_WITH)}
+              {tt.continueWith}
             </div>
 
             <Button
               icon={<GoogleOutlined />}
               className="w-full h-12 text-base"
-              title={t(i18nKeys.LOGIN_WITH_GOOGLE_TITLE)}
+              title={tt.withGoogleTitle}
             >
-              {t(i18nKeys.LOGIN_WITH_GOOGLE)}
+              {tt.withGoogle}
             </Button>
 
             <div className="text-center mt-6">
-              <span className="text-text-tertiary">
-                {t(i18nKeys.LOGIN_NO_ACCOUNT)}{' '}
-              </span>
+              <span className="text-text-tertiary">{tt.noAccount} </span>
               <LocaleLink
                 href="/register"
                 className="text-brand hover:text-brand-hover"
-                title={t(i18nKeys.LOGIN_CREATE_ACCOUNT_TITLE)}
+                title={tt.createAccountTitle}
               >
-                {t(i18nKeys.LOGIN_CREATE_ACCOUNT)}
+                {tt.createAccount}
               </LocaleLink>
             </div>
           </Form>

@@ -1,9 +1,10 @@
 import { Button } from 'antd';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
-import * as i18nKeys from '@config/Identifier';
 import { baseRoutes } from '@config/app.router';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { homeI18n } from '@config/i18n/homeI18n';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 const layoutRoutes = baseRoutes.filter(
   (route) => route.element === 'base/Layout'
@@ -19,6 +20,7 @@ const navigationItems = layoutRoutes[0]!
 
 export default function HomePage() {
   const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(homeI18n);
 
   return (
     <div className="min-h-screen bg-primary">
@@ -26,11 +28,9 @@ export default function HomePage() {
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-            {t(i18nKeys.HOME_WELCOME)}
+            {tt.welcome}
           </h1>
-          <p className="text-xl text-text-secondary mb-8">
-            {t(i18nKeys.HOME_DESCRIPTION)}
-          </p>
+          <p className="text-xl text-text-secondary mb-8">{tt.description2}</p>
         </div>
       </section>
 
@@ -56,7 +56,7 @@ export default function HomePage() {
                 {t(item.descriptionKey)}
               </p>
               <Button type="primary" className="w-full">
-                {t(i18nKeys.HOME_EXPLORE)}
+                {tt.explore}
               </Button>
             </LocaleLink>
           ))}
@@ -67,13 +67,13 @@ export default function HomePage() {
       <section className="py-16 px-4 bg-elevated">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4 text-text">
-            {t(i18nKeys.HOME_GET_STARTED_TITLE)}
+            {tt.getStartedTitle}
           </h2>
           <p className="text-lg text-text-secondary mb-8">
-            {t(i18nKeys.HOME_GET_STARTED_DESCRIPTION)}
+            {tt.getStartedDescription}
           </p>
           <Button type="primary" size="large" className="px-8">
-            {t(i18nKeys.HOME_GET_STARTED_BUTTON)}
+            {tt.getStartedButton}
           </Button>
         </div>
       </section>

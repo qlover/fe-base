@@ -1,6 +1,6 @@
-import { routerPrefix } from './common';
+import { routerPrefix } from '../common';
 
-export default {
+export const i18nConfig = {
   fallbackLng: 'en',
   debug: false,
   interpolation: {
@@ -13,3 +13,5 @@ export default {
   },
   supportedLngs: ['en', 'zh']
 } as const;
+
+export type LocaleType = (typeof i18nConfig.supportedLngs)[number];

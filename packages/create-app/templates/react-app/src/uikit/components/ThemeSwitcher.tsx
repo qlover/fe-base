@@ -1,5 +1,4 @@
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
 import {
   BulbOutlined,
@@ -12,6 +11,7 @@ import { useMemo } from 'react';
 import * as i18nKeys from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '../hooks/useIOC';
+import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const colorMap: Record<
   string,
@@ -38,7 +38,7 @@ export default function ThemeSwitcher() {
   const themeService = useIOC(IOCIdentifier.ThemeService);
   const { theme } = useStore(themeService);
   const themes = themeService.getSupportedThemes();
-  const { t } = useTranslation('common');
+  const { t } = useAppTranslation('common');
 
   const themeOptions = useMemo(() => {
     return themes.map((themeName) => {

@@ -1,5 +1,5 @@
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/pages/page.about';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { aboutI18n } from '@config/i18n/aboutI18n';
 import {
   Button,
   Tooltip,
@@ -14,27 +14,28 @@ import {
 import { useState } from 'react';
 
 export default function AboutPage() {
-  const { t } = useBaseRoutePage();
   const [messageApi, contextHolder] = message.useMessage();
   const [notificationApi, contextHolder2] = notification.useNotification();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const tt = useI18nInterface(aboutI18n);
+
   const showMessage = () => {
-    messageApi.info(t(i18nKeys.ABOUT_MESSAGE_TEST), 2000);
+    messageApi.info(tt.messageTest, 2000);
   };
 
   const showNotification = () => {
     notificationApi.open({
-      message: t(i18nKeys.ABOUT_NOTIFICATION_TITLE),
-      description: t(i18nKeys.ABOUT_NOTIFICATION_DESC),
+      message: tt.notificationTitle,
+      description: tt.notificationDescription,
       duration: 2000
     });
   };
   const showNotification2 = () => {
     notification.open({
-      message: t(i18nKeys.ABOUT_NOTIFICATION_TITLE),
-      description: t(i18nKeys.ABOUT_NOTIFICATION_DESC),
+      message: tt.notificationTitle,
+      description: tt.notificationDescription,
       duration: 2000
     });
   };
@@ -43,7 +44,7 @@ export default function AboutPage() {
     setIsModalOpen(true);
   };
   const showMessage2 = () => {
-    message.info(t(i18nKeys.ABOUT_MESSAGE_TEST), 200);
+    message.info(tt.messageTest, 200);
   };
 
   const showDrawer = () => {
@@ -56,66 +57,57 @@ export default function AboutPage() {
       {contextHolder2}
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <h1 className="text-2xl font-bold text-center text-text mb-8">
-          {t(i18nKeys.PAGE_ABOUT_TITLE)}
+          {tt.title}
         </h1>
 
         <div className="space-x-4 flex justify-center flex-wrap gap-4">
-          <Button onClick={showMessage}>{t(i18nKeys.ABOUT_BTN_MESSAGE)}</Button>
-          <Button onClick={showMessage2}>
-            {t(i18nKeys.ABOUT_BTN_MESSAGE2)}
-          </Button>
+          <Button onClick={showMessage}>{tt.btnMessage}</Button>
+          <Button onClick={showMessage2}>{tt.btnMessage2}</Button>
 
-          <Button onClick={showNotification}>
-            {t(i18nKeys.ABOUT_BTN_NOTIFICATION)}
-          </Button>
+          <Button onClick={showNotification}>{tt.btnNotification}</Button>
 
-          <Button onClick={showNotification2}>
-            {t(i18nKeys.ABOUT_BTN_NOTIFICATION2)}
-          </Button>
+          <Button onClick={showNotification2}>{tt.btnNotification2}</Button>
 
-          <Tooltip title={t(i18nKeys.ABOUT_TOOLTIP_TEXT)}>
-            <Button>{t(i18nKeys.ABOUT_BTN_TOOLTIP)}</Button>
+          <Tooltip title={tt.tooltipText}>
+            <Button>{tt.btnTooltip}</Button>
           </Tooltip>
 
           <Modal
-            title={t(i18nKeys.ABOUT_MODAL_TITLE)}
+            title={tt.modalTitle}
             open={isModalOpen}
             onOk={() => setIsModalOpen(false)}
             onCancel={() => setIsModalOpen(false)}
           >
-            <p>{t(i18nKeys.ABOUT_MODAL_CONTENT)}</p>
+            <p>{tt.modalContent}</p>
           </Modal>
 
-          <Button onClick={showModal}>{t(i18nKeys.ABOUT_BTN_MODAL)}</Button>
+          <Button onClick={showModal}>{tt.btnModal}</Button>
 
           <Drawer
-            title={t(i18nKeys.ABOUT_DRAWER_TITLE)}
+            title={tt.drawerTitle}
             open={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}
           >
-            <p>{t(i18nKeys.ABOUT_DRAWER_CONTENT)}</p>
+            <p>{tt.drawerContent}</p>
           </Drawer>
 
-          <Button onClick={showDrawer}>{t(i18nKeys.ABOUT_BTN_DRAWER)}</Button>
+          <Button onClick={showDrawer}>{tt.btnDrawer}</Button>
 
-          <Popover
-            content={t(i18nKeys.ABOUT_POPOVER_CONTENT)}
-            title={t(i18nKeys.ABOUT_POPOVER_TITLE)}
-          >
-            <Button>{t(i18nKeys.ABOUT_BTN_POPOVER)}</Button>
+          <Popover content={tt.popoverContent} title={tt.popoverTitle}>
+            <Button>{tt.btnPopover}</Button>
           </Popover>
 
           <Popconfirm
-            title={t(i18nKeys.ABOUT_POPCONFIRM_TITLE)}
-            description={t(i18nKeys.ABOUT_POPCONFIRM_DESC)}
-            okText={t(i18nKeys.ABOUT_OK_TEXT)}
-            cancelText={t(i18nKeys.ABOUT_CANCEL_TEXT)}
+            title={tt.popconfirmTitle}
+            description={tt.popconfirmDesc}
+            okText={tt.okText}
+            cancelText={tt.cancelText}
           >
-            <Button>{t(i18nKeys.ABOUT_BTN_POPCONFIRM)}</Button>
+            <Button>{tt.btnPopconfirm}</Button>
           </Popconfirm>
 
           <Alert
-            message={t(i18nKeys.ABOUT_ALERT_MESSAGE)}
+            message={tt.alertMessage}
             type="warning"
             showIcon
             closable

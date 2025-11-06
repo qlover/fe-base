@@ -13,7 +13,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { I18nService, I18nServiceState } from '@/base/services/I18nService';
 import i18n from 'i18next';
-import i18nConfig from '@config/i18n';
+import { i18nConfig } from '@config/i18n/i18nConfig';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 

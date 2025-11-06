@@ -1,10 +1,12 @@
 import { Button } from 'antd';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import * as ErrorIdentifierList from '@config/Identifier/common/common.error';
-import * as i18nKeys from '@config/Identifier/pages/page.identifiter';
+import { identifiter18n } from '@config/i18n/identifiter18n';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 export default function IdentifierPage() {
   const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(identifiter18n);
 
   return (
     <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
@@ -13,10 +15,10 @@ export default function IdentifierPage() {
         <section className="py-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_MAIN_TITLE)}
+              {tt.title}
             </h1>
             <p className="text-xl text-text-secondary mb-8">
-              {t(i18nKeys.PAGE_ERROR_IDENTIFIER_SOURCE_DESCRIPTION)}
+              {tt.sourceDescription}
             </p>
           </div>
         </section>
@@ -42,14 +44,12 @@ export default function IdentifierPage() {
 
         {/* Call to Action Section */}
         <section className="py-8 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-text">
-            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_TITLE)}
-          </h2>
+          <h2 className="text-2xl font-bold mb-4 text-text">{tt.helpTitle}</h2>
           <p className="text-lg text-text-secondary mb-6">
-            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_HELP_DESCRIPTION)}
+            {tt.helpDescription}
           </p>
           <Button type="primary" size="large">
-            {t(i18nKeys.PAGE_ERROR_IDENTIFIER_CONTACT_SUPPORT)}
+            {tt.contactSupport}
           </Button>
         </section>
       </div>

@@ -10,7 +10,7 @@ import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
-import i18nConfig from './config/i18n';
+import { i18nConfig } from './config/i18n/i18nConfig';
 import tailwindcss from '@tailwindcss/vite';
 import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
 import vitePluginImp from 'vite-plugin-imp';

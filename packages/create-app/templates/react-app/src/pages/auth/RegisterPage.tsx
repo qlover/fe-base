@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { RegisterFormData } from '@/base/services/UserService';
-import * as i18nKeys from '@config/Identifier/pages/page.register';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useIOC } from '@/uikit/hooks/useIOC';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { register18n } from '@config/i18n/register18n';
 
 export default function RegisterPage() {
-  const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(register18n);
   const AppConfig = useIOC(IOCIdentifier.AppConfig);
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
   const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
@@ -44,34 +44,20 @@ export default function RegisterPage() {
             {AppConfig.appName}
           </span>
         </div>
-        <h1 className="text-4xl font-bold text-text mb-4">
-          {t(i18nKeys.REGISTER_TITLE)}
-        </h1>
-        <p className="text-text-secondary text-lg mb-8">
-          {t(i18nKeys.REGISTER_SUBTITLE)}
-        </p>
+        <h1 className="text-4xl font-bold text-text mb-4">{tt.title2}</h1>
+        <p className="text-text-secondary text-lg mb-8">{tt.subtitle}</p>
         <div className="space-y-4">
-          <FeatureItem
-            icon="🎯"
-            text={t(i18nKeys.REGISTER_FEATURE_PERSONALIZED)}
-          />
-          <FeatureItem icon="👨‍🏫" text={t(i18nKeys.REGISTER_FEATURE_SUPPORT)} />
-          <FeatureItem
-            icon="👥"
-            text={t(i18nKeys.REGISTER_FEATURE_COMMUNITY)}
-          />
+          <FeatureItem icon="🎯" text={tt.featurePersonalized} />
+          <FeatureItem icon="👨‍🏫" text={tt.featureSupport} />
+          <FeatureItem icon="👥" text={tt.featureCommunity} />
         </div>
       </div>
 
       {/* Right side - Registration form */}
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
-          <h2 className="text-2xl font-semibold mb-2 text-text">
-            {t(i18nKeys.REGISTER_TITLE)}
-          </h2>
-          <p className="text-text-secondary mb-8">
-            {t(i18nKeys.REGISTER_SUBTITLE)}
-          </p>
+          <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title2}</h2>
+          <p className="text-text-secondary mb-8">{tt.subtitle}</p>
 
           <Form
             form={form}
@@ -85,13 +71,13 @@ export default function RegisterPage() {
               rules={[
                 {
                   required: true,
-                  message: t(i18nKeys.REGISTER_USERNAME_REQUIRED)
+                  message: tt.usernameRequired
                 }
               ]}
             >
               <Input
                 prefix={<UserOutlined className="text-text-tertiary" />}
-                placeholder={t(i18nKeys.REGISTER_USERNAME)}
+                placeholder={tt.username}
                 className="h-12 text-base bg-secondary border-border"
               />
             </Form.Item>
@@ -101,17 +87,17 @@ export default function RegisterPage() {
               rules={[
                 {
                   required: true,
-                  message: t(i18nKeys.REGISTER_EMAIL_REQUIRED)
+                  message: tt.emailRequired
                 },
                 {
                   type: 'email',
-                  message: t(i18nKeys.REGISTER_EMAIL_REQUIRED)
+                  message: tt.emailRequired
                 }
               ]}
             >
               <Input
                 prefix={<MailOutlined className="text-text-tertiary" />}
-                placeholder={t(i18nKeys.REGISTER_EMAIL)}
+                placeholder={tt.email}
                 className="h-12 text-base bg-secondary border-border"
               />
             </Form.Item>
@@ -121,13 +107,13 @@ export default function RegisterPage() {
               rules={[
                 {
                   required: true,
-                  message: t(i18nKeys.REGISTER_PASSWORD_REQUIRED)
+                  message: tt.passwordRequired
                 }
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder={t(i18nKeys.REGISTER_PASSWORD)}
+                placeholder={tt.password}
                 className="h-12 text-base"
               />
             </Form.Item>
@@ -138,23 +124,21 @@ export default function RegisterPage() {
               rules={[
                 {
                   required: true,
-                  message: t(i18nKeys.REGISTER_CONFIRM_PASSWORD_REQUIRED)
+                  message: tt.confirmPasswordRequired
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue('password') === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      t(i18nKeys.REGISTER_PASSWORD_MISMATCH)
-                    );
+                    return Promise.reject(tt.passwordMismatch);
                   }
                 })
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder={t(i18nKeys.REGISTER_CONFIRM_PASSWORD)}
+                placeholder={tt.confirmPassword}
                 className="h-12 text-base"
               />
             </Form.Item>
@@ -167,31 +151,29 @@ export default function RegisterPage() {
                   validator: (_, value) =>
                     value
                       ? Promise.resolve()
-                      : Promise.reject(
-                          new Error(t(i18nKeys.REGISTER_TERMS_REQUIRED))
-                        )
+                      : Promise.reject(new Error(tt.termsRequired))
                 }
               ]}
             >
               <Checkbox>
                 <span className="text-text-secondary">
-                  {t(i18nKeys.REGISTER_TERMS_PREFIX)}{' '}
+                  {tt.termsPrefix}{' '}
                   <a
                     href="#"
                     className="text-brand hover:text-brand-hover"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {t(i18nKeys.REGISTER_TERMS_LINK)}
+                    {tt.termsLink}
                   </a>{' '}
-                  {t(i18nKeys.REGISTER_TERMS_AND)}{' '}
+                  {tt.termsAnd}{' '}
                   <a
                     href="#"
                     className="text-brand hover:text-brand-hover"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {t(i18nKeys.REGISTER_PRIVACY_LINK)}
+                    {tt.privacyLink}
                   </a>
                 </span>
               </Checkbox>
@@ -204,20 +186,18 @@ export default function RegisterPage() {
                 loading={loading}
                 className="w-full h-12 text-base"
               >
-                {t(i18nKeys.REGISTER_BUTTON)}
+                {tt.button}
               </Button>
             </Form.Item>
 
             <div className="text-center mt-6">
-              <span className="text-text-tertiary">
-                {t(i18nKeys.REGISTER_HAVE_ACCOUNT)}{' '}
-              </span>
+              <span className="text-text-tertiary">{tt.haveAccount} </span>
               <a
                 href="#"
                 className="text-brand hover:text-brand-hover"
                 onClick={handleLoginClick}
               >
-                {t(i18nKeys.REGISTER_LOGIN_LINK)}
+                {tt.loginLink}
               </a>
             </div>
           </Form>

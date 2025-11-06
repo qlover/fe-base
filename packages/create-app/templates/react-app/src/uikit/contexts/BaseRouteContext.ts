@@ -1,11 +1,11 @@
-import { useTranslation } from 'react-i18next';
 import { useContext, useMemo } from 'react';
 import { BasePageProvider } from '@/base/types/Page';
 import { RouteMeta } from '@/base/types/Page';
 import { createContext } from 'react';
 import merge from 'lodash/merge';
-import i18nConfig from '@config/i18n';
+import { i18nConfig } from '@config/i18n/i18nConfig';
 import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/common/common.error';
+import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const { defaultNS } = i18nConfig;
 
@@ -26,7 +26,7 @@ export function useBaseRoutePage(): BasePageProvider {
 
   const _meta = useMemo(() => merge({}, defaultBaseRoutemeta, meta), [meta]);
 
-  const i18n = useTranslation(_meta.localNamespace);
+  const i18n = useAppTranslation(_meta.localNamespace);
 
   return {
     meta: _meta,
