@@ -73,8 +73,18 @@ describe('IOC Container Tests', () => {
       // This test verifies that IOC function can be called with string identifiers
       // The function should accept the identifier, but will throw if service is not bound
       expect(() => {
-        IOC(IOCIdentifier.Logger);
+        IOC('NonExistentService' as any);
       }).toThrow();
+    });
+
+    it('should get registered services successfully', () => {
+      // Logger is registered during IOC initialization
+      expect(() => {
+        IOC(IOCIdentifier.Logger);
+      }).not.toThrow();
+      
+      const logger = IOC(IOCIdentifier.Logger);
+      expect(logger).toBeDefined();
     });
 
     it('should accept class constructors', () => {

@@ -4,7 +4,7 @@ import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
 import * as globals from '../globals';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import { isObject } from 'lodash';
-import { IOCInterface } from '@/base/port/IOCInterface';
+import { IOCInterface, IOCRegister } from '@/base/port/IOCInterface';
 
 export type BootstrapClientArgs = {
   /**
@@ -20,11 +20,18 @@ export type BootstrapClientArgs = {
    * IOC容器对象
    */
   ioc: IOCInterface<IOCIdentifierMap, IOCContainerInterface>;
+
+  /**
+   * IOC注册器对象，用于注册IOC容器
+   *
+   * 可能在ioc create 中已经注册，这里可以额外注册
+   */
+  iocRegister?: IOCRegister;
 };
 
 export class BootstrapClient {
-  static async main(args: BootstrapClientArgs): Promise<void> {
-    const { root, bootHref, ioc } = args;
+  static async main(args: BootstrapClientArgs): Promise<BootstrapClientArgs> {
+    const { root, bootHref, ioc, iocRegister } = args;
 
     if (!isObject(root)) {
       throw new Error('root is not an object');
@@ -42,6 +49,7 @@ export class BootstrapClient {
       logger,
       ioc: {
         manager: IOC,
+        register: iocRegister
       },
       envOptions: {
         target: appConfig,
@@ -69,5 +77,7 @@ export class BootstrapClient {
     } catch (error) {
       logger.error(`${appConfig.appName} starup error:`, error);
     }
+
+    return args;
   }
 }

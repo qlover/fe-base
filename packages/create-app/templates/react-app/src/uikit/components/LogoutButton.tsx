@@ -27,7 +27,7 @@ export default function LogoutButton() {
   }, [tTitle, tContent]);
 
   return (
-    <Button danger onClick={onClick}>
+    <Button data-testid="LogoutButton" danger onClick={onClick}>
       {tTitle}
     </Button>
   );

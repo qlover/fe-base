@@ -40,7 +40,9 @@ describe('BootstrapApp', () => {
     mockArgs = {
       root: {},
       bootHref: 'http://localhost:3000',
-      IOC: mockIOC
+      ioc: {
+        create: vi.fn().mockReturnValue(mockIOC)
+      }
     };
   });
 

@@ -1,7 +1,8 @@
 import type {
   EnvConfigInterface,
   IOCContainerInterface,
-  IOCFunctionInterface
+  IOCFunctionInterface,
+  IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 
 /**
@@ -27,3 +28,9 @@ export interface IOCInterface<
     options: IocRegisterOptions
   ): IOCFunctionInterface<IdentifierMap, IOCContainer>;
 }
+
+/**
+ * 提供一个快捷的注册器类型名
+ */
+export interface IOCRegister
+  extends IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions> {}

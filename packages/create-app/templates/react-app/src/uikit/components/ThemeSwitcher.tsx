@@ -67,7 +67,7 @@ export default function ThemeSwitcher() {
   }, [theme, themes, t]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div data-testid="ThemeSwitcher" className="flex items-center gap-2">
       <Select
         value={theme}
         onChange={(value) => themeService.changeTheme(value)}

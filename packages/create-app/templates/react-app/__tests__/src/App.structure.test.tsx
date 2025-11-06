@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
-import { clientIOC } from '@/core/clientIoc/ClientIOC';
 import { routerPrefix } from '@config/common';
 
 // Mock CSS imports
@@ -66,6 +65,7 @@ vi.mock('@/uikit/components/AppRouterProvider', () => ({
 import App from '@/App';
 import { ClientIOCRegister } from '@/core/clientIoc/ClientIOCRegister';
 import { appConfig } from '@/core/globals';
+import { testIOC } from '__tests__/__mocks__/testIOC/TestIOC';
 
 describe('App Component with IOC Initialization', () => {
   beforeAll(async () => {
@@ -79,8 +79,8 @@ describe('App Component with IOC Initialization', () => {
     await BootstrapClient.main({
       root: globalThis,
       bootHref: 'http://localhost:3000',
-      IOC: clientIOC.create(),
-      IOCRegister: new ClientIOCRegister({
+      ioc: testIOC,
+      iocRegister: new ClientIOCRegister({
         pathname: '/',
         appConfig: appConfig
       })

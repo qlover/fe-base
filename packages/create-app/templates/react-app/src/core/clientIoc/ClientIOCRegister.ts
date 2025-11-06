@@ -5,6 +5,7 @@ import {
   IOCRegisterInterface,
   RequestCommonPlugin,
   ThemeService,
+  ThemeServiceProps,
   type IOCManagerInterface
 } from '@qlover/corekit-bridge';
 import * as globals from '../globals';
@@ -83,7 +84,7 @@ export class ClientIOCRegister
     ioc.bind(
       I.ThemeService,
       new ThemeService({
-        ...themeConfig,
+        ...(themeConfig as unknown as ThemeServiceProps),
         storage: ioc.get<SyncStorageInterface<string, string>>(I.LocalStorage)
       })
     );

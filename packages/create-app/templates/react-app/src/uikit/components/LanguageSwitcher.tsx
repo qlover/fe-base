@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
   );
 
   return (
-    <div className="flex items-center gap-2">
+    <div data-testid="LanguageSwitcher" className="flex items-center gap-2">
       <Select
         loading={loading}
         disabled={loading}

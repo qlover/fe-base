@@ -1,2 +1,1 @@
 import './setupGlobal';
-import './setupIOC';
