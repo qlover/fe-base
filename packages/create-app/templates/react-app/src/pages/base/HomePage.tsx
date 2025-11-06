@@ -2,8 +2,7 @@ import { Button } from 'antd';
 import LocaleLink from '@/uikit/components/LocaleLink';
 import clsx from 'clsx';
 import { baseRoutes } from '@config/app.router';
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
-import { homeI18n } from '@config/i18n/homeI18n';
+import { HomeI18nInterface } from '@config/i18n/homeI18n';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 
 const layoutRoutes = baseRoutes.filter(
@@ -19,8 +18,7 @@ const navigationItems = layoutRoutes[0]!
   }));
 
 export default function HomePage() {
-  const { t } = useBaseRoutePage();
-  const tt = useI18nInterface(homeI18n);
+  const { t, tt } = useBaseRoutePage<HomeI18nInterface>();
 
   return (
     <div className="min-h-screen bg-primary">

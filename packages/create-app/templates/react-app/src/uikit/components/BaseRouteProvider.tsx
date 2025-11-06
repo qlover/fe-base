@@ -1,19 +1,18 @@
 import { PropsWithChildren } from 'react';
 import { RouteMeta } from '@/base/types/Page';
 import { BaseRoutePageContext } from '@/uikit/contexts/BaseRouteContext';
-import { useDocumentTitle } from '@/uikit/hooks/useDocumentTitle';
-import { useIOC } from '../hooks/useIOC';
-import { useAppTranslation } from '../hooks/useAppTranslation';
+import { BaseRouteSeo } from './BaseRouteSeo';
 
 export default function BaseRouteProvider(props: PropsWithChildren<RouteMeta>) {
-  const { t } = useAppTranslation();
-  const AppConfig = useIOC('AppConfig');
-
-  useDocumentTitle(props.title ? t(props.title) : AppConfig.appName);
+  const { children, ..._props } = props;
 
   return (
-    <BaseRoutePageContext.Provider value={props}>
-      {props.children}
+    <BaseRoutePageContext.Provider value={_props}>
+      {typeof _props.i18nInterface === 'object' &&
+        _props.i18nInterface != null &&
+        Object.keys(_props.i18nInterface).length > 0 && <BaseRouteSeo />}
+
+      {children}
     </BaseRoutePageContext.Provider>
   );
 }

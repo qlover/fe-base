@@ -13,10 +13,13 @@ export function useI18nInterface<T extends Record<string, string>>(
 ): T {
   const { t } = useAppTranslation('common');
 
-  const i18n = useMemo(
-    () => TranslateI18nInterface.translate(i18nInterface, t),
-    [i18nInterface, t]
-  );
+  const i18n = useMemo(() => {
+    if (Object.keys(i18nInterface).length > 0) {
+      return TranslateI18nInterface.translate(i18nInterface, t);
+    }
+
+    return {} as T;
+  }, [i18nInterface, t]);
 
   return i18n;
 }

@@ -1,5 +1,13 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
 import * as identifier from './Identifier';
+import { homeI18n } from './i18n/homeI18n';
+import { aboutI18n } from './i18n/aboutI18n';
+import { jsonStorage18n } from './i18n/jsonStorage18n';
+import { request18n } from './i18n/request18n';
+import { executorI18n } from './i18n/executorI18n';
+import { identifiter18n } from './i18n/identifiter18n';
+import { login18n } from './i18n/login18n';
+import { register18n } from './i18n/register18n';
 
 export const baseRoutes: RouteConfigValue[] = [
   {
@@ -20,7 +28,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_HOME_TITLE,
           description: identifier.PAGE_HOME_DESCRIPTION,
           icon: 'home',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: homeI18n
         }
       },
       {
@@ -30,7 +39,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_ABOUT_TITLE,
           description: identifier.PAGE_ABOUT_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: aboutI18n
         }
       },
       {
@@ -40,7 +50,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_JSONSTORAGE_TITLE,
           description: identifier.PAGE_JSONSTORAGE_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: jsonStorage18n
         }
       },
       {
@@ -50,7 +61,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_REQUEST_TITLE,
           description: identifier.PAGE_REQUEST_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: request18n
         }
       },
       {
@@ -60,7 +72,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_EXECUTOR_TITLE,
           description: identifier.PAGE_EXECUTOR_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: executorI18n
         }
       },
       {
@@ -70,7 +83,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
           description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: identifiter18n
         }
       },
       {
@@ -114,7 +128,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_LOGIN_TITLE,
           description: identifier.PAGE_LOGIN_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: login18n
         }
       },
       {
@@ -124,7 +139,8 @@ export const baseRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_REGISTER_TITLE,
           description: identifier.PAGE_REGISTER_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: register18n
         }
       }
     ]
@@ -177,7 +193,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_HOME_TITLE,
           description: identifier.PAGE_HOME_DESCRIPTION,
           icon: 'home',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: homeI18n
         }
       },
       {
@@ -187,7 +204,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_ABOUT_TITLE,
           description: identifier.PAGE_ABOUT_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: aboutI18n
         }
       },
       {
@@ -197,7 +215,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_JSONSTORAGE_TITLE,
           description: identifier.PAGE_JSONSTORAGE_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: jsonStorage18n
         }
       },
       {
@@ -207,7 +226,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_REQUEST_TITLE,
           description: identifier.PAGE_REQUEST_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: request18n
         }
       },
       {
@@ -217,7 +237,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_EXECUTOR_TITLE,
           description: identifier.PAGE_EXECUTOR_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: executorI18n
         }
       },
       {
@@ -227,7 +248,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
           description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,
           icon: 'info',
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: identifiter18n
         }
       },
       {
