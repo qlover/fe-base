@@ -1,8 +1,8 @@
-import type AntdMessageStatic from 'antd/es/message';
-import type { TypeOpen } from 'antd/es/message/interface';
-import type AntdModalStatic from 'antd/es/modal';
+import AntdMessageStatic from 'antd/es/message';
+import { TypeOpen } from 'antd/es/message/interface';
+import AntdModalStatic from 'antd/es/modal';
 
-import type { ModalFunc } from 'antd/es/modal/confirm';
+import { ModalFunc } from 'antd/es/modal/confirm';
 
 declare module 'antd' {
   /**

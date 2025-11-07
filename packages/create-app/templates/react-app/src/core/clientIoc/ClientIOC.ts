@@ -26,6 +26,7 @@ export class ClientIOC
 
     // move to BootstrapClient
     const register = new ClientIOCRegister({
+      // eslint-disable-next-line no-restricted-globals
       pathname: window.location.pathname,
       appConfig: appConfig
     });

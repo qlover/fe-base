@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { useEffect } from 'react';
 import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 

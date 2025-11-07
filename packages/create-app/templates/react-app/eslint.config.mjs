@@ -6,6 +6,11 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import unusedImports from 'eslint-plugin-unused-imports';
 import qloverEslint from '@qlover/eslint-plugin';
 import tseslint from 'typescript-eslint';
+import globals from 'globals';
+import {
+  disableGlobals,
+  restrictSpecificGlobals
+} from './makes/eslint-utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -185,6 +190,41 @@ const eslintConfig = [
       ],
       // 默认禁用 export default
       'import/no-default-export': 'error'
+    }
+  },
+  {
+    // TODO: antd override theme need use import type
+    files: ['src/base/types/deprecated-antd.d.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'off'
+    }
+  },
+  // 限制 src 目录下不能直接使用特定的浏览器全局变量
+  restrictSpecificGlobals(
+    {
+      files: ['src/**/*.{ts,tsx,js,jsx}'],
+      languageOptions: {
+        globals: globals.browser
+      }
+    },
+    {
+      restrictedGlobals: [
+        'window',
+        'document',
+        'localStorage',
+        'sessionStorage',
+        'navigator',
+        'location',
+        'history'
+      ],
+      message: '❌ see(./docs/zh/why-no-globals.md)'
+    }
+  ),
+  // 为特定文件允许使用全局变量
+  {
+    files: ['src/main.tsx', 'src/core/globals.ts'],
+    rules: {
+      'no-restricted-globals': 'off'
     }
   },
   // 为特定文件允许 default export

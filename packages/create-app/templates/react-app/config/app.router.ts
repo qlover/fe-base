@@ -243,7 +243,7 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
       },
       {
         path: 'errorIdentifier',
-        element: 'base/ErrorIdentifierPage',
+        element: 'base/IdentifierPage',
         meta: {
           title: identifier.PAGE_ERROR_IDENTIFIER_TITLE,
           description: identifier.PAGE_ERROR_IDENTIFIER_DESCRIPTION,
