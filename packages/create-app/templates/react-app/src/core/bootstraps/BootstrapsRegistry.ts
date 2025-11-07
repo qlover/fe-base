@@ -12,7 +12,13 @@ import type {
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
-export class BootstrapsRegistry {
+export interface BootstrapsRegistryInterface {
+  register(
+    ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
+  ): BootstrapExecutorPlugin[];
+}
+
+export class BootstrapsRegistry implements BootstrapsRegistryInterface {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}

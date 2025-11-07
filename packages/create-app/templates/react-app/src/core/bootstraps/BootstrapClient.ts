@@ -5,7 +5,11 @@ import type { IOCInterface, IOCRegister } from '@/base/port/IOCInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import * as globals from '../globals';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
-import type { IOCContainerInterface } from '@qlover/corekit-bridge';
+import type { BootstrapsRegistryInterface } from './BootstrapsRegistry';
+import type {
+  IOCContainerInterface,
+  IOCFunctionInterface
+} from '@qlover/corekit-bridge';
 
 export type BootstrapClientArgs = {
   /**
@@ -28,11 +32,24 @@ export type BootstrapClientArgs = {
    * 可能在ioc create 中已经注册，这里可以额外注册
    */
   iocRegister?: IOCRegister;
+
+  /**
+   * 注册器类，用于注册注册器
+   */
+  RegistryClass?: new (
+    ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
+  ) => BootstrapsRegistryInterface;
 };
 
 export class BootstrapClient {
   static async main(args: BootstrapClientArgs): Promise<BootstrapClientArgs> {
-    const { root, bootHref, ioc, iocRegister } = args;
+    const {
+      root,
+      bootHref,
+      ioc,
+      iocRegister,
+      RegistryClass = BootstrapsRegistry
+    } = args;
 
     if (!isObject(root)) {
       throw new Error('root is not an object');
@@ -72,9 +89,9 @@ export class BootstrapClient {
       // init bootstrap
       await bootstrap.initialize();
 
-      const bootstrapsRegistry = new BootstrapsRegistry(IOC);
+      const bootstrapsRegistry = new RegistryClass(IOC);
 
-      await bootstrap.use(bootstrapsRegistry.register()).start();
+      await bootstrap.use(bootstrapsRegistry.register(IOC)).start();
     } catch (error) {
       logger.error(`${appConfig.appName} starup error:`, error);
     }

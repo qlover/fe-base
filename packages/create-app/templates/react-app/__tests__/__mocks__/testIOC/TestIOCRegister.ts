@@ -21,6 +21,8 @@ import type {
 export class TestIOCRegister
   implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
 {
+  constructor(protected options: IocRegisterOptions) {}
+
   protected registerGlobals(ioc: IOCContainerInterface): void {
     const { appConfig, dialogHandler, localStorageEncrypt, JSON, logger } =
       globals;
@@ -43,7 +45,7 @@ export class TestIOCRegister
   ): void {
     this.registerGlobals(ioc);
 
-    ioc.bind(I.I18nServiceInterface, new I18nService('/en/test-mock'));
+    ioc.bind(I.I18nServiceInterface, new I18nService(this.options.pathname));
     ioc.bind(
       I.RouteServiceInterface,
       new RouteService(
