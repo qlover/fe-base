@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import { expect, describe, it, beforeAll } from 'vitest';
-import BaseHeader from '@/uikit/components/BaseHeader';
-import { BootstrapTest } from '__tests__/__mocks__/BootstrapTest';
-import { TestApp } from '__tests__/__mocks__/components';
-import { IOCRegister } from '@/base/port/IOCInterface';
+import { BootstrapTest } from '@__mocks__/BootstrapTest';
+import { TestApp } from '@__mocks__/components';
 import { I } from '@config/IOCIdentifier';
+import { render, screen } from '@testing-library/react';
+import type { IOCRegister } from '@/base/port/IOCInterface';
 import { UserService } from '@/base/services/UserService';
+import { BaseHeader } from '@/uikit/components/BaseHeader';
 
 const BaseHeaderRegister: IOCRegister = {
   register(ioc): void {

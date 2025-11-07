@@ -35,6 +35,7 @@ export function TestApp({
 }: TestAppProps) {
   return (
     <TestBootstrapsProvider
+      data-testid="TestApp"
       routerInitialEntries={routerInitialEntries}
       routerInitialIndex={routerInitialIndex}
     >

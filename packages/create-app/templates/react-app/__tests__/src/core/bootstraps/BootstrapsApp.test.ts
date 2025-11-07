@@ -1,10 +1,10 @@
+import { browserGlobalsName } from '@config/common';
+import { createIOCFunction } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 import type { BootstrapClientArgs } from '@/core/bootstraps/BootstrapClient';
-import { createIOCFunction } from '@qlover/corekit-bridge';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { name, version } from '../../../../package.json';
-import { browserGlobalsName } from '@config/common';
 
 // Mock IocRegisterImpl to properly handle registration
 vi.mock('@/core/registers/IocRegisterImpl', () => ({

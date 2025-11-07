@@ -1,6 +1,6 @@
 import { IOCContext } from '@/uikit/contexts/IOCContext';
-import { testIOC } from '../testIOC/TestIOC';
 import { TestRouter } from './TestRouter';
+import { testIOC } from '../testIOC/TestIOC';
 
 export function TestBootstrapsProvider({
   children,

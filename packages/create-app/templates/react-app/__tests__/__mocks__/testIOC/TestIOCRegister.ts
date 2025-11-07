@@ -1,19 +1,19 @@
-import { IocRegisterOptions } from '@/base/port/IOCInterface';
-import { I18nService } from '@/base/services/I18nService';
-import * as globals from '@/core/globals';
+import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
+import { useLocaleRoutes } from '@config/common';
 import { I } from '@config/IOCIdentifier';
 import { themeConfig } from '@config/theme';
-import {
+import { ThemeService } from '@qlover/corekit-bridge';
+import type { IocRegisterOptions } from '@/base/port/IOCInterface';
+import { I18nService } from '@/base/services/I18nService';
+import { RouteService } from '@/base/services/RouteService';
+import * as globals from '@/core/globals';
+import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
+import type {
   IOCContainerInterface,
   IOCManagerInterface,
   IOCRegisterInterface,
-  ThemeService,
   ThemeServiceProps
 } from '@qlover/corekit-bridge';
-import { RouteService } from '@/base/services/RouteService';
-import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
-import { useLocaleRoutes } from '@config/common';
-import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
 
 /**
  * TestIOCRegister - Register mock services for testing

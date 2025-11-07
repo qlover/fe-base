@@ -1,7 +1,5 @@
-import {
-  BootstrapClient,
-  BootstrapClientArgs
-} from '@/core/bootstraps/BootstrapClient';
+import type { BootstrapClientArgs } from '@/core/bootstraps/BootstrapClient';
+import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 import { testIOC } from './testIOC/TestIOC';
 
 export interface BootstrapTestArgs extends Omit<BootstrapClientArgs, 'ioc'> {

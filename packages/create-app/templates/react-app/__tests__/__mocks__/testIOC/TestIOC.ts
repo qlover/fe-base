@@ -1,14 +1,12 @@
+import { createIOCFunction } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import { IOCInterface } from '@/base/port/IOCInterface';
-import { IOCIdentifierMap } from '@config/IOCIdentifier';
-import {
-  createIOCFunction,
+import type { IOCInterface } from '@/base/port/IOCInterface';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import { TestIOCRegister } from './TestIOCRegister';
+import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
-import { TestIOCRegister } from './TestIOCRegister';
-import { ClientIOCRegister } from '@/core/clientIoc/ClientIOCRegister';
-import { appConfig } from '@/core/globals';
 
 export class TestIOC
   implements IOCInterface<IOCIdentifierMap, IOCContainerInterface>

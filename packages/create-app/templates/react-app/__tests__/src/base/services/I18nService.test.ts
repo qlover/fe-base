@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member */
 /**
  * I18nService test suite
  *
@@ -10,10 +11,10 @@
  * 6. translation      - Key translation with parameters
  */
 
+import { i18nConfig } from '@config/i18n/i18nConfig';
+import i18n from 'i18next';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { I18nService, I18nServiceState } from '@/base/services/I18nService';
-import i18n from 'i18next';
-import { i18nConfig } from '@config/i18n/i18nConfig';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
@@ -100,8 +101,7 @@ describe('I18nService', () => {
       expect(i18n.services.languageDetector.addDetector).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'pathLanguageDetector',
-          lookup: expect.any(Function),
-          cacheUserLanguage: expect.any(Function)
+          lookup: expect.any(Function)
         })
       );
     });

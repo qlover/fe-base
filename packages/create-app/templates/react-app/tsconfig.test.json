@@ -5,7 +5,9 @@
     "types": ["vitest/globals", "vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["./config/*"]
+      "@config/*": ["./config/*"],
+      "@__tests__/*": ["./__tests__/*"],
+      "@__mocks__/*": ["./__tests__/__mocks__/*"]
     }
   },
   "include": ["__tests__/**/*"],

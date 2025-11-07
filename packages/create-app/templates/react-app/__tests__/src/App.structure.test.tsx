@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 import { routerPrefix } from '@config/common';
+import { render, screen } from '@testing-library/react';
+import { testIOC } from '__tests__/__mocks__/testIOC/TestIOC';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+import App from '@/App';
+import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 
 // Mock CSS imports
 vi.mock('@/styles/css/index.css', () => ({}));
@@ -62,10 +64,8 @@ vi.mock('@/uikit/components/AppRouterProvider', () => ({
 }));
 
 // Import App after all mocks
-import App from '@/App';
 import { ClientIOCRegister } from '@/core/clientIoc/ClientIOCRegister';
 import { appConfig } from '@/core/globals';
-import { testIOC } from '__tests__/__mocks__/testIOC/TestIOC';
 
 describe('App Component with IOC Initialization', () => {
   beforeAll(async () => {

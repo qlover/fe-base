@@ -8,11 +8,11 @@
  * 4. edge cases       - Various error scenarios
  */
 
+import { MockLogger } from '@__mocks__/MockLogger';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import { MockLogger } from '../../../__mocks__/MockLogger';
-import type { ExecutorContext } from '@qlover/fe-corekit';
 import { I18nService } from '@/base/services/I18nService';
+import type { ExecutorContext } from '@qlover/fe-corekit';
 
 class MockI18nService extends I18nService {
   constructor() {

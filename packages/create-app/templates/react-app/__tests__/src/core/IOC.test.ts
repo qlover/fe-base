@@ -1,8 +1,8 @@
-import { IOC } from '@/core/IOC';
-import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { AppConfig } from '@/base/cases/AppConfig';
+import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { ClientIOCRegister } from '@/core/clientIoc/ClientIOCRegister';
+import { IOC } from '@/core/IOC';
 
 describe('IOC Container Tests', () => {
   let container: InversifyContainer;

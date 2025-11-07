@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
 interface TestRouterProps {
   children: ReactNode;
@@ -35,7 +35,11 @@ export function TestRouter({
   initialIndex = 0
 }: TestRouterProps) {
   return (
-    <MemoryRouter initialEntries={initialEntries} initialIndex={initialIndex}>
+    <MemoryRouter
+      data-testid="TestRouter"
+      initialEntries={initialEntries}
+      initialIndex={initialIndex}
+    >
       {children}
     </MemoryRouter>
   );

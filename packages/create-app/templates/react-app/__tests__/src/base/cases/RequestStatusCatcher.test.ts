@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * RequestStatusCatcher test suite
  *
@@ -9,9 +8,9 @@
  * 4. case200         - Success case handling
  */
 
+import { MockLogger } from '@__mocks__/MockLogger';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import { MockLogger } from '../../../__mocks__/MockLogger';
 import type { RequestAdapterResponse } from '@qlover/fe-corekit';
 
 describe('RequestStatusCatcher', () => {

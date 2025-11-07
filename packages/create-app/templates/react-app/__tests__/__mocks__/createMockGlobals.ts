@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
-import { MockLogger } from './MockLogger';
 import { MockAppConfig } from './MockAppConfit';
 import { MockDialogHandler } from './MockDialogHandler';
+import { MockLogger } from './MockLogger';
 
 export function createMockGlobals() {
   const mockLogger = new MockLogger();
@@ -16,7 +16,6 @@ export function createMockGlobals() {
     parse: vi.fn((data) => JSON.parse(data))
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const storageOptions: Record<string, any> = {
     localStorage: {},
     cookieStorage: {},

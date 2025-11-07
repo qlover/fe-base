@@ -1,6 +1,6 @@
-import { InteractionHubInterface } from '@/base/port/InteractionHubInterface';
-import { AntdStaticApiInterface } from '@brain-toolkit/antd-theme-override/react';
 import { vi } from 'vitest';
+import type { InteractionHubInterface } from '@/base/port/InteractionHubInterface';
+import type { AntdStaticApiInterface } from '@brain-toolkit/antd-theme-override/react';
 
 export class MockDialogHandler
   implements InteractionHubInterface, AntdStaticApiInterface

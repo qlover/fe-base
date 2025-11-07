@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * RouterLoader test suite
  *
@@ -10,13 +9,13 @@
  * 5. error handling  - Invalid configurations
  */
 
+import { createElement } from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RouterLoader } from '@/base/cases/RouterLoader';
 import type {
   RouteConfigValue,
   RouterLoaderOptions
 } from '@/base/cases/RouterLoader';
-import { createElement } from 'react';
 
 describe('RouterLoader', () => {
   // Mock components and render function
