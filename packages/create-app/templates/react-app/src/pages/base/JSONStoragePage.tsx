@@ -1,10 +1,10 @@
-import template from 'lodash/template';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import { Button, Input } from 'antd';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hooks/useIOC';
 import { jsonStorage18n } from '@config/i18n/jsonStorage18n';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Button, Input } from 'antd';
+import template from 'lodash/template';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 export default function JSONStoragePage() {
   const pageBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
@@ -12,7 +12,10 @@ export default function JSONStoragePage() {
   const tt = useI18nInterface(jsonStorage18n);
 
   return (
-    <div className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12">
+    <div
+      data-testid="JSONStoragePage"
+      className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12"
+    >
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="bg-secondary shadow-lg rounded-lg px-8 py-6">
           <h1 className="text-3xl font-bold text-center text-text mb-8">

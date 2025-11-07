@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import LocaleLink from '@/uikit/components/LocaleLink';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hooks/useIOC';
 import { login18n } from '@config/i18n/login18n';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Form, Input, Button } from 'antd';
+import { useState } from 'react';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface LoginFormData {
   email: string;
@@ -37,7 +37,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen text-xs1 bg-primary">
+    <div
+      data-testid="LoginPage"
+      className="flex min-h-screen text-xs1 bg-primary"
+    >
       {/* Left side - Brand section */}
       <div className="hidden lg:flex lg:w-1/2 bg-secondary p-12 flex-col">
         <div className="flex items-center gap-3 mb-12">
@@ -149,7 +152,10 @@ export default function LoginPage() {
 // Helper component for feature items
 function FeatureItem({ icon, text }: { icon: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 text-text">
+    <div
+      data-testid="FeatureItem"
+      className="flex items-center gap-3 text-text"
+    >
       <div className="w-8 h-8 bg-elevated rounded-lg flex items-center justify-center">
         {icon}
       </div>

@@ -1,11 +1,12 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useStore } from '@brain-toolkit/react-kit';
-import { I } from '@config/IOCIdentifier';
-import { useIOC } from '../hooks/useIOC';
-import { useMemo } from 'react';
-import { ComponentValue, RouterLoader } from '@/base/cases/RouterLoader';
-import { RouterRenderComponent } from './RouterRenderComponent';
 import { routerPrefix } from '@config/common';
+import { I } from '@config/IOCIdentifier';
+import { useMemo } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import type { ComponentValue } from '@/base/cases/RouterLoader';
+import { RouterLoader } from '@/base/cases/RouterLoader';
+import { RouterRenderComponent } from './RouterRenderComponent';
+import { useIOC } from '../hooks/useIOC';
 
 export function AppRouterProvider(props: { pages: ComponentValue }) {
   const { pages } = props;
@@ -30,5 +31,5 @@ export function AppRouterProvider(props: { pages: ComponentValue }) {
     return router;
   }, [routes]);
 
-  return <RouterProvider router={routerBase} />;
+  return <RouterProvider data-testid="AppRouterProvider" router={routerBase} />;
 }

@@ -1,9 +1,9 @@
-import { Button } from 'antd';
-import LocaleLink from '@/uikit/components/LocaleLink';
-import clsx from 'clsx';
 import { baseRoutes } from '@config/app.router';
-import { HomeI18nInterface } from '@config/i18n/homeI18n';
+import { Button } from 'antd';
+import { clsx } from 'clsx';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
+import type { HomeI18nInterface } from '@config/i18n/homeI18n';
 
 const layoutRoutes = baseRoutes.filter(
   (route) => route.element === 'base/Layout'
@@ -21,7 +21,7 @@ export default function HomePage() {
   const { t, tt } = useBaseRoutePage<HomeI18nInterface>();
 
   return (
-    <div className="min-h-screen bg-primary">
+    <div data-testid="HomePage" className="min-h-screen bg-primary">
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -37,6 +37,7 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {navigationItems.map((item) => (
             <LocaleLink
+              data-testid="HomePage"
               key={item.href}
               href={item.href}
               className={clsx(

@@ -1,4 +1,4 @@
-import { createMockGlobals } from "__tests__/__mocks__/createMockGlobals";
+import { createMockGlobals } from '__tests__/__mocks__/createMockGlobals';
 
 // 设置测试环境
 beforeEach(() => {

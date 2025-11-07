@@ -71,6 +71,7 @@ pnpm test
 The project provides detailed development documentation covering all major features and best practices:
 
 ### Basic Documentation
+
 - [Project Overview](./docs/en/index.md) - Project introduction and quick start guide
 - [Project Structure](./docs/en/project-structure.md) - Detailed project directory structure explanation
 - [Development Guide](./docs/en/development-guide.md) - Project development specifications and best practices
@@ -78,6 +79,7 @@ The project provides detailed development documentation covering all major featu
 - [Global Configuration](./docs/en/global.md) - Application global configuration and settings
 
 ### Core Features
+
 - [Bootstrap Process](./docs/en/bootstrap.md) - Application startup process and lifecycle management
 - [IOC Container](./docs/en/ioc.md) - Dependency injection system usage guide
 - [Router Management](./docs/en/router.md) - Router configuration and page navigation
@@ -85,6 +87,7 @@ The project provides detailed development documentation covering all major featu
 - [Request Handling](./docs/en/request.md) - API request handling mechanism
 
 ### Feature Extensions
+
 - [Internationalization](./docs/en/i18n.md) - Multi-language support and translation management
 - [Theme System](./docs/en/theme.md) - Theme configuration and dark mode support
 - [TypeScript Guide](./docs/en/typescript-guide.md) - TypeScript usage specifications and best practices
@@ -254,4 +257,7 @@ VITE_SERVER_PORT=3000 pnpm dev
 - Use Vitest for unit testing
 - Support JSDOM environment
 - Built-in test tool configuration
-``` 
+
+```
+
+```

@@ -1,8 +1,8 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { inject, injectable } from 'inversify';
 import type { RequestCatcherInterface } from '@qlover/corekit-bridge';
 import type { RequestAdapterResponse } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
-import { inject, injectable } from 'inversify';
 
 @injectable()
 export class RequestStatusCatcher

@@ -1,20 +1,20 @@
 // ! global variables, don't import any dependencies and don't have side effects
-import {
-  Base64Serializer,
-  JSONSerializer,
-  ObjectStorage,
-  SyncStorage,
-  SyncStorageInterface
-} from '@qlover/fe-corekit';
+import { loggerStyles } from '@config/common';
 import {
   ColorFormatter,
   ConsoleHandler,
   CookieStorage,
   Logger
 } from '@qlover/corekit-bridge';
-import { DialogHandler } from '@/base/cases/DialogHandler';
-import { loggerStyles } from '@config/common';
+import {
+  Base64Serializer,
+  JSONSerializer,
+  ObjectStorage,
+  SyncStorage
+} from '@qlover/fe-corekit';
 import { AppConfig } from '@/base/cases/AppConfig';
+import { DialogHandler } from '@/base/cases/DialogHandler';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
 
 export const appConfig = new AppConfig();
 

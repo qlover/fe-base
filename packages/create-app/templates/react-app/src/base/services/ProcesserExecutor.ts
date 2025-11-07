@@ -1,14 +1,14 @@
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   AsyncExecutor,
   ExecutorContext,
   ExecutorPlugin
 } from '@qlover/fe-corekit';
-import { IOCIdentifier } from '@config/IOCIdentifier';
 import { injectable, inject } from 'inversify';
-import type { LoggerInterface } from '@qlover/logger';
 import type { ProcesserExecutorInterface } from '../port/ProcesserExecutorInterface';
-import type { BootstrapContextValue } from '@qlover/corekit-bridge';
 import type { RouteServiceInterface } from '../port/RouteServiceInterface';
+import type { BootstrapContextValue } from '@qlover/corekit-bridge';
+import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
 export class ProcesserExecutor implements ProcesserExecutorInterface {

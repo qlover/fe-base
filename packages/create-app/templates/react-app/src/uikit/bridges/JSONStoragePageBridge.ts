@@ -1,8 +1,8 @@
-import { inject, injectable } from 'inversify';
-import { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import { inject, injectable } from 'inversify';
 import random from 'lodash/random';
+import { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
 
 @injectable()
 export class JSONStoragePageBridge extends JSONStoragePageBridgeInterface {

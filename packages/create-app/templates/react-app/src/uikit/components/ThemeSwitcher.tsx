@@ -1,17 +1,17 @@
-import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import { Select } from 'antd';
 import {
   BulbOutlined,
   BulbFilled,
   HeartFilled,
   HeartOutlined
 } from '@ant-design/icons';
-import clsx from 'clsx';
-import { useMemo } from 'react';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '../hooks/useIOC';
+import { Select } from 'antd';
+import { clsx } from 'clsx';
+import { useMemo } from 'react';
 import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useIOC } from '../hooks/useIOC';
 
 const colorMap: Record<
   string,
@@ -34,7 +34,7 @@ const colorMap: Record<
   }
 };
 
-export default function ThemeSwitcher() {
+export function ThemeSwitcher() {
   const themeService = useIOC(IOCIdentifier.ThemeService);
   const { theme } = useStore(themeService);
   const themes = themeService.getSupportedThemes();

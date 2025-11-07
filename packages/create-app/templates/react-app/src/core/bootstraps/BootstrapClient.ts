@@ -1,10 +1,11 @@
-import { Bootstrap, IOCContainerInterface } from '@qlover/corekit-bridge';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { envBlackList, envPrefix, browserGlobalsName } from '@config/common';
+import { Bootstrap } from '@qlover/corekit-bridge';
+import { isObject } from 'lodash';
+import type { IOCInterface, IOCRegister } from '@/base/port/IOCInterface';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import * as globals from '../globals';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
-import { isObject } from 'lodash';
-import { IOCInterface, IOCRegister } from '@/base/port/IOCInterface';
+import type { IOCContainerInterface } from '@qlover/corekit-bridge';
 
 export type BootstrapClientArgs = {
   /**

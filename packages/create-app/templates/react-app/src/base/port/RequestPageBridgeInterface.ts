@@ -1,5 +1,5 @@
-import { StoreInterface, StoreStateInterface } from '@qlover/corekit-bridge';
-import { RequestState } from '@qlover/corekit-bridge';
+import { StoreInterface } from '@qlover/corekit-bridge';
+import type { StoreStateInterface, RequestState } from '@qlover/corekit-bridge';
 
 export interface RequestPageStateInterface extends StoreStateInterface {
   helloState: RequestState<unknown>;

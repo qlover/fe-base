@@ -71,6 +71,7 @@ pnpm test
 项目提供了详细的开发文档，涵盖了所有主要功能和最佳实践：
 
 ### 基础文档
+
 - [项目概述](./docs/zh/index.md) - 项目整体介绍和快速开始指南
 - [项目结构](./docs/zh/project-structure.md) - 详细的项目目录结构说明
 - [开发指南](./docs/zh/development-guide.md) - 项目开发规范和最佳实践
@@ -78,6 +79,7 @@ pnpm test
 - [全局配置](./docs/zh/global.md) - 应用全局配置和设置说明
 
 ### 核心功能
+
 - [启动流程](./docs/zh/bootstrap.md) - 应用启动流程和生命周期管理
 - [IOC容器](./docs/zh/ioc.md) - 依赖注入系统的使用说明
 - [路由管理](./docs/zh/router.md) - 路由配置和页面导航说明
@@ -85,6 +87,7 @@ pnpm test
 - [请求处理](./docs/zh/request.md) - API 请求处理机制说明
 
 ### 功能扩展
+
 - [国际化](./docs/zh/i18n.md) - 多语言支持和翻译管理
 - [主题系统](./docs/zh/theme.md) - 主题配置和暗色模式支持
 - [TypeScript指南](./docs/zh/typescript-guide.md) - TypeScript 使用规范和最佳实践

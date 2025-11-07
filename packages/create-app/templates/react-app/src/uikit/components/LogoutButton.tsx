@@ -5,10 +5,10 @@ import {
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { Button } from 'antd';
 import { useCallback } from 'react';
-import { useIOC } from '../hooks/useIOC';
 import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useIOC } from '../hooks/useIOC';
 
-export default function LogoutButton() {
+export function LogoutButton() {
   const { t } = useAppTranslation();
   const dialogHandler = useIOC(IOCIdentifier.DialogHandler);
   const userService = useIOC(IOCIdentifier.UserServiceInterface);

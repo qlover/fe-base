@@ -1,4 +1,5 @@
-import { StoreInterface, StoreStateInterface } from '@qlover/corekit-bridge';
+import { StoreInterface } from '@qlover/corekit-bridge';
+import type { StoreStateInterface } from '@qlover/corekit-bridge';
 
 export interface JSONStoragePageStateInterface extends StoreStateInterface {
   testKey1?: number;

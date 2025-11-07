@@ -1,12 +1,12 @@
-import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { useState, useEffect } from 'react';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import { executorI18n } from '@config/i18n/executorI18n';
 import * as i18nKeys from '@config/Identifier/pages/page.executor';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hooks/useIOC';
-import { executorI18n } from '@config/i18n/executorI18n';
+import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
+import { useState, useEffect } from 'react';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface Task {
   id: string;
@@ -222,7 +222,10 @@ export default function ExecutorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
+    <div
+      data-testid="ExecutorPage"
+      className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <section className="py-8">
@@ -353,6 +356,7 @@ export default function ExecutorPage() {
           <div className="space-y-4">
             {tasks.map((task) => (
               <Card
+                data-testid="ExecutorPage"
                 key={task.id}
                 className="bg-elevated border-border"
                 title={
@@ -426,6 +430,7 @@ export default function ExecutorPage() {
               )
               .map((task) => (
                 <div
+                  data-testid="ExecutorPage"
                   key={task.id}
                   className="flex items-center justify-between p-2 bg-elevated rounded"
                 >

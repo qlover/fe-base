@@ -1,14 +1,14 @@
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import {
+  type BootstrapExecutorPlugin,
+  RequestCommonPlugin
+} from '@qlover/corekit-bridge';
 import {
   FetchURLPlugin,
   RequestAdapterFetch,
   RequestScheduler
 } from '@qlover/fe-corekit';
-import {
-  type BootstrapExecutorPlugin,
-  RequestCommonPlugin
-} from '@qlover/corekit-bridge';
 import { RequestLogger } from '../cases/RequestLogger';
-import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { AppConfig } from '../cases/AppConfig';
 
 const apiApiAdapter = new RequestAdapterFetch({

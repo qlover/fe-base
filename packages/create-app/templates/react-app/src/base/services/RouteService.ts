@@ -1,12 +1,12 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
-import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
-import type { LoggerInterface } from '@qlover/logger';
 import { RouteServiceInterface } from '../port/RouteServiceInterface';
+import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type {
   UIBridgeInterface,
   StoreStateInterface
 } from '@qlover/corekit-bridge';
-import { I18nServiceInterface } from '../port/I18nServiceInterface';
+import type { LoggerInterface } from '@qlover/logger';
+import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 export type RouterServiceOptions = {
   routes: RouteConfigValue[];

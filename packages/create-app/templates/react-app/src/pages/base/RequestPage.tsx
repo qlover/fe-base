@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
-import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import { Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hooks/useIOC';
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { request18n } from '@config/i18n/request18n';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Button } from 'antd';
+import { useMemo } from 'react';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 function JSONValue({ value }: { value: unknown }) {
   const output = useMemo(() => {
@@ -16,7 +16,10 @@ function JSONValue({ value }: { value: unknown }) {
     }
   }, [value]);
   return (
-    <pre className="mt-1 text-sm text-text-secondary font-mono bg-secondary p-2 rounded overflow-x-auto">
+    <pre
+      data-testid="JSONValue"
+      className="mt-1 text-sm text-text-secondary font-mono bg-secondary p-2 rounded overflow-x-auto"
+    >
       {output}
     </pre>
   );
@@ -30,7 +33,10 @@ export default function RequestPage() {
   const tt = useI18nInterface(request18n);
 
   return (
-    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
+    <div
+      data-testid="RequestPage"
+      className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Request Timeout Information */}
         <div className="bg-secondary shadow sm:rounded-lg p-6 border border-primary">

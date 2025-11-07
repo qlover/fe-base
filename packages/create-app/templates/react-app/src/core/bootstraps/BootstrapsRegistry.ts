@@ -1,15 +1,16 @@
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { AiApiBootstarp } from '@/base/apis/AiApi';
+import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
+import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import { IocIdentifierTest } from './IocIdentifierTest';
+import { printBootstrap } from './PrintBootstrap';
 import type {
   BootstrapExecutorPlugin,
   EnvConfigInterface,
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
-import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
-import { FeApiBootstarp } from '@/base/apis/feApi/FeApiBootstarp';
-import { AiApiBootstarp } from '@/base/apis/AiApi';
-import { printBootstrap } from './PrintBootstrap';
-import { IOCIdentifier, IOCIdentifierMap } from '@config/IOCIdentifier';
-import { IocIdentifierTest } from './IocIdentifierTest';
 
 export class BootstrapsRegistry {
   constructor(

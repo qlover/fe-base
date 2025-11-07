@@ -1,8 +1,8 @@
-import { Navigate, Outlet } from 'react-router-dom';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
-import BaseHeader from '../../uikit/components/BaseHeader';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useIOC } from '@/uikit/hooks/useIOC';
+import { BaseHeader } from '../../uikit/components/BaseHeader';
 
 export default function Layout() {
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
@@ -10,7 +10,7 @@ export default function Layout() {
 
   // If user is authenticated, redirect to home page
   if (userService.isAuthenticated()) {
-    return <Navigate to="/" replace />;
+    return <Navigate data-testid="Layout" to="/" replace />;
   }
 
   return (

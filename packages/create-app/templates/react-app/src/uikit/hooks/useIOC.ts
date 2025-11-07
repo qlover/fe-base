@@ -1,12 +1,11 @@
-import { IOCContext } from './../contexts/IOCContext';
 import { useContext } from 'react';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import { IOCContext } from './../contexts/IOCContext';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type IOCIdentifier = keyof IOCIdentifierMap | (new (...args: any[]) => any);
 
 export function useIOC(): IOCFunctionInterface<
@@ -17,8 +16,7 @@ export function useIOC<T extends IOCIdentifier>(
   identifier: T
 ): T extends keyof IOCIdentifierMap
   ? IOCIdentifierMap[T]
-  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    T extends new (...args: any[]) => any
+  : T extends new (...args: any[]) => any
     ? InstanceType<T>
     : never;
 

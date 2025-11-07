@@ -1,4 +1,3 @@
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 import { aboutI18n } from '@config/i18n/aboutI18n';
 import {
   Button,
@@ -12,6 +11,7 @@ import {
   Alert
 } from 'antd';
 import { useState } from 'react';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 
 export default function AboutPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -52,7 +52,10 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12">
+    <div
+      data-testid="AboutPage"
+      className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12"
+    >
       {contextHolder}
       {contextHolder2}
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">

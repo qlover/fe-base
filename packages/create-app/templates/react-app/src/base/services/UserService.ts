@@ -1,22 +1,22 @@
-import { type SyncStorageInterface } from '@qlover/fe-corekit';
-import type {
-  UserApiLoginTransaction,
-  UserInfo
-} from '@/base/apis/userApi/UserApiType';
+import * as errKeys from '@config/Identifier/common/common.error';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   type UserAuthApiInterface,
   type UserAuthState,
   LoginResponseData,
   UserAuthStore
 } from '@qlover/corekit-bridge';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { UserApi } from '@/base/apis/userApi/UserApi';
+import type {
+  UserApiLoginTransaction,
+  UserInfo
+} from '@/base/apis/userApi/UserApiType';
 import { AppError } from '@/base/cases/AppError';
-import * as errKeys from '@config/Identifier/common/common.error';
-import { IOCIdentifier } from '@config/IOCIdentifier';
 import { AppConfig } from '../cases/AppConfig';
-import { UserServiceInterface } from '../port/UserServiceInterface';
 import { RouteServiceInterface } from '../port/RouteServiceInterface';
+import { UserServiceInterface } from '../port/UserServiceInterface';
 
 export interface UserApiState extends UserAuthState<UserInfo> {}
 

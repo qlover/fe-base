@@ -1,5 +1,5 @@
-import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { useMemo } from 'react';
+import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { useAppTranslation } from './useAppTranslation';
 
 /**

@@ -1,9 +1,9 @@
 'use client';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import { clientIOC } from '@/core/clientIoc/ClientIOC';
-import { I } from '@config/IOCIdentifier';
 import { useMountedClient } from '@brain-toolkit/react-kit';
-import { CommonThemeConfig } from '@config/theme';
+import { I } from '@config/IOCIdentifier';
+import { clientIOC } from '@/core/clientIoc/ClientIOC';
+import type { CommonThemeConfig } from '@config/theme';
 
 /**
  * CommonProvider is a provider for the common components

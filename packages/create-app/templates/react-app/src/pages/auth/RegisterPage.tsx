@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { RegisterFormData } from '@/base/services/UserService';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import { useIOC } from '@/uikit/hooks/useIOC';
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 import { register18n } from '@config/i18n/register18n';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Form, Input, Button, Checkbox } from 'antd';
+import { useState } from 'react';
+import type { RegisterFormData } from '@/base/services/UserService';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 export default function RegisterPage() {
   const tt = useI18nInterface(register18n);
@@ -35,7 +35,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen text-xs1 bg-primary">
+    <div
+      data-testid="RegisterPage"
+      className="flex min-h-screen text-xs1 bg-primary"
+    >
       {/* Left side - Brand section */}
       <div className="hidden lg:flex lg:w-1/2 bg-secondary p-12 flex-col">
         <div className="flex items-center gap-3 mb-12">
@@ -210,7 +213,10 @@ export default function RegisterPage() {
 // Helper component for feature items
 function FeatureItem({ icon, text }: { icon: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 text-text">
+    <div
+      data-testid="FeatureItem"
+      className="flex items-center gap-3 text-text"
+    >
       <div className="w-8 h-8 bg-elevated rounded-lg flex items-center justify-center">
         {icon}
       </div>

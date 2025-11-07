@@ -1,5 +1,5 @@
 import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
-import { TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 
 /**
  * Translate I18n Interface tools class

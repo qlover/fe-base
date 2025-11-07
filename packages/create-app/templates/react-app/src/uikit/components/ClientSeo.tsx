@@ -1,5 +1,5 @@
-import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 import { useEffect } from 'react';
+import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
 
 export function ClientSeo(props: {
   i18nInterface: PageI18nInterface;
@@ -14,7 +14,7 @@ export function ClientSeo(props: {
     // Helper function to create or update meta tag
     const setMetaTag = (name: string, content: string | undefined) => {
       if (!content) return;
-      
+
       let meta = document.querySelector(`meta[name="${name}"]`);
       if (!meta) {
         meta = document.createElement('meta');
@@ -47,7 +47,7 @@ export function ClientSeo(props: {
     return () => {
       // You can optionally remove these tags on unmount
       // const metaNames = [
-      //   'description', 'keywords', 'author', 'publishedTime', 
+      //   'description', 'keywords', 'author', 'publishedTime',
       //   'modifiedTime', 'canonical', 'og:title', 'og:description', 'og:image'
       // ];
       // metaNames.forEach(name => {

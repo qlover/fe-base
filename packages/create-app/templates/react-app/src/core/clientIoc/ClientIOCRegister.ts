@@ -1,33 +1,35 @@
+import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
+import { useLocaleRoutes } from '@config/common';
+import mockDataJson from '@config/feapi.mock.json';
+import { IOCIdentifier as I } from '@config/IOCIdentifier';
+import { themeConfig } from '@config/theme';
 import {
   ApiCatchPlugin,
   ApiMockPlugin,
-  IOCContainerInterface,
-  IOCRegisterInterface,
   RequestCommonPlugin,
-  ThemeService,
-  ThemeServiceProps,
-  type IOCManagerInterface
+  ThemeService
 } from '@qlover/corekit-bridge';
-import * as globals from '../globals';
-import { IOCIdentifier as I } from '@config/IOCIdentifier';
-import mockDataJson from '@config/feapi.mock.json';
-import { I18nService } from '@/base/services/I18nService';
-import { themeConfig } from '@config/theme';
-import { useLocaleRoutes } from '@config/common';
-import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
-import { SyncStorageInterface } from '@qlover/fe-corekit';
-import { RouteService } from '@/base/services/RouteService';
-import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
-import { UserService } from '@/base/services/UserService';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
+import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
+import type { IocRegisterOptions } from '@/base/port/IOCInterface';
+import type { UserServiceInterface } from '@/base/port/UserServiceInterface';
+import { I18nService } from '@/base/services/I18nService';
 import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
-import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
+import { RouteService } from '@/base/services/RouteService';
+import { UserService } from '@/base/services/UserService';
 import { ExecutorPageBridge } from '@/uikit/bridges/ExecutorPageBridge';
 import { JSONStoragePageBridge } from '@/uikit/bridges/JSONStoragePageBridge';
+import { NavigateBridge } from '@/uikit/bridges/NavigateBridge';
 import { RequestPageBridge } from '@/uikit/bridges/RequestPageBridge';
-import { IocRegisterOptions } from '@/base/port/IOCInterface';
-import { LoggerInterface } from '@qlover/logger';
-import { UserServiceInterface } from '@/base/port/UserServiceInterface';
+import * as globals from '../globals';
+import type {
+  ThemeServiceProps,
+  IOCManagerInterface,
+  IOCContainerInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 export class ClientIOCRegister
   implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>

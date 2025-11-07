@@ -1,10 +1,8 @@
-import { useContext, useMemo } from 'react';
-import { BasePageProvider } from '@/base/types/Page';
-import { RouteMeta } from '@/base/types/Page';
-import { createContext } from 'react';
-import merge from 'lodash/merge';
 import { i18nConfig } from '@config/i18n/i18nConfig';
 import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/common/common.error';
+import merge from 'lodash/merge';
+import { useContext, useMemo, createContext } from 'react';
+import type { BasePageProvider, RouteMeta } from '@/base/types/Page';
 import { useAppTranslation } from '../hooks/useAppTranslation';
 import { useI18nInterface } from '../hooks/useI18nInterface';
 

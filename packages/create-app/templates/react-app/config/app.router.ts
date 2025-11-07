@@ -1,13 +1,13 @@
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
-import * as identifier from './Identifier';
-import { homeI18n } from './i18n/homeI18n';
 import { aboutI18n } from './i18n/aboutI18n';
-import { jsonStorage18n } from './i18n/jsonStorage18n';
-import { request18n } from './i18n/request18n';
 import { executorI18n } from './i18n/executorI18n';
+import { homeI18n } from './i18n/homeI18n';
 import { identifiter18n } from './i18n/identifiter18n';
+import { jsonStorage18n } from './i18n/jsonStorage18n';
 import { login18n } from './i18n/login18n';
 import { register18n } from './i18n/register18n';
+import { request18n } from './i18n/request18n';
+import * as identifier from './Identifier';
 
 export const baseRoutes: RouteConfigValue[] = [
   {

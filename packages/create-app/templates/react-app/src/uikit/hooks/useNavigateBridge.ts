@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavigateBridge } from '../bridges/NavigateBridge';
 import { useIOC } from './useIOC';
+import { NavigateBridge } from '../bridges/NavigateBridge';
 
 export function useNavigateBridge() {
   const navigate = useNavigate();

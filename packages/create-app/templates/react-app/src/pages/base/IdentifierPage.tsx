@@ -1,15 +1,18 @@
-import { Button } from 'antd';
-import * as ErrorIdentifierList from '@config/Identifier/common/common.error';
 import { identifiter18n } from '@config/i18n/identifiter18n';
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import * as ErrorIdentifierList from '@config/Identifier/common/common.error';
+import { Button } from 'antd';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 
 export default function IdentifierPage() {
   const { t } = useBaseRoutePage();
   const tt = useI18nInterface(identifiter18n);
 
   return (
-    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
+    <div
+      data-testid="IdentifierPage"
+      className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header Section */}
         <section className="py-8">
@@ -27,6 +30,7 @@ export default function IdentifierPage() {
         <div className="grid gap-4">
           {Object.entries(ErrorIdentifierList).map(([key, value]) => (
             <div
+              data-testid="IdentifierPage"
               key={key}
               className="bg-secondary shadow sm:rounded-lg p-6 border border-border hover:bg-elevated transition-colors duration-200"
             >

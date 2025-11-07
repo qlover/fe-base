@@ -271,4 +271,5 @@ export const PAGE_EXECUTOR_REQUEST_TIMEOUT = 'page_executor:request.timeout';
  * @localZh 错误标识符
  * @localEn Error Identifier
  */
-export const PAGE_ERROR_IDENTIFIER_TITLE = 'page_executor:error_identifier.title';
+export const PAGE_ERROR_IDENTIFIER_TITLE =
+  'page_executor:error_identifier.title';

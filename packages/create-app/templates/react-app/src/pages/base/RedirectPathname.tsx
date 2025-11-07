@@ -1,7 +1,7 @@
-import { useIOC } from '@/uikit/hooks/useIOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 const RedirectToDefault = () => {
   const navigate = useNavigate();

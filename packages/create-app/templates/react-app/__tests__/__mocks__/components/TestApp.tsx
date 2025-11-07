@@ -16,11 +16,11 @@ interface TestAppProps {
 
 /**
  * TestApp - Complete test wrapper with IOC and Router
- * 
+ *
  * Usage:
  * ```tsx
  * import { TestApp } from '__tests__/__mocks__/components/TestApp';
- * 
+ *
  * render(
  *   <TestApp routerInitialEntries={['/en/dashboard']}>
  *     <YourComponent />

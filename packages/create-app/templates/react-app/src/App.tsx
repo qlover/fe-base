@@ -1,10 +1,10 @@
 import '@/styles/css/index.css';
-import { AppRouterProvider } from './uikit/components/AppRouterProvider';
-import { lazy } from 'react';
-import { ComponentValue } from './base/cases/RouterLoader';
 import { themeConfig } from '@config/theme';
-import { ComboProvider } from './uikit/components/ComboProvider';
+import { lazy } from 'react';
+import { AppRouterProvider } from './uikit/components/AppRouterProvider';
 import { BootstrapsProvider } from './uikit/components/BootstrapsProvider';
+import { ComboProvider } from './uikit/components/ComboProvider';
+import type { ComponentValue } from './base/cases/RouterLoader';
 
 const allPages = (function getAllPages() {
   // !!! important, map to all pages in pages directory
@@ -24,7 +24,7 @@ const allPages = (function getAllPages() {
 
 function App() {
   return (
-    <BootstrapsProvider>
+    <BootstrapsProvider data-testid="App">
       <ComboProvider themeConfig={themeConfig}>
         <AppRouterProvider pages={allPages} />
       </ComboProvider>

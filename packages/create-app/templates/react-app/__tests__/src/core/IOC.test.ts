@@ -82,7 +82,7 @@ describe('IOC Container Tests', () => {
       expect(() => {
         IOC(IOCIdentifier.Logger);
       }).not.toThrow();
-      
+
       const logger = IOC(IOCIdentifier.Logger);
       expect(logger).toBeDefined();
     });

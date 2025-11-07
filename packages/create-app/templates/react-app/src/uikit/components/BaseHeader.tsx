@@ -1,12 +1,12 @@
-import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
-import LocaleLink from '@/uikit/components/LocaleLink';
-import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
-import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
-import LogoutButton from './LogoutButton';
-import { useIOC } from '../hooks/useIOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
+import { LanguageSwitcher } from '@/uikit/components/LanguageSwitcher';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { ThemeSwitcher } from '@/uikit/components/ThemeSwitcher';
+import { LogoutButton } from './LogoutButton';
+import { useIOC } from '../hooks/useIOC';
 
-export default function BaseHeader({
+export function BaseHeader({
   showLogoutButton
 }: {
   showLogoutButton?: boolean;

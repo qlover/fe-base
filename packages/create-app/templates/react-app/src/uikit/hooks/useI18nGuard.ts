@@ -1,8 +1,7 @@
-import { I18nServiceLocale } from '@/base/services/I18nService';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import type { I18nServiceLocale } from '@/base/services/I18nService';
 import { useIOC } from './useIOC';
 
 /**

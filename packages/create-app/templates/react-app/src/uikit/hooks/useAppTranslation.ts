@@ -1,6 +1,7 @@
-import { TOptions } from 'i18next';
 import { useCallback, useMemo } from 'react';
-import { useTranslation, UseTranslationResponse } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import type { TOptions } from 'i18next';
+import type { UseTranslationResponse } from 'react-i18next';
 
 export function useAppTranslation(
   ns?: string

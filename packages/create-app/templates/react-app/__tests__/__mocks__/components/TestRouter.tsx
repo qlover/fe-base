@@ -17,11 +17,11 @@ interface TestRouterProps {
 
 /**
  * TestRouter - A reusable router wrapper for tests
- * 
+ *
  * Usage:
  * ```tsx
  * import { TestRouter } from '__tests__/__mocks__/components/TestRouter';
- * 
+ *
  * render(
  *   <TestRouter initialEntries={['/en/dashboard']}>
  *     <YourComponent />
@@ -40,4 +40,3 @@ export function TestRouter({
     </MemoryRouter>
   );
 }
-
