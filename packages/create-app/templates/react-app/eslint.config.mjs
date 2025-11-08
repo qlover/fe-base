@@ -33,6 +33,8 @@ const eslintConfig = [
       // testing
       'coverage/**',
       'test-results/**',
+      'playwright-report/**',
+      '.playwright/**',
 
       // next.js
       '.next/**',
@@ -80,7 +82,8 @@ const eslintConfig = [
       'next.config.*',
       'jest.config.*',
       'babel.config.*',
-
+      'playwright.config.*',
+      
       // static assets
       'public/**',
       '**/*.min.js',
@@ -101,7 +104,8 @@ const eslintConfig = [
         project: [
           './tsconfig.app.json',
           './tsconfig.node.json',
-          './tsconfig.test.json'
+          './tsconfig.test.json',
+          './tsconfig.e2e.json'
         ],
         tsconfigRootDir: __dirname
       }
@@ -229,7 +233,7 @@ const eslintConfig = [
   },
   // 为特定文件允许 default export
   {
-    files: ['src/pages/**/*.tsx', 'src/App.tsx'],
+    files: ['src/pages/**/*.tsx', 'src/App.tsx', 'vite.config.ts'],
     rules: {
       'import/no-default-export': 'off',
       // 强制 pages 必须使用 default export，禁止 named export

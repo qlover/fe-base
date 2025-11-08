@@ -63,7 +63,14 @@ pnpm build
 ### Run Tests
 
 ```bash
+# Run unit tests
 pnpm test
+
+# Run E2E tests
+pnpm test:e2e
+
+# Run E2E tests (UI mode)
+pnpm test:e2e:ui
 ```
 
 ## 📚 Documentation Guide
@@ -82,6 +89,15 @@ The project provides detailed development documentation covering all major featu
 - **[Store State Management](./docs/en/store.md)** - 📡 How the application layer notifies the UI layer
 - **[Environment Variable Management](./docs/en/env.md)** - ⚙️ Multi-environment configuration
 - **[Internationalization](./docs/en/i18n.md)** - 🌍 i18n Key and translation management
+
+### 🧪 Testing Documentation
+
+- **[Playwright E2E Testing](./docs/en/playwright/)** - 🎭 Complete end-to-end testing documentation
+  - [Overview](./docs/en/playwright/overview.md)
+  - [Quick Start](./docs/en/playwright/quickstart.md)
+  - [Testing Guide](./docs/en/playwright/testing-guide.md)
+  - [Setup Complete](./docs/en/playwright/setup-complete.md)
+- [Unit Testing Guide](./docs/en/test-guide.md) - Vitest unit testing
 
 ### 📖 Additional Documentation
 

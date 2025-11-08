@@ -7,5 +7,10 @@
   "tailwindCSS.rootFontSize": 10,
   "editor.snippetSuggestions": "top",
   "vitest.autoRun": false,
-  "workbench.view.alwaysShowHeaderActions": true
+  "workbench.view.alwaysShowHeaderActions": true,
+  "playwright.reuseBrowser": true,
+  "playwright.showTrace": true,
+  "playwright.env": {
+    "PLAYWRIGHT_BASE_URL": "http://localhost:3200"
+  }
 }
