@@ -1,6 +1,7 @@
-import { LinkProps, Link as RouterLink, To, useParams } from 'react-router-dom';
-import { ReactNode } from 'react';
 import { useLocaleRoutes } from '@config/common';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import type { LinkProps, To } from 'react-router-dom';
 
 interface LocaleLinkProps extends Omit<LinkProps, 'href' | 'to'> {
   href: string | To;
@@ -10,7 +11,7 @@ interface LocaleLinkProps extends Omit<LinkProps, 'href' | 'to'> {
   className?: string;
 }
 
-const LocaleLink: React.FC<LocaleLinkProps> = ({
+export const LocaleLink: React.FC<LocaleLinkProps> = ({
   href,
   locale,
   children,
@@ -40,5 +41,3 @@ const LocaleLink: React.FC<LocaleLinkProps> = ({
     </RouterLink>
   );
 };
-
-export default LocaleLink;

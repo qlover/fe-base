@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * DialogHandler test suite
  *
@@ -12,13 +11,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DialogHandler } from '../../../../src/base/cases/DialogHandler';
+import { DialogHandler } from '@/base/cases/DialogHandler';
 import type {
   MessageApi,
   ModalApi,
   NotificationApi
 } from '@brain-toolkit/antd-theme-override/react';
-import type { ConfirmOptions } from '../../../../src/base/port/InteractionHubInterface';
 
 describe('DialogHandler', () => {
   let dialogHandler: DialogHandler;
@@ -192,7 +190,7 @@ describe('DialogHandler', () => {
     });
 
     it('should call modal.confirm with options', () => {
-      const options: ConfirmOptions = {
+      const options = {
         title: 'Confirm',
         content: 'Are you sure?',
         onOk: vi.fn(),
@@ -212,7 +210,7 @@ describe('DialogHandler', () => {
     });
 
     it('should handle undefined modal api', () => {
-      const options: ConfirmOptions = {
+      const options = {
         title: 'test',
         content: 'test content'
       };

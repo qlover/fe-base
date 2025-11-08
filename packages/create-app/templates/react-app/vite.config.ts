@@ -10,12 +10,11 @@ import { name, version } from './package.json';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
-import i18nConfig from './config/i18n';
+import { i18nConfig } from './config/i18n/i18nConfig';
 import tailwindcss from '@tailwindcss/vite';
 import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
 import vitePluginImp from 'vite-plugin-imp';
-import { readdirSync } from 'fs';
-import { join } from 'path';
+import { generateTs2LocalesOptions } from './makes/generateTs2LocalesOptions';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -94,18 +93,7 @@ export default defineConfig({
     tsconfigPaths(),
     ts2Locales({
       locales: i18nConfig.supportedLngs as unknown as string[],
-      options: readdirSync(join(__dirname, './config/Identifier'))
-        .map((file) => ({
-          file,
-          name: file.replace('.ts', ''),
-          path: join('./config/Identifier', file)
-        }))
-        .map(({ path }) => ({
-          source: path,
-          // You can use namespace
-          // target: `./public/locales/{{lng}}/{{${name}}}.json`
-          target: `./public/locales/{{lng}}/common.json`
-        }))
+      options: generateTs2LocalesOptions()
     }),
     viteDeprecatedAntd({
       mode: overrideAntdThemeMode,

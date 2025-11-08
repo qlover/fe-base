@@ -70,24 +70,26 @@ pnpm test
 
 项目提供了详细的开发文档，涵盖了所有主要功能和最佳实践：
 
-### 基础文档
-- [项目概述](./docs/zh/index.md) - 项目整体介绍和快速开始指南
-- [项目结构](./docs/zh/project-structure.md) - 详细的项目目录结构说明
-- [开发指南](./docs/zh/development-guide.md) - 项目开发规范和最佳实践
-- [环境配置](./docs/zh/env.md) - 环境变量和配置管理说明
-- [全局配置](./docs/zh/global.md) - 应用全局配置和设置说明
+### 🚀 快速上手
 
-### 核心功能
-- [启动流程](./docs/zh/bootstrap.md) - 应用启动流程和生命周期管理
-- [IOC容器](./docs/zh/ioc.md) - 依赖注入系统的使用说明
-- [路由管理](./docs/zh/router.md) - 路由配置和页面导航说明
-- [状态管理](./docs/zh/store.md) - 应用状态管理方案说明
-- [请求处理](./docs/zh/request.md) - API 请求处理机制说明
+- **[📖 项目文档](./docs/zh/index.md)** - 架构概览、核心理念和完整文档导航
+- **[开发指南](./docs/zh/development-guide.md)** - 📝 完整的页面开发流程
 
-### 功能扩展
-- [国际化](./docs/zh/i18n.md) - 多语言支持和翻译管理
-- [主题系统](./docs/zh/theme.md) - 主题配置和暗色模式支持
-- [TypeScript指南](./docs/zh/typescript-guide.md) - TypeScript 使用规范和最佳实践
+### 🎯 核心功能
+
+- **[Bootstrap 启动器](./docs/zh/bootstrap.md)** - ⚡ 应用启动和初始化
+- **[IOC 容器](./docs/zh/ioc.md)** - 🔌 依赖注入和 UI 分离
+- **[Store 状态管理](./docs/zh/store.md)** - 📡 应用层如何通知 UI 层
+- **[环境变量管理](./docs/zh/env.md)** - ⚙️ 多环境配置
+- **[国际化](./docs/zh/i18n.md)** - 🌍 i18n Key 和翻译管理
+
+### 📖 辅助文档
+
+- [为什么要禁用全局变量](./docs/zh/why-no-globals.md) - 全局变量使用规范
+- [路由管理](./docs/zh/router.md) - 路由配置说明
+- [主题系统](./docs/zh/theme.md) - 主题配置和切换
+- [请求处理](./docs/zh/request.md) - API 请求处理
+- [TypeScript 指南](./docs/zh/typescript-guide.md) - TypeScript 规范
 
 ## 🔨 核心功能
 

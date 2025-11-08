@@ -7,9 +7,9 @@
  * 3. error properties - Verify error properties are set correctly
  */
 
+import { ExecutorError } from '@qlover/fe-corekit';
 import { describe, it, expect } from 'vitest';
 import { AppError } from '@/base/cases/AppError';
-import { ExecutorError } from '@qlover/fe-corekit';
 
 describe('AppError', () => {
   describe('constructor', () => {

@@ -1,17 +1,17 @@
-import type * as CorekitBridge from '@qlover/corekit-bridge';
-import type * as FeCorekit from '@qlover/fe-corekit';
-import type * as Logger from '@qlover/logger';
-import type { DialogHandler } from '@/base/cases/DialogHandler';
 import type { AppConfig } from '@/base/cases/AppConfig';
+import type { DialogHandler } from '@/base/cases/DialogHandler';
+import type { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import type { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
+import type { ExecutorPageBridgeInterface } from '@/base/port/ExecutorPageBridgeInterface';
+import type { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
+import type { RequestPageBridgeInterface } from '@/base/port/RequestPageBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
 import type { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import type { RouteService } from '@/base/services/RouteService';
 import type { UserService } from '@/base/services/UserService';
-import type { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import type { ExecutorPageBridgeInterface } from '@/base/port/ExecutorPageBridgeInterface';
-import type { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
-import type { RequestPageBridgeInterface } from '@/base/port/RequestPageBridgeInterface';
+import type * as CorekitBridge from '@qlover/corekit-bridge';
+import type * as FeCorekit from '@qlover/fe-corekit';
+import type * as Logger from '@qlover/logger';
 
 /**
  * IOC identifier

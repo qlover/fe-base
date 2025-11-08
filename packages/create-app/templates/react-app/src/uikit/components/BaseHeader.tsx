@@ -1,18 +1,22 @@
-import ThemeSwitcher from '@/uikit/components/ThemeSwitcher';
-import LocaleLink from '@/uikit/components/LocaleLink';
-import LanguageSwitcher from '@/uikit/components/LanguageSwitcher';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
-import { IOC } from '@/core/IOC';
-import LogoutButton from './LogoutButton';
+import { LanguageSwitcher } from '@/uikit/components/LanguageSwitcher';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { ThemeSwitcher } from '@/uikit/components/ThemeSwitcher';
+import { LogoutButton } from './LogoutButton';
+import { useIOC } from '../hooks/useIOC';
 
-export default function BaseHeader({
+export function BaseHeader({
   showLogoutButton
 }: {
   showLogoutButton?: boolean;
 }) {
+  const AppConfig = useIOC(IOCIdentifier.AppConfig);
+  const publicAssetsPath = useIOC(PublicAssetsPath);
+
   return (
     <header
-      data-testid="base-header"
+      data-testid="BaseHeader"
       className="h-14 bg-secondary border-b border-border sticky top-0 z-50"
     >
       <div className="flex items-center justify-between h-full px-4 mx-auto max-w-7xl">
@@ -22,16 +26,16 @@ export default function BaseHeader({
             className="flex items-center hover:opacity-80 transition-opacity"
           >
             <img
-              data-testid="base-header-logo"
-              src={IOC(PublicAssetsPath).getPath('/logo.svg')}
+              data-testid="BaseHeader-logo"
+              src={publicAssetsPath.getPath('/logo.svg')}
               alt="logo"
               className="h-8 w-auto"
             />
             <span
-              data-testid="base-header-app-name"
+              data-testid="BaseHeader-app-name"
               className="ml-2 text-lg font-semibold text-text"
             >
-              {IOC('AppConfig').appName}
+              {AppConfig.appName}
             </span>
           </LocaleLink>
         </div>

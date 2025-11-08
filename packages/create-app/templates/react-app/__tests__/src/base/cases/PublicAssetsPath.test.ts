@@ -6,9 +6,9 @@
  * 2. getPath         - Simple path concatenation with prefix
  */
 
+import { routerPrefix } from '@config/common';
 import { describe, it, expect } from 'vitest';
 import { PublicAssetsPath } from '@/base/cases/PublicAssetsPath';
-import { routerPrefix } from '@config/common';
 
 describe('PublicAssetsPath', () => {
   describe('constructor', () => {

@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 
 /**
  * Loading component
@@ -16,6 +16,7 @@ import clsx from 'clsx';
 export function Loading({ fullscreen = false }: { fullscreen?: boolean }) {
   return (
     <div
+      data-testid="Loading"
       className={clsx('flex justify-center items-center', {
         'fixed inset-0 backdrop-blur-sm z-50': fullscreen,
         relative: !fullscreen
@@ -29,10 +30,11 @@ export function Loading({ fullscreen = false }: { fullscreen?: boolean }) {
       <div className="flex space-x-3">
         {[0, 1, 2].map((i) => (
           <div
+            data-testid="Loading"
             key={i}
             className={clsx(
               'w-3 h-3 rounded-full',
-              'bg-[var(--fe-color-primary)]',
+              'bg-(--fe-color-primary)',
               'animate-[bounce_1s_ease-in-out_infinite]'
             )}
             style={{

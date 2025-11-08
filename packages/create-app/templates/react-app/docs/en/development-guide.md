@@ -1,274 +1,431 @@
-# Development Guidelines
+# Development Guide
 
-## Table of Contents
+> **📖 This document provides a complete page development workflow and practical guide to help you quickly get started with project development.**
 
-1. [Project Structure Standards](#project-structure-standards)
-2. [Code Style Standards](#code-style-standards)
-3. [Component Development Standards](#component-development-standards)
-4. [State Management Standards](#state-management-standards)
-5. [Router Development Standards](#router-development-standards)
-6. [Internationalization Development Standards](#internationalization-development-standards)
-7. [Theme Style Standards](#theme-style-standards)
-8. [Testing Standards](#testing-standards)
-9. [Documentation Standards](#documentation-standards)
+## 📋 Table of Contents
 
-## Project Structure Standards
+- [What's Needed to Develop a Page](#-whats-needed-to-develop-a-page)
+- [Complete Development Workflow](#-complete-development-workflow)
+- [Practical Example: User List Page](#-practical-example-user-list-page)
+- [Common Scenarios](#-common-scenarios)
+- [Code Standards](#-code-standards)
+- [Development Tools](#-development-tools)
 
-> 💡 Only basic standards are listed here. For complete project structure documentation, please refer to [Project Structure Documentation](./project-structure.md)
+---
 
-### 1. Directory Structure
+## 🎯 What's Needed to Develop a Page
+
+### Core Checklist
+
+A complete page typically requires the following components:
 
 ```
-src/
-├── base/               # Base functionality implementation
-│   ├── cases/         # Business scenario implementations
-│   ├── services/      # Core service implementations
-│   └── types/         # Type definitions
-├── core/              # Core functionality
-│   ├── bootstraps/    # Startup related
-│   ├── registers/     # Registries
-│   └── IOC.ts         # IOC container
-├── pages/             # Page components
-│   ├── auth/          # Authentication related pages
-│   └── base/          # Base pages
-├── styles/            # Style files
-│   └── css/
-│       ├── themes/    # Theme related
-│       └── antd-themes/ # Ant Design themes
-├── uikit/             # UI component library
-│   ├── components/    # Common components
-│   ├── contexts/      # React Contexts
-│   ├── hooks/         # Custom Hooks
-│   └── providers/     # Provider components
-└── App.tsx            # Application entry
+✅ 1. Interface Definition (Port)      - base/port/XxxServiceInterface.ts
+✅ 2. Service Implementation           - base/services/XxxService.ts
+✅ 3. API Adapter (Optional)           - base/apis/xxxApi/XxxApi.ts
+✅ 4. Route Configuration              - config/app.router.ts
+✅ 5. i18n Text Definition             - config/Identifier/pages/page.xxx.ts
+✅ 6. Page Component                   - pages/xxx/XxxPage.tsx
+✅ 7. IOC Registration (New Services)  - core/clientIoc/ClientIOCRegister.ts
+✅ 8. Test Files                       - __tests__/src/pages/xxx/XxxPage.test.tsx
 ```
 
-### 2. Naming Conventions
+### Dependency Diagram
 
-- **File Naming**:
-  - Component files: `PascalCase.tsx` (e.g., `UserProfile.tsx`)
-  - Utility files: `camelCase.ts` (e.g., `formatDate.ts`)
-  - Type files: `PascalCase.types.ts` (e.g., `User.types.ts`)
-  - Style files: `camelCase.css` (e.g., `buttonStyles.css`)
+```
+┌─────────────────────────────────────────┐
+│  Route Configuration (app.router.ts)    │
+│  Define page paths and metadata         │
+└──────────────┬──────────────────────────┘
+               ↓
+┌─────────────────────────────────────────┐
+│  Page Component (XxxPage.tsx)           │
+│  - Use useIOC to get services           │
+│  - Use useStore to subscribe to state   │
+│  - Use useAppTranslation for i18n       │
+│  - Handle UI rendering & interactions   │
+└──────────────┬──────────────────────────┘
+               ↓
+┌─────────────────────────────────────────┐
+│  Service Layer (XxxService.ts)          │
+│  - Implement business logic             │
+│  - Extend StoreInterface                │
+│  - Dependency injection                 │
+└──────────────┬──────────────────────────┘
+               ↓
+┌─────────────────────────────────────────┐
+│  Interface Definition (XxxServiceInterface.ts) │
+│  - Define service contract              │
+│  - Easy to test and mock                │
+└─────────────────────────────────────────┘
+               ↓
+┌─────────────────────────────────────────┐
+│  API Adapter (XxxApi.ts)                │
+│  - Encapsulate HTTP requests            │
+│  - Transform data formats               │
+└─────────────────────────────────────────┘
+               ↓
+┌─────────────────────────────────────────┐
+│  i18n Text (page.xxx.ts)                │
+│  - Define all text keys for page        │
+│  - Auto-generate translation files      │
+└─────────────────────────────────────────┘
+```
 
-- **Directory Naming**:
-  - All lowercase, using hyphens (e.g., `user-profile/`)
-  - Feature modules use singular form (e.g., `auth/`, not `auths/`)
+---
 
-## Code Style Standards
+## 🚀 Complete Development Workflow
 
-> 💡 Only basic standards are listed here. For more TypeScript and React development standards, please refer to [TypeScript Development Standards](./typescript-guide.md)
+### Workflow Diagram
 
-### 1. TypeScript Standards
+```
+📝 1. Requirements Analysis
+   ├── Determine page features
+   ├── Determine data sources (API)
+   └── Determine interaction logic
+       ↓
+🎨 2. Define i18n Keys
+   ├── Page titles, button text, etc.
+   └── Error messages, success messages, etc.
+       ↓
+🔌 3. Define Interfaces (Port)
+   ├── Service interfaces
+   └── Data types
+       ↓
+⚙️ 4. Implement Service
+   ├── Extend StoreInterface
+   ├── Implement business logic
+   └── Dependency injection
+       ↓
+🌐 5. Implement API Adapter (if needed)
+   ├── Encapsulate HTTP requests
+   └── Data transformation
+       ↓
+🗺️ 6. Configure Routes
+   ├── Add route configuration
+   └── Set metadata
+       ↓
+🎭 7. Implement Page Component
+   ├── Use useIOC to get services
+   ├── Use useStore to subscribe to state
+   └── Implement UI rendering
+       ↓
+🔗 8. Register to IOC (if new service)
+   └── Register in ClientIOCRegister
+       ↓
+🧪 9. Write Tests
+   ├── Service tests (logic)
+   ├── UI tests (rendering)
+   └── Integration tests (workflow)
+       ↓
+✅ 10. Self-test and Submit
+   ├── Feature testing
+   ├── Code review
+   └── Submit PR
+```
+
+---
+
+## 📚 Practical Example: User List Page
+
+Let's assume we want to develop a user list page with the following features:
+
+- Display user list
+- Search users
+- Pagination
+- View user details
+
+### 1. Requirements Analysis
+
+**Feature List:**
+
+- 📄 Display user list (avatar, name, email, role)
+- 🔍 Search users (by name)
+- 📃 Pagination (10 items per page)
+- 👁️ View details (click to navigate to detail page)
+- 🔄 Refresh list
+
+**Data Source:**
+
+- API: `GET /api/users?page=1&pageSize=10&keyword=xxx`
+
+### 2. Define i18n Keys
 
 ```typescript
-// Use interface for object types
-interface UserProfile {
+// config/Identifier/pages/page.users.ts
+
+/**
+ * @description User list page title
+ * @localZh 用户列表
+ * @localEn User List
+ */
+export const PAGE_USERS_TITLE = 'page.users.title';
+
+/**
+ * @description Search user placeholder
+ * @localZh 搜索用户姓名
+ * @localEn Search user name
+ */
+export const PAGE_USERS_SEARCH_PLACEHOLDER = 'page.users.search.placeholder';
+
+/**
+ * @description View user detail button
+ * @localZh 查看详情
+ * @localEn View Detail
+ */
+export const PAGE_USERS_VIEW_DETAIL = 'page.users.viewDetail';
+
+/**
+ * @description Refresh button
+ * @localZh 刷新
+ * @localEn Refresh
+ */
+export const PAGE_USERS_REFRESH = 'page.users.refresh';
+
+/**
+ * @description Loading message
+ * @localZh 加载中...
+ * @localEn Loading...
+ */
+export const PAGE_USERS_LOADING = 'page.users.loading';
+
+/**
+ * @description Empty message
+ * @localZh 暂无用户数据
+ * @localEn No users found
+ */
+export const PAGE_USERS_EMPTY = 'page.users.empty';
+```
+
+### 3. Define Interfaces and Types
+
+```typescript
+// base/port/UserServiceInterface.ts
+
+import { StoreInterface } from '@qlover/corekit-bridge';
+
+/**
+ * User information
+ */
+export interface UserInfo {
   id: string;
   name: string;
-  age?: number; // Optional properties use ?
+  email: string;
+  avatar: string;
+  role: 'admin' | 'user';
 }
 
-// Use type for union types or utility types
-type Theme = 'light' | 'dark' | 'pink';
-type Nullable<T> = T | null;
-
-// Use enum for constant enumerations
-enum UserRole {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  GUEST = 'GUEST'
+/**
+ * User list query parameters
+ */
+export interface UserListParams {
+  page: number;
+  pageSize: number;
+  keyword?: string;
 }
 
-// Function type declarations
-function processUser(user: UserProfile): void {
-  // Implementation
+/**
+ * User list response
+ */
+export interface UserListResponse {
+  list: UserInfo[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
-// Use meaningful names for generics
-interface Repository<TEntity> {
-  find(id: string): Promise<TEntity>;
-}
-```
-
-### 2. React Standards
-
-```tsx
-// Function components use FC type
-interface Props {
-  name: string;
-  age: number;
+/**
+ * User service state
+ */
+export interface UserServiceState extends StoreStateInterface {
+  users: UserInfo[];
+  total: number;
+  page: number;
+  pageSize: number;
+  loading: boolean;
+  error: Error | null;
 }
 
-const UserCard: FC<Props> = ({ name, age }) => {
-  return (
-    <div>
-      <h3>{name}</h3>
-      <p>{age}</p>
-    </div>
-  );
-};
+/**
+ * User service interface
+ */
+export abstract class UserServiceInterface extends StoreInterface<UserServiceState> {
+  /**
+   * Fetch user list
+   */
+  abstract fetchUsers(params: UserListParams): Promise<void>;
 
-// Hooks standards
-const useUser = (userId: string) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(false);
+  /**
+   * Search users
+   */
+  abstract searchUsers(keyword: string): Promise<void>;
 
-  useEffect(() => {
-    // Implementation
-  }, [userId]);
+  /**
+   * Refresh list
+   */
+  abstract refreshUsers(): Promise<void>;
 
-  return { user, loading };
-};
-```
-
-## Component Development Standards
-
-> 💡 Only basic standards are listed here. For complete component development guide, please refer to [Component Development Guide](./component-guide.md)
-
-### 1. Component Categories
-
-- **Page Components**: Located in `pages/` directory
-- **Business Components**: Located in corresponding business module directories
-- **Common Components**: Located in `uikit/components/` directory
-- **Layout Components**: Located in `uikit/layouts/` directory
-
-### 2. Component Implementation
-
-```tsx
-// 1. Import order
-import { FC, useEffect, useState } from 'react'; // React related
-import { useTranslation } from 'react-i18next'; // Third-party libraries
-import { UserService } from '@/services/user'; // Internal project imports
-import { Button } from './Button'; // Relative path imports
-
-// 2. Type definitions
-interface Props {
-  userId: string;
-  onUpdate?: (user: User) => void;
-}
-
-// 3. Component implementation
-export const UserProfile: FC<Props> = ({ userId, onUpdate }) => {
-  // 3.1 Hooks declarations
-  const { t } = useTranslation();
-  const [user, setUser] = useState<User | null>(null);
-
-  // 3.2 Side effects
-  useEffect(() => {
-    // Implementation
-  }, [userId]);
-
-  // 3.3 Event handlers
-  const handleUpdate = () => {
-    // Implementation
+  /**
+   * Selectors
+   */
+  abstract selector: {
+    users: (state: UserServiceState) => UserInfo[];
+    loading: (state: UserServiceState) => boolean;
+    total: (state: UserServiceState) => number;
   };
-
-  // 3.4 Render methods
-  const renderHeader = () => {
-    return <h2>{user?.name}</h2>;
-  };
-
-  // 3.5 Return JSX
-  return (
-    <div>
-      {renderHeader()}
-      <Button onClick={handleUpdate}>{t('common.update')}</Button>
-    </div>
-  );
-};
+}
 ```
 
-## State Management Standards
-
-> 💡 Only basic standards are listed here. For complete state management guide, please refer to [Store Development Guide](./store.md)
-
-### 1. Store Implementation
+### 4. Implement API Adapter
 
 ```typescript
-// 1. State interface definition
-interface UserState extends StoreStateInterface {
-  currentUser: User | null;
-  loading: boolean;
-  error: string | null;
-}
+// base/apis/userApi/UserApi.ts
 
-// 2. Store implementation
+import { injectable, inject } from 'inversify';
+import { HttpClient } from '@/base/cases/HttpClient';
+import type {
+  UserListParams,
+  UserListResponse
+} from '@/base/port/UserServiceInterface';
+
 @injectable()
-export class UserStore extends StoreInterface<UserState> {
-  constructor() {
+export class UserApi {
+  constructor(@inject(HttpClient) private http: HttpClient) {}
+
+  /**
+   * Get user list
+   */
+  async getUserList(params: UserListParams): Promise<UserListResponse> {
+    const response = await this.http.get('/api/users', { params });
+
+    // Transform backend data format
+    return {
+      list: response.data.items.map((item: any) => ({
+        id: item.user_id,
+        name: item.user_name,
+        email: item.user_email,
+        avatar: item.avatar_url,
+        role: item.user_role
+      })),
+      total: response.data.total_count,
+      page: response.data.current_page,
+      pageSize: response.data.page_size
+    };
+  }
+}
+```
+
+### 5. Implement Service
+
+```typescript
+// base/services/UserService.ts
+
+import { injectable, inject } from 'inversify';
+import {
+  UserServiceInterface,
+  UserServiceState
+} from '@/base/port/UserServiceInterface';
+import { UserApi } from '@/base/apis/userApi/UserApi';
+import type { UserListParams } from '@/base/port/UserServiceInterface';
+
+@injectable()
+export class UserService extends UserServiceInterface {
+  constructor(@inject(UserApi) private api: UserApi) {
+    // Initialize state
     super(() => ({
-      currentUser: null,
+      users: [],
+      total: 0,
+      page: 1,
+      pageSize: 10,
       loading: false,
       error: null
     }));
   }
 
-  // 3. Selector definitions
+  /**
+   * Selectors
+   */
   selector = {
-    currentUser: (state: UserState) => state.currentUser,
-    loading: (state: UserState) => state.loading
+    users: (state: UserServiceState) => state.users,
+    loading: (state: UserServiceState) => state.loading,
+    total: (state: UserServiceState) => state.total,
+    page: (state: UserServiceState) => state.page,
+    pageSize: (state: UserServiceState) => state.pageSize
   };
 
-  // 4. Operation methods
-  async fetchUser(id: string) {
+  /**
+   * Fetch user list
+   */
+  async fetchUsers(params: UserListParams): Promise<void> {
     try {
-      this.emit({ ...this.state, loading: true });
-      const user = await api.getUser(id);
-      this.emit({ ...this.state, currentUser: user, loading: false });
+      // 1. Set loading state
+      this.emit({ ...this.state, loading: true, error: null });
+
+      // 2. Call API
+      const response = await this.api.getUserList(params);
+
+      // 3. Update state
+      this.emit({
+        users: response.list,
+        total: response.total,
+        page: response.page,
+        pageSize: response.pageSize,
+        loading: false,
+        error: null
+      });
     } catch (error) {
+      // 4. Error handling
       this.emit({
         ...this.state,
-        error: error.message,
-        loading: false
+        loading: false,
+        error: error as Error
       });
     }
+  }
+
+  /**
+   * Search users
+   */
+  async searchUsers(keyword: string): Promise<void> {
+    await this.fetchUsers({
+      page: 1,
+      pageSize: this.state.pageSize,
+      keyword
+    });
+  }
+
+  /**
+   * Refresh list
+   */
+  async refreshUsers(): Promise<void> {
+    await this.fetchUsers({
+      page: this.state.page,
+      pageSize: this.state.pageSize
+    });
   }
 }
 ```
 
-### 2. Store Usage
-
-```tsx
-function UserProfile() {
-  const userStore = IOC(UserStore);
-  const user = useStore(userStore, userStore.selector.currentUser);
-  const loading = useStore(userStore, userStore.selector.loading);
-
-  return <div>{loading ? <Loading /> : <UserInfo user={user} />}</div>;
-}
-```
-
-## Router Development Standards
-
-> 💡 Only basic standards are listed here. For complete router development guide, please refer to [Router Development Guide](./router.md)
-
-### 1. Basic Standards
-
-- Route configurations are centrally managed in `config/app.router.ts`
-- Use declarative route configuration
-- Route components are placed in the `pages` directory
-- Support route-level code splitting
-- Route configurations include metadata support
-
-### 2. Example
+### 6. Configure Routes
 
 ```typescript
-// Route configuration example
+// config/app.router.ts
+
+import * as i18nKeys from './Identifier/pages/page.users';
+
 export const baseRoutes: RouteConfigValue[] = [
   {
     path: '/:lng',
     element: 'base/Layout',
-    meta: {
-      category: 'main'
-    },
     children: [
+      // ... other routes
       {
         path: 'users',
-        element: 'users/UserList',
+        element: 'users/UserListPage',
         meta: {
           title: i18nKeys.PAGE_USERS_TITLE,
-          auth: true
+          requiresAuth: true, // Requires authentication
+          category: 'main'
         }
       }
     ]
@@ -276,248 +433,767 @@ export const baseRoutes: RouteConfigValue[] = [
 ];
 ```
 
-For more route configuration and usage examples, please refer to [Router Development Guide](./router.md).
-
-## Internationalization Development Standards
-
-> 💡 Only basic standards are listed here. For complete internationalization development guide, please refer to [Internationalization Development Guide](./i18n.md)
-
-### 1. Basic Standards
-
-- Use identifier constants to manage translation keys
-- Generate translation resources through TypeScript comments
-- Support multi-language routes
-- Centrally manage translation files
-
-### 2. Example
+### 7. Implement Page Component
 
 ```typescript
-/**
- * @description User list page title
- * @localZh 用户列表
- * @localEn User List
- */
-export const PAGE_USERS_TITLE = 'page.users.title';
-```
+// pages/users/UserListPage.tsx
 
-For more internationalization configuration and usage examples, please refer to [Internationalization Development Guide](./i18n.md).
+import { useEffect, useState } from 'react';
+import { Table, Input, Button, Avatar, Space } from 'antd';
+import { ReloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { useIOC } from '@/uikit/hooks/useIOC';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import { useAppTranslation } from '@/uikit/hooks/useAppTranslation';
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import * as i18nKeys from '@config/Identifier/pages/page.users';
+import type { UserInfo } from '@/base/port/UserServiceInterface';
 
-## Theme Style Standards
+export default function UserListPage() {
+  // 1. Get services
+  const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
+  const { t } = useAppTranslation();
 
-> 💡 Only basic standards are listed here. For complete theme development guide, please refer to [Theme Development Guide](./theme.md)
+  // 2. Subscribe to state
+  const users = useStore(userService, userService.selector.users);
+  const loading = useStore(userService, userService.selector.loading);
+  const total = useStore(userService, userService.selector.total);
+  const page = useStore(userService, userService.selector.page);
+  const pageSize = useStore(userService, userService.selector.pageSize);
 
-### 1. Basic Standards
+  // 3. Local state
+  const [keyword, setKeyword] = useState('');
 
-- Use CSS variables to manage themes
-- Follow Tailwind CSS usage standards
-- Modularize component styles
-- Support multiple theme switching
+  // 4. Initialize loading
+  useEffect(() => {
+    userService.fetchUsers({ page: 1, pageSize: 10 });
+  }, []);
 
-### 2. Example
+  // 5. Event handlers
+  const handleSearch = () => {
+    userService.searchUsers(keyword);
+  };
 
-```css
-:root {
-  --color-brand: 37 99 235;
-  --text-primary: 15 23 42;
-}
-```
+  const handleRefresh = () => {
+    userService.refreshUsers();
+  };
 
-For more theme configuration and usage examples, please refer to [Theme Development Guide](./theme.md).
+  const handlePageChange = (newPage: number, newPageSize: number) => {
+    userService.fetchUsers({ page: newPage, pageSize: newPageSize, keyword });
+  };
 
-## Testing Standards
+  const handleViewDetail = (userId: string) => {
+    routeService.push(`/users/${userId}`);
+  };
 
-> 💡 Only basic standards are listed here. For complete testing guide, please refer to [Testing Development Guide](./testing.md)
+  // 6. Table column configuration
+  const columns = [
+    {
+      title: t(i18nKeys.PAGE_USERS_COLUMN_AVATAR),
+      dataIndex: 'avatar',
+      key: 'avatar',
+      render: (avatar: string) => <Avatar src={avatar} />
+    },
+    {
+      title: t(i18nKeys.PAGE_USERS_COLUMN_NAME),
+      dataIndex: 'name',
+      key: 'name'
+    },
+    {
+      title: t(i18nKeys.PAGE_USERS_COLUMN_EMAIL),
+      dataIndex: 'email',
+      key: 'email'
+    },
+    {
+      title: t(i18nKeys.PAGE_USERS_COLUMN_ROLE),
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => t(`common.role.${role}`)
+    },
+    {
+      title: t(i18nKeys.PAGE_USERS_COLUMN_ACTIONS),
+      key: 'actions',
+      render: (_: any, record: UserInfo) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => handleViewDetail(record.id)}
+        >
+          {t(i18nKeys.PAGE_USERS_VIEW_DETAIL)}
+        </Button>
+      )
+    }
+  ];
 
-### 1. Basic Standards
-
-- Unit tests cover core logic
-- Component tests focus on interaction and rendering
-- Use Jest and Testing Library
-- Keep tests simple and maintainable
-
-### 2. Example
-
-```typescript
-describe('UserProfile', () => {
-  it('should render user info', () => {
-    const user = { id: '1', name: 'Test' };
-    render(<UserProfile user={user} />);
-    expect(screen.getByText(user.name)).toBeInTheDocument();
-  });
-});
-```
-
-For more testing examples and best practices, please refer to [Testing Development Guide](./testing.md).
-
-## Documentation Standards
-
-> 💡 Only basic standards are listed here. For complete documentation writing guide, please refer to [Documentation Writing Guide](./documentation.md)
-
-### 1. Code Comments
-
-```typescript
-/**
- * User service
- *
- * @description Handles user-related business logic
- * @example
- * const userService = IOC(UserService);
- * await userService.login(credentials);
- */
-@injectable()
-export class UserService {
-  /**
-   * User login
-   *
-   * @param credentials - Login credentials
-   * @returns Logged-in user information
-   * @throws {AuthError} Thrown when authentication fails
-   */
-  async login(credentials: Credentials): Promise<User> {
-    // Implementation
-  }
-}
-```
-
-### 2. Documentation Structure
-
-- **README.md**: Project overview, installation instructions, quick start
-- **docs/**:
-  - `zh/`: Chinese documentation
-  - `en/`: English documentation
-  - Organize documentation files by feature modules
-
-### 3. Documentation Format
-
-```markdown
-# Module Name
-
-## Overview
-
-Brief explanation of module functionality and purpose.
-
-## Usage
-
-Code examples and usage instructions.
-
-## API Documentation
-
-Detailed API descriptions.
-
-## Best Practices
-
-Usage suggestions and considerations.
-```
-
-## Git Commit Standards
-
-> 💡 Only basic standards are listed here. For complete Git workflow, please refer to [Git Workflow Guide](./git-workflow.md)
-
-### 1. Commit Message Format
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-- **type**:
-  - `feat`: New feature
-  - `fix`: Bug fix
-  - `docs`: Documentation updates
-  - `style`: Code formatting (changes that don't affect code execution)
-  - `refactor`: Code refactoring
-  - `test`: Adding tests
-  - `chore`: Build process or auxiliary tool changes
-
-- **scope**: Impact scope (optional)
-- **subject**: Brief description
-- **body**: Detailed description (optional)
-- **footer**: Breaking changes, issue closure (optional)
-
-### 2. Example
-
-```
-feat(auth): add user role management functionality
-
-- Add role creation and editing interface
-- Implement role permission configuration
-- Add role assignment functionality
-
-Closes #123
-```
-
-## Performance Optimization Standards
-
-> 💡 Only basic standards are listed here. For complete performance optimization guide, please refer to [Performance Optimization Guide](./performance.md)
-
-### 1. Code Splitting
-
-```typescript
-// Route-level code splitting
-const UserModule = lazy(() => import('./pages/users'));
-
-// Component-level code splitting
-const HeavyComponent = lazy(() => import('./components/Heavy'));
-```
-
-### 2. Performance Considerations
-
-```typescript
-// Use useMemo to cache computation results
-const sortedUsers = useMemo(() => {
-  return users.sort((a, b) => a.name.localeCompare(b.name));
-}, [users]);
-
-// Use useCallback to cache functions
-const handleUpdate = useCallback(() => {
-  // Implementation
-}, [dependencies]);
-
-// Use React.memo to avoid unnecessary re-renders
-const UserCard = React.memo(({ user }) => {
-  return <div>{user.name}</div>;
-});
-```
-
-## Security Standards
-
-> 💡 Only basic standards are listed here. For complete security development guide, please refer to [Security Development Guide](./security.md)
-
-### 1. Data Handling
-
-```typescript
-// Sensitive data encryption
-const encryptedData = encrypt(sensitiveData);
-
-// XSS protection
-const sanitizedHtml = sanitizeHtml(userInput);
-
-// CSRF protection
-api.defaults.headers['X-CSRF-Token'] = getCsrfToken();
-```
-
-### 2. Permission Control
-
-```typescript
-// Route permissions
-const PrivateRoute: FC = ({ children }) => {
-  const auth = useAuth();
-  return auth.isAuthenticated ? children : <Navigate to="/login" />;
-};
-
-// Operation permissions
-function AdminPanel() {
-  const { hasPermission } = useAuth();
-
+  // 7. Render
   return (
-    <div>
-      {hasPermission('ADMIN') && (
-        <button>Admin Operation</button>
-      )}
+    <div className="p-6">
+      {/* Page title */}
+      <h1 className="text-2xl font-bold mb-4">
+        {t(i18nKeys.PAGE_USERS_TITLE)}
+      </h1>
+
+      {/* Search bar */}
+      <div className="mb-4 flex gap-2">
+        <Input.Search
+          placeholder={t(i18nKeys.PAGE_USERS_SEARCH_PLACEHOLDER)}
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onSearch={handleSearch}
+          style={{ width: 300 }}
+        />
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={handleRefresh}
+          loading={loading}
+        >
+          {t(i18nKeys.PAGE_USERS_REFRESH)}
+        </Button>
+      </div>
+
+      {/* User table */}
+      <Table
+        columns={columns}
+        dataSource={users}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          total: total,
+          onChange: handlePageChange,
+          showSizeChanger: true,
+          showTotal: (total) => `${t('common.total')} ${total} ${t('common.items')}`
+        }}
+        locale={{
+          emptyText: t(i18nKeys.PAGE_USERS_EMPTY)
+        }}
+      />
     </div>
   );
 }
 ```
+
+### 8. Register to IOC (if new service)
+
+```typescript
+// core/clientIoc/ClientIOCRegister.ts
+
+export class ClientIOCRegister {
+  protected registerImplement(ioc: IOCContainerInterface): void {
+    // ... other service registrations
+
+    // Register UserService
+    ioc.bind(IOCIdentifier.UserServiceInterface, ioc.get(UserService));
+  }
+}
+```
+
+### 9. Write Tests
+
+```typescript
+// __tests__/src/base/services/UserService.test.ts
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { UserService } from '@/base/services/UserService';
+
+describe('UserService', () => {
+  let userService: UserService;
+  let mockApi: any;
+
+  beforeEach(() => {
+    mockApi = {
+      getUserList: vi.fn()
+    };
+
+    userService = new UserService(mockApi);
+  });
+
+  it('should fetch users and update state', async () => {
+    const mockResponse = {
+      list: [
+        {
+          id: '1',
+          name: 'John',
+          email: 'john@example.com',
+          avatar: '',
+          role: 'user'
+        }
+      ],
+      total: 1,
+      page: 1,
+      pageSize: 10
+    };
+
+    mockApi.getUserList.mockResolvedValue(mockResponse);
+
+    const states: any[] = [];
+    userService.subscribe((state) => states.push({ ...state }));
+
+    await userService.fetchUsers({ page: 1, pageSize: 10 });
+
+    // Verify state changes
+    expect(states).toHaveLength(2);
+    expect(states[0].loading).toBe(true);
+    expect(states[1].loading).toBe(false);
+    expect(states[1].users).toEqual(mockResponse.list);
+    expect(states[1].total).toBe(1);
+  });
+
+  it('should handle error when fetch fails', async () => {
+    mockApi.getUserList.mockRejectedValue(new Error('Network error'));
+
+    await userService.fetchUsers({ page: 1, pageSize: 10 });
+
+    expect(userService.getState().error).toBeTruthy();
+    expect(userService.getState().loading).toBe(false);
+  });
+});
+```
+
+```typescript
+// __tests__/src/pages/users/UserListPage.test.tsx
+
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import UserListPage from '@/pages/users/UserListPage';
+import { IOCProvider } from '@/uikit/contexts/IOCContext';
+
+describe('UserListPage', () => {
+  it('should display user list', async () => {
+    const mockUsers = [
+      {
+        id: '1',
+        name: 'John',
+        email: 'john@example.com',
+        avatar: '',
+        role: 'user'
+      }
+    ];
+
+    const mockUserService = {
+      fetchUsers: vi.fn(),
+      searchUsers: vi.fn(),
+      refreshUsers: vi.fn(),
+      subscribe: vi.fn(),
+      getState: () => ({ users: mockUsers, loading: false, total: 1 }),
+      selector: {
+        users: (state: any) => state.users,
+        loading: (state: any) => state.loading,
+        total: (state: any) => state.total
+      }
+    };
+
+    const mockIOC = (identifier: string) => {
+      if (identifier === 'UserServiceInterface') return mockUserService;
+      if (identifier === 'RouteServiceInterface') return { push: vi.fn() };
+    };
+
+    render(
+      <IOCProvider value={mockIOC}>
+        <UserListPage />
+      </IOCProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('John')).toBeInTheDocument();
+      expect(screen.getByText('john@example.com')).toBeInTheDocument();
+    });
+  });
+
+  it('should search users when search button clicked', async () => {
+    const mockUserService = {
+      fetchUsers: vi.fn(),
+      searchUsers: vi.fn(),
+      subscribe: vi.fn(),
+      getState: () => ({ users: [], loading: false }),
+      selector: {
+        users: () => [],
+        loading: () => false,
+        total: () => 0
+      }
+    };
+
+    const mockIOC = (identifier: string) => {
+      if (identifier === 'UserServiceInterface') return mockUserService;
+      if (identifier === 'RouteServiceInterface') return { push: vi.fn() };
+    };
+
+    render(
+      <IOCProvider value={mockIOC}>
+        <UserListPage />
+      </IOCProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    fireEvent.change(searchInput, { target: { value: 'John' } });
+
+    const searchButton = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(searchButton);
+
+    expect(mockUserService.searchUsers).toHaveBeenCalledWith('John');
+  });
+});
+```
+
+---
+
+## 🎬 Common Scenarios
+
+### Scenario 1: Adding a New Button Feature
+
+Suppose we want to add a "bulk delete" feature to the user list page:
+
+```typescript
+// 1. Add i18n Key
+/**
+ * @description Delete selected users
+ * @localZh 删除选中用户
+ * @localEn Delete Selected
+ */
+export const PAGE_USERS_DELETE_SELECTED = 'page.users.deleteSelected';
+
+// 2. Add method to service
+@injectable()
+export class UserService extends UserServiceInterface {
+  async deleteUsers(userIds: string[]): Promise<void> {
+    try {
+      this.emit({ ...this.state, loading: true });
+      await this.api.deleteUsers(userIds);
+      await this.refreshUsers(); // Refresh list
+    } catch (error) {
+      this.emit({ ...this.state, loading: false, error: error as Error });
+    }
+  }
+}
+
+// 3. Use in page
+function UserListPage() {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+
+  const handleDelete = async () => {
+    await userService.deleteUsers(selectedRowKeys);
+    setSelectedRowKeys([]);
+  };
+
+  return (
+    <div>
+      <Button
+        danger
+        onClick={handleDelete}
+        disabled={selectedRowKeys.length === 0}
+      >
+        {t(i18nKeys.PAGE_USERS_DELETE_SELECTED)}
+      </Button>
+
+      <Table
+        rowSelection={{
+          selectedRowKeys,
+          onChange: setSelectedRowKeys
+        }}
+        // ...
+      />
+    </div>
+  );
+}
+```
+
+### Scenario 2: Adding a Modal Form
+
+Suppose we want to add an "edit user" modal:
+
+```typescript
+// 1. Create modal component
+// components/UserEditModal.tsx
+interface UserEditModalProps {
+  user: UserInfo | null;
+  visible: boolean;
+  onClose: () => void;
+  onSubmit: (user: UserInfo) => void;
+}
+
+export function UserEditModal({ user, visible, onClose, onSubmit }: UserEditModalProps) {
+  const [form] = Form.useForm();
+  const { t } = useAppTranslation();
+
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue(user);
+    }
+  }, [user]);
+
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    onSubmit(values);
+  };
+
+  return (
+    <Modal
+      title={t(i18nKeys.PAGE_USERS_EDIT_TITLE)}
+      open={visible}
+      onCancel={onClose}
+      onOk={handleSubmit}
+    >
+      <Form form={form} layout="vertical">
+        <Form.Item
+          name="name"
+          label={t(i18nKeys.PAGE_USERS_FORM_NAME)}
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="email"
+          label={t(i18nKeys.PAGE_USERS_FORM_EMAIL)}
+          rules={[{ required: true, type: 'email' }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}
+
+// 2. Add update method to service
+@injectable()
+export class UserService extends UserServiceInterface {
+  async updateUser(userId: string, data: Partial<UserInfo>): Promise<void> {
+    this.emit({ ...this.state, loading: true });
+    await this.api.updateUser(userId, data);
+    await this.refreshUsers();
+  }
+}
+
+// 3. Use in page
+function UserListPage() {
+  const [editUser, setEditUser] = useState<UserInfo | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleEdit = (user: UserInfo) => {
+    setEditUser(user);
+    setModalVisible(true);
+  };
+
+  const handleSubmit = async (values: UserInfo) => {
+    await userService.updateUser(editUser!.id, values);
+    setModalVisible(false);
+    setEditUser(null);
+  };
+
+  return (
+    <div>
+      <Table
+        columns={[
+          // ...
+          {
+            title: 'Actions',
+            render: (_, record) => (
+              <Button onClick={() => handleEdit(record)}>Edit</Button>
+            )
+          }
+        ]}
+        // ...
+      />
+
+      <UserEditModal
+        user={editUser}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  );
+}
+```
+
+### Scenario 3: Adding Real-time Search
+
+Suppose we want to implement "auto-search while typing":
+
+```typescript
+function UserListPage() {
+  const [keyword, setKeyword] = useState('');
+
+  // Use debounce to optimize search
+  const debouncedKeyword = useDebounce(keyword, 500);
+
+  useEffect(() => {
+    if (debouncedKeyword !== undefined) {
+      userService.searchUsers(debouncedKeyword);
+    }
+  }, [debouncedKeyword]);
+
+  return (
+    <Input
+      placeholder={t(i18nKeys.PAGE_USERS_SEARCH_PLACEHOLDER)}
+      value={keyword}
+      onChange={(e) => setKeyword(e.target.value)}
+    />
+  );
+}
+
+// Custom Hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+---
+
+## 📐 Code Standards
+
+### 1. Naming Conventions
+
+```typescript
+// ✅ Good naming
+const userService = useIOC('UserServiceInterface'); // Service: camelCase
+const UserListPage = () => {
+  /* ... */
+}; // Component: PascalCase
+const PAGE_USERS_TITLE = 'page.users.title'; // Constant: UPPER_SNAKE_CASE
+interface UserInfo {
+  /* ... */
+} // Interface: PascalCase
+type UserRole = 'admin' | 'user'; // Type: PascalCase
+
+// ❌ Bad naming
+const UserService = useIOC('UserServiceInterface'); // Should be camelCase
+const userListPage = () => {
+  /* ... */
+}; // Component should be PascalCase
+const pageUsersTitle = 'page.users.title'; // Constant should be UPPER_CASE
+interface userInfo {
+  /* ... */
+} // Interface should be PascalCase
+```
+
+### 2. File Organization
+
+```typescript
+// ✅ Good file organization
+import { FC, useEffect, useState } from 'react'; // React
+import { Button, Table, Input } from 'antd'; // Third-party UI
+import { useIOC } from '@/uikit/hooks/useIOC'; // Internal project
+import { useAppTranslation } from '@/uikit/hooks/useAppTranslation';
+import * as i18nKeys from '@config/Identifier/pages/page.users';
+import './UserListPage.css'; // Styles
+
+// Type definitions
+interface Props {
+  /* ... */
+}
+
+// Component
+export default function UserListPage() {
+  /* ... */
+}
+
+// ❌ Bad file organization
+import './UserListPage.css'; // Styles shouldn't be first
+import * as i18nKeys from '@config/Identifier/pages/page.users';
+import { Button } from 'antd';
+import { useIOC } from '@/uikit/hooks/useIOC';
+import { FC } from 'react';
+```
+
+### 3. Component Structure
+
+```typescript
+// ✅ Good component structure
+export default function UserListPage() {
+  // 1. Hooks
+  const userService = useIOC('UserServiceInterface');
+  const { t } = useAppTranslation();
+
+  // 2. State
+  const users = useStore(userService, userService.selector.users);
+  const [keyword, setKeyword] = useState('');
+
+  // 3. Side effects
+  useEffect(() => {
+    userService.fetchUsers({ page: 1, pageSize: 10 });
+  }, []);
+
+  // 4. Event handlers
+  const handleSearch = () => {
+    userService.searchUsers(keyword);
+  };
+
+  // 5. Render functions
+  const renderActions = (record: UserInfo) => {
+    return <Button onClick={() => handleEdit(record)}>Edit</Button>;
+  };
+
+  // 6. Return JSX
+  return (
+    <div>
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+### 4. Comment Standards
+
+```typescript
+/**
+ * User list page
+ *
+ * @description Display user list with search, pagination, and view details functionality
+ */
+export default function UserListPage() {
+  /**
+   * Handle search
+   * Search users by keyword
+   */
+  const handleSearch = () => {
+    userService.searchUsers(keyword);
+  };
+
+  // Initialize user list loading
+  useEffect(() => {
+    userService.fetchUsers({ page: 1, pageSize: 10 });
+  }, []);
+
+  return (
+    <div>
+      {/* Search bar */}
+      <Input.Search onSearch={handleSearch} />
+
+      {/* User table */}
+      <Table dataSource={users} />
+    </div>
+  );
+}
+```
+
+---
+
+## 🛠️ Development Tools
+
+### Recommended VSCode Extensions
+
+```
+✅ ESLint - Code linting
+✅ Prettier - Code formatting
+✅ TypeScript Vue Plugin (Volar) - Vue/React support
+✅ Tailwind CSS IntelliSense - Tailwind autocomplete
+✅ i18n Ally - i18n management
+✅ GitLens - Git enhancement
+✅ Error Lens - Error display
+✅ Auto Rename Tag - Tag auto-rename
+```
+
+### Quick Commands
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run dev:staging      # Start staging environment
+
+# Build
+npm run build            # Production build
+npm run preview          # Preview build result
+
+# Code quality
+npm run lint             # ESLint check
+npm run lint:fix         # ESLint auto-fix
+npm run type-check       # TypeScript type checking
+
+# Testing
+npm run test             # Run tests
+npm run test:watch       # Watch mode testing
+npm run test:coverage    # Test coverage
+
+# i18n
+npm run i18n:generate    # Generate translation files
+```
+
+### Debugging Tips
+
+```typescript
+// 1. Use logger
+import { logger } from '@/core/globals';
+
+logger.debug('User data:', user);
+logger.error('Failed to fetch users:', error);
+
+// 2. Use React DevTools
+// Install React Developer Tools browser extension
+
+// 3. Use Redux DevTools (if needed)
+// View Store state changes
+
+// 4. Use VSCode breakpoint debugging
+// Click on the left side of a code line to set breakpoint, then F5 to start debugging
+```
+
+---
+
+## 🎯 Development Checklist
+
+### Feature Development
+
+- [ ] Define i18n Keys
+- [ ] Define interfaces and types
+- [ ] Implement API adapter (if needed)
+- [ ] Implement service
+- [ ] Configure routes
+- [ ] Implement page component
+- [ ] Register to IOC (if new service)
+- [ ] Feature self-testing
+
+### Code Quality
+
+- [ ] Pass ESLint check
+- [ ] Pass TypeScript type check
+- [ ] Code formatting (Prettier)
+- [ ] Remove console.log and debug code
+- [ ] Remove unused imports
+
+### Testing
+
+- [ ] Write service tests
+- [ ] Write UI tests
+- [ ] Test coverage > 80%
+- [ ] All tests passing
+
+### Documentation
+
+- [ ] Update related documentation
+- [ ] Add necessary code comments
+- [ ] Update API documentation (if any)
+
+### Submission
+
+- [ ] Git commit follows conventions
+- [ ] Code reviewed
+- [ ] Merged to main branch
+
+---
+
+## 📚 Related Documentation
+
+- **[Project Architecture Design](./index.md)** - Understand overall architecture
+- **[IOC Container](./ioc.md)** - Dependency injection and UI separation
+- **[Store State Management](./store.md)** - How application layer notifies UI layer
+- **[Bootstrap Initializer](./bootstrap.md)** - Application startup and initialization
+- **[Environment Variables](./env.md)** - Multi-environment configuration
+- **[Internationalization](./i18n.md)** - i18n Key and translation management
+
+---
+
+**Feedback:**  
+If you encounter any problems during development, please discuss in the team channel or submit an Issue.

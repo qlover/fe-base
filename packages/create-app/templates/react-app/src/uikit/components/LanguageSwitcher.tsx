@@ -1,18 +1,18 @@
-import { Select } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import i18nConfig from '@config/i18n';
-import { IOC } from '@/core/IOC';
-import { I18nServiceLocale } from '@/base/services/I18nService';
-import { useCallback } from 'react';
-import { useStore } from '@/uikit/hooks/useStore';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import { i18nConfig } from '@config/i18n/i18nConfig';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Select } from 'antd';
+import { useCallback } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import type { I18nServiceLocale } from '@/base/services/I18nService';
+import { useIOC } from '../hooks/useIOC';
 
 const { supportedLngs } = i18nConfig;
 
-export default function LanguageSwitcher() {
+export function LanguageSwitcher() {
   const navigate = useNavigate();
-  const i18nService = IOC(IOCIdentifier.I18nServiceInterface);
+  const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
   const loading = useStore(i18nService, i18nService.selector.loading);
   const { lng } = useParams<{ lng: I18nServiceLocale }>();
   const { pathname } = useLocation();
@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
   );
 
   return (
-    <div className="flex items-center gap-2">
+    <div data-testid="LanguageSwitcher" className="flex items-center gap-2">
       <Select
         loading={loading}
         disabled={loading}

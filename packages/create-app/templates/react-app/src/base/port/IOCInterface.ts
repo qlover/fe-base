@@ -1,0 +1,36 @@
+import type {
+  EnvConfigInterface,
+  IOCContainerInterface,
+  IOCFunctionInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge';
+
+/**
+ * IOC register options
+ */
+export type IocRegisterOptions = {
+  /**
+   * The pathname of the current page
+   */
+  pathname: string;
+
+  /**
+   * The app config
+   */
+  appConfig: EnvConfigInterface;
+};
+
+export interface IOCInterface<
+  IdentifierMap,
+  IOCContainer extends IOCContainerInterface
+> {
+  create(
+    options: IocRegisterOptions
+  ): IOCFunctionInterface<IdentifierMap, IOCContainer>;
+}
+
+/**
+ * 提供一个快捷的注册器类型名
+ */
+export interface IOCRegister
+  extends IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions> {}

@@ -1,13 +1,13 @@
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { RequestState } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
+import { aiHello } from '@/base/apis/AiApi';
 import { FeApi } from '@/base/apis/feApi/FeApi';
 import { UserApi } from '@/base/apis/userApi/UserApi';
-import { aiHello } from '@/base/apis/AiApi';
 import {
   RequestPageBridgeInterface,
   RequestPageStateInterface
 } from '@/base/port/RequestPageBridgeInterface';
-import { RequestState } from '@/base/cases/RequestState';
-import { IOCIdentifier } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
 
 function createDefaultState(): RequestPageStateInterface {

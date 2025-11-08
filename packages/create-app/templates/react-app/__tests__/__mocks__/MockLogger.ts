@@ -1,5 +1,5 @@
-import { LoggerInterface } from '@qlover/logger';
 import { vi } from 'vitest';
+import type { LoggerInterface } from '@qlover/logger';
 
 export class MockLogger implements LoggerInterface {
   info = vi.fn();
