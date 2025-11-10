@@ -10,7 +10,11 @@
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["./config/*"]
+    }
   },
   "include": ["e2e/**/*.ts", "playwright.config.ts"],
   "exclude": ["node_modules", "dist"]

@@ -57,7 +57,8 @@ rollup.config-*.*js
 .nx/cache
 .nx/workspace-data
 
-playwright-report
 test-results
-packages/**/.vscode
-packages/**/.github
+playwright-report
+blob-report
+playwright/.cache
+playwright/.auth

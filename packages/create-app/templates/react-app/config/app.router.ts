@@ -8,6 +8,7 @@ import { login18n } from './i18n/login18n';
 import { register18n } from './i18n/register18n';
 import { request18n } from './i18n/request18n';
 import * as identifier from './Identifier';
+import { notFound18n, serverError18n } from './i18n/notFoundI18n';
 
 export const baseRoutes: RouteConfigValue[] = [
   {
@@ -151,9 +152,8 @@ export const baseRoutes: RouteConfigValue[] = [
     element: '404',
     meta: {
       category: 'common',
-      title: identifier.PAGE_404_TITLE,
-      description: identifier.PAGE_404_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: notFound18n
     }
   },
   {
@@ -161,9 +161,8 @@ export const baseRoutes: RouteConfigValue[] = [
     element: '500',
     meta: {
       category: 'common',
-      title: identifier.PAGE_500_TITLE,
-      description: identifier.PAGE_500_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: serverError18n
     }
   },
   {
@@ -173,7 +172,8 @@ export const baseRoutes: RouteConfigValue[] = [
       category: 'common',
       title: identifier.PAGE_404_TITLE,
       description: identifier.PAGE_404_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: notFound18n
     }
   }
 ];
@@ -257,9 +257,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
         element: '404',
         meta: {
           category: 'common',
-          title: identifier.PAGE_404_TITLE,
-          description: identifier.PAGE_404_DESCRIPTION,
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: notFound18n
         }
       },
       {
@@ -267,9 +266,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
         element: '500',
         meta: {
           category: 'common',
-          title: identifier.PAGE_500_TITLE,
-          description: identifier.PAGE_500_DESCRIPTION,
-          localNamespace: 'common'
+          localNamespace: 'common',
+          i18nInterface: serverError18n
         }
       }
     ]
@@ -312,9 +310,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
     element: '404',
     meta: {
       category: 'common',
-      title: identifier.PAGE_404_TITLE,
-      description: identifier.PAGE_404_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: notFound18n
     }
   },
   {
@@ -322,9 +319,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
     element: '500',
     meta: {
       category: 'common',
-      title: identifier.PAGE_500_TITLE,
-      description: identifier.PAGE_500_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: serverError18n
     }
   },
   {
@@ -332,9 +328,8 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
     element: '404',
     meta: {
       category: 'common',
-      title: identifier.PAGE_404_TITLE,
-      description: identifier.PAGE_404_DESCRIPTION,
-      localNamespace: 'common'
+      localNamespace: 'common',
+      i18nInterface: notFound18n
     }
   }
 ];

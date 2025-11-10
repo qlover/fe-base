@@ -110,6 +110,8 @@ export default defineConfig({
     watch: false,
     environment: 'jsdom',
     globals: true,
+    include: ['__tests__/**/*.test.ts', '__tests__/**/*.test.tsx'],
+    exclude: ['__tests__/**/*.e2e.ts', '__tests__/**/*.e2e.tsx'],
     setupFiles: ['./__tests__/setup/index.ts']
   }
 });
