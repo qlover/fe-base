@@ -110,6 +110,7 @@ export default function LoginPage() {
 
             <Form.Item>
               <Button
+                data-testid="LoginButton"
                 type="primary"
                 htmlType="submit"
                 loading={loading}

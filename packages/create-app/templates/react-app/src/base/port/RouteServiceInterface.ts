@@ -23,5 +23,9 @@ export abstract class RouteServiceInterface extends StoreInterface<RouteServiceS
   abstract gotoLogin(): void;
   abstract replaceToHome(): void;
   abstract redirectToDefault(navigate: NavigateFunction): void;
-  abstract i18nGuard(lng: string, navigate: NavigateFunction): void;
+  abstract i18nGuard(
+    currentPath: string,
+    lng: string,
+    navigate?: NavigateFunction
+  ): void;
 }

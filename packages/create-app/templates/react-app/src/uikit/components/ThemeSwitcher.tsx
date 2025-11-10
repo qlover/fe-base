@@ -53,6 +53,7 @@ export function ThemeSwitcher() {
         value: themeName,
         label: (
           <div
+            data-testid={`ThemeSwitcherOption-${themeName}`}
             className={clsx(
               'flex items-center gap-2',
               isSelf ? currentColor : normalColor
@@ -67,8 +68,13 @@ export function ThemeSwitcher() {
   }, [theme, themes, t]);
 
   return (
-    <div data-testid="ThemeSwitcher" className="flex items-center gap-2">
+    <div
+      data-testid="ThemeSwitcher"
+      data-testvalue={theme}
+      className="flex items-center gap-2"
+    >
       <Select
+        data-testid="ThemeSwitcherSelect"
         value={theme}
         onChange={(value) => themeService.changeTheme(value)}
         options={themeOptions}

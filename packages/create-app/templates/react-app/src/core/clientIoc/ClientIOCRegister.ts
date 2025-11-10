@@ -1,5 +1,5 @@
 import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
-import { useLocaleRoutes } from '@config/common';
+import { routerPrefix, useLocaleRoutes } from '@config/common';
 import mockDataJson from '@config/feapi.mock.json';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { themeConfig } from '@config/theme';
@@ -79,7 +79,8 @@ export class ClientIOCRegister
         {
           routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
           logger: ioc.get(I.Logger),
-          hasLocalRoutes: useLocaleRoutes
+          hasLocalRoutes: useLocaleRoutes,
+          routerPrefix: routerPrefix
         }
       )
     );

@@ -10,7 +10,7 @@ const layoutRoutes = baseRoutes.filter(
 );
 
 const navigationItems = layoutRoutes[0]!
-  .children!.filter((route) => !route.index)
+  .children!.filter((route) => route.path !== '*' && !route.index)
   .map((route) => ({
     href: `/${route.path}`,
     titleKey: route.meta!.title!,
@@ -37,7 +37,7 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {navigationItems.map((item) => (
             <LocaleLink
-              data-testid="HomePage"
+              data-testid={`HomePage-NavLink-${item.href.replace('/', '')}`}
               key={item.href}
               href={item.href}
               className={clsx(

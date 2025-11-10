@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base.fixture';
+import { test, expect } from './fixtures/base.fixture';
 
 test.describe('Main', () => {
   test('should render the main component', async ({ page }) => {

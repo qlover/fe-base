@@ -30,7 +30,7 @@ export default function IdentifierPage() {
         <div className="grid gap-4">
           {Object.entries(ErrorIdentifierList).map(([key, value]) => (
             <div
-              data-testid="IdentifierPage"
+              data-testid={`IdentifierPage-${key}`}
               key={key}
               className="bg-secondary shadow sm:rounded-lg p-6 border border-border hover:bg-elevated transition-colors duration-200"
             >

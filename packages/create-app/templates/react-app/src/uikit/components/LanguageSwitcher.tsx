@@ -21,7 +21,10 @@ export function LanguageSwitcher() {
     key: lang,
     value: lang,
     label: (
-      <div className="flex items-center gap-2">
+      <div
+        className="flex items-center gap-2"
+        data-testid={`LanguageSwitcherOption-${lang}`}
+      >
         <GlobalOutlined />
         <span>{lang.toUpperCase()}</span>
       </div>
@@ -48,6 +51,7 @@ export function LanguageSwitcher() {
       className="flex items-center gap-2"
     >
       <Select
+        data-testid="LanguageSwitcherSelect"
         loading={loading}
         disabled={loading}
         value={language}
