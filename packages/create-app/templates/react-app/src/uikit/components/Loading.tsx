@@ -16,7 +16,7 @@ import { clsx } from 'clsx';
 export function Loading({ fullscreen = false }: { fullscreen?: boolean }) {
   return (
     <div
-      data-testid="Loading"
+      data-testid="LoadingRoot"
       className={clsx('flex justify-center items-center', {
         'fixed inset-0 backdrop-blur-sm z-50': fullscreen,
         relative: !fullscreen

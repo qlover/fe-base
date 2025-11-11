@@ -682,6 +682,18 @@ function ThemeSwitcher() {
 - Integration testing (workflow)
 - Testing best practices
 
+#### [Playwright E2E Testing](./playwright/) 🎭
+
+**Core Content:**
+
+- Complete E2E testing documentation
+- Multi-browser testing (Chromium, Firefox, WebKit, Mobile)
+- Page Object Model architecture
+- Test writing guide and best practices
+- Debugging techniques and CI/CD integration
+- See [Playwright Documentation Hub](./playwright/)
+- Quick reference: [Playwright Overview](./playwright/overview.md)
+
 #### [TypeScript Guide](./typescript-guide.md)
 
 **Core Content:**
@@ -717,7 +729,9 @@ function ThemeSwitcher() {
 
 **Call APIs** → [Request Handling](./request.md)
 
-**Write tests** → [Testing Guide](./test-guide.md)
+**Write unit tests** → [Testing Guide](./test-guide.md)
+
+**Write E2E tests** → [Playwright E2E Testing](./playwright/README.md)
 
 **Solve TypeScript issues** → [TypeScript Guide](./typescript-guide.md)
 

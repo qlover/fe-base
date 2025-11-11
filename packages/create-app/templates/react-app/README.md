@@ -63,7 +63,14 @@ pnpm build
 ### 运行测试
 
 ```bash
+# 运行单元测试
 pnpm test
+
+# 运行 E2E 测试
+pnpm test:e2e
+
+# 运行 E2E 测试（UI 模式）
+pnpm test:e2e:ui
 ```
 
 ## 📚 文档指南
@@ -82,6 +89,14 @@ pnpm test
 - **[Store 状态管理](./docs/zh/store.md)** - 📡 应用层如何通知 UI 层
 - **[环境变量管理](./docs/zh/env.md)** - ⚙️ 多环境配置
 - **[国际化](./docs/zh/i18n.md)** - 🌍 i18n Key 和翻译管理
+
+### 🧪 测试文档
+
+- **[Playwright E2E 测试](./docs/zh/playwright/)** - 🎭 端到端测试完整文档
+  - [快速入门](./docs/zh/playwright/quickstart.md)
+  - [详细测试指南](./docs/zh/playwright/testing-guide.md)
+  - [设置完成指南](./docs/zh/playwright/setup-complete.md)
+- [单元测试指南](./docs/zh/test-guide.md) - Vitest 单元测试
 
 ### 📖 辅助文档
 

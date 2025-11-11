@@ -19,6 +19,12 @@ export function LogoutButton() {
   const onClick = useCallback(() => {
     dialogHandler.confirm({
       title: tTitle,
+      okButtonProps: {
+        'data-testid': 'LogoutButton-OkButton'
+      },
+      cancelButtonProps: {
+        'data-testid': 'LogoutButton-CancelButton'
+      },
       content: tContent,
       onOk: () => {
         userService.logout();

@@ -28,7 +28,8 @@ export class I18nService
   readonly pluginName = 'I18nService';
 
   selector = {
-    loading: (state: I18nServiceState) => state.loading
+    loading: (state: I18nServiceState) => state.loading,
+    language: (state: I18nServiceState) => state.language
   };
 
   constructor(protected pathname: string) {
@@ -74,10 +75,19 @@ export class I18nService
       }
     };
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
+
+    // Sync i18n.language with state.language
+    i18n.on('languageChanged', (lng: string) => {
+      if (this.isValidLanguage(lng) && this.state.language !== lng) {
+        this.emit({ ...this.state, language: lng as I18nServiceLocale });
+      }
+    });
   }
 
   async changeLanguage(language: I18nServiceLocale): Promise<void> {
     await i18n.changeLanguage(language);
+    // Sync state with i18n.language
+    this.emit({ ...this.state, language });
   }
 
   changeLoading(loading: boolean): void {

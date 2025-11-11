@@ -356,7 +356,7 @@ export default function ExecutorPage() {
           <div className="space-y-4">
             {tasks.map((task) => (
               <Card
-                data-testid="ExecutorPage"
+                data-testid={`ExecutorPageCard-${task.id}`}
                 key={task.id}
                 className="bg-elevated border-border"
                 title={
@@ -430,7 +430,7 @@ export default function ExecutorPage() {
               )
               .map((task) => (
                 <div
-                  data-testid="ExecutorPage"
+                  data-testid={`ExecutorPageHistory-${task.id}`}
                   key={task.id}
                   className="flex items-center justify-between p-2 bg-elevated rounded"
                 >

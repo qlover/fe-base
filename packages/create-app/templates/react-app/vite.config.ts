@@ -1,20 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { defineConfig } from 'vitest/config';
+import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
+import ts2Locales from '@brain-toolkit/ts2locales/vite';
+import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import vitePluginImp from 'vite-plugin-imp';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 import {
   envPrefix,
   overrideAntdThemeMode,
   routerPrefix
 } from './config/common';
-import { name, version } from './package.json';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
-import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import { i18nConfig } from './config/i18n/i18nConfig';
-import tailwindcss from '@tailwindcss/vite';
-import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
-import vitePluginImp from 'vite-plugin-imp';
 import { generateTs2LocalesOptions } from './makes/generateTs2LocalesOptions';
+import { name, version } from './package.json';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -111,6 +110,8 @@ export default defineConfig({
     watch: false,
     environment: 'jsdom',
     globals: true,
+    include: ['__tests__/**/*.test.ts', '__tests__/**/*.test.tsx'],
+    exclude: ['__tests__/**/*.e2e.ts', '__tests__/**/*.e2e.tsx'],
     setupFiles: ['./__tests__/setup/index.ts']
   }
 });
