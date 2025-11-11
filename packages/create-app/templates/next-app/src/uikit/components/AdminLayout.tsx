@@ -2,12 +2,15 @@
 
 import {
   DashboardOutlined,
+  GlobalOutlined,
   UserOutlined,
   VerticalAlignBottomOutlined,
   VerticalAlignTopOutlined
 } from '@ant-design/icons';
+import { useStore } from '@brain-toolkit/react-kit';
 import { Layout, Menu } from 'antd';
 import { clsx } from 'clsx';
+import { usePathname } from 'next/navigation';
 import React, { useMemo, type HTMLAttributes } from 'react';
 import { AdminPageManager } from '@/base/cases/AdminPageManager';
 import { BaseHeader } from './BaseHeader';
@@ -16,14 +19,14 @@ import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useIOC } from '../hook/useIOC';
-import { useStore } from '../hook/useStore';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { Sider } = Layout;
 
 const IconMap = {
   dashboard: <DashboardOutlined />,
-  users: <UserOutlined />
+  users: <UserOutlined />,
+  locales: <GlobalOutlined />
 };
 
 export interface AdminLayoutProps extends HTMLAttributes<HTMLDivElement> {
@@ -34,9 +37,16 @@ export interface AdminLayoutProps extends HTMLAttributes<HTMLDivElement> {
 export function AdminLayout(props: AdminLayoutProps) {
   const { children, className, mainClassName, ...rest } = props;
 
+  const pathname = usePathname();
   const page = useIOC(AdminPageManager);
   const collapsedSidebar = useStore(page, page.selectors.collapsedSidebar);
   const navItems = useStore(page, page.selectors.navItems);
+
+  const selectedKey = useMemo(() => {
+    // 移除语言前缀，例如 /en/admin/users -> /admin/users
+    const normalizedPath = pathname.replace(/^\/[^/]+/, '');
+    return navItems.find((item) => item.pathname === normalizedPath)?.key || '';
+  }, [pathname, navItems]);
 
   const sidebarItems = useMemo(() => {
     return navItems.map((item) => {
@@ -78,7 +88,11 @@ export function AdminLayout(props: AdminLayoutProps) {
           collapsed={collapsedSidebar}
           collapsedWidth={46}
         >
-          <Menu mode="inline" items={sidebarItems} />
+          <Menu
+            mode="inline"
+            items={sidebarItems}
+            selectedKeys={selectedKey ? [selectedKey] : []}
+          />
 
           <div
             data-testid="ToggleSidebarButton"

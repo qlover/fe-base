@@ -8,6 +8,7 @@
 
     /* 文字颜色 */
     --text-primary: 190 18 60; /* rose-700 */
+    --text-primary-hover: 244 63 94; /* rose-500 */
     --text-secondary: 225 29 72; /* rose-600 */
     --text-tertiary: 244 63 94; /* rose-500 */
 

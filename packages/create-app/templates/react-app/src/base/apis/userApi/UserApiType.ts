@@ -1,4 +1,4 @@
-import { UserApiTransaction } from './UserApiBootstarp';
+import type { UserApiTransaction } from './UserApiBootstarp';
 
 export type UserInfo = {
   name: string;

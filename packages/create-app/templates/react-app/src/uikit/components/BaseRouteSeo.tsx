@@ -1,0 +1,18 @@
+import type { PageI18nInterface } from '@config/i18n/PageI18nInterface';
+import { ClientSeo } from './ClientSeo';
+import { useBaseRoutePage } from '../contexts/BaseRouteContext';
+
+export function BaseRouteSeo() {
+  const { i18nInterface } = useBaseRoutePage();
+
+  if (!i18nInterface) {
+    return null;
+  }
+
+  return (
+    <ClientSeo
+      data-testid="BaseRouteSeo"
+      i18nInterface={i18nInterface as unknown as PageI18nInterface}
+    />
+  );
+}

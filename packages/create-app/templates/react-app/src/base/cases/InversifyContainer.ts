@@ -1,9 +1,9 @@
-import { IOCIdentifierMap } from '@config/IOCIdentifier';
-import {
+import { Container } from 'inversify';
+import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type {
   IOCContainerInterface,
   ServiceIdentifier
 } from '@qlover/corekit-bridge';
-import { Container } from 'inversify';
 
 export class InversifyContainer implements IOCContainerInterface {
   protected container: Container;

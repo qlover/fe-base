@@ -4,8 +4,11 @@ import {
   type ExecutorPlugin
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
+import { i18nKeySchema } from '@config/i18n/i18nKeyScheam';
+import { API_NOT_AUTHORIZED } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
 import type { DialogHandlerOptions } from './DialogHandler';
+import type { RouterService } from './RouterService';
 import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';
 
@@ -16,7 +19,9 @@ export class DialogErrorPlugin implements ExecutorPlugin {
   constructor(
     @inject(I.DialogHandler)
     protected dialogHandler: UIDialogInterface<DialogHandlerOptions>,
-    @inject(I.I18nServiceInterface) protected i18nService: I18nServiceInterface
+    @inject(I.I18nServiceInterface) protected i18nService: I18nServiceInterface,
+    @inject(I.RouterServiceInterface)
+    protected routerService: RouterService
   ) {}
 
   onError(context: ExecutorContext<unknown>): void | Promise<void> {
@@ -28,9 +33,13 @@ export class DialogErrorPlugin implements ExecutorPlugin {
     const handleError = runtimesError || error;
 
     if (handleError instanceof ExecutorError) {
-      if (this.isI18nMessage(handleError.message)) {
+      if (this.isI18nMessage(handleError.id)) {
         const message = this.i18nService.t(handleError.id);
         this.dialogHandler.error(message);
+
+        if (handleError.id === API_NOT_AUTHORIZED) {
+          this.routerService.gotoLogin();
+        }
       } else {
         this.dialogHandler.error(handleError.message);
       }
@@ -38,9 +47,6 @@ export class DialogErrorPlugin implements ExecutorPlugin {
   }
 
   protected isI18nMessage(message: string): boolean {
-    // Check if message follows the pattern of underscore-separated format
-    // e.g., "namespace_key" or "namespace__key"
-    const pattern = /^[a-zA-Z]+(?:_[a-zA-Z]+)+$|^[a-zA-Z]+(?:__[a-zA-Z]+)+$/;
-    return pattern.test(message);
+    return i18nKeySchema.safeParse(message).success;
   }
 }

@@ -6,7 +6,8 @@ import {
   V_PASSWORD_MIN_LENGTH,
   V_PASSWORD_MAX_LENGTH,
   V_PASSWORD_SPECIAL_CHARS
-} from '@config/Identifier/validator';
+} from '@config/Identifier/common/validators';
+import type { ExtendedExecutorError } from './ExtendedExecutorError';
 import type {
   ValidatorInterface,
   ValidationFaildResult
@@ -24,10 +25,6 @@ const passwordSchema = z
   .min(6, { message: V_PASSWORD_MIN_LENGTH })
   .max(50, { message: V_PASSWORD_MAX_LENGTH })
   .regex(/^\S+$/, { message: V_PASSWORD_SPECIAL_CHARS });
-
-interface ExtendedExecutorError extends ExecutorError {
-  issues?: ValidationFaildResult[];
-}
 
 export class LoginValidator implements ValidatorInterface {
   validateEmail(data: unknown): void | ValidationFaildResult {

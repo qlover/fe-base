@@ -1,14 +1,14 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
+  type ApiCatchPluginConfig,
+  type ApiCatchPluginResponse
+} from '@qlover/corekit-bridge';
+import {
   type ExecutorPlugin,
   type ExecutorContext,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
-import {
-  type ApiCatchPluginConfig,
-  type ApiCatchPluginResponse
-} from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 

@@ -1,12 +1,13 @@
 'use client';
 
 import { clsx } from 'clsx';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useMemo } from 'react';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { LocaleLink } from './LocaleLink';
+import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 export type RenderLeftFunction = (props: {
   locale: string;
@@ -22,11 +23,11 @@ export function BaseHeader(props: {
   const { href = '/', className, renderLeft, rightActions } = props;
   const appConfig = useIOC(IOCIdentifier.AppConfig);
   const locale = useLocale();
-  const t = useTranslations();
+  const t = useWarnTranslations();
 
   const tt = {
     title: appConfig.appName,
-    admin: t(PAGE_HEAD_ADMIN_TITLE)
+    admin: t(COMMON_ADMIN_TITLE)
   };
 
   const leftDefault = useMemo(

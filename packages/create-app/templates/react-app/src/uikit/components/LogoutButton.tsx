@@ -1,32 +1,55 @@
-import { IOC } from '@/core/IOC';
+import { LogoutOutlined } from '@ant-design/icons';
 import {
   AUTH_LOGOUT_DIALOG_CONTENT,
   AUTH_LOGOUT_DIALOG_TITLE
-} from '@config/Identifier/common';
+} from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { Button } from 'antd';
+import { Button, Grid } from 'antd';
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useIOC } from '../hooks/useIOC';
 
-export default function LogoutButton() {
-  const { t } = useTranslation();
+const { useBreakpoint } = Grid;
 
+export function LogoutButton() {
+  const { t } = useAppTranslation();
+  const dialogHandler = useIOC(IOCIdentifier.DialogHandler);
+  const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const breakpoint = useBreakpoint();
   const tTitle = t(AUTH_LOGOUT_DIALOG_TITLE);
   const tContent = t(AUTH_LOGOUT_DIALOG_CONTENT);
 
   const onClick = useCallback(() => {
-    IOC('DialogHandler').confirm({
+    dialogHandler.confirm({
       title: tTitle,
+      okButtonProps: {
+        'data-testid': 'LogoutButton-OkButton'
+      },
+      cancelButtonProps: {
+        'data-testid': 'LogoutButton-CancelButton'
+      },
       content: tContent,
       onOk: () => {
-        IOC(IOCIdentifier.UserServiceInterface).logout();
+        userService.logout();
       }
     });
   }, [tTitle, tContent]);
 
+  if (breakpoint.md) {
+    return (
+      <Button data-testid="LogoutButton" danger onClick={onClick}>
+        {tTitle}
+      </Button>
+    );
+  }
+
   return (
-    <Button danger onClick={onClick}>
-      {tTitle}
-    </Button>
+    <span
+      data-testid="LogoutButton"
+      className="text-text hover:text-red-500 cursor-pointer text-lg transition-colors block md:hidden"
+      onClick={onClick}
+    >
+      <LogoutOutlined />
+    </span>
   );
 }

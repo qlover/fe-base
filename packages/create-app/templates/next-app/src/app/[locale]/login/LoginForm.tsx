@@ -2,11 +2,11 @@
 
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { Form, Input, Button } from 'antd';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { LoginValidator } from '@/server/validators/LoginValidator';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
+import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
 import { I } from '@config/IOCIdentifier';
 
@@ -17,7 +17,7 @@ interface LoginFormData {
 
 export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
-  const t = useTranslations();
+  const t = useWarnTranslations();
   const userService = useIOC(I.UserServiceInterface);
   const logger = useIOC(I.Logger);
   const appConfig = useIOC(I.AppConfig);

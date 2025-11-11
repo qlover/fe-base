@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
-import { IOC } from '@/core/IOC';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import * as i18nKeys from '@config/Identifier/page.login';
-import LocaleLink from '@/uikit/components/LocaleLink';
+import { login18n } from '@config/i18n/login18n';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Form, Input, Button } from 'antd';
+import { useState } from 'react';
+import { LocaleLink } from '@/uikit/components/LocaleLink';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface LoginFormData {
   email: string;
@@ -13,9 +13,12 @@ interface LoginFormData {
 }
 
 export default function LoginPage() {
-  const { t } = useBaseRoutePage();
-  const userService = IOC(IOCIdentifier.UserServiceInterface);
-  const AppConfig = IOC(IOCIdentifier.AppConfig);
+  const tt = useI18nInterface(login18n);
+  const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const AppConfig = useIOC(IOCIdentifier.AppConfig);
+  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
+  const logger = useIOC(IOCIdentifier.Logger);
+
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormData) => {
@@ -25,16 +28,19 @@ export default function LoginPage() {
         username: values.email,
         password: values.password
       });
-      IOC(IOCIdentifier.RouteServiceInterface).replaceToHome();
+      routeService.replaceToHome();
     } catch (error) {
-      IOC(IOCIdentifier.Logger).error(error);
+      logger.error(error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen text-xs1 bg-primary">
+    <div
+      data-testid="LoginPage"
+      className="flex min-h-screen text-xs1 bg-primary"
+    >
       {/* Left side - Brand section */}
       <div className="hidden lg:flex lg:w-1/2 bg-secondary p-12 flex-col">
         <div className="flex items-center gap-3 mb-12">
@@ -43,34 +49,20 @@ export default function LoginPage() {
             {AppConfig.appName}
           </span>
         </div>
-        <h1 className="text-4xl font-bold text-text mb-4">
-          {t(i18nKeys.LOGIN_WELCOME)}
-        </h1>
-        <p className="text-text-secondary text-lg mb-8">
-          {t(i18nKeys.LOGIN_SUBTITLE)}
-        </p>
+        <h1 className="text-4xl font-bold text-text mb-4">{tt.welcome}</h1>
+        <p className="text-text-secondary text-lg mb-8">{tt.subtitle}</p>
         <div className="space-y-4">
-          <FeatureItem icon="🎯" text={t(i18nKeys.LOGIN_FEATURE_AI_PATHS)} />
-          <FeatureItem
-            icon="🎯"
-            text={t(i18nKeys.LOGIN_FEATURE_SMART_RECOMMENDATIONS)}
-          />
-          <FeatureItem
-            icon="📊"
-            text={t(i18nKeys.LOGIN_FEATURE_PROGRESS_TRACKING)}
-          />
+          <FeatureItem icon="🎯" text={tt.featureAiPaths} />
+          <FeatureItem icon="🎯" text={tt.featureSmartRecommendations} />
+          <FeatureItem icon="📊" text={tt.featureProgressTracking} />
         </div>
       </div>
 
       {/* Right side - Login form */}
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
-          <h2 className="text-2xl font-semibold mb-2 text-text">
-            {t(i18nKeys.LOGIN_TITLE)}
-          </h2>
-          <p className="text-text-secondary mb-8">
-            {t(i18nKeys.LOGIN_SUBTITLE)}
-          </p>
+          <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title2}</h2>
+          <p className="text-text-secondary mb-8">{tt.subtitle}</p>
 
           <Form
             name="login"
@@ -84,28 +76,24 @@ export default function LoginPage() {
           >
             <Form.Item
               name="email"
-              rules={[
-                { required: true, message: t(i18nKeys.LOGIN_EMAIL_REQUIRED) }
-              ]}
+              rules={[{ required: true, message: tt.emailRequired }]}
             >
               <Input
                 prefix={<UserOutlined className="text-text-tertiary" />}
-                placeholder={t(i18nKeys.LOGIN_EMAIL)}
-                title={t(i18nKeys.LOGIN_EMAIL_TITLE)}
+                placeholder={tt.email}
+                title={tt.emailTitle}
                 className="h-12 text-base bg-secondary border-border"
               />
             </Form.Item>
 
             <Form.Item
               name="password"
-              rules={[
-                { required: true, message: t(i18nKeys.LOGIN_PASSWORD_REQUIRED) }
-              ]}
+              rules={[{ required: true, message: tt.passwordRequired }]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder={t(i18nKeys.LOGIN_PASSWORD)}
-                title={t(i18nKeys.LOGIN_PASSWORD_TITLE)}
+                placeholder={tt.password}
+                title={tt.passwordTitle}
                 className="h-12 text-base"
               />
             </Form.Item>
@@ -114,46 +102,45 @@ export default function LoginPage() {
               <a
                 href="#"
                 className="text-brand hover:text-brand-hover"
-                title={t(i18nKeys.LOGIN_FORGOT_PASSWORD_TITLE)}
+                title={tt.forgotPasswordTitle}
               >
-                {t(i18nKeys.LOGIN_FORGOT_PASSWORD)}
+                {tt.forgotPassword}
               </a>
             </div>
 
             <Form.Item>
               <Button
+                data-testid="LoginButton"
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                title={t(i18nKeys.LOGIN_BUTTON_TITLE)}
+                title={tt.buttonTitle}
                 className="w-full h-12 text-base"
               >
-                {t(i18nKeys.LOGIN_BUTTON)}
+                {tt.button}
               </Button>
             </Form.Item>
 
             <div className="text-center text-text-tertiary my-4">
-              {t(i18nKeys.LOGIN_CONTINUE_WITH)}
+              {tt.continueWith}
             </div>
 
             <Button
               icon={<GoogleOutlined />}
               className="w-full h-12 text-base"
-              title={t(i18nKeys.LOGIN_WITH_GOOGLE_TITLE)}
+              title={tt.withGoogleTitle}
             >
-              {t(i18nKeys.LOGIN_WITH_GOOGLE)}
+              {tt.withGoogle}
             </Button>
 
             <div className="text-center mt-6">
-              <span className="text-text-tertiary">
-                {t(i18nKeys.LOGIN_NO_ACCOUNT)}{' '}
-              </span>
+              <span className="text-text-tertiary">{tt.noAccount} </span>
               <LocaleLink
                 href="/register"
                 className="text-brand hover:text-brand-hover"
-                title={t(i18nKeys.LOGIN_CREATE_ACCOUNT_TITLE)}
+                title={tt.createAccountTitle}
               >
-                {t(i18nKeys.LOGIN_CREATE_ACCOUNT)}
+                {tt.createAccount}
               </LocaleLink>
             </div>
           </Form>
@@ -166,7 +153,10 @@ export default function LoginPage() {
 // Helper component for feature items
 function FeatureItem({ icon, text }: { icon: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 text-text">
+    <div
+      data-testid="FeatureItem"
+      className="flex items-center gap-3 text-text"
+    >
       <div className="w-8 h-8 bg-elevated rounded-lg flex items-center justify-center">
         {icon}
       </div>

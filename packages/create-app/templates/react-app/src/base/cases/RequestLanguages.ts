@@ -1,5 +1,5 @@
-import { I18nServiceInterface } from '@/base/port/I18nServiceInterface';
-import {
+import type { I18nServiceInterface } from '@/base/port/I18nServiceInterface';
+import type {
   ExecutorContext,
   ExecutorPlugin,
   RequestAdapterConfig

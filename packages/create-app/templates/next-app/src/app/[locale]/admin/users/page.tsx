@@ -1,68 +1,66 @@
 'use client';
 
-import { Table } from 'antd';
-import { useEffect, useRef } from 'react';
-import { AdminUserService } from '@/base/services/AdminUserService';
+import { ResourceTable } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTable';
+import { ResourceTableHeader } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTableHeader';
+import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
+import { ResourceStore } from '@qlover/corekit-bridge';
+import { useMemo } from 'react';
+import { ResourceState } from '@/base/cases/ResourceState';
+import { ZodColumnBuilder } from '@/base/cases/ZodColumnBuilder';
+import { AdminUserApi } from '@/base/services/adminApi/AdminUserApi';
+import { AdminPageEvent } from '@/base/services/AdminPageEvent';
+import { ResourceService } from '@/base/services/ResourceService';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useStore } from '@/uikit/hook/useStore';
-import { userSchema, type UserSchema } from '@migrations/schema/UserSchema';
-import { adminUsers18n } from '@config/i18n';
-import type { ColumnsType } from 'antd/es/table';
+import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
+import { userSchema } from '@migrations/schema/UserSchema';
+import { adminUsers18n, adminTableI18n } from '@config/i18n';
 
-const baseColumns: ColumnsType<UserSchema> = Object.keys(
-  userSchema.omit({
-    password: true,
-    credential_token: true
-  }).shape
-).map((key) => ({
-  title: key,
-  dataIndex: key
-}));
+const ns = 'admin_users';
+
+const localesTT = {
+  ...adminUsers18n,
+  ...adminTableI18n
+};
 
 export default function UsersPage() {
-  const adminUserService = useIOC(AdminUserService);
-  const tt = useI18nInterface(adminUsers18n);
-  const listParams = useStore(adminUserService, (state) => state.listParams);
-  const listState = useStore(adminUserService, (state) => state.listState);
-  const mouted = useRef(false);
+  const tt = useI18nInterface(localesTT);
+  const t = useWarnTranslations();
+  const adminUserApi = useIOC(AdminUserApi);
+  const resourceStore = useFactory(ResourceStore, () => new ResourceState());
+  const service = useFactory(ResourceService, ns, resourceStore, adminUserApi);
+  const pageEvent = useFactory(AdminPageEvent, ns, service);
 
-  useEffect(() => {
-    if (!mouted.current) {
-      mouted.current = true;
+  const zodColumnBuilder = useFactory(
+    ZodColumnBuilder,
+    ns,
+    userSchema.omit({
+      password: true,
+      credential_token: true
+    })
+  );
 
-      requestAnimationFrame(() => {
-        adminUserService.initialize();
-      });
-    }
-  }, [adminUserService]);
+  useLifecycle(pageEvent);
 
-  const dataSource = listState.result?.list as UserSchema[];
-
-  const columns: ColumnsType<UserSchema> = baseColumns;
+  const options = useMemo(
+    () => zodColumnBuilder.translate(t).buildAll(),
+    [t, zodColumnBuilder]
+  );
 
   return (
     <div data-testid="UsersPage">
       <ClientSeo i18nInterface={tt} />
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={dataSource}
-        loading={listState.loading}
-        scroll={{ x: true }}
-        pagination={{
-          pageSizeOptions: [10, 20, 50],
-          current: listParams.page,
-          pageSize: listParams.pageSize,
-          total: listState.result?.total,
-          onChange: (page, pageSize) => {
-            adminUserService.changeListParams({
-              page,
-              pageSize
-            });
-          }
-        }}
+
+      <ResourceTableHeader
+        settings={Object.assign({}, tt, { create: false })}
+        tableEvent={pageEvent}
+      />
+
+      <ResourceTable
+        columns={options}
+        tableEvent={pageEvent}
+        actionProps={false}
       />
     </div>
   );

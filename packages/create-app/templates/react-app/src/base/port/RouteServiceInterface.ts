@@ -1,10 +1,10 @@
-import {
+import { StoreInterface } from '@qlover/corekit-bridge';
+import type { RouteConfigValue } from '../cases/RouterLoader';
+import type {
   LoggerInterface,
-  StoreInterface,
   StoreStateInterface
 } from '@qlover/corekit-bridge';
-import { RouteConfigValue } from '../cases/RouterLoader';
-import { NavigateFunction, NavigateOptions } from 'react-router-dom';
+import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 export interface RouteServiceStateInterface extends StoreStateInterface {
   routes: RouteConfigValue[];
@@ -23,5 +23,9 @@ export abstract class RouteServiceInterface extends StoreInterface<RouteServiceS
   abstract gotoLogin(): void;
   abstract replaceToHome(): void;
   abstract redirectToDefault(navigate: NavigateFunction): void;
-  abstract i18nGuard(lng: string, navigate: NavigateFunction): void;
+  abstract i18nGuard(
+    currentPath: string,
+    lng: string,
+    navigate?: NavigateFunction
+  ): void;
 }

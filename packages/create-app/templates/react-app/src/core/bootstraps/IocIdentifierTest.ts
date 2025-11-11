@@ -1,5 +1,5 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const IocIdentifierTest: BootstrapExecutorPlugin = {
   pluginName: 'IocIdentifierTest',

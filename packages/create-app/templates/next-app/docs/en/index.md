@@ -43,7 +43,6 @@ pnpm build
 #### Interface Definitions (src/base/port)
 
 - AppUserApiInterface: User API interface
-- AdminPageInterface: Admin page interface
 - AsyncStateInterface: Asynchronous state interface
 - RouterInterface: Router management interface
 

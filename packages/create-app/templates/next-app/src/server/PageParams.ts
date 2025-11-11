@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
+import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
 import type { ParamsHandlerInterface as ParamsHandlerInterface } from './port/ParamsHandlerInterface';
@@ -60,15 +61,6 @@ export class PageParams implements ParamsHandlerInterface {
       namespace: namespace
     });
 
-    const result = Object.fromEntries(
-      Object.entries(i18nInterface).map(([key, value]) => {
-        if (typeof value === 'string') {
-          return [key, t(value)];
-        }
-        return [key, value];
-      })
-    ) as T;
-
-    return result;
+    return TranslateI18nInterface.translate<T>(i18nInterface, t);
   }
 }

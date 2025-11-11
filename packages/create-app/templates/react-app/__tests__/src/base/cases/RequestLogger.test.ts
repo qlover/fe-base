@@ -9,18 +9,18 @@
  * 5. loggerError     - Error formatting and logging
  */
 
+import { MockLogger } from '@__mocks__/MockLogger';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RequestLogger } from '@/base/cases/RequestLogger';
-import { MockLogger } from '../../../__mocks__/MockLogger';
+import type {
+  ApiCatchPluginConfig,
+  ApiCatchPluginResponse
+} from '@qlover/corekit-bridge';
 import type {
   ExecutorContext,
   RequestAdapterFetchConfig,
   RequestAdapterResponse
 } from '@qlover/fe-corekit';
-import type {
-  ApiCatchPluginConfig,
-  ApiCatchPluginResponse
-} from '@qlover/corekit-bridge';
 
 describe('RequestLogger', () => {
   let logger: MockLogger;

@@ -1,19 +1,19 @@
 # FE-React Template
 
-A modern React frontend project template with integrated practical features and best practices.
+A modern React frontend project template integrated with multiple practical features and best practices.
 
 [中文](./README.md)
 
-## 🌟 Features
+## 🌟 Highlights
 
-- 🚀 Fast development experience with Vite
+- 🚀 Fast development experience based on Vite
 - 🎨 Theme system integrated with Tailwind CSS
-- 🌍 Comprehensive internationalization support (Chinese & English)
+- 🌍 Complete internationalization support (Chinese and English)
 - 🔄 TypeScript-based IOC container
 - 📡 Unified API request handling
-- 🎮 Controller pattern for state management
-- 📦 Package management with pnpm
-- 🧪 Built-in test support
+- 🎮 Controller pattern state management
+- 📦 Package management using pnpm
+- 🧪 Built-in testing support
 
 ## 🔧 Requirements
 
@@ -23,14 +23,14 @@ A modern React frontend project template with integrated practical features and 
 ## 📁 Project Structure
 
 ```tree
-├── config/                 # Configuration directory
-│   ├── app.router.json     # Router page configuration
+├── config/                 # Configuration files directory
+│   ├── app.router.json     # Route page configuration
 │   ├── common.ts           # Application common configuration
-│   ├── app.router.json     # Router configuration
-│   ├── i18n.ts             # I18n configuration
+│   ├── app.router.json     # Route configuration
+│   ├── i18n.ts             # Internationalization configuration
 │   └── theme.json          # Theme configuration
 ├── lib/                    # Common library directory
-├── public/                 # Static resources directory
+├── public/                 # Static assets directory
 ├── src/
 │   ├── base/           # Base code
 │   ├── core/           # Core code
@@ -63,51 +63,69 @@ pnpm build
 ### Run Tests
 
 ```bash
+# Run unit tests
 pnpm test
+
+# Run E2E tests
+pnpm test:e2e
+
+# Run E2E tests (UI mode)
+pnpm test:e2e:ui
 ```
 
 ## 📚 Documentation Guide
 
 The project provides detailed development documentation covering all major features and best practices:
 
-### Basic Documentation
-- [Project Overview](./docs/en/index.md) - Project introduction and quick start guide
-- [Project Structure](./docs/en/project-structure.md) - Detailed project directory structure explanation
-- [Development Guide](./docs/en/development-guide.md) - Project development specifications and best practices
-- [Environment Configuration](./docs/en/env.md) - Environment variables and configuration management
-- [Global Configuration](./docs/en/global.md) - Application global configuration and settings
+### 🚀 Getting Started
 
-### Core Features
-- [Bootstrap Process](./docs/en/bootstrap.md) - Application startup process and lifecycle management
-- [IOC Container](./docs/en/ioc.md) - Dependency injection system usage guide
-- [Router Management](./docs/en/router.md) - Router configuration and page navigation
-- [State Management](./docs/en/store.md) - Application state management solution
-- [Request Handling](./docs/en/request.md) - API request handling mechanism
+- **[📖 Project Documentation](./docs/en/index.md)** - Architecture overview, core concepts, and complete documentation navigation
+- **[Development Guide](./docs/en/development-guide.md)** - 📝 Complete page development process
 
-### Feature Extensions
-- [Internationalization](./docs/en/i18n.md) - Multi-language support and translation management
-- [Theme System](./docs/en/theme.md) - Theme configuration and dark mode support
-- [TypeScript Guide](./docs/en/typescript-guide.md) - TypeScript usage specifications and best practices
+### 🎯 Core Features
+
+- **[Bootstrap Initializer](./docs/en/bootstrap.md)** - ⚡ Application startup and initialization
+- **[IOC Container](./docs/en/ioc.md)** - 🔌 Dependency injection and UI separation
+- **[Store State Management](./docs/en/store.md)** - 📡 How the application layer notifies the UI layer
+- **[Environment Variable Management](./docs/en/env.md)** - ⚙️ Multi-environment configuration
+- **[Internationalization](./docs/en/i18n.md)** - 🌍 i18n Key and translation management
+
+### 🧪 Testing Documentation
+
+- **[Playwright E2E Testing](./docs/en/playwright/)** - 🎭 Complete end-to-end testing documentation
+  - [Overview](./docs/en/playwright/overview.md)
+  - [Quick Start](./docs/en/playwright/quickstart.md)
+  - [Testing Guide](./docs/en/playwright/testing-guide.md)
+  - [Setup Complete](./docs/en/playwright/setup-complete.md)
+- [Unit Testing Guide](./docs/en/test-guide.md) - Vitest unit testing
+
+### 📖 Additional Documentation
+
+- [Why Disable Global Variables](./docs/en/why-no-globals.md) - Global variable usage guidelines
+- [Route Management](./docs/en/router.md) - Route configuration instructions
+- [Theme System](./docs/en/theme.md) - Theme configuration and switching
+- [Request Handling](./docs/en/request.md) - API request handling
+- [TypeScript Guide](./docs/en/typescript-guide.md) - TypeScript conventions
 
 ## 🔨 Core Features
 
 ### IOC Container
 
 - TypeScript-based dependency injection system
-- Support for automatic service registration and dependency management
-- Complete type inference
+- Supports automatic service registration and dependency management
+- Provides complete type inference
 
 ### Environment Configuration
 
-[Vite Environment Variables and Modes](https://vitejs.dev/guide/env-and-mode.html)
+[Vite Environment Variables and Modes](https://cn.vite.dev/guide/env-and-mode#env-variables-and-modes)
 
-`vite dev` default NODE_ENV is 'development', it will load possible `.env[mode]` files, e.g., .env.local -> .env
+`vite dev` defaults NODE_ENV to development, it will load possible `.env[mode]` files, such as .env.local -> .env
 
-`vite build` default NODE_ENV is 'production', it will load possible `.env[mode]` files, e.g., .env.production -> .env
+`vite build` defaults NODE_ENV to production, it will load possible `.env[mode]` files, such as .env.production -> .env
 
 Node.js NODE_ENV only supports development, production, test
 
-This is completely different from mode in vite. Mode can be specified with `--mode` to load different env configurations.
+This is completely different from mode in vite, mode can specify different modes through `--mode` to load different env configurations
 
 For example:
 
@@ -118,21 +136,21 @@ vite dev --mode local # Load .env.local
 
 ### Internationalization Support
 
-- Complete i18n solution based on i18next
-- Support for Chinese (zh) and English (en) language switching
-- Automatic i18n resource generation based on TypeScript comments
+- Complete internationalization solution based on i18next
+- Supports Chinese (zh) and English (en) bilingual switching
+- Automatic internationalization resource generation based on TypeScript comments
 - URL path language detection and switching
-- Built-in language switcher component
+- Built-in language switching component
 
 ### Theme System
 
 - Theme configuration based on Tailwind CSS
-- Support for dark/light mode
+- Supports dark/light mode
 - Custom design token system
 
 ### API Integration
 
-The project provides a powerful API request handling mechanism based on a plugin architecture:
+The project provides a powerful API request handling mechanism based on a plugin architecture design:
 
 #### Request Controller
 
@@ -182,24 +200,24 @@ Provides multiple out-of-the-box controllers:
 
 ## 🛠️ Development Guide
 
-### API Development Standards
+### API Development Specifications
 
 1. Define interfaces in `src/base/apis`
-2. Support for Mock data configuration
+2. Support Mock data configuration
 
-### Adding New Pages
+### Adding New Pages Process
 
-1. Create page component in `src/pages`
+1. Create page components in `src/pages`
 2. Update `config/app.router.json`
 3. Add corresponding controller (if needed)
 
 ### Build Optimization
 
-The project uses Vite for building and includes the following optimizations:
+The project uses Vite for building and has been optimized with the following:
 
 #### Code Splitting
 
-Automatic intelligent code splitting into the following main chunks:
+Automatic intelligent code splitting, dividing code into the following main chunks:
 
 - react-vendor: React core library
 - antd-core: Ant Design core components
@@ -214,7 +232,7 @@ Automatic intelligent code splitting into the following main chunks:
 build: {
   // Chunk size warning limit set to 600kb
   chunkSizeWarningLimit: 600,
-  // Use terser for code compression
+  // Use terser for code minification
   minify: 'terser',
   terserOptions: {
     compress: {
@@ -234,18 +252,18 @@ build: {
 
 - Use `@qlover/corekit-bridge/vite-env-config` to manage environment variables
 - Automatically inject application name and version information
-- Support for environment variable prefix configuration
+- Support environment variable prefix configuration
 
 #### Style Configuration
 
-- Integrate Tailwind CSS
-- Load Ant Design component styles on demand
+- Integrated with Tailwind CSS
+- On-demand loading of Ant Design component styles
 - Support theme mode override
 
 #### Development Server
 
 ```bash
-# Default port 3200, configurable via environment variable
+# Default port 3200, can be configured via environment variables
 VITE_SERVER_PORT=3000 pnpm dev
 ```
 
@@ -254,4 +272,3 @@ VITE_SERVER_PORT=3000 pnpm dev
 - Use Vitest for unit testing
 - Support JSDOM environment
 - Built-in test tool configuration
-``` 

@@ -1,16 +1,16 @@
-import { FeApi } from '@/base/apis/feApi/FeApi';
-import cloneDeep from 'lodash/cloneDeep';
+import { RequestState } from '@qlover/corekit-bridge';
 import {
   ExecutorPlugin,
   RequestAdapterResponse,
   RequestAdapterFetchConfig
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
+import cloneDeep from 'lodash/cloneDeep';
+import { FeApi } from '@/base/apis/feApi/FeApi';
 import {
   ExecutorPageBridgeInterface,
   ExecutorPageStateInterface
 } from '@/base/port/ExecutorPageBridgeInterface';
-import { RequestState } from '@/base/cases/RequestState';
 
 class ExecutorPageBridgeState implements ExecutorPageStateInterface {
   helloState = new RequestState();

@@ -8,6 +8,7 @@
 
     /* 文字颜色 */
     --text-primary: 255 255 255;
+    --text-primary-hover: 148 163 184; /* slate-400 */
     --text-secondary: 148 163 184; /* slate-400 */
     --text-tertiary: 100 116 139; /* slate-500 */
 

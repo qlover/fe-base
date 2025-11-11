@@ -8,11 +8,22 @@
  * 4. edge cases       - Various error scenarios
  */
 
+import { MockLogger } from '@__mocks__/MockLogger';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
-import { MockLogger } from '../../../__mocks__/MockLogger';
-import { MockI18nService } from '../../../__mocks__/I18nService';
+import { I18nService } from '@/base/services/I18nService';
 import type { ExecutorContext } from '@qlover/fe-corekit';
+
+class MockI18nService extends I18nService {
+  constructor() {
+    super('/');
+  }
+
+  t = vi.fn((key: string) => key);
+  changeLanguage = vi.fn();
+  changeLoading = vi.fn();
+  onBefore = vi.fn();
+}
 
 describe('I18nKeyErrorPlugin', () => {
   let plugin: I18nKeyErrorPlugin;

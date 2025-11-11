@@ -58,7 +58,7 @@ export class AppApiPlugin implements ExecutorPlugin {
         const json = await this.getResponseJson(response);
 
         if (this.isAppApiErrorInterface(json)) {
-          const newError = new ExecutorError(json.message || json.id);
+          const newError = new ExecutorError(json.id, json.message);
           // context.error = newError;
           return newError;
         }

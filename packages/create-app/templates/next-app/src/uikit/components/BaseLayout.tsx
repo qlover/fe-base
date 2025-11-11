@@ -1,12 +1,13 @@
 import { TeamOutlined } from '@ant-design/icons';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useMemo, type HTMLAttributes } from 'react';
-import { PAGE_HEAD_ADMIN_TITLE } from '@config/Identifier';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { BaseHeader } from './BaseHeader';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
+import { useWarnTranslations } from '../hook/useWarnTranslations';
 
 export interface BaseLayoutProps extends HTMLAttributes<HTMLDivElement> {
   showLogoutButton?: boolean;
@@ -22,10 +23,10 @@ export function BaseLayout({
   ...props
 }: BaseLayoutProps) {
   const locale = useLocale();
-  const t = useTranslations();
+  const t = useWarnTranslations();
 
   const tt = {
-    admin: t(PAGE_HEAD_ADMIN_TITLE)
+    admin: t(COMMON_ADMIN_TITLE)
   };
 
   const actions = useMemo(

@@ -1,14 +1,16 @@
+import { i18nConfig } from '@config/i18n/i18nConfig';
 import type { RouteConfigValue } from '@/base/cases/RouterLoader';
-import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
-import type { LoggerInterface } from '@qlover/logger';
 import { RouteServiceInterface } from '../port/RouteServiceInterface';
+import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type {
   UIBridgeInterface,
   StoreStateInterface
 } from '@qlover/corekit-bridge';
-import { I18nServiceInterface } from '../port/I18nServiceInterface';
+import type { LoggerInterface } from '@qlover/logger';
+import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 export type RouterServiceOptions = {
+  routerPrefix: string;
   routes: RouteConfigValue[];
   /**
    * Whether to use locale routes
@@ -82,15 +84,32 @@ export class RouteService extends RouteServiceInterface {
     this.goto('/', { replace: true, navigate });
   }
 
-  override i18nGuard(lng: string, navigate?: NavigateFunction): void {
+  override i18nGuard(
+    currentPath: string,
+    lng: string,
+    navigate?: NavigateFunction
+  ): void {
+    // 只在使用本地化路由时才检查
     if (!this.state.localeRoutes) {
       return;
     }
 
-    if (!lng) {
-      this.goto('/404', { replace: true, navigate });
-    } else if (!this.i18nService.isValidLanguage(lng)) {
-      this.goto('/404', { replace: true, navigate });
+    const _navigate = navigate || this.uiBridge.getUIBridge();
+
+    lng = lng || i18nConfig.fallbackLng;
+
+    // 如果没有语言参数或语言无效
+    if (!this.i18nService.isValidLanguage(lng)) {
+      // 重定向到默认语言？
+      if (i18nConfig.noValidRedirectFallbackLng) {
+        const newPath = currentPath.replace(lng, i18nConfig.fallbackLng);
+
+        _navigate?.(newPath, { replace: true });
+        return;
+      }
+
+      // 不支持的语言直接404
+      _navigate?.('/404', { replace: true });
     }
   }
 }

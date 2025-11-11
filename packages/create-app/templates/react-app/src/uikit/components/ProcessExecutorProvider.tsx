@@ -1,16 +1,16 @@
-import { UserAuthProvider } from './UserAuthProvider';
-import { useStrictEffect } from '../hooks/useStrictEffect';
-import { IOC } from '@/core/IOC';
-import { useI18nGuard } from '../hooks/useI18nGuard';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { UserAuthProvider } from './UserAuthProvider';
+import { useI18nGuard } from '../hooks/useI18nGuard';
+import { useIOC } from '../hooks/useIOC';
 import { useNavigateBridge } from '../hooks/useNavigateBridge';
+import { useStrictEffect } from '../hooks/useStrictEffect';
 
 export function ProcessExecutorProvider({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const processerExecutor = IOC(IOCIdentifier.ProcesserExecutorInterface);
+  const processerExecutor = useIOC(IOCIdentifier.ProcesserExecutorInterface);
 
   useI18nGuard();
 
@@ -20,5 +20,9 @@ export function ProcessExecutorProvider({
     processerExecutor.starup();
   }, []);
 
-  return <UserAuthProvider>{children}</UserAuthProvider>;
+  return (
+    <UserAuthProvider data-testid="ProcessExecutorProvider">
+      {children}
+    </UserAuthProvider>
+  );
 }
