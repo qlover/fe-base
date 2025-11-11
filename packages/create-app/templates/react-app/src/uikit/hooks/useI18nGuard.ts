@@ -1,7 +1,7 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import type { I18nServiceLocale } from '@/base/services/I18nService';
+import type { LocaleType } from '@config/i18n/i18nConfig';
 import { useIOC } from './useIOC';
 
 /**
@@ -12,11 +12,11 @@ import { useIOC } from './useIOC';
  * TODO: if language not found, use default language
  */
 export function useI18nGuard() {
-  const { lng } = useParams<{ lng: I18nServiceLocale }>();
+  const { lng } = useParams<{ lng: LocaleType }>();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
   useEffect(() => {
-    routeService.i18nGuard(pathname, lng as I18nServiceLocale, navigate);
+    routeService.i18nGuard(pathname, lng as LocaleType, navigate);
   }, [lng, navigate, pathname]);
 }
