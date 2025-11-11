@@ -11,9 +11,10 @@
   --color-secondary: rgba(var(--color-bg-secondary));
   --color-elevated: rgba(var(--color-bg-elevated));
   --color-text: rgba(var(--text-primary));
+  --color-text-hover: rgba(var(--text-primary-hover));
   --color-text-secondary: rgba(var(--text-secondary));
   --color-text-tertiary: rgba(var(--text-tertiary));
-  --color-border: rgba(var(--color-border));
-  --color-brand: rgba(var(--color-brand));
-  --color-brand-hover: rgba(var(--color-brand-hover));
+  --color-c-border: rgba(var(--color-border));
+  --color-c-brand: rgba(var(--color-brand));
+  --color-c-brand-hover: rgba(var(--color-brand-hover));
 }

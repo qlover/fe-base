@@ -45,6 +45,12 @@
   --fe-color-text-tertiary: rgba(255, 255, 255, 0.35);
   --fe-color-text-quaternary: rgba(255, 255, 255, 0.15);
   --fe-color-text-placeholder: rgba(255, 255, 255, 0.25);
+  --fe-color-text-disabled: rgba(
+    255,
+    255,
+    255,
+    0.25
+  ); /* 暗色主题禁用状态文本颜色 */
   --fe-color-border: rgb(51 65 85);
 
   /* Antd 图标相关变量 */
@@ -174,5 +180,98 @@
       255,
       0.85
     ); /* 确保文字在深色背景上清晰可见 */
+  }
+  .ant-dropdown-css-var {
+    /* Control Variables - Dark Theme */
+    --fe-control-outline-width: 2px;
+    --fe-control-interactive-size: 16px;
+    --fe-control-item-bg-hover: rgba(255, 255, 255, 0.08);
+    --fe-control-item-bg-active: rgba(
+      96,
+      165,
+      250,
+      0.2
+    ); /* blue-400 with 0.2 opacity */
+    --fe-control-item-bg-active-hover: rgba(
+      96,
+      165,
+      250,
+      0.3
+    ); /* blue-400 with 0.3 opacity */
+    --fe-control-item-bg-active-disabled: rgba(255, 255, 255, 0.15);
+    --fe-control-tmp-outline: rgba(255, 255, 255, 0.02);
+    --fe-control-outline: rgba(
+      96,
+      165,
+      250,
+      0.1
+    ); /* blue-400 with 0.1 opacity */
+  }
+
+  /* Antd Layout 组件变量 */
+  &.ant-layout-sider {
+    --fe-layout-color-bg-header: rgb(15 23 42);
+    --fe-layout-color-bg-body: rgb(30 41 59);
+    --fe-layout-color-bg-trigger: rgb(15 23 42);
+    --fe-layout-body-bg: rgb(30 41 59);
+    --fe-layout-header-bg: rgb(15 23 42);
+    --fe-layout-header-height: 64px;
+    --fe-layout-header-padding: 0 50px;
+    --fe-layout-header-color: rgb(var(--text-primary));
+    --fe-layout-footer-padding: 24px 50px;
+    --fe-layout-footer-bg: rgb(30 41 59);
+    --fe-layout-sider-bg: rgb(15 23 42);
+    --fe-layout-trigger-height: 48px;
+    --fe-layout-trigger-bg: rgb(15 23 42);
+    --fe-layout-trigger-color: rgb(255 255 255);
+    --fe-layout-zero-trigger-width: 40px;
+    --fe-layout-zero-trigger-height: 40px;
+    --fe-layout-light-sider-bg: rgb(30 41 59);
+    --fe-layout-light-trigger-bg: rgb(30 41 59);
+    --fe-layout-light-trigger-color: rgb(var(--text-primary));
+  }
+
+  /* 滚动条样式变量 */
+  --fe-scrollbar-size: 6px;
+  --fe-scrollbar-thumb-bg: rgba(255 255 255 / 0.2);
+  --fe-scrollbar-thumb-hover-bg: rgba(255 255 255 / 0.3);
+  --fe-scrollbar-track-bg: transparent;
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: var(--fe-scrollbar-size);
+    height: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--fe-scrollbar-track-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--fe-scrollbar-thumb-bg);
+    border-radius: var(--fe-scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--fe-scrollbar-thumb-hover-bg);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 可选的细滚动条样式 */
+  .scrollbar-thin {
+    --fe-scrollbar-size: 4px;
+  }
+
+  /* 隐藏滚动条但保持可滚动 */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }

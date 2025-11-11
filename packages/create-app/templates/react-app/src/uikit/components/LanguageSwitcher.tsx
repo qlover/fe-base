@@ -1,11 +1,11 @@
-import { GlobalOutlined } from '@ant-design/icons';
+import { GlobalOutlined, TranslationOutlined } from '@ant-design/icons';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import { i18nConfig } from '@config/i18n/i18nConfig';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { Select } from 'antd';
+import { Dropdown } from 'antd';
 import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { I18nServiceLocale } from '@/base/services/I18nService';
+import type { LocaleType } from '@config/i18n/i18nConfig';
 import { useIOC } from '../hooks/useIOC';
 
 const { supportedLngs } = i18nConfig;
@@ -13,7 +13,6 @@ const { supportedLngs } = i18nConfig;
 export function LanguageSwitcher() {
   const navigate = useNavigate();
   const i18nService = useIOC(IOCIdentifier.I18nServiceInterface);
-  const loading = useStore(i18nService, i18nService.selector.loading);
   const language = useStore(i18nService, i18nService.selector.language);
   const { pathname } = useLocation();
 
@@ -32,7 +31,7 @@ export function LanguageSwitcher() {
   }));
 
   const handleLanguageChange = useCallback(
-    async (newLang: I18nServiceLocale) => {
+    async (newLang: LocaleType) => {
       i18nService.changeLoading(true);
       // Change i18n language
       await i18nService.changeLanguage(newLang);
@@ -44,22 +43,36 @@ export function LanguageSwitcher() {
     [language, pathname, navigate, i18nService]
   );
 
+  // const nextLocale = useMemo(() => {
+  //   const targetIndex = i18nConfig.supportedLngs.indexOf(language) + 1;
+  //   return i18nConfig.supportedLngs[
+  //     targetIndex % i18nConfig.supportedLngs.length
+  //   ];
+  // }, [language]);
+
   return (
-    <div
-      data-testid="LanguageSwitcher"
-      data-testvalue={language}
-      className="flex items-center gap-2"
+    <Dropdown
+      data-testid="LanguageSwitcherDropdown"
+      trigger={['hover', 'click']}
+      placement="bottom"
+      menu={{
+        // @ts-ignore
+        'data-testid': 'LanguageSwitcherSelect',
+        selectedKeys: [language],
+        items: languageOptions,
+        onClick: ({ key }) => {
+          handleLanguageChange(key as LocaleType);
+        }
+      }}
     >
-      <Select
-        data-testid="LanguageSwitcherSelect"
-        loading={loading}
-        disabled={loading}
-        value={language}
-        onChange={handleLanguageChange}
-        options={languageOptions}
-        style={{ width: 100 }}
-        className="min-w-24 max-w-full"
-      />
-    </div>
+      <span
+        data-testid="LanguageSwitcher"
+        data-testvalue={language}
+        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+        // onClick={() => handleLanguageChange(nextLocale)}
+      >
+        <TranslationOutlined />
+      </span>
+    </Dropdown>
   );
 }

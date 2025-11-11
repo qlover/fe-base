@@ -1,38 +1,70 @@
 import {
-  BulbOutlined,
-  BulbFilled,
   HeartFilled,
-  HeartOutlined
+  SettingOutlined,
+  MoonOutlined,
+  SettingFilled,
+  MoonFilled,
+  HeartOutlined,
+  SunOutlined,
+  SunFilled
 } from '@ant-design/icons';
 import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
 import * as i18nKeys from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { Select } from 'antd';
+import { themeConfig, type SupportedTheme } from '@config/theme';
+import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
 import { useAppTranslation } from '../hooks/useAppTranslation';
 import { useIOC } from '../hooks/useIOC';
+import type { ItemType } from 'antd/es/menu/interface';
 
 const colorMap: Record<
   string,
-  { i18nkey: string; colors: string[]; icons: React.ElementType[] }
+  {
+    i18nkey: string;
+    selectedColor: string;
+    normalColor: string;
+    Icon: React.ElementType;
+    SelectedIcon: React.ElementType;
+    TriggerIcon: React.ElementType;
+  }
 > = {
-  default: {
+  system: {
+    i18nkey: 'System',
+    selectedColor: 'text-text',
+    normalColor: 'text-text-secondary',
+    Icon: SettingOutlined,
+    SelectedIcon: SettingFilled,
+    TriggerIcon: SettingOutlined
+  },
+  light: {
     i18nkey: i18nKeys.HEADER_THEME_DEFAULT,
-    colors: ['text-text', 'text-text-secondary'],
-    icons: [BulbFilled, BulbOutlined]
+    selectedColor: 'text-text',
+    normalColor: 'text-text-secondary',
+    Icon: SunOutlined,
+    SelectedIcon: SunFilled,
+    TriggerIcon: SunOutlined
   },
   dark: {
     i18nkey: i18nKeys.HEADER_THEME_DARK,
-    colors: ['text-[#9333ea]', 'text-[#a855f7]'],
-    icons: [BulbFilled, BulbOutlined]
+    selectedColor: 'text-[#9333ea]',
+    normalColor: 'text-[#a855f7]',
+    Icon: MoonOutlined,
+    SelectedIcon: MoonFilled,
+    TriggerIcon: MoonOutlined
   },
   pink: {
     i18nkey: i18nKeys.HEADER_THEME_PINK,
-    colors: ['text-[#f472b6]', 'text-[#ec4899]'],
-    icons: [HeartFilled, HeartOutlined]
+    selectedColor: 'text-[#f472b6]',
+    normalColor: 'text-[#ec4899]',
+    Icon: HeartOutlined,
+    SelectedIcon: HeartFilled,
+    TriggerIcon: HeartOutlined
   }
 };
+
+const themesList = ['system', ...themeConfig.supportedThemes];
 
 export function ThemeSwitcher() {
   const themeService = useIOC(IOCIdentifier.ThemeService);
@@ -41,46 +73,65 @@ export function ThemeSwitcher() {
   const { t } = useAppTranslation('common');
 
   const themeOptions = useMemo(() => {
-    return themes.map((themeName) => {
-      const { i18nkey, colors, icons } =
-        colorMap[themeName] || colorMap.default;
-      const [currentColor, normalColor] = colors;
-      const [CurrentIcon, NormalIcon] = icons;
-      const isSelf = theme === themeName;
+    return themesList.map((themeName) => {
+      const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =
+        colorMap[themeName] || colorMap.light;
+
+      const isCurrentTheme =
+        theme === themeName || (themeName === theme && theme === 'system');
 
       return {
-        key: themeName + i18nkey,
+        key: themeName,
         value: themeName,
         label: (
           <div
             data-testid={`ThemeSwitcherOption-${themeName}`}
             className={clsx(
               'flex items-center gap-2',
-              isSelf ? currentColor : normalColor
+              isCurrentTheme ? selectedColor : normalColor
             )}
           >
-            {isSelf ? <CurrentIcon /> : <NormalIcon />}
+            {isCurrentTheme ? <SelectedIcon /> : <Icon />}
             <span>{t(i18nkey)}</span>
           </div>
         )
-      };
+      } as ItemType;
     });
   }, [theme, themes, t]);
 
+  // const nextTheme = useMemo(() => {
+  //   if (!theme) {
+  //     return themeConfig.defaultTheme;
+  //   }
+  //   const targetIndex = themes.indexOf(theme as SupportedTheme) + 1;
+  //   return themes[targetIndex % themes.length];
+  // }, [theme]);
+
+  const TriggerIcon = colorMap[theme || themeConfig.defaultTheme].TriggerIcon;
+
   return (
-    <div
-      data-testid="ThemeSwitcher"
-      data-testvalue={theme}
-      className="flex items-center gap-2"
+    <Dropdown
+      data-testid="ThemeSwitcherDropdown"
+      trigger={['hover']}
+      placement="bottom"
+      menu={{
+        // @ts-ignore
+        'data-testid': 'ThemeSwitcherSelect',
+        items: themeOptions,
+        selectedKeys: [theme],
+        onClick: ({ key }) => {
+          themeService.changeTheme(key as SupportedTheme);
+        }
+      }}
     >
-      <Select
-        data-testid="ThemeSwitcherSelect"
-        value={theme}
-        onChange={(value) => themeService.changeTheme(value)}
-        options={themeOptions}
-        style={{ width: 120 }}
-        className="min-w-40 max-w-full"
-      />
-    </div>
+      <span
+        data-testid="ThemeSwitcher"
+        data-testvalue={theme}
+        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+        // onClick={() => setTheme(nextTheme)}
+      >
+        <TriggerIcon />
+      </span>
+    </Dropdown>
   );
 }

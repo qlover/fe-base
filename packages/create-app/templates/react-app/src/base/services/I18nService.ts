@@ -10,15 +10,14 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import { initReactI18next } from 'react-i18next';
+import type { LocaleType } from '@config/i18n/i18nConfig';
 import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
-export type I18nServiceLocale = (typeof supportedLngs)[number];
-
 export class I18nServiceState implements StoreStateInterface {
   loading: boolean = false;
-  constructor(public language: I18nServiceLocale) {}
+  constructor(public language: LocaleType) {}
 }
 
 export class I18nService
@@ -33,7 +32,7 @@ export class I18nService
   };
 
   constructor(protected pathname: string) {
-    super(() => new I18nServiceState(i18n.language as I18nServiceLocale));
+    super(() => new I18nServiceState(i18n.language as LocaleType));
   }
 
   /**
@@ -79,12 +78,12 @@ export class I18nService
     // Sync i18n.language with state.language
     i18n.on('languageChanged', (lng: string) => {
       if (this.isValidLanguage(lng) && this.state.language !== lng) {
-        this.emit({ ...this.state, language: lng as I18nServiceLocale });
+        this.emit({ ...this.state, language: lng as LocaleType });
       }
     });
   }
 
-  async changeLanguage(language: I18nServiceLocale): Promise<void> {
+  async changeLanguage(language: LocaleType): Promise<void> {
     await i18n.changeLanguage(language);
     // Sync state with i18n.language
     this.emit({ ...this.state, language });
@@ -94,8 +93,8 @@ export class I18nService
     this.emit({ ...this.state, loading });
   }
 
-  getCurrentLanguage(): I18nServiceLocale {
-    return i18n.language as I18nServiceLocale;
+  getCurrentLanguage(): LocaleType {
+    return i18n.language as LocaleType;
   }
 
   /**
@@ -103,11 +102,11 @@ export class I18nService
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
-  isValidLanguage(language: string): language is I18nServiceLocale {
-    return supportedLngs.includes(language as I18nServiceLocale);
+  isValidLanguage(language: string): language is LocaleType {
+    return supportedLngs.includes(language as LocaleType);
   }
 
-  getSupportedLanguages(): I18nServiceLocale[] {
+  getSupportedLanguages(): LocaleType[] {
     return [...supportedLngs];
   }
 

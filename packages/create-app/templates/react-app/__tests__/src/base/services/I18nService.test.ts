@@ -30,7 +30,8 @@ vi.mock('i18next', () => ({
       languageDetector: {
         addDetector: vi.fn()
       }
-    }
+    },
+    on: vi.fn()
   }
 }));
 

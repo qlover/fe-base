@@ -1,3 +1,4 @@
+import { ResourceTableFormMap } from '@brain-toolkit/antd-blocks';
 import { merge } from 'lodash';
 import {
   type z,
@@ -6,13 +7,12 @@ import {
   type ZodRawShape,
   type ZodType
 } from 'zod';
+import { joinI18nKey } from '@config/i18n/i18nKeyScheam';
+import type { ZodBuilderInterface } from '../port/ZodBuilderInterface';
 import type {
   ResourceTableFormType,
   ResourceTableOption
-} from '@/uikit/components/resourceTable';
-import { ResourceTableFormMap } from '@/uikit/components/resourceTable';
-import { joinI18nKey } from '@config/i18n/i18nKeyScheam';
-import type { ZodBuilderInterface } from '../port/ZodBuilderInterface';
+} from '@brain-toolkit/antd-blocks';
 import type { NamePath } from 'antd/es/form/interface';
 import type { useTranslations } from 'next-intl';
 

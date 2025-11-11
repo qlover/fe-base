@@ -1,5 +1,11 @@
 'use client';
 
+import {
+  ResourceTable,
+  ResourceTableHeader,
+  ResourceTablePopup,
+  ResourceTableSchemaForm
+} from '@brain-toolkit/antd-blocks/resourceTable';
 import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
 import { Form, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
@@ -11,12 +17,6 @@ import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { EditableCell } from '@/uikit/components/EditableCell';
 import { LocalesImportButton } from '@/uikit/components/localesImportButton/LocalesImportButton';
 import { LocalesImportEvent } from '@/uikit/components/localesImportButton/LocalesImportEvent';
-import {
-  ResourceTable,
-  ResourceTableHeader,
-  ResourceTablePopup,
-  ResourceTableSchemaForm
-} from '@/uikit/components/resourceTable';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';

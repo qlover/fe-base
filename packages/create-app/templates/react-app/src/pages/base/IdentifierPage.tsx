@@ -1,12 +1,45 @@
-import { identifiter18n } from '@config/i18n/identifiter18n';
+import {
+  ResourceEvent,
+  ResourceTable
+} from '@brain-toolkit/antd-blocks/resourceTable';
+import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
 import * as ErrorIdentifierList from '@config/Identifier/common/common.error';
 import { Button } from 'antd';
+import { IdentifierService } from '@/base/services/IdentifierService';
 import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
+import type { Identifiter18nInterface } from '@config/i18n/identifiter18n';
+import type { ResourceTableOption } from '@brain-toolkit/antd-blocks/resourceTable';
 
 export default function IdentifierPage() {
-  const { t } = useBaseRoutePage();
-  const tt = useI18nInterface(identifiter18n);
+  const { t, tt } = useBaseRoutePage<Identifiter18nInterface>();
+  const identifierService = useIOC(IdentifierService);
+  const tableEvent = useFactory(ResourceEvent, 'identifier', identifierService);
+
+  useLifecycle(tableEvent);
+
+  const columns: ResourceTableOption<any>[] = [
+    {
+      title: tt.iTableIndex,
+      dataIndex: 'index',
+      key: 'index'
+    },
+    {
+      title: tt.iTableId,
+      dataIndex: 'id',
+      key: 'id'
+    },
+    {
+      title: tt.iTableLabel,
+      dataIndex: 'locale',
+      key: 'locale'
+    },
+    {
+      title: tt.iTableLocaleValue,
+      dataIndex: 'localeValue',
+      key: 'localeValue'
+    }
+  ] as ResourceTableOption<any>[];
 
   return (
     <div
@@ -44,6 +77,28 @@ export default function IdentifierPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold mb-4 text-text">
+            {tt.iTableTitle}
+          </h2>
+          <div className="text-lg text-text-secondary mb-6">
+            {tt.iTableDescription}
+          </div>
+          <ResourceTable
+            columns={columns}
+            tableEvent={tableEvent}
+            actionProps={false}
+            // use antd default pagination
+            pagination={{
+              pageSizeOptions: [20, 50, 100],
+              current: undefined,
+              pageSize: undefined,
+              total: undefined,
+              onChange: undefined
+            }}
+          />
         </div>
 
         {/* Call to Action Section */}
