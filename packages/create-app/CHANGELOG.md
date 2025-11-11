@@ -1,5 +1,9 @@
 # @qlover/create-app
 
+## 0.8.0
+
+### Minor Changes
+
 ## 0.7.15
 
 ### Patch Changes
