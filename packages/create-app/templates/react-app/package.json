@@ -29,11 +29,13 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "vite --mode localhost",
+    "dev:force": "vite --mode localhost --force",
     "dev:staging": "vite --mode staging",
     "dev:prod": "vite --mode production",
     "build": "npm run lint && vite build",
     "build:staging": "npm run lint && vite build --mode staging",
-    "build:production": "npm run lint && vite build --mode production",
+    "build:prod": "npm run lint && vite build --mode production",
+    "build:analyze": "vite build --mode production && start dist/stats.html",
     "lint": "eslint ./src ./__tests__ ./config ./makes ./e2e",
     "lint:fix": "eslint ./src ./__tests__ ./config ./makes ./e2e --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
@@ -53,6 +55,7 @@
     "test:e2e:report": "playwright show-report playwright-report"
   },
   "dependencies": {
+    "@brain-toolkit/antd-blocks": "^0.0.1",
     "@brain-toolkit/antd-theme-override": "^0.0.3",
     "@brain-toolkit/react-kit": "^0.1.0",
     "@qlover/corekit-bridge": "latest",
@@ -104,6 +107,7 @@
     "jsdom": "^26.1.0",
     "postcss": "^8.5.4",
     "prettier": "^3.5.3",
+    "rollup-plugin-visualizer": "^6.0.5",
     "sass-embedded": "^1.79.4",
     "tailwindcss": "^4.1.8",
     "terser": "^5.41.0",

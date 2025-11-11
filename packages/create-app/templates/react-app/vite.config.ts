@@ -2,8 +2,8 @@ import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
 import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
-import vitePluginImp from 'vite-plugin-imp';
+import react from '@vitejs/plugin-react-swc';
+import { visualizer } from 'rollup-plugin-visualizer';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 import {
@@ -71,15 +71,6 @@ export default defineConfig({
   },
   plugins: [
     tailwindcss(),
-    vitePluginImp({
-      libList: [
-        {
-          libName: 'antd',
-          style: (name) => `antd/es/${name}/style/index`,
-          libDirectory: 'es'
-        }
-      ]
-    }),
     envConfig({
       envPops: true,
       envPrefix,
@@ -88,7 +79,9 @@ export default defineConfig({
         ['APP_VERSION', version]
       ]
     }),
-    react(),
+    react({
+      tsDecorators: true
+    }),
     tsconfigPaths(),
     ts2Locales({
       locales: i18nConfig.supportedLngs as unknown as string[],
@@ -98,13 +91,47 @@ export default defineConfig({
       mode: overrideAntdThemeMode,
       overriedCssFilePath: './src/styles/css/antd-themes/no-context.css',
       targetPath: './src/base/types/deprecated-antd.d.ts'
+    }),
+    // Bundle size analysis tool
+    visualizer({
+      filename: './dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+      template: 'treemap' // 'sunburst' | 'treemap' | 'network'
     })
   ] as any[],
   base: routerPrefix,
   envPrefix: envPrefix,
   publicDir: 'public',
   server: {
-    port: Number(process.env.VITE_SERVER_PORT || 3200)
+    port: Number(process.env.VITE_SERVER_PORT || 3200),
+    fs: {
+      deny: ['**/playwright-report/**']
+    }
+  },
+  optimizeDeps: {
+    // exclude: ['playwright-report'],
+    esbuildOptions: {
+      tsconfigRaw: {
+        compilerOptions: {
+          /**
+           * Solve the problem, tsconfig.json has already configured experimentalDecorators: true,
+           * esbuild uses a separate configuration when compiling?
+           *
+           * X [ERROR] Parameter decorators only work when experimental decorators are enabled
+           * You can enable experimental decorators by adding "experimentalDecorators": true to your "tsconfig.json" file.
+           */
+          experimentalDecorators: true
+        }
+      }
+    },
+    /**
+     * If current project has other html files, it will automatically scan all html files,
+     * like some automatically generated html files, like: playwright-report/index.html,
+     * so we need to exclude them.
+     */
+    entries: ['index.html']
   },
   test: {
     watch: false,
