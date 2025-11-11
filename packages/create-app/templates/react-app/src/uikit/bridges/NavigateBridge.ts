@@ -1,5 +1,5 @@
-import { injectable } from 'inversify';
 import { UIBridgeInterface } from '@qlover/corekit-bridge';
+import { injectable } from 'inversify';
 import { NavigateFunction } from 'react-router-dom';
 
 @injectable()

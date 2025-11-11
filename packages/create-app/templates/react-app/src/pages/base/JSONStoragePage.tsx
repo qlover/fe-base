@@ -1,32 +1,35 @@
-import { IOC } from '@/core/IOC';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import template from 'lodash/template';
-import { useStore } from '@/uikit/hooks/useStore';
-import { Button, Input } from 'antd';
-import * as i18nKeys from '@config/Identifier/page.jsonStorage';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import { jsonStorage18n } from '@config/i18n/jsonStorage18n';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Button, Input } from 'antd';
+import template from 'lodash/template';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 export default function JSONStoragePage() {
-  const pageBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const pageBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
   const pageState = useStore(pageBridge);
-  const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(jsonStorage18n);
 
   return (
-    <div className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12">
+    <div
+      data-testid="JSONStoragePage"
+      className="min-h-screen bg-primary py-6 flex flex-col justify-center sm:py-12"
+    >
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="bg-secondary shadow-lg rounded-lg px-8 py-6">
           <h1 className="text-3xl font-bold text-center text-text mb-8">
-            {t(i18nKeys.PAGE_JSONSTORAGE_MAIN_TITLE)}
+            {tt.mainTitle}
           </h1>
 
           <div className="space-y-6">
             {/* 无过期时间的测试 */}
             <div className="p-6 bg-elevated rounded-lg">
               <h2 className="text-xl font-semibold text-text mb-4">
-                {t(i18nKeys.PAGE_JSONSTORAGE_PERMANENT_TITLE)}
+                {tt.permanentTitle}
               </h2>
               <div className="text-text-secondary mb-4">
-                {template(t(i18nKeys.PAGE_JSONSTORAGE_FORMAT_TITLE))({
+                {template(tt.formatTitle)({
                   key: 'testKey1',
                   min: 100,
                   max: 9000
@@ -38,12 +41,12 @@ export default function JSONStoragePage() {
                   type="primary"
                   onClick={pageBridge.changeRandomTestKey1}
                 >
-                  {t(i18nKeys.PAGE_JSONSTORAGE_SET_RANDOM)}
+                  {tt.setRandom}
                 </Button>
 
                 <div className="p-4 bg-secondary rounded-lg w-full text-center">
                   <span className="text-text-secondary">
-                    {t(i18nKeys.PAGE_JSONSTORAGE_CURRENT_VALUE)}:{' '}
+                    {tt.currentValue}:{' '}
                   </span>
                   <span className="font-semibold text-text">
                     {JSON.stringify(pageState.testKey1)}
@@ -55,10 +58,10 @@ export default function JSONStoragePage() {
             {/* 带过期时间的测试 */}
             <div className="p-6 bg-elevated rounded-lg">
               <h2 className="text-xl font-semibold text-text mb-4">
-                {t(i18nKeys.PAGE_JSONSTORAGE_EXPIRE_TITLE)}
+                {tt.expireTitle}
               </h2>
               <div className="text-text-secondary mb-4">
-                {template(t(i18nKeys.PAGE_JSONSTORAGE_FORMAT_TITLE))({
+                {template(tt.formatTitle)({
                   key: 'testKey2',
                   min: 100,
                   max: 9000
@@ -77,21 +80,19 @@ export default function JSONStoragePage() {
                     min="1000"
                     step="1000"
                   />
-                  <span className="text-text-secondary">
-                    {t(i18nKeys.PAGE_JSONSTORAGE_MS)}
-                  </span>
+                  <span className="text-text-secondary">{tt.ms}</span>
                 </div>
 
                 <Button
                   type="primary"
                   onClick={pageBridge.onChangeRandomTestKey2}
                 >
-                  {t(i18nKeys.PAGE_JSONSTORAGE_SET_EXPIRE)}
+                  {tt.setExpire}
                 </Button>
 
                 <div className="p-4 bg-secondary rounded-lg w-full text-center">
                   <span className="text-text-secondary">
-                    {t(i18nKeys.PAGE_JSONSTORAGE_CURRENT_VALUE)}:{' '}
+                    {tt.currentValue}:{' '}
                   </span>
                   <span className="font-semibold text-text">
                     {pageState.testKey2}
@@ -103,7 +104,7 @@ export default function JSONStoragePage() {
             {/* 请求超时时间设置 */}
             <div className="p-6 bg-elevated rounded-lg">
               <h2 className="text-xl font-semibold text-text mb-4">
-                {t(i18nKeys.PAGE_JSONSTORAGE_TIMEOUT_TITLE)}
+                {tt.timeoutTitle}
               </h2>
               <div className="flex items-center space-x-4">
                 <Input
@@ -116,9 +117,7 @@ export default function JSONStoragePage() {
                   min="1000"
                   step="1000"
                 />
-                <span className="text-text-secondary">
-                  {t(i18nKeys.PAGE_JSONSTORAGE_MS)}
-                </span>
+                <span className="text-text-secondary">{tt.ms}</span>
               </div>
             </div>
           </div>

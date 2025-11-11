@@ -1,8 +1,8 @@
+import { IOCIdentifier } from '@config/IOCIdentifier';
+import { inject, injectable } from 'inversify';
+import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
-import { inject, injectable } from 'inversify';
-import { IOCIdentifier } from '@config/IOCIdentifier';
-import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 /**
  * When throw error, it will be converted to i18n key

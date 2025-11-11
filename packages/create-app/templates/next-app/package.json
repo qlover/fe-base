@@ -23,6 +23,7 @@
     "@brain-toolkit/antd-blocks": "^0.0.1",
     "@brain-toolkit/antd-theme-override": "^0.0.3",
     "@brain-toolkit/bridge": "^0.0.1",
+    "@brain-toolkit/react-kit": "^0.1.0",
     "@qlover/corekit-bridge": "^1.6.5",
     "@qlover/fe-corekit": "^2.1.0",
     "@qlover/slice-store-react": "^1.4.1",

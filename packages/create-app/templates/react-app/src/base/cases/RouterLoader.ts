@@ -1,8 +1,8 @@
-import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
-import { RouteObject } from 'react-router-dom';
 import isString from 'lodash/isString';
-import { RouteMeta } from '../types/Page';
-import { LoggerInterface } from '@qlover/logger';
+import type { RouteMeta } from '../types/Page';
+import type { LoggerInterface } from '@qlover/logger';
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
+import type { RouteObject } from 'react-router-dom';
 
 /**
  * Component mapping type for lazy-loaded components

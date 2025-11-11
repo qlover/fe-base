@@ -7,6 +7,7 @@ import {
   VerticalAlignBottomOutlined,
   VerticalAlignTopOutlined
 } from '@ant-design/icons';
+import { useStore } from '@brain-toolkit/react-kit';
 import { Layout, Menu } from 'antd';
 import { clsx } from 'clsx';
 import { usePathname } from 'next/navigation';
@@ -18,7 +19,6 @@ import { LocaleLink } from './LocaleLink';
 import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useIOC } from '../hook/useIOC';
-import { useStore } from '../hook/useStore';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { Sider } = Layout;

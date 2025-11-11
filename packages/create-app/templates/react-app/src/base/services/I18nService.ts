@@ -1,15 +1,16 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import HttpApi from 'i18next-http-backend';
-import merge from 'lodash/merge';
-import i18nConfig from '@config/i18n';
+/* eslint-disable import/no-named-as-default-member */
+import { useLocaleRoutes } from '@config/common';
+import { i18nConfig } from '@config/i18n/i18nConfig';
 import {
   type StoreStateInterface,
   StoreInterface
 } from '@qlover/corekit-bridge';
-import { useLocaleRoutes } from '@config/common';
-import { I18nServiceInterface } from '../port/I18nServiceInterface';
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import HttpApi from 'i18next-http-backend';
+import merge from 'lodash/merge';
+import { initReactI18next } from 'react-i18next';
+import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
 
@@ -27,7 +28,8 @@ export class I18nService
   readonly pluginName = 'I18nService';
 
   selector = {
-    loading: (state: I18nServiceState) => state.loading
+    loading: (state: I18nServiceState) => state.loading,
+    language: (state: I18nServiceState) => state.language
   };
 
   constructor(protected pathname: string) {
@@ -70,23 +72,22 @@ export class I18nService
         }
 
         return fallbackLng;
-      },
-      cacheUserLanguage(lng: string) {
-        // Only cache language if not using locale routes
-        if (!useLocaleRoutes) {
-          localStorage.setItem('i18nextLng', lng);
-        }
       }
     };
     i18n.services.languageDetector.addDetector(pathLanguageDetector);
+
+    // Sync i18n.language with state.language
+    i18n.on('languageChanged', (lng: string) => {
+      if (this.isValidLanguage(lng) && this.state.language !== lng) {
+        this.emit({ ...this.state, language: lng as I18nServiceLocale });
+      }
+    });
   }
 
   async changeLanguage(language: I18nServiceLocale): Promise<void> {
     await i18n.changeLanguage(language);
-    // 如果不使用本地化路由，则保存语言设置到本地存储
-    if (!useLocaleRoutes) {
-      localStorage.setItem('i18nextLng', language);
-    }
+    // Sync state with i18n.language
+    this.emit({ ...this.state, language });
   }
 
   changeLoading(loading: boolean): void {

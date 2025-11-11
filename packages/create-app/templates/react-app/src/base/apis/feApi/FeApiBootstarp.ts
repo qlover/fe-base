@@ -1,18 +1,18 @@
-import type {
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface
-} from '@qlover/fe-corekit';
-import { FetchURLPlugin } from '@qlover/fe-corekit';
+import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
   type ApiMockPluginConfig,
   ApiPickDataPlugin
 } from '@qlover/corekit-bridge';
-import { FeApi } from './FeApi';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { FetchURLPlugin } from '@qlover/fe-corekit';
 import { RequestLogger } from '@/base/cases/RequestLogger';
+import { FeApi } from './FeApi';
+import type {
+  RequestAdapterConfig,
+  RequestAdapterResponse,
+  RequestTransactionInterface
+} from '@qlover/fe-corekit';
 
 /**
  * FeApiConfig

@@ -2,6 +2,7 @@
 
 import { ResourceTable } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTable';
 import { ResourceTableHeader } from '@brain-toolkit/antd-blocks/resourceTable/ResourceTableHeader';
+import { useFactory, useLifecycle } from '@brain-toolkit/react-kit';
 import { ResourceStore } from '@qlover/corekit-bridge';
 import { useMemo } from 'react';
 import { ResourceState } from '@/base/cases/ResourceState';
@@ -10,10 +11,8 @@ import { AdminUserApi } from '@/base/services/adminApi/AdminUserApi';
 import { AdminPageEvent } from '@/base/services/AdminPageEvent';
 import { ResourceService } from '@/base/services/ResourceService';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
-import { useFactory } from '@/uikit/hook/useFactory';
 import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
 import { useIOC } from '@/uikit/hook/useIOC';
-import { useLifecycle } from '@/uikit/hook/useLifecycle';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { userSchema } from '@migrations/schema/UserSchema';
 import { adminUsers18n, adminTableI18n } from '@config/i18n';

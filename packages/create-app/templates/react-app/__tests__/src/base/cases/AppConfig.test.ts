@@ -12,10 +12,10 @@
  * 8. Configuration validation
  */
 
+import { envBlackList, envPrefix } from '@config/common';
+import { InjectEnv } from '@qlover/corekit-bridge';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AppConfig } from '@/base/cases/AppConfig';
-import { InjectEnv } from '@qlover/corekit-bridge';
-import { envBlackList, envPrefix } from '@config/common';
 
 // Mock import.meta.env
 const mockImportMetaEnv = {

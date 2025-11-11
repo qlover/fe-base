@@ -1,17 +1,17 @@
-import { IOC } from '@/core/IOC';
-import { useStore } from '@/uikit/hooks/useStore';
-import { useTranslation } from 'react-i18next';
-import { Select } from 'antd';
 import {
   BulbOutlined,
   BulbFilled,
   HeartFilled,
   HeartOutlined
 } from '@ant-design/icons';
-import clsx from 'clsx';
-import { useMemo } from 'react';
-import * as i18nKeys from '@config/Identifier/common';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import * as i18nKeys from '@config/Identifier/common/common';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Select } from 'antd';
+import { clsx } from 'clsx';
+import { useMemo } from 'react';
+import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useIOC } from '../hooks/useIOC';
 
 const colorMap: Record<
   string,
@@ -34,11 +34,11 @@ const colorMap: Record<
   }
 };
 
-export default function ThemeSwitcher() {
-  const themeService = IOC(IOCIdentifier.ThemeService);
+export function ThemeSwitcher() {
+  const themeService = useIOC(IOCIdentifier.ThemeService);
   const { theme } = useStore(themeService);
   const themes = themeService.getSupportedThemes();
-  const { t } = useTranslation('common');
+  const { t } = useAppTranslation('common');
 
   const themeOptions = useMemo(() => {
     return themes.map((themeName) => {
@@ -53,6 +53,7 @@ export default function ThemeSwitcher() {
         value: themeName,
         label: (
           <div
+            data-testid={`ThemeSwitcherOption-${themeName}`}
             className={clsx(
               'flex items-center gap-2',
               isSelf ? currentColor : normalColor
@@ -67,8 +68,13 @@ export default function ThemeSwitcher() {
   }, [theme, themes, t]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div
+      data-testid="ThemeSwitcher"
+      data-testvalue={theme}
+      className="flex items-center gap-2"
+    >
       <Select
+        data-testid="ThemeSwitcherSelect"
         value={theme}
         onChange={(value) => themeService.changeTheme(value)}
         options={themeOptions}

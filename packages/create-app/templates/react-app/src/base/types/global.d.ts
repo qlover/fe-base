@@ -1,4 +1,4 @@
-import * as feGlobals from '@/core/globals';
+import type * as feGlobals from '@/core/globals';
 import type { browserGlobalsName } from '@config/common';
 
 declare global {

@@ -1,4 +1,4 @@
-import { FeApiTransaction } from './FeApiBootstarp';
+import type { FeApiTransaction } from './FeApiBootstarp';
 
 export type FeApiGetIpInfo = FeApiTransaction<
   undefined,

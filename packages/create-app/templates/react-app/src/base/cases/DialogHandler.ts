@@ -4,8 +4,11 @@ import type {
   ModalApi,
   NotificationApi
 } from '@brain-toolkit/antd-theme-override/react';
-import { UIDialogInterface, NotificationOptions } from '@qlover/corekit-bridge';
-import { ModalFuncProps } from 'antd';
+import type {
+  UIDialogInterface,
+  NotificationOptions
+} from '@qlover/corekit-bridge';
+import type { ModalFuncProps } from 'antd';
 
 export interface DialogHandlerOptions
   extends NotificationOptions,

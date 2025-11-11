@@ -1,23 +1,25 @@
-import { useTranslation } from 'react-i18next';
-import { useContext, useMemo } from 'react';
-import { BasePageProvider } from '@/base/types/Page';
-import { RouteMeta } from '@/base/types/Page';
-import { createContext } from 'react';
+import { i18nConfig } from '@config/i18n/i18nConfig';
+import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/common/common.error';
 import merge from 'lodash/merge';
-import i18nConfig from '@config/i18n';
-import { WITHIN_PAGE_PROVIDER } from '@config/Identifier/common.error';
+import { useContext, useMemo, createContext } from 'react';
+import type { BasePageProvider, RouteMeta } from '@/base/types/Page';
+import { useAppTranslation } from '../hooks/useAppTranslation';
+import { useI18nInterface } from '../hooks/useI18nInterface';
 
 const { defaultNS } = i18nConfig;
 
 const defaultBaseRoutemeta = {
   localNamespace: defaultNS,
   title: '',
-  icon: ''
+  icon: '',
+  i18nInterface: {}
 };
 
 export const BaseRoutePageContext = createContext<RouteMeta>({});
 
-export function useBaseRoutePage(): BasePageProvider {
+export function useBaseRoutePage<
+  T extends Record<string, string>
+>(): BasePageProvider<T> {
   const meta = useContext(BaseRoutePageContext);
 
   if (!meta) {
@@ -26,10 +28,14 @@ export function useBaseRoutePage(): BasePageProvider {
 
   const _meta = useMemo(() => merge({}, defaultBaseRoutemeta, meta), [meta]);
 
-  const i18n = useTranslation(_meta.localNamespace);
+  const i18n = useAppTranslation(_meta.localNamespace);
+
+  const i18nInterface = useI18nInterface(_meta.i18nInterface as T);
 
   return {
-    meta: _meta,
+    meta: _meta as Omit<RouteMeta, 'i18nInterface'> & { i18nInterface?: T },
+    i18nInterface: i18nInterface as T,
+    tt: i18nInterface as T,
     i18n,
     t: i18n.t
   };

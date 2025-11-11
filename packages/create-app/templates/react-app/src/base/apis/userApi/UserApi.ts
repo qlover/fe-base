@@ -1,8 +1,14 @@
+import { RES_NO_TOKEN } from '@config/Identifier';
 import {
   FetchAbortPlugin,
   RequestAdapterFetch,
   RequestTransaction
 } from '@qlover/fe-corekit';
+import { inject, injectable } from 'inversify';
+import { AppError } from '@/base/cases/AppError';
+import { RegisterFormData } from '@/base/services/UserService';
+import { UserApiAdapter } from './UserApiAdapter';
+import { UserApiConfig } from './UserApiBootstarp';
 import {
   GetIpInfoTransaction,
   UserApiGetUserInfoTransaction,
@@ -10,17 +16,11 @@ import {
   UserApiTestApiCatchResultTransaction,
   UserInfo
 } from './UserApiType';
-import { inject, injectable } from 'inversify';
-import { UserApiAdapter } from './UserApiAdapter';
-import { UserApiConfig } from './UserApiBootstarp';
 import type {
   LoginResponseData,
   UserAuthApiInterface,
   UserAuthStoreInterface
 } from '@qlover/corekit-bridge';
-import { RegisterFormData } from '@/base/services/UserService';
-import { RES_NO_TOKEN } from '@config/Identifier';
-import { AppError } from '@/base/cases/AppError';
 
 /**
  * UserApi

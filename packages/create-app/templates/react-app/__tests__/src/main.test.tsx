@@ -1,8 +1,8 @@
-import { BootstrapApp } from '@/core/bootstraps/BootstrapApp';
+import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 
 // Mock BootstrapApp
-vi.mock('@/core/bootstraps/BootstrapApp', () => ({
-  BootstrapApp: {
+vi.mock('@/core/bootstraps/BootstrapClient', () => ({
+  BootstrapClient: {
     main: vi.fn()
   }
 }));
@@ -33,7 +33,7 @@ describe('main.tsx', () => {
   describe('BootstrapApp initialization', () => {
     it('should call BootstrapApp.main()', async () => {
       await import('@/main');
-      expect(BootstrapApp.main).toHaveBeenCalledTimes(1);
+      expect(BootstrapClient.main).toHaveBeenCalledTimes(1);
     });
   });
 

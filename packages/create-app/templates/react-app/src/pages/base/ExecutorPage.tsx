@@ -1,10 +1,12 @@
-import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
-import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
-import { useState, useEffect } from 'react';
-import { IOC } from '@/core/IOC';
-import { useStore } from '@/uikit/hooks/useStore';
-import * as i18nKeys from '@config/Identifier/page.executor';
+import { useStore } from '@brain-toolkit/react-kit/hooks/useStore';
+import { executorI18n } from '@config/i18n/executorI18n';
+import * as i18nKeys from '@config/Identifier/pages/page.executor';
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { Button, Progress, Tag, Space, Card, Input, Select } from 'antd';
+import { useState, useEffect } from 'react';
+import { useBaseRoutePage } from '@/uikit/contexts/BaseRouteContext';
+import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
+import { useIOC } from '@/uikit/hooks/useIOC';
 
 interface Task {
   id: string;
@@ -20,16 +22,19 @@ interface Task {
 }
 
 export default function ExecutorPage() {
-  const { t } = useBaseRoutePage();
-  const pageBridge = IOC(IOCIdentifier.ExecutorPageBridgeInterface);
-  const jspBridge = IOC(IOCIdentifier.JSONStoragePageInterface);
+  const pageBridge = useIOC(IOCIdentifier.ExecutorPageBridgeInterface);
+  const jspBridge = useIOC(IOCIdentifier.JSONStoragePageInterface);
+  const dialogHandler = useIOC(IOCIdentifier.DialogHandler);
+  const jsonSerializer = useIOC(IOCIdentifier.JSONSerializer);
   const requestTimeout = useStore(jspBridge, jspBridge.selector.requestTimeout);
   const helloState = useStore(pageBridge, pageBridge.selector.helloState);
+  const { t } = useBaseRoutePage();
+  const tt = useI18nInterface(executorI18n);
 
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: '1',
-      name: t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE),
+      name: tt.testPluginTitle,
       status: 'pending',
       progress: 0,
       type: 'data-sync',
@@ -39,7 +44,7 @@ export default function ExecutorPage() {
     },
     {
       id: '2',
-      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_DATA_SYNC),
+      name: tt.taskTypeDataSync,
       status: 'pending',
       progress: 0,
       type: 'data-sync',
@@ -49,7 +54,7 @@ export default function ExecutorPage() {
     },
     {
       id: '3',
-      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_MAINTENANCE),
+      name: tt.taskTypeMaintenance,
       status: 'pending',
       progress: 0,
       type: 'system-maintenance',
@@ -59,7 +64,7 @@ export default function ExecutorPage() {
     },
     {
       id: '4',
-      name: t(i18nKeys.PAGE_EXECUTOR_TASK_TYPE_BACKUP),
+      name: tt.taskTypeBackup,
       status: 'pending',
       progress: 0,
       type: 'backup',
@@ -80,9 +85,7 @@ export default function ExecutorPage() {
   // 监听 helloState 变化，更新任务状态
   useEffect(() => {
     if (helloState.result) {
-      IOC('DialogHandler').success(
-        t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_SUCCESS)
-      );
+      dialogHandler.success(tt.pluginTestSuccess);
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -97,7 +100,7 @@ export default function ExecutorPage() {
         )
       );
     } else if (helloState.error) {
-      IOC('DialogHandler').error(t(i18nKeys.PAGE_EXECUTOR_PLUGIN_TEST_FAILURE));
+      dialogHandler.error(tt.pluginTestFailure);
       // 更新任务状态
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -107,7 +110,7 @@ export default function ExecutorPage() {
         )
       );
     }
-  }, [helloState.result, helloState.error, t]);
+  }, [helloState.result, helloState.error, tt]);
 
   const getStatusColor = (status: Task['status']) => {
     switch (status) {
@@ -142,7 +145,7 @@ export default function ExecutorPage() {
     const end = endTime || new Date();
     const duration = end.getTime() - startTime.getTime();
     const minutes = Math.floor(duration / (1000 * 60));
-    return `${minutes} ${t(i18nKeys.PAGE_EXECUTOR_TASK_DURATION_UNIT)}`;
+    return `${minutes} ${tt.taskDurationUnit}`;
   };
 
   const handleStartTask = async (taskId: string) => {
@@ -166,7 +169,7 @@ export default function ExecutorPage() {
         )
       );
 
-      IOC('DialogHandler').success(
+      dialogHandler.success(
         t(i18nKeys.PAGE_EXECUTOR_TASK_SUCCESS, { name: task.name })
       );
     } catch {
@@ -176,7 +179,7 @@ export default function ExecutorPage() {
         )
       );
 
-      IOC('DialogHandler').error(
+      dialogHandler.error(
         t(i18nKeys.PAGE_EXECUTOR_TASK_FAILURE, { name: task.name })
       );
     }
@@ -194,9 +197,7 @@ export default function ExecutorPage() {
 
   const handleCreateTask = () => {
     if (!customUrl) {
-      IOC('DialogHandler').error(
-        t(i18nKeys.PAGE_EXECUTOR_CUSTOM_TASK_URL_REQUIRED)
-      );
+      dialogHandler.error(tt.customTaskUrlRequired);
       return;
     }
 
@@ -221,35 +222,36 @@ export default function ExecutorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8">
+    <div
+      data-testid="ExecutorPage"
+      className="min-h-screen bg-primary py-8 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <section className="py-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
-              {t(i18nKeys.PAGE_EXECUTOR_MAIN_TITLE)}
+              {tt.mainTitle}
             </h1>
-            <p className="text-xl text-text-secondary mb-8">
-              {t(i18nKeys.PAGE_EXECUTOR_DESCRIPTION)}
-            </p>
+            <p className="text-xl text-text-secondary mb-8">{tt.description}</p>
           </div>
         </section>
 
         {/* Test Plugin Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE)}
+            {tt.testPluginTitle}
           </h2>
           <div className="space-y-4">
             <div className="text-text-secondary">
-              {t(i18nKeys.PAGE_EXECUTOR_REQUEST_TIMEOUT)}: {requestTimeout}
+              {tt.requestTimeout}: {requestTimeout}
             </div>
             <div>
               {helloState.loading ? (
                 <div className="text-text-secondary">Loading...</div>
               ) : (
                 <Button type="primary" onClick={pageBridge.onTestPlugins}>
-                  {t(i18nKeys.PAGE_EXECUTOR_TEST_PLUGIN_TITLE)}
+                  {tt.testPluginTitle}
                 </Button>
               )}
             </div>
@@ -258,7 +260,7 @@ export default function ExecutorPage() {
                 <div className="text-red-500">{helloState.error.message}</div>
               ) : (
                 <pre className="text-text-secondary">
-                  {IOC('JSONSerializer').stringify(helloState.result?.data)}
+                  {jsonSerializer.stringify(helloState.result?.data)}
                 </pre>
               )}
             </div>
@@ -268,12 +270,12 @@ export default function ExecutorPage() {
         {/* Create Task Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t(i18nKeys.PAGE_EXECUTOR_CREATE_TASK_TITLE)}
+            {tt.createTaskTitle}
           </h2>
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
               <Input
-                placeholder={t(i18nKeys.PAGE_EXECUTOR_ENTER_URL)}
+                placeholder={tt.enterUrl}
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
                 className="flex-1"
@@ -298,7 +300,7 @@ export default function ExecutorPage() {
                 <Select.Option value="blob">Blob</Select.Option>
               </Select>
               <Button type="primary" onClick={handleCreateTask}>
-                {t(i18nKeys.PAGE_EXECUTOR_CREATE_BUTTON)}
+                {tt.createButton}
               </Button>
             </div>
           </div>
@@ -310,7 +312,7 @@ export default function ExecutorPage() {
             <div className="text-center">
               <div className="text-2xl font-bold text-text">{tasks.length}</div>
               <div className="text-sm text-text-secondary">
-                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_TOTAL)}
+                {tt.taskStatsTotal}
               </div>
             </div>
           </Card>
@@ -320,7 +322,7 @@ export default function ExecutorPage() {
                 {tasks.filter((t) => t.status === 'running').length}
               </div>
               <div className="text-sm text-text-secondary">
-                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_RUNNING)}
+                {tt.taskStatsRunning}
               </div>
             </div>
           </Card>
@@ -330,7 +332,7 @@ export default function ExecutorPage() {
                 {tasks.filter((t) => t.status === 'completed').length}
               </div>
               <div className="text-sm text-text-secondary">
-                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_COMPLETED)}
+                {tt.taskStatsCompleted}
               </div>
             </div>
           </Card>
@@ -340,7 +342,7 @@ export default function ExecutorPage() {
                 {tasks.filter((t) => t.status === 'failed').length}
               </div>
               <div className="text-sm text-text-secondary">
-                {t(i18nKeys.PAGE_EXECUTOR_TASK_STATS_FAILED)}
+                {tt.taskStatsFailed}
               </div>
             </div>
           </Card>
@@ -349,11 +351,12 @@ export default function ExecutorPage() {
         {/* Task List Section */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t(i18nKeys.PAGE_EXECUTOR_TASK_LIST_TITLE)}
+            {tt.taskListTitle}
           </h2>
           <div className="space-y-4">
             {tasks.map((task) => (
               <Card
+                data-testid={`ExecutorPageCard-${task.id}`}
                 key={task.id}
                 className="bg-elevated border-border"
                 title={
@@ -395,7 +398,7 @@ export default function ExecutorPage() {
                         type="primary"
                         onClick={() => handleStartTask(task.id)}
                       >
-                        {t(i18nKeys.PAGE_EXECUTOR_TASK_START)}
+                        {tt.taskStart}
                       </Button>
                     )}
                     {task.status === 'running' && (
@@ -404,7 +407,7 @@ export default function ExecutorPage() {
                         danger
                         onClick={() => handleStopTask(task.id)}
                       >
-                        {t(i18nKeys.PAGE_EXECUTOR_TASK_STOP)}
+                        {tt.taskStop}
                       </Button>
                     )}
                   </div>
@@ -417,7 +420,7 @@ export default function ExecutorPage() {
         {/* Task History */}
         <section className="bg-secondary shadow sm:rounded-lg p-6 border border-border">
           <h2 className="text-xl font-medium text-text mb-4">
-            {t(i18nKeys.PAGE_EXECUTOR_TASK_HISTORY_TITLE)}
+            {tt.taskHistoryTitle}
           </h2>
           <div className="space-y-2">
             {tasks
@@ -427,6 +430,7 @@ export default function ExecutorPage() {
               )
               .map((task) => (
                 <div
+                  data-testid={`ExecutorPageHistory-${task.id}`}
                   key={task.id}
                   className="flex items-center justify-between p-2 bg-elevated rounded"
                 >
@@ -444,19 +448,15 @@ export default function ExecutorPage() {
 
         {/* Call to Action Section */}
         <section className="py-8 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-text">
-            {t(i18nKeys.PAGE_EXECUTOR_HELP_TITLE)}
-          </h2>
+          <h2 className="text-2xl font-bold mb-4 text-text">{tt.helpTitle}</h2>
           <p className="text-lg text-text-secondary mb-6">
-            {t(i18nKeys.PAGE_EXECUTOR_HELP_DESCRIPTION)}
+            {tt.helpDescription}
           </p>
           <Space>
             <Button type="primary" size="large">
-              {t(i18nKeys.PAGE_EXECUTOR_VIEW_GUIDE)}
+              {tt.viewGuide}
             </Button>
-            <Button size="large">
-              {t(i18nKeys.PAGE_EXECUTOR_CONTACT_SUPPORT)}
-            </Button>
+            <Button size="large">{tt.contactSupport}</Button>
           </Space>
         </section>
       </div>

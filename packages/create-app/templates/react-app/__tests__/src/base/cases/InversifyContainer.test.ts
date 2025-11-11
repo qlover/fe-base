@@ -10,8 +10,8 @@
  * 6. error handling  - Error cases and boundary tests
  */
 
-import { InversifyContainer } from '@/base/cases/InversifyContainer';
 import { injectable } from 'inversify';
+import { InversifyContainer } from '@/base/cases/InversifyContainer';
 
 describe('InversifyContainer', () => {
   let container: InversifyContainer;

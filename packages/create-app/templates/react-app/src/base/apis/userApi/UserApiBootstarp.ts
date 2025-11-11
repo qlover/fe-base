@@ -1,13 +1,4 @@
-import {
-  FetchAbortPlugin,
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface
-} from '@qlover/fe-corekit';
-import { IOC } from '@/core/IOC';
 import { IOCIdentifier } from '@config/IOCIdentifier';
-import { RequestLogger } from '@/base/cases/RequestLogger';
-import { FetchURLPlugin } from '@qlover/fe-corekit';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
@@ -15,8 +6,15 @@ import {
   type ApiCatchPluginConfig,
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
+import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-corekit';
+import { RequestLogger } from '@/base/cases/RequestLogger';
 import { UserApi } from './UserApi';
 import { RequestLanguages } from '../../cases/RequestLanguages';
+import type {
+  RequestAdapterConfig,
+  RequestAdapterResponse,
+  RequestTransactionInterface
+} from '@qlover/fe-corekit';
 
 /**
  * UserApiConfig
@@ -68,13 +66,13 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
     ioc
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())
-      .usePlugin(IOC.get(IOCIdentifier.FeApiCommonPlugin))
+      .usePlugin(ioc.get(IOCIdentifier.FeApiCommonPlugin))
       .usePlugin(
         new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface))
       )
-      .usePlugin(IOC.get(IOCIdentifier.ApiMockPlugin))
-      .usePlugin(IOC.get(RequestLogger))
-      .usePlugin(IOC.get(FetchAbortPlugin))
-      .usePlugin(IOC.get(IOCIdentifier.ApiCatchPlugin));
+      .usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin))
+      .usePlugin(ioc.get(RequestLogger))
+      .usePlugin(ioc.get(FetchAbortPlugin))
+      .usePlugin(ioc.get(IOCIdentifier.ApiCatchPlugin));
   }
 }

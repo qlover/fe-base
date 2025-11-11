@@ -1,21 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { defineConfig } from 'vitest/config';
+import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
+import ts2Locales from '@brain-toolkit/ts2locales/vite';
+import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import vitePluginImp from 'vite-plugin-imp';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 import {
   envPrefix,
   overrideAntdThemeMode,
   routerPrefix
 } from './config/common';
+import { i18nConfig } from './config/i18n/i18nConfig';
+import { generateTs2LocalesOptions } from './makes/generateTs2LocalesOptions';
 import { name, version } from './package.json';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import envConfig from '@qlover/corekit-bridge/build/vite-env-config';
-import ts2Locales from '@brain-toolkit/ts2locales/vite';
-import i18nConfig from './config/i18n';
-import tailwindcss from '@tailwindcss/vite';
-import viteDeprecatedAntd from '@brain-toolkit/antd-theme-override/vite';
-import vitePluginImp from 'vite-plugin-imp';
-import { readdirSync } from 'fs';
-import { join } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -94,18 +92,7 @@ export default defineConfig({
     tsconfigPaths(),
     ts2Locales({
       locales: i18nConfig.supportedLngs as unknown as string[],
-      options: readdirSync(join(__dirname, './config/Identifier'))
-        .map((file) => ({
-          file,
-          name: file.replace('.ts', ''),
-          path: join('./config/Identifier', file)
-        }))
-        .map(({ path }) => ({
-          source: path,
-          // You can use namespace
-          // target: `./public/locales/{{lng}}/{{${name}}}.json`
-          target: `./public/locales/{{lng}}/common.json`
-        }))
+      options: generateTs2LocalesOptions()
     }),
     viteDeprecatedAntd({
       mode: overrideAntdThemeMode,
@@ -123,6 +110,8 @@ export default defineConfig({
     watch: false,
     environment: 'jsdom',
     globals: true,
+    include: ['__tests__/**/*.test.ts', '__tests__/**/*.test.tsx'],
+    exclude: ['__tests__/**/*.e2e.ts', '__tests__/**/*.e2e.tsx'],
     setupFiles: ['./__tests__/setup/index.ts']
   }
 });

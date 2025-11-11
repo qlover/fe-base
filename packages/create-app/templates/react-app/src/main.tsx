@@ -3,13 +3,13 @@ import 'reflect-metadata';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { BootstrapApp } from './core/bootstraps/BootstrapApp';
-import { IOC } from './core/IOC.ts';
+import { BootstrapClient } from './core/bootstraps/BootstrapClient';
+import { clientIOC } from './core/clientIoc/ClientIOC.ts';
 
-BootstrapApp.main({
+BootstrapClient.main({
   root: window,
   bootHref: window.location.href,
-  IOC: IOC
+  ioc: clientIOC
 });
 
 createRoot(document.getElementById('root')!).render(
