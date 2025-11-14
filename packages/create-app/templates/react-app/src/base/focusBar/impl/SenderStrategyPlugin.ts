@@ -1,4 +1,4 @@
-import { MessageStatus } from './MessagesStore';
+import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
 import type { MessageSenderContext } from './MessageSender';
 import type {
   ExecutorContext,
@@ -65,21 +65,16 @@ export class SenderStrategyPlugin
    * 根据 addedToStore 决定是更新消息（已在store）还是添加消息（ADD_ON_SUCCESS策略）
    */
   onSuccess(context: ExecutorContext<MessageSenderContext>): void {
-    const { currentMessage, messages, addedToStore, gatewayResult } =
-      context.parameters;
+    const { currentMessage, messages, addedToStore } = context.parameters;
 
-    const successData = {
-      status: MessageStatus.SENT,
-      result: gatewayResult,
-      loading: false,
-      endTime: Date.now()
-    };
+    const successData = context.returnValue as MessageStoreMsg<any>;
 
     if (addedToStore) {
       // 消息已在 store 中，更新状态
-      const updatedMessage = messages.updateMessage(currentMessage.id!, {
-        ...successData
-      } as any);
+      const updatedMessage = messages.updateMessage(
+        currentMessage.id!,
+        successData as Partial<MessageStoreMsg<any>>
+      );
 
       if (!updatedMessage) {
         throw new Error('Failed to update message');
@@ -95,7 +90,7 @@ export class SenderStrategyPlugin
       const addedMessage = messages.addMessage({
         ...currentMessage,
         ...successData
-      } as any);
+      } as Partial<MessageStoreMsg<any>>);
 
       // 更新 context
       context.parameters.currentMessage = addedMessage;
@@ -115,29 +110,32 @@ export class SenderStrategyPlugin
     const error = context.error;
 
     // 根据策略处理失败消息
-    let failedMessage: any;
+    let finalMessage: MessageStoreMsg<any>;
+
+    const faileds = {
+      loading: false,
+      error: error,
+      status: MessageStatus.FAILED,
+      endTime: Date.now()
+    };
 
     switch (this.failureStrategy) {
       case SendFailureStrategy.KEEP_FAILED:
         // 保留失败消息：更新消息状态为 FAILED
         if (addedToStore && currentMessage.id) {
-          const updatedMessage = messages.updateMessage(currentMessage.id, {
-            loading: false,
-            error: error,
-            status: MessageStatus.FAILED,
-            endTime: Date.now()
-          } as any);
+          const updatedMessage = messages.updateMessage(
+            currentMessage.id,
+            faileds
+          );
 
-          failedMessage = updatedMessage;
+          if (!updatedMessage) {
+            throw new Error('Failed to call updateMessage in store');
+          }
+
+          finalMessage = updatedMessage;
         } else {
           // 消息不在 store 中，创建临时消息对象
-          failedMessage = messages.createMessage({
-            ...currentMessage,
-            loading: false,
-            error: error,
-            status: MessageStatus.FAILED,
-            endTime: Date.now()
-          } as any);
+          finalMessage = Object.assign(currentMessage, faileds);
         }
         break;
 
@@ -147,29 +145,20 @@ export class SenderStrategyPlugin
           messages.deleteMessage(currentMessage.id);
         }
         // 创建临时失败消息对象返回（不在 store 中）
-        failedMessage = messages.createMessage({
-          ...currentMessage,
-          loading: false,
-          error: error,
-          status: MessageStatus.FAILED,
-          endTime: Date.now()
-        } as any);
+        finalMessage = messages.mergeMessage(currentMessage, faileds);
         break;
 
       case SendFailureStrategy.ADD_ON_SUCCESS:
         // 延迟添加策略：创建临时失败消息对象（不添加到 store）
-        failedMessage = messages.createMessage({
-          ...currentMessage,
-          loading: false,
-          error: error,
-          status: MessageStatus.FAILED,
-          endTime: Date.now()
-        } as any);
+        finalMessage = Object.assign(currentMessage, faileds);
         break;
     }
 
-    // 更新 context 的返回值为失败消息
-    context.returnValue = failedMessage;
+    if (finalMessage) {
+      // 更新 context 中的 currentMessage
+      context.parameters.currentMessage = finalMessage;
+      context.returnValue = finalMessage;
+    }
 
     // 返回 void 表示错误已被处理，不再向上抛出
   }

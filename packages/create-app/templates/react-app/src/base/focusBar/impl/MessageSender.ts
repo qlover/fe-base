@@ -1,20 +1,12 @@
-import {
-  AsyncExecutor,
-  type ExecutorPlugin,
-  type ExecutorContext
-} from '@qlover/fe-corekit';
+import { AsyncExecutor, ExecutorError } from '@qlover/fe-corekit';
 import {
   MessageStatus,
   type MessageStoreMsg,
   type MessagesStore
 } from './MessagesStore';
-import {
-  SenderStrategyPlugin,
-  SendFailureStrategy
-} from './SenderStrategyPlugin';
-import type { SendFailureStrategyType } from './SenderStrategyPlugin';
 import type { MessageGetwayInterface } from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface MessageSenderContext<
   MessageType extends MessageStoreMsg<any> = MessageStoreMsg<any>
@@ -28,18 +20,16 @@ export interface MessageSenderContext<
    * 消息是否已添加到 store
    */
   addedToStore?: boolean;
-  /**
-   * 网关返回的结果
-   */
-  gatewayResult?: any;
 }
 
 export interface MessageSenderConfig {
-  /** 发送失败时的处理策略，
+  /**
    *
-   * @default KEEP_FAILED
+   * 是否在发送失败时抛出错误
+   *
+   * @default false
    */
-  failureStrategy?: SendFailureStrategyType;
+  throwIfError?: boolean;
   /** 网关 */
   gateway?: MessageGetwayInterface;
 }
@@ -47,7 +37,10 @@ export interface MessageSenderConfig {
 export class MessageSender<MessageType extends MessageStoreMsg<any>>
   implements MessageSenderInterface<MessageType>
 {
+  protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
+
   protected readonly executor: AsyncExecutor;
+  protected throwIfError: boolean;
 
   readonly gateway?: MessageGetwayInterface;
 
@@ -58,13 +51,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     this.executor = new AsyncExecutor();
 
     this.gateway = config?.gateway;
-
-    this.executor.use(
-      new SenderStrategyPlugin(
-        config?.failureStrategy ??
-          (SendFailureStrategy.KEEP_FAILED as SendFailureStrategyType)
-      )
-    );
+    this.throwIfError = config?.throwIfError ?? false;
   }
 
   use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
@@ -99,28 +86,28 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       ...message,
       status: MessageStatus.SENDING,
       loading: true,
-      startTime: Date.now()
+      startTime: Date.now(),
+      endTime: 0,
+      // 重置错误
+      error: null
     });
   }
 
-  protected async sendMessage(
-    message: MessageType,
-    context: ExecutorContext<MessageSenderContext<MessageType>>
-  ): Promise<any> {
+  protected async sendMessage(message: MessageType): Promise<MessageType> {
+    let currentMessage: MessageType = message;
+
     // 调用网关发送消息
     const result = await this.gateway?.sendMessage(message);
 
-    // 将结果保存到 context，供 onSuccess 使用
-    context.parameters.gatewayResult = result;
+    const endTime = Date.now();
 
-    if (context.parameters.currentMessage != message) {
-      console.warn(
-        'MessageSender: currentMessage is not the same as the message'
-      );
-      return context.parameters.currentMessage;
-    }
-
-    return message;
+    // 返回带成功状态的消息对象（不更新 store，由插件决定）
+    return this.messages.mergeMessage(currentMessage, {
+      status: MessageStatus.SENT,
+      result: result,
+      loading: false,
+      endTime: endTime
+    } as Partial<MessageType>);
   }
 
   async send(message: Partial<MessageType>): Promise<MessageType>;
@@ -142,13 +129,39 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     files?: MessageType['files']
   ): Promise<MessageType> {
     const createMessage = this.generateSendingMessage(messageOrContent, files);
+
     const context: MessageSenderContext<MessageType> = {
       messages: this.messages,
       currentMessage: createMessage
     };
 
-    return this.executor.exec(context, async (ctx) => {
-      return this.sendMessage(createMessage, ctx);
-    });
+    try {
+      const message = await this.executor.exec(context, async (ctx) => {
+        // 防止修改 messageOrContent 引用
+        return await this.sendMessage(ctx.parameters.currentMessage);
+      });
+
+      return message;
+    } catch (error) {
+      // If is unknown async error, set the id to MESSAGE_SENDER_ERROR
+      if (
+        error instanceof ExecutorError &&
+        error.id === 'UNKNOWN_ASYNC_ERROR'
+      ) {
+        error.id = this.messageSenderErrorId;
+      }
+
+      if (this.throwIfError) {
+        throw error;
+      }
+
+      const endTime = context.currentMessage.endTime || Date.now();
+      return Object.assign(context.currentMessage, {
+        loading: false,
+        error: error,
+        status: MessageStatus.FAILED,
+        endTime: endTime
+      } as Partial<MessageType>);
+    }
   }
 }
