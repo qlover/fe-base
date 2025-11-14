@@ -1,8 +1,7 @@
-import { StoreInterface } from '@qlover/corekit-bridge';
 import {
+  MessagesStoreInterface,
   type MessageInterface,
-  type MessagesStateInterface,
-  type MessagesStoreInterface
+  type MessagesStateInterface
 } from '../interface/MessagesStoreInterface';
 
 /**
@@ -38,17 +37,17 @@ export interface MessageStoreMsg<T, R = unknown> extends MessageInterface<R> {
 }
 
 export class MessagesStore<
-    MessageType extends MessageStoreMsg<unknown> = MessageStoreMsg<any>,
-    State extends
-      MessagesStateInterface<MessageType> = MessagesStateInterface<MessageType>
-  >
-  extends StoreInterface<State>
-  implements MessagesStoreInterface<MessageType, State>
-{
+  MessageType extends MessageStoreMsg<unknown> = MessageStoreMsg<any>,
+  State extends
+    MessagesStateInterface<MessageType> = MessagesStateInterface<MessageType>
+> extends MessagesStoreInterface<MessageType, State> {
   /**
    * 合并消息对象，保留实例原型链
    */
-  mergeMessage<T extends MessageType>(target: T, ...updates: Partial<T>[]): T {
+  override mergeMessage<T extends MessageType>(
+    target: T,
+    ...updates: Partial<T>[]
+  ): T {
     // 检查是否为类实例（非普通对象）
     const proto = Object.getPrototypeOf(target);
     if (proto && proto.constructor && proto.constructor !== Object) {
@@ -60,7 +59,7 @@ export class MessagesStore<
     return Object.assign({}, target, ...updates);
   }
 
-  getMessages(): MessageType[] {
+  override getMessages(): MessageType[] {
     return this.state.messages ?? [];
   }
 
@@ -68,7 +67,7 @@ export class MessagesStore<
     return `${message.startTime ?? Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   }
 
-  createMessage<T extends MessageType>(message: Partial<T> = {}): T {
+  override createMessage<T extends MessageType>(message: Partial<T> = {}): T {
     const startTime = message.startTime ?? Date.now();
     const id = message.id ?? this.defaultId(message);
     const status = message.status ?? MessageStatus.DRAFT;
@@ -86,11 +85,11 @@ export class MessagesStore<
     }) as T;
   }
 
-  getMessageById(id: string): MessageType | undefined {
+  override getMessageById(id: string): MessageType | undefined {
     return this.getMessages().find((message) => message.id === id);
   }
 
-  addMessage<M extends MessageType>(message: Partial<M>): M {
+  override addMessage<M extends MessageType>(message: Partial<M>): M {
     // If the message has an id, update the message instead of adding it
     if (message.id) {
       const existingMessage = this.getMessageById(message.id) as M;
@@ -112,7 +111,7 @@ export class MessagesStore<
     return finalMessage;
   }
 
-  updateMessage<M extends MessageType>(
+  override updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined {
@@ -138,7 +137,7 @@ export class MessagesStore<
     return updatedMessage;
   }
 
-  deleteMessage(id: string): void {
+  override deleteMessage(id: string): void {
     const messages = this.getMessages();
     // 使用 filter 一次遍历完成删除
     const newMessages = messages.filter((message) => message.id !== id);

@@ -1,3 +1,8 @@
+import type {
+  FocusBarStateInterface,
+  FocusBarStoreInterface
+} from './FocusBarStoreInterface';
+import type { MessageSenderInterface } from './MessageSenderInterface';
 import type { MessageInterface } from './MessagesStoreInterface';
 
 /**
@@ -7,21 +12,39 @@ import type { MessageInterface } from './MessagesStoreInterface';
 export interface FocusBarBridgeInterface<
   MessageType extends MessageInterface = MessageInterface
 > {
+  readonly store: FocusBarStoreInterface<FocusBarStateInterface>;
+  readonly messageSender: MessageSenderInterface<MessageType>;
+
+  onChangeText(text: string): void;
+
   /**
-   * 从输入框发送文本消息
-   * - 校验内容（长度、敏感词等）
-   * - 显示确认弹窗（可选）
-   * - 调用 Service 发送
-   * - 显示成功/失败提示
+   * 当直接调用send时，会使用默认的输入框内容
    *
-   * @param text 文本内容
-   * @returns 发送的消息 或 null（失败/取消）
+   * 当调用send(text)时，会使用传入的文本内容
+   *
+   * 当调用send(message)时，会使用传入的消息对象
+   *
+   * @returns 发送的消息
    */
-  sendInput(text: string): Promise<MessageType | null>;
+  send(): Promise<MessageType>;
+  send(text: string): Promise<MessageType>;
+  send(message: MessageType): Promise<MessageType>;
 
   // /**
-  //  * 发送文件消息
-  //  * - 校验文件大小和类型
+  //  * 从输入框发送文本消息
+  //  * - 校验内容（长度、敏感词等）
+  //  * - 显示确认弹窗（可选）
+  //  * - 调用 Service 发送
+  //  * - 显示成功/失败提示
+  //  *
+  //  * @param text 文本内容
+  //  * @returns 发送的消息 或 null（失败/取消）
+  //  */
+  // sendInput(text: string): Promise<MessageType | null>;
+
+  // // /**
+  // //  * 发送文件消息
+  // //  * - 校验文件大小和类型
   //  * - 上传文件
   //  * - 生成缩略图（图片）
   //  * - 调用 Service 发送

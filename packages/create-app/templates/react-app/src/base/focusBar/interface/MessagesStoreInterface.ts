@@ -1,6 +1,7 @@
-import type {
-  AsyncStateInterface,
-  StoreStateInterface
+import {
+  type AsyncStateInterface,
+  StoreInterface,
+  type StoreStateInterface
 } from '@qlover/corekit-bridge';
 
 /**
@@ -20,26 +21,27 @@ export interface MessagesStateInterface<T> extends StoreStateInterface {
   messages: T[];
 }
 
-export interface MessagesStoreInterface<
+export abstract class MessagesStoreInterface<
   MessageType extends MessageInterface<any>,
   State extends MessagesStateInterface<MessageType>
-> {
-  readonly state: State;
+> extends StoreInterface<State> {
+  abstract mergeMessage<T extends MessageType>(
+    target: T,
+    ...updates: Partial<T>[]
+  ): T;
 
-  mergeMessage<T extends MessageType>(target: T, ...updates: Partial<T>[]): T;
+  abstract createMessage<T extends MessageType>(message: Partial<T>): T;
 
-  createMessage<T extends MessageType>(message: Partial<T>): T;
+  abstract getMessages(): MessageType[];
 
-  getMessages(): MessageType[];
+  abstract getMessageById(id: string): MessageType | undefined;
 
-  getMessageById(id: string): MessageType | undefined;
+  abstract addMessage<M extends MessageType>(message: Partial<M>): M;
 
-  addMessage<M extends MessageType>(message: Partial<M>): M;
-
-  updateMessage<M extends MessageType>(
+  abstract updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined;
 
-  deleteMessage(id: string): void;
+  abstract deleteMessage(id: string): void;
 }

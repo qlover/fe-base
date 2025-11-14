@@ -2,9 +2,9 @@
 import 'reflect-metadata';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
 import { BootstrapClient } from './core/bootstraps/BootstrapClient';
 import { clientIOC } from './core/clientIoc/ClientIOC.ts';
+import { ChatRoot } from './uikit/components/chat/ChatRoot.tsx';
 
 BootstrapClient.main({
   root: window,
@@ -14,6 +14,6 @@ BootstrapClient.main({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ChatRoot />
   </StrictMode>
 );
