@@ -579,7 +579,10 @@ describe('SenderStrategyPlugin', () => {
 
       // 使用 content + files 方式
       const files = [new File(['test'], 'test.txt')];
-      const result = await sender.send('Test content', files);
+      const result = await sender.send({
+        content: 'Test content',
+        files: files
+      });
 
       expect(result.content).toBe('Test content');
       expect(result.files).toEqual(files);

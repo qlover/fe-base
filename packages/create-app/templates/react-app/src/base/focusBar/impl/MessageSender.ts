@@ -38,14 +38,12 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
   implements MessageSenderInterface<MessageType>
 {
   protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
-
   protected readonly executor: AsyncExecutor;
+  protected readonly gateway?: MessageGetwayInterface;
   protected throwIfError: boolean;
 
-  readonly gateway?: MessageGetwayInterface;
-
   constructor(
-    readonly messages: MessagesStore<MessageType>,
+    protected readonly messages: MessagesStore<MessageType>,
     config?: MessageSenderConfig
   ) {
     this.executor = new AsyncExecutor();
@@ -54,43 +52,17 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     this.throwIfError = config?.throwIfError ?? false;
   }
 
+  getMessageStore(): MessagesStore<MessageType> {
+    return this.messages;
+  }
+
+  getGateway(): MessageGetwayInterface | undefined {
+    return this.gateway;
+  }
+
   use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
     this.executor.use(plugin);
     return this;
-  }
-
-  protected generateSendingMessage(
-    messageOrContent: Partial<MessageType> | MessageType['content'],
-    files?: MessageType['files']
-  ): MessageType {
-    // 判断第一个参数是对象还是简单类型
-    let message: Partial<MessageType>;
-
-    if (
-      typeof messageOrContent === 'object' &&
-      messageOrContent !== null &&
-      !Array.isArray(messageOrContent) &&
-      files === undefined
-    ) {
-      // 第一个参数是消息对象
-      message = messageOrContent;
-    } else {
-      // 第一个参数是 content，构造消息对象
-      message = {
-        content: messageOrContent,
-        files
-      } as Partial<MessageType>;
-    }
-
-    return this.messages.createMessage({
-      ...message,
-      status: MessageStatus.SENDING,
-      loading: true,
-      startTime: Date.now(),
-      endTime: 0,
-      // 重置错误
-      error: null
-    });
   }
 
   protected async sendMessage(message: MessageType): Promise<MessageType> {
@@ -110,29 +82,31 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     } as Partial<MessageType>);
   }
 
-  async send(message: Partial<MessageType>): Promise<MessageType>;
-  async send(
-    content: MessageType['content'],
-    files?: MessageType['files']
-  ): Promise<MessageType>;
+  protected generateSendingMessage(message: Partial<MessageType>): MessageType {
+    // 设置为 SENDING 状态
+    return this.messages.createMessage({
+      ...message,
+      status: MessageStatus.SENDING,
+      loading: true,
+      startTime: Date.now(),
+      endTime: 0,
+      error: null
+    } as Partial<MessageType>);
+  }
 
   /**
    * 发送消息
    *
-   * @overload
-   * @param messageOrContent 消息对象或内容
-   * @param files 附件文件
+   * - 如果 `throwIfError=true` ，则会在发送失败时抛出错误
+   * - 如果 `throwIfError=false(默认)` ，则会在发送失败时返回失败消息
+   *
+   * @param message - 消息对象（支持部分字段）
    * @returns 发送的消息
    */
-  async send(
-    messageOrContent: Partial<MessageType> | MessageType['content'],
-    files?: MessageType['files']
-  ): Promise<MessageType> {
-    const createMessage = this.generateSendingMessage(messageOrContent, files);
-
+  async send(message: Partial<MessageType>): Promise<MessageType> {
     const context: MessageSenderContext<MessageType> = {
       messages: this.messages,
-      currentMessage: createMessage
+      currentMessage: this.generateSendingMessage(message)
     };
 
     try {

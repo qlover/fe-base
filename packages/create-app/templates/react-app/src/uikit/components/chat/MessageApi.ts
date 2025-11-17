@@ -1,9 +1,18 @@
 import { ThreadUtil } from '@qlover/corekit-bridge';
 import { random } from 'lodash';
-import type { MessageStoreMsg } from '@/base/focusBar/impl/MessagesStore';
+import {
+  MessageStatus,
+  type MessageStoreMsg
+} from '@/base/focusBar/impl/MessagesStore';
 import type { MessageGetwayInterface } from '@/base/focusBar/interface/MessageGetwayInterface';
+import { ChatMessageRoleType } from './chatMessage/ChatMessage';
+import type { ChatMessageStore } from './chatMessage/ChatMessageStore';
 
 export class MessageApi implements MessageGetwayInterface {
+  constructor(protected messagesStore: ChatMessageStore<unknown>) {
+    this.messagesStore = messagesStore;
+  }
+
   async sendMessage<M extends MessageStoreMsg<string>>(message: M): Promise<M> {
     const times = random(200, 1000);
 
@@ -18,11 +27,17 @@ export class MessageApi implements MessageGetwayInterface {
       throw new Error(`Network error(${times})`);
     }
 
-    return {
+    const endTime = Date.now();
+    return this.messagesStore.createMessage({
       ...message,
-      result: {
-        content: 'Hello! You sent: ' + message.content
-      }
-    };
+      id: ChatMessageRoleType.ASSISTANT + message.id + endTime,
+      role: ChatMessageRoleType.ASSISTANT,
+      content: '(' + endTime + ')Hello! You sent7: ' + message.content,
+      error: null,
+      loading: false,
+      status: MessageStatus.SENT,
+      endTime: endTime,
+      result: null
+    }) as unknown as M;
   }
 }

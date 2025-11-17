@@ -46,4 +46,10 @@ export abstract class MessagesStoreInterface<
   abstract deleteMessage(id: string): void;
 
   abstract isMessage<T extends MessageType>(message: unknown): message is T;
+
+  abstract getMessageIndex(id: string): number;
+
+  abstract getMessageByIndex(index: number): MessageType | undefined;
+
+  abstract resetMessages(messages: MessageType[]): void;
 }

@@ -6,12 +6,12 @@ import type {
 } from './MessagesStoreInterface';
 
 export interface MessageSenderInterface<Message extends MessageInterface> {
-  readonly messages: MessagesStoreInterface<
+  getMessageStore(): MessagesStoreInterface<
     Message,
     MessagesStateInterface<Message>
   >;
 
-  readonly gateway?: MessageGetwayInterface;
+  getGateway(): MessageGetwayInterface | undefined;
 
-  send(message: Message): Promise<Message>;
+  send(message: Partial<Message>): Promise<Message>;
 }

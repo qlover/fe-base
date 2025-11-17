@@ -1,49 +1,35 @@
 import { useFactory } from '@brain-toolkit/react-kit';
 import { useState } from 'react';
-import { FocusBarStore } from '@/base/focusBar/impl/FocusBarStore';
-import { MessageSender } from '@/base/focusBar/impl/MessageSender';
-import { MessagesStore } from '@/base/focusBar/impl/MessagesStore';
-import {
-  SenderStrategyPlugin,
-  SendFailureStrategy
-} from '@/base/focusBar/impl/SenderStrategyPlugin';
-import type { FocusBarStateInterface } from '@/base/focusBar/interface/FocusBarStoreInterface';
-import type {
-  MessageInterface,
-  MessagesStateInterface
-} from '@/base/focusBar/interface/MessagesStoreInterface';
+import { SendFailureStrategy } from '@/base/focusBar/impl/SenderStrategyPlugin';
+import { ChatMessageBridge } from './chatMessage/ChatMessageBridge';
+import { ChatMessageStore } from './chatMessage/ChatMessageStore';
+import { ChatSenderStrategy } from './chatMessage/ChatSenderStrategy';
 import { FocusBar } from './FocusBar';
-import { FocusBarBridge } from './FocusBarBridge';
 import { MessageApi } from './MessageApi';
 import { MessagesList } from './messagesList/MessagesList';
+import type { ChatMessageStoreStateInterface } from './chatMessage/interface';
 
-function createFocusBarState(): FocusBarStateInterface {
+function createChatMessageState(): ChatMessageStoreStateInterface<unknown> {
   return {
-    inputText: '',
+    messages: [],
+    currentMessage: null,
     disabledSend: false
   };
 }
 
-function createMessagesState(): MessagesStateInterface<
-  MessageInterface<unknown>
-> {
-  return {
-    messages: []
-  };
-}
-
 export function ChatRoot() {
-  const focusBarStore = useFactory(FocusBarStore, createFocusBarState);
-  const messagesStore = useFactory(MessagesStore, createMessagesState);
-  const messageApi = useFactory(MessageApi);
+  const messagesStore = useFactory(ChatMessageStore, createChatMessageState);
+  const messageApi = useFactory(MessageApi, messagesStore);
 
-  const [messageSender] = useState(() => {
-    return new MessageSender(messagesStore, {
-      gateway: messageApi
-    }).use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+  const [bridge] = useState(() => {
+    return (
+      new ChatMessageBridge(messagesStore, {
+        gateway: messageApi
+      })
+        // 发送策略
+        .use(new ChatSenderStrategy(SendFailureStrategy.KEEP_FAILED))
+    );
   });
-
-  const bridge = useFactory(FocusBarBridge, focusBarStore, messageSender);
 
   return (
     <div data-testid="ChatRoot">

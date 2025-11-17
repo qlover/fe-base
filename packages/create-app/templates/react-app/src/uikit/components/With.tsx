@@ -5,7 +5,7 @@ export function With<T>(props: {
 }) {
   const { fallback, it, children } = props;
 
-  if (it != null && it !== false) {
+  if (it != null && it === false) {
     if (typeof children === 'function') {
       return children(it as NonNullable<T>);
     }

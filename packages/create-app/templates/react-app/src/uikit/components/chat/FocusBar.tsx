@@ -1,19 +1,22 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
-import type { FocusBarBridgeInterface } from '@/base/focusBar/interface/FocusBarBridgeInterface';
+import type { ChatMessageBridgeInterface } from './chatMessage/interface';
 
 const { TextArea } = Input;
 
 export interface FocusBarProps {
-  bridge: FocusBarBridgeInterface;
+  bridge: ChatMessageBridgeInterface<unknown>;
 }
 
 export function FocusBar({ bridge }: FocusBarProps) {
-  const messagesStore = bridge.messageSender.messages;
+  const messagesStore = bridge.getMessageStore();
   const messages = useStore(messagesStore, (state) => state.messages);
-  const inputText = useStore(bridge.store, (state) => state.inputText);
-  const disabledSend = useStore(bridge.store, (state) => state.disabledSend);
+  const message = useStore(messagesStore, (state) => state.currentMessage);
+
+  const inputText = message?.content as string;
+
+  const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
 
   const lastMessage = useMemo(() => messages.at(-1), [messages]);
 
@@ -22,7 +25,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
       // Ctrl+Enter 发送
       if (e.key === 'Enter' && e.ctrlKey) {
         if (!disabledSend && !lastMessage?.loading) {
-          bridge.send();
+          bridge.sendUser();
         }
       }
     },
@@ -38,7 +41,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
           disabled={lastMessage?.loading}
           value={inputText}
           onKeyDown={handleKeyDown}
-          onChange={(e) => bridge.onChangeText(e.target.value)}
+          onChange={(e) => bridge.onChangeContent(e.target.value)}
         />
       </div>
       <div data-testid="FocusBarFooter">
@@ -46,7 +49,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
           loading={lastMessage?.loading}
           disabled={disabledSend}
           data-testid="FocusBar-Button-Send"
-          onClick={() => bridge.send()}
+          onClick={() => bridge.sendUser()}
         >
           Send
         </Button>

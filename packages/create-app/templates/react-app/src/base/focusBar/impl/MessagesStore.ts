@@ -153,4 +153,20 @@ export class MessagesStore<
   override isMessage<T extends MessageType>(message: unknown): message is T {
     return typeof message === 'object' && message !== null;
   }
+
+  override getMessageIndex(id: string): number {
+    return this.getMessages().findIndex((message) => message.id === id);
+  }
+
+  override getMessageByIndex(index: number): MessageType | undefined {
+    return this.getMessages().at(index);
+  }
+
+  override resetMessages(messages: MessageType[]): void {
+    this.emit(
+      this.cloneState({
+        messages: messages.map((message) => this.createMessage(message))
+      } as Partial<State>)
+    );
+  }
 }

@@ -55,10 +55,23 @@ describe('MessageSender', () => {
       });
       expect(serviceWithGateway.gateway).toBe(mockGateway);
     });
+
+    it('应该正确设置 throwIfError 配置', () => {
+      const serviceWithThrow = new MessageSender(store, {
+        gateway: mockGateway,
+        throwIfError: true
+      });
+      expect(serviceWithThrow['throwIfError']).toBe(true);
+
+      const serviceWithoutThrow = new MessageSender(store, {
+        gateway: mockGateway
+      });
+      expect(serviceWithoutThrow['throwIfError']).toBe(false);
+    });
   });
 
-  describe('sendMessage - 对象参数方式', () => {
-    it('应该成功发送消息（完整对象）', async () => {
+  describe('send - 基础功能', () => {
+    it('应该成功发送消息对象', async () => {
       const message = {
         content: 'Test message'
       };
@@ -86,7 +99,7 @@ describe('MessageSender', () => {
       );
     });
 
-    it('应该不对 store 进行任何操作', async () => {
+    it('应该不自动操作 store', async () => {
       const message = { content: 'Test' };
 
       await service.send(message);
@@ -95,75 +108,35 @@ describe('MessageSender', () => {
       expect(messages).toHaveLength(0);
     });
 
-    it('应该返回一个正确的消息对象', async () => {
+    it('应该正确设置消息的初始状态', async () => {
       const message = { content: 'Test' };
 
       const result = await service.send(message);
 
-      expect(result).toBeDefined();
-      expect(result.content).toBe('Test');
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.loading).toBe(false);
-      expect(result.endTime).toBeGreaterThan(0);
+      expect(result.startTime).toBeDefined();
+      expect(result.endTime).toBeDefined();
+      expect(result.endTime).toBeGreaterThanOrEqual(result.startTime!);
+    });
+
+    it('应该支持发送带有额外属性的消息对象', async () => {
+      const message = {
+        content: 'Test',
+        placeholder: 'Typing...',
+        customField: 'custom value'
+      };
+
+      const result = await service.send(message);
+
+      expect(result.content).toBe('Test');
+      expect(result.placeholder).toBe('Typing...');
+      expect((result as any).customField).toBe('custom value');
     });
   });
 
-  describe('sendMessage - 简化参数方式', () => {
-    it('应该支持只传递 content', async () => {
-      const result = await service.send('Simple text');
-
-      expect(result).toBeDefined();
-      expect(result.content).toBe('Simple text');
-      expect(result.status).toBe(MessageStatus.SENT);
-    });
-
-    it('应该支持传递 content 和 files', async () => {
-      const files = [new File(['content'], 'test.txt')];
-
-      const result = await service.send('Text with files', files);
-
-      expect(result.content).toBe('Text with files');
-      expect(result.files).toEqual(files);
-      expect(result.status).toBe(MessageStatus.SENT);
-    });
-
-    it('应该正确处理不同类型的 content', async () => {
-      // 数字
-      const result1 = await service.send(123 as any);
-      expect(result1.content).toBe(123);
-
-      // 对象（作为 content）
-      const result2 = await service.send(
-        { type: 'custom', data: 'value' } as any,
-        []
-      );
-      expect(result2.content).toEqual({ type: 'custom', data: 'value' });
-
-      // 数组（作为 content）
-      const result3 = await service.send(['item1', 'item2'] as any, []);
-      expect(result3.content).toEqual(['item1', 'item2']);
-    });
-
-    it('应该不对 store 进行任何操作', async () => {
-      await service.send('Simple text');
-
-      const messages = store.getMessages();
-      expect(messages).toHaveLength(0);
-    });
-
-    it('应该返回一个正确的消息对象', async () => {
-      const result = await service.send('Test');
-
-      expect(result).toBeDefined();
-      expect(result.content).toBe('Test');
-      expect(result.status).toBe(MessageStatus.SENT);
-      expect(result.loading).toBe(false);
-      expect(result.endTime).toBeGreaterThan(0);
-    });
-  });
-
-  describe('sendMessage - 错误处理', () => {
-    it('应该处理发送失败的情况（默认不抛出错误）', async () => {
+  describe('send - 错误处理', () => {
+    it('默认模式：发送失败时返回失败消息（不抛出错误）', async () => {
       const error = new Error('Network error');
       mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
 
@@ -173,67 +146,13 @@ describe('MessageSender', () => {
       expect(result.content).toBe('Failed message');
       expect(result.status).toBe(MessageStatus.FAILED);
       expect(result.loading).toBe(false);
-    });
-
-    it('应该在设置 throwIfError 时抛出错误', async () => {
-      const errorService = new MessageSender(store, {
-        gateway: mockGateway,
-        throwIfError: true
-      });
-
-      const error = new Error('Network error');
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
-
-      let result;
-      try {
-        result = await errorService.send('Failed message');
-      } catch {}
-
-      expect(result).toBeUndefined();
-
-      await expect(errorService.send('Failed message')).rejects.toBeInstanceOf(
-        ExecutorError
-      );
-
-      await expect(
-        errorService.send('Failed message', [])
-      ).rejects.toBeInstanceOf(ExecutorError);
-
-      await expect(
-        errorService.send({ content: 'Failed message' })
-      ).rejects.toBeInstanceOf(ExecutorError);
-    });
-
-    it('默认模式：sendMessage 失败时返回失败消息', async () => {
-      const error = new Error('Network error');
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
-
-      const result = await service.send('Test');
-      expect(result).toBeDefined();
-      expect(result.error).toBeDefined();
       expect(result.error).toBeInstanceOf(ExecutorError);
       expect((result.error as ExecutorError).id).toBe(
         service['messageSenderErrorId']
       );
-      expect(result.status).toBe(MessageStatus.FAILED);
-      expect(result.loading).toBe(false);
-
-      const result2 = await service.send({ content: 'Test' });
-
-      expect(result2).toBeDefined();
-      expect(result2.status).toBe(MessageStatus.FAILED);
-      expect(result2.loading).toBe(false);
-
-      const files: File[] = [new File(['test'], 'test.txt')];
-      const result3 = await service.send('Test', files);
-
-      expect(result3).toBeDefined();
-      expect(result3.status).toBe(MessageStatus.FAILED);
-      expect(result3.files).toEqual(files);
-      expect(result3.loading).toBe(false);
     });
 
-    it('抛出错误模式：sendMessage 失败时抛出错误', async () => {
+    it('throwIfError=true：发送失败时抛出错误', async () => {
       const errorService = new MessageSender(store, {
         gateway: mockGateway,
         throwIfError: true
@@ -243,51 +162,17 @@ describe('MessageSender', () => {
       mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
 
       await expect(
-        errorService.send({ content: 'Test' })
+        errorService.send({ content: 'Failed message' })
       ).rejects.toBeInstanceOf(ExecutorError);
 
       await expect(
-        errorService.send({ content: 'Test2' })
+        errorService.send({ content: 'Failed message' })
       ).rejects.toMatchObject({
         message: error.message
       });
     });
-  });
 
-  describe('throwIfError 配置测试', () => {
-    it('对比：默认模式适合 UI 错误展示，抛出模式适合测试', async () => {
-      const error = new Error('API Error');
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
-
-      // 场景 1：UI 使用 - 默认模式（不抛出错误）
-      const service1 = new MessageSender(store, {
-        gateway: mockGateway
-      });
-      const result1 = await service1.send({ content: 'UI Message' });
-
-      expect(result1.status).toBe(MessageStatus.FAILED);
-      // ✅ UI 可以显示错误消息，不会中断应用
-
-      // 场景 2：测试使用 - 抛出错误模式
-      const store2 = new MessagesStore(() => ({ messages: [] }));
-      const service2 = new MessageSender(store2, {
-        gateway: mockGateway,
-        throwIfError: true
-      });
-
-      await expect(
-        service2.send({ content: 'Test Message' })
-      ).rejects.toBeInstanceOf(ExecutorError);
-
-      await expect(
-        service2.send({ content: 'Test Message' })
-      ).rejects.toMatchObject({
-        message: error.message
-      });
-      // ✅ 测试可以验证错误是否被正确抛出
-    });
-
-    it('throwIfError 为 true 时，成功的消息应该正常返回（不抛出错误）', async () => {
+    it('throwIfError=true 时，成功的消息应正常返回', async () => {
       const errorService = new MessageSender(store, {
         gateway: mockGateway,
         throwIfError: true
@@ -297,69 +182,51 @@ describe('MessageSender', () => {
         result: 'Success'
       });
 
-      // 成功的消息不应该抛出错误
       const result = await errorService.send({ content: 'Success message' });
 
       expect(result).toBeDefined();
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.loading).toBe(false);
-      // ✅ 即使 throwIfError 为 true，成功的消息也应该正常返回
     });
 
-    it('throwIfError 为 false 时，失败的消息不应该抛出错误', async () => {
-      const error = new Error('Network error');
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(error);
+    it('应该将 UNKNOWN_ASYNC_ERROR 改写为 MESSAGE_SENDER_ERROR', async () => {
+      const unknownError = new ExecutorError('Unknown error');
+      unknownError.id = 'UNKNOWN_ASYNC_ERROR';
 
-      // 不应该抛出错误
-      const result = await service.send({ content: 'Failed message' });
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(unknownError);
 
-      expect(result).toBeDefined();
-      expect(result.status).toBe(MessageStatus.FAILED);
-      expect((result.error as ExecutorError).message).toBe(error.message);
-      // ✅ 默认情况下，失败消息以对象形式返回，不抛出
-    });
-  });
+      const result = await service.send({ content: 'Test' });
 
-  describe('generateSendingMessage', () => {
-    it('应该正确处理消息对象', () => {
-      const message = service['generateSendingMessage']({
-        content: 'Test',
-        placeholder: 'Typing...'
-      });
-
-      expect(message.content).toBe('Test');
-      expect(message.placeholder).toBe('Typing...');
-      expect(message.status).toBe(MessageStatus.SENDING);
-      expect(message.loading).toBe(true);
-      expect(message.startTime).toBeDefined();
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe('MESSAGE_SENDER_ERROR');
     });
 
-    it('应该正确处理 content 和 files 参数', () => {
-      const files = [new File(['test'], 'test.txt')];
-      const message = service['generateSendingMessage']('Content', files);
+    it('不应该修改其他 ExecutorError 的 ID', async () => {
+      const customError = new ExecutorError('Custom error');
+      customError.id = 'CUSTOM_ERROR_ID';
 
-      expect(message.content).toBe('Content');
-      expect(message.files).toBe(files);
-      expect(message.status).toBe(MessageStatus.SENDING);
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(customError);
+
+      const result = await service.send({ content: 'Test' });
+
+      expect(result.error).toBeInstanceOf(ExecutorError);
+      expect((result.error as ExecutorError).id).toBe('CUSTOM_ERROR_ID');
     });
   });
 
-  describe('集成测试：完整发送流程', () => {
+  describe('send - 完整流程', () => {
     it('应该完成完整的成功发送流程', async () => {
       const result = await service.send({
         content: 'Hello World',
         placeholder: 'Sending...'
       });
 
-      // 验证消息状态
       expect(result.content).toBe('Hello World');
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.loading).toBe(false);
-
-      // 验证 gateway 调用
       expect(mockGateway.sendMessage).toHaveBeenCalledTimes(1);
 
-      // 验证 store 状态
+      // MessageSender 不自动操作 store
       const messages = store.getMessages();
       expect(messages).toHaveLength(0);
     });
@@ -372,16 +239,21 @@ describe('MessageSender', () => {
         content: 'Failed Message'
       });
 
-      // 验证消息状态
       expect(result.status).toBe(MessageStatus.FAILED);
       expect(result.loading).toBe(false);
+      expect(result.error).toBeInstanceOf(ExecutorError);
     });
 
     it('应该支持连续发送多条消息', async () => {
-      await service.send('Message 1');
-      await service.send('Message 2');
-      await service.send('Message 3');
+      const result1 = await service.send({ content: 'Message 1' });
+      const result2 = await service.send({ content: 'Message 2' });
+      const result3 = await service.send({ content: 'Message 3' });
 
+      expect(result1.status).toBe(MessageStatus.SENT);
+      expect(result2.status).toBe(MessageStatus.SENT);
+      expect(result3.status).toBe(MessageStatus.SENT);
+
+      // MessageSender 不自动操作 store
       const messages = store.getMessages();
       expect(messages).toHaveLength(0);
     });
@@ -786,34 +658,29 @@ describe('MessageSender', () => {
   });
 
   describe('边界情况', () => {
-    it('应该处理空 content', async () => {
-      const result = await service.send('');
+    it('应该处理空 content 的消息对象', async () => {
+      const result = await service.send({ content: '' });
       expect(result.content).toBe('');
       expect(result.status).toBe(MessageStatus.SENT);
     });
 
     it('应该处理 null/undefined content', async () => {
-      const result1 = await service.send(null as any);
+      const result1 = await service.send({ content: null as any });
       expect(result1.content).toBeNull();
 
-      const result2 = await service.send(undefined as any);
+      const result2 = await service.send({ content: undefined });
       expect(result2.content).toBeUndefined();
+    });
+
+    it('应该处理空消息对象', async () => {
+      const result = await service.send({});
+      expect(result.status).toBe(MessageStatus.SENT);
     });
 
     it('应该处理 gateway 未定义的情况', async () => {
       const serviceWithoutGateway = new MessageSender(store);
 
-      const result = await serviceWithoutGateway.send('Test');
-
-      expect(result.status).toBe(MessageStatus.SENT);
-    });
-
-    it('应该处理只配置 gateway 的情况', async () => {
-      const serviceWithGateway = new MessageSender(store, {
-        gateway: mockGateway
-      });
-
-      const result = await serviceWithGateway.send('Test');
+      const result = await serviceWithoutGateway.send({ content: 'Test' });
 
       expect(result.status).toBe(MessageStatus.SENT);
     });
@@ -821,7 +688,7 @@ describe('MessageSender', () => {
 
   describe('时间戳验证', () => {
     it('成功消息的 endTime 应该大于等于 startTime', async () => {
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.startTime).toBeDefined();
       expect(result.endTime).toBeDefined();
@@ -831,25 +698,16 @@ describe('MessageSender', () => {
     it('失败消息的 endTime 应该大于等于 startTime', async () => {
       mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.startTime).toBeDefined();
       expect(result.endTime).toBeDefined();
       expect(result.endTime).toBeGreaterThanOrEqual(result.startTime!);
     });
 
-    it('不应该支持自定义 startTime', async () => {
+    it('插件可以修改 startTime', async () => {
       const customStartTime = Date.now() - 1000;
 
-      const result = await service.send({
-        content: 'Test',
-        startTime: customStartTime
-      });
-
-      expect(result.startTime).not.toBe(customStartTime);
-      expect(result.endTime).toBeGreaterThan(customStartTime);
-
-      // But you can use plugin to modify the startTime
       const plugin: ExecutorPlugin<MessageSenderContext<any>> = {
         pluginName: 'start-time-modifier',
         onBefore({ parameters }) {
@@ -859,10 +717,10 @@ describe('MessageSender', () => {
 
       service.use(plugin);
 
-      const result2 = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
-      expect(result2.startTime).toBe(customStartTime);
-      expect(result2.endTime).toBeGreaterThan(customStartTime);
+      expect(result.startTime).toBe(customStartTime);
+      expect(result.endTime).toBeGreaterThan(customStartTime);
     });
   });
 
@@ -870,7 +728,7 @@ describe('MessageSender', () => {
     it('应该处理 gateway 返回 null', async () => {
       mockGateway.sendMessage = vi.fn().mockResolvedValue(null);
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.result).toBeNull();
@@ -879,7 +737,7 @@ describe('MessageSender', () => {
     it('应该处理 gateway 返回 undefined', async () => {
       mockGateway.sendMessage = vi.fn().mockResolvedValue(undefined);
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.result).toBeUndefined();
@@ -894,7 +752,7 @@ describe('MessageSender', () => {
 
       mockGateway.sendMessage = vi.fn().mockResolvedValue(complexResult);
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.status).toBe(MessageStatus.SENT);
       expect(result.result).toEqual(complexResult);
@@ -903,17 +761,17 @@ describe('MessageSender', () => {
     it('应该处理 gateway 返回原始类型', async () => {
       // 字符串
       mockGateway.sendMessage = vi.fn().mockResolvedValue('string result');
-      const result1 = await service.send('Test');
+      const result1 = await service.send({ content: 'Test' });
       expect(result1.result).toBe('string result');
 
       // 数字
       mockGateway.sendMessage = vi.fn().mockResolvedValue(42);
-      const result2 = await service.send('Test');
+      const result2 = await service.send({ content: 'Test' });
       expect(result2.result).toBe(42);
 
       // 布尔值
       mockGateway.sendMessage = vi.fn().mockResolvedValue(true);
-      const result3 = await service.send('Test');
+      const result3 = await service.send({ content: 'Test' });
       expect(result3.result).toBe(true);
     });
   });
@@ -921,9 +779,9 @@ describe('MessageSender', () => {
   describe('并发场景', () => {
     it('应该支持并发发送多条消息', async () => {
       const promises = [
-        service.send('Message 1'),
-        service.send('Message 2'),
-        service.send('Message 3')
+        service.send({ content: 'Message 1' }),
+        service.send({ content: 'Message 2' }),
+        service.send({ content: 'Message 3' })
       ];
 
       const results = await Promise.all(promises);
@@ -946,9 +804,9 @@ describe('MessageSender', () => {
       });
 
       const promises = [
-        service.send('Message 1'),
-        service.send('Message 2'), // 这条会失败
-        service.send('Message 3')
+        service.send({ content: 'Message 1' }),
+        service.send({ content: 'Message 2' }), // 这条会失败
+        service.send({ content: 'Message 3' })
       ];
 
       const results = await Promise.all(promises);
@@ -959,38 +817,9 @@ describe('MessageSender', () => {
     });
   });
 
-  describe('ExecutorError ID 修改逻辑', () => {
-    it('应该将 UNKNOWN_ASYNC_ERROR 改写为 MESSAGE_SENDER_ERROR', async () => {
-      const unknownError = new ExecutorError('Unknown error');
-      unknownError.id = 'UNKNOWN_ASYNC_ERROR';
-
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(unknownError);
-
-      const result = await service.send('Test');
-
-      expect(result.error).toBeInstanceOf(ExecutorError);
-      expect((result.error as ExecutorError).id).toBe(
-        service['messageSenderErrorId']
-      );
-      expect((result.error as ExecutorError).id).toBe('MESSAGE_SENDER_ERROR');
-    });
-
-    it('不应该修改其他 ExecutorError 的 ID', async () => {
-      const customError = new ExecutorError('Custom error');
-      customError.id = 'CUSTOM_ERROR_ID';
-
-      mockGateway.sendMessage = vi.fn().mockRejectedValue(customError);
-
-      const result = await service.send('Test');
-
-      expect(result.error).toBeInstanceOf(ExecutorError);
-      expect((result.error as ExecutorError).id).toBe('CUSTOM_ERROR_ID');
-    });
-  });
-
   describe('消息对象的完整性', () => {
     it('发送的消息应该包含所有必要字段', async () => {
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       // 验证所有必要字段
       expect(result).toHaveProperty('id');
@@ -1023,7 +852,7 @@ describe('MessageSender', () => {
       const testError = new Error('Test error');
       mockGateway.sendMessage = vi.fn().mockRejectedValue(testError);
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.error).toBeDefined();
       expect(result.result).toBeNull();
@@ -1056,7 +885,7 @@ describe('MessageSender', () => {
 
       service.use(plugin);
 
-      await service.send('Test');
+      await service.send({ content: 'Test' });
 
       expect(capturedContext).toBeDefined();
       expect(capturedContext!.messages).toBe(store);
@@ -1081,7 +910,7 @@ describe('MessageSender', () => {
 
       service.use(plugin1).use(plugin2);
 
-      const result = await service.send('Test');
+      const result = await service.send({ content: 'Test' });
 
       expect(result.content).toBe('[P1] Test [P2]');
     });
@@ -1145,17 +974,18 @@ describe('MessageSender', () => {
         pluginName: 'retry-plugin',
         async onBefore({ parameters }) {
           expect(parameters.currentMessage.id).toEqual(result.id);
-          expect(parameters.currentMessage).not.toEqual(result);
         }
       };
 
       service.use(plugin);
 
-      const result2 = await service.send(
-        Object.assign(result, { content: 'success' })
-      );
+      // 重试时传递一个新对象，保留 id，但不传递旧的 error
+      const result2 = await service.send({
+        id: result.id,
+        content: 'success'
+      });
 
-      store.addMessage(result2);
+      store.updateMessage(result.id!, result2);
 
       const messages2 = store.getMessages();
 
@@ -1165,8 +995,8 @@ describe('MessageSender', () => {
         result: 'gateway result'
       });
       expect(messages2).toHaveLength(1);
-      expect(messages2[0]).not.toEqual(result);
-      expect(messages2[0]).toEqual(result2);
+      expect(messages2[0].id).toEqual(result.id);
+      expect(messages2[0].status).toBe(MessageStatus.SENT);
     });
   });
 });

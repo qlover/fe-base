@@ -59,21 +59,55 @@ export class SenderStrategyPlugin
     }
   }
 
+  protected handleAddNoOnSuccess(
+    parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
+    successData: MessageStoreMsg<any, unknown>
+  ): MessageStoreMsg<any, unknown> | undefined {
+    const { currentMessage, messages } = parameters;
+
+    // 消息已在 store 中，更新状态
+    const updatedMessage = messages.updateMessage(
+      currentMessage.id!,
+      successData as Partial<MessageStoreMsg<any>>
+    );
+
+    return updatedMessage;
+  }
+
+  /**
+   * 处理添加消息
+   * @param context 上下文
+   * @returns 添加的用户消息
+   */
+  protected handleAaddOnSuccess(
+    parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
+    successData: MessageStoreMsg<any, unknown>
+  ): MessageStoreMsg<any, unknown> {
+    const { currentMessage, messages } = parameters;
+
+    const addedMessage = messages.addMessage({
+      ...currentMessage,
+      ...successData
+    });
+
+    return addedMessage;
+  }
+
   /**
    * 生命周期钩子：发送成功处理
    *
    * 根据 addedToStore 决定是更新消息（已在store）还是添加消息（ADD_ON_SUCCESS策略）
    */
   onSuccess(context: ExecutorContext<MessageSenderContext>): void {
-    const { currentMessage, messages, addedToStore } = context.parameters;
+    const { addedToStore } = context.parameters;
 
     const successData = context.returnValue as MessageStoreMsg<any>;
 
     if (addedToStore) {
       // 消息已在 store 中，更新状态
-      const updatedMessage = messages.updateMessage(
-        currentMessage.id!,
-        successData as Partial<MessageStoreMsg<any>>
+      const updatedMessage = this.handleAddNoOnSuccess(
+        context.parameters,
+        successData
       );
 
       if (!updatedMessage) {
@@ -86,11 +120,10 @@ export class SenderStrategyPlugin
       // 更新 returnValue，让 executor 返回更新后的消息
       context.returnValue = updatedMessage;
     } else {
-      // 消息不在 store 中，现在添加（ADD_ON_SUCCESS 策略）
-      const addedMessage = messages.addMessage({
-        ...currentMessage,
-        ...successData
-      } as Partial<MessageStoreMsg<any>>);
+      const addedMessage = this.handleAaddOnSuccess(
+        context.parameters,
+        successData
+      );
 
       // 更新 context
       context.parameters.currentMessage = addedMessage;

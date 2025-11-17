@@ -1,19 +1,20 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { useCallback, type ComponentType } from 'react';
-import type { FocusBarBridgeInterface } from '@/base/focusBar/interface/FocusBarBridgeInterface';
-import type { MessageInterface } from '@/base/focusBar/interface/MessagesStoreInterface';
-import { MessageItem } from './MessageItem';
-import type { MessageItemProps } from './MessageItemProps';
+import { MessageItem, type MessageItemProps } from './MessageItem';
+import type { ChatMessage } from '../chatMessage/ChatMessage';
+import type { ChatMessageBridgeInterface } from '../chatMessage/interface';
 
-export type MessageComponentType<MessageType extends MessageInterface> =
-  ComponentType<MessageItemProps<MessageType>>;
+export type MessageComponentType<
+  T,
+  MessageType extends ChatMessage<T>
+> = ComponentType<MessageItemProps<T, MessageType>>;
 
-export type GetMessageComponent<MessageType extends MessageInterface> = (
-  props: MessageItemProps<MessageType>
-) => MessageComponentType<MessageType>;
+export type GetMessageComponent<T, MessageType extends ChatMessage<T>> = (
+  props: MessageItemProps<T, MessageType>
+) => MessageComponentType<T, MessageType>;
 
-export interface MessagesListProps<MessageType extends MessageInterface> {
-  bridge: FocusBarBridgeInterface<MessageType>;
+export interface MessagesListProps<T, MessageType extends ChatMessage<T>> {
+  bridge: ChatMessageBridgeInterface<T>;
 
   /**
    * 获取消息组件
@@ -22,7 +23,7 @@ export interface MessagesListProps<MessageType extends MessageInterface> {
    *
    * @type `ComponentType<MessageItemProps<MessageType>>`
    */
-  getMessageComponent?: GetMessageComponent<MessageType>;
+  getMessageComponent?: GetMessageComponent<T, MessageType>;
 
   /**
    * 获取消息唯一标识
@@ -36,16 +37,18 @@ export interface MessagesListProps<MessageType extends MessageInterface> {
   getMessageKey?(message: MessageType, index: number): string;
 }
 
-export function MessagesList<MessageType extends MessageInterface>({
+export function MessagesList<T>({
   bridge,
   getMessageComponent,
   getMessageKey
-}: MessagesListProps<MessageType>) {
-  const messagesStore = bridge.messageSender.messages;
+}: MessagesListProps<T, ChatMessage<T>>) {
+  const messagesStore = bridge.getMessageStore();
   const messages = useStore(messagesStore, (state) => state.messages);
 
+  console.log(messages);
+
   const _getMessageKey = useCallback(
-    (message: MessageType, index: number): string => {
+    (message: ChatMessage<T>, index: number): string => {
       return (
         getMessageKey?.(message, index) ||
         String((message.id ?? '') + (message.startTime ?? 0) + index)

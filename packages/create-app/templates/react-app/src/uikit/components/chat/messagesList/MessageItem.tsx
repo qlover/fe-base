@@ -1,14 +1,25 @@
 import { ReloadOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
+import { clsx } from 'clsx';
 import { useMemo } from 'react';
-import { type MessageStoreMsg } from '@/base/focusBar/impl/MessagesStore';
-import type { MessageItemProps } from './MessageItemProps';
+import { With } from '../../With';
+import {
+  ChatMessageRoleType,
+  type ChatMessage
+} from '../chatMessage/ChatMessage';
+import type { ChatMessageBridgeInterface } from '../chatMessage/interface';
 
-export function MessageItem<MessageType extends MessageStoreMsg<unknown>>({
+export interface MessageItemProps<T, MessageType extends ChatMessage<T>> {
+  message: MessageType;
+  index: number;
+  bridge?: ChatMessageBridgeInterface<T>;
+}
+
+export function MessageItem<T, MessageType extends ChatMessage<T>>({
   message,
   bridge,
   index
-}: MessageItemProps<MessageType>) {
+}: MessageItemProps<T, MessageType>) {
   const messageText = useMemo(() => {
     return message.content as string;
   }, [message.content]);
@@ -21,26 +32,41 @@ export function MessageItem<MessageType extends MessageStoreMsg<unknown>>({
     return message.error instanceof Error ? message.error.message : null;
   }, [message.error]);
 
+  const isUserMessage = message.role === ChatMessageRoleType.USER;
+
   return (
     <div
       data-testid="MessageItem"
       data-message-id={message.id}
+      data-message-role={message.role}
       data-message-index={index}
-      className="w-full flex justify-end"
+      className={clsx('w-full flex', {
+        'justify-end': isUserMessage,
+        'justify-start': !isUserMessage
+      })}
     >
-      <div className="flex flex-col my-1 p-1 border border-cyan-600 rounded-xl w-[80%]">
+      <div
+        className={clsx(
+          'flex flex-col my-1 p-1 border border-cyan-600 rounded-xl ',
+          {
+            'w-full': !isUserMessage,
+            'w-[80%]': isUserMessage
+          }
+        )}
+      >
         <div className="flex items-center gap-2">
-          {message.loading ? (
-            <Spin size="small" />
-          ) : (
-            <ReloadOutlined
-              disabled={message.loading}
-              onClick={() => bridge?.send(message)}
-            />
+          {isUserMessage && (
+            <With it={message.loading} fallback={<Spin size="small" />}>
+              <ReloadOutlined
+                disabled={message.loading}
+                onClick={() => bridge?.sendUser(message)}
+              />
+            </With>
           )}
           <span data-testid="MessageContent">{messageText}</span>
         </div>
-        <div className="text-right">{durtaion}ms</div>
+
+        {isUserMessage && <div className="text-right">{durtaion}ms</div>}
 
         {errorMessage && (
           <div data-testid="MessageError" className="text-red-500">
