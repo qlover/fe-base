@@ -13,12 +13,11 @@ export function FocusBar({ bridge }: FocusBarProps) {
   const messagesStore = bridge.getMessageStore();
   const messages = useStore(messagesStore, (state) => state.messages);
   const message = useStore(messagesStore, (state) => state.currentMessage);
+  const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
+  const lastMessage = useMemo(() => messages.at(-1), [messages]);
 
   const inputText = message?.content as string;
-
-  const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
-
-  const lastMessage = useMemo(() => messages.at(-1), [messages]);
+  const loading = lastMessage?.loading;
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -38,7 +37,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
         <TextArea
           ref={bridge.setRef.bind(bridge)}
           autoFocus
-          disabled={lastMessage?.loading}
+          disabled={loading}
           value={inputText}
           onKeyDown={handleKeyDown}
           onChange={(e) => bridge.onChangeContent(e.target.value)}
@@ -46,7 +45,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
       </div>
       <div data-testid="FocusBarFooter">
         <Button
-          loading={lastMessage?.loading}
+          loading={loading}
           disabled={disabledSend}
           data-testid="FocusBar-Button-Send"
           onClick={() => bridge.sendUser()}

@@ -33,14 +33,21 @@ export class SenderStrategyPlugin
 
   constructor(protected failureStrategy: SendFailureStrategyType) {}
 
+  protected handleBefore_KEEP_FAILED(
+    parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>
+  ): MessageStoreMsg<any, unknown> {
+    const { currentMessage, store } = parameters;
+
+    // 立即添加策略：现在就添加到 store
+    return store.addMessage(currentMessage);
+  }
+
   /**
    * 生命周期钩子：发送前处理
    *
    * 根据策略决定是否立即将消息添加到 store
    */
   onBefore(context: ExecutorContext<MessageSenderContext>): void {
-    const { currentMessage, messages } = context.parameters;
-
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
         // 延迟添加策略：不添加到 store，等成功后再添加
@@ -51,7 +58,7 @@ export class SenderStrategyPlugin
       case SendFailureStrategy.DELETE_FAILED:
       default:
         // 立即添加策略：现在就添加到 store
-        const addedMessage = messages.addMessage(currentMessage);
+        const addedMessage = this.handleBefore_KEEP_FAILED(context.parameters);
         // 更新 context 中的 currentMessage 为已添加的消息（可能 id 有变化）
         context.parameters.currentMessage = addedMessage;
         context.parameters.addedToStore = true;
@@ -59,11 +66,11 @@ export class SenderStrategyPlugin
     }
   }
 
-  protected handleAddNoOnSuccess(
+  protected handleSuccess_KEEP_FAILED(
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
     successData: MessageStoreMsg<any, unknown>
   ): MessageStoreMsg<any, unknown> | undefined {
-    const { currentMessage, messages } = parameters;
+    const { currentMessage, store: messages } = parameters;
 
     // 消息已在 store 中，更新状态
     const updatedMessage = messages.updateMessage(
@@ -79,11 +86,11 @@ export class SenderStrategyPlugin
    * @param context 上下文
    * @returns 添加的用户消息
    */
-  protected handleAaddOnSuccess(
+  protected handleSuccess_ADD_ON_SUCCESS(
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
     successData: MessageStoreMsg<any, unknown>
   ): MessageStoreMsg<any, unknown> {
-    const { currentMessage, messages } = parameters;
+    const { currentMessage, store: messages } = parameters;
 
     const addedMessage = messages.addMessage({
       ...currentMessage,
@@ -105,7 +112,7 @@ export class SenderStrategyPlugin
 
     if (addedToStore) {
       // 消息已在 store 中，更新状态
-      const updatedMessage = this.handleAddNoOnSuccess(
+      const updatedMessage = this.handleSuccess_KEEP_FAILED(
         context.parameters,
         successData
       );
@@ -120,7 +127,7 @@ export class SenderStrategyPlugin
       // 更新 returnValue，让 executor 返回更新后的消息
       context.returnValue = updatedMessage;
     } else {
-      const addedMessage = this.handleAaddOnSuccess(
+      const addedMessage = this.handleSuccess_ADD_ON_SUCCESS(
         context.parameters,
         successData
       );
@@ -139,7 +146,7 @@ export class SenderStrategyPlugin
   onError(
     context: ExecutorContext<MessageSenderContext>
   ): ExecutorError | void {
-    const { currentMessage, messages, addedToStore } = context.parameters;
+    const { currentMessage, store, addedToStore } = context.parameters;
     const error = context.error;
 
     // 根据策略处理失败消息
@@ -156,7 +163,7 @@ export class SenderStrategyPlugin
       case SendFailureStrategy.KEEP_FAILED:
         // 保留失败消息：更新消息状态为 FAILED
         if (addedToStore && currentMessage.id) {
-          const updatedMessage = messages.updateMessage(
+          const updatedMessage = store.updateMessage(
             currentMessage.id,
             faileds
           );
@@ -175,10 +182,10 @@ export class SenderStrategyPlugin
       case SendFailureStrategy.DELETE_FAILED:
         // 删除失败消息：从 store 中删除
         if (addedToStore && currentMessage.id) {
-          messages.deleteMessage(currentMessage.id);
+          store.deleteMessage(currentMessage.id);
         }
         // 创建临时失败消息对象返回（不在 store 中）
-        finalMessage = messages.mergeMessage(currentMessage, faileds);
+        finalMessage = store.mergeMessage(currentMessage, faileds);
         break;
 
       case SendFailureStrategy.ADD_ON_SUCCESS:

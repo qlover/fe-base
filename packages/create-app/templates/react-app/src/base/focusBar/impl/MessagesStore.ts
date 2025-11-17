@@ -169,4 +169,8 @@ export class MessagesStore<
       } as Partial<State>)
     );
   }
+
+  override toJson(): Record<string, any>[] {
+    return JSON.parse(JSON.stringify(this.getMessages()));
+  }
 }

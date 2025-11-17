@@ -62,10 +62,9 @@ export class ChatMessageBridge<T = string>
 
     const reuslt = await this.send(currentMessage);
 
-    if (!reuslt.error) {
-      this.messages.resetCurrentMessage();
-      this.ref?.focus();
-    }
+    this.messages.resetCurrentMessage();
+
+    this.focus();
 
     this.enableSend();
 

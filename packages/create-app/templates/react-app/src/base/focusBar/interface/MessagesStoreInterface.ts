@@ -52,4 +52,6 @@ export abstract class MessagesStoreInterface<
   abstract getMessageByIndex(index: number): MessageType | undefined;
 
   abstract resetMessages(messages: MessageType[]): void;
+
+  abstract toJson(): Record<string, any>[];
 }

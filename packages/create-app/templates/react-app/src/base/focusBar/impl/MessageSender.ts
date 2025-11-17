@@ -6,12 +6,12 @@ import {
 } from './MessagesStore';
 import type { MessageGetwayInterface } from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface MessageSenderContext<
   MessageType extends MessageStoreMsg<any> = MessageStoreMsg<any>
-> {
-  messages: MessagesStore<MessageType>;
+> extends MessageSenderConfig {
+  store: MessagesStore<MessageType>;
   /**
    * 整个流程中的当前消息
    */
@@ -24,32 +24,42 @@ export interface MessageSenderContext<
 
 export interface MessageSenderConfig {
   /**
-   *
    * 是否在发送失败时抛出错误
    *
    * @default false
    */
   throwIfError?: boolean;
-  /** 网关 */
+
+  /**
+   * 网关
+   */
   gateway?: MessageGetwayInterface;
+
+  /**
+   * 是否启用流式发送
+   *
+   * @default false
+   */
+  streaming?: boolean;
+}
+
+class MessageSenderExecutor extends AsyncExecutor {
+  getPlugins(): ExecutorPlugin<any>[] {
+    return this.plugins;
+  }
 }
 
 export class MessageSender<MessageType extends MessageStoreMsg<any>>
   implements MessageSenderInterface<MessageType>
 {
   protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
-  protected readonly executor: AsyncExecutor;
-  protected readonly gateway?: MessageGetwayInterface;
-  protected throwIfError: boolean;
+  protected readonly executor: MessageSenderExecutor;
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
-    config?: MessageSenderConfig
+    protected readonly config?: MessageSenderConfig
   ) {
-    this.executor = new AsyncExecutor();
-
-    this.gateway = config?.gateway;
-    this.throwIfError = config?.throwIfError ?? false;
+    this.executor = new MessageSenderExecutor();
   }
 
   getMessageStore(): MessagesStore<MessageType> {
@@ -57,7 +67,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
   }
 
   getGateway(): MessageGetwayInterface | undefined {
-    return this.gateway;
+    return this.config?.gateway;
   }
 
   use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
@@ -65,11 +75,20 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     return this;
   }
 
-  protected async sendMessage(message: MessageType): Promise<MessageType> {
+  protected async sendMessage(
+    message: MessageType,
+    context: ExecutorContext<MessageSenderContext<MessageType>>
+  ): Promise<MessageType> {
     let currentMessage: MessageType = message;
 
-    // 调用网关发送消息
-    const result = await this.gateway?.sendMessage(message);
+    const gateway = this.getGateway();
+
+    const result = await gateway?.sendMessage(message);
+
+    if (context.parameters.streaming) {
+      const plugins = this.executor.getPlugins();
+      await this.executor.runHooks(plugins, 'onStream', context);
+    }
 
     const endTime = Date.now();
 
@@ -104,15 +123,19 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
    * @returns 发送的消息
    */
   async send(message: Partial<MessageType>): Promise<MessageType> {
-    const context: MessageSenderContext<MessageType> = {
-      messages: this.messages,
-      currentMessage: this.generateSendingMessage(message)
-    };
+    const context: MessageSenderContext<MessageType> = Object.assign(
+      {},
+      this.config,
+      {
+        store: this.messages,
+        currentMessage: this.generateSendingMessage(message)
+      }
+    );
 
     try {
       const message = await this.executor.exec(context, async (ctx) => {
         // 防止修改 messageOrContent 引用
-        return await this.sendMessage(ctx.parameters.currentMessage);
+        return await this.sendMessage(ctx.parameters.currentMessage, ctx);
       });
 
       return message;
@@ -125,7 +148,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
         error.id = this.messageSenderErrorId;
       }
 
-      if (this.throwIfError) {
+      if (this.config?.throwIfError) {
         throw error;
       }
 
