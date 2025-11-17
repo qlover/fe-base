@@ -44,4 +44,6 @@ export abstract class MessagesStoreInterface<
   ): M | undefined;
 
   abstract deleteMessage(id: string): void;
+
+  abstract isMessage<T extends MessageType>(message: unknown): message is T;
 }

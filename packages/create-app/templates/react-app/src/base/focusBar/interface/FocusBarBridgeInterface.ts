@@ -17,6 +17,8 @@ export interface FocusBarBridgeInterface<
 
   onChangeText(text: string): void;
 
+  setRef(ref: unknown): void;
+
   /**
    * 当直接调用send时，会使用默认的输入框内容
    *

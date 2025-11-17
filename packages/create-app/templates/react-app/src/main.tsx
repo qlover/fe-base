@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { BootstrapClient } from './core/bootstraps/BootstrapClient';
 import { clientIOC } from './core/clientIoc/ClientIOC.ts';
 import { ChatRoot } from './uikit/components/chat/ChatRoot.tsx';
+import '@/styles/css/tailwind.css';
 
 BootstrapClient.main({
   root: window,

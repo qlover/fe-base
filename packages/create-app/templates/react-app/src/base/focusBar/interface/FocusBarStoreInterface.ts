@@ -23,11 +23,9 @@ export abstract class FocusBarStoreInterface<
 
   abstract clearInputText(): void;
 
-  abstract enableSend(): void;
-
-  abstract disableSend(): void;
-
   abstract getInputText(): string;
+
+  abstract changeDisabledSend(disabled: boolean): void;
 
   abstract getDisabledSend(): boolean;
 }

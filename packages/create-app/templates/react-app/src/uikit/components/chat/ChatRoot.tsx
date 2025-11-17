@@ -15,6 +15,7 @@ import type {
 import { FocusBar } from './FocusBar';
 import { FocusBarBridge } from './FocusBarBridge';
 import { MessageApi } from './MessageApi';
+import { MessagesList } from './messagesList/MessagesList';
 
 function createFocusBarState(): FocusBarStateInterface {
   return {
@@ -46,6 +47,7 @@ export function ChatRoot() {
 
   return (
     <div data-testid="ChatRoot">
+      <MessagesList bridge={bridge} />
       <FocusBar bridge={bridge} />
     </div>
   );

@@ -149,4 +149,8 @@ export class MessagesStore<
 
     this.emit(this.cloneState({ messages: newMessages } as Partial<State>));
   }
+
+  override isMessage<T extends MessageType>(message: unknown): message is T {
+    return typeof message === 'object' && message !== null;
+  }
 }

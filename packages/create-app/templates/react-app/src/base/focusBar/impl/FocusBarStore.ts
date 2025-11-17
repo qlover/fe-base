@@ -10,12 +10,8 @@ export class FocusBarStore extends FocusBarStoreInterface<FocusBarStateInterface
     this.emit(this.cloneState({ inputText: '' }));
   }
 
-  override enableSend(): void {
-    this.emit(this.cloneState({ disabledSend: false }));
-  }
-
-  override disableSend(): void {
-    this.emit(this.cloneState({ disabledSend: true }));
+  override changeDisabledSend(disabled: boolean): void {
+    this.emit(this.cloneState({ disabledSend: disabled }));
   }
 
   override getInputText(): string {
