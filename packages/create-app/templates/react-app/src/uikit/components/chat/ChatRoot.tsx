@@ -1,6 +1,7 @@
 import { useFactory } from '@brain-toolkit/react-kit';
 import { useState } from 'react';
 import { SendFailureStrategy } from '@/base/focusBar/impl/SenderStrategyPlugin';
+import { StopControlPlugin } from '@/base/focusBar/impl/StopControlPlugin';
 import { ChatMessageBridge } from './chatMessage/ChatMessageBridge';
 import { ChatMessageStore } from './chatMessage/ChatMessageStore';
 import { ChatSenderStrategy } from './chatMessage/ChatSenderStrategy';
@@ -26,6 +27,8 @@ export function ChatRoot() {
       new ChatMessageBridge(messagesStore, {
         gateway: messageApi
       })
+        // ⭐ 停止控制插件 - 必须最先注册
+        .use(new StopControlPlugin())
         // 发送策略
         .use(new ChatSenderStrategy(SendFailureStrategy.KEEP_FAILED))
     );

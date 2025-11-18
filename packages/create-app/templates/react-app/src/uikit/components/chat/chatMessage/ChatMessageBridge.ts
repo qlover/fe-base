@@ -89,6 +89,36 @@ export class ChatMessageBridge<T = string>
   sendStream(
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
-    return this.send(undefined, Object.assign({}, gatewayOptions));
+    return this.send(
+      undefined,
+      Object.assign(
+        { stream: true } as GatewayOptions<ChatMessage<T>>,
+        gatewayOptions
+      )
+    );
+  }
+
+  /**
+   * 停止指定消息的发送
+   * @param messageId - 消息ID
+   * @returns 是否成功停止
+   */
+  stop(messageId: string): boolean {
+    return this.messageSender.stop(messageId);
+  }
+
+  /**
+   * 停止所有正在发送的消息
+   */
+  stopAll(): void {
+    this.messageSender.stopAll();
+  }
+
+  /**
+   * 获取所有正在发送的消息ID列表
+   * @returns 消息ID数组
+   */
+  getPendingMessageIds(): string[] {
+    return this.messageSender.getPendingMessageIds();
   }
 }

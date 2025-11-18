@@ -18,8 +18,9 @@ export class MessageApi implements MessageGetwayInterface {
 
   /**
    * 发送消息（支持普通和流式两种模式）
-   * - 如果 options 中有 onChunk 回调，则使用流式模式
-   * - 否则使用普通模式
+   * - 如果 options.stream === true，使用流式模式（逐步输出）
+   * - 如果提供了 options 但 stream !== true，使用可中断的普通模式
+   * - 如果没有 options，使用快速普通模式（不可中断）
    */
   async sendMessage<M extends MessageStoreMsg<string>>(
     message: M,
@@ -34,14 +35,15 @@ export class MessageApi implements MessageGetwayInterface {
       throw error;
     }
 
-    // 判断是否使用流式模式
-    const isStreamMode = typeof options?.onChunk === 'function';
-
-    if (isStreamMode) {
-      // 流式模式
+    // 判断使用哪种模式
+    if (options?.stream === true) {
+      // 流式模式：逐步输出
       return this.sendStreamMode(message, options);
+    } else if (options) {
+      // 可中断的普通模式：一次性返回，但支持停止
+      return this.sendInterruptibleMode(message, options);
     } else {
-      // 普通模式
+      // 快速普通模式：不可中断
       return this.sendNormalMode(message);
     }
   }
@@ -70,7 +72,7 @@ export class MessageApi implements MessageGetwayInterface {
       for (let i = 0; i < words.length; i++) {
         // 检查是否被取消
         if (options.signal?.aborted) {
-          throw new Error('Request aborted');
+          throw new DOMException('Request aborted', 'AbortError');
         }
 
         // 累积内容
@@ -120,15 +122,115 @@ export class MessageApi implements MessageGetwayInterface {
 
       return finalMessage;
     } catch (error) {
-      // 发生错误时调用错误回调
-      await options.onError?.(error);
+      // 检查是否是停止错误
+      if (
+        error instanceof DOMException &&
+        error.name === 'AbortError' &&
+        typeof options.onAborted === 'function'
+      ) {
+        // 调用 onAborted 回调
+        // 注意：这里的消息包含已经累积的内容
+        const abortedMessage = this.messagesStore.createMessage({
+          ...message,
+          id: assistantMessageId,
+          role: ChatMessageRoleType.ASSISTANT,
+          content: accumulatedContent,
+          error: null,
+          loading: false,
+          status: MessageStatus.STOPPED,
+          startTime: message.startTime,
+          endTime: Date.now(),
+          result: null
+        }) as unknown as M;
+
+        await options.onAborted(abortedMessage);
+      } else {
+        // 其他错误，调用 onError 回调
+        await options.onError?.(error);
+      }
+
       throw error;
     }
   }
 
   /**
-   * 普通发送模式
+   * 可中断的普通模式
+   * - 一次性返回完整消息（不逐字输出）
+   * - 支持停止控制（通过 signal）
+   * - 支持事件回调（onComplete, onAborted, onError）
+   */
+  private async sendInterruptibleMode<M extends MessageStoreMsg<string>>(
+    message: M,
+    options: GatewayOptions<M>
+  ): Promise<M> {
+    const messageContent = message.content ?? '';
+
+    // 模拟随机延迟
+    const times = random(200, 1000);
+
+    // 在延迟过程中检查是否被取消
+    const startTime = Date.now();
+    while (Date.now() - startTime < times) {
+      if (options.signal?.aborted) {
+        // 被取消，创建停止状态的消息
+        const abortedMessage = this.messagesStore.createMessage({
+          ...message,
+          id: ChatMessageRoleType.ASSISTANT + message.id + Date.now(),
+          role: ChatMessageRoleType.ASSISTANT,
+          content: '', // 还没开始生成内容
+          error: null,
+          loading: false,
+          status: MessageStatus.STOPPED,
+          endTime: Date.now(),
+          result: null
+        }) as unknown as M;
+
+        // 调用 onAborted
+        await options.onAborted?.(abortedMessage);
+
+        throw new DOMException('Request aborted', 'AbortError');
+      }
+
+      // 每 50ms 检查一次
+      await ThreadUtil.sleep(50);
+    }
+
+    // 检查是否需要模拟错误
+    if (messageContent.includes('Failed') || messageContent.includes('error')) {
+      const error = new Error('Failed to send message');
+      await options.onError?.(error);
+      throw error;
+    }
+
+    if (times % 5 === 0) {
+      const error = new Error(`Network error(${times})`);
+      await options.onError?.(error);
+      throw error;
+    }
+
+    const endTime = Date.now();
+    const finalMessage = this.messagesStore.createMessage({
+      ...message,
+      id: ChatMessageRoleType.ASSISTANT + message.id + endTime,
+      role: ChatMessageRoleType.ASSISTANT,
+      content: '(' + endTime + ')Hello! You sent: ' + message.content,
+      error: null,
+      loading: false,
+      status: MessageStatus.SENT,
+      endTime: endTime,
+      result: null
+    }) as unknown as M;
+
+    // 调用 onComplete
+    await options.onComplete?.(finalMessage);
+
+    return finalMessage;
+  }
+
+  /**
+   * 快速普通模式
    * - 一次性返回完整消息
+   * - 不可中断（不检查 signal）
    */
   private async sendNormalMode<M extends MessageStoreMsg<string>>(
     message: M

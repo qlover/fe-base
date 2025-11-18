@@ -27,10 +27,27 @@ export interface MessageStreamEvent<M = unknown> {
    * @param progress - 进度百分比
    */
   onProgress?(progress: number): void;
+
+  /**
+   * 消息被停止/取消时调用
+   * @param message - 被停止时的消息状态（包含已接收的部分内容）
+   */
+  onAborted?(message: M): void;
 }
 
 export interface GatewayOptions<M, P = Record<string, any>>
   extends MessageStreamEvent<M> {
+  /**
+   * 是否使用流式模式
+   * - true: 流式模式，逐步输出内容（会调用 onChunk）
+   * - false 或 undefined: 普通模式，一次性返回完整内容
+   *
+   * 注意：无论是否流式，只要提供了 options，都支持停止控制（signal）
+   *
+   * @default false
+   */
+  stream?: boolean;
+
   /**
    * 取消请求信号
    */
