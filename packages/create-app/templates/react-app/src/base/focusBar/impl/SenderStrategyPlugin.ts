@@ -1,10 +1,10 @@
 import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
-import type { MessageSenderContext } from './MessageSender';
 import type {
-  ExecutorContext,
-  ExecutorError,
-  ExecutorPlugin
-} from '@qlover/fe-corekit';
+  MessageSenderContext,
+  MessageSenderPlugin,
+  MessageSenderPluginContext
+} from './MessageSenderExecutor';
+import type { ExecutorContext, ExecutorError } from '@qlover/fe-corekit';
 
 /**
  * 发送失败时的消息处理策略
@@ -26,9 +26,7 @@ export type SendFailureStrategyType =
  *
  * 实现三个生命周期钩子来控制消息的添加、更新和失败处理
  */
-export class SenderStrategyPlugin
-  implements ExecutorPlugin<MessageSenderContext>
-{
+export class SenderStrategyPlugin implements MessageSenderPlugin {
   readonly pluginName = 'SenderStrategyPlugin';
 
   constructor(protected failureStrategy: SendFailureStrategyType) {}
@@ -38,28 +36,19 @@ export class SenderStrategyPlugin
   ): MessageStoreMsg<any, unknown> {
     const { currentMessage, store } = parameters;
 
-    // 立即添加策略：现在就添加到 store
     return store.addMessage(currentMessage);
   }
 
-  /**
-   * 生命周期钩子：发送前处理
-   *
-   * 根据策略决定是否立即将消息添加到 store
-   */
   onBefore(context: ExecutorContext<MessageSenderContext>): void {
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
-        // 延迟添加策略：不添加到 store，等成功后再添加
         context.parameters.addedToStore = false;
         break;
 
       case SendFailureStrategy.KEEP_FAILED:
       case SendFailureStrategy.DELETE_FAILED:
       default:
-        // 立即添加策略：现在就添加到 store
         const addedMessage = this.handleBefore_KEEP_FAILED(context.parameters);
-        // 更新 context 中的 currentMessage 为已添加的消息（可能 id 有变化）
         context.parameters.currentMessage = addedMessage;
         context.parameters.addedToStore = true;
         break;
@@ -72,7 +61,6 @@ export class SenderStrategyPlugin
   ): MessageStoreMsg<any, unknown> | undefined {
     const { currentMessage, store: messages } = parameters;
 
-    // 消息已在 store 中，更新状态
     const updatedMessage = messages.updateMessage(
       currentMessage.id!,
       successData as Partial<MessageStoreMsg<any>>
@@ -81,11 +69,6 @@ export class SenderStrategyPlugin
     return updatedMessage;
   }
 
-  /**
-   * 处理添加消息
-   * @param context 上下文
-   * @returns 添加的用户消息
-   */
   protected handleSuccess_ADD_ON_SUCCESS(
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
     successData: MessageStoreMsg<any, unknown>
@@ -100,18 +83,12 @@ export class SenderStrategyPlugin
     return addedMessage;
   }
 
-  /**
-   * 生命周期钩子：发送成功处理
-   *
-   * 根据 addedToStore 决定是更新消息（已在store）还是添加消息（ADD_ON_SUCCESS策略）
-   */
   onSuccess(context: ExecutorContext<MessageSenderContext>): void {
     const { addedToStore } = context.parameters;
 
     const successData = context.returnValue as MessageStoreMsg<any>;
 
     if (addedToStore) {
-      // 消息已在 store 中，更新状态
       const updatedMessage = this.handleSuccess_KEEP_FAILED(
         context.parameters,
         successData
@@ -121,10 +98,7 @@ export class SenderStrategyPlugin
         throw new Error('Failed to update message');
       }
 
-      // 更新 context 中的 currentMessage 为更新后的消息
       context.parameters.currentMessage = updatedMessage;
-
-      // 更新 returnValue，让 executor 返回更新后的消息
       context.returnValue = updatedMessage;
     } else {
       const addedMessage = this.handleSuccess_ADD_ON_SUCCESS(
@@ -132,24 +106,17 @@ export class SenderStrategyPlugin
         successData
       );
 
-      // 更新 context
       context.parameters.currentMessage = addedMessage;
       context.returnValue = addedMessage;
     }
   }
 
-  /**
-   * 生命周期钩子：发送失败处理
-   *
-   * 根据策略决定如何处理失败的消息
-   */
   onError(
     context: ExecutorContext<MessageSenderContext>
   ): ExecutorError | void {
     const { currentMessage, store, addedToStore } = context.parameters;
     const error = context.error;
 
-    // 根据策略处理失败消息
     let finalMessage: MessageStoreMsg<any>;
 
     const faileds = {
@@ -161,7 +128,6 @@ export class SenderStrategyPlugin
 
     switch (this.failureStrategy) {
       case SendFailureStrategy.KEEP_FAILED:
-        // 保留失败消息：更新消息状态为 FAILED
         if (addedToStore && currentMessage.id) {
           const updatedMessage = store.updateMessage(
             currentMessage.id,
@@ -174,32 +140,32 @@ export class SenderStrategyPlugin
 
           finalMessage = updatedMessage;
         } else {
-          // 消息不在 store 中，创建临时消息对象
           finalMessage = Object.assign(currentMessage, faileds);
         }
         break;
 
       case SendFailureStrategy.DELETE_FAILED:
-        // 删除失败消息：从 store 中删除
         if (addedToStore && currentMessage.id) {
           store.deleteMessage(currentMessage.id);
         }
-        // 创建临时失败消息对象返回（不在 store 中）
         finalMessage = store.mergeMessage(currentMessage, faileds);
         break;
 
       case SendFailureStrategy.ADD_ON_SUCCESS:
-        // 延迟添加策略：创建临时失败消息对象（不添加到 store）
         finalMessage = Object.assign(currentMessage, faileds);
         break;
     }
 
     if (finalMessage) {
-      // 更新 context 中的 currentMessage
       context.parameters.currentMessage = finalMessage;
       context.returnValue = finalMessage;
     }
+  }
 
-    // 返回 void 表示错误已被处理，不再向上抛出
+  onStream(
+    context: MessageSenderPluginContext<any>,
+    chunk: unknown
+  ): Promise<unknown> | unknown | void {
+    return chunk;
   }
 }

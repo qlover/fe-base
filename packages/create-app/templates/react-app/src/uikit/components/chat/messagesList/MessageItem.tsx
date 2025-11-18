@@ -59,7 +59,7 @@ export function MessageItem<T, MessageType extends ChatMessage<T>>({
             <With it={message.loading} fallback={<Spin size="small" />}>
               <ReloadOutlined
                 disabled={message.loading}
-                onClick={() => bridge?.sendUser(message)}
+                onClick={() => bridge?.send(message)}
               />
             </With>
           )}

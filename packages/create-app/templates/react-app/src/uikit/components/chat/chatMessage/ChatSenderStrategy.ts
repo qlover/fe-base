@@ -1,4 +1,4 @@
-import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSender';
+import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
 import { SenderStrategyPlugin } from '@/base/focusBar/impl/SenderStrategyPlugin';
 import { ChatMessageRoleType, type ChatMessage } from './ChatMessage';
 import type { ChatMessageStore } from './ChatMessageStore';

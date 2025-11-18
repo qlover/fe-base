@@ -24,7 +24,7 @@ export function FocusBar({ bridge }: FocusBarProps) {
       // Ctrl+Enter 发送
       if (e.key === 'Enter' && e.ctrlKey) {
         if (!disabledSend && !lastMessage?.loading) {
-          bridge.sendUser();
+          bridge.send();
         }
       }
     },
@@ -43,14 +43,23 @@ export function FocusBar({ bridge }: FocusBarProps) {
           onChange={(e) => bridge.onChangeContent(e.target.value)}
         />
       </div>
-      <div data-testid="FocusBarFooter">
+      <div data-testid="FocusBarFooter" className="flex gap-2">
         <Button
           loading={loading}
           disabled={disabledSend}
           data-testid="FocusBar-Button-Send"
-          onClick={() => bridge.sendUser()}
+          onClick={() => bridge.send()}
         >
           Send
+        </Button>
+
+        <Button
+          loading={loading}
+          disabled={disabledSend}
+          data-testid="FocusBar-Button-SendStream"
+          onClick={() => bridge.sendStream()}
+        >
+          Send stream
         </Button>
       </div>
     </div>

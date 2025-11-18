@@ -1,26 +1,20 @@
-import { AsyncExecutor, ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError } from '@qlover/fe-corekit';
+import {
+  type MessageSenderContext,
+  type MessageSenderPluginContext,
+  MessageSenderExecutor
+} from './MessageSenderExecutor';
 import {
   MessageStatus,
   type MessageStoreMsg,
   type MessagesStore
 } from './MessagesStore';
-import type { MessageGetwayInterface } from '../interface/MessageGetwayInterface';
+import type {
+  GatewayOptions,
+  MessageGetwayInterface
+} from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
-import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
-
-export interface MessageSenderContext<
-  MessageType extends MessageStoreMsg<any> = MessageStoreMsg<any>
-> extends MessageSenderConfig {
-  store: MessagesStore<MessageType>;
-  /**
-   * 整个流程中的当前消息
-   */
-  currentMessage: MessageType;
-  /**
-   * 消息是否已添加到 store
-   */
-  addedToStore?: boolean;
-}
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface MessageSenderConfig {
   /**
@@ -36,17 +30,12 @@ export interface MessageSenderConfig {
   gateway?: MessageGetwayInterface;
 
   /**
-   * 是否启用流式发送
+   * 流式消息对象
    *
-   * @default false
+   * - 可用作对 gateway 事件接受, 如: onChunk, onComplete, onError, onProgress
+   * - 可以给 gateway 传递中止信号
    */
-  streaming?: boolean;
-}
-
-class MessageSenderExecutor extends AsyncExecutor {
-  getPlugins(): ExecutorPlugin<any>[] {
-    return this.plugins;
-  }
+  gatewayOptions?: GatewayOptions<any>;
 }
 
 export class MessageSender<MessageType extends MessageStoreMsg<any>>
@@ -62,47 +51,56 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     this.executor = new MessageSenderExecutor();
   }
 
-  getMessageStore(): MessagesStore<MessageType> {
+  public getMessageStore(): MessagesStore<MessageType> {
     return this.messages;
   }
 
-  getGateway(): MessageGetwayInterface | undefined {
+  public getGateway(): MessageGetwayInterface | undefined {
     return this.config?.gateway;
   }
 
-  use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
+  public use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
     this.executor.use(plugin);
     return this;
   }
 
+  /**
+   * 发送普通消息
+   *
+   * @param message - 消息对象
+   * @returns 消息结果
+   */
   protected async sendMessage(
     message: MessageType,
-    context: ExecutorContext<MessageSenderContext<MessageType>>
+    context: MessageSenderPluginContext<MessageType>
   ): Promise<MessageType> {
-    let currentMessage: MessageType = message;
-
     const gateway = this.getGateway();
+
+    const gatewayOptions = context.parameters.gatewayOptions;
+    if (gatewayOptions) {
+      // extends gatewayMessage with onChunk event, call plugin.onStream
+      context.parameters.gatewayOptions = Object.assign(gatewayOptions, {
+        onChunk: async (chunk) => {
+          const result = await this.executor.runStream(chunk, context);
+
+          if (typeof gatewayOptions.onChunk === 'function') {
+            gatewayOptions.onChunk(result || chunk);
+          }
+        }
+      } as GatewayOptions<MessageType>);
+    }
 
     const result = await gateway?.sendMessage(message);
 
-    if (context.parameters.streaming) {
-      const plugins = this.executor.getPlugins();
-      await this.executor.runHooks(plugins, 'onStream', context);
-    }
-
-    const endTime = Date.now();
-
-    // 返回带成功状态的消息对象（不更新 store，由插件决定）
-    return this.messages.mergeMessage(currentMessage, {
+    return this.messages.mergeMessage(message, {
       status: MessageStatus.SENT,
       result: result,
       loading: false,
-      endTime: endTime
+      endTime: Date.now()
     } as Partial<MessageType>);
   }
 
   protected generateSendingMessage(message: Partial<MessageType>): MessageType {
-    // 设置为 SENDING 状态
     return this.messages.createMessage({
       ...message,
       status: MessageStatus.SENDING,
@@ -113,52 +111,55 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     } as Partial<MessageType>);
   }
 
+  protected async handleError(
+    error: unknown,
+    context: MessageSenderContext<MessageType>
+  ): Promise<MessageType> {
+    // If is unknown async error, set the id to MESSAGE_SENDER_ERROR
+    if (error instanceof ExecutorError && error.id === 'UNKNOWN_ASYNC_ERROR') {
+      error.id = this.messageSenderErrorId;
+    }
+
+    if (this.config?.throwIfError) {
+      throw error;
+    }
+
+    const endTime = context.currentMessage.endTime || Date.now();
+    return Object.assign(context.currentMessage, {
+      loading: false,
+      error: error,
+      status: MessageStatus.FAILED,
+      endTime: endTime
+    } as Partial<MessageType>);
+  }
+
   /**
    * 发送消息
    *
    * - 如果 `throwIfError=true` ，则会在发送失败时抛出错误
    * - 如果 `throwIfError=false(默认)` ，则会在发送失败时返回失败消息
+   * - 如果提供 `streamEvent`，则使用流式模式
    *
    * @param message - 消息对象（支持部分字段）
+   * @param streamEvent - 可选的流式事件对象，提供则使用流式模式,可覆盖 config.streamEvent
    * @returns 发送的消息
    */
-  async send(message: Partial<MessageType>): Promise<MessageType> {
-    const context: MessageSenderContext<MessageType> = Object.assign(
-      {},
-      this.config,
-      {
-        store: this.messages,
-        currentMessage: this.generateSendingMessage(message)
-      }
-    );
+  public async send(
+    message: Partial<MessageType>,
+    gatewayOptions?: GatewayOptions<MessageType>
+  ): Promise<MessageType> {
+    const context = Object.assign({}, this.config, {
+      store: this.messages,
+      currentMessage: this.generateSendingMessage(message),
+      gatewayOptions: gatewayOptions ?? this.config?.gatewayOptions
+    } as MessageSenderContext<MessageType>);
 
     try {
-      const message = await this.executor.exec(context, async (ctx) => {
-        // 防止修改 messageOrContent 引用
+      return await this.executor.exec(context, async (ctx) => {
         return await this.sendMessage(ctx.parameters.currentMessage, ctx);
       });
-
-      return message;
     } catch (error) {
-      // If is unknown async error, set the id to MESSAGE_SENDER_ERROR
-      if (
-        error instanceof ExecutorError &&
-        error.id === 'UNKNOWN_ASYNC_ERROR'
-      ) {
-        error.id = this.messageSenderErrorId;
-      }
-
-      if (this.config?.throwIfError) {
-        throw error;
-      }
-
-      const endTime = context.currentMessage.endTime || Date.now();
-      return Object.assign(context.currentMessage, {
-        loading: false,
-        error: error,
-        status: MessageStatus.FAILED,
-        endTime: endTime
-      } as Partial<MessageType>);
+      return this.handleError(error, context);
     }
   }
 }

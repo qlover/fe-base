@@ -1,6 +1,6 @@
 import {
-  MessagesStoreInterface,
   type MessageInterface,
+  MessagesStoreInterface,
   type MessagesStateInterface
 } from '../interface/MessagesStoreInterface';
 
@@ -44,7 +44,7 @@ export class MessagesStore<
   /**
    * 合并消息对象，保留实例原型链
    */
-  override mergeMessage<T extends MessageType>(
+  override mergeMessage<T extends MessageStoreMsg<any>>(
     target: T,
     ...updates: Partial<T>[]
   ): T {

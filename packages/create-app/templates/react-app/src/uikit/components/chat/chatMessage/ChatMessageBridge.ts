@@ -1,24 +1,37 @@
 import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
 import { MessageSender } from '@/base/focusBar/impl/MessageSender';
+import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
 import { ChatMessageRoleType, type ChatMessage } from './ChatMessage';
 import type { ChatMessageStore } from './ChatMessageStore';
-import type { ChatMessageBridgeInterface } from './interface';
+import type {
+  ChatMessageBridgeInterface,
+  ChatMessageBridgePlugin
+} from './interface';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
 export class ChatMessageBridge<T = string>
-  extends MessageSender<ChatMessage<T>>
   implements ChatMessageBridgeInterface<T>
 {
   protected ref: TextAreaRef | null = null;
+  protected readonly messageSender: MessageSender<ChatMessage<T>>;
 
   constructor(
-    readonly messages: ChatMessageStore<T>,
+    protected readonly messages: ChatMessageStore<T>,
     config?: MessageSenderConfig
   ) {
-    super(messages, config);
+    this.messageSender = new MessageSender(messages, config);
   }
 
-  override getMessageStore(): ChatMessageStore<T> {
+  use(plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]): this {
+    if (Array.isArray(plugin)) {
+      plugin.forEach((p) => this.messageSender.use(p));
+    } else {
+      this.messageSender.use(plugin);
+    }
+    return this;
+  }
+
+  getMessageStore(): ChatMessageStore<T> {
     return this.messages;
   }
 
@@ -44,9 +57,10 @@ export class ChatMessageBridge<T = string>
     });
   }
 
-  sendUser(): Promise<ChatMessage<T>>;
-  sendUser(message: ChatMessage<T>): Promise<ChatMessage<T>>;
-  async sendUser(message?: ChatMessage<T>): Promise<ChatMessage<T>> {
+  async send(
+    message?: ChatMessage<T>,
+    gatewayOptions?: GatewayOptions<ChatMessage<T>>
+  ): Promise<ChatMessage<T>> {
     const currentMessage = message ?? this.messages.getCurrentMessage();
 
     if (!this.messages.isMessage(currentMessage)) {
@@ -60,14 +74,21 @@ export class ChatMessageBridge<T = string>
 
     this.disableSend();
 
-    const reuslt = await this.send(currentMessage);
-
-    this.messages.resetCurrentMessage();
+    const reuslt = await this.messageSender.send(
+      currentMessage,
+      gatewayOptions
+    );
 
     this.focus();
 
     this.enableSend();
 
     return reuslt;
+  }
+
+  sendStream(
+    gatewayOptions?: GatewayOptions<ChatMessage<T>>
+  ): Promise<ChatMessage<T>> {
+    return this.send(undefined, Object.assign({}, gatewayOptions));
   }
 }

@@ -1,9 +1,11 @@
-import type { MessageSenderInterface } from '@/base/focusBar/interface/MessageSenderInterface';
+import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
+import type { MessageStreamEvent } from '@/base/focusBar/interface/MessageGetwayInterface';
 import type {
   MessagesStateInterface,
   MessagesStoreInterface
 } from '@/base/focusBar/interface/MessagesStoreInterface';
 import type { ChatMessage } from './ChatMessage';
+import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface ChatMessageStoreStateInterface<T = unknown>
   extends MessagesStateInterface<ChatMessage<T>> {
@@ -40,14 +42,19 @@ export interface InputRefInterface {
   focus(): void;
 }
 
+export type ChatMessageBridgePlugin<T = unknown> = ExecutorPlugin<
+  MessageSenderContext<ChatMessage<T>>
+>;
+
 export interface ChatMessageBridgeInterface<T = string>
-  extends MessageSenderInterface<ChatMessage<T>>,
-    InputRefInterface {
+  extends InputRefInterface {
   /**
    * @override
    * 返回更具体的 ChatMessageStoreInterface 类型
    */
   getMessageStore(): ChatMessageStoreInterface<T>;
+
+  use(plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]): this;
 
   onChangeContent(content: T): void;
 
@@ -66,6 +73,12 @@ export interface ChatMessageBridgeInterface<T = string>
    * @param message 消息对象
    * @returns 发送的消息
    */
-  sendUser(): Promise<ChatMessage<T>>;
-  sendUser(message: ChatMessage<T>): Promise<ChatMessage<T>>;
+  send(
+    message?: ChatMessage<T>,
+    streamEvent?: MessageStreamEvent<ChatMessage<T>>
+  ): Promise<ChatMessage<T>>;
+
+  sendStream(
+    streamEvent?: MessageStreamEvent<ChatMessage<T>>
+  ): Promise<ChatMessage<T>>;
 }
