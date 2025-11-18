@@ -86,25 +86,17 @@ export class ChatMessageBridge<T = string>
     return reuslt;
   }
 
-  sendStream(
-    gatewayOptions?: GatewayOptions<ChatMessage<T>>
-  ): Promise<ChatMessage<T>> {
-    return this.send(
-      undefined,
-      Object.assign(
-        { stream: true } as GatewayOptions<ChatMessage<T>>,
-        gatewayOptions
-      )
-    );
-  }
+  stop(messageId?: string): boolean {
+    if (messageId) {
+      return this.messageSender.stop(messageId);
+    }
 
-  /**
-   * 停止指定消息的发送
-   * @param messageId - 消息ID
-   * @returns 是否成功停止
-   */
-  stop(messageId: string): boolean {
-    return this.messageSender.stop(messageId);
+    const currentMessage = this.messages.getCurrentMessage();
+    if (currentMessage && currentMessage.id) {
+      return this.messageSender.stop(currentMessage.id);
+    }
+
+    return false;
   }
 
   /**

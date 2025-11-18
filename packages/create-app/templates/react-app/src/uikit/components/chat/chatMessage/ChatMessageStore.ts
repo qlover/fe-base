@@ -59,9 +59,14 @@ export class ChatMessageStore<T = unknown>
   }
 
   resetCurrentMessage(): void {
+    const currentMessage = this.createMessage({
+      id: this.state.currentMessage?.id,
+      role: ChatMessageRoleType.USER
+    });
+
     this.emit(
       this.cloneState({
-        currentMessage: this.createMessage({ role: ChatMessageRoleType.USER })
+        currentMessage
       })
     );
   }

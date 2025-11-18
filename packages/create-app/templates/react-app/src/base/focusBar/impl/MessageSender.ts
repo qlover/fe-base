@@ -105,6 +105,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     // 1. 清理 AbortController
     this.abortControllers.delete(messageId);
 
+    return;
     // 2. 获取 context（如果没有传入则从 Map 中获取）
     const ctxToClean = context || this.messageContexts.get(messageId);
 

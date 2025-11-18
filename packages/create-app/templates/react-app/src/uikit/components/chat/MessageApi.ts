@@ -100,7 +100,7 @@ export class MessageApi implements MessageGetwayInterface {
         await options.onProgress?.(progress);
 
         // 模拟网络延迟（随机延迟）
-        await ThreadUtil.sleep(random(300, 5000));
+        await ThreadUtil.sleep(random(100, 500));
       }
 
       // 创建最终完成的消息
@@ -175,7 +175,7 @@ export class MessageApi implements MessageGetwayInterface {
         // 被取消，创建停止状态的消息
         const abortedMessage = this.messagesStore.createMessage({
           ...message,
-          id: ChatMessageRoleType.ASSISTANT + message.id + Date.now(),
+          id: ChatMessageRoleType.ASSISTANT + message.id,
           role: ChatMessageRoleType.ASSISTANT,
           content: '', // 还没开始生成内容
           error: null,
@@ -211,7 +211,7 @@ export class MessageApi implements MessageGetwayInterface {
     const endTime = Date.now();
     const finalMessage = this.messagesStore.createMessage({
       ...message,
-      id: ChatMessageRoleType.ASSISTANT + message.id + endTime,
+      id: ChatMessageRoleType.ASSISTANT + message.id,
       role: ChatMessageRoleType.ASSISTANT,
       content: '(' + endTime + ')Hello! You sent: ' + message.content,
       error: null,
@@ -251,7 +251,7 @@ export class MessageApi implements MessageGetwayInterface {
     const endTime = Date.now();
     return this.messagesStore.createMessage({
       ...message,
-      id: ChatMessageRoleType.ASSISTANT + message.id + endTime,
+      id: ChatMessageRoleType.ASSISTANT + message.id,
       role: ChatMessageRoleType.ASSISTANT,
       content: '(' + endTime + ')Hello! You sent7: ' + message.content,
       error: null,

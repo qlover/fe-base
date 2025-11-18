@@ -204,8 +204,6 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
   ): unknown | void {
     const { store } = parameters;
 
-    console.log('handleStream_UpdateExisting', chunkMessage);
-
     if (!store.isMessage(chunkMessage) || !chunkMessage.id) {
       return chunkMessage;
     }
