@@ -1,5 +1,5 @@
 import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
-import type { MessageStreamEvent } from '@/base/focusBar/interface/MessageGetwayInterface';
+import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
 import type {
   MessagesStateInterface,
   MessagesStoreInterface
@@ -67,18 +67,24 @@ export interface ChatMessageBridgeInterface<T = string>
    *
    * @overload
    *
-   * - 如果传入消息对象，则使用传入的消息对象发送
-   * - 如果不传入任何参数，则使用当前消息对象发送
+   * - 如果不传入参数一，则使用当前消息对象发送
+   * - 如果传入参数二，则将启用流式模式
    *
    * @param message 消息对象
    * @returns 发送的消息
    */
   send(
     message?: ChatMessage<T>,
-    streamEvent?: MessageStreamEvent<ChatMessage<T>>
+    gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>>;
 
+  /**
+   * 发送流式消息
+   *
+   * @param gatewayOptions 流式模式配置
+   * @returns 发送的消息
+   */
   sendStream(
-    streamEvent?: MessageStreamEvent<ChatMessage<T>>
+    gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>>;
 }

@@ -77,20 +77,26 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     const gateway = this.getGateway();
 
     const gatewayOptions = context.parameters.gatewayOptions;
+    let newGatewayOptions: GatewayOptions<MessageType> | undefined;
     if (gatewayOptions) {
-      // extends gatewayMessage with onChunk event, call plugin.onStream
-      context.parameters.gatewayOptions = Object.assign(gatewayOptions, {
-        onChunk: async (chunk) => {
-          const result = await this.executor.runStream(chunk, context);
+      // Extract only necessary references to minimize closure capture
+      const originalOnChunk = gatewayOptions.onChunk;
+      const executor = this.executor;
 
-          if (typeof gatewayOptions.onChunk === 'function') {
-            gatewayOptions.onChunk(result || chunk);
+      newGatewayOptions = {
+        ...gatewayOptions,
+        onChunk: async (chunk) => {
+          // Pass context for plugin hooks, but don't capture it in closure unnecessarily
+          const result = await executor.runStream(chunk, context);
+
+          if (originalOnChunk) {
+            originalOnChunk(result || chunk);
           }
         }
-      } as GatewayOptions<MessageType>);
+      };
     }
 
-    const result = await gateway?.sendMessage(message);
+    const result = await gateway?.sendMessage(message, newGatewayOptions);
 
     return this.messages.mergeMessage(message, {
       status: MessageStatus.SENT,
@@ -115,19 +121,23 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     error: unknown,
     context: MessageSenderContext<MessageType>
   ): Promise<MessageType> {
-    // If is unknown async error, set the id to MESSAGE_SENDER_ERROR
+    // If is unknown async error, create a new error with MESSAGE_SENDER_ERROR id
+    let processedError = error;
     if (error instanceof ExecutorError && error.id === 'UNKNOWN_ASYNC_ERROR') {
-      error.id = this.messageSenderErrorId;
+      // Create a new ExecutorError instead of modifying the original
+      // The constructor will automatically preserve the stack trace from the original error
+      processedError = new ExecutorError(this.messageSenderErrorId, error);
     }
 
     if (this.config?.throwIfError) {
-      throw error;
+      throw processedError;
     }
 
     const endTime = context.currentMessage.endTime || Date.now();
-    return Object.assign(context.currentMessage, {
+    // Create a new message object instead of modifying the original
+    return this.messages.mergeMessage(context.currentMessage, {
       loading: false,
-      error: error,
+      error: processedError,
       status: MessageStatus.FAILED,
       endTime: endTime
     } as Partial<MessageType>);
@@ -148,11 +158,14 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     message: Partial<MessageType>,
     gatewayOptions?: GatewayOptions<MessageType>
   ): Promise<MessageType> {
-    const context = Object.assign({}, this.config, {
+    // Create context with explicit property assignment to avoid shallow copy issues
+    const context: MessageSenderContext<MessageType> = {
+      throwIfError: this.config?.throwIfError,
+      gateway: this.config?.gateway,
+      gatewayOptions: gatewayOptions ?? this.config?.gatewayOptions,
       store: this.messages,
-      currentMessage: this.generateSendingMessage(message),
-      gatewayOptions: gatewayOptions ?? this.config?.gatewayOptions
-    } as MessageSenderContext<MessageType>);
+      currentMessage: this.generateSendingMessage(message)
+    };
 
     try {
       return await this.executor.exec(context, async (ctx) => {

@@ -45,21 +45,19 @@ export function FocusBar({ bridge }: FocusBarProps) {
       </div>
       <div data-testid="FocusBarFooter" className="flex gap-2">
         <Button
-          loading={loading}
           disabled={disabledSend}
           data-testid="FocusBar-Button-Send"
           onClick={() => bridge.send()}
         >
-          Send
+          {loading ? 'Stop' : 'Send'}
         </Button>
 
         <Button
-          loading={loading}
           disabled={disabledSend}
           data-testid="FocusBar-Button-SendStream"
           onClick={() => bridge.sendStream()}
         >
-          Send stream
+          {loading ? 'Stop stream' : 'Send stream'}
         </Button>
       </div>
     </div>

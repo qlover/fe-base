@@ -162,10 +162,62 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
     }
   }
 
+  /**
+   * 流式数据处理钩子
+   * - 根据不同策略更新消息内容
+   * - KEEP_FAILED/DELETE_FAILED: 实时更新 store 中的消息
+   * - ADD_ON_SUCCESS: 不更新 store，等待完成时再添加
+   */
   onStream(
     context: MessageSenderPluginContext<any>,
     chunk: unknown
   ): Promise<unknown> | unknown | void {
+    const { addedToStore, currentMessage, store } = context.parameters;
+
+    if (!store.isMessage(chunk)) {
+      return chunk;
+    }
+
+    const chunkMessage = chunk as MessageStoreMsg<any, unknown>;
+
+    switch (this.failureStrategy) {
+      case SendFailureStrategy.KEEP_FAILED:
+      case SendFailureStrategy.DELETE_FAILED:
+        if (addedToStore && currentMessage.id) {
+          return this.handleStream_UpdateExisting(
+            context.parameters,
+            chunkMessage
+          );
+        }
+        break;
+
+      case SendFailureStrategy.ADD_ON_SUCCESS:
+        return chunk;
+    }
+
     return chunk;
+  }
+
+  protected handleStream_UpdateExisting(
+    parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
+    chunkMessage: unknown
+  ): unknown | void {
+    const { store } = parameters;
+
+    console.log('handleStream_UpdateExisting', chunkMessage);
+
+    if (!store.isMessage(chunkMessage) || !chunkMessage.id) {
+      return chunkMessage;
+    }
+
+    const existingMessage = store.getMessageById(chunkMessage.id);
+
+    if (existingMessage) {
+      const updatedMessage = store.updateMessage(chunkMessage.id, chunkMessage);
+      return updatedMessage || chunkMessage;
+    }
+
+    const addedMessage = store.addMessage(chunkMessage);
+    return addedMessage;
   }
 }

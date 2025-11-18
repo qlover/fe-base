@@ -40,7 +40,7 @@ export class ChatMessageBridge<T = string>
   }
 
   disableSend(): void {
-    this.messages.changeDisabledSend(true);
+    // this.messages.changeDisabledSend(true);
   }
 
   enableSend(): void {
