@@ -36,7 +36,20 @@ export class ChatMessageBridge<T = string>
   }
 
   onChangeContent(content: T): void {
-    this.messages.changeCurrent({ content });
+    const lastDraft = this.messages.getLastDraftMessage();
+
+    // 如果已经有草稿消息，更新它的内容
+    if (lastDraft && lastDraft.id) {
+      this.messages.updateDraftMessage(lastDraft.id, {
+        content
+      });
+    } else {
+      // 如果没有草稿消息，创建一个新的
+      this.messages.addDraftMessage({
+        content,
+        role: ChatMessageRoleType.USER
+      });
+    }
   }
 
   disableSend(): void {
@@ -61,10 +74,15 @@ export class ChatMessageBridge<T = string>
     message?: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
-    const currentMessage = message ?? this.messages.getCurrentMessage();
+    // 如果没有传入消息，则从 draftMessages 中取出最后一个
+    let currentMessage = message;
+
+    if (!currentMessage) {
+      currentMessage = this.messages.popLastDraftMessage() ?? undefined;
+    }
 
     if (!this.messages.isMessage(currentMessage)) {
-      throw new Error('No current message');
+      throw new Error('No current message to send');
     }
 
     // 如果消息不是用户消息，则抛出错误
@@ -74,7 +92,7 @@ export class ChatMessageBridge<T = string>
 
     this.disableSend();
 
-    const reuslt = await this.messageSender.send(
+    const result = await this.messageSender.send(
       currentMessage,
       gatewayOptions
     );
@@ -83,7 +101,7 @@ export class ChatMessageBridge<T = string>
 
     this.enableSend();
 
-    return reuslt;
+    return result;
   }
 
   stop(messageId?: string): boolean {
@@ -91,9 +109,15 @@ export class ChatMessageBridge<T = string>
       return this.messageSender.stop(messageId);
     }
 
-    const currentMessage = this.messages.getCurrentMessage();
-    if (currentMessage && currentMessage.id) {
-      return this.messageSender.stop(currentMessage.id);
+    // 停止最后一个正在 loading 的消息
+    const messages = this.messages.getMessages();
+    const loadingMessage = messages
+      .slice()
+      .reverse()
+      .find((msg) => msg.loading);
+
+    if (loadingMessage && loadingMessage.id) {
+      return this.messageSender.stop(loadingMessage.id);
     }
 
     return false;

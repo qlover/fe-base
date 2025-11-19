@@ -12,14 +12,15 @@ export interface FocusBarProps {
 export function FocusBar({ bridge }: FocusBarProps) {
   const messagesStore = bridge.getMessageStore();
   const messages = useStore(messagesStore, (state) => state.messages);
-  const currentMessage = useStore(
+  const draftMessages = useStore(
     messagesStore,
-    (state) => state.currentMessage
+    (state) => state.draftMessages
   );
   const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
   const lastMessage = useMemo(() => messages.at(-1), [messages]);
+  const lastDraft = useMemo(() => draftMessages.at(-1), [draftMessages]);
 
-  const inputText = currentMessage?.content as string;
+  const inputText = (lastDraft?.content as string) ?? '';
   const loading = lastMessage?.loading;
 
   const handleKeyDown = useCallback(

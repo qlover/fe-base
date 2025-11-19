@@ -9,7 +9,12 @@ import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface ChatMessageStoreStateInterface<T = unknown>
   extends MessagesStateInterface<ChatMessage<T>> {
-  currentMessage: ChatMessage<T> | null;
+  /**
+   * 草稿消息列表
+   *
+   * 草稿消息列表中的消息不会被发送，而是作为草稿保存
+   */
+  draftMessages: ChatMessage<T>[];
 
   /**
    * 是否禁用发送
@@ -22,13 +27,56 @@ export interface ChatMessageStoreInterface<T = unknown>
     ChatMessage<T>,
     ChatMessageStoreStateInterface<T>
   > {
-  changeCurrent(message: Partial<ChatMessage<T>>): ChatMessage<T>;
+  /**
+   * 获取最后一个草稿消息
+   *
+   * - 这里获取的是草稿消息(draftMessages)列表中的最后一个消息
+   * - 而不是历史消息(messages)列表中的最后一个消息
+   */
+  getLastDraftMessage(): ChatMessage<T> | null;
 
-  changeDisabledSend(disabled: boolean): void;
+  /**
+   * 弹出最后一个草稿消息
+   *
+   * - 这里弹出的是草稿消息(draftMessages)列表中的最后一个消息
+   * - 而不是历史消息(messages)列表中的最后一个消息
+   */
+  popLastDraftMessage(): ChatMessage<T> | null;
 
-  getCurrentMessage(): ChatMessage<T> | null;
+  /**
+   * 获取草稿消息列表
+   */
+  getDraftMessages(): ChatMessage<T>[];
 
-  resetCurrentMessage(): void;
+  /**
+   * 添加草稿消息
+   *
+   * @param message 草稿消息
+   */
+  addDraftMessage(message: Partial<ChatMessage<T>>): void;
+
+  /**
+   * 删除草稿消息
+   *
+   * @param messageId 草稿消息ID
+   */
+  deleteDraftMessage(messageId: string): void;
+
+  /**
+   * 更新草稿消息
+   *
+   * @param messageId 草稿消息ID
+   * @param updates 要更新的字段
+   */
+  updateDraftMessage(
+    messageId: string,
+    updates: Partial<ChatMessage<T>>
+  ): ChatMessage<T> | undefined;
+
+  /**
+   * 清空草稿消息
+   */
+  resetDraftMessages(messages?: ChatMessage<T>[]): void;
 }
 
 export interface InputRefInterface {

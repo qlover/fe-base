@@ -13,7 +13,7 @@ import type { ChatMessageStoreStateInterface } from './chatMessage/interface';
 function createChatMessageState(): ChatMessageStoreStateInterface<unknown> {
   return {
     messages: [],
-    currentMessage: null,
+    draftMessages: [],
     disabledSend: false
   };
 }

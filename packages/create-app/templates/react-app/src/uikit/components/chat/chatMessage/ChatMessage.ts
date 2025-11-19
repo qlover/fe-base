@@ -1,4 +1,7 @@
-import type { MessageStoreMsg } from '@/base/focusBar/impl/MessagesStore';
+import type {
+  MessageStatusType,
+  MessageStoreMsg
+} from '@/base/focusBar/impl/MessagesStore';
 
 export const ChatMessageRoleType = {
   USER: 'user',
@@ -22,6 +25,7 @@ export class ChatMessage<T = unknown, R = unknown>
   readonly endTime: number = 0;
   readonly placeholder?: string;
   readonly files?: File[];
+  readonly status?: MessageStatusType;
 
   readonly role: ChatMessageRoleType = ChatMessageRoleType.USER;
 
