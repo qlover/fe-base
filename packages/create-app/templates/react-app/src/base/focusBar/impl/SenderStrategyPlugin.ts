@@ -1,3 +1,4 @@
+import { AbortPlugin } from './AbortPlugin';
 import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
 import type {
   MessageSenderContext,
@@ -30,6 +31,15 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
   readonly pluginName = 'SenderStrategyPlugin';
 
   constructor(protected failureStrategy: SendFailureStrategyType) {}
+
+  /**
+   * 判断错误是否为 abort 错误
+   * @param error - 错误对象
+   * @returns 是否为 abort 错误
+   */
+  protected isAbortError(error: any): boolean {
+    return AbortPlugin.isAbortError(error);
+  }
 
   protected handleBefore_KEEP_FAILED(
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>
@@ -119,10 +129,14 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
 
     let finalMessage: MessageStoreMsg<any>;
 
+    // 判断是否为 abort 错误，决定使用 STOPPED 还是 FAILED 状态
+    const isAborted = this.isAbortError(error);
+    const status = isAborted ? MessageStatus.STOPPED : MessageStatus.FAILED;
+
     const faileds = {
       loading: false,
       error: error,
-      status: MessageStatus.FAILED,
+      status: status,
       endTime: Date.now()
     };
 

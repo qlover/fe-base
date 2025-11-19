@@ -1,5 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { AbortPlugin } from './AbortPlugin';
+import { AbortPlugin, type AbortPluginConfig, AbortError } from './AbortPlugin';
 import {
   type MessageSenderContext,
   type MessageSenderPluginContext,
@@ -44,14 +44,21 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
 {
   protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
   protected readonly executor: MessageSenderExecutor;
-  protected readonly abortPlugin: AbortPlugin;
+  protected readonly abortPlugin: AbortPlugin<
+    MessageSenderContext<MessageType>
+  >;
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
     protected readonly config?: MessageSenderConfig
   ) {
     this.executor = new MessageSenderExecutor();
-    this.abortPlugin = new AbortPlugin();
+    // 创建 AbortPlugin，传入配置提取器
+    // 从 gatewayOptions 中获取 AbortPluginConfig
+    this.abortPlugin = new AbortPlugin<MessageSenderContext<MessageType>>({
+      getConfig: (parameters) =>
+        (parameters.gatewayOptions || parameters) as AbortPluginConfig
+    });
     // 自动注册 AbortPlugin
     this.executor.use(this.abortPlugin);
   }
@@ -110,10 +117,19 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       // Extract only necessary references to minimize closure capture
       const originalOnChunk = gatewayOptions.onChunk;
       const executor = this.executor;
+      const signal = gatewayOptions.signal;
 
       newGatewayOptions = {
         ...gatewayOptions,
         onChunk: async (chunk) => {
+          // 在每次 chunk 到达时检查是否已被 abort
+          if (signal?.aborted) {
+            throw (
+              signal.reason ||
+              new AbortError('The operation was aborted', undefined)
+            );
+          }
+
           // Pass context for plugin hooks, but don't capture it in closure unnecessarily
           const result = await executor.runStream(chunk, context);
 
@@ -124,7 +140,12 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       };
     }
 
-    const result = await gateway?.sendMessage(message, newGatewayOptions);
+    // 使用 AbortPlugin.raceWithAbort 确保即使 gateway 不检查 signal，我们也能响应 abort
+    const gatewayPromise = gateway?.sendMessage(message, newGatewayOptions);
+    const result = await this.abortPlugin.raceWithAbort(
+      gatewayPromise!,
+      gatewayOptions?.signal
+    );
 
     return this.messages.mergeMessage(message, {
       status: MessageStatus.SENT,

@@ -26,6 +26,23 @@ export class ChatSenderStrategy extends SenderStrategyPlugin {
     parameters: MessageSenderContext<ChatMessage<string>>
   ): ChatMessage<string> {
     const store = parameters.store as ChatMessageStore<string>;
+    const { currentMessage } = parameters;
+
+    // 🔧 重试逻辑：如果消息已经在列表中，清空该消息后面的所有消息
+    if (currentMessage.id) {
+      const messageIndex = store.getMessageIndex(currentMessage.id);
+      if (messageIndex !== -1) {
+        // 找到了消息，说明是重试操作
+        // 删除该消息后面的所有消息（包括之前的 assistant 响应）
+        const allMessages = store.getMessages();
+        const messagesToRemove = allMessages.slice(messageIndex + 1);
+        messagesToRemove.forEach((msg) => {
+          if (msg.id) {
+            store.deleteMessage(msg.id);
+          }
+        });
+      }
+    }
 
     // 重置当前消息为空消息
     store.resetCurrentMessage();
