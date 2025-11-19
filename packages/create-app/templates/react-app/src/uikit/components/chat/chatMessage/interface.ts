@@ -78,13 +78,5 @@ export interface ChatMessageBridgeInterface<T = string>
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>>;
 
-  /**
-   * 发送流式消息
-   *
-   * @param gatewayOptions 流式模式配置
-   * @returns 发送的消息
-   */
-  sendStream(
-    gatewayOptions?: GatewayOptions<ChatMessage<T>>
-  ): Promise<ChatMessage<T>>;
+  stop(messageId?: string): boolean;
 }

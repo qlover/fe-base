@@ -25,7 +25,8 @@ export function ChatRoot() {
   const [bridge] = useState(() => {
     return (
       new ChatMessageBridge(messagesStore, {
-        gateway: messageApi
+        gateway: messageApi,
+        gatewayOptions: { stream: true }
       })
         // ⭐ 停止控制插件 - 必须最先注册
         .use(new StopControlPlugin())
