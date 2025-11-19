@@ -1,4 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit';
+import { AbortPlugin } from './AbortPlugin';
 import {
   type MessageSenderContext,
   type MessageSenderPluginContext,
@@ -43,26 +44,16 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
 {
   protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
   protected readonly executor: MessageSenderExecutor;
-
-  /**
-   * AbortController 管理 - 用于停止正在发送的消息
-   */
-  private abortControllers = new Map<string, AbortController>();
-
-  /**
-   * Context 管理 - 用于追踪和清理消息发送上下文
-   * 注意：只在消息发送完成后清理，不在 stop() 时清理（避免干扰正在进行的异步操作）
-   */
-  private messageContexts = new Map<
-    string,
-    MessageSenderContext<MessageType>
-  >();
+  protected readonly abortPlugin: AbortPlugin;
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
     protected readonly config?: MessageSenderConfig
   ) {
     this.executor = new MessageSenderExecutor();
+    this.abortPlugin = new AbortPlugin();
+    // 自动注册 AbortPlugin
+    this.executor.use(this.abortPlugin);
   }
 
   public getMessageStore(): MessagesStore<MessageType> {
@@ -79,108 +70,26 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
   }
 
   /**
-   * 获取消息的 AbortController
-   * @param messageId - 消息ID
-   * @returns AbortController 或 undefined
-   */
-  public getAbortController(messageId: string): AbortController | undefined {
-    return this.abortControllers.get(messageId);
-  }
-
-  /**
-   * 清理指定消息的所有资源
-   * - 移除 AbortController
-   * - 清理闭包引用
-   * - 清理回调函数引用
-   * - 清理 context 引用
-   * - 可由子类扩展以清理其他资源
-   *
-   * @param messageId - 消息ID
-   * @param context - 可选的上下文对象，如果不传则从内部 Map 获取
-   */
-  protected cleanupMessage(
-    messageId: string,
-    context?: MessageSenderContext<MessageType>
-  ): void {
-    // 1. 清理 AbortController
-    this.abortControllers.delete(messageId);
-
-    // 2. 获取 context（如果没有传入则从 Map 中获取）
-    const ctxToClean = context || this.messageContexts.get(messageId);
-
-    // 3. 清理 context 中的回调引用（防止闭包持有大对象）
-    if (ctxToClean?.gatewayOptions) {
-      // 清理所有回调引用，但保留 signal（因为它可能被外部持有）
-      const gatewayOptions = ctxToClean.gatewayOptions;
-      if (gatewayOptions.onChunk) {
-        delete gatewayOptions.onChunk;
-      }
-      if (gatewayOptions.onError) {
-        delete gatewayOptions.onError;
-      }
-      if (gatewayOptions.onComplete) {
-        delete gatewayOptions.onComplete;
-      }
-      if (gatewayOptions.onProgress) {
-        delete gatewayOptions.onProgress;
-      }
-      if (gatewayOptions.onAborted) {
-        delete gatewayOptions.onAborted;
-      }
-    }
-
-    // 4. 清理 context 中的其他引用
-    if (ctxToClean) {
-      // 注意：不清理 store 和 gateway，因为它们是共享的
-      // 但可以清理 currentMessage 引用
-      // @ts-ignore - 允许删除只读属性以释放内存
-      delete ctxToClean.currentMessage;
-    }
-
-    // 5. 从 Map 中移除 context 引用
-    this.messageContexts.delete(messageId);
-  }
-
-  /**
    * 停止指定消息的发送
    *
    * 注意：
    * - 只能停止由 MessageSender 自动创建的请求（未提供 signal）
    * - 如果发送时提供了自定义 signal，此方法不生效
-   * - 停止后会自动清理相关资源
+   * - 停止后会自动清理相关资源（由 AbortPlugin 管理）
    *
    * @param messageId - 要停止的消息ID
-   * @returns 是否成功停止（false 表示未找到或已完成）
    */
   public stop(messageId: string): boolean {
-    const controller = this.abortControllers.get(messageId);
-    if (controller) {
-      controller.abort();
-      // 立即清理资源（不等 finally）
-      this.cleanupMessage(messageId);
-      return true;
-    }
-    return false;
+    return this.abortPlugin.abort(messageId);
   }
 
   /**
    * 停止所有正在发送的消息
-   * - 调用所有 AbortController 的 abort()
-   * - 清理所有相关资源
+   * - 调用 AbortPlugin 的 abortAll()
+   * - 清理所有相关资源（由 AbortPlugin 管理）
    */
   public stopAll(): void {
-    this.abortControllers.forEach((controller, messageId) => {
-      controller.abort();
-      this.cleanupMessage(messageId);
-    });
-  }
-
-  /**
-   * 获取所有正在发送的消息ID列表
-   * @returns 消息ID数组
-   */
-  public getPendingMessageIds(): string[] {
-    return Array.from(this.abortControllers.keys());
+    this.abortPlugin.abortAll();
   }
 
   /**
@@ -268,27 +177,18 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
   ): MessageSenderContext<MessageType> {
     const _gatewayOptions = {
       ...this.config?.gatewayOptions,
-      ...gatewayOptions
+      ...gatewayOptions,
+      // 使用消息 ID 作为 AbortPlugin 的请求标识
+      id: sendingMessage.id
     };
 
-    if (!_gatewayOptions.signal) {
-      const controller = new AbortController();
-      _gatewayOptions.signal = controller.signal;
-      this.abortControllers.set(sendingMessage.id!, controller);
-    }
-
-    const context = {
+    return {
       store: this.messages,
       currentMessage: sendingMessage,
       throwIfError: this.config?.throwIfError,
       gateway: this.config?.gateway,
       gatewayOptions: _gatewayOptions
     };
-
-    // 存储 context 以便后续清理
-    this.messageContexts.set(sendingMessage.id!, context);
-
-    return context;
   }
 
   /**
@@ -298,7 +198,8 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
    * - 如果 `throwIfError=false(默认)` ，则会在发送失败时返回失败消息
    * - 如果提供 `gatewayOptions`，则使用相应的配置
    * - 如果 `gatewayOptions.signal` 已提供，则使用用户的 signal（stop 方法将不生效）
-   * - 如果未提供 signal，则自动创建 AbortController（可通过 stop 方法停止）
+   * - 如果未提供 signal，则由 AbortPlugin 自动创建（可通过 stop 方法停止）
+   * - 资源清理由 AbortPlugin 自动管理
    *
    * @param message - 消息对象（支持部分字段）
    * @param gatewayOptions - 可选的网关选项
@@ -317,9 +218,6 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       });
     } catch (error) {
       return this.handleError(error, context);
-    } finally {
-      // 清理消息相关资源，传入 context 以清理更多引用
-      this.cleanupMessage(sendingMessage.id!, context);
     }
   }
 }

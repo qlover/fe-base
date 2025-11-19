@@ -1,4 +1,5 @@
 import type { MessageInterface } from './MessagesStoreInterface';
+import type { AbortPluginConfig } from '../impl/AbortPlugin';
 
 /**
  * 流式消息事件回调
@@ -36,7 +37,8 @@ export interface MessageStreamEvent<M = unknown> {
 }
 
 export interface GatewayOptions<M, P = Record<string, any>>
-  extends MessageStreamEvent<M> {
+  extends MessageStreamEvent<M>,
+    Omit<AbortPluginConfig, 'onAborted'> {
   /**
    * 是否使用流式模式
    * - true: 流式模式，逐步输出内容（会调用 onChunk）
@@ -47,11 +49,6 @@ export interface GatewayOptions<M, P = Record<string, any>>
    * @default false
    */
   stream?: boolean;
-
-  /**
-   * 取消请求信号
-   */
-  signal?: AbortSignal;
 
   /**
    * 请求参数

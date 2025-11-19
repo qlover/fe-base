@@ -113,12 +113,4 @@ export class ChatMessageBridge<T = string>
   stopAll(): void {
     this.messageSender.stopAll();
   }
-
-  /**
-   * 获取所有正在发送的消息ID列表
-   * @returns 消息ID数组
-   */
-  getPendingMessageIds(): string[] {
-    return this.messageSender.getPendingMessageIds();
-  }
 }
