@@ -1,7 +1,11 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
-import type { ChatMessageBridgeInterface } from './chatMessage/interface';
+import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
+import type {
+  ChatMessageBridgeInterface,
+  ChatMessageStoreStateInterface
+} from './chatMessage/interface';
 
 const { TextArea } = Input;
 
@@ -9,30 +13,43 @@ export interface FocusBarProps {
   bridge: ChatMessageBridgeInterface<unknown>;
 }
 
+const selectors = {
+  historyMessages: (state: ChatMessageStoreStateInterface<unknown>) =>
+    state.messages,
+  draftMessages: (state: ChatMessageStoreStateInterface<unknown>) =>
+    state.draftMessages
+};
 export function FocusBar({ bridge }: FocusBarProps) {
   const messagesStore = bridge.getMessageStore();
-  const messages = useStore(messagesStore, (state) => state.messages);
-  const draftMessages = useStore(
-    messagesStore,
-    (state) => state.draftMessages
-  );
+  const historyMessages = useStore(messagesStore, selectors.historyMessages);
+  const draftMessages = useStore(messagesStore, selectors.draftMessages);
   const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
-  const lastMessage = useMemo(() => messages.at(-1), [messages]);
-  const lastDraft = useMemo(() => draftMessages.at(-1), [draftMessages]);
 
-  const inputText = (lastDraft?.content as string) ?? '';
-  const loading = lastMessage?.loading;
+  const firstDraft = useMemo(
+    () => messagesStore.getFirstDraftMessage(),
+    [draftMessages]
+  );
+
+  const sendingMessage = useMemo(
+    () =>
+      historyMessages.find((msg) => msg.status === MessageStatus.SENDING) ||
+      null,
+    [historyMessages]
+  );
+
+  const inputText = (firstDraft?.content as string) ?? '';
+  const loading = sendingMessage?.loading || firstDraft?.loading;
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       // Ctrl+Enter 发送
       if (e.key === 'Enter' && e.ctrlKey) {
-        if (!disabledSend && !lastMessage?.loading) {
+        if (!disabledSend && !firstDraft?.loading) {
           bridge.send();
         }
       }
     },
-    [disabledSend, lastMessage, bridge]
+    [disabledSend, firstDraft, bridge]
   );
 
   return (

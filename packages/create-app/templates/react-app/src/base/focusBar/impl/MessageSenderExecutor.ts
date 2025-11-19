@@ -23,8 +23,8 @@ export interface MessageSenderContext<
 export type MessageSenderPluginContext<T extends MessageStoreMsg<any>> =
   ExecutorContext<MessageSenderContext<T>>;
 
-export interface MessageSenderPlugin
-  extends ExecutorPlugin<MessageSenderContext> {
+export interface MessageSenderPlugin<T extends MessageStoreMsg<any>>
+  extends ExecutorPlugin<MessageSenderContext<T>> {
   /**
    * 当以stream调用 send 时，会调用此钩子
    *

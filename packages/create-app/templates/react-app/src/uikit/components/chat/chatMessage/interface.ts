@@ -28,20 +28,11 @@ export interface ChatMessageStoreInterface<T = unknown>
     ChatMessageStoreStateInterface<T>
   > {
   /**
-   * 获取最后一个草稿消息
+   * 获取草稿消息
    *
-   * - 这里获取的是草稿消息(draftMessages)列表中的最后一个消息
-   * - 而不是历史消息(messages)列表中的最后一个消息
+   * @param messageId - 消息ID
    */
-  getLastDraftMessage(): ChatMessage<T> | null;
-
-  /**
-   * 弹出最后一个草稿消息
-   *
-   * - 这里弹出的是草稿消息(draftMessages)列表中的最后一个消息
-   * - 而不是历史消息(messages)列表中的最后一个消息
-   */
-  popLastDraftMessage(): ChatMessage<T> | null;
+  getDarftMessageById(messageId: string): ChatMessage<T> | null;
 
   /**
    * 获取草稿消息列表
@@ -77,6 +68,24 @@ export interface ChatMessageStoreInterface<T = unknown>
    * 清空草稿消息
    */
   resetDraftMessages(messages?: ChatMessage<T>[]): void;
+
+  /**
+   * 获取第一个加入草稿的消息(并不是数组的第一个)
+   *
+   * - 这里获取的是草稿消息(draftMessages)列表中的第一个消息
+   * - 而不是历史消息(messages)列表中的第一个消息
+   */
+  getFirstDraftMessage(): ChatMessage<T> | null;
+
+  /**
+   * 获取第一个加入草稿的消息, 并从草稿消息列表中移除
+   */
+  shiftFirstDraftMessage(): ChatMessage<T> | null;
+
+  /**
+   * 获取可以发送的消息
+   */
+  getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null;
 }
 
 export interface InputRefInterface {
@@ -102,13 +111,14 @@ export interface ChatMessageBridgeInterface<T = string>
    */
   getMessageStore(): ChatMessageStoreInterface<T>;
 
+  /**
+   * 使用额外的 messageSender 插件
+   *
+   * @param plugin
+   */
   use(plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]): this;
 
   onChangeContent(content: T): void;
-
-  disableSend(): void;
-
-  enableSend(): void;
 
   /**
    * 发送用户消息

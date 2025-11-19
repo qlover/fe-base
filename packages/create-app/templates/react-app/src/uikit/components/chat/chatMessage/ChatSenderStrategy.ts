@@ -44,8 +44,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin {
       }
     }
 
-    // 重置当前消息为空消息
-    store.resetCurrentMessage();
+    // store.resetCurrentMessage();
 
     const result = super.handleBefore_KEEP_FAILED(parameters);
 

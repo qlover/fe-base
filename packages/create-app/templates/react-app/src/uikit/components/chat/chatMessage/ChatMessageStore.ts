@@ -8,45 +8,54 @@ import type {
   ChatMessageStoreStateInterface
 } from './interface';
 
-export class ChatMessageStoreState<T = unknown>
-  implements ChatMessageStoreStateInterface<T>
-{
-  messages: ChatMessage<T>[] = [];
+export const DraftMode = Object.freeze({
+  STACK: 'stack',
+  QUEUE: 'queue'
+});
 
-  /**
-   * 表示当前真正输入的消息
-   */
-  draftMessages: ChatMessage<T>[] = [];
-
-  /**
-   * 是否禁用发送
-   */
-  disabledSend: boolean = false;
-}
+export type DraftModeType = (typeof DraftMode)[keyof typeof DraftMode];
 
 export class ChatMessageStore<T = unknown>
-  extends MessagesStore<ChatMessage<T>, ChatMessageStoreState<T>>
+  extends MessagesStore<ChatMessage<T>, ChatMessageStoreStateInterface<T>>
   implements ChatMessageStoreInterface<T>
 {
-  /**
-   * 获取最后一个草稿消息
-   */
-  getLastDraftMessage(): ChatMessage<T> | null {
-    return this.state.draftMessages.at(-1) || null;
+  protected draftMode: DraftModeType = DraftMode.STACK;
+
+  override createMessage<M extends ChatMessage<T>>(
+    message: Partial<M> = {} as Partial<M>
+  ): M {
+    return new ChatMessage<T>(super.createMessage(message)) as M;
   }
 
-  /**
-   * 弹出最后一个草稿消息（从队列中移除并返回）
-   */
-  popLastDraftMessage(): ChatMessage<T> | null {
-    const draftMessages = this.state.draftMessages;
+  override isMessage<M extends ChatMessage<T>>(message: unknown): message is M {
+    return message instanceof ChatMessage;
+  }
+
+  protected sliceDraftMessages(): ChatMessage<T>[] {
+    if (this.draftMode === DraftMode.STACK) {
+      return this.getDraftMessages().slice(1);
+    }
+
+    return this.getDraftMessages().slice(0, -1);
+  }
+
+  getFirstDraftMessage(): ChatMessage<T> | null {
+    if (this.draftMode === DraftMode.STACK) {
+      return this.getDraftMessages().at(-1) || null;
+    }
+
+    return this.getDraftMessages().at(0) || null;
+  }
+
+  shiftFirstDraftMessage(): ChatMessage<T> | null {
+    const draftMessages = this.getDraftMessages();
 
     if (draftMessages.length === 0) {
       return null;
     }
 
-    const lastDraft = this.getLastDraftMessage();
-    const newDraftMessages = draftMessages.slice(0, -1);
+    const firstDraft = this.getFirstDraftMessage();
+    const newDraftMessages = this.sliceDraftMessages();
 
     this.emit(
       this.cloneState({
@@ -54,14 +63,14 @@ export class ChatMessageStore<T = unknown>
       })
     );
 
-    return lastDraft;
+    return firstDraft;
   }
 
   /**
    * 获取所有草稿消息
    */
   getDraftMessages(): ChatMessage<T>[] {
-    return this.state.draftMessages;
+    return this.state.draftMessages ?? [];
   }
 
   /**
@@ -74,7 +83,10 @@ export class ChatMessageStore<T = unknown>
       Object.assign(draftMessage, { status: MessageStatus.DRAFT });
     }
 
-    const newDraftMessages = [...this.state.draftMessages, draftMessage];
+    const newDraftMessages =
+      this.draftMode === DraftMode.STACK
+        ? [...this.getDraftMessages(), draftMessage]
+        : [draftMessage, ...this.getDraftMessages()];
 
     this.emit(
       this.cloneState({
@@ -87,7 +99,7 @@ export class ChatMessageStore<T = unknown>
    * 删除指定 ID 的草稿消息
    */
   deleteDraftMessage(messageId: string): void {
-    const draftMessages = this.state.draftMessages;
+    const draftMessages = this.getDraftMessages();
     const newDraftMessages = draftMessages.filter(
       (msg) => msg.id !== messageId
     );
@@ -112,7 +124,7 @@ export class ChatMessageStore<T = unknown>
     updates: Partial<ChatMessage<T>>
   ): ChatMessage<T> | undefined {
     let updatedMessage: ChatMessage<T> | undefined;
-    const draftMessages = this.state.draftMessages;
+    const draftMessages = this.getDraftMessages();
 
     // 使用 map 一次遍历完成查找和更新
     const newDraftMessages = draftMessages.map((msg) => {
@@ -160,13 +172,25 @@ export class ChatMessageStore<T = unknown>
     this.emit(this.cloneState({ disabledSend: disabled }));
   }
 
-  override createMessage<M extends ChatMessage<T>>(
-    message: Partial<M> = {} as Partial<M>
-  ): M {
-    return new ChatMessage<T>(super.createMessage(message)) as M;
+  getDarftMessageById(messageId: string): ChatMessage<T> | null {
+    return this.getDraftMessages().find((msg) => msg.id === messageId) || null;
   }
 
-  override isMessage<M extends ChatMessage<T>>(message: unknown): message is M {
-    return message instanceof ChatMessage;
+  getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null {
+    let targetMessage: ChatMessage<T> | null = null;
+
+    if (this.isMessage(message) && message.id) {
+      targetMessage = this.getDarftMessageById(message.id);
+
+      if (!targetMessage) {
+        targetMessage = this.getMessageById(message.id)!;
+      }
+    }
+
+    if (!targetMessage) {
+      targetMessage = this.shiftFirstDraftMessage();
+    }
+
+    return targetMessage;
   }
 }

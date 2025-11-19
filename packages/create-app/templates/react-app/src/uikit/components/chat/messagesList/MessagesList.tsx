@@ -45,8 +45,6 @@ export function MessagesList<T>({
   const messagesStore = bridge.getMessageStore();
   const messages = useStore(messagesStore, (state) => state.messages);
 
-  console.log(messages);
-
   const _getMessageKey = useCallback(
     (message: ChatMessage<T>, index: number): string => {
       return (

@@ -1,5 +1,6 @@
 import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
 import { MessageSender } from '@/base/focusBar/impl/MessageSender';
+import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
 import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
 import { ChatMessageRoleType, type ChatMessage } from './ChatMessage';
 import type { ChatMessageStore } from './ChatMessageStore';
@@ -36,11 +37,11 @@ export class ChatMessageBridge<T = string>
   }
 
   onChangeContent(content: T): void {
-    const lastDraft = this.messages.getLastDraftMessage();
+    const firstDraft = this.messages.getFirstDraftMessage();
 
     // 如果已经有草稿消息，更新它的内容
-    if (lastDraft && lastDraft.id) {
-      this.messages.updateDraftMessage(lastDraft.id, {
+    if (firstDraft && firstDraft.id) {
+      this.messages.updateDraftMessage(firstDraft.id, {
         content
       });
     } else {
@@ -50,14 +51,6 @@ export class ChatMessageBridge<T = string>
         role: ChatMessageRoleType.USER
       });
     }
-  }
-
-  disableSend(): void {
-    // this.messages.changeDisabledSend(true);
-  }
-
-  enableSend(): void {
-    this.messages.changeDisabledSend(false);
   }
 
   setRef(ref: unknown): void {
@@ -70,57 +63,59 @@ export class ChatMessageBridge<T = string>
     });
   }
 
-  async send(
+  sendMessage(
+    messages: ChatMessage<T>,
+    gatewayOptions?: GatewayOptions<ChatMessage<T>>
+  ): Promise<ChatMessage<T>> {
+    return this.messageSender.send(messages, gatewayOptions);
+  }
+
+  /**
+   * 发送消息
+   *
+   * - 如果直接传入一个对象不存在则不允许发送, 只能允许发送草稿消息和重发历史消息
+   *
+   * @param message - 消息对象
+   * @param gatewayOptions - 网关选项
+   */
+  send(
     message?: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
-    // 如果没有传入消息，则从 draftMessages 中取出最后一个
-    let currentMessage = message;
+    const targetMessage = this.messages.getReadySendMessage(message);
 
-    if (!currentMessage) {
-      currentMessage = this.messages.popLastDraftMessage() ?? undefined;
+    if (!targetMessage) {
+      throw new Error('No message to send');
     }
 
-    if (!this.messages.isMessage(currentMessage)) {
-      throw new Error('No current message to send');
+    if (targetMessage.loading) {
+      return Promise.resolve(targetMessage);
     }
 
-    // 如果消息不是用户消息，则抛出错误
-    if (currentMessage.role !== ChatMessageRoleType.USER) {
-      throw new Error('Current message is not a user message');
-    }
+    return this.sendMessage(targetMessage, gatewayOptions);
+  }
 
-    this.disableSend();
-
-    const result = await this.messageSender.send(
-      currentMessage,
-      gatewayOptions
+  getSendingMessage(): ChatMessage<T> | null {
+    return (
+      this.messages
+        .getMessages()
+        .find((msg) => msg.status === MessageStatus.SENDING) || null
     );
-
-    this.focus();
-
-    this.enableSend();
-
-    return result;
   }
 
   stop(messageId?: string): boolean {
-    if (messageId) {
-      return this.messageSender.stop(messageId);
+    if (!messageId) {
+      const sendingMessage = this.getSendingMessage();
+      if (sendingMessage) {
+        messageId = sendingMessage.id;
+      }
     }
 
-    // 停止最后一个正在 loading 的消息
-    const messages = this.messages.getMessages();
-    const loadingMessage = messages
-      .slice()
-      .reverse()
-      .find((msg) => msg.loading);
-
-    if (loadingMessage && loadingMessage.id) {
-      return this.messageSender.stop(loadingMessage.id);
+    if (!messageId) {
+      return false;
     }
 
-    return false;
+    return this.messageSender.stop(messageId);
   }
 
   /**

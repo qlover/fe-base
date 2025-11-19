@@ -16,8 +16,18 @@ import type {
 } from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
 import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface MessageSenderConfig {
+  /**
+   * 发送器名称
+   *
+   * @default 'MessageSender'
+   */
+  senderName?: string;
+
+  logger?: LoggerInterface;
+
   /**
    * 是否在发送失败时抛出错误
    *
@@ -39,27 +49,33 @@ export interface MessageSenderConfig {
   gatewayOptions?: GatewayOptions<any>;
 }
 
+const defaultSenderName = 'MessageSender';
+const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
+
 export class MessageSender<MessageType extends MessageStoreMsg<any>>
   implements MessageSenderInterface<MessageType>
 {
-  protected messageSenderErrorId = 'MESSAGE_SENDER_ERROR';
+  protected messageSenderErrorId = defaultMessageSenderErrorId;
   protected readonly executor: MessageSenderExecutor;
   protected readonly abortPlugin: AbortPlugin<
     MessageSenderContext<MessageType>
   >;
+  protected readonly logger?: LoggerInterface;
+  protected readonly senderName: string;
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
-    protected readonly config?: MessageSenderConfig
+    readonly config?: MessageSenderConfig
   ) {
+    this.logger = config?.logger;
+    this.senderName = config?.senderName || defaultSenderName;
     this.executor = new MessageSenderExecutor();
-    // 创建 AbortPlugin，传入配置提取器
-    // 从 gatewayOptions 中获取 AbortPluginConfig
+
     this.abortPlugin = new AbortPlugin<MessageSenderContext<MessageType>>({
       getConfig: (parameters) =>
-        (parameters.gatewayOptions || parameters) as AbortPluginConfig
+        (parameters.gatewayOptions || parameters) as AbortPluginConfig,
+      logger: config?.logger
     });
-    // 自动注册 AbortPlugin
     this.executor.use(this.abortPlugin);
   }
 
@@ -182,12 +198,24 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       throw processedError;
     }
 
-    const endTime = context.currentMessage.endTime || Date.now();
+    const { currentMessage } = context;
+    const endTime = currentMessage.endTime || Date.now();
+    // 允许插件修改最终的状态, 可能在某些情况下失败后不这是为失败
+    // 比如: STOPPED
+    const status = currentMessage.status || MessageStatus.FAILED;
+
+    this.logger?.debug(`[${this.senderName}] message failed`, {
+      messageId: currentMessage.id,
+      status,
+      error: processedError,
+      errorType: error instanceof Error ? error.constructor.name : typeof error
+    });
+
     // Create a new message object instead of modifying the original
     return this.messages.mergeMessage(context.currentMessage, {
       loading: false,
       error: processedError,
-      status: MessageStatus.FAILED,
+      status: status,
       endTime: endTime
     } as Partial<MessageType>);
   }
@@ -233,12 +261,26 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     const sendingMessage = this.generateSendingMessage(message);
     const context = this.createSendContext(sendingMessage, gatewayOptions);
 
+    this.logger?.debug(`[${this.senderName}] send start: ${sendingMessage.id}`);
+
     try {
-      return await this.executor.exec(context, async (ctx) => {
+      const reuslt = await this.executor.exec(context, async (ctx) => {
         return await this.sendMessage(ctx.parameters.currentMessage, ctx);
       });
+
+      if (this.logger) {
+        this.logger.info(
+          `[${this.senderName}] send success, speed: ${this.getDuration(reuslt)}ms`
+        );
+      }
+
+      return reuslt;
     } catch (error) {
       return this.handleError(error, context);
     }
+  }
+
+  public getDuration(message: MessageType): number {
+    return message.endTime ? message.endTime - message.startTime : 0;
   }
 }

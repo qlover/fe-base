@@ -3,6 +3,7 @@ import {
   type ExecutorContext,
   ExecutorError
 } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface AbortPluginConfig {
   id?: string;
@@ -30,6 +31,7 @@ export type AbortConfigExtractor<T = any> = (
  * AbortPlugin 选项
  */
 export interface AbortPluginOptions<T = any> {
+  logger?: LoggerInterface;
   /**
    * 配置提取器
    * 用于从 context.parameters 中提取 AbortPluginConfig
@@ -93,24 +95,23 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
 
   readonly onlyOne = true;
 
-  protected controllers: Map<string, AbortController> = new Map();
-
-  // 存储超时定时器，用于防止内存泄漏
-  protected timeouts: Map<string, NodeJS.Timeout> = new Map();
-
   private requestCounter = 0;
 
-  /**
-   * 配置提取器函数
-   * 用于从 context.parameters 中提取 AbortPluginConfig
-   */
-  private readonly getConfig: AbortConfigExtractor<TParameters>;
+  protected readonly controllers: Map<string, AbortController> = new Map();
+
+  protected readonly timeouts: Map<string, NodeJS.Timeout> = new Map();
+
+  protected readonly getConfig: AbortConfigExtractor<TParameters>;
+
+  protected readonly logger?: LoggerInterface;
 
   constructor(options?: AbortPluginOptions<TParameters>) {
     // 默认配置提取器：直接返回 parameters
     this.getConfig =
       options?.getConfig ||
       ((parameters) => parameters as unknown as AbortPluginConfig);
+
+    this.logger = options?.logger;
   }
 
   /**
@@ -130,19 +131,19 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
    * }
    * ```
    */
-  static isAbortError(error?: any): boolean {
+  static isAbortError(error?: unknown): error is AbortError {
     // Check if the error is our custom AbortError
     if (error instanceof AbortError) {
       return true;
     }
 
-    // Check if the error is an ExecutorError with ABORT_ERROR_ID
-    if (error?.id === ABORT_ERROR_ID) {
+    // Check if the error is an instance of AbortError
+    if (error instanceof Error && error.name === 'AbortError') {
       return true;
     }
 
-    // Check if the error is an instance of AbortError
-    if (error instanceof Error && error.name === 'AbortError') {
+    // Check if the error is an ExecutorError with ABORT_ERROR_ID
+    if (error instanceof ExecutorError && error?.id === ABORT_ERROR_ID) {
       return true;
     }
 
@@ -173,9 +174,11 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
    * 释放相关资源（controller 和 timeout）
    * @param config 配置对象或的唯一标识符
    */
-  protected releaseRequest(config: AbortPluginConfig | string): void {
+  cleanup(config: AbortPluginConfig | string): void {
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
+
+    this.logger?.debug(`[${this.pluginName}] cleanup - key: ${key}`);
 
     // 删除 controller
     this.controllers.delete(key);
@@ -196,6 +199,9 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
 
     // abort previous request
     if (this.controllers.has(key)) {
+      this.logger?.debug(
+        `[${this.pluginName}] aborting previous request: ${key}`
+      );
       this.abort(key);
     }
 
@@ -212,6 +218,9 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
         const timeoutId = setTimeout(() => {
           const ctrl = this.controllers.get(key);
           if (ctrl) {
+            this.logger?.debug(
+              `[${this.pluginName}] timeout abort: ${key} (${abortTimeout}ms)`
+            );
             ctrl.abort(
               new AbortError(
                 'The operation was aborted due to timeout',
@@ -219,7 +228,7 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
                 abortTimeout
               )
             );
-            this.releaseRequest(key);
+            this.cleanup(key);
 
             // 触发 onAbort 回调
             if (typeof config.onAborted === 'function') {
@@ -241,8 +250,7 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
     if (parameters) {
       const config = this.getConfig(parameters);
       const key = this.generateRequestKey(config);
-      console.log('AbortPlugin onSuccess - releasing key:', key);
-      this.releaseRequest(key);
+      this.cleanup(key);
     }
   }
 
@@ -256,10 +264,13 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
     if (AbortPlugin.isAbortError(error)) {
       // controller may be deleted in .abort, this is will be undefined
       const controller = this.controllers.get(key);
-      this.releaseRequest(key);
+      const reason = controller?.signal.reason;
+
+      this.logger?.debug(`[${this.pluginName}] handling abort error: ${key}`);
+
+      this.cleanup(key);
 
       // 如果 signal.reason 已经是 AbortError，直接返回
-      const reason = controller?.signal.reason;
       if (reason instanceof AbortError) {
         return reason;
       }
@@ -271,7 +282,7 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
       );
     } else {
       // 发生非 abort 错误时，也需要清理资源
-      this.releaseRequest(key);
+      this.cleanup(key);
     }
   }
 
@@ -281,8 +292,9 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
 
     const controller = this.controllers.get(key);
     if (controller) {
+      this.logger?.debug(`[${this.pluginName}] manual abort: ${key}`);
       controller.abort(new AbortError('The operation was aborted', key));
-      this.releaseRequest(key);
+      this.cleanup(key);
 
       if (
         typeof config !== 'string' &&
@@ -296,11 +308,16 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
       return true;
     }
 
-    console.log('AbortPlugin abort - controller not found!');
     return false;
   }
 
   abortAll(): void {
+    const count = this.controllers.size;
+
+    if (count > 0) {
+      this.logger?.debug(`[${this.pluginName}] aborting all ${count} requests`);
+    }
+
     this.controllers.forEach((controller, key) => {
       controller.abort(new AbortError('All operations were aborted', key));
     });

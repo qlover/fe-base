@@ -1,11 +1,12 @@
 import { AbortPlugin } from './AbortPlugin';
+import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
 import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
 import type {
   MessageSenderContext,
-  MessageSenderPlugin,
   MessageSenderPluginContext
 } from './MessageSenderExecutor';
 import type { ExecutorContext, ExecutorError } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 /**
  * 发送失败时的消息处理策略
@@ -27,10 +28,15 @@ export type SendFailureStrategyType =
  *
  * 实现三个生命周期钩子来控制消息的添加、更新和失败处理
  */
-export class SenderStrategyPlugin implements MessageSenderPlugin {
+export class SenderStrategyPlugin extends MessageSenderBasePlugin {
   readonly pluginName = 'SenderStrategyPlugin';
 
-  constructor(protected failureStrategy: SendFailureStrategyType) {}
+  constructor(
+    protected failureStrategy: SendFailureStrategyType,
+    protected logger?: LoggerInterface
+  ) {
+    super();
+  }
 
   /**
    * 判断错误是否为 abort 错误
@@ -52,15 +58,16 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
   onBefore(context: ExecutorContext<MessageSenderContext>): void {
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
-        context.parameters.addedToStore = false;
+        this.closeAddedToStore(context);
         break;
 
       case SendFailureStrategy.KEEP_FAILED:
       case SendFailureStrategy.DELETE_FAILED:
       default:
         const addedMessage = this.handleBefore_KEEP_FAILED(context.parameters);
-        context.parameters.currentMessage = addedMessage;
-        context.parameters.addedToStore = true;
+
+        this.mergeRuntimeMessage(context, addedMessage);
+        this.openAddedToStore(context);
         break;
     }
   }
@@ -69,9 +76,9 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
     successData: MessageStoreMsg<any, unknown>
   ): MessageStoreMsg<any, unknown> | undefined {
-    const { currentMessage, store: messages } = parameters;
+    const { currentMessage, store } = parameters;
 
-    const updatedMessage = messages.updateMessage(
+    const updatedMessage = store.updateMessage(
       currentMessage.id!,
       successData as Partial<MessageStoreMsg<any>>
     );
@@ -83,9 +90,9 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
     parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>,
     successData: MessageStoreMsg<any, unknown>
   ): MessageStoreMsg<any, unknown> {
-    const { currentMessage, store: messages } = parameters;
+    const { currentMessage, store } = parameters;
 
-    const addedMessage = messages.addMessage({
+    const addedMessage = store.addMessage({
       ...currentMessage,
       ...successData
     });
@@ -108,35 +115,83 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
         throw new Error('Failed to update message');
       }
 
-      context.parameters.currentMessage = updatedMessage;
-      context.returnValue = updatedMessage;
+      this.mergeRuntimeMessage(context, updatedMessage);
+      this.asyncReturnValue(context, updatedMessage);
     } else {
       const addedMessage = this.handleSuccess_ADD_ON_SUCCESS(
         context.parameters,
         successData
       );
 
-      context.parameters.currentMessage = addedMessage;
-      context.returnValue = addedMessage;
+      this.mergeRuntimeMessage(context, addedMessage);
+      this.asyncReturnValue(context, addedMessage);
     }
+  }
+
+  /**
+   * 处理停止错误（AbortError）
+   *
+   * 当检测到停止操作时：
+   * 1. 将消息状态设置为 STOPPED
+   * 2. 调用 onAborted 回调
+   * 3. 阻止错误传播到其他插件
+   *
+   * @param context - 执行上下文
+   * @returns undefined - 阻止错误传播
+   */
+  protected onStopError(
+    context: ExecutorContext<MessageSenderContext>
+  ): ExecutorError | void {
+    const { currentMessage, store, addedToStore, gatewayOptions } =
+      context.parameters;
+
+    const stoppedData = {
+      error: context.error,
+      loading: false,
+      status: MessageStatus.STOPPED,
+      endTime: Date.now()
+    };
+
+    let finalMessage: MessageStoreMsg<any>;
+
+    if (addedToStore && currentMessage.id) {
+      const updated = store.updateMessage(currentMessage.id, stoppedData);
+      finalMessage = updated || store.mergeMessage(currentMessage, stoppedData);
+    } else {
+      finalMessage = store.mergeMessage(currentMessage, stoppedData);
+    }
+
+    this.mergeRuntimeMessage(context, finalMessage);
+    this.asyncReturnValue(context, finalMessage);
+
+    if (typeof gatewayOptions?.onAborted === 'function') {
+      try {
+        gatewayOptions.onAborted(finalMessage);
+      } catch {
+        // 防止回调错误影响主流程
+      }
+    }
+
+    return undefined;
   }
 
   onError(
     context: ExecutorContext<MessageSenderContext>
   ): ExecutorError | void {
-    const { currentMessage, store, addedToStore } = context.parameters;
     const error = context.error;
 
-    let finalMessage: MessageStoreMsg<any>;
+    // 如果是停止错误，使用专门的停止错误处理
+    if (this.isAbortError(error)) {
+      return this.onStopError(context);
+    }
 
-    // 判断是否为 abort 错误，决定使用 STOPPED 还是 FAILED 状态
-    const isAborted = this.isAbortError(error);
-    const status = isAborted ? MessageStatus.STOPPED : MessageStatus.FAILED;
+    const { currentMessage, store, addedToStore } = context.parameters;
+    let finalMessage: MessageStoreMsg<any>;
 
     const faileds = {
       loading: false,
       error: error,
-      status: status,
+      status: MessageStatus.FAILED,
       endTime: Date.now()
     };
 
@@ -171,8 +226,8 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
     }
 
     if (finalMessage) {
-      context.parameters.currentMessage = finalMessage;
-      context.returnValue = finalMessage;
+      this.mergeRuntimeMessage(context, finalMessage);
+      this.asyncReturnValue(context, finalMessage);
     }
   }
 
@@ -187,6 +242,8 @@ export class SenderStrategyPlugin implements MessageSenderPlugin {
     chunk: unknown
   ): Promise<unknown> | unknown | void {
     const { addedToStore, currentMessage, store } = context.parameters;
+
+    this.logger?.debug(`[${this.pluginName}] onStream - chunk:`, chunk);
 
     if (!store.isMessage(chunk)) {
       return chunk;
