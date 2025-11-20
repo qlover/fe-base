@@ -15,11 +15,25 @@ export const DraftMode = Object.freeze({
 
 export type DraftModeType = (typeof DraftMode)[keyof typeof DraftMode];
 
+function createChatMessageState<T>(): ChatMessageStoreStateInterface<T> {
+  return {
+    messages: [],
+    draftMessages: [],
+    disabledSend: false
+  };
+}
+
 export class ChatMessageStore<T = unknown>
   extends MessagesStore<ChatMessage<T>, ChatMessageStoreStateInterface<T>>
   implements ChatMessageStoreInterface<T>
 {
   protected draftMode: DraftModeType = DraftMode.STACK;
+
+  constructor(
+    initialState: () => ChatMessageStoreStateInterface<T> = createChatMessageState
+  ) {
+    super(initialState);
+  }
 
   override createMessage<M extends ChatMessage<T>>(
     message: Partial<M> = {} as Partial<M>

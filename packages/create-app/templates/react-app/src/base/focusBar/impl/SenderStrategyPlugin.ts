@@ -1,6 +1,7 @@
 import { AbortPlugin } from './AbortPlugin';
 import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
 import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
+import { template } from './utils';
 import type {
   MessageSenderContext,
   MessageSenderPluginContext
@@ -30,6 +31,10 @@ export type SendFailureStrategyType =
  */
 export class SenderStrategyPlugin extends MessageSenderBasePlugin {
   readonly pluginName = 'SenderStrategyPlugin';
+
+  protected loggerTpl = {
+    stram: '[${pluginName}] onStream #${times} - chunk:'
+  } as const;
 
   constructor(
     protected failureStrategy: SendFailureStrategyType,
@@ -243,7 +248,14 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
   ): Promise<unknown> | unknown | void {
     const { addedToStore, currentMessage, store } = context.parameters;
 
-    this.logger?.debug(`[${this.pluginName}] onStream - chunk:`, chunk);
+    const times = context.hooksRuntimes.streamTimes;
+    this.logger?.debug(
+      template(this.loggerTpl.stram, {
+        pluginName: this.pluginName,
+        times: String(times)
+      }),
+      chunk
+    );
 
     if (!store.isMessage(chunk)) {
       return chunk;

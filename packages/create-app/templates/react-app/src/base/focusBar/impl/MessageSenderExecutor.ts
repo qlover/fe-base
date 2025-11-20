@@ -41,10 +41,24 @@ export interface MessageSenderPlugin<T extends MessageStoreMsg<any>>
 }
 
 export class MessageSenderExecutor extends AsyncExecutor {
-  async runStream(
+  public resetRuntimesStreamTimes(
+    context: ExecutorContext<MessageSenderContext>
+  ): void {
+    context.hooksRuntimes.streamTimes = 0;
+  }
+
+  public async runStream(
     chunk: any,
     context: ExecutorContext<MessageSenderContext>
   ): Promise<any> {
+    if (context.hooksRuntimes.streamTimes === undefined) {
+      context.hooksRuntimes.streamTimes = 0;
+    }
+
+    if (typeof context.hooksRuntimes.streamTimes === 'number') {
+      context.hooksRuntimes.streamTimes++;
+    }
+
     return await this.runHooks(this.plugins, 'onStream', context, chunk);
   }
 }

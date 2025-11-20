@@ -37,7 +37,7 @@ export interface MessagesListProps<T, MessageType extends ChatMessage<T>> {
   getMessageKey?(message: MessageType, index: number): string;
 }
 
-export function MessagesList<T>({
+export function MessagesList<T = string>({
   bridge,
   getMessageComponent,
   getMessageKey

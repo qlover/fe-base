@@ -178,16 +178,22 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
 
-    this.logger?.debug(`[${this.pluginName}] cleanup - key: ${key}`);
+    // 只有当资源存在时才清理并打印日志
+    const hasController = this.controllers.has(key);
+    const hasTimeout = this.timeouts.has(key);
 
-    // 删除 controller
-    this.controllers.delete(key);
+    if (hasController || hasTimeout) {
+      // 删除 controller
+      this.controllers.delete(key);
 
-    // 清除超时定时器
-    const timeoutId = this.timeouts.get(key);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      this.timeouts.delete(key);
+      // 清除超时定时器
+      const timeoutId = this.timeouts.get(key);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        this.timeouts.delete(key);
+      }
+
+      this.logger?.debug(`[${this.pluginName}] cleanup: ${key}`);
     }
   }
 
@@ -218,9 +224,6 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
         const timeoutId = setTimeout(() => {
           const ctrl = this.controllers.get(key);
           if (ctrl) {
-            this.logger?.debug(
-              `[${this.pluginName}] timeout abort: ${key} (${abortTimeout}ms)`
-            );
             ctrl.abort(
               new AbortError(
                 'The operation was aborted due to timeout',
@@ -228,6 +231,11 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
                 abortTimeout
               )
             );
+
+            this.logger?.info(
+              `[${this.pluginName}] timeout abort: ${key} (${abortTimeout}ms)`
+            );
+
             this.cleanup(key);
 
             // 触发 onAbort 回调
@@ -266,8 +274,6 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
       const controller = this.controllers.get(key);
       const reason = controller?.signal.reason;
 
-      this.logger?.debug(`[${this.pluginName}] handling abort error: ${key}`);
-
       this.cleanup(key);
 
       // 如果 signal.reason 已经是 AbortError，直接返回
@@ -292,8 +298,9 @@ export class AbortPlugin<TParameters = AbortPluginConfig>
 
     const controller = this.controllers.get(key);
     if (controller) {
-      this.logger?.debug(`[${this.pluginName}] manual abort: ${key}`);
       controller.abort(new AbortError('The operation was aborted', key));
+
+      this.logger?.info(`[${this.pluginName}] manual abort: ${key}`);
       this.cleanup(key);
 
       if (

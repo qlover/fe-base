@@ -1,7 +1,6 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
-import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
 import type {
   ChatMessageBridgeInterface,
   ChatMessageStoreStateInterface
@@ -10,13 +9,13 @@ import type {
 const { TextArea } = Input;
 
 export interface FocusBarProps {
-  bridge: ChatMessageBridgeInterface<unknown>;
+  bridge: ChatMessageBridgeInterface<string>;
 }
 
 const selectors = {
-  historyMessages: (state: ChatMessageStoreStateInterface<unknown>) =>
+  historyMessages: (state: ChatMessageStoreStateInterface<string>) =>
     state.messages,
-  draftMessages: (state: ChatMessageStoreStateInterface<unknown>) =>
+  draftMessages: (state: ChatMessageStoreStateInterface<string>) =>
     state.draftMessages
 };
 export function FocusBar({ bridge }: FocusBarProps) {
@@ -26,18 +25,16 @@ export function FocusBar({ bridge }: FocusBarProps) {
   const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
 
   const firstDraft = useMemo(
-    () => messagesStore.getFirstDraftMessage(),
-    [draftMessages]
+    () => bridge.getFirstDraftMessage(draftMessages),
+    [draftMessages, bridge]
   );
 
   const sendingMessage = useMemo(
-    () =>
-      historyMessages.find((msg) => msg.status === MessageStatus.SENDING) ||
-      null,
-    [historyMessages]
+    () => bridge.getSendingMessage(historyMessages),
+    [historyMessages, bridge]
   );
 
-  const inputText = (firstDraft?.content as string) ?? '';
+  const inputText = firstDraft?.content ?? '';
   const loading = sendingMessage?.loading || firstDraft?.loading;
 
   const handleKeyDown = useCallback(

@@ -118,7 +118,24 @@ export interface ChatMessageBridgeInterface<T = string>
    */
   use(plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]): this;
 
+  /**
+   * 改变输入框内容
+   *
+   * 如果想要获取最新ui上的草稿消息，请使用 `getFirstDraftMessage` 方法
+   *
+   * @param content 内容
+   */
   onChangeContent(content: T): void;
+
+  /**
+   * 获取第一个草稿消息
+   *
+   * 他应该获取最新ui上的草稿消息
+   *
+   * @param draftMessages 草稿消息列表（可依赖ui层级获取，避免直接访问store, 默认获取全部消息）
+   * @returns 第一个草稿消息
+   */
+  getFirstDraftMessage(draftMessages?: ChatMessage<T>[]): ChatMessage<T> | null;
 
   /**
    * 发送用户消息
@@ -136,5 +153,19 @@ export interface ChatMessageBridgeInterface<T = string>
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>>;
 
+  /**
+   * 获取正在发送的消息
+   *
+   * @param messages 消息列表（可依赖ui层级获取，避免直接访问store, 默认获取全部消息）
+   * @returns 正在发送的消息
+   */
+  getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null;
+
+  /**
+   * 停止发送消息
+   *
+   * @param messageId 消息ID
+   * @returns 是否停止成功
+   */
   stop(messageId?: string): boolean;
 }

@@ -8,23 +8,14 @@ import { ChatSenderStrategy } from './chatMessage/ChatSenderStrategy';
 import { FocusBar } from './FocusBar';
 import { MessageApi } from './MessageApi';
 import { MessagesList } from './messagesList/MessagesList';
-import type { ChatMessageStoreStateInterface } from './chatMessage/interface';
-
-function createChatMessageState(): ChatMessageStoreStateInterface<unknown> {
-  return {
-    messages: [],
-    draftMessages: [],
-    disabledSend: false
-  };
-}
 
 export function ChatRoot() {
-  const messagesStore = useFactory(ChatMessageStore, createChatMessageState);
+  const messagesStore = useFactory(ChatMessageStore<string>);
   const messageApi = useFactory(MessageApi, messagesStore);
 
   const [bridge] = useState(() => {
     return (
-      new ChatMessageBridge(messagesStore, {
+      new ChatMessageBridge<string>(messagesStore, {
         gateway: messageApi,
         logger: logger,
         senderName: 'ChatSender',

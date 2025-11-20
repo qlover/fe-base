@@ -37,7 +37,7 @@ export class ChatMessageBridge<T = string>
   }
 
   onChangeContent(content: T): void {
-    const firstDraft = this.messages.getFirstDraftMessage();
+    const firstDraft = this.getFirstDraftMessage();
 
     // 如果已经有草稿消息，更新它的内容
     if (firstDraft && firstDraft.id) {
@@ -51,6 +51,10 @@ export class ChatMessageBridge<T = string>
         role: ChatMessageRoleType.USER
       });
     }
+  }
+
+  getFirstDraftMessage(): ChatMessage<T> | null {
+    return this.messages.getFirstDraftMessage();
   }
 
   setRef(ref: unknown): void {
@@ -67,6 +71,10 @@ export class ChatMessageBridge<T = string>
     messages: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
+    if (this.messages.state.disabledSend) {
+      throw new Error('Send is disabled');
+    }
+
     return this.messageSender.send(messages, gatewayOptions);
   }
 
@@ -95,12 +103,9 @@ export class ChatMessageBridge<T = string>
     return this.sendMessage(targetMessage, gatewayOptions);
   }
 
-  getSendingMessage(): ChatMessage<T> | null {
-    return (
-      this.messages
-        .getMessages()
-        .find((msg) => msg.status === MessageStatus.SENDING) || null
-    );
+  getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null {
+    messages = messages || this.messages.getMessages();
+    return messages.find((msg) => msg.status === MessageStatus.SENDING) || null;
   }
 
   stop(messageId?: string): boolean {

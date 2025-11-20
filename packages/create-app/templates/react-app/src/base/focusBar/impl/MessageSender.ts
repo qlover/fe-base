@@ -10,6 +10,7 @@ import {
   type MessageStoreMsg,
   type MessagesStore
 } from './MessagesStore';
+import { template } from './utils';
 import type {
   GatewayOptions,
   MessageGetwayInterface
@@ -62,6 +63,11 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
   >;
   protected readonly logger?: LoggerInterface;
   protected readonly senderName: string;
+
+  protected loggerTpl = {
+    failed: '[${senderName}] ${messageId} failed',
+    success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
+  } as const;
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
@@ -135,6 +141,8 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
       const executor = this.executor;
       const signal = gatewayOptions.signal;
 
+      executor.resetRuntimesStreamTimes(context);
+
       newGatewayOptions = {
         ...gatewayOptions,
         onChunk: async (chunk) => {
@@ -204,12 +212,14 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     // 比如: STOPPED
     const status = currentMessage.status || MessageStatus.FAILED;
 
-    this.logger?.debug(`[${this.senderName}] message failed`, {
-      messageId: currentMessage.id,
-      status,
-      error: processedError,
-      errorType: error instanceof Error ? error.constructor.name : typeof error
-    });
+    if (this.logger) {
+      this.logger.debug(
+        template(this.loggerTpl.failed, {
+          senderName: this.senderName,
+          messageId: currentMessage.id
+        })
+      );
+    }
 
     // Create a new message object instead of modifying the original
     return this.messages.mergeMessage(context.currentMessage, {
@@ -261,8 +271,6 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     const sendingMessage = this.generateSendingMessage(message);
     const context = this.createSendContext(sendingMessage, gatewayOptions);
 
-    this.logger?.debug(`[${this.senderName}] send start: ${sendingMessage.id}`);
-
     try {
       const reuslt = await this.executor.exec(context, async (ctx) => {
         return await this.sendMessage(ctx.parameters.currentMessage, ctx);
@@ -270,7 +278,11 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
 
       if (this.logger) {
         this.logger.info(
-          `[${this.senderName}] send success, speed: ${this.getDuration(reuslt)}ms`
+          template(this.loggerTpl.success, {
+            senderName: this.senderName,
+            messageId: sendingMessage.id,
+            speed: String(this.getDuration(reuslt))
+          })
         );
       }
 
