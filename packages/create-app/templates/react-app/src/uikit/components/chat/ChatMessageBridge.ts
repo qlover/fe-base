@@ -1,14 +1,17 @@
-import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
-import { MessageSender } from '@/base/focusBar/impl/MessageSender';
-import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
-import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
-import { ChatMessageRole, type ChatMessage } from './ChatMessage';
-import type { ChatMessageStore } from './ChatMessageStore';
+import {
+  ChatMessageRole,
+  type ChatMessage
+} from '@/base/focusBar/chatMessage/ChatMessage';
+import type { ChatMessageStore } from '@/base/focusBar/chatMessage/ChatMessageStore';
 import type {
   ChatMessageBridgeInterface,
   ChatMessageBridgePlugin,
   DisabledSendParams
-} from './interface';
+} from '@/base/focusBar/chatMessage/interface';
+import { MessageSender } from '@/base/focusBar/impl/MessageSender';
+import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
+import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
+import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
 export class ChatMessageBridge<T = string>

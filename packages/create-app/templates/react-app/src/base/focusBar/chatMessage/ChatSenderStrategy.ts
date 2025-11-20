@@ -1,7 +1,7 @@
-import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
-import { SenderStrategyPlugin } from '@/base/focusBar/impl/SenderStrategyPlugin';
 import { ChatMessageRole, type ChatMessage } from './ChatMessage';
+import { SenderStrategyPlugin } from '../impl/SenderStrategyPlugin';
 import type { ChatMessageStore } from './ChatMessageStore';
+import type { MessageSenderContext } from '../impl/MessageSenderExecutor';
 
 export class ChatSenderStrategy extends SenderStrategyPlugin {
   sliceMessages(store: ChatMessageStore<string>, index: number): void {

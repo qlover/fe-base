@@ -1,7 +1,7 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
-import type { ChatMessageBridgeInterface } from './chatMessage/interface';
+import type { ChatMessageBridgeInterface } from '@/base/focusBar/chatMessage/interface';
 
 const { TextArea } = Input;
 

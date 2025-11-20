@@ -1,7 +1,4 @@
-import type {
-  MessageStatusType,
-  MessageStoreMsg
-} from '@/base/focusBar/impl/MessagesStore';
+import type { MessageStatusType, MessageStoreMsg } from '../impl/MessagesStore';
 
 export const ChatMessageRole = {
   USER: 'user',
@@ -29,7 +26,7 @@ export class ChatMessage<T = unknown, R = unknown>
 
   readonly role: ChatMessageRoleType = ChatMessageRole.USER;
 
-  constructor(options?: Partial<MessageStoreMsg<T>>) {
+  constructor(options?: Partial<ChatMessage<T>>) {
     if (options) {
       Object.assign(this, options);
     }

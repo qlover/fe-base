@@ -1,10 +1,10 @@
 import { useFactory } from '@brain-toolkit/react-kit';
 import { useState } from 'react';
+import { ChatMessageStore } from '@/base/focusBar/chatMessage/ChatMessageStore';
+import { ChatSenderStrategy } from '@/base/focusBar/chatMessage/ChatSenderStrategy';
 import { SendFailureStrategy } from '@/base/focusBar/impl/SenderStrategyPlugin';
 import { logger } from '@/core/globals';
-import { ChatMessageBridge } from './chatMessage/ChatMessageBridge';
-import { ChatMessageStore } from './chatMessage/ChatMessageStore';
-import { ChatSenderStrategy } from './chatMessage/ChatSenderStrategy';
+import { ChatMessageBridge } from './ChatMessageBridge';
 import { FocusBar } from './FocusBar';
 import { MessageApi } from './MessageApi';
 import { MessagesList } from './messagesList/MessagesList';
