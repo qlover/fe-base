@@ -1,6 +1,10 @@
 import { AbortPlugin } from './AbortPlugin';
 import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
-import { MessageStatus, type MessageStoreMsg } from './MessagesStore';
+import {
+  type MessagesStore,
+  MessageStatus,
+  type MessageStoreMsg
+} from './MessagesStore';
 import { template } from './utils';
 import type {
   MessageSenderContext,
@@ -28,12 +32,23 @@ export type SendFailureStrategyType =
  * 消息发送策略插件
  *
  * 实现三个生命周期钩子来控制消息的添加、更新和失败处理
+ *
+ * Message loading 处理规则示例：
+ * 1. 不是 stream 时, gateway
+ *  - 返回结果前都是 loading=true, status=sending
+ *  - 返回正确结果后 loading=false, status=sent
+ *
+ * 2. 是 stream 时, gateway
+ *  - chunk之前都是 loading=true, status=sending, streaming=true
+ *  - chunk 结束后 loading=false, status=sent, streaming=false
  */
 export class SenderStrategyPlugin extends MessageSenderBasePlugin {
   readonly pluginName = 'SenderStrategyPlugin';
 
   protected loggerTpl = {
-    stram: '[${pluginName}] onStream #${times} - chunk:'
+    stream: '[${pluginName}] onStream #${times} - chunk:',
+    startStreaming: '[${pluginName}] startStreaming',
+    endStreaming: '[${pluginName}] endStreaming'
   } as const;
 
   constructor(
@@ -58,6 +73,17 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
     const { currentMessage, store } = parameters;
 
     return store.addMessage(currentMessage);
+  }
+
+  protected cleanup(context: ExecutorContext<MessageSenderContext>): void {
+    const { store } = context.parameters;
+    store.stopStreaming();
+
+    this.logger?.info(
+      template(this.loggerTpl.endStreaming, {
+        pluginName: this.pluginName
+      })
+    );
   }
 
   onBefore(context: ExecutorContext<MessageSenderContext>): void {
@@ -131,6 +157,8 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
       this.mergeRuntimeMessage(context, addedMessage);
       this.asyncReturnValue(context, addedMessage);
     }
+
+    this.cleanup(context);
   }
 
   /**
@@ -176,6 +204,8 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
         // 防止回调错误影响主流程
       }
     }
+
+    this.cleanup(context);
 
     return undefined;
   }
@@ -234,6 +264,8 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
       this.mergeRuntimeMessage(context, finalMessage);
       this.asyncReturnValue(context, finalMessage);
     }
+
+    this.cleanup(context);
   }
 
   /**
@@ -241,6 +273,7 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
    * - 根据不同策略更新消息内容
    * - KEEP_FAILED/DELETE_FAILED: 实时更新 store 中的消息
    * - ADD_ON_SUCCESS: 不更新 store，等待完成时再添加
+   * - Fallback: 如果第一次收到 chunk 时用户消息还在 loading，说明 onConnected 未被调用，自动触发
    */
   onStream(
     context: MessageSenderPluginContext<any>,
@@ -250,12 +283,28 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
 
     const times = context.hooksRuntimes.streamTimes;
     this.logger?.debug(
-      template(this.loggerTpl.stram, {
+      template(this.loggerTpl.stream, {
         pluginName: this.pluginName,
         times: String(times)
       }),
       chunk
     );
+
+    // Fallback: 如果是第一次 chunk 且用户消息还在 loading，说明 onConnected 未被调用
+    // 此时第一次 chunk 到达意味着连接已建立，执行相同的逻辑
+    if (times === 1 && addedToStore && currentMessage.id) {
+      const userMessage = store.getMessageById(currentMessage.id);
+      if (userMessage?.loading) {
+        this.handleConnectionEstablished(context.parameters);
+
+        this.logger?.info(
+          `[${this.pluginName}] Fallback: Connection established on first chunk`
+        );
+      }
+    }
+
+    // 确保全局 streaming 状态已启动（防止某些边界情况）
+    this.startStreaming(store);
 
     if (!store.isMessage(chunk)) {
       return chunk;
@@ -279,6 +328,50 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
     }
 
     return chunk;
+  }
+
+  protected startStreaming(
+    store: MessagesStore<MessageStoreMsg<any, unknown>>
+  ): void {
+    // 启动全局 streaming 状态
+    if (!store.state.streaming) {
+      this.logger?.debug(
+        template(this.loggerTpl.startStreaming, {
+          pluginName: this.pluginName
+        })
+      );
+      store.startStreaming();
+    }
+  }
+
+  /**
+   * 处理连接建立的公共逻辑
+   * - 启动全局 streaming 状态
+   * - 将用户消息标记为已发送（loading=false）
+   *
+   * @param parameters - 消息发送上下文参数
+   */
+  protected handleConnectionEstablished(
+    parameters: MessageSenderContext<MessageStoreMsg<any, unknown>>
+  ): void {
+    const { store, currentMessage, addedToStore } = parameters;
+
+    // 启动全局 streaming 状态
+    this.startStreaming(store);
+
+    // 将用户消息的 loading 设置为 false，表示请求已发送成功
+    if (addedToStore && currentMessage.id) {
+      store.updateMessage(currentMessage.id, {
+        loading: false,
+        // sending 规则1
+        status: MessageStatus.SENDING,
+        endTime: Date.now()
+      });
+    }
+  }
+
+  onConnected(context: ExecutorContext<MessageSenderContext>): void {
+    this.handleConnectionEstablished(context.parameters);
   }
 
   protected handleStream_UpdateExisting(

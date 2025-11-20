@@ -3,14 +3,14 @@ import type {
   MessageStoreMsg
 } from '@/base/focusBar/impl/MessagesStore';
 
-export const ChatMessageRoleType = {
+export const ChatMessageRole = {
   USER: 'user',
   SYSTEM: 'system',
   ASSISTANT: 'assistant'
 } as const;
 
 export type ChatMessageRoleType =
-  (typeof ChatMessageRoleType)[keyof typeof ChatMessageRoleType];
+  (typeof ChatMessageRole)[keyof typeof ChatMessageRole];
 
 export class ChatMessage<T = unknown, R = unknown>
   implements MessageStoreMsg<T, R>
@@ -27,7 +27,7 @@ export class ChatMessage<T = unknown, R = unknown>
   readonly files?: File[];
   readonly status?: MessageStatusType;
 
-  readonly role: ChatMessageRoleType = ChatMessageRoleType.USER;
+  readonly role: ChatMessageRoleType = ChatMessageRole.USER;
 
   constructor(options?: Partial<MessageStoreMsg<T>>) {
     if (options) {

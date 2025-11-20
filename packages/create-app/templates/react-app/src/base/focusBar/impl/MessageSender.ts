@@ -1,5 +1,5 @@
 import { ExecutorError } from '@qlover/fe-corekit';
-import { AbortPlugin, type AbortPluginConfig, AbortError } from './AbortPlugin';
+import { AbortPlugin, type AbortPluginConfig } from './AbortPlugin';
 import {
   type MessageSenderContext,
   type MessageSenderPluginContext,
@@ -138,6 +138,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     if (gatewayOptions) {
       // Extract only necessary references to minimize closure capture
       const originalOnChunk = gatewayOptions.onChunk;
+      const originalOnConnected = gatewayOptions.onConnected;
       const executor = this.executor;
       const signal = gatewayOptions.signal;
 
@@ -145,14 +146,14 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
 
       newGatewayOptions = {
         ...gatewayOptions,
+        onConnected: async () => {
+          signal?.throwIfAborted();
+
+          await executor.runConnected(context);
+          originalOnConnected?.();
+        },
         onChunk: async (chunk) => {
-          // 在每次 chunk 到达时检查是否已被 abort
-          if (signal?.aborted) {
-            throw (
-              signal.reason ||
-              new AbortError('The operation was aborted', undefined)
-            );
-          }
+          signal?.throwIfAborted();
 
           // Pass context for plugin hooks, but don't capture it in closure unnecessarily
           const result = await executor.runStream(chunk, context);

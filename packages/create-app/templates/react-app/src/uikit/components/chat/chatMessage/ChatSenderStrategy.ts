@@ -1,6 +1,6 @@
 import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
 import { SenderStrategyPlugin } from '@/base/focusBar/impl/SenderStrategyPlugin';
-import { ChatMessageRoleType, type ChatMessage } from './ChatMessage';
+import { ChatMessageRole, type ChatMessage } from './ChatMessage';
 import type { ChatMessageStore } from './ChatMessageStore';
 
 export class ChatSenderStrategy extends SenderStrategyPlugin {
@@ -18,7 +18,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin {
     message: ChatMessage<string>
   ): boolean {
     return (
-      store.isMessage(message) && message.role === ChatMessageRoleType.ASSISTANT
+      store.isMessage(message) && message.role === ChatMessageRole.ASSISTANT
     );
   }
 

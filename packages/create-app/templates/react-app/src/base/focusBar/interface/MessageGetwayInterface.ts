@@ -6,6 +6,12 @@ import type { AbortPluginConfig } from '../impl/AbortPlugin';
  */
 export interface MessageStreamEvent<M = unknown> {
   /**
+   * 网络连接成功建立时调用（在开始接收数据之前）
+   * @description 表示请求已发送且服务器已响应，即将开始流式传输数据
+   */
+  onConnected?(): void;
+
+  /**
    * 每次收到新的 chunk 时调用
    * @param chunk - 消息片段（通常是累积的消息）
    */

@@ -38,6 +38,14 @@ export interface MessageSenderPlugin<T extends MessageStoreMsg<any>>
     context: MessageSenderPluginContext<any>,
     chunk: unknown
   ): Promise<unknown> | unknown | void;
+
+  /**
+   * 当以stream调用 send 时，会调用此钩子
+   *
+   * @param context - 上下文
+   * @returns 返回值
+   */
+  onConnected?(context: MessageSenderPluginContext<any>): Promise<void> | void;
 }
 
 export class MessageSenderExecutor extends AsyncExecutor {
@@ -60,5 +68,11 @@ export class MessageSenderExecutor extends AsyncExecutor {
     }
 
     return await this.runHooks(this.plugins, 'onStream', context, chunk);
+  }
+
+  public async runConnected(
+    context: ExecutorContext<MessageSenderContext>
+  ): Promise<void> {
+    await this.runHooks(this.plugins, 'onConnected', context);
   }
 }

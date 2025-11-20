@@ -10,7 +10,12 @@ import {
 export const MessageStatus = Object.freeze({
   /** 草稿/编辑中 */
   DRAFT: 'draft',
-  /** 发送中 */
+  /**
+   * 发送中
+   *
+   * - 规则1：正在 streaming 也应该是 sending 状态
+   * - 规则2：不是 streaming, 则结果没有获取到之前都是 sending 状态
+   */
   SENDING: 'sending',
   /** 发送成功 */
   SENT: 'sent',
@@ -172,5 +177,13 @@ export class MessagesStore<
 
   override toJson(): Record<string, any>[] {
     return JSON.parse(JSON.stringify(this.getMessages()));
+  }
+
+  override startStreaming(): void {
+    this.emit(this.cloneState({ streaming: true } as Partial<State>));
+  }
+
+  override stopStreaming(): void {
+    this.emit(this.cloneState({ streaming: false } as Partial<State>));
   }
 }

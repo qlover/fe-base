@@ -3,10 +3,7 @@ import { Spin } from 'antd';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
 import { With } from '../../With';
-import {
-  ChatMessageRoleType,
-  type ChatMessage
-} from '../chatMessage/ChatMessage';
+import { ChatMessageRole, type ChatMessage } from '../chatMessage/ChatMessage';
 import type { ChatMessageBridgeInterface } from '../chatMessage/interface';
 
 export interface MessageItemProps<T, MessageType extends ChatMessage<T>> {
@@ -32,7 +29,7 @@ export function MessageItem<T, MessageType extends ChatMessage<T>>({
     return message.error instanceof Error ? message.error.message : null;
   }, [message.error]);
 
-  const isUserMessage = message.role === ChatMessageRoleType.USER;
+  const isUserMessage = message.role === ChatMessageRole.USER;
 
   return (
     <div

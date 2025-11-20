@@ -16,13 +16,15 @@ const selectors = {
   historyMessages: (state: ChatMessageStoreStateInterface<string>) =>
     state.messages,
   draftMessages: (state: ChatMessageStoreStateInterface<string>) =>
-    state.draftMessages
+    state.draftMessages,
+  streaming: (state: ChatMessageStoreStateInterface<string>) => state.streaming
 };
 export function FocusBar({ bridge }: FocusBarProps) {
   const messagesStore = bridge.getMessageStore();
   const historyMessages = useStore(messagesStore, selectors.historyMessages);
   const draftMessages = useStore(messagesStore, selectors.draftMessages);
   const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
+  const streaming = useStore(messagesStore, selectors.streaming);
 
   const firstDraft = useMemo(
     () => bridge.getFirstDraftMessage(draftMessages),
@@ -34,6 +36,11 @@ export function FocusBar({ bridge }: FocusBarProps) {
     [historyMessages, bridge]
   );
 
+  const disabledSendButton = useMemo(
+    () => bridge.getDisabledSend({ firstDraft, sendingMessage, disabledSend }),
+    [firstDraft, sendingMessage, disabledSend]
+  );
+
   const inputText = firstDraft?.content ?? '';
   const loading = sendingMessage?.loading || firstDraft?.loading;
 
@@ -41,12 +48,10 @@ export function FocusBar({ bridge }: FocusBarProps) {
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       // Ctrl+Enter 发送
       if (e.key === 'Enter' && e.ctrlKey) {
-        if (!disabledSend && !firstDraft?.loading) {
-          bridge.send();
-        }
+        bridge.send();
       }
     },
-    [disabledSend, firstDraft, bridge]
+    [bridge]
   );
 
   return (
@@ -62,11 +67,18 @@ export function FocusBar({ bridge }: FocusBarProps) {
       </div>
       <div data-testid="FocusBarFooter" className="flex gap-2">
         <Button
-          disabled={disabledSend}
+          disabled={loading}
           data-testid="FocusBar-Button-Send"
-          onClick={() => (loading ? bridge.stop() : bridge.send())}
+          onClick={() => {
+            if (!disabledSendButton) {
+              bridge.send();
+              return;
+            }
+
+            bridge.stop();
+          }}
         >
-          {loading ? 'Stop' : 'Send'}
+          {streaming ? 'stop' : loading ? 'loading' : 'Send'}
         </Button>
       </div>
     </div>

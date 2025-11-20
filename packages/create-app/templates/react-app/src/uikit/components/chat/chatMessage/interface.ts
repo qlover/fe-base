@@ -103,6 +103,12 @@ export type ChatMessageBridgePlugin<T = unknown> = ExecutorPlugin<
   MessageSenderContext<ChatMessage<T>>
 >;
 
+export type DisabledSendParams<T = unknown> = {
+  firstDraft: ChatMessage<T> | null;
+  sendingMessage: ChatMessage<T> | null;
+  disabledSend: boolean;
+};
+
 export interface ChatMessageBridgeInterface<T = string>
   extends InputRefInterface {
   /**
@@ -160,6 +166,16 @@ export interface ChatMessageBridgeInterface<T = string>
    * @returns 正在发送的消息
    */
   getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null;
+
+  /**
+   * 是否禁用发送状态
+   *
+   * @param firstDraft 第一个草稿消息
+   * @param sendingMessage 正在发送的消息
+   * @param disabledSend 是否禁用发送
+   * @returns 是否禁用发送
+   */
+  getDisabledSend(params?: DisabledSendParams<T>): boolean;
 
   /**
    * 停止发送消息

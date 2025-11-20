@@ -19,6 +19,11 @@ export interface MessageInterface<T = unknown> extends AsyncStateInterface<T> {
 export interface MessagesStateInterface<T> extends StoreStateInterface {
   /** 历史消息列表 */
   messages: T[];
+
+  /**
+   * 是否正在流式传输
+   */
+  streaming?: boolean;
 }
 
 export abstract class MessagesStoreInterface<
@@ -54,4 +59,8 @@ export abstract class MessagesStoreInterface<
   abstract resetMessages(messages: MessageType[]): void;
 
   abstract toJson(): Record<string, any>[];
+
+  abstract startStreaming(): void;
+
+  abstract stopStreaming(): void;
 }

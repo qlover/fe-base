@@ -2,11 +2,12 @@ import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
 import { MessageSender } from '@/base/focusBar/impl/MessageSender';
 import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
 import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
-import { ChatMessageRoleType, type ChatMessage } from './ChatMessage';
+import { ChatMessageRole, type ChatMessage } from './ChatMessage';
 import type { ChatMessageStore } from './ChatMessageStore';
 import type {
   ChatMessageBridgeInterface,
-  ChatMessageBridgePlugin
+  ChatMessageBridgePlugin,
+  DisabledSendParams
 } from './interface';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
@@ -36,6 +37,28 @@ export class ChatMessageBridge<T = string>
     return this.messages;
   }
 
+  /**
+   * 禁用规则
+   * 1. 如果正在 streaming，则不允许发送
+   * 2. 如果正在 sending，则不允许发送
+
+   */
+  getDisabledSend(params?: DisabledSendParams<T>): boolean {
+    const disabledSend =
+      params?.disabledSend || this.messages.state.disabledSend;
+
+    if (disabledSend || this.messages.state.streaming) {
+      return true;
+    }
+
+    const sendingMessage = this.getSendingMessage();
+    if (sendingMessage) {
+      return true;
+    }
+
+    return false;
+  }
+
   onChangeContent(content: T): void {
     const firstDraft = this.getFirstDraftMessage();
 
@@ -48,7 +71,7 @@ export class ChatMessageBridge<T = string>
       // 如果没有草稿消息，创建一个新的
       this.messages.addDraftMessage({
         content,
-        role: ChatMessageRoleType.USER
+        role: ChatMessageRole.USER
       });
     }
   }
@@ -82,6 +105,9 @@ export class ChatMessageBridge<T = string>
    * 发送消息
    *
    * - 如果直接传入一个对象不存在则不允许发送, 只能允许发送草稿消息和重发历史消息
+   * - 如果正在 streaming，则不允许发送
+   * - 如果正在 loading，则不允许发送
+   * - 如果没有可以发送的消息，则不允许发送
    *
    * @param message - 消息对象
    * @param gatewayOptions - 网关选项
@@ -90,12 +116,19 @@ export class ChatMessageBridge<T = string>
     message?: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
-    const targetMessage = this.messages.getReadySendMessage(message);
+    const disabledSend = this.getDisabledSend();
 
+    if (disabledSend) {
+      throw new Error('Send is not allowed');
+    }
+
+    // 3. 如果没有可以发送的消息，则不允许发送
+    const targetMessage = this.messages.getReadySendMessage(message);
     if (!targetMessage) {
       throw new Error('No message to send');
     }
 
+    // 4. 如果正在 loading，则不允许发送
     if (targetMessage.loading) {
       return Promise.resolve(targetMessage);
     }
@@ -105,7 +138,13 @@ export class ChatMessageBridge<T = string>
 
   getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null {
     messages = messages || this.messages.getMessages();
-    return messages.find((msg) => msg.status === MessageStatus.SENDING) || null;
+    return (
+      messages.find(
+        (msg) =>
+          msg.status === MessageStatus.SENDING &&
+          msg.role === ChatMessageRole.USER
+      ) || null
+    );
   }
 
   stop(messageId?: string): boolean {

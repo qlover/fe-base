@@ -8,7 +8,7 @@ import type {
   MessageGetwayInterface,
   GatewayOptions
 } from '@/base/focusBar/interface/MessageGetwayInterface';
-import { ChatMessageRoleType } from './chatMessage/ChatMessage';
+import { ChatMessageRole } from './chatMessage/ChatMessage';
 import type { ChatMessageStore } from './chatMessage/ChatMessageStore';
 
 export class MessageApi implements MessageGetwayInterface {
@@ -64,10 +64,15 @@ export class MessageApi implements MessageGetwayInterface {
 
     // 创建初始的助手消息
     const assistantMessageId =
-      ChatMessageRoleType.ASSISTANT + message.id + Date.now();
+      ChatMessageRole.ASSISTANT + message.id + Date.now();
     let accumulatedContent = '';
 
     try {
+      // 模拟连接建立 - 调用 onConnected
+      await ThreadUtil.sleep(random(2000, 5000));
+      // 注意：框架会自动拦截这个调用，触发插件系统，然后调用用户的原始回调
+      await options.onConnected?.();
+
       // 逐词发送
       for (let i = 0; i < words.length; i++) {
         // 检查是否被取消
@@ -82,7 +87,7 @@ export class MessageApi implements MessageGetwayInterface {
         const chunkMessage = this.messagesStore.createMessage({
           ...message,
           id: assistantMessageId,
-          role: ChatMessageRoleType.ASSISTANT,
+          role: ChatMessageRole.ASSISTANT,
           content: accumulatedContent,
           error: null,
           loading: true,
@@ -107,7 +112,7 @@ export class MessageApi implements MessageGetwayInterface {
       const finalMessage = this.messagesStore.createMessage({
         ...message,
         id: assistantMessageId,
-        role: ChatMessageRoleType.ASSISTANT,
+        role: ChatMessageRole.ASSISTANT,
         content: accumulatedContent,
         error: null,
         loading: false,
@@ -133,7 +138,7 @@ export class MessageApi implements MessageGetwayInterface {
         const abortedMessage = this.messagesStore.createMessage({
           ...message,
           id: assistantMessageId,
-          role: ChatMessageRoleType.ASSISTANT,
+          role: ChatMessageRole.ASSISTANT,
           content: accumulatedContent,
           error: null,
           loading: false,
@@ -165,6 +170,10 @@ export class MessageApi implements MessageGetwayInterface {
   ): Promise<M> {
     const messageContent = message.content ?? '';
 
+    // 模拟连接建立 - 调用 onConnected
+    // 注意：框架会自动拦截这个调用，触发插件系统，然后调用用户的原始回调
+    await options.onConnected?.();
+
     // 模拟随机延迟
     const times = random(200, 1000);
 
@@ -175,8 +184,8 @@ export class MessageApi implements MessageGetwayInterface {
         // 被取消，创建停止状态的消息
         const abortedMessage = this.messagesStore.createMessage({
           ...message,
-          id: ChatMessageRoleType.ASSISTANT + message.id,
-          role: ChatMessageRoleType.ASSISTANT,
+          id: ChatMessageRole.ASSISTANT + message.id,
+          role: ChatMessageRole.ASSISTANT,
           content: '', // 还没开始生成内容
           error: null,
           loading: false,
@@ -211,8 +220,8 @@ export class MessageApi implements MessageGetwayInterface {
     const endTime = Date.now();
     const finalMessage = this.messagesStore.createMessage({
       ...message,
-      id: ChatMessageRoleType.ASSISTANT + message.id,
-      role: ChatMessageRoleType.ASSISTANT,
+      id: ChatMessageRole.ASSISTANT + message.id,
+      role: ChatMessageRole.ASSISTANT,
       content: '(' + endTime + ')Hello! You sent: ' + message.content,
       error: null,
       loading: false,
@@ -251,8 +260,8 @@ export class MessageApi implements MessageGetwayInterface {
     const endTime = Date.now();
     return this.messagesStore.createMessage({
       ...message,
-      id: ChatMessageRoleType.ASSISTANT + message.id,
-      role: ChatMessageRoleType.ASSISTANT,
+      id: ChatMessageRole.ASSISTANT + message.id,
+      role: ChatMessageRole.ASSISTANT,
       content: '(' + endTime + ')Hello! You sent7: ' + message.content,
       error: null,
       loading: false,
