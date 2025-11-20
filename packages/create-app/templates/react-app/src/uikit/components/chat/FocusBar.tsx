@@ -1,10 +1,7 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Input } from 'antd';
 import { useCallback, useMemo } from 'react';
-import type {
-  ChatMessageBridgeInterface,
-  ChatMessageStoreStateInterface
-} from './chatMessage/interface';
+import type { ChatMessageBridgeInterface } from './chatMessage/interface';
 
 const { TextArea } = Input;
 
@@ -12,33 +9,29 @@ export interface FocusBarProps {
   bridge: ChatMessageBridgeInterface<string>;
 }
 
-const selectors = {
-  historyMessages: (state: ChatMessageStoreStateInterface<string>) =>
-    state.messages,
-  draftMessages: (state: ChatMessageStoreStateInterface<string>) =>
-    state.draftMessages,
-  streaming: (state: ChatMessageStoreStateInterface<string>) => state.streaming
-};
 export function FocusBar({ bridge }: FocusBarProps) {
   const messagesStore = bridge.getMessageStore();
-  const historyMessages = useStore(messagesStore, selectors.historyMessages);
-  const draftMessages = useStore(messagesStore, selectors.draftMessages);
-  const disabledSend = useStore(messagesStore, (state) => state.disabledSend);
-  const streaming = useStore(messagesStore, selectors.streaming);
+
+  const {
+    messages: historyMessages,
+    draftMessages,
+    disabledSend,
+    streaming
+  } = useStore(messagesStore);
 
   const firstDraft = useMemo(
     () => bridge.getFirstDraftMessage(draftMessages),
-    [draftMessages, bridge]
+    [bridge, draftMessages]
   );
 
   const sendingMessage = useMemo(
     () => bridge.getSendingMessage(historyMessages),
-    [historyMessages, bridge]
+    [bridge, historyMessages]
   );
 
   const disabledSendButton = useMemo(
     () => bridge.getDisabledSend({ firstDraft, sendingMessage, disabledSend }),
-    [firstDraft, sendingMessage, disabledSend]
+    [bridge, firstDraft, sendingMessage, disabledSend]
   );
 
   const inputText = firstDraft?.content ?? '';
