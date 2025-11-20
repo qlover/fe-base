@@ -56,6 +56,8 @@ export interface GatewayOptions<M, P = Record<string, any>>
    */
   stream?: boolean;
 
+  timeout?: number;
+
   /**
    * 请求参数
    */

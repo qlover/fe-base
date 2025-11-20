@@ -383,7 +383,6 @@ export class SenderStrategyPlugin extends MessageSenderBasePlugin {
     if (!store.isMessage(chunkMessage) || !chunkMessage.id) {
       return chunkMessage;
     }
-
     const existingMessage = store.getMessageById(chunkMessage.id);
 
     if (existingMessage) {

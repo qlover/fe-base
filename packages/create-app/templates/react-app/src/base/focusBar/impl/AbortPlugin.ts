@@ -32,6 +32,9 @@ export type AbortConfigExtractor<T = any> = (
  */
 export interface AbortPluginOptions<T = any> {
   logger?: LoggerInterface;
+
+  timeout?: number;
+
   /**
    * 配置提取器
    * 用于从 context.parameters 中提取 AbortPluginConfig

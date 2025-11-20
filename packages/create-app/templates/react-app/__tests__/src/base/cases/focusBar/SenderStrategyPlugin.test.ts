@@ -1,7 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSender';
 import { MessageSender } from '@/base/focusBar/impl/MessageSender';
+import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSenderExecutor';
 import {
   MessagesStore,
   MessageStatus,
@@ -180,9 +180,16 @@ describe('SenderStrategyPlugin', () => {
       expect(result.endTime).toBeGreaterThanOrEqual(result.startTime!);
 
       const messages = store.getMessages();
-      // 返回的消息应该和 store 中的消息是同一个引用
-      expect(messages[0]).toBe(result);
+      // result 返回一个新的对象，但是内容一样，所以比较关键属性而不是整个对象
+      expect(messages[0].id).toBe(result.id);
+      expect(messages[0].content).toBe(result.content);
+      expect(messages[0].status).toBe(result.status);
+      expect(messages[0].startTime).toBe(result.startTime);
       expect(messages[0].endTime).toBe(result.endTime);
+      expect(messages[0].loading).toBe(result.loading);
+      expect((messages[0].error as any)?.message).toBe(
+        (result.error as any)?.message
+      );
     });
   });
 
@@ -517,7 +524,7 @@ describe('SenderStrategyPlugin', () => {
       await sender.send({ content: 'Test' });
 
       expect(capturedContext).toBeDefined();
-      expect(capturedContext!.messages).toBe(store);
+      expect(capturedContext!.store).toBe(store);
       expect(capturedContext!.currentMessage).toBeDefined();
       expect(capturedContext!.currentMessage.content).toBe('Test');
     });
@@ -1093,6 +1100,878 @@ describe('SenderStrategyPlugin', () => {
       await sender.send({ content: 'Test' });
 
       expect(capturedFlag).toBe(false);
+    });
+  });
+
+  describe('流式传输测试 - onStream', () => {
+    it('KEEP_FAILED: onStream 应该更新 store 中的消息（更新result字段）', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      const chunks: any[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            // 流式更新应该更新 result，不是用户的 content
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            await options.onChunk({ id: msg.id, result: 'chunk 2' });
+            await options.onChunk({ id: msg.id, result: 'chunk 3' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send(
+        { content: 'Streaming message' },
+        {
+          onChunk: (chunk) => {
+            chunks.push(chunk);
+          }
+        }
+      );
+
+      // 应该收到所有 chunks
+      expect(chunks).toHaveLength(3);
+
+      // Store 中应该有最终的消息
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      // 用户的 content 应该保持不变
+      expect(messages[0].content).toBe('Streaming message');
+      // result 应该被更新为最后一次的值
+      expect(messages[0].result).toEqual({ result: 'Complete' });
+    });
+
+    it('DELETE_FAILED: onStream 应该更新 store 中的消息（更新result字段）', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            await options.onChunk({ id: msg.id, result: 'chunk 2' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Streaming' }, { onChunk: () => {} });
+
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      // 用户的 content 应该保持不变
+      expect(messages[0].content).toBe('Streaming');
+      // result 应该被更新
+      expect(messages[0].result).toEqual({ result: 'Complete' });
+    });
+
+    it('ADD_ON_SUCCESS: onStream 不应该更新 store', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
+
+      let storeCountDuringChunk = 0;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, content: 'chunk 1' });
+            storeCountDuringChunk = store.getMessages().length;
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Streaming' }, { onChunk: () => {} });
+
+      // 流式传输过程中 store 应该为空
+      expect(storeCountDuringChunk).toBe(0);
+
+      // 完成后才有消息
+      expect(store.getMessages()).toHaveLength(1);
+    });
+
+    it('onStream 应该处理非消息对象的 chunk', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      const receivedChunks: any[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            // 发送非消息对象的 chunk
+            await options.onChunk('string chunk');
+            await options.onChunk(123);
+            await options.onChunk({ random: 'object' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send(
+        { content: 'Test' },
+        {
+          onChunk: (chunk) => {
+            receivedChunks.push(chunk);
+          }
+        }
+      );
+
+      // 应该原样返回非消息对象的 chunk
+      expect(receivedChunks).toHaveLength(3);
+      expect(receivedChunks[0]).toBe('string chunk');
+      expect(receivedChunks[1]).toBe(123);
+      expect(receivedChunks[2]).toEqual({ random: 'object' });
+    });
+
+    it('onStream 应该在流式传输时启动 streaming 状态', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let streamingDuringChunk = false;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, content: 'chunk 1' });
+            streamingDuringChunk = store.state.streaming || false;
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Test' }, { onChunk: () => {} });
+
+      // 流式传输过程中 streaming 应该为 true
+      expect(streamingDuringChunk).toBe(true);
+
+      // 完成后 streaming 应该为 false
+      expect(store.state.streaming).toBe(false);
+    });
+
+    it('onStream 应该处理新消息的添加（消息不在 store 中）', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            // 发送一个新的消息 ID（模拟服务器返回的AI响应消息）
+            await options.onChunk({
+              id: 'new-message-id',
+              content: 'AI response message'
+            });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'User message' }, { onChunk: () => {} });
+
+      const messages = store.getMessages();
+      // 应该有用户消息 + 服务器新消息（AI响应）
+      expect(messages).toHaveLength(2);
+
+      const userMessage = messages.find((m) => m.content === 'User message');
+      const aiMessage = messages.find((m) => m.id === 'new-message-id');
+
+      expect(userMessage).toBeDefined();
+      expect(aiMessage).toBeDefined();
+      expect(aiMessage?.content).toBe('AI response message');
+    });
+  });
+
+  describe('流式传输测试 - onConnected', () => {
+    it('onConnected 应该设置消息为非 loading 状态', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let messageDuringConnected: TestMessage | undefined;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+            // 连接建立后，消息应该不再 loading
+            messageDuringConnected = store.getMessageById(msg.id);
+          }
+
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      expect(messageDuringConnected).toBeDefined();
+      expect(messageDuringConnected?.loading).toBe(false);
+      expect(messageDuringConnected?.status).toBe(MessageStatus.SENDING);
+    });
+
+    it('onConnected 应该启动 streaming 状态', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let streamingDuringConnected = false;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+            streamingDuringConnected = store.state.streaming || false;
+          }
+
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      expect(streamingDuringConnected).toBe(true);
+      expect(store.state.streaming).toBe(false); // 完成后应该关闭
+    });
+
+    it('ADD_ON_SUCCESS: onConnected 不应该影响 store', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
+
+      let storeCountDuringConnected = -1;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+            storeCountDuringConnected = store.getMessages().length;
+          }
+
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      // 连接时 store 应该为空
+      expect(storeCountDuringConnected).toBe(0);
+
+      // 完成后才有消息
+      expect(store.getMessages()).toHaveLength(1);
+    });
+  });
+
+  describe('Fallback 逻辑 - 第一次 chunk 时 onConnected 未被调用', () => {
+    it('应该在第一次 chunk 时自动触发连接建立逻辑', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let messageBeforeFirstChunk: TestMessage | undefined;
+      let messageAfterFirstChunk: TestMessage | undefined;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          // 故意不调用 onConnected
+
+          if (options?.onChunk) {
+            messageBeforeFirstChunk = store.getMessageById(msg.id);
+            await options.onChunk({ id: msg.id, content: 'chunk 1' });
+            messageAfterFirstChunk = store.getMessageById(msg.id);
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Test' }, { onChunk: () => {} });
+
+      // 第一次 chunk 之前消息应该是 loading
+      expect(messageBeforeFirstChunk).toBeDefined();
+      expect(messageBeforeFirstChunk?.loading).toBe(true);
+
+      // 第一次 chunk 之后应该触发 Fallback，设置为非 loading
+      expect(messageAfterFirstChunk).toBeDefined();
+      expect(messageAfterFirstChunk?.loading).toBe(false);
+      expect(messageAfterFirstChunk?.status).toBe(MessageStatus.SENDING);
+    });
+
+    it('Fallback 不应该在第二次 chunk 时触发', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      const loadingStates: boolean[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            loadingStates.push(store.getMessageById(msg.id)?.loading || false);
+
+            await options.onChunk({ id: msg.id, result: 'chunk 2' });
+            loadingStates.push(store.getMessageById(msg.id)?.loading || false);
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Test' }, { onChunk: () => {} });
+
+      // 第一次 chunk 后是 false，第二次也应该是 false
+      expect(loadingStates).toEqual([false, false]);
+    });
+  });
+
+  describe('Abort 错误处理 - MessageStatus.STOPPED', () => {
+    it('停止消息应该设置状态为 STOPPED', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      const gatewayPromise = new Promise((resolve) => {
+        resolveGateway = resolve;
+      });
+
+      mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
+
+      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+
+      // 等待消息开始发送
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // 停止消息
+      sender.stop('test-msg');
+
+      const result = await sendPromise;
+
+      // 应该是 STOPPED 状态
+      expect(result.status).toBe(MessageStatus.STOPPED);
+      expect(result.loading).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('KEEP_FAILED: 停止的消息应该保留在 store 中', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      sender.stop('test-msg');
+      const result = await sendPromise;
+
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      expect(messages[0].status).toBe(MessageStatus.STOPPED);
+      expect(messages[0].id).toBe(result.id);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('DELETE_FAILED: 停止的消息不应该删除（只删除 FAILED）', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      sender.stop('test-msg');
+      const result = await sendPromise;
+
+      // STOPPED 消息应该保留（不同于 FAILED）
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      expect(messages[0].status).toBe(MessageStatus.STOPPED);
+      expect(result).toBeDefined();
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('ADD_ON_SUCCESS: 停止的消息不应该添加到 store', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      sender.stop('test-msg');
+      await sendPromise;
+
+      // store 应该为空
+      expect(store.getMessages()).toHaveLength(0);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('应该调用 gatewayOptions.onAborted 回调', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let abortedMessage: TestMessage | undefined;
+      let onAbortedCalled = false;
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send(
+        { id: 'test-msg', content: 'Test' },
+        {
+          onAborted: (msg) => {
+            onAbortedCalled = true;
+            abortedMessage = msg as TestMessage;
+          }
+        }
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      sender.stop('test-msg');
+      await sendPromise;
+
+      expect(onAbortedCalled).toBe(true);
+      expect(abortedMessage).toBeDefined();
+      expect(abortedMessage?.status).toBe(MessageStatus.STOPPED);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('onAborted 回调错误不应该影响主流程', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send(
+        { id: 'test-msg', content: 'Test' },
+        {
+          onAborted: () => {
+            throw new Error('Callback error');
+          }
+        }
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      sender.stop('test-msg');
+
+      // 不应该抛出错误
+      await expect(sendPromise).resolves.toBeDefined();
+
+      const result = await sendPromise;
+      expect(result.status).toBe(MessageStatus.STOPPED);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+  });
+
+  describe('Logger 集成测试', () => {
+    it('应该在流式传输开始时记录日志', async () => {
+      const mockLogger = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(
+        new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
+      );
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        expect.stringContaining('startStreaming')
+      );
+    });
+
+    it('应该在流式传输结束时记录日志', async () => {
+      const mockLogger = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(
+        new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
+      );
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('endStreaming')
+      );
+    });
+
+    it('应该在每次 chunk 时记录日志', async () => {
+      const mockLogger = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(
+        new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
+      );
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            await options.onChunk({ id: msg.id, result: 'chunk 2' });
+            await options.onChunk({ id: msg.id, result: 'chunk 3' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Test' }, { onChunk: () => {} });
+
+      // 应该为每个 chunk 记录日志
+      const streamLogCalls = mockLogger.debug.mock.calls.filter((call) =>
+        call[0].includes('onStream')
+      );
+      expect(streamLogCalls).toHaveLength(3);
+
+      // 检查日志包含 chunk 次数
+      expect(streamLogCalls[0][0]).toContain('#1');
+      expect(streamLogCalls[1][0]).toContain('#2');
+      expect(streamLogCalls[2][0]).toContain('#3');
+    });
+
+    it('应该在 Fallback 时记录日志', async () => {
+      const mockLogger = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(
+        new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
+      );
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          // 不调用 onConnected，触发 Fallback
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+          }
+          return { result: 'Complete' };
+        });
+
+      await sender.send({ content: 'Test' }, { onChunk: () => {} });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Fallback')
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Connection established on first chunk')
+      );
+    });
+  });
+
+  describe('cleanup 方法测试', () => {
+    it('cleanup 应该停止 streaming 状态', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+          return { result: 'Success' };
+        });
+
+      await sender.send({ content: 'Test' }, { onConnected: () => {} });
+
+      // 完成后 streaming 应该为 false
+      expect(store.state.streaming).toBe(false);
+    });
+
+    it('cleanup 应该在成功后调用', async () => {
+      let cleanupCalled = false;
+
+      class TestPlugin extends SenderStrategyPlugin {
+        protected cleanup(context: any): void {
+          cleanupCalled = true;
+          super.cleanup(context);
+        }
+      }
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      await sender.send({ content: 'Test' });
+
+      expect(cleanupCalled).toBe(true);
+    });
+
+    it('cleanup 应该在失败后调用', async () => {
+      let cleanupCalled = false;
+
+      class TestPlugin extends SenderStrategyPlugin {
+        protected cleanup(context: any): void {
+          cleanupCalled = true;
+          super.cleanup(context);
+        }
+      }
+
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      await sender.send({ content: 'Test' });
+
+      expect(cleanupCalled).toBe(true);
+    });
+
+    it('cleanup 应该在停止后调用', async () => {
+      let cleanupCalled = false;
+
+      class TestPlugin extends SenderStrategyPlugin {
+        protected cleanup(context: any): void {
+          cleanupCalled = true;
+          super.cleanup(context);
+        }
+      }
+
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      mockGateway.sendMessage = vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolveGateway = resolve;
+        })
+      );
+
+      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      sender.stop('test-msg');
+      await sendPromise;
+
+      expect(cleanupCalled).toBe(true);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+  });
+
+  describe('复杂流式场景', () => {
+    it('应该支持混合内容的流式传输', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      const allChunks: any[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            // 混合消息对象和普通数据
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            await options.onChunk('text data');
+            await options.onChunk({ id: msg.id, result: 'chunk 2' });
+            await options.onChunk({ number: 123 });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await sender.send(
+        { content: 'Test' },
+        {
+          onChunk: (chunk) => {
+            allChunks.push(chunk);
+          }
+        }
+      );
+
+      expect(allChunks).toHaveLength(4);
+
+      // Store 中应该只有用户消息，result 被更新
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      expect(messages[0].content).toBe('Test');
+      expect(messages[0].result).toEqual({ result: 'Complete' });
+    });
+
+    it('应该支持流式传输中的错误恢复', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      let errorThrown = false;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (msg, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ id: msg.id, result: 'chunk 1' });
+            // 在中途抛出错误
+            errorThrown = true;
+            throw new Error('Stream error');
+          }
+
+          return { result: 'Should not reach' };
+        });
+
+      const result = await sender.send(
+        { content: 'Test' },
+        { onChunk: () => {} }
+      );
+
+      expect(errorThrown).toBe(true);
+      expect(result.status).toBe(MessageStatus.FAILED);
+
+      // 消息应该保留最后的状态
+      const messages = store.getMessages();
+      expect(messages).toHaveLength(1);
+      expect(messages[0].content).toBe('Test');
+      expect(messages[0].result).toBe('chunk 1');
+    });
+
+    it('应该处理空 chunk 列表', async () => {
+      sender = new MessageSender(store, { gateway: mockGateway });
+      sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          // 不发送任何 chunk
+
+          return { result: 'Complete' };
+        });
+
+      const result = await sender.send(
+        { content: 'Test' },
+        { onChunk: () => {} }
+      );
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect(store.getMessages()).toHaveLength(1);
     });
   });
 });

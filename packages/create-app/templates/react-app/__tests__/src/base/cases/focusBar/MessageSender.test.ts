@@ -1,14 +1,18 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { MessageSenderContext } from '@/base/focusBar/impl/MessageSender';
 import { MessageSender } from '@/base/focusBar/impl/MessageSender';
+import type {
+  MessageSenderContext,
+  MessageSenderPlugin
+} from '@/base/focusBar/impl/MessageSenderExecutor';
 import {
   MessagesStore,
   MessageStatus,
   type MessageStoreMsg
 } from '@/base/focusBar/impl/MessagesStore';
 import type { MessageGetwayInterface } from '@/base/focusBar/interface/MessageGetwayInterface';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 // 测试用的消息类型
 interface TestMessage extends MessageStoreMsg<string> {
@@ -39,21 +43,21 @@ describe('MessageSender', () => {
 
   describe('构造函数', () => {
     it('应该正确初始化', () => {
-      expect(service.messages).toBe(store);
-      expect(service.gateway).toBe(mockGateway);
+      expect(service.getMessageStore()).toBe(store);
+      expect(service.getGateway()).toBe(mockGateway);
     });
 
     it('应该支持不传递 config', () => {
       const minimalService = new MessageSender(store);
-      expect(minimalService.messages).toBe(store);
-      expect(minimalService.gateway).toBeUndefined();
+      expect(minimalService.getMessageStore()).toBe(store);
+      expect(minimalService.getGateway()).toBeUndefined();
     });
 
     it('应该支持只传递 gateway', () => {
       const serviceWithGateway = new MessageSender(store, {
         gateway: mockGateway
       });
-      expect(serviceWithGateway.gateway).toBe(mockGateway);
+      expect(serviceWithGateway.getGateway()).toBe(mockGateway);
     });
 
     it('应该正确设置 throwIfError 配置', () => {
@@ -61,12 +65,12 @@ describe('MessageSender', () => {
         gateway: mockGateway,
         throwIfError: true
       });
-      expect(serviceWithThrow['throwIfError']).toBe(true);
+      expect(serviceWithThrow['config']?.throwIfError).toBe(true);
 
       const serviceWithoutThrow = new MessageSender(store, {
         gateway: mockGateway
       });
-      expect(serviceWithoutThrow['throwIfError']).toBe(false);
+      expect(serviceWithoutThrow['config']?.throwIfError).toBeUndefined();
     });
   });
 
@@ -95,6 +99,10 @@ describe('MessageSender', () => {
         expect.objectContaining({
           content: 'Test',
           status: MessageStatus.SENDING
+        }),
+        expect.objectContaining({
+          onChunk: expect.any(Function),
+          onConnected: expect.any(Function)
         })
       );
     });
@@ -272,11 +280,12 @@ describe('MessageSender', () => {
     });
 
     it('插件应该能够访问和修改 context', async () => {
-      let capturedContext: any = null;
+      let capturedContext: ExecutorContext<MessageSenderContext<any>> | null =
+        null;
 
       const plugin: ExecutorPlugin<MessageSenderContext<any>> = {
         pluginName: 'context-capture',
-        onExec(ctx) {
+        onBefore(ctx) {
           capturedContext = ctx;
         }
       };
@@ -286,9 +295,9 @@ describe('MessageSender', () => {
       await service.send({ content: 'Test' });
 
       expect(capturedContext).toBeDefined();
-      expect(capturedContext.parameters.messages).toBe(store);
-      expect(capturedContext.parameters.currentMessage).toBeDefined();
-      expect(capturedContext.parameters.currentMessage.content).toBe('Test');
+      expect(capturedContext!.parameters.store).toBe(store);
+      expect(capturedContext!.parameters.currentMessage).toBeDefined();
+      expect(capturedContext!.parameters.currentMessage.content).toBe('Test');
     });
 
     it('插件应该能够修改消息', async () => {
@@ -888,7 +897,7 @@ describe('MessageSender', () => {
       await service.send({ content: 'Test' });
 
       expect(capturedContext).toBeDefined();
-      expect(capturedContext!.messages).toBe(store);
+      expect(capturedContext!.store).toBe(store);
       expect(capturedContext!.currentMessage).toBeDefined();
       expect(capturedContext!.currentMessage.content).toBe('Test');
     });
@@ -997,6 +1006,805 @@ describe('MessageSender', () => {
       expect(messages2).toHaveLength(1);
       expect(messages2[0].id).toEqual(result.id);
       expect(messages2[0].status).toBe(MessageStatus.SENT);
+    });
+  });
+
+  describe('getMessageStore', () => {
+    it('应该返回 MessagesStore 实例', () => {
+      const messageStore = service.getMessageStore();
+
+      expect(messageStore).toBe(store);
+    });
+
+    it('应该返回与构造函数中传入的 store 相同的引用', () => {
+      const newStore = new MessagesStore<TestMessage>(() => ({
+        messages: []
+      }));
+
+      const newService = new MessageSender(newStore, {
+        gateway: mockGateway
+      });
+
+      expect(newService.getMessageStore()).toBe(newStore);
+    });
+  });
+
+  describe('getGateway', () => {
+    it('应该返回配置的 gateway', () => {
+      const gateway = service.getGateway();
+
+      expect(gateway).toBe(mockGateway);
+    });
+
+    it('应该返回 undefined 如果没有配置 gateway', () => {
+      const serviceWithoutGateway = new MessageSender(store);
+
+      expect(serviceWithoutGateway.getGateway()).toBeUndefined();
+    });
+
+    it('应该返回构造函数中配置的 gateway', () => {
+      const anotherGateway: MessageGetwayInterface = {
+        sendMessage: vi.fn().mockResolvedValue({ result: 'Another gateway' })
+      };
+
+      const serviceWithAnotherGateway = new MessageSender(store, {
+        gateway: anotherGateway
+      });
+
+      expect(serviceWithAnotherGateway.getGateway()).toBe(anotherGateway);
+    });
+  });
+
+  describe('getDuration', () => {
+    it('应该返回消息的持续时间', async () => {
+      const result = await service.send({ content: 'Test' });
+
+      const duration = service.getDuration(result);
+
+      expect(duration).toBeGreaterThanOrEqual(0);
+      expect(duration).toBe(result.endTime - result.startTime);
+    });
+
+    it('应该返回 0 如果 endTime 为 0', () => {
+      const message = store.createMessage({
+        content: 'Test',
+        startTime: Date.now(),
+        endTime: 0
+      });
+
+      const duration = service.getDuration(message);
+
+      expect(duration).toBe(0);
+    });
+
+    it('应该计算正确的时间差', () => {
+      const startTime = 1000;
+      const endTime = 5000;
+
+      const message = store.createMessage({
+        content: 'Test',
+        startTime: startTime,
+        endTime: endTime
+      });
+
+      const duration = service.getDuration(message);
+
+      expect(duration).toBe(4000);
+    });
+
+    it('应该处理消息持续时间为 0 的情况', () => {
+      const sameTime = Date.now();
+
+      const message = store.createMessage({
+        content: 'Test',
+        startTime: sameTime,
+        endTime: sameTime
+      });
+
+      const duration = service.getDuration(message);
+
+      expect(duration).toBe(0);
+    });
+  });
+
+  describe('stop - 停止单个消息', () => {
+    it('应该能够停止正在发送的消息', async () => {
+      // 创建一个延迟的 gateway 响应
+      let resolveGateway: ((value: unknown) => void) | null = null;
+
+      const gatewayPromise = new Promise((resolve) => {
+        resolveGateway = resolve;
+      });
+
+      mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
+
+      // 开始发送消息
+      const sendPromise = service.send({ id: 'test-message', content: 'Test' });
+
+      // 等待一小段时间，确保请求已开始
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // 停止消息发送
+      const stopped = service.stop('test-message');
+
+      // 应该返回 true 表示成功停止
+      expect(stopped).toBe(true);
+
+      // 等待发送完成（应该被取消）
+      const result = await sendPromise;
+
+      // 消息应该被标记为失败或停止
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result.status
+      );
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+
+    it('应该返回 false 如果消息 ID 不存在', () => {
+      const stopped = service.stop('non-existent-id');
+
+      expect(stopped).toBe(false);
+    });
+
+    it('应该不影响其他正在发送的消息', async () => {
+      // 创建两个延迟的 gateway 响应
+      const promises: any[] = [];
+      let callCount = 0;
+
+      mockGateway.sendMessage = vi.fn().mockImplementation(() => {
+        const index = callCount++;
+        return new Promise((resolve) => {
+          promises[index] = resolve;
+        });
+      });
+
+      // 开始发送两条消息
+      const sendPromise1 = service.send({
+        id: 'message-1',
+        content: 'Message 1'
+      });
+      const sendPromise2 = service.send({
+        id: 'message-2',
+        content: 'Message 2'
+      });
+
+      // 等待一小段时间
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // 只停止第一条消息
+      service.stop('message-1');
+
+      // 完成第二条消息
+      promises[1]({ result: 'Success' });
+
+      const result2 = await sendPromise2;
+
+      // 第二条消息应该成功
+      expect(result2.status).toBe(MessageStatus.SENT);
+      expect(result2.result).toEqual({ result: 'Success' });
+
+      // 第一条消息应该被取消
+      const result1 = await sendPromise1;
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result1.status
+      );
+    });
+  });
+
+  describe('stopAll - 停止所有消息', () => {
+    it('应该停止所有正在发送的消息', async () => {
+      // 创建多个延迟的 gateway 响应
+      const promises: any[] = [];
+      let callCount = 0;
+
+      mockGateway.sendMessage = vi.fn().mockImplementation(() => {
+        const index = callCount++;
+        return new Promise((resolve) => {
+          promises[index] = resolve;
+        });
+      });
+
+      // 开始发送多条消息
+      const sendPromise1 = service.send({
+        id: 'message-1',
+        content: 'Message 1'
+      });
+      const sendPromise2 = service.send({
+        id: 'message-2',
+        content: 'Message 2'
+      });
+      const sendPromise3 = service.send({
+        id: 'message-3',
+        content: 'Message 3'
+      });
+
+      // 等待一小段时间
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // 停止所有消息
+      service.stopAll();
+
+      // 等待所有消息完成
+      const results = await Promise.all([
+        sendPromise1,
+        sendPromise2,
+        sendPromise3
+      ]);
+
+      // 所有消息都应该被取消或失败
+      results.forEach((result) => {
+        expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+          result.status
+        );
+      });
+    });
+
+    it('应该能够在没有正在发送的消息时调用', () => {
+      // 不应该抛出错误
+      expect(() => {
+        service.stopAll();
+      }).not.toThrow();
+    });
+
+    it('停止后应该能够继续发送新消息', async () => {
+      // 创建延迟的 gateway 响应
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      const gatewayPromise = new Promise((resolve) => {
+        resolveGateway = resolve;
+      });
+
+      mockGateway.sendMessage = vi.fn().mockReturnValueOnce(gatewayPromise);
+
+      // 开始发送消息
+      const sendPromise = service.send({
+        id: 'message-1',
+        content: 'Message 1'
+      });
+
+      // 等待一小段时间
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // 停止所有消息
+      service.stopAll();
+
+      await sendPromise;
+
+      // 重置 mock，返回成功
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockResolvedValue({ result: 'Success' });
+
+      // 发送新消息
+      const newResult = await service.send({ content: 'New message' });
+
+      // 新消息应该成功
+      expect(newResult.status).toBe(MessageStatus.SENT);
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+  });
+
+  describe('流式消息 - gatewayOptions', () => {
+    it('应该支持 onChunk 回调', async () => {
+      const chunks: any[] = [];
+      let chunkCallCount = 0;
+
+      // Mock streaming response
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          // Simulate streaming chunks
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ content: 'chunk1' });
+            await options.onChunk({ content: 'chunk2' });
+            await options.onChunk({ content: 'chunk3' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      const result = await service.send(
+        { content: 'Streaming message' },
+        {
+          onChunk: (chunk) => {
+            chunks.push(chunk);
+            chunkCallCount++;
+          }
+        }
+      );
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect(chunkCallCount).toBe(3);
+      expect(chunks).toHaveLength(3);
+      expect(chunks[0]).toEqual({ content: 'chunk1' });
+      expect(chunks[1]).toEqual({ content: 'chunk2' });
+      expect(chunks[2]).toEqual({ content: 'chunk3' });
+    });
+
+    it('应该支持 onConnected 回调', async () => {
+      let connected = false;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+          return { result: 'Success' };
+        });
+
+      const result = await service.send(
+        { content: 'Test' },
+        {
+          onConnected: () => {
+            connected = true;
+          }
+        }
+      );
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect(connected).toBe(true);
+    });
+
+    it('应该按顺序调用 onConnected 和 onChunk', async () => {
+      const callOrder: string[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ content: 'chunk1' });
+            await options.onChunk({ content: 'chunk2' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      await service.send(
+        { content: 'Test' },
+        {
+          onConnected: () => {
+            callOrder.push('connected');
+          },
+          onChunk: () => {
+            callOrder.push('chunk');
+          }
+        }
+      );
+
+      expect(callOrder).toEqual(['connected', 'chunk', 'chunk']);
+    });
+
+    it('应该支持自定义 signal', async () => {
+      const controller = new AbortController();
+      let gatewayCallCount = 0;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          gatewayCallCount++;
+          // Check if signal is aborted
+          options?.signal?.throwIfAborted();
+
+          return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              resolve({ result: 'Success' });
+            }, 100);
+
+            options?.signal?.addEventListener('abort', () => {
+              clearTimeout(timeout);
+              reject(new Error('Aborted'));
+            });
+          });
+        });
+
+      const sendPromise = service.send(
+        { content: 'Test' },
+        { signal: controller.signal }
+      );
+
+      // 取消请求
+      controller.abort();
+
+      const result = await sendPromise;
+
+      expect(gatewayCallCount).toBe(1);
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result.status
+      );
+    });
+
+    it('应该合并 config 中的 gatewayOptions 和 send 参数中的 gatewayOptions', async () => {
+      let receivedOptions: any = null;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          receivedOptions = options;
+          return { result: 'Success' };
+        });
+
+      const serviceWithOptions = new MessageSender(store, {
+        gateway: mockGateway,
+        gatewayOptions: {
+          timeout: 5000
+        }
+      });
+
+      await serviceWithOptions.send({ content: 'Test' }, {
+        retry: 3
+      } as any);
+
+      expect(receivedOptions).toBeDefined();
+      expect(receivedOptions.timeout).toBe(5000);
+      expect(receivedOptions.retry).toBe(3);
+    });
+  });
+
+  describe('Logger 集成', () => {
+    it('应该在成功发送时记录日志', async () => {
+      const mockLogger: LoggerInterface = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      const serviceWithLogger = new MessageSender(store, {
+        gateway: mockGateway,
+        logger: mockLogger
+      });
+
+      const result = await serviceWithLogger.send({ content: 'Test' });
+
+      expect(mockLogger.info).toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('success')
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining(result.id!)
+      );
+    });
+
+    it('应该在发送失败时记录日志', async () => {
+      const mockLogger: LoggerInterface = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
+
+      const serviceWithLogger = new MessageSender(store, {
+        gateway: mockGateway,
+        logger: mockLogger
+      });
+
+      const result = await serviceWithLogger.send({ content: 'Test' });
+
+      expect(mockLogger.debug).toHaveBeenCalled();
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        expect.stringContaining('failed')
+      );
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(result.id!)
+      );
+    });
+
+    it('应该在日志中包含自定义的 senderName', async () => {
+      const mockLogger: LoggerInterface = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      const customSenderName = 'CustomSender';
+
+      const serviceWithCustomName = new MessageSender(store, {
+        gateway: mockGateway,
+        logger: mockLogger,
+        senderName: customSenderName
+      });
+
+      await serviceWithCustomName.send({ content: 'Test' });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining(customSenderName)
+      );
+    });
+
+    it('应该在日志中包含消息持续时间', async () => {
+      const mockLogger: LoggerInterface = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      const serviceWithLogger = new MessageSender(store, {
+        gateway: mockGateway,
+        logger: mockLogger
+      });
+
+      await serviceWithLogger.send({ content: 'Test' });
+
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('speed')
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringMatching(/\d+ms/)
+      );
+    });
+
+    it('应该能够在没有 logger 的情况下正常工作', async () => {
+      const serviceWithoutLogger = new MessageSender(store, {
+        gateway: mockGateway
+      });
+
+      await expect(
+        serviceWithoutLogger.send({ content: 'Test' })
+      ).resolves.toBeDefined();
+    });
+  });
+
+  describe('senderName 配置', () => {
+    it('应该使用默认的 senderName', () => {
+      const defaultService = new MessageSender(store, {
+        gateway: mockGateway
+      });
+
+      expect(defaultService['senderName']).toBe('MessageSender');
+    });
+
+    it('应该使用自定义的 senderName', () => {
+      const customName = 'MyCustomSender';
+
+      const customService = new MessageSender(store, {
+        gateway: mockGateway,
+        senderName: customName
+      });
+
+      expect(customService['senderName']).toBe(customName);
+    });
+
+    it('应该在错误消息中使用 senderName', async () => {
+      const mockLogger: LoggerInterface = {
+        info: vi.fn(),
+        debug: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        log: vi.fn(),
+        fatal: vi.fn(),
+        trace: vi.fn(),
+        addAppender: vi.fn(),
+        context: vi.fn()
+      };
+
+      const customName = 'TestSender';
+
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
+
+      const customService = new MessageSender(store, {
+        gateway: mockGateway,
+        senderName: customName,
+        logger: mockLogger
+      });
+
+      await customService.send({ content: 'Test' });
+
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(`[${customName}]`)
+      );
+    });
+  });
+
+  describe('复杂的流式场景', () => {
+    it('应该在流式传输中支持插件拦截', async () => {
+      const receivedChunks: any[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ text: 'Hello' });
+            await options.onChunk({ text: ' World' });
+          }
+
+          return { result: 'Complete' };
+        });
+
+      const plugin: MessageSenderPlugin<TestMessage> = {
+        pluginName: 'stream-interceptor',
+        onStream: async (chunk) => {
+          // Plugin can modify chunk
+          return {
+            ...chunk,
+            modified: true
+          };
+        }
+      };
+
+      service.use(plugin);
+
+      await service.send(
+        { content: 'Test' },
+        {
+          onChunk: (chunk) => {
+            receivedChunks.push(chunk);
+          }
+        }
+      );
+
+      // Chunks should be modified by plugin
+      receivedChunks.forEach((chunk) => {
+        expect(chunk).toHaveProperty('modified', true);
+      });
+    });
+
+    it('应该处理流式传输中的错误', async () => {
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          if (options?.onChunk) {
+            await options.onChunk({ content: 'chunk1' });
+            throw new Error('Streaming error');
+          }
+
+          return { result: 'Should not reach here' };
+        });
+
+      const result = await service.send(
+        { content: 'Test' },
+        {
+          onChunk: () => {
+            // do nothing
+          }
+        }
+      );
+
+      expect(result.status).toBe(MessageStatus.FAILED);
+      expect(result.error).toBeDefined();
+    });
+  });
+
+  describe('AbortPlugin 集成测试', () => {
+    it('应该在构造时自动注册 AbortPlugin', () => {
+      const newService = new MessageSender(store, {
+        gateway: mockGateway
+      });
+
+      // AbortPlugin 应该已经被注册
+      expect(newService['abortPlugin']).toBeDefined();
+      expect(newService['executor']).toBeDefined();
+    });
+
+    it('应该使用消息 ID 作为 abort 标识', async () => {
+      const messageId = 'test-id-123';
+
+      let resolveGateway: ((value: unknown) => void) | null = null;
+      const gatewayPromise = new Promise((resolve) => {
+        resolveGateway = resolve;
+      });
+
+      mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
+
+      const sendPromise = service.send({
+        id: messageId,
+        content: 'Test'
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      const stopped = service.stop(messageId);
+
+      expect(stopped).toBe(true);
+
+      const result = await sendPromise;
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result.status
+      );
+      expect(resolveGateway).toBeDefined();
+      resolveGateway = null;
+    });
+  });
+
+  describe('边界情况和特殊场景', () => {
+    it('应该处理 gateway 返回 Promise.reject(undefined)', async () => {
+      mockGateway.sendMessage = vi.fn().mockRejectedValue(undefined);
+
+      const result = await service.send({ content: 'Test' });
+
+      expect(result.status).toBe(MessageStatus.FAILED);
+      expect(result.error).toBeDefined();
+    });
+
+    it('应该处理消息对象包含函数属性', async () => {
+      const messageWithFunction = {
+        content: 'Test',
+        customMethod: () => 'custom result'
+      } as any;
+
+      const result = await service.send(messageWithFunction);
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect(typeof (result as any).customMethod).toBe('function');
+    });
+
+    it('应该处理消息对象包含 Symbol 属性', async () => {
+      const symbolKey = Symbol('test');
+      const messageWithSymbol = {
+        content: 'Test',
+        [symbolKey]: 'symbol value'
+      } as any;
+
+      const result = await service.send(messageWithSymbol);
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect((result as any)[symbolKey]).toBe('symbol value');
+    });
+
+    it('应该处理极短的发送时间', async () => {
+      // Gateway 立即返回
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockResolvedValue({ result: 'Instant' });
+
+      const result = await service.send({ content: 'Test' });
+
+      expect(result.status).toBe(MessageStatus.SENT);
+      expect(result.endTime).toBeGreaterThanOrEqual(result.startTime);
+      expect(service.getDuration(result)).toBeGreaterThanOrEqual(0);
+    });
+
+    it('应该处理消息 ID 包含特殊字符', async () => {
+      const specialId = 'msg-#@!$%^&*()_+-=[]{}|;:,.<>?';
+
+      const result = await service.send({
+        id: specialId,
+        content: 'Test'
+      });
+
+      expect(result.id).toBe(specialId);
+      expect(result.status).toBe(MessageStatus.SENT);
     });
   });
 });

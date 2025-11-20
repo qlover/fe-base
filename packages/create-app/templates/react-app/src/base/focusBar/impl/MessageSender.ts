@@ -71,7 +71,7 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
 
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
-    readonly config?: MessageSenderConfig
+    protected readonly config?: MessageSenderConfig
   ) {
     this.logger = config?.logger;
     this.senderName = config?.senderName || defaultSenderName;
@@ -80,7 +80,8 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     this.abortPlugin = new AbortPlugin<MessageSenderContext<MessageType>>({
       getConfig: (parameters) =>
         (parameters.gatewayOptions || parameters) as AbortPluginConfig,
-      logger: config?.logger
+      logger: config?.logger,
+      timeout: config?.gatewayOptions?.timeout
     });
     this.executor.use(this.abortPlugin);
   }
@@ -210,8 +211,13 @@ export class MessageSender<MessageType extends MessageStoreMsg<any>>
     const { currentMessage } = context;
     const endTime = currentMessage.endTime || Date.now();
     // 允许插件修改最终的状态, 可能在某些情况下失败后不这是为失败
+    // 如果到了最后一步状态还是 sending 则会重置为 failed
     // 比如: STOPPED
-    const status = currentMessage.status || MessageStatus.FAILED;
+    const currentStatus = currentMessage.status;
+    const status =
+      currentStatus === MessageStatus.SENDING
+        ? MessageStatus.FAILED
+        : currentStatus;
 
     if (this.logger) {
       this.logger.debug(
