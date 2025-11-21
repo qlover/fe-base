@@ -46,11 +46,11 @@
     "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json --formatOutput prettier && rimraf './doc/**/index.md' -g"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "lodash": "^4.17.21",
-    "@qlover/logger": "workspace:*"
+    "@types/lodash": "^4.17.12",
+    "@qlover/logger": "workspace:*",
+    "axios": "^1.7.9"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.12"
+    "lodash": "^4.17.21"
   }
 }
