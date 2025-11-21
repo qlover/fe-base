@@ -319,5 +319,5 @@ export interface MessageGetwayInterface {
   sendMessage<M extends MessageInterface<unknown>>(
     message: M,
     options?: GatewayOptions<M>
-  ): Promise<M>;
+  ): Promise<unknown | M>;
 }
