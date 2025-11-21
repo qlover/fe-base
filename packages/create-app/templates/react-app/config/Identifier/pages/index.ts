@@ -4,5 +4,6 @@ export * from './page.home';
 export * from './page.identifiter';
 export * from './page.jsonStorage';
 export * from './page.login';
+export * from './page.message';
 export * from './page.register';
 export * from './page.request';
