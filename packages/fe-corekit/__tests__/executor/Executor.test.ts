@@ -1,5 +1,10 @@
 import { MockInstance } from 'vitest';
-import { Executor, ExecutorError, ExecutorPlugin } from '../../src';
+import {
+  Executor,
+  ExecutorConfigInterface,
+  ExecutorError,
+  ExecutorPlugin
+} from '../../src';
 
 function mockLogStdIo(): {
   spy: MockInstance;
@@ -27,7 +32,7 @@ function mockLogStdIo(): {
   return { spy, end, lastStdout, stdouts: allStdout };
 }
 
-class MyExecutor extends Executor {
+class MyExecutor extends Executor<ExecutorConfigInterface> {
   constructor() {
     super();
   }

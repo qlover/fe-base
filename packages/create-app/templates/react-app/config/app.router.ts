@@ -5,6 +5,7 @@ import { homeI18n } from './i18n/homeI18n';
 import { identifiter18n } from './i18n/identifiter18n';
 import { jsonStorage18n } from './i18n/jsonStorage18n';
 import { login18n } from './i18n/login18n';
+import { messageI18n } from './i18n/messageI18n';
 import { notFound18n, serverError18n } from './i18n/notFoundI18n';
 import { register18n } from './i18n/register18n';
 import { request18n } from './i18n/request18n';
@@ -86,6 +87,17 @@ export const baseRoutes: RouteConfigValue[] = [
           icon: 'info',
           localNamespace: 'common',
           i18nInterface: identifiter18n
+        }
+      },
+      {
+        path: 'message',
+        element: 'base/MessagePage',
+        meta: {
+          title: identifier.PAGE_MESSAGE_TITLE,
+          description: identifier.PAGE_MESSAGE_DESCRIPTION,
+          icon: 'message',
+          localNamespace: 'common',
+          i18nInterface: messageI18n
         }
       },
       {
@@ -248,6 +260,17 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
           icon: 'info',
           localNamespace: 'common',
           i18nInterface: identifiter18n
+        }
+      },
+      {
+        path: 'message',
+        element: 'base/MessagePage',
+        meta: {
+          title: identifier.PAGE_MESSAGE_TITLE,
+          description: identifier.PAGE_MESSAGE_DESCRIPTION,
+          icon: 'message',
+          localNamespace: 'common',
+          i18nInterface: messageI18n
         }
       }
     ]

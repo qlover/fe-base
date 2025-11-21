@@ -6,6 +6,7 @@ import type { ExecutorPageBridgeInterface } from '@/base/port/ExecutorPageBridge
 import type { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
 import type { RequestPageBridgeInterface } from '@/base/port/RequestPageBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
+import type { MessageService } from '@/base/services/MessageService';
 import type { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import type { RouteService } from '@/base/services/RouteService';
 import type { UserService } from '@/base/services/UserService';
@@ -32,6 +33,7 @@ export const IOCIdentifier = Object.freeze({
   ProcesserExecutorInterface: 'ProcesserExecutorInterface',
   RouteServiceInterface: 'RouteServiceInterface',
   UserServiceInterface: 'UserServiceInterface',
+  MessageServiceInterface: 'MessageServiceInterface',
   I18nKeyErrorPlugin: 'I18nKeyErrorPlugin',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   ApiMockPlugin: 'ApiMockPlugin',
@@ -74,6 +76,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.ProcesserExecutorInterface]: ProcesserExecutor;
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
+  [IOCIdentifier.MessageServiceInterface]: MessageService;
   [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;

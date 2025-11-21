@@ -166,7 +166,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     entries.forEach((entry) => {
       const entryPath = statSync(entry).isFile() ? dirname(entry) : entry;
       const dirs = readdirSync(entryPath, 'utf-8');
-      return dirs.map((dir) => {
+      dirs.forEach((dir) => {
         const fullPath = join(entryPath, dir);
         if (statSync(fullPath).isFile()) {
           entryValues.add(fullPath);

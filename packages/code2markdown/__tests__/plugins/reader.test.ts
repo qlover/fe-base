@@ -12,8 +12,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Reader } from '../../src/plugins/reader';
 import Code2MDContext from '../../src/implments/Code2MDContext';
-import { mkdirSync, writeFileSync, rmSync, readdirSync } from 'fs';
+import { mkdirSync, writeFileSync, rmSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 
 // Mock fs module
 vi.mock('fs', async () => {
@@ -25,12 +26,20 @@ vi.mock('fs', async () => {
 });
 
 describe('Reader', () => {
-  const TEST_DIR = './test-files';
+  let TEST_DIR: string;
   let context: Code2MDContext;
   let reader: Reader;
 
   // Test file structure setup
   beforeEach(() => {
+    // Create unique test directory for each test
+    TEST_DIR = join(
+      tmpdir(),
+      'code2markdown-test-' +
+        Date.now() +
+        '-' +
+        Math.random().toString(36).slice(2)
+    );
     // Create test directory structure
     mkdirSync(TEST_DIR, { recursive: true });
     mkdirSync(join(TEST_DIR, 'src'), { recursive: true });
@@ -62,7 +71,9 @@ describe('Reader', () => {
 
   // Cleanup test files
   afterEach(() => {
-    rmSync(TEST_DIR, { recursive: true, force: true });
+    if (existsSync(TEST_DIR)) {
+      rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 3 });
+    }
     vi.clearAllMocks();
   });
 
