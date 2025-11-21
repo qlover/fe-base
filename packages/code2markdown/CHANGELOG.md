@@ -1,5 +1,13 @@
 # @qlover/code2markdown
 
+## 1.2.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **code2markdown:** Refactor test setup in Reader and TypeDocJson tests to use unique temporary directories and improve cleanup logic. Updated Reader class to use forEach instead of map for directory processing. This enhances test isolation and reliability. ([002edaf](https://github.com/qlover/fe-base/commit/002edaf41144169d79ba2c4095e57c1c20589a3e)) ([#537](https://github.com/qlover/fe-base/pull/537))
+
 ## 1.1.2
 
 ### Patch Changes

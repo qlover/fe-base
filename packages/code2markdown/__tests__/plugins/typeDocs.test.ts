@@ -131,8 +131,14 @@ describe('TypeDocJson', () => {
   // Test file structure setup
   beforeEach(() => {
     // Create unique test directory for each test
-    TEST_DIR = join(tmpdir(), 'code2markdown-typedocs-test-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-    
+    TEST_DIR = join(
+      tmpdir(),
+      'code2markdown-typedocs-test-' +
+        Date.now() +
+        '-' +
+        Math.random().toString(36).slice(2)
+    );
+
     // Create test directory structure
     mkdirSync(TEST_DIR, { recursive: true });
     mkdirSync(join(TEST_DIR, 'src'), { recursive: true });

@@ -1,5 +1,22 @@
 # @qlover/create-app
 
+## 0.9.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-app:** integrate chat message components and enhance messaging functionality ([84af0f3](https://github.com/qlover/fe-base/commit/84af0f3913f191e79d747bffcc7d26283f6b861f)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Introduced ChatMessage component system, including ChatRoot, MessagesList, and MessageItem for improved chat interactions.
+  - Added MessageBaseList component for testing message gateway functionality.
+  - Implemented internationalization support for chat and message components, enhancing user experience.
+  - Updated routing configuration to include a new MessagePage for managing chat messages.
+  - Enhanced Playwright testing setup for chat components, ensuring robust testing coverage.
+
+  These changes aim to provide a comprehensive chat experience, streamline message handling, and improve overall application functionality.
+
+  Co-authored-by: QRJ <github-actions[bot]@users.noreply.github.com>
+
 ## 0.8.0
 
 ### Minor Changes
