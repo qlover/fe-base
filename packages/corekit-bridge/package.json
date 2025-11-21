@@ -9,34 +9,112 @@
     "package.json",
     "README.md"
   ],
-  "main": "./dist/index.umd.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "browser": "./dist/index.umd.js",
+  "browser": "./dist/index.iife.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.umd.js"
+      "require": "./dist/index.cjs"
+    },
+    "./bootstrap": {
+      "types": "./dist/bootstrap/index.d.ts",
+      "import": "./dist/bootstrap/index.js",
+      "require": "./dist/bootstrap/index.cjs",
+      "default": "./dist/bootstrap/index.js"
+    },
+    "./color-log": {
+      "types": "./dist/color-log/index.d.ts",
+      "import": "./dist/color-log/index.js",
+      "require": "./dist/color-log/index.cjs",
+      "default": "./dist/color-log/index.js"
+    },
+    "./ioc": {
+      "types": "./dist/ioc/index.d.ts",
+      "import": "./dist/ioc/index.js",
+      "require": "./dist/ioc/index.cjs",
+      "default": "./dist/ioc/index.js"
+    },
+    "./message-sender": {
+      "types": "./dist/message-sender/index.d.ts",
+      "import": "./dist/message-sender/index.js",
+      "require": "./dist/message-sender/index.cjs",
+      "default": "./dist/message-sender/index.js"
+    },
+    "./request-plugins": {
+      "types": "./dist/request-plugins/index.d.ts",
+      "import": "./dist/request-plugins/index.js",
+      "require": "./dist/request-plugins/index.cjs",
+      "default": "./dist/request-plugins/index.js"
+    },
+    "./resources": {
+      "types": "./dist/resources/index.d.ts",
+      "import": "./dist/resources/index.js",
+      "require": "./dist/resources/index.cjs",
+      "default": "./dist/resources/index.js"
+    },
+    "./response-stream": {
+      "types": "./dist/response-stream/index.d.ts",
+      "import": "./dist/response-stream/index.js",
+      "require": "./dist/response-stream/index.cjs",
+      "default": "./dist/response-stream/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.js",
+      "require": "./dist/storage/index.cjs",
+      "default": "./dist/storage/index.js"
+    },
+    "./store-state": {
+      "types": "./dist/store-state/index.d.ts",
+      "import": "./dist/store-state/index.js",
+      "require": "./dist/store-state/index.cjs",
+      "default": "./dist/store-state/index.js"
+    },
+    "./theme-service": {
+      "types": "./dist/theme-service/index.d.ts",
+      "import": "./dist/theme-service/index.js",
+      "require": "./dist/theme-service/index.cjs",
+      "default": "./dist/theme-service/index.js"
+    },
+    "./thread": {
+      "types": "./dist/thread/index.d.ts",
+      "import": "./dist/thread/index.js",
+      "require": "./dist/thread/index.cjs",
+      "default": "./dist/thread/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.js",
+      "require": "./dist/ui/index.cjs",
+      "default": "./dist/ui/index.js"
+    },
+    "./user-auth": {
+      "types": "./dist/user-auth/index.d.ts",
+      "import": "./dist/user-auth/index.js",
+      "require": "./dist/user-auth/index.cjs",
+      "default": "./dist/user-auth/index.js"
     },
     "./build/tw-root10px": {
-      "types": "./dist/build/tw-root10px.d.ts",
-      "import": "./dist/build/tw-root10px.js",
-      "require": "./dist/build/tw-root10px.cjs",
-      "default": "./dist/build/tw-root10px.js"
+      "types": "./dist/build/tw-root10px/index.d.ts",
+      "import": "./dist/build/tw-root10px/index.js",
+      "require": "./dist/build/tw-root10px/index.cjs",
+      "default": "./dist/build/tw-root10px/index.js"
     },
     "./build/vite-env-config": {
-      "types": "./dist/build/vite-env-config.d.ts",
-      "import": "./dist/build/vite-env-config.js",
-      "require": "./dist/build/vite-env-config.cjs",
-      "default": "./dist/build/vite-env-config.js"
+      "types": "./dist/build/vite-env-config/index.d.ts",
+      "import": "./dist/build/vite-env-config/index.js",
+      "require": "./dist/build/vite-env-config/index.cjs",
+      "default": "./dist/build/vite-env-config/index.js"
     },
     "./build/vite-ts-to-locales": {
-      "types": "./dist/build/vite-ts-to-locales.d.ts",
-      "import": "./dist/build/vite-ts-to-locales.js",
-      "require": "./dist/build/vite-ts-to-locales.cjs",
-      "default": "./dist/build/vite-ts-to-locales.js"
+      "types": "./dist/build/vite-ts-to-locales/index.d.ts",
+      "import": "./dist/build/vite-ts-to-locales/index.js",
+      "require": "./dist/build/vite-ts-to-locales/index.cjs",
+      "default": "./dist/build/vite-ts-to-locales/index.js"
     }
   },
   "repository": {
