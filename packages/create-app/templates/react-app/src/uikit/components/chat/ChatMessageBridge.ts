@@ -1,17 +1,17 @@
 import {
+  MessageSender,
   ChatMessageRole,
-  type ChatMessage
-} from '@/base/focusBar/chatMessage/ChatMessage';
-import type { ChatMessageStore } from '@/base/focusBar/chatMessage/ChatMessageStore';
+  MessageStatus
+} from '@qlover/corekit-bridge';
 import type {
+  ChatMessage,
+  ChatMessageStore,
   ChatMessageBridgeInterface,
   ChatMessageBridgePlugin,
-  DisabledSendParams
-} from '@/base/focusBar/chatMessage/interface';
-import { MessageSender } from '@/base/focusBar/impl/MessageSender';
-import type { MessageSenderConfig } from '@/base/focusBar/impl/MessageSender';
-import { MessageStatus } from '@/base/focusBar/impl/MessagesStore';
-import type { GatewayOptions } from '@/base/focusBar/interface/MessageGetwayInterface';
+  DisabledSendParams,
+  MessageSenderConfig,
+  GatewayOptions
+} from '@qlover/corekit-bridge';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
 export class ChatMessageBridge<T = string>

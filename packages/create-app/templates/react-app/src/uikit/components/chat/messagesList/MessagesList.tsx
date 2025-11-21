@@ -1,8 +1,10 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { useCallback, type ComponentType } from 'react';
-import type { ChatMessage } from '@/base/focusBar/chatMessage/ChatMessage';
-import type { ChatMessageBridgeInterface } from '@/base/focusBar/chatMessage/interface';
 import { MessageItem, type MessageItemProps } from './MessageItem';
+import type {
+  ChatMessage,
+  ChatMessageBridgeInterface
+} from '@qlover/corekit-bridge';
 
 export type MessageComponentType<
   T,

@@ -1,15 +1,15 @@
-import { ThreadUtil } from '@qlover/corekit-bridge';
-import { random } from 'lodash';
-import { ChatMessageRole } from '@/base/focusBar/chatMessage/ChatMessage';
-import type { ChatMessageStore } from '@/base/focusBar/chatMessage/ChatMessageStore';
 import {
+  ThreadUtil,
   MessageStatus,
-  type MessageStoreMsg
-} from '@/base/focusBar/impl/MessagesStore';
+  ChatMessageRole
+} from '@qlover/corekit-bridge';
+import { random } from 'lodash';
 import type {
+  MessageStoreMsg,
+  ChatMessageStore,
   MessageGetwayInterface,
   GatewayOptions
-} from '@/base/focusBar/interface/MessageGetwayInterface';
+} from '@qlover/corekit-bridge';
 
 export class MessageApi implements MessageGetwayInterface {
   constructor(protected messagesStore: ChatMessageStore<unknown>) {

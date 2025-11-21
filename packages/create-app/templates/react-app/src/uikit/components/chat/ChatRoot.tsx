@@ -1,8 +1,10 @@
 import { useFactory } from '@brain-toolkit/react-kit';
+import {
+  ChatMessageStore,
+  ChatSenderStrategy,
+  SendFailureStrategy
+} from '@qlover/corekit-bridge';
 import { useState } from 'react';
-import { ChatMessageStore } from '@/base/focusBar/chatMessage/ChatMessageStore';
-import { ChatSenderStrategy } from '@/base/focusBar/chatMessage/ChatSenderStrategy';
-import { SendFailureStrategy } from '@/base/focusBar/impl/SenderStrategyPlugin';
 import { logger } from '@/core/globals';
 import { ChatMessageBridge } from './ChatMessageBridge';
 import { FocusBar } from './FocusBar';

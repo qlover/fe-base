@@ -1,13 +1,13 @@
 import { ReloadOutlined } from '@ant-design/icons';
+import { ChatMessageRole } from '@qlover/corekit-bridge';
 import { Spin } from 'antd';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
-import {
-  ChatMessageRole,
-  type ChatMessage
-} from '@/base/focusBar/chatMessage/ChatMessage';
-import type { ChatMessageBridgeInterface } from '@/base/focusBar/chatMessage/interface';
 import { With } from '../../With';
+import type {
+  ChatMessage,
+  ChatMessageBridgeInterface
+} from '@qlover/corekit-bridge';
 
 export interface MessageItemProps<T, MessageType extends ChatMessage<T>> {
   message: MessageType;
