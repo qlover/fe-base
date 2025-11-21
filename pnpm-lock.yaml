@@ -279,16 +279,16 @@ importers:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
-      '@types/lodash':
-        specifier: ^4.17.12
-        version: 4.17.20
       axios:
         specifier: ^1.7.9
         version: 1.11.0
-    devDependencies:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.12
+        version: 4.17.20
 
   packages/fe-release:
     dependencies:
