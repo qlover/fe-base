@@ -423,10 +423,7 @@ export class AbortError extends ExecutorError {
  * abortPlugin.abortAll();
  * ```
  */
-export class AbortPlugin<
-  TParameters extends AbortPluginConfig = AbortPluginConfig
-> implements ExecutorPlugin
-{
+export class AbortPlugin<TParameters> implements ExecutorPlugin {
   /**
    * Plugin identifier name
    *
