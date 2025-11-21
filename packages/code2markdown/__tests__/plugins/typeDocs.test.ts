@@ -70,8 +70,9 @@ vi.mock('typedoc', () => ({
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import TypeDocJson from '../../src/plugins/typeDocs';
 import Code2MDContext from '../../src/implments/Code2MDContext';
-import { mkdirSync, writeFileSync, rmSync } from 'fs';
+import { mkdirSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { Application, ProjectReflection } from 'typedoc';
 import fsExtra from 'fs-extra';
 
@@ -123,12 +124,15 @@ interface MockParameterReflection extends TestReflection {
 }
 
 describe('TypeDocJson', () => {
-  const TEST_DIR = './test-files';
+  let TEST_DIR: string;
   let context: Code2MDContext;
   let typeDocJson: TypeDocJson;
 
   // Test file structure setup
   beforeEach(() => {
+    // Create unique test directory for each test
+    TEST_DIR = join(tmpdir(), 'code2markdown-typedocs-test-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+    
     // Create test directory structure
     mkdirSync(TEST_DIR, { recursive: true });
     mkdirSync(join(TEST_DIR, 'src'), { recursive: true });
@@ -176,7 +180,9 @@ describe('TypeDocJson', () => {
 
   // Cleanup test files
   afterEach(() => {
-    rmSync(TEST_DIR, { recursive: true, force: true });
+    if (existsSync(TEST_DIR)) {
+      rmSync(TEST_DIR, { recursive: true, force: true, maxRetries: 3 });
+    }
     vi.clearAllMocks();
   });
 
