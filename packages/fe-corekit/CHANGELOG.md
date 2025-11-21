@@ -1,5 +1,32 @@
 # @qlover/fe-corekit
 
+## 2.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **fe-corekit:** add AbortPlugin for request cancellation and timeout management ([2962840](https://github.com/qlover/fe-base/commit/2962840466aca3f2ede4e19e788f496fabc2def3)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Introduced AbortPlugin to manage request cancellations and timeouts, enhancing control over asynchronous operations.
+  - Implemented AbortError class for detailed error handling related to abort operations.
+  - Added comprehensive tests for AbortPlugin functionality, covering various scenarios including timeout handling and resource cleanup.
+  - Updated package.json to include @qlover/logger as a dependency for logging capabilities.
+
+  These changes aim to improve the robustness and reliability of asynchronous request handling within the application.
+
+#### ♻️ Refactors
+
+- **AbortPlugin:** simplify generic type declaration ([507170f](https://github.com/qlover/fe-base/commit/507170f2c1ba54f16b73956b1b95c67ce271129a)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Removed default type parameter from AbortPlugin class, streamlining the type definition for better clarity and maintainability.
+  - This change enhances the overall readability of the code while maintaining the functionality of the AbortPlugin.
+
+- **fe-corekit:** reorganize dependencies and enhance tsup configuration ([47dbd72](https://github.com/qlover/fe-base/commit/47dbd7222a6a8333303a02624f4ec085efd89f94)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Moved '@types/lodash' to devDependencies in package.json for better dependency management.
+  - Updated pnpm-lock.yaml to reflect the new structure of dependencies.
+  - Enhanced tsup configuration by adding external modules and a new IIFE build format, improving the build process and output management.
+
+  These changes aim to streamline the dependency structure and optimize the build configuration for better performance and maintainability.
+
 ## 2.1.0
 
 ### Minor Changes

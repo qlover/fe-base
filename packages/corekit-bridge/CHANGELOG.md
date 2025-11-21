@@ -1,5 +1,29 @@
 # @qlover/corekit-bridge
 
+## 1.7.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** implement chat message handling and store management ([18e9466](https://github.com/qlover/fe-base/commit/18e9466e80c8600eda7c174962f0d99ea992d80c)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Added new classes and interfaces for chat message handling, including ChatMessage, ChatMessageStore, and ChatSenderStrategy, enhancing the messaging capabilities within the application.
+  - Introduced comprehensive test suites for message sending, storage, and strategy management, ensuring robust functionality and reliability.
+  - Updated pnpm-lock.yaml to include '@qlover/logger' as a dependency for improved logging capabilities in message operations.
+  - Enhanced documentation for new modules and interfaces, providing clear guidance on usage and integration.
+
+  These changes aim to improve the chat messaging framework, enabling better message management and user interaction within the application.
+
+#### ♻️ Refactors
+
+- **corekit-bridge:** add message-sender export to core index ([126bcab](https://github.com/qlover/fe-base/commit/126bcab04c59f5479731b5e770bfd7c5976e86b5)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Included the message-sender module in the core index.ts file, enhancing the messaging capabilities within the corekit-bridge package.
+  - This addition aims to streamline access to message-sending functionalities, supporting better integration across the application.
+
+- **corekit-bridge:** update sendMessage return type in MessageGetwayInterface ([63a7ba6](https://github.com/qlover/fe-base/commit/63a7ba616426a1d01d063a5e1864816ec49d7627)) ([#537](https://github.com/qlover/fe-base/pull/537))
+  - Changed the return type of the sendMessage method from Promise<M> to Promise<unknown | M>, enhancing type flexibility and accommodating various message types.
+  - This modification aims to improve type safety and usability within the messaging framework.
+
 ## 1.6.6
 
 ### Patch Changes
