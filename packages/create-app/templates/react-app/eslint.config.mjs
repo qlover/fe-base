@@ -7,10 +7,7 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import qloverEslint from '@qlover/eslint-plugin';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
-import {
-  disableGlobals,
-  restrictSpecificGlobals
-} from './makes/eslint-utils.mjs';
+import { restrictSpecificGlobals } from './makes/eslint-utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -186,10 +183,14 @@ const eslintConfig = [
       'prettier/prettier': [
         'error',
         {
-          semi: true,
           singleQuote: true,
           trailingComma: 'none',
           endOfLine: 'lf'
+        },
+        {
+          // 仅用于单独部署时对 eslint prettier 插件自动查找 prettierrc 时报错
+          // 注意: vscode 等编辑器会失效, 作为单独项目开发时可以去掉
+          usePrettierrc: false
         }
       ],
       // 默认禁用 export default

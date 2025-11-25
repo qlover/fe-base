@@ -32,7 +32,7 @@
     "dev:force": "vite --mode localhost --force",
     "dev:staging": "vite --mode staging",
     "dev:prod": "vite --mode production",
-    "build": "npm run lint && vite build",
+    "build": "vite build",
     "build:staging": "npm run lint && vite build --mode staging",
     "build:prod": "npm run lint && vite build --mode production",
     "build:analyze": "vite build --mode production && start dist/stats.html",
