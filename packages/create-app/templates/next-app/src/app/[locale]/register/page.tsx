@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 }
 
 // Allow Next.js to statically generate this page if possible (default behavior)
-export const dynamic = 'auto'; // Enable static generation when possible, fallback to dynamic if needed
+// Note: 'auto' is not a valid value in Next.js 15, removed to use default behavior
 
 // Optional: Use revalidate if you want ISR (Incremental Static Regeneration)
 // export const revalidate = 3600; // Rebuild every hour (optional)

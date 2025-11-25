@@ -27,7 +27,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       onError: (error) => {
         if (error.message.includes('MISSING_MESSAGE')) {
           console.warn(`[i18n] Missing translation: ${error.message}`);
-          return error.key; // 返回 key 作为 fallback 文本
+          return error.message; // 返回 key 作为 fallback 文本
         }
         throw error; // 其他错误仍然抛出
       }
@@ -42,7 +42,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     onError: (error) => {
       if (error.message.includes('MISSING_MESSAGE')) {
         console.warn(`[i18n] Missing translation: ${error.message}`);
-        return error.key; // 返回 key 作为 fallback 文本
+        return error.message; // 返回 key 作为 fallback 文本
       }
       throw error; // 其他错误仍然抛出
     }

@@ -5,7 +5,8 @@ import { ApiLocaleService } from '@/server/services/ApiLocaleService';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 
-export const revalidate = i18nConfig.localeCacheTime;
+// Use literal value instead of imported config to ensure static analysis
+export const revalidate = 60; // Cache time in seconds (matches i18nConfig.localeCacheTime)
 
 export async function GET(req: NextRequest) {
   const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
