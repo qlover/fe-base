@@ -27,7 +27,8 @@ export function BaseHeader({
           >
             <img
               data-testid="BaseHeader-logo"
-              src={publicAssetsPath.getPath('/logo.svg')}
+              // This `router-root` is a real path, just a coincidence that it happens to match the Vite publicDir path
+              src={publicAssetsPath.getPath('/router-root/logo.svg')}
               alt="logo"
               className="h-8 w-auto"
             />

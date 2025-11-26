@@ -31,14 +31,6 @@ export const loggerStyles = {
 };
 
 /**
- * 路由前缀
- *
- * - 需要以 / 开头
- * - 但是不能只有 /
- */
-export const routerPrefix = '/router-root';
-
-/**
  * 是否使用本地化路由
  *
  * - true: 使用本地化路由，路由会带有语言前缀 (例如: /en/home)
