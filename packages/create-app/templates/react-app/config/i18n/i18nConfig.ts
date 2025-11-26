@@ -1,5 +1,3 @@
-import { routerPrefix } from '../common';
-
 export const i18nConfig = {
   fallbackLng: 'en',
   debug: false,
@@ -9,7 +7,7 @@ export const i18nConfig = {
   ns: ['common'],
   defaultNS: 'common',
   backend: {
-    loadPath: routerPrefix + '/locales/{{lng}}/{{ns}}.json'
+    loadPath: '/locales/{{lng}}/{{ns}}.json'
   },
   supportedLngs: ['en', 'zh'],
   /**

@@ -120,4 +120,11 @@ export class AppConfig implements EnvConfigInterface {
   get isProduction(): boolean {
     return this.env === 'production';
   }
+
+  /** Base URL for the application
+   *
+   * - /
+   * - start with /
+   */
+  readonly baseUrl = '';
 }

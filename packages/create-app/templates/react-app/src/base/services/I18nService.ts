@@ -11,6 +11,7 @@ import HttpApi from 'i18next-http-backend';
 import merge from 'lodash/merge';
 import { initReactI18next } from 'react-i18next';
 import type { LocaleType } from '@config/i18n/i18nConfig';
+import type { AppConfig } from '../cases/AppConfig';
 import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 
 const { supportedLngs, fallbackLng } = i18nConfig;
@@ -31,8 +32,20 @@ export class I18nService
     language: (state: I18nServiceState) => state.language
   };
 
-  constructor(protected pathname: string) {
+  constructor(
+    protected pathname: string,
+    protected appConfig: AppConfig
+  ) {
     super(() => new I18nServiceState(i18n.language as LocaleType));
+  }
+
+  getBackendLoadPath(locale: LocaleType, ns: string = 'common'): string {
+    return (
+      this.appConfig.baseUrl +
+      i18nConfig.backend.loadPath
+        .replace('{{lng}}', locale)
+        .replace('{{ns}}', ns)
+    );
   }
 
   /**

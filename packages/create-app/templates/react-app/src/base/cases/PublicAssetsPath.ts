@@ -1,5 +1,6 @@
-import { routerPrefix } from '@config/common';
-import { injectable } from 'inversify';
+import { I } from '@config/IOCIdentifier';
+import { inject, injectable } from 'inversify';
+import { AppConfig } from './AppConfig';
 
 /**
  * Get Publish Assets Path
@@ -9,7 +10,11 @@ import { injectable } from 'inversify';
  */
 @injectable()
 export class PublicAssetsPath {
-  constructor(protected prefix: string = routerPrefix) {}
+  protected prefix: string = '';
+
+  constructor(@inject(I.AppConfig) protected appConfig: AppConfig) {
+    this.prefix = appConfig.baseUrl;
+  }
 
   getPath(path: string): string {
     if (!this.prefix) {

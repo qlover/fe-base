@@ -1,4 +1,3 @@
-import { routerPrefix } from '@config/common';
 import { I } from '@config/IOCIdentifier';
 import {
   RequestState,
@@ -96,9 +95,7 @@ export class IdentifierService<T>
 
     const locale = params.locale!;
 
-    const response = await fetch(
-      `${routerPrefix}/locales/${locale}/common.json`
-    );
+    const response = await fetch(this.i18nService.getBackendLoadPath(locale));
     const data = await response.json();
 
     let index = 0;

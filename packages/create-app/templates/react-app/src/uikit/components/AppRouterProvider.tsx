@@ -1,5 +1,4 @@
 import { useStore } from '@brain-toolkit/react-kit';
-import { routerPrefix } from '@config/common';
 import { I } from '@config/IOCIdentifier';
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -13,6 +12,7 @@ export function AppRouterProvider(props: { pages: ComponentValue }) {
 
   const routerService = useIOC(I.RouteServiceInterface);
   const logger = useIOC(I.Logger);
+  const appConfig = useIOC(I.AppConfig);
   const routes = useStore(routerService, (state) => state.routes);
 
   const routerLoader = useMemo(() => {
@@ -26,10 +26,10 @@ export function AppRouterProvider(props: { pages: ComponentValue }) {
   const routerBase = useMemo(() => {
     const routeList = routes.map((route) => routerLoader.toRoute(route));
     const router = createBrowserRouter(routeList, {
-      basename: routerPrefix
+      basename: appConfig.baseUrl
     });
     return router;
-  }, [routes]);
+  }, [routes, appConfig.baseUrl]);
 
   return <RouterProvider data-testid="AppRouterProvider" router={routerBase} />;
 }
