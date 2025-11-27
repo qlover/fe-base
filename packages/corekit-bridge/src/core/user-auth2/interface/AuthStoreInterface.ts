@@ -1,25 +1,13 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import type { KeyStorageInterface } from '@qlover/fe-corekit';
 import type {
   AsyncStateInterface,
   StoreInterface,
   StoreStateInterface
 } from '../../store-state';
 
-export const AuthStatus = Object.freeze({
-  INITIAL: 'initial',
-  LOADING: 'loading',
-  SUCCESS: 'success',
-  STOPPED: 'stopped',
-  FAILED: 'failed'
-});
-
-export type AuthStatusType = (typeof AuthStatus)[keyof typeof AuthStatus];
-
 export interface AuthStateInterface<T>
   extends AsyncStateInterface<T>,
-    StoreStateInterface {
-  status: AuthStatusType;
-}
+    StoreStateInterface {}
 
 export interface AuthStoreInterface<
   T,
