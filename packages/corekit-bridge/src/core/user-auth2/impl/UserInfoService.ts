@@ -1,40 +1,20 @@
 import {
-  AsyncStore,
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
 } from '../../store-state';
-import { AsyncStoreState } from '../../store-state/impl/AsyncStoreState';
 import type { UserInfoInterface } from '../interface/base/UserInfoInterface';
 import type { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
+import { BaseGatewayService } from './BaseGatewayService';
 
 export class UserInfoService<
-  User,
-  Store extends AsyncStoreInterface<AsyncStoreStateInterface<User>>
-> implements UserInfoServiceInterface<User, Store>
+    User,
+    Store extends AsyncStoreInterface<AsyncStoreStateInterface<User>>
+  >
+  extends BaseGatewayService<User, UserInfoInterface<User>, Store>
+  implements UserInfoServiceInterface<User, Store>
 {
-  protected readonly store: Store;
-  constructor(
-    store?: Store,
-    protected readonly gateway: UserInfoInterface<User> | null = null
-  ) {
-    const targetStore: AsyncStoreInterface<AsyncStoreStateInterface<User>> =
-      store ??
-      // use default store if no store is provided
-      new AsyncStore<User, string>(() => new AsyncStoreState<User>());
-
-    this.store = targetStore as Store;
-  }
-
-  getStore(): Store {
-    return this.store;
-  }
-
-  getGateway(): UserInfoInterface<User> | null {
-    return this.gateway;
-  }
-
   getUser(): User | null {
-    return this.store.getState().result;
+    return this.getResult();
   }
 
   async getUserInfo<Params>(params?: Params): Promise<User> {

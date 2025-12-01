@@ -8,6 +8,7 @@ import type {
   LoginParams
 } from '../interface/base/LoginInterface';
 import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
+import { BaseGatewayService } from './BaseGatewayService';
 
 export interface LoginCredential {
   token?: string;
@@ -30,56 +31,22 @@ export interface LoginCredential {
  * ```
  */
 export class LoginService<
-  Credential extends LoginCredential,
-  Store extends AsyncStoreInterface<
-    AsyncStoreStateInterface<Credential>
-  > = AsyncStore<Credential, string>
-> implements LoginServiceInterface<Credential, Store>
-{
-  protected readonly store: Store;
-
-  constructor(
-    store?: Store,
-    protected readonly gateway: LoginInterface<Credential> | null = null
-  ) {
-    const targetStore: AsyncStoreInterface<
+    Credential extends LoginCredential,
+    Store extends AsyncStoreInterface<
       AsyncStoreStateInterface<Credential>
-    > =
-      store ??
-      // use default store if no store is provided
-      new AsyncStore<Credential, string>();
-
-    this.store = targetStore as Store;
-  }
-
-  /**
-   * Get the store instance for reactive state access
-   *
-   * @override
-   * @returns The store instance for reactive state access
-   */
-  getStore(): Store {
-    return this.store as Store;
-  }
-
-  /**
-   * Get the gateway instance for authentication
-   *
-   * @override
-   * @returns The gateway instance for authentication
-   */
-  getGateway(): LoginInterface<Credential> | null {
-    return this.gateway;
-  }
-
+    > = AsyncStore<Credential, string>
+  >
+  extends BaseGatewayService<Credential, LoginInterface<Credential>, Store>
+  implements LoginServiceInterface<Credential, Store>
+{
   /**
    * Get the credential from the store
    *
    * @override
    * @returns The credential from the store
    */
-  getCredential(): Credential | null {
-    return this.store.getState().result;
+  public getCredential(): Credential | null {
+    return this.getResult();
   }
 
   /**
@@ -108,23 +75,10 @@ export class LoginService<
    * });
    * ```
    */
-  async login<Params extends LoginParams>(params: Params): Promise<Credential> {
-    if (!this.gateway) {
-      return Promise.resolve({} as Credential);
-    }
-
-    this.store.start();
-
-    try {
-      const result = await this.gateway.login(params);
-
-      this.store.success(result);
-
-      return result;
-    } catch (error) {
-      this.store.failed(error);
-      throw error;
-    }
+  public async login<Params extends LoginParams>(
+    params: Params
+  ): Promise<Credential> {
+    return this.executeGateway(() => this.gateway?.login(params));
   }
 
   /**
@@ -158,7 +112,7 @@ export class LoginService<
    * }
    * ```
    */
-  async logout<LogoutParams, LogoutResult = void>(
+  public async logout<LogoutParams, LogoutResult = void>(
     params?: LogoutParams
   ): Promise<LogoutResult> {
     try {

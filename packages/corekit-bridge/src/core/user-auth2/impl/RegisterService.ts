@@ -5,37 +5,25 @@ import {
 } from '../../store-state';
 import type { RegisterInterface } from '../interface/base/RegisterInterface';
 import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
+import { BaseGatewayService } from './BaseGatewayService';
 
 export class RegisterService<
-  Result,
-  Store extends AsyncStoreInterface<
-    AsyncStoreStateInterface<Result>
-  > = AsyncStore<Result, string>
-> implements RegisterServiceInterface<Result, Store>
+    Result,
+    Store extends AsyncStoreInterface<
+      AsyncStoreStateInterface<Result>
+    > = AsyncStore<Result, string>
+  >
+  extends BaseGatewayService<Result, RegisterInterface<Result>, Store>
+  implements RegisterServiceInterface<Result, Store>
 {
-  protected readonly store: Store;
-  constructor(
-    store?: Store,
-    protected readonly gateway: RegisterInterface<Result> | null = null
-  ) {
-    const targetStore: AsyncStoreInterface<AsyncStoreStateInterface<Result>> =
-      store ??
-      // use default store if no store is provided
-      new AsyncStore<Result, string>();
-
-    this.store = targetStore as Store;
-  }
-
-  getStore(): Store {
-    return this.store;
-  }
-
-  getGateway(): RegisterInterface<Result> | null {
-    return this.gateway;
-  }
-
-  getUser(): Result | null {
-    return this.store.getState().result;
+  /**
+   * Get the user from the store
+   *
+   * @override
+   * @returns The user from the store
+   */
+  public getUser(): Result | null {
+    return this.getResult();
   }
 
   async register<Params>(params: Params): Promise<Result> {
