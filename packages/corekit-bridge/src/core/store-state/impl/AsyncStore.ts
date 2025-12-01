@@ -9,29 +9,30 @@ import {
   PersistentStoreStateInterface
 } from '../interface/PersistentStoreInterface';
 import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
+import { AsyncStoreState } from './AsyncStoreState';
 
-export interface AsyncStoreState<T>
+export interface AsyncStoreStateInterface<T>
   extends PersistentStoreStateInterface,
     AsyncStateInterface<T> {
   status: AsyncStoreStatusType;
 }
 
 export class AsyncStore<T, Key>
-  extends PersistentStoreInterface<AsyncStoreState<T>, Key>
-  implements AsyncStoreInterface<T, AsyncStoreState<T>>
+  extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key>
+  implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
 {
   constructor(
-    initialState: () => AsyncStoreState<T>,
-    storage: KeyStorageInterface<Key, AsyncStoreState<T>>
+    initialState?: () => AsyncStoreStateInterface<T>,
+    storage: KeyStorageInterface<Key, AsyncStoreStateInterface<T>> | null = null
   ) {
-    super(initialState, storage);
+    super(initialState ?? (() => new AsyncStoreState<T>()), storage);
   }
 
   /**
    * @override
    * @returns
    */
-  getStore(): StoreInterface<AsyncStoreState<T>> {
+  getStore(): StoreInterface<AsyncStoreStateInterface<T>> {
     return this;
   }
 
@@ -96,7 +97,7 @@ export class AsyncStore<T, Key>
    * @override
    * @returns
    */
-  getState(): AsyncStoreState<T> {
+  getState(): AsyncStoreStateInterface<T> {
     return this.state;
   }
 
@@ -104,8 +105,10 @@ export class AsyncStore<T, Key>
    * @override
    * @param state
    */
-  updateState(state: Partial<AsyncStoreState<T>>): void {
-    const newState = this.cloneState(state);
+  updateState<S extends AsyncStateInterface<T>>(state: Partial<S>): void {
+    const newState = this.cloneState(
+      state as Partial<AsyncStoreStateInterface<T>>
+    );
     this.emit(newState);
   }
 }

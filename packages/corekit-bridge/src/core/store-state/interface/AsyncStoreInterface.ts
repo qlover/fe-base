@@ -87,7 +87,7 @@ export interface AsyncStateInterface<T> {
   status?: unknown;
 }
 
-export interface AsyncStateAction<T, State extends AsyncStateInterface<T>> {
+export interface AsyncStateAction<T> {
   /**
    * Start authentication process
    * Marks the beginning of an async authentication operation
@@ -120,20 +120,15 @@ export interface AsyncStateAction<T, State extends AsyncStateInterface<T>> {
   reset(): void;
 
   /**
-   * Get current store state
-   * @returns Current state object
-   */
-  getState(): State;
-
-  /**
    * Update store state
    * @param state - Partial state object to merge into current state
    */
-  updateState(state: Partial<State>): void;
+  updateState<S extends AsyncStateInterface<T>>(state: Partial<S>): void;
 }
 
-export interface AsyncStoreInterface<T, State extends AsyncStateInterface<T>>
-  extends AsyncStateAction<T, State> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
+  extends AsyncStateAction<State['result']> {
   /**
    * Get the underlying store instance
    * This allows reactive state access and subscription
@@ -143,4 +138,10 @@ export interface AsyncStoreInterface<T, State extends AsyncStateInterface<T>>
    * @returns The store instance for reactive state access
    */
   getStore(): StoreInterface<State>;
+
+  /**
+   * Get current store state
+   * @returns Current state object
+   */
+  getState(): State;
 }

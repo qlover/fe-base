@@ -1,8 +1,8 @@
-export interface CoreAuthLoginParams {
+export interface LoginParams {
   email?: string;
-  phone?: string;
   password?: string;
-  code?: string; // Verification code for phone/email login
+  phone?: string;
+  code?: string;
 }
 
 export interface LoginInterface<CredentialType> {
@@ -31,7 +31,7 @@ export interface LoginInterface<CredentialType> {
    * });
    * ```
    */
-  login<T extends CoreAuthLoginParams>(params: T): Promise<CredentialType>;
+  login<Params extends LoginParams>(params: Params): Promise<CredentialType>;
 
   /**
    * Logout current user
@@ -39,17 +39,28 @@ export interface LoginInterface<CredentialType> {
    * Clears authentication state, user data, and credentials.
    * Resets both user and credential stores to initial state.
    *
-   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl)
-   * @returns Promise that resolves when logout is complete
+   * @template LogoutParams - Type of logout parameters (default: void)
+   * @template LogoutResult - Type of logout result (default: void)
+   *
+   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
+   * @returns Promise resolving to logout result (e.g., success status, redirect URL)
    *
    * @example
    * ```typescript
-   * // Basic logout
+   * // Basic logout (no params, no return value)
    * await authService.logout();
    *
-   * // Logout with options (future extension)
-   * await authService.logout({ revokeAll: true });
+   * // Logout with parameters
+   * await authService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
+   *
+   * // Logout with parameters and return value
+   * const result = await authService.logout<
+   *   { revokeAll: boolean },
+   *   { success: boolean; message: string }
+   * >({ revokeAll: true });
    * ```
    */
-  logout(params?: unknown): Promise<void>;
+  logout<LogoutParams, LogoutResult = void>(
+    params?: LogoutParams
+  ): Promise<LogoutResult>;
 }
