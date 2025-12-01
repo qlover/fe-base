@@ -1,3 +1,5 @@
+import { StoreInterface } from './StoreInterface';
+
 /**
  * Interface representing the state of an asynchronous operation
  *
@@ -76,4 +78,69 @@ export interface AsyncStateInterface<T> {
    * @example `Date.now()`
    */
   endTime: number;
+
+  /**
+   * Status of the async operation
+   *
+   * @example `'pending' | 'success' | 'failed' | 'stopped'`
+   */
+  status?: unknown;
+}
+
+export interface AsyncStateAction<T, State extends AsyncStateInterface<T>> {
+  /**
+   * Start authentication process
+   * Marks the beginning of an async authentication operation
+   */
+  start(result?: T): void;
+
+  /**
+   * Stop authentication process
+   * Marks the end of an async authentication operation
+   */
+  stopped(error?: unknown, result?: T): void;
+
+  /**
+   * Mark authentication as failed
+   * @param error - The error that occurred
+   * @param result - The result of the authentication operation
+   */
+  failed(error: unknown, result?: T): void;
+
+  /**
+   * Mark authentication as successful
+   * @param result - The result of the authentication operation
+   */
+  success(result: T): void;
+
+  /**
+   * Reset store state to initial state
+   * Clears all state data and resets to default values
+   */
+  reset(): void;
+
+  /**
+   * Get current store state
+   * @returns Current state object
+   */
+  getState(): State;
+
+  /**
+   * Update store state
+   * @param state - Partial state object to merge into current state
+   */
+  updateState(state: Partial<State>): void;
+}
+
+export interface AsyncStoreInterface<T, State extends AsyncStateInterface<T>>
+  extends AsyncStateAction<T, State> {
+  /**
+   * Get the underlying store instance
+   * This allows reactive state access and subscription
+   *
+   * - If this extends StoreInterface, it will return itself.
+   *
+   * @returns The store instance for reactive state access
+   */
+  getStore(): StoreInterface<State>;
 }
