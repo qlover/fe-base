@@ -31,7 +31,9 @@ export interface LoginInterface<CredentialType> {
    * });
    * ```
    */
-  login<Params extends LoginParams>(params: Params): Promise<CredentialType>;
+  login<Params extends LoginParams>(
+    params: Params
+  ): Promise<CredentialType | null>;
 
   /**
    * Logout current user

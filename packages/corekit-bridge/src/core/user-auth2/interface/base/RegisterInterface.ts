@@ -5,7 +5,7 @@
  * This interface focuses solely on registration behavior.
  *
  * @template Params - Type of registration parameters
- * @template User - Type of user object returned after registration
+ * @template Result - Type of user object returned after registration
  *
  * @example
  * ```typescript
@@ -16,7 +16,7 @@
  * }
  * ```
  */
-export interface RegisterInterface<User> {
+export interface RegisterInterface<Result> {
   /**
    * Register a new user
    *
@@ -35,5 +35,5 @@ export interface RegisterInterface<User> {
    * });
    * ```
    */
-  register<Params>(params: Params): Promise<User>;
+  register<Params>(params: Params): Promise<Result | null>;
 }

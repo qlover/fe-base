@@ -1,41 +1,23 @@
-import {
-  type AsyncStoreInterface,
-  type AsyncStoreStateInterface
-} from '../../store-state';
+import { AsyncStore } from '../../store-state';
 import type { UserInfoInterface } from '../interface/base/UserInfoInterface';
 import type { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
 import { BaseGatewayService } from './BaseGatewayService';
 
-export class UserInfoService<
-    User,
-    Store extends AsyncStoreInterface<AsyncStoreStateInterface<User>>
-  >
+export class UserInfoService<User, Store extends AsyncStore<User, string>>
   extends BaseGatewayService<User, UserInfoInterface<User>, Store>
   implements UserInfoServiceInterface<User, Store>
 {
   getUser(): User | null {
-    return this.getResult();
+    return this.store.getResult();
   }
 
-  async getUserInfo<Params>(params?: Params): Promise<User> {
-    if (!this.gateway) {
-      return Promise.resolve({} as User);
-    }
-
-    this.store.start();
-
-    try {
-      const result = await this.gateway.getUserInfo(params);
-      this.store.success(result);
-
-      return result;
-    } catch (error) {
-      this.store.failed(error);
-      throw error;
-    }
+  async getUserInfo<Params>(params?: Params): Promise<User | null> {
+    return this.execute('getUserInfo', params, async (args, gateway) => {
+      return (await gateway?.getUserInfo(args)) ?? null;
+    });
   }
 
-  async refreshUserInfo<Params>(params?: Params): Promise<User> {
+  async refreshUserInfo<Params>(params?: Params): Promise<User | null> {
     return this.getUserInfo(params);
   }
 }

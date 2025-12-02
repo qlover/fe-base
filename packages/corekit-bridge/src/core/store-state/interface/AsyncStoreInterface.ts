@@ -124,11 +124,16 @@ export interface AsyncStateAction<T> {
    * @param state - Partial state object to merge into current state
    */
   updateState<S extends AsyncStateInterface<T>>(state: Partial<S>): void;
+
+  /**
+   * Get the duration of the async operation
+   * @returns The duration of the async operation in milliseconds
+   */
+  getDuration(): number;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
-  extends AsyncStateAction<State['result']> {
+export interface AsyncStoreInterface<State extends AsyncStateInterface<any>> {
   /**
    * Get the underlying store instance
    * This allows reactive state access and subscription
@@ -144,4 +149,11 @@ export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
    * @returns Current state object
    */
   getState(): State;
+
+  getLoading(): boolean;
+  getError(): State['error'];
+  getResult(): State['result'];
+  getStatus(): State['status'];
+
+  reset(): void;
 }

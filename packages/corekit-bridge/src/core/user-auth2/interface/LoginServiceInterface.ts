@@ -3,13 +3,12 @@ import {
   AsyncStoreStateInterface
 } from '../../store-state';
 import { LoginInterface } from './base/LoginInterface';
+import { BaseServiceInterface } from './BaseServiceInterface';
 
 export interface LoginServiceInterface<
   Credential,
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<Credential>>
-> extends LoginInterface<Credential> {
-  getStore(): Store;
-  getGateway(): LoginInterface<Credential> | null;
-
+> extends LoginInterface<Credential>,
+    BaseServiceInterface<Store, LoginInterface<Credential>> {
   getCredential(): Credential | null;
 }

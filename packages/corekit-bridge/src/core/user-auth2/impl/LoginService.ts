@@ -1,18 +1,10 @@
-import {
-  AsyncStore,
-  type AsyncStoreInterface,
-  type AsyncStoreStateInterface
-} from '../../store-state';
+import { AsyncStore } from '../../store-state';
 import type {
   LoginInterface,
   LoginParams
 } from '../interface/base/LoginInterface';
 import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
 import { BaseGatewayService } from './BaseGatewayService';
-
-export interface LoginCredential {
-  token?: string;
-}
 
 /**
  * Login service implementation
@@ -31,10 +23,11 @@ export interface LoginCredential {
  * ```
  */
 export class LoginService<
-    Credential extends LoginCredential,
-    Store extends AsyncStoreInterface<
-      AsyncStoreStateInterface<Credential>
-    > = AsyncStore<Credential, string>
+    Credential,
+    Store extends AsyncStore<Credential, string> = AsyncStore<
+      Credential,
+      string
+    >
   >
   extends BaseGatewayService<Credential, LoginInterface<Credential>, Store>
   implements LoginServiceInterface<Credential, Store>
@@ -46,7 +39,7 @@ export class LoginService<
    * @returns The credential from the store
    */
   public getCredential(): Credential | null {
-    return this.getResult();
+    return this.store.getResult();
   }
 
   /**
@@ -77,8 +70,10 @@ export class LoginService<
    */
   public async login<Params extends LoginParams>(
     params: Params
-  ): Promise<Credential> {
-    return this.executeGateway(() => this.gateway?.login(params));
+  ): Promise<Credential | null> {
+    return this.execute('login', params, async (args, gateway) => {
+      return (await gateway?.login(args)) ?? null;
+    });
   }
 
   /**

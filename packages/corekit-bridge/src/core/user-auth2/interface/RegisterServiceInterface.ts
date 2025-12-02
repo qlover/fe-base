@@ -3,13 +3,12 @@ import {
   AsyncStoreStateInterface
 } from '../../store-state';
 import { RegisterInterface } from './base/RegisterInterface';
+import { BaseServiceInterface } from './BaseServiceInterface';
+import { UserInfoGetter } from './UserInfoServiceInterface';
 
 export interface RegisterServiceInterface<
-  Result,
-  Store extends AsyncStoreInterface<AsyncStoreStateInterface<Result>>
-> extends RegisterInterface<Result> {
-  getStore(): Store;
-  getGateway(): RegisterInterface<Result> | null;
-
-  getUser(): Result | null;
-}
+  User,
+  Store extends AsyncStoreInterface<AsyncStoreStateInterface<User>>
+> extends RegisterInterface<User>,
+    BaseServiceInterface<Store, RegisterInterface<User>>,
+    UserInfoGetter<User> {}

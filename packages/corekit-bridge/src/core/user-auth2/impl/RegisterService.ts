@@ -1,17 +1,11 @@
-import {
-  AsyncStore,
-  type AsyncStoreInterface,
-  type AsyncStoreStateInterface
-} from '../../store-state';
+import { AsyncStore } from '../../store-state';
 import type { RegisterInterface } from '../interface/base/RegisterInterface';
 import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
 import { BaseGatewayService } from './BaseGatewayService';
 
 export class RegisterService<
     Result,
-    Store extends AsyncStoreInterface<
-      AsyncStoreStateInterface<Result>
-    > = AsyncStore<Result, string>
+    Store extends AsyncStore<Result, string> = AsyncStore<Result, string>
   >
   extends BaseGatewayService<Result, RegisterInterface<Result>, Store>
   implements RegisterServiceInterface<Result, Store>
@@ -23,24 +17,12 @@ export class RegisterService<
    * @returns The user from the store
    */
   public getUser(): Result | null {
-    return this.getResult();
+    return this.store.getResult();
   }
 
-  async register<Params>(params: Params): Promise<Result> {
-    if (!this.gateway) {
-      return Promise.resolve({} as Result);
-    }
-
-    this.store.start();
-
-    try {
-      const result = await this.gateway.register(params);
-      this.store.success(result);
-
-      return result;
-    } catch (error) {
-      this.store.failed(error);
-      throw error;
-    }
+  async register<Params>(params: Params): Promise<Result | null> {
+    return this.execute('register', params, async (args, gateway) => {
+      return (await gateway?.register(args)) ?? null;
+    });
   }
 }

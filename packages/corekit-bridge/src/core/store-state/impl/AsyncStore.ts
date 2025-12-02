@@ -1,9 +1,8 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import {
-  AsyncStateInterface,
-  AsyncStoreInterface
+  AsyncStateAction,
+  AsyncStateInterface
 } from '../interface/AsyncStoreInterface';
-import { StoreInterface } from '../interface/StoreInterface';
 import {
   PersistentStoreInterface,
   PersistentStoreStateInterface
@@ -19,7 +18,7 @@ export interface AsyncStoreStateInterface<T>
 
 export class AsyncStore<T, Key>
   extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key>
-  implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
+  implements AsyncStateAction<T>
 {
   constructor(
     initialState?: () => AsyncStoreStateInterface<T>,
@@ -32,7 +31,7 @@ export class AsyncStore<T, Key>
    * @override
    * @returns
    */
-  getStore(): StoreInterface<AsyncStoreStateInterface<T>> {
+  getStore(): this {
     return this;
   }
 
@@ -110,5 +109,95 @@ export class AsyncStore<T, Key>
       state as Partial<AsyncStoreStateInterface<T>>
     );
     this.emit(newState);
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  getLoading(): boolean {
+    return this.getState().loading;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  getError(): unknown | null {
+    return this.getState().error;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  getResult(): T | null {
+    return this.getState().result;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  getStatus(): AsyncStoreStatusType {
+    return this.getState().status;
+  }
+
+  /**
+   * Get the duration of the async operation
+   *
+   * - If startTime and endTime are numbers and not NaN, return endTime - startTime
+   * - If startTime and endTime are not numbers, return 0
+   * - If startTime or endTime is a string, return parseFloat converted number and not NaN
+   * - If startTime or endTime is undefined or null, return 0
+   * - If startTime is greater than endTime, return 0
+   * - If endTime is less than startTime, return 0
+   *
+   * @override
+   * @param state - The state of the async operation
+   * @returns The duration of the async operation in milliseconds
+   *
+   * @example
+   * ```typescript
+   * const duration = store.getDuration();
+   * console.log(`Operation took ${duration}ms`);
+   * ```
+   */
+  getDuration(): number {
+    const state = this.getState();
+
+    const startTime = state?.startTime;
+    const endTime = state?.endTime;
+
+    const start =
+      typeof startTime === 'number'
+        ? startTime
+        : typeof startTime === 'string'
+          ? parseFloat(startTime)
+          : Number(startTime);
+
+    const end =
+      typeof endTime === 'number'
+        ? endTime
+        : typeof endTime === 'string'
+          ? parseFloat(endTime)
+          : Number(endTime);
+
+    // 更严格的检查
+    if (
+      Number.isFinite(start) &&
+      Number.isFinite(end) &&
+      start >= 0 &&
+      end >= start
+    ) {
+      const duration = end - start;
+
+      // 额外检查：防止溢出或极大值
+      if (duration < Number.MAX_SAFE_INTEGER) {
+        return duration;
+      }
+    }
+
+    return 0;
   }
 }
