@@ -71,9 +71,7 @@ export class LoginService<
   public async login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
-    return this.execute('login', params, async (args, gateway) => {
-      return (await gateway?.login(args)) ?? null;
-    });
+    return this.execute('login', params);
   }
 
   /**

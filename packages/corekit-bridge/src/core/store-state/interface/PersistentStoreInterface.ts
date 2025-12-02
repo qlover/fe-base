@@ -14,20 +14,7 @@ export abstract class PersistentStoreInterface<
     stateFactory: () => T,
     protected readonly storage: KeyStorageInterface<Key, T> | null = null
   ) {
-    super(() => stateFactory());
-
-    // try to load state from storage
-    try {
-      this.storage2store();
-    } catch (error) {
-      // Log error in development, silently fail in production
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(
-          'Failed to load state from storage:',
-          error instanceof Error ? error.message : error
-        );
-      }
-    }
+    super(stateFactory);
   }
 
   /**

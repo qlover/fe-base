@@ -20,9 +20,7 @@ export class RegisterService<
     return this.store.getResult();
   }
 
-  async register<Params>(params: Params): Promise<Result | null> {
-    return this.execute('register', params, async (args, gateway) => {
-      return (await gateway?.register(args)) ?? null;
-    });
+  public async register<Params>(params: Params): Promise<Result | null> {
+    return this.execute('register', params);
   }
 }

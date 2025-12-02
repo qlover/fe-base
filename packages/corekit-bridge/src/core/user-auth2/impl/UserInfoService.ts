@@ -12,12 +12,10 @@ export class UserInfoService<User, Store extends AsyncStore<User, string>>
   }
 
   async getUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.execute('getUserInfo', params, async (args, gateway) => {
-      return (await gateway?.getUserInfo(args)) ?? null;
-    });
+    return this.execute('getUserInfo', params);
   }
 
   async refreshUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.getUserInfo(params);
+    return this.execute('refreshUserInfo', params);
   }
 }

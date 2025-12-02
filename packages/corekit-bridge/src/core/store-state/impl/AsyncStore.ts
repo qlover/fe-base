@@ -1,14 +1,15 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import {
   AsyncStateAction,
-  AsyncStateInterface
+  AsyncStateInterface,
+  AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
 import {
   PersistentStoreInterface,
   PersistentStoreStateInterface
 } from '../interface/PersistentStoreInterface';
 import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
-import { AsyncStoreState } from './AsyncStoreState';
+import { createState } from './createState';
 
 export interface AsyncStoreStateInterface<T>
   extends PersistentStoreStateInterface,
@@ -16,15 +17,33 @@ export interface AsyncStoreStateInterface<T>
   status: AsyncStoreStatusType;
 }
 
+export interface AsyncStoreOptions<
+  Key,
+  State extends AsyncStoreStateInterface<unknown>
+> {
+  /**
+   * Credential storage implementation
+   */
+  storage?: KeyStorageInterface<Key, State> | null;
+
+  /**
+   * Create a new state instance
+   *
+   * - 如果提供了 storage 选项，则 defaultState 参数是 storage 的 get 方法返回的值
+   * - 如果未提供 storage 选项，则 defaultState 参数是 undefined
+   * - 如果 defaultState 参数是函数，则该函数返回的值作为初始状态
+   */
+  defaultState?: (defaultStorageState?: State) => State;
+}
+
 export class AsyncStore<T, Key>
   extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key>
-  implements AsyncStateAction<T>
+  implements
+    AsyncStoreInterface<AsyncStoreStateInterface<T>>,
+    AsyncStateAction<T>
 {
-  constructor(
-    initialState?: () => AsyncStoreStateInterface<T>,
-    storage: KeyStorageInterface<Key, AsyncStoreStateInterface<T>> | null = null
-  ) {
-    super(initialState ?? (() => new AsyncStoreState<T>()), storage);
+  constructor(options?: AsyncStoreOptions<Key, AsyncStoreStateInterface<T>>) {
+    super(() => createState(options), options?.storage);
   }
 
   /**
