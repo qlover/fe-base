@@ -1,13 +1,13 @@
 import { AsyncStore } from '../../store-state';
 import type { RegisterInterface } from '../interface/base/RegisterInterface';
 import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
-import { BaseGatewayService } from './BaseGatewayService';
+import { GatewayService } from './GatewayService';
 
 export class RegisterService<
     Result,
     Store extends AsyncStore<Result, string> = AsyncStore<Result, string>
   >
-  extends BaseGatewayService<Result, RegisterInterface<Result>, Store>
+  extends GatewayService<Result, RegisterInterface<Result>, Store>
   implements RegisterServiceInterface<Result, Store>
 {
   /**

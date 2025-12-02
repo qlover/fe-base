@@ -1,13 +1,14 @@
 import {
   AsyncStore,
   AsyncStoreOptions,
-  AsyncStoreStateInterface
+  AsyncStoreStateInterface,
+  createStore
 } from '../../store-state';
 import { LoggerInterface } from '@qlover/logger';
 import { BaseServiceInterface } from '../interface/BaseServiceInterface';
 import { ExecutorError } from '@qlover/fe-corekit';
 
-export interface BaseGatewayServiceOptions<T, Gateway, Key = string>
+export interface GatewayServiceOptions<T, Gateway, Key = string>
   extends AsyncStoreOptions<Key, AsyncStoreStateInterface<T>> {
   /**
    * Store instance for the service
@@ -38,7 +39,7 @@ type ExecuteFn<Params, Result, Gateway> = (
   action: keyof Gateway
 ) => Promise<Result | null>;
 
-export abstract class BaseGatewayService<
+export abstract class GatewayService<
   T,
   Gateway,
   Store extends AsyncStore<T, string>
@@ -50,11 +51,9 @@ export abstract class BaseGatewayService<
 
   constructor(
     readonly serviceName: string,
-    options?: BaseGatewayServiceOptions<T, Gateway>
+    options?: GatewayServiceOptions<T, Gateway>
   ) {
-    const targetStore = options?.store ?? new AsyncStore<T, string>(options);
-
-    this.store = targetStore as Store;
+    this.store = createStore(options) as Store;
     this.gateway = options?.gateway ?? null;
     this.logger = options?.logger;
   }

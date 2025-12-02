@@ -4,7 +4,7 @@ import type {
   LoginParams
 } from '../interface/base/LoginInterface';
 import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
-import { BaseGatewayService } from './BaseGatewayService';
+import { GatewayService } from './GatewayService';
 
 /**
  * Login service implementation
@@ -29,7 +29,7 @@ export class LoginService<
       string
     >
   >
-  extends BaseGatewayService<Credential, LoginInterface<Credential>, Store>
+  extends GatewayService<Credential, LoginInterface<Credential>, Store>
   implements LoginServiceInterface<Credential, Store>
 {
   /**

@@ -1,8 +1,8 @@
 import { AsyncStore } from '../../store-state';
 import {
-  BaseGatewayService,
-  BaseGatewayServiceOptions
-} from './BaseGatewayService';
+  GatewayService,
+  GatewayServiceOptions
+} from './GatewayService';
 import { UserServiceConfig, UserServiceGateway } from './UserService';
 
 export function mergeUserServiceConfig<Credential, User>(
@@ -12,12 +12,12 @@ export function mergeUserServiceConfig<Credential, User>(
 }
 
 export type UserServiceOptionsType<Credential, User> =
-  | BaseGatewayServiceOptions<
+  | GatewayServiceOptions<
       Credential,
       UserServiceGateway<Credential, User>,
       string
     >
-  | BaseGatewayService<
+  | GatewayService<
       Credential,
       UserServiceGateway<Credential, User>,
       AsyncStore<Credential, string>

@@ -1,5 +1,5 @@
-import { BaseGatewayServiceOptions } from './BaseGatewayService';
+import { GatewayServiceOptions } from './GatewayService';
 
 export function createBaseGatewayService<T, Gateway>(
-  options?: BaseGatewayServiceOptions<T, Gateway>
-): BaseGatewayServiceOptions<T, Gateway> {}
+  options?: GatewayServiceOptions<T, Gateway>
+): GatewayServiceOptions<T, Gateway> {}
