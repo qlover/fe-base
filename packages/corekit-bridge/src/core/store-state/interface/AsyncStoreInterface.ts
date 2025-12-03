@@ -132,8 +132,38 @@ export interface AsyncStateAction<T> {
   getDuration(): number;
 }
 
+export interface AsyncStateStatusInterface {
+  /**
+   * Check if the async operation is successful
+   * @returns true if the async operation is successful, false otherwise
+   */
+  isSuccess(): boolean;
+  /**
+   * Check if the async operation is failed
+   * @returns true if the async operation is failed, false otherwise
+   */
+  isFailed(): boolean;
+  /**
+   * Check if the async operation is stopped
+   * @returns true if the async operation is stopped, false otherwise
+   */
+  isStopped(): boolean;
+  /**
+   * Check if the async operation is completed
+   * @returns true if the async operation is completed, false otherwise
+   */
+  isCompleted(): boolean;
+  /**
+   * Check if the async operation is pending
+   * @returns true if the async operation is pending, false otherwise
+   */
+  isPending(): boolean;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface AsyncStoreInterface<State extends AsyncStateInterface<any>> {
+export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
+  extends AsyncStateAction<State['result']>,
+    AsyncStateStatusInterface {
   /**
    * Get the underlying store instance
    * This allows reactive state access and subscription

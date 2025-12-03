@@ -1,11 +1,15 @@
-import { AsyncStore, AsyncStoreStatus } from '../../store-state';
+import { ExecutorPlugin } from '@qlover/fe-corekit';
+import { AsyncStore } from '../../store-state';
 import { LoginInterface, LoginParams } from '../interface/base/LoginInterface';
 import { RegisterInterface } from '../interface/base/RegisterInterface';
 import { UserInfoInterface } from '../interface/base/UserInfoInterface';
 import { LoginServiceInterface } from '../interface/LoginServiceInterface';
 import { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
 import { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
+import { GatewayExecutorOptions } from './GatewayExecutor';
 import { GatewayService, GatewayServiceOptions } from './GatewayService';
+import { ServiceActionType } from './ServiceAction';
+import { GatewayBasePluginType } from './GatewayBasePlguin';
 
 export interface UserServiceGateway<Credential, User>
   extends LoginInterface<Credential>,
@@ -31,14 +35,25 @@ export interface UserServiceConfig<Credential, User>
   extends Omit<
     GatewayServiceOptions<Credential, UserServiceGateway<Credential, User>>,
     'store'
-  > {
-  loginService: LoginServiceInterface<
+  > {}
+
+export type UserServicePlugin<
+  Credential,
+  User,
+  Actions extends readonly ServiceActionType[] = readonly ServiceActionType[]
+> = ExecutorPlugin<
+  GatewayExecutorOptions<
+    unknown,
     Credential,
-    AsyncStore<Credential, string>
+    UserServiceGateway<Credential, User>
+  >
+> &
+  GatewayBasePluginType<
+    Actions,
+    unknown,
+    Credential,
+    UserServiceGateway<Credential, User>
   >;
-  userInfoService: UserInfoServiceInterface<User, AsyncStore<User, string>>;
-  registerService: RegisterServiceInterface<User, AsyncStore<User, string>>;
-}
 
 export class UserService<Credential, User>
   extends GatewayService<
@@ -62,16 +77,31 @@ export class UserService<Credential, User>
       User,
       AsyncStore<User, string>
     >,
-    config: Partial<UserServiceConfig<Credential, User>>
+    options?: Omit<
+      GatewayServiceOptions<
+        Credential,
+        UserServiceGateway<Credential, User>,
+        string
+      >,
+      'store'
+    >
   ) {
-    super(serviceName, config);
+    super(serviceName, options);
+  }
+
+  override use(
+    plugin:
+      | UserServicePlugin<Credential, User>
+      | UserServicePlugin<Credential, User>[]
+  ): this {
+    return super.use(plugin);
   }
 
   /**
    * Get the user info store
    * @override
    */
-  getUserInfoStore(): AsyncStore<User, string> {
+  public getUserInfoStore(): AsyncStore<User, string> {
     return this.userInfoService.getStore();
   }
 
@@ -79,7 +109,7 @@ export class UserService<Credential, User>
    * Get the user from the user info service
    * @override
    */
-  getUser(): User | null {
+  public getUser(): User | null {
     return this.userInfoService.getUser();
   }
 
@@ -87,7 +117,7 @@ export class UserService<Credential, User>
    * Logout the user
    * @override
    */
-  logout<LogoutParams, LogoutResult = void>(
+  public logout<LogoutParams, LogoutResult = void>(
     params?: LogoutParams
   ): Promise<LogoutResult> {
     return this.loginService.logout(params);
@@ -97,7 +127,9 @@ export class UserService<Credential, User>
    * Refresh the user info
    * @override
    */
-  refreshUserInfo<Params>(params?: Params | undefined): Promise<User | null> {
+  public refreshUserInfo<Params>(
+    params?: Params | undefined
+  ): Promise<User | null> {
     return this.userInfoService.refreshUserInfo(params);
   }
 
@@ -105,7 +137,7 @@ export class UserService<Credential, User>
    * Login the user
    * @override
    */
-  login<Params extends LoginParams>(
+  public login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
     return this.loginService.login(params);
@@ -115,7 +147,7 @@ export class UserService<Credential, User>
    * Register the user
    * @override
    */
-  register<Params>(params: Params): Promise<User | null> {
+  public register<Params>(params: Params): Promise<User | null> {
     return this.registerService.register(params);
   }
 
@@ -123,7 +155,7 @@ export class UserService<Credential, User>
    * Get the user info
    * @override
    */
-  getUserInfo<Params>(params: Params): Promise<User | null> {
+  public getUserInfo<Params>(params: Params): Promise<User | null> {
     return this.userInfoService.getUserInfo(params);
   }
 
@@ -131,16 +163,12 @@ export class UserService<Credential, User>
    * Check if the user is authenticated
    * @override
    */
-  isAuthenticated(): boolean {
+  public isAuthenticated(): boolean {
     const loginStore = this.getStore();
     const userInfoStore = this.getUserInfoStore();
     return (
-      // check loading status
-      !loginStore.getLoading() &&
-      !userInfoStore.getLoading() &&
-      // check status
-      loginStore.getStatus() === AsyncStoreStatus.SUCCESS &&
-      userInfoStore.getStatus() === AsyncStoreStatus.SUCCESS &&
+      loginStore.isSuccess() &&
+      userInfoStore.isSuccess() &&
       // check result
       loginStore.getResult() !== null &&
       userInfoStore.getResult() !== null

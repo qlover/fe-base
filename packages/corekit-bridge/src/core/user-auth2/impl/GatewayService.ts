@@ -6,32 +6,16 @@ import {
 } from '../../store-state';
 import { LoggerInterface } from '@qlover/logger';
 import { BaseServiceInterface } from '../interface/BaseServiceInterface';
-import { ExecutorError } from '@qlover/fe-corekit';
+import {
+  GatewayExecutor,
+  GatewayExecutorBaseOptions,
+  GatewayExecutorOptions
+} from './GatewayExecutor';
+import { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface GatewayServiceOptions<T, Gateway, Key = string>
-  extends AsyncStoreOptions<Key, AsyncStoreStateInterface<T>> {
-  /**
-   * Store instance for the service
-   *
-   * @default `AsyncStore<T, string>`
-   */
-  store?: AsyncStore<T, Key>;
-
-  /**
-   * Gateway instance for the service
-   * @default `null`
-   */
-  gateway?: Gateway;
-
-  /**
-   * Logger instance for the service
-   *
-   * - Future use logger to record the log of service execution
-   *
-   * @default `null`
-   */
-  logger?: LoggerInterface;
-}
+  extends GatewayExecutorBaseOptions<T, Gateway, Key>,
+    AsyncStoreOptions<Key, AsyncStoreStateInterface<T>> {}
 
 type ExecuteFn<Params, Result, Gateway> = (
   params: Params,
@@ -39,15 +23,23 @@ type ExecuteFn<Params, Result, Gateway> = (
   action: keyof Gateway
 ) => Promise<Result | null>;
 
+/**
+ * GatewayService is a base class for all gateway services
+ *
+ * - It is used to execute the gateway actions
+ * - It is used to execute the gateway actions with plugins
+ * - It is used to execute the gateway actions with plugins
+ */
 export abstract class GatewayService<
   T,
-  Gateway,
+  Gateway extends object,
   Store extends AsyncStore<T, string>
 > implements BaseServiceInterface<Store, Gateway>
 {
   protected readonly store: Store;
   protected readonly gateway: Gateway | null = null;
   protected readonly logger?: LoggerInterface;
+  protected readonly executor: GatewayExecutor<T, Gateway>;
 
   constructor(
     readonly serviceName: string,
@@ -56,6 +48,7 @@ export abstract class GatewayService<
     this.store = createStore(options) as Store;
     this.gateway = options?.gateway ?? null;
     this.logger = options?.logger;
+    this.executor = new GatewayExecutor<T, Gateway>();
   }
 
   /**
@@ -78,12 +71,32 @@ export abstract class GatewayService<
     return this.gateway;
   }
 
+  /**
+   * Register a plugin with the service
+   *
+   * @param plugin - The plugin to register with the service
+   * @returns The GatewayService instance
+   */
+  public use<
+    Plugin extends ExecutorPlugin<GatewayExecutorOptions<unknown, T, Gateway>>
+  >(plugin: Plugin | Plugin[]): this {
+    if (Array.isArray(plugin)) {
+      plugin.forEach((p) => this.executor.use(p));
+      return this;
+    }
+
+    this.executor.use(plugin);
+    return this;
+  }
+
   protected createDefaultFn(
     action: keyof Gateway
   ): ExecuteFn<unknown, unknown, Gateway> {
     if (
       typeof action === 'string' &&
-      this.gateway &&
+      typeof this.gateway === 'object' &&
+      // is not null or undefined
+      this.gateway != null &&
       typeof this.gateway[action] === 'function'
     ) {
       return async (params, _gateway, _action) =>
@@ -95,6 +108,23 @@ export abstract class GatewayService<
     }
 
     return () => Promise.resolve(null);
+  }
+
+  protected createServiceOptions<Params>(
+    action: keyof Gateway,
+    params: Params
+  ): GatewayExecutorOptions<Params, T, Gateway> {
+    return {
+      // Do not allow to modify actionName, this is to ensure the stability of the executor
+      get actionName() {
+        return String(action);
+      },
+      serviceName: this.serviceName,
+      store: this.store,
+      gateway: this.gateway,
+      logger: this.logger,
+      params: params
+    };
   }
 
   /**
@@ -115,34 +145,17 @@ export abstract class GatewayService<
     params: Params,
     fn?: ExecuteFn<Params, Result, Gateway>
   ): Promise<Result> {
-    this.store.start();
+    const options = this.createServiceOptions(action, params);
+    const computedFn = fn ?? this.createDefaultFn(action);
 
-    try {
-      const computedFn = fn ?? this.createDefaultFn(action);
+    return await this.executor.exec(options, async (context) => {
+      await this.executor.runBeforeAction(context);
 
       const result = await computedFn(params, this.gateway, action);
 
-      if (result == null) {
-        throw new ExecutorError(
-          'SERVICE_RESULT_NULL',
-          `${this.serviceName}: ${String(action)} - Result is null`
-        );
-      }
-
-      this.store.success(result as T);
-
-      if (this.logger) {
-        const ms = this.store.getDuration();
-        this.logger.debug(
-          `${this.serviceName}: ${String(action)} - success(${ms}ms)`,
-          result
-        );
-      }
+      await this.executor.runSuccessAction(context);
 
       return result as Result;
-    } catch (error) {
-      this.store.failed(error);
-      throw error;
-    }
+    });
   }
 }

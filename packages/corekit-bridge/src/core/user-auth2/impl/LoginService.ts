@@ -5,6 +5,7 @@ import type {
 } from '../interface/base/LoginInterface';
 import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
 import { GatewayService } from './GatewayService';
+import { ServiceAction } from './ServiceAction';
 
 /**
  * Login service implementation
@@ -71,7 +72,7 @@ export class LoginService<
   public async login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
-    return this.execute('login', params);
+    return this.execute(ServiceAction.LOGIN, params);
   }
 
   /**

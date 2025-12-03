@@ -2,6 +2,7 @@ import { AsyncStore } from '../../store-state';
 import type { UserInfoInterface } from '../interface/base/UserInfoInterface';
 import type { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
 import { GatewayService } from './GatewayService';
+import { ServiceAction } from './ServiceAction';
 
 export class UserInfoService<User, Store extends AsyncStore<User, string>>
   extends GatewayService<User, UserInfoInterface<User>, Store>
@@ -12,10 +13,10 @@ export class UserInfoService<User, Store extends AsyncStore<User, string>>
   }
 
   async getUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.execute('getUserInfo', params);
+    return this.execute(ServiceAction.GET_USER_INFO, params);
   }
 
   async refreshUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.execute('refreshUserInfo', params);
+    return this.execute(ServiceAction.REFRESH_USER, params);
   }
 }

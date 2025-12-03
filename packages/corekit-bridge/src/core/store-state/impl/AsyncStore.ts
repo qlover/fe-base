@@ -1,6 +1,5 @@
 import { KeyStorageInterface } from '@qlover/fe-corekit';
 import {
-  AsyncStateAction,
   AsyncStateInterface,
   AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
@@ -38,9 +37,7 @@ export interface AsyncStoreOptions<
 
 export class AsyncStore<T, Key>
   extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key>
-  implements
-    AsyncStoreInterface<AsyncStoreStateInterface<T>>,
-    AsyncStateAction<T>
+  implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
 {
   constructor(options?: AsyncStoreOptions<Key, AsyncStoreStateInterface<T>>) {
     super(() => createState(options), options?.storage);
@@ -218,5 +215,48 @@ export class AsyncStore<T, Key>
     }
 
     return 0;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  isSuccess(): boolean {
+    return !this.getLoading() && this.getStatus() === AsyncStoreStatus.SUCCESS;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  isFailed(): boolean {
+    return !this.getLoading() && this.getStatus() === AsyncStoreStatus.FAILED;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  isStopped(): boolean {
+    return !this.getLoading() && this.getStatus() === AsyncStoreStatus.STOPPED;
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  isCompleted(): boolean {
+    return (
+      !this.getLoading() &&
+      (this.isSuccess() || this.isFailed() || this.isStopped())
+    );
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  isPending(): boolean {
+    return this.getLoading() && this.getStatus() === AsyncStoreStatus.PENDING;
   }
 }

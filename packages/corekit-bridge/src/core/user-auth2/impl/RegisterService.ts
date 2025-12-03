@@ -2,6 +2,7 @@ import { AsyncStore } from '../../store-state';
 import type { RegisterInterface } from '../interface/base/RegisterInterface';
 import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
 import { GatewayService } from './GatewayService';
+import { ServiceAction } from './ServiceAction';
 
 export class RegisterService<
     Result,
@@ -21,6 +22,6 @@ export class RegisterService<
   }
 
   public async register<Params>(params: Params): Promise<Result | null> {
-    return this.execute('register', params);
+    return this.execute(ServiceAction.REGISTER, params);
   }
 }
