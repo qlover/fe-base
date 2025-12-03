@@ -1,4 +1,4 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import { SyncStorageInterface } from '@qlover/fe-corekit';
 import {
   AsyncStateInterface,
   AsyncStoreInterface
@@ -18,12 +18,16 @@ export interface AsyncStoreStateInterface<T>
 
 export interface AsyncStoreOptions<
   Key,
-  State extends AsyncStoreStateInterface<unknown>
+  State extends
+    AsyncStoreStateInterface<unknown> = AsyncStoreStateInterface<unknown>,
+  Opt = unknown
 > {
   /**
-   * Credential storage implementation
+   * Storage implementation for persisting state
    */
-  storage?: KeyStorageInterface<Key, State> | null;
+  storage?: SyncStorageInterface<Key, Opt> | null;
+
+  storageKey: Key;
 
   /**
    * Create a new state instance
@@ -35,12 +39,42 @@ export interface AsyncStoreOptions<
   defaultState?: (defaultStorageState?: State) => State;
 }
 
-export class AsyncStore<T, Key>
-  extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key>
+export class AsyncStore<T, Key, Opt = unknown>
+  extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key, Opt>
   implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
 {
-  constructor(options?: AsyncStoreOptions<Key, AsyncStoreStateInterface<T>>) {
-    super(() => createState(options), options?.storage);
+  protected storageKey: Key | null = null;
+
+  constructor(
+    options?: AsyncStoreOptions<Key, AsyncStoreStateInterface<T>, Opt>
+  ) {
+    super(() => createState(options), options?.storage ?? null);
+    this.storageKey = options?.storageKey ?? null;
+  }
+
+  override restore<R = AsyncStoreStateInterface<T>>(): R | void {
+    if (!this.storage || !this.storageKey) {
+      return;
+    }
+
+    try {
+      const value = this.storage.getItem(this.storageKey) as T | null;
+      if (value !== null && value !== undefined) {
+        this.success(value);
+      }
+    } catch {
+      // ignore error
+    }
+
+    return this.getState() as R;
+  }
+
+  override persist(_state?: AsyncStoreStateInterface<T> | undefined): void {
+    if (!this.storage || !this.storageKey) {
+      return;
+    }
+
+    this.storage.setItem(this.storageKey, this.getState().result as T);
   }
 
   /**
