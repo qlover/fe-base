@@ -1,8 +1,8 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
 import { AsyncStore } from '../../store-state';
-import { LoginInterface, LoginParams } from '../interface/base/LoginInterface';
-import { RegisterInterface } from '../interface/base/RegisterInterface';
-import { UserInfoInterface } from '../interface/base/UserInfoInterface';
+import { LoginInterface, LoginParams } from '../interface/LoginInterface';
+import { RegisterInterface } from '../interface/RegisterInterface';
+import { UserInfoInterface } from '../interface/UserInfoInterface';
 import { LoginServiceInterface } from '../interface/LoginServiceInterface';
 import { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
 import { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';

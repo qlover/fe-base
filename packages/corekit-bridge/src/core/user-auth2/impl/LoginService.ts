@@ -1,10 +1,7 @@
 import { AsyncStore } from '../../store-state';
-import type {
-  LoginInterface,
-  LoginParams
-} from '../interface/base/LoginInterface';
+import type { LoginInterface, LoginParams } from '../interface/LoginInterface';
 import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
-import { GatewayService } from './GatewayService';
+import { GatewayService, GatewayServiceOptions } from './GatewayService';
 import { ServiceAction } from './ServiceAction';
 
 /**
@@ -33,6 +30,17 @@ export class LoginService<
   extends GatewayService<Credential, LoginInterface<Credential>, Store>
   implements LoginServiceInterface<Credential, Store>
 {
+  constructor(
+    serviceName: string,
+    options?: GatewayServiceOptions<
+      Credential,
+      LoginInterface<Credential>,
+      string
+    >
+  ) {
+    super(serviceName, options);
+  }
+
   /**
    * Get the credential from the store
    *

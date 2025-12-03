@@ -2,7 +2,7 @@ import {
   AsyncStoreInterface,
   AsyncStoreStateInterface
 } from '../../store-state';
-import { LoginInterface } from './base/LoginInterface';
+import { LoginInterface } from './LoginInterface';
 import { BaseServiceInterface } from './BaseServiceInterface';
 
 export interface LoginServiceInterface<

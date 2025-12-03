@@ -1,5 +1,5 @@
 import { AsyncStore } from '../../store-state';
-import type { UserInfoInterface } from '../interface/base/UserInfoInterface';
+import type { UserInfoInterface } from '../interface/UserInfoInterface';
 import type { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
 import { GatewayService } from './GatewayService';
 import { ServiceAction } from './ServiceAction';

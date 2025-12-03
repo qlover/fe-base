@@ -58,6 +58,58 @@ export type GatewayBasePluginType<
       }>
     : never;
 
+/**
+ * Base plugin for gateway actions
+ *
+ * 这是一个最基本的网关服务插件，它只提供了最基本的网关服务插件功能
+ *
+ * - onBefore: 在执行 action 之前执行将store置为开始
+ * - onSuccess: 在执行 action 成功之后执行将store置为成功
+ * - onError: 在执行 action 失败之后执行将store置为失败
+ *
+ * 如果需要扩展功能你可以渲染继承它或者单独实现
+ *
+ * @example 扩展插件
+ *
+ * ```typescript
+ * class MyGatewayPlugin extends GatewayBasePlguin<Params, T, Gateway> {
+ *   readonly pluginName = 'MyGatewayPlugin';
+ *
+ *   async onBefore(
+ *     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
+ *   ): Promise<void> {
+ *
+ *     // your code here
+ *   }
+ * }
+ * ```
+ *
+ * @example 单独实现插件
+ *
+ * ```typescript
+ * class MyGatewayPlugin implements ExecutorPlugin<GatewayExecutorOptions<Params, T, Gateway>> {
+ *   readonly pluginName = 'MyGatewayPlugin';
+ *
+ *   async onBefore(
+ *     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
+ *   ): Promise<void> {
+ *     // your code here
+ *   }
+ *
+ *   async onSuccess(
+ *     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
+ *   ): Promise<void> {
+ *     // your code here
+ *   }
+ *
+ *   async onError(
+ *     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
+ *   ): Promise<void> {
+ *     // your code here
+ *   }
+ * }
+ * ```
+ */
 export class GatewayBasePlguin<Params, T, Gateway>
   implements ExecutorPlugin<GatewayExecutorOptions<Params, T, Gateway>>
 {

@@ -1,5 +1,5 @@
 import { AsyncStore } from '../../store-state';
-import type { RegisterInterface } from '../interface/base/RegisterInterface';
+import type { RegisterInterface } from '../interface/RegisterInterface';
 import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
 import { GatewayService } from './GatewayService';
 import { ServiceAction } from './ServiceAction';

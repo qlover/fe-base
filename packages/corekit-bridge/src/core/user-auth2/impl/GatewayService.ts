@@ -43,7 +43,7 @@ export abstract class GatewayService<
 
   constructor(
     readonly serviceName: string,
-    options?: GatewayServiceOptions<T, Gateway>
+    options?: GatewayServiceOptions<T, Gateway, string>
   ) {
     this.store = createStore(options) as Store;
     this.gateway = options?.gateway ?? null;

@@ -2,7 +2,7 @@ import {
   AsyncStoreInterface,
   AsyncStoreStateInterface
 } from '../../store-state';
-import { UserInfoInterface } from './base/UserInfoInterface';
+import { UserInfoInterface } from './UserInfoInterface';
 import { BaseServiceInterface } from './BaseServiceInterface';
 
 export interface UserInfoGetter<User> {
