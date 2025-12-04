@@ -469,7 +469,7 @@ export class UserService<Credential, User>
    * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
    * ```
    */
-  public logout<LogoutParams, LogoutResult = void>(
+  public logout<LogoutParams = unknown, LogoutResult = void>(
     params?: LogoutParams
   ): Promise<LogoutResult> {
     return this.loginService.logout(params);

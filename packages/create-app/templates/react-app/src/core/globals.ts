@@ -1,11 +1,7 @@
 // ! global variables, don't import any dependencies and don't have side effects
 import { loggerStyles } from '@config/common';
-import {
-  ColorFormatter,
-  ConsoleHandler,
-  CookieStorage,
-  Logger
-} from '@qlover/corekit-bridge';
+import { ColorFormatter, CookieStorage } from '@qlover/corekit-bridge';
+import { Logger, ConsoleHandler } from '@qlover/logger';
 import {
   Base64Serializer,
   JSONSerializer,
@@ -39,9 +35,9 @@ export const JSON = new JSONSerializer();
  */
 export const localStorage = new SyncStorage(new ObjectStorage(), [
   JSON,
-  new Base64Serializer(),
+  appConfig.isProduction ? new Base64Serializer() : undefined,
   window.localStorage as unknown as SyncStorageInterface<string>
-]);
+].filter(Boolean) as any[]);
 
 export const localStorageEncrypt = localStorage;
 

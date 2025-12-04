@@ -1,3 +1,4 @@
+import type { LoginParams } from '@qlover/corekit-bridge';
 import type { UserApiTransaction } from './UserApiBootstarp';
 
 export type UserInfo = {
@@ -44,22 +45,26 @@ export type UserApiGetUserInfoTransaction = UserApiTransaction<
   UserInfo
 >;
 
+export type UserCredential = {
+  token: string;
+};
+
 export type UserApiLoginTransaction = UserApiTransaction<
-  { username: string; password: string },
-  {
-    token: string;
-  }
+  LoginParams & { username?: string },
+  UserCredential
 >;
 
 export type UserApiTestApiCatchResultTransaction = UserApiGetRandomUser;
 
+export interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+}
+
 export type UserApiRegisterTransaction = UserApiTransaction<
-  {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    agreeToTerms: boolean;
-  },
-  UserApiTransaction['response']['data']
+  RegisterFormData,
+  UserInfo
 >;

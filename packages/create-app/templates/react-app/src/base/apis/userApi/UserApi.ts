@@ -6,20 +6,20 @@ import {
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { AppError } from '@/base/cases/AppError';
-import { RegisterFormData } from '@/base/services/UserService';
 import { UserApiAdapter } from './UserApiAdapter';
 import { UserApiConfig } from './UserApiBootstarp';
 import {
   GetIpInfoTransaction,
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction,
+  UserApiRegisterTransaction,
   UserApiTestApiCatchResultTransaction,
-  UserInfo
+  UserInfo,
+  UserCredential
 } from './UserApiType';
 import type {
-  LoginResponseData,
-  UserAuthApiInterface,
-  UserAuthStoreInterface
+  UserAuthStoreInterface,
+  UserServiceGateway
 } from '@qlover/corekit-bridge';
 
 /**
@@ -32,7 +32,7 @@ import type {
 @injectable()
 export class UserApi
   extends RequestTransaction<UserApiConfig>
-  implements UserAuthApiInterface<UserInfo>
+  implements UserServiceGateway<UserCredential, UserInfo>
 {
   protected store: UserAuthStoreInterface<UserInfo> | null = null;
 
@@ -83,9 +83,9 @@ export class UserApi
    * @param params
    * @returns
    */
-  async login(
-    params: UserApiLoginTransaction['data']
-  ): Promise<LoginResponseData> {
+  async login<Params extends UserApiLoginTransaction['data']>(
+    params: Params
+  ): Promise<UserCredential> {
     const response = await this.post<UserApiLoginTransaction>(
       '/api/login',
       params
@@ -108,16 +108,25 @@ export class UserApi
    * @returns
    */
   register(
-    params: RegisterFormData
-  ): Promise<UserApiLoginTransaction['response']> {
-    return this.post<UserApiLoginTransaction>('/api/register', params);
+    params: UserApiRegisterTransaction['data']
+  ): Promise<UserApiRegisterTransaction['response']['data']> {
+    // @ts-expect-error - TODO: implement
+    return this.post<UserApiRegisterTransaction>('/api/register', params);
   }
 
   /**
    * @override
    * @returns
    */
-  logout(): Promise<void> {
+  async refreshUserInfo(): Promise<UserInfo> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  logout(): Promise<any> {
     return Promise.resolve();
   }
 

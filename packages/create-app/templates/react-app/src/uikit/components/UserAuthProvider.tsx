@@ -6,7 +6,7 @@ import { useIOC } from '../hooks/useIOC';
 export function UserAuthProvider({ children }: { children: React.ReactNode }) {
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
 
-  useStore(userService.store);
+  useStore(userService.getStore());
 
   if (!userService.isAuthenticated()) {
     return <Loading data-testid="UserAuthProvider" fullscreen />;

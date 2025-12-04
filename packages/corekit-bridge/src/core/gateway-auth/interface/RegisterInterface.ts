@@ -96,5 +96,5 @@ export interface RegisterInterface<Result> {
    * }
    * ```
    */
-  register<Params>(params: Params): Promise<Result | null>;
+  register(params: unknown): Promise<Result | null>;
 }

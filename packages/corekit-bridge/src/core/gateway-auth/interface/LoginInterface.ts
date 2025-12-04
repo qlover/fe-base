@@ -130,9 +130,7 @@ export interface LoginInterface<CredentialType> {
    * });
    * ```
    */
-  login<Params extends LoginParams>(
-    params: Params
-  ): Promise<CredentialType | null>;
+  login(params: LoginParams): Promise<CredentialType | null>;
 
   /**
    * Logout current user
@@ -161,7 +159,5 @@ export interface LoginInterface<CredentialType> {
    * >({ revokeAll: true });
    * ```
    */
-  logout<LogoutParams, LogoutResult = void>(
-    params?: LogoutParams
-  ): Promise<LogoutResult>;
+  logout<Parmas = unknown, Result = void>(params?: Parmas): Promise<Result>;
 }

@@ -58,7 +58,10 @@ import { ServiceAction } from './ServiceAction';
  * });
  * ```
  */
-export class UserInfoService<User, Store extends AsyncStore<User, string>>
+export class UserInfoService<
+    User,
+    Store extends AsyncStore<User, string> = AsyncStore<User, string>
+  >
   extends GatewayService<User, UserInfoInterface<User>, Store>
   implements UserInfoServiceInterface<User, Store>
 {

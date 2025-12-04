@@ -71,7 +71,7 @@ export interface UserInfoInterface<User> {
    * const user = await userAuthService.getUserInfo({ token: 'abc123' });
    * ```
    */
-  getUserInfo<Params>(params?: Params): Promise<User | null>;
+  getUserInfo(params?: unknown): Promise<User | null>;
 
   /**
    * Refresh user information

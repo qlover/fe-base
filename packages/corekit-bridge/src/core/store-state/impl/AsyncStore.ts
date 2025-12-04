@@ -117,7 +117,7 @@ export interface AsyncStoreOptions<T, Key, Opt = unknown> {
    * });
    * ```
    */
-  defaultState<State extends AsyncStoreStateInterface<T>>(
+  defaultState?<State extends AsyncStoreStateInterface<T>>(
     storage?: SyncStorageInterface<Key, Opt> | null,
     storageKey?: Key | null
   ): State | null;

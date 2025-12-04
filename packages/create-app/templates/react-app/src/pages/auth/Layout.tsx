@@ -7,10 +7,11 @@ import { BaseHeader } from '../../uikit/components/BaseHeader';
 
 export default function Layout() {
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
-  useStore(userService.store);
+  const state = useStore(userService.getStore());
 
   useI18nGuard();
 
+  console.log(state);
   // If user is authenticated, redirect to home page
   if (userService.isAuthenticated()) {
     return <Navigate data-testid="Layout" to="/" replace />;
