@@ -166,6 +166,3 @@ export * from './theme-service';
 export * from './thread';
 export * from './ui';
 export * from './user-auth';
-
-// export all the dependencies
-export * from '@qlover/logger';
