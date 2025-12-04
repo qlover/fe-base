@@ -224,6 +224,9 @@ The `@module` tag should:
 /**
  * Manages user authentication and session handling
  *
+ * A brief description of the module's core functions, explaining what it can do and what it is,
+ * This is a service management system based on JWT, supporting session and permission verification ..
+ *
  * Core concept:
  * Centralized authentication service handling user login, session management,
  * and permission validation
