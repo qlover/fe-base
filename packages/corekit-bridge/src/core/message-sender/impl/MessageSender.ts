@@ -160,7 +160,8 @@ const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
  * ```
  */
 export class MessageSender<
-  MessageType extends MessageStoreMsg<unknown, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageType extends MessageStoreMsg<any, any>
 > implements MessageSenderInterface<MessageType>
 {
   /** Error ID for message sender errors */

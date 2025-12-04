@@ -3,12 +3,12 @@ import type {
   MessageStreamEvent
 } from './MessageGetwayInterface';
 import type {
-  MessageInterface,
   MessagesStateInterface,
   MessagesStoreInterface
 } from './MessagesStoreInterface';
 import type { MessageSenderContext } from '../impl/MessageSenderExecutor';
 import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import { MessageStoreMsg } from '../impl/MessageStore';
 
 /**
  * Message sender interface for managing message transmission
@@ -46,7 +46,10 @@ import type { ExecutorPlugin } from '@qlover/fe-corekit';
  * await sender.send({ content: 'Hello' });
  * ```
  */
-export interface MessageSenderInterface<Message extends MessageInterface> {
+export interface MessageSenderInterface<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Message extends MessageStoreMsg<any, any>
+> {
   /**
    * Get the message store instance
    *
@@ -121,7 +124,7 @@ export interface MessageSenderInterface<Message extends MessageInterface> {
    *   .use(transformPlugin);
    * ```
    */
-  use<T extends Message>(plugin: ExecutorPlugin<MessageSenderContext<T>>): this;
+  use(plugin: ExecutorPlugin<MessageSenderContext<Message>>): this;
 
   /**
    * Send a message through the sender
