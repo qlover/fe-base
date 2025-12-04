@@ -1,9 +1,4 @@
-import {
-  AsyncStore,
-  AsyncStoreOptions,
-  AsyncStoreStateInterface,
-  createStore
-} from '../../store-state';
+import { AsyncStore, AsyncStoreOptions, createStore } from '../../store-state';
 import { LoggerInterface } from '@qlover/logger';
 import { BaseServiceInterface } from '../interface/BaseServiceInterface';
 import {
@@ -15,7 +10,7 @@ import { ExecutorPlugin } from '@qlover/fe-corekit';
 
 export interface GatewayServiceOptions<T, Gateway, Key = string>
   extends GatewayExecutorBaseOptions<T, Gateway, Key>,
-    AsyncStoreOptions<Key, AsyncStoreStateInterface<T>> {}
+    AsyncStoreOptions<T, Key> {}
 
 type ExecuteFn<Params, Result, Gateway> = (
   params: Params,

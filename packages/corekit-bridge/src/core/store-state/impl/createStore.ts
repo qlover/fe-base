@@ -4,14 +4,13 @@ import {
   AsyncStoreStateInterface
 } from './AsyncStore';
 import { AsyncStoreInterface } from '../interface/AsyncStoreInterface';
-import { createStorage, TokenStorageValueType } from './createStorage';
 
 /**
  * Type for store parameter - can be an AsyncStoreInterface instance or configuration options
  */
-export type CreateAsyncStoreType<T, Key> =
+export type CreateAsyncStoreType<T, Key, Opt = unknown> =
   | AsyncStoreInterface<AsyncStoreStateInterface<T>>
-  | AsyncStoreOptions<Key, AsyncStoreStateInterface<T>>;
+  | AsyncStoreOptions<T, Key, Opt>;
 
 /**
  * Type guard to check if value is an AsyncStoreInterface instance
@@ -75,8 +74,8 @@ function isAsyncStoreInterface<T>(
  * // Using default options
  * const store = createStore<User, string>();
  */
-export function createStore<T, Key = string>(
-  store?: CreateAsyncStoreType<T, Key>
+export function createStore<T, Key, Opt>(
+  store?: CreateAsyncStoreType<T, Key, Opt>
 ): AsyncStoreInterface<AsyncStoreStateInterface<T>> {
   // If store is already an AsyncStoreInterface instance, return it directly
   if (isAsyncStoreInterface<T>(store)) {
@@ -85,32 +84,9 @@ export function createStore<T, Key = string>(
 
   // If store is undefined or null, create a new AsyncStore with default options
   if (store == null) {
-    return new AsyncStore<T, Key>();
+    return new AsyncStore<T, Key, Opt>();
   }
 
-  // Parse store options
-  const storeOptions = store as AsyncStoreOptions<
-    Key,
-    AsyncStoreStateInterface<T>
-  >;
-  const { storage: storageConfig, defaultState } = storeOptions;
-
-  // Parse storage configuration
-  const storage = createStorage<Key, AsyncStoreStateInterface<T>>(
-    storageConfig as
-      | TokenStorageValueType<Key, AsyncStoreStateInterface<T>>
-      | false
-  );
-
-  // Prepare AsyncStoreOptions with correct types
-  const asyncStoreOptions: AsyncStoreOptions<
-    Key,
-    AsyncStoreStateInterface<T>
-  > = {
-    storage,
-    defaultState
-  };
-
   // Create AsyncStore (default implementation) with the options
-  return new AsyncStore<T, Key>(asyncStoreOptions);
+  return new AsyncStore<T, Key, Opt>(store);
 }

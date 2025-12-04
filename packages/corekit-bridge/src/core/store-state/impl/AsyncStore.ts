@@ -16,18 +16,16 @@ export interface AsyncStoreStateInterface<T>
   status: AsyncStoreStatusType;
 }
 
-export interface AsyncStoreOptions<
-  Key,
-  State extends
-    AsyncStoreStateInterface<unknown> = AsyncStoreStateInterface<unknown>,
-  Opt = unknown
-> {
+export interface AsyncStoreOptions<T, Key, Opt = unknown> {
   /**
    * Storage implementation for persisting state
    */
   storage?: SyncStorageInterface<Key, Opt> | null;
 
-  storageKey: Key;
+  /**
+   * Storage key for persisting state
+   */
+  storageKey?: Key | null;
 
   /**
    * Create a new state instance
@@ -36,7 +34,10 @@ export interface AsyncStoreOptions<
    * - 如果未提供 storage 选项，则 defaultState 参数是 undefined
    * - 如果 defaultState 参数是函数，则该函数返回的值作为初始状态
    */
-  defaultState?: (defaultStorageState?: State) => State;
+  defaultState<State extends AsyncStoreStateInterface<T>>(
+    storage?: SyncStorageInterface<Key, Opt> | null,
+    storageKey?: Key | null
+  ): State | null;
 }
 
 export class AsyncStore<T, Key, Opt = unknown>
@@ -45,28 +46,60 @@ export class AsyncStore<T, Key, Opt = unknown>
 {
   protected storageKey: Key | null = null;
 
-  constructor(
-    options?: AsyncStoreOptions<Key, AsyncStoreStateInterface<T>, Opt>
-  ) {
+  /**
+   * 该属性用于控制持久化存储的结果类型
+   *
+   * - 如果为 true，则 restore 方法返回的结果类型为 T，也就是result的值
+   * - 如果为 false，则 restore 方法返回的结果类型为 AsyncStoreStateInterface<T>，也就是整个状态
+   *
+   * **但是该属性目前是一个内部测试属性**
+   *
+   * @default true
+   */
+  protected storageResult: boolean = true;
+
+  constructor(options?: AsyncStoreOptions<T, Key, Opt>) {
     super(() => createState(options), options?.storage ?? null);
     this.storageKey = options?.storageKey ?? null;
   }
 
-  override restore<R = AsyncStoreStateInterface<T>>(): R | void {
+  /**
+   * Restore state from storage
+   *
+   * Returns the result value (T) if storageResult is true, otherwise returns the full state.
+   * The actual return type depends on the storageResult property value at runtime.
+   *
+   * @template R - The return type (defaults to T | AsyncStoreStateInterface<T>)
+   * @returns The restored value or state, or null if not available
+   */
+  override restore<R = T | AsyncStoreStateInterface<T>>(): R | null {
     if (!this.storage || !this.storageKey) {
-      return;
+      return null;
     }
 
     try {
-      const value = this.storage.getItem(this.storageKey) as T | null;
-      if (value !== null && value !== undefined) {
-        this.success(value);
+      if (this.storageResult) {
+        // When storageResult is true, storage contains only the result value (T)
+        const value = this.storage.getItem(this.storageKey) as T | null;
+        if (value !== null && value !== undefined) {
+          this.updateState({ result: value }, { persist: false });
+          return this.getResult() as R;
+        }
+      } else {
+        // When storageResult is false, storage contains the full state object
+        const state = this.storage.getItem(
+          this.storageKey
+        ) as AsyncStoreStateInterface<T> | null;
+        if (state !== null && state !== undefined) {
+          this.updateState(state, { persist: false });
+          return this.getState() as R;
+        }
       }
     } catch {
       // ignore error
     }
 
-    return this.getState() as R;
+    return null;
   }
 
   override persist(_state?: AsyncStoreStateInterface<T> | undefined): void {
@@ -74,7 +107,16 @@ export class AsyncStore<T, Key, Opt = unknown>
       return;
     }
 
-    this.storage.setItem(this.storageKey, this.getState().result as T);
+    if (this.storageResult) {
+      // Store only the result value (T)
+      const result = this.getResult();
+      if (result !== null) {
+        this.storage.setItem(this.storageKey, result);
+      }
+    } else {
+      // Store the full state object
+      this.storage.setItem(this.storageKey, this.getState());
+    }
   }
 
   /**
@@ -153,12 +195,16 @@ export class AsyncStore<T, Key, Opt = unknown>
   /**
    * @override
    * @param state
+   * @param options - Optional configuration for emit behavior
    */
-  updateState<S extends AsyncStateInterface<T>>(state: Partial<S>): void {
+  updateState<S extends AsyncStateInterface<T>>(
+    state: Partial<S>,
+    options?: { persist?: boolean }
+  ): void {
     const newState = this.cloneState(
       state as Partial<AsyncStoreStateInterface<T>>
     );
-    this.emit(newState);
+    this.emit(newState, options);
   }
 
   /**

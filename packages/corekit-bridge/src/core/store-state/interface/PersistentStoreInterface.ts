@@ -10,8 +10,12 @@ export interface PersistentStoreStateInterface extends StoreStateInterface {
   /**
    * Optional expiration timestamp for the stored state
    * Used by storage implementations to determine if the state should be considered expired
+   *
+   * - number: Unix timestamp in milliseconds
+   * - Date: Date object representing expiration time
+   * - null: Explicitly no expiration
    */
-  expires?: unknown;
+  expires?: number | Date | null;
 }
 
 /**
@@ -23,7 +27,7 @@ export interface PersistentStoreStateInterface extends StoreStateInterface {
  * Main purpose: Enable state persistence with flexible storage backends
  *
  * @template T - The state type that extends PersistentStoreStateInterface
- * @template Key - The type of keys used in storage (defaults to string)
+ * @template Key - The type of keys used in storage (e.g., string, number, symbol, or custom types)
  * @template Opt - The type of options for storage operations (defaults to unknown)
  *
  * @example
@@ -40,8 +44,12 @@ export interface PersistentStoreStateInterface extends StoreStateInterface {
  *
  *   restore(): MyStoreState | null {
  *     if (!this.storage) return null;
- *     const value = this.storage.getItem('my-state');
- *     return value ? new MyStoreState(value) : null;
+ *     try {
+ *       const value = this.storage.getItem('my-state');
+ *       return value ? new MyStoreState(value) : null;
+ *     } catch {
+ *       return null;
+ *     }
  *   }
  *
  *   persist(state?: MyStoreState): void {
@@ -59,9 +67,14 @@ export abstract class PersistentStoreInterface<
 > extends StoreInterface<T> {
   constructor(
     stateFactory: () => T,
-    protected readonly storage: SyncStorageInterface<Key, Opt> | null = null
+    protected readonly storage: SyncStorageInterface<Key, Opt> | null = null,
+    initRestore: boolean = true
   ) {
     super(stateFactory);
+
+    if (initRestore) {
+      this.restore();
+    }
   }
 
   /**
@@ -78,11 +91,36 @@ export abstract class PersistentStoreInterface<
    *
    * @override
    * @param state - The new state to emit
+   * @param options - Optional configuration for emit behavior
+   * @param options.persist - Whether to persist state to storage (default: true)
+   *                          Set to false to skip persistence, useful during restore operations
+   *
+   * Note: If persist fails (e.g., storage quota exceeded, permission denied),
+   * the state update will still succeed, but the persistence will be silently ignored.
+   * Subclasses can override this behavior if needed.
+   *
+   * @example
+   * ```typescript
+   * // Normal emit with automatic persistence
+   * this.emit(newState);
+   *
+   * // Emit without persistence (e.g., during restore)
+   * this.emit(restoredState, { persist: false });
+   * ```
    */
-  override emit(state: T): void {
+  override emit(state: T, options?: { persist?: boolean }): void {
     super.emit(state);
-    if (this.storage) {
+
+    const shouldPersist = options?.persist !== false && this.storage;
+    if (!shouldPersist) {
+      return;
+    }
+
+    try {
       this.persist(state);
+    } catch {
+      // Silently ignore persistence errors to prevent state update failures
+      // Subclasses can override this method to handle errors differently if needed
     }
   }
 
@@ -92,10 +130,35 @@ export abstract class PersistentStoreInterface<
    * This method should be implemented by subclasses to define how state is restored from storage.
    * It will be called when the store needs to restore state from persistent storage.
    *
-   * If storage is not configured, this method should return null.
+   * If storage is not configured or no state is found, this method should return null.
+   * If restoration succeeds, return the restored state of type R.
    *
+   * Note: If you need to update the state during restore, you can call emit() with
+   * { persist: false } option to update state without triggering automatic persistence.
+   *
+   * @template R - The type of restored state (defaults to T)
+   * @returns The restored state or null if not available
+   *
+   * @example
+   * ```typescript
+   * restore(): MyStoreState | null {
+   *   if (!this.storage) return null;
+   *   try {
+   *     const value = this.storage.getItem('my-state');
+   *     if (value) {
+   *       const restoredState = new MyStoreState(value);
+   *       // Update state without triggering persist
+   *       this.emit(restoredState, { persist: false });
+   *       return restoredState;
+   *     }
+   *   } catch {
+   *     return null;
+   *   }
+   *   return null;
+   * }
+   * ```
    */
-  abstract restore<R = unknown>(): R | void;
+  abstract restore<R = T>(): R | null;
 
   /**
    * Persist current state to storage
@@ -105,8 +168,13 @@ export abstract class PersistentStoreInterface<
    *
    * If storage is not configured, this method should do nothing.
    *
+   * Note: This method may throw errors (e.g., storage quota exceeded, permission denied).
+   * The emit() method will catch these errors to prevent state update failures, but subclasses
+   * can override emit() to handle errors differently if needed.
+   *
    * @param state - optional state to persist, defaults to current state
    * @returns void - persisting is a side effect operation
+   * @throws May throw errors if storage operations fail
    */
   abstract persist(state?: T): void;
 }
