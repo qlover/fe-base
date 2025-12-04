@@ -1,4 +1,4 @@
-import { AsyncStoreOptions, AsyncStoreStateInterface } from '../../store-state';
+import { AsyncStoreOptions, AsyncStoreStateInterface } from './AsyncStore';
 import { AsyncStoreState } from './AsyncStoreState';
 
 /**

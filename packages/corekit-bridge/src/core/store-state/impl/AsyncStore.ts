@@ -3,36 +3,119 @@ import {
   AsyncStateInterface,
   AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
-import {
-  PersistentStoreInterface,
-  PersistentStoreStateInterface
-} from '../interface/PersistentStoreInterface';
+import { PersistentStoreInterface } from '../interface/PersistentStoreInterface';
 import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
 import { createState } from './createState';
 
-export interface AsyncStoreStateInterface<T>
-  extends PersistentStoreStateInterface,
-    AsyncStateInterface<T> {
+/**
+ * Async store state interface
+ *
+ * Extends `AsyncStateInterface` with status tracking for async operations.
+ * This interface provides a complete state structure for managing async operations
+ * with status information.
+ *
+ * @template T - The type of the result data from the async operation
+ */
+export interface AsyncStoreStateInterface<T> extends AsyncStateInterface<T> {
+  /**
+   * Current status of the async operation
+   *
+   * Status values are defined by `AsyncStoreStatus`:
+   * - `DRAFT`: Initial state, operation hasn't started
+   * - `PENDING`: Operation is in progress
+   * - `SUCCESS`: Operation completed successfully
+   * - `FAILED`: Operation failed with an error
+   * - `STOPPED`: Operation was manually stopped
+   */
   status: AsyncStoreStatusType;
 }
 
+/**
+ * Options for creating an async store instance
+ *
+ * Configuration options for initializing an `AsyncStore` with storage support
+ * and custom state initialization.
+ *
+ * @template T - The type of the result data from the async operation
+ * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`)
+ * @template Opt - The type of options for storage operations (defaults to `unknown`)
+ *
+ * @example Basic usage
+ * ```typescript
+ * const store = new AsyncStore<User, string>({
+ *   storage: localStorage,
+ *   storageKey: 'user-state',
+ *   defaultState: () => null
+ * });
+ * ```
+ *
+ * @example Without storage
+ * ```typescript
+ * const store = new AsyncStore<User, string>({
+ *   storage: null,
+ *   defaultState: () => null
+ * });
+ * ```
+ */
 export interface AsyncStoreOptions<T, Key, Opt = unknown> {
   /**
    * Storage implementation for persisting state
+   *
+   * If provided, state changes will be automatically persisted to this storage.
+   * If `null` or `undefined`, the store will work without persistence.
+   *
+   * @optional
    */
   storage?: SyncStorageInterface<Key, Opt> | null;
 
   /**
    * Storage key for persisting state
+   *
+   * The key used to store state in the storage backend.
+   * Required if `storage` is provided.
+   *
+   * @optional
    */
   storageKey?: Key | null;
 
   /**
    * Create a new state instance
    *
-   * - 如果提供了 storage 选项，则 defaultState 参数是 storage 的 get 方法返回的值
-   * - 如果未提供 storage 选项，则 defaultState 参数是 undefined
-   * - 如果 defaultState 参数是函数，则该函数返回的值作为初始状态
+   * Factory function that creates the initial state for the store.
+   * This function is called during store initialization and when state is reset.
+   *
+   * Behavior:
+   * - If `storage` is provided, the function receives storage and storageKey as parameters
+   * - If `storage` is not provided, the function receives `undefined` for both parameters
+   * - If the function returns `null`, a new `AsyncStoreState` instance will be created
+   * - If the function returns a state object, that object will be used as the initial state
+   *
+   * @param storage - Storage implementation (if provided in options)
+   * @param storageKey - Storage key (if provided in options)
+   * @returns The initial state instance, or `null` to use default state
+   *
+   * @example With storage restoration
+   * ```typescript
+   * const store = new AsyncStore<User, string>({
+   *   storage: localStorage,
+   *   storageKey: 'user-state',
+   *   defaultState: (storage, storageKey) => {
+   *     const stored = storage?.getItem(storageKey);
+   *     if (stored) {
+   *       return new AsyncStoreState<User>(stored);
+   *     }
+   *     return null; // Use default state
+   *   }
+   * });
+   * ```
+   *
+   * @example Without storage
+   * ```typescript
+   * const store = new AsyncStore<User, string>({
+   *   storage: null,
+   *   defaultState: () => null // Always use default state
+   * });
+   * ```
    */
   defaultState<State extends AsyncStoreStateInterface<T>>(
     storage?: SyncStorageInterface<Key, Opt> | null,
@@ -40,24 +123,126 @@ export interface AsyncStoreOptions<T, Key, Opt = unknown> {
   ): State | null;
 }
 
+/**
+ * Async store implementation
+ *
+ * - Significance: Provides a complete implementation of async operation state management with persistence
+ * - Core idea: Combine async operation lifecycle management with persistent state storage
+ * - Main function: Manage async operations (start, stop, success, failure) with automatic state persistence
+ * - Main purpose: Enable reactive async state management with storage synchronization
+ *
+ * Core features:
+ * - Async operation lifecycle: Start, stop, success, failure handling with automatic state updates
+ * - Persistent storage: Optional automatic state persistence to storage backends
+ * - Reactive state: Extends `PersistentStoreInterface` for reactive state subscriptions
+ * - Status tracking: Complete status management (DRAFT, PENDING, SUCCESS, FAILED, STOPPED)
+ * - Duration calculation: Track and calculate operation duration from timestamps
+ * - Flexible storage: Support storing only result value or full state object
+ *
+ * Design decisions:
+ * - Storage is optional: Store works without storage for in-memory only scenarios
+ * - Automatic persistence: State changes are automatically persisted (unless disabled)
+ * - Storage modes: Can store only result value (default) or full state object
+ * - Error resilience: Storage failures don't prevent state updates
+ * - Status management: Status is automatically updated based on operation lifecycle
+ *
+ * @template T - The type of the result data from the async operation
+ * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`)
+ * @template Opt - The type of options for storage operations (defaults to `unknown`)
+ *
+ * @example Basic usage
+ * ```typescript
+ * const store = new AsyncStore<User, string>({
+ *   storage: localStorage,
+ *   storageKey: 'user-state',
+ *   defaultState: () => null
+ * });
+ *
+ * // Start operation
+ * store.start();
+ *
+ * // Handle success
+ * try {
+ *   const user = await fetchUser();
+ *   store.success(user);
+ * } catch (error) {
+ *   store.failed(error);
+ * }
+ * ```
+ *
+ * @example Reactive usage
+ * ```typescript
+ * const store = new AsyncStore<User, string>({ storage: null });
+ *
+ * // Subscribe to state changes
+ * store.observe((state) => {
+ *   if (state.loading) {
+ *     console.log('Loading...');
+ *   } else if (state.result) {
+ *     console.log('User:', state.result);
+ *   } else if (state.error) {
+ *     console.error('Error:', state.error);
+ *   }
+ * });
+ * ```
+ */
 export class AsyncStore<T, Key, Opt = unknown>
   extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key, Opt>
   implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
 {
+  /**
+   * Storage key for persisting state
+   *
+   * The key used to store state in the storage backend.
+   * Set during construction from `AsyncStoreOptions.storageKey`.
+   *
+   * @default `null`
+   */
   protected storageKey: Key | null = null;
 
   /**
-   * 该属性用于控制持久化存储的结果类型
+   * Control the type of data stored in persistence
    *
-   * - 如果为 true，则 restore 方法返回的结果类型为 T，也就是result的值
-   * - 如果为 false，则 restore 方法返回的结果类型为 AsyncStoreStateInterface<T>，也就是整个状态
+   * This property controls what data is stored and restored from storage:
+   * - `true`: Store only the result value (`T`). `restore()` returns `T | null`
+   * - `false`: Store the full state object. `restore()` returns `AsyncStoreStateInterface<T> | null`
    *
-   * **但是该属性目前是一个内部测试属性**
+   * **Note:** This is primarily an internal testing property. In most cases, storing
+   * only the result value (`true`) is sufficient and more efficient.
    *
-   * @default true
+   * @default `true`
+   * @internal
    */
   protected storageResult: boolean = true;
 
+  /**
+   * Constructor for async store
+   *
+   * Initializes the store with optional storage backend and state factory.
+   * The state factory is created from options, supporting both storage restoration
+   * and default state initialization.
+   *
+   * @param options - Optional configuration for storage and initial state
+   *   If not provided, store will work without persistence and use default state
+   *   @optional
+   *
+   * @example With storage
+   * ```typescript
+   * const store = new AsyncStore<User, string>({
+   *   storage: localStorage,
+   *   storageKey: 'user-state',
+   *   defaultState: () => null
+   * });
+   * ```
+   *
+   * @example Without storage
+   * ```typescript
+   * const store = new AsyncStore<User, string>({
+   *   storage: null,
+   *   defaultState: () => null
+   * });
+   * ```
+   */
   constructor(options?: AsyncStoreOptions<T, Key, Opt>) {
     super(() => createState(options), options?.storage ?? null);
     this.storageKey = options?.storageKey ?? null;
@@ -66,11 +251,36 @@ export class AsyncStore<T, Key, Opt = unknown>
   /**
    * Restore state from storage
    *
-   * Returns the result value (T) if storageResult is true, otherwise returns the full state.
-   * The actual return type depends on the storageResult property value at runtime.
+   * Restores state from the configured storage backend. The return type depends
+   * on the `storageResult` property:
+   * - If `storageResult` is `true`: Returns only the result value (`T`)
+   * - If `storageResult` is `false`: Returns the full state object
    *
-   * @template R - The return type (defaults to T | AsyncStoreStateInterface<T>)
-   * @returns The restored value or state, or null if not available
+   * Behavior:
+   * - Checks if storage and storageKey are configured
+   * - Retrieves data from storage based on `storageResult` mode
+   * - Updates store state without triggering persistence (prevents circular updates)
+   * - Returns `null` if storage is not configured, no data found, or restoration fails
+   *
+   * @template R - The return type (defaults to `T | AsyncStoreStateInterface<T>`)
+   * @returns The restored value or state, or `null` if not available
+   *
+   * @example Restore result value (storageResult = true)
+   * ```typescript
+   * const result = store.restore(); // Returns T | null
+   * if (result) {
+   *   console.log('Restored user:', result);
+   * }
+   * ```
+   *
+   * @example Restore full state (storageResult = false)
+   * ```typescript
+   * store.storageResult = false;
+   * const state = store.restore(); // Returns AsyncStoreStateInterface<T> | null
+   * if (state) {
+   *   console.log('Restored state:', state);
+   * }
+   * ```
    */
   override restore<R = T | AsyncStoreStateInterface<T>>(): R | null {
     if (!this.storage || !this.storageKey) {
@@ -102,6 +312,33 @@ export class AsyncStore<T, Key, Opt = unknown>
     return null;
   }
 
+  /**
+   * Persist state to storage
+   *
+   * Persists the current state or a specified state to the configured storage backend.
+   * The data persisted depends on the `storageResult` property:
+   * - If `storageResult` is `true`: Stores only the result value (`T`)
+   * - If `storageResult` is `false`: Stores the full state object
+   *
+   * Behavior:
+   * - Does nothing if storage or storageKey is not configured
+   * - If `storageResult` is `true` and result is `null`, nothing is stored
+   * - Automatically called by `emit()` when state changes (unless `persist: false` is specified)
+   *
+   * @param _state - Optional state to persist
+   *   If provided, persists the specified state. Otherwise, persists current state.
+   *   @optional
+   *
+   * @example Automatic persistence (via emit)
+   * ```typescript
+   * store.success(user); // Automatically persists to storage
+   * ```
+   *
+   * @example Manual persistence
+   * ```typescript
+   * store.persist(); // Persist current state
+   * ```
+   */
   override persist(_state?: AsyncStoreStateInterface<T> | undefined): void {
     if (!this.storage || !this.storageKey) {
       return;
@@ -120,16 +357,56 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Get the underlying store instance
+   *
+   * Returns the store instance itself, enabling reactive state subscriptions.
+   * This method is required by `AsyncStoreInterface` and allows consumers to
+   * subscribe to state changes using the store's `observe()` method.
+   *
    * @override
-   * @returns
+   * @returns The store instance for reactive subscriptions
+   *
+   * @example Subscribe to state changes
+   * ```typescript
+   * const store = asyncStore.getStore();
+   * store.observe((state) => {
+   *   console.log('State changed:', state);
+   * });
+   * ```
    */
   getStore(): this {
     return this;
   }
 
   /**
+   * Start an async operation
+   *
+   * Marks the beginning of an async operation and sets the loading state to `true`.
+   * Records the start timestamp and optionally sets an initial result value.
+   *
+   * Behavior:
+   * - Sets `loading` to `true`
+   * - Sets `status` to `PENDING`
+   * - Records `startTime` with current timestamp
+   * - Optionally sets `result` if provided
+   * - Automatically persists state to storage (if configured)
+   *
    * @override
-   * @param result
+   * @param result - Optional initial result value to set before operation starts
+   *   Useful for optimistic updates or when resuming a previous operation
+   *   @optional
+   *
+   * @example Start operation
+   * ```typescript
+   * store.start();
+   * // Operation is now in progress, loading = true
+   * ```
+   *
+   * @example Start with optimistic result
+   * ```typescript
+   * store.start(cachedUser);
+   * // Start with cached data while fetching fresh data
+   * ```
    */
   start(result?: T | undefined): void {
     this.updateState({
@@ -141,9 +418,35 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Stop an async operation
+   *
+   * Manually stops an async operation (e.g., user cancellation). This is different
+   * from failure - stopping is intentional, while failure indicates an error occurred.
+   *
+   * Behavior:
+   * - Sets `loading` to `false`
+   * - Sets `status` to `STOPPED`
+   * - Records `endTime` with current timestamp
+   * - Optionally sets `error` and `result` if provided
+   * - Automatically persists state to storage (if configured)
+   *
    * @override
-   * @param error
-   * @param result
+   * @param error - Optional error information if operation was stopped due to an error
+   *   @optional
+   * @param result - Optional result value if partial results are available
+   *   @optional
+   *
+   * @example Stop operation
+   * ```typescript
+   * store.start();
+   * // ... user cancels operation ...
+   * store.stopped();
+   * ```
+   *
+   * @example Stop with error
+   * ```typescript
+   * store.stopped(new Error('User cancelled'));
+   * ```
    */
   stopped(error?: unknown, result?: T | undefined): void {
     this.updateState({
@@ -156,9 +459,46 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Mark an async operation as failed
+   *
+   * Marks the end of an async operation with a failure. This should be called
+   * when an operation encounters an error or exception.
+   *
+   * Behavior:
+   * - Sets `loading` to `false`
+   * - Sets `status` to `FAILED`
+   * - Records `endTime` with current timestamp
+   * - Sets `error` with the failure information
+   * - Optionally sets `result` if partial results are available
+   * - Automatically persists state to storage (if configured)
+   *
    * @override
-   * @param error
-   * @param result
+   * @param error - The error that occurred during the operation
+   *   Can be an Error object, string message, or any error information
+   * @param result - Optional result value if partial results are available
+   *   Useful when operation fails but has partial data to preserve
+   *   @optional
+   *
+   * @example Handle API error
+   * ```typescript
+   * try {
+   *   const user = await fetchUser();
+   *   store.success(user);
+   * } catch (error) {
+   *   store.failed(error);
+   * }
+   * ```
+   *
+   * @example Handle failure with partial data
+   * ```typescript
+   * try {
+   *   const data = await fetchData();
+   *   store.success(data);
+   * } catch (error) {
+   *   // Operation failed but we have cached data
+   *   store.failed(error, cachedData);
+   * }
+   * ```
    */
   failed(error: unknown, result?: T | undefined): void {
     this.updateState({
@@ -171,8 +511,38 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Mark an async operation as successful
+   *
+   * Marks the end of an async operation with a successful result. This should be
+   * called when an operation completes successfully.
+   *
+   * Behavior:
+   * - Sets `loading` to `false`
+   * - Sets `status` to `SUCCESS`
+   * - Records `endTime` with current timestamp
+   * - Sets `result` with the successful result data
+   * - Clears `error` (sets to `null`)
+   * - Automatically persists state to storage (if configured)
+   *
    * @override
-   * @param result
+   * @param result - The result of the successful async operation
+   *   This is the data returned from the completed operation
+   *
+   * @example Handle successful API response
+   * ```typescript
+   * try {
+   *   const user = await fetchUser();
+   *   store.success(user);
+   * } catch (error) {
+   *   store.failed(error);
+   * }
+   * ```
+   *
+   * @example Handle successful data transformation
+   * ```typescript
+   * const processedData = processData(rawData);
+   * store.success(processedData);
+   * ```
    */
   success(result: T): void {
     this.updateState({
@@ -185,17 +555,81 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Get current store state
+   *
+   * Returns the current state object containing all async operation information.
+   * This is a snapshot of the current state at the time of call.
+   *
    * @override
-   * @returns
+   * @returns Current state object containing:
+   *   - `loading`: Whether operation is in progress
+   *   - `result`: Operation result (if successful)
+   *   - `error`: Error information (if failed)
+   *   - `startTime`: Operation start timestamp
+   *   - `endTime`: Operation end timestamp
+   *   - `status`: Operation status
+   *
+   * @example Get current state
+   * ```typescript
+   * const state = store.getState();
+   * console.log('Loading:', state.loading);
+   * console.log('Result:', state.result);
+   * ```
+   *
+   * @example Use state for conditional logic
+   * ```typescript
+   * const state = store.getState();
+   * if (state.loading) {
+   *   return <LoadingSpinner />;
+   * } else if (state.result) {
+   *   return <DataDisplay data={state.result} />;
+   * }
+   * ```
    */
   getState(): AsyncStoreStateInterface<T> {
     return this.state;
   }
 
   /**
+   * Update store state with partial state object
+   *
+   * Merges the provided partial state into the current state. This allows
+   * fine-grained control over state updates without replacing the entire state.
+   *
+   * Behavior:
+   * - Merges provided properties into current state
+   * - Only updates specified properties, others remain unchanged
+   * - Type-safe: Only accepts properties that exist in the state interface
+   * - Automatically persists state to storage (unless `persist: false` is specified)
+   *
    * @override
-   * @param state
+   * @template S - The state type that extends `AsyncStateInterface<T>`
+   * @param state - Partial state object containing properties to update
+   *   Only specified properties will be updated, others remain unchanged
    * @param options - Optional configuration for emit behavior
+   * @param options.persist - Whether to persist state to storage
+   *   - `true` or `undefined`: Persist state to storage (default behavior)
+   *   - `false`: Skip persistence, useful during restore operations
+   *   @default `true`
+   *
+   * @example Update loading state only
+   * ```typescript
+   * store.updateState({ loading: true });
+   * ```
+   *
+   * @example Update multiple properties
+   * ```typescript
+   * store.updateState({
+   *   loading: false,
+   *   result: data,
+   *   endTime: Date.now()
+   * });
+   * ```
+   *
+   * @example Update without persistence
+   * ```typescript
+   * store.updateState({ loading: true }, { persist: false });
+   * ```
    */
   updateState<S extends AsyncStateInterface<T>>(
     state: Partial<S>,
@@ -208,32 +642,89 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Get the loading state of the async operation
+   *
+   * Convenience method to check if an operation is currently in progress.
+   * Equivalent to `getState().loading`.
+   *
    * @override
-   * @returns
+   * @returns `true` if the operation is in progress, `false` otherwise
+   *
+   * @example Check loading state
+   * ```typescript
+   * if (store.getLoading()) {
+   *   console.log('Operation in progress...');
+   * }
+   * ```
    */
   getLoading(): boolean {
     return this.getState().loading;
   }
 
   /**
+   * Get the error from the async operation
+   *
+   * Returns the error information if the operation failed, or `null` if no error.
+   * Equivalent to `getState().error`.
+   *
    * @override
-   * @returns
+   * @returns The error information if operation failed, or `null` if no error
+   *
+   * @example Handle error
+   * ```typescript
+   * const error = store.getError();
+   * if (error) {
+   *   console.error('Operation failed:', error);
+   * }
+   * ```
    */
   getError(): unknown | null {
     return this.getState().error;
   }
 
   /**
+   * Get the result from the async operation
+   *
+   * Returns the result data if the operation succeeded, or `null` if no result.
+   * Equivalent to `getState().result`.
+   *
    * @override
-   * @returns
+   * @returns The result data if operation succeeded, or `null` if no result
+   *
+   * @example Access result
+   * ```typescript
+   * const result = store.getResult();
+   * if (result) {
+   *   console.log('Operation result:', result);
+   * }
+   * ```
    */
   getResult(): T | null {
     return this.getState().result;
   }
 
   /**
+   * Get the status of the async operation
+   *
+   * Returns the status information about the operation state.
+   * The status type depends on the implementation (e.g., `'pending' | 'success' | 'failed' | 'stopped'`).
+   * Equivalent to `getState().status`.
+   *
    * @override
-   * @returns
+   * @returns The status of the async operation
+   *
+   * @example Check status
+   * ```typescript
+   * const status = store.getStatus();
+   * switch (status) {
+   *   case AsyncStoreStatus.PENDING:
+   *     return <LoadingSpinner />;
+   *   case AsyncStoreStatus.SUCCESS:
+   *     return <SuccessMessage />;
+   *   case AsyncStoreStatus.FAILED:
+   *     return <ErrorMessage />;
+   * }
+   * ```
    */
   getStatus(): AsyncStoreStatusType {
     return this.getState().status;
@@ -243,6 +734,7 @@ export class AsyncStore<T, Key, Opt = unknown>
    * Get the duration of the async operation
    *
    * - If startTime and endTime are numbers and not NaN, return endTime - startTime
+   * - If startTime is set but endTime is 0 (operation in progress), return Date.now() - startTime
    * - If startTime and endTime are not numbers, return 0
    * - If startTime or endTime is a string, return parseFloat converted number and not NaN
    * - If startTime or endTime is undefined or null, return 0
@@ -265,6 +757,11 @@ export class AsyncStore<T, Key, Opt = unknown>
     const startTime = state?.startTime;
     const endTime = state?.endTime;
 
+    // If operation has not started (startTime is 0 or not set), return 0
+    if (!startTime || startTime === 0) {
+      return 0;
+    }
+
     const start =
       typeof startTime === 'number'
         ? startTime
@@ -279,14 +776,17 @@ export class AsyncStore<T, Key, Opt = unknown>
           ? parseFloat(endTime)
           : Number(endTime);
 
+    // If operation is in progress (endTime is 0 or not set), use current time
+    const actualEnd = Number.isFinite(end) && end > 0 ? end : Date.now();
+
     // 更严格的检查
     if (
       Number.isFinite(start) &&
-      Number.isFinite(end) &&
-      start >= 0 &&
-      end >= start
+      Number.isFinite(actualEnd) &&
+      start > 0 &&
+      actualEnd >= start
     ) {
-      const duration = end - start;
+      const duration = actualEnd - start;
 
       // 额外检查：防止溢出或极大值
       if (duration < Number.MAX_SAFE_INTEGER) {
@@ -298,32 +798,117 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Reset store state to initial state
+   *
+   * Clears all state data and resets to default values. This is useful when
+   * starting a new operation or clearing previous operation state.
+   *
+   * Behavior:
+   * - Resets `loading` to `false`
+   * - Clears `result` (sets to `null`)
+   * - Clears `error` (sets to `null`)
+   * - Resets `startTime` and `endTime` to `0`
+   * - Resets `status` to `DRAFT`
+   *
    * @override
-   * @returns
+   *
+   * @example Reset before new operation
+   * ```typescript
+   * store.reset();
+   * store.start();
+   * // Now ready for a new operation
+   * ```
+   *
+   * @example Reset after error recovery
+   * ```typescript
+   * store.failed(error);
+   * // ... handle error ...
+   * store.reset();
+   * // Ready to retry
+   * ```
+   */
+  reset(): void {
+    super.reset();
+  }
+
+  /**
+   * Check if the async operation completed successfully
+   *
+   * Returns `true` if the operation has completed successfully with a result.
+   * This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
+   *
+   * @override
+   * @returns `true` if the async operation is successful, `false` otherwise
+   *
+   * @example Check success before accessing result
+   * ```typescript
+   * if (store.isSuccess()) {
+   *   const result = store.getResult();
+   *   console.log('Success:', result);
+   * }
+   * ```
    */
   isSuccess(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.SUCCESS;
   }
 
   /**
+   * Check if the async operation failed
+   *
+   * Returns `true` if the operation has failed with an error.
+   * This typically means `loading` is `false` and `error` is not `null`.
+   *
    * @override
-   * @returns
+   * @returns `true` if the async operation is failed, `false` otherwise
+   *
+   * @example Handle failure
+   * ```typescript
+   * if (store.isFailed()) {
+   *   const error = store.getError();
+   *   console.error('Operation failed:', error);
+   * }
+   * ```
    */
   isFailed(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.FAILED;
   }
 
   /**
+   * Check if the async operation was stopped
+   *
+   * Returns `true` if the operation was manually stopped (e.g., user cancellation).
+   * This is different from failure - stopping is intentional, failure is an error.
+   *
    * @override
-   * @returns
+   * @returns `true` if the async operation is stopped, `false` otherwise
+   *
+   * @example Handle stopped operation
+   * ```typescript
+   * if (store.isStopped()) {
+   *   console.log('Operation was cancelled');
+   * }
+   * ```
    */
   isStopped(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.STOPPED;
   }
 
   /**
+   * Check if the async operation is completed
+   *
+   * Returns `true` if the operation has finished, regardless of outcome.
+   * This includes success, failure, and stopped states. Returns `false` if still in progress.
+   *
    * @override
-   * @returns
+   * @returns `true` if the async operation is completed (success, failed, or stopped), `false` otherwise
+   *
+   * @example Check if operation finished
+   * ```typescript
+   * if (store.isCompleted()) {
+   *   // Operation is done, can proceed with next steps
+   *   proceedToNextStep();
+   * }
+   * ```
    */
   isCompleted(): boolean {
     return (
@@ -333,8 +918,20 @@ export class AsyncStore<T, Key, Opt = unknown>
   }
 
   /**
+   * Check if the async operation is pending (in progress)
+   *
+   * Returns `true` if the operation is currently in progress.
+   * This is equivalent to checking if `loading` is `true`.
+   *
    * @override
-   * @returns
+   * @returns `true` if the async operation is pending (in progress), `false` otherwise
+   *
+   * @example Show loading indicator
+   * ```typescript
+   * if (store.isPending()) {
+   *   return <LoadingSpinner />;
+   * }
+   * ```
    */
   isPending(): boolean {
     return this.getLoading() && this.getStatus() === AsyncStoreStatus.PENDING;
