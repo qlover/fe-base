@@ -154,6 +154,7 @@
  */
 export * from './bootstrap';
 export * from './color-log';
+export * from './gateway-auth';
 export * from './ioc';
 export * from './message-sender';
 export * from './request-plugins';
