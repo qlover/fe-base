@@ -25,6 +25,7 @@ import {
  */
 class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   public data = new Map<string, unknown>();
+  public shouldFailGetItem: boolean = false;
   public calls: {
     setItem: Array<{ key: Key; value: unknown; options?: unknown }>;
     getItem: Array<{ key: Key; defaultValue?: unknown; options?: unknown }>;
@@ -49,6 +50,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
 
   getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
+    if (this.shouldFailGetItem) {
+      throw new Error('Storage getItem failed');
+    }
     const value = this.data.get(String(key));
     return (value ?? defaultValue ?? null) as T | null;
   }
@@ -65,6 +69,7 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
 
   reset(): void {
     this.data.clear();
+    this.shouldFailGetItem = false;
     this.calls = {
       setItem: [],
       getItem: [],
@@ -648,6 +653,259 @@ describe('AsyncStoreInterface', () => {
 
       store.success({ id: 1, name: 'John', email: 'john@test.com' });
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+    });
+  });
+
+  describe('restore', () => {
+    it('should return null when storage is not configured', () => {
+      const storeWithoutStorage = new AsyncStore<TestUser, string>({
+        storage: null,
+        defaultState: () => null
+      });
+      expect(storeWithoutStorage.restore()).toBeNull();
+    });
+
+    it('should return null when storageKey is not configured', () => {
+      const storeWithoutKey = new AsyncStore<TestUser, string>({
+        storage: mockStorage,
+        storageKey: null,
+        defaultState: () => null
+      });
+      expect(storeWithoutKey.restore()).toBeNull();
+    });
+
+    it('should return null when no data exists in storage', () => {
+      expect(store.restore()).toBeNull();
+    });
+
+    it('should restore result value when storageResult is true (default)', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      mockStorage.setItem('test-user', user);
+
+      const restored = store.restore();
+      expect(restored).toEqual(user);
+      expect(store.getResult()).toEqual(user);
+      expect(typeof restored).toBe('object');
+    });
+
+    it('should restore full state when storageResult is false', () => {
+      store['storageResult'] = false;
+      const fullState: AsyncStoreStateInterface<TestUser> = {
+        loading: false,
+        result: { id: 1, name: 'John', email: 'john@test.com' },
+        error: null,
+        startTime: 1000,
+        endTime: 2000,
+        status: AsyncStoreStatus.SUCCESS
+      };
+      mockStorage.setItem('test-user', fullState);
+
+      const restored = store.restore<AsyncStoreStateInterface<TestUser>>();
+      expect(restored).not.toBeNull();
+      expect(restored).toEqual(fullState);
+      expect(store.getState()).toEqual(fullState);
+    });
+
+    it('should not persist when restoring state', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      mockStorage.setItem('test-user', user);
+
+      const initialSetItemCalls = mockStorage.calls.setItem.length;
+      store.restore();
+      // restore() calls updateState with { persist: false }, so no additional setItem calls
+      expect(mockStorage.calls.setItem.length).toBe(initialSetItemCalls);
+    });
+
+    it('should return null when storage getItem throws error', () => {
+      const errorStorage = new MockStorage<string>();
+      errorStorage.shouldFailGetItem = true;
+      const errorStore = new AsyncStore<TestUser, string>({
+        storage: errorStorage,
+        storageKey: 'test-user',
+        defaultState: () => null
+      });
+
+      expect(errorStore.restore()).toBeNull();
+    });
+
+    it('should handle null or undefined values from storage', () => {
+      mockStorage.setItem('test-user', null as unknown as TestUser);
+      expect(store.restore()).toBeNull();
+
+      mockStorage.setItem('test-user', undefined as unknown as TestUser);
+      expect(store.restore()).toBeNull();
+    });
+  });
+
+  describe('persist', () => {
+    it('should do nothing when storage is not configured', () => {
+      const storeWithoutStorage = new AsyncStore<TestUser, string>({
+        storage: null,
+        defaultState: () => null
+      });
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      storeWithoutStorage.start();
+      storeWithoutStorage.success(user);
+      storeWithoutStorage.persist();
+
+      // Should not throw and should not persist
+      expect(mockStorage.calls.setItem.length).toBe(0);
+    });
+
+    it('should do nothing when storageKey is not configured', () => {
+      const storeWithoutKey = new AsyncStore<TestUser, string>({
+        storage: mockStorage,
+        storageKey: null,
+        defaultState: () => null
+      });
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      storeWithoutKey.start();
+      storeWithoutKey.success(user);
+      storeWithoutKey.persist();
+
+      expect(mockStorage.calls.setItem.length).toBe(0);
+    });
+
+    it('should persist only result value when storageResult is true (default)', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      store.start();
+      store.success(user);
+
+      expect(mockStorage.calls.setItem.length).toBeGreaterThan(0);
+      const persisted = mockStorage.getItem('test-user');
+      expect(persisted).toEqual(user);
+      expect(persisted).not.toHaveProperty('loading');
+      expect(persisted).not.toHaveProperty('status');
+    });
+
+    it('should persist full state when storageResult is false', () => {
+      store['storageResult'] = false;
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      store.start();
+      store.success(user);
+
+      const persisted = mockStorage.getItem(
+        'test-user'
+      ) as AsyncStoreStateInterface<TestUser>;
+      expect(persisted).toHaveProperty('loading');
+      expect(persisted).toHaveProperty('result');
+      expect(persisted).toHaveProperty('error');
+      expect(persisted).toHaveProperty('startTime');
+      expect(persisted).toHaveProperty('endTime');
+      expect(persisted).toHaveProperty('status');
+      expect(persisted.result).toEqual(user);
+      expect(persisted.status).toBe(AsyncStoreStatus.SUCCESS);
+    });
+
+    it('should not persist when result is null and storageResult is true', () => {
+      store.start();
+      store.failed(new Error('Failed'));
+
+      // Clear previous calls
+      mockStorage.reset();
+      store.persist();
+
+      // When storageResult is true and result is null, persist should not store anything
+      const persisted = mockStorage.getItem('test-user');
+      expect(persisted).toBeNull();
+    });
+
+    it('should persist full state even when result is null if storageResult is false', () => {
+      store['storageResult'] = false;
+      store.start();
+      store.failed(new Error('Failed'));
+
+      // Clear previous calls
+      mockStorage.reset();
+      store.persist();
+
+      const persisted = mockStorage.getItem(
+        'test-user'
+      ) as AsyncStoreStateInterface<TestUser>;
+      expect(persisted).not.toBeNull();
+      expect(persisted.result).toBeNull();
+      expect(persisted.error).not.toBeNull();
+      expect(persisted.status).toBe(AsyncStoreStatus.FAILED);
+    });
+
+    it('should automatically persist on state changes', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+      store.start();
+      store.success(user);
+
+      expect(mockStorage.calls.setItem.length).toBeGreaterThan(0);
+      const persisted = mockStorage.getItem('test-user');
+      expect(persisted).toEqual(user);
+    });
+  });
+
+  describe('storageResult property', () => {
+    it('should default to true', () => {
+      expect(store['storageResult']).toBe(true);
+    });
+
+    it('should allow changing storageResult mode', () => {
+      expect(store['storageResult']).toBe(true);
+
+      store['storageResult'] = false;
+      expect(store['storageResult']).toBe(false);
+
+      store['storageResult'] = true;
+      expect(store['storageResult']).toBe(true);
+    });
+
+    it('should affect restore behavior based on storageResult', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+
+      // Test with storageResult = true (default)
+      mockStorage.setItem('test-user', user);
+      const restoredWithResult = store.restore();
+      expect(restoredWithResult).toEqual(user);
+      expect(typeof restoredWithResult).toBe('object');
+
+      // Reset and test with storageResult = false
+      store.reset();
+      mockStorage.reset();
+      store['storageResult'] = false;
+      const fullState: AsyncStoreStateInterface<TestUser> = {
+        loading: false,
+        result: user,
+        error: null,
+        startTime: 1000,
+        endTime: 2000,
+        status: AsyncStoreStatus.SUCCESS
+      };
+      mockStorage.setItem('test-user', fullState);
+      const restoredWithState =
+        store.restore<AsyncStoreStateInterface<TestUser>>();
+      expect(restoredWithState).toEqual(fullState);
+    });
+
+    it('should affect persist behavior based on storageResult', () => {
+      const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
+
+      // Test with storageResult = true (default)
+      store.start();
+      store.success(user);
+      mockStorage.reset();
+      store.persist();
+      const persistedWithResult = mockStorage.getItem('test-user');
+      expect(persistedWithResult).toEqual(user);
+      expect(persistedWithResult).not.toHaveProperty('loading');
+
+      // Reset and test with storageResult = false
+      store.reset();
+      mockStorage.reset();
+      store['storageResult'] = false;
+      store.start();
+      store.success(user);
+      store.persist();
+      const persistedWithState = mockStorage.getItem(
+        'test-user'
+      ) as AsyncStoreStateInterface<TestUser>;
+      expect(persistedWithState).toHaveProperty('loading');
+      expect(persistedWithState).toHaveProperty('status');
+      expect(persistedWithState.result).toEqual(user);
     });
   });
 

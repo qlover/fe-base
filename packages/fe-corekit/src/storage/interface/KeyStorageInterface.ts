@@ -1,39 +1,11 @@
-import { SyncStorageInterface } from './SyncStorageInterface';
-import { ExpireOptions } from './ExpireOptions';
+export interface KeyStorageInterface<Key, Value, Opt = unknown> {
+  getKey(): Key;
 
-export interface KeyStorageOptions<Key, Sopt = unknown> extends ExpireOptions {
-  /**
-   * Persistent storage
-   */
-  storage?: SyncStorageInterface<Key, Sopt>;
-}
+  getValue(): Value | null;
 
-export abstract class KeyStorageInterface<
-  Key,
-  Value,
-  Opt extends KeyStorageOptions<Key> = KeyStorageOptions<Key>
-> {
-  protected value: Value | null = null;
+  get(options?: Opt): Value | null;
 
-  constructor(
-    readonly key: Key,
-    protected options: Opt = {} as Opt
-  ) {
-    const localValue = options.storage?.getItem(key);
-    this.value = localValue as Value | null;
-  }
+  set(value: Value, options?: Opt): void;
 
-  getKey(): Key {
-    return this.key;
-  }
-
-  getValue(): Value | null {
-    return this.get();
-  }
-
-  abstract get(options?: Opt): Value | null;
-
-  abstract set(value: Value, options?: Opt): void;
-
-  abstract remove(options?: Opt): void;
+  remove(options?: Opt): void;
 }

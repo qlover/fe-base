@@ -121,6 +121,20 @@ export interface AsyncStoreOptions<T, Key, Opt = unknown> {
     storage?: SyncStorageInterface<Key, Opt> | null,
     storageKey?: Key | null
   ): State | null;
+
+  /**
+   * Whether to automatically restore state from storage during construction
+   *
+   * **⚠️ This is primarily a testing/internal property.**
+   *
+   * **Initialization Order Issues:**
+   * When `initRestore` is `true`, `restore()` is called during `super()` execution,
+   * which happens BEFORE subclass field initialization. This means:
+   * - Subclass fields (e.g., `private readonly storageKey = 'my-key'`) are NOT yet initialized
+   * - `restore()` cannot access these fields, causing runtime errors or incorrect behavior
+   * - This is a fundamental limitation of JavaScript/TypeScript class initialization order
+   */
+  initRestore?: boolean;
 }
 
 /**
@@ -244,7 +258,11 @@ export class AsyncStore<T, Key, Opt = unknown>
    * ```
    */
   constructor(options?: AsyncStoreOptions<T, Key, Opt>) {
-    super(() => createState(options), options?.storage ?? null);
+    super(
+      () => createState(options),
+      options?.storage ?? null,
+      options?.initRestore ?? false
+    );
     this.storageKey = options?.storageKey ?? null;
   }
 
@@ -315,7 +333,7 @@ export class AsyncStore<T, Key, Opt = unknown>
   /**
    * Persist state to storage
    *
-   * Persists the current state or a specified state to the configured storage backend.
+   * Persists the current state to the configured storage backend.
    * The data persisted depends on the `storageResult` property:
    * - If `storageResult` is `true`: Stores only the result value (`T`)
    * - If `storageResult` is `false`: Stores the full state object
@@ -323,10 +341,12 @@ export class AsyncStore<T, Key, Opt = unknown>
    * Behavior:
    * - Does nothing if storage or storageKey is not configured
    * - If `storageResult` is `true` and result is `null`, nothing is stored
+   * - If `storageResult` is `false`, always stores the full state object (even if result is null)
    * - Automatically called by `emit()` when state changes (unless `persist: false` is specified)
+   * - Always persists the current state (the `_state` parameter is ignored for compatibility with interface)
    *
-   * @param _state - Optional state to persist
-   *   If provided, persists the specified state. Otherwise, persists current state.
+   * @param _state - Optional state parameter (ignored, kept for interface compatibility)
+   *   This parameter is not used. The method always persists the current state.
    *   @optional
    *
    * @example Automatic persistence (via emit)
@@ -337,6 +357,20 @@ export class AsyncStore<T, Key, Opt = unknown>
    * @example Manual persistence
    * ```typescript
    * store.persist(); // Persist current state
+   * ```
+   *
+   * @example Persist only result value (default)
+   * ```typescript
+   * store.storageResult = true; // default
+   * store.success(user);
+   * // Storage contains only the user object
+   * ```
+   *
+   * @example Persist full state
+   * ```typescript
+   * store.storageResult = false;
+   * store.success(user);
+   * // Storage contains full state object with loading, status, timestamps, etc.
    * ```
    */
   override persist(_state?: AsyncStoreStateInterface<T> | undefined): void {
@@ -733,22 +767,33 @@ export class AsyncStore<T, Key, Opt = unknown>
   /**
    * Get the duration of the async operation
    *
-   * - If startTime and endTime are numbers and not NaN, return endTime - startTime
-   * - If startTime is set but endTime is 0 (operation in progress), return Date.now() - startTime
-   * - If startTime and endTime are not numbers, return 0
-   * - If startTime or endTime is a string, return parseFloat converted number and not NaN
-   * - If startTime or endTime is undefined or null, return 0
-   * - If startTime is greater than endTime, return 0
-   * - If endTime is less than startTime, return 0
+   * Calculates the duration based on the current state's `startTime` and `endTime`:
+   * - Returns `0` if operation has not started (`startTime` is `0` or not set)
+   * - If operation is in progress (`endTime` is `0` or not set), returns `Date.now() - startTime`
+   * - If operation has completed, returns `endTime - startTime`
+   * - Handles type conversion: supports `number`, `string` (parsed via `parseFloat`), or other types (converted via `Number`)
+   * - Returns `0` if startTime or endTime cannot be converted to valid numbers
+   * - Returns `0` if startTime is greater than endTime (invalid state)
+   * - Prevents overflow by checking against `Number.MAX_SAFE_INTEGER`
    *
    * @override
-   * @param state - The state of the async operation
-   * @returns The duration of the async operation in milliseconds
+   * @returns The duration of the async operation in milliseconds, or `0` if duration cannot be calculated
    *
-   * @example
+   * @example Get duration for completed operation
    * ```typescript
+   * store.start();
+   * // ... operation completes ...
+   * store.success(result);
    * const duration = store.getDuration();
    * console.log(`Operation took ${duration}ms`);
+   * ```
+   *
+   * @example Get duration for in-progress operation
+   * ```typescript
+   * store.start();
+   * // ... operation still running ...
+   * const duration = store.getDuration(); // Returns time since start
+   * console.log(`Operation has been running for ${duration}ms`);
    * ```
    */
   getDuration(): number {
