@@ -1,10 +1,109 @@
+/**
+ * Login parameters
+ *
+ * Parameters for user authentication. Supports multiple authentication methods:
+ * - Email + password authentication
+ * - Phone + password authentication
+ * - Phone + verification code authentication
+ *
+ * @example Email and password login
+ * ```typescript
+ * const params: LoginParams = {
+ *   email: 'user@example.com',
+ *   password: 'password123'
+ * };
+ * ```
+ *
+ * @example Phone and code login
+ * ```typescript
+ * const params: LoginParams = {
+ *   phone: '13800138000',
+ *   code: '123456'
+ * };
+ * ```
+ */
 export interface LoginParams {
+  /**
+   * User email address
+   *
+   * Used for email + password authentication.
+   * Required when using email-based login.
+   *
+   * @optional
+   */
   email?: string;
+
+  /**
+   * User password
+   *
+   * Used for email/phone + password authentication.
+   * Required when using password-based login.
+   *
+   * @optional
+   */
   password?: string;
+
+  /**
+   * User phone number
+   *
+   * Used for phone + password or phone + code authentication.
+   * Required when using phone-based login.
+   *
+   * @optional
+   */
   phone?: string;
+
+  /**
+   * Verification code
+   *
+   * Used for phone + code authentication.
+   * Required when using code-based login.
+   *
+   * @optional
+   */
   code?: string;
 }
 
+/**
+ * Login interface
+ *
+ * Defines the contract for user authentication operations, providing a standardized way to handle
+ * login and logout functionality across different implementations. This interface abstracts authentication
+ * logic from implementation details, supporting various authentication methods including email/phone
+ * with password or verification code. It ensures consistent authentication behavior and enables flexible
+ * credential handling through generic types.
+ *
+ * - Significance: Defines the contract for user authentication operations
+ * - Core idea: Abstract login and logout operations from implementation details
+ * - Main function: Handle user authentication lifecycle (login and logout)
+ * - Main purpose: Ensure consistent authentication behavior across different implementations
+ *
+ * Core features:
+ * - Login: Authenticate users with various credential types (email/phone + password/code)
+ * - Logout: Clear authentication state and user data
+ * - Flexible parameters: Supports generic parameter types for different authentication methods
+ * - Flexible results: Supports generic result types for different credential structures
+ *
+ * Design decisions:
+ * - Generic credential type: Allows different credential structures (tokens, sessions, etc.)
+ * - Generic logout parameters: Allows different logout requirements (revokeAll, redirects)
+ * - Generic logout result: Allows different logout responses (e.g., success status, redirect URLs)
+ *
+ * @template CredentialType - The type of credential data returned after successful login
+ *
+ * @example Basic implementation
+ * ```typescript
+ * class AuthService implements LoginInterface<TokenCredential> {
+ *   async login(params: LoginParams): Promise<TokenCredential | null> {
+ *     // Implementation
+ *   }
+ *
+ *   async logout(): Promise<void> {
+ *     // Implementation
+ *   }
+ * }
+ * ```
+ */
 export interface LoginInterface<CredentialType> {
   /**
    * Authenticate user with credentials

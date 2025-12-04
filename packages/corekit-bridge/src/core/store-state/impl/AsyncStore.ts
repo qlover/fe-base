@@ -779,7 +779,6 @@ export class AsyncStore<T, Key, Opt = unknown>
     // If operation is in progress (endTime is 0 or not set), use current time
     const actualEnd = Number.isFinite(end) && end > 0 ? end : Date.now();
 
-    // 更严格的检查
     if (
       Number.isFinite(start) &&
       Number.isFinite(actualEnd) &&
@@ -788,7 +787,7 @@ export class AsyncStore<T, Key, Opt = unknown>
     ) {
       const duration = actualEnd - start;
 
-      // 额外检查：防止溢出或极大值
+      // Additional check to prevent overflow or large values
       if (duration < Number.MAX_SAFE_INTEGER) {
         return duration;
       }

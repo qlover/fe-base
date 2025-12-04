@@ -8,52 +8,185 @@ import { AsyncStore } from '../../store-state';
 import { LoggerInterface } from '@qlover/logger';
 
 /**
- * GatewayExecutorOptions is the options for the GatewayExecutor
+ * Gateway executor options
  *
- * - Except for the params property, other properties are read-only and cannot be modified
+ * This is a module/class that provides the core functionality for executing gateway actions.
+ * It extends the AsyncExecutor class and adds support for [action][before|success] hooks.
+ * It allows plugins to execute [action][before|success] hook logic.
+ * It also provides a way to handle errors through the onError hook.
+ *
+ * - Significance: Configuration options for executing gateway actions
+ * - Core idea: Provide context and configuration for gateway action execution
+ * - Main function: Pass execution context to plugins and gateway methods
+ * - Main purpose: Enable plugins to access service state and modify execution behavior
+ *
+ * Core features:
+ * - Action identification: Identifies which action is being executed
+ * - Service identification: Identifies which service is executing the action
+ * - Execution parameters: Provides parameters for the gateway method
+ * - Read-only context: Most properties are read-only to ensure execution stability
+ *
+ * Design decisions:
+ * - Read-only properties: Prevents plugins from modifying critical execution context
+ * - Mutable params: Allows plugins to modify parameters before execution
+ * - Extends base options: Inherits store, gateway, and logger configuration
+ *
+ * @template Params - The type of parameters for executing the gateway method
+ * @template T - The type of data stored in the async store
+ * @template Gateway - The type of gateway object
+ *
+ * @example Plugin usage
+ * ```typescript
+ * executor.use({
+ *   onBefore: (context) => {
+ *     console.log('Action:', context.parameters.actionName);
+ *     console.log('Service:', context.parameters.serviceName);
+ *     console.log('Params:', context.parameters.params);
+ *   }
+ * });
+ * ```
  */
 export interface GatewayExecutorOptions<Params, T, Gateway>
   extends Readonly<GatewayExecutorBaseOptions<T, Gateway, string>> {
   /**
    * Action name
    *
+   * The name of the gateway action being executed (e.g., 'login', 'logout', 'getUserInfo').
+   * This is used to identify which hooks should be called (e.g., `onLoginBefore`, `onLogoutSuccess`).
+   *
    * - Do not allow to modify actionName, this is to ensure the stability of the executor
    *
+   * @readonly
    */
   readonly actionName: string;
 
   /**
    * Service name
+   *
+   * The name of the service executing the action.
+   * Used for logging, debugging, and service identification.
+   *
+   * @readonly
    */
   readonly serviceName: string;
 
   /**
    * Parameters for executing gateway method
    *
+   * The parameters to pass to the gateway method.
+   * This is the only mutable property, allowing plugins to modify parameters before execution.
+   *
+   * @example Modify params in plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (context) => {
+   *     // Modify params before execution
+   *     context.parameters.params = {
+   *       ...context.parameters.params,
+   *       additionalField: 'value'
+   *     };
+   *   }
+   * });
+   * ```
    */
   params: Params;
 }
 
+/**
+ * Gateway executor base options
+ *
+ * - Significance: Base configuration options for gateway executor
+ * - Core idea: Provide common configuration for store, gateway, and logger
+ * - Main function: Configure executor infrastructure components
+ * - Main purpose: Enable consistent executor configuration across different services
+ *
+ * Core features:
+ * - Store configuration: Optional async store for state management
+ * - Gateway configuration: Optional gateway instance for API operations
+ * - Logger configuration: Optional logger for execution logging
+ *
+ * Design decisions:
+ * - All properties optional: Allows flexible executor configuration
+ * - Generic types: Supports different store and gateway types
+ * - Default values: Provides sensible defaults (null for gateway/logger)
+ *
+ * @template T - The type of data stored in the async store
+ * @template Gateway - The type of gateway object
+ * @template Key - The type of key used for store operations (default: string)
+ *
+ * @example Basic usage
+ * ```typescript
+ * const options: GatewayExecutorBaseOptions<User, UserGateway> = {
+ *   store: new AsyncStore<User>(),
+ *   gateway: new UserGateway(),
+ *   logger: new Logger()
+ * };
+ * ```
+ */
 export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
   /**
    * Store instance for the service
    *
-   * @default `AsyncStore<T, string>`
+   * The async store instance used for state management during gateway action execution.
+   * Plugins can access and modify store state through this instance.
+   *
+   * @default `undefined` (store will be created if not provided)
+   *
+   * @example Access store in plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (context) => {
+   *     const store = context.parameters.store;
+   *     if (store) {
+   *       store.start();
+   *     }
+   *   }
+   * });
+   * ```
    */
   store?: AsyncStore<T, Key>;
 
   /**
    * Gateway instance for the service
+   *
+   * The gateway instance that provides API methods for the service.
+   * Plugins can access gateway methods through this instance.
+   *
    * @default `null`
+   *
+   * @example Access gateway in plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (context) => {
+   *     const gateway = context.parameters.gateway;
+   *     if (gateway) {
+   *       // Access gateway methods
+   *     }
+   *   }
+   * });
+   * ```
    */
   gateway?: Gateway | null;
 
   /**
    * Logger instance for the service
    *
-   * - Future use logger to record the log of service execution
+   * The logger instance used for recording service execution logs.
+   * Future use: Logger will record detailed logs of service execution for debugging and monitoring.
    *
-   * @default `null`
+   * @default `undefined`
+   *
+   * @example Use logger in plugin
+   * ```typescript
+   * executor.use({
+   *   onBefore: (context) => {
+   *     const logger = context.parameters.logger;
+   *     if (logger) {
+   *       logger.info('Executing action:', context.parameters.actionName);
+   *     }
+   *   }
+   * });
+   * ```
    */
   logger?: LoggerInterface;
 }
@@ -61,16 +194,20 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
 /**
  * GatewayExecutor for executing gateway actions with plugin support
  *
+ * Extends `AsyncExecutor` to provide enhanced gateway action execution with action-specific hook support.
+ * This executor allows plugins to hook into specific actions (e.g., `onLoginBefore`, `onLogoutSuccess`)
+ * in addition to general execution hooks. It maintains consistency in error handling while providing
+ * flexible plugin integration for custom execution logic.
+ *
  * - Allow plugins to execute [action][before|success] hook logic
  * - Plugins can define hooks like: onLoginBefore, onLoginSuccess
  * - Error handling is done through Executor's onError hook, users can define on[Action]Error hooks manually
  *
+ * Extends `AsyncExecutor` and adds support for [action][before|success] hooks.
  *
- * 扩展了AsyncExecutor，增加了[action][before|success] hook的支持
+ * For example, if you need to execute a hook before action=login, you have two options:
  *
- * 比如需要在执行 action=login 之前的hook你可以有两种方式:
- *
- * 1. 使用 use 方法注册 plugin, 在 onBefore 单独判断 action=login 的情况
+ * 1. Use the `use` method to register a plugin and check for action=login in the onBefore hook
  *
  * @example
  * ```typescript
@@ -82,7 +219,8 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
  *   }
  * });
  * ```
- * 2. 直接使用颗粒度小的 onLoginBefore 中执行 hook 逻辑
+ *
+ * 2. Use the more granular onLoginBefore hook directly
  *
  * @example
  * ```typescript
@@ -93,9 +231,9 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
  * });
  * ```
  *
- * 但是，如果同时存在 onBefore 和 onLoginBefore 两个 hook 都会被执行，onBefore 在 onLoginBefore 之前执行
+ * However, if both onBefore and onLoginBefore hooks exist, both will be executed, with onBefore executing before onLoginBefore.
  *
- * 如果有多个 action 且before都需要被执行，你可以这样做:
+ * If you have multiple actions and need before hooks for all of them, you can do this:
  *
  * @example action=['login', 'logout']
  * ```typescript
@@ -111,7 +249,7 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
  *   }
  * });
  *
- * // 或者使用颗粒度小的 onLoginBefore 和 onLogoutBefore 中执行 hook 逻辑
+ * // Or use the more granular onLoginBefore and onLogoutBefore hooks
  * this.use({
  *   onLoginBefore: (context) => {
  *    // onLoginBefore hook logic
@@ -122,10 +260,10 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
  * });
  * ```
  *
- * 当发生错误的时候, 没有提供对应的 [action][error] hook, 这是为了考虑错误处理机制处理的统一性问题，
- * 因为整个 AsyncExecutor 的错误是统一由 catch 捕获并交由 onError 处理，我们不去修改它正常的捕获流程避免增加复杂度
+ * When an error occurs, there is no corresponding [action][error] hook provided. This is to maintain consistency in error handling,
+ * because all errors in AsyncExecutor are caught by catch and handled by onError. We don't modify the normal error handling flow to avoid increasing complexity.
  *
- * 如果需要针对特定 action 的错误处理, 可以在 onError hook 中处理
+ * If you need error handling for a specific action, you can handle it in the onError hook:
  *
  * @example
  * ```typescript
@@ -143,6 +281,24 @@ export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
  * });
  */
 export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
+  /**
+   * Generate hook name for a specific action and type
+   *
+   * Converts an action name and hook type into a hook method name.
+   * Follows the naming convention: `on{Action}{Type}` (e.g., `onLoginBefore`, `onLogoutSuccess`).
+   *
+   * @param action - The action name (e.g., 'login', 'logout')
+   * @param type - The hook type ('before' or 'success')
+   * @returns The generated hook name (e.g., 'onLoginBefore', 'onLogoutSuccess')
+   *
+   * @example
+   * ```typescript
+   * executor.getHookName('login', 'before'); // Returns 'onLoginBefore'
+   * executor.getHookName('logout', 'success'); // Returns 'onLogoutSuccess'
+   * ```
+   *
+   * @internal This method is used internally to resolve hook names for plugins
+   */
   getHookName(action: string, type: 'before' | 'success'): string {
     return `on${firstUppercase(String(action))}${firstUppercase(type)}`;
   }
@@ -180,6 +336,36 @@ export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
     context.returnValue = await actualTask(context);
   }
 
+  /**
+   * Run before-action hooks for a specific action
+   *
+   * Executes action-specific before hooks (e.g., `onLoginBefore`, `onLogoutBefore`)
+   * for the action being executed. These hooks run after general `onBefore` hooks
+   * but before the gateway method execution.
+   *
+   * Hook execution order:
+   * 1. General `onBefore` hooks (from `AsyncExecutor`)
+   * 2. Action-specific before hooks (this method, e.g., `onLoginBefore`)
+   * 3. Gateway method execution
+   *
+   * @template Params - The type of parameters for the action
+   * @param context - The executor context containing action parameters and state
+   *
+   * @example Hook execution order
+   * ```typescript
+   * executor.use({
+   *   onBefore: async (context) => {
+   *     console.log('1. General before hook');
+   *   },
+   *   onLoginBefore: async (context) => {
+   *     console.log('2. Login-specific before hook');
+   *   }
+   * });
+   * // Output: 1, then 2
+   * ```
+   *
+   * @internal This method is called by `GatewayService.execute` during action execution
+   */
   async runBeforeAction<Params = unknown>(
     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
   ): Promise<void> {
@@ -190,6 +376,36 @@ export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
     );
   }
 
+  /**
+   * Run success-action hooks for a specific action
+   *
+   * Executes action-specific success hooks (e.g., `onLoginSuccess`, `onLogoutSuccess`)
+   * for the action being executed. These hooks run after the gateway method execution
+   * succeeds but before general `onSuccess` hooks.
+   *
+   * Hook execution order:
+   * 1. Gateway method execution
+   * 2. Action-specific success hooks (this method, e.g., `onLoginSuccess`)
+   * 3. General `onSuccess` hooks (from `AsyncExecutor`)
+   *
+   * @template Params - The type of parameters for the action
+   * @param context - The executor context containing action parameters, state, and return value
+   *
+   * @example Hook execution order
+   * ```typescript
+   * executor.use({
+   *   onLoginSuccess: async (context) => {
+   *     console.log('1. Login-specific success hook');
+   *   },
+   *   onSuccess: async (context) => {
+   *     console.log('2. General success hook');
+   *   }
+   * });
+   * // Output: 1, then 2
+   * ```
+   *
+   * @internal This method is called by `GatewayService.execute` after successful action execution
+   */
   async runSuccessAction<Params = unknown>(
     context: ExecutorContext<GatewayExecutorOptions<Params, T, Gateway>>
   ): Promise<void> {

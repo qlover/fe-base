@@ -7,17 +7,60 @@ import { ServiceAction } from './ServiceAction';
 /**
  * Login service implementation
  *
- * @template Credential - Login credential type
- * @template Store - Store type for login state
- * @param store - Store instance for login state
- * @param gateway - Gateway instance for authentication
- * @returns Login service instance
+ * Concrete implementation of the login service that provides user authentication functionality with
+ * integrated state management. This service extends `GatewayService` to handle login and logout operations,
+ * automatically managing credential state through an async store. It supports various authentication methods
+ * and ensures security by always clearing local state on logout, even if the gateway logout fails.
  *
- * @example Simple usage
+ * - Significance: Provides user authentication functionality with state management
+ * - Core idea: Extend `GatewayService` to handle login and logout operations
+ * - Main function: Execute authentication through gateway and manage credential state
+ * - Main purpose: Enable reactive login services with persistent state and API gateway support
+ *
+ * Core features:
+ * - User login: Authenticate users with various credential types (email/phone + password/code)
+ * - User logout: Clear authentication state and call logout gateway
+ * - State management: Track login state (loading, success, error) via async store
+ * - Gateway integration: Execute login/logout through gateway interface
+ * - Plugin support: Supports plugins for custom login logic
+ * - Security: Always clears local state on logout, even if gateway logout fails
+ *
+ * Design decisions:
+ * - Extends `GatewayService`: Inherits store, gateway, and executor infrastructure
+ * - Implements `LoginServiceInterface`: Provides login contract
+ * - Uses `ServiceAction.LOGIN`: Identifies login action for plugin hooks
+ * - Generic credential type: Supports different credential structures (tokens, sessions, etc.)
+ * - Logout security: Always resets local state in `finally` block for security
+ *
+ * @template Credential - The type of credential data returned after successful login
+ * @template Store - The async store type that manages credential state
+ *
+ * @example Basic usage
  * ```typescript
- * const loginService = new LoginService();
- * const store = loginService.getStore();
- * store.start();
+ * const loginService = new LoginService<TokenCredential>(
+ *   'LoginService',
+ *   {
+ *     gateway: new AuthGateway(),
+ *     logger: new Logger()
+ *   }
+ * );
+ *
+ * const credential = await loginService.login({
+ *   email: 'user@example.com',
+ *   password: 'password123'
+ * });
+ * ```
+ *
+ * @example With plugin
+ * ```typescript
+ * loginService.use({
+ *   onLoginBefore: async (context) => {
+ *     console.log('Starting login...');
+ *   },
+ *   onLoginSuccess: async (context) => {
+ *     console.log('Login successful:', context.returnValue);
+ *   }
+ * });
  * ```
  */
 export class LoginService<
