@@ -1,6 +1,11 @@
-import { KeyStorage } from '@qlover/fe-corekit';
+import { KeyStorage, KeyStorageOptions } from '@qlover/fe-corekit';
 import { type ExpiresInType, QuickerTime } from '../utils/QuickerTime';
-import { TokenStorageOptions } from '../../store-state';
+
+export interface TokenStorageOptions<Key = string>
+  extends KeyStorageOptions<Key> {
+  quickerTime?: QuickerTime;
+  expires?: ExpiresInType;
+}
 
 /**
  * 相对于是一个 ObjectStorage 别名
