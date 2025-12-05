@@ -3,7 +3,7 @@ import {
   ExecutorContext,
   PromiseTask
 } from '@qlover/fe-corekit';
-import { firstUppercase } from '../utils';
+import { firstUppercase } from '../utils/firstUppercase';
 import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
@@ -68,7 +68,7 @@ export interface GatewayExecutorOptions<Params, T, Gateway>
    * });
    * ```
    */
-  params: Params;
+  params?: Params;
 }
 
 /**

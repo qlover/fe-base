@@ -35,6 +35,24 @@ export interface ExecutorServiceInterface<
   ): void;
 
   /**
+   * Create executor options for a service action
+   *
+   * Creates the options object passed to the executor for executing a gateway action.
+   * This includes action name, service name, store, gateway, logger, and parameters.
+   *
+   * The `actionName` is read-only to ensure execution stability.
+   *
+   * @template Action - The gateway action name type (string or keyof Gateway)
+   * @param action - The gateway action name
+   * @returns Executor options object with all necessary context
+   *
+   * @internal This method is used internally by `execute` and typically doesn't need to be called directly
+   */
+  createExecOptions<Action extends keyof Gateway>(
+    action: Action
+  ): ExecutorServiceOptions<any, Gateway>;
+
+  /**
    * Execute a gateway action
    *
    * Supports multiple calling patterns:

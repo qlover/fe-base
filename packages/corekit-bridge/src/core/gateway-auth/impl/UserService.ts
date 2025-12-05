@@ -134,19 +134,22 @@ export type UserServicePlugin<
   Credential,
   User,
   Actions extends readonly ServiceActionType[] = readonly ServiceActionType[]
-> = ExecutorPlugin<
-  GatewayExecutorOptions<
-    unknown,
-    Credential,
-    UserServiceGateway<Credential, User>
-  >
-> &
+> = ExecutorPlugin<UserServiceExecutorOptions<unknown, Credential, User>> &
   GatewayBasePluginType<
     Actions,
     unknown,
     Credential,
     UserServiceGateway<Credential, User>
   >;
+
+export interface UserServiceExecutorOptions<Params, Credential, User>
+  extends GatewayExecutorOptions<
+    Params,
+    Credential,
+    UserServiceGateway<Credential, User>
+  > {
+  userStore: AsyncStore<User, string>;
+}
 
 /**
  * User service implementation
@@ -360,6 +363,16 @@ export class UserService<Credential, User>
     return this.userInfoService.getUser();
   }
 
+  override createExecOptions<Params>(
+    action: keyof UserServiceGateway<Credential, User>,
+    params?: Params
+  ): UserServiceExecutorOptions<Params, Credential, User> {
+    return {
+      ...super.createExecOptions(action, params),
+      userStore: this.getUserInfoStore()
+    };
+  }
+
   /**
    * Logout current user
    *
@@ -382,10 +395,14 @@ export class UserService<Credential, User>
    * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
    * ```
    */
-  public logout<LogoutParams = unknown, LogoutResult = void>(
+  public async logout<LogoutParams = unknown, LogoutResult = void>(
     params?: LogoutParams
   ): Promise<LogoutResult> {
-    return this.loginService.logout(params);
+    const result = await this.loginService.logout<LogoutParams, LogoutResult>(
+      params
+    );
+    this.userInfoService.getStore().reset();
+    return result;
   }
 
   /**
@@ -437,10 +454,14 @@ export class UserService<Credential, User>
    * });
    * ```
    */
-  public login<Params extends LoginParams>(
+  public async login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
-    return this.loginService.login(params);
+    const credential = await this.loginService.login(params);
+    if (credential) {
+      await this.userInfoService.getUserInfo(credential);
+    }
+    return credential;
   }
 
   /**

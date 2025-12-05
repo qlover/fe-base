@@ -276,6 +276,7 @@ export abstract class GatewayService<
    *
    * The `actionName` is read-only to ensure execution stability.
    *
+   * @override
    * @template Params - The type of parameters for the action
    * @param action - The gateway action name
    * @param params - The parameters to pass to the gateway method
@@ -283,9 +284,9 @@ export abstract class GatewayService<
    *
    * @internal This method is used internally by `execute` and typically doesn't need to be called directly
    */
-  protected createServiceOptions<Params>(
+  createExecOptions<Params>(
     action: keyof Gateway,
-    params: Params
+    params?: Params
   ): GatewayExecutorOptions<Params, T, Gateway> {
     return {
       // Do not allow to modify actionName, this is to ensure the stability of the executor
@@ -399,7 +400,7 @@ export abstract class GatewayService<
     }
 
     const actionKey = action as keyof Gateway;
-    const options = this.createServiceOptions(actionKey, params);
+    const options = this.createExecOptions(actionKey, params);
 
     // Create execution function
     const computedFn = executionFn
