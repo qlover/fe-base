@@ -7,7 +7,7 @@ export * from './impl/UserService';
 export * from './impl/ServiceAction';
 export * from './impl/UserInfoService';
 export * from './impl/UserService';
-export * from './interface/BaseServiceInterface';
+export * from './interface/base/BaseServiceInterface';
 export * from './interface/LoginInterface';
 export * from './interface/LoginServiceInterface';
 export * from './interface/RegisterInterface';

@@ -247,7 +247,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
     if (returnValue == null) {
       throw new ExecutorError(
         'SERVICE_RESULT_NULL',
-        `${serviceName}: ${String(actionName)} - Result is null`
+        `${serviceName.toString()}: ${String(actionName)} - Result is null`
       );
     }
 
@@ -255,7 +255,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
     if (logger) {
       const ms = store?.getDuration();
       logger.debug(
-        `${serviceName}: ${String(actionName)} - success(${ms}ms)`,
+        `${serviceName.toString()}: ${String(actionName)} - success(${ms}ms)`,
         returnValue
       );
     }

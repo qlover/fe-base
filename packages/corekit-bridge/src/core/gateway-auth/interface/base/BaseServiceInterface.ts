@@ -1,7 +1,10 @@
+import { LoggerInterface } from '@qlover/logger';
 import {
   AsyncStoreInterface,
   AsyncStoreStateInterface
-} from '../../store-state';
+} from '../../../store-state';
+
+export type ServiceGatewayType = object;
 
 /**
  * Base service interface
@@ -47,7 +50,7 @@ import {
 export interface BaseServiceInterface<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<any>>,
-  Gateway
+  Gateway extends ServiceGatewayType
 > {
   /**
    * Service name identifier
@@ -57,7 +60,7 @@ export interface BaseServiceInterface<
    *
    * @readonly
    */
-  readonly serviceName: string;
+  readonly serviceName: string | symbol;
 
   /**
    * Get the async store instance
@@ -108,5 +111,15 @@ export interface BaseServiceInterface<
    * }
    * ```
    */
-  getGateway(): Gateway | null;
+  getGateway(): Gateway | undefined;
+
+  /**
+   * Get the logger instance
+   *
+   * Returns the logger instance used by this service for logging.
+   * Returns `null` if no logger was configured.
+   *
+   * @returns The logger instance, or `null` if not configured
+   */
+  getLogger(): LoggerInterface | undefined;
 }

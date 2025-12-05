@@ -1,13 +1,9 @@
-import { AsyncStore, AsyncStoreOptions } from '../../store-state';
-import { LoggerInterface } from '@qlover/logger';
-import { BaseServiceInterface } from '../interface/BaseServiceInterface';
-import {
-  GatewayExecutor,
-  GatewayExecutorBaseOptions,
-  GatewayExecutorOptions
-} from './GatewayExecutor';
+import { AsyncStore } from '../../store-state';
+import { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
+import { GatewayExecutor, GatewayExecutorOptions } from './GatewayExecutor';
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { createStore } from '../../store-state/impl/createStore';
+import { ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import { BaseService, BaseServiceOptions } from './BaseService';
 
 /**
  * Gateway service options
@@ -36,8 +32,9 @@ import { createStore } from '../../store-state/impl/createStore';
  * ```
  */
 export interface GatewayServiceOptions<T, Gateway, Key = string>
-  extends GatewayExecutorBaseOptions<T, Gateway, Key>,
-    AsyncStoreOptions<T, Key> {}
+  extends BaseServiceOptions<T, Gateway, Key> {
+  executor?: GatewayExecutor<T, Gateway>;
+}
 
 type ExecuteFn<Params, Result, Gateway> = (
   params: Params,
@@ -124,44 +121,24 @@ type ExecuteFn<Params, Result, Gateway> = (
  * ```
  */
 export abstract class GatewayService<
-  T,
-  Gateway extends object,
-  Store extends AsyncStore<T, string>
-> implements BaseServiceInterface<Store, Gateway>
+    T,
+    Gateway extends ServiceGatewayType,
+    Store extends AsyncStore<T, string>
+  >
+  extends BaseService<T, Gateway, Store>
+  implements ExecutorServiceInterface<Store, Gateway>
 {
-  protected readonly store: Store;
-  protected readonly gateway: Gateway | null = null;
-  protected readonly logger?: LoggerInterface;
-  protected readonly executor: GatewayExecutor<T, Gateway>;
+  protected readonly executor?: GatewayExecutor<T, Gateway>;
 
-  constructor(
-    readonly serviceName: string,
-    options?: GatewayServiceOptions<T, Gateway, string>
-  ) {
-    this.store = createStore(options) as Store;
-    this.gateway = options?.gateway ?? null;
-    this.logger = options?.logger;
-    this.executor = new GatewayExecutor<T, Gateway>();
+  constructor(options: GatewayServiceOptions<T, Gateway, string>) {
+    const { executor, ...baseOptions } = options;
+    super(baseOptions);
+
+    this.executor = executor;
   }
 
-  /**
-   * Get the store instance for the service
-   *
-   * @override
-   * @returns The store instance for the service
-   */
-  public getStore(): Store {
-    return this.store.getStore();
-  }
-
-  /**
-   * Get the gateway instance for the service
-   *
-   * @override
-   * @returns The gateway instance for the service
-   */
-  public getGateway(): Gateway | null {
-    return this.gateway;
+  getExecutor(): GatewayExecutor<T, Gateway> | undefined {
+    return this.executor;
   }
 
   /**
@@ -173,6 +150,7 @@ export abstract class GatewayService<
    *
    * Plugins are executed in registration order for each hook type.
    *
+   * @override
    * @template Plugin - The plugin type that extends `ExecutorPlugin`
    * @param plugin - The plugin(s) to register with the service
    *   Can be a single plugin or an array of plugins
@@ -217,8 +195,12 @@ export abstract class GatewayService<
   public use<
     Plugin extends ExecutorPlugin<GatewayExecutorOptions<unknown, T, Gateway>>
   >(plugin: Plugin | Plugin[]): this {
+    if (!this.executor) {
+      throw new Error(`${String(this.serviceName)} Executor is not set`);
+    }
+
     if (Array.isArray(plugin)) {
-      plugin.forEach((p) => this.executor.use(p));
+      plugin.forEach((p) => this.getExecutor()?.use(p));
       return this;
     }
 
@@ -262,12 +244,25 @@ export abstract class GatewayService<
       this.gateway != null &&
       typeof this.gateway[action] === 'function'
     ) {
-      return async (params, _gateway, _action) =>
-        (await (
-          _gateway?.[_action] as unknown as (
-            params: unknown
-          ) => Promise<unknown>
-        )(params)) ?? null;
+      return async (params, _gateway, _action) => {
+        if (!_gateway) {
+          return null;
+        }
+
+        const gatewayMethod = _gateway[_action] as unknown as (
+          ...args: unknown[]
+        ) => Promise<unknown>;
+
+        // Bind this context to gateway to preserve gateway's this
+        const boundMethod = gatewayMethod.bind(_gateway);
+
+        // If params is an array, spread it; otherwise pass as single argument
+        if (Array.isArray(params)) {
+          return (await boundMethod(...params)) ?? null;
+        } else {
+          return (await boundMethod(params)) ?? null;
+        }
+      };
     }
 
     return () => Promise.resolve(null);
@@ -311,6 +306,12 @@ export abstract class GatewayService<
    * Executes a gateway action through the executor with plugin support and state management.
    * This is the main method used by subclasses to execute gateway operations.
    *
+   * Supports multiple calling patterns:
+   * 1. `execute(action)` - Execute action without parameters
+   * 2. `execute(action, params)` - Execute action with single parameter
+   * 3. `execute(action, ...params)` - Execute action with multiple parameters
+   * 4. `execute(action, fn)` - Execute action with custom function that receives gateway
+   *
    * Execution flow:
    * 1. Creates executor options with action context
    * 2. Resolves execution function (custom function or default gateway method)
@@ -322,53 +323,110 @@ export abstract class GatewayService<
    *
    * If an error occurs, the executor's `onError` hooks are called and the error is rethrown.
    *
-   * @template Params - The type of parameters for the action
    * @template Result - The type of result returned by the action
    * @template Action - The gateway action name type
-   * @param action - The gateway action name (must match a method name on the gateway if using default function)
-   * @param params - The parameters to pass to the gateway method
-   * @param fn - Optional custom execution function. If not provided, automatically resolves
-   *   the gateway method matching the action name. If the method doesn't exist, returns `null`.
+   * @param action - The gateway action name
+   * @param paramsOrFn - Either parameters (single or multiple) or a custom execution function
+   * @param restParams - Additional parameters if multiple parameters are provided
    * @returns Promise resolving to the action result
    *
-   * @example Using default gateway method
+   * @example Execute without parameters
    * ```typescript
-   * // Gateway has a method named 'login'
-   * const credential = await this.execute('login', { email, password });
+   * await this.execute(ServiceAction.LOGOUT);
    * ```
    *
-   * @example Using custom execution function
+   * @example Execute with single parameter
    * ```typescript
-   * const result = await this.execute('customAction', params, async (params, gateway) => {
-   *   // Custom execution logic
-   *   return await someCustomFunction(params);
+   * await this.execute(ServiceAction.LOGIN, { email, password });
+   * ```
+   *
+   * @example Execute with multiple parameters
+   * ```typescript
+   * await this.execute(ServiceAction.LOGIN, params1, params2, params3);
+   * ```
+   *
+   * @example Execute with custom function
+   * ```typescript
+   * await this.execute(ServiceAction.LOGIN, (gateway) => {
+   *   return gateway.login(params1, params2);
    * });
    * ```
-   *
-   * @example Error handling
-   * ```typescript
-   * try {
-   *   const result = await this.execute('login', params);
-   * } catch (error) {
-   *   // Error hooks have been called, store state updated
-   *   console.error('Action failed:', error);
-   * }
-   * ```
    */
-  protected async execute<Params, Result, Action extends keyof Gateway>(
+  // Overload 1: execute(action, fn) - custom function (must be first for proper type inference)
+  public async execute<Result, Action extends string | keyof Gateway>(
     action: Action,
-    params: Params,
-    fn?: ExecuteFn<Params, Result, Gateway>
+    fn: (gateway: Gateway | null) => Promise<Result>
+  ): Promise<Result>;
+  // Overload 2: execute(action) - no parameters
+  public async execute<Result, Action extends string | keyof Gateway>(
+    action: Action
+  ): Promise<Result>;
+  // Overload 3: execute(action, params) - single parameter
+  public async execute<Result, Action extends string | keyof Gateway, Params>(
+    action: Action,
+    params: Params
+  ): Promise<Result>;
+  // Overload 4: execute(action, ...params) - multiple parameters
+  public async execute<Result, Action extends string | keyof Gateway>(
+    action: Action,
+    ...params: unknown[]
+  ): Promise<Result>;
+  // Implementation
+  public async execute<Result, Action extends string | keyof Gateway>(
+    action: Action,
+    paramsOrFn?: unknown | ((gateway: Gateway | null) => Promise<Result>),
+    ...restParams: unknown[]
   ): Promise<Result> {
-    const options = this.createServiceOptions(action, params);
-    const computedFn = fn ?? this.createDefaultFn(action);
+    // Determine if paramsOrFn is a function (custom execution function)
+    const isFunction = typeof paramsOrFn === 'function';
+
+    let params: unknown;
+    let executionFn: ((gateway: Gateway | null) => Promise<Result>) | undefined;
+
+    if (isFunction) {
+      // Pattern 4: execute(action, fn)
+      executionFn = paramsOrFn as (gateway: Gateway | null) => Promise<Result>;
+      params = undefined;
+    } else {
+      // Pattern 1, 2, 3: execute(action) or execute(action, params) or execute(action, ...params)
+      if (restParams.length > 0) {
+        // Pattern 3: Multiple parameters - combine into array
+        params = [paramsOrFn, ...restParams];
+      } else {
+        // Pattern 1 or 2: No params or single param
+        params = paramsOrFn;
+      }
+    }
+
+    const actionKey = action as keyof Gateway;
+    const options = this.createServiceOptions(actionKey, params);
+
+    // Create execution function
+    const computedFn = executionFn
+      ? async (
+          _params: unknown,
+          gateway: Gateway | null,
+          _action: keyof Gateway
+        ) => {
+          return await executionFn!(gateway);
+        }
+      : this.createDefaultFn(actionKey);
+
+    // If no executor, directly execute the function
+    if (!this.executor) {
+      return (await computedFn(
+        params,
+        this.gateway ?? null,
+        actionKey
+      )) as Result;
+    }
 
     return await this.executor.exec(options, async (context) => {
-      await this.executor.runBeforeAction(context);
+      await this.executor!.runBeforeAction(context);
 
-      const result = await computedFn(params, this.gateway, action);
+      const result = await computedFn(params, this.gateway ?? null, actionKey);
 
-      await this.executor.runSuccessAction(context);
+      await this.executor!.runSuccessAction(context);
 
       return result as Result;
     });

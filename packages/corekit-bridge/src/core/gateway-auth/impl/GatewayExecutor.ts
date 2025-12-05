@@ -4,8 +4,7 @@ import {
   PromiseTask
 } from '@qlover/fe-corekit';
 import { firstUppercase } from '../utils';
-import { AsyncStore } from '../../store-state';
-import { LoggerInterface } from '@qlover/logger';
+import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
  * Gateway executor options
@@ -47,29 +46,7 @@ import { LoggerInterface } from '@qlover/logger';
  * ```
  */
 export interface GatewayExecutorOptions<Params, T, Gateway>
-  extends Readonly<GatewayExecutorBaseOptions<T, Gateway, string>> {
-  /**
-   * Action name
-   *
-   * The name of the gateway action being executed (e.g., 'login', 'logout', 'getUserInfo').
-   * This is used to identify which hooks should be called (e.g., `onLoginBefore`, `onLogoutSuccess`).
-   *
-   * - Do not allow to modify actionName, this is to ensure the stability of the executor
-   *
-   * @readonly
-   */
-  readonly actionName: string;
-
-  /**
-   * Service name
-   *
-   * The name of the service executing the action.
-   * Used for logging, debugging, and service identification.
-   *
-   * @readonly
-   */
-  readonly serviceName: string;
-
+  extends Readonly<ExecutorServiceOptions<T, Gateway>> {
   /**
    * Parameters for executing gateway method
    *
@@ -90,105 +67,6 @@ export interface GatewayExecutorOptions<Params, T, Gateway>
    * ```
    */
   params: Params;
-}
-
-/**
- * Gateway executor base options
- *
- * - Significance: Base configuration options for gateway executor
- * - Core idea: Provide common configuration for store, gateway, and logger
- * - Main function: Configure executor infrastructure components
- * - Main purpose: Enable consistent executor configuration across different services
- *
- * Core features:
- * - Store configuration: Optional async store for state management
- * - Gateway configuration: Optional gateway instance for API operations
- * - Logger configuration: Optional logger for execution logging
- *
- * Design decisions:
- * - All properties optional: Allows flexible executor configuration
- * - Generic types: Supports different store and gateway types
- * - Default values: Provides sensible defaults (null for gateway/logger)
- *
- * @template T - The type of data stored in the async store
- * @template Gateway - The type of gateway object
- * @template Key - The type of key used for store operations (default: string)
- *
- * @example Basic usage
- * ```typescript
- * const options: GatewayExecutorBaseOptions<User, UserGateway> = {
- *   store: new AsyncStore<User>(),
- *   gateway: new UserGateway(),
- *   logger: new Logger()
- * };
- * ```
- */
-export interface GatewayExecutorBaseOptions<T, Gateway, Key = string> {
-  /**
-   * Store instance for the service
-   *
-   * The async store instance used for state management during gateway action execution.
-   * Plugins can access and modify store state through this instance.
-   *
-   * @default `undefined` (store will be created if not provided)
-   *
-   * @example Access store in plugin
-   * ```typescript
-   * executor.use({
-   *   onBefore: (context) => {
-   *     const store = context.parameters.store;
-   *     if (store) {
-   *       store.start();
-   *     }
-   *   }
-   * });
-   * ```
-   */
-  store?: AsyncStore<T, Key>;
-
-  /**
-   * Gateway instance for the service
-   *
-   * The gateway instance that provides API methods for the service.
-   * Plugins can access gateway methods through this instance.
-   *
-   * @default `null`
-   *
-   * @example Access gateway in plugin
-   * ```typescript
-   * executor.use({
-   *   onBefore: (context) => {
-   *     const gateway = context.parameters.gateway;
-   *     if (gateway) {
-   *       // Access gateway methods
-   *     }
-   *   }
-   * });
-   * ```
-   */
-  gateway?: Gateway | null;
-
-  /**
-   * Logger instance for the service
-   *
-   * The logger instance used for recording service execution logs.
-   * Future use: Logger will record detailed logs of service execution for debugging and monitoring.
-   *
-   * @default `undefined`
-   *
-   * @example Use logger in plugin
-   * ```typescript
-   * executor.use({
-   *   onBefore: (context) => {
-   *     const logger = context.parameters.logger;
-   *     if (logger) {
-   *       logger.info('Executing action:', context.parameters.actionName);
-   *     }
-   *   }
-   * });
-   * ```
-   */
-  logger?: LoggerInterface;
 }
 
 /**

@@ -13,9 +13,15 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { GatewayService } from '../../src/core/gateway-auth/impl/GatewayService';
+import {
+  GatewayService,
+  GatewayServiceOptions
+} from '../../src/core/gateway-auth/impl/GatewayService';
 import { AsyncStore } from '../../src/core/store-state';
-import { GatewayExecutorOptions } from '../../src/core/gateway-auth/impl/GatewayExecutor';
+import {
+  GatewayExecutor,
+  GatewayExecutorOptions
+} from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import {
   ExecutorPlugin,
   ExecutorError,
@@ -87,6 +93,20 @@ class TestGatewayService extends GatewayService<
   MockGateway,
   AsyncStore<TestUser, string>
 > {
+  constructor(
+    serviceName: string | symbol,
+    options?: Omit<
+      GatewayServiceOptions<TestUser, MockGateway, string>,
+      'serviceName' | 'actionName'
+    >
+  ) {
+    super({
+      serviceName,
+      actionName: 'test',
+      ...options
+    });
+  }
+
   async getUser(id: number): Promise<TestUser | null> {
     return this.execute('getUser', { id });
   }
@@ -120,7 +140,8 @@ describe('GatewayService', () => {
     service = new TestGatewayService('TestService', {
       gateway: mockGateway,
       logger: mockLogger,
-      defaultState: () => null
+      defaultState: () => null,
+      executor: new GatewayExecutor<TestUser, MockGateway>()
     });
     // Register GatewayBasePlugin for automatic state management
     service.use(new GatewayBasePlguin<unknown, TestUser, MockGateway>());
@@ -147,7 +168,7 @@ describe('GatewayService', () => {
       const serviceWithoutGateway = new TestGatewayService('TestService', {
         defaultState: () => null
       });
-      expect(serviceWithoutGateway.getGateway()).toBeNull();
+      expect(serviceWithoutGateway.getGateway()).toBeUndefined();
     });
 
     it('should create service with logger', () => {
@@ -155,7 +176,7 @@ describe('GatewayService', () => {
         logger: mockLogger,
         defaultState: () => null
       });
-      expect(serviceWithLogger.getGateway()).toBeNull();
+      expect(serviceWithLogger.getGateway()).toBeUndefined();
     });
 
     it('should create store instance', () => {
@@ -194,9 +215,9 @@ describe('GatewayService', () => {
       expect(gateway).toBe(mockGateway);
     });
 
-    it('should return null when gateway is not configured', () => {
+    it('should return undefined when gateway is not configured', () => {
       const serviceWithoutGateway = new TestGatewayService('TestService');
-      expect(serviceWithoutGateway.getGateway()).toBeNull();
+      expect(serviceWithoutGateway.getGateway()).toBeUndefined();
     });
   });
 
@@ -245,83 +266,365 @@ describe('GatewayService', () => {
   });
 
   describe('execute', () => {
-    it('should execute gateway method successfully', async () => {
-      const user = await service.getUser(1);
-      expect(user).toEqual({
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com'
+    describe('Pattern 1: execute(action) - no parameters', () => {
+      it('should execute gateway method without parameters', async () => {
+        const noParamsGateway = {
+          async getUsers(): Promise<TestUser[]> {
+            return [
+              { id: 1, name: 'John', email: 'john@example.com' },
+              { id: 2, name: 'Jane', email: 'jane@example.com' }
+            ];
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: noParamsGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute('getUsers');
+        expect(result).toEqual([
+          { id: 1, name: 'John', email: 'john@example.com' },
+          { id: 2, name: 'Jane', email: 'jane@example.com' }
+        ]);
+      });
+
+      it('should handle action without gateway method', async () => {
+        const testService = new TestGatewayService('TestService', {
+          defaultState: () => null
+        });
+        // Without executor, should return null
+        const result = await testService.execute('nonExistentMethod');
+        expect(result).toBeNull();
       });
     });
 
-    it('should update store state during execution', async () => {
-      const store = service.getStore();
-      expect(store.getLoading()).toBe(false);
+    describe('Pattern 2: execute(action, params) - single parameter', () => {
+      it('should execute gateway method with single parameter', async () => {
+        const user = await service.execute('getUser', { id: 1 });
+        expect(user).toEqual({
+          id: 1,
+          name: 'John Doe',
+          email: 'john@example.com'
+        });
+      });
 
-      const promise = service.getUser(1);
-      // Wait for async execution to start and GatewayBasePlugin.onBefore to be called
-      // The onBefore hook is called synchronously in the execution chain
-      // We need to wait a microtask for the promise chain to start
-      await Promise.resolve();
-      // Store should be in loading state after GatewayBasePlugin.onBefore is called
-      expect(store.getLoading()).toBe(true);
+      it('should handle object parameter', async () => {
+        const createParams = { name: 'New User', email: 'new@example.com' };
+        const result = await service.execute('createUser', createParams);
+        expect(result).toBeDefined();
+        expect(result).toHaveProperty('name', 'New User');
+        expect(result).toHaveProperty('email', 'new@example.com');
+      });
 
-      await promise;
-      expect(store.getLoading()).toBe(false);
-      expect(store.getResult()).toEqual({
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com'
+      it('should handle primitive parameter', async () => {
+        const primitiveGateway = {
+          async getUserById(id: number): Promise<TestUser> {
+            return { id, name: 'User', email: 'user@example.com' };
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: primitiveGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute('getUserById', 123);
+        expect(result).toEqual({
+          id: 123,
+          name: 'User',
+          email: 'user@example.com'
+        });
       });
     });
 
-    it('should execute with custom function', async () => {
-      const result = await service.customAction({ id: 1 });
-      expect(result).toEqual({
-        id: 999,
-        name: 'Custom',
-        email: 'custom@example.com'
+    describe('Pattern 3: execute(action, ...params) - multiple parameters', () => {
+      it('should execute gateway method with multiple parameters', async () => {
+        const multiParamsGateway = {
+          async createUserWithRole(
+            name: string,
+            email: string,
+            role: string
+          ): Promise<TestUser & { role: string }> {
+            return {
+              id: Date.now(),
+              name,
+              email,
+              role
+            };
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: multiParamsGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute(
+          'createUserWithRole',
+          'John Doe',
+          'john@example.com',
+          'admin'
+        );
+        expect(result).toHaveProperty('name', 'John Doe');
+        expect(result).toHaveProperty('email', 'john@example.com');
+        expect(result).toHaveProperty('role', 'admin');
+      });
+
+      it('should handle multiple parameters with different types', async () => {
+        const mixedParamsGateway = {
+          async updateUser(
+            id: number,
+            updates: Partial<TestUser>
+          ): Promise<TestUser> {
+            return {
+              id,
+              name: updates.name ?? 'Updated',
+              email: updates.email ?? 'updated@example.com'
+            };
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: mixedParamsGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute(
+          'updateUser',
+          1,
+          { name: 'Updated Name' },
+          true
+        );
+        expect(result).toHaveProperty('id', 1);
+        expect(result).toHaveProperty('name', 'Updated Name');
       });
     });
 
-    it('should handle gateway method that returns array', async () => {
-      const users = await service.getUsers();
-      expect(users).toEqual([
-        { id: 1, name: 'John', email: 'john@example.com' },
-        { id: 2, name: 'Jane', email: 'jane@example.com' }
-      ]);
-    });
-
-    it('should return null when gateway method does not exist', async () => {
-      const serviceWithoutGateway = new TestGatewayService('TestService', {
-        defaultState: () => null
+    describe('Pattern 4: execute(action, fn) - custom function', () => {
+      it('should execute with custom function', async () => {
+        const result = await service.execute('getUser', () => {
+          return Promise.resolve({
+            id: 999,
+            name: 'Custom',
+            email: 'custom@example.com'
+          } as TestUser);
+        });
+        expect(result).toEqual({
+          id: 999,
+          name: 'Custom',
+          email: 'custom@example.com'
+        });
       });
-      // Don't register GatewayBasePlugin - it will throw error on null result
-      // When gateway method doesn't exist, createDefaultFn returns a function that returns null
-      // Without GatewayBasePlugin, the service will return null
-      const result = await serviceWithoutGateway.getUser(1);
-      expect(result).toBeNull();
+
+      it('should pass gateway to custom function', async () => {
+        const customFn = vi.fn(async (gateway: MockGateway | null) => {
+          if (gateway) {
+            return await gateway.getUser({ id: 1 });
+          }
+          return null;
+        });
+
+        await service.execute('getUser', customFn);
+        expect(customFn).toHaveBeenCalledWith(mockGateway);
+      });
+
+      it('should handle null gateway in custom function', async () => {
+        const serviceWithoutGateway = new TestGatewayService('TestService', {
+          defaultState: () => null
+        });
+
+        const result = await serviceWithoutGateway.execute(
+          'getUser',
+          (gateway: MockGateway | null) => {
+            expect(gateway).toBeNull();
+            return Promise.resolve({
+              id: 0,
+              name: 'No Gateway',
+              email: 'no@example.com'
+            } as TestUser);
+          }
+        );
+        expect(result).toEqual({
+          id: 0,
+          name: 'No Gateway',
+          email: 'no@example.com'
+        });
+      });
+
+      it('should allow custom function to call multiple gateway methods', async () => {
+        const multiCallGateway: MockGateway = {
+          async getUser(params: { id: number }): Promise<TestUser> {
+            return { id: params.id, name: 'User', email: 'user@example.com' };
+          },
+          async getUsers(): Promise<TestUser[]> {
+            return [{ id: 1, name: 'User1', email: 'user1@example.com' }];
+          }
+        } as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: multiCallGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute('getUser', async (gateway) => {
+          if (!gateway) return null;
+          const user = await gateway.getUser({ id: 1 });
+          const users = await gateway.getUsers();
+          return { ...user, relatedUsers: users };
+        });
+
+        expect(result).toHaveProperty('id', 1);
+        expect(result).toHaveProperty('relatedUsers');
+      });
     });
 
-    it('should handle errors and update store state', async () => {
-      const errorGateway = {
-        async getUser(): Promise<TestUser> {
-          throw new Error('Gateway error');
+    describe('execute without executor', () => {
+      it('should execute directly without executor', async () => {
+        const serviceWithoutExecutor = new TestGatewayService('TestService', {
+          gateway: mockGateway,
+          defaultState: () => null
+          // No executor provided
+        });
+
+        const result = await serviceWithoutExecutor.execute('getUser', {
+          id: 1
+        });
+        expect(result).toEqual({
+          id: 1,
+          name: 'John Doe',
+          email: 'john@example.com'
+        });
+      });
+
+      it('should execute custom function without executor', async () => {
+        const serviceWithoutExecutor = new TestGatewayService('TestService', {
+          gateway: mockGateway,
+          defaultState: () => null
+        });
+
+        const result = await serviceWithoutExecutor.execute(
+          'getUser',
+          (_gateway: MockGateway | null) => {
+            return Promise.resolve({
+              id: 999,
+              name: 'Direct',
+              email: 'direct@example.com'
+            } as TestUser);
+          }
+        );
+        expect(result).toEqual({
+          id: 999,
+          name: 'Direct',
+          email: 'direct@example.com'
+        });
+      });
+    });
+
+    describe('execute with store state updates', () => {
+      it('should update store state during execution', async () => {
+        const store = service.getStore();
+        expect(store.getLoading()).toBe(false);
+
+        const promise = service.execute('getUser', { id: 1 });
+        // Wait for async execution to start and GatewayBasePlugin.onBefore to be called
+        await Promise.resolve();
+        expect(store.getLoading()).toBe(true);
+
+        await promise;
+        expect(store.getLoading()).toBe(false);
+        expect(store.getResult()).toEqual({
+          id: 1,
+          name: 'John Doe',
+          email: 'john@example.com'
+        });
+      });
+
+      it('should handle errors and update store state', async () => {
+        const errorGateway = {
+          async getUser(): Promise<TestUser> {
+            throw new Error('Gateway error');
+          }
+        } as unknown as MockGateway;
+
+        const errorService = new TestGatewayService('TestService', {
+          gateway: errorGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        errorService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        await expect(
+          errorService.execute('getUser', { id: 1 })
+        ).rejects.toThrow('Gateway error');
+
+        const store = errorService.getStore();
+        expect(store.getLoading()).toBe(false);
+        expect(store.getError()).toBeDefined();
+      });
+    });
+
+    describe('execute edge cases', () => {
+      it('should handle gateway method that returns array', async () => {
+        const users = await service.execute('getUsers', {});
+        expect(users).toEqual([
+          { id: 1, name: 'John', email: 'john@example.com' },
+          { id: 2, name: 'Jane', email: 'jane@example.com' }
+        ]);
+      });
+
+      it('should return null when gateway method does not exist', async () => {
+        const serviceWithoutGateway = new TestGatewayService('TestService', {
+          defaultState: () => null
+        });
+        const result = await serviceWithoutGateway.execute('nonExistentMethod');
+        expect(result).toBeNull();
+      });
+
+      it('should preserve gateway this context', async () => {
+        class GatewayWithThis {
+          private value = 'test-value';
+
+          async getValue(): Promise<string> {
+            return this.value;
+          }
         }
-      } as unknown as MockGateway;
 
-      const errorService = new TestGatewayService('TestService', {
-        gateway: errorGateway,
-        defaultState: () => null
+        const gatewayWithThis = new GatewayWithThis();
+        const testService = new TestGatewayService('TestService', {
+          gateway: gatewayWithThis as unknown as MockGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+
+        const result = await testService.execute('getValue');
+        expect(result).toBe('test-value');
       });
-      // Register GatewayBasePlugin for error handling
-      errorService.use(new GatewayBasePlguin<unknown, TestUser, MockGateway>());
-
-      await expect(errorService.getUser(1)).rejects.toThrow('Gateway error');
-
-      const store = errorService.getStore();
-      expect(store.getLoading()).toBe(false);
-      expect(store.getError()).toBeDefined();
     });
   });
 
@@ -354,7 +657,8 @@ describe('GatewayService', () => {
       const nullService = new TestGatewayService('TestService', {
         gateway: nullGateway,
         logger: mockLogger,
-        defaultState: () => null
+        defaultState: () => null,
+        executor: new GatewayExecutor<TestUser, MockGateway>()
       });
       // Register GatewayBasePlugin to enable null result validation
       nullService.use(new GatewayBasePlguin<unknown, TestUser, MockGateway>());
@@ -364,134 +668,329 @@ describe('GatewayService', () => {
   });
 
   describe('plugin hooks', () => {
-    it('should call onBefore hook', async () => {
-      const onBeforeHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<unknown, TestUser, MockGateway>
-      > = {
-        pluginName: 'TestPlugin',
-        onBefore: onBeforeHook
-      };
+    describe('general hooks', () => {
+      it('should call onBefore hook', async () => {
+        const onBeforeHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: onBeforeHook
+        };
 
-      service.use(plugin);
-      await service.getUser(1);
+        service.use(plugin);
+        await service.getUser(1);
 
-      expect(onBeforeHook).toHaveBeenCalled();
-      expect(onBeforeHook).toHaveBeenCalledWith(
-        expect.objectContaining({
-          parameters: expect.objectContaining({
-            actionName: 'getUser',
-            serviceName: 'TestService'
+        expect(onBeforeHook).toHaveBeenCalled();
+        expect(onBeforeHook).toHaveBeenCalledWith(
+          expect.objectContaining({
+            parameters: expect.objectContaining({
+              actionName: 'getUser',
+              serviceName: 'TestService'
+            })
           })
-        })
-      );
-    });
-
-    it('should call onSuccess hook', async () => {
-      const onSuccessHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<unknown, TestUser, MockGateway>
-      > = {
-        pluginName: 'TestPlugin',
-        onSuccess: onSuccessHook
-      };
-
-      // Add plugin after GatewayBasePlugin (which is already registered in beforeEach)
-      service.use(plugin);
-      await service.getUser(1);
-
-      expect(onSuccessHook).toHaveBeenCalled();
-      // onSuccess hook is called by AsyncExecutor.run after runExec sets returnValue
-      // Execution flow:
-      // 1. AsyncExecutor.run calls onBefore hooks (GatewayBasePlugin.onBefore)
-      // 2. GatewayExecutor.runExec executes actualTask:
-      //    - runBeforeAction (action-specific before hooks like onGetUserBefore)
-      //    - computedFn executes, returns result
-      //    - runSuccessAction (action-specific success hooks like onGetUserSuccess)
-      //    - actualTask returns result
-      // 3. GatewayExecutor.runExec sets context.returnValue = await actualTask(context)
-      // 4. AsyncExecutor.run calls onSuccess hooks - returnValue is now set
-      //    - GatewayBasePlugin.onSuccess (needs returnValue, so it runs here)
-      //    - TestPlugin.onSuccess (our test hook)
-      const callArgs = onSuccessHook.mock.calls[0][0];
-      expect(callArgs).toHaveProperty('returnValue');
-      expect(callArgs).toHaveProperty('parameters');
-      // returnValue should be set by GatewayExecutor.runExec after actualTask completes
-      // The onSuccess hook receives the context with returnValue already set
-      // However, there might be multiple calls to onSuccess hook:
-      // 1. GatewayBasePlugin.onSuccess might be called in runSuccessAction (before returnValue is set) - this is a bug
-      // 2. TestPlugin.onSuccess should be called in AsyncExecutor.run's onSuccess hooks (after returnValue is set)
-      // Let's check all calls and find the one with returnValue set
-      const callsWithReturnValue = onSuccessHook.mock.calls.filter(
-        (call) => call[0]?.returnValue !== undefined
-      );
-
-      if (callsWithReturnValue.length > 0) {
-        // Use the call with returnValue set (should be from AsyncExecutor.run's onSuccess hooks)
-        const callArgs = callsWithReturnValue[0][0];
-        expect(callArgs.returnValue).toEqual({
-          id: 1,
-          name: 'John Doe',
-          email: 'john@example.com'
-        });
-      } else {
-        // If no calls have returnValue set, all hooks were called before returnValue was set
-        // This indicates a bug in the execution flow
-        // For now, let's just verify the hook was called
-        expect(onSuccessHook).toHaveBeenCalled();
-        // Log for debugging
-        console.warn(
-          'onSuccess hook called without returnValue - this might indicate a bug in execution flow'
         );
-      }
-    });
-
-    it('should call onError hook when error occurs', async () => {
-      const onErrorHook = vi.fn();
-      const errorGateway = {
-        async getUser(): Promise<TestUser> {
-          throw new Error('Test error');
-        }
-      } as unknown as MockGateway;
-
-      const errorService = new TestGatewayService('TestService', {
-        gateway: errorGateway,
-        defaultState: () => null
       });
 
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<unknown, TestUser, MockGateway>
-      > = {
-        pluginName: 'TestPlugin',
-        onError: onErrorHook
-      };
+      it('should call onSuccess hook', async () => {
+        const onSuccessHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onSuccess: onSuccessHook
+        };
 
-      errorService.use(new GatewayBasePlguin<unknown, TestUser, MockGateway>());
-      errorService.use(plugin);
+        service.use(plugin);
+        await service.getUser(1);
 
-      await expect(errorService.getUser(1)).rejects.toThrow('Test error');
-      expect(onErrorHook).toHaveBeenCalled();
+        expect(onSuccessHook).toHaveBeenCalled();
+        const callArgs = onSuccessHook.mock.calls[0][0];
+        expect(callArgs).toHaveProperty('returnValue');
+        expect(callArgs).toHaveProperty('parameters');
+      });
+
+      it('should call onError hook when error occurs', async () => {
+        const onErrorHook = vi.fn();
+        const errorGateway = {
+          async getUser(): Promise<TestUser> {
+            throw new Error('Test error');
+          }
+        } as unknown as MockGateway;
+
+        const errorService = new TestGatewayService('TestService', {
+          gateway: errorGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onError: onErrorHook
+        };
+
+        errorService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+        errorService.use(plugin);
+
+        await expect(errorService.getUser(1)).rejects.toThrow('Test error');
+        expect(onErrorHook).toHaveBeenCalled();
+      });
+
+      it('should call hooks in correct order', async () => {
+        const callOrder: string[] = [];
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'OrderPlugin',
+          onBefore: async () => {
+            callOrder.push('onBefore');
+          },
+          onSuccess: async () => {
+            callOrder.push('onSuccess');
+          }
+        };
+
+        service.use(plugin);
+        await service.getUser(1);
+
+        expect(callOrder).toContain('onBefore');
+        expect(callOrder).toContain('onSuccess');
+        expect(callOrder.indexOf('onBefore')).toBeLessThan(
+          callOrder.indexOf('onSuccess')
+        );
+      });
     });
 
-    it('should call action-specific hooks', async () => {
-      const onGetUserBeforeHook = vi.fn();
-      const plugin = {
-        pluginName: 'TestPlugin',
-        onGetUserBefore: onGetUserBeforeHook
-      } as ExecutorPlugin<
-        GatewayExecutorOptions<unknown, TestUser, MockGateway>
-      > & {
-        onGetUserBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<unknown, TestUser, MockGateway>
-          >
-        ) => Promise<void> | void;
-      };
+    describe('action-specific hooks', () => {
+      it('should call action-specific before hook', async () => {
+        const onGetUserBeforeHook = vi.fn();
+        const plugin = {
+          pluginName: 'TestPlugin',
+          onGetUserBefore: onGetUserBeforeHook
+        } as ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > & {
+          onGetUserBefore?: (
+            context: ExecutorContext<
+              GatewayExecutorOptions<unknown, TestUser, MockGateway>
+            >
+          ) => Promise<void> | void;
+        };
 
-      service.use(plugin);
-      await service.getUser(1);
+        service.use(plugin);
+        await service.getUser(1);
 
-      expect(onGetUserBeforeHook).toHaveBeenCalled();
+        expect(onGetUserBeforeHook).toHaveBeenCalled();
+        const callArgs = onGetUserBeforeHook.mock.calls[0][0];
+        expect(callArgs.parameters.actionName).toBe('getUser');
+      });
+
+      it('should call action-specific success hook', async () => {
+        const onGetUserSuccessHook = vi.fn();
+        const plugin = {
+          pluginName: 'TestPlugin',
+          onGetUserSuccess: onGetUserSuccessHook
+        } as ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > & {
+          onGetUserSuccess?: (
+            context: ExecutorContext<
+              GatewayExecutorOptions<unknown, TestUser, MockGateway>
+            >
+          ) => Promise<void> | void;
+        };
+
+        service.use(plugin);
+        await service.getUser(1);
+
+        expect(onGetUserSuccessHook).toHaveBeenCalled();
+      });
+
+      it('should call action-specific hooks for different actions', async () => {
+        const onGetUserBeforeHook = vi.fn();
+        const onCreateUserBeforeHook = vi.fn();
+        const plugin = {
+          pluginName: 'TestPlugin',
+          onGetUserBefore: onGetUserBeforeHook,
+          onCreateUserBefore: onCreateUserBeforeHook
+        } as ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > & {
+          onGetUserBefore?: (
+            context: ExecutorContext<
+              GatewayExecutorOptions<unknown, TestUser, MockGateway>
+            >
+          ) => Promise<void> | void;
+          onCreateUserBefore?: (
+            context: ExecutorContext<
+              GatewayExecutorOptions<unknown, TestUser, MockGateway>
+            >
+          ) => Promise<void> | void;
+        };
+
+        service.use(plugin);
+        await service.getUser(1);
+        await service.createUser({ name: 'Test', email: 'test@example.com' });
+
+        expect(onGetUserBeforeHook).toHaveBeenCalledTimes(1);
+        expect(onCreateUserBeforeHook).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('plugin registration', () => {
+      it('should register multiple plugins', async () => {
+        const plugin1Hook = vi.fn();
+        const plugin2Hook = vi.fn();
+        const plugin1: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'Plugin1',
+          onBefore: plugin1Hook
+        };
+        const plugin2: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'Plugin2',
+          onBefore: plugin2Hook
+        };
+
+        service.use([plugin1, plugin2]);
+        await service.getUser(1);
+
+        expect(plugin1Hook).toHaveBeenCalled();
+        expect(plugin2Hook).toHaveBeenCalled();
+      });
+
+      it('should allow method chaining', () => {
+        const plugin1: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'Plugin1',
+          onBefore: vi.fn()
+        };
+        const plugin2: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'Plugin2',
+          onBefore: vi.fn()
+        };
+
+        const result = service.use(plugin1).use(plugin2);
+        expect(result).toBe(service);
+      });
+
+      it('should throw error when executor is not set', () => {
+        const serviceWithoutExecutor = new TestGatewayService('TestService', {
+          gateway: mockGateway,
+          defaultState: () => null
+          // No executor provided
+        });
+
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: vi.fn()
+        };
+
+        expect(() => {
+          serviceWithoutExecutor.use(plugin);
+        }).toThrow('TestService Executor is not set');
+      });
+    });
+
+    describe('plugin with execute patterns', () => {
+      it('should call hooks for execute(action)', async () => {
+        const onBeforeHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: onBeforeHook
+        };
+
+        const noParamsGateway = {
+          async getUsers(): Promise<TestUser[]> {
+            return [];
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: noParamsGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+        testService.use(plugin);
+
+        await testService.execute('getUsers');
+        expect(onBeforeHook).toHaveBeenCalled();
+      });
+
+      it('should call hooks for execute(action, params)', async () => {
+        const onBeforeHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: onBeforeHook
+        };
+
+        service.use(plugin);
+        await service.execute('getUser', { id: 1 });
+        expect(onBeforeHook).toHaveBeenCalled();
+      });
+
+      it('should call hooks for execute(action, ...params)', async () => {
+        const onBeforeHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: onBeforeHook
+        };
+
+        const multiParamsGateway = {
+          async createUser(name: string, email: string): Promise<TestUser> {
+            return { id: 1, name, email };
+          }
+        } as unknown as MockGateway;
+
+        const testService = new TestGatewayService('TestService', {
+          gateway: multiParamsGateway,
+          defaultState: () => null,
+          executor: new GatewayExecutor<TestUser, MockGateway>()
+        });
+        testService.use(
+          new GatewayBasePlguin<unknown, TestUser, MockGateway>()
+        );
+        testService.use(plugin);
+
+        await testService.execute('createUser', 'John', 'john@example.com');
+        expect(onBeforeHook).toHaveBeenCalled();
+      });
+
+      it('should call hooks for execute(action, fn)', async () => {
+        const onBeforeHook = vi.fn();
+        const plugin: ExecutorPlugin<
+          GatewayExecutorOptions<unknown, TestUser, MockGateway>
+        > = {
+          pluginName: 'TestPlugin',
+          onBefore: onBeforeHook
+        };
+
+        service.use(plugin);
+        await service.execute('getUser', async () => {
+          return { id: 1, name: 'Test', email: 'test@example.com' };
+        });
+        expect(onBeforeHook).toHaveBeenCalled();
+      });
     });
   });
 
@@ -513,16 +1012,15 @@ describe('GatewayService', () => {
     it('should handle service without base plugin', async () => {
       const serviceWithoutPlugin = new TestGatewayService('TestService', {
         gateway: mockGateway,
-        defaultState: () => null
+        defaultState: () => null,
+        executor: new GatewayExecutor<TestUser, MockGateway>()
       });
 
       // Remove base plugin
-      const executor = (
-        serviceWithoutPlugin as unknown as {
-          executor: { plugins: unknown[] };
-        }
-      ).executor;
-      executor.plugins = [];
+      const executor = serviceWithoutPlugin.getExecutor();
+      if (executor) {
+        (executor as unknown as { plugins: unknown[] }).plugins = [];
+      }
 
       const result = await serviceWithoutPlugin.getUser(1);
       expect(result).toBeDefined();

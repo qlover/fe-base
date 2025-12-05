@@ -3,7 +3,7 @@ import {
   AsyncStoreStateInterface
 } from '../../store-state';
 import { RegisterInterface } from './RegisterInterface';
-import { BaseServiceInterface } from './BaseServiceInterface';
+import { BaseServiceInterface } from './base/BaseServiceInterface';
 import { UserInfoGetter } from './UserInfoServiceInterface';
 
 /**
