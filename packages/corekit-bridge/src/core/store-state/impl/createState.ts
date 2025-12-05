@@ -7,9 +7,11 @@ import { AsyncStoreState } from './AsyncStoreState';
  * @param options - Configuration options for storage and initial state
  * @returns The default state for the user service store
  */
-export function createState<T, StorageKey, Opt>(
-  options?: AsyncStoreOptions<T, StorageKey, Opt>
-): AsyncStoreStateInterface<T> {
+export function createState<
+  State extends AsyncStoreStateInterface<unknown>,
+  StorageKey,
+  Opt
+>(options?: AsyncStoreOptions<State, StorageKey, Opt>): State {
   const { storage, storageKey, defaultState } = options || {};
 
   if (defaultState) {
@@ -19,5 +21,5 @@ export function createState<T, StorageKey, Opt>(
     }
   }
 
-  return new AsyncStoreState();
+  return new AsyncStoreState<unknown>() as unknown as State;
 }

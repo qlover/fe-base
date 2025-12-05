@@ -555,5 +555,5 @@ export abstract class PersistentStoreInterface<
    * store.persist(customState);
    * ```
    */
-  abstract persist(state?: T): void;
+  abstract persist<S extends T>(state?: S): void;
 }

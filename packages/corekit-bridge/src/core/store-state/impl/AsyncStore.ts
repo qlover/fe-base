@@ -57,7 +57,11 @@ export interface AsyncStoreStateInterface<T> extends AsyncStateInterface<T> {
  * });
  * ```
  */
-export interface AsyncStoreOptions<T, Key, Opt = unknown> {
+export interface AsyncStoreOptions<
+  State extends AsyncStoreStateInterface<unknown>,
+  Key,
+  Opt = unknown
+> {
   /**
    * Storage implementation for persisting state
    *
@@ -117,7 +121,7 @@ export interface AsyncStoreOptions<T, Key, Opt = unknown> {
    * });
    * ```
    */
-  defaultState?<State extends AsyncStoreStateInterface<T>>(
+  defaultState?(
     storage?: SyncStorageInterface<Key, Opt> | null,
     storageKey?: Key | null
   ): State | null;
@@ -200,9 +204,14 @@ export interface AsyncStoreOptions<T, Key, Opt = unknown> {
  * });
  * ```
  */
-export class AsyncStore<T, Key, Opt = unknown>
-  extends PersistentStoreInterface<AsyncStoreStateInterface<T>, Key, Opt>
-  implements AsyncStoreInterface<AsyncStoreStateInterface<T>>
+export class AsyncStore<
+    T,
+    State extends AsyncStoreStateInterface<T>,
+    Key,
+    Opt = unknown
+  >
+  extends PersistentStoreInterface<State, Key, Opt>
+  implements AsyncStoreInterface<State>
 {
   /**
    * Storage key for persisting state
@@ -257,7 +266,7 @@ export class AsyncStore<T, Key, Opt = unknown>
    * });
    * ```
    */
-  constructor(options?: AsyncStoreOptions<T, Key, Opt>) {
+  constructor(options?: AsyncStoreOptions<State, Key, Opt>) {
     super(
       () => createState(options),
       options?.storage ?? null,
@@ -300,7 +309,7 @@ export class AsyncStore<T, Key, Opt = unknown>
    * }
    * ```
    */
-  override restore<R = T | AsyncStoreStateInterface<T>>(): R | null {
+  override restore<R = T | State>(): R | null {
     if (!this.storage || !this.storageKey) {
       return null;
     }
@@ -320,7 +329,7 @@ export class AsyncStore<T, Key, Opt = unknown>
         ) as AsyncStoreStateInterface<T> | null;
         if (state !== null && state !== undefined) {
           this.updateState(state, { persist: false });
-          return this.getState() as R;
+          return this.getState() as unknown as R;
         }
       }
     } catch {
@@ -373,7 +382,9 @@ export class AsyncStore<T, Key, Opt = unknown>
    * // Storage contains full state object with loading, status, timestamps, etc.
    * ```
    */
-  override persist(_state?: AsyncStoreStateInterface<T> | undefined): void {
+  override persist<S extends AsyncStoreStateInterface<T>>(
+    _state?: S | undefined
+  ): void {
     if (!this.storage || !this.storageKey) {
       return;
     }
@@ -408,7 +419,7 @@ export class AsyncStore<T, Key, Opt = unknown>
    * });
    * ```
    */
-  getStore(): this {
+  getStore(): PersistentStoreInterface<State, Key, Opt> {
     return this;
   }
 
@@ -620,7 +631,7 @@ export class AsyncStore<T, Key, Opt = unknown>
    * }
    * ```
    */
-  getState(): AsyncStoreStateInterface<T> {
+  getState(): State {
     return this.state;
   }
 
@@ -669,9 +680,7 @@ export class AsyncStore<T, Key, Opt = unknown>
     state: Partial<S>,
     options?: { persist?: boolean }
   ): void {
-    const newState = this.cloneState(
-      state as Partial<AsyncStoreStateInterface<T>>
-    );
+    const newState = this.cloneState(state as Partial<State>);
     this.emit(newState, options);
   }
 
