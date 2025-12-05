@@ -42,7 +42,7 @@ import {
  * - Other operations: getUserInfo, register, refreshUserInfo should manage their own state
  *
  * @template Credential - The type of credential data returned after login
- * @template User - The type of user object
+ * @template User2 - The type of user object
  *
  * @example Basic usage
  * ```typescript
@@ -60,7 +60,7 @@ import {
  * };
  * ```
  */
-export interface UserStateInterface<Credential, User>
+export interface UserStateInterface<User, Credential>
   extends AsyncStoreStateInterface<User> {
   /**
    * Authentication credential (typically a token)
@@ -99,8 +99,8 @@ export interface UserStateInterface<Credential, User>
  * - Credential persistence: Only credential is persisted, user info is not persisted
  * - Store adapters: Can be adapted to AsyncStore<Credential> and AsyncStore<User> for compatibility
  *
- * @template Credential - The type of credential data returned after login
- * @template User - The type of user object
+ * @template User - The type of credential data returned after login
+ * @template Credential - The type of user object
  *
  * @example Basic usage
  * ```typescript
@@ -137,8 +137,8 @@ export interface UserStateInterface<Credential, User>
  * });
  * ```
  */
-export interface UserStoreInterface<Credential, User>
-  extends AsyncStoreInterface<UserStateInterface<Credential, User>> {
+export interface UserStoreInterface<User, Credential>
+  extends AsyncStoreInterface<UserStateInterface<User, Credential>> {
   /**
    * Get the underlying store instance
    *
@@ -157,7 +157,7 @@ export interface UserStoreInterface<Credential, User>
    * ```
    */
   getStore(): PersistentStoreInterface<
-    UserStateInterface<Credential, User>,
+    UserStateInterface<User, Credential>,
     unknown,
     unknown
   >;
@@ -269,7 +269,7 @@ export interface UserStoreInterface<Credential, User>
    *
    * @example Get user info
    * ```typescript
-   * const user = store.getUserInfo();
+   * const user = store.getUser();
    * if (user) {
    *   console.log('User:', user.name);
    * }
@@ -284,16 +284,16 @@ export interface UserStoreInterface<Credential, User>
    * **User information is NOT persisted** - it will be cleared on page reload.
    * Only credential is persisted.
    *
-   * @param userInfo - The user information to store, or `null` to clear
+   * @param user - The user information to store, or `null` to clear
    *
    * @example Set user info
    * ```typescript
-   * store.setUserInfo({ id: '123', name: 'John Doe', email: 'john@example.com' });
+   * store.setUser({ id: '123', name: 'John Doe', email: 'john@example.com' });
    * ```
    *
    * @example Clear user info
    * ```typescript
-   * store.setUserInfo(null);
+   * store.setUser(null);
    * ```
    */
   setUser(user: User | null): void;

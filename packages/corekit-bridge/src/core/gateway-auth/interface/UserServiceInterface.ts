@@ -1,7 +1,7 @@
-import { AsyncStore } from '../../store-state';
 import { LoginInterface } from './LoginInterface';
 import { RegisterInterface } from './RegisterInterface';
 import { UserInfoInterface } from './UserInfoInterface';
+import { UserStoreInterface } from './UserStoreInterface';
 
 /**
  * User service gateway interface
@@ -16,12 +16,12 @@ import { UserInfoInterface } from './UserInfoInterface';
  * - `RegisterInterface`: Handles user registration
  * - `UserInfoInterface`: Handles user information retrieval
  *
- * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
+ * @template Credential - The type of credential data returned after login
  *
  * @example Gateway implementation
  * ```typescript
- * class UserGateway implements UserServiceGateway<TokenCredential, User> {
+ * class UserGateway implements UserServiceGateway<User, TokenCredential> {
  *   async login(params: LoginParams): Promise<TokenCredential | null> {
  *     // Implementation
  *   }
@@ -44,7 +44,7 @@ import { UserInfoInterface } from './UserInfoInterface';
  * }
  * ```
  */
-export interface UserServiceGateway<Credential, User>
+export interface UserServiceGateway<User, Credential>
   extends LoginInterface<Credential>,
     RegisterInterface<User>,
     UserInfoInterface<User> {}
@@ -59,27 +59,26 @@ export interface UserServiceGateway<Credential, User>
  *
  * Core features:
  * - User operations: Login, logout, register, getUserInfo, refreshUserInfo
- * - Store access: Access to credential store (from login service)
- * - User info store access: Access to user info store (from user info service)
+ * - Store access: Access to credential store
  * - Authentication check: Verify if user is currently authenticated
  *
  * Design decisions:
  * - Extends `UserServiceGateway`: Inherits all gateway operations
- * - Separate stores: Credential store for login state, user info store for user data
- * - Authentication check: Combines both stores to determine authentication status
+ * - Unified store: Single store manages both credential and user info
+ * - Authentication check: Verifies unified store for authentication status
  *
- * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
+ * @template Credential - The type of credential data returned after login
  *
  * @example Basic usage
  * ```typescript
- * class MyUserService implements UserServiceInterface<TokenCredential, User> {
+ * class MyUserService implements UserServiceInterface<User, TokenCredential> {
  *   // Implementation
  * }
  * ```
  */
-export interface UserServiceInterface<Credential, User>
-  extends UserServiceGateway<Credential, User> {
+export interface UserServiceInterface<User, Credential>
+  extends UserServiceGateway<User, Credential> {
   /**
    * Get the credential store instance
    *
@@ -95,24 +94,7 @@ export interface UserServiceInterface<Credential, User>
    * const isLoading = store.getLoading();
    * ```
    */
-  getStore(): AsyncStore<Credential, string>;
-
-  /**
-   * Get the user info store instance
-   *
-   * Returns the store instance that manages user information state (from user info service).
-   * This store tracks user data, loading status, and errors.
-   *
-   * @returns The async store instance for user info state
-   *
-   * @example Access user info store
-   * ```typescript
-   * const userStore = userService.getUserInfoStore();
-   * const user = userStore.getResult();
-   * const isLoading = userStore.getLoading();
-   * ```
-   */
-  getUserInfoStore(): AsyncStore<User, string>;
+  getStore(): UserStoreInterface<User, Credential>;
 
   /**
    * Check if user is authenticated

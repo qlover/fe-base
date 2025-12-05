@@ -72,9 +72,9 @@ import {
  * });
  * ```
  */
-export class UserStore<Credential, User, Key = string, Opt = unknown>
-  extends AsyncStore<User, UserStateInterface<Credential, User>, Key, Opt>
-  implements UserStoreInterface<Credential, User>
+export class UserStore<User, Credential, Key = string, Opt = unknown>
+  extends AsyncStore<User, UserStateInterface<User, Credential>, Key, Opt>
+  implements UserStoreInterface<User, Credential>
 {
   /**
    * Start authentication process
@@ -183,6 +183,7 @@ export class UserStore<Credential, User, Key = string, Opt = unknown>
    * Returns the current credential data if available.
    * This is a convenience method that accesses the state's credential property directly.
    *
+   * @override
    * @returns The current credential data, or `null` if not available
    */
   getCredential(): Credential | null {
@@ -199,7 +200,7 @@ export class UserStore<Credential, User, Key = string, Opt = unknown>
    */
   setCredential(credential: Credential | null): void {
     // Update state with credential
-    this.updateState<UserStateInterface<Credential, User>>({
+    this.updateState<UserStateInterface<User, Credential>>({
       credential: credential
     });
   }
@@ -210,6 +211,7 @@ export class UserStore<Credential, User, Key = string, Opt = unknown>
    * Returns the current user information if available. This is a convenience method
    * that accesses the state's userInfo property directly.
    *
+   * @override
    * @returns The current user information, or `null` if not available
    */
   getUser(): User | null {
@@ -223,11 +225,12 @@ export class UserStore<Credential, User, Key = string, Opt = unknown>
    * **User information is NOT persisted** - it will be cleared on page reload.
    * Only credential is persisted.
    *
-   * @param userInfo - The user information to store, or `null` to clear
+   * @override
+   * @param user - The user information to store, or `null` to clear
    */
-  setUser(userInfo: User | null): void {
+  setUser(user: User | null): void {
     this.updateState({
-      result: userInfo
+      result: user
     });
   }
 }

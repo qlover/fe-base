@@ -1,4 +1,7 @@
-import { AsyncStore } from '../../store-state';
+import {
+  AsyncStoreInterface,
+  AsyncStoreStateInterface
+} from '../../store-state';
 import { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
 import { GatewayExecutor, GatewayExecutorOptions } from './GatewayExecutor';
 import { ExecutorPlugin } from '@qlover/fe-corekit';
@@ -123,7 +126,7 @@ type ExecuteFn<Params, Result, Gateway> = (
 export abstract class GatewayService<
     T,
     Gateway extends ServiceGatewayType,
-    Store extends AsyncStore<T, string>
+    Store extends AsyncStoreInterface<AsyncStoreStateInterface<T>>
   >
   extends BaseService<T, Gateway, Store>
   implements ExecutorServiceInterface<Store, Gateway>
@@ -356,6 +359,12 @@ export abstract class GatewayService<
   // Overload 1: execute(action, fn) - custom function (must be first for proper type inference)
   public async execute<Result, Action extends string | keyof Gateway>(
     action: Action,
+    fn: (gateway: Gateway | null) => Promise<Result>
+  ): Promise<Result>;
+  // Overload 1.5: execute(action, params, fn) - custom function with params (for type inference)
+  public async execute<Result, Action extends string | keyof Gateway, Params>(
+    action: Action,
+    params: Params,
     fn: (gateway: Gateway | null) => Promise<Result>
   ): Promise<Result>;
   // Overload 2: execute(action) - no parameters

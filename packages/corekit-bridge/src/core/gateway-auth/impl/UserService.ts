@@ -1,15 +1,10 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { AsyncStore } from '../../store-state';
-import { LoginInterface, LoginParams } from '../interface/LoginInterface';
-import { LoginServiceInterface } from '../interface/LoginInterface';
 import {
-  RegisterInterface,
-  RegisterServiceInterface
-} from '../interface/RegisterInterface';
-import {
-  UserInfoInterface,
-  UserInfoServiceInterface
-} from '../interface/UserInfoInterface';
+  AsyncStoreInterface,
+  AsyncStoreStateInterface,
+  AsyncStoreStatus
+} from '../../store-state';
+import { LoginParams } from '../interface/LoginInterface';
 import { GatewayExecutor, GatewayExecutorOptions } from './GatewayExecutor';
 import { GatewayService, GatewayServiceOptions } from './GatewayService';
 import { ServiceActionType } from './ServiceAction';
@@ -18,24 +13,23 @@ import {
   UserServiceGateway,
   UserServiceInterface
 } from '../interface/UserServiceInterface';
-import { LoginService } from './LoginService';
-import { UserInfoService } from './UserInfoService';
-import { RegisterService } from './RegisterService';
-import { createExecutorService } from '../utils/createExecutorService';
+import { UserStore } from './UserStore';
+import { UserStoreInterface } from '../interface/UserStoreInterface';
+import { AsyncStoreOptions } from '../../store-state';
+import { UserStateInterface } from '../interface/UserStoreInterface';
 
 /**
  * User service configuration
  *
  * - Significance: Configuration options for creating a user service instance
- * - Core idea: Extend gateway service options while omitting store (stores come from sub-services)
- * - Main function: Configure user service behavior without store configuration
- * - Main purpose: Simplify user service initialization
+ * - Core idea: Extend gateway service options with unified UserStore configuration
+ * - Main function: Configure user service behavior with unified store
+ * - Main purpose: Simplify user service initialization with single store
  *
  * Design decisions:
- * - Omits `store`: User service uses stores from login service and user info service
- * - Extends `GatewayServiceOptions`: Inherits gateway, logger, and plugin configuration
- * - `getStore()` returns login service's store: Credential store from login service
- * - `getUserInfoStore()` returns user info service's store: User store from user info service
+ * - Uses unified UserStore: Single store managing both credential and user info
+ * - Extends GatewayServiceOptions: Inherits gateway, logger, and plugin configuration
+ * - Store configuration: Uses UserServiceStoreOptions for credential storage
  *
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
@@ -44,36 +38,38 @@ import { createExecutorService } from '../utils/createExecutorService';
  * ```typescript
  * const config: UserServiceConfig<TokenCredential, User> = {
  *   gateway: new UserGateway(),
- *   logger: new Logger()
+ *   logger: new Logger(),
+ *   credentialStorage: {
+ *     key: 'auth_token',
+ *     storage: sessionStorage
+ *   }
  * };
  *
- * const userService = new UserService(
- *   'UserService',
- *   loginService,
- *   userInfoService,
- *   registerService,
- *   config
- * );
+ * const userService = new UserService(config);
  * ```
  */
-export interface UserServiceConfig<Credential, User>
+export interface UserServiceConfig<User, Credential>
   extends Omit<
-    GatewayServiceOptions<Credential, UserServiceGateway<Credential, User>>,
+    GatewayServiceOptions<User, UserServiceGateway<User, Credential>>,
     'store' | 'serviceName'
   > {
   serviceName?: string | symbol;
 
-  executor?: GatewayExecutor<Credential, UserServiceGateway<Credential, User>>;
+  executor?: GatewayExecutor<User, UserServiceGateway<User, Credential>>;
 
-  loginService?:
-    | LoginServiceInterface<Credential, AsyncStore<Credential, string>>
-    | GatewayServiceOptions<Credential, LoginInterface<Credential>>;
-  userInfoService?:
-    | UserInfoServiceInterface<User, AsyncStore<User, string>>
-    | GatewayServiceOptions<User, UserInfoInterface<User>>;
-  registerService?:
-    | RegisterServiceInterface<User, AsyncStore<User, string>>
-    | GatewayServiceOptions<User, RegisterInterface<User>>;
+  /**
+   * UserStore instance or configuration options
+   *
+   * Allows passing a custom UserStore implementation or configuration options.
+   * If a UserStore instance is provided, it will be used directly.
+   * If options are provided, a default UserStore will be created with those options.
+   * If not provided, a default UserStore will be created.
+   *
+   * Only credential is persisted, user information is stored in memory only.
+   */
+  store?:
+    | UserStoreInterface<User, Credential>
+    | AsyncStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
 }
 
 /**
@@ -112,99 +108,67 @@ export interface UserServiceConfig<Credential, User>
  *   }
  * };
  * ```
- *
- * @example Plugin with specific actions
- * ```typescript
- * const plugin: UserServicePlugin<
- *   TokenCredential,
- *   User,
- *   ['login', 'logout']
- * > = {
- *   pluginName: 'AuthPlugin',
- *   onLoginBefore: async (context) => {
- *     // Only login and logout hooks are available
- *   },
- *   onLogoutSuccess: async (context) => {
- *     // Other action hooks are not available
- *   }
- * };
- * ```
  */
 export type UserServicePlugin<
-  Credential,
   User,
+  Credential,
   Actions extends readonly ServiceActionType[] = readonly ServiceActionType[]
-> = ExecutorPlugin<UserServiceExecutorOptions<unknown, Credential, User>> &
+> = ExecutorPlugin<UserServiceExecutorOptions<unknown, User, Credential>> &
   GatewayBasePluginType<
     Actions,
     unknown,
-    Credential,
-    UserServiceGateway<Credential, User>
+    User,
+    UserServiceGateway<User, Credential>
   >;
 
-export interface UserServiceExecutorOptions<Params, Credential, User>
+export interface UserServiceExecutorOptions<Params, User, Credential>
   extends GatewayExecutorOptions<
     Params,
-    Credential,
-    UserServiceGateway<Credential, User>
+    User,
+    UserServiceGateway<User, Credential>
   > {
-  userStore: AsyncStore<User, string>;
+  userStore: UserStoreInterface<User, Credential>;
 }
 
 /**
  * User service implementation
  *
  * Unified service that combines login, registration, and user info functionality into a single cohesive
- * service. This service composes multiple specialized services (login, register, userInfo) to provide
- * a complete user management solution. It manages dual stores (credential and user info) and provides
- * a unified authentication check that verifies both stores have valid results.
+ * service. This service uses a unified UserStore to manage authentication state and directly implements
+ * all business logic without delegating to sub-services.
  *
  * - Significance: Unified service for complete user management (login, registration, user info)
- * - Core idea: Compose multiple services (login, register, userInfo) into a single unified service
+ * - Core idea: Direct implementation with unified UserStore for authentication state
  * - Main function: Provide single entry point for all user-related operations
- * - Main purpose: Simplify user management by combining authentication, registration, and user info operations
+ * - Main purpose: Simplify user management with unified state and direct implementation
  *
  * Core features:
  * - User operations: Login, logout, register, getUserInfo, refreshUserInfo
- * - Service composition: Delegates to login, register, and userInfo services
- * - Dual store management: Manages both credential store (login) and user info store
- * - Authentication check: Verifies user is authenticated by checking both stores
+ * - Unified store: Uses UserStore to manage both credential and user info in single store
+ * - Direct implementation: All business logic implemented directly without sub-services
+ * - Authentication check: Verifies user is authenticated by checking unified store
  * - Plugin support: Supports plugins for all user service actions
  *
  * Design decisions:
- * - Extends `GatewayService`: Inherits gateway execution infrastructure
- * - Composes sub-services: Uses login, register, and userInfo services internally
- * - Credential store: Uses login service's store for credential state
- * - User info store: Uses userInfo service's store for user data state
- * - Authentication logic: Requires both stores to have valid results for authentication
- * - Gateway type: Uses combined `UserServiceGateway` interface
- *
- * Service composition:
- * - Login operations → `loginService`
- * - Logout operations → `loginService`
- * - Registration operations → `registerService`
- * - User info operations → `userInfoService`
- * - Authentication check → Checks both `loginService` and `userInfoService` stores
+ * - Extends GatewayService: Inherits gateway execution infrastructure
+ * - Uses UserStore: Single unified store for authentication state
+ * - Direct implementation: No delegation to sub-services, all logic in UserService
+ * - Authentication logic: Checks unified store for authentication status
+ * - Gateway type: Uses combined UserServiceGateway interface
  *
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
  *
  * @example Basic usage
  * ```typescript
- * const loginService = new LoginService<TokenCredential>('LoginService', { gateway: authGateway });
- * const userInfoService = new UserInfoService<User>('UserInfoService', { gateway: userGateway });
- * const registerService = new RegisterService<User>('RegisterService', { gateway: userGateway });
- *
- * const userService = new UserService<TokenCredential, User>(
- *   'UserService',
- *   loginService,
- *   userInfoService,
- *   registerService,
- *   {
- *     gateway: combinedGateway,
- *     logger: new Logger()
+ * const userService = new UserService<TokenCredential, User>({
+ *   gateway: new UserGateway(),
+ *   logger: new Logger(),
+ *   credentialStorage: {
+ *     key: 'auth_token',
+ *     storage: sessionStorage
  *   }
- * );
+ * });
  *
  * // Use unified service
  * await userService.login({ email, password });
@@ -224,56 +188,67 @@ export interface UserServiceExecutorOptions<Params, Credential, User>
  * });
  * ```
  */
-export class UserService<Credential, User>
+export class UserService<User, Credential>
   extends GatewayService<
-    Credential,
-    UserServiceGateway<Credential, User>,
-    AsyncStore<Credential, string>
+    User,
+    UserServiceGateway<User, Credential>,
+    AsyncStoreInterface<AsyncStoreStateInterface<User>>
   >
-  implements UserServiceInterface<Credential, User>
+  implements UserServiceInterface<User, Credential>
 {
-  protected readonly loginService: LoginServiceInterface<
-    Credential,
-    AsyncStore<Credential, string>
-  >;
-  protected readonly userInfoService: UserInfoServiceInterface<
-    User,
-    AsyncStore<User, string>
-  >;
-  protected readonly registerService: RegisterServiceInterface<
-    User,
-    AsyncStore<User, string>
-  >;
+  /**
+   * Unified user store for all operations
+   *
+   * Manages both credential and user info in a single store.
+   * Only credential is persisted, user information is stored in memory only.
+   */
+  protected readonly userStore: UserStoreInterface<User, Credential>;
 
-  constructor(options: UserServiceConfig<Credential, User> = {}) {
+  constructor(options: UserServiceConfig<User, Credential> = {}) {
     const {
       serviceName = 'UserService',
       executor = new GatewayExecutor(),
-      loginService,
-      userInfoService,
-      registerService,
+      store: storeOptions,
       gateway,
       logger
     } = options;
 
-    // Initialize parent GatewayService first
+    // Create or use provided UserStore instance
+    let userStore: UserStoreInterface<User, Credential>;
+    if (
+      storeOptions &&
+      typeof storeOptions === 'object' &&
+      'getStore' in storeOptions &&
+      'getCredential' in storeOptions
+    ) {
+      // UserStore instance provided
+      userStore = storeOptions as UserStoreInterface<User, Credential>;
+    } else {
+      // Create default UserStore with options
+      userStore = new UserStore<User, Credential>(
+        storeOptions as AsyncStoreOptions<
+          UserStateInterface<User, Credential>,
+          string,
+          unknown
+        >
+      );
+    }
+
+    // Initialize parent GatewayService with userStore (cast to required type)
+    // GatewayService expects AsyncStoreInterface<AsyncStoreStateInterface<User>>
     super({
       serviceName,
       executor,
       gateway,
-      logger
+      logger,
+      // Pass userStore's underlying store, cast to required type for GatewayService
+      store: userStore.getStore() as unknown as AsyncStoreInterface<
+        AsyncStoreStateInterface<User>
+      >
     });
 
-    // Initialize sub-services using createExecutorService
-    this.loginService = createExecutorService(loginService, LoginService);
-    this.userInfoService = createExecutorService(
-      userInfoService,
-      UserInfoService
-    );
-    this.registerService = createExecutorService(
-      registerService,
-      RegisterService
-    );
+    // Assign to instance properties after super()
+    this.userStore = userStore;
   }
 
   /**
@@ -296,142 +271,48 @@ export class UserService<Credential, User>
    */
   override use(
     plugin:
-      | UserServicePlugin<Credential, User>
-      | UserServicePlugin<Credential, User>[]
+      | UserServicePlugin<User, Credential>
+      | UserServicePlugin<User, Credential>[]
   ): this {
     return super.use(plugin);
   }
 
   /**
-   * Get the credential store instance
+   * Get the user store instance
    *
-   * Returns the store instance that manages credential state (from loginService).
-   * This store tracks login status, credentials, and authentication errors.
+   * Returns the unified UserStore instance.
+   * This store tracks login status, credentials, user info, and authentication errors.
    *
    * @override
-   * @returns The async store instance for credential state
+   * @returns The user store instance
    *
-   * @example Access credential store
+   * @example Access user store
    * ```typescript
    * const store = userService.getStore();
-   * const credential = store.getResult();
+   * const user = store.getUser();
+   * const credential = store.getCredential();
    * const isLoading = store.getLoading();
    * ```
    */
-  public override getStore(): AsyncStore<Credential, string> {
-    return this.loginService.getStore();
-  }
-
-  /**
-   * Get the user info store instance
-   *
-   * Returns the store instance that manages user information state (from userInfoService).
-   * This store tracks user data, loading status, and errors.
-   *
-   * @override
-   * @returns The async store instance for user info state
-   *
-   * @example Access user info store
-   * ```typescript
-   * const userStore = userService.getUserInfoStore();
-   * const user = userStore.getResult();
-   * const isLoading = userStore.getLoading();
-   * ```
-   */
-  public getUserInfoStore(): AsyncStore<User, string> {
-    return this.userInfoService.getStore();
-  }
-
-  /**
-   * Get current user from the user info service
-   *
-   * Returns the current user information from the userInfoService.
-   * This is a convenience method that delegates to the userInfoService.
-   *
-   * @override
-   * @returns The current user information, or `null` if not available
-   *
-   * @example Get current user
-   * ```typescript
-   * const user = userService.getUser();
-   * if (user) {
-   *   console.log('Current user:', user.name);
-   * }
-   * ```
-   */
-  public getUser(): User | null {
-    return this.userInfoService.getUser();
+  public override getStore(): UserStoreInterface<User, Credential> {
+    return this.userStore;
   }
 
   override createExecOptions<Params>(
-    action: keyof UserServiceGateway<Credential, User>,
+    action: keyof UserServiceGateway<User, Credential>,
     params?: Params
-  ): UserServiceExecutorOptions<Params, Credential, User> {
+  ): UserServiceExecutorOptions<Params, User, Credential> {
     return {
       ...super.createExecOptions(action, params),
-      userStore: this.getUserInfoStore()
+      userStore: this.userStore
     };
-  }
-
-  /**
-   * Logout current user
-   *
-   * Delegates logout operation to the loginService.
-   * Clears authentication credential state and calls the logout gateway if configured.
-   *
-   * @override
-   * @template LogoutParams - Type of logout parameters (default: void)
-   * @template LogoutResult - Type of logout result (default: void)
-   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
-   * @returns Promise resolving to logout result (e.g., success status, redirect URL)
-   *
-   * @example Basic logout
-   * ```typescript
-   * await userService.logout();
-   * ```
-   *
-   * @example Logout with parameters
-   * ```typescript
-   * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
-   * ```
-   */
-  public async logout<LogoutParams = unknown, LogoutResult = void>(
-    params?: LogoutParams
-  ): Promise<LogoutResult> {
-    const result = await this.loginService.logout<LogoutParams, LogoutResult>(
-      params
-    );
-    this.userInfoService.getStore().reset();
-    return result;
-  }
-
-  /**
-   * Refresh user information
-   *
-   * Delegates refresh operation to the userInfoService.
-   * Forces a refresh of user information from the server, bypassing any cache.
-   *
-   * @override
-   * @template Params - The type of parameters for refreshing user info
-   * @param params - Optional parameters for refreshing user info
-   * @returns Promise resolving to refreshed user information, or `null` if refresh fails
-   *
-   * @example Refresh user info
-   * ```typescript
-   * const user = await userService.refreshUserInfo();
-   * ```
-   */
-  public refreshUserInfo<Params>(
-    params?: Params | undefined
-  ): Promise<User | null> {
-    return this.userInfoService.refreshUserInfo(params);
   }
 
   /**
    * Login user with credentials
    *
-   * Delegates login operation to the loginService.
    * Performs user authentication using provided credentials through the configured gateway.
+   * After successful login, automatically fetches user information.
    *
    * @override
    * @template Params - The type of login parameters (must extend LoginParams)
@@ -457,18 +338,89 @@ export class UserService<Credential, User>
   public async login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
-    const credential = await this.loginService.login(params);
-    if (credential) {
-      await this.userInfoService.getUserInfo(credential);
-    }
-    return credential;
+    return await this.execute('login', params, async (gateway) => {
+      // Start authentication
+      this.userStore.start();
+
+      try {
+        // Call gateway login
+        const credential = await gateway?.login(params);
+
+        if (credential) {
+          // Automatically fetch user info after successful login
+          const user = await gateway?.getUserInfo(credential);
+
+          // Mark authentication success with both credential and user info
+          if (user) {
+            this.userStore.success(user, credential);
+          } else {
+            // If user info fetch failed, still mark credential success
+            this.userStore.success(null as User, credential);
+          }
+
+          return credential;
+        } else {
+          // Login failed
+          this.userStore.failed(
+            new Error('Login failed: no credential returned')
+          );
+          return null;
+        }
+      } catch (error) {
+        // Login failed with error
+        this.userStore.failed(error);
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * Logout current user
+   *
+   * Clears authentication credential state and calls the logout gateway if configured.
+   * Resets user info store after logout.
+   *
+   * @override
+   * @template LogoutParams - Type of logout parameters (default: void)
+   * @template LogoutResult - Type of logout result (default: void)
+   * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
+   * @returns Promise resolving to logout result (e.g., success status, redirect URL)
+   *
+   * @example Basic logout
+   * ```typescript
+   * await userService.logout();
+   * ```
+   *
+   * @example Logout with parameters
+   * ```typescript
+   * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
+   * ```
+   */
+  public async logout<LogoutParams = unknown, LogoutResult = void>(
+    params?: LogoutParams
+  ): Promise<LogoutResult> {
+    return await this.execute('logout', params, async (gateway) => {
+      try {
+        // Call gateway logout
+        const result = await gateway?.logout(params);
+
+        // Reset user store after logout
+        this.userStore.reset();
+
+        return result as LogoutResult;
+      } catch (error) {
+        // Logout failed
+        this.userStore.failed(error);
+        throw error;
+      }
+    });
   }
 
   /**
    * Register a new user
    *
-   * Delegates registration operation to the registerService.
    * Creates a new user account with the provided registration parameters.
+   * Uses unified userStore for registration state.
    *
    * @override
    * @template Params - The type of registration parameters
@@ -485,14 +437,33 @@ export class UserService<Credential, User>
    * ```
    */
   public register<Params>(params: Params): Promise<User | null> {
-    return this.registerService.register(params);
+    return this.execute('register', params, async (gateway) => {
+      // Use unified userStore for registration
+      this.userStore.start();
+
+      try {
+        // Call gateway register
+        const user = await gateway?.register(params);
+
+        if (user) {
+          this.userStore.success(user);
+          return user;
+        } else {
+          this.userStore.failed(new Error('Registration failed'));
+          return null;
+        }
+      } catch (error) {
+        this.userStore.failed(error);
+        throw error;
+      }
+    });
   }
 
   /**
    * Get current user information
    *
-   * Delegates get user info operation to the userInfoService.
    * Retrieves the current user's information (may use cached data if available).
+   * Uses unified userStore for user info operations.
    *
    * @override
    * @template Params - The type of parameters for fetching user info
@@ -509,19 +480,82 @@ export class UserService<Credential, User>
    * const user = await userService.getUserInfo({ token: 'abc123' });
    * ```
    */
-  public getUserInfo<Params>(params: Params): Promise<User | null> {
-    return this.userInfoService.getUserInfo(params);
+  public getUserInfo<Params>(params?: Params): Promise<User | null> {
+    return this.execute('getUserInfo', params, async (gateway) => {
+      // Use unified userStore for getUserInfo
+      this.userStore.start();
+
+      try {
+        // Get credential from userStore if available
+        const credential = this.userStore.getCredential();
+
+        // Call gateway getUserInfo
+        const user = await gateway?.getUserInfo(params ?? credential);
+
+        if (user) {
+          this.userStore.success(user);
+          return user;
+        } else {
+          this.userStore.failed(new Error('Failed to get user info'));
+          return null;
+        }
+      } catch (error) {
+        this.userStore.failed(error);
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * Refresh user information
+   *
+   * Forces a refresh of user information from the server, bypassing any cache.
+   * Uses separate userInfoStore for refresh operations (not authentication store).
+   *
+   * @override
+   * @template Params - The type of parameters for refreshing user info
+   * @param params - Optional parameters for refreshing user info
+   * @returns Promise resolving to refreshed user information, or `null` if refresh fails
+   *
+   * @example Refresh user info
+   * ```typescript
+   * const user = await userService.refreshUserInfo();
+   * ```
+   */
+  public refreshUserInfo<Params>(params?: Params): Promise<User | null> {
+    return this.execute('refreshUserInfo', params, async (gateway) => {
+      // Use unified userStore for refreshUserInfo
+      this.userStore.start();
+
+      try {
+        // Get credential from userStore if available
+        const credential = this.userStore.getCredential();
+
+        // Call gateway refreshUserInfo
+        const user = await gateway?.refreshUserInfo(params ?? credential);
+
+        if (user) {
+          this.userStore.success(user);
+          return user;
+        } else {
+          this.userStore.failed(new Error('Failed to refresh user info'));
+          return null;
+        }
+      } catch (error) {
+        this.userStore.failed(error);
+        throw error;
+      }
+    });
   }
 
   /**
    * Check if user is authenticated
    *
-   * Verifies that both credential store (from loginService) and user info store
-   * (from userInfoService) have successful results with non-null values.
-   * Both conditions must be met for the user to be considered authenticated.
+   * Verifies that the unified UserStore has successful authentication status
+   * with both credential and user info available.
    *
    * @override
-   * @returns `true` if user is authenticated (both stores have valid results), `false` otherwise
+   * @returns `true` if user is authenticated (store has valid credential and user info), `false` otherwise
    *
    * @example Check authentication status
    * ```typescript
@@ -533,25 +567,34 @@ export class UserService<Credential, User>
    *   console.log('User is not authenticated');
    * }
    * ```
+   */
+  public isAuthenticated(): boolean {
+    const state = this.userStore.getState();
+    return (
+      state.status === AsyncStoreStatus.SUCCESS &&
+      !!this.userStore.getCredential() &&
+      !!this.userStore.getUser()
+    );
+  }
+
+  /**
+   * Get current user from the unified store
    *
-   * @example Conditional rendering
+   * Returns the current user information from the UserStore.
+   * This is a convenience method that accesses the store's user info directly.
+   *
+   * @override
+   * @returns The current user information, or `null` if not available
+   *
+   * @example Get current user
    * ```typescript
-   * if (userService.isAuthenticated()) {
-   *   // Show authenticated UI
-   * } else {
-   *   // Show login form
+   * const user = userService.getUser();
+   * if (user) {
+   *   console.log('Current user:', user.name);
    * }
    * ```
    */
-  public isAuthenticated(): boolean {
-    const loginStore = this.getStore();
-    const userInfoStore = this.getUserInfoStore();
-    return (
-      loginStore.isSuccess() &&
-      userInfoStore.isSuccess() &&
-      // check result
-      loginStore.getResult() !== null &&
-      userInfoStore.getResult() !== null
-    );
+  public getUser(): User | null {
+    return this.userStore.getUser();
   }
 }
