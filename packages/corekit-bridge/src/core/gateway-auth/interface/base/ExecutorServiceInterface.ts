@@ -11,7 +11,6 @@ import {
 import { LoggerInterface } from '@qlover/logger';
 
 export interface ExecutorServiceOptions<T, Gateway> {
-  actionName: string;
   serviceName: string | symbol;
   gateway?: Gateway;
   logger?: LoggerInterface;

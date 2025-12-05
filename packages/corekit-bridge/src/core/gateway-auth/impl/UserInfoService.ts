@@ -1,7 +1,7 @@
 import { AsyncStore } from '../../store-state';
 import type { UserInfoInterface } from '../interface/UserInfoInterface';
-import type { UserInfoServiceInterface } from '../interface/UserInfoServiceInterface';
-import { GatewayService } from './GatewayService';
+import type { UserInfoServiceInterface } from '../interface/UserInfoInterface';
+import { GatewayService, GatewayServiceOptions } from './GatewayService';
 import { ServiceAction } from './ServiceAction';
 
 /**
@@ -65,6 +65,14 @@ export class UserInfoService<
   extends GatewayService<User, UserInfoInterface<User>, Store>
   implements UserInfoServiceInterface<User, Store>
 {
+  constructor(
+    options?: GatewayServiceOptions<User, UserInfoInterface<User>, string>
+  ) {
+    super({
+      ...options,
+      serviceName: options?.serviceName ?? 'UserInfoService'
+    });
+  }
   /**
    * Get current user from the store
    *
@@ -105,6 +113,7 @@ export class UserInfoService<
    * - Updates store with error on failure
    * - Triggers plugin hooks (`onGetUserInfoBefore`, `onGetUserInfoSuccess`, `onError`)
    *
+   * @override
    * @template Params - The type of parameters for fetching user info
    * @param params - Optional parameters for fetching user info
    *   Common parameters include:
@@ -159,6 +168,7 @@ export class UserInfoService<
    * - Updates store with error on failure
    * - Triggers plugin hooks (`onRefreshUserInfoBefore`, `onRefreshUserInfoSuccess`, `onError`)
    *
+   * @override
    * @template Params - The type of parameters for refreshing user info
    * @param params - Optional parameters for refreshing user info
    *   Common parameters include:

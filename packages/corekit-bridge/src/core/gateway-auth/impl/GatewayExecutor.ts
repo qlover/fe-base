@@ -47,6 +47,8 @@ import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterfa
  */
 export interface GatewayExecutorOptions<Params, T, Gateway>
   extends Readonly<ExecutorServiceOptions<T, Gateway>> {
+  actionName: string;
+
   /**
    * Parameters for executing gateway method
    *

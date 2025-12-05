@@ -1,7 +1,7 @@
 import { AsyncStore } from '../../store-state';
 import type { RegisterInterface } from '../interface/RegisterInterface';
-import type { RegisterServiceInterface } from '../interface/RegisterServiceInterface';
-import { GatewayService } from './GatewayService';
+import type { RegisterServiceInterface } from '../interface/RegisterInterface';
+import { GatewayService, GatewayServiceOptions } from './GatewayService';
 import { ServiceAction } from './ServiceAction';
 
 /**
@@ -68,6 +68,14 @@ export class RegisterService<
   extends GatewayService<Result, RegisterInterface<Result>, Store>
   implements RegisterServiceInterface<Result, Store>
 {
+  constructor(
+    options?: GatewayServiceOptions<Result, RegisterInterface<Result>, string>
+  ) {
+    super({
+      ...options,
+      serviceName: options?.serviceName ?? 'RegisterService'
+    });
+  }
   /**
    * Get the registered user from the store
    *
@@ -102,6 +110,7 @@ export class RegisterService<
    * - Updates store with error on failure
    * - Triggers plugin hooks (`onRegisterBefore`, `onRegisterSuccess`, `onError`)
    *
+   * @override
    * @template Params - The type of registration parameters
    * @param params - Registration parameters containing user information
    *   Common parameters include:

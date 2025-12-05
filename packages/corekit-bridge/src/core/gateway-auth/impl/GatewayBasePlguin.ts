@@ -4,7 +4,7 @@ import {
   ExecutorPlugin
 } from '@qlover/fe-corekit';
 import { GatewayExecutorOptions } from './GatewayExecutor';
-import { FirstUppercaseType } from '../utils';
+import { FirstUppercaseType } from '../utils/firstUppercase';
 
 /**
  * Generate hook name type for a specific action

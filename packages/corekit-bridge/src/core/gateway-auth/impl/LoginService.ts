@@ -1,7 +1,7 @@
 import { AsyncStore } from '../../store-state';
 import type { LoginInterface, LoginParams } from '../interface/LoginInterface';
-import type { LoginServiceInterface } from '../interface/LoginServiceInterface';
-import { GatewayService } from './GatewayService';
+import type { LoginServiceInterface } from '../interface/LoginInterface';
+import { GatewayService, GatewayServiceOptions } from './GatewayService';
 import { ServiceAction } from './ServiceAction';
 
 /**
@@ -73,14 +73,30 @@ export class LoginService<
   extends GatewayService<Credential, LoginInterface<Credential>, Store>
   implements LoginServiceInterface<Credential, Store>
 {
+  constructor(
+    options?: GatewayServiceOptions<
+      Credential,
+      LoginInterface<Credential>,
+      string
+    >
+  ) {
+    super({
+      ...options,
+      serviceName: options?.serviceName ?? 'LoginService'
+    });
+  }
+
   /**
    * Get the credential from the store
    *
+   * Returns the current credential data if the user is authenticated.
+   * This is a convenience method that typically accesses the store's result.
+   *
    * @override
-   * @returns The credential from the store
+   * @returns The current credential data, or `null` if not authenticated
    */
   public getCredential(): Credential | null {
-    return this.store.getResult();
+    return this.getStore().getResult();
   }
 
   /**
@@ -150,13 +166,10 @@ export class LoginService<
     params?: LogoutParams
   ): Promise<LogoutResult> {
     try {
-      if (this.gateway) {
-        return await this.gateway.logout(params);
-      }
-      return undefined as LogoutResult;
+      return await this.execute(ServiceAction.LOGOUT, params);
     } finally {
       // Always reset local state regardless of gateway logout result for security
-      this.store.reset();
+      this.getStore().reset();
     }
   }
 }
