@@ -491,10 +491,14 @@ export class AsyncStore<
    * ```
    */
   stopped(error?: unknown, result?: S['result'] | undefined): void {
+    // If result is explicitly provided (including null), use it
+    // Otherwise, preserve the existing result
+    const newResult = result !== undefined ? result : this.getState().result;
+
     this.updateState({
       loading: false,
       error,
-      result,
+      result: newResult,
       status: AsyncStoreStatus.STOPPED,
       endTime: Date.now()
     });
@@ -511,23 +515,26 @@ export class AsyncStore<
    * - Sets `status` to `FAILED`
    * - Records `endTime` with current timestamp
    * - Sets `error` with the failure information
-   * - Optionally sets `result` if partial results are available
+   * - Preserves existing `result` if not provided, or sets `result` if explicitly provided
    * - Automatically persists state to storage (if configured)
    *
    * @override
    * @param error - The error that occurred during the operation
    *   Can be an Error object, string message, or any error information
    * @param result - Optional result value if partial results are available
-   *   Useful when operation fails but has partial data to preserve
+   *   If provided (including `null`), will update the result to this value
+   *   If not provided (`undefined`), will preserve the existing result
+   *   Useful when operation fails but has partial data to preserve, or when you want to clear result
    *   @optional
    *
-   * @example Handle API error
+   * @example Handle API error (preserves existing result)
    * ```typescript
    * try {
    *   const user = await fetchUser();
    *   store.success(user);
    * } catch (error) {
    *   store.failed(error);
+   *   // Existing user data is preserved
    * }
    * ```
    *
@@ -541,12 +548,27 @@ export class AsyncStore<
    *   store.failed(error, cachedData);
    * }
    * ```
+   *
+   * @example Clear result on failure
+   * ```typescript
+   * try {
+   *   const data = await fetchData();
+   *   store.success(data);
+   * } catch (error) {
+   *   // Explicitly clear result on failure
+   *   store.failed(error, null);
+   * }
+   * ```
    */
   failed(error: unknown, result?: S['result'] | undefined): void {
+    // If result is explicitly provided (including null), use it
+    // Otherwise, preserve the existing result
+    const newResult = result !== undefined ? result : this.getState().result;
+
     this.updateState({
       loading: false,
       error,
-      result: result ?? null,
+      result: newResult,
       status: AsyncStoreStatus.FAILED,
       endTime: Date.now()
     });

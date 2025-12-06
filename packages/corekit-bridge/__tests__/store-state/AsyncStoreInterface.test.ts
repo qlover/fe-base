@@ -281,6 +281,48 @@ describe('AsyncStateAction', () => {
       expect(store.getResult()).toEqual(partialUser);
     });
 
+    it('should preserve existing result when result parameter is not provided', () => {
+      const existingUser: TestUser = {
+        id: 1,
+        name: 'John',
+        email: 'john@test.com'
+      };
+      // Set up existing result
+      store.start();
+      store.success(existingUser);
+      expect(store.getResult()).toEqual(existingUser);
+
+      // Call failed without result parameter
+      const error = new Error('Operation failed');
+      store.failed(error);
+
+      // Existing result should be preserved
+      expect(store.getError()).toBe(error);
+      expect(store.getResult()).toEqual(existingUser);
+      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
+    });
+
+    it('should clear result when explicitly passing null', () => {
+      const existingUser: TestUser = {
+        id: 1,
+        name: 'John',
+        email: 'john@test.com'
+      };
+      // Set up existing result
+      store.start();
+      store.success(existingUser);
+      expect(store.getResult()).toEqual(existingUser);
+
+      // Call failed with explicit null to clear result
+      const error = new Error('Operation failed');
+      store.failed(error, null);
+
+      // Result should be cleared
+      expect(store.getError()).toBe(error);
+      expect(store.getResult()).toBeNull();
+      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
+    });
+
     it('should set status to failed', () => {
       store.start();
       store.failed(new Error('Failed'));
@@ -825,7 +867,7 @@ describe('AsyncStoreInterface', () => {
         'test-user'
       ) as AsyncStoreStateInterface<TestUser>;
       expect(persisted).not.toBeNull();
-      expect(persisted.result).toBeNull();
+      expect(persisted.result).toBeUndefined();
       expect(persisted.error).not.toBeNull();
       expect(persisted.status).toBe(AsyncStoreStatus.FAILED);
     });
