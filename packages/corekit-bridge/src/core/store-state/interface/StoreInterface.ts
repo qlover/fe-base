@@ -1,5 +1,5 @@
 import { SliceStore } from '@qlover/slice-store';
-import { clone } from './clone';
+import { clone } from '../clone';
 
 /**
  * Store state interface
