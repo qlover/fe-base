@@ -1,7 +1,7 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { AbortPlugin, type AbortPluginConfig } from '@qlover/fe-corekit';
 import {
-  type MessageSenderContext,
+  type MessageSenderContextOptions,
   type MessageSenderPluginContext,
   MessageSenderExecutor
 } from './MessageSenderExecutor';
@@ -160,18 +160,19 @@ const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
  * ```
  */
 export class MessageSender<
-  MessageType extends MessageStoreMsg<unknown, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MessageType extends MessageStoreMsg<any, any>
 > implements MessageSenderInterface<MessageType>
 {
   /** Error ID for message sender errors */
   protected messageSenderErrorId = defaultMessageSenderErrorId;
 
   /** Plugin executor for managing send pipeline */
-  protected readonly executor: MessageSenderExecutor;
+  protected readonly executor: MessageSenderExecutor<MessageType>;
 
   /** Abort plugin for handling message cancellation */
   protected readonly abortPlugin: AbortPlugin<
-    MessageSenderContext<MessageType>
+    MessageSenderContextOptions<MessageType>
   >;
 
   /** Optional logger instance */
@@ -216,7 +217,9 @@ export class MessageSender<
     this.senderName = config?.senderName || defaultSenderName;
     this.executor = new MessageSenderExecutor();
 
-    this.abortPlugin = new AbortPlugin<MessageSenderContext<MessageType>>({
+    this.abortPlugin = new AbortPlugin<
+      MessageSenderContextOptions<MessageType>
+    >({
       getConfig: (parameters) =>
         (parameters.gatewayOptions || parameters) as AbortPluginConfig,
       logger: config?.logger,
@@ -260,7 +263,9 @@ export class MessageSender<
    *   .use(transformPlugin);
    * ```
    */
-  public use(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>): this {
+  public use<T = MessageSenderContextOptions<MessageType>>(
+    plugin: ExecutorPlugin<T>
+  ): this {
     this.executor.use(plugin);
     return this;
   }
@@ -417,7 +422,7 @@ export class MessageSender<
    */
   protected async handleError(
     error: unknown,
-    context: MessageSenderContext<MessageType>
+    context: MessageSenderContextOptions<MessageType>
   ): Promise<MessageType> {
     // If is unknown async error, create a new error with MESSAGE_SENDER_ERROR id
     let processedError = error;
@@ -473,7 +478,7 @@ export class MessageSender<
   protected createSendContext(
     sendingMessage: MessageType,
     gatewayOptions?: GatewayOptions<MessageType>
-  ): MessageSenderContext<MessageType> {
+  ): MessageSenderContextOptions<MessageType> {
     const _gatewayOptions = {
       ...this.config?.gatewayOptions,
       ...gatewayOptions,

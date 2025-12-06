@@ -7,7 +7,6 @@ import type {
   MessagesStateInterface,
   MessagesStoreInterface
 } from './MessagesStoreInterface';
-import type { MessageSenderContext } from '../impl/MessageSenderExecutor';
 import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 /**
@@ -46,7 +45,10 @@ import type { ExecutorPlugin } from '@qlover/fe-corekit';
  * await sender.send({ content: 'Hello' });
  * ```
  */
-export interface MessageSenderInterface<Message extends MessageInterface> {
+export interface MessageSenderInterface<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Message extends MessageInterface<any>
+> {
   /**
    * Get the message store instance
    *
@@ -121,7 +123,7 @@ export interface MessageSenderInterface<Message extends MessageInterface> {
    *   .use(transformPlugin);
    * ```
    */
-  use<T extends Message>(plugin: ExecutorPlugin<MessageSenderContext<T>>): this;
+  use<T>(plugin: ExecutorPlugin<T>): this;
 
   /**
    * Send a message through the sender

@@ -8,7 +8,7 @@ import {
   SendFailureStrategy
 } from '../../src/core/message-sender';
 import type {
-  MessageSenderContext,
+  MessageSenderContextOptions,
   MessageGetwayInterface
 } from '../../src/core/message-sender';
 
@@ -137,11 +137,11 @@ describe('ChatSenderStrategy', () => {
         content: 'New message'
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       const result = strategy['handleBefore_KEEP_FAILED'](parameters);
 
@@ -164,11 +164,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Question'
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: retryMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](parameters);
 
@@ -192,11 +192,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Message 2'
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: retryMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](parameters);
 
@@ -211,11 +211,11 @@ describe('ChatSenderStrategy', () => {
         content: 'No ID message'
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: messageWithoutId,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       const result = strategy['handleBefore_KEEP_FAILED'](parameters);
 
@@ -232,11 +232,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Last message'
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: retryMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](parameters);
 
@@ -262,11 +262,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
 
@@ -294,11 +294,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
 
@@ -331,11 +331,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
 
@@ -362,11 +362,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
 
@@ -389,11 +389,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       const messageCountBefore = store.getMessages().length;
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
@@ -410,11 +410,11 @@ describe('ChatSenderStrategy', () => {
         result: null
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       const messageCountBefore = store.getMessages().length;
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
@@ -434,11 +434,11 @@ describe('ChatSenderStrategy', () => {
         })
       });
 
-      const parameters: MessageSenderContext<ChatMessage<string>> = {
+      const parameters: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: successData,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       const messageCountBefore = store.getMessages().length;
       strategy['handleSuccess_KEEP_FAILED'](parameters, successData);
@@ -458,11 +458,11 @@ describe('ChatSenderStrategy', () => {
       store.addMessage(userMessage);
 
       // 2. handle before
-      const beforeParams: MessageSenderContext<ChatMessage<string>> = {
+      const beforeParams: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: userMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](beforeParams);
 
@@ -515,11 +515,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Second question'
       });
 
-      const beforeParams: MessageSenderContext<ChatMessage<string>> = {
+      const beforeParams: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: retryMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](beforeParams);
 
@@ -575,11 +575,11 @@ describe('ChatSenderStrategy', () => {
           })
         });
 
-        const params: MessageSenderContext<ChatMessage<string>> = {
+        const params: MessageSenderContextOptions<ChatMessage<string>> = {
           currentMessage: successData,
           store,
           gateway: mockGateway
-        } as unknown as MessageSenderContext<ChatMessage<string>>;
+        } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
         strategy['handleSuccess_KEEP_FAILED'](params, successData);
       });
@@ -621,11 +621,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Edited question 1'
       });
 
-      const beforeParams: MessageSenderContext<ChatMessage<string>> = {
+      const beforeParams: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: editedMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](beforeParams);
 
@@ -662,11 +662,11 @@ describe('ChatSenderStrategy', () => {
         content: 'First message'
       });
 
-      const params: MessageSenderContext<ChatMessage<string>> = {
+      const params: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: message,
         store: emptyStore,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       expect(() => {
         strategy['handleBefore_KEEP_FAILED'](params);
@@ -678,11 +678,11 @@ describe('ChatSenderStrategy', () => {
         content: 'No ID'
       });
 
-      const params: MessageSenderContext<ChatMessage<string>> = {
+      const params: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: messageWithoutId,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       expect(() => {
         strategy['handleBefore_KEEP_FAILED'](params);
@@ -697,11 +697,11 @@ describe('ChatSenderStrategy', () => {
 
       store.addMessage(emptyMessage);
 
-      const params: MessageSenderContext<ChatMessage<string>> = {
+      const params: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: emptyMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       expect(() => {
         strategy['handleBefore_KEEP_FAILED'](params);
@@ -716,11 +716,11 @@ describe('ChatSenderStrategy', () => {
 
       store.addMessage(specialMessage);
 
-      const params: MessageSenderContext<ChatMessage<string>> = {
+      const params: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: specialMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](params);
 
@@ -747,11 +747,11 @@ describe('ChatSenderStrategy', () => {
         content: 'Message 500'
       });
 
-      const params: MessageSenderContext<ChatMessage<string>> = {
+      const params: MessageSenderContextOptions<ChatMessage<string>> = {
         currentMessage: retryMessage,
         store,
         gateway: mockGateway
-      } as unknown as MessageSenderContext<ChatMessage<string>>;
+      } as unknown as MessageSenderContextOptions<ChatMessage<string>>;
 
       strategy['handleBefore_KEEP_FAILED'](params);
 
