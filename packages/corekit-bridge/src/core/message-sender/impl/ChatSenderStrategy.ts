@@ -1,7 +1,7 @@
 import { ChatMessageRole, type ChatMessage } from './ChatMessage';
 import { SenderStrategyPlugin } from './SenderStrategyPlugin';
 import type { ChatMessageStore } from './ChatMessageStore';
-import type { MessageSenderContext } from './MessageSenderExecutor';
+import type { MessageSenderContextOptions } from './MessageSenderExecutor';
 
 /**
  * Chat-specific sender strategy plugin
@@ -109,7 +109,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin {
    * ```
    */
   protected override handleBefore_KEEP_FAILED(
-    parameters: MessageSenderContext<ChatMessage<string>>
+    parameters: MessageSenderContextOptions<ChatMessage<string>>
   ): ChatMessage<string> {
     const store = parameters.store as ChatMessageStore<string>;
     const { currentMessage } = parameters;
@@ -171,7 +171,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin {
    * ```
    */
   protected override handleSuccess_KEEP_FAILED(
-    parameters: MessageSenderContext<ChatMessage<string>>,
+    parameters: MessageSenderContextOptions<ChatMessage<string>>,
     successData: ChatMessage<string>
   ): ChatMessage<string> | undefined {
     const store = parameters.store as ChatMessageStore<string>;

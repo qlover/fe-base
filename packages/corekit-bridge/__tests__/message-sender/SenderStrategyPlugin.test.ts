@@ -7,7 +7,7 @@ import {
   SendFailureStrategy,
   SenderStrategyPlugin,
   type MessageGetwayInterface,
-  type MessageSenderContext,
+  type MessageSenderContextOptions,
   type MessageStoreMsg,
   MessageSenderPluginContext
 } from '../../src/core/message-sender';
@@ -504,9 +504,10 @@ describe('SenderStrategyPlugin', () => {
 
   describe('integration test with MessageSender', () => {
     it('the plugin should be able to correctly access MessageSenderContext', async () => {
-      let capturedContext: MessageSenderContext | null = null;
+      let capturedContext: MessageSenderContextOptions<TestMessage> | null =
+        null;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onBefore(context: MessageSenderPluginContext<TestMessage>): void {
           capturedContext = context.parameters;
           super.onBefore(context);
@@ -599,7 +600,7 @@ describe('SenderStrategyPlugin', () => {
     it('onBefore: should be called before sending', async () => {
       const callLog: string[] = [];
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onBefore(context: MessageSenderPluginContext<TestMessage>): void {
           callLog.push('onBefore');
           super.onBefore(context);
@@ -622,7 +623,7 @@ describe('SenderStrategyPlugin', () => {
     it('onSuccess: should be called after sending successfully', async () => {
       const callLog: string[] = [];
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
           callLog.push('onSuccess');
           super.onSuccess(context);
@@ -645,7 +646,7 @@ describe('SenderStrategyPlugin', () => {
     it('onError: should be called after sending failed', async () => {
       const callLog: string[] = [];
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onError(
           context: MessageSenderPluginContext<TestMessage>
         ): ExecutorError | void {
@@ -670,7 +671,7 @@ describe('SenderStrategyPlugin', () => {
     it('onSuccess should work under the addedToStore flag set by onBefore', async () => {
       let addedToStoreInOnSuccess: boolean | undefined;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
           addedToStoreInOnSuccess = context.parameters.addedToStore;
           super.onSuccess(context);
@@ -1048,7 +1049,7 @@ describe('SenderStrategyPlugin', () => {
     it('KEEP_FAILED: addedToStore should be true', async () => {
       let capturedFlag: boolean | undefined;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
@@ -1066,7 +1067,7 @@ describe('SenderStrategyPlugin', () => {
     it('DELETE_FAILED: addedToStore should be true', async () => {
       let capturedFlag: boolean | undefined;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
@@ -1084,7 +1085,7 @@ describe('SenderStrategyPlugin', () => {
     it('ADD_ON_SUCCESS: addedToStore should be false', async () => {
       let capturedFlag: boolean | undefined;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
@@ -1791,7 +1792,7 @@ describe('SenderStrategyPlugin', () => {
     it('cleanup should be called after success', async () => {
       let cleanupCalled = false;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {
@@ -1811,7 +1812,7 @@ describe('SenderStrategyPlugin', () => {
     it('cleanup should be called after failure', async () => {
       let cleanupCalled = false;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {
@@ -1833,7 +1834,7 @@ describe('SenderStrategyPlugin', () => {
     it('cleanup should be called after stopped', async () => {
       let cleanupCalled = false;
 
-      class TestPlugin extends SenderStrategyPlugin {
+      class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {

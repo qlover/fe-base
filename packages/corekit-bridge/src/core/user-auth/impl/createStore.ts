@@ -111,6 +111,20 @@ function isUserAuthStore<User>(
   );
 }
 
+function isKeyStorageInterface<Key, Value>(
+  value: unknown
+): value is KeyStorageInterface<Key, Value> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as KeyStorageInterface<Key, Value>).getKey === 'function' &&
+    typeof (value as KeyStorageInterface<Key, Value>).getValue === 'function' &&
+    typeof (value as KeyStorageInterface<Key, Value>).get === 'function' &&
+    typeof (value as KeyStorageInterface<Key, Value>).set === 'function' &&
+    typeof (value as KeyStorageInterface<Key, Value>).remove === 'function'
+  );
+}
+
 /**
  * Parse and create storage implementation from configuration
  *
@@ -129,7 +143,7 @@ function parseStorage<Value>(
     return null;
   }
 
-  if (value instanceof KeyStorageInterface) {
+  if (isKeyStorageInterface(value)) {
     return value;
   }
 
@@ -231,7 +245,7 @@ export function createStore<
   // Extract and set credential from URL if configured
   const urlCredential = getURLCredential(
     href,
-    tokenKey || _store.getCredentialStorage()?.key || defaultCredentialKey
+    tokenKey || _store.getCredentialStorage()?.getKey() || defaultCredentialKey
   );
 
   if (urlCredential) {

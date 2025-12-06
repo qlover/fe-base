@@ -226,6 +226,9 @@
 /**
  * 管理用户认证和会话处理
  *
+ * 模块主要核心功能的简短描述，说明它可以做什么，是什么，
+ * 比如：这是一个基于JWt的用于管理服务，支持会话, 权限验证...
+ *
  * 核心思想：
  * 集中式认证服务，处理用户登录、会话管理和权限验证
  *
@@ -330,7 +333,7 @@ function login(
 
 #### 方法参数签名注释
 
-```typescript
+````typescript
 /**
  * 用户服务类，提供用户认证、管理和数据操作功能
  *
@@ -352,13 +355,13 @@ class UserService {
   constructor(
     /**
      * 服务配置选项
-     * 
+     *
      * 控制用户服务的核心行为和配置参数
      */
     options: {
       /**
        * JWT token 在本地存储中的键名
-       * 
+       *
        * 用于在浏览器 localStorage 或 sessionStorage 中存储和检索用户认证令牌
        * 建议使用有意义的键名以避免与其他应用的存储冲突
        *
@@ -368,7 +371,7 @@ class UserService {
       tokenKey?: string;
       /**
        * 是否启用跨域资源共享（CORS）
-       * 
+       *
        * 当设置为 true 时，允许跨域请求访问用户数据
        * 在生产环境中应谨慎启用，确保适当的安全措施
        *
@@ -378,26 +381,26 @@ class UserService {
       cors?: boolean;
       /**
        * 数据库连接配置
-       * 
+       *
        * 指定用户数据存储的数据库连接参数
        * 支持多种数据库类型：MySQL、PostgreSQL、MongoDB
        */
       database?: {
         /**
          * 数据库类型
-         * 
+         *
          * @default `'mysql'`
          */
         type: 'mysql' | 'postgresql' | 'mongodb';
         /**
          * 数据库主机地址
-         * 
+         *
          * @default `'localhost'`
          */
         host: string;
         /**
          * 数据库端口号
-         * 
+         *
          * @default `3306`
          */
         port: number;
@@ -405,13 +408,13 @@ class UserService {
     },
     /**
      * 是否启用调试模式
-     * 
+     *
      * 调试模式下会输出详细的日志信息，包括：
      * - API 请求和响应详情
      * - 数据库查询语句
      * - 认证流程的每个步骤
      * - 错误堆栈信息
-     * 
+     *
      * 仅在开发环境使用，生产环境应设置为 false
      *
      * @default `false`
@@ -476,18 +479,18 @@ class UserService {
   async login(
     /**
      * 用户登录凭证
-     * 
+     *
      * 包含用户身份验证所需的所有信息
      */
     credentials: {
       /**
        * 用户登录标识符
-       * 
+       *
        * 支持以下格式：
        * - 邮箱地址：user@example.com
        * - 用户名：john_doe
        * - 手机号：+86-138-0013-8000
-       * 
+       *
        * 系统会自动识别格式并进行相应的验证
        *
        * @example `"john@example.com"`
@@ -497,12 +500,12 @@ class UserService {
       username: string;
       /**
        * 用户密码
-       * 
+       *
        * 密码要求：
        * - 长度：8-128 个字符
        * - 必须包含：大小写字母、数字、特殊字符
        * - 不能包含：用户名、常见密码、连续字符
-       * 
+       *
        * 系统会自动进行密码强度检查
        *
        * @example `"MySecurePass123!"`
@@ -512,12 +515,12 @@ class UserService {
       password: string;
       /**
        * 是否记住登录状态
-       * 
+       *
        * 当设置为 true 时：
        * - JWT 令牌有效期延长到 30 天
        * - 刷新令牌有效期延长到 90 天
        * - 在多个设备间保持登录状态
-       * 
+       *
        * 安全考虑：
        * - 仅在可信设备上启用
        * - 用户可随时撤销所有会话
@@ -529,12 +532,13 @@ class UserService {
       rememberMe?: boolean;
       /**
        * 多因素认证代码
-       * 
+       *
        * 当用户启用了 MFA 时，需要提供此代码
        * 支持 TOTP（基于时间的一次性密码）
-       * 
+       *
        * 格式：6 位数字代码
        *
        * @optional
        * @example `"123456"`
        * @pattern `
+````

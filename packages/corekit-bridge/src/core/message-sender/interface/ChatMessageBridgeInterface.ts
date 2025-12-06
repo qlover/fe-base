@@ -1,5 +1,5 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { MessageSenderContext } from '../impl/MessageSenderExecutor';
+import { MessageSenderContextOptions } from '../impl/MessageSenderExecutor';
 import { ChatMessage } from '../impl/ChatMessage';
 import { ChatMessageStoreInterface } from './ChatMessageStoreInterface';
 import { GatewayOptions } from './MessageGetwayInterface';
@@ -60,7 +60,7 @@ export interface InputRefInterface {
  * ```
  */
 export type ChatMessageBridgePlugin<T = unknown> = ExecutorPlugin<
-  MessageSenderContext<ChatMessage<T>>
+  MessageSenderContextOptions<ChatMessage<T>>
 >;
 
 /**

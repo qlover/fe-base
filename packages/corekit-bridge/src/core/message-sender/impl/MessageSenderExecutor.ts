@@ -4,7 +4,11 @@ import {
   type ExecutorPlugin
 } from '@qlover/fe-corekit';
 import type { MessageSenderConfig } from './MessageSender';
-import type { MessagesStore, MessageStoreMsg } from './MessageStore';
+import {
+  MessageInterface,
+  MessagesStateInterface,
+  MessagesStoreInterface
+} from '../interface/MessagesStoreInterface';
 
 /**
  * Message sender execution context
@@ -25,11 +29,8 @@ import type { MessagesStore, MessageStoreMsg } from './MessageStore';
  * };
  * ```
  */
-export interface MessageSenderContext<
-  MessageType extends MessageStoreMsg<unknown, unknown> = MessageStoreMsg<
-    unknown,
-    unknown
-  >
+export interface MessageSenderContextOptions<
+  MessageType extends MessageInterface<unknown>
 > extends MessageSenderConfig {
   /**
    * Message store instance
@@ -37,7 +38,10 @@ export interface MessageSenderContext<
    * Provides access to the message store for persistence and
    * state management operations during message sending.
    */
-  store: MessagesStore<MessageType>;
+  store: MessagesStoreInterface<
+    MessageType,
+    MessagesStateInterface<MessageType>
+  >;
 
   /**
    * Current message in the execution flow
@@ -68,9 +72,8 @@ export interface MessageSenderContext<
  *
  * @template T - Type of message being processed
  */
-export type MessageSenderPluginContext<
-  T extends MessageStoreMsg<unknown, unknown>
-> = ExecutorContext<MessageSenderContext<T>>;
+export type MessageSenderPluginContext<T extends MessageInterface<unknown>> =
+  ExecutorContext<MessageSenderContextOptions<T>>;
 
 /**
  * Message sender plugin interface
@@ -108,9 +111,8 @@ export type MessageSenderPluginContext<
  * };
  * ```
  */
-export interface MessageSenderPlugin<
-  T extends MessageStoreMsg<unknown, unknown>
-> extends ExecutorPlugin<MessageSenderContext<T>> {
+export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
+  extends ExecutorPlugin<MessageSenderContextOptions<T>> {
   /**
    * Stream chunk received hook
    *
@@ -233,7 +235,9 @@ export interface MessageSenderPlugin<
  * executor.resetRuntimesStreamTimes(context);
  * ```
  */
-export class MessageSenderExecutor extends AsyncExecutor {
+export class MessageSenderExecutor<
+  MessageType extends MessageInterface<unknown>
+> extends AsyncExecutor {
   /**
    * Reset stream timing counter
    *
@@ -251,7 +255,7 @@ export class MessageSenderExecutor extends AsyncExecutor {
    * ```
    */
   public resetRuntimesStreamTimes(
-    context: ExecutorContext<MessageSenderContext>
+    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
   ): void {
     context.hooksRuntimes.streamTimes = 0;
   }
@@ -286,7 +290,7 @@ export class MessageSenderExecutor extends AsyncExecutor {
    */
   public async runStream(
     chunk: unknown,
-    context: ExecutorContext<MessageSenderContext>
+    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
   ): Promise<unknown> {
     if (context.hooksRuntimes.streamTimes === undefined) {
       context.hooksRuntimes.streamTimes = 0;
@@ -323,7 +327,7 @@ export class MessageSenderExecutor extends AsyncExecutor {
    * ```
    */
   public async runConnected(
-    context: ExecutorContext<MessageSenderContext>
+    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
   ): Promise<void> {
     await this.runHooks(this.plugins, 'onConnected', context);
   }

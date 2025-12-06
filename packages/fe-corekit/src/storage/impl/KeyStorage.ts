@@ -1,7 +1,13 @@
-import {
-  KeyStorageInterface,
-  KeyStorageOptions
-} from '../interface/KeyStorageInterface';
+import { ExpireOptions } from '../interface/ExpireOptions';
+import { KeyStorageInterface } from '../interface/KeyStorageInterface';
+import { SyncStorageInterface } from '../interface/SyncStorageInterface';
+
+export interface KeyStorageOptions<Key, Sopt = unknown> extends ExpireOptions {
+  /**
+   * Persistent storage
+   */
+  storage?: SyncStorageInterface<Key, Sopt>;
+}
 
 /**
  * KeyStorage is a storage that can be used to store a single value.
@@ -44,8 +50,22 @@ export class KeyStorage<
   Key,
   Value,
   Opt extends KeyStorageOptions<Key> = KeyStorageOptions<Key>
-> extends KeyStorageInterface<Key, Value, Opt> {
-  protected value: Value | null = null;
+> implements KeyStorageInterface<Key, Value, Opt>
+{
+  protected value: Value | null;
+
+  constructor(
+    readonly key: Key,
+    protected options: Opt = {} as Opt
+  ) {
+    // try to get the value from the storage
+    try {
+      const localValue = options.storage?.getItem<Value>(key);
+      this.value = localValue ?? null;
+    } catch {
+      this.value = null;
+    }
+  }
 
   protected mergeOptions(options?: Opt): Opt {
     return {
@@ -54,7 +74,15 @@ export class KeyStorage<
     };
   }
 
-  override get(options?: Opt): Value | null {
+  public getKey(): Key {
+    return this.key;
+  }
+
+  public getValue(): Value | null {
+    return this.value;
+  }
+
+  public get(options?: Opt): Value | null {
     const { storage, ...reset } = this.mergeOptions(options);
 
     if (this.value != null) {
@@ -62,6 +90,7 @@ export class KeyStorage<
     }
 
     if (storage) {
+      // Let storage errors propagate (don't catch here)
       const val = storage.getItem(this.key, undefined, reset);
 
       // If the value is null, remove the item
@@ -79,7 +108,7 @@ export class KeyStorage<
     return this.value;
   }
 
-  override set(token: Value, options?: Opt): void {
+  public set(token: Value, options?: Opt): void {
     const { storage, ...reset } = this.mergeOptions(options);
 
     this.value = token;
@@ -89,7 +118,7 @@ export class KeyStorage<
     }
   }
 
-  override remove(options?: Opt): void {
+  public remove(options?: Opt): void {
     const { storage, ...reset } = this.mergeOptions(options);
 
     this.value = null;

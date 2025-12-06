@@ -1,4 +1,4 @@
-import { AsyncStateInterface } from './AsyncStateInterface';
+import { AsyncStateInterface } from '../interface/AsyncStoreInterface';
 
 /**
  * Concrete implementation of AsyncStateInterface for tracking request lifecycle

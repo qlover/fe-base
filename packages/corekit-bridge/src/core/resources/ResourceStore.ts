@@ -1,5 +1,5 @@
-import { StoreInterface, StoreStateInterface } from '../store-state';
-import { AsyncStateInterface } from '../store-state/AsyncStateInterface';
+import { StoreInterface, type StoreStateInterface } from '../store-state';
+import { type AsyncStateInterface } from '../store-state';
 
 /**
  * Interface defining resource query parameters
