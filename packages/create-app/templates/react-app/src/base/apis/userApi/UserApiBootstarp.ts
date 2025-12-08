@@ -2,7 +2,7 @@ import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
-  type ApiMockPluginConfig,
+  type ApiMockPluginOptions,
   type ApiCatchPluginConfig,
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
@@ -23,12 +23,12 @@ import type {
  * UserApiConfig is the config for the UserApi.
  *
  * extends:
- * - ApiMockPluginConfig
+ * - ApiMockPluginOptions
  * - ApiCatchPluginConfig
  */
 export interface UserApiConfig<Request = unknown>
   extends RequestAdapterConfig<Request>,
-    ApiMockPluginConfig,
+    ApiMockPluginOptions,
     ApiCatchPluginConfig {}
 
 /**

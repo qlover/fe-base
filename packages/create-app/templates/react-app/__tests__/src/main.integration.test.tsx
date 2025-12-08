@@ -1,5 +1,6 @@
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+// @vitest-environment node
+import { readFileSync, existsSync } from 'node:fs';
+import * as path from 'node:path';
 
 describe('main.tsx Integration Tests', () => {
   beforeAll(() => {
@@ -29,13 +30,13 @@ describe('main.tsx Integration Tests', () => {
 
   it('should have main.tsx file', () => {
     // Test if file exists
-    const mainPath = join(process.cwd(), 'src/main.tsx');
+    const mainPath = path.join(process.cwd(), 'src/main.tsx');
     expect(existsSync(mainPath)).toBe(true);
   });
 
   it('should have main.tsx with correct structure', () => {
     // Test file content structure
-    const mainPath = join(process.cwd(), 'src/main.tsx');
+    const mainPath = path.join(process.cwd(), 'src/main.tsx');
     const content = readFileSync(mainPath, 'utf-8');
 
     // Check if it contains necessary imports
@@ -46,13 +47,13 @@ describe('main.tsx Integration Tests', () => {
 
   it('should have App.tsx file', () => {
     // Test if App.tsx file exists
-    const appPath = join(process.cwd(), 'src/App.tsx');
+    const appPath = path.join(process.cwd(), 'src/App.tsx');
     expect(existsSync(appPath)).toBe(true);
   });
 
   it('should have BootstrapClient.ts file', () => {
     // Test if BootstrapClient.ts file exists
-    const bootstrapPath = join(
+    const bootstrapPath = path.join(
       process.cwd(),
       'src/core/bootstraps/BootstrapClient.ts'
     );

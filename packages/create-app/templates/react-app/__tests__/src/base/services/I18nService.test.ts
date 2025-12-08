@@ -205,7 +205,8 @@ describe('I18nService', () => {
       const result = service.t(key);
       expect(result).toBe('translated_test.key');
       expect(i18n.t).toHaveBeenCalledWith(key, {
-        lng: 'en'
+        lng: 'en',
+        nsSeparator: false
       });
     });
 
@@ -216,6 +217,7 @@ describe('I18nService', () => {
       expect(result).toBe('translated_test.key');
       expect(i18n.t).toHaveBeenCalledWith(key, {
         lng: 'en',
+        nsSeparator: false,
         ...params
       });
     });

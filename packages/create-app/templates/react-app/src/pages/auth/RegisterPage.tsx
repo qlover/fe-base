@@ -3,7 +3,7 @@ import { register18n } from '@config/i18n/register18n';
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { Form, Input, Button, Checkbox } from 'antd';
 import { useState } from 'react';
-import type { RegisterFormData } from '@/base/services/UserService';
+import type { RegisterFormData } from '@/base/apis/userApi/UserApiType';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 import { useIOC } from '@/uikit/hooks/useIOC';
 

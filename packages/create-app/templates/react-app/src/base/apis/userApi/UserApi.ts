@@ -6,20 +6,20 @@ import {
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { AppError } from '@/base/cases/AppError';
-import { RegisterFormData } from '@/base/services/UserService';
 import { UserApiAdapter } from './UserApiAdapter';
 import { UserApiConfig } from './UserApiBootstarp';
 import {
   GetIpInfoTransaction,
   UserApiGetUserInfoTransaction,
   UserApiLoginTransaction,
+  UserApiRegisterTransaction,
   UserApiTestApiCatchResultTransaction,
-  UserInfo
+  UserInfo,
+  UserCredential
 } from './UserApiType';
 import type {
-  LoginResponseData,
-  UserAuthApiInterface,
-  UserAuthStoreInterface
+  UserAuthStoreInterface,
+  UserServiceGateway
 } from '@qlover/corekit-bridge';
 
 /**
@@ -32,7 +32,7 @@ import type {
 @injectable()
 export class UserApi
   extends RequestTransaction<UserApiConfig>
-  implements UserAuthApiInterface<UserInfo>
+  implements UserServiceGateway<UserInfo, UserCredential>
 {
   protected store: UserAuthStoreInterface<UserInfo> | null = null;
 
@@ -85,7 +85,7 @@ export class UserApi
    */
   async login(
     params: UserApiLoginTransaction['data']
-  ): Promise<LoginResponseData> {
+  ): Promise<UserCredential> {
     const response = await this.post<UserApiLoginTransaction>(
       '/api/login',
       params
@@ -108,24 +108,33 @@ export class UserApi
    * @returns
    */
   register(
-    params: RegisterFormData
-  ): Promise<UserApiLoginTransaction['response']> {
-    return this.post<UserApiLoginTransaction>('/api/register', params);
+    params: UserApiRegisterTransaction['data']
+  ): Promise<UserApiRegisterTransaction['response']['data']> {
+    // @ts-expect-error - TODO: implement
+    return this.post<UserApiRegisterTransaction>('/api/register', params);
   }
 
   /**
    * @override
    * @returns
    */
-  logout(): Promise<void> {
-    return Promise.resolve();
+  async refreshUserInfo(): Promise<UserInfo> {
+    return this.getUserInfo();
   }
 
   /**
    * @override
    * @returns
    */
-  async getUserInfo(): Promise<UserInfo> {
+  logout(): Promise<any> {
+    return this.post('/api/logout');
+  }
+
+  /**
+   * @override
+   * @returns
+   */
+  async getUserInfo(_credential?: UserCredential): Promise<UserInfo> {
     const response =
       await this.get<UserApiGetUserInfoTransaction>('/api/userinfo');
 

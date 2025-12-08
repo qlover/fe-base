@@ -1,9 +1,7 @@
 import { StoreInterface } from '@qlover/corekit-bridge';
 import type { RouteConfigValue } from '../cases/RouterLoader';
-import type {
-  LoggerInterface,
-  StoreStateInterface
-} from '@qlover/corekit-bridge';
+import type { StoreStateInterface } from '@qlover/corekit-bridge';
+import type { LoggerInterface } from '@qlover/logger';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
 export interface RouteServiceStateInterface extends StoreStateInterface {

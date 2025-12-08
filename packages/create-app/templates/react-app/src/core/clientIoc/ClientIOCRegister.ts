@@ -14,8 +14,8 @@ import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import type { UserServiceInterface } from '@/base/port/UserServiceInterface';
 import { I18nService } from '@/base/services/I18nService';
-import { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import { RouteService } from '@/base/services/RouteService';
+import { UserGatewayPlugin } from '@/base/services/UserGatewayPlugin';
 import { UserService } from '@/base/services/UserService';
 import { ExecutorPageBridge } from '@/uikit/bridges/ExecutorPageBridge';
 import { JSONStoragePageBridge } from '@/uikit/bridges/JSONStoragePageBridge';
@@ -28,7 +28,6 @@ import type {
   IOCContainerInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 export class ClientIOCRegister
@@ -71,30 +70,34 @@ export class ClientIOCRegister
    */
   protected registerImplement(ioc: IOCContainerInterface): void {
     ioc.bind(I.I18nServiceInterface, new I18nService(this.options.pathname));
-    ioc.bind(
-      I.RouteServiceInterface,
-      new RouteService(
-        ioc.get(NavigateBridge),
-        ioc.get(I.I18nServiceInterface),
-        {
-          routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
-          logger: ioc.get(I.Logger),
-          hasLocalRoutes: useLocaleRoutes,
-          routerPrefix: routerPrefix
-        }
-      )
+
+    const routeService = new RouteService(
+      ioc.get(NavigateBridge),
+      ioc.get(I.I18nServiceInterface),
+      {
+        routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
+        logger: ioc.get(I.Logger),
+        hasLocalRoutes: useLocaleRoutes,
+        routerPrefix: routerPrefix
+      }
     );
+    ioc.bind(I.RouteServiceInterface, routeService);
     ioc.bind(
       I.ThemeService,
       new ThemeService({
         ...(themeConfig as unknown as ThemeServiceProps),
-        storage: ioc.get<SyncStorageInterface<string, string>>(I.LocalStorage)
+        storage: ioc.get(I.LocalStorage)
       })
     );
 
     ioc.bind(I.I18nKeyErrorPlugin, ioc.get(I18nKeyErrorPlugin));
-    ioc.bind(I.ProcesserExecutorInterface, ioc.get(ProcesserExecutor));
-    ioc.bind(I.UserServiceInterface, ioc.get(UserService));
+
+    ioc.bind(
+      I.UserServiceInterface,
+      ioc
+        .get<UserServiceInterface>(UserService)
+        .use(new UserGatewayPlugin(routeService))
+    );
     ioc.bind(I.RequestCatcherInterface, ioc.get(RequestStatusCatcher));
     ioc.bind(I.ExecutorPageBridgeInterface, ioc.get(ExecutorPageBridge));
     ioc.bind(I.JSONStoragePageInterface, ioc.get(JSONStoragePageBridge));
@@ -111,7 +114,10 @@ export class ClientIOCRegister
       token: () =>
         ioc.get<UserServiceInterface>(I.UserServiceInterface).getToken()
     });
-    const apiMockPlugin = new ApiMockPlugin(mockDataJson, logger);
+    const apiMockPlugin = new ApiMockPlugin({
+      mockData: mockDataJson,
+      logger: logger
+    });
     const apiCatchPlugin = new ApiCatchPlugin(
       logger,
       ioc.get(RequestStatusCatcher)

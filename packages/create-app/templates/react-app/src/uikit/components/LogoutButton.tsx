@@ -29,9 +29,7 @@ export function LogoutButton() {
         'data-testid': 'LogoutButton-CancelButton'
       },
       content: tContent,
-      onOk: () => {
-        userService.logout();
-      }
+      onOk: () => userService.logout()
     });
   }, [tTitle, tContent]);
 
