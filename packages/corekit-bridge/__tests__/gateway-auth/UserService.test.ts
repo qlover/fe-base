@@ -24,6 +24,7 @@ import { GatewayExecutor } from '../../src/core/gateway-auth/impl/GatewayExecuto
 import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Test credential type
@@ -70,6 +71,39 @@ class MockLogger implements LoggerInterface {
   addAppender = vi.fn();
   context<Value>(value?: Value): LogContext<Value> {
     return new LogContext<Value>(value);
+  }
+}
+
+/**
+ * Mock storage implementation for testing persistence
+ */
+class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+  public data = new Map<string, unknown>();
+
+  get length(): number {
+    return this.data.size;
+  }
+
+  setItem<T>(key: Key, value: T): T {
+    this.data.set(String(key), value);
+    return value;
+  }
+
+  getItem<T>(key: Key): T | null {
+    const value = this.data.get(String(key));
+    return (value ?? null) as T | null;
+  }
+
+  removeItem(key: Key): void {
+    this.data.delete(String(key));
+  }
+
+  clear(): void {
+    this.data.clear();
+  }
+
+  reset(): void {
+    this.data.clear();
   }
 }
 
@@ -147,6 +181,401 @@ describe('UserService', () => {
         executor
       });
       expect(service.getExecutor()).toBe(executor);
+    });
+
+    describe('store persistence configuration', () => {
+      it('should create UserService with store configuration (default: persist credential only)', () => {
+        const mockStorage = new MockStorage<string>();
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token'
+          }
+        });
+
+        expect(service.getStore()).toBeDefined();
+        const store = service.getStore();
+        // Verify store is configured correctly
+        expect(store.getStorage()).toBe(mockStorage);
+      });
+
+      it('should create UserService with dual persistence configuration', () => {
+        const mockStorage = new MockStorage<string>();
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'user-info',
+            credentialStorageKey: 'auth-token',
+            persistUserInfo: true
+          }
+        });
+
+        expect(service.getStore()).toBeDefined();
+        const store = service.getStore();
+        expect(store.getStorage()).toBe(mockStorage);
+      });
+
+      it('should persist credential only by default after login', async () => {
+        const mockStorage = new MockStorage<string>();
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token'
+          }
+        });
+
+        mockGateway.login.mockResolvedValue(testCredential);
+        mockGateway.getUserInfo.mockResolvedValue(testUser);
+
+        await service.login(loginParams);
+
+        // Credential should be persisted
+        expect(mockStorage.data.get('auth-token')).toEqual(testCredential);
+        // User info should NOT be persisted (in memory only)
+        expect(mockStorage.data.get('auth-token')).not.toEqual(testUser);
+      });
+
+      it('should persist both user info and credential when dual persistence is enabled', async () => {
+        const mockStorage = new MockStorage<string>();
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'user-info',
+            credentialStorageKey: 'auth-token',
+            persistUserInfo: true
+          }
+        });
+
+        mockGateway.login.mockResolvedValue(testCredential);
+        mockGateway.getUserInfo.mockResolvedValue(testUser);
+
+        await service.login(loginParams);
+
+        // Both should be persisted
+        expect(mockStorage.data.get('auth-token')).toEqual(testCredential);
+        expect(mockStorage.data.get('user-info')).toEqual(testUser);
+      });
+
+      it('should restore credential from storage on initialization', () => {
+        const mockStorage = new MockStorage<string>();
+        // Pre-populate storage with credential
+        mockStorage.setItem('auth-token', testCredential);
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token',
+            initRestore: true
+          }
+        });
+
+        const store = service.getStore();
+        expect(store.getCredential()).toEqual(testCredential);
+      });
+
+      it('should restore both user info and credential when dual persistence is enabled', () => {
+        const mockStorage = new MockStorage<string>();
+        // Pre-populate storage with both
+        mockStorage.setItem('auth-token', testCredential);
+        mockStorage.setItem('user-info', testUser);
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'user-info',
+            credentialStorageKey: 'auth-token',
+            persistUserInfo: true,
+            initRestore: true
+          }
+        });
+
+        const store = service.getStore();
+        expect(store.getCredential()).toEqual(testCredential);
+        expect(store.getUser()).toEqual(testUser);
+      });
+
+      it('should return false when credential is restored but status is not SUCCESS', () => {
+        const mockStorage = new MockStorage<string>();
+        // Pre-populate storage with credential
+        mockStorage.setItem('auth-token', testCredential);
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token',
+            initRestore: true
+          }
+        });
+
+        // Credential is restored
+        expect(service.getStore().getCredential()).toEqual(testCredential);
+        // But status is NOT automatically set to SUCCESS
+        expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+        // So isAuthenticated returns false
+        expect(service.isAuthenticated()).toBe(false);
+      });
+
+      it('should return true when credential is restored and status is manually set to SUCCESS', () => {
+        const mockStorage = new MockStorage<string>();
+        mockStorage.setItem('auth-token', testCredential);
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token',
+            initRestore: true
+          }
+        });
+
+        // Credential is restored but status is DRAFT
+        expect(service.getStore().getCredential()).toEqual(testCredential);
+        expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+        expect(service.isAuthenticated()).toBe(false);
+
+        // Developer manually sets status to SUCCESS after validation
+        service.getStore().updateState({
+          status: AsyncStoreStatus.SUCCESS,
+          loading: false,
+          error: null,
+          endTime: Date.now()
+        });
+
+        // Now isAuthenticated returns true
+        expect(service.isAuthenticated()).toBe(true);
+        expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      });
+
+      it('should return false when both credential and user info are restored but status is not SUCCESS', () => {
+        const mockStorage = new MockStorage<string>();
+        // Pre-populate storage with both
+        mockStorage.setItem('auth-token', testCredential);
+        mockStorage.setItem('user-info', testUser);
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'user-info',
+            credentialStorageKey: 'auth-token',
+            persistUserInfo: true,
+            initRestore: true
+          }
+        });
+
+        // Both are restored
+        expect(service.getStore().getCredential()).toEqual(testCredential);
+        expect(service.getStore().getUser()).toEqual(testUser);
+        // But status is NOT automatically set to SUCCESS
+        expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+        // So isAuthenticated returns false
+        expect(service.isAuthenticated()).toBe(false);
+      });
+
+      it('should set isAuthenticated to false when no credential is restored', () => {
+        const mockStorage = new MockStorage<string>();
+        // Storage is empty
+
+        const service = new UserService<TestUser, TestCredential>({
+          gateway: mockGateway,
+          store: {
+            storage: mockStorage,
+            storageKey: 'auth-token',
+            initRestore: true
+          }
+        });
+
+        // isAuthenticated should return false when no credential is restored
+        expect(service.isAuthenticated()).toBe(false);
+        expect(service.getStore().getCredential()).toBeNull();
+        expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+      });
+
+      describe('Custom authentication logic examples', () => {
+        it('should demonstrate overriding isAuthenticated with credential expiration check', () => {
+          class CustomUserService extends UserService<TestUser, TestCredential> {
+            override isAuthenticated(): boolean {
+              const credential = this.getCredential();
+              if (!credential) return false;
+
+              // Check if credential has expired
+              if (credential.expiresIn && credential.expiresIn <= 0) {
+                // Credential expired, clear it
+                this.getStore().setCredential(null);
+                return false;
+              }
+
+              // Use base implementation
+              return super.isAuthenticated();
+            }
+          }
+
+          const mockStorage = new MockStorage<string>();
+          const expiredCredential = { ...testCredential, expiresIn: -1000 }; // Expired
+          mockStorage.setItem('auth-token', expiredCredential);
+
+          const service = new CustomUserService({
+            gateway: mockGateway,
+            store: {
+              storage: mockStorage,
+              storageKey: 'auth-token',
+              initRestore: true
+            }
+          });
+
+          // Credential is restored but expired
+          expect(service.getStore().getCredential()).toEqual(expiredCredential);
+          // Custom isAuthenticated should clear expired credential and return false
+          expect(service.isAuthenticated()).toBe(false);
+          expect(service.getStore().getCredential()).toBeNull();
+        });
+
+        it('should demonstrate overriding isAuthenticated to require both credential and user', () => {
+          class CustomUserService extends UserService<TestUser, TestCredential> {
+            override isAuthenticated(): boolean {
+              const state = this.getStore().getState();
+              // Require both credential and user info
+              return (
+                state.status === AsyncStoreStatus.SUCCESS &&
+                !!this.getCredential() &&
+                !!this.getUser()
+              );
+            }
+          }
+
+          const mockStorage = new MockStorage<string>();
+          mockStorage.setItem('auth-token', testCredential);
+
+          const service = new CustomUserService({
+            gateway: mockGateway,
+            store: {
+              storage: mockStorage,
+              storageKey: 'auth-token',
+              initRestore: true
+            }
+          });
+
+          // Credential restored but user info is missing
+          expect(service.getStore().getCredential()).toEqual(testCredential);
+          expect(service.getStore().getUser()).toBeNull();
+          // Custom isAuthenticated requires both, so returns false
+          expect(service.isAuthenticated()).toBe(false);
+
+          // Set status to SUCCESS manually
+          service.getStore().updateState({
+            status: AsyncStoreStatus.SUCCESS,
+            loading: false,
+            error: null,
+            endTime: Date.now()
+          });
+
+          // Still false because user info is missing
+          expect(service.isAuthenticated()).toBe(false);
+
+          // Set user info
+          service.getStore().setUser(testUser);
+          // Now returns true
+          expect(service.isAuthenticated()).toBe(true);
+        });
+
+        it('should demonstrate handling credential restoration with validation in constructor', () => {
+          class CustomUserService extends UserService<TestUser, TestCredential> {
+            constructor(options: UserServiceConfig<TestUser, TestCredential>) {
+              super(options);
+
+              // After store initialization, check if credential was restored
+              const credential = this.getStore().getCredential();
+              if (credential) {
+                // Validate credential (e.g., check expiration)
+                if (this.isCredentialValid(credential)) {
+                  // Credential is valid, set status to SUCCESS
+                  this.getStore().updateState({
+                    status: AsyncStoreStatus.SUCCESS,
+                    loading: false,
+                    error: null,
+                    endTime: Date.now()
+                  });
+                } else {
+                  // Credential invalid, clear it
+                  this.getStore().setCredential(null);
+                }
+              }
+            }
+
+            private isCredentialValid(credential: TestCredential): boolean {
+              // Example: Check expiration
+              return credential.expiresIn > 0;
+            }
+          }
+
+          const mockStorage = new MockStorage<string>();
+          mockStorage.setItem('auth-token', testCredential);
+
+          const service = new CustomUserService({
+            gateway: mockGateway,
+            store: {
+              storage: mockStorage,
+              storageKey: 'auth-token',
+              initRestore: true
+            }
+          });
+
+          // Credential is restored and validated in constructor
+          expect(service.getStore().getCredential()).toEqual(testCredential);
+          expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+          expect(service.isAuthenticated()).toBe(true);
+        });
+
+        it('should demonstrate handling expired credential restoration', () => {
+          class CustomUserService extends UserService<TestUser, TestCredential> {
+            constructor(options: UserServiceConfig<TestUser, TestCredential>) {
+              super(options);
+
+              const credential = this.getStore().getCredential();
+              if (credential) {
+                // Check if expired
+                if (credential.expiresIn <= 0) {
+                  // Expired, clear it
+                  this.getStore().setCredential(null);
+                } else {
+                  // Valid, set status to SUCCESS
+                  this.getStore().updateState({
+                    status: AsyncStoreStatus.SUCCESS,
+                    loading: false,
+                    error: null,
+                    endTime: Date.now()
+                  });
+                }
+              }
+            }
+          }
+
+          const mockStorage = new MockStorage<string>();
+          const expiredCredential = { ...testCredential, expiresIn: -1000 };
+          mockStorage.setItem('auth-token', expiredCredential);
+
+          const service = new CustomUserService({
+            gateway: mockGateway,
+            store: {
+              storage: mockStorage,
+              storageKey: 'auth-token',
+              initRestore: true
+            }
+          });
+
+          // Expired credential should be cleared
+          expect(service.getStore().getCredential()).toBeNull();
+          expect(service.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+          expect(service.isAuthenticated()).toBe(false);
+        });
+      });
     });
   });
 
@@ -457,27 +886,62 @@ describe('UserService', () => {
   });
 
   describe('isAuthenticated', () => {
-    it('should return false when not authenticated', () => {
+    it('should return false when not authenticated (basic check)', () => {
+      // No credential, no SUCCESS status
       expect(userService.isAuthenticated()).toBe(false);
     });
 
-    it('should return false when only credential exists', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockRejectedValue(new Error('Failed'));
-
-      await userService.login(loginParams);
-
-      // User is null, so not authenticated
+    it('should return false when credential exists but status is not SUCCESS', () => {
+      // Set credential but status is DRAFT
+      userService.getStore().setCredential(testCredential);
+      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.DRAFT);
+      // Basic check requires SUCCESS status
       expect(userService.isAuthenticated()).toBe(false);
     });
 
-    it('should return true when both credential and user exist', async () => {
+    it('should return true when credential exists and status is SUCCESS (basic check)', () => {
+      // Set credential and status to SUCCESS
+      userService.getStore().success(null, testCredential);
+      expect(userService.getStore().getCredential()).toEqual(testCredential);
+      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      // Basic check passes
+      expect(userService.isAuthenticated()).toBe(true);
+    });
+
+    it('should return false when status is SUCCESS but credential is null', () => {
+      // Set status to SUCCESS but no credential
+      userService.getStore().success(testUser);
+      userService.getStore().setCredential(null);
+      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      expect(userService.getStore().getCredential()).toBeNull();
+      // Basic check requires credential
+      expect(userService.isAuthenticated()).toBe(false);
+    });
+
+    it('should return true when credential exists and status is SUCCESS (user info optional)', async () => {
       mockGateway.login.mockResolvedValue(testCredential);
       mockGateway.getUserInfo.mockResolvedValue(testUser);
 
       await userService.login(loginParams);
 
+      // Basic check: credential + SUCCESS status = authenticated
+      // User info is optional for basic check
       expect(userService.isAuthenticated()).toBe(true);
+    });
+
+    it('should return true even when getUserInfo fails but credential exists', async () => {
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockRejectedValue(new Error('Failed to fetch user'));
+
+      await userService.login(loginParams);
+
+      // Login succeeded, credential exists, status is SUCCESS
+      // Basic check only requires credential + SUCCESS status
+      // User info failure doesn't affect basic authentication check
+      expect(userService.getStore().getCredential()).toEqual(testCredential);
+      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      expect(userService.getUser()).toBeNull(); // User info fetch failed
+      expect(userService.isAuthenticated()).toBe(true); // But still authenticated
     });
 
     it('should return false after logout', async () => {

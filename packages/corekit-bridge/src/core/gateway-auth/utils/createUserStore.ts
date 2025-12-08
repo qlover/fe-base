@@ -1,5 +1,4 @@
-import { AsyncStoreOptions } from '../../store-state';
-import { UserStore } from '../impl/UserStore';
+import { UserStore, UserStoreOptions } from '../impl/UserStore';
 import {
   UserStateInterface,
   UserStoreInterface
@@ -13,15 +12,15 @@ import { isUserStoreInterface } from './typeGuards';
  * If it is, returns it directly. Otherwise, creates a new UserStore with the options.
  *
  * @param storeOptions - UserStore instance or configuration options
- * @returns UserStoreInterface instance
+ * @returns UserStore instance (implements UserStoreInterface)
  */
 export function createUserStore<User, Credential, Key, Opt = unknown>(
   storeOptions?:
     | UserStoreInterface<User, Credential>
-    | AsyncStoreOptions<UserStateInterface<User, Credential>, Key, Opt>
-): UserStoreInterface<User, Credential> {
+    | UserStoreOptions<UserStateInterface<User, Credential>, Key, Opt>
+): UserStore<User, Credential, Key, Opt> {
   if (isUserStoreInterface(storeOptions)) {
-    return storeOptions;
+    return storeOptions as UserStore<User, Credential, Key, Opt>;
   }
 
   return new UserStore<User, Credential, Key, Opt>(storeOptions);

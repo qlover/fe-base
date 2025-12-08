@@ -8,8 +8,7 @@ import {
   UserServicePluginType,
   UserServicePluginInterface
 } from '../interface/UserServiceInterface';
-import { UserStoreInterface } from '../interface/UserStoreInterface';
-import { AsyncStoreOptions } from '../../store-state';
+import { UserStore, UserStoreOptions } from './UserStore';
 import { UserStateInterface } from '../interface/UserStoreInterface';
 import { createUserStore } from '../utils/createUserStore';
 
@@ -21,22 +20,50 @@ import { createUserStore } from '../utils/createUserStore';
  * - Main function: Configure user service behavior with unified store
  * - Main purpose: Simplify user service initialization with single store
  *
+ * **Persistence Behavior (inherited from UserStore):**
+ * - **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
+ *   - When `store` configuration includes `storage` and `storageKey`, **credential will be persisted using `storageKey`**
+ *   - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
+ *   - User info will NOT be persisted and will be cleared on page reload
+ *
+ * - **Dual persistence** (optional): Configure `persistUserInfo: true` and `credentialStorageKey` in store options
+ *   - Credential will be persisted to `credentialStorageKey`
+ *   - User info will be persisted to `storageKey` (when `credentialStorageKey` is different from `storageKey`)
+ *
  * Design decisions:
  * - Uses unified UserStore: Single store managing both credential and user info
  * - Extends GatewayServiceOptions: Inherits gateway, logger, and plugin configuration
  * - Store configuration: Uses UserServiceStoreOptions for credential storage
+ * - Credential-first persistence: Inherits UserStore's default behavior of persisting only credential
  *
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
  *
- * @example Basic usage
+ * @example Basic usage (persist only credential)
  * ```typescript
- * const config: UserServiceConfig<TokenCredential, User> = {
+ * const config: UserServiceConfig<User, TokenCredential> = {
  *   gateway: new UserGateway(),
  *   logger: new Logger(),
- *   credentialStorage: {
- *     key: 'auth_token',
- *     storage: sessionStorage
+ *   store: {
+ *     storage: localStorage,
+ *     storageKey: 'auth_token'  // This key stores credential, not user info
+ *     // Only credential is persisted to 'auth_token', user info is in memory only
+ *   }
+ * };
+ *
+ * const userService = new UserService(config);
+ * ```
+ *
+ * @example Persist both user info and credential
+ * ```typescript
+ * const config: UserServiceConfig<User, TokenCredential> = {
+ *   gateway: new UserGateway(),
+ *   store: {
+ *     storage: localStorage,
+ *     storageKey: 'user-info',
+ *     credentialStorageKey: 'auth_token',
+ *     persistUserInfo: true
+ *     // Both user info and credential are persisted separately
  *   }
  * };
  *
@@ -87,11 +114,44 @@ export interface UserServiceConfig<User, Credential>
    * If options are provided, a default UserStore will be created with those options.
    * If not provided, a default UserStore will be created.
    *
-   * Only credential is persisted, user information is stored in memory only.
+   * **Persistence Behavior (inherited from UserStore):**
+   * - **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
+   *   - When `storage` and `storageKey` are provided, **credential will be persisted using `storageKey`**
+   *   - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
+   *   - User info will NOT be persisted and will be cleared on page reload
+   *
+   * - **Dual persistence** (optional): Set `persistUserInfo: true` and provide `credentialStorageKey`
+   *   - Credential will be persisted to `credentialStorageKey`
+   *   - User info will be persisted to `storageKey` (when `credentialStorageKey` is different from `storageKey`)
+   *   - Both will be restored from storage on initialization
+   *
+   * @example Persist only credential (default)
+   * ```typescript
+   * const userService = new UserService({
+   *   store: {
+   *     storage: localStorage,
+   *     storageKey: 'auth-token'  // This key stores credential, not user info
+   *     // Only credential is persisted to 'auth-token', user info is in memory only
+   *   }
+   * });
+   * ```
+   *
+   * @example Persist both user info and credential
+   * ```typescript
+   * const userService = new UserService({
+   *   store: {
+   *     storage: localStorage,
+   *     storageKey: 'user-info',
+   *     credentialStorageKey: 'auth-token',
+   *     persistUserInfo: true
+   *     // Both user info and credential are persisted separately
+   *   }
+   * });
+   * ```
    */
   store?:
-    | UserStoreInterface<User, Credential>
-    | AsyncStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
+    | UserStore<User, Credential, string, unknown>
+    | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
 }
 
 /**
@@ -106,12 +166,31 @@ export interface UserServiceConfig<User, Credential>
  * - Main function: Provide single entry point for all user-related operations
  * - Main purpose: Simplify user management with unified state and direct implementation
  *
+ * **Persistence Behavior (inherited from UserStore):**
+ * - **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
+ *   - When `store` configuration includes `storage` and `storageKey`, **credential will be persisted using `storageKey`**
+ *   - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
+ *   - User info will NOT be persisted and will be cleared on page reload
+ *   - This ensures credential survives page reloads while user info is fetched fresh each time
+ *
+ * - **Dual persistence** (optional): Configure `persistUserInfo: true` and `credentialStorageKey` in store options
+ *   - Credential will be persisted to `credentialStorageKey`
+ *   - User info will be persisted to `storageKey`
+ *   - Both will be restored from storage on service initialization
+ *
+ * **Important: Authentication Status After Restore**
+ * - When credential is restored from storage, the store status is **NOT automatically set to `SUCCESS`**
+ * - You must manually decide when to set status to `SUCCESS` based on your application's authentication logic
+ * - See `isAuthenticated()` method documentation for examples of custom authentication logic
+ * - See examples below for how to handle credential restoration
+ *
  * Core features:
  * - User operations: Login, logout, register, getUserInfo, refreshUserInfo
  * - Unified store: Uses UserStore to manage both credential and user info in single store
  * - Direct implementation: All business logic implemented directly without sub-services
  * - Authentication check: Verifies user is authenticated by checking unified store
  * - Plugin support: Supports plugins for all user service actions
+ * - Credential-first persistence: Only credential is persisted by default (user info in memory only)
  *
  * Design decisions:
  * - Extends GatewayService: Inherits gateway execution infrastructure
@@ -119,18 +198,20 @@ export interface UserServiceConfig<User, Credential>
  * - Direct implementation: No delegation to sub-services, all logic in UserService
  * - Authentication logic: Checks unified store for authentication status
  * - Gateway type: Uses combined UserServiceGateway interface
+ * - Credential-first persistence: Inherits UserStore's default behavior of persisting only credential
  *
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
  *
- * @example Basic usage
+ * @example Basic usage (persist only credential)
  * ```typescript
- * const userService = new UserService<TokenCredential, User>({
+ * const userService = new UserService<User, TokenCredential>({
  *   gateway: new UserGateway(),
  *   logger: new Logger(),
- *   credentialStorage: {
- *     key: 'auth_token',
- *     storage: sessionStorage
+ *   store: {
+ *     storage: localStorage,
+ *     storageKey: 'auth_token'  // This key stores credential, not user info
+ *     // Only credential is persisted to 'auth_token', user info is in memory only
  *   }
  * });
  *
@@ -138,6 +219,20 @@ export interface UserServiceConfig<User, Credential>
  * await userService.login({ email, password });
  * const user = await userService.getUserInfo();
  * const isAuth = userService.isAuthenticated();
+ * ```
+ *
+ * @example Persist both user info and credential
+ * ```typescript
+ * const userService = new UserService<User, TokenCredential>({
+ *   gateway: new UserGateway(),
+ *   store: {
+ *     storage: localStorage,
+ *     storageKey: 'user-info',
+ *     credentialStorageKey: 'auth_token',
+ *     persistUserInfo: true
+ *     // Both user info and credential are persisted separately
+ *   }
+ * });
  * ```
  *
  * @example With plugins
@@ -151,12 +246,100 @@ export interface UserServiceConfig<User, Credential>
  *   }
  * });
  * ```
+ *
+ * @example Handle credential restoration with validation
+ * ```typescript
+ * class CustomUserService extends UserService<User, TokenCredential> {
+ *   constructor(options: UserServiceConfig<User, TokenCredential>) {
+ *     super(options);
+ *
+ *     // After store initialization, check if credential was restored
+ *     const credential = this.getStore().getCredential();
+ *     if (credential) {
+ *       // Validate credential (e.g., check expiration)
+ *       if (this.isCredentialValid(credential)) {
+ *         // Credential is valid, set status to SUCCESS
+ *         this.getStore().updateState({
+ *           status: AsyncStoreStatus.SUCCESS,
+ *           loading: false,
+ *           error: null,
+ *           endTime: Date.now()
+ *         });
+ *       } else {
+ *         // Credential invalid, clear it
+ *         this.getStore().setCredential(null);
+ *       }
+ *     }
+ *   }
+ *
+ *   private isCredentialValid(credential: TokenCredential): boolean {
+ *     // Example: Check expiration
+ *     return credential.expiresAt ? Date.now() < credential.expiresAt : true;
+ *   }
+ * }
+ * ```
+ *
+ * @example Handle credential restoration with async validation
+ * ```typescript
+ * class CustomUserService extends UserService<User, Credential> {
+ *   constructor(options: UserServiceConfig<User, Credential>) {
+ *     super(options);
+ *
+ *     // After store initialization, validate restored credential
+ *     this.validateRestoredCredential();
+ *   }
+ *
+ *   private async validateRestoredCredential(): Promise<void> {
+ *     const credential = this.getStore().getCredential();
+ *     if (!credential) return;
+ *
+ *     try {
+ *       // Validate with server
+ *       const isValid = await this.getGateway()?.validateCredential?.(credential);
+ *       if (isValid) {
+ *         this.getStore().updateState({
+ *           status: AsyncStoreStatus.SUCCESS,
+ *           loading: false,
+ *           error: null,
+ *           endTime: Date.now()
+ *         });
+ *       } else {
+ *         // Invalid credential, clear it
+ *         this.getStore().setCredential(null);
+ *       }
+ *     } catch (error) {
+ *       // Validation failed, keep status as DRAFT
+ *       this.getStore().updateState({ error });
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @example Treat restored credential as valid immediately
+ * ```typescript
+ * class CustomUserService extends UserService<User, Credential> {
+ *   constructor(options: UserServiceConfig<User, Credential>) {
+ *     super(options);
+ *
+ *     // If credential exists after restore, treat as authenticated
+ *     const credential = this.getStore().getCredential();
+ *     if (credential) {
+ *       this.getStore().updateState({
+ *         status: AsyncStoreStatus.SUCCESS,
+ *         loading: false,
+ *         error: null,
+ *         endTime: Date.now()
+ *       });
+ *     }
+ *   }
+ * }
+ * ```
  */
-export class UserService<User, Credential>
+export class UserService<User, Credential, Key = string | symbol>
   extends GatewayService<
     User,
     UserServiceGateway<User, Credential>,
-    UserStoreInterface<User, Credential>
+    UserStore<User, Credential, Key, unknown>
   >
   implements UserServiceInterface<User, Credential>
 {
@@ -204,27 +387,6 @@ export class UserService<User, Credential>
       | UserServicePluginInterface<User, Credential>[]
   ): this {
     return super.use(plugin);
-  }
-
-  /**
-   * Get the user store instance
-   *
-   * Returns the unified UserStore instance.
-   * This store tracks login status, credentials, user info, and authentication errors.
-   *
-   * @override
-   * @returns The user store instance
-   *
-   * @example Access user store
-   * ```typescript
-   * const store = userService.getStore();
-   * const user = store.getUser();
-   * const credential = store.getCredential();
-   * const isLoading = store.getLoading();
-   * ```
-   */
-  public override getStore(): UserStoreInterface<User, Credential> {
-    return this.store;
   }
 
   /**
@@ -281,7 +443,7 @@ export class UserService<User, Credential>
 
           // Mark success with both credential and user info (user may be null if fetch failed)
           // This ensures credential is persisted even if user info fetch fails
-          this.store.success(user, credential);
+          this.store.success(user ?? null, credential);
 
           return credential;
         } else {
@@ -464,29 +626,109 @@ export class UserService<User, Credential>
   /**
    * Check if user is authenticated
    *
-   * Verifies that the unified UserStore has successful authentication status
-   * with both credential and user info available.
+   * Provides a **basic authentication check** that verifies:
+   * - Store status is `SUCCESS`
+   * - Credential exists
+   *
+   * **Important:** This is a basic implementation that may not suit all application scenarios.
+   * Different applications may have different authentication requirements:
+   * - Some may need to check credential expiration
+   * - Some may need to verify user info exists
+   * - Some may require additional permission checks
+   * - Some may need to validate credential with server periodically
+   *
+   * **Override this method** to implement custom authentication logic based on your application's
+   * specific requirements. The base implementation only checks if status is SUCCESS and credential exists.
+   *
+   * **Note:** When credential is restored from storage via `restore()`, the status is NOT automatically
+   * set to SUCCESS. You need to manually set the status based on your validation logic (see examples below).
    *
    * @override
-   * @returns `true` if user is authenticated (store has valid credential and user info), `false` otherwise
+   * @returns `true` if user is authenticated (has SUCCESS status and credential), `false` otherwise
    *
-   * @example Check authentication status
+   * @example Basic usage
    * ```typescript
    * if (userService.isAuthenticated()) {
    *   console.log('User is authenticated');
    *   const user = userService.getUser();
-   *   const credential = userService.getStore().getResult();
+   *   const credential = userService.getCredential();
    * } else {
    *   console.log('User is not authenticated');
+   * }
+   * ```
+   *
+   * @example Override with credential expiration check
+   * ```typescript
+   * class CustomUserService extends UserService<User, TokenCredential> {
+   *   override isAuthenticated(): boolean {
+   *     const credential = this.getCredential();
+   *     if (!credential) return false;
+   *
+   *     // Check if credential has expired
+   *     if (credential.expiresAt && Date.now() >= credential.expiresAt) {
+   *       // Credential expired, clear it
+   *       this.getStore().setCredential(null);
+   *       return false;
+   *     }
+   *
+   *     // Use base implementation
+   *     return super.isAuthenticated();
+   *   }
+   * }
+   * ```
+   *
+   * @example Override to require both credential and user info
+   * ```typescript
+   * class CustomUserService extends UserService<User, Credential> {
+   *   override isAuthenticated(): boolean {
+   *     const state = this.getStore().getState();
+   *     // Require both credential and user info
+   *     return (
+   *       state.status === AsyncStoreStatus.SUCCESS &&
+   *       !!this.getCredential() &&
+   *       !!this.getUser()
+   *     );
+   *   }
+   * }
+   * ```
+   *
+   * @example Override with server validation
+   * ```typescript
+   * class CustomUserService extends UserService<User, Credential> {
+   *   private isValidated = false;
+   *
+   *   override isAuthenticated(): boolean {
+   *     if (!super.isAuthenticated()) return false;
+   *
+   *     // If not validated yet, trigger async validation
+   *     if (!this.isValidated) {
+   *       this.validateCredential();
+   *       return false; // Return false until validated
+   *     }
+   *
+   *     return true;
+   *   }
+   *
+   *   private async validateCredential(): Promise<void> {
+   *     const credential = this.getCredential();
+   *     if (!credential) return;
+   *
+   *     try {
+   *       const isValid = await this.getGateway()?.validateCredential?.(credential);
+   *       this.isValidated = isValid ?? false;
+   *     } catch {
+   *       this.isValidated = false;
+   *     }
+   *   }
    * }
    * ```
    */
   public isAuthenticated(): boolean {
     const state = this.store.getState();
+    // Basic check: status must be SUCCESS and credential must exist
+    // Override this method to implement custom authentication logic
     return (
-      state.status === AsyncStoreStatus.SUCCESS &&
-      !!this.store.getCredential() &&
-      !!this.store.getUser()
+      state.status === AsyncStoreStatus.SUCCESS && !!this.store.getCredential()
     );
   }
 
@@ -509,5 +751,26 @@ export class UserService<User, Credential>
    */
   public getUser(): User | null {
     return this.store.getUser();
+  }
+
+  /**
+   * Get the current credential
+   *
+   * Returns the current credential data if available.
+   * This is a convenience method that accesses the state's credential property directly.
+   *
+   * @override
+   * @returns The current credential data, or `null` if not available
+   *
+   * @example Get current credential
+   * ```typescript
+   * const credential = userService.getCredential();
+   * if (credential) {
+   *   console.log('Current credential:', credential.token);
+   * }
+   * ```
+   */
+  public getCredential(): Credential | null {
+    return this.store.getCredential();
   }
 }

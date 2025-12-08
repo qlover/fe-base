@@ -1,8 +1,8 @@
 import {
   AsyncStoreInterface,
-  AsyncStoreStateInterface,
-  PersistentStoreInterface
+  AsyncStoreStateInterface
 } from '../../store-state';
+import { StoreInterface } from '../../store-state/interface/StoreInterface';
 
 /**
  * User service store state interface
@@ -156,11 +156,7 @@ export interface UserStoreInterface<User, Credential>
    * });
    * ```
    */
-  getStore(): PersistentStoreInterface<
-    UserStateInterface<User, Credential>,
-    unknown,
-    unknown
-  >;
+  getStore(): StoreInterface<UserStateInterface<User, Credential>>;
 
   /**
    * Start authentication process

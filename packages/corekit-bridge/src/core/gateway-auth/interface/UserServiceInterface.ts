@@ -423,6 +423,16 @@ export interface UserServiceInterface<User, Credential>
   getUser(): User | null;
 
   /**
+   * Get the current credential
+   *
+   * Returns the current credential data if available.
+   * This is a convenience method that accesses the state's credential property directly.
+   *
+   * @returns The current credential data, or `null` if not available
+   */
+  getCredential(): Credential | null;
+
+  /**
    * Check if user is authenticated
    *
    * Verifies that both credential and user info stores have successful results,
