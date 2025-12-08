@@ -1,4 +1,4 @@
-import { StoreInterface } from './StoreInterface';
+import { StoreInterface, StoreStateInterface } from './StoreInterface';
 
 /**
  * Interface representing the state of an asynchronous operation
@@ -30,7 +30,7 @@ import { StoreInterface } from './StoreInterface';
  * };
  * ```
  */
-export interface AsyncStateInterface<T> {
+export interface AsyncStateInterface<T> extends StoreStateInterface {
   /**
    * Whether the async operation is currently in progress
    *

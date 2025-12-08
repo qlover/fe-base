@@ -3,7 +3,7 @@ import {
   AsyncStateInterface,
   AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
-import { PersistentStoreInterface } from '../interface/PersistentStoreInterface';
+import { PersistentStore } from './PersistentStore';
 import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
 import { createAsyncState } from './createAsyncState';
 
@@ -209,7 +209,7 @@ export class AsyncStore<
     Key,
     Opt = unknown
   >
-  extends PersistentStoreInterface<S, Key, Opt>
+  extends PersistentStore<S, Key, Opt>
   implements AsyncStoreInterface<S>
 {
   /**
@@ -416,7 +416,7 @@ export class AsyncStore<
    * });
    * ```
    */
-  getStore(): PersistentStoreInterface<S, Key, Opt> {
+  getStore(): PersistentStore<S, Key, Opt> {
     return this;
   }
 

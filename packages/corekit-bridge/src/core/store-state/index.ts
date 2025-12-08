@@ -1,5 +1,5 @@
 export * from './interface/StoreInterface';
-export * from './interface/PersistentStoreInterface';
+export * from './impl/PersistentStore';
 export * from './interface/AsyncStoreInterface';
 export * from './impl/AsyncStore';
 export * from './impl/AsyncStoreState';
