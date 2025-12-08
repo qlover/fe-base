@@ -26,7 +26,9 @@ import type { MessageSenderContextOptions } from './MessageSenderExecutor';
  * messageSender.use(strategy);
  * ```
  */
-export class ChatSenderStrategy extends SenderStrategyPlugin {
+export class ChatSenderStrategy extends SenderStrategyPlugin<
+  ChatMessage<string>
+> {
   /**
    * Slice messages to keep only up to the specified index
    *
