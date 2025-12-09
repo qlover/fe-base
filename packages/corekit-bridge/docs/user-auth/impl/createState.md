@@ -1,6 +1,6 @@
 ## `src/core/user-auth/impl/createState` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/createState`
 
 ---
 

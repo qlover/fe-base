@@ -1,12 +1,12 @@
 ## `src/feConfig` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/feConfig`
 
 ---
 
 ### `FeReleaseConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FeReleaseConfig`
 
 Configuration interface for automated release process management
 

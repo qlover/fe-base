@@ -1,12 +1,12 @@
 ## `src/core/theme-service/ThemeStateGetter` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/theme-service/ThemeStateGetter`
 
 ---
 
 ### `ThemeStateGetter` (Class)
 
-**Type:** `unknown`
+**Type:** `class ThemeStateGetter`
 
 ---
 

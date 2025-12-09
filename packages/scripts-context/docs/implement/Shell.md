@@ -1,12 +1,12 @@
 ## `src/implement/Shell` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implement/Shell`
 
 ---
 
 ### `Shell` (Class)
 
-**Type:** `unknown`
+**Type:** `class Shell`
 
 Shell class for command execution with templating and caching support
 
@@ -121,7 +121,7 @@ Shell configuration with logger and execution options
 
 #### `logger` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor logger`
 
 ---
 
@@ -548,7 +548,7 @@ const result = Shell.format('npm install<% if (dev) { %> --save-dev<% } %>', {
 
 ### `ShellConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ShellConfig`
 
 Configuration interface for Shell class initialization
 

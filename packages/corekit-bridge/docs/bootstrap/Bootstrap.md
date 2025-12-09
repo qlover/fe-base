@@ -1,12 +1,12 @@
 ## `src/core/bootstrap/Bootstrap` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/bootstrap/Bootstrap`
 
 ---
 
 ### `Bootstrap` (Class)
 
-**Type:** `unknown`
+**Type:** `class Bootstrap<Container>`
 
 ---
 
@@ -594,7 +594,7 @@ const result = this.runHooks(this.plugins, 'onBefore', context, data);
 
 ### `BootstrapConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface BootstrapConfig<Container>`
 
 ---
 

@@ -1,12 +1,12 @@
 ## `src/core/storage/utils/QuickerTime` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/storage/utils/QuickerTime`
 
 ---
 
 ### `QuickerTime` (Class)
 
-**Type:** `unknown`
+**Type:** `class QuickerTime`
 
 QuickerTime is a simple time calculation tool class.
 

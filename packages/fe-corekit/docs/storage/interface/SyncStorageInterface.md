@@ -1,12 +1,12 @@
 ## `src/storage/interface/SyncStorageInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/interface/SyncStorageInterface`
 
 ---
 
 ### `SyncStorageInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface SyncStorageInterface<Key, Opt>`
 
 Interface representing a synchronous storage mechanism.
 

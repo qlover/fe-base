@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/UserStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/UserStore`
 
 ---
 
 ### `UserStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserStore<User, Credential, Key, Opt>`
 
 **Since:** `1.8.0`
 
@@ -262,7 +262,7 @@ only the result value (
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -1922,7 +1922,7 @@ store.updateState({ loading: true }, { persist: false });
 
 ### `UserStoreOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserStoreOptions<State, Key, Opt>`
 
 Options for creating a UserStore instance
 

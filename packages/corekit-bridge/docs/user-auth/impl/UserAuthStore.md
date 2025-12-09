@@ -1,12 +1,12 @@
 ## `src/core/user-auth/impl/UserAuthStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/UserAuthStore`
 
 ---
 
 ### `UserAuthStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserAuthStore<State>`
 
 User authentication store implementation
 
@@ -78,7 +78,7 @@ off();
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 

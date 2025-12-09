@@ -1,12 +1,12 @@
 ## `src/executor/interface/Executor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/interface/Executor`
 
 ---
 
 ### `Executor` (Class)
 
-**Type:** `unknown`
+**Type:** `class Executor<ExecutorConfig>`
 
 Base executor class providing plugin management and execution pipeline
 
@@ -578,7 +578,7 @@ executor.use(plugin); // Second addition - skipped with warning
 
 ### `ExecutorConfigInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorConfigInterface`
 
 **Since:** `2.1.0`
 

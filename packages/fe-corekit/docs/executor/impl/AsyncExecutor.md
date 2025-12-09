@@ -1,12 +1,12 @@
 ## `src/executor/impl/AsyncExecutor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/impl/AsyncExecutor`
 
 ---
 
 ### `AsyncExecutor` (Class)
 
-**Type:** `unknown`
+**Type:** `class AsyncExecutor<ExecutorConfig>`
 
 Asynchronous implementation of the Executor pattern
 

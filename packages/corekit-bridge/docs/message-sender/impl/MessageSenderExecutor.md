@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/MessageSenderExecutor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/MessageSenderExecutor`
 
 ---
 
 ### `MessageSenderExecutor` (Class)
 
-**Type:** `unknown`
+**Type:** `class MessageSenderExecutor<MessageType>`
 
 Message sender executor for managing plugin execution
 
@@ -738,7 +738,7 @@ executor.use(plugin); // Second addition - skipped with warning
 
 ### `MessageSenderContextOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageSenderContextOptions<MessageType>`
 
 Message sender execution context
 
@@ -898,7 +898,7 @@ const config = {
 
 ### `MessageSenderPlugin` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageSenderPlugin<T>`
 
 Message sender plugin interface
 
@@ -958,13 +958,13 @@ Plugins with the same pluginName will be merged.
 
 #### `enabled` (Method)
 
-**Type:** `(name: unknown, context: ExecutorContext<MessageSenderContextOptions<T>>) => boolean`
+**Type:** `(name: parameter name, context: ExecutorContext<MessageSenderContextOptions<T>>) => boolean`
 
 #### Parameters
 
 | Name      | Type                                              | Optional | Default | Since | Deprecated | Description                     |
 | --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                         | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                                  | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ✅       | -       | -     | -          |                                 |
 
 ---
@@ -992,7 +992,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 
 | Name      | Type                                              | Optional | Default | Since | Deprecated | Description                     |
 | --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                         | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                                  | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ✅       | -       | -     | -          |                                 |
 
 ---

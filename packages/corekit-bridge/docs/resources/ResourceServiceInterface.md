@@ -1,12 +1,12 @@
 ## `src/core/resources/ResourceServiceInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/resources/ResourceServiceInterface`
 
 ---
 
 ### `ResourceServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ResourceServiceInterface<T, Store>`
 
 Service interface for managing resource lifecycle and state
 

@@ -1,12 +1,12 @@
 ## `src/core/resources/ResourceStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/resources/ResourceStore`
 
 ---
 
 ### `ResourceStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class ResourceStore<S>`
 
 Store class for managing resource state
 
@@ -53,7 +53,7 @@ store.changeSearchParams({ page: 1, pageSize: 20 });
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -455,7 +455,7 @@ store.emit(initialState);
 
 ### `ResourceQuery` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ResourceQuery`
 
 Interface defining resource query parameters
 
@@ -532,7 +532,7 @@ Number of items per page
 
 ### `ResourceStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ResourceStateInterface`
 
 Interface for resource state management
 

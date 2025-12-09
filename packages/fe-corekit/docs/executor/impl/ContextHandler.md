@@ -1,12 +1,12 @@
 ## `src/executor/impl/ContextHandler` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/impl/ContextHandler`
 
 ---
 
 ### `ContextHandler` (Class)
 
-**Type:** `unknown`
+**Type:** `class ContextHandler`
 
 Manages execution context state and plugin runtime tracking
 

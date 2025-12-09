@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/UserServiceInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/UserServiceInterface`
 
 ---
 
 ### `UserServiceExecutorOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserServiceExecutorOptions<User, Credential>`
 
 User service executor options
 
@@ -131,7 +131,7 @@ if (user) {
 
 ### `UserServiceGateway` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserServiceGateway<User, Credential>`
 
 **Since:** `1.8.0`
 
@@ -512,7 +512,7 @@ Common parameters include:
 
 ### `UserServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserServiceInterface<User, Credential>`
 
 User service interface
 
@@ -1098,7 +1098,7 @@ userService.use(plugin);
 
 ### `UserServicePluginInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserServicePluginInterface<User, Credential>`
 
 User service plugin interface
 
@@ -1231,13 +1231,13 @@ Plugins with the same pluginName will be merged.
 
 #### `enabled` (Method)
 
-**Type:** `(name: unknown, context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => boolean`
+**Type:** `(name: parameter name, context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => boolean`
 
 #### Parameters
 
 | Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                     |
 | --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                                       | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                                                | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ✅       | -       | -     | -          |                                 |
 
 ---
@@ -1265,7 +1265,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 
 | Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                     |
 | --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                                       | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                                                | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ✅       | -       | -     | -          |                                 |
 
 ---

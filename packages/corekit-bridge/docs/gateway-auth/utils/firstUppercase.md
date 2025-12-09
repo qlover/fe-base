@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/utils/firstUppercase` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/utils/firstUppercase`
 
 ---
 
 ### `FirstUppercaseType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type FirstUppercaseType<S>`
 
 Capitalize first letter of a string type
 Same behavior as firstUppercase function: only first letter uppercase, rest unchanged

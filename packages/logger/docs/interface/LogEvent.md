@@ -1,12 +1,12 @@
 ## `src/interface/LogEvent` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/LogEvent`
 
 ---
 
 ### `LogEvent` (Class)
 
-**Type:** `unknown`
+**Type:** `class LogEvent<Ctx>`
 
 Represents a log event in the logging system
 

@@ -1,12 +1,12 @@
 ## `src/core/storage/impl/CookieStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/storage/impl/CookieStorage`
 
 ---
 
 ### `CookieStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class CookieStorage`
 
 CookieStorage
 
@@ -59,7 +59,7 @@ storage.clear(); // remove every cookie under the current path/domain
 
 #### `length` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor length`
 
 ---
 

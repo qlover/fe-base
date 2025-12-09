@@ -1,12 +1,12 @@
 ## `src/interface/FormatterInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/FormatterInterface`
 
 ---
 
 ### `FormatterInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FormatterInterface<Ctx>`
 
 Interface for log event formatters
 

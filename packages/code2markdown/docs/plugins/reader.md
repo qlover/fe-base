@@ -1,12 +1,12 @@
 ## `src/plugins/reader` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/plugins/reader`
 
 ---
 
 ### `Reader` (Class)
 
-**Type:** `unknown`
+**Type:** `class Reader`
 
 Reader plugin for scanning and processing TypeScript source files
 
@@ -86,19 +86,19 @@ Ensures only one instance of this plugin can be registered
 
 #### `logger` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor logger`
 
 ---
 
 #### `options` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor options`
 
 ---
 
 #### `shell` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor shell`
 
 ---
 
@@ -613,7 +613,7 @@ await this.step({
 
 ### `EntryValue` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface EntryValue`
 
 Entry file information for file reading operations
 
@@ -637,7 +637,7 @@ Full path to the entry file or directory
 
 ### `ReaderOutput` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ReaderOutput`
 
 Processed file information for markdown generation
 

@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/base/ExecutorServiceInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/base/ExecutorServiceInterface`
 
 ---
 
 ### `ExecutorServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorServiceInterface<Store, Gateway>`
 
 **Since:** `1.8.0`
 
@@ -519,7 +519,7 @@ service.use({
 
 ### `ExecutorServiceOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorServiceOptions<T, Gateway>`
 
 **Since:** `1.8.0`
 

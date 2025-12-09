@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/ServiceAction` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/ServiceAction`
 
 ---
 
 ### `ServiceActionType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type ServiceActionType`
 
 Service action type
 

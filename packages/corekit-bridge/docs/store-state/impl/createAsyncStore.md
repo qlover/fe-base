@@ -1,6 +1,6 @@
 ## `src/core/store-state/impl/createAsyncStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/createAsyncStore`
 
 ---
 

@@ -1,18 +1,18 @@
 ## `src/core/ioc/IOCManagerInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ioc/IOCManagerInterface`
 
 ---
 
 ### `IOCManagerInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface IOCManagerInterface<Container>`
 
 ---
 
 #### `implemention` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor implemention`
 
 ---
 

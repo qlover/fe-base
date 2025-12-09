@@ -1,12 +1,12 @@
 ## `src/executor/impl/SyncExecutor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/impl/SyncExecutor`
 
 ---
 
 ### `SyncExecutor` (Class)
 
-**Type:** `unknown`
+**Type:** `class SyncExecutor<ExecutorConfig>`
 
 Synchronous executor class that extends the base Executor
 Provides synchronous task execution with plugin support

@@ -1,12 +1,12 @@
 ## `src/request/managers/RequestManager` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/managers/RequestManager`
 
 ---
 
 ### `RequestManager` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestManager<Config>`
 
 **Since:** `1.2.2`
 

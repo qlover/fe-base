@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/UserService` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/UserService`
 
 ---
 
 ### `UserService` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserService<User, Credential, Key>`
 
 User service implementation
 
@@ -292,13 +292,13 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `createDefaultFn` (Method)
 
-**Type:** `(action: unknown) => ExecuteFn<unknown, unknown, UserServiceGateway<User, Credential>>`
+**Type:** `(action: parameter action) => ExecuteFn<unknown, unknown, UserServiceGateway<User, Credential>>`
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                       |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
-| `action` | `unknown` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                       |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
+| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
 
 ---
 
@@ -340,22 +340,22 @@ await service.execute('login', params);
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                       |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
-| `action` | `unknown` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                       |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
+| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
 
 ---
 
 #### `createExecOptions` (Method)
 
-**Type:** `(action: unknown, params: Params) => GatewayExecutorOptions<User, UserServiceGateway<User, Credential>, Params>`
+**Type:** `(action: parameter action, params: Params) => GatewayExecutorOptions<User, UserServiceGateway<User, Credential>, Params>`
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `action` | `unknown` | ❌       | -       | -     | -          | The gateway action name                      |
-| `params` | `Params`  | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name                      |
+| `params` | `Params`           | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
 
 ---
 
@@ -382,10 +382,10 @@ and typically doesn't need to be called directly
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `action` | `unknown` | ❌       | -       | -     | -          | The gateway action name                      |
-| `params` | `Params`  | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name                      |
+| `params` | `Params`           | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
 
 ---
 
@@ -1134,7 +1134,7 @@ userService.use({
 
 ### `UserServiceConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserServiceConfig<User, Credential>`
 
 **Since:** `1.8.0`
 

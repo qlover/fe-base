@@ -1,12 +1,12 @@
 ## `src/interface/LogContext` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/LogContext`
 
 ---
 
 ### `LogContext` (Class)
 
-**Type:** `unknown`
+**Type:** `class LogContext<Value>`
 
 Type-safe container for log event context data
 

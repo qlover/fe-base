@@ -1,6 +1,6 @@
 ## `src/core/message-sender/impl/utils` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/utils`
 
 ---
 

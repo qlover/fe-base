@@ -1,12 +1,12 @@
 ## `src/request/plugins/FetchAbortPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/plugins/FetchAbortPlugin`
 
 ---
 
 ### `FetchAbortPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class FetchAbortPlugin`
 
 Plugin for handling request cancellation
 Provides abort functionality for fetch requests

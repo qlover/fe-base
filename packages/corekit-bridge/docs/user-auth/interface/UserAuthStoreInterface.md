@@ -1,12 +1,12 @@
 ## `src/core/user-auth/interface/UserAuthStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/interface/UserAuthStoreInterface`
 
 ---
 
 ### `LOGIN_STATUS` (Enum)
 
-**Type:** `unknown`
+**Type:** `enum LOGIN_STATUS`
 
 Login status enumeration
 
@@ -40,7 +40,7 @@ Authentication succeeded
 
 ### `UserAuthStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthStoreInterface<User>`
 
 User authentication store interface
 
@@ -345,7 +345,7 @@ Sets login status to LOADING and clears any previous errors
 
 ### `UserAuthStoreOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthStoreOptions<State>`
 
 ---
 

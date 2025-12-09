@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/ChatMessageStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/ChatMessageStoreInterface`
 
 ---
 
 ### `ChatMessageStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ChatMessageStoreInterface<T>`
 
 Chat message store interface for managing chat message state and operations
 
@@ -48,7 +48,7 @@ store.updateDraftMessage(draft.id, { content: 'Hello, world!' });
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -706,7 +706,7 @@ if (ready) {
 
 #### `isMessage` (Method)
 
-**Type:** `(message: unknown) => unknown`
+**Type:** `(message: unknown) => callsignature isMessage<T>`
 
 #### Parameters
 
@@ -718,7 +718,7 @@ if (ready) {
 
 ##### `isMessage` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isMessage<T>`
 
 Type guard to check if an unknown value is a message
 
@@ -1310,7 +1310,7 @@ store.updateMessage(
 
 ### `ChatMessageStoreStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ChatMessageStoreStateInterface<T>`
 
 State interface for chat message store
 

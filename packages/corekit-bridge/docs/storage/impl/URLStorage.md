@@ -1,12 +1,12 @@
 ## `src/core/storage/impl/URLStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/storage/impl/URLStorage`
 
 ---
 
 ### `URLStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class URLStorage<Key>`
 
 **Since:** `1.8.0`
 
@@ -502,7 +502,7 @@ storage.set('new-value'); // Only updates internal cache, URL unchanged
 
 ### `URLStorageOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface URLStorageOptions<Key>`
 
 Configuration options for
 `URLStorage`

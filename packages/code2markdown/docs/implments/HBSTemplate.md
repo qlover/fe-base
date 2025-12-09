@@ -1,12 +1,12 @@
 ## `src/implments/HBSTemplate` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implments/HBSTemplate`
 
 ---
 
 ### `HBSTemplate` (Class)
 
-**Type:** `unknown`
+**Type:** `class HBSTemplate`
 
 Handlebars template processor for code-to-markdown conversion
 

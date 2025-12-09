@@ -1,6 +1,6 @@
 ## `src/core/ioc/createIOCFunction` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ioc/createIOCFunction`
 
 ---
 

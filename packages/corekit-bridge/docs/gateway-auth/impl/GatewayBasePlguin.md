@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/GatewayBasePlguin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/GatewayBasePlguin`
 
 ---
 
 ### `GatewayBasePlguin` (Class)
 
-**Type:** `unknown`
+**Type:** `class GatewayBasePlguin<Params, T, Gateway>`
 
 Base plugin for gateway actions
 

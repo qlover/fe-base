@@ -1,12 +1,12 @@
 ## `src/core/request-plugins/ApiMockPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/request-plugins/ApiMockPlugin`
 
 ---
 
 ### `ApiMockPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class ApiMockPlugin`
 
 ApiMockPlugin - Mock API responses for development and testing
 
@@ -162,13 +162,13 @@ A Response object with JSON stringified mock data
 
 #### `enabled` (Method)
 
-**Type:** `(_name: unknown, context: ApiMockPluginContext) => boolean`
+**Type:** `(_name: parameter _name, context: ApiMockPluginContext) => boolean`
 
 #### Parameters
 
 | Name      | Type                   | Optional | Default | Since | Deprecated | Description                                            |
 | --------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `_name`   | `unknown`              | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
+| `_name`   | `parameter _name`      | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
 | `context` | `ApiMockPluginContext` | ✅       | -       | -     | -          | The executor context containing request parameters     |
 
 ---
@@ -189,7 +189,7 @@ true if the plugin should be enabled, false otherwise
 
 | Name      | Type                   | Optional | Default | Since | Deprecated | Description                                            |
 | --------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `_name`   | `unknown`              | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
+| `_name`   | `parameter _name`      | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
 | `context` | `ApiMockPluginContext` | ✅       | -       | -     | -          | The executor context containing request parameters     |
 
 ---
@@ -350,7 +350,7 @@ Resolved mock data
 
 ### `ApiMockPluginOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ApiMockPluginOptions`
 
 ---
 
@@ -389,7 +389,7 @@ Set to 0 to disable delay (no await).
 
 ### `MockDataJson` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MockDataJson<T>`
 
 Mock data configuration object
 

@@ -484,7 +484,8 @@ export default class TypeDocJson extends ScriptPlugin<
    * 2. Handles different type categories (intrinsic, reference, literal, etc.)
    * 3. Processes complex types (union, intersection, reflection)
    * 4. Generates function signatures with parameters and return types
-   * 5. Falls back to 'unknown' for unrecognized types
+   * 5. Handles declaration types (Class, Interface, Module, Enum, TypeAlias) that don't have type property
+   * 6. Falls back to 'unknown' for unrecognized types
    *
    * Business Rules:
    * - Intrinsic types: returns type name directly (string, number, boolean)
@@ -494,6 +495,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * - Intersection types: joins with ' & ' separator
    * - Reflection types: returns 'Object' for object types
    * - Function types: generates parameter list and return type
+   * - Declaration types: generates type string based on kind and name (e.g., "class ClassName<T>")
    * - Unknown types: returns 'unknown' fallback
    *
    * Type Categories:
@@ -504,6 +506,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * - Intersection: A & B & C
    * - Reflection: object types with properties
    * - Function: (param: type) => returnType
+   * - Declaration: class, interface, module, enum, type alias
    *
    * @param reflection - TypeDoc reflection object
    * @returns Formatted type string representation
@@ -518,6 +521,12 @@ export default class TypeDocJson extends ScriptPlugin<
    * ```typescript
    * this.getTypeString({ type: { type: 'union', types: [...] } });
    * // Returns: 'string | number | boolean'
+   * ```
+   *
+   * @example Declaration Types
+   * ```typescript
+   * this.getTypeString({ kind: ReflectionKind.Class, name: 'BaseService', typeParameters: [...] });
+   * // Returns: 'class BaseService<T, Store, Gateway>'
    * ```
    */
   private getTypeString(reflection: any): string {
@@ -582,6 +591,54 @@ export default class TypeDocJson extends ScriptPlugin<
           .join(SEPARATORS_PARAMS) || '';
       const returnType = this.getTypeString(signature);
       return `(${params}) => ${returnType}`;
+    }
+
+    // 处理声明类型（类、接口、模块、枚举、类型别名等）这些类型没有 type 属性
+    if (reflection.kind !== undefined && reflection.name) {
+      const kindName =
+        ReflectionKindName[reflection.kind as keyof typeof ReflectionKindName];
+
+      if (kindName) {
+        let typeString = '';
+
+        // 根据不同的声明类型生成相应的类型字符串
+        switch (reflection.kind) {
+          case ReflectionKind.Class:
+            typeString = 'class';
+            break;
+          case ReflectionKind.Interface:
+            typeString = 'interface';
+            break;
+          case ReflectionKind.Module:
+            typeString = 'module';
+            break;
+          case ReflectionKind.Enum:
+            typeString = 'enum';
+            break;
+          case ReflectionKind.TypeAlias:
+            typeString = 'type';
+            break;
+          case ReflectionKind.Namespace:
+            typeString = 'namespace';
+            break;
+          default:
+            // 对于其他声明类型，使用小写的 kindName
+            typeString = kindName.toLowerCase();
+        }
+
+        // 添加名称
+        typeString += ` ${reflection.name}`;
+
+        // 处理泛型类型参数
+        if (reflection.typeParameters && reflection.typeParameters.length > 0) {
+          const typeParams = reflection.typeParameters
+            .map((tp: any) => tp.name)
+            .join(SEPARATORS_PARAMS);
+          typeString += `<${typeParams}>`;
+        }
+
+        return typeString;
+      }
     }
 
     return 'unknown';

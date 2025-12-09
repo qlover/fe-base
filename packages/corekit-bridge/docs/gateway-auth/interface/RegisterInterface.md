@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/RegisterInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/RegisterInterface`
 
 ---
 
 ### `RegisterInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RegisterInterface<Result>`
 
 **Since:** `1.8.0`
 
@@ -153,7 +153,7 @@ Common parameters include:
 
 ### `RegisterServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RegisterServiceInterface<User, Store>`
 
 Register service interface
 

@@ -1,12 +1,12 @@
 ## `src/core/request-plugins/RequestCatcherInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/request-plugins/RequestCatcherInterface`
 
 ---
 
 ### `RequestCatcherInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestCatcherInterface<Context>`
 
 RequestCatcherInterface
 

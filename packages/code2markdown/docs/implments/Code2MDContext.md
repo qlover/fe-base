@@ -1,12 +1,12 @@
 ## `src/implments/Code2MDContext` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implments/Code2MDContext`
 
 ---
 
 ### `default` (Class)
 
-**Type:** `unknown`
+**Type:** `class default`
 
 Context class for code-to-markdown conversion operations
 
@@ -164,7 +164,7 @@ detailed information display.
 
 #### `env` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor env`
 
 ---
 
@@ -553,7 +553,7 @@ this.setOptions({
 
 ### `Code2MDContextConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface Code2MDContextConfig`
 
 Configuration interface for code-to-markdown conversion context
 
@@ -836,7 +836,7 @@ sourcePath: 'packages/core/src';
 
 ### `Code2MDContextOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface Code2MDContextOptions<T>`
 
 Configuration options for Code2MDContext
 

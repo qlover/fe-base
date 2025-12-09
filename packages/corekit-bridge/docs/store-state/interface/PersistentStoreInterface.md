@@ -1,12 +1,12 @@
 ## `src/core/store-state/interface/PersistentStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/interface/PersistentStoreInterface`
 
 ---
 
 ### `PersistentStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface PersistentStoreInterface<T, Key, Opt>`
 
 **Since:** `1.8.0`
 

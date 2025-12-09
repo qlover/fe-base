@@ -1,12 +1,12 @@
 ## `src/core/store-state/impl/RequestState` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/RequestState`
 
 ---
 
 ### `RequestState` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestState<T>`
 
 Concrete implementation of AsyncStateInterface for tracking request lifecycle
 

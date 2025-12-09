@@ -1,12 +1,12 @@
 ## `src/type` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/type`
 
 ---
 
 ### `FormatProjectDescription` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FormatProjectDescription`
 
 Formatted description from JSDoc comments
 
@@ -115,7 +115,7 @@ This field identifies the type of description content, such as
 
 ### `FormatProjectSource` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FormatProjectSource`
 
 Source file information for code elements
 
@@ -223,7 +223,7 @@ version control system integration.
 
 ### `FormatProjectValue` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FormatProjectValue`
 
 Formatted project value representing a code element
 
@@ -560,7 +560,7 @@ parameter types, return types, and generic type parameters.
 
 ### `FormatProjectKindName` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type FormatProjectKindName`
 
 Type alias for reflection kind names
 
@@ -589,7 +589,7 @@ function processKind(kindName: FormatProjectKindName): string {
 
 ### `ValueOf` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type ValueOf<T>`
 
 Utility type to extract value types from an object type
 

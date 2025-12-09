@@ -1,12 +1,12 @@
 ## `src/storage/impl/KeyStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/impl/KeyStorage`
 
 ---
 
 ### `KeyStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class KeyStorage<Key, Value, Opt>`
 
 **Since:** `1.5.0`
 
@@ -430,7 +430,7 @@ storage.set('sensitive-data', {
 
 ### `KeyStorageOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface KeyStorageOptions<Key, Sopt>`
 
 ---
 

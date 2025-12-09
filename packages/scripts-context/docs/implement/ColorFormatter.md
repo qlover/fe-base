@@ -1,12 +1,12 @@
 ## `src/implement/ColorFormatter` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implement/ColorFormatter`
 
 ---
 
 ### `ColorFormatter` (Class)
 
-**Type:** `unknown`
+**Type:** `class ColorFormatter`
 
 Color formatter for log output with customizable level-based coloring
 

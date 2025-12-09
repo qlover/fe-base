@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/MessageSenderBasePlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/MessageSenderBasePlugin`
 
 ---
 
 ### `MessageSenderBasePlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class MessageSenderBasePlugin<T>`
 
 Abstract base class for message sender plugins
 

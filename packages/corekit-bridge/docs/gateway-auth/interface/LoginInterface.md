@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/LoginInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/LoginInterface`
 
 ---
 
 ### `LoginInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LoginInterface<CredentialType>`
 
 **Since:** `1.8.0`
 
@@ -156,7 +156,7 @@ const result = await authService.logout<
 
 ### `LoginParams` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LoginParams`
 
 Login parameters
 
@@ -232,7 +232,7 @@ Required when using phone-based login.
 
 ### `LoginServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LoginServiceInterface<Credential, Store>`
 
 Login service interface
 

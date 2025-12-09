@@ -1,12 +1,12 @@
 ## `src/storage/interface/KeyStorageInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/interface/KeyStorageInterface`
 
 ---
 
 ### `KeyStorageInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface KeyStorageInterface<Key, Value, Opt>`
 
 Key-value storage interface for managing a single value with persistence support
 

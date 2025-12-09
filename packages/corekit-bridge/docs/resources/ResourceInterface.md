@@ -1,12 +1,12 @@
 ## `src/core/resources/ResourceInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/resources/ResourceInterface`
 
 ---
 
 ### `ResourceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ResourceInterface<T>`
 
 Generic interface for resource operations
 

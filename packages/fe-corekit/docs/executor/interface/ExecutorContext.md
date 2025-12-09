@@ -1,12 +1,12 @@
 ## `src/executor/interface/ExecutorContext` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/interface/ExecutorContext`
 
 ---
 
 ### `ExecutorContext` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorContext<Params>`
 
 **Since:** `1.0.14`
 
@@ -240,7 +240,7 @@ Result lifecycle:
 
 ### `HookRuntimes` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface HookRuntimes`
 
 Runtime information interface for hook execution tracking
 

@@ -1,12 +1,12 @@
 ## `src/implments/Code2MDTask` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implments/Code2MDTask`
 
 ---
 
 ### `Code2MDTask` (Class)
 
-**Type:** `unknown`
+**Type:** `class Code2MDTask`
 
 Main task class for code-to-markdown conversion operations
 

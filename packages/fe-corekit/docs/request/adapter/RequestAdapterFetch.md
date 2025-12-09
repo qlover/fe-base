@@ -1,12 +1,12 @@
 ## `src/request/adapter/RequestAdapterFetch` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/adapter/RequestAdapterFetch`
 
 ---
 
 ### `RequestAdapterFetch` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestAdapterFetch`
 
 Request adapter interface
 
@@ -219,7 +219,7 @@ A RequestAdapterResponse containing the processed response data.
 
 ### `RequestAdapterFetchConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestAdapterFetchConfig<Request>`
 
 **Since:** `1.0.14`
 

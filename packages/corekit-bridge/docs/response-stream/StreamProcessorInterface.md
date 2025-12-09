@@ -1,12 +1,12 @@
 ## `src/core/response-stream/StreamProcessorInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/StreamProcessorInterface`
 
 ---
 
 ### `StreamProcessorInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface StreamProcessorInterface`
 
 Stream processor interface for custom stream data processing
 

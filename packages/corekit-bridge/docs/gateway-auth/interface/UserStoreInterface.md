@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/UserStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/UserStoreInterface`
 
 ---
 
 ### `UserStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserStateInterface<User, Credential>`
 
 **Since:** `1.8.0`
 
@@ -198,7 +198,7 @@ Status values are defined by
 
 ### `UserStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserStoreInterface<User, Credential>`
 
 User service store interface
 

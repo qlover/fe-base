@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/BaseService` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/BaseService`
 
 ---
 
 ### `BaseService` (Class)
 
-**Type:** `unknown`
+**Type:** `class BaseService<T, Store, Gateway>`
 
 **Since:** `1.8.0`
 
@@ -332,7 +332,7 @@ store.observe((state) => {
 
 ### `BaseServiceOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface BaseServiceOptions<T, Gateway, Key>`
 
 **Since:** `1.8.0`
 

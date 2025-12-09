@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/SenderStrategyPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/SenderStrategyPlugin`
 
 ---
 
 ### `SenderStrategyPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class SenderStrategyPlugin<T>`
 
 Message sender strategy plugin for managing message lifecycle
 
@@ -895,7 +895,7 @@ This ensures the store properly tracks streaming operations.
 
 ### `SendFailureStrategyType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type SendFailureStrategyType`
 
 Type representing valid send failure strategies
 

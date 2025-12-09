@@ -1,12 +1,12 @@
 ## `src/core/response-stream/StreamEvent` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/StreamEvent`
 
 ---
 
 ### `StreamEvent` (Class)
 
-**Type:** `unknown`
+**Type:** `class StreamEvent`
 
 Stream event handler for processing stream data
 
@@ -96,13 +96,13 @@ Array of processed messages
 
 #### `finish` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor finish`
 
 ---
 
 #### `times` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor times`
 
 ---
 

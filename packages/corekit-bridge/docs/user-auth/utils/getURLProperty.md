@@ -1,6 +1,6 @@
 ## `src/core/user-auth/utils/getURLProperty` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/utils/getURLProperty`
 
 ---
 

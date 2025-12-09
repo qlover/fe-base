@@ -1,12 +1,12 @@
 ## `src/storage/impl/ObjectStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/impl/ObjectStorage`
 
 ---
 
 ### `ObjectStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class ObjectStorage<Key, ValueType, Opt>`
 
 **Since:** `1.5.0`
 
@@ -88,7 +88,7 @@ Main purpose: Minimize latency for storage operations
 
 #### `length` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor length`
 
 The number of items stored.
 
@@ -285,7 +285,7 @@ if (isExpired) {
 
 #### `isStorageValue` (Method)
 
-**Type:** `(value: unknown) => unknown`
+**Type:** `(value: unknown) => callsignature isStorageValue`
 
 #### Parameters
 
@@ -297,7 +297,7 @@ if (isExpired) {
 
 ##### `isStorageValue` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isStorageValue`
 
 Type guard to check if a value is a valid StorageValue
 
@@ -411,7 +411,7 @@ storage.setItem('session', sessionData, Date.now() + 3600000);
 
 ### `ObjectStorageOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ObjectStorageOptions`
 
 ---
 

@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/MessageSenderInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/MessageSenderInterface`
 
 ---
 
 ### `MessageSenderInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageSenderInterface<Message>`
 
 Message sender interface for managing message transmission
 

@@ -1,12 +1,12 @@
 ## `src/core/ui/UIDialogInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ui/UIDialogInterface`
 
 ---
 
 ### `UIDialogInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UIDialogInterface<T>`
 
 ---
 

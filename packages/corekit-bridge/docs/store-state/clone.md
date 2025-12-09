@@ -1,6 +1,6 @@
 ## `src/core/store-state/clone` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/clone`
 
 ---
 

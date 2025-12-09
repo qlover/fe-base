@@ -1,12 +1,12 @@
 ## `src/serializer/JSONSerializer` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/serializer/JSONSerializer`
 
 ---
 
 ### `JSONSerializer` (Class)
 
-**Type:** `unknown`
+**Type:** `class JSONSerializer<T, Opt>`
 
 **Since:** `1.0.10`
 
@@ -370,7 +370,7 @@ Serialized string
 
 ### `JSONSerializerOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface JSONSerializerOptions`
 
 ---
 

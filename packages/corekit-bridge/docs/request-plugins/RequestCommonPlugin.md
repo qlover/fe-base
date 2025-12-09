@@ -1,12 +1,12 @@
 ## `src/core/request-plugins/RequestCommonPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/request-plugins/RequestCommonPlugin`
 
 ---
 
 ### `RequestCommonPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestCommonPlugin`
 
 Represents a plugin for handling common request configurations and behaviors.
 

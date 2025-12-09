@@ -1,6 +1,6 @@
 ## `src/core/gateway-auth/utils/createUserStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/utils/createUserStore`
 
 ---
 

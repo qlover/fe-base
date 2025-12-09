@@ -1,12 +1,12 @@
 ## `src/storage/interface/AsyncStorageInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/interface/AsyncStorageInterface`
 
 ---
 
 ### `AsyncStorageInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStorageInterface<Key, ValueType>`
 
 Interface representing an asynchronous storage mechanism.
 

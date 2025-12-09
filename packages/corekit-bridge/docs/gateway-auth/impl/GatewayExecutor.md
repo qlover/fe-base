@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/impl/GatewayExecutor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/impl/GatewayExecutor`
 
 ---
 
 ### `GatewayExecutor` (Class)
 
-**Type:** `unknown`
+**Type:** `class GatewayExecutor<T, Gateway>`
 
 GatewayExecutor for executing gateway actions with plugin support
 
@@ -864,7 +864,7 @@ executor.use(plugin); // Second addition - skipped with warning
 
 ### `GatewayExecutorOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface GatewayExecutorOptions<T, Gateway, Params>`
 
 Gateway executor options
 

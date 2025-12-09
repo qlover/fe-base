@@ -1,12 +1,12 @@
 ## `src/interface/LoggerInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/LoggerInterface`
 
 ---
 
 ### `LoggerInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LoggerInterface`
 
 Core interface for logger implementations
 

@@ -1,12 +1,12 @@
 ## `src/executor/plugins/RetryPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/plugins/RetryPlugin`
 
 ---
 
 ### `RetryPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class RetryPlugin`
 
 Plugin that implements retry logic for failed task executions
 
@@ -156,7 +156,7 @@ const result = await this.retry(fetchData, options, 3);
 
 ### `RetryOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RetryOptions`
 
 Configuration options for the RetryPlugin
 

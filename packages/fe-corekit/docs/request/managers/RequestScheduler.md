@@ -1,12 +1,12 @@
 ## `src/request/managers/RequestScheduler` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/managers/RequestScheduler`
 
 ---
 
 ### `RequestScheduler` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestScheduler<Config>`
 
 **Since:** `1.0.14`
 

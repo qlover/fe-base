@@ -1,12 +1,12 @@
 ## `src/plugins/formats` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/plugins/formats`
 
 ---
 
 ### `Formats` (Class)
 
-**Type:** `unknown`
+**Type:** `class Formats`
 
 Formats plugin for generating and formatting markdown documentation from TypeScript code
 
@@ -103,19 +103,19 @@ Ensures only one instance of this plugin can be registered
 
 #### `logger` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor logger`
 
 ---
 
 #### `options` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor options`
 
 ---
 
 #### `shell` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor shell`
 
 ---
 
@@ -834,7 +834,7 @@ await this.step({
 
 ### `FormatsProps` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface FormatsProps`
 
 Configuration options for the Formats plugin
 

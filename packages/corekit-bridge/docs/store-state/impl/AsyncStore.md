@@ -1,12 +1,12 @@
 ## `src/core/store-state/impl/AsyncStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/AsyncStore`
 
 ---
 
 ### `AsyncStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class AsyncStore<S, Key, Opt>`
 
 **Since:** `1.8.0`
 
@@ -168,7 +168,7 @@ only the result value (
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -349,15 +349,15 @@ override emit(state: T, options?: { persist?: boolean }): void {
 
 #### `failed` (Method)
 
-**Type:** `(error: unknown, result: unknown) => void`
+**Type:** `(error: unknown, result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                             | Type      | Optional | Default | Since | Deprecated | Description                                            |
-| ---------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`                                                          | `unknown` | ❌       | -       | -     | -          | The error that occurred during the operation           |
+| Name                                                             | Type               | Optional | Default | Since | Deprecated | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`                                                          | `unknown`          | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -437,11 +437,11 @@ try {
 
 #### Parameters
 
-| Name                                                             | Type      | Optional | Default | Since | Deprecated | Description                                            |
-| ---------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`                                                          | `unknown` | ❌       | -       | -     | -          | The error that occurred during the operation           |
+| Name                                                             | Type               | Optional | Default | Since | Deprecated | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`                                                          | `unknown`          | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 
 If provided (including `null`), will update the result to this value
 If not provided (`undefined`), will preserve the existing result
@@ -1405,13 +1405,13 @@ store.emit(initialState);
 
 #### `start` (Method)
 
-**Type:** `(result: unknown) => void`
+**Type:** `(result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                                | Type      | Optional | Default | Since | Deprecated | Description                                                  |
-| ------------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `unknown` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| Name                                                                | Type               | Optional | Default | Since | Deprecated | Description                                                  |
+| ------------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `result`                                                            | `parameter result` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
@@ -1463,23 +1463,23 @@ store.start(cachedUser);
 
 #### Parameters
 
-| Name                                                                | Type      | Optional | Default | Since | Deprecated | Description                                                  |
-| ------------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `unknown` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| Name                                                                | Type               | Optional | Default | Since | Deprecated | Description                                                  |
+| ------------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `result`                                                            | `parameter result` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
 
 #### `stopped` (Method)
 
-**Type:** `(error: unknown, result: unknown) => void`
+**Type:** `(error: unknown, result: parameter result) => void`
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                         |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
-| `error`  | `unknown` | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                         |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
+| `error`  | `unknown`          | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
+| `result` | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
@@ -1530,22 +1530,22 @@ store.stopped(new Error('User cancelled'));
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                         |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
-| `error`  | `unknown` | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
-| `result` | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                         |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
+| `error`  | `unknown`          | ✅       | -       | -     | -          | Optional error information if operation was stopped due to an error |
+| `result` | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 
 ---
 
 #### `success` (Method)
 
-**Type:** `(result: unknown) => void`
+**Type:** `(result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                   | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------------------------------------------ | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `unknown` | ❌       | -       | -     | -          | The result of the successful async operation |
+| Name                                                   | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------------------------------------------ | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `result`                                               | `parameter result` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---
@@ -1604,9 +1604,9 @@ store.success(processedData);
 
 #### Parameters
 
-| Name                                                   | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------------------------------------------ | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `unknown` | ❌       | -       | -     | -          | The result of the successful async operation |
+| Name                                                   | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------------------------------------------ | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `result`                                               | `parameter result` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---
@@ -1687,7 +1687,7 @@ store.updateState({ loading: true }, { persist: false });
 
 ### `AsyncStoreOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStoreOptions<State, Key, Opt>`
 
 Options for creating an async store instance
 
@@ -1859,7 +1859,7 @@ const store = new AsyncStore<User, string>({
 
 ### `AsyncStoreStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStoreStateInterface<T>`
 
 Async store state interface
 

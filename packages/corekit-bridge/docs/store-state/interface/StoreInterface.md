@@ -1,12 +1,12 @@
 ## `src/core/store-state/interface/StoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/interface/StoreInterface`
 
 ---
 
 ### `StoreInterface` (Class)
 
-**Type:** `unknown`
+**Type:** `class StoreInterface<T>`
 
 Store interface
 
@@ -69,7 +69,7 @@ export class ChatStore extends StoreInterface<ChatStoreState> {
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -375,7 +375,7 @@ store.emit(initialState);
 
 ### `StoreStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface StoreStateInterface`
 
 Store state interface
 

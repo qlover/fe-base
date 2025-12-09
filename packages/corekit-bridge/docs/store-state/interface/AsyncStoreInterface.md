@@ -1,12 +1,12 @@
 ## `src/core/store-state/interface/AsyncStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/interface/AsyncStoreInterface`
 
 ---
 
 ### `AsyncStateAction` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStateAction<T>`
 
 **Since:** `1.8.0`
 
@@ -526,7 +526,7 @@ asyncService.updateState<CustomState>({
 
 ### `AsyncStateInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStateInterface<T>`
 
 **Since:** `1.8.0`
 
@@ -654,7 +654,7 @@ Status of the async operation
 
 ### `AsyncStateStatusInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStateStatusInterface`
 
 Interface for checking the status of an async operation
 
@@ -897,7 +897,7 @@ if (asyncService.isSuccess()) {
 
 ### `AsyncStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AsyncStoreInterface<State>`
 
 **Since:** `1.8.0`
 
@@ -965,15 +965,15 @@ store.observe((state) => {
 
 #### `failed` (Method)
 
-**Type:** `(error: unknown, result: unknown) => void`
+**Type:** `(error: unknown, result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                             | Type      | Optional | Default | Since | Deprecated | Description                                            |
-| ---------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`                                                          | `unknown` | ❌       | -       | -     | -          | The error that occurred during the operation           |
+| Name                                                             | Type               | Optional | Default | Since | Deprecated | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`                                                          | `unknown`          | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 | Useful when operation fails but has partial data to preserve     |
 
 ---
@@ -1030,11 +1030,11 @@ try {
 
 #### Parameters
 
-| Name                                                             | Type      | Optional | Default | Since | Deprecated | Description                                            |
-| ---------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`                                                          | `unknown` | ❌       | -       | -     | -          | The error that occurred during the operation           |
+| Name                                                             | Type               | Optional | Default | Since | Deprecated | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`                                                          | `unknown`          | ❌       | -       | -     | -          | The error that occurred during the operation           |
 | Can be an Error object, string message, or any error information |
-| `result`                                                         | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available |
+| `result`                                                         | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available |
 | Useful when operation fails but has partial data to preserve     |
 
 ---
@@ -1104,13 +1104,13 @@ console.log(`Operation completed in ${duration}ms`);
 
 #### `getError` (Method)
 
-**Type:** `() => unknown`
+**Type:** `() => callsignature getError`
 
 ---
 
 ##### `getError` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature getError`
 
 Get the error from the async operation
 
@@ -1174,13 +1174,13 @@ if (asyncService.getLoading()) {
 
 #### `getResult` (Method)
 
-**Type:** `() => unknown`
+**Type:** `() => callsignature getResult`
 
 ---
 
 ##### `getResult` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature getResult`
 
 Get the result from the async operation
 
@@ -1263,13 +1263,13 @@ if (state.loading) {
 
 #### `getStatus` (Method)
 
-**Type:** `() => unknown`
+**Type:** `() => callsignature getStatus`
 
 ---
 
 ##### `getStatus` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature getStatus`
 
 Get the status of the async operation
 
@@ -1580,13 +1580,13 @@ asyncService.start();
 
 #### `start` (Method)
 
-**Type:** `(result: unknown) => void`
+**Type:** `(result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                                | Type      | Optional | Default | Since | Deprecated | Description                                                  |
-| ------------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `unknown` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| Name                                                                | Type               | Optional | Default | Since | Deprecated | Description                                                  |
+| ------------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `result`                                                            | `parameter result` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
@@ -1638,24 +1638,24 @@ asyncService.start(cachedData);
 
 #### Parameters
 
-| Name                                                                | Type      | Optional | Default | Since | Deprecated | Description                                                  |
-| ------------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `result`                                                            | `unknown` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
+| Name                                                                | Type               | Optional | Default | Since | Deprecated | Description                                                  |
+| ------------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `result`                                                            | `parameter result` | ✅       | -       | -     | -          | Optional initial result value to set before operation starts |
 | Useful for optimistic updates or when resuming a previous operation |
 
 ---
 
 #### `stopped` (Method)
 
-**Type:** `(error: unknown, result: unknown) => void`
+**Type:** `(error: unknown, result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                              | Type      | Optional | Default | Since | Deprecated | Description                                                         |
-| ----------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
-| `error`                                                           | `unknown` | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
+| Name                                                              | Type               | Optional | Default | Since | Deprecated | Description                                                         |
+| ----------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
+| `error`                                                           | `unknown`          | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
 | Can be used to provide cancellation reason or timeout information |
-| `result`                                                          | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result`                                                          | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 | Useful when stopping an operation that has partial data           |
 
 ---
@@ -1707,24 +1707,24 @@ asyncService.stopped(undefined, partialData);
 
 #### Parameters
 
-| Name                                                              | Type      | Optional | Default | Since | Deprecated | Description                                                         |
-| ----------------------------------------------------------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
-| `error`                                                           | `unknown` | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
+| Name                                                              | Type               | Optional | Default | Since | Deprecated | Description                                                         |
+| ----------------------------------------------------------------- | ------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------- |
+| `error`                                                           | `unknown`          | ✅       | -       | -     | -          | Optional error information explaining why the operation was stopped |
 | Can be used to provide cancellation reason or timeout information |
-| `result`                                                          | `unknown` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
+| `result`                                                          | `parameter result` | ✅       | -       | -     | -          | Optional result value if partial results are available              |
 | Useful when stopping an operation that has partial data           |
 
 ---
 
 #### `success` (Method)
 
-**Type:** `(result: unknown) => void`
+**Type:** `(result: parameter result) => void`
 
 #### Parameters
 
-| Name                                                   | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------------------------------------------ | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `unknown` | ❌       | -       | -     | -          | The result of the successful async operation |
+| Name                                                   | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------------------------------------------ | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `result`                                               | `parameter result` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---
@@ -1778,9 +1778,9 @@ asyncService.success(processedData);
 
 #### Parameters
 
-| Name                                                   | Type      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------------------------------------------ | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `result`                                               | `unknown` | ❌       | -       | -     | -          | The result of the successful async operation |
+| Name                                                   | Type               | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------------------------------------------ | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `result`                                               | `parameter result` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
 
 ---

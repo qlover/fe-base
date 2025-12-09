@@ -1,12 +1,12 @@
 ## `src/core/response-stream/SSEStreamProcessor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/SSEStreamProcessor`
 
 ---
 
 ### `SSEStreamProcessor` (Class)
 
-**Type:** `unknown`
+**Type:** `class SSEStreamProcessor`
 
 SSE (Server-Sent Events) stream processor
 

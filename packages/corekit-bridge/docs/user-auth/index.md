@@ -1,6 +1,6 @@
 ## `UserAuth` (Module)
 
-**Type:** `unknown`
+**Type:** `module UserAuth`
 
 Entry point and re-exports for user authentication functionality
 

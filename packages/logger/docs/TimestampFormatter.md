@@ -1,12 +1,12 @@
 ## `src/TimestampFormatter` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/TimestampFormatter`
 
 ---
 
 ### `TimestampFormatter` (Class)
 
-**Type:** `unknown`
+**Type:** `class TimestampFormatter`
 
 Formatter implementation that adds timestamps to log messages
 
@@ -255,7 +255,7 @@ const result = this.replacePrefix(template, vars);
 
 ### `TimestampFormatterContext` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface TimestampFormatterContext`
 
 Context interface for customizing timestamp formatting behavior
 

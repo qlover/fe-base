@@ -1,6 +1,6 @@
 ## `FeCode2Markdown` (Module)
 
-**Type:** `unknown`
+**Type:** `module FeCode2Markdown`
 
 CLI tool for converting TypeScript/JavaScript code to Markdown documentation
 

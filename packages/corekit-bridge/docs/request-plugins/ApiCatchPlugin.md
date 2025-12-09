@@ -1,12 +1,12 @@
 ## `src/core/request-plugins/ApiCatchPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/request-plugins/ApiCatchPlugin`
 
 ---
 
 ### `ApiCatchPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class ApiCatchPlugin`
 
 Api request error catch plugin
 
@@ -37,13 +37,13 @@ Do not throw errors, only return errors and data
 
 #### `enabled` (Method)
 
-**Type:** `(_name: unknown, context: ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>) => boolean`
+**Type:** `(_name: parameter _name, context: ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>) => boolean`
 
 #### Parameters
 
 | Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
 | --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_name`   | `unknown`                                                                    | ❌       | -       | -     | -          |             |
+| `_name`   | `parameter _name`                                                            | ❌       | -       | -     | -          |             |
 | `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ✅       | -       | -     | -          |             |
 
 ---
@@ -56,7 +56,7 @@ Do not throw errors, only return errors and data
 
 | Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
 | --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_name`   | `unknown`                                                                    | ❌       | -       | -     | -          |             |
+| `_name`   | `parameter _name`                                                            | ❌       | -       | -     | -          |             |
 | `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ✅       | -       | -     | -          |             |
 
 ---
@@ -113,7 +113,7 @@ Do not throw errors, only return errors and data
 
 ### `ApiCatchPluginConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ApiCatchPluginConfig`
 
 ---
 
@@ -127,7 +127,7 @@ Whether to catch the error
 
 ### `ApiCatchPluginResponse` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ApiCatchPluginResponse`
 
 extends RequestAdapterResponse
 

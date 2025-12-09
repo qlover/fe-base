@@ -1,6 +1,6 @@
 ## `src/implments/hbsHelper` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implments/hbsHelper`
 
 ---
 

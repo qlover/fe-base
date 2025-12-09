@@ -1,12 +1,12 @@
 ## `src/core/thread/ThreadUtil` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/thread/ThreadUtil`
 
 ---
 
 ### `ThreadUtil` (Class)
 
-**Type:** `unknown`
+**Type:** `class ThreadUtil`
 
 ---
 

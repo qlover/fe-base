@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/ChatSenderStrategy` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/ChatSenderStrategy`
 
 ---
 
 ### `ChatSenderStrategy` (Class)
 
-**Type:** `unknown`
+**Type:** `class ChatSenderStrategy`
 
 Chat-specific sender strategy plugin
 

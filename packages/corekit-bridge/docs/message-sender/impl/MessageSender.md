@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/MessageSender` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/MessageSender`
 
 ---
 
 ### `MessageSender` (Class)
 
-**Type:** `unknown`
+**Type:** `class MessageSender<MessageType>`
 
 Message sender implementation
 
@@ -629,7 +629,7 @@ sender.use(validationPlugin).use(loggingPlugin).use(transformPlugin);
 
 ### `MessageSenderConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageSenderConfig`
 
 Configuration options for message sender
 

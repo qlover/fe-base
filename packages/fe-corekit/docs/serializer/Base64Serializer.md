@@ -1,12 +1,12 @@
 ## `src/serializer/Base64Serializer` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/serializer/Base64Serializer`
 
 ---
 
 ### `Base64Serializer` (Class)
 
-**Type:** `unknown`
+**Type:** `class Base64Serializer`
 
 **Since:** `1.0.10`
 

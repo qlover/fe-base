@@ -1,6 +1,6 @@
 ## `src/core/user-auth/impl/createStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/createStore`
 
 ---
 

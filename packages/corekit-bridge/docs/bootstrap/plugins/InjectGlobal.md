@@ -1,12 +1,12 @@
 ## `src/core/bootstrap/plugins/InjectGlobal` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/bootstrap/plugins/InjectGlobal`
 
 ---
 
 ### `InjectGlobal` (Class)
 
-**Type:** `unknown`
+**Type:** `class InjectGlobal`
 
 ---
 
@@ -73,7 +73,7 @@ Modified data or Promise of modified data
 
 ### `InjectGlobalConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface InjectGlobalConfig`
 
 ---
 

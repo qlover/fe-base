@@ -1,12 +1,12 @@
 ## `src/request/adapter/RequestAdapterAxios` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/adapter/RequestAdapterAxios`
 
 ---
 
 ### `RequestAdapterAxios` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestAdapterAxios`
 
 **Since:** `1.0.14`
 

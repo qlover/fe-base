@@ -1,12 +1,12 @@
 ## `src/core/store-state/impl/AsyncStoreState` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/AsyncStoreState`
 
 ---
 
 ### `AsyncStoreState` (Class)
 
-**Type:** `unknown`
+**Type:** `class AsyncStoreState<T>`
 
 Async store state implementation
 

@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/MessageGetwayInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/MessageGetwayInterface`
 
 ---
 
 ### `GatewayOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface GatewayOptions<M, P>`
 
 Configuration options for message gateway operations
 
@@ -425,7 +425,7 @@ onProgress: (progress) => {
 
 ### `MessageGetwayInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageGetwayInterface`
 
 Message gateway interface for sending messages to external services
 
@@ -552,7 +552,7 @@ setTimeout(() => controller.abort(), 5000);
 
 ### `MessageStreamEvent` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageStreamEvent<M>`
 
 Event callbacks for streaming message operations
 

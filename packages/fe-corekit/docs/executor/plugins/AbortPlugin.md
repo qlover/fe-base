@@ -1,12 +1,12 @@
 ## `src/executor/plugins/AbortPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/plugins/AbortPlugin`
 
 ---
 
 ### `AbortError` (Class)
 
-**Type:** `unknown`
+**Type:** `class AbortError`
 
 Custom error class for abort operations
 
@@ -358,7 +358,7 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 ### `AbortPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class AbortPlugin<TParameters>`
 
 Executor plugin for managing request cancellation and timeout handling
 
@@ -1015,7 +1015,7 @@ try {
 
 #### `isAbortError` (Method)
 
-**Type:** `(error: unknown) => unknown`
+**Type:** `(error: unknown) => callsignature isAbortError`
 
 #### Parameters
 
@@ -1027,7 +1027,7 @@ try {
 
 ##### `isAbortError` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isAbortError`
 
 Checks if an error is abort-related (static utility method)
 
@@ -1103,7 +1103,7 @@ function handleError(error: unknown) {
 
 ### `AbortPluginConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AbortPluginConfig`
 
 Configuration interface for AbortPlugin
 
@@ -1230,7 +1230,7 @@ onAborted: (config) => {
 
 ### `AbortPluginOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AbortPluginOptions<T>`
 
 Configuration options for initializing AbortPlugin
 

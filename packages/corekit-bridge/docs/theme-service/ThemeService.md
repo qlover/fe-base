@@ -1,12 +1,12 @@
 ## `src/core/theme-service/ThemeService` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/theme-service/ThemeService`
 
 ---
 
 ### `ThemeService` (Class)
 
-**Type:** `unknown`
+**Type:** `class ThemeService`
 
 Store interface
 
@@ -69,7 +69,7 @@ export class ChatStore extends StoreInterface<ChatStoreState> {
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 

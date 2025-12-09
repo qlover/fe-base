@@ -1,12 +1,12 @@
 ## `src/core/store-state/impl/AsyncStoreStatus` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/AsyncStoreStatus`
 
 ---
 
 ### `AsyncStoreStatusType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type AsyncStoreStatusType`
 
 ---
 

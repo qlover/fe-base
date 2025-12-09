@@ -1,12 +1,12 @@
 ## `src/executor/interface/ExecutorError` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/interface/ExecutorError`
 
 ---
 
 ### `ExecutorError` (Class)
 
-**Type:** `unknown`
+**Type:** `class ExecutorError`
 
 Custom error class for executor operations.
 

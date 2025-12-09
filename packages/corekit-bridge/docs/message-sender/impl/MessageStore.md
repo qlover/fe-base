@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/MessageStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/MessageStore`
 
 ---
 
 ### `MessagesStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class MessagesStore<MessageType, State>`
 
 Messages store implementation for managing message collections
 
@@ -69,7 +69,7 @@ store.stopStreaming();
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -464,7 +464,7 @@ Array of all messages in the store
 
 #### `isMessage` (Method)
 
-**Type:** `(message: unknown) => unknown`
+**Type:** `(message: unknown) => callsignature isMessage<T>`
 
 #### Parameters
 
@@ -476,7 +476,7 @@ Array of all messages in the store
 
 ##### `isMessage` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isMessage<T>`
 
 Type guard to check if an unknown value is a message
 
@@ -913,7 +913,7 @@ const updated = store.updateMessage('msg-123', {
 
 ### `MessageStoreMsg` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageStoreMsg<T, R>`
 
 Message store message interface
 
@@ -1060,7 +1060,7 @@ Tracks the lifecycle state of the message from draft to completion.
 
 ### `MessageStatusType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type MessageStatusType`
 
 Type representing valid message statuses
 

@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/utils/typeGuards` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/utils/typeGuards`
 
 ---
 
 ### `isBaseServiceInterface` (Function)
 
-**Type:** `(obj: unknown) => unknown`
+**Type:** `(obj: unknown) => callsignature isBaseServiceInterface<Store, Gateway>`
 
 #### Parameters
 
@@ -18,7 +18,7 @@
 
 #### `isBaseServiceInterface` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isBaseServiceInterface<Store, Gateway>`
 
 Type guard to check if an object implements BaseServiceInterface
 
@@ -53,7 +53,7 @@ if (isBaseServiceInterface(service)) {
 
 ### `isExecutorServiceInterface` (Function)
 
-**Type:** `(obj: unknown) => unknown`
+**Type:** `(obj: unknown) => callsignature isExecutorServiceInterface<Store, Gateway>`
 
 #### Parameters
 
@@ -65,7 +65,7 @@ if (isBaseServiceInterface(service)) {
 
 #### `isExecutorServiceInterface` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isExecutorServiceInterface<Store, Gateway>`
 
 Type guard to check if an object implements ExecutorServiceInterface
 
@@ -99,7 +99,7 @@ if (isExecutorServiceInterface(service)) {
 
 ### `isUserStoreInterface` (Function)
 
-**Type:** `(value: unknown) => unknown`
+**Type:** `(value: unknown) => callsignature isUserStoreInterface<User, Credential>`
 
 #### Parameters
 
@@ -111,7 +111,7 @@ if (isExecutorServiceInterface(service)) {
 
 #### `isUserStoreInterface` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isUserStoreInterface<User, Credential>`
 
 Check if the value is a UserStoreInterface instance
 

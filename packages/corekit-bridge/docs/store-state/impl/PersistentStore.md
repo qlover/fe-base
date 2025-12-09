@@ -1,12 +1,12 @@
 ## `src/core/store-state/impl/PersistentStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/store-state/impl/PersistentStore`
 
 ---
 
 ### `PersistentStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class PersistentStore<T, Key, Opt>`
 
 **Since:** `1.8.0`
 
@@ -198,7 +198,7 @@ methods will not perform any operations
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 

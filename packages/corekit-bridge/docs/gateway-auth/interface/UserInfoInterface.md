@@ -1,12 +1,12 @@
 ## `src/core/gateway-auth/interface/UserInfoInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/gateway-auth/interface/UserInfoInterface`
 
 ---
 
 ### `UserInfoGetter` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserInfoGetter<User>`
 
 User info getter interface
 
@@ -76,7 +76,7 @@ const isAuthenticated = user !== null;
 
 ### `UserInfoInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserInfoInterface<User>`
 
 **Since:** `1.8.0`
 
@@ -263,7 +263,7 @@ Common parameters include:
 
 ### `UserInfoServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserInfoServiceInterface<User, Store>`
 
 User info service interface
 
