@@ -400,7 +400,10 @@ describe('UserService', () => {
 
       describe('Custom authentication logic examples', () => {
         it('should demonstrate overriding isAuthenticated with credential expiration check', () => {
-          class CustomUserService extends UserService<TestUser, TestCredential> {
+          class CustomUserService extends UserService<
+            TestUser,
+            TestCredential
+          > {
             override isAuthenticated(): boolean {
               const credential = this.getCredential();
               if (!credential) return false;
@@ -438,7 +441,10 @@ describe('UserService', () => {
         });
 
         it('should demonstrate overriding isAuthenticated to require both credential and user', () => {
-          class CustomUserService extends UserService<TestUser, TestCredential> {
+          class CustomUserService extends UserService<
+            TestUser,
+            TestCredential
+          > {
             override isAuthenticated(): boolean {
               const state = this.getStore().getState();
               // Require both credential and user info
@@ -486,7 +492,10 @@ describe('UserService', () => {
         });
 
         it('should demonstrate handling credential restoration with validation in constructor', () => {
-          class CustomUserService extends UserService<TestUser, TestCredential> {
+          class CustomUserService extends UserService<
+            TestUser,
+            TestCredential
+          > {
             constructor(options: UserServiceConfig<TestUser, TestCredential>) {
               super(options);
 
@@ -534,7 +543,10 @@ describe('UserService', () => {
         });
 
         it('should demonstrate handling expired credential restoration', () => {
-          class CustomUserService extends UserService<TestUser, TestCredential> {
+          class CustomUserService extends UserService<
+            TestUser,
+            TestCredential
+          > {
             constructor(options: UserServiceConfig<TestUser, TestCredential>) {
               super(options);
 
@@ -931,7 +943,9 @@ describe('UserService', () => {
 
     it('should return true even when getUserInfo fails but credential exists', async () => {
       mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockRejectedValue(new Error('Failed to fetch user'));
+      mockGateway.getUserInfo.mockRejectedValue(
+        new Error('Failed to fetch user')
+      );
 
       await userService.login(loginParams);
 

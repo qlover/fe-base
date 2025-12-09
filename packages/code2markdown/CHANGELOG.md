@@ -1,5 +1,24 @@
 # @qlover/code2markdown
 
+## 1.3.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **typeDocs:** Enhance default value handling in TypeDocJson plugin ([ed2cd3f](https://github.com/qlover/fe-base/commit/ed2cd3f69f606bd7a827cf2205b883f69650acd8)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Updated getDefaultValue method to handle TypeDoc's ellipsis ("...") for complex default values.
+  - Introduced logic to infer reasonable default values based on parameter types when ellipsis is encountered.
+  - Enhanced documentation with examples for ellipsis handling and default value extraction from JSDoc tags.
+  - Improved overall clarity and maintainability of the code by restructuring the default value logic.
+
+#### 📝 Documentation
+
+- Update type annotations and module descriptions across multiple documentation files ([d0a5535](https://github.com/qlover/fe-base/commit/d0a5535aceffeb9b03b2fc8d578116fe55ab85b5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added type annotations for various modules and interfaces in the documentation, enhancing clarity and understanding of their functionalities.
+  - Updated descriptions for modules such as `FeCode2Markdown`, `corekit-bridge`, and `user-auth`, ensuring accurate representation of their purposes.
+  - Improved overall documentation quality by standardizing type definitions and enhancing the user experience with clearer explanations.
+
 ## 1.2.0
 
 ### Minor Changes

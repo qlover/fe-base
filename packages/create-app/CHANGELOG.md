@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 0.10.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-app:** Update TypeScript configurations and enhance user services ([6b33d18](https://github.com/qlover/fe-base/commit/6b33d18bdec4d0943a615d746e929348ea965031)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added path mappings for corekit-bridge and fe-corekit in TypeScript configuration files.
+  - Refactored integration tests to use updated import paths and improved error handling.
+  - Introduced a new BaseLayoutService for managing user authentication and layout rendering.
+  - Enhanced UserService with credential management and user information validation.
+  - Removed obsolete ProcesserExecutor and UserAuthProvider components to streamline the codebase.
+  - Updated mock API configurations for improved endpoint handling and response structures.
+  - Added new hooks for router internationalization and layout management.
+
 ## 0.9.0
 
 ### Minor Changes
