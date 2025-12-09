@@ -1,12 +1,12 @@
 ## `src/core/ioc/IOCFunctionInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ioc/IOCFunctionInterface`
 
 ---
 
 ### `IOCFunctionInterface` (Interface)
 
-**Type:** `(serviceIdentifier: K) => unknown`
+**Type:** `(serviceIdentifier: K) => callsignature IOCFunctionInterface<K>`
 
 IOC function
 
@@ -27,13 +27,13 @@ const logger = IOC(ConstanstIdentifier.Logger);
 
 #### `implemention` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor implemention`
 
 ---
 
 #### `get` (Method)
 
-**Type:** `(serviceIdentifier: K) => unknown`
+**Type:** `(serviceIdentifier: K) => callsignature get<K>`
 
 #### Parameters
 
@@ -45,7 +45,7 @@ const logger = IOC(ConstanstIdentifier.Logger);
 
 ##### `get` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature get<K>`
 
 #### Parameters
 
@@ -95,7 +95,7 @@ implement IOC container
 
 #### `IOCFunctionInterface` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature IOCFunctionInterface<K>`
 
 get constant identifier
 

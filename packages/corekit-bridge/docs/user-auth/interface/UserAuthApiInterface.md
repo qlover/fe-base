@@ -1,12 +1,12 @@
 ## `src/core/user-auth/interface/UserAuthApiInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/interface/UserAuthApiInterface`
 
 ---
 
 ### `LoginResponseData` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LoginResponseData`
 
 Login response data structure
 
@@ -24,7 +24,7 @@ Authentication token
 
 ### `UserAuthApiInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthApiInterface<User>`
 
 User authentication API interface
 

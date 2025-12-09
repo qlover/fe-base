@@ -1,5 +1,5 @@
 import { baseNoLocaleRoutes, baseRoutes } from '@config/app.router';
-import { useLocaleRoutes } from '@config/common';
+import { routerPrefix, useLocaleRoutes } from '@config/common';
 import { I } from '@config/IOCIdentifier';
 import { themeConfig } from '@config/theme';
 import { ThemeService } from '@qlover/corekit-bridge';
@@ -54,7 +54,8 @@ export class TestIOCRegister
         {
           routes: useLocaleRoutes ? baseRoutes : baseNoLocaleRoutes,
           logger: ioc.get(I.Logger),
-          hasLocalRoutes: useLocaleRoutes
+          hasLocalRoutes: useLocaleRoutes,
+          routerPrefix: routerPrefix
         }
       )
     );

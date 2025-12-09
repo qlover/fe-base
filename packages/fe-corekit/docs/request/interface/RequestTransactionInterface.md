@@ -1,12 +1,12 @@
 ## `src/request/interface/RequestTransactionInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/interface/RequestTransactionInterface`
 
 ---
 
 ### `RequestTransactionInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestTransactionInterface<Request, Response>`
 
 **Since:** `1.2.2`
 

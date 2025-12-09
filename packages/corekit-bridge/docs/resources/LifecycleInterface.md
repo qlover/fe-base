@@ -1,12 +1,12 @@
 ## `src/core/resources/LifecycleInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/resources/LifecycleInterface`
 
 ---
 
 ### `LifecycleInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface LifecycleInterface`
 
 Interface for managing component/service lifecycle events
 

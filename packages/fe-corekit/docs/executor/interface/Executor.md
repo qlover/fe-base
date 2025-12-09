@@ -1,12 +1,12 @@
 ## `src/executor/interface/Executor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/interface/Executor`
 
 ---
 
 ### `Executor` (Class)
 
-**Type:** `unknown`
+**Type:** `class Executor<ExecutorConfig>`
 
 Base executor class providing plugin management and execution pipeline
 
@@ -95,7 +95,7 @@ if (result instanceof ExecutorError) {
 
 | Name     | Type             | Optional | Default | Since | Deprecated | Description                                                  |
 | -------- | ---------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `config` | `ExecutorConfig` | ✅       | `...`   | -     | -          | Optional configuration object to customize executor behavior |
+| `config` | `ExecutorConfig` | ✅       | `{}`    | -     | -          | Optional configuration object to customize executor behavior |
 
 ---
 
@@ -103,7 +103,7 @@ if (result instanceof ExecutorError) {
 
 **Type:** `ExecutorConfig`
 
-**Default:** `...`
+**Default:** `{}`
 
 Optional configuration object to customize executor behavior
 
@@ -578,7 +578,7 @@ executor.use(plugin); // Second addition - skipped with warning
 
 ### `ExecutorConfigInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorConfigInterface`
 
 **Since:** `2.1.0`
 

@@ -1,12 +1,12 @@
 ## `src/Logger` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/Logger`
 
 ---
 
 ### `Logger` (Class)
 
-**Type:** `unknown`
+**Type:** `class Logger`
 
 Main Logger class that implements the LoggerInterface
 Processes log events and distributes them to registered handlers
@@ -852,7 +852,7 @@ without changing the code.
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Default log levels with their priorities (lower number = higher priority)
 

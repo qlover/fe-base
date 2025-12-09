@@ -35,6 +35,8 @@ export const loggerStyles = {
  *
  * - 需要以 / 开头
  * - 但是不能只有 /
+ *
+ * **TODO: 未来可能需要修改为支持 vercel 环境使用前缀**
  */
 export const routerPrefix = '/router-root';
 
@@ -45,3 +47,39 @@ export const routerPrefix = '/router-root';
  * - false: 不使用本地化路由，直接使用路径 (例如: /home)
  */
 export const useLocaleRoutes = true;
+
+/**
+ * 注入到浏览器全局变量中需要忽略的变量
+ *
+ * 应用 `@/core/globals.ts` 中的变量
+ *
+ * 可能 appConfig 有敏感信息，需要忽略
+ *
+ * - 可以直接忽略整个 appConfig 对象, 例如: 'appConfig'
+ * - 也可以忽略单个属性, 例如: 'appConfig.openAiTokenPrefix', 'appConfig.openAiToken'
+ *
+ * @example 忽略 appConfig 对象
+ * ```typescript
+ * export const omitInjectedGlobals = [
+ *   'appConfig'
+ * ];
+ * ```
+ *
+ * @example 忽略 appConfig 中的 openAiTokenPrefix 和 openAiToken 属性
+ * ```typescript
+ * export const omitInjectedGlobals = [
+ *   'appConfig.openAiTokenPrefix',
+ *   'appConfig.openAiToken'
+ * ];
+ * ```
+ */
+export const omitInjectedGlobals = [
+  'appConfig.openAiTokenPrefix',
+  'appConfig.openAiToken',
+  'appConfig.loginPassword',
+  'appConfig.loginUser',
+  'appConfig.aiApiTokenPrefix',
+  'appConfig.openAiBaseUrl',
+  'appConfig.aiApiBaseUrl',
+  'appConfig.aiApiToken'
+];

@@ -1,12 +1,12 @@
 ## `src/core/response-stream/LineStreamProcessor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/LineStreamProcessor`
 
 ---
 
 ### `LineStreamProcessor` (Class)
 
-**Type:** `unknown`
+**Type:** `class LineStreamProcessor`
 
 Default line-based stream processor
 

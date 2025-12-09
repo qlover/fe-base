@@ -1,6 +1,6 @@
 ## `code2markdown` (Module)
 
-**Type:** `unknown`
+**Type:** `module code2markdown`
 
 Code to Markdown Documentation Generator
 

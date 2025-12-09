@@ -1,12 +1,12 @@
 ## `src/interface/ScriptSharedInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/ScriptSharedInterface`
 
 ---
 
 ### `ScriptSharedInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ScriptSharedInterface`
 
 Common/shared configuration options for script execution context
 

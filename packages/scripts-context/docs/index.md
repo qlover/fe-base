@@ -1,6 +1,6 @@
 ## `ScriptsContext` (Module)
 
-**Type:** `unknown`
+**Type:** `module ScriptsContext`
 
 Comprehensive script execution and management framework
 

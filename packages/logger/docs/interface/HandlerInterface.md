@@ -1,12 +1,12 @@
 ## `src/interface/HandlerInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/HandlerInterface`
 
 ---
 
 ### `HandlerInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface HandlerInterface`
 
 Interface for log event handlers (appenders)
 

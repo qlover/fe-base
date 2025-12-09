@@ -6,7 +6,7 @@ export class MockAppConfig implements EnvConfigInterface {
 
   appVersion = version;
 
-  env: string = import.meta.env.MODE;
+  env: string = 'test';
 
   userTokenStorageKey = '__fe_user_token__';
 

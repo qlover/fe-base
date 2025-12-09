@@ -1,12 +1,18 @@
-import { UserAuthService } from '@qlover/corekit-bridge';
-import type { UserInfo } from '@/base/apis/userApi/UserApiType';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { UserInfo, UserCredential } from '@/base/apis/userApi/UserApiType';
+import type { UserServiceInterface as CorekitBridgeUserServiceInterface } from '@qlover/corekit-bridge';
 
-export abstract class UserServiceInterface
-  extends UserAuthService<UserInfo>
-  implements ExecutorPlugin
-{
-  readonly pluginName = 'UserService';
+export interface UserServiceInterface
+  extends CorekitBridgeUserServiceInterface<UserInfo, UserCredential> {
+  // You can add your own methods here
 
-  abstract getToken(): string | null;
+  /**
+   * Get the user token
+   *
+   * This is a extends method from the corekit-bridge UserServiceInterface.
+   */
+  getToken(): string;
+
+  isUserInfo(value: unknown): value is UserInfo;
+
+  isUserCredential(value: unknown): value is UserCredential;
 }

@@ -1,12 +1,12 @@
 ## `src/core/bootstrap/plugins/InjectEnv` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/bootstrap/plugins/InjectEnv`
 
 ---
 
 ### `InjectEnv` (Class)
 
-**Type:** `unknown`
+**Type:** `class InjectEnv`
 
 ---
 
@@ -192,13 +192,13 @@ Modified result or Promise of modified result
 
 ### `EnvConfigInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface EnvConfigInterface`
 
 ---
 
 ### `InjectEnvConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface InjectEnvConfig`
 
 ---
 

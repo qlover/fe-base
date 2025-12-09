@@ -98,6 +98,12 @@
       "require": "./dist/user-auth/index.cjs",
       "default": "./dist/user-auth/index.js"
     },
+    "./gateway-auth": {
+      "types": "./dist/gateway-auth/index.d.ts",
+      "import": "./dist/gateway-auth/index.js",
+      "require": "./dist/gateway-auth/index.cjs",
+      "default": "./dist/gateway-auth/index.js"
+    },
     "./build/tw-root10px": {
       "types": "./dist/build/tw-root10px/index.d.ts",
       "import": "./dist/build/tw-root10px/index.js",

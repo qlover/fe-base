@@ -1,12 +1,12 @@
 ## `src/core/ioc/IOCContainerInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ioc/IOCContainerInterface`
 
 ---
 
 ### `IOCContainerInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface IOCContainerInterface`
 
 IOC container
 
@@ -70,7 +70,7 @@ get instance
 
 ### `IOCRegisterInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface IOCRegisterInterface<Container, Opt>`
 
 IOC register
 

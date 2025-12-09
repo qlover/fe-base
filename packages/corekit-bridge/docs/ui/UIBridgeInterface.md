@@ -1,12 +1,12 @@
 ## `src/core/ui/UIBridgeInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ui/UIBridgeInterface`
 
 ---
 
 ### `UIBridgeInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UIBridgeInterface<T>`
 
 UI Bridge Interface for connecting business logic with UI layer functionality
 

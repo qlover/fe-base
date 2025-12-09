@@ -1,12 +1,12 @@
 ## `src/core/ui/UINotificationInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/ui/UINotificationInterface`
 
 ---
 
 ### `NotificationOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface NotificationOptions`
 
 Configuration options for UI notifications
 
@@ -67,7 +67,7 @@ onClose: () => {
 
 ### `UINotificationInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UINotificationInterface`
 
 Interface for displaying UI notifications
 

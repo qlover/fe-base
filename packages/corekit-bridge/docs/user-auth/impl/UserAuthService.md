@@ -1,12 +1,12 @@
 ## `src/core/user-auth/impl/UserAuthService` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/UserAuthService`
 
 ---
 
 ### `UserAuthService` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserAuthService<T>`
 
 User authentication service implementation
 
@@ -130,7 +130,7 @@ Authentication API service implementing UserAuthApiInterface for HTTP operations
 
 #### `store` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor store`
 
 ---
 
@@ -638,7 +638,7 @@ const user = await authService.userInfo(refreshedData);
 
 ### `UserAuthOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthOptions<State, Key>`
 
 User authentication service configuration options
 
@@ -948,6 +948,6 @@ userStorage: {
 
 ### `InferState` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type InferState<T>`
 
 ---

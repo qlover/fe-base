@@ -19,7 +19,7 @@ import {
   MessageSender,
   MessagesStore,
   MessageStatus,
-  type MessageSenderContext,
+  type MessageSenderContextOptions,
   type MessageSenderPlugin,
   type MessageStoreMsg,
   type MessageGetwayInterface,
@@ -356,7 +356,7 @@ describe('MessageSender', () => {
       });
 
       const plugin: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'error-plugin',
         onExec() {
@@ -375,7 +375,7 @@ describe('MessageSender', () => {
       const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
         pluginName: 'block-plugin',
         onExec(ctx, _send) {
-          const parameters = ctx.parameters as MessageSenderContext<
+          const parameters = ctx.parameters as MessageSenderContextOptions<
             MessageStoreMsg<unknown, unknown>
           >;
           // do not call send(), block subsequent execution
@@ -434,7 +434,7 @@ describe('MessageSender', () => {
         onExec(ctx, next) {
           if (
             (
-              ctx.parameters as MessageSenderContext<
+              ctx.parameters as MessageSenderContextOptions<
                 MessageStoreMsg<unknown, unknown>
               >
             ).currentMessage.content === 'error'
@@ -544,7 +544,7 @@ describe('MessageSender', () => {
       const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
         pluginName: 'error-handler',
         async onExec(ctx, next) {
-          const parameters = ctx.parameters as MessageSenderContext<
+          const parameters = ctx.parameters as MessageSenderContextOptions<
             MessageStoreMsg<unknown, unknown>
           >;
           try {
@@ -920,16 +920,16 @@ describe('MessageSender', () => {
 
   describe('plugin Context integrity', () => {
     it('plugins should be able to access complete context', async () => {
-      let capturedContext: MessageSenderContext<
+      let capturedContext: MessageSenderContextOptions<
         MessageStoreMsg<unknown, unknown>
       > | null = null;
 
       const plugin: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'context-inspector',
         onExec(ctx, next) {
-          capturedContext = ctx.parameters as MessageSenderContext<
+          capturedContext = ctx.parameters as MessageSenderContextOptions<
             MessageStoreMsg<unknown, unknown>
           >;
           return next(ctx);
@@ -948,7 +948,7 @@ describe('MessageSender', () => {
 
     it('multiple plugins modify currentMessage should accumulate effects', async () => {
       const plugin1: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'add-prefix',
         onBefore({ parameters }) {
@@ -957,7 +957,7 @@ describe('MessageSender', () => {
       };
 
       const plugin2: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'add-suffix',
         onBefore({ parameters }) {
@@ -974,7 +974,7 @@ describe('MessageSender', () => {
 
     it('plugins can modify different properties in different lifecycle', async () => {
       const plugin: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'lifecycle-modifier',
         onBefore({ parameters }) {
@@ -1030,7 +1030,7 @@ describe('MessageSender', () => {
         .mockResolvedValue({ result: 'gateway result' });
 
       const plugin: ExecutorPlugin<
-        MessageSenderContext<MessageStoreMsg<unknown, unknown>>
+        MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
       > = {
         pluginName: 'retry-plugin',
         async onBefore({ parameters }) {
@@ -2026,13 +2026,15 @@ describe('MessageSender', () => {
     });
 
     it('should support chaining use method', () => {
-      const plugin1: ExecutorPlugin<MessageSenderContext<TestMessage>> = {
-        pluginName: 'plugin1'
-      };
+      const plugin1: ExecutorPlugin<MessageSenderContextOptions<TestMessage>> =
+        {
+          pluginName: 'plugin1'
+        };
 
-      const plugin2: ExecutorPlugin<MessageSenderContext<TestMessage>> = {
-        pluginName: 'plugin2'
-      };
+      const plugin2: ExecutorPlugin<MessageSenderContextOptions<TestMessage>> =
+        {
+          pluginName: 'plugin2'
+        };
 
       const result = service.use(plugin1).use(plugin2);
 

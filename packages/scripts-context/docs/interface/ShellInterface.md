@@ -1,12 +1,12 @@
 ## `src/interface/ShellInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/ShellInterface`
 
 ---
 
 ### `ShellExecOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ShellExecOptions`
 
 Options for shell command execution with comprehensive customization
 
@@ -456,7 +456,7 @@ const options: ShellExecOptions = {
 
 ### `ShellInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ShellInterface`
 
 Interface for shell command execution with comprehensive capabilities
 

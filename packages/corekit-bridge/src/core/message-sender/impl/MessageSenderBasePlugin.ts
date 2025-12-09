@@ -1,5 +1,5 @@
 import type {
-  MessageSenderContext,
+  MessageSenderContextOptions,
   MessageSenderPlugin
 } from './MessageSenderExecutor';
 import type { MessageStoreMsg } from './MessageStore';
@@ -101,8 +101,8 @@ export abstract class MessageSenderBasePlugin<
    * ```
    */
   protected mergeRuntimeMessage(
-    context: ExecutorContext<MessageSenderContext>,
-    message: MessageStoreMsg<unknown, unknown>
+    context: ExecutorContext<MessageSenderContextOptions<T>>,
+    message: Partial<T>
   ): MessageStoreMsg<unknown, unknown> {
     const { currentMessage, store } = context.parameters;
     const mergedMessage = store.mergeMessage(currentMessage, message);
@@ -135,7 +135,7 @@ export abstract class MessageSenderBasePlugin<
    * ```
    */
   protected asyncReturnValue(
-    context: ExecutorContext<MessageSenderContext>,
+    context: ExecutorContext<MessageSenderContextOptions<T>>,
     returnValue: unknown
   ): unknown {
     context.returnValue = returnValue;
@@ -165,7 +165,7 @@ export abstract class MessageSenderBasePlugin<
    * ```
    */
   protected openAddedToStore(
-    context: ExecutorContext<MessageSenderContext>
+    context: ExecutorContext<MessageSenderContextOptions<T>>
   ): void {
     context.parameters.addedToStore = true;
   }
@@ -194,7 +194,7 @@ export abstract class MessageSenderBasePlugin<
    * ```
    */
   protected closeAddedToStore(
-    context: ExecutorContext<MessageSenderContext>
+    context: ExecutorContext<MessageSenderContextOptions<T>>
   ): void {
     context.parameters.addedToStore = false;
   }

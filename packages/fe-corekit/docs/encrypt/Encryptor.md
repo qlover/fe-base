@@ -1,12 +1,12 @@
 ## `src/encrypt/Encryptor` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/encrypt/Encryptor`
 
 ---
 
 ### `Encryptor` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface Encryptor<ValueType, EncryptResult>`
 
 Generic interface for encryption/decryption operations
 Provides a standard contract for implementing encryption strategies

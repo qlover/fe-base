@@ -1,12 +1,12 @@
 ## `src/ConsoleHandler` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/ConsoleHandler`
 
 ---
 
 ### `ConsoleHandler` (Class)
 
-**Type:** `unknown`
+**Type:** `class ConsoleHandler`
 
 Console output handler for log messages
 

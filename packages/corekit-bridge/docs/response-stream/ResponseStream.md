@@ -1,12 +1,12 @@
 ## `src/core/response-stream/ResponseStream` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/ResponseStream`
 
 ---
 
 ### `ResponseStream` (Class)
 
-**Type:** `unknown`
+**Type:** `class ResponseStream`
 
 **Since:** `1.5.0`
 
@@ -186,7 +186,7 @@ Final processed data or undefined
 
 ### `ResponseStreamConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ResponseStreamConfig`
 
 Configuration options for the ResponseStream plugin
 

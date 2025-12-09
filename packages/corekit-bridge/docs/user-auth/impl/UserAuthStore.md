@@ -1,12 +1,12 @@
 ## `src/core/user-auth/impl/UserAuthStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/UserAuthStore`
 
 ---
 
 ### `UserAuthStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserAuthStore<State>`
 
 User authentication store implementation
 
@@ -78,7 +78,7 @@ off();
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -331,13 +331,13 @@ if (token) {
 
 #### `getCredentialStorage` (Method)
 
-**Type:** `() => null \| KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>`
+**Type:** `() => null \| KeyStorageInterface<string, string, unknown>`
 
 ---
 
 ##### `getCredentialStorage` (CallSignature)
 
-**Type:** `null \| KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, string, unknown>`
 
 Get current credential storage implementation
 
@@ -444,13 +444,13 @@ if (user) {
 
 #### `getUserStorage` (Method)
 
-**Type:** `() => null \| KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>`
+**Type:** `() => null \| KeyStorageInterface<string, PickUser<State>, unknown>`
 
 ---
 
 ##### `getUserStorage` (CallSignature)
 
-**Type:** `null \| KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, PickUser<State>, unknown>`
 
 Get current user storage implementation
 
@@ -671,13 +671,13 @@ authStore.setCredential('');
 
 #### `setCredentialStorage` (Method)
 
-**Type:** `(credentialStorage: KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>) => void`
+**Type:** `(credentialStorage: KeyStorageInterface<string, string, unknown>) => void`
 
 #### Parameters
 
-| Name                | Type                                                                      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------- | ------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `credentialStorage` | `KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | Storage interface for credential persistence |
+| Name                | Type                                           | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------- | ---------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `credentialStorage` | `KeyStorageInterface<string, string, unknown>` | ❌       | -       | -     | -          | Storage interface for credential persistence |
 
 ---
 
@@ -706,9 +706,9 @@ authStore.setCredentialStorage(secureStorage);
 
 #### Parameters
 
-| Name                | Type                                                                      | Optional | Default | Since | Deprecated | Description                                  |
-| ------------------- | ------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `credentialStorage` | `KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | Storage interface for credential persistence |
+| Name                | Type                                           | Optional | Default | Since | Deprecated | Description                                  |
+| ------------------- | ---------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `credentialStorage` | `KeyStorageInterface<string, string, unknown>` | ❌       | -       | -     | -          | Storage interface for credential persistence |
 
 ---
 
@@ -810,13 +810,13 @@ authStore.setUserInfo({
 
 #### `setUserStorage` (Method)
 
-**Type:** `(userStorage: KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>) => void`
+**Type:** `(userStorage: KeyStorageInterface<string, PickUser<State>, unknown>) => void`
 
 #### Parameters
 
-| Name          | Type                                                                               | Optional | Default | Since | Deprecated | Description                                        |
-| ------------- | ---------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `userStorage` | `KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | Storage interface for user information persistence |
+| Name          | Type                                                    | Optional | Default | Since | Deprecated | Description                                        |
+| ------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
+| `userStorage` | `KeyStorageInterface<string, PickUser<State>, unknown>` | ❌       | -       | -     | -          | Storage interface for user information persistence |
 
 ---
 
@@ -845,9 +845,9 @@ authStore.setUserStorage(encryptedStorage);
 
 #### Parameters
 
-| Name          | Type                                                                               | Optional | Default | Since | Deprecated | Description                                        |
-| ------------- | ---------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `userStorage` | `KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | Storage interface for user information persistence |
+| Name          | Type                                                    | Optional | Default | Since | Deprecated | Description                                        |
+| ------------- | ------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
+| `userStorage` | `KeyStorageInterface<string, PickUser<State>, unknown>` | ❌       | -       | -     | -          | Storage interface for user information persistence |
 
 ---
 

@@ -1,12 +1,12 @@
 ## `src/core/user-auth/impl/UserAuthState` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/impl/UserAuthState`
 
 ---
 
 ### `UserAuthState` (Class)
 
-**Type:** `unknown`
+**Type:** `class UserAuthState<User>`
 
 User authentication store state container
 
@@ -95,6 +95,6 @@ The user profile data or null if not authenticated
 
 ### `PickUser` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type PickUser<T>`
 
 ---

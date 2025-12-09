@@ -1,12 +1,12 @@
 ## `src/storage/impl/SyncStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/impl/SyncStorage`
 
 ---
 
 ### `SyncStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class SyncStorage<Key, Opt>`
 
 Interface representing a synchronous storage mechanism.
 
@@ -53,7 +53,7 @@ Internal pipe value list, pre-determined type
 
 #### `length` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor length`
 
 The number of items stored.
 

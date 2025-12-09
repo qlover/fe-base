@@ -1,12 +1,12 @@
 ## `src/implement/ScriptContext` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implement/ScriptContext`
 
 ---
 
 ### `ScriptContext` (Class)
 
-**Type:** `unknown`
+**Type:** `class ScriptContext<Opt>`
 
 Enhanced script context that provides environment management and configuration utilities
 
@@ -188,7 +188,7 @@ detailed information display.
 
 #### `env` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor env`
 
 ---
 

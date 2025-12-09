@@ -1,12 +1,12 @@
 ## `src/interface/ScriptContextInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/interface/ScriptContextInterface`
 
 ---
 
 ### `ScriptContextInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ScriptContextInterface<Opt>`
 
 Core interface for script execution context with integrated capabilities
 

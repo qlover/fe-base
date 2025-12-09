@@ -1,12 +1,12 @@
 ## `src/request/plugins/FetchURLPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/plugins/FetchURLPlugin`
 
 ---
 
 ### `FetchURLPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class FetchURLPlugin`
 
 Plugin for URL manipulation and response handling
 Provides URL composition and response status checking

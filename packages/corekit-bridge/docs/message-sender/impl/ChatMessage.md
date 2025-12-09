@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/ChatMessage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/ChatMessage`
 
 ---
 
 ### `ChatMessage` (Class)
 
-**Type:** `unknown`
+**Type:** `class ChatMessage<T, R>`
 
 Chat message implementation class
 
@@ -187,8 +187,6 @@ Used for message rendering, styling, and conversation flow control.
 
 **Type:** `number`
 
-**Default:** `...`
-
 Message creation timestamp
 
 Unix timestamp (milliseconds) when the message was created.
@@ -211,7 +209,7 @@ sent, failed). The specific statuses are defined by
 
 ### `ChatMessageRoleType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type ChatMessageRoleType`
 
 Type representing valid chat message roles
 
@@ -221,7 +219,7 @@ Type representing valid chat message roles
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Chat message role constants
 

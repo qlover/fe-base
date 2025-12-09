@@ -119,6 +119,7 @@ export class I18nService
   t(key: string, params?: Record<string, unknown>): string {
     const i18nValue = i18n.t(key, {
       lng: i18n.language,
+      nsSeparator: false,
       ...params
     });
 

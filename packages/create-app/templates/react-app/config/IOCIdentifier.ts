@@ -6,8 +6,6 @@ import type { ExecutorPageBridgeInterface } from '@/base/port/ExecutorPageBridge
 import type { JSONStoragePageBridgeInterface } from '@/base/port/JSONStoragePageBridgeInterface';
 import type { RequestPageBridgeInterface } from '@/base/port/RequestPageBridgeInterface';
 import type { I18nService } from '@/base/services/I18nService';
-import type { MessageService } from '@/base/services/MessageService';
-import type { ProcesserExecutor } from '@/base/services/ProcesserExecutor';
 import type { RouteService } from '@/base/services/RouteService';
 import type { UserService } from '@/base/services/UserService';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
@@ -30,10 +28,17 @@ export const IOCIdentifier = Object.freeze({
   AntdStaticApiInterface: 'AntdStaticApiInterface',
   RequestCatcherInterface: 'RequestCatcherInterface',
   I18nServiceInterface: 'I18nServiceInterface',
-  ProcesserExecutorInterface: 'ProcesserExecutorInterface',
   RouteServiceInterface: 'RouteServiceInterface',
+  /**
+   * User service interface
+   *
+   * This interface is implemented by the corekit-bridge UserServiceInterface interface, used to manage user information and authentication.
+   *
+   * @example ```
+   * const userService = useIOC(IOCIdentifier.UserServiceInterface);
+   * ```
+   */
   UserServiceInterface: 'UserServiceInterface',
-  MessageServiceInterface: 'MessageServiceInterface',
   I18nKeyErrorPlugin: 'I18nKeyErrorPlugin',
   FeApiCommonPlugin: 'FeApiCommonPlugin',
   ApiMockPlugin: 'ApiMockPlugin',
@@ -73,10 +78,8 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.AntdStaticApiInterface]: DialogHandler;
   [IOCIdentifier.RequestCatcherInterface]: RequestStatusCatcher;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
-  [IOCIdentifier.ProcesserExecutorInterface]: ProcesserExecutor;
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
-  [IOCIdentifier.MessageServiceInterface]: MessageService;
   [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
   [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;

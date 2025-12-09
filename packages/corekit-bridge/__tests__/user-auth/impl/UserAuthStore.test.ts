@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import { KeyStorage } from '@qlover/fe-corekit';
 import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import {
@@ -34,7 +34,7 @@ class MockAuthState extends UserAuthState<MockUser> {
   }
 }
 
-class MockKeyStorage extends KeyStorageInterface<string, MockUser> {
+class MockKeyStorage extends KeyStorage<string, MockUser> {
   private storage = new Map<string, MockUser>();
 
   get(): MockUser | null {
@@ -58,7 +58,7 @@ class MockKeyStorage extends KeyStorageInterface<string, MockUser> {
   }
 }
 
-class MockCredentialStorage extends KeyStorageInterface<string, string> {
+class MockCredentialStorage extends KeyStorage<string, string> {
   private storage = new Map<string, string>();
 
   get(): string | null {

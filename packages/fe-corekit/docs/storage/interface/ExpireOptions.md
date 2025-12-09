@@ -1,12 +1,12 @@
 ## `src/storage/interface/ExpireOptions` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/storage/interface/ExpireOptions`
 
 ---
 
 ### `ExpireOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExpireOptions`
 
 ---
 

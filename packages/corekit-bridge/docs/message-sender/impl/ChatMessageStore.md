@@ -1,12 +1,12 @@
 ## `src/core/message-sender/impl/ChatMessageStore` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/impl/ChatMessageStore`
 
 ---
 
 ### `ChatMessageStore` (Class)
 
-**Type:** `unknown`
+**Type:** `class ChatMessageStore<T>`
 
 Chat message store implementation with draft management
 
@@ -96,7 +96,7 @@ class MyStore extends ChatMessageStore {
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -352,7 +352,7 @@ T - the new cloned state
 
 | Name      | Type         | Optional | Default | Since | Deprecated | Description                   |
 | --------- | ------------ | -------- | ------- | ----- | ---------- | ----------------------------- |
-| `message` | `Partial<M>` | ✅       | `...`   | -     | -          | Partial message specification |
+| `message` | `Partial<M>` | ✅       | `{}`    | -     | -          | Partial message specification |
 
 ---
 
@@ -373,7 +373,7 @@ ChatMessage instance
 
 | Name      | Type         | Optional | Default | Since | Deprecated | Description                   |
 | --------- | ------------ | -------- | ------- | ----- | ---------- | ----------------------------- |
-| `message` | `Partial<M>` | ✅       | `...`   | -     | -          | Partial message specification |
+| `message` | `Partial<M>` | ✅       | `{}`    | -     | -          | Partial message specification |
 
 ---
 
@@ -829,7 +829,7 @@ if (ready) {
 
 #### `isMessage` (Method)
 
-**Type:** `(message: unknown) => unknown`
+**Type:** `(message: unknown) => callsignature isMessage<M>`
 
 #### Parameters
 
@@ -841,7 +841,7 @@ if (ready) {
 
 ##### `isMessage` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isMessage<M>`
 
 Type guard to check if a value is a ChatMessage instance
 
@@ -1477,7 +1477,7 @@ const updated = store.updateMessage('msg-123', {
 
 ### `DraftModeType` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type DraftModeType`
 
 Type representing valid draft modes
 
@@ -1487,7 +1487,7 @@ Type representing valid draft modes
 
 **Type:** `Readonly<Object>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Draft message processing modes
 

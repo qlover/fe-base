@@ -1,12 +1,12 @@
 ## `src/plugins/typeDocs` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/plugins/typeDocs`
 
 ---
 
 ### `default` (Class)
 
-**Type:** `unknown`
+**Type:** `class default`
 
 TypeDocs plugin for parsing TypeScript code and generating structured documentation data
 
@@ -90,19 +90,19 @@ Ensures only one instance of this plugin can be registered
 
 #### `logger` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor logger`
 
 ---
 
 #### `options` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor options`
 
 ---
 
 #### `shell` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor shell`
 
 ---
 
@@ -986,7 +986,7 @@ try {
 
 ### `TypeDocsProps` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface TypeDocsProps`
 
 Configuration options for the TypeDocs plugin
 

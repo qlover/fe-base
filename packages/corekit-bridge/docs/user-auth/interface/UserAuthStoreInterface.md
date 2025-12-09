@@ -1,12 +1,12 @@
 ## `src/core/user-auth/interface/UserAuthStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/interface/UserAuthStoreInterface`
 
 ---
 
 ### `LOGIN_STATUS` (Enum)
 
-**Type:** `unknown`
+**Type:** `enum LOGIN_STATUS`
 
 Login status enumeration
 
@@ -40,7 +40,7 @@ Authentication succeeded
 
 ### `UserAuthStoreInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthStoreInterface<User>`
 
 User authentication store interface
 
@@ -139,13 +139,13 @@ The stored credential or null if not available
 
 #### `getCredentialStorage` (Method)
 
-**Type:** `() => null \| KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>`
+**Type:** `() => null \| KeyStorageInterface<string, string, unknown>`
 
 ---
 
 ##### `getCredentialStorage` (CallSignature)
 
-**Type:** `null \| KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, string, unknown>`
 
 Get the current credential storage implementation
 
@@ -193,13 +193,13 @@ The stored user information or null if not available
 
 #### `getUserStorage` (Method)
 
-**Type:** `() => null \| KeyStorageInterface<string, User, KeyStorageOptions<string, unknown>>`
+**Type:** `() => null \| KeyStorageInterface<string, User, unknown>`
 
 ---
 
 ##### `getUserStorage` (CallSignature)
 
-**Type:** `null \| KeyStorageInterface<string, User, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, User, unknown>`
 
 Get the current key storage implementation
 
@@ -252,13 +252,13 @@ Set credential
 
 #### `setCredentialStorage` (Method)
 
-**Type:** `(credentialStorage: KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>) => void`
+**Type:** `(credentialStorage: KeyStorageInterface<string, string, unknown>) => void`
 
 #### Parameters
 
-| Name                | Type                                                                      | Optional | Default | Since | Deprecated | Description                                           |
-| ------------------- | ------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `credentialStorage` | `KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | The credential storage implementation for persistence |
+| Name                | Type                                           | Optional | Default | Since | Deprecated | Description                                           |
+| ------------------- | ---------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `credentialStorage` | `KeyStorageInterface<string, string, unknown>` | ❌       | -       | -     | -          | The credential storage implementation for persistence |
 
 ---
 
@@ -270,9 +270,9 @@ Set the credential storage implementation
 
 #### Parameters
 
-| Name                | Type                                                                      | Optional | Default | Since | Deprecated | Description                                           |
-| ------------------- | ------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `credentialStorage` | `KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | The credential storage implementation for persistence |
+| Name                | Type                                           | Optional | Default | Since | Deprecated | Description                                           |
+| ------------------- | ---------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `credentialStorage` | `KeyStorageInterface<string, string, unknown>` | ❌       | -       | -     | -          | The credential storage implementation for persistence |
 
 ---
 
@@ -304,13 +304,13 @@ Set user information
 
 #### `setUserStorage` (Method)
 
-**Type:** `(userStorage: KeyStorageInterface<string, User, KeyStorageOptions<string, unknown>>) => void`
+**Type:** `(userStorage: KeyStorageInterface<string, User, unknown>) => void`
 
 #### Parameters
 
-| Name          | Type                                                                    | Optional | Default | Since | Deprecated | Description                                          |
-| ------------- | ----------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `userStorage` | `KeyStorageInterface<string, User, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | The key-value storage implementation for persistence |
+| Name          | Type                                         | Optional | Default | Since | Deprecated | Description                                          |
+| ------------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `userStorage` | `KeyStorageInterface<string, User, unknown>` | ❌       | -       | -     | -          | The key-value storage implementation for persistence |
 
 ---
 
@@ -322,9 +322,9 @@ Set the key storage implementation
 
 #### Parameters
 
-| Name          | Type                                                                    | Optional | Default | Since | Deprecated | Description                                          |
-| ------------- | ----------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `userStorage` | `KeyStorageInterface<string, User, KeyStorageOptions<string, unknown>>` | ❌       | -       | -     | -          | The key-value storage implementation for persistence |
+| Name          | Type                                         | Optional | Default | Since | Deprecated | Description                                          |
+| ------------- | -------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `userStorage` | `KeyStorageInterface<string, User, unknown>` | ❌       | -       | -     | -          | The key-value storage implementation for persistence |
 
 ---
 
@@ -345,13 +345,13 @@ Sets login status to LOADING and clears any previous errors
 
 ### `UserAuthStoreOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface UserAuthStoreOptions<State>`
 
 ---
 
 #### `credentialStorage` (Property)
 
-**Type:** `null \| KeyStorageInterface<string, string, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, string, unknown>`
 
 Credential storage implementation
 
@@ -367,7 +367,7 @@ Create a new state instance
 
 #### `userStorage` (Property)
 
-**Type:** `null \| KeyStorageInterface<string, PickUser<State>, KeyStorageOptions<string, unknown>>`
+**Type:** `null \| KeyStorageInterface<string, PickUser<State>, unknown>`
 
 User storage implementation
 

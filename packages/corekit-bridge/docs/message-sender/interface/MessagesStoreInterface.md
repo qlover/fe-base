@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/MessagesStoreInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/MessagesStoreInterface`
 
 ---
 
 ### `MessagesStoreInterface` (Class)
 
-**Type:** `unknown`
+**Type:** `class MessagesStoreInterface<MessageType, State>`
 
 Abstract messages store interface for managing message collections
 
@@ -75,7 +75,7 @@ store.updateMessage(message.id, { content: 'Hello, world!' });
 
 #### `state` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor state`
 
 ---
 
@@ -489,7 +489,7 @@ messages.forEach((msg) => console.log(msg.content));
 
 #### `isMessage` (Method)
 
-**Type:** `(message: unknown) => unknown`
+**Type:** `(message: unknown) => callsignature isMessage<T>`
 
 #### Parameters
 
@@ -501,7 +501,7 @@ messages.forEach((msg) => console.log(msg.content));
 
 ##### `isMessage` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isMessage<T>`
 
 Type guard to check if an unknown value is a message
 
@@ -972,7 +972,7 @@ store.updateMessage(
 
 ### `MessageInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageInterface<T>`
 
 Base message interface representing a complete message
 
@@ -1086,9 +1086,23 @@ Used for:
 
 ---
 
-### `MessagesStateInterface` (Interface)
+#### `status` (Property)
 
 **Type:** `unknown`
+
+Status of the async operation
+
+**Example:**
+
+```ts
+`'pending' | 'success' | 'failed' | 'stopped'`;
+```
+
+---
+
+### `MessagesStateInterface` (Interface)
+
+**Type:** `interface MessagesStateInterface<T>`
 
 Messages state interface for managing message collection state
 

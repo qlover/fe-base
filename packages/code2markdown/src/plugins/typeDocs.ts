@@ -484,7 +484,8 @@ export default class TypeDocJson extends ScriptPlugin<
    * 2. Handles different type categories (intrinsic, reference, literal, etc.)
    * 3. Processes complex types (union, intersection, reflection)
    * 4. Generates function signatures with parameters and return types
-   * 5. Falls back to 'unknown' for unrecognized types
+   * 5. Handles declaration types (Class, Interface, Module, Enum, TypeAlias) that don't have type property
+   * 6. Falls back to 'unknown' for unrecognized types
    *
    * Business Rules:
    * - Intrinsic types: returns type name directly (string, number, boolean)
@@ -494,6 +495,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * - Intersection types: joins with ' & ' separator
    * - Reflection types: returns 'Object' for object types
    * - Function types: generates parameter list and return type
+   * - Declaration types: generates type string based on kind and name (e.g., "class ClassName<T>")
    * - Unknown types: returns 'unknown' fallback
    *
    * Type Categories:
@@ -504,6 +506,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * - Intersection: A & B & C
    * - Reflection: object types with properties
    * - Function: (param: type) => returnType
+   * - Declaration: class, interface, module, enum, type alias
    *
    * @param reflection - TypeDoc reflection object
    * @returns Formatted type string representation
@@ -518,6 +521,12 @@ export default class TypeDocJson extends ScriptPlugin<
    * ```typescript
    * this.getTypeString({ type: { type: 'union', types: [...] } });
    * // Returns: 'string | number | boolean'
+   * ```
+   *
+   * @example Declaration Types
+   * ```typescript
+   * this.getTypeString({ kind: ReflectionKind.Class, name: 'BaseService', typeParameters: [...] });
+   * // Returns: 'class BaseService<T, Store, Gateway>'
    * ```
    */
   private getTypeString(reflection: any): string {
@@ -584,6 +593,54 @@ export default class TypeDocJson extends ScriptPlugin<
       return `(${params}) => ${returnType}`;
     }
 
+    // 处理声明类型（类、接口、模块、枚举、类型别名等）这些类型没有 type 属性
+    if (reflection.kind !== undefined && reflection.name) {
+      const kindName =
+        ReflectionKindName[reflection.kind as keyof typeof ReflectionKindName];
+
+      if (kindName) {
+        let typeString = '';
+
+        // 根据不同的声明类型生成相应的类型字符串
+        switch (reflection.kind) {
+          case ReflectionKind.Class:
+            typeString = 'class';
+            break;
+          case ReflectionKind.Interface:
+            typeString = 'interface';
+            break;
+          case ReflectionKind.Module:
+            typeString = 'module';
+            break;
+          case ReflectionKind.Enum:
+            typeString = 'enum';
+            break;
+          case ReflectionKind.TypeAlias:
+            typeString = 'type';
+            break;
+          case ReflectionKind.Namespace:
+            typeString = 'namespace';
+            break;
+          default:
+            // 对于其他声明类型，使用小写的 kindName
+            typeString = kindName.toLowerCase();
+        }
+
+        // 添加名称
+        typeString += ` ${reflection.name}`;
+
+        // 处理泛型类型参数
+        if (reflection.typeParameters && reflection.typeParameters.length > 0) {
+          const typeParams = reflection.typeParameters
+            .map((tp: any) => tp.name)
+            .join(SEPARATORS_PARAMS);
+          typeString += `<${typeParams}>`;
+        }
+
+        return typeString;
+      }
+    }
+
     return 'unknown';
   }
 
@@ -592,13 +649,19 @@ export default class TypeDocJson extends ScriptPlugin<
    *
    * Implementation Details:
    * 1. Checks reflection.defaultValue property first
-   * 2. Searches for `@default` JSDoc tag in comment block tags
-   * 3. Extracts text content from `@default` tag
-   * 4. Removes backticks from default value for clean formatting
-   * 5. Returns undefined if no default value found
+   * 2. Handles TypeDoc's ellipsis ("...") for complex default values
+   * 3. Infers reasonable default values based on parameter type when ellipsis is encountered
+   * 4. Searches for `@default` JSDoc tag in comment block tags
+   * 5. Extracts text content from `@default` tag
+   * 6. Removes backticks from default value for clean formatting
+   * 7. Returns undefined if no default value found
    *
    * Business Rules:
    * - Prioritizes reflection.defaultValue over JSDoc `@default` tag
+   * - When defaultValue is "..." (TypeDoc's ellipsis for complex expressions):
+   *   - For object/reflection types: returns "{}"
+   *   - For array types: returns "[]"
+   *   - For other types: returns undefined
    * - Converts default value to string representation
    * - Removes markdown backticks from JSDoc default values
    * - Returns undefined for missing default values
@@ -613,6 +676,15 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Returns: 'hello'
    * ```
    *
+   * @example TypeDoc Ellipsis Handling
+   * ```typescript
+   * this.getDefaultValue({
+   *   defaultValue: '...',
+   *   type: { type: 'reflection' }
+   * });
+   * // Returns: '{}'
+   * ```
+   *
    * @example JSDoc Default Tag
    * ```typescript
    * this.getDefaultValue({
@@ -625,7 +697,49 @@ export default class TypeDocJson extends ScriptPlugin<
    */
   private getDefaultValue(reflection: any): string | undefined {
     if (reflection.defaultValue !== undefined) {
-      return String(reflection.defaultValue);
+      const defaultValueStr = String(reflection.defaultValue);
+
+      // Handle TypeDoc's ellipsis ("...") for complex default value expressions
+      // TypeDoc uses "..." when it cannot fully parse complex expressions like "{} as Opt"
+      if (defaultValueStr === '...') {
+        // Try to infer a reasonable default value based on the parameter type
+        if (reflection.type) {
+          // For object/reflection types, infer "{}"
+          if (reflection.type.type === 'reflection') {
+            return '{}';
+          }
+          // For array types, infer "[]"
+          if (reflection.type.type === 'array') {
+            return '[]';
+          }
+          // For reference types that might be objects, check if it's likely an object type
+          // This is a heuristic - we can't be 100% sure, but "{}" is a common default for object types
+          if (reflection.type.type === 'reference') {
+            // Common object-like type names (case-insensitive check)
+            const typeName = reflection.type.name?.toLowerCase() || '';
+            // If it's clearly not a primitive or function, assume it might be an object
+            const primitiveTypes = [
+              'string',
+              'number',
+              'boolean',
+              'null',
+              'undefined',
+              'void',
+              'any',
+              'unknown'
+            ];
+            if (!primitiveTypes.includes(typeName)) {
+              // For generic or complex types, we'll return "{}" as a reasonable default
+              // This handles cases like "Opt", "Options", "Config", etc.
+              return '{}';
+            }
+          }
+        }
+        // If we can't infer, return undefined to let JSDoc @default tag take precedence
+        return undefined;
+      }
+
+      return defaultValueStr;
     }
 
     // 从注释中获取 @default 标签

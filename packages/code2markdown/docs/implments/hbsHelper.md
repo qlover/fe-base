@@ -1,6 +1,6 @@
 ## `src/implments/hbsHelper` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implments/hbsHelper`
 
 ---
 
@@ -8,7 +8,7 @@
 
 **Type:** `Record<string, Handlebars.HelperDelegate>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Handlebars helper functions for template processing
 

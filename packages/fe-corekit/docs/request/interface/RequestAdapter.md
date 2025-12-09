@@ -1,12 +1,12 @@
 ## `src/request/interface/RequestAdapter` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/interface/RequestAdapter`
 
 ---
 
 ### `RequestAdapterConfig` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestAdapterConfig<RequestData>`
 
 **Since:** `1.0.14`
 
@@ -156,7 +156,7 @@ url: '/users/1';
 
 ### `RequestAdapterInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestAdapterInterface<Config>`
 
 Request adapter interface
 
@@ -232,7 +232,7 @@ adapter
 
 ### `RequestAdapterResponse` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface RequestAdapterResponse<Req, Res>`
 
 Request adapter response
 

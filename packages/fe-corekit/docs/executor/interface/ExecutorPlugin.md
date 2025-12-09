@@ -1,12 +1,12 @@
 ## `src/executor/interface/ExecutorPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/executor/interface/ExecutorPlugin`
 
 ---
 
 ### `ExecutorPlugin` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ExecutorPlugin<T>`
 
 Base plugin class for extending executor functionality.
 
@@ -102,13 +102,13 @@ Plugins with the same pluginName will be merged.
 
 #### `enabled` (Method)
 
-**Type:** `(name: unknown, context: ExecutorContext<T>) => boolean`
+**Type:** `(name: parameter name, context: ExecutorContext<T>) => boolean`
 
 #### Parameters
 
 | Name      | Type                 | Optional | Default | Since | Deprecated | Description                     |
 | --------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`            | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`     | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<T>` | ✅       | -       | -     | -          |                                 |
 
 ---
@@ -136,7 +136,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 
 | Name      | Type                 | Optional | Default | Since | Deprecated | Description                     |
 | --------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`            | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`     | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<T>` | ✅       | -       | -     | -          |                                 |
 
 ---

@@ -1,18 +1,7 @@
-import { TestBootstrapsProvider } from './TestBootstrapsProvider';
-
-interface TestAppProps {
-  children: React.ReactNode;
-  /**
-   * Initial URL path for the router
-   * @default ['/en/']
-   */
-  routerInitialEntries?: string[];
-  /**
-   * Initial index of the entries array
-   * @default 0
-   */
-  routerInitialIndex?: number;
-}
+import {
+  TestBootstrapsProvider,
+  type TestBootstrapsProviderProps
+} from './TestBootstrapsProvider';
 
 /**
  * TestApp - Complete test wrapper with IOC and Router
@@ -31,13 +20,17 @@ interface TestAppProps {
 export function TestApp({
   children,
   routerInitialEntries,
-  routerInitialIndex
-}: TestAppProps) {
+  routerInitialIndex,
+  bootHref,
+  appConfig
+}: TestBootstrapsProviderProps) {
   return (
     <TestBootstrapsProvider
       data-testid="TestApp"
       routerInitialEntries={routerInitialEntries}
       routerInitialIndex={routerInitialIndex}
+      bootHref={bootHref}
+      appConfig={appConfig}
     >
       {children}
     </TestBootstrapsProvider>

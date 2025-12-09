@@ -1,6 +1,6 @@
 ## `corekit-bridge` (Module)
 
-**Type:** `unknown`
+**Type:** `module corekit-bridge`
 
 Abstraction tool bridge for fe-corekit in real development environments
 

@@ -1,12 +1,12 @@
 ## `src/implement/ConfigSearch` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implement/ConfigSearch`
 
 ---
 
 ### `ConfigSearch` (Class)
 
-**Type:** `unknown`
+**Type:** `class ConfigSearch`
 
 Configuration search and loading utility with caching support
 
@@ -112,7 +112,7 @@ const configSearch = new ConfigSearch({
 
 #### `config` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor config`
 
 ---
 
@@ -352,7 +352,7 @@ for (let i = 0; i < 100; i++) {
 
 ### `ConfigSearchOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ConfigSearchOptions`
 
 Configuration search options for initializing ConfigSearch instances
 

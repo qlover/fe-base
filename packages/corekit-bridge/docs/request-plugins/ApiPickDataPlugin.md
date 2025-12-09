@@ -1,12 +1,12 @@
 ## `src/core/request-plugins/ApiPickDataPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/request-plugins/ApiPickDataPlugin`
 
 ---
 
 ### `ApiPickDataPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class ApiPickDataPlugin`
 
 From
 `RequestAdapterResponse`

@@ -5,13 +5,16 @@ import type { LocaleType } from '@config/i18n/i18nConfig';
 import { useIOC } from './useIOC';
 
 /**
- * Language Guard
+ * 国际化路由国际化守卫
  *
- * if language not found, redirect to 404 page
+ * 比如: 开启了 `@config/common 中useLocaleRoutes` 为 `true` 时，
  *
- * TODO: if language not found, use default language
+ * 访问 `/login` 则会自动重定向到 `/en/login`, 其中 en 为默认语言可配置
+ *
+ * 或者访问一个不支持的语言，则会自动重定向到 `/en/404`
+ *
  */
-export function useI18nGuard() {
+export function useRouterI18nGuard() {
   const { lng } = useParams<{ lng: LocaleType }>();
   const { pathname } = useLocation();
   const navigate = useNavigate();

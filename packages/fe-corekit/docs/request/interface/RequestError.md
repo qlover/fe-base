@@ -1,12 +1,12 @@
 ## `src/request/interface/RequestError` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/interface/RequestError`
 
 ---
 
 ### `RequestErrorID` (Enum)
 
-**Type:** `unknown`
+**Type:** `enum RequestErrorID`
 
 Error IDs for different fetch request failure scenarios
 Used to identify specific error types in error handling
@@ -77,7 +77,7 @@ URL is not provided
 
 ### `RequestError` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestError`
 
 **Since:** `1.0.14`
 

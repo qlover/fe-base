@@ -1,12 +1,12 @@
 ## `src/core/response-stream/StreamEvent` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/response-stream/StreamEvent`
 
 ---
 
 ### `StreamEvent` (Class)
 
-**Type:** `unknown`
+**Type:** `class StreamEvent`
 
 Stream event handler for processing stream data
 
@@ -58,7 +58,7 @@ const final = event.doned();
 | `processor` | `StreamProcessorInterface` | ❌       | -       | -     | -          | Stream processor implementation for chunk processing |
 
 Determines how raw chunks are converted to messagesRaw chunk data from streamArray of processed messages |
-| `decoder` | `TextDecoder` | ✅ | `...` | - | - | Text decoder for binary data conversion
+| `decoder` | `TextDecoder` | ✅ | `{}` | - | - | Text decoder for binary data conversion
 
 Used when processing ArrayBuffer chunks |
 
@@ -68,7 +68,7 @@ Used when processing ArrayBuffer chunks |
 
 **Type:** `TextDecoder`
 
-**Default:** `...`
+**Default:** `{}`
 
 Text decoder for binary data conversion
 
@@ -96,13 +96,13 @@ Array of processed messages
 
 #### `finish` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor finish`
 
 ---
 
 #### `times` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor times`
 
 ---
 

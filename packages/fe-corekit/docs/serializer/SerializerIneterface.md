@@ -1,12 +1,12 @@
 ## `src/serializer/SerializerIneterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/serializer/SerializerIneterface`
 
 ---
 
 ### `SerializerIneterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface SerializerIneterface<T, R>`
 
 **Since:** `1.0.10`
 

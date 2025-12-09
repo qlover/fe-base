@@ -1,12 +1,12 @@
 ## `src/request/managers/RequestManager` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/managers/RequestManager`
 
 ---
 
 ### `RequestManager` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestManager<Config>`
 
 **Since:** `1.2.2`
 
@@ -32,7 +32,7 @@ Why this is an abstract class?
 | Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
 | ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -46,7 +46,7 @@ Why this is an abstract class?
 
 **Type:** `AsyncExecutor<ExecutorConfigInterface>`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 

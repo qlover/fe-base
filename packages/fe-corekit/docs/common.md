@@ -1,12 +1,12 @@
 ## `src/common` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/common`
 
 ---
 
 ### `Intersection` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type Intersection<T1, T2>`
 
 **Since:** `1.0.14`
 
@@ -24,7 +24,7 @@ type I = Intersection<T1, T2>; // I is { a: number }
 
 ### `ValueOf` (TypeAlias)
 
-**Type:** `unknown`
+**Type:** `type ValueOf<T>`
 
 **Since:** `1.0.14`
 

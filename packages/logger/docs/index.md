@@ -1,6 +1,6 @@
 ## `Logger` (Module)
 
-**Type:** `unknown`
+**Type:** `module Logger`
 
 A flexible and extensible logging system for applications
 

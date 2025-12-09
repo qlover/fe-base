@@ -1,12 +1,12 @@
 ## `src/core/bootstrap/BootstrapExecutorPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/bootstrap/BootstrapExecutorPlugin`
 
 ---
 
 ### `BootstrapExecutorPlugin` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface BootstrapExecutorPlugin`
 
 ---
 
@@ -31,13 +31,13 @@ Plugins with the same pluginName will be merged.
 
 #### `enabled` (Method)
 
-**Type:** `(name: unknown, context: ExecutorContext<BootstrapContextValue>) => boolean`
+**Type:** `(name: parameter name, context: ExecutorContext<BootstrapContextValue>) => boolean`
 
 #### Parameters
 
 | Name      | Type                                     | Optional | Default | Since | Deprecated | Description                     |
 | --------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                         | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<BootstrapContextValue>` | ✅       | -       | -     | -          |                                 |
 
 ---
@@ -65,7 +65,7 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 
 | Name      | Type                                     | Optional | Default | Since | Deprecated | Description                     |
 | --------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                | ❌       | -       | -     | -          | Name of the hook being executed |
+| `name`    | `parameter name`                         | ❌       | -       | -     | -          | Name of the hook being executed |
 | `context` | `ExecutorContext<BootstrapContextValue>` | ✅       | -       | -     | -          |                                 |
 
 ---

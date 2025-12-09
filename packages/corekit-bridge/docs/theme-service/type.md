@@ -1,12 +1,12 @@
 ## `src/core/theme-service/type` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/theme-service/type`
 
 ---
 
 ### `ThemeServiceProps` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ThemeServiceProps`
 
 ---
 
@@ -112,7 +112,7 @@ The target element
 
 ### `ThemeServiceState` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ThemeServiceState`
 
 Store state interface
 

@@ -428,12 +428,30 @@ describe('KeyStorage', () => {
         clear: vi.fn()
       } as unknown as SyncStorageInterface<string>;
 
-      // Constructor should throw if storage.getItem fails
+      // Constructor should handle storage.getItem failures gracefully
+      let keyStorage: KeyStorage<string, string>;
       expect(() => {
-        new KeyStorage<string, string>('fail-test', {
+        keyStorage = new KeyStorage<string, string>('fail-test', {
           storage: failingStorage
         });
+      }).not.toThrow();
+
+      // Instance should be created successfully with null value
+      expect(keyStorage!).toBeInstanceOf(KeyStorage);
+
+      expect(() => {
+        keyStorage!.get();
       }).toThrow('Read error');
+
+      // set operation should handle storage failures gracefully
+      expect(() => {
+        keyStorage!.set('test-value');
+      }).toThrow('Storage full');
+
+      // remove operation should handle storage failures gracefully
+      expect(() => {
+        keyStorage!.remove();
+      }).toThrow('Remove error');
 
       // For memory-only storage, operations should work
       const memoryStorage = new KeyStorage<string, string>('memory-test');

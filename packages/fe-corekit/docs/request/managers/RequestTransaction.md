@@ -1,12 +1,12 @@
 ## `src/request/managers/RequestTransaction` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/request/managers/RequestTransaction`
 
 ---
 
 ### `RequestTransaction` (Class)
 
-**Type:** `unknown`
+**Type:** `class RequestTransaction<Config>`
 
 **Since:** `1.2.2`
 
@@ -215,7 +215,7 @@ except that some of the shortcuts have different parameters.
 | Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
 | ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -229,7 +229,7 @@ except that some of the shortcuts have different parameters.
 
 **Type:** `AsyncExecutor<ExecutorConfigInterface>`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 
@@ -291,14 +291,14 @@ Sends a GET request
 
 #### `patch` (Method)
 
-**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
+**Type:** `(url: string, data: parameter data, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
 
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
@@ -314,21 +314,21 @@ Sends a PATCH request
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
 
 #### `post` (Method)
 
-**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
+**Type:** `(url: string, data: parameter data, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
 
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
@@ -344,21 +344,21 @@ Sends a POST request
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
 
 #### `put` (Method)
 
-**Type:** `(url: string, data: unknown, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
+**Type:** `(url: string, data: parameter data, config: Omit<Config, "method" \| "url" \| "data">) => Promise<unknown>`
 
 #### Parameters
 
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
@@ -374,20 +374,20 @@ Sends a PUT request
 | Name     | Type                                        | Optional | Default | Since | Deprecated | Description                             |
 | -------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
 | `url`    | `string`                                    | ❌       | -       | -     | -          | The URL to send the request to          |
-| `data`   | `unknown`                                   | ✅       | -       | -     | -          | The data to be sent in the request body |
+| `data`   | `parameter data`                            | ✅       | -       | -     | -          | The data to be sent in the request body |
 | `config` | `Omit<Config, "method" \| "url" \| "data">` | ✅       | -       | -     | -          | Additional configuration options        |
 
 ---
 
 #### `request` (Method)
 
-**Type:** `(config: unknown) => Promise<unknown>`
+**Type:** `(config: parameter config) => Promise<unknown>`
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                  |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------- |
-| `config` | `unknown` | ❌       | -       | -     | -          | Request configuration object |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                  |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ---------------------------- |
+| `config` | `parameter config` | ❌       | -       | -     | -          | Request configuration object |
 
 ---
 
@@ -403,9 +403,9 @@ Promise of response data
 
 #### Parameters
 
-| Name     | Type      | Optional | Default | Since | Deprecated | Description                  |
-| -------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------- |
-| `config` | `unknown` | ❌       | -       | -     | -          | Request configuration object |
+| Name     | Type               | Optional | Default | Since | Deprecated | Description                  |
+| -------- | ------------------ | -------- | ------- | ----- | ---------- | ---------------------------- |
+| `config` | `parameter config` | ❌       | -       | -     | -          | Request configuration object |
 
 ---
 

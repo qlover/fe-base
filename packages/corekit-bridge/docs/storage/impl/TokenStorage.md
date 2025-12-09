@@ -1,12 +1,12 @@
 ## `src/core/storage/impl/TokenStorage` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/storage/impl/TokenStorage`
 
 ---
 
 ### `TokenStorage` (Class)
 
-**Type:** `unknown`
+**Type:** `class TokenStorage<Key, ValueType>`
 
 相对于是一个 ObjectStorage 别名
 
@@ -203,7 +203,7 @@
 
 ### `TokenStorageOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface TokenStorageOptions<Key>`
 
 ---
 

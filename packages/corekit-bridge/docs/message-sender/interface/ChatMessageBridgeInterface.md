@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/ChatMessageBridgeInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/ChatMessageBridgeInterface`
 
 ---
 
 ### `ChatMessageBridgeInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ChatMessageBridgeInterface<T>`
 
 Chat message bridge interface for managing chat message operations
 
@@ -520,7 +520,7 @@ bridge.use([loggerPlugin, validatorPlugin, transformerPlugin]);
 
 ### `InputRefInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface InputRefInterface`
 
 Input reference interface for managing input element references and focus control
 
@@ -589,7 +589,7 @@ bridge.setRef(inputRef.current);
 
 ### `ChatMessageBridgePlugin` (TypeAlias)
 
-**Type:** `ExecutorPlugin<MessageSenderContext<ChatMessage<T>>>`
+**Type:** `ExecutorPlugin<MessageSenderContextOptions<ChatMessage<T>>>`
 
 Plugin type for chat message bridge executor
 

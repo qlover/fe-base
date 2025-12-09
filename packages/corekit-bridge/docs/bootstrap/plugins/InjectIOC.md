@@ -1,12 +1,20 @@
 ## `src/core/bootstrap/plugins/InjectIOC` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/bootstrap/plugins/InjectIOC`
+
+
+
+
 
 ---
 
 ### `InjectIOC` (Class)
 
-**Type:** `unknown`
+**Type:** `class InjectIOC<Container>`
+
+
+
+
 
 ---
 
@@ -14,11 +22,15 @@
 
 **Type:** `(options: InjectIOCOptions<Container>) => InjectIOC<Container>`
 
+
+
+
 #### Parameters
 
-| Name      | Type                          | Optional | Default | Since   | Deprecated | Description |
-| --------- | ----------------------------- | -------- | ------- | ------- | ---------- | ----------- |
-| `options` | `InjectIOCOptions<Container>` | ❌       | -       | `2.0.0` | -          |             |
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `options` | `InjectIOCOptions<Container>` | ❌ | - | `2.0.0` | - |  |
+
 
 ---
 
@@ -28,17 +40,25 @@
 
 **Since:** `2.0.0`
 
+
+
+
 ---
 
 #### `pluginName` (Property)
 
 **Type:** `"InjectIOC"`
 
+
 **Default:** `'InjectIOC'`
+
+
+
 
 The pluginName of the plugin.
 
 Plugins with the same pluginName will be merged.
+
 
 ---
 
@@ -46,18 +66,28 @@ Plugins with the same pluginName will be merged.
 
 **Type:** `() => void`
 
+
+
+
+
 ---
 
 ##### `onBefore` (CallSignature)
 
 **Type:** `void`
 
+
+
+
+
+
 Hook executed before the main task
 Can modify the input data before it reaches the task
 
-**Returns:**
+**Returns:** 
 
 Modified data or Promise of modified data
+
 
 ---
 
@@ -65,11 +95,15 @@ Modified data or Promise of modified data
 
 **Type:** `(__namedParameters: BootstrapContext) => void`
 
+
+
+
 #### Parameters
 
-| Name                | Type               | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `__namedParameters` | `BootstrapContext` | ❌       | -       | -     | -          |             |
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `__namedParameters` | `BootstrapContext` | ❌ | - | - | - |  |
+
 
 ---
 
@@ -77,18 +111,24 @@ Modified data or Promise of modified data
 
 **Type:** `void`
 
+
+
+
+
+
 Hook executed after successful task completion
 Can transform the task result
 
-**Returns:**
+**Returns:** 
 
 Modified result or Promise of modified result
 
 #### Parameters
 
-| Name                | Type               | Optional | Default | Since | Deprecated | Description |
-| ------------------- | ------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `__namedParameters` | `BootstrapContext` | ❌       | -       | -     | -          |             |
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `__namedParameters` | `BootstrapContext` | ❌ | - | - | - |  |
+
 
 ---
 
@@ -96,41 +136,61 @@ Modified result or Promise of modified result
 
 **Type:** `() => void`
 
+
+
+
+
 ---
 
 ##### `startup` (CallSignature)
 
 **Type:** `void`
 
+
+
+
+
 ---
 
 #### `isIocManager` (Method)
 
-**Type:** `(ioc: unknown) => unknown`
+**Type:** `(ioc: unknown) => callsignature isIocManager<C>`
+
+
+
 
 #### Parameters
 
-| Name  | Type      | Optional | Default | Since | Deprecated | Description |
-| ----- | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `ioc` | `unknown` | ✅       | -       | -     | -          |             |
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `ioc` | `unknown` | ✅ | - | - | - |  |
+
 
 ---
 
 ##### `isIocManager` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `callsignature isIocManager<C>`
+
+
+
 
 #### Parameters
 
-| Name  | Type      | Optional | Default | Since | Deprecated | Description |
-| ----- | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `ioc` | `unknown` | ✅       | -       | -     | -          |             |
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `ioc` | `unknown` | ✅ | - | - | - |  |
+
 
 ---
 
 ### `InjectIOCOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface InjectIOCOptions<Container>`
+
+
+
+
 
 ---
 
@@ -138,7 +198,13 @@ Modified result or Promise of modified result
 
 **Type:** `IOCManagerInterface<Container>`
 
+
+
+
+
+
 IOC manager
+
 
 ---
 
@@ -146,6 +212,12 @@ IOC manager
 
 **Type:** `IOCRegisterInterface<Container, unknown>`
 
+
+
+
+
+
 IOC register
+
 
 ---

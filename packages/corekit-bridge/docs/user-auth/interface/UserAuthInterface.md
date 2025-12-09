@@ -1,12 +1,12 @@
 ## `src/core/user-auth/interface/UserAuthInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/user-auth/interface/UserAuthInterface`
 
 ---
 
 ### `AuthServiceInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface AuthServiceInterface<State>`
 
 User authentication service interface
 
@@ -44,13 +44,13 @@ await userAuth.logout();
 
 #### `api` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor api`
 
 ---
 
 #### `store` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor store`
 
 ---
 

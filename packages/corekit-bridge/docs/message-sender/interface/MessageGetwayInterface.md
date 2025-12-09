@@ -1,12 +1,12 @@
 ## `src/core/message-sender/interface/MessageGetwayInterface` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/core/message-sender/interface/MessageGetwayInterface`
 
 ---
 
 ### `GatewayOptions` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface GatewayOptions<M, P>`
 
 Configuration options for message gateway operations
 
@@ -47,14 +47,43 @@ const options: GatewayOptions<ChatMessage, CustomParams> = {
 
 **Type:** `number`
 
-超时时间，单位：毫秒
-如果设置，则会在超时后自动 abort
+**Default:** `undefined`
+
+Timeout duration in milliseconds
+
+When set, the operation will be automatically aborted after this duration
+Helps prevent hanging requests and manages resource cleanup
+
+**Example:**
+
+```ts
+`5000`; // 5 seconds timeout
+```
+
+**Example:**
+
+```ts
+`30000`; // 30 seconds timeout
+```
 
 ---
 
 #### `id` (Property)
 
 **Type:** `string`
+
+Unique identifier for the abort operation
+
+Used to identify and manage specific abort controller instances
+If not provided, will use
+`requestId`
+or auto-generated value
+
+**Example:**
+
+```ts
+`"user-profile-fetch"`;
+```
 
 ---
 
@@ -87,11 +116,33 @@ const options = {
 
 **Type:** `string`
 
+Request unique identifier
+
+Alternative to
+`id`
+, used for identifying specific requests
+Useful when tracking requests across different systems
+
+**Example:**
+
+```ts
+`"req_123456789"`;
+```
+
 ---
 
 #### `signal` (Property)
 
 **Type:** `AbortSignal`
+
+AbortSignal instance for request cancellation
+
+If not provided, the plugin will create and manage one automatically
+Can be provided externally to integrate with existing abort mechanisms
+
+**See:**
+
+AbortSignal MDN
 
 ---
 
@@ -374,7 +425,7 @@ onProgress: (progress) => {
 
 ### `MessageGetwayInterface` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageGetwayInterface`
 
 Message gateway interface for sending messages to external services
 
@@ -417,7 +468,7 @@ await gateway.sendMessage(message, {
 
 #### `sendMessage` (Method)
 
-**Type:** `(message: M, options: GatewayOptions<M, Record<string, unknown>>) => Promise<M>`
+**Type:** `(message: M, options: GatewayOptions<M, Record<string, unknown>>) => Promise<unknown>`
 
 #### Parameters
 
@@ -431,7 +482,7 @@ await gateway.sendMessage(message, {
 
 ##### `sendMessage` (CallSignature)
 
-**Type:** `Promise<M>`
+**Type:** `Promise<unknown>`
 
 Send a message through the gateway
 
@@ -501,7 +552,7 @@ setTimeout(() => controller.abort(), 5000);
 
 ### `MessageStreamEvent` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface MessageStreamEvent<M>`
 
 Event callbacks for streaming message operations
 

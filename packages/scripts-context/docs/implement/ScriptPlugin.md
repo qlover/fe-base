@@ -1,12 +1,12 @@
 ## `src/implement/ScriptPlugin` (Module)
 
-**Type:** `unknown`
+**Type:** `module src/implement/ScriptPlugin`
 
 ---
 
 ### `ScriptPlugin` (Class)
 
-**Type:** `unknown`
+**Type:** `class ScriptPlugin<Context, Props>`
 
 Abstract base class for script plugins that provides common functionality
 
@@ -80,7 +80,7 @@ class BuildPlugin extends ScriptPlugin<BuildContext, MyPluginProps> {
 | ------------ | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
 | `context`    | `Context` | ❌       | -       | -     | -          | Script context providing environment and configuration        |
 | `pluginName` | `string`  | ❌       | -       | -     | -          | Unique identifier for this plugin (used for config namespace) |
-| `props`      | `Props`   | ✅       | `...`   | -     | -          | Optional runtime configuration overrides                      |
+| `props`      | `Props`   | ✅       | `{}`    | -     | -          | Optional runtime configuration overrides                      |
 
 ---
 
@@ -114,7 +114,7 @@ Unique identifier for this plugin (used for config namespace)
 
 **Type:** `Props`
 
-**Default:** `...`
+**Default:** `{}`
 
 Optional runtime configuration overrides
 
@@ -122,19 +122,19 @@ Optional runtime configuration overrides
 
 #### `logger` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor logger`
 
 ---
 
 #### `options` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor options`
 
 ---
 
 #### `shell` (Accessor)
 
-**Type:** `unknown`
+**Type:** `accessor shell`
 
 ---
 
@@ -654,7 +654,7 @@ await this.step({
 
 ### `ScriptPluginProps` (Interface)
 
-**Type:** `unknown`
+**Type:** `interface ScriptPluginProps`
 
 Base properties for script plugin configuration
 

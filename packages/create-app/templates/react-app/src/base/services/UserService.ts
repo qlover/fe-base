@@ -1,51 +1,41 @@
-import * as errKeys from '@config/Identifier/common/common.error';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { I } from '@config/IOCIdentifier';
 import {
-  type UserAuthApiInterface,
-  type UserAuthState,
-  LoginResponseData,
-  UserAuthStore
+  UserService as CorekitBridgeUserService,
+  GatewayExecutor
 } from '@qlover/corekit-bridge';
-import { type SyncStorageInterface } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
+import { isObject, isString } from 'lodash';
 import { UserApi } from '@/base/apis/userApi/UserApi';
-import type {
-  UserApiLoginTransaction,
-  UserInfo
-} from '@/base/apis/userApi/UserApiType';
-import { AppError } from '@/base/cases/AppError';
+import type { UserInfo, UserCredential } from '@/base/apis/userApi/UserApiType';
 import { AppConfig } from '../cases/AppConfig';
-import { RouteServiceInterface } from '../port/RouteServiceInterface';
 import { UserServiceInterface } from '../port/UserServiceInterface';
-
-export interface UserApiState extends UserAuthState<UserInfo> {}
-
-export interface RegisterFormData {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  agreeToTerms: boolean;
-}
+import type { UserServiceGateway } from '@qlover/corekit-bridge';
+import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class UserService extends UserServiceInterface {
+export class UserService
+  extends CorekitBridgeUserService<UserInfo, UserCredential>
+  implements UserServiceInterface
+{
   constructor(
-    @inject(IOCIdentifier.RouteServiceInterface)
-    protected routerService: RouteServiceInterface,
     @inject(UserApi)
-    userApi: UserAuthApiInterface<UserInfo>,
-    @inject(IOCIdentifier.AppConfig) appConfig: AppConfig,
-    @inject(IOCIdentifier.LocalStorageEncrypt)
-    storage: SyncStorageInterface<string, string>
+    userApi: UserServiceGateway<UserInfo, UserCredential>,
+    @inject(I.AppConfig) appConfig: AppConfig,
+    @inject(I.LocalStorageEncrypt)
+    storage: SyncStorageInterface<string>,
+    @inject(I.Logger)
+    logger: LoggerInterface
   ) {
-    super(userApi, {
-      userStorage: {
-        key: appConfig.userInfoStorageKey,
-        storage: storage
-      },
-      credentialStorage: {
-        key: appConfig.userTokenStorageKey,
+    super({
+      executor: new GatewayExecutor(),
+      gateway: userApi,
+      logger: logger,
+      store: {
+        storageKey: appConfig.userInfoStorageKey,
+        credentialStorageKey: appConfig.userTokenStorageKey,
+        // Not production environment persists user information, for testing and development
+        persistUserInfo: !appConfig.isProduction,
         storage: storage
       }
     });
@@ -53,60 +43,41 @@ export class UserService extends UserServiceInterface {
 
   /**
    * @override
+   * @returns
    */
-  override get store(): UserAuthStore<UserApiState> {
-    return super.store as UserAuthStore<UserApiState>;
+  getToken(): string {
+    return this.getCredential()?.token ?? '';
   }
 
-  override getToken(): string | null {
-    return this.store.getCredential();
+  isUserInfo(value: unknown): value is UserInfo {
+    return (
+      isObject(value) &&
+      'name' in value &&
+      isString(value.name) &&
+      'email' in value &&
+      isString(value.email) &&
+      'picture' in value &&
+      isString(value.picture)
+    );
   }
 
-  /**
-   * @override
-   */
-  async onBefore(): Promise<void> {
-    if (this.isAuthenticated()) {
-      return;
-    }
-
-    const userToken = this.getToken();
-
-    if (!userToken) {
-      throw new AppError(errKeys.LOCAL_NO_USER_TOKEN);
-    }
-
-    if (userToken) {
-      this.store.authSuccess();
-    }
-
-    await this.userInfo();
-    this.store.authSuccess();
+  isUserCredential(value: unknown): value is UserCredential {
+    return isObject(value) && 'token' in value && isString(value.token);
   }
 
-  override async logout(): Promise<void> {
-    await super.logout();
-
-    this.routerService.reset();
-    this.routerService.gotoLogin();
-  }
-
-  override async register(
-    params: RegisterFormData
-  ): Promise<LoginResponseData> {
-    const response = (await this.api.register(
-      params
-    )) as UserApiLoginTransaction['response'];
-
-    if (response.data?.token) {
-      try {
-        await this.userInfo({ token: response.data?.token });
-        this.store.authSuccess();
-      } catch (error) {
-        this.store.authFailed(error);
-      }
+  override isAuthenticated(): boolean {
+    if (!super.isAuthenticated()) {
+      return false;
     }
 
-    throw new AppError(errKeys.LOCAL_NO_USER_TOKEN);
+    if (!this.isUserInfo(this.getUser())) {
+      return false;
+    }
+
+    if (!this.isUserCredential(this.getCredential())) {
+      return false;
+    }
+
+    return true;
   }
 }
