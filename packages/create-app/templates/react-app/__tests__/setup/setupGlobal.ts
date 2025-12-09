@@ -49,3 +49,16 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 
 // Mock globals
 vi.mock('@/core/globals', () => createMockGlobals());
+
+// Mock i18next-http-backend to avoid network requests in tests
+// This prevents timeout issues when I18nService tries to load language files
+// The mock loads translations directly from JSON files, enabling translation testing
+vi.mock('i18next-http-backend', async () => {
+  const { MockHttpBackend } = await import('@__mocks__/i18nextHttpBackend');
+  return { default: MockHttpBackend };
+});
+
+// Mock i18next-browser-languagedetector to avoid browser API calls
+vi.mock('i18next-browser-languagedetector', () => ({
+  default: {}
+}));

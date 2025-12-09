@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { MockAppConfig } from './MockAppConfit';
+import { MockAppConfig } from './MockAppConfig';
 import { MockDialogHandler } from './MockDialogHandler';
 import { MockLogger } from './MockLogger';
 

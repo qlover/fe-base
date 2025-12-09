@@ -5,6 +5,7 @@ import { UserApiBootstarp } from '@/base/apis/userApi/UserApiBootstarp';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
+import { saveAppInfo } from './SaveAppInfo';
 import type {
   BootstrapExecutorPlugin,
   EnvConfigInterface,
@@ -35,6 +36,7 @@ export class BootstrapsRegistry implements BootstrapsRegistryInterface {
       new UserApiBootstarp(),
       new FeApiBootstarp(),
       AiApiBootstarp,
+      saveAppInfo,
       IOC(I.I18nKeyErrorPlugin)
     ];
 
