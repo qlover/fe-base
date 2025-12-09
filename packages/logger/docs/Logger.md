@@ -852,7 +852,7 @@ without changing the code.
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Default log levels with their priorities (lower number = higher priority)
 
