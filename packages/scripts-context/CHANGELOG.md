@@ -1,5 +1,20 @@
 # @qlover/scripts-context
 
+## 1.2.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- **scripts-context:** Update default values in configuration documentation ([c602cf2](https://github.com/qlover/fe-base/commit/c602cf24aa411dd73f7e6339603f2b334b691bf3)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Changed default values from `...` to `{}` in multiple documentation files for clarity.
+  - Updated `feConfig`, `ColorFormatter`, `ScriptPlugin`, and `Shell` documentation to reflect accurate default configurations, enhancing user understanding.
+
+- Update type annotations and module descriptions across multiple documentation files ([d0a5535](https://github.com/qlover/fe-base/commit/d0a5535aceffeb9b03b2fc8d578116fe55ab85b5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added type annotations for various modules and interfaces in the documentation, enhancing clarity and understanding of their functionalities.
+  - Updated descriptions for modules such as `FeCode2Markdown`, `corekit-bridge`, and `user-auth`, ensuring accurate representation of their purposes.
+  - Improved overall documentation quality by standardizing type definitions and enhancing the user experience with clearer explanations.
+
 ## 1.1.4
 
 ### Patch Changes

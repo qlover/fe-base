@@ -1,5 +1,28 @@
 # @qlover/fe-corekit
 
+## 2.3.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **KeyStorage:** Enhance error handling for storage operations ([02ad7fc](https://github.com/qlover/fe-base/commit/02ad7fc7ec136e333c9895e3df2faa66907ad3d9)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Updated KeyStorage class to gracefully handle failures during storage operations, including get, set, and remove methods.
+  - Improved test cases to verify that the constructor and operations do not throw errors on storage access failures, ensuring robust functionality.
+  - Refactored KeyStorageInterface to include methods for retrieving the storage key and current in-memory value, enhancing usability and clarity.
+
+#### 📝 Documentation
+
+- **fe-corekit:** Update default values in executor documentation ([22b1332](https://github.com/qlover/fe-base/commit/22b1332b55ace481e46b14c85d3948c5cdca514c)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Changed default values for `config` in AsyncExecutor, SyncExecutor, and related interfaces from `...` to `{}` for clarity.
+  - Enhanced documentation across multiple files to reflect accurate default configurations for better user understanding.
+  - Added new AbortPlugin documentation to provide comprehensive details on its functionality and usage examples.
+
+- Update type annotations and module descriptions across multiple documentation files ([d0a5535](https://github.com/qlover/fe-base/commit/d0a5535aceffeb9b03b2fc8d578116fe55ab85b5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added type annotations for various modules and interfaces in the documentation, enhancing clarity and understanding of their functionalities.
+  - Updated descriptions for modules such as `FeCode2Markdown`, `corekit-bridge`, and `user-auth`, ensuring accurate representation of their purposes.
+  - Improved overall documentation quality by standardizing type definitions and enhancing the user experience with clearer explanations.
+
 ## 2.2.0
 
 ### Minor Changes

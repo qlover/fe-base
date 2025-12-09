@@ -1,5 +1,19 @@
 # @qlover/logger
 
+## 0.3.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- **logger:** Update default value in Logger documentation ([a6bf121](https://github.com/qlover/fe-base/commit/a6bf121bd6363a208499bf31c9c8aaadd1ba16ee)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Changed default value from `...` to `{}` in Logger.md for clarity and accuracy in documentation.
+
+- Update type annotations and module descriptions across multiple documentation files ([d0a5535](https://github.com/qlover/fe-base/commit/d0a5535aceffeb9b03b2fc8d578116fe55ab85b5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added type annotations for various modules and interfaces in the documentation, enhancing clarity and understanding of their functionalities.
+  - Updated descriptions for modules such as `FeCode2Markdown`, `corekit-bridge`, and `user-auth`, ensuring accurate representation of their purposes.
+  - Improved overall documentation quality by standardizing type definitions and enhancing the user experience with clearer explanations.
+
 ## 0.2.0
 
 ### Minor Changes

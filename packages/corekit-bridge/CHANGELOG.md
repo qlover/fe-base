@@ -1,5 +1,76 @@
 # @qlover/corekit-bridge
 
+## 1.8.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **store-state:** Add AsyncStore and PersistentStore test suites ([ceee5d9](https://github.com/qlover/fe-base/commit/ceee5d97d5dd602b264650028a9c1f0a39dcf8f7)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Introduced comprehensive test suites for AsyncStore and PersistentStore, covering state management, error handling, and integration scenarios.
+  - Implemented MockStorage for simulating storage operations during tests, ensuring robust validation of store functionalities.
+  - Enhanced AsyncStore with status tracking and lifecycle management, providing a complete interface for asynchronous operations.
+  - Updated index exports to include new interfaces and implementations, improving module organization and accessibility.
+  - Removed obsolete AsyncStateInterface to streamline the codebase and improve clarity in state management.
+
+- **URLStorage:** Implement URLStorage class and test suite ([80c8518](https://github.com/qlover/fe-base/commit/80c85186f722904f3f90458461fae539dc94c6a2)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Introduced URLStorage class for managing URL query parameters with flexible key matching and caching capabilities.
+  - Added comprehensive test suite for URLStorage, covering constructor behavior, key retrieval, value retrieval, and error handling.
+  - Updated core storage index to export URLStorage, enhancing module accessibility.
+
+- **gateway-auth:** Introduce gateway authentication module with services and utilities ([19977c6](https://github.com/qlover/fe-base/commit/19977c6db340f76de46068e3b2a7b317d6faba6e)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added a new gateway authentication module, including BaseService, GatewayService, UserService, and GatewayExecutor for managing user authentication and related operations.
+  - Implemented comprehensive test suites for each service, covering various scenarios such as login, registration, and user information retrieval.
+  - Enhanced AsyncStore to support user authentication state management, including credential persistence and error handling.
+  - Updated package.json to include new entry points for the gateway-auth module, improving accessibility and organization.
+  - Introduced utility functions for creating user stores and managing action hooks, enhancing modularity and reusability.
+
+- **persistent-store:** Implement PersistentStore and associated test suite ([257404e](https://github.com/qlover/fe-base/commit/257404e143b3a0e099e02ad805e59fa84681975f)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Introduced PersistentStore class for managing state persistence with flexible storage backends, enhancing state management capabilities.
+  - Added comprehensive test suite for PersistentStore, covering state restoration, persistence, and error handling scenarios.
+  - Updated AsyncStore to extend from PersistentStore, ensuring consistent behavior across synchronous and asynchronous storage operations.
+  - Refactored existing interfaces and implementations to improve clarity and maintainability, including updates to the PersistentStoreInterface.
+  - Enhanced documentation to reflect the new structure and functionality of the persistent storage system.
+
+- **gateway-auth:** Add UserStore test suite and enhance UserService with credential management ([d9cac86](https://github.com/qlover/fe-base/commit/d9cac86eb741907842c773423517f7f1a21eaaa1)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Introduced a comprehensive test suite for UserStore, covering various scenarios including persistence, restoration, and error handling.
+  - Enhanced UserService to include a method for retrieving the current credential, improving accessibility to authentication data.
+  - Updated UserStore and UserService interfaces to reflect changes in credential management and persistence behavior.
+  - Improved documentation for UserStore and UserService, clarifying persistence options and usage examples.
+
+- **api-mock-plugin:** Add comprehensive test suite for ApiMockPlugin ([03abe4f](https://github.com/qlover/fe-base/commit/03abe4fc4de9ab6956a64b3ba175d3a7c5def8c9)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Introduced a new test suite for ApiMockPlugin, covering various scenarios including plugin initialization, mock data matching, and response structure.
+  - Enhanced ApiMockPlugin to support dynamic mock data generation through functions, improving flexibility in testing.
+  - Updated documentation within the code to clarify the usage of mock data configurations and the plugin's behavior.
+  - Implemented logging for mock requests to aid in debugging and validation of mock responses.
+
+#### 📝 Documentation
+
+- **corekit-bridge:** Update default values in multiple documentation files ([c205143](https://github.com/qlover/fe-base/commit/c20514312ed562d370932e195c9f7486c73ce2e5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Changed default values from `...` to `{}` in various documentation files, including ColorFormatter, ChatMessage, and AsyncStore, for clarity and accuracy.
+  - Added new documentation for several gateway-auth and store-state modules, enhancing user understanding of their functionalities and configurations.
+  - Updated examples and descriptions to reflect the latest changes in default configurations and improve overall documentation quality.
+
+- Update type annotations and module descriptions across multiple documentation files ([d0a5535](https://github.com/qlover/fe-base/commit/d0a5535aceffeb9b03b2fc8d578116fe55ab85b5)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Added type annotations for various modules and interfaces in the documentation, enhancing clarity and understanding of their functionalities.
+  - Updated descriptions for modules such as `FeCode2Markdown`, `corekit-bridge`, and `user-auth`, ensuring accurate representation of their purposes.
+  - Improved overall documentation quality by standardizing type definitions and enhancing the user experience with clearer explanations.
+
+#### ♻️ Refactors
+
+- **message-sender:** Rename MessageSenderContext to MessageSenderContextOptions ([95a60dd](https://github.com/qlover/fe-base/commit/95a60ddf333c1990326a22d9aaa27156c4a91602)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Updated all instances of MessageSenderContext to MessageSenderContextOptions across test files and implementation files for consistency.
+  - Adjusted type definitions in MessageSender and related plugins to reflect the new naming convention, enhancing clarity and maintainability.
+  - Ensured that all tests are updated accordingly to prevent any breaking changes.
+
+- **message-sender:** Enhance ChatSenderStrategy with generic type support ([738adcc](https://github.com/qlover/fe-base/commit/738adccc035bbd4c2e36f995829218be4fbdb2cf)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Updated ChatSenderStrategy to extend SenderStrategyPlugin with a generic type parameter for ChatMessage, improving type safety and flexibility in message handling.
+  - Adjusted related documentation to reflect the changes in the class definition.
+
+- **tests:** Update import paths and refactor mock classes for consistency ([168a431](https://github.com/qlover/fe-base/commit/168a43162f09caddebe9e9e895f56eec681dbe40)) ([#545](https://github.com/qlover/fe-base/pull/545))
+  - Changed import paths for PersistentStore and RequestState to align with new structure.
+  - Refactored mock classes in UserAuthStore tests to use KeyStorage instead of KeyStorageInterface, enhancing clarity and consistency across test files.
+
 ## 1.7.0
 
 ### Minor Changes
