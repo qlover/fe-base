@@ -95,6 +95,7 @@ export interface LoginParams {
  * - Generic logout parameters: Allows different logout requirements (revokeAll, redirects)
  * - Generic logout result: Allows different logout responses (e.g., success status, redirect URLs)
  *
+ * @since 1.8.0
  * @template CredentialType - The type of credential data returned after successful login
  *
  * @example Basic implementation

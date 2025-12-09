@@ -28,6 +28,7 @@ import { UserInfoGetter } from './UserInfoInterface';
  * - Generic parameters: Allows different registration methods (email, phone, etc.)
  * - Returns null on failure: Provides clear indication of registration failure
  *
+ * @since 1.8.0
  * @template Result - The type of user object returned after successful registration
  *
  * @example Basic implementation

@@ -57,6 +57,7 @@ export interface URLStorageOptions<Key> {
  * - Performance optimization: Caching mechanism for each key configuration
  * - Read-only storage: URL parameters cannot be modified through this interface
  *
+ * @since 1.8.0
  * @template Key - The type of keys used to identify URL parameters (defaults to string)
  *
  * @example Basic usage with single key

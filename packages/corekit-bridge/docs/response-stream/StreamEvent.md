@@ -58,7 +58,7 @@ const final = event.doned();
 | `processor` | `StreamProcessorInterface` | ❌       | -       | -     | -          | Stream processor implementation for chunk processing |
 
 Determines how raw chunks are converted to messagesRaw chunk data from streamArray of processed messages |
-| `decoder` | `TextDecoder` | ✅ | `...` | - | - | Text decoder for binary data conversion
+| `decoder` | `TextDecoder` | ✅ | `{}` | - | - | Text decoder for binary data conversion
 
 Used when processing ArrayBuffer chunks |
 
@@ -68,7 +68,7 @@ Used when processing ArrayBuffer chunks |
 
 **Type:** `TextDecoder`
 
-**Default:** `...`
+**Default:** `{}`
 
 Text decoder for binary data conversion
 

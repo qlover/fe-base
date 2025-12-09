@@ -352,7 +352,7 @@ T - the new cloned state
 
 | Name      | Type         | Optional | Default | Since | Deprecated | Description                   |
 | --------- | ------------ | -------- | ------- | ----- | ---------- | ----------------------------- |
-| `message` | `Partial<M>` | ✅       | `...`   | -     | -          | Partial message specification |
+| `message` | `Partial<M>` | ✅       | `{}`    | -     | -          | Partial message specification |
 
 ---
 
@@ -373,7 +373,7 @@ ChatMessage instance
 
 | Name      | Type         | Optional | Default | Since | Deprecated | Description                   |
 | --------- | ------------ | -------- | ------- | ----- | ---------- | ----------------------------- |
-| `message` | `Partial<M>` | ✅       | `...`   | -     | -          | Partial message specification |
+| `message` | `Partial<M>` | ✅       | `{}`    | -     | -          | Partial message specification |
 
 ---
 
@@ -1487,7 +1487,7 @@ Type representing valid draft modes
 
 **Type:** `Readonly<Object>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Draft message processing modes
 

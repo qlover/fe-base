@@ -54,7 +54,7 @@ executor.resetRuntimesStreamTimes(context);
 
 #### `new MessageSenderExecutor` (Constructor)
 
-**Type:** `(config: ExecutorConfigInterface) => MessageSenderExecutor`
+**Type:** `(config: ExecutorConfigInterface) => MessageSenderExecutor<MessageType>`
 
 #### Parameters
 
@@ -266,13 +266,13 @@ const result = await executor.execNoError(
 
 #### `resetRuntimesStreamTimes` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<MessageType>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing hook runtimes |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context containing hook runtimes |
 
 ---
 
@@ -298,9 +298,9 @@ await startNewStream();
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing hook runtimes |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context containing hook runtimes |
 
 ---
 
@@ -381,13 +381,13 @@ protected async run(data, task) {
 
 #### `runConnected` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => Promise<void>`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<MessageType>>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
 
 ---
 
@@ -423,9 +423,9 @@ try {
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
 
 ---
 
@@ -602,14 +602,14 @@ const result = await this.runHooks(this.plugins, 'onBefore', context, data);
 
 #### `runStream` (Method)
 
-**Type:** `(chunk: unknown, context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => Promise<unknown>`
+**Type:** `(chunk: unknown, context: ExecutorContext<MessageSenderContextOptions<MessageType>>) => Promise<unknown>`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `chunk`   | `unknown`                                                                  | ❌       | -       | -     | -          | Data chunk received from the stream              |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `chunk`   | `unknown`                                                   | ❌       | -       | -     | -          | Data chunk received from the stream              |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
 
 ---
 
@@ -650,10 +650,10 @@ console.log(`Processed ${chunkCount} chunks`);
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `chunk`   | `unknown`                                                                  | ❌       | -       | -     | -          | Data chunk received from the stream              |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| Name      | Type                                                        | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ----------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `chunk`   | `unknown`                                                   | ❌       | -       | -     | -          | Data chunk received from the stream              |
+| `context` | `ExecutorContext<MessageSenderContextOptions<MessageType>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
 
 ---
 
@@ -736,7 +736,7 @@ executor.use(plugin); // Second addition - skipped with warning
 
 ---
 
-### `MessageSenderContext` (Interface)
+### `MessageSenderContextOptions` (Interface)
 
 **Type:** `unknown`
 
@@ -864,7 +864,7 @@ const config = {
 
 #### `store` (Property)
 
-**Type:** `MessagesStore<MessageType, MessagesStateInterface<MessageType>>`
+**Type:** `MessagesStoreInterface<MessageType, MessagesStateInterface<MessageType>>`
 
 Message store instance
 
@@ -958,14 +958,14 @@ Plugins with the same pluginName will be merged.
 
 #### `enabled` (Method)
 
-**Type:** `(name: unknown, context: ExecutorContext<MessageSenderContext<T>>) => boolean`
+**Type:** `(name: unknown, context: ExecutorContext<MessageSenderContextOptions<T>>) => boolean`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                     |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                  | ❌       | -       | -     | -          | Name of the hook being executed |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ✅       | -       | -     | -          |                                 |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                     |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `name`    | `unknown`                                         | ❌       | -       | -     | -          | Name of the hook being executed |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ✅       | -       | -     | -          |                                 |
 
 ---
 
@@ -990,22 +990,22 @@ enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                     |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `unknown`                                  | ❌       | -       | -     | -          | Name of the hook being executed |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ✅       | -       | -     | -          |                                 |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                     |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `name`    | `unknown`                                         | ❌       | -       | -     | -          | Name of the hook being executed |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ✅       | -       | -     | -          |                                 |
 
 ---
 
 #### `onBefore` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<T>>) => void \| Promise<void>`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1022,9 +1022,9 @@ Modified data or Promise of modified data
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1087,13 +1087,13 @@ onConnected: async (context) => {
 
 #### `onError` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<T>>) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError \| Error>`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError \| Error>`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1120,9 +1120,9 @@ ExecutorError, void, or Promise of either
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1233,13 +1233,13 @@ onStream: async (context, chunk) => {
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<T>>) => void \| Promise<void>`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -1256,15 +1256,15 @@ Modified result or Promise of modified result
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<MessageSenderContext<T>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          |             |
 
 ---
 
 ### `MessageSenderPluginContext` (TypeAlias)
 
-**Type:** `ExecutorContext<MessageSenderContext<T>>`
+**Type:** `ExecutorContext<MessageSenderContextOptions<T>>`
 
 Type alias for message sender plugin context
 

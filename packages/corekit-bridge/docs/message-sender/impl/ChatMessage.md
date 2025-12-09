@@ -187,8 +187,6 @@ Used for message rendering, styling, and conversation flow control.
 
 **Type:** `number`
 
-**Default:** `...`
-
 Message creation timestamp
 
 Unix timestamp (milliseconds) when the message was created.
@@ -221,7 +219,7 @@ Type representing valid chat message roles
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Chat message role constants
 

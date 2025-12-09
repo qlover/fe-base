@@ -87,7 +87,7 @@ const plugin = new SenderStrategyPlugin(
 
 #### `new SenderStrategyPlugin` (Constructor)
 
-**Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface) => SenderStrategyPlugin`
+**Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface) => SenderStrategyPlugin<T>`
 
 #### Parameters
 
@@ -118,7 +118,7 @@ Optional logger instance for debugging and monitoring
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Logger message templates
 
@@ -163,14 +163,14 @@ Plugin identifier
 
 #### `asyncReturnValue` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>, returnValue: unknown) => unknown`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>, returnValue: unknown) => unknown`
 
 #### Parameters
 
-| Name          | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| ------------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context`     | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `returnValue` | `unknown`                                                                  | ❌       | -       | -     | -          | Value to set as the context's return value            |
+| Name          | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| ------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context`     | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| `returnValue` | `unknown`                                         | ❌       | -       | -     | -          | Value to set as the context's return value            |
 
 ---
 
@@ -202,22 +202,22 @@ async execute(context, next) {
 
 #### Parameters
 
-| Name          | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| ------------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context`     | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `returnValue` | `unknown`                                                                  | ❌       | -       | -     | -          | Value to set as the context's return value            |
+| Name          | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| ------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context`     | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| `returnValue` | `unknown`                                         | ❌       | -       | -     | -          | Value to set as the context's return value            |
 
 ---
 
 #### `cleanup` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: MessageSenderPluginContext<T>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderPluginContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -232,21 +232,21 @@ Called after success, error, or abort operations.
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderPluginContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `closeAddedToStore` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
 
 ---
 
@@ -281,21 +281,21 @@ async execute(context, next) {
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
 
 ---
 
 #### `handleBefore_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderContext<MessageStoreMsg<unknown, unknown>>) => MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>) => MessageStoreMsg<unknown, unknown>`
 
 #### Parameters
 
-| Name         | Type                                                      | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
@@ -314,21 +314,21 @@ Added message from the store
 
 #### Parameters
 
-| Name         | Type                                                      | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
 #### `handleConnectionEstablished` (Method)
 
-**Type:** `(parameters: MessageSenderContext<MessageStoreMsg<unknown, unknown>>) => void`
+**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>) => void`
 
 #### Parameters
 
-| Name         | Type                                                      | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
@@ -349,22 +349,22 @@ to "sent and waiting for response".
 
 #### Parameters
 
-| Name         | Type                                                      | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
 #### `handleStream_UpdateExisting` (Method)
 
-**Type:** `(parameters: MessageSenderContext<MessageStoreMsg<unknown, unknown>>, chunkMessage: unknown) => unknown`
+**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, chunkMessage: unknown) => unknown`
 
 #### Parameters
 
-| Name           | Type                                                      | Optional | Default | Since | Deprecated | Description                           |
-| -------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `parameters`   | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
-| `chunkMessage` | `unknown`                                                 | ❌       | -       | -     | -          | Chunk data containing message updates |
+| Name           | Type                                                             | Optional | Default | Since | Deprecated | Description                           |
+| -------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `parameters`   | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
+| `chunkMessage` | `unknown`                                                        | ❌       | -       | -     | -          | Chunk data containing message updates |
 
 ---
 
@@ -384,23 +384,23 @@ Updated or added message, or original chunk if not a message
 
 #### Parameters
 
-| Name           | Type                                                      | Optional | Default | Since | Deprecated | Description                           |
-| -------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `parameters`   | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
-| `chunkMessage` | `unknown`                                                 | ❌       | -       | -     | -          | Chunk data containing message updates |
+| Name           | Type                                                             | Optional | Default | Since | Deprecated | Description                           |
+| -------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `parameters`   | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
+| `chunkMessage` | `unknown`                                                        | ❌       | -       | -     | -          | Chunk data containing message updates |
 
 ---
 
 #### `handleSuccess_ADD_ON_SUCCESS` (Method)
 
-**Type:** `(parameters: MessageSenderContext<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => MessageStoreMsg<unknown, unknown>`
 
 #### Parameters
 
-| Name          | Type                                                      | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
@@ -419,23 +419,23 @@ Newly added message from store
 
 #### Parameters
 
-| Name          | Type                                                      | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 #### `handleSuccess_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderContext<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => undefined \| MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => undefined \| MessageStoreMsg<unknown, unknown>`
 
 #### Parameters
 
-| Name          | Type                                                      | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
@@ -456,10 +456,10 @@ if update failed
 
 #### Parameters
 
-| Name          | Type                                                      | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | --------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                       | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
@@ -513,14 +513,14 @@ try {
 
 #### `mergeRuntimeMessage` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>, message: MessageStoreMsg<unknown, unknown>) => MessageStoreMsg<unknown, unknown>`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>, message: Partial<T>) => MessageStoreMsg<unknown, unknown>`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `message` | `MessageStoreMsg<unknown, unknown>`                                        | ❌       | -       | -     | -          | Partial message updates to merge into current message |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| `message` | `Partial<T>`                                      | ❌       | -       | -     | -          | Partial message updates to merge into current message |
 
 ---
 
@@ -551,22 +551,22 @@ const updated = this.mergeRuntimeMessage(context, {
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `message` | `MessageStoreMsg<unknown, unknown>`                                        | ❌       | -       | -     | -          | Partial message updates to merge into current message |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| `message` | `Partial<T>`                                      | ❌       | -       | -     | -          | Partial message updates to merge into current message |
 
 ---
 
 #### `onBefore` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -590,21 +590,21 @@ Strategy behavior:
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onConnected` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -619,21 +619,21 @@ Delegates to the common connection handling logic.
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onError` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void \| ExecutorError`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| ExecutorError`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -662,21 +662,21 @@ When message update fails for KEEP_FAILED strategy
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onStopError` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void \| ExecutorError`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| ExecutorError`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -716,9 +716,9 @@ controller.abort();
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -785,13 +785,13 @@ onStream: (context, chunk) => {
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -810,21 +810,21 @@ When message update fails for already-added messages
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `openAddedToStore` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>) => void`
+**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
 
 ---
 
@@ -858,9 +858,9 @@ async execute(context, next) {
 
 #### Parameters
 
-| Name      | Type                                                                       | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | -------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContext<MessageStoreMsg<unknown, unknown>>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
+| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
 
 ---
 
@@ -905,7 +905,7 @@ Type representing valid send failure strategies
 
 **Type:** `Readonly<Object>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Send failure handling strategies
 

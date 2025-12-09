@@ -41,6 +41,7 @@ import { StoreInterface } from '../../store-state/interface/StoreInterface';
  * - Authentication-only: This store is only for login/logout operations
  * - Other operations: getUserInfo, register, refreshUserInfo should manage their own state
  *
+ * @since 1.8.0
  * @template Credential - The type of credential data returned after login
  * @template User2 - The type of user object
  *

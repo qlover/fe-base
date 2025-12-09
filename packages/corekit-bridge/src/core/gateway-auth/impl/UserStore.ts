@@ -124,6 +124,7 @@ export interface UserStoreOptions<
  * - Flexible persistence: Supports persisting both user info and credential separately when configured
  * - Enhanced methods: `start` and `success` can accept credential for atomic updates
  *
+ * @since 1.8.0
  * @template User - The type of user object
  * @template Credential - The type of credential data returned after login
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`)

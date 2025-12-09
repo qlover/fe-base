@@ -1086,6 +1086,20 @@ Used for:
 
 ---
 
+#### `status` (Property)
+
+**Type:** `unknown`
+
+Status of the async operation
+
+**Example:**
+
+```ts
+`'pending' | 'success' | 'failed' | 'stopped'`;
+```
+
+---
+
 ### `MessagesStateInterface` (Interface)
 
 **Type:** `unknown`

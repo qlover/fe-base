@@ -20,6 +20,7 @@ import { ServiceActionType } from '../impl/ServiceAction';
  * - `RegisterInterface`: Handles user registration
  * - `UserInfoInterface`: Handles user information retrieval
  *
+ * @since 1.8.0
  * @template User - The type of user object
  * @template Credential - The type of credential data returned after login
  *

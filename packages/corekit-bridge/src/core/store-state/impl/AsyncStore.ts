@@ -164,6 +164,7 @@ export interface AsyncStoreOptions<
  * - Error resilience: Storage failures don't prevent state updates
  * - Status management: Status is automatically updated based on operation lifecycle
  *
+ * @since 1.8.0
  * @template T - The type of the result data from the async operation
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`)
  * @template Opt - The type of options for storage operations (defaults to `unknown`)

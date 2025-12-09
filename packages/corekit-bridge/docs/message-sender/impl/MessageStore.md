@@ -1070,7 +1070,7 @@ Type representing valid message statuses
 
 **Type:** `Readonly<Object>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Message status constants
 

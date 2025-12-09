@@ -29,6 +29,7 @@ export type ServiceGatewayType = object;
  * - Gateway is optional: Services can work without gateway (e.g., mock services)
  * - Service name is readonly: Prevents accidental modification after construction
  *
+ * @since 1.8.0
  * @template Store - The async store type that extends `AsyncStoreInterface`
  * @template Gateway - The gateway type (can be any object type)
  *

@@ -36,6 +36,7 @@ import { createUserStore } from '../utils/createUserStore';
  * - Store configuration: Uses UserServiceStoreOptions for credential storage
  * - Credential-first persistence: Inherits UserStore's default behavior of persisting only credential
  *
+ * @since 1.8.0
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
  *

@@ -15,6 +15,22 @@ Core idea: Provide a unified API for state management with reset and clone helpe
 Main function: Extend SliceStore, add resetState and cloneState utilities
 Main purpose: Simplify store implementation and ensure consistency
 
+**Naming Note:**
+
+- This class is currently named
+  `StoreInterface`
+  but it's actually an abstract class, not an interface
+- The naming is inconsistent because
+  `SliceStore`
+  (from
+  `@qlover/slice-store`
+  ) only provides
+  an implementation class without a corresponding interface
+- In the next major version, this class will be renamed to better reflect its nature
+- The name
+  `StoreInterface`
+  will be preserved as an actual interface type for type definitions
+
 **Example:**
 
 ```ts
@@ -421,6 +437,6 @@ store.emit(initialState);
 
 **Type:** `ThemeConfig`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---

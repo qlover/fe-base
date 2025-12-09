@@ -202,13 +202,13 @@ try {
 
 #### `use` (Method)
 
-**Type:** `(plugin: ExecutorPlugin<MessageSenderContext<T>>) => this`
+**Type:** `(plugin: ExecutorPlugin<T>) => this`
 
 #### Parameters
 
-| Name     | Type                                      | Optional | Default | Since | Deprecated | Description                        |
-| -------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `plugin` | `ExecutorPlugin<MessageSenderContext<T>>` | ❌       | -       | -     | -          | Plugin to register with the sender |
+| Name     | Type                | Optional | Default | Since | Deprecated | Description                        |
+| -------- | ------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register with the sender |
 
 ---
 
@@ -248,8 +248,8 @@ sender.use(authPlugin).use(validationPlugin).use(transformPlugin);
 
 #### Parameters
 
-| Name     | Type                                      | Optional | Default | Since | Deprecated | Description                        |
-| -------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `plugin` | `ExecutorPlugin<MessageSenderContext<T>>` | ❌       | -       | -     | -          | Plugin to register with the sender |
+| Name     | Type                | Optional | Default | Since | Deprecated | Description                        |
+| -------- | ------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register with the sender |
 
 ---

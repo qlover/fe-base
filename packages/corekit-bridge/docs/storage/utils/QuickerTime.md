@@ -39,7 +39,7 @@ const pastTimestamp = QuickerTime.subtract('minute', 30); // The timestamp of 30
 | ----------- | ---------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
 | `unit`      | `TimeUnit` | ❌       | -       | -     | -          | TimeUnit                                            |
 | `value`     | `number`   | ✅       | `1`     | -     | -          | The time value to add                               |
-| `timestamp` | `number`   | ✅       | `...`   | -     | -          | Optional parameter, the default is the current time |
+| `timestamp` | `number`   | ✅       | -       | -     | -          | Optional parameter, the default is the current time |
 
 ---
 
@@ -59,7 +59,7 @@ The calculated timestamp (milliseconds)
 | ----------- | ---------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
 | `unit`      | `TimeUnit` | ❌       | -       | -     | -          | TimeUnit                                            |
 | `value`     | `number`   | ✅       | `1`     | -     | -          | The time value to add                               |
-| `timestamp` | `number`   | ✅       | `...`   | -     | -          | Optional parameter, the default is the current time |
+| `timestamp` | `number`   | ✅       | -       | -     | -          | Optional parameter, the default is the current time |
 
 ---
 

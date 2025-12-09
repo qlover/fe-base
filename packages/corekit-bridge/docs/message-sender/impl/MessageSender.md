@@ -74,7 +74,7 @@ await sender.send(
 
 #### `abortPlugin` (Property)
 
-**Type:** `AbortPlugin<MessageSenderContext<MessageType>>`
+**Type:** `AbortPlugin<MessageSenderContextOptions<MessageType>>`
 
 Abort plugin for handling message cancellation
 
@@ -90,7 +90,7 @@ Optional configuration for sender behavior
 
 #### `executor` (Property)
 
-**Type:** `MessageSenderExecutor`
+**Type:** `MessageSenderExecutor<MessageType>`
 
 Plugin executor for managing send pipeline
 
@@ -108,7 +108,7 @@ Optional logger instance
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Logger message templates
 
@@ -161,7 +161,7 @@ Name of this sender instance
 
 #### `createSendContext` (Method)
 
-**Type:** `(sendingMessage: MessageType, gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>) => MessageSenderContext<MessageType>`
+**Type:** `(sendingMessage: MessageType, gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>) => MessageSenderContextOptions<MessageType>`
 
 #### Parameters
 
@@ -174,7 +174,7 @@ Name of this sender instance
 
 ##### `createSendContext` (CallSignature)
 
-**Type:** `MessageSenderContext<MessageType>`
+**Type:** `MessageSenderContextOptions<MessageType>`
 
 Create execution context for sending
 
@@ -308,14 +308,14 @@ Message store managing message state
 
 #### `handleError` (Method)
 
-**Type:** `(error: unknown, context: MessageSenderContext<MessageType>) => Promise<MessageType>`
+**Type:** `(error: unknown, context: MessageSenderContextOptions<MessageType>) => Promise<MessageType>`
 
 #### Parameters
 
-| Name      | Type                                | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`   | `unknown`                           | ❌       | -       | -     | -          | Error that occurred during send                        |
-| `context` | `MessageSenderContext<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`   | `unknown`                                  | ❌       | -       | -     | -          | Error that occurred during send                        |
+| `context` | `MessageSenderContextOptions<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -356,10 +356,10 @@ configuration is
 
 #### Parameters
 
-| Name      | Type                                | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`   | `unknown`                           | ❌       | -       | -     | -          | Error that occurred during send                        |
-| `context` | `MessageSenderContext<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `error`   | `unknown`                                  | ❌       | -       | -     | -          | Error that occurred during send                        |
+| `context` | `MessageSenderContextOptions<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -588,13 +588,13 @@ console.log('All sends cancelled');
 
 #### `use` (Method)
 
-**Type:** `(plugin: ExecutorPlugin<MessageSenderContext<MessageType>>) => this`
+**Type:** `(plugin: ExecutorPlugin<T>) => this`
 
 #### Parameters
 
-| Name     | Type                                                | Optional | Default | Since | Deprecated | Description        |
-| -------- | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------ |
-| `plugin` | `ExecutorPlugin<MessageSenderContext<MessageType>>` | ❌       | -       | -     | -          | Plugin to register |
+| Name     | Type                | Optional | Default | Since | Deprecated | Description        |
+| -------- | ------------------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register |
 
 ---
 
@@ -621,9 +621,9 @@ sender.use(validationPlugin).use(loggingPlugin).use(transformPlugin);
 
 #### Parameters
 
-| Name     | Type                                                | Optional | Default | Since | Deprecated | Description        |
-| -------- | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------ |
-| `plugin` | `ExecutorPlugin<MessageSenderContext<MessageType>>` | ❌       | -       | -     | -          | Plugin to register |
+| Name     | Type                | Optional | Default | Since | Deprecated | Description        |
+| -------- | ------------------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register |
 
 ---
 
