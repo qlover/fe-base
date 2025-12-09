@@ -7,9 +7,7 @@
       "@/*": ["./src/*"],
       "@config/*": ["./config/*"],
       "@__tests__/*": ["./__tests__/*"],
-      "@__mocks__/*": ["./__tests__/__mocks__/*"],
-      "@qlover/corekit-bridge": ["../../../corekit-bridge"],
-      "@qlover/fe-corekit": ["../../../fe-corekit"]
+      "@__mocks__/*": ["./__tests__/__mocks__/*"]
     }
   },
   "include": ["__tests__/**/*"],

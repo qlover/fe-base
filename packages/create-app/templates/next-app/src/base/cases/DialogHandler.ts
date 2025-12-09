@@ -11,8 +11,7 @@ import type {
 import type { ModalFuncProps } from 'antd';
 
 export interface DialogHandlerOptions
-  extends NotificationOptions,
-    ModalFuncProps {
+  extends NotificationOptions, ModalFuncProps {
   content: string;
 }
 

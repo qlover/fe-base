@@ -13,8 +13,7 @@ import type {
 } from '@qlover/fe-corekit';
 
 export interface AppApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>,
-    RequestEncryptPluginProps<Request> {}
+  extends RequestAdapterConfig<Request>, RequestEncryptPluginProps<Request> {}
 
 /**
  * UserApiResponse
@@ -33,11 +32,13 @@ export type AppApiResponse<
 /**
  * UserApi common transaction
  */
-export interface AppApiTransaction<Request = unknown, Response = unknown>
-  extends RequestTransactionInterface<
-    AppApiConfig<Request>,
-    AppApiResponse<Request, Response>
-  > {
+export interface AppApiTransaction<
+  Request = unknown,
+  Response = unknown
+> extends RequestTransactionInterface<
+  AppApiConfig<Request>,
+  AppApiResponse<Request, Response>
+> {
   data: AppApiConfig<Request>['data'];
 }
 

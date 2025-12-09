@@ -1,24 +1,48 @@
+import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { injectable, inject } from 'inversify';
-import type { UserSchema } from '@migrations/schema/UserSchema';
-import { AppConfig } from '../cases/AppConfig';
+import { isObject, isString } from 'lodash';
+import {
+  userSchema,
+  type UserCredential,
+  type UserSchema
+} from '@migrations/schema/UserSchema';
 import { UserServiceApi } from '../cases/UserServiceApi';
-import { UserServiceInterface } from '../port/UserServiceInterface';
-import type { UserAuthApiInterface } from '@qlover/corekit-bridge';
+import type { UserServiceInterface } from '../port/UserServiceInterface';
+import type { UserServiceGateway } from '@qlover/corekit-bridge';
 
 @injectable()
-export class UserService extends UserServiceInterface {
+export class UserService
+  extends CorekitBridgeUserService<UserSchema, UserCredential>
+  implements UserServiceInterface
+{
   constructor(
-    @inject(AppConfig) protected appConfig: AppConfig,
-    @inject(UserServiceApi) protected userApi: UserAuthApiInterface<UserSchema>
+    @inject(UserServiceApi)
+    userApi: UserServiceGateway<UserSchema, UserCredential>
   ) {
-    super(userApi, {
-      credentialStorage: {
-        key: appConfig.userTokenKey
-      }
+    super({
+      gateway: userApi
+      // next-js ssr 将 credential 存储在 cookie 中无需存储用户信息到本地
+      // store: {
+      //   storageKey: appConfig.userInfoKey,
+      //   credentialStorageKey: appConfig.userTokenKey,
+      //   persistUserInfo: true,
+      // }
     });
   }
 
-  getToken(): string | null {
-    return this.store.getCredential();
+  getToken(): string {
+    return this.store.getCredential()?.credential_token ?? '';
+  }
+
+  isUserInfo(value: unknown): value is UserSchema {
+    return userSchema.safeParse(value).success;
+  }
+
+  isUserCredential(value: unknown): value is UserCredential {
+    return (
+      isObject(value) &&
+      'credential_token' in value &&
+      isString(value.credential_token)
+    );
   }
 }

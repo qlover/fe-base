@@ -28,9 +28,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./config/*"],
-      "@lib/*": ["./lib/*"],
-      "@qlover/corekit-bridge": ["../../../corekit-bridge"],
-      "@qlover/fe-corekit": ["../../../fe-corekit"]
+      "@lib/*": ["./lib/*"]
     }
   },
   "include": ["src", "config"],
