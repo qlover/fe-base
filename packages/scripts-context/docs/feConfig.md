@@ -702,6 +702,6 @@ Use repo info when create merge PR
 
 **Type:** `FeConfig`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---

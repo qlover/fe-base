@@ -68,7 +68,7 @@ const customFormatter = new ColorFormatter({
 
 | Name          | Type                               | Optional | Default | Since | Deprecated | Description                         |
 | ------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
-| `levelColors` | `Record<string, string \| Object>` | ✅       | `...`   | -     | -          | Custom color mapping for log levels |
+| `levelColors` | `Record<string, string \| Object>` | ✅       | `{}`    | -     | -          | Custom color mapping for log levels |
 
 - Keys: Log level names (fatal, error, warn, info, debug, trace, log)
 - Values: Chalk color functions or string color names
@@ -81,7 +81,7 @@ const customFormatter = new ColorFormatter({
 
 **Type:** `Record<string, string \| Object>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Custom color mapping for different log levels
 

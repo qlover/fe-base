@@ -107,7 +107,7 @@ const output = await shell.exec('rm -rf /', {
 | Name     | Type                           | Optional | Default | Since | Deprecated | Description                                           |
 | -------- | ------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
 | `config` | `ShellConfig`                  | ❌       | -       | -     | -          | Shell configuration with logger and execution options |
-| `cache`  | `Map<string, Promise<string>>` | ✅       | `...`   | -     | -          | Optional command cache map for result storage         |
+| `cache`  | `Map<string, Promise<string>>` | ✅       | `{}`    | -     | -          | Optional command cache map for result storage         |
 
 ---
 

@@ -80,7 +80,7 @@ class BuildPlugin extends ScriptPlugin<BuildContext, MyPluginProps> {
 | ------------ | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
 | `context`    | `Context` | ❌       | -       | -     | -          | Script context providing environment and configuration        |
 | `pluginName` | `string`  | ❌       | -       | -     | -          | Unique identifier for this plugin (used for config namespace) |
-| `props`      | `Props`   | ✅       | `...`   | -     | -          | Optional runtime configuration overrides                      |
+| `props`      | `Props`   | ✅       | `{}`    | -     | -          | Optional runtime configuration overrides                      |
 
 ---
 
@@ -114,7 +114,7 @@ Unique identifier for this plugin (used for config namespace)
 
 **Type:** `Props`
 
-**Default:** `...`
+**Default:** `{}`
 
 Optional runtime configuration overrides
 
