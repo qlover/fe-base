@@ -1,24 +1,13 @@
 import { inject, injectable } from 'inversify';
-import type { AppApiResult } from '@/base/port/AppApiInterface';
-import type { AppUserApiInterface } from '@/base/port/AppUserApiInterface';
+import type {
+  AppUserApiInterface,
+  UserApiLoginTransaction,
+  UserApiLogoutTransaction,
+  UserApiRegisterTransaction
+} from '@/base/port/AppUserApiInterface';
 import { AppApiRequester } from './AppApiRequester';
-import type { AppApiConfig, AppApiTransaction } from './AppApiRequester';
+import type { AppApiConfig } from './AppApiRequester';
 import type { RequestTransaction } from '@qlover/fe-corekit';
-
-export type UserApiLoginTransaction = AppApiTransaction<
-  { email: string; password: string },
-  {
-    token: string;
-  }
->;
-
-export type UserApiRegisterTransaction = AppApiTransaction<
-  {
-    email: string;
-    password: string;
-  },
-  AppApiTransaction['response']['data']
->;
 
 /**
  * UserApi
@@ -36,7 +25,7 @@ export class AppUserApi implements AppUserApiInterface {
 
   async login(
     params: UserApiLoginTransaction['data']
-  ): Promise<AppApiResult<unknown>> {
+  ): Promise<UserApiLoginTransaction['response']> {
     const response = await this.client.request<UserApiLoginTransaction>({
       url: '/user/login',
       method: 'POST',
@@ -44,12 +33,12 @@ export class AppUserApi implements AppUserApiInterface {
       encryptProps: 'password'
     });
 
-    return response.data;
+    return response;
   }
 
   async register(
     params: UserApiRegisterTransaction['data']
-  ): Promise<AppApiResult<unknown>> {
+  ): Promise<UserApiRegisterTransaction['response']> {
     const response = await this.client.request<UserApiRegisterTransaction>({
       url: '/user/register',
       method: 'POST',
@@ -57,15 +46,15 @@ export class AppUserApi implements AppUserApiInterface {
       encryptProps: 'password'
     });
 
-    return response.data;
+    return response;
   }
 
-  async logout(): Promise<AppApiResult<unknown>> {
-    const response = await this.client.request({
+  async logout(
+    _params?: unknown
+  ): Promise<UserApiLogoutTransaction['response']> {
+    return await this.client.request<UserApiLogoutTransaction>({
       url: '/user/logout',
       method: 'POST'
     });
-
-    return response.data as AppApiResult<unknown>;
   }
 }

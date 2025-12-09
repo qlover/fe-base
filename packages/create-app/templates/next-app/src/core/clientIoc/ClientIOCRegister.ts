@@ -10,9 +10,10 @@ import type {
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 
-export class ClientIOCRegister
-  implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
-{
+export class ClientIOCRegister implements IOCRegisterInterface<
+  IOCContainerInterface,
+  IocRegisterOptions
+> {
   constructor(protected options: IocRegisterOptions) {}
 
   /**

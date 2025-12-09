@@ -1,48 +1,63 @@
 import { inject, injectable } from 'inversify';
-import type { UserSchema } from '@migrations/schema/UserSchema';
+import { omit } from 'lodash';
+import type { LoginValidatorData } from '@/server/validators/LoginValidator';
+import {
+  isWebUserSchema,
+  type UserCredential,
+  type UserSchema
+} from '@migrations/schema/UserSchema';
 import { AppUserApi } from '../services/appApi/AppUserApi';
-import type { AppApiSuccessInterface } from '../port/AppApiInterface';
 import type { AppUserApiInterface } from '../port/AppUserApiInterface';
-import type {
-  LoginResponseData,
-  UserAuthApiInterface,
-  UserAuthStoreInterface
-} from '@qlover/corekit-bridge';
+import type { UserServiceGateway } from '@qlover/corekit-bridge';
 
 @injectable()
-export class UserServiceApi implements UserAuthApiInterface<UserSchema> {
-  protected store: UserAuthStoreInterface<UserSchema> | null = null;
-
+export class UserServiceApi implements UserServiceGateway<
+  UserSchema,
+  UserCredential
+> {
   constructor(@inject(AppUserApi) protected appUserApi: AppUserApiInterface) {}
 
-  getStore(): UserAuthStoreInterface<UserSchema> | null {
-    return this.store;
-  }
-  setStore(store: UserAuthStoreInterface<UserSchema>): void {
-    this.store = store;
+  getUserInfo(_params?: unknown): Promise<UserSchema | null> {
+    if (_params && isWebUserSchema(_params).success) {
+      return Promise.resolve(omit(_params, 'credential_token') as UserSchema);
+    }
+
+    return Promise.resolve(null);
   }
 
-  async login(params: {
-    email: string;
-    password: string;
-  }): Promise<LoginResponseData> {
+  refreshUserInfo<Params>(
+    _params?: Params | undefined
+  ): Promise<UserSchema | null> {
+    return this.getUserInfo(_params);
+  }
+
+  async login(params: LoginValidatorData): Promise<UserCredential> {
     const response = await this.appUserApi.login(params);
-    return (response as AppApiSuccessInterface).data as LoginResponseData;
+
+    if (!response.data.success) {
+      throw response;
+    }
+
+    return response.data.data as UserCredential;
   }
 
-  async register(params: {
-    email: string;
-    password: string;
-  }): Promise<LoginResponseData> {
+  async register(params: LoginValidatorData): Promise<UserSchema> {
     const response = await this.appUserApi.register(params);
-    return (response as AppApiSuccessInterface).data as LoginResponseData;
+
+    if (!response.data.success) {
+      throw response;
+    }
+
+    return response.data.data as UserSchema;
   }
 
-  async logout(): Promise<void> {
-    await this.appUserApi.logout();
-  }
+  async logout<P = unknown, Result = void>(params?: P): Promise<Result> {
+    const response = await this.appUserApi.logout(params);
 
-  getUserInfo(loginData: LoginResponseData): Promise<UserSchema> {
-    return Promise.resolve(loginData as unknown as UserSchema);
+    if (!response.data.success) {
+      throw response;
+    }
+
+    return response.data.data as Result;
   }
 }

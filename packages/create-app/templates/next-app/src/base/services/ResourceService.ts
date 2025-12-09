@@ -11,10 +11,9 @@ import type { PaginationInterface } from '@/server/port/PaginationInterface';
 
 export class ResourceService<
   T,
-  Store extends
-    ResourceStore<ResourceStateInterface> = ResourceStore<ResourceStateInterface>
-> implements ResourceServiceInterface<T>
-{
+  Store extends ResourceStore<ResourceStateInterface> =
+    ResourceStore<ResourceStateInterface>
+> implements ResourceServiceInterface<T> {
   readonly unionKey: string = 'id';
 
   constructor(

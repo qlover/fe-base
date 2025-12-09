@@ -33,8 +33,7 @@ export const ZodType2RenderFormMap = {
 export class ZodColumnBuilder<
   Value extends ZodRawShape,
   Input extends ZodObject<Value>
-> implements ZodBuilderInterface<Input, ResourceTableOption<z.infer<Input>>>
-{
+> implements ZodBuilderInterface<Input, ResourceTableOption<z.infer<Input>>> {
   protected optionMap: OptionMap<Value, Input>;
 
   constructor(

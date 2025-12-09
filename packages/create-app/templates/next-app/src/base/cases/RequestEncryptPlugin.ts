@@ -6,8 +6,9 @@ import type {
   RequestAdapterConfig
 } from '@qlover/fe-corekit';
 
-export interface RequestEncryptPluginProps<Request = unknown>
-  extends RequestAdapterConfig<Request> {
+export interface RequestEncryptPluginProps<
+  Request = unknown
+> extends RequestAdapterConfig<Request> {
   /**
    * 加密密码在 HTTP 请求中
    *
@@ -18,9 +19,7 @@ export interface RequestEncryptPluginProps<Request = unknown>
   encryptProps?: string[] | string;
 }
 
-export class RequestEncryptPlugin
-  implements ExecutorPlugin<RequestEncryptPluginProps>
-{
+export class RequestEncryptPlugin implements ExecutorPlugin<RequestEncryptPluginProps> {
   readonly pluginName = 'RequestEncryptPlugin';
 
   constructor(protected encryptor: Encryptor<string, string>) {}

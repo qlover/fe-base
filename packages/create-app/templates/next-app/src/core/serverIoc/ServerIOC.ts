@@ -9,9 +9,10 @@ import type { IOCInterface } from '@/base/port/IOCInterface';
 import type { IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOCRegister } from './ServerIOCRegister';
 
-export class ServerIOC
-  implements IOCInterface<IOCIdentifierMapServer, IOCContainerInterface>
-{
+export class ServerIOC implements IOCInterface<
+  IOCIdentifierMapServer,
+  IOCContainerInterface
+> {
   static instance: ServerIOC | null = null;
 
   protected ioc: IOCFunctionInterface<

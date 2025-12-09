@@ -7,9 +7,7 @@ import type { CrentialTokenInterface } from './port/CrentialTokenInterface';
 export type UserCredentialTokenValue = Pick<UserSchema, 'id' | 'email'>;
 
 @injectable()
-export class UserCredentialToken
-  implements CrentialTokenInterface<UserCredentialTokenValue>
-{
+export class UserCredentialToken implements CrentialTokenInterface<UserCredentialTokenValue> {
   protected jwtSecret: string;
   protected jwtExpiresIn: string;
 
