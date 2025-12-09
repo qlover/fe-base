@@ -13,8 +13,10 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
-import { PersistentStoreInterface } from '../../src/core/store-state/interface/PersistentStoreInterface';
-import { StoreStateInterface } from '../../src/core/store-state/interface/StoreInterface';
+import {
+  StoreStateInterface,
+  PersistentStore
+} from '../../src/core/store-state';
 
 /**
  * Mock storage implementation for testing
@@ -104,7 +106,7 @@ class TestState implements StoreStateInterface {
 /**
  * Concrete implementation of PersistentStoreInterface for testing
  */
-class TestPersistentStore extends PersistentStoreInterface<TestState, string> {
+class TestPersistentStore extends PersistentStore<TestState, string> {
   private readonly storageKey = 'test-state';
 
   constructor(

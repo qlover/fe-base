@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { RequestState } from '../../src/core/store-state/RequestState';
+import { RequestState } from '../../src/core/store-state/impl/RequestState';
 
 describe('RequestState', () => {
   beforeEach(() => {

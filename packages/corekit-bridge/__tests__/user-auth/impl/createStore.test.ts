@@ -6,7 +6,11 @@ import {
   LOGIN_STATUS,
   UserAuthStoreOptions
 } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
-import { KeyStorageInterface, KeyStorageOptions } from '@qlover/fe-corekit';
+import {
+  KeyStorage,
+  KeyStorageInterface,
+  KeyStorageOptions
+} from '@qlover/fe-corekit';
 import { UserAuthOptions } from '../../../src/core/user-auth/impl/UserAuthService';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import { TokenStorage } from '../../../src/core/storage';
@@ -106,7 +110,7 @@ class MockUserAuthStore implements UserAuthStoreInterface<TestUser> {
 /**
  * Mock storage implementation for testing
  */
-class MockStorage<Key, Value> extends KeyStorageInterface<Key, Value> {
+class MockStorage<Key, Value> extends KeyStorage<Key, Value> {
   private data: Map<Key, Value> = new Map();
 
   constructor(key: Key, options: KeyStorageOptions<Key> = {}) {
@@ -400,7 +404,7 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getUserStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getUserStorage()?.key).toBe('custom_user_key');
+      expect(store.getUserStorage()?.getKey()).toBe('custom_user_key');
     });
 
     it('should disable userStorage when set to false', () => {
@@ -423,7 +427,7 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getUserStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getUserStorage()?.key).toBe('user_with_backend');
+      expect(store.getUserStorage()?.getKey()).toBe('user_with_backend');
     });
 
     it('should throw error when userStorage configuration lacks key', () => {
@@ -481,7 +485,9 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getCredentialStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getCredentialStorage()?.key).toBe('custom_credential_key');
+      expect(store.getCredentialStorage()?.getKey()).toBe(
+        'custom_credential_key'
+      );
     });
 
     it('should disable credentialStorage when set to false', () => {
@@ -500,7 +506,7 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getCredentialStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getCredentialStorage()?.key).toBe('auth_token');
+      expect(store.getCredentialStorage()?.getKey()).toBe('auth_token');
     });
 
     it('should handle credentialStorage with configuration', () => {
@@ -513,7 +519,9 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getCredentialStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getCredentialStorage()?.key).toBe('credential_with_config');
+      expect(store.getCredentialStorage()?.getKey()).toBe(
+        'credential_with_config'
+      );
     });
 
     it('should throw error when credentialStorage configuration lacks key', () => {
@@ -786,7 +794,7 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getCredentialStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getCredentialStorage()?.key).toBe('set_on_existing');
+      expect(store.getCredentialStorage()?.getKey()).toBe('set_on_existing');
     });
 
     it('should handle malformed URL encoding gracefully', () => {
@@ -836,7 +844,7 @@ describe('createStore', () => {
       const store = createStore<TestState>(options);
 
       expect(store.getUserStorage()).toBeInstanceOf(TokenStorage);
-      expect(store.getUserStorage()?.key).toBe('complex_user');
+      expect(store.getUserStorage()?.getKey()).toBe('complex_user');
       expect(store.getCredentialStorage()).toBeNull();
       expect(store.getCredential()).toBe('complex_token');
     });
