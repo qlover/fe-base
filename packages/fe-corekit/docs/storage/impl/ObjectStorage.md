@@ -75,7 +75,7 @@ Main purpose: Support type-safe storage operations
 
 **Type:** `Map<Key, ValueType>`
 
-**Default:** `...`
+**Default:** `{}`
 
 In-memory storage map for fast data access
 

@@ -32,7 +32,7 @@ Why this is an abstract class?
 | Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
 | ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -46,7 +46,7 @@ Why this is an abstract class?
 
 **Type:** `AsyncExecutor<ExecutorConfigInterface>`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 

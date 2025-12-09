@@ -64,7 +64,7 @@ const result = await executor.exec(data, async (input) => {
 
 | Name     | Type             | Optional | Default | Since | Deprecated | Description                                                  |
 | -------- | ---------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `config` | `ExecutorConfig` | ✅       | `...`   | -     | -          | Optional configuration object to customize executor behavior |
+| `config` | `ExecutorConfig` | ✅       | `{}`    | -     | -          | Optional configuration object to customize executor behavior |
 
 ---
 
@@ -72,7 +72,7 @@ const result = await executor.exec(data, async (input) => {
 
 **Type:** `ExecutorConfig`
 
-**Default:** `...`
+**Default:** `{}`
 
 Optional configuration object to customize executor behavior
 
@@ -82,7 +82,7 @@ Optional configuration object to customize executor behavior
 
 **Type:** `ContextHandler`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 

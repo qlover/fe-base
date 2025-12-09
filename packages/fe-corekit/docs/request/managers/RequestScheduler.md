@@ -71,7 +71,7 @@ const response = await scheduler.request({ url: '/test', data: reqData });
 | Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
 | ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -85,7 +85,7 @@ const response = await scheduler.request({ url: '/test', data: reqData });
 
 **Type:** `AsyncExecutor<ExecutorConfigInterface>`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 

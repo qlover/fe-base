@@ -73,7 +73,7 @@ const result = executor.execNoError(() => {
 
 | Name     | Type             | Optional | Default | Since | Deprecated | Description                                                  |
 | -------- | ---------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
-| `config` | `ExecutorConfig` | ✅       | `...`   | -     | -          | Optional configuration object to customize executor behavior |
+| `config` | `ExecutorConfig` | ✅       | `{}`    | -     | -          | Optional configuration object to customize executor behavior |
 
 ---
 
@@ -81,7 +81,7 @@ const result = executor.execNoError(() => {
 
 **Type:** `ExecutorConfig`
 
-**Default:** `...`
+**Default:** `{}`
 
 Optional configuration object to customize executor behavior
 
@@ -91,7 +91,7 @@ Optional configuration object to customize executor behavior
 
 **Type:** `ContextHandler`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 

@@ -96,7 +96,7 @@ JSON.parse('{ "name": "test" }'); // same as JSON.parse('{ "name": "test" }')
 
 | Name      | Type  | Optional | Default | Since   | Deprecated | Description                |
 | --------- | ----- | -------- | ------- | ------- | ---------- | -------------------------- |
-| `options` | `Opt` | ✅       | `...`   | `1.5.0` | -          | Options for JSONSerializer |
+| `options` | `Opt` | ✅       | `{}`    | `1.5.0` | -          | Options for JSONSerializer |
 
 ---
 
@@ -126,7 +126,7 @@ serializer.toString(); // returns '[object JSONSerializer]'
 
 **Since:** `1.5.0`
 
-**Default:** `...`
+**Default:** `{}`
 
 Options for JSONSerializer
 

@@ -215,7 +215,7 @@ except that some of the shortcuts have different parameters.
 | Name       | Type                                     | Optional | Default | Since | Deprecated | Description |
 | ---------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
 | `adapter`  | `RequestAdapterInterface<Config>`        | ❌       | -       | -     | -          |             |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `...`   | -     | -          |             |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -229,7 +229,7 @@ except that some of the shortcuts have different parameters.
 
 **Type:** `AsyncExecutor<ExecutorConfigInterface>`
 
-**Default:** `...`
+**Default:** `{}`
 
 ---
 
