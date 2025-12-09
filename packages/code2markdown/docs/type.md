@@ -613,7 +613,7 @@ type StatusValue = ValueOf<typeof Status>; // 'active' | 'inactive'
 
 **Type:** `Object`
 
-**Default:** `...`
+**Default:** `{}`
 
 Mapping of TypeDoc reflection kinds to string names
 

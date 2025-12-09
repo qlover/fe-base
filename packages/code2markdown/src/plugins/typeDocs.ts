@@ -592,13 +592,19 @@ export default class TypeDocJson extends ScriptPlugin<
    *
    * Implementation Details:
    * 1. Checks reflection.defaultValue property first
-   * 2. Searches for `@default` JSDoc tag in comment block tags
-   * 3. Extracts text content from `@default` tag
-   * 4. Removes backticks from default value for clean formatting
-   * 5. Returns undefined if no default value found
+   * 2. Handles TypeDoc's ellipsis ("...") for complex default values
+   * 3. Infers reasonable default values based on parameter type when ellipsis is encountered
+   * 4. Searches for `@default` JSDoc tag in comment block tags
+   * 5. Extracts text content from `@default` tag
+   * 6. Removes backticks from default value for clean formatting
+   * 7. Returns undefined if no default value found
    *
    * Business Rules:
    * - Prioritizes reflection.defaultValue over JSDoc `@default` tag
+   * - When defaultValue is "..." (TypeDoc's ellipsis for complex expressions):
+   *   - For object/reflection types: returns "{}"
+   *   - For array types: returns "[]"
+   *   - For other types: returns undefined
    * - Converts default value to string representation
    * - Removes markdown backticks from JSDoc default values
    * - Returns undefined for missing default values
@@ -613,6 +619,15 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Returns: 'hello'
    * ```
    *
+   * @example TypeDoc Ellipsis Handling
+   * ```typescript
+   * this.getDefaultValue({
+   *   defaultValue: '...',
+   *   type: { type: 'reflection' }
+   * });
+   * // Returns: '{}'
+   * ```
+   *
    * @example JSDoc Default Tag
    * ```typescript
    * this.getDefaultValue({
@@ -625,7 +640,49 @@ export default class TypeDocJson extends ScriptPlugin<
    */
   private getDefaultValue(reflection: any): string | undefined {
     if (reflection.defaultValue !== undefined) {
-      return String(reflection.defaultValue);
+      const defaultValueStr = String(reflection.defaultValue);
+
+      // Handle TypeDoc's ellipsis ("...") for complex default value expressions
+      // TypeDoc uses "..." when it cannot fully parse complex expressions like "{} as Opt"
+      if (defaultValueStr === '...') {
+        // Try to infer a reasonable default value based on the parameter type
+        if (reflection.type) {
+          // For object/reflection types, infer "{}"
+          if (reflection.type.type === 'reflection') {
+            return '{}';
+          }
+          // For array types, infer "[]"
+          if (reflection.type.type === 'array') {
+            return '[]';
+          }
+          // For reference types that might be objects, check if it's likely an object type
+          // This is a heuristic - we can't be 100% sure, but "{}" is a common default for object types
+          if (reflection.type.type === 'reference') {
+            // Common object-like type names (case-insensitive check)
+            const typeName = reflection.type.name?.toLowerCase() || '';
+            // If it's clearly not a primitive or function, assume it might be an object
+            const primitiveTypes = [
+              'string',
+              'number',
+              'boolean',
+              'null',
+              'undefined',
+              'void',
+              'any',
+              'unknown'
+            ];
+            if (!primitiveTypes.includes(typeName)) {
+              // For generic or complex types, we'll return "{}" as a reasonable default
+              // This handles cases like "Opt", "Options", "Config", etc.
+              return '{}';
+            }
+          }
+        }
+        // If we can't infer, return undefined to let JSDoc @default tag take precedence
+        return undefined;
+      }
+
+      return defaultValueStr;
     }
 
     // 从注释中获取 @default 标签

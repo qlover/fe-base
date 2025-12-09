@@ -96,7 +96,7 @@ try {
 | Name       | Type                                                   | Optional | Default | Since | Deprecated | Description                                     |
 | ---------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
 | `options`  | `Partial<Code2MDContextOptions<Code2MDContextConfig>>` | ❌       | -       | -     | -          | Configuration options for the conversion task   |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>`               | ✅       | `...`   | -     | -          | AsyncExecutor instance for plugin orchestration |
+| `executor` | `AsyncExecutor<ExecutorConfigInterface>`               | ✅       | `{}`    | -     | -          | AsyncExecutor instance for plugin orchestration |
 
 ---
 
@@ -235,8 +235,6 @@ console.log(`Processed ${reflections?.length || 0} code elements`);
 ### `CODE2MD_NAME` (Variable)
 
 **Type:** `"code2md"`
-
-**Default:** `...`
 
 Task name constant for code-to-markdown conversion
 

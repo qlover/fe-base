@@ -8,7 +8,7 @@
 
 **Type:** `Record<string, Handlebars.HelperDelegate>`
 
-**Default:** `...`
+**Default:** `{}`
 
 Handlebars helper functions for template processing
 
