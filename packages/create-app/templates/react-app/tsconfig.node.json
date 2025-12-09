@@ -12,10 +12,6 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "paths": {
-      "@qlover/corekit-bridge": ["../../../corekit-bridge"],
-      "@qlover/fe-corekit": ["../../../fe-corekit"]
-    },
 
     /* Linting */
     "strict": true,
