@@ -1,8 +1,8 @@
 // src/i18n/request.ts
 
 import { getRequestConfig } from 'next-intl/server';
-import { routing, type Locale } from './routing';
 import { loadMessages } from './loadMessages';
+import { routing, type Locale } from './routing';
 
 // Export a function to configure next-intl on each request (server-side)
 export default getRequestConfig(async ({ requestLocale }) => {

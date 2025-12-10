@@ -6,7 +6,9 @@ import type { PageI18nInterface } from '@config/i18n';
 export interface RouteParamsnHandlerInterface {
   getLocale(defaultLocale?: string): string;
   getI18nWithNotFound(): string;
-  getI18nMessages(namespace?: string | string[]): Promise<Record<string, string>>;
+  getI18nMessages(
+    namespace?: string | string[]
+  ): Promise<Record<string, string>>;
   getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
     namespace?: string

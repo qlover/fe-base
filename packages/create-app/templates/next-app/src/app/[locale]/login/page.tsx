@@ -2,7 +2,10 @@ import { notFound } from 'next/navigation';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
-import { AppPageRouteParams, type PageParamsType } from '@/server/AppPageRouteParams';
+import {
+  AppPageRouteParams,
+  type PageParamsType
+} from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';

@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
+import { filterMessagesByNamespace } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
 import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
-import { filterMessagesByNamespace } from '@/i18n/loadMessages';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;
@@ -53,7 +53,9 @@ export class AppPageRouteParams<
    * @param namespace - 可选的命名空间（单个字符串或字符串数组），会与默认命名空间 ['common', 'api'] 合并
    * @returns Promise<Record<string, string>> 返回翻译消息对象
    */
-  public async getI18nMessages(namespace?: string | string[]): Promise<Record<string, string>> {
+  public async getI18nMessages(
+    namespace?: string | string[]
+  ): Promise<Record<string, string>> {
     const locale = this.getLocale();
     const messages = await getMessages({ locale });
     // 将默认命名空间和用户提供的命名空间合并

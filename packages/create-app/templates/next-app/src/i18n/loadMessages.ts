@@ -12,10 +12,10 @@ import { useApiLocales } from '@config/common';
  * ```ts
  * // 加载所有消息
  * const allMessages = await loadMessages('en');
- * 
+ *
  * // 加载单个命名空间
  * const commonMessages = await loadMessages('en', 'common');
- * 
+ *
  * // 加载多个命名空间
  * const messages = await loadMessages('en', ['common', 'page_home']);
  * ```
@@ -43,7 +43,8 @@ export async function loadMessages(
     } catch (error) {
       console.warn(`Failed to load locale from API for ${locale}`, error);
       // 如果 API 加载失败，继续尝试从文件加载
-      allMessages = (await import(`../../public/locales/${locale}.json`)).default;
+      allMessages = (await import(`../../public/locales/${locale}.json`))
+        .default;
     }
   } else {
     allMessages = (await import(`../../public/locales/${locale}.json`)).default;
@@ -63,11 +64,11 @@ export async function loadMessages(
  * @example
  * ```ts
  * const allMessages = { "common:save": "Save", "common:cancel": "Cancel", "page_home:title": "Home" };
- * 
+ *
  * // 单个命名空间
  * const commonMessages = filterMessagesByNamespace(allMessages, "common");
  * // 返回: { "common:save": "Save", "common:cancel": "Cancel" }
- * 
+ *
  * // 多个命名空间
  * const messages = filterMessagesByNamespace(allMessages, ["common", "page_home"]);
  * // 返回: { "common:save": "Save", "common:cancel": "Cancel", "page_home:title": "Home" }

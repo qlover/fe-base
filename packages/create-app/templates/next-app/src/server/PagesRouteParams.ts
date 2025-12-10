@@ -1,9 +1,10 @@
 import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
+import { loadMessages } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
 import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
-import { ParsedUrlQuery } from 'querystring';
-import { loadMessages } from '@/i18n/loadMessages';
+import type { useTranslations } from 'next-intl';
+import type { ParsedUrlQuery } from 'querystring';
 
 export interface PagesRouteParamsType extends ParsedUrlQuery {
   locale?: string | string[];
@@ -122,6 +123,9 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
       return message;
     };
 
-    return TranslateI18nInterface.translate<T>(i18nInterface, t as any);
+    return TranslateI18nInterface.translate<T>(
+      i18nInterface,
+      t as ReturnType<typeof useTranslations>
+    );
   }
 }
