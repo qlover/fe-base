@@ -1,5 +1,5 @@
 import type { PageLayoutProps } from '@/base/types/PageProps';
-import { PageParams } from '@/server/PageParams';
+import { AppPageRouteParams } from '@/server/AppPageRouteParams';
 import '@/styles/css/index.css';
 import { AdminLayout } from '@/uikit/components/AdminLayout';
 
@@ -7,7 +7,7 @@ export default async function AdminRootLayout({
   children,
   params
 }: PageLayoutProps) {
-  const pageParams = new PageParams(await params!);
+  const pageParams = new AppPageRouteParams(await params!);
   const locale = pageParams.getLocale();
 
   return (

@@ -3,7 +3,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
-import type { ParamsHandlerInterface as ParamsHandlerInterface } from './port/ParamsHandlerInterface';
+import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;
@@ -14,12 +14,14 @@ export interface PageParamsType {
 }
 
 /**
- * Handler Page Params
+ * 用于 src/app/page 路由的参数管理工具
  */
-export class PageParams implements ParamsHandlerInterface {
+export class AppPageRouteParams<
+  T extends PageParamsType
+> implements RouteParamsnHandlerInterface {
   private locale: string | null;
 
-  constructor(protected readonly params: PageParamsType) {
+  constructor(protected readonly params: T) {
     this.locale = this.params.locale || i18nConfig.fallbackLng;
   }
 

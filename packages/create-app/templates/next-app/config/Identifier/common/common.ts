@@ -74,3 +74,10 @@ export const COMMON_LOGOUT_DIALOG_CONTENT = 'common:logout__dialog__content';
  * @localEn I18n key format is incorrect
  */
 export const COMMON_I18N_KEY_INVALID = 'common:i18n_key_invalid';
+
+/**
+ * @description manifest name
+ * @localZh 应用名称
+ * @localEn Application Name
+ */
+export const COMMON_MANIFEST_NAME = 'common:manifest__name';

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
-import { PageParams, type PageParamsType } from '@/server/PageParams';
+import { AppPageRouteParams, type PageParamsType } from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
@@ -28,7 +28,7 @@ export async function generateMetadata({
 }: {
   params: Promise<PageParamsType>;
 }): Promise<Metadata> {
-  const pageParams = new PageParams(await params);
+  const pageParams = new AppPageRouteParams(await params);
 
   return await pageParams.getI18nInterface(register18n);
 }
@@ -39,7 +39,7 @@ export default async function LoginPage(props: PageParamsProps) {
   }
 
   const params = await props.params;
-  const pageParams = new PageParams(params);
+  const pageParams = new AppPageRouteParams(params);
 
   const server = new BootstrapServer();
 

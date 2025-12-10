@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import type { PageParamsProps } from '@/base/types/PageProps';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
-import { PageParams, type PageParamsType } from '@/server/PageParams';
+import { AppPageRouteParams, type PageParamsType } from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
 import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { i18nConfig, homeI18n } from '@config/i18n';
@@ -34,13 +34,13 @@ export async function generateMetadata({
 }: {
   params: Promise<PageParamsType>;
 }): Promise<Metadata> {
-  const pageParams = new PageParams(await params);
+  const pageParams = new AppPageRouteParams(await params);
   return await pageParams.getI18nInterface(homeI18n);
 }
 
 export default async function Home({ params }: PageParamsProps) {
   const server = new BootstrapServer();
-  const pageParams = new PageParams(await params!);
+  const pageParams = new AppPageRouteParams(await params!);
   const locale = pageParams.getLocale();
   const tt = await pageParams.getI18nInterface(homeI18n);
 

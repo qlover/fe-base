@@ -170,5 +170,6 @@
   "page_register:privacy_link": "Privacy Policy",
   "page_register:have_account": "Already have an account?",
   "page_register:login_link": "Sign in",
-  "page_register:terms_required": "Please agree to the Terms of Service and Privacy Policy"
+  "page_register:terms_required": "Please agree to the Terms of Service and Privacy Policy",
+  "common:manifest__name": "Application Name"
 }

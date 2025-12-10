@@ -170,5 +170,6 @@
   "page_register:privacy_link": "隐私政策",
   "page_register:have_account": "已有账号？",
   "page_register:login_link": "登录",
-  "page_register:terms_required": "请同意服务条款和隐私政策"
+  "page_register:terms_required": "请同意服务条款和隐私政策",
+  "common:manifest__name": "应用名称"
 }

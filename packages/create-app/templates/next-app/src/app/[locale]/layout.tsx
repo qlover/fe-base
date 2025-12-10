@@ -1,7 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import type { PageLayoutProps } from '@/base/types/PageProps';
-import { PageParams } from '@/server/PageParams';
+import { AppPageRouteParams } from '@/server/AppPageRouteParams';
 import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
@@ -34,7 +34,7 @@ export default async function RootLayout({
   children,
   params
 }: PageLayoutProps) {
-  const pageParams = new PageParams(await params!);
+  const pageParams = new AppPageRouteParams(await params!);
   const locale = pageParams.getLocale();
 
   // Enable static rendering
@@ -44,8 +44,7 @@ export default async function RootLayout({
   const messages = await pageParams.getI18nMessages();
 
   return (
-    // eslint-disable-next-line @qlover-eslint/require-root-testid
-    <html lang={locale} data-theme={'dark'}>
+    <html data-testid="AppRootLayout" lang={locale} data-theme={'dark'}>
       <body>
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
