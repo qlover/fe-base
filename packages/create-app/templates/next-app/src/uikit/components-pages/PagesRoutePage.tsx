@@ -4,7 +4,6 @@ import { useLocale } from 'next-intl';
 import { useMemo } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LocaleLink } from '../components/LocaleLink';
-import { LogoutButton } from '../components-app/LogoutButton';
 import { ThemeSwitcher } from '../components-app/ThemeSwitcher';
 import type { AppRoutePageProps } from '../components-app/AppRoutePage';
 
@@ -20,7 +19,6 @@ import type { AppRoutePageProps } from '../components-app/AppRoutePage';
  */
 export function PagesRoutePage({
   children,
-  showLogoutButton,
   showAdminButton,
   mainProps,
   headerClassName,
@@ -47,11 +45,9 @@ export function PagesRoutePage({
 
       <LanguageSwitcher key="language-switcher" />,
 
-      <ThemeSwitcher key="theme-switcher" />,
-
-      showLogoutButton && <LogoutButton key="logout-button" />
+      <ThemeSwitcher key="theme-switcher" />
     ].filter(Boolean);
-  }, [adminTitle, showAdminButton, showLogoutButton, locale]);
+  }, [adminTitle, showAdminButton, locale]);
 
   return (
     <div

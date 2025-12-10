@@ -19,5 +19,5 @@ export interface ValidatorInterface {
    * @returns The data if it is valid
    * @throws {import('@qlover/fe-corekit').ExecutorError} if the data is invalid, with validation errors
    */
-  getThrow(data: unknown): unknown;
+  getThrow<T>(data: unknown): T;
 }

@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { omit } from 'lodash';
 import { revalidateTag } from 'next/cache';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import type { LocaleType } from '@config/i18n';
@@ -18,6 +19,12 @@ export type ImportLocalesData = {
   values: {
     [key in LocaleType]?: Record<string, string>;
   };
+};
+
+export type GetLocalesParams = {
+  page: number;
+  pageSize: number;
+  orderBy?: BridgeOrderBy;
 };
 
 @injectable()
@@ -45,11 +52,9 @@ export class ApiLocaleService {
     );
   }
 
-  async getLocales(params: {
-    page: number;
-    pageSize: number;
-    orderBy?: BridgeOrderBy;
-  }): Promise<PaginationInterface<LocalesSchema>> {
+  async getLocales(
+    params: GetLocalesParams
+  ): Promise<PaginationInterface<LocalesSchema>> {
     return this.localesRepository.pagination({
       page: params.page,
       pageSize: params.pageSize,
@@ -58,14 +63,20 @@ export class ApiLocaleService {
   }
 
   async update(data: Partial<LocalesSchema>): Promise<void> {
+    if (!data.id || typeof data.id !== 'number') {
+      throw new Error(
+        'ID is required and must be a number for update operation'
+      );
+    }
+
     await this.localesRepository.updateById(
-      data.id!,
-      data as Omit<LocalesSchema, 'id' | 'created_at'>
+      data.id,
+      omit(data, ['id', 'created_at'])
     );
 
     // 清除所有支持的语言的缓存
     const revalidatePromises = i18nConfig.supportedLngs.map(async (locale) => {
-      await revalidateTag(`i18n-${locale}`);
+      await revalidateTag(`i18n-${locale}`, 'default');
     });
     await Promise.all(revalidatePromises);
   }
@@ -75,7 +86,7 @@ export class ApiLocaleService {
 
     // 清除所有支持的语言的缓存
     const revalidatePromises = i18nConfig.supportedLngs.map(async (locale) => {
-      await revalidateTag(`i18n-${locale}`);
+      await revalidateTag(`i18n-${locale}`, 'default');
     });
     await Promise.all(revalidatePromises);
   }
@@ -111,7 +122,7 @@ export class ApiLocaleService {
     if (upsertResult.successCount > 0) {
       const revalidatePromises = i18nConfig.supportedLngs.map(
         async (locale) => {
-          await revalidateTag(`i18n-${locale}`);
+          await revalidateTag(`i18n-${locale}`, 'default');
         }
       );
       await Promise.all(revalidatePromises);

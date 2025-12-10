@@ -70,6 +70,12 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     id: number,
     params: Partial<Omit<LocalesSchema, 'id' | 'created_at'>>
   ): Promise<void> {
+    if (!id || typeof id !== 'number') {
+      throw new Error(
+        'ID is required and must be a number for updateById operation'
+      );
+    }
+
     const data = {
       ...params,
       updated_at: this.datetime.timestampz()

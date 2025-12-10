@@ -59,6 +59,8 @@ export class SupabaseBridge implements DBBridgeInterface {
     result: PostgrestSingleResponse<unknown>
   ): Promise<SupabaseBridgeResponse<unknown>> {
     if (result.error) {
+      this.logger.error('', result);
+
       if (this.hasPausedProject(result)) {
         throw new Error(
           'Project is paused, Please Restore project: https://supabase.com/dashboard'
