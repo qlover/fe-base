@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-import type { PageLayoutProps } from '@/base/types/PageProps';
+import type { PageLayoutProps } from '@/base/types/AppPageRouter';
 import { AppPageRouteParams } from '@/server/AppPageRouteParams';
 import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
@@ -41,10 +41,11 @@ export default async function RootLayout({
   setRequestLocale(locale);
 
   // Get messages for the current locale to prevent flickering during language switch
+  // Load default namespaces (common, api) - admin namespaces are loaded in admin layout
   const messages = await pageParams.getI18nMessages();
 
   return (
-    <html data-testid="AppRootLayout" lang={locale} data-theme={'dark'}>
+    <html data-testid="AppRoute-RootLayout" lang={locale} data-theme={'dark'}>
       <body>
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>

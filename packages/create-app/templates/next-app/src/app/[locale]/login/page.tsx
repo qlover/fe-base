@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { PageParamsProps } from '@/base/types/PageProps';
+import type { PageParamsProps } from '@/base/types/AppPageRouter';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
 import {
@@ -7,9 +7,10 @@ import {
   type PageParamsType
 } from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
-import { BaseLayout } from '@/uikit/components/BaseLayout';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
-import { loginI18n, i18nConfig } from '@config/i18n';
+import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
+import { loginI18n, i18nConfig, NS_PAGE_LOGIN } from '@config/i18n';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { LoginForm } from './LoginForm';
 import type { Metadata } from 'next';
 
@@ -50,11 +51,19 @@ export default async function LoginPage(props: PageParamsProps) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
-  const tt = await pageParams.getI18nInterface(loginI18n);
+  const tt = await pageParams.getI18nInterface(
+    { ...loginI18n, adminTitle: COMMON_ADMIN_TITLE },
+    NS_PAGE_LOGIN
+  );
 
   return (
-    <BaseLayout
-      data-testid="LoginPage"
+    <AppRoutePage
+      data-testid="AppRoute-LoginPage"
+      tt={{
+        title: tt.title,
+        adminTitle: tt.adminTitle
+      }}
+      headerHref="/login"
       mainProps={{
         className: 'text-xs1 bg-primary flex min-h-screen'
       }}
@@ -77,6 +86,6 @@ export default async function LoginPage(props: PageParamsProps) {
           <LoginForm tt={tt} />
         </div>
       </div>
-    </BaseLayout>
+    </AppRoutePage>
   );
 }

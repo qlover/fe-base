@@ -2,12 +2,11 @@ import dynamic from 'next/dynamic';
 import { withRouter } from 'next/router';
 import { NextIntlClientProvider } from 'next-intl';
 import '@/styles/css/index.css';
+import type { PagesRouterProps } from '@/base/types/PagesRouter';
 import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
-import type { AppProps } from 'next/app';
-import type { NextRouter } from 'next/router';
 
 /**
  * 动态导入 ClientRootProvider，禁用 SSR，确保只在客户端渲染
@@ -32,25 +31,19 @@ const ClientRootProvider = dynamic(
   }
 );
 
-type Props = AppProps & {
-  router: NextRouter;
-};
-
-function App({ Component, pageProps, router }: Props) {
+function App({ Component, pageProps, router }: PagesRouterProps) {
   const locale = (router.query.locale as string) || i18nConfig.fallbackLng;
 
   return (
-    <div data-testid="PagesRootLayout">
-      <IOCProvider>
-        <NextIntlClientProvider locale={locale} messages={pageProps.messages}>
-          <BootstrapsProvider>
-            <ClientRootProvider themeConfig={themeConfig}>
-              <Component {...pageProps} />
-            </ClientRootProvider>
-          </BootstrapsProvider>
-        </NextIntlClientProvider>
-      </IOCProvider>
-    </div>
+    <IOCProvider data-testid="IOCProvider">
+      <NextIntlClientProvider locale={locale} messages={pageProps.messages}>
+        <BootstrapsProvider>
+          <ClientRootProvider themeConfig={themeConfig}>
+            <Component {...pageProps} />
+          </ClientRootProvider>
+        </BootstrapsProvider>
+      </NextIntlClientProvider>
+    </IOCProvider>
   );
 }
 

@@ -108,6 +108,7 @@ export function ThemeSwitcher() {
 
   const TriggerIcon = colorMap[currentTheme || defaultTheme].TriggerIcon;
 
+  // TODO: 解决渲染闪烁问题
   if (!mounted) {
     return (
       <span

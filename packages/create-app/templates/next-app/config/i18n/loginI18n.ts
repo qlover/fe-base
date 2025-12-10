@@ -8,6 +8,14 @@ import * as i18nKeys from '../Identifier/pages/page.login';
  */
 export type LoginI18nInterface = typeof loginI18n;
 
+/**
+ * Login page i18n namespace
+ *
+ * - /login/page.tsx
+ *
+ */
+export const NS_PAGE_LOGIN = 'page_login';
+
 export const loginI18n = Object.freeze({
   // basic meta properties
   title: i18nKeys.PAGE_LOGIN_TITLE,

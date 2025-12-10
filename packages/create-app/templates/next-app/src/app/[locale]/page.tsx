@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import type { PageParamsProps } from '@/base/types/PageProps';
+import type { PageParamsProps } from '@/base/types/AppPageRouter';
 import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import { redirect } from '@/i18n/routing';
 import {
@@ -7,8 +7,9 @@ import {
   type PageParamsType
 } from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
-import { BaseLayout } from '@/uikit/components/BaseLayout';
+import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig, homeI18n } from '@config/i18n';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import type { Metadata } from 'next';
 
 // const navigationItems = [
@@ -45,14 +46,25 @@ export default async function Home({ params }: PageParamsProps) {
   const server = new BootstrapServer();
   const pageParams = new AppPageRouteParams(await params!);
   const locale = pageParams.getLocale();
-  const tt = await pageParams.getI18nInterface(homeI18n);
+  const tt = await pageParams.getI18nInterface({
+    ...homeI18n,
+    adminTitle: COMMON_ADMIN_TITLE
+  });
 
   if (!(await server.getIOC(ServerAuth).hasAuth())) {
     return redirect({ href: '/login', locale });
   }
 
   return (
-    <BaseLayout data-testid="HomePage" showLogoutButton showAdminButton>
+    <AppRoutePage
+      data-testid="AppRoute-HomePage"
+      showLogoutButton
+      showAdminButton
+      tt={{
+        title: tt.title,
+        adminTitle: tt.adminTitle
+      }}
+    >
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -108,6 +120,6 @@ export default async function Home({ params }: PageParamsProps) {
           </Button>
         </div>
       </section>
-    </BaseLayout>
+    </AppRoutePage>
   );
 }

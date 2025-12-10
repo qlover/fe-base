@@ -72,12 +72,11 @@ export class AppPageRouteParams<
 
   public async getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
-    namespace?: string
+    _namespace?: string
   ): Promise<T> {
-    // Load translation messages from the HomePage namespace
     const t = await getTranslations({
-      locale: this.getLocale(),
-      namespace: namespace
+      locale: this.getLocale()
+      // namespace: namespace
     });
 
     return TranslateI18nInterface.translate<T>(i18nInterface, t);
