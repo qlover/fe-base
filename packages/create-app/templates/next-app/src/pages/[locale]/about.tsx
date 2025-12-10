@@ -1,14 +1,15 @@
-import { AppPageRouteParams } from '@/server/AppPageRouteParams';
+import { useTranslations } from 'next-intl';
+import type { PagesRouteParamsType } from '@/server/PagesRouteParams';
+import { PagesRouteParams } from '@/server/PagesRouteParams';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { i18nConfig } from '@config/i18n';
-import { GetStaticPropsContext } from 'next';
-import { useTranslations } from 'next-intl';
+import type { GetStaticPropsContext } from 'next';
 
 export default function About() {
   const t = useTranslations('About');
 
   return (
-    <div className="bg-primary h-screen">
+    <div data-testid="About" className="bg-primary h-screen">
       <p>{t('description')}</p>
       <LocaleLink href="/" title={t('navigateToHome')}>
         {t('navigateToHome')}
@@ -19,10 +20,8 @@ export default function About() {
 
 export async function getStaticProps({
   params
-}: GetStaticPropsContext<{ locale: string }>) {
-  const pageParams = new AppPageRouteParams({
-    locale: params?.locale || i18nConfig.fallbackLng
-  });
+}: GetStaticPropsContext<PagesRouteParamsType>) {
+  const pageParams = new PagesRouteParams(params);
 
   const messages = await pageParams.getI18nMessages();
 

@@ -4,6 +4,7 @@ import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
 import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
+import { filterMessagesByNamespace } from '@/i18n/loadMessages';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;
@@ -45,12 +46,26 @@ export class AppPageRouteParams<
     return locale;
   }
 
-  public async getI18nMessages(): Promise<Record<string, string>> {
+  /**
+   * 获取 i18n 消息
+   * 使用 next-intl 的 getMessages 加载消息
+   *
+   * @param namespace - 可选的命名空间（单个字符串或字符串数组），会与默认命名空间 ['common', 'api'] 合并
+   * @returns Promise<Record<string, string>> 返回翻译消息对象
+   */
+  public async getI18nMessages(namespace?: string | string[]): Promise<Record<string, string>> {
     const locale = this.getLocale();
-
     const messages = await getMessages({ locale });
-
-    return messages;
+    // 将默认命名空间和用户提供的命名空间合并
+    const defaultNamespaces = [...i18nConfig.defaultNamespaces];
+    const userNamespaces = namespace
+      ? Array.isArray(namespace)
+        ? namespace
+        : [namespace]
+      : [];
+    // 合并并去重
+    const namespaces = [...new Set([...defaultNamespaces, ...userNamespaces])];
+    return filterMessagesByNamespace(messages, namespaces);
   }
 
   public async getI18nInterface<T extends PageI18nInterface>(

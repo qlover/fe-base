@@ -1,8 +1,9 @@
-import { AppProps } from 'next/app';
-import { NextRouter, withRouter } from 'next/router';
+import { withRouter } from 'next/router';
 import { NextIntlClientProvider } from 'next-intl';
 import '@/styles/css/index.css';
 import { i18nConfig } from '@config/i18n';
+import type { AppProps } from 'next/app';
+import type { NextRouter } from 'next/router';
 
 type Props = AppProps & {
   router: NextRouter;
