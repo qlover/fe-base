@@ -171,5 +171,8 @@
   "page_register:have_account": "已有账号？",
   "page_register:login_link": "登录",
   "page_register:terms_required": "请同意服务条款和隐私政策",
+  "page_about:title": "关于我们",
+  "page_about:description": "了解我们的团队和使命",
+  "page_about:keywords": "关于我们, 团队, 使命",
   "common:manifest__name": "应用名称"
 }

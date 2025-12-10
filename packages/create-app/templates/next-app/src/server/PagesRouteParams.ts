@@ -99,7 +99,7 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
     i18nInterface: T,
     namespace?: string
   ): Promise<T> {
-    const messages = await this.getI18nMessages();
+    const messages = await this.getI18nMessages(namespace);
 
     // 创建一个简单的翻译函数
     const t = (

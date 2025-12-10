@@ -1,13 +1,25 @@
-import type { PagesRouteParamsType } from '@/server/PagesRouteParams';
 import { PagesRouteParams } from '@/server/PagesRouteParams';
-import { i18nConfig } from '@config/i18n';
+import type { PagesRouteParamsType } from '@/server/PagesRouteParams';
+import { ClientSeo } from '@/uikit/components/ClientSeo';
+import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
+import { aboutI18n, i18nConfig } from '@config/i18n';
 import type { GetStaticPropsContext } from 'next';
 
-export default function About() {
+interface AboutProps {
+  messages: Record<string, string>;
+}
+
+const namespace = 'page_about';
+
+export default function About({}: AboutProps) {
+  const seoMetadata = useI18nInterface(aboutI18n);
   return (
-    <div data-testid="About" className="bg-primary h-screen">
-      Hello About
-    </div>
+    <>
+      <ClientSeo i18nInterface={seoMetadata} />
+      <div data-testid="About" className="bg-primary h-screen">
+        {seoMetadata.title}
+      </div>
+    </>
   );
 }
 
@@ -16,7 +28,7 @@ export async function getStaticProps({
 }: GetStaticPropsContext<PagesRouteParamsType>) {
   const pageParams = new PagesRouteParams(params);
 
-  const messages = await pageParams.getI18nMessages();
+  const messages = await pageParams.getI18nMessages(namespace);
 
   return {
     props: {

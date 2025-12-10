@@ -171,5 +171,8 @@
   "page_register:have_account": "Already have an account?",
   "page_register:login_link": "Sign in",
   "page_register:terms_required": "Please agree to the Terms of Service and Privacy Policy",
+  "page_about:title": "About Us",
+  "page_about:description": "Learn about our team and mission",
+  "page_about:keywords": "About us, team, mission",
   "common:manifest__name": "Application Name"
 }
