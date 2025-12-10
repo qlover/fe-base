@@ -2,22 +2,20 @@
 
 import { TranslationOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
+import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { useCallback, useMemo } from 'react';
-import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
+import { useCallback, useMemo, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import { I } from '@config/IOCIdentifier';
-import { useIOC } from '../hook/useIOC';
 import type { ItemType } from 'antd/es/menu/interface';
 
 export function LanguageSwitcher() {
-  const i18nService = useIOC(I.I18nServiceInterface);
-  const pathname = usePathname(); // current pathname, aware of i18n
-
-  const router = useRouter(); // i18n-aware router instance
-  const currentLocale = useLocale() as LocaleType; // currently active locale
+  const pathname = usePathname();
+  const router = useRouter();
+  const currentLocale = useLocale() as LocaleType;
+  const [isPending, startTransition] = useTransition();
+  const params = useParams();
 
   const options: ItemType[] = useMemo(() => {
     return i18nConfig.supportedLngs.map(
@@ -34,18 +32,18 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = useCallback(
     async (value: string) => {
-      // Set a persistent cookie with the user's preferred locale (valid for 1 year)
-      document.cookie = `NEXT_LOCALE=${value}; path=/; max-age=31536000; SameSite=Lax`;
-      // Route to the same page in the selected locale
-      router.replace(pathname, { locale: value });
+      if (isPending) return;
 
-      try {
-        await i18nService.changeLanguage(value as I18nServiceLocale);
-      } catch (error) {
-        console.error('Failed to change language:', error);
-      }
+      // TODO: save to server side
+
+      startTransition(() => {
+        // @ts-expect-error -- TypeScript will validate that only known `params`
+        // are used in combination with a given `pathname`. Since the two will
+        // always match for the current route, we can skip runtime checks.
+        router.replace({ pathname, params }, { locale: value });
+      });
     },
-    [i18nService, pathname, router]
+    [pathname, router, isPending, params]
   );
 
   const nextLocale = useMemo(() => {

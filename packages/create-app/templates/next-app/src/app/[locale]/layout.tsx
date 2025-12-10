@@ -1,9 +1,16 @@
 import { NextIntlClientProvider } from 'next-intl';
+import { setRequestLocale } from 'next-intl/server';
 import type { PageLayoutProps } from '@/base/types/PageProps';
 import { PageParams } from '@/server/PageParams';
 import { ComboProvider } from '@/uikit/components/ComboProvider';
+import { LanguageSwitcher } from '@/uikit/components/LanguageSwitcher';
+import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
 import '@/styles/css/index.css';
+
+export function generateStaticParams() {
+  return i18nConfig.supportedLngs.map((locale) => ({ locale }));
+}
 
 export default async function RootLayout({
   children,
@@ -11,14 +18,20 @@ export default async function RootLayout({
 }: PageLayoutProps) {
   const pageParams = new PageParams(await params!);
   const locale = pageParams.getLocale();
-  const messages = await pageParams.getI18nMessages();
 
-  // TODO: suppressHydrationWarning 暂时解决 hydration 问题
+  // Enable static rendering
+  setRequestLocale(locale);
+
   return (
-    <html data-testid="RootLayout" lang={locale} suppressHydrationWarning>
+    <html data-testid="RootLayout" lang={locale} data-theme={'dark'}>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ComboProvider themeConfig={themeConfig}>{children}</ComboProvider>
+        <NextIntlClientProvider>
+          {/* <ComboProvider themeConfig={themeConfig}> */}
+          <main className="flex flex-1 h-screen flex-col bg-primary">
+            <LanguageSwitcher />
+            <span className="text-text">text{locale}</span>
+          </main>
+          {/* </ComboProvider> */}
         </NextIntlClientProvider>
       </body>
     </html>
