@@ -15,6 +15,7 @@ import type { BridgeOrderBy } from '../port/DBBridgeInterface';
 import type { UpsertResult } from '../port/LocalesRepositoryInterface';
 import type { PaginationInterface } from '../port/PaginationInterface';
 import type { ValidatorInterface } from '../port/ValidatorInterface';
+import type { PaginationParams } from '../validators/PaginationValidator';
 
 @injectable()
 export class AdminLocalesController implements AdminLocalesControllerInterface {
@@ -22,13 +23,13 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
     @inject(AdminLocalesService)
     protected adminLocalesService: AdminLocalesService,
     @inject(PaginationValidator)
-    protected paginationValidator: ValidatorInterface,
+    protected paginationValidator: ValidatorInterface<PaginationParams>,
     @inject(ApiLocaleService)
     protected apiLocaleService: ApiLocaleService,
     @inject(LocalesValidator)
-    protected localesValidator: ValidatorInterface,
+    protected localesValidator: ValidatorInterface<Partial<LocalesSchema>>,
     @inject(LocalesImportValidator)
-    protected localesImportValidator: ValidatorInterface
+    protected localesImportValidator: ValidatorInterface<ImportLocalesData>
   ) {}
 
   async getLocales(query: {
@@ -36,8 +37,7 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
     pageSize: number;
     orders?: BridgeOrderBy;
   }): Promise<PaginationInterface<LocalesSchema>> {
-    const paginationParams =
-      this.paginationValidator.getThrow<typeof query>(query);
+    const paginationParams = await this.paginationValidator.getThrow(query);
 
     const result = await this.apiLocaleService.getLocales({
       page: paginationParams.page,
@@ -51,8 +51,7 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
   async createLocale(
     body: Omit<LocalesSchema, 'id' | 'created_at' | 'updated_at'>
   ): Promise<{ success: boolean }> {
-    const localesParams =
-      this.localesValidator.getThrow<Partial<LocalesSchema>>(body);
+    const localesParams = await this.localesValidator.getThrow(body);
 
     await this.apiLocaleService.create(localesParams);
 
@@ -61,16 +60,12 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
     };
   }
   async updateLocale(body: Partial<LocalesSchema>): Promise<void> {
-    const localesParams =
-      this.localesValidator.getThrow<Partial<LocalesSchema>>(body);
-
-    await this.apiLocaleService.update(localesParams);
+    await this.apiLocaleService.update(body);
   }
   async importLocales(formData: unknown): Promise<UpsertResult> {
-    const localesParams =
-      this.localesImportValidator.getThrow<ImportLocalesData>({
-        values: formData
-      });
+    const localesParams = await this.localesImportValidator.getThrow({
+      values: formData
+    });
 
     const result = await this.apiLocaleService.importLocales(localesParams);
 

@@ -20,7 +20,8 @@ export class UserController implements UserControllerInerface {
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(StringEncryptor)
     protected stringEncryptor: Encryptor<string, string>,
-    @inject(LoginValidator) protected loginValidator: ValidatorInterface,
+    @inject(LoginValidator)
+    protected loginValidator: ValidatorInterface<LoginValidatorData>,
     @inject(UserService) protected userService: UserServiceInterface
   ) {}
 
@@ -37,7 +38,7 @@ export class UserController implements UserControllerInerface {
         'Encrypt password failed'
       );
     }
-    const body = this.loginValidator.getThrow<LoginValidatorData>(requestBody);
+    const body = await this.loginValidator.getThrow(requestBody);
 
     const user = await this.userService.login(body);
 
@@ -60,7 +61,7 @@ export class UserController implements UserControllerInerface {
       );
     }
 
-    const body = this.loginValidator.getThrow<LoginValidatorData>(requestBody);
+    const body = await this.loginValidator.getThrow(requestBody);
 
     const user = await this.userService.register({
       email: body.email,

@@ -21,7 +21,13 @@ const paginationSchema = z.object({
   order: z.string().optional().default('0')
 });
 
-export class PaginationValidator implements ValidatorInterface {
+export type PaginationParams = {
+  page: number;
+  pageSize: number;
+  orders?: BridgeOrderBy;
+};
+
+export class PaginationValidator implements ValidatorInterface<PaginationParams> {
   protected defaultPageSize = 10;
 
   validate(data: unknown): void | ValidationFaildResult {

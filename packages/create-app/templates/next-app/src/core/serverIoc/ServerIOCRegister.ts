@@ -5,7 +5,7 @@ import {
 } from '@qlover/corekit-bridge';
 import { Logger, ConsoleHandler, TimestampFormatter } from '@qlover/logger';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
-import { SupabaseBridge } from '@/server/sqlBridges/SupabaseBridge';
+import { SupabaseBridge } from '@/server/SupabaseBridge';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 
 export class ServerIOCRegister implements IOCRegisterInterface<

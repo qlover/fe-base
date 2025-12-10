@@ -11,7 +11,9 @@ import {
 import type { ExtendedExecutorError } from './ExtendedExecutorError';
 import type { ImportLocalesData } from '../services/ApiLocaleService';
 
-export class LocalesValidator implements ValidatorInterface {
+export class LocalesValidator implements ValidatorInterface<
+  Omit<LocalesSchema, 'id' | 'created_at' | 'updated_at'>
+> {
   validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
@@ -44,7 +46,7 @@ export class LocalesValidator implements ValidatorInterface {
   }
 }
 
-export class LocalesImportValidator implements ValidatorInterface {
+export class LocalesImportValidator implements ValidatorInterface<ImportLocalesData> {
   getHasAnyFilesLocale(
     values: FormData
   ): { language: LocaleType; value: FormDataEntryValue }[] {

@@ -105,6 +105,10 @@ export class ApiLocaleService {
         result[key]!['value'] = key;
         result[key]![locale] = value;
 
+        if (locale === i18nConfig.fallbackLng) {
+          result[key]!['description'] = value;
+        }
+
         const { namespace: namespace2 } = splitI18nKey(key);
         result[key]!['namespace'] = namespace2 || namespace;
       });

@@ -10,7 +10,7 @@ import {
   localesSchema,
   type LocalesSchema
 } from '@migrations/schema/LocalesSchema';
-import { I } from '@config/IOCIdentifier';
+import { SupabaseBridge } from '../SupabaseBridge';
 import type {
   LocalesRepositoryInterface,
   UpsertResult
@@ -23,7 +23,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
   protected safeFields = Object.keys(localesSchema.shape);
 
   constructor(
-    @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface,
+    @inject(SupabaseBridge) protected dbBridge: DBBridgeInterface,
     @inject(Datetime) protected datetime: Datetime
   ) {}
 

@@ -10,8 +10,8 @@
     "build:staging": "cross-env APP_ENV=staging next build --turbopack",
     "build:prod": "cross-env APP_ENV=production next build --turbopack",
     "start": "next start --port 3101",
-    "lint": "eslint ./src ./config ./make ./migrations",
-    "lint:fix": "eslint ./src ./config ./make ./migrations --ext .ts,.tsx --fix",
+    "lint": "tsc --noEmit && eslint ./src ./config ./make ./migrations",
+    "lint:fix": "tsc --noEmit && eslint ./src ./config ./make ./migrations --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "fix": "npm run lint:fix && npm run format"
