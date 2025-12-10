@@ -87,7 +87,7 @@ export class ClientIOCRegister implements IOCRegisterInterface<
   /**
    * @override
    */
-  register(
+  public register(
     ioc: IOCContainerInterface,
     _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {

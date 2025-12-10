@@ -4,8 +4,7 @@ import {
   type BootstrapContextValue,
   type BootstrapExecutorPlugin,
   type IOCContainerInterface,
-  type IOCFunctionInterface,
-  type LoggerInterface
+  type IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 import {
   AsyncExecutor,
@@ -16,6 +15,7 @@ import {
 import type { ServerInterface } from '@/server/port/ServerInterface';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOC } from '../serverIoc/ServerIOC';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface BootstrapServerContextValue extends BootstrapContextValue {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;

@@ -2,44 +2,34 @@
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
-import { useMountedClient } from '@brain-toolkit/react-kit';
 import { ThemeProvider } from 'next-themes';
-import { clientIOC } from '@/core/clientIoc/ClientIOC';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { I } from '@config/IOCIdentifier';
 import type { CommonThemeConfig } from '@config/theme';
-import { BootstrapsProvider } from './BootstrapsProvider';
+import { useIOC } from '../hook/useIOC';
 
 /**
- * CommonProvider is a provider for the common components
+ * ClientRootProvider is a provider for the client components
  *
- * - IOCProvider
- * - BootstrapsProvider
  * - ThemeProvider
  * - AntdProvider
  *
- * @param param0
+ * @param themeConfig - The theme config
+ * @param children - The children components
  * @returns
  */
-export function ComboProvider(props: {
+export function ClientRootProvider(props: {
   themeConfig: CommonThemeConfig;
   children: React.ReactNode;
 }) {
-  /**
-   * useMountedClient 会等待客户端完全初始化
-   * 只有在客户端准备就绪后才渲染组件内容
-   * 这样可以确保所有的客户端代码（包括 API 配置、插件等）都已经正确初始化
-   */
-  const mounted = useMountedClient();
-
   const { themeConfig, children } = props;
 
-  const IOC = clientIOC.create();
+  const IOC = useIOC();
 
   return (
     <AntdThemeProvider
       data-testid="ComboProvider"
       theme={themeConfig.antdTheme}
-      staticApi={IOC(IOCIdentifier.DialogHandler)}
+      staticApi={IOC(I.DialogHandler)}
     >
       <ThemeProvider
         themes={themeConfig.supportedThemes as unknown as string[]}
@@ -49,9 +39,7 @@ export function ComboProvider(props: {
         enableColorScheme={false}
         storageKey={themeConfig.storageKey}
       >
-        <BootstrapsProvider>
-          <AntdRegistry>{mounted ? children : null}</AntdRegistry>
-        </BootstrapsProvider>
+        <AntdRegistry>{children}</AntdRegistry>
       </ThemeProvider>
     </AntdThemeProvider>
   );
