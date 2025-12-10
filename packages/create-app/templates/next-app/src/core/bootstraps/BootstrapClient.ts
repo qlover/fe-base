@@ -65,6 +65,8 @@ export class BootstrapClient {
       await bootstrap.use(bootstrapsRegistry.register()).start();
 
       BootstrapClient.lastTime = Date.now();
+
+      logger.info('BootstrapClient starup success,', BootstrapClient.lastTime);
     } catch (error) {
       logger.error(`${appConfig.appName} starup error:`, error);
     }
