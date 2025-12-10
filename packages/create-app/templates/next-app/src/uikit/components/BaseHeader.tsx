@@ -25,10 +25,13 @@ export function BaseHeader(props: {
   const locale = useLocale();
   const t = useWarnTranslations();
 
-  const tt = {
-    title: appConfig.appName,
-    admin: t(COMMON_ADMIN_TITLE)
-  };
+  const tt = useMemo(
+    () => ({
+      title: appConfig.appName,
+      admin: t(COMMON_ADMIN_TITLE)
+    }),
+    [appConfig.appName, t]
+  );
 
   const leftDefault = useMemo(
     () => (

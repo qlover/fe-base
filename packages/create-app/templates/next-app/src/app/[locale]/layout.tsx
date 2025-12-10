@@ -40,12 +40,15 @@ export default async function RootLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
+  // Get messages for the current locale to prevent flickering during language switch
+  const messages = await pageParams.getI18nMessages();
+
   return (
     // eslint-disable-next-line @qlover-eslint/require-root-testid
     <html lang={locale} data-theme={'dark'}>
       <body>
         <IOCProvider>
-          <NextIntlClientProvider>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <BootstrapsProvider>
               <ClientRootProvider themeConfig={themeConfig}>
                 {children}

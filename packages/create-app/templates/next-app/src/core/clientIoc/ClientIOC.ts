@@ -11,7 +11,6 @@ import type {
 } from '@/base/port/IOCInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { ClientIOCRegister } from './ClientIOCRegister';
-import { logger } from '../globals';
 
 export class ClientIOC implements IOCInterface<
   IOCIdentifierMap,
@@ -42,12 +41,10 @@ export class ClientIOC implements IOCInterface<
 
   register(options: IocRegisterOptions): void {
     if (this.registers > 0) {
-      logger.debug('ClientIOC: ioc already registered');
       return;
     }
 
     if (!this.ioc) {
-      logger.debug('ClientIOC: ioc not initialized');
       return;
     }
 

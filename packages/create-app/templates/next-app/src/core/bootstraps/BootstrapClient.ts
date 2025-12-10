@@ -35,7 +35,6 @@ export class BootstrapClient {
     const { logger, appConfig } = globals;
 
     if (BootstrapClient.lastTime) {
-      logger.debug('BootstrapClient: already started');
       return args;
     }
 
