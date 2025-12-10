@@ -192,6 +192,7 @@ const eslintConfig = [
       'src/app/**/not-found.tsx',
       'src/i18n/request.ts',
       'src/middleware.ts',
+      'src/app/manifest.ts',
       '**/*.config.*'
     ],
     rules: {

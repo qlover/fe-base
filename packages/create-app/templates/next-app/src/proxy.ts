@@ -20,6 +20,7 @@ export const config = {
     // - Next.js internals (_next/*)
     // - Static files (*.svg, *.png, *.jpg, *.jpeg, *.gif, *.ico)
     // - Other static assets and special files
-    '/((?!api|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml).*)'
+    // - Manifest file (manifest.webmanifest)
+    '/((?!api|_next|.*\\.(?:svg|png|jpg|jpeg|gif|ico)|favicon.ico|sitemap.xml|sitemap-0.xml|manifest.webmanifest).*)'
   ]
 };
