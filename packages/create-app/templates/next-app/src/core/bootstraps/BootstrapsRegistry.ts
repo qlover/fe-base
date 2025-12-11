@@ -41,7 +41,6 @@ export class BootstrapsRegistry {
     }
 
     bootstrapList.push(IocIdentifierTest);
-    // TODO: 需要使用到
 
     return bootstrapList;
   }

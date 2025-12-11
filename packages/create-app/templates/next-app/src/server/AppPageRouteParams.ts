@@ -1,9 +1,11 @@
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { filterMessagesByNamespace } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
+import { themeConfig } from '@config/theme';
 import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
 
 export interface PageWithParams {
@@ -80,5 +82,12 @@ export class AppPageRouteParams<
     });
 
     return TranslateI18nInterface.translate<T>(i18nInterface, t);
+  }
+
+  public async getTheme(): Promise<string> {
+    const cookieStore = await cookies();
+    return (
+      cookieStore.get(themeConfig.storageKey)?.value || themeConfig.defaultTheme
+    );
   }
 }

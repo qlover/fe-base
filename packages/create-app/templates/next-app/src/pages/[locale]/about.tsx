@@ -28,7 +28,6 @@ export default function About({}: AboutProps) {
       data-testid="AboutPage"
       tt={{ title: seoMetadata.title, adminTitle: seoMetadata.adminTitle }}
       showAdminButton={false}
-      showLogoutButton
     >
       <ClientSeo i18nInterface={seoMetadata} />
       <div data-testid="About" className="bg-primary h-screen">

@@ -14,11 +14,13 @@ import { useMountedClient } from '@brain-toolkit/react-kit';
 import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { I } from '@config/IOCIdentifier';
 import { type SupportedTheme, themeConfig } from '@config/theme';
+import { useIOC } from '../hook/useIOC';
 import type { ItemType } from 'antd/es/menu/interface';
 
-const { supportedThemes } = themeConfig;
+const { supportedThemes, storageKey } = themeConfig;
 
 const defaultTheme = supportedThemes[0] || 'system';
 const themesList = ['system', ...supportedThemes];
@@ -71,6 +73,13 @@ const colorMap: Record<
 export function ThemeSwitcher() {
   const { theme: currentTheme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMountedClient();
+  const cookieStorage = useIOC(I.CookieStorage);
+
+  useEffect(() => {
+    if (currentTheme) {
+      cookieStorage.setItem(storageKey, currentTheme);
+    }
+  }, [currentTheme, cookieStorage]);
 
   const themeOptions = themesList.map((themeName) => {
     const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =

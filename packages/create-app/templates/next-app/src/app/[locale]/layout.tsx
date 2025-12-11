@@ -36,6 +36,7 @@ export default async function RootLayout({
 }: PageLayoutProps) {
   const pageParams = new AppPageRouteParams(await params!);
   const locale = pageParams.getLocale();
+  const theme = await pageParams.getTheme();
 
   // Enable static rendering
   setRequestLocale(locale);
@@ -45,7 +46,7 @@ export default async function RootLayout({
   const messages = await pageParams.getI18nMessages();
 
   return (
-    <html data-testid="AppRoute-RootLayout" lang={locale} data-theme={'dark'}>
+    <html data-testid="AppRoute-RootLayout" lang={locale} data-theme={theme}>
       <body>
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>

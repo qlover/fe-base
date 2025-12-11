@@ -9,7 +9,8 @@ export const i18nConfig = {
   debug: false,
   supportedLngs: ['en', 'zh'] as const,
   localeDetection: true,
-  defaultNamespaces: ['common', 'api']
+  defaultNamespaces: ['common', 'api'],
+  storageKey: 'NEXT_LOCALE'
 } as const;
 
 export type LocaleType = (typeof i18nConfig.supportedLngs)[number];

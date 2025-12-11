@@ -2,6 +2,7 @@ import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
 import { loadMessages } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
+import { themeConfig } from '@config/theme';
 import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
 import type { useTranslations } from 'next-intl';
 import type { ParsedUrlQuery } from 'querystring';
@@ -127,5 +128,9 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
       i18nInterface,
       t as ReturnType<typeof useTranslations>
     );
+  }
+
+  public getTheme(): string {
+    return themeConfig.defaultTheme;
   }
 }

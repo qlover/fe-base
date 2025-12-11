@@ -16,6 +16,8 @@ export function IOCProvider(props: { children: React.ReactNode }) {
    *
    * **但是这样会有一个问题, 组件会重新挂载渲染，当切换语言时会闪烁**
    *
+   * 因为页面初始化时有些组件可能已经使用了容器注入，这样就会丢失注册的依赖
+   *
    * TODO: 这是一个需要解决的问题
    */
   useMemo(() => {

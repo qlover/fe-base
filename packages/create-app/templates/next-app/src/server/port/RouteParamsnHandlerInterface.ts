@@ -13,4 +13,6 @@ export interface RouteParamsnHandlerInterface {
     i18nInterface: T,
     namespace?: string
   ): Promise<T>;
+
+  getTheme(): string | Promise<string>;
 }
