@@ -1,8 +1,10 @@
 import { inject, injectable } from 'inversify';
+import type { useRouter } from '@/i18n/routing';
 import { I } from '@config/IOCIdentifier';
 import type { UIBridgeInterface } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
-import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+
+type AppRouterInstance = ReturnType<typeof useRouter>;
 
 @injectable()
 export class NavigateBridge implements UIBridgeInterface<AppRouterInstance> {

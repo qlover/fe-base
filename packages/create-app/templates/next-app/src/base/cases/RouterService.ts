@@ -13,12 +13,8 @@ export class RouterService implements RouterInterface {
     protected uiBridge: UIBridgeInterface<AppRouterInstance>
   ) {}
 
-  protected padLocaleHref(href: RouterPathname): string {
-    return `/${this.locale}${href === '/' ? '' : href}`;
-  }
-
   goto(href: RouterPathname): void {
-    this.uiBridge.getUIBridge()?.push(this.padLocaleHref(href));
+    this.uiBridge.getUIBridge()?.push(href as string);
   }
 
   gotoHome(): void {
@@ -27,6 +23,10 @@ export class RouterService implements RouterInterface {
 
   gotoLogin(): void {
     this.goto('/login');
+  }
+
+  replaceHome(): void {
+    this.uiBridge.getUIBridge()?.replace('/');
   }
 
   setLocale(locale: string): void {

@@ -28,7 +28,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
     try {
       setLoading(true);
       await userService.login(values);
-      routerService.gotoHome();
+      routerService.replaceHome();
     } catch (error) {
       logger.error(error);
     } finally {

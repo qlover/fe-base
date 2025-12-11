@@ -85,7 +85,7 @@ export function AdminLayout(props: AdminLayoutProps) {
 
   return (
     <Layout data-testid="AdminLayout" className={className} {...rest}>
-      <div className="overflow-y-auto overflow-x-hidden h-screen sticky top-0 bottom-0 scrollbar-thin scrollbar-gutter-stable">
+      <div className="overflow-y-auto overflow-x-hidden h-screen sticky top-0 bottom-0">
         <Sider
           className="h-full relative"
           onCollapse={() => page.toggleSidebar()}

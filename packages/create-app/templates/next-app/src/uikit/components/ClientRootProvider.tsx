@@ -20,6 +20,8 @@ import { useIOC } from '../hook/useIOC';
  * 目前能将完美解决的就是完全使用客户端渲染,也就是引入 useMountedClient 当客户端渲染时才渲染, 这样就不会出现闪烁问题
  * 但是他会导致国际化切换闪烁问题
  *
+ * 可能需要等待 antd 官方解决这个问题
+ *
  * @example
  *
  * ```tsx

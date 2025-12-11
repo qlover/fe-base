@@ -2,6 +2,7 @@ import { TeamOutlined } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
 import { useMemo, type HTMLAttributes } from 'react';
+import { AppBridge } from './AppBridge';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -72,6 +73,7 @@ export function AppRoutePage({
       className="flex flex-col min-h-screen"
       {...props}
     >
+      <AppBridge />
       <header
         data-testid="BaseHeader"
         className="h-14 bg-secondary border-b border-c-border sticky top-0 z-50"

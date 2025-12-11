@@ -2,6 +2,7 @@ import type { PageLayoutProps } from '@/base/types/AppPageRouter';
 import { AppPageRouteParams } from '@/server/AppPageRouteParams';
 import '@/styles/css/index.css';
 import { AdminLayout } from '@/uikit/components/AdminLayout';
+import { ClinetRenderProvider } from '@/uikit/components/ClinetRenderProvider';
 import { AdminI18nProvider } from './AdminI18nProvider';
 
 export default async function AdminRootLayout({
@@ -31,9 +32,11 @@ export default async function AdminRootLayout({
       locale={locale}
       adminMessages={adminMessages}
     >
-      <AdminLayout data-testid="AdminRootLayout" lang={locale}>
-        {children}
-      </AdminLayout>
+      <ClinetRenderProvider>
+        <AdminLayout data-testid="AdminRootLayout" lang={locale}>
+          {children}
+        </AdminLayout>
+      </ClinetRenderProvider>
     </AdminI18nProvider>
   );
 }
