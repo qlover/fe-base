@@ -5,7 +5,11 @@ import type { ThemeConfig } from 'antd';
  */
 export const themeConfig = {
   domAttribute: 'data-theme',
+  /**
+   * If `enableSystem` is false, the default theme is light
+   */
   defaultTheme: 'system',
+  enableSystem: true,
   target: 'html',
   supportedThemes: ['light', 'dark', 'pink'],
   storageKey: 'fe_theme',

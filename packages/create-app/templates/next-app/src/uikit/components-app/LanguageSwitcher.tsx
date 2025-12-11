@@ -34,8 +34,6 @@ export function LanguageSwitcher() {
     async (value: string) => {
       if (isPending) return;
 
-      // TODO: save to server side
-
       startTransition(() => {
         // @ts-expect-error -- TypeScript will validate that only known `params`
         // are used in combination with a given `pathname`. Since the two will

@@ -87,7 +87,8 @@ export class AppPageRouteParams<
   public async getTheme(): Promise<string> {
     const cookieStore = await cookies();
     return (
-      cookieStore.get(themeConfig.storageKey)?.value || themeConfig.defaultTheme
+      cookieStore.get(themeConfig.storageKey)?.value ||
+      themeConfig.supportedThemes[0]
     );
   }
 }

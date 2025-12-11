@@ -34,6 +34,13 @@ export const COMMON_DETAIL = 'common:detail';
 export const COMMON_THEME_DEFAULT = 'common:theme__default';
 
 /**
+ * @description Theme switcher light theme label
+ * @localZh 亮色主题
+ * @localEn Light Theme
+ */
+export const COMMON_THEME_LIGHT = 'common:theme__light';
+
+/**
  * @description Theme switcher dark theme label
  * @localZh 暗色主题
  * @localEn Dark Theme

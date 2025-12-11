@@ -35,8 +35,6 @@ export function LanguageSwitcher() {
       setIsPending(true);
 
       try {
-        // TODO: save to server side
-
         // Get current path
         let newPath = router.asPath;
 

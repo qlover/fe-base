@@ -15,9 +15,16 @@ import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
 import { useEffect, useMemo } from 'react';
+import {
+  COMMON_THEME_DARK,
+  COMMON_THEME_DEFAULT,
+  COMMON_THEME_LIGHT,
+  COMMON_THEME_PINK
+} from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
 import { type SupportedTheme, themeConfig } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
+import { useWarnTranslations } from '../hook/useWarnTranslations';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { supportedThemes, storageKey } = themeConfig;
@@ -33,40 +40,35 @@ const colorMap: Record<
     normalColor: string;
     Icon: React.ElementType;
     SelectedIcon: React.ElementType;
-    TriggerIcon: React.ElementType;
   }
 > = {
   system: {
-    i18nkey: 'System',
+    i18nkey: COMMON_THEME_DEFAULT,
     selectedColor: 'text-text',
     normalColor: 'text-text-secondary',
     Icon: SettingOutlined,
-    SelectedIcon: SettingFilled,
-    TriggerIcon: SettingOutlined
+    SelectedIcon: SettingFilled
   },
   light: {
-    i18nkey: 'Light',
+    i18nkey: COMMON_THEME_LIGHT,
     selectedColor: 'text-text',
     normalColor: 'text-text-secondary',
     Icon: SunOutlined,
-    SelectedIcon: SunFilled,
-    TriggerIcon: SunOutlined
+    SelectedIcon: SunFilled
   },
   dark: {
-    i18nkey: 'Dark',
+    i18nkey: COMMON_THEME_DARK,
     selectedColor: 'text-[#9333ea]',
     normalColor: 'text-[#a855f7]',
     Icon: MoonOutlined,
-    SelectedIcon: MoonFilled,
-    TriggerIcon: MoonOutlined
+    SelectedIcon: MoonFilled
   },
   pink: {
-    i18nkey: 'Pink',
+    i18nkey: COMMON_THEME_PINK,
     selectedColor: 'text-[#f472b6]',
     normalColor: 'text-[#ec4899]',
     Icon: HeartOutlined,
-    SelectedIcon: HeartFilled,
-    TriggerIcon: HeartOutlined
+    SelectedIcon: HeartFilled
   }
 };
 
@@ -74,37 +76,40 @@ export function ThemeSwitcher() {
   const { theme: currentTheme, resolvedTheme, setTheme } = useTheme();
   const mounted = useMountedClient();
   const cookieStorage = useIOC(I.CookieStorage);
+  const t = useWarnTranslations();
 
   useEffect(() => {
-    if (currentTheme) {
-      cookieStorage.setItem(storageKey, currentTheme);
+    if (resolvedTheme) {
+      cookieStorage.setItem(storageKey, resolvedTheme);
     }
-  }, [currentTheme, cookieStorage]);
+  }, [resolvedTheme, cookieStorage]);
 
-  const themeOptions = themesList.map((themeName) => {
-    const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =
-      colorMap[themeName] || colorMap.light;
+  const themeOptions = useMemo(() => {
+    return themesList.map((themeName) => {
+      const { i18nkey, selectedColor, normalColor, Icon, SelectedIcon } =
+        colorMap[themeName] || colorMap.light;
 
-    const isCurrentTheme =
-      currentTheme === themeName ||
-      (themeName === resolvedTheme && currentTheme === 'system');
+      const isCurrentTheme =
+        currentTheme === themeName ||
+        (themeName === resolvedTheme && currentTheme === 'system');
 
-    return {
-      key: themeName,
-      value: themeName,
-      label: (
-        <div
-          className={clsx(
-            'flex items-center gap-2',
-            isCurrentTheme ? selectedColor : normalColor
-          )}
-        >
-          {isCurrentTheme ? <SelectedIcon /> : <Icon />}
-          <span>{i18nkey}</span>
-        </div>
-      )
-    } as ItemType;
-  });
+      return {
+        key: themeName,
+        value: themeName,
+        label: (
+          <div
+            className={clsx(
+              'flex items-center gap-2',
+              isCurrentTheme ? selectedColor : normalColor
+            )}
+          >
+            {isCurrentTheme ? <SelectedIcon /> : <Icon />}
+            <span>{t(i18nkey)}</span>
+          </div>
+        )
+      } as ItemType;
+    });
+  }, [currentTheme, resolvedTheme, t]);
 
   const nextTheme = useMemo(() => {
     if (!currentTheme) {
@@ -115,27 +120,13 @@ export function ThemeSwitcher() {
     return supportedThemes[targetIndex % supportedThemes.length];
   }, [currentTheme]);
 
-  const TriggerIcon = colorMap[currentTheme || defaultTheme].TriggerIcon;
-
-  // TODO: 解决渲染闪烁问题
-  if (!mounted) {
-    return (
-      <span
-        data-testid="ThemeSwitcher"
-        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
-      >
-        <SettingOutlined />
-      </span>
-    );
-  }
-
   return (
     <Dropdown
       data-testid="ThemeSwitcherDropdown"
       trigger={['hover']}
       menu={{
         items: themeOptions,
-        selectedKeys: [currentTheme!],
+        selectedKeys: mounted ? [resolvedTheme!] : undefined,
         onClick: ({ key }) => {
           setTheme(key);
         }
@@ -146,7 +137,7 @@ export function ThemeSwitcher() {
         className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
         onClick={() => setTheme(nextTheme)}
       >
-        <TriggerIcon />
+        <SunOutlined />
       </span>
     </Dropdown>
   );
