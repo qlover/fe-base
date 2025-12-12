@@ -34,7 +34,7 @@ export interface ApiCatchPluginResponse {
  * Do not throw errors, only return errors and data
  */
 export class ApiCatchPlugin implements ExecutorPlugin {
-  readonly pluginName = 'ApiCatchPlugin';
+  public readonly pluginName = 'ApiCatchPlugin';
 
   constructor(
     private readonly logger: LoggerInterface,
@@ -43,7 +43,7 @@ export class ApiCatchPlugin implements ExecutorPlugin {
     >
   ) {}
 
-  enabled(
+  public enabled(
     _name: keyof ExecutorPlugin,
     context?:
       | ExecutorContext<RequestAdapterFetchConfig & ApiCatchPluginConfig>
@@ -54,7 +54,7 @@ export class ApiCatchPlugin implements ExecutorPlugin {
     return !!openApiCatch;
   }
 
-  onExec(
+  public onExec(
     context: ExecutorContext<RequestAdapterFetchConfig & ApiCatchPluginConfig>,
     task: PromiseTask<unknown, unknown>
   ): Promise<unknown> | unknown {
@@ -95,7 +95,7 @@ export class ApiCatchPlugin implements ExecutorPlugin {
     return withErrorTask();
   }
 
-  onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
+  public onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
     const returnValue = context.returnValue as RequestAdapterResponse &
       ApiCatchPluginResponse;
 

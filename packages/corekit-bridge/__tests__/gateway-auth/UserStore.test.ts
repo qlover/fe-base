@@ -53,11 +53,11 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     clear: 0
   };
 
-  get length(): number {
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T): T {
+  public setItem<T>(key: Key, value: T): T {
     if (this.shouldFailSetItem) {
       throw new Error('Storage setItem failed');
     }
@@ -66,7 +66,7 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     return value;
   }
 
-  getItem<T>(key: Key): T | null {
+  public getItem<T>(key: Key): T | null {
     if (this.shouldFailGetItem) {
       throw new Error('Storage getItem failed');
     }
@@ -75,17 +75,17 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     return (value ?? null) as T | null;
   }
 
-  removeItem(key: Key): void {
+  public removeItem(key: Key): void {
     this.calls.removeItem.push({ key });
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.shouldFailGetItem = false;
     this.shouldFailSetItem = false;

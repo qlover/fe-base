@@ -8,7 +8,7 @@ import {
 } from '../../src/request';
 
 class MockAdapter implements RequestAdapterInterface<RequestAdapterConfig> {
-  readonly config: RequestAdapterConfig;
+  public readonly config: RequestAdapterConfig;
   private mockResponse: unknown;
   private shouldFail: boolean;
 
@@ -18,11 +18,11 @@ class MockAdapter implements RequestAdapterInterface<RequestAdapterConfig> {
     this.config = {};
   }
 
-  getConfig(): RequestAdapterConfig {
+  public getConfig(): RequestAdapterConfig {
     return this.config;
   }
 
-  async request<Request, Response>(
+  public async request<Request, Response>(
     config: RequestAdapterConfig<Request>
   ): Promise<Response> {
     if (this.shouldFail) {
@@ -316,7 +316,7 @@ describe('RequestTransaction Advanced Tests', () => {
         > {}
 
       class ApiClient extends RequestTransaction<ApiClientConfig> {
-        test(): Promise<ApiTestTransaction['response']> {
+        public test(): Promise<ApiTestTransaction['response']> {
           return this.request<ApiTestTransaction>({
             url: 'https://api.example.com/data',
             method: 'GET',
@@ -324,7 +324,7 @@ describe('RequestTransaction Advanced Tests', () => {
           });
         }
 
-        test2(
+        public test2(
           data: ApiTestTransaction['request']
         ): Promise<ApiTestTransaction['response']> {
           return this.request<ApiTestTransaction>({

@@ -197,7 +197,7 @@ export class HBSTemplate {
    * console.log('Template content:', content);
    * ```
    */
-  getTemplate(): string {
+  public getTemplate(): string {
     return this.templateContent;
   }
 
@@ -232,7 +232,7 @@ export class HBSTemplate {
    * });
    * ```
    */
-  compile(
+  public compile(
     context: FormatProjectValue,
     options?: Handlebars.RuntimeOptions
   ): string {
@@ -281,7 +281,7 @@ export class HBSTemplate {
    * const output = template.compileSource(contextMap);
    * ```
    */
-  compileSource(contextMap: FormatProjectValueMap): string {
+  public compileSource(contextMap: FormatProjectValueMap): string {
     const output: string[] = [];
 
     // Define processing order for consistent output structure

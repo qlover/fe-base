@@ -346,7 +346,7 @@ export class Logger implements LoggerInterface {
    * @important This method is named 'addAppender' for legacy/compatibility reasons,
    * but it works with any object implementing HandlerInterface
    */
-  addAppender(appender: HandlerInterface): void {
+  public addAppender(appender: HandlerInterface): void {
     (this.options.handlers as HandlerInterface[]).push(appender);
   }
 
@@ -358,7 +358,7 @@ export class Logger implements LoggerInterface {
    * @param value - Optional value to be stored in the context
    * @returns A new LogContext instance with the provided value
    */
-  context<Value>(value?: Value): LogContext<Value> {
+  public context<Value>(value?: Value): LogContext<Value> {
     return new LogContext(value);
   }
 
@@ -443,7 +443,7 @@ export class Logger implements LoggerInterface {
    *
    * @note This method uses 'info' level internally, but appears as 'log' in default levels
    */
-  log(...args: unknown[]): void {
+  public log(...args: unknown[]): void {
     this.print('info', args);
   }
 
@@ -468,7 +468,7 @@ export class Logger implements LoggerInterface {
    *
    * @important Fatal logs typically indicate that the application cannot continue to function
    */
-  fatal(...args: unknown[]): void {
+  public fatal(...args: unknown[]): void {
     this.print('fatal', args);
   }
 
@@ -498,7 +498,7 @@ export class Logger implements LoggerInterface {
    *
    * @note Error logs should provide enough context to diagnose the problem
    */
-  error(...args: unknown[]): void {
+  public error(...args: unknown[]): void {
     this.print('error', args);
   }
 
@@ -523,7 +523,7 @@ export class Logger implements LoggerInterface {
    *
    * @note Warnings shouldn't be ignored in production systems as they often indicate future problems
    */
-  warn(...args: unknown[]): void {
+  public warn(...args: unknown[]): void {
     this.print('warn', args);
   }
 
@@ -549,7 +549,7 @@ export class Logger implements LoggerInterface {
    *
    * @note Info level is typically the default level in production environments
    */
-  info(...args: unknown[]): void {
+  public info(...args: unknown[]): void {
     this.print('info', args);
   }
 
@@ -579,7 +579,7 @@ export class Logger implements LoggerInterface {
    * @note Debug logs are typically disabled in production environments
    * @important Debug logs can contain sensitive information, use caution in production
    */
-  debug(...args: unknown[]): void {
+  public debug(...args: unknown[]): void {
     this.print('debug', args);
   }
 
@@ -607,7 +607,7 @@ export class Logger implements LoggerInterface {
    * @note Trace is the most verbose level and should only be enabled temporarily for debugging
    * @important Trace logs can significantly impact performance and generate large volumes of data
    */
-  trace(...args: unknown[]): void {
+  public trace(...args: unknown[]): void {
     this.print('trace', args);
   }
 }

@@ -181,7 +181,7 @@ export type GatewayBasePluginType<
 export class GatewayBasePlguin<Params, T, Gateway>
   implements ExecutorPlugin<GatewayExecutorOptions<T, Gateway, Params>>
 {
-  readonly pluginName = 'GatewayBasePlguin';
+  public readonly pluginName = 'GatewayBasePlguin';
 
   /**
    * Before action hook
@@ -199,7 +199,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onBefore(
+  public async onBefore(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const store = context.parameters.store;
@@ -229,7 +229,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onSuccess(
+  public async onSuccess(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const { returnValue } = context;
@@ -269,7 +269,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onError(
+  public async onError(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const error = context.error;

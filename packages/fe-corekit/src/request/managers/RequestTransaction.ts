@@ -173,7 +173,7 @@ export class RequestTransaction<
    * @param config - Request configuration object
    * @returns Promise of response data
    */
-  request<Transaction = unknown>(
+  public request<Transaction = unknown>(
     config: Transaction extends RequestTransactionInterface<Config, unknown>
       ? Transaction['request']
       : Config
@@ -195,7 +195,7 @@ export class RequestTransaction<
    * @param {string} url - The URL to send the request to
    * @param {Omit<Config, 'url' | 'method'>} [config] - Additional configuration options
    */
-  get<Transaction = unknown>(
+  public get<Transaction = unknown>(
     url: string,
     config?: Omit<Config, 'url' | 'method'>
   ): Promise<
@@ -219,7 +219,7 @@ export class RequestTransaction<
    * @param {Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction['request']['data'] : Config['data']} [data] - The data to be sent in the request body
    * @param {Omit<Config, 'url' | 'method' | 'data'>} [config] - Additional configuration options
    */
-  post<Transaction = unknown>(
+  public post<Transaction = unknown>(
     url: string,
     data?: Transaction extends RequestTransactionInterface<Config, unknown>
       ? Transaction['request']['data']
@@ -247,7 +247,7 @@ export class RequestTransaction<
    * @param {Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction['request']['data'] : Config['data']} [data] - The data to be sent in the request body
    * @param {Omit<Config, 'url' | 'method' | 'data'>} [config] - Additional configuration options
    */
-  put<Transaction = unknown>(
+  public put<Transaction = unknown>(
     url: string,
     data?: Transaction extends RequestTransactionInterface<Config, unknown>
       ? Transaction['request']['data']
@@ -274,7 +274,7 @@ export class RequestTransaction<
    * @param {string} url - The URL to send the request to
    * @param {Omit<Config, 'url' | 'method'>} [config] - Additional configuration options
    */
-  delete<Transaction = unknown>(
+  public delete<Transaction = unknown>(
     url: string,
     config?: Omit<Config, 'url' | 'method'>
   ): Promise<
@@ -298,7 +298,7 @@ export class RequestTransaction<
    * @param {Transaction extends RequestTransactionInterface<Config, unknown> ? Transaction['request']['data'] : Config['data']} [data] - The data to be sent in the request body
    * @param {Omit<Config, 'url' | 'method' | 'data'>} [config] - Additional configuration options
    */
-  patch<Transaction = unknown>(
+  public patch<Transaction = unknown>(
     url: string,
     data?: Transaction extends RequestTransactionInterface<Config, unknown>
       ? Transaction['request']['data']

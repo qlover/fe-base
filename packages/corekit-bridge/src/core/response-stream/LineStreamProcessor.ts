@@ -62,7 +62,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * // Result: ["line1", "line2"]
    * ```
    */
-  processChunk(chunk: string): string[] {
+  public processChunk(chunk: string): string[] {
     return chunk
       .split(this.separator)
       .map((line) => line.trim())
@@ -89,7 +89,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * // Result: "last line"
    * ```
    */
-  processFinal(data: string): string | undefined {
+  public processFinal(data: string): string | undefined {
     const trimmed = data.trim();
     return trimmed !== '' ? trimmed : undefined;
   }

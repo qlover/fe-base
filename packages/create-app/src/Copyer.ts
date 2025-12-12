@@ -11,14 +11,16 @@ export type CopyCallback = (
 ) => boolean | Promise<boolean>;
 
 export class Copyer {
-  static IGNORE_FILE = '.gitignore.template';
+  public static IGNORE_FILE = '.gitignore.template';
 
   constructor(
     private readonly ignoreTargetPath: string,
     private readonly ignoreFile: string = Copyer.IGNORE_FILE
   ) {}
 
-  getIg(targetDir: string = this.ignoreTargetPath): ignore.Ignore | undefined {
+  public getIg(
+    targetDir: string = this.ignoreTargetPath
+  ): ignore.Ignore | undefined {
     const gitignorePath = join(targetDir, this.ignoreFile);
 
     if (!existsSync(gitignorePath)) {
@@ -44,7 +46,7 @@ export class Copyer {
    * @example
    * await copyer.copyFilesPromise('src', 'dest', ignoreInstance);
    */
-  async copyFiles(
+  public async copyFiles(
     sourcePath: string,
     targetDir: string,
     ig?: ignore.Ignore,
@@ -87,7 +89,7 @@ export class Copyer {
     );
   }
 
-  copyPaths({
+  public copyPaths({
     sourcePath,
     targetPath,
     copyCallback

@@ -48,11 +48,11 @@ vi.mock('typedoc', () => ({
   },
   TSConfigReader: class TSConfigReader {
     constructor() {}
-    read(): void {}
+    public read(): void {}
   },
   TypeDocReader: class TypeDocReader {
     constructor() {}
-    read(): void {}
+    public read(): void {}
   }
 }));
 

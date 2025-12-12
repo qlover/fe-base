@@ -142,7 +142,7 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * // Generates markdown files for all TypeScript source files
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     const { formatProject = [] } = this.context.options;
     const fileGroups = this.groupByFile(formatProject);
 
@@ -205,7 +205,7 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * }
    * ```
    */
-  override async onSuccess(): Promise<void> {
+  public override async onSuccess(): Promise<void> {
     const { generatePath } = this.context.options;
     const formatOutput = this.getConfig('formatOutput');
 
@@ -252,7 +252,7 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * }
    * ```
    */
-  async formatDocument(
+  public async formatDocument(
     targetPath: string,
     formatOutput: FormatOutputType
   ): Promise<void> {
@@ -314,7 +314,9 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * console.log(groups.size); // 0
    * ```
    */
-  groupByFile(data: FormatProjectValue[]): Map<string, FormatProjectValue[]> {
+  public groupByFile(
+    data: FormatProjectValue[]
+  ): Map<string, FormatProjectValue[]> {
     const fileGroups = new Map<string, FormatProjectValue[]>();
 
     for (const item of data) {
@@ -371,7 +373,10 @@ export class Formats extends ScriptPlugin<Code2MDContext, FormatsProps> {
    * }, 0);
    * ```
    */
-  formatProjectValue(data: FormatProjectValue, level: number = 0): string {
+  public formatProjectValue(
+    data: FormatProjectValue,
+    level: number = 0
+  ): string {
     const content: string[] = [];
 
     // Render current element, passing level parameter

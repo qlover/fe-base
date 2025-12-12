@@ -14,8 +14,8 @@ class TestPlugin extends ScriptPlugin<ScriptContext<any>, ScriptPluginProps> {
     this.option2 = option2;
   }
 
-  option1: string;
-  option2: number;
+  public option1: string;
+  public option2: number;
 }
 
 describe('tuple utils', () => {

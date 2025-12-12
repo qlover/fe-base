@@ -12,11 +12,11 @@ describe('Logger', () => {
     public events: LogEvent[] = [];
     public formatter: FormatterInterface | null = null;
 
-    append(event: LogEvent): void {
+    public append(event: LogEvent): void {
       this.events.push(event);
     }
 
-    setFormatter(formatter: FormatterInterface): void {
+    public setFormatter(formatter: FormatterInterface): void {
       this.formatter = formatter;
     }
   }
@@ -379,7 +379,7 @@ describe('Logger', () => {
 
   describe('formatter behavior', () => {
     class TestFormatter implements FormatterInterface {
-      format(event: LogEvent): string[] {
+      public format(event: LogEvent): string[] {
         return [
           `[${event.loggerName}][${event.level}]`,
           ...(event.args as string[])
@@ -388,7 +388,7 @@ describe('Logger', () => {
     }
 
     class ContextFormatter implements FormatterInterface {
-      format(event: LogEvent): string[] {
+      public format(event: LogEvent): string[] {
         if (event.context) {
           return [
             `[${event.level}]`,
@@ -446,7 +446,7 @@ describe('Logger', () => {
       class ChainFormatter implements FormatterInterface {
         constructor(private nextFormatter: FormatterInterface) {}
 
-        format(event: LogEvent): string[] {
+        public format(event: LogEvent): string[] {
           const formatted = this.nextFormatter.format(event) as string[];
           return [`CHAIN-${formatted[0]}`, ...formatted.slice(1)];
         }
@@ -476,13 +476,13 @@ describe('Logger', () => {
 
   describe('appender error handling', () => {
     class ErrorAppender implements HandlerInterface {
-      formatter: FormatterInterface | null = null;
+      public formatter: FormatterInterface | null = null;
 
-      append(): void {
+      public append(): void {
         throw new Error('Appender error');
       }
 
-      setFormatter(formatter: FormatterInterface): void {
+      public setFormatter(formatter: FormatterInterface): void {
         this.formatter = formatter;
       }
     }

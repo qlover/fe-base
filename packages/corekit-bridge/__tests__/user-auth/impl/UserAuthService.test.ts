@@ -33,27 +33,27 @@ class MockUserAuthApi implements UserAuthApiInterface<MockUser> {
   public mockLogout: Mock = vi.fn();
   public mockGetUserInfo: Mock = vi.fn();
 
-  getStore(): UserAuthStoreInterface<MockUser> | null {
+  public getStore(): UserAuthStoreInterface<MockUser> | null {
     return this.store;
   }
 
-  setStore(store: UserAuthStoreInterface<MockUser>): void {
+  public setStore(store: UserAuthStoreInterface<MockUser>): void {
     this.store = store;
   }
 
-  async login(params: unknown): Promise<LoginResponseData> {
+  public async login(params: unknown): Promise<LoginResponseData> {
     return this.mockLogin(params);
   }
 
-  async register(params: unknown): Promise<LoginResponseData> {
+  public async register(params: unknown): Promise<LoginResponseData> {
     return this.mockRegister(params);
   }
 
-  async logout(): Promise<void> {
+  public async logout(): Promise<void> {
     return this.mockLogout();
   }
 
-  async getUserInfo(params?: unknown): Promise<MockUser> {
+  public async getUserInfo(params?: unknown): Promise<MockUser> {
     return this.mockGetUserInfo(params);
   }
 }
@@ -629,7 +629,7 @@ describe('UserAuthService', () => {
       /**
        * Override login with rate limiting and audit logging
        */
-      async login(params: unknown): Promise<LoginResponseData> {
+      public async login(params: unknown): Promise<LoginResponseData> {
         this.loginAttempts++;
 
         if (this.loginAttempts > this.maxLoginAttempts) {
@@ -658,7 +658,7 @@ describe('UserAuthService', () => {
       /**
        * Override register with custom validation
        */
-      async register(params: unknown): Promise<LoginResponseData> {
+      public async register(params: unknown): Promise<LoginResponseData> {
         // Custom pre-registration validation
         this.validateRegistrationParams(params);
 
@@ -674,7 +674,7 @@ describe('UserAuthService', () => {
       /**
        * Override logout with cleanup
        */
-      async logout(): Promise<void> {
+      public async logout(): Promise<void> {
         // Custom pre-logout actions
         await this.cleanupUserSessions();
 
@@ -688,35 +688,35 @@ describe('UserAuthService', () => {
       /**
        * Custom method: Get login attempts
        */
-      getLoginAttempts(): number {
+      public getLoginAttempts(): number {
         return this.loginAttempts;
       }
 
       /**
        * Custom method: Reset login attempts
        */
-      resetLoginAttempts(): void {
+      public resetLoginAttempts(): void {
         this.loginAttempts = 0;
       }
 
       /**
        * Custom method: Check if rate limited
        */
-      isRateLimited(): boolean {
+      public isRateLimited(): boolean {
         return this.loginAttempts >= this.maxLoginAttempts;
       }
 
       /**
        * Custom method: Get service features
        */
-      getFeatures(): typeof this.customFeatures {
+      public getFeatures(): typeof this.customFeatures {
         return { ...this.customFeatures };
       }
 
       /**
        * Custom method: Toggle feature
        */
-      toggleFeature(feature: keyof typeof this.customFeatures): void {
+      public toggleFeature(feature: keyof typeof this.customFeatures): void {
         this.customFeatures[feature] = !this.customFeatures[feature];
       }
 
@@ -794,7 +794,7 @@ describe('UserAuthService', () => {
       /**
        * Override login with event emission and session management
        */
-      async login(params: unknown): Promise<LoginResponseData> {
+      public async login(params: unknown): Promise<LoginResponseData> {
         this.emit('login:start', params);
 
         try {
@@ -814,7 +814,7 @@ describe('UserAuthService', () => {
       /**
        * Override logout with event emission
        */
-      async logout(): Promise<void> {
+      public async logout(): Promise<void> {
         this.emit('logout:start');
 
         try {
@@ -830,7 +830,7 @@ describe('UserAuthService', () => {
       /**
        * Custom method: Add event listener
        */
-      addEventListener(
+      public addEventListener(
         event: string,
         callback: (data?: unknown) => void
       ): void {
@@ -843,7 +843,7 @@ describe('UserAuthService', () => {
       /**
        * Custom method: Remove event listener
        */
-      removeEventListener(
+      public removeEventListener(
         event: string,
         callback: (data?: unknown) => void
       ): void {
@@ -900,14 +900,14 @@ describe('UserAuthService', () => {
       /**
        * Custom method: Enable/disable auto refresh
        */
-      setAutoRefresh(enabled: boolean): void {
+      public setAutoRefresh(enabled: boolean): void {
         this.autoRefreshEnabled = enabled;
       }
 
       /**
        * Custom method: Get session info
        */
-      getSessionInfo(): {
+      public getSessionInfo(): {
         hasTimeout: boolean;
         autoRefreshEnabled: boolean;
         eventListeners: string[];

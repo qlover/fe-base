@@ -105,11 +105,11 @@ class ColorHandler implements HandlerInterface {
     this.formatter = formatter;
   }
 
-  setFormatter(formatter: FormatterInterface): void {
+  public setFormatter(formatter: FormatterInterface): void {
     this.formatter = formatter;
   }
 
-  append(event: LogEvent): void {
+  public append(event: LogEvent): void {
     const formattedArgs = this.formatter.format(event);
     if (Array.isArray(formattedArgs)) {
       console.log(formattedArgs[0], ...formattedArgs.slice(1));

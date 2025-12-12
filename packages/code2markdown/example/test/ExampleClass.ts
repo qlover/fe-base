@@ -95,7 +95,7 @@ export class ExampleClass {
    * @param {string} name Example param name
    * @returns {string} Example return name
    */
-  exampleMethod(name: string): string {
+  public exampleMethod(name: string): string {
     return name;
   }
 

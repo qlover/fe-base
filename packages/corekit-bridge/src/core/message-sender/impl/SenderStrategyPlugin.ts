@@ -123,7 +123,7 @@ export class SenderStrategyPlugin<
   T extends MessageStoreMsg<unknown, unknown>
 > extends MessageSenderBasePlugin<T> {
   /** Plugin identifier */
-  readonly pluginName = 'SenderStrategyPlugin';
+  public readonly pluginName = 'SenderStrategyPlugin';
 
   /**
    * Logger message templates
@@ -230,7 +230,9 @@ export class SenderStrategyPlugin<
    *
    * @param context - Execution context containing message sender parameters
    */
-  onBefore(context: ExecutorContext<MessageSenderContextOptions<T>>): void {
+  public onBefore(
+    context: ExecutorContext<MessageSenderContextOptions<T>>
+  ): void {
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
         this.closeAddedToStore(context);
@@ -309,7 +311,9 @@ export class SenderStrategyPlugin<
    *
    * @throws {Error} When message update fails for already-added messages
    */
-  onSuccess(context: ExecutorContext<MessageSenderContextOptions<T>>): void {
+  public onSuccess(
+    context: ExecutorContext<MessageSenderContextOptions<T>>
+  ): void {
     const { addedToStore } = context.parameters;
 
     const successData = context.returnValue as MessageStoreMsg<
@@ -419,7 +423,7 @@ export class SenderStrategyPlugin<
    *
    * @throws {Error} When message update fails for KEEP_FAILED strategy
    */
-  onError(
+  public onError(
     context: ExecutorContext<MessageSenderContextOptions<T>>
   ): ExecutorError | void {
     const error = context.error;
@@ -505,7 +509,7 @@ export class SenderStrategyPlugin<
    * }
    * ```
    */
-  onStream(
+  public onStream(
     context: MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>,
     chunk: unknown
   ): Promise<unknown> | unknown | void {
@@ -627,7 +631,9 @@ export class SenderStrategyPlugin<
    *
    * @param context - Execution context containing message sender parameters
    */
-  onConnected(context: ExecutorContext<MessageSenderContextOptions<T>>): void {
+  public onConnected(
+    context: ExecutorContext<MessageSenderContextOptions<T>>
+  ): void {
     this.handleConnectionEstablished(context.parameters);
   }
 

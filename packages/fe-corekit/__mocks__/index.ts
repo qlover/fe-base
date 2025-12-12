@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 
 export class Logger {
-  isCI: boolean;
-  isDryRun: boolean;
-  isDebug: boolean;
-  isSilent: boolean;
+  public isCI: boolean;
+  public isDryRun: boolean;
+  public isDebug: boolean;
+  public isSilent: boolean;
   constructor({
     isCI = false,
     dryRun = false,
@@ -16,14 +16,14 @@ export class Logger {
     this.isDebug = debug;
     this.isSilent = silent;
   }
-  info = vi.fn();
-  debug = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  log = vi.fn();
-  exec = vi.fn();
-  obtrusive = vi.fn();
-  verbose = vi.fn();
+  public info = vi.fn();
+  public debug = vi.fn();
+  public warn = vi.fn();
+  public error = vi.fn();
+  public log = vi.fn();
+  public exec = vi.fn();
+  public obtrusive = vi.fn();
+  public verbose = vi.fn();
 }
 
 export * from '../src';

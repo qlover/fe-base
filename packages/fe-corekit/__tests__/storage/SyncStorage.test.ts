@@ -27,33 +27,33 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     clear: 0
   };
 
-  get length(): number {
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T, options?: unknown): T {
+  public setItem<T>(key: Key, value: T, options?: unknown): T {
     this.calls.setItem.push({ key, value, options });
     this.data.set(String(key), value);
     return value;
   }
 
-  getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
+  public getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
     const value = this.data.get(String(key));
     return (value ?? defaultValue ?? null) as T | null;
   }
 
-  removeItem(key: Key, options?: unknown): void {
+  public removeItem(key: Key, options?: unknown): void {
     this.calls.removeItem.push({ key, options });
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.calls = {
       setItem: [],
@@ -64,7 +64,7 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   }
 
   // Helper method to directly set data (simulating existing storage)
-  directSet(key: string, value: unknown): void {
+  public directSet(key: string, value: unknown): void {
     this.data.set(key, value);
   }
 }
@@ -89,7 +89,7 @@ class MockSerializer<T = unknown> implements SerializerIneterface<T, string> {
   public shouldFailSerialization = false;
   public shouldFailDeserialization = false;
 
-  serialize(data: T): string {
+  public serialize(data: T): string {
     this.calls.serialize.push(data);
     if (this.shouldFailSerialization) {
       throw new Error('Serialization failed');
@@ -97,7 +97,7 @@ class MockSerializer<T = unknown> implements SerializerIneterface<T, string> {
     return `serialized_${JSON.stringify(data)}`;
   }
 
-  deserialize(data: string, defaultValue?: T): T {
+  public deserialize(data: string, defaultValue?: T): T {
     this.calls.deserialize.push({ data, defaultValue });
     if (this.shouldFailDeserialization) {
       throw new Error('Deserialization failed');
@@ -112,7 +112,7 @@ class MockSerializer<T = unknown> implements SerializerIneterface<T, string> {
     }
   }
 
-  reset(): void {
+  public reset(): void {
     this.calls = {
       serialize: [],
       deserialize: []
@@ -142,7 +142,7 @@ class MockEncryptor<T = unknown> implements Encryptor<T, string> {
   public shouldFailEncryption = false;
   public shouldFailDecryption = false;
 
-  encrypt(data: T): string {
+  public encrypt(data: T): string {
     this.calls.encrypt.push(data);
     if (this.shouldFailEncryption) {
       throw new Error('Encryption failed');
@@ -150,7 +150,7 @@ class MockEncryptor<T = unknown> implements Encryptor<T, string> {
     return `encrypted_${String(data)}`;
   }
 
-  decrypt(data: string): T {
+  public decrypt(data: string): T {
     this.calls.decrypt.push(data);
     if (this.shouldFailDecryption) {
       throw new Error('Decryption failed');
@@ -161,7 +161,7 @@ class MockEncryptor<T = unknown> implements Encryptor<T, string> {
     return data.replace('encrypted_', '') as T;
   }
 
-  reset(): void {
+  public reset(): void {
     this.calls = {
       encrypt: [],
       decrypt: []
@@ -183,7 +183,7 @@ class MockJSONEncryptor<T = unknown> implements Encryptor<T, string> {
   public shouldFailEncryption = false;
   public shouldFailDecryption = false;
 
-  encrypt(data: T): string {
+  public encrypt(data: T): string {
     this.calls.encrypt.push(data);
     if (this.shouldFailEncryption) {
       throw new Error('Encryption failed');
@@ -191,7 +191,7 @@ class MockJSONEncryptor<T = unknown> implements Encryptor<T, string> {
     return `encrypted_${String(data)}`;
   }
 
-  decrypt(data: string): T {
+  public decrypt(data: string): T {
     this.calls.decrypt.push(data);
     if (this.shouldFailDecryption) {
       throw new Error('Decryption failed');
@@ -207,7 +207,7 @@ class MockJSONEncryptor<T = unknown> implements Encryptor<T, string> {
     }
   }
 
-  reset(): void {
+  public reset(): void {
     this.calls = {
       encrypt: [],
       decrypt: []

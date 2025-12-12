@@ -440,7 +440,13 @@ export class TimestampFormatter implements FormatterInterface {
    * ]
    * ```
    */
-  format({ timestamp, level, args, context, loggerName }: LogEvent): unknown[] {
+  public format({
+    timestamp,
+    level,
+    args,
+    context,
+    loggerName
+  }: LogEvent): unknown[] {
     const {
       locale = 'zh-CN',
       localeOptions,

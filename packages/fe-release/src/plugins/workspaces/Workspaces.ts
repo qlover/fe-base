@@ -124,11 +124,11 @@ export default class Workspaces extends ScriptPlugin<
     });
   }
 
-  override enabled(): boolean {
+  public override enabled(): boolean {
     return !this._skip && !this.getConfig('skip');
   }
 
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     const workspace = this.getConfig('workspace');
 
     if (workspace) {
@@ -187,11 +187,11 @@ export default class Workspaces extends ScriptPlugin<
     this.logger.debug('skip next workspace');
   }
 
-  setReleaseTask(releaseTask: ReleaseTask): void {
+  public setReleaseTask(releaseTask: ReleaseTask): void {
     this.releaseTask = releaseTask;
   }
 
-  setCurrentWorkspace(
+  public setCurrentWorkspace(
     workspace: WorkspaceValue,
     workspaces?: WorkspaceValue[]
   ): void {
@@ -216,7 +216,7 @@ export default class Workspaces extends ScriptPlugin<
     return typeof result === 'string' ? result.split('\n') : [];
   }
 
-  async getChangedPackages(
+  public async getChangedPackages(
     packagesPaths: string[],
     changeLabels?: string[]
   ): Promise<string[]> {
@@ -260,7 +260,7 @@ export default class Workspaces extends ScriptPlugin<
     }));
   }
 
-  async getWorkspaces(): Promise<WorkspaceValue[]> {
+  public async getWorkspaces(): Promise<WorkspaceValue[]> {
     const projectWorkspaces: WorkspaceValue[] = this.getProjectWorkspaces();
 
     const packages = projectWorkspaces.map(({ path }) => path);

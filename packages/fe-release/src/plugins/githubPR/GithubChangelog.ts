@@ -142,7 +142,7 @@ export default class GithubChangelog extends GitChangelog {
    * // Only commits that modified files in packages/pkg-a
    * ```
    */
-  async filterCommitsByDirectory(
+  public async filterCommitsByDirectory(
     commits: CommitValue[],
     directory: string
   ): Promise<CommitValue[]> {
@@ -200,7 +200,9 @@ export default class GithubChangelog extends GitChangelog {
    * // Includes all PR commits
    * ```
    */
-  async getFullCommit(options?: GitChangelogOptions): Promise<CommitValue[]> {
+  public async getFullCommit(
+    options?: GitChangelogOptions
+  ): Promise<CommitValue[]> {
     const _options = { ...this.options, ...options };
 
     const allCommits = await this.getCommits(_options);
@@ -272,7 +274,7 @@ export default class GithubChangelog extends GitChangelog {
    * // Returns workspaces with GitHub-formatted changelogs
    * ```
    */
-  async transformWorkspace(
+  public async transformWorkspace(
     workspaces: WorkspaceValue[],
     context: ReleaseContext
   ): Promise<WorkspaceValue[]> {

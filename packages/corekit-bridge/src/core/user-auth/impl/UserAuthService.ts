@@ -464,7 +464,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * const loginStatus = store.getLoginStatus();
    * const userInfo = store.getUserInfo();
    */
-  get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
+  public get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
     return this._store;
   }
 
@@ -574,7 +574,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('2FA login failed:', error.message);
    * }
    */
-  async login(params: unknown): Promise<LoginResponseData> {
+  public async login(params: unknown): Promise<LoginResponseData> {
     this.store.startAuth();
 
     try {
@@ -646,7 +646,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * const refreshedData = await tokenService.refreshToken();
    * const user = await authService.userInfo(refreshedData);
    */
-  async userInfo(
+  public async userInfo(
     loginData?: LoginResponseData
   ): Promise<PickUser<InferState<T>>> {
     const result = await this.api.getUserInfo(loginData);
@@ -709,7 +709,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('Failed to logout from all devices:', error.message);
    * }
    */
-  async logout(): Promise<void> {
+  public async logout(): Promise<void> {
     try {
       await this.api.logout();
     } finally {
@@ -850,7 +850,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('Custom field registration failed:', error.message);
    * }
    */
-  async register(params: unknown): Promise<LoginResponseData> {
+  public async register(params: unknown): Promise<LoginResponseData> {
     this.store.startAuth();
 
     try {
@@ -909,7 +909,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   return api.getData();
    * };
    */
-  isAuthenticated(): boolean {
+  public isAuthenticated(): boolean {
     return (
       this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS &&
       !!this.store.getUserInfo()

@@ -71,7 +71,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * // Result: ["event1", "event2", "event3"]
    * ```
    */
-  processChunk(chunk: string): string[] {
+  public processChunk(chunk: string): string[] {
     return chunk
       .split('\n')
       .map((line) => line.trim())
@@ -107,7 +107,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * // Result: "incomplete"
    * ```
    */
-  processFinal(data: string): string | undefined {
+  public processFinal(data: string): string | undefined {
     const lines = data
       .split('\n')
       .map((line) => line.trim())

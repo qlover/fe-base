@@ -63,7 +63,7 @@ export abstract class StoreInterface<
    * @deprecated use `this.reset()` instead, extends `SliceStore`
    * @returns void
    */
-  resetState(): void {
+  public resetState(): void {
     // Create a new instance of initial state
     this.emit(this.stateFactory());
   }
@@ -75,7 +75,7 @@ export abstract class StoreInterface<
    * @returns T - the new cloned state
    * @since 1.3.1
    */
-  cloneState(source?: Partial<T>): T {
+  public cloneState(source?: Partial<T>): T {
     const cloned = clone(this.state);
     if (typeof cloned === 'object' && cloned !== null) {
       Object.assign(cloned, source);

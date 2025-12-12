@@ -44,7 +44,7 @@ interface TestUser {
  * Mock gateway implementation for testing
  */
 class MockGateway {
-  async getUser(params: { id: number }): Promise<TestUser> {
+  public async getUser(params: { id: number }): Promise<TestUser> {
     return {
       id: params.id,
       name: 'John Doe',
@@ -52,14 +52,17 @@ class MockGateway {
     };
   }
 
-  async getUsers(): Promise<TestUser[]> {
+  public async getUsers(): Promise<TestUser[]> {
     return [
       { id: 1, name: 'John', email: 'john@example.com' },
       { id: 2, name: 'Jane', email: 'jane@example.com' }
     ];
   }
 
-  async createUser(params: { name: string; email: string }): Promise<TestUser> {
+  public async createUser(params: {
+    name: string;
+    email: string;
+  }): Promise<TestUser> {
     return {
       id: Date.now(),
       name: params.name,
@@ -72,15 +75,15 @@ class MockGateway {
  * Mock logger implementation for testing
  */
 class MockLogger implements LoggerInterface {
-  log = vi.fn();
-  fatal = vi.fn();
-  trace = vi.fn();
-  debug = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  addAppender = vi.fn();
-  context<Value>(value?: Value): LogContext<Value> {
+  public log = vi.fn();
+  public fatal = vi.fn();
+  public trace = vi.fn();
+  public debug = vi.fn();
+  public info = vi.fn();
+  public warn = vi.fn();
+  public error = vi.fn();
+  public addAppender = vi.fn();
+  public context<Value>(value?: Value): LogContext<Value> {
     return new LogContext<Value>(value);
   }
 }
@@ -108,22 +111,22 @@ class TestGatewayService extends GatewayService<
     });
   }
 
-  async getUser(id: number): Promise<TestUser | null> {
+  public async getUser(id: number): Promise<TestUser | null> {
     return this.execute('getUser', { id });
   }
 
-  async getUsers(): Promise<TestUser[] | null> {
+  public async getUsers(): Promise<TestUser[] | null> {
     return this.execute('getUsers', {});
   }
 
-  async createUser(params: {
+  public async createUser(params: {
     name: string;
     email: string;
   }): Promise<TestUser | null> {
     return this.execute('createUser', params);
   }
 
-  async customAction(_params: unknown): Promise<unknown> {
+  public async customAction(_params: unknown): Promise<unknown> {
     return this.execute('getUser', _params, async () => {
       return { id: 999, name: 'Custom', email: 'custom@example.com' };
     });
@@ -913,7 +916,7 @@ describe('GatewayService', () => {
         class GatewayWithThis {
           private value = 'test-value';
 
-          async getValue(): Promise<string> {
+          public async getValue(): Promise<string> {
             return this.value;
           }
         }

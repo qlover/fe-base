@@ -80,7 +80,7 @@ export type RequestCommonPluginConfig = {
 export class RequestCommonPlugin
   implements ExecutorPlugin<RequestAdapterConfig>
 {
-  readonly pluginName = 'RequestCommonPlugin';
+  public readonly pluginName = 'RequestCommonPlugin';
 
   constructor(readonly config: RequestCommonPluginConfig = {}) {
     if (config.requiredToken && !config.token) {
@@ -121,7 +121,7 @@ export class RequestCommonPlugin
     return result;
   }
 
-  onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
+  public onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const {
       tokenPrefix,
       defaultHeaders,
@@ -174,7 +174,7 @@ export class RequestCommonPlugin
     }
   }
 
-  async onSuccess(
+  public async onSuccess(
     context: ExecutorContext<RequestAdapterConfig>
   ): Promise<void> {
     const { parameters, returnValue } = context;
@@ -206,7 +206,7 @@ export class RequestCommonPlugin
     }
   }
 
-  getAuthToken(mergeConfig?: Partial<RequestAdapterConfig>): string {
+  public getAuthToken(mergeConfig?: Partial<RequestAdapterConfig>): string {
     const { token } = { ...this.config, ...mergeConfig };
     return typeof token === 'function' ? (token() ?? '') : (token ?? '');
   }

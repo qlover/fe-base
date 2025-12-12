@@ -608,7 +608,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * const debug = this.env.get('DEBUG', 'false');
    * ```
    */
-  get env(): Env {
+  public get env(): Env {
     if (!this.options.env) {
       throw new Error('Environment is not initialized');
     }
@@ -792,7 +792,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * // Merges nested build configuration
    * ```
    */
-  setOptions(options: Partial<Opt>): void {
+  public setOptions(options: Partial<Opt>): void {
     this.options = merge(this.options, options);
   }
 
@@ -839,7 +839,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * const isDebug = debug === 'true';
    * ```
    */
-  getEnv(key: string, defaultValue?: string): string | undefined {
+  public getEnv(key: string, defaultValue?: string): string | undefined {
     return this.env.get(key) ?? defaultValue;
   }
 
@@ -898,7 +898,7 @@ export class ScriptContext<Opt extends ScriptSharedInterface>
    * // Returns the complete options object
    * ```
    */
-  getOptions<T = unknown>(key?: string | string[], defaultValue?: T): T {
+  public getOptions<T = unknown>(key?: string | string[], defaultValue?: T): T {
     if (!key) {
       return this.options as unknown as T;
     }

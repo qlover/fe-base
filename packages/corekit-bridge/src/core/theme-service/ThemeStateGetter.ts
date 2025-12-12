@@ -1,9 +1,9 @@
 import { ThemeServiceProps, ThemeServiceState } from './type';
 
 export class ThemeStateGetter {
-  static SYSTEM_THEME = 'system';
+  public static SYSTEM_THEME = 'system';
 
-  static create(props: ThemeServiceProps): ThemeServiceState {
+  public static create(props: ThemeServiceProps): ThemeServiceState {
     const theme = ThemeStateGetter.getDefaultTheme(props);
 
     return {
@@ -11,7 +11,7 @@ export class ThemeStateGetter {
     };
   }
 
-  static getDefaultTheme(props: ThemeServiceProps): string {
+  public static getDefaultTheme(props: ThemeServiceProps): string {
     const { storage, storageKey, defaultTheme, prioritizeStore } = props;
 
     let theme;
@@ -46,7 +46,7 @@ export class ThemeStateGetter {
     return ThemeStateGetter.getSystemTheme();
   }
 
-  static getSystemTheme(): 'dark' | 'light' {
+  public static getSystemTheme(): 'dark' | 'light' {
     if (typeof window === 'undefined') {
       // if not in browser, return light
       console.warn('ThemeStateGetter: not in browser, return light');

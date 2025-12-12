@@ -238,7 +238,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * executor.use(plugin); // Second addition - skipped with warning
    * ```
    */
-  use(plugin: ExecutorPlugin): void {
+  public use(plugin: ExecutorPlugin): void {
     if (typeof plugin !== 'object' || plugin === null) {
       throw new Error('Plugin must be an object');
     }

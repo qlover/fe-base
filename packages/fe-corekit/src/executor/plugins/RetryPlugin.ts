@@ -104,12 +104,12 @@ export class RetryPlugin implements ExecutorPlugin {
   /**
    * The pluginName of the plugin
    */
-  readonly pluginName = 'RetryPlugin';
+  public readonly pluginName = 'RetryPlugin';
 
   /**
    * Ensures only one instance of RetryPlugin is used per executor
    */
-  readonly onlyOne = true;
+  public readonly onlyOne = true;
 
   /**
    * Normalized options with defaults applied
@@ -184,7 +184,7 @@ export class RetryPlugin implements ExecutorPlugin {
    * const result = await retryPlugin.onExec(() => fetchData());
    * ```
    */
-  async onExec(
+  public async onExec(
     context: ExecutorContext<unknown>,
     task: PromiseTask<unknown, unknown>
   ): Promise<unknown> {
@@ -246,7 +246,7 @@ export class RetryPlugin implements ExecutorPlugin {
    * const result = await this.retry(fetchData, options, 3);
    * ```
    */
-  async retry<Result, Params = unknown>(
+  public async retry<Result, Params = unknown>(
     fn: PromiseTask<Result, Params>,
     context: ExecutorContext<Params>,
     options: RetryOptions,

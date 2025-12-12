@@ -17,7 +17,7 @@ class MockSerializer {
   public shouldFailSerialization = false;
   public shouldFailDeserialization = false;
 
-  serialize(data: unknown): string {
+  public serialize(data: unknown): string {
     this.calls.serialize.push(data);
     if (this.shouldFailSerialization) {
       throw new Error('Serialization failed');
@@ -25,7 +25,7 @@ class MockSerializer {
     return JSON.stringify(data);
   }
 
-  deserialize(data: string, defaultValue?: unknown): unknown {
+  public deserialize(data: string, defaultValue?: unknown): unknown {
     this.calls.deserialize.push({ data, defaultValue });
     if (this.shouldFailDeserialization) {
       return defaultValue;
@@ -37,7 +37,7 @@ class MockSerializer {
     }
   }
 
-  reset(): void {
+  public reset(): void {
     this.calls = {
       serialize: [],
       deserialize: []

@@ -343,7 +343,7 @@ export abstract class PersistentStore<
    * }
    * ```
    */
-  override emit(state: T, options?: { persist?: boolean }): void {
+  public override emit(state: T, options?: { persist?: boolean }): void {
     super.emit(state);
 
     const shouldPersist = options?.persist !== false && this.storage;

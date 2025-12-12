@@ -141,7 +141,7 @@ export abstract class GatewayService<
     this.executor = executor;
   }
 
-  getExecutor(): GatewayExecutor<T, Gateway> | undefined {
+  public getExecutor(): GatewayExecutor<T, Gateway> | undefined {
     return this.executor;
   }
 
@@ -288,7 +288,7 @@ export abstract class GatewayService<
    *
    * @internal This method is used internally by `execute` and typically doesn't need to be called directly
    */
-  createExecOptions<Params>(
+  public createExecOptions<Params>(
     action: keyof Gateway,
     params?: Params
   ): GatewayExecutorOptions<T, Gateway, Params> {

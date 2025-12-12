@@ -78,7 +78,7 @@ export class ChatMessage<T = unknown, R = unknown>
    * Optional during creation, typically assigned by the server
    * or generated client-side for tracking purposes.
    */
-  readonly id?: string;
+  public readonly id?: string;
 
   /**
    * Message content
@@ -86,7 +86,7 @@ export class ChatMessage<T = unknown, R = unknown>
    * The main payload of the message. Type is generic to support
    * various content formats (string, rich text, structured data).
    */
-  readonly content?: T;
+  public readonly content?: T;
 
   /**
    * Whether the message is currently loading
@@ -96,7 +96,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `false`
    */
-  readonly loading: boolean = false;
+  public readonly loading: boolean = false;
 
   /**
    * Result data from message processing
@@ -106,7 +106,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `null`
    */
-  readonly result: R | null = null;
+  public readonly result: R | null = null;
 
   /**
    * Error information if message processing failed
@@ -116,7 +116,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `null`
    */
-  readonly error: unknown = null;
+  public readonly error: unknown = null;
 
   /**
    * Message creation timestamp
@@ -126,7 +126,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `Date.now()`
    */
-  readonly startTime: number = Date.now();
+  public readonly startTime: number = Date.now();
 
   /**
    * Message completion timestamp
@@ -136,7 +136,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `0`
    */
-  readonly endTime: number = 0;
+  public readonly endTime: number = 0;
 
   /**
    * Placeholder text for the message
@@ -144,7 +144,7 @@ export class ChatMessage<T = unknown, R = unknown>
    * Optional placeholder text to display while the actual content
    * is loading or being generated. Commonly used for streaming responses.
    */
-  readonly placeholder?: string;
+  public readonly placeholder?: string;
 
   /**
    * File attachments associated with the message
@@ -152,7 +152,7 @@ export class ChatMessage<T = unknown, R = unknown>
    * Array of `File` objects attached to the message, such as images,
    * documents, or other media files.
    */
-  readonly files?: File[];
+  public readonly files?: File[];
 
   /**
    * Current status of the message
@@ -160,7 +160,7 @@ export class ChatMessage<T = unknown, R = unknown>
    * Indicates the processing state of the message (e.g., draft, sending,
    * sent, failed). The specific statuses are defined by `MessageStatusType`.
    */
-  readonly status?: MessageStatusType;
+  public readonly status?: MessageStatusType;
 
   /**
    * Role of the message sender
@@ -170,7 +170,7 @@ export class ChatMessage<T = unknown, R = unknown>
    *
    * @default `ChatMessageRole.USER`
    */
-  readonly role: ChatMessageRoleType = ChatMessageRole.USER;
+  public readonly role: ChatMessageRoleType = ChatMessageRole.USER;
 
   /**
    * Create a new chat message instance

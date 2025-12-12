@@ -43,7 +43,7 @@ export class UserAuthState<User> implements StoreStateInterface {
    * Current authentication status
    * Tracks the state of authentication operations (loading, success, failed)
    */
-  loginStatus: LOGIN_STATUS | null = null;
+  public loginStatus: LOGIN_STATUS | null = null;
 
   /**
    * Authentication error information
@@ -51,5 +51,5 @@ export class UserAuthState<User> implements StoreStateInterface {
    * Stores error details when authentication operations fail,
    * such as login failures, network errors, or user info fetch errors
    */
-  error: unknown | null = null;
+  public error: unknown | null = null;
 }

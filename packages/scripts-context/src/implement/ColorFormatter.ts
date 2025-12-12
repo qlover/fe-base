@@ -141,7 +141,7 @@ export class ColorFormatter implements FormatterInterface {
    * // Returns: [chalk.white('UNKNOWN'), 'Custom message']
    * ```
    */
-  format(event: LogEvent): unknown[] {
+  public format(event: LogEvent): unknown[] {
     const { level, args } = event;
 
     // Apply the appropriate color function to the level

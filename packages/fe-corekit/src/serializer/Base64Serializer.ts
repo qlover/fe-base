@@ -98,7 +98,7 @@ export class Base64Serializer implements SerializerIneterface<string, string> {
    * @param data - String to encode
    * @returns Base64 encoded string
    */
-  serialize(data: string): string {
+  public serialize(data: string): string {
     try {
       let base64: string;
 
@@ -132,7 +132,7 @@ export class Base64Serializer implements SerializerIneterface<string, string> {
    * @param defaultValue - Optional default value if decoding fails
    * @returns Decoded string
    */
-  deserialize(data: string, defaultValue?: string): string {
+  public deserialize(data: string, defaultValue?: string): string {
     try {
       // Input validation
       if (typeof data !== 'string') {

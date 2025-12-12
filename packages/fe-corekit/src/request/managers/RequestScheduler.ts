@@ -70,7 +70,7 @@ export class RequestScheduler<
    * @param config - The configuration for the request.
    * @returns A promise that resolves to the response of the request.
    */
-  override request<Response, Request>(
+  public override request<Response, Request>(
     config: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     return super.request(config) as Promise<
@@ -84,7 +84,7 @@ export class RequestScheduler<
    * @param config - The configuration for the GET request.
    * @returns A promise that resolves to the response of the GET request.
    */
-  async get<Response, Request>(
+  public async get<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -97,7 +97,7 @@ export class RequestScheduler<
    * @param config - The configuration for the POST request.
    * @returns A promise that resolves to the response of the POST request.
    */
-  async post<Response, Request>(
+  public async post<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -110,7 +110,7 @@ export class RequestScheduler<
    * @param config - The configuration for the PUT request.
    * @returns A promise that resolves to the response of the PUT request.
    */
-  async put<Response, Request>(
+  public async put<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -123,7 +123,7 @@ export class RequestScheduler<
    * @param config - The configuration for the DELETE request.
    * @returns A promise that resolves to the response of the DELETE request.
    */
-  async delete<Response, Request>(
+  public async delete<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -140,7 +140,7 @@ export class RequestScheduler<
    * @param config - The configuration for the PATCH request.
    * @returns A promise that resolves to the response of the PATCH request.
    */
-  async patch<Response, Request>(
+  public async patch<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -153,7 +153,7 @@ export class RequestScheduler<
    * @param config - The configuration for the HEAD request.
    * @returns A promise that resolves to the response of the HEAD request.
    */
-  async head<Response, Request>(
+  public async head<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -166,7 +166,7 @@ export class RequestScheduler<
    * @param config - The configuration for the OPTIONS request.
    * @returns A promise that resolves to the response of the OPTIONS request.
    */
-  async options<Response, Request>(
+  public async options<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -183,7 +183,7 @@ export class RequestScheduler<
    * @param config - The configuration for the TRACE request.
    * @returns A promise that resolves to the response of the TRACE request.
    */
-  async trace<Response, Request>(
+  public async trace<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
@@ -196,7 +196,7 @@ export class RequestScheduler<
    * @param config - The configuration for the CONNECT request.
    * @returns A promise that resolves to the response of the CONNECT request.
    */
-  async connect<Response, Request>(
+  public async connect<Response, Request>(
     url: string,
     config?: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {

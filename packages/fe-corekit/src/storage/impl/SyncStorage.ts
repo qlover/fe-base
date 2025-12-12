@@ -78,11 +78,11 @@ export class SyncStorage<Key, Opt = unknown>
   /**
    * Get the number of storage items
    */
-  get length(): number {
+  public get length(): number {
     return this.storage.length;
   }
 
-  setItem<T>(key: Key, value: T, options?: Opt): void {
+  public setItem<T>(key: Key, value: T, options?: Opt): void {
     let processedValue: unknown = value;
 
     // Process value through all pipes before storing
@@ -114,7 +114,7 @@ export class SyncStorage<Key, Opt = unknown>
     this.storage.setItem(key, processedValue, options);
   }
 
-  getItem<T>(key: Key, defaultValue?: T, options?: Opt): T | null {
+  public getItem<T>(key: Key, defaultValue?: T, options?: Opt): T | null {
     let processedValue = this.storage.getItem(key, defaultValue, options);
 
     // If no value found in main storage, try intermediate storage
@@ -181,7 +181,7 @@ export class SyncStorage<Key, Opt = unknown>
    * @param key - Storage key
    * @param options - Delete options
    */
-  removeItem(key: Key, options?: Opt): void {
+  public removeItem(key: Key, options?: Opt): void {
     this.storage.removeItem(key, options);
 
     this.pipes
@@ -194,7 +194,7 @@ export class SyncStorage<Key, Opt = unknown>
   /**
    * Clear all data, including storage in the pipeline
    */
-  clear(): void {
+  public clear(): void {
     this.storage.clear();
 
     this.pipes

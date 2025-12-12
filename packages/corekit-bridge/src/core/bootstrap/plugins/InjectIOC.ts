@@ -23,7 +23,7 @@ export interface InjectIOCOptions<Container extends IOCContainerInterface> {
 export class InjectIOC<Container extends IOCContainerInterface>
   implements BootstrapExecutorPlugin
 {
-  readonly pluginName = 'InjectIOC';
+  public readonly pluginName = 'InjectIOC';
 
   constructor(
     /**
@@ -32,7 +32,7 @@ export class InjectIOC<Container extends IOCContainerInterface>
     protected options: InjectIOCOptions<Container>
   ) {}
 
-  static isIocManager<C extends IOCContainerInterface>(
+  public static isIocManager<C extends IOCContainerInterface>(
     ioc?: unknown
   ): ioc is IOCManagerInterface<C> {
     return (
@@ -46,7 +46,7 @@ export class InjectIOC<Container extends IOCContainerInterface>
     );
   }
 
-  startup(): void {
+  public startup(): void {
     const { manager, register } = this.options;
 
     if (!manager.implemention) {
@@ -59,11 +59,11 @@ export class InjectIOC<Container extends IOCContainerInterface>
     }
   }
 
-  onBefore(): void {
+  public onBefore(): void {
     this.startup();
   }
 
-  onSuccess({ parameters: { logger } }: BootstrapContext): void {
+  public onSuccess({ parameters: { logger } }: BootstrapContext): void {
     logger.debug('InjectIOC success!');
   }
 }

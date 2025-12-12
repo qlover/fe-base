@@ -38,17 +38,17 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     clear: 0
   };
 
-  get length(): number {
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T, options?: unknown): T {
+  public setItem<T>(key: Key, value: T, options?: unknown): T {
     this.calls.setItem.push({ key, value, options });
     this.data.set(String(key), value);
     return value;
   }
 
-  getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
+  public getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
     if (this.shouldFailGetItem) {
       throw new Error('Storage getItem failed');
@@ -57,17 +57,17 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     return (value ?? defaultValue ?? null) as T | null;
   }
 
-  removeItem(key: Key, options?: unknown): void {
+  public removeItem(key: Key, options?: unknown): void {
     this.calls.removeItem.push({ key, options });
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.shouldFailGetItem = false;
     this.calls = {
@@ -1021,33 +1021,39 @@ describe('AsyncStore subclass implementation', () => {
     /**
      * Custom method to set custom property
      */
-    setCustomProperty(value: string): void {
+    public setCustomProperty(value: string): void {
       this.customProperty = value;
     }
 
     /**
      * Custom method to get custom property
      */
-    getCustomProperty(): string {
+    public getCustomProperty(): string {
       return this.customProperty;
     }
 
-    override start(result?: TestUser | undefined): void {
+    public override start(result?: TestUser | undefined): void {
       this.setCustomProperty('started');
       super.start(result);
     }
 
-    override success(result: TestUser): void {
+    public override success(result: TestUser): void {
       this.setCustomProperty('success');
       super.success(result);
     }
 
-    override failed(error: unknown, result?: TestUser | undefined): void {
+    public override failed(
+      error: unknown,
+      result?: TestUser | undefined
+    ): void {
       this.setCustomProperty('failed');
       super.failed(error, result);
     }
 
-    override stopped(error?: unknown, result?: TestUser | undefined): void {
+    public override stopped(
+      error?: unknown,
+      result?: TestUser | undefined
+    ): void {
       this.setCustomProperty('stopped');
       super.stopped(error, result);
     }
@@ -1055,7 +1061,7 @@ describe('AsyncStore subclass implementation', () => {
     /**
      * Custom async operation method
      */
-    async fetchData(): Promise<void> {
+    public async fetchData(): Promise<void> {
       this.start();
       try {
         // Simulate async operation
@@ -1243,7 +1249,7 @@ describe('AsyncStore extension patterns', () => {
       this.expirationKey = expirationKey;
     }
 
-    override restore<R = TestUser | TestUserState>(): R | null {
+    public override restore<R = TestUser | TestUserState>(): R | null {
       if (!this.storage || !this.storageKey) {
         return null;
       }
@@ -1279,7 +1285,7 @@ describe('AsyncStore extension patterns', () => {
     /**
      * Set expiration for the current state
      */
-    setExpiration(expiresInMs: number): void {
+    public setExpiration(expiresInMs: number): void {
       const expires = Date.now() + expiresInMs;
       this.updateState({
         expires
@@ -1373,11 +1379,14 @@ describe('AsyncStore extension patterns', () => {
         this.maxRetries = maxRetries;
       }
 
-      getRetryCount(): number {
+      public getRetryCount(): number {
         return this.retryCount;
       }
 
-      override failed(error: unknown, result?: TestUser | undefined): void {
+      public override failed(
+        error: unknown,
+        result?: TestUser | undefined
+      ): void {
         super.failed(error, result);
         this.retryCount++;
       }
@@ -1385,7 +1394,7 @@ describe('AsyncStore extension patterns', () => {
       /**
        * Retry the operation
        */
-      async retry(operation: () => Promise<TestUser>): Promise<void> {
+      public async retry(operation: () => Promise<TestUser>): Promise<void> {
         if (this.retryCount >= this.maxRetries) {
           return;
         }
@@ -1400,7 +1409,7 @@ describe('AsyncStore extension patterns', () => {
         }
       }
 
-      canRetry(): boolean {
+      public canRetry(): boolean {
         return this.retryCount < this.maxRetries;
       }
     }
@@ -1473,7 +1482,7 @@ describe('AsyncStore extension patterns', () => {
     > {
       protected baseProperty: string = 'base';
 
-      getBaseProperty(): string {
+      public getBaseProperty(): string {
         return this.baseProperty;
       }
     }
@@ -1487,11 +1496,11 @@ describe('AsyncStore extension patterns', () => {
     > {
       private derivedProperty: string = 'derived';
 
-      getDerivedProperty(): string {
+      public getDerivedProperty(): string {
         return this.derivedProperty;
       }
 
-      override start(result?: TestUser | undefined): void {
+      public override start(result?: TestUser | undefined): void {
         this.baseProperty = 'modified-base';
         this.derivedProperty = 'modified-derived';
         super.start(result);

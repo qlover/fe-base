@@ -376,9 +376,7 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
         // The '[' token is part of the MethodDefinition node, not the key expression
         if (node.computed) {
           // Find the first '[' token in the tokens array
-          const bracketToken = tokens.find(
-            (token) => token.value === '['
-          );
+          const bracketToken = tokens.find((token) => token.value === '[');
           if (bracketToken) {
             return bracketToken;
           }
@@ -425,9 +423,7 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
         // The '[' token is part of the PropertyDefinition node, not the key expression
         if (node.computed) {
           // Find the first '[' token in the tokens array
-          const bracketToken = tokens.find(
-            (token) => token.value === '['
-          );
+          const bracketToken = tokens.find((token) => token.value === '[');
           if (bracketToken) {
             return bracketToken;
           }
@@ -545,7 +541,7 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
           // If no modifier is present and allowImplicitPublic is false, report an error
           // When allowImplicitPublic is true, we allow properties without explicit modifiers
           // (they are implicitly public in TypeScript)
-          
+
           if (!node.accessibility && !allowImplicitPublic) {
             const className = getClassName(node);
             const memberName = getMemberName(node.key);

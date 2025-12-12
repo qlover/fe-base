@@ -179,7 +179,7 @@ export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
    *
    * @internal This method is used internally to resolve hook names for plugins
    */
-  getHookName(action: string, type: 'before' | 'success'): string {
+  public getHookName(action: string, type: 'before' | 'success'): string {
     return `on${firstUppercase(String(action))}${firstUppercase(type)}`;
   }
 
@@ -246,7 +246,7 @@ export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
    *
    * @internal This method is called by `GatewayService.execute` during action execution
    */
-  async runBeforeAction<Params = unknown>(
+  public async runBeforeAction<Params = unknown>(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     await this.runHook(
@@ -286,7 +286,7 @@ export class GatewayExecutor<T, Gateway> extends AsyncExecutor {
    *
    * @internal This method is called by `GatewayService.execute` after successful action execution
    */
-  async runSuccessAction<Params = unknown>(
+  public async runSuccessAction<Params = unknown>(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     await this.runHook(

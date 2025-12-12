@@ -70,7 +70,7 @@ export class StringZlibEncrypt implements Encryptor<string, string> {
    * @param value - String to encrypt
    * @returns Encrypted and compressed string with IV
    */
-  encrypt(value: string): string {
+  public encrypt(value: string): string {
     const iv = crypto.randomBytes(this.IV_LENGTH);
     const cipher = crypto.createCipheriv(this.ALGORITHM, this.KEY, iv);
 
@@ -88,7 +88,7 @@ export class StringZlibEncrypt implements Encryptor<string, string> {
    * @param encryptedData - Encrypted string with IV
    * @returns Original string
    */
-  decrypt(encryptedData: string): string {
+  public decrypt(encryptedData: string): string {
     const [encrypted, iv] = encryptedData.split(':');
     const decipher = crypto.createDecipheriv(
       this.ALGORITHM,

@@ -207,7 +207,7 @@ export class BaseService<
    *
    * @readonly
    */
-  readonly serviceName: string | symbol;
+  public readonly serviceName: string | symbol;
 
   /**
    * Gateway instance for API operations
@@ -324,7 +324,7 @@ export class BaseService<
    * });
    * ```
    */
-  getStore(): Store {
+  public getStore(): Store {
     return this.store;
   }
 
@@ -352,7 +352,7 @@ export class BaseService<
    * }
    * ```
    */
-  getGateway(): Gateway | undefined {
+  public getGateway(): Gateway | undefined {
     return this.gateway;
   }
 
@@ -373,7 +373,7 @@ export class BaseService<
    * }
    * ```
    */
-  getLogger(): LoggerInterface | undefined {
+  public getLogger(): LoggerInterface | undefined {
     return this.logger;
   }
 }

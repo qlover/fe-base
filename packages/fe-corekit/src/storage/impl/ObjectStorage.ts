@@ -124,7 +124,7 @@ export class ObjectStorage<
    * console.log(`Storage contains ${storage.length} items`);
    * ```
    */
-  get length(): number {
+  public get length(): number {
     return this.store.size;
   }
 
@@ -151,7 +151,11 @@ export class ObjectStorage<
    * storage.setItem('session', sessionData, Date.now() + 3600000);
    * ```
    */
-  setItem<T>(key: Key, value: T, options?: ObjectStorageOptions): unknown {
+  public setItem<T>(
+    key: Key,
+    value: T,
+    options?: ObjectStorageOptions
+  ): unknown {
     const parameters = { key, value: value ?? null } as StorageValue<Key, T>;
 
     if (typeof options?.expires === 'number' && options.expires > 0) {
@@ -196,7 +200,7 @@ export class ObjectStorage<
    * const config = storage.getItem<AppConfig>('app-config');
    * ```
    */
-  getItem<T>(key: Key, defaultValue?: T): T | null {
+  public getItem<T>(key: Key, defaultValue?: T): T | null {
     const storeValue = this.store.get(key);
 
     const _dv = defaultValue ?? null;
@@ -212,7 +216,7 @@ export class ObjectStorage<
     return this.getRawValue(value, _dv);
   }
 
-  getRawValue<T>(value: unknown, defaultValue?: T): T | null {
+  public getRawValue<T>(value: unknown, defaultValue?: T): T | null {
     if (this.isStorageValue(value)) {
       if (this.isExpired(value)) {
         this.removeItem(value.key);
@@ -241,7 +245,7 @@ export class ObjectStorage<
    * storage.removeItem('expired-session');
    * ```
    */
-  removeItem(key: Key): void {
+  public removeItem(key: Key): void {
     this.store.delete(key);
   }
 
@@ -260,7 +264,7 @@ export class ObjectStorage<
    * storage.clear(); // Removes all stored data
    * ```
    */
-  clear(): void {
+  public clear(): void {
     this.store.clear();
   }
 
@@ -341,7 +345,7 @@ export class ObjectStorage<
    * }
    * ```
    */
-  getSerializer(): SerializerIneterface<unknown, ValueType> | undefined {
+  public getSerializer(): SerializerIneterface<unknown, ValueType> | undefined {
     return this.serializer;
   }
 }

@@ -91,7 +91,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * const encryptedStorage = new EncryptedStorage('secure_user');
    * authStore.setUserStorage(encryptedStorage);
    */
-  setUserStorage(
+  public setUserStorage(
     userStorage: KeyStorageInterface<string, PickUser<State>>
   ): void {
     if (this.getUserStorage() !== userStorage) {
@@ -118,7 +118,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   const userData = storage.get();
    * }
    */
-  getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
+  public getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
     return this.options.userStorage || null;
   }
 
@@ -141,7 +141,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * const secureStorage = new SecureStorage('credentials');
    * authStore.setCredentialStorage(secureStorage);
    */
-  setCredentialStorage(
+  public setCredentialStorage(
     credentialStorage: KeyStorageInterface<string, string>
   ): void {
     if (this.getCredentialStorage() !== credentialStorage) {
@@ -171,7 +171,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   }
    * }
    */
-  getCredentialStorage(): KeyStorageInterface<string, string> | null {
+  public getCredentialStorage(): KeyStorageInterface<string, string> | null {
     return this.options.credentialStorage || null;
   }
 
@@ -204,7 +204,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   lastLogin: new Date().toISOString()
    * });
    */
-  setUserInfo(userInfo: PickUser<State> | null): void {
+  public setUserInfo(userInfo: PickUser<State> | null): void {
     this.emit(this.cloneState({ userInfo } as Partial<State>));
 
     if (userInfo) {
@@ -231,7 +231,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   console.log('No user logged in');
    * }
    */
-  getUserInfo(): PickUser<State> | null {
+  public getUserInfo(): PickUser<State> | null {
     return (this.state.userInfo ?? null) as PickUser<State>;
   }
 
@@ -255,7 +255,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * // Clear credential (logout)
    * authStore.setCredential('');
    */
-  setCredential(credential: string): void {
+  public setCredential(credential: string): void {
     this.emit(this.cloneState({ credential } as Partial<State>));
     this.getCredentialStorage()?.set(credential);
   }
@@ -280,7 +280,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   router.push('/login');
    * }
    */
-  getCredential(): string | null {
+  public getCredential(): string | null {
     return this.state.credential;
   }
 
@@ -310,7 +310,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *     console.log('Not authenticated');
    * }
    */
-  getLoginStatus(): LOGIN_STATUS | null {
+  public getLoginStatus(): LOGIN_STATUS | null {
     return this.state.loginStatus;
   }
 
@@ -332,7 +332,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * console.log('Credential:', authStore.getCredential()); // null
    * console.log('Login status:', authStore.getLoginStatus()); // null
    */
-  override reset(): void {
+  public override reset(): void {
     this.getUserStorage()?.remove();
     this.getCredentialStorage()?.remove();
     super.reset();
@@ -356,7 +356,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   showLoadingSpinner();
    * }
    */
-  startAuth(): void {
+  public startAuth(): void {
     this.emit(
       this.cloneState({
         loginStatus: LOGIN_STATUS.LOADING,
@@ -393,7 +393,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   expiresIn: 3600
    * });
    */
-  authSuccess(
+  public authSuccess(
     userInfo?: PickUser<State>,
     credential?: string | LoginResponseData
   ): void {
@@ -445,7 +445,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   console.log('Authentication error:', error);
    * }
    */
-  authFailed(error?: unknown): void {
+  public authFailed(error?: unknown): void {
     this.emit(
       this.cloneState({
         loginStatus: LOGIN_STATUS.FAILED,

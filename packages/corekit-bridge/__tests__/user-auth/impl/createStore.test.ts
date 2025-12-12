@@ -40,57 +40,59 @@ class MockUserAuthStore implements UserAuthStoreInterface<TestUser> {
   private loginStatus: LOGIN_STATUS | null = null;
   private error: unknown = null;
 
-  setUserStorage(userStorage: KeyStorageInterface<string, TestUser>): void {
+  public setUserStorage(
+    userStorage: KeyStorageInterface<string, TestUser>
+  ): void {
     this.userStorage = userStorage;
   }
 
-  getUserStorage(): KeyStorageInterface<string, TestUser> | null {
+  public getUserStorage(): KeyStorageInterface<string, TestUser> | null {
     return this.userStorage;
   }
 
-  setCredentialStorage(
+  public setCredentialStorage(
     credentialStorage: KeyStorageInterface<string, string>
   ): void {
     this.credentialStorage = credentialStorage;
   }
 
-  getCredentialStorage(): KeyStorageInterface<string, string> | null {
+  public getCredentialStorage(): KeyStorageInterface<string, string> | null {
     return this.credentialStorage;
   }
 
-  setUserInfo(params: TestUser | null): void {
+  public setUserInfo(params: TestUser | null): void {
     this.userInfo = params;
   }
 
-  getUserInfo(): TestUser | null {
+  public getUserInfo(): TestUser | null {
     return this.userInfo;
   }
 
-  setCredential(credential: string): void {
+  public setCredential(credential: string): void {
     this.credential = credential;
   }
 
-  getCredential(): string | null {
+  public getCredential(): string | null {
     return this.credential;
   }
 
-  getLoginStatus(): LOGIN_STATUS | null {
+  public getLoginStatus(): LOGIN_STATUS | null {
     return this.loginStatus;
   }
 
-  reset(): void {
+  public reset(): void {
     this.userInfo = null;
     this.credential = null;
     this.loginStatus = null;
     this.error = null;
   }
 
-  startAuth(): void {
+  public startAuth(): void {
     this.loginStatus = LOGIN_STATUS.LOADING;
     this.error = null;
   }
 
-  authSuccess(userInfo?: TestUser, credential?: string): void {
+  public authSuccess(userInfo?: TestUser, credential?: string): void {
     this.loginStatus = LOGIN_STATUS.SUCCESS;
     this.error = null;
     if (userInfo) {
@@ -101,7 +103,7 @@ class MockUserAuthStore implements UserAuthStoreInterface<TestUser> {
     }
   }
 
-  authFailed(error?: unknown): void {
+  public authFailed(error?: unknown): void {
     this.loginStatus = LOGIN_STATUS.FAILED;
     this.error = error;
   }
@@ -117,39 +119,39 @@ class MockStorage<Key, Value> extends KeyStorage<Key, Value> {
     super(key, options);
   }
 
-  get(): Value | null {
+  public get(): Value | null {
     return this.data.get(this.key) || null;
   }
 
-  set(value: Value): void {
+  public set(value: Value): void {
     this.data.set(this.key, value);
   }
 
-  remove(): void {
+  public remove(): void {
     this.data.delete(this.key);
   }
 
-  clear(): void {
+  public clear(): void {
     this.data.clear();
   }
 
-  has(key: Key): boolean {
+  public has(key: Key): boolean {
     return this.data.has(key);
   }
 
-  keys(): Key[] {
+  public keys(): Key[] {
     return Array.from(this.data.keys());
   }
 
-  values(): Value[] {
+  public values(): Value[] {
     return Array.from(this.data.values());
   }
 
-  entries(): [Key, Value][] {
+  public entries(): [Key, Value][] {
     return Array.from(this.data.entries());
   }
 
-  size(): number {
+  public size(): number {
     return this.data.size;
   }
 }

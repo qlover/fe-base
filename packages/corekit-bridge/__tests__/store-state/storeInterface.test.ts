@@ -5,18 +5,18 @@ import {
 } from '../../src/core/store-state';
 
 class CounterState implements StoreStateInterface {
-  count = 0;
-  meta = { updated: false };
+  public count = 0;
+  public meta = { updated: false };
 }
 
 class CounterStore extends StoreInterface<CounterState> {
   constructor() {
     super(() => new CounterState());
   }
-  increment(): void {
+  public increment(): void {
     this.emit(this.cloneState({ count: this.state.count + 1 }));
   }
-  setMeta(updated: boolean): void {
+  public setMeta(updated: boolean): void {
     this.emit(this.cloneState({ meta: { updated } }));
   }
 }
@@ -109,8 +109,8 @@ describe('StoreInterface', () => {
 
   it('cloneState works with class instance state', () => {
     class CustomState implements StoreStateInterface {
-      value = 1;
-      get double(): number {
+      public value = 1;
+      public get double(): number {
         return this.value * 2;
       }
     }
@@ -127,16 +127,16 @@ describe('StoreInterface', () => {
 
   it('cloneState preserves class methods and getter/setter', () => {
     class AdvancedState implements StoreStateInterface {
-      value = 5;
-      _hidden = 10;
-      get double(): number {
+      public value = 5;
+      public _hidden = 10;
+      public get double(): number {
         return this.value * 2;
       }
       // eslint-disable-next-line @qlover-eslint/ts-class-method-return
-      set double(v: number) {
+      public set double(v: number) {
         this.value = v / 2;
       }
-      inc(): void {
+      public inc(): void {
         this.value++;
       }
     }
@@ -163,10 +163,10 @@ describe('StoreInterface', () => {
   it('cloneState handles nested objects, arrays, symbol and function properties', () => {
     const sym = Symbol('test');
     class ComplexState implements StoreStateInterface {
-      arr = [1, 2, { deep: 3 }];
-      nested = { foo: { bar: 1 } };
-      [sym] = 42;
-      fn = (): string => 'hello';
+      public arr = [1, 2, { deep: 3 }];
+      public nested = { foo: { bar: 1 } };
+      public [sym] = 42;
+      public fn = (): string => 'hello';
     }
     class ComplexStore extends StoreInterface<ComplexState> {
       constructor() {
@@ -188,8 +188,8 @@ describe('StoreInterface', () => {
 
   it('cloneState can override class methods (not recommended, but possible)', () => {
     class MethodState implements StoreStateInterface {
-      value = 1;
-      fn(): string {
+      public value = 1;
+      public fn(): string {
         return 'original';
       }
     }
@@ -207,7 +207,7 @@ describe('StoreInterface', () => {
 
   it('cloneState works with readonly properties', () => {
     class ReadonlyState implements StoreStateInterface {
-      readonly foo = 123;
+      public readonly foo = 123;
     }
     class ReadonlyStore extends StoreInterface<ReadonlyState> {
       constructor() {

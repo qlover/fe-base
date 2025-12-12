@@ -41,7 +41,7 @@ export class CookieStorage
    *
    * @returns number – Count of stored cookie keys.
    */
-  get length(): number {
+  public get length(): number {
     return Object.keys(Cookies.get()).length;
   }
 
@@ -54,7 +54,7 @@ export class CookieStorage
    *        does not exist. No constraint apart from being JSON-serialisable.
    * @returns T | null – Found value, `defaultValue`, or `null` when nothing is found.
    */
-  getItem<T>(key: string, defaultValue?: T): T | null {
+  public getItem<T>(key: string, defaultValue?: T): T | null {
     const value = Cookies.get(key) || defaultValue;
     return typeof value === 'undefined' ? null : (value as T);
   }
@@ -69,7 +69,7 @@ export class CookieStorage
    *        such as `expires`, `path`, or `domain`.
    * @returns void
    */
-  setItem<T>(key: string, value: T, options?: CookieAttributes): void {
+  public setItem<T>(key: string, value: T, options?: CookieAttributes): void {
     Cookies.set(key, String(value), { ...this.defaultAttrs, ...options });
   }
 
@@ -81,7 +81,7 @@ export class CookieStorage
    *        must match the cookie being removed (e.g. `path`, `domain`).
    * @returns void
    */
-  removeItem(key: string, options?: CookieAttributes): void {
+  public removeItem(key: string, options?: CookieAttributes): void {
     Cookies.remove(key, { ...this.defaultAttrs, ...options });
   }
 
@@ -90,7 +90,7 @@ export class CookieStorage
    *
    * @returns void
    */
-  clear(): void {
+  public clear(): void {
     const all = Cookies.get();
     Object.keys(all).forEach((key) => Cookies.remove(key, this.defaultAttrs));
   }
@@ -101,7 +101,7 @@ export class CookieStorage
    * @param index number – Zero-based index in the internal cookie key list.
    * @returns string | null – Cookie name at the index, or `null` when out of bounds.
    */
-  key(index: number): string | null {
+  public key(index: number): string | null {
     const keys = Object.keys(Cookies.get());
     return keys[index] ?? null;
   }

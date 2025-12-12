@@ -380,7 +380,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * });
    * ```
    */
-  override use(
+  public override use(
     plugin:
       | UserServicePluginType<User, Credential>
       | UserServicePluginInterface<User, Credential>

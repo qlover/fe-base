@@ -4,14 +4,14 @@ import { createTestReleaseOptions } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
 
 class MockExecutor extends AsyncExecutor {
-  override async run<Result, Params = unknown>(
+  public override async run<Result, Params = unknown>(
     _data: Params,
     _actualTask: PromiseTask<Result, Params>
   ): Promise<Result> {
     return Promise.resolve('test run' as Result);
   }
 
-  override async exec<Result, Params = unknown>(
+  public override async exec<Result, Params = unknown>(
     _dataOrTask: Params | PromiseTask<Result, Params>,
     _task?: PromiseTask<Result, Params>
   ): Promise<Result> {

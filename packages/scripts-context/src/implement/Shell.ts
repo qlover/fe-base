@@ -257,7 +257,7 @@ export class Shell implements ShellInterface {
    * logger.info('Shell instance created');
    * ```
    */
-  get logger(): LoggerInterface {
+  public get logger(): LoggerInterface {
     return this.config.logger;
   }
 
@@ -314,7 +314,7 @@ export class Shell implements ShellInterface {
    * // Returns: 'npm install --save-dev'
    * ```
    */
-  static format(
+  public static format(
     template: string = '',
     context: Record<string, unknown> = {}
   ): string {
@@ -368,7 +368,10 @@ export class Shell implements ShellInterface {
    * }
    * ```
    */
-  format(template: string = '', context: Record<string, unknown> = {}): string {
+  public format(
+    template: string = '',
+    context: Record<string, unknown> = {}
+  ): string {
     try {
       return Shell.format(template, context);
     } catch (error) {
@@ -432,7 +435,7 @@ export class Shell implements ShellInterface {
    * });
    * ```
    */
-  exec(
+  public exec(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
@@ -479,7 +482,7 @@ export class Shell implements ShellInterface {
    * const output = await shell.exec('npm install', { silent: true });
    * ```
    */
-  run(
+  public run(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
@@ -546,7 +549,7 @@ export class Shell implements ShellInterface {
    * // Returns 'Would delete all files' without execution
    * ```
    */
-  async execFormattedCommand(
+  public async execFormattedCommand(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {

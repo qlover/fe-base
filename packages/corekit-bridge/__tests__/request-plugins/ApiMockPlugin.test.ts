@@ -13,15 +13,15 @@ type MockPluginParams = ApiMockPluginContext['parameters'];
  * Mock logger implementation for testing
  */
 class MockLogger implements LoggerInterface {
-  log = vi.fn();
-  fatal = vi.fn();
-  trace = vi.fn();
-  debug = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  addAppender = vi.fn();
-  context<Value>(value?: Value): {
+  public log = vi.fn();
+  public fatal = vi.fn();
+  public trace = vi.fn();
+  public debug = vi.fn();
+  public info = vi.fn();
+  public warn = vi.fn();
+  public error = vi.fn();
+  public addAppender = vi.fn();
+  public context<Value>(value?: Value): {
     log: ReturnType<typeof vi.fn>;
     fatal: ReturnType<typeof vi.fn>;
     trace: ReturnType<typeof vi.fn>;

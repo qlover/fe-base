@@ -186,7 +186,9 @@ export class GitChangelog implements ChangeLogInterface {
    * });
    * ```
    */
-  async getGitLog(options: GitChangelogOptions = {}): Promise<BaseCommit[]> {
+  public async getGitLog(
+    options: GitChangelogOptions = {}
+  ): Promise<BaseCommit[]> {
     const { directory, noMerges = true, fields } = options;
 
     const from = await this.resolveTag(options.from, 'root');
@@ -244,7 +246,9 @@ export class GitChangelog implements ChangeLogInterface {
    * });
    * ```
    */
-  async getCommits(options?: GitChangelogOptions): Promise<CommitValue[]> {
+  public async getCommits(
+    options?: GitChangelogOptions
+  ): Promise<CommitValue[]> {
     const gitCommits = await this.getGitLog(options);
 
     return gitCommits.map((commit) => {
@@ -312,7 +316,7 @@ export class GitChangelog implements ChangeLogInterface {
    * // '    Line 1\n    Line 2\n    Line 3'
    * ```
    */
-  tabify(body: string, size = 2): string {
+  public tabify(body: string, size = 2): string {
     return body
       .split('\n')
       .map((line) => ' '.repeat(size) + line.trim())
@@ -357,7 +361,7 @@ export class GitChangelog implements ChangeLogInterface {
    * // }
    * ```
    */
-  parseCommitlint(subject: string, rawBody: string = ''): Commitlint {
+  public parseCommitlint(subject: string, rawBody: string = ''): Commitlint {
     const [title] = subject.trim().split('\n');
     const bodyLines = rawBody.startsWith(title)
       ? rawBody.replace(title, '')
@@ -428,7 +432,7 @@ export class GitChangelog implements ChangeLogInterface {
    * // }
    * ```
    */
-  toCommitValue(hash: string, message: string): CommitValue {
+  public toCommitValue(hash: string, message: string): CommitValue {
     const [title] = message.trim().split('\n');
 
     const prMatch = title.match(/\(#(\d+)\)/);

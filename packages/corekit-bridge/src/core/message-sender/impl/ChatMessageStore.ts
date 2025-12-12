@@ -210,7 +210,7 @@ export class ChatMessageStore<T = unknown>
    * @param message - Partial message specification
    * @returns ChatMessage instance
    */
-  override createMessage<M extends ChatMessage<T>>(
+  public override createMessage<M extends ChatMessage<T>>(
     message: Partial<M> = {} as Partial<M>
   ): M {
     return new ChatMessage<T>(super.createMessage(message)) as M;
@@ -224,7 +224,9 @@ export class ChatMessageStore<T = unknown>
    * @param message - Value to check
    * @returns `true` if value is a ChatMessage instance, `false` otherwise
    */
-  override isMessage<M extends ChatMessage<T>>(message: unknown): message is M {
+  public override isMessage<M extends ChatMessage<T>>(
+    message: unknown
+  ): message is M {
     return message instanceof ChatMessage;
   }
 
@@ -299,7 +301,7 @@ export class ChatMessageStore<T = unknown>
    * console.log(first.content); // "C" - newest is first
    * ```
    */
-  getFirstDraftMessage(): ChatMessage<T> | null {
+  public getFirstDraftMessage(): ChatMessage<T> | null {
     if (this.draftMode === DraftMode.STACK) {
       // STACK mode: Get last element (newest)
       return this.getDraftMessages().at(-1) || null;
@@ -360,7 +362,7 @@ export class ChatMessageStore<T = unknown>
    * // Remaining drafts: [A]
    * ```
    */
-  shiftFirstDraftMessage(): ChatMessage<T> | null {
+  public shiftFirstDraftMessage(): ChatMessage<T> | null {
     const draftMessages = this.getDraftMessages();
 
     if (draftMessages.length === 0) {
@@ -384,7 +386,7 @@ export class ChatMessageStore<T = unknown>
    *
    * @returns Array of all draft messages in the store
    */
-  getDraftMessages(): ChatMessage<T>[] {
+  public getDraftMessages(): ChatMessage<T>[] {
     return this.state.draftMessages ?? [];
   }
 
@@ -426,7 +428,7 @@ export class ChatMessageStore<T = unknown>
    * });
    * ```
    */
-  addDraftMessage(message: Partial<ChatMessage<T>>): void {
+  public addDraftMessage(message: Partial<ChatMessage<T>>): void {
     const draftMessage = this.createMessage(message);
 
     if (draftMessage.status !== MessageStatus.DRAFT) {
@@ -456,7 +458,7 @@ export class ChatMessageStore<T = unknown>
    * store.deleteDraftMessage('draft-123');
    * ```
    */
-  deleteDraftMessage(messageId: string): void {
+  public deleteDraftMessage(messageId: string): void {
     const draftMessages = this.getDraftMessages();
     const newDraftMessages = draftMessages.filter(
       (msg) => msg.id !== messageId
@@ -492,7 +494,7 @@ export class ChatMessageStore<T = unknown>
    * });
    * ```
    */
-  updateDraftMessage(
+  public updateDraftMessage(
     messageId: string,
     updates: Partial<ChatMessage<T>>
   ): ChatMessage<T> | undefined {
@@ -540,7 +542,7 @@ export class ChatMessageStore<T = unknown>
    * store.resetDraftMessages([draft1, draft2]);
    * ```
    */
-  resetDraftMessages(messages?: ChatMessage<T>[]): void {
+  public resetDraftMessages(messages?: ChatMessage<T>[]): void {
     const newDraftMessages = messages
       ? messages.map((msg) => this.createMessage(msg))
       : [];
@@ -569,7 +571,7 @@ export class ChatMessageStore<T = unknown>
    * store.changeDisabledSend(false);
    * ```
    */
-  changeDisabledSend(disabled: boolean): void {
+  public changeDisabledSend(disabled: boolean): void {
     this.emit(this.cloneState({ disabledSend: disabled }));
   }
 
@@ -589,7 +591,7 @@ export class ChatMessageStore<T = unknown>
    * }
    * ```
    */
-  getDarftMessageById(messageId: string): ChatMessage<T> | null {
+  public getDarftMessageById(messageId: string): ChatMessage<T> | null {
     return this.getDraftMessages().find((msg) => msg.id === messageId) || null;
   }
 
@@ -621,7 +623,7 @@ export class ChatMessageStore<T = unknown>
    * }
    * ```
    */
-  getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null {
+  public getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null {
     let targetMessage: ChatMessage<T> | null = null;
 
     if (this.isMessage(message) && message.id) {

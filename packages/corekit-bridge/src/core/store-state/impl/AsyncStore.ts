@@ -309,7 +309,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  override restore<R = S['result'] | S>(): R | null {
+  public override restore<R = S['result'] | S>(): R | null {
     if (!this.storage || !this.storageKey) {
       return null;
     }
@@ -382,7 +382,7 @@ export class AsyncStore<
    * // Storage contains full state object with loading, status, timestamps, etc.
    * ```
    */
-  override persist<T extends S>(_state?: T | undefined): void {
+  public override persist<T extends S>(_state?: T | undefined): void {
     if (!this.storage || !this.storageKey) {
       return;
     }
@@ -417,7 +417,7 @@ export class AsyncStore<
    * });
    * ```
    */
-  getStore(): PersistentStore<S, Key, Opt> {
+  public getStore(): PersistentStore<S, Key, Opt> {
     return this;
   }
 
@@ -451,7 +451,7 @@ export class AsyncStore<
    * // Start with cached data while fetching fresh data
    * ```
    */
-  start(result?: S['result'] | undefined): void {
+  public start(result?: S['result'] | undefined): void {
     this.updateState({
       loading: true,
       result,
@@ -491,7 +491,7 @@ export class AsyncStore<
    * store.stopped(new Error('User cancelled'));
    * ```
    */
-  stopped(error?: unknown, result?: S['result'] | undefined): void {
+  public stopped(error?: unknown, result?: S['result'] | undefined): void {
     // If result is explicitly provided (including null), use it
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
@@ -561,7 +561,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  failed(error: unknown, result?: S['result'] | undefined): void {
+  public failed(error: unknown, result?: S['result'] | undefined): void {
     // If result is explicitly provided (including null), use it
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
@@ -609,7 +609,7 @@ export class AsyncStore<
    * store.success(processedData);
    * ```
    */
-  success(result: S['result']): void {
+  public success(result: S['result']): void {
     this.updateState({
       loading: false,
       result,
@@ -651,7 +651,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getState(): S {
+  public getState(): S {
     return this.state;
   }
 
@@ -696,7 +696,10 @@ export class AsyncStore<
    * store.updateState({ loading: true }, { persist: false });
    * ```
    */
-  updateState<T = S>(state: Partial<T>, options?: { persist?: boolean }): void {
+  public updateState<T = S>(
+    state: Partial<T>,
+    options?: { persist?: boolean }
+  ): void {
     const newState = this.cloneState(state as Partial<S>);
     this.emit(newState, options);
   }
@@ -717,7 +720,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getLoading(): boolean {
+  public getLoading(): boolean {
     return this.getState().loading;
   }
 
@@ -738,7 +741,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getError(): unknown | null {
+  public getError(): unknown | null {
     return this.getState().error;
   }
 
@@ -759,7 +762,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getResult(): S['result'] | null {
+  public getResult(): S['result'] | null {
     return this.getState().result;
   }
 
@@ -786,7 +789,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getStatus(): AsyncStoreStatusType {
+  public getStatus(): AsyncStoreStatusType {
     return this.getState().status;
   }
 
@@ -822,7 +825,7 @@ export class AsyncStore<
    * console.log(`Operation has been running for ${duration}ms`);
    * ```
    */
-  getDuration(): number {
+  public getDuration(): number {
     const state = this.getState();
 
     const startTime = state?.startTime;
@@ -897,7 +900,7 @@ export class AsyncStore<
    * // Ready to retry
    * ```
    */
-  reset(): void {
+  public reset(): void {
     super.reset();
   }
 
@@ -918,7 +921,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isSuccess(): boolean {
+  public isSuccess(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.SUCCESS;
   }
 
@@ -939,7 +942,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isFailed(): boolean {
+  public isFailed(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.FAILED;
   }
 
@@ -959,7 +962,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isStopped(): boolean {
+  public isStopped(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.STOPPED;
   }
 
@@ -980,7 +983,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isCompleted(): boolean {
+  public isCompleted(): boolean {
     return (
       !this.getLoading() &&
       (this.isSuccess() || this.isFailed() || this.isStopped())
@@ -1003,7 +1006,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isPending(): boolean {
+  public isPending(): boolean {
     return this.getLoading() && this.getStatus() === AsyncStoreStatus.PENDING;
   }
 }
