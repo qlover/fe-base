@@ -39,7 +39,7 @@ export class TestIOCRegister
     ioc.bind(I.CookieStorage, globals.cookieStorage);
   }
 
-  register(
+  public register(
     ioc: IOCContainerInterface,
     _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {

@@ -2,17 +2,17 @@ import { name, version } from '../../package.json';
 import type { EnvConfigInterface } from '@qlover/corekit-bridge';
 
 export class MockAppConfig implements EnvConfigInterface {
-  appName = name;
+  public appName = name;
 
-  appVersion = version;
+  public appVersion = version;
 
-  env: string = 'test';
+  public env: string = 'test';
 
-  userTokenStorageKey = '__fe_user_token__';
+  public userTokenStorageKey = '__fe_user_token__';
 
-  userInfoStorageKey = '__fe_user_info__';
+  public userInfoStorageKey = '__fe_user_info__';
 
-  openAiModels = [
+  public openAiModels = [
     'gpt-4o-mini',
     'gpt-3.5-turbo',
     'gpt-3.5-turbo-2',
@@ -20,29 +20,29 @@ export class MockAppConfig implements EnvConfigInterface {
     'gpt-4-32k'
   ];
 
-  openAiBaseUrl = '';
+  public openAiBaseUrl = '';
 
-  openAiToken = '';
+  public openAiToken = '';
 
-  openAiTokenPrefix = '';
+  public openAiTokenPrefix = '';
 
-  openAiRequireToken = true;
+  public openAiRequireToken = true;
 
-  loginUser = '';
+  public loginUser = '';
 
-  loginPassword = '';
+  public loginPassword = '';
 
-  feApiBaseUrl = '';
+  public feApiBaseUrl = '';
 
-  userApiBaseUrl = '';
+  public userApiBaseUrl = '';
 
-  aiApiBaseUrl = 'https://api.openai.com/v1';
+  public aiApiBaseUrl = 'https://api.openai.com/v1';
 
-  aiApiToken = '';
+  public aiApiToken = '';
 
-  aiApiTokenPrefix = 'Bearer';
+  public aiApiTokenPrefix = 'Bearer';
 
-  aiApiRequireToken = true;
+  public aiApiRequireToken = true;
 
-  bootHref = '';
+  public bootHref = '';
 }

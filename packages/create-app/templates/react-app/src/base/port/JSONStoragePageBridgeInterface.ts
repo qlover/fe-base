@@ -9,7 +9,7 @@ export interface JSONStoragePageStateInterface extends StoreStateInterface {
 }
 
 export abstract class JSONStoragePageBridgeInterface extends StoreInterface<JSONStoragePageStateInterface> {
-  selector = {
+  public selector = {
     requestTimeout: (state: JSONStoragePageStateInterface) =>
       state.requestTimeout
   };

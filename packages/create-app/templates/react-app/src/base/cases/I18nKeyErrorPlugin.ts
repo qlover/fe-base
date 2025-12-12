@@ -15,7 +15,7 @@ import type { LoggerInterface } from '@qlover/logger';
  */
 @injectable()
 export class I18nKeyErrorPlugin implements ExecutorPlugin {
-  readonly pluginName = 'I18nKeyErrorPlugin';
+  public readonly pluginName = 'I18nKeyErrorPlugin';
 
   constructor(
     @inject(IOCIdentifier.Logger) protected logger: LoggerInterface,
@@ -27,7 +27,7 @@ export class I18nKeyErrorPlugin implements ExecutorPlugin {
     return this.i18nService.t(id);
   }
 
-  onError(context: ExecutorContext<unknown>): Error | void {
+  public onError(context: ExecutorContext<unknown>): Error | void {
     const { error } = context;
 
     if (!error) {

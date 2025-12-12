@@ -46,15 +46,15 @@ export class DialogHandler
     notification?: NotificationApi;
   } = {};
 
-  setMessage(message: MessageApi): void {
+  public setMessage(message: MessageApi): void {
     this.antds.message = message;
   }
 
-  setModal(modal: ModalApi): void {
+  public setModal(modal: ModalApi): void {
     this.antds.modal = modal;
   }
 
-  setNotification(notification: NotificationApi): void {
+  public setNotification(notification: NotificationApi): void {
     this.antds.notification = notification;
   }
 

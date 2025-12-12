@@ -123,7 +123,7 @@ export class RouterLoader {
    * Get the component mapping object
    * @returns Component mapping dictionary
    */
-  getComponentMaps(): ComponentValue {
+  public getComponentMaps(): ComponentValue {
     const { componentMaps = {} } = this.options;
     return componentMaps;
   }
@@ -134,7 +134,7 @@ export class RouterLoader {
    * @returns Component loader function
    * @throws Error if component is not found in componentMaps
    */
-  getComponent(element: string): () => RouteComponentType {
+  public getComponent(element: string): () => RouteComponentType {
     const maps = this.getComponentMaps();
     const component = maps[element];
 
@@ -150,7 +150,7 @@ export class RouterLoader {
    * @param route Route configuration object
    * @returns React Router route object
    */
-  toRoute(route: RouteConfigValue): RouteObject {
+  public toRoute(route: RouteConfigValue): RouteObject {
     const { render } = this.options;
     const { element, children, ...rest } = route;
 

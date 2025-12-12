@@ -16,11 +16,13 @@ import type { LoggerInterface } from '@qlover/logger';
 export class RequestLogger
   implements ExecutorPlugin<RequestAdapterFetchConfig>
 {
-  readonly pluginName = 'RequestLogger';
+  public readonly pluginName = 'RequestLogger';
 
   constructor(@inject(IOCIdentifier.Logger) public logger: LoggerInterface) {}
 
-  onBefore(context: ExecutorContext<RequestAdapterFetchConfig<unknown>>): void {
+  public onBefore(
+    context: ExecutorContext<RequestAdapterFetchConfig<unknown>>
+  ): void {
     this.logger.log(
       `%c[Request before]%c [${new Date().toLocaleString()}] ${context.parameters.method} ${context.parameters.url}`,
       'color: #0ff;',
@@ -29,7 +31,7 @@ export class RequestLogger
     );
   }
 
-  async onSuccess({
+  public async onSuccess({
     parameters,
     returnValue
   }: ExecutorContext<
@@ -53,14 +55,14 @@ export class RequestLogger
     );
   }
 
-  onError({
+  public onError({
     parameters,
     error
   }: ExecutorContext<RequestAdapterFetchConfig>): void {
     this.loggerError(parameters, error);
   }
 
-  loggerError(config: RequestAdapterFetchConfig, error: unknown): void {
+  public loggerError(config: RequestAdapterFetchConfig, error: unknown): void {
     this.logger.log(
       `%c[Request error]%c [${new Date().toLocaleString()}] ${config.method} ${config.url}`,
       'color: #f00;',

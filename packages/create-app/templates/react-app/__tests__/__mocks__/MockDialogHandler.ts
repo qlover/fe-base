@@ -5,12 +5,12 @@ import type { AntdStaticApiInterface } from '@brain-toolkit/antd-theme-override/
 export class MockDialogHandler
   implements InteractionHubInterface, AntdStaticApiInterface
 {
-  setMessage = vi.fn();
-  setModal = vi.fn();
-  setNotification = vi.fn();
-  success = vi.fn();
-  error = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  confirm = vi.fn();
+  public setMessage = vi.fn();
+  public setModal = vi.fn();
+  public setNotification = vi.fn();
+  public success = vi.fn();
+  public error = vi.fn();
+  public info = vi.fn();
+  public warn = vi.fn();
+  public confirm = vi.fn();
 }

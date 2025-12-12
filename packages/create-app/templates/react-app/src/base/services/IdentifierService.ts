@@ -23,11 +23,11 @@ export interface IdentifierRecord {
 export class IdentifierService<T>
   implements ResourceServiceInterface<T, ResourceStore<ResourceStateInterface>>
 {
-  readonly unionKey: string = 'id';
-  readonly serviceName: string = 'IdentifierService';
-  readonly store: ResourceStore<ResourceStateInterface>;
+  public readonly unionKey: string = 'id';
+  public readonly serviceName: string = 'IdentifierService';
+  public readonly store: ResourceStore<ResourceStateInterface>;
   // Not implemented
-  readonly resourceApi!: ResourceInterface<T>;
+  public readonly resourceApi!: ResourceInterface<T>;
   private unsubscribe: (() => void) | null = null;
 
   constructor(
@@ -37,7 +37,7 @@ export class IdentifierService<T>
     this.store = new ResourceStore(() => new ResourceState());
   }
 
-  getStore(): ResourceStore<ResourceStateInterface> {
+  public getStore(): ResourceStore<ResourceStateInterface> {
     return this.store;
   }
 
@@ -61,7 +61,7 @@ export class IdentifierService<T>
   /**
    * @override
    */
-  async created(): Promise<unknown> {
+  public async created(): Promise<unknown> {
     this.unsubscribe = this.i18nService.observe(
       (state) => state.language,
       () => {
@@ -75,7 +75,7 @@ export class IdentifierService<T>
   /**
    * @override
    */
-  destroyed(): void {
+  public destroyed(): void {
     this.unsubscribe?.();
     this.unsubscribe = null;
 
@@ -85,9 +85,9 @@ export class IdentifierService<T>
   /**
    * @override
    */
-  updated(): void {}
+  public updated(): void {}
 
-  async search(
+  public async search(
     params: Partial<ResourceQuery & { locale: LocaleType }>
   ): Promise<PaginationInterface<IdentifierRecord>> {
     this.store.changeListState(
@@ -123,21 +123,21 @@ export class IdentifierService<T>
     return result;
   }
 
-  refresh(): Promise<unknown> {
+  public refresh(): Promise<unknown> {
     return this.search(this.store.state.searchParams);
   }
 
-  async update(_data: Partial<T>): Promise<unknown> {
+  public async update(_data: Partial<T>): Promise<unknown> {
     return Promise.resolve(null);
   }
 
-  create(_data: T): Promise<unknown> {
+  public create(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }
-  remove(_data: T): Promise<unknown> {
+  public remove(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }
-  export(_data: T): Promise<unknown> {
+  public export(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }
 }

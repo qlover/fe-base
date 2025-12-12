@@ -60,9 +60,9 @@ export interface UserApiTransaction<Request = unknown, Response = unknown>
 }
 
 export class UserApiBootstarp implements BootstrapExecutorPlugin {
-  readonly pluginName = 'UserApiBootstarp';
+  public readonly pluginName = 'UserApiBootstarp';
 
-  onBefore({ parameters: { ioc } }: BootstrapContext): void {
+  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())

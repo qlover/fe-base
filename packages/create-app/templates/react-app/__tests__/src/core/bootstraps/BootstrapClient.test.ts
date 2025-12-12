@@ -37,7 +37,7 @@ describe('BootstrapClient', () => {
       const mockRegister = vi.fn().mockReturnValue([testBootstrapPlugin]);
 
       class TestBootstrapsRegistry implements BootstrapsRegistryInterface {
-        register = mockRegister;
+        public register = mockRegister;
       }
 
       const args: BootstrapClientArgs = {
@@ -70,7 +70,7 @@ describe('BootstrapClient', () => {
         );
 
       class TestBootstrapsRegistry implements BootstrapsRegistryInterface {
-        register = mockRegister;
+        public register = mockRegister;
       }
 
       const args: BootstrapClientArgs = {
@@ -114,7 +114,7 @@ describe('BootstrapClient', () => {
         );
 
       class TestBootstrapsRegistry implements BootstrapsRegistryInterface {
-        register = mockRegister;
+        public register = mockRegister;
       }
 
       const args: BootstrapClientArgs = {

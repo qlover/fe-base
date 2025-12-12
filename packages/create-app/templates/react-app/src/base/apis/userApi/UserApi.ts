@@ -43,7 +43,7 @@ export class UserApi
     super(adapter);
   }
 
-  getStore(): UserAuthStoreInterface<UserInfo> | null {
+  public getStore(): UserAuthStoreInterface<UserInfo> | null {
     return this.store;
   }
 
@@ -51,15 +51,15 @@ export class UserApi
    * @override
    * @param store
    */
-  setStore(store: UserAuthStoreInterface<UserInfo>): void {
+  public setStore(store: UserAuthStoreInterface<UserInfo>): void {
     this.store = store;
   }
 
-  stop(request: UserApiConfig): Promise<void> | void {
+  public stop(request: UserApiConfig): Promise<void> | void {
     this.abortPlugin.abort(request);
   }
 
-  async getRandomUser(): Promise<GetIpInfoTransaction['response']> {
+  public async getRandomUser(): Promise<GetIpInfoTransaction['response']> {
     return this.request<GetIpInfoTransaction>({
       url: 'https://randomuser.me/api/',
       method: 'GET',
@@ -67,7 +67,7 @@ export class UserApi
     });
   }
 
-  async testApiCatchResult(): Promise<
+  public async testApiCatchResult(): Promise<
     UserApiTestApiCatchResultTransaction['response']
   > {
     return this.request<UserApiTestApiCatchResultTransaction>({
@@ -83,7 +83,7 @@ export class UserApi
    * @param params
    * @returns
    */
-  async login(
+  public async login(
     params: UserApiLoginTransaction['data']
   ): Promise<UserCredential> {
     const response = await this.post<UserApiLoginTransaction>(
@@ -107,7 +107,7 @@ export class UserApi
    * @param params
    * @returns
    */
-  register(
+  public register(
     params: UserApiRegisterTransaction['data']
   ): Promise<UserApiRegisterTransaction['response']['data']> {
     // @ts-expect-error - TODO: implement
@@ -118,7 +118,7 @@ export class UserApi
    * @override
    * @returns
    */
-  async refreshUserInfo(): Promise<UserInfo> {
+  public async refreshUserInfo(): Promise<UserInfo> {
     return this.getUserInfo();
   }
 
@@ -126,7 +126,7 @@ export class UserApi
    * @override
    * @returns
    */
-  logout(): Promise<any> {
+  public logout(): Promise<any> {
     return this.post('/api/logout');
   }
 
@@ -134,7 +134,7 @@ export class UserApi
    * @override
    * @returns
    */
-  async getUserInfo(_credential?: UserCredential): Promise<UserInfo> {
+  public async getUserInfo(_credential?: UserCredential): Promise<UserInfo> {
     const response =
       await this.get<UserApiGetUserInfoTransaction>('/api/userinfo');
 

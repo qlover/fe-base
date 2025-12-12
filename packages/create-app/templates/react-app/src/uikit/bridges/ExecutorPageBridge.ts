@@ -13,7 +13,7 @@ import {
 } from '@/base/port/ExecutorPageBridgeInterface';
 
 class ExecutorPageBridgeState implements ExecutorPageStateInterface {
-  helloState = new RequestState();
+  public helloState = new RequestState();
 }
 
 const TestPlugin: ExecutorPlugin<RequestAdapterFetchConfig> = {
@@ -41,7 +41,7 @@ export class ExecutorPageBridge extends ExecutorPageBridgeInterface {
     this.feApi.usePlugin(TestPlugin);
   }
 
-  override onTestPlugins = async () => {
+  public override onTestPlugins = async () => {
     this.emit({
       ...this.state,
       helloState: new RequestState(true)

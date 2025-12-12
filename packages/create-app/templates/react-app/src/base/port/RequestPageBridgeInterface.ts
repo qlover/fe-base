@@ -17,7 +17,7 @@ export abstract class RequestPageBridgeInterface extends StoreInterface<RequestP
   abstract onTriggerAbortRequest: () => void;
   abstract stopAbortRequest: () => void;
 
-  emitState(state: Partial<RequestPageStateInterface>): void {
+  public emitState(state: Partial<RequestPageStateInterface>): void {
     this.emit(this.cloneState(state));
   }
 }

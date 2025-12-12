@@ -19,14 +19,14 @@ export class TestIOC
     IOCContainerInterface
   > | null = null;
 
-  getIoc(): IOCFunctionInterface<
+  public getIoc(): IOCFunctionInterface<
     IOCIdentifierMap,
     IOCContainerInterface
   > | null {
     return this.ioc;
   }
 
-  create(
+  public create(
     options: IocRegisterOptions
   ): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
     if (this.ioc) {

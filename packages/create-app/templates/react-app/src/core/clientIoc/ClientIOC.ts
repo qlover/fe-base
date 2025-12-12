@@ -17,7 +17,10 @@ export class ClientIOC
     IOCContainerInterface
   > | null = null;
 
-  create(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
+  public create(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
     if (this.ioc) {
       return this.ioc;
     }

@@ -11,7 +11,7 @@ import { injectable } from 'inversify';
 export class PublicAssetsPath {
   constructor(protected prefix: string = routerPrefix) {}
 
-  getPath(path: string): string {
+  public getPath(path: string): string {
     if (!this.prefix) {
       return path.startsWith('/') ? path : `/${path}`;
     }

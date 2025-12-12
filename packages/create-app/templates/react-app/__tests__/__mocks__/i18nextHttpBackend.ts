@@ -24,13 +24,13 @@ const resources: Record<string, Record<string, Record<string, string>>> = {
  * Implements the backend interface to avoid network requests
  */
 export class MockHttpBackend {
-  type = 'backend';
+  public type = 'backend';
 
   /**
    * Initialize the backend
    * This is called by i18next when .use() is called
    */
-  init(
+  public init(
     _services: unknown,
     _backendOptions: unknown,
     _i18nextOptions: unknown,
@@ -60,7 +60,7 @@ export class MockHttpBackend {
    * Read translation data for a language and namespace
    * This method is called by i18next to load translations
    */
-  read(
+  public read(
     language: string,
     namespace: string,
     callback: (error: Error | null, data?: Record<string, string>) => void
@@ -82,7 +82,7 @@ export class MockHttpBackend {
    * Load URL - called by i18next-http-backend to load from URL
    * We intercept this and return data from memory instead
    */
-  loadUrl(
+  public loadUrl(
     _url: string,
     callback: (error: Error | null, data?: Record<string, string>) => void
   ): void {
@@ -104,7 +104,7 @@ export class MockHttpBackend {
   /**
    * Create - not used in our mock
    */
-  create(): void {
+  public create(): void {
     // No-op
   }
 }

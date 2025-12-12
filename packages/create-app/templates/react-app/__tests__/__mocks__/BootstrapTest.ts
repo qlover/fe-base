@@ -7,7 +7,9 @@ export interface BootstrapTestArgs extends Omit<BootstrapClientArgs, 'ioc'> {
 }
 
 export class BootstrapTest {
-  static async main(args: BootstrapTestArgs): Promise<BootstrapClientArgs> {
+  public static async main(
+    args: BootstrapTestArgs
+  ): Promise<BootstrapClientArgs> {
     const result = await BootstrapClient.main({ ...args, ioc: testIOC });
     return result;
   }

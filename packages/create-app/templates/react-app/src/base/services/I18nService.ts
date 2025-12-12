@@ -16,7 +16,7 @@ import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 const { supportedLngs, fallbackLng } = i18nConfig;
 
 export class I18nServiceState implements StoreStateInterface {
-  loading: boolean = false;
+  public loading: boolean = false;
   constructor(public language: LocaleType) {}
 }
 
@@ -24,9 +24,9 @@ export class I18nService
   extends StoreInterface<I18nServiceState>
   implements I18nServiceInterface
 {
-  readonly pluginName = 'I18nService';
+  public readonly pluginName = 'I18nService';
 
-  selector = {
+  public selector = {
     loading: (state: I18nServiceState) => state.loading,
     language: (state: I18nServiceState) => state.language
   };
@@ -38,7 +38,7 @@ export class I18nService
   /**
    * @override
    */
-  onBefore(): void {
+  public onBefore(): void {
     const debug = false;
 
     i18n
@@ -83,17 +83,17 @@ export class I18nService
     });
   }
 
-  async changeLanguage(language: LocaleType): Promise<void> {
+  public async changeLanguage(language: LocaleType): Promise<void> {
     await i18n.changeLanguage(language);
     // Sync state with i18n.language
     this.emit({ ...this.state, language });
   }
 
-  changeLoading(loading: boolean): void {
+  public changeLoading(loading: boolean): void {
     this.emit({ ...this.state, loading });
   }
 
-  getCurrentLanguage(): LocaleType {
+  public getCurrentLanguage(): LocaleType {
     return i18n.language as LocaleType;
   }
 
@@ -102,11 +102,11 @@ export class I18nService
    * @param language - language to check
    * @returns true if the language is supported, false otherwise
    */
-  isValidLanguage(language: string): language is LocaleType {
+  public isValidLanguage(language: string): language is LocaleType {
     return supportedLngs.includes(language as LocaleType);
   }
 
-  getSupportedLanguages(): LocaleType[] {
+  public getSupportedLanguages(): LocaleType[] {
     return [...supportedLngs];
   }
 
@@ -116,7 +116,7 @@ export class I18nService
    * @param params - params to pass to the translation
    * @returns translated value
    */
-  t(key: string, params?: Record<string, unknown>): string {
+  public t(key: string, params?: Record<string, unknown>): string {
     const i18nValue = i18n.t(key, {
       lng: i18n.language,
       nsSeparator: false,

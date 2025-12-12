@@ -45,11 +45,11 @@ export class UserService
    * @override
    * @returns
    */
-  getToken(): string {
+  public getToken(): string {
     return this.getCredential()?.token ?? '';
   }
 
-  isUserInfo(value: unknown): value is UserInfo {
+  public isUserInfo(value: unknown): value is UserInfo {
     return (
       isObject(value) &&
       'name' in value &&
@@ -61,11 +61,11 @@ export class UserService
     );
   }
 
-  isUserCredential(value: unknown): value is UserCredential {
+  public isUserCredential(value: unknown): value is UserCredential {
     return isObject(value) && 'token' in value && isString(value.token);
   }
 
-  override isAuthenticated(): boolean {
+  public override isAuthenticated(): boolean {
     if (!super.isAuthenticated()) {
       return false;
     }

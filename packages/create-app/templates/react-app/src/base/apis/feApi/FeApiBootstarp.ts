@@ -54,9 +54,9 @@ export interface FeApiTransaction<Request = unknown, Response = unknown>
 }
 
 export class FeApiBootstarp implements BootstrapExecutorPlugin {
-  readonly pluginName = 'FeApiBootstarp';
+  public readonly pluginName = 'FeApiBootstarp';
 
-  onBefore({ parameters: { ioc } }: BootstrapContext): void {
+  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<FeApi>(FeApi)
       .usePlugin(new FetchURLPlugin())
