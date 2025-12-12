@@ -30,8 +30,8 @@ export type BootstrapAppArgs = {
 };
 
 export class BootstrapClient {
-  static lastTime = 0;
-  static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
+  public static lastTime = 0;
+  public static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
     const { logger, appConfig } = globals;
 
     if (BootstrapClient.lastTime) {

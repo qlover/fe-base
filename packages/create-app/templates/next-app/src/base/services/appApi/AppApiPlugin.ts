@@ -9,11 +9,11 @@ import type { AppApiConfig } from './AppApiRequester';
 import type { LoggerInterface } from '@qlover/logger';
 
 export class AppApiPlugin implements ExecutorPlugin {
-  readonly pluginName = 'AppApiPlugin';
+  public readonly pluginName = 'AppApiPlugin';
 
   constructor(protected logger: LoggerInterface) {}
 
-  isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
+  public isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
     return (
       typeof value === 'object' &&
       value !== null &&
@@ -24,7 +24,9 @@ export class AppApiPlugin implements ExecutorPlugin {
     );
   }
 
-  onSuccess(context: ExecutorContext<AppApiConfig>): void | Promise<void> {
+  public onSuccess(
+    context: ExecutorContext<AppApiConfig>
+  ): void | Promise<void> {
     const response = context.returnValue;
     const { parameters } = context;
 
@@ -40,7 +42,7 @@ export class AppApiPlugin implements ExecutorPlugin {
     }
   }
 
-  async onError(
+  public async onError(
     context: ExecutorContext<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;

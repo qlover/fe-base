@@ -14,11 +14,13 @@ import type {
 import type { ExecutorContext, SerializerIneterface } from '@qlover/fe-corekit';
 
 export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
-  readonly pluginName = 'AppUserApiBootstrap';
+  public readonly pluginName = 'AppUserApiBootstrap';
 
   constructor(protected serializer: SerializerIneterface) {}
 
-  onBefore({ parameters: { ioc } }: BootstrapContext): void | Promise<void> {
+  public onBefore({
+    parameters: { ioc }
+  }: BootstrapContext): void | Promise<void> {
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
 
     appUserApi.usePlugin(new FetchURLPlugin());

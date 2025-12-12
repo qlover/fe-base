@@ -21,7 +21,7 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
     protected client: RequestTransaction<AppApiConfig>
   ) {}
 
-  async search(
+  public async search(
     params: AdminUserListTransaction['request']
   ): Promise<AdminUserListTransaction['response']> {
     const response = await this.client.request<AdminUserListTransaction>({
@@ -33,7 +33,7 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
     return response;
   }
 
-  create(data: UserSchema): Promise<unknown> {
+  public create(data: UserSchema): Promise<unknown> {
     return this.client.request<AdminUserListTransaction>({
       url: '/admin/users',
       method: 'POST',
@@ -41,7 +41,7 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
     });
   }
 
-  remove(data: UserSchema): Promise<unknown> {
+  public remove(data: UserSchema): Promise<unknown> {
     return this.client.request<AdminUserListTransaction>({
       url: '/admin/users',
       method: 'DELETE',
@@ -49,7 +49,7 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
     });
   }
 
-  update(data: UserSchema): Promise<unknown> {
+  public update(data: UserSchema): Promise<unknown> {
     return this.client.request<AdminUserListTransaction>({
       url: '/admin/users',
       method: 'PUT',
@@ -57,7 +57,7 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
     });
   }
 
-  export(data: UserSchema): Promise<unknown> {
+  public export(data: UserSchema): Promise<unknown> {
     return this.client.request<AdminUserListTransaction>({
       url: '/admin/users',
       method: 'GET',

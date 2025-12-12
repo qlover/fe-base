@@ -20,11 +20,11 @@ export interface RequestEncryptPluginProps<
 }
 
 export class RequestEncryptPlugin implements ExecutorPlugin<RequestEncryptPluginProps> {
-  readonly pluginName = 'RequestEncryptPlugin';
+  public readonly pluginName = 'RequestEncryptPlugin';
 
   constructor(protected encryptor: Encryptor<string, string>) {}
 
-  onBefore(
+  public onBefore(
     context: ExecutorContext<RequestEncryptPluginProps>
   ): void | Promise<void> {
     const { responseType, encryptProps } = context.parameters;

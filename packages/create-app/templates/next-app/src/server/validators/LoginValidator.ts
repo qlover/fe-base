@@ -27,21 +27,21 @@ const passwordSchema = z
   .regex(/^\S+$/, { message: V_PASSWORD_SPECIAL_CHARS });
 
 export class LoginValidator implements ValidatorInterface<LoginValidatorData> {
-  validateEmail(data: unknown): void | ValidationFaildResult {
+  public validateEmail(data: unknown): void | ValidationFaildResult {
     const emailResult = emailSchema.safeParse(data);
     if (!emailResult.success) {
       return emailResult.error.issues[0];
     }
   }
 
-  validatePassword(data: unknown): void | ValidationFaildResult {
+  public validatePassword(data: unknown): void | ValidationFaildResult {
     const passwordResult = passwordSchema.safeParse(data);
     if (!passwordResult.success) {
       return passwordResult.error.issues[0];
     }
   }
 
-  validate(data: unknown): void | ValidationFaildResult {
+  public validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
@@ -62,7 +62,7 @@ export class LoginValidator implements ValidatorInterface<LoginValidatorData> {
     }
   }
 
-  getThrow(data: unknown): LoginValidatorData {
+  public getThrow(data: unknown): LoginValidatorData {
     const result = this.validate(data);
 
     if (result == null) {

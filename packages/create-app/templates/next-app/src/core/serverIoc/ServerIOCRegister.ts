@@ -54,7 +54,7 @@ export class ServerIOCRegister implements IOCRegisterInterface<
   /**
    * @override
    */
-  register(
+  public register(
     ioc: IOCContainerInterface,
     _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {

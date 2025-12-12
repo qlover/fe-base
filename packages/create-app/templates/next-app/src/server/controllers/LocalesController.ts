@@ -14,7 +14,7 @@ export class LocalesController implements LocalesControllerInterface {
     protected apiLocaleService: ApiLocaleService
   ) {}
 
-  async json(
+  public async json(
     query: LocalesControllerJsonQuery
   ): Promise<Record<string, string>> {
     const locale = query.locale as LocaleType;

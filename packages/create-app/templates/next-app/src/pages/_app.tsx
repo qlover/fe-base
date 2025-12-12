@@ -35,7 +35,7 @@ function App({ Component, pageProps, router }: PagesRouterProps) {
   const locale = (router.query.locale as string) || i18nConfig.fallbackLng;
 
   return (
-    <IOCProvider data-testid="IOCProvider">
+    <IOCProvider>
       <NextIntlClientProvider locale={locale} messages={pageProps.messages}>
         <BootstrapsProvider>
           <ClientRootProvider themeConfig={themeConfig}>

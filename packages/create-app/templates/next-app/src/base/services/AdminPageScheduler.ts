@@ -5,7 +5,7 @@ export class AdminPageScheduler implements LifecycleInterface {
   /**
    * @override
    */
-  async created(parmas: {
+  public async created(parmas: {
     resource: ResourceService<unknown>;
   }): Promise<unknown> {
     const { resource } = parmas;
@@ -28,7 +28,7 @@ export class AdminPageScheduler implements LifecycleInterface {
   /**
    * @override
    */
-  destroyed(parmas: { resource: ResourceService<unknown> }): void {
+  public destroyed(parmas: { resource: ResourceService<unknown> }): void {
     const { resource } = parmas;
     const store = resource.getStore();
 
@@ -38,5 +38,5 @@ export class AdminPageScheduler implements LifecycleInterface {
   /**
    * @override
    */
-  updated(): void {}
+  public updated(): void {}
 }

@@ -5,9 +5,9 @@ import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import type { ExecutorContext } from '@qlover/fe-corekit';
 
 export class AdminAuthPlugin implements BootstrapExecutorPlugin {
-  pluginName = 'AdminAuthPlugin';
+  public pluginName = 'AdminAuthPlugin';
 
-  async onBefore(
+  public async onBefore(
     context: ExecutorContext<BootstrapServerContextValue>
   ): Promise<void> {
     const { IOC } = context.parameters;

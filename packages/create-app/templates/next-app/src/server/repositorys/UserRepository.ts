@@ -8,7 +8,7 @@ import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 
 @injectable()
 export class UserRepository implements UserRepositoryInterface {
-  readonly name = 'fe_users';
+  public readonly name = 'fe_users';
 
   protected safeFields = [
     'created_at',
@@ -25,14 +25,14 @@ export class UserRepository implements UserRepositoryInterface {
     @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface
   ) {}
 
-  getAll(): Promise<unknown> {
+  public getAll(): Promise<unknown> {
     return this.dbBridge.get({ table: this.name });
   }
 
   /**
    * @override
    */
-  async getUserByEmail(email: string): Promise<UserSchema | null> {
+  public async getUserByEmail(email: string): Promise<UserSchema | null> {
     const result = await this.dbBridge.get({
       table: this.name,
       where: [['email', '=', email]]
@@ -48,7 +48,7 @@ export class UserRepository implements UserRepositoryInterface {
   /**
    * @override
    */
-  async add(params: {
+  public async add(params: {
     email: string;
     password: string;
   }): Promise<UserSchema[] | null> {
@@ -64,7 +64,7 @@ export class UserRepository implements UserRepositoryInterface {
     return result.data as UserSchema[];
   }
 
-  async updateById(
+  public async updateById(
     id: number,
     params: Partial<Omit<UserSchema, 'id' | 'created_at'>>
   ): Promise<void> {
@@ -75,7 +75,7 @@ export class UserRepository implements UserRepositoryInterface {
     });
   }
 
-  async pagination<UserSchema>(params: {
+  public async pagination<UserSchema>(params: {
     page: number;
     pageSize: number;
   }): Promise<PaginationInterface<UserSchema>> {

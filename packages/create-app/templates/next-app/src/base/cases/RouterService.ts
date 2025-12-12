@@ -13,27 +13,27 @@ export class RouterService implements RouterInterface {
     protected uiBridge: UIBridgeInterface<AppRouterInstance>
   ) {}
 
-  goto(href: RouterPathname): void {
+  public goto(href: RouterPathname): void {
     this.uiBridge.getUIBridge()?.push(href as string);
   }
 
-  gotoHome(): void {
+  public gotoHome(): void {
     this.goto('/');
   }
 
-  gotoLogin(): void {
+  public gotoLogin(): void {
     this.goto('/login');
   }
 
-  replaceHome(): void {
+  public replaceHome(): void {
     this.uiBridge.getUIBridge()?.replace('/');
   }
 
-  setLocale(locale: string): void {
+  public setLocale(locale: string): void {
     this.locale = locale;
   }
 
-  getLocale(): string {
+  public getLocale(): string {
     return this.locale;
   }
 }

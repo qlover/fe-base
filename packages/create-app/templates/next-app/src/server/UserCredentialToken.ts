@@ -16,7 +16,7 @@ export class UserCredentialToken implements CrentialTokenInterface<UserCredentia
     this.jwtExpiresIn = config.jwtExpiresIn;
   }
 
-  async generateToken(
+  public async generateToken(
     data: UserCredentialTokenValue,
     options: { expiresIn?: string } = {}
   ): Promise<string> {
@@ -29,7 +29,7 @@ export class UserCredentialToken implements CrentialTokenInterface<UserCredentia
     });
   }
 
-  async parseToken(token: string): Promise<UserCredentialTokenValue> {
+  public async parseToken(token: string): Promise<UserCredentialTokenValue> {
     try {
       const decoded = jwt.verify(token, this.jwtSecret) as {
         i: UserSchema['id'];

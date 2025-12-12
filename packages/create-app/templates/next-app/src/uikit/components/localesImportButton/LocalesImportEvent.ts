@@ -16,7 +16,7 @@ export class LocalesImportEvent extends StoreInterface<LocalesImportEventState> 
     }
   }
 
-  async onImport(type: LocaleType, file: File): Promise<void> {
+  public async onImport(type: LocaleType, file: File): Promise<void> {
     try {
       this.validate(file);
 

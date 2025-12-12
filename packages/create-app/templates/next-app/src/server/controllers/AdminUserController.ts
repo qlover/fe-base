@@ -22,7 +22,7 @@ export class AdminUserController implements AdminUserControllerInterface {
     protected apiUserService: ApiUserService
   ) {}
 
-  async getUsers(query: {
+  public async getUsers(query: {
     page: number;
     pageSize: number;
     orderBy?: BridgeOrderBy;

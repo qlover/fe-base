@@ -18,7 +18,7 @@ import type {
 
 @injectable()
 export class LocalesRepository implements LocalesRepositoryInterface {
-  readonly name = 'next_app_locales';
+  public readonly name = 'next_app_locales';
 
   protected safeFields = Object.keys(localesSchema.shape);
 
@@ -27,7 +27,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     @inject(Datetime) protected datetime: Datetime
   ) {}
 
-  async getAll(): Promise<LocalesSchema[]> {
+  public async getAll(): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
       table: this.name,
       fields: this.safeFields
@@ -35,7 +35,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return (result.data as LocalesSchema[]) || [];
   }
 
-  async getLocales(
+  public async getLocales(
     localeName: string,
     orderBy?: BridgeOrderBy
   ): Promise<LocalesSchema[]> {
@@ -49,7 +49,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return data && data.length > 0 ? data : [];
   }
 
-  async add(params: LocalesSchema): Promise<LocalesSchema[] | null> {
+  public async add(params: LocalesSchema): Promise<LocalesSchema[] | null> {
     const now = this.datetime.timestampz();
     const data = {
       ...params,
@@ -66,7 +66,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return (result.data as LocalesSchema[]) || null;
   }
 
-  async updateById(
+  public async updateById(
     id: number,
     params: Partial<Omit<LocalesSchema, 'id' | 'created_at'>>
   ): Promise<void> {
@@ -89,7 +89,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     });
   }
 
-  async pagination<T = LocalesSchema>(params: {
+  public async pagination<T = LocalesSchema>(params: {
     page: number;
     pageSize: number;
     orderBy?: BridgeOrderBy;
@@ -118,7 +118,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
    * @param options.concurrency - concurrency, default 3
    * @returns UpsertResult - contains success/failure details with returned data
    */
-  async upsert(
+  public async upsert(
     data: Partial<LocalesSchema>[],
     options?: {
       chunkSize?: number;

@@ -16,7 +16,7 @@ export class AdminPageEvent extends ResourceEvent {
     super(namespace, resource, undefined, schemaFormRef);
   }
 
-  override onDeleted(_params: ResourceTableEventCommonParams): void {
+  public override onDeleted(_params: ResourceTableEventCommonParams): void {
     this.uiDialog?.confirm({
       title: 'Confirm Delete',
       content: 'Are you sure you want to delete this item?',

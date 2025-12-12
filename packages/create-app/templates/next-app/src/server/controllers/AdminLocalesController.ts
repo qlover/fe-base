@@ -32,7 +32,7 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
     protected localesImportValidator: ValidatorInterface<ImportLocalesData>
   ) {}
 
-  async getLocales(query: {
+  public async getLocales(query: {
     page: number;
     pageSize: number;
     orders?: BridgeOrderBy;
@@ -48,7 +48,7 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
     return result;
   }
 
-  async createLocale(
+  public async createLocale(
     body: Omit<LocalesSchema, 'id' | 'created_at' | 'updated_at'>
   ): Promise<{ success: boolean }> {
     const localesParams = await this.localesValidator.getThrow(body);
@@ -59,10 +59,10 @@ export class AdminLocalesController implements AdminLocalesControllerInterface {
       success: true
     };
   }
-  async updateLocale(body: Partial<LocalesSchema>): Promise<void> {
+  public async updateLocale(body: Partial<LocalesSchema>): Promise<void> {
     await this.apiLocaleService.update(body);
   }
-  async importLocales(formData: unknown): Promise<UpsertResult> {
+  public async importLocales(formData: unknown): Promise<UpsertResult> {
     const localesParams = await this.localesImportValidator.getThrow({
       values: formData
     });

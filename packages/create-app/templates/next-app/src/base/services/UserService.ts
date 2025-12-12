@@ -30,15 +30,15 @@ export class UserService
     });
   }
 
-  getToken(): string {
+  public getToken(): string {
     return this.store.getCredential()?.credential_token ?? '';
   }
 
-  isUserInfo(value: unknown): value is UserSchema {
+  public isUserInfo(value: unknown): value is UserSchema {
     return userSchema.safeParse(value).success;
   }
 
-  isUserCredential(value: unknown): value is UserCredential {
+  public isUserCredential(value: unknown): value is UserCredential {
     return (
       isObject(value) &&
       'credential_token' in value &&

@@ -30,7 +30,7 @@ export type PaginationParams = {
 export class PaginationValidator implements ValidatorInterface<PaginationParams> {
   protected defaultPageSize = 10;
 
-  validate(data: unknown): void | ValidationFaildResult {
+  public validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
@@ -44,7 +44,7 @@ export class PaginationValidator implements ValidatorInterface<PaginationParams>
     }
   }
 
-  getThrow<T>(data: unknown): T {
+  public getThrow<T>(data: unknown): T {
     const result = paginationSchema.safeParse(data);
     if (!result.success) {
       throw new Error(result.error.issues[0].message);

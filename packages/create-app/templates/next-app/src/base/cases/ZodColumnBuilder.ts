@@ -45,7 +45,9 @@ export class ZodColumnBuilder<
     this.optionMap = optionMap ? merge(baseOptions, optionMap) : baseOptions;
   }
 
-  static zodType2RenderForm(zod: ZodType): ResourceTableFormType | undefined {
+  public static zodType2RenderForm(
+    zod: ZodType
+  ): ResourceTableFormType | undefined {
     // @ts-expect-error - zod._def.typeName is not typed
     const typeName = zod._def?.typeName as ZodFirstPartyTypeKind;
 
@@ -65,7 +67,7 @@ export class ZodColumnBuilder<
     ];
   }
 
-  zod2BaseOption(
+  public zod2BaseOption(
     key: string,
     zod: ZodType
   ): ResourceTableOption<z.infer<Input>> {
@@ -91,7 +93,7 @@ export class ZodColumnBuilder<
     };
   }
 
-  getBaseOptions(input: Input): OptionMap<Value, Input> {
+  public getBaseOptions(input: Input): OptionMap<Value, Input> {
     return Object.entries(input.shape).reduce(
       (acc, [key, zod]) => {
         acc[key as keyof Input['shape']] = this.zod2BaseOption(
@@ -104,7 +106,7 @@ export class ZodColumnBuilder<
     );
   }
 
-  bind(
+  public bind(
     key: keyof Input['shape'],
     params?: Partial<ResourceTableOption<z.infer<Input>>>
   ): this {
@@ -115,7 +117,7 @@ export class ZodColumnBuilder<
     return this;
   }
 
-  render<K extends keyof Input['shape']>(
+  public render<K extends keyof Input['shape']>(
     key: K,
     render: (
       value: unknown,
@@ -132,7 +134,7 @@ export class ZodColumnBuilder<
    * @param t - Translation function from next-intl
    * @returns this for chaining
    */
-  translate(t: ReturnType<typeof useTranslations>): this {
+  public translate(t: ReturnType<typeof useTranslations>): this {
     Object.values(this.optionMap).forEach((option) => {
       const { tt } = option;
       // Translate title if it's a string (i18n key)
@@ -171,7 +173,10 @@ export class ZodColumnBuilder<
    * @param params - Optional additional parameters to merge
    * @returns The built option
    */
-  build(key: string, params?: unknown): ResourceTableOption<z.infer<Input>> {
+  public build(
+    key: string,
+    params?: unknown
+  ): ResourceTableOption<z.infer<Input>> {
     const option = this.optionMap[key as keyof Input['shape']];
     if (!option) {
       throw new Error(`Option with key "${key}" not found`);
@@ -193,7 +198,7 @@ export class ZodColumnBuilder<
    * @param params - Optional additional parameters (currently unused)
    * @returns Array of all built options
    */
-  buildAll(_params?: unknown): ResourceTableOption<z.infer<Input>>[] {
+  public buildAll(_params?: unknown): ResourceTableOption<z.infer<Input>>[] {
     return Object.values(this.optionMap);
   }
 }

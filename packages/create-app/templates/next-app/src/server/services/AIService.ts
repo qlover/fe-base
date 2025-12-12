@@ -21,7 +21,9 @@ export class AIService {
     });
   }
 
-  async completions(messages: ChatCompletionMessageParam[]): Promise<unknown> {
+  public async completions(
+    messages: ChatCompletionMessageParam[]
+  ): Promise<unknown> {
     const url = `${this.baseUrl}/chat/completions`;
 
     const response = await fetch(url, {

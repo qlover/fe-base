@@ -46,11 +46,11 @@ export class SupabaseBridge implements DBBridgeInterface {
     );
   }
 
-  getSupabase(): SupabaseClient {
+  public getSupabase(): SupabaseClient {
     return this.supabase;
   }
 
-  async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
+  public async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
     const res = await this.supabase.rpc('exec_sql', { sql });
     return this.catch(res);
   }
@@ -111,7 +111,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  async add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  public async add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data } = event;
     if (!data) {
       throw new Error('Data is required for add operation');
@@ -122,7 +122,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(res);
   }
 
-  async upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  public async upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data, fields = '*' } = event;
     if (!data) {
       throw new Error('Data is required for upsert operation');
@@ -137,7 +137,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(res);
   }
 
-  async update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  public async update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data, where } = event;
     if (!data) {
       throw new Error('Data is required for update operation');
@@ -150,7 +150,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  public async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, where } = event;
     const handler = this.supabase.from(table).delete();
 
@@ -159,7 +159,9 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async get(event: BridgeEvent): Promise<SupabaseBridgeResponse<unknown>> {
+  public async get(
+    event: BridgeEvent
+  ): Promise<SupabaseBridgeResponse<unknown>> {
     const { table, fields = '*', where, orderBy } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
     const handler = this.supabase.from(table).select(selectFields);
@@ -171,7 +173,9 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>> {
+  public async pagination(
+    event: BridgeEvent
+  ): Promise<DBBridgeResponse<unknown[]>> {
     const {
       table,
       fields = '*',

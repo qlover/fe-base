@@ -14,15 +14,18 @@ import type {
 export class BootstrapsRegistry {
   constructor(protected args: BootstrapAppArgs) {}
 
-  get IOC(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
+  public get IOC(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
     return this.args.IOC;
   }
 
-  get appConfig(): EnvConfigInterface {
+  public get appConfig(): EnvConfigInterface {
     return this.IOC(IOCIdentifier.AppConfig);
   }
 
-  register(): BootstrapExecutorPlugin[] {
+  public register(): BootstrapExecutorPlugin[] {
     const IOC = this.IOC;
 
     const i18nService = IOC(IOCIdentifier.I18nServiceInterface);

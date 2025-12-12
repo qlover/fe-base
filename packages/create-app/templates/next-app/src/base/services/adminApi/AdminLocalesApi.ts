@@ -30,7 +30,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   /**
    * @override
    */
-  create(data: LocalesSchema): Promise<unknown> {
+  public create(data: LocalesSchema): Promise<unknown> {
     return this.client.request<AdminLocalesListTransaction>({
       url: '/admin/locales/create',
       method: 'POST',
@@ -41,7 +41,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   /**
    * @override
    */
-  remove(data: Partial<LocalesSchema>): Promise<unknown> {
+  public remove(data: Partial<LocalesSchema>): Promise<unknown> {
     return this.client.request<AdminLocalesListTransaction>({
       url: '/admin/locales',
       method: 'DELETE',
@@ -52,7 +52,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   /**
    * @override
    */
-  search(
+  public search(
     params: ResourceQuery
   ): Promise<AdminLocalesListTransaction['response']> {
     return this.client.request<AdminLocalesListTransaction>({
@@ -65,7 +65,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   /**
    * @override
    */
-  export(data: LocalesSchema): Promise<unknown> {
+  public export(data: LocalesSchema): Promise<unknown> {
     return this.client.request<AdminLocalesListTransaction>({
       url: '/admin/locales',
       method: 'GET',
@@ -76,7 +76,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   /**
    * @override
    */
-  update(
+  public update(
     data: Partial<LocalesSchema>
   ): Promise<AdminLocalesUpdateTransaction['response']> {
     return this.client.request<AdminLocalesUpdateTransaction>({
@@ -86,7 +86,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
     });
   }
 
-  import(data: {
+  public import(data: {
     [key in LocaleType]?: File;
   }): Promise<unknown> {
     const formdata = new FormData();
