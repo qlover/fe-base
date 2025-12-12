@@ -13,9 +13,7 @@ import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class RequestLogger
-  implements ExecutorPlugin<RequestAdapterFetchConfig>
-{
+export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> {
   public readonly pluginName = 'RequestLogger';
 
   constructor(@inject(IOCIdentifier.Logger) public logger: LoggerInterface) {}

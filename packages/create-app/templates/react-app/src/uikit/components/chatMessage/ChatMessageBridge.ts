@@ -14,9 +14,9 @@ import type {
 } from '@qlover/corekit-bridge';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
-export class ChatMessageBridge<T = string>
-  implements ChatMessageBridgeInterface<T>
-{
+export class ChatMessageBridge<
+  T = string
+> implements ChatMessageBridgeInterface<T> {
   protected ref: TextAreaRef | null = null;
   protected readonly messageSender: MessageSender<ChatMessage<T>>;
 

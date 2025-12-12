@@ -20,9 +20,10 @@ export interface IdentifierRecord {
 }
 
 @injectable()
-export class IdentifierService<T>
-  implements ResourceServiceInterface<T, ResourceStore<ResourceStateInterface>>
-{
+export class IdentifierService<T> implements ResourceServiceInterface<
+  T,
+  ResourceStore<ResourceStateInterface>
+> {
   public readonly unionKey: string = 'id';
   public readonly serviceName: string = 'IdentifierService';
   public readonly store: ResourceStore<ResourceStateInterface>;

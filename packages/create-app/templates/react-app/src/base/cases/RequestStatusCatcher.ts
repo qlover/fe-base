@@ -5,9 +5,7 @@ import type { RequestAdapterResponse } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class RequestStatusCatcher
-  implements RequestCatcherInterface<RequestAdapterResponse>
-{
+export class RequestStatusCatcher implements RequestCatcherInterface<RequestAdapterResponse> {
   constructor(
     @inject(IOCIdentifier.Logger) protected logger: LoggerInterface
   ) {}

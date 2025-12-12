@@ -18,9 +18,10 @@ import type {
 /**
  * TestIOCRegister - Register mock services for testing
  */
-export class TestIOCRegister
-  implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
-{
+export class TestIOCRegister implements IOCRegisterInterface<
+  IOCContainerInterface,
+  IocRegisterOptions
+> {
   constructor(protected options: IocRegisterOptions) {}
 
   protected registerGlobals(ioc: IOCContainerInterface): void {
