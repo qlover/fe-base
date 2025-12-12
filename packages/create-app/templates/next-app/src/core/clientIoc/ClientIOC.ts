@@ -1,13 +1,17 @@
 import {
   createIOCFunction,
   type IOCContainerInterface,
-  type IOCFunctionInterface
+  type IOCFunctionInterface,
+  type IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import type { IOCInterface } from '@/base/port/IOCInterface';
+import type {
+  IOCInterface,
+  IocRegisterOptions
+} from '@/base/port/IOCInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { ClientIOCRegister } from './ClientIOCRegister';
-import { appConfig } from '../globals';
+import { logger } from '../globals';
 
 export class ClientIOC implements IOCInterface<
   IOCIdentifierMap,
@@ -17,6 +21,14 @@ export class ClientIOC implements IOCInterface<
     IOCIdentifierMap,
     IOCContainerInterface
   > | null = null;
+  protected registers = 0;
+
+  constructor(
+    protected readonly iocRegister?: IOCRegisterInterface<
+      IOCContainerInterface,
+      IocRegisterOptions
+    >
+  ) {}
 
   create(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
     if (this.ioc) {
@@ -25,13 +37,22 @@ export class ClientIOC implements IOCInterface<
 
     this.ioc = createIOCFunction<IOCIdentifierMap>(new InversifyContainer());
 
-    const register = new ClientIOCRegister({
-      appConfig: appConfig
-    });
-
-    register.register(this.ioc.implemention!, this.ioc);
-
     return this.ioc;
+  }
+
+  register(options: IocRegisterOptions): void {
+    if (this.registers > 0) {
+      return;
+    }
+
+    if (!this.ioc) {
+      return;
+    }
+
+    logger.info('ClientIOC register');
+    new ClientIOCRegister(options).register(this.ioc.implemention!, this.ioc);
+
+    this.registers++;
   }
 }
 

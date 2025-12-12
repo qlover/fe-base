@@ -1,13 +1,15 @@
 import 'reflect-metadata';
 import { Bootstrap } from '@qlover/corekit-bridge';
 import { isObject } from 'lodash';
+import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import { browserGlobalsName } from '@config/common';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { BootstrapsRegistry } from './BootstrapsRegistry';
 import * as globals from '../globals';
 import type {
   IOCContainerInterface,
-  IOCFunctionInterface
+  IOCFunctionInterface,
+  IOCRegisterInterface
 } from '@qlover/corekit-bridge';
 
 export type BootstrapAppArgs = {
@@ -23,23 +25,31 @@ export type BootstrapAppArgs = {
    * IOC容器
    */
   IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
+
+  register?: IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>;
 };
 
 export class BootstrapClient {
+  static lastTime = 0;
   static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
-    const { root, IOC } = args;
+    const { logger, appConfig } = globals;
+
+    if (BootstrapClient.lastTime) {
+      return args;
+    }
+
+    const { root, IOC, register } = args;
 
     if (!isObject(root)) {
       throw new Error('root is not an object');
     }
 
-    const { logger, appConfig } = globals;
-
     const bootstrap = new Bootstrap({
       root,
       logger,
       ioc: {
-        manager: IOC
+        manager: IOC,
+        register: register
       },
       globalOptions: {
         sources: globals,
@@ -53,6 +63,10 @@ export class BootstrapClient {
       const bootstrapsRegistry = new BootstrapsRegistry(args);
 
       await bootstrap.use(bootstrapsRegistry.register()).start();
+
+      BootstrapClient.lastTime = Date.now();
+
+      logger.info('BootstrapClient starup success,', BootstrapClient.lastTime);
     } catch (error) {
       logger.error(`${appConfig.appName} starup error:`, error);
     }

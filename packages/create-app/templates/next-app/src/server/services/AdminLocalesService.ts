@@ -1,9 +1,9 @@
 import { ResourceStore } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
+import { ResourceState } from '@/base/cases/ResourceState';
+import { AdminLocalesApi } from '@/base/services/adminApi/AdminLocalesApi';
 import { ResourceService } from '@/base/services/ResourceService';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
-import { AdminLocalesApi } from './adminApi/AdminLocalesApi';
-import { ResourceState } from '../cases/ResourceState';
 
 @injectable()
 export class AdminLocalesService extends ResourceService<

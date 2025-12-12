@@ -1,42 +1,20 @@
-import { ExecutorError } from '@qlover/fe-corekit';
-import { NextResponse } from 'next/server';
-import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
-import { AppErrorApi } from '@/server/AppErrorApi';
-import { AppSuccessApi } from '@/server/AppSuccessApi';
+import { AdminLocalesController } from '@/server/controllers/AdminLocalesController';
+import { NextApiServer } from '@/server/NextApiServer';
+import type { BridgeOrderBy } from '@/server/port/DBBridgeInterface';
 import { AdminAuthPlugin } from '@/server/services/AdminAuthPlugin';
-import { ApiLocaleService } from '@/server/services/ApiLocaleService';
-import { PaginationValidator } from '@/server/validators/PaginationValidator';
 import type { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  const server = new BootstrapServer();
-
-  const result = await server
+  const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
+  return await new NextApiServer()
     .use(new AdminAuthPlugin())
-    .execNoError(async ({ parameters: { IOC } }) => {
-      const searchParams = Object.fromEntries(
-        req.nextUrl.searchParams.entries()
+    .runWithJson(async ({ parameters: { IOC } }) => {
+      return IOC(AdminLocalesController).getLocales(
+        searchParams as unknown as {
+          page: number;
+          pageSize: number;
+          orders?: BridgeOrderBy;
+        }
       );
-
-      const paginationParams = IOC(PaginationValidator).getThrow(searchParams);
-
-      const apiUserService = IOC(ApiLocaleService);
-
-      const result = await apiUserService.getLocales({
-        page: paginationParams.page,
-        pageSize: paginationParams.pageSize,
-        orderBy: paginationParams.orders
-      });
-
-      return result;
     });
-
-  if (result instanceof ExecutorError) {
-    console.error(result);
-    return NextResponse.json(new AppErrorApi(result.id, result.message), {
-      status: 400
-    });
-  }
-
-  return NextResponse.json(new AppSuccessApi(result));
 }

@@ -2,7 +2,10 @@ import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
 import { UserRepository } from '../repositorys/UserRepository';
-import { PaginationValidator } from '../validators/PaginationValidator';
+import {
+  type PaginationParams,
+  PaginationValidator
+} from '../validators/PaginationValidator';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { ValidatorInterface } from '../port/ValidatorInterface';
 
@@ -12,7 +15,7 @@ export class ApiUserService {
     @inject(UserRepository)
     protected userRepository: UserRepositoryInterface,
     @inject(PaginationValidator)
-    protected paginationValidator: ValidatorInterface
+    protected paginationValidator: ValidatorInterface<PaginationParams>
   ) {}
 
   async getUsers(params: {

@@ -34,6 +34,13 @@ export const COMMON_DETAIL = 'common:detail';
 export const COMMON_THEME_DEFAULT = 'common:theme__default';
 
 /**
+ * @description Theme switcher light theme label
+ * @localZh 亮色主题
+ * @localEn Light Theme
+ */
+export const COMMON_THEME_LIGHT = 'common:theme__light';
+
+/**
  * @description Theme switcher dark theme label
  * @localZh 暗色主题
  * @localEn Dark Theme
@@ -74,3 +81,10 @@ export const COMMON_LOGOUT_DIALOG_CONTENT = 'common:logout__dialog__content';
  * @localEn I18n key format is incorrect
  */
 export const COMMON_I18N_KEY_INVALID = 'common:i18n_key_invalid';
+
+/**
+ * @description manifest name
+ * @localZh 应用名称
+ * @localEn Application Name
+ */
+export const COMMON_MANIFEST_NAME = 'common:manifest__name';

@@ -1,7 +1,9 @@
+import { CookieStorage } from '@qlover/corekit-bridge';
 import { RouterService } from '@/base/cases/RouterService';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import { I18nService } from '@/base/services/I18nService';
 import { UserService } from '@/base/services/UserService';
+import { cookiesConfig } from '@config/cookies';
 import { IOCIdentifier as I } from '@config/IOCIdentifier';
 import { dialogHandler, logger, JSON } from '../globals';
 import type {
@@ -34,7 +36,7 @@ export class ClientIOCRegister implements IOCRegisterInterface<
     // ioc.bind(I.AntdStaticApiInterface, dialogHandler);
     // ioc.bind(I.LocalStorage, globals.localStorage);
     // ioc.bind(I.LocalStorageEncrypt, localStorageEncrypt);
-    // ioc.bind(I.CookieStorage, globals.cookieStorage);
+    ioc.bind(I.CookieStorage, new CookieStorage(cookiesConfig));
   }
 
   /**
@@ -87,7 +89,7 @@ export class ClientIOCRegister implements IOCRegisterInterface<
   /**
    * @override
    */
-  register(
+  public register(
     ioc: IOCContainerInterface,
     _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {

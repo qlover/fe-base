@@ -3,9 +3,9 @@ import { type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import type {
   ServiceIdentifier,
   IOCContainerInterface,
-  IOCFunctionInterface,
-  LoggerInterface
+  IOCFunctionInterface
 } from '@qlover/corekit-bridge';
+import type { LoggerInterface } from '@qlover/logger';
 
 export interface ServerInterface {
   readonly logger: LoggerInterface;

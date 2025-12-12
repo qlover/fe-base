@@ -3,7 +3,7 @@ import type { DialogHandler } from '@/base/cases/DialogHandler';
 import type { RouterService } from '@/base/cases/RouterService';
 import type { I18nService } from '@/base/services/I18nService';
 import type { UserService } from '@/base/services/UserService';
-import type { DBBridgeInterface } from '@/server/port/DBBridgeInterface';
+import type { SupabaseBridge } from '@/server/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
@@ -70,5 +70,5 @@ export interface IOCIdentifierMap {
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.AppConfig]: AppConfig;
   [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.DBBridgeInterface]: DBBridgeInterface;
+  [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
 }

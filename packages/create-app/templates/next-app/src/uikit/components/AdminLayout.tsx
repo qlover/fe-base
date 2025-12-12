@@ -13,12 +13,13 @@ import { clsx } from 'clsx';
 import { usePathname } from 'next/navigation';
 import React, { useMemo, type HTMLAttributes } from 'react';
 import { AdminPageManager } from '@/base/cases/AdminPageManager';
-import { BaseHeader } from './BaseHeader';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import { LocaleLink } from './LocaleLink';
-import { LogoutButton } from './LogoutButton';
-import { ThemeSwitcher } from './ThemeSwitcher';
+import { LanguageSwitcher } from '../components-app/LanguageSwitcher';
+import { LogoutButton } from '../components-app/LogoutButton';
+import { ThemeSwitcher } from '../components-app/ThemeSwitcher';
 import { useIOC } from '../hook/useIOC';
+import { useWarnTranslations } from '../hook/useWarnTranslations';
 import type { ItemType } from 'antd/es/menu/interface';
 
 const { Sider } = Layout;
@@ -41,10 +42,13 @@ export function AdminLayout(props: AdminLayoutProps) {
   const page = useIOC(AdminPageManager);
   const collapsedSidebar = useStore(page, page.selectors.collapsedSidebar);
   const navItems = useStore(page, page.selectors.navItems);
+  const t = useWarnTranslations();
+
+  const title = useMemo(() => t(COMMON_ADMIN_TITLE), [t]);
 
   const selectedKey = useMemo(() => {
     // 移除语言前缀，例如 /en/admin/users -> /admin/users
-    const normalizedPath = pathname.replace(/^\/[^/]+/, '');
+    const normalizedPath = pathname?.replace(/^\/[^/]+/, '') ?? '';
     return navItems.find((item) => item.pathname === normalizedPath)?.key || '';
   }, [pathname, navItems]);
 
@@ -81,7 +85,7 @@ export function AdminLayout(props: AdminLayoutProps) {
 
   return (
     <Layout data-testid="AdminLayout" className={className} {...rest}>
-      <div className="overflow-y-auto overflow-x-hidden h-screen sticky top-0 bottom-0 scrollbar-thin scrollbar-gutter-stable">
+      <div className="overflow-y-auto overflow-x-hidden h-screen sticky top-0 bottom-0">
         <Sider
           className="h-full relative"
           onCollapse={() => page.toggleSidebar()}
@@ -111,11 +115,30 @@ export function AdminLayout(props: AdminLayoutProps) {
       </div>
 
       <Layout>
-        <BaseHeader
-          href="/admin"
-          className="max-w-full pl-0"
-          rightActions={rightActions}
-        />
+        <header
+          data-testid="AdminLayoutHeader"
+          className="h-14 bg-secondary border-b border-c-border sticky top-0 z-50"
+        >
+          <div
+            className={clsx(
+              'flex items-center justify-between h-full px-4 mx-auto max-w-7xl',
+              className
+            )}
+          >
+            <div className="flex items-center">
+              <LocaleLink
+                href="/admin"
+                title={title}
+                className="flex items-center hover:opacity-80 transition-opacity"
+              >
+                <span className="text-lg font-semibold text-text">{title}</span>
+              </LocaleLink>
+            </div>
+            <div className="flex items-center gap-2 md:gap-4">
+              {rightActions}
+            </div>
+          </div>
+        </header>
         <main
           className={clsx('p-2 bg-primary text-text flex-1', mainClassName)}
         >

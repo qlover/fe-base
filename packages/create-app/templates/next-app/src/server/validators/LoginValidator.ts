@@ -26,7 +26,7 @@ const passwordSchema = z
   .max(50, { message: V_PASSWORD_MAX_LENGTH })
   .regex(/^\S+$/, { message: V_PASSWORD_SPECIAL_CHARS });
 
-export class LoginValidator implements ValidatorInterface {
+export class LoginValidator implements ValidatorInterface<LoginValidatorData> {
   validateEmail(data: unknown): void | ValidationFaildResult {
     const emailResult = emailSchema.safeParse(data);
     if (!emailResult.success) {

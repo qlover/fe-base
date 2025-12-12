@@ -3,7 +3,7 @@ export interface ValidationFaildResult {
   message: string;
 }
 
-export interface ValidatorInterface {
+export interface ValidatorInterface<T> {
   /**
    * Validate the data and return validation result
    * @param data - The data to validate
@@ -19,5 +19,5 @@ export interface ValidatorInterface {
    * @returns The data if it is valid
    * @throws {import('@qlover/fe-corekit').ExecutorError} if the data is invalid, with validation errors
    */
-  getThrow(data: unknown): unknown;
+  getThrow(data: unknown): Promise<T> | T;
 }

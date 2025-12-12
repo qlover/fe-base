@@ -2,22 +2,18 @@
 
 import { TranslationOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
+import { useRouter } from 'next/router';
 import { useLocale } from 'next-intl';
-import { useCallback, useMemo } from 'react';
-import type { I18nServiceLocale } from '@/base/port/I18nServiceInterface';
-import { usePathname, useRouter } from '@/i18n/routing';
+import { useCallback, useMemo, useState } from 'react';
+import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
-import { I } from '@config/IOCIdentifier';
-import { useIOC } from '../hook/useIOC';
 import type { ItemType } from 'antd/es/menu/interface';
 
 export function LanguageSwitcher() {
-  const i18nService = useIOC(I.I18nServiceInterface);
-  const pathname = usePathname(); // current pathname, aware of i18n
-
-  const router = useRouter(); // i18n-aware router instance
-  const currentLocale = useLocale() as LocaleType; // currently active locale
+  const router = useRouter();
+  const currentLocale = useLocale() as LocaleType;
+  const [isPending, setIsPending] = useState(false);
 
   const options: ItemType[] = useMemo(() => {
     return i18nConfig.supportedLngs.map(
@@ -34,18 +30,41 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = useCallback(
     async (value: string) => {
-      // Set a persistent cookie with the user's preferred locale (valid for 1 year)
-      document.cookie = `NEXT_LOCALE=${value}; path=/; max-age=31536000; SameSite=Lax`;
-      // Route to the same page in the selected locale
-      router.replace(pathname, { locale: value });
+      if (isPending || value === currentLocale) return;
+
+      setIsPending(true);
 
       try {
-        await i18nService.changeLanguage(value as I18nServiceLocale);
-      } catch (error) {
-        console.error('Failed to change language:', error);
+        // Get current path
+        let newPath = router.asPath;
+
+        if (useLocaleRoutes) {
+          // Replace locale in path (e.g., /en/about -> /zh/about)
+          const pathWithoutLocale = newPath.replace(
+            new RegExp(`^/${currentLocale}(/|$)`),
+            '/'
+          );
+          // Remove leading slash if path is root
+          const cleanPath = pathWithoutLocale === '/' ? '' : pathWithoutLocale;
+          newPath = `/${value}${cleanPath}`;
+        } else {
+          // If not using locale routes, just update query param
+          newPath = router.pathname;
+          router.replace({
+            pathname: router.pathname,
+            query: { ...router.query, locale: value }
+          });
+          setIsPending(false);
+          return;
+        }
+
+        // Replace the route
+        router.replace(newPath);
+      } finally {
+        setIsPending(false);
       }
     },
-    [i18nService, pathname, router]
+    [router, currentLocale, isPending]
   );
 
   const nextLocale = useMemo(() => {

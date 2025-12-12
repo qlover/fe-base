@@ -5,7 +5,10 @@ import {
 } from '@qlover/corekit-bridge';
 import { AppConfig } from '@/base/cases/AppConfig';
 import { InversifyContainer } from '@/base/cases/InversifyContainer';
-import type { IOCInterface } from '@/base/port/IOCInterface';
+import type {
+  IOCInterface,
+  IocRegisterOptions
+} from '@/base/port/IOCInterface';
 import type { IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOCRegister } from './ServerIOCRegister';
 
@@ -14,6 +17,8 @@ export class ServerIOC implements IOCInterface<
   IOCContainerInterface
 > {
   static instance: ServerIOC | null = null;
+
+  protected registers = 0;
 
   protected ioc: IOCFunctionInterface<
     IOCIdentifierMapServer,
@@ -38,16 +43,29 @@ export class ServerIOC implements IOCInterface<
       return this.ioc;
     }
 
-    this.ioc = createIOCFunction<IOCIdentifierMapServer>(
-      new InversifyContainer()
-    );
+    this.ioc = createIOCFunction(new InversifyContainer());
 
-    const register = new ServerIOCRegister({
+    // 注册默认依赖
+    this.register({
       appConfig: new AppConfig()
     });
 
-    register.register(this.ioc.implemention!, this.ioc);
-
     return this.ioc;
+  }
+
+  register(options: IocRegisterOptions): void {
+    if (this.registers > 0) {
+      console.debug('ServerIOC: ioc already registered');
+      return;
+    }
+
+    if (!this.ioc) {
+      console.debug('ServerIOC: ioc not initialized');
+      return;
+    }
+
+    new ServerIOCRegister(options).register(this.ioc.implemention!, this.ioc);
+
+    this.registers++;
   }
 }

@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import { API_PAGE_INVALID } from '@config/Identifier';
 import {
   type ValidationFaildResult,
@@ -22,7 +21,13 @@ const paginationSchema = z.object({
   order: z.string().optional().default('0')
 });
 
-export class PaginationValidator implements ValidatorInterface {
+export type PaginationParams = {
+  page: number;
+  pageSize: number;
+  orders?: BridgeOrderBy;
+};
+
+export class PaginationValidator implements ValidatorInterface<PaginationParams> {
   protected defaultPageSize = 10;
 
   validate(data: unknown): void | ValidationFaildResult {
@@ -39,12 +44,7 @@ export class PaginationValidator implements ValidatorInterface {
     }
   }
 
-  getThrow(data: unknown): Pick<
-    PaginationInterface<unknown>,
-    'page' | 'pageSize'
-  > & {
-    orders: BridgeOrderBy;
-  } {
+  getThrow<T>(data: unknown): T {
     const result = paginationSchema.safeParse(data);
     if (!result.success) {
       throw new Error(result.error.issues[0].message);
@@ -58,7 +58,7 @@ export class PaginationValidator implements ValidatorInterface {
       orders: [
         result.data.orderBy || 'updated_at',
         order == '0' || order == '1' ? (+order as 0 | 1) : 0
-      ]
-    };
+      ] as BridgeOrderBy
+    } as T;
   }
 }
