@@ -1,5 +1,146 @@
 # @qlover/create-app
 
+## 0.10.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** enhance internationalization support and layout components ([6da4f10](https://github.com/qlover/fe-base/commit/6da4f10d79e22619d86db938bdd4ae263af0e084)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `prettier` configuration to `package.json` for consistent code formatting.
+  - Implemented `generateStaticParams` function in `layout.tsx` to support static rendering with locale parameters.
+  - Introduced `LanguageSwitcher` and `LocaleSwitcher` components for improved language selection.
+  - Refactored `BaseLayout` to streamline layout rendering and removed unused components.
+  - Created `LocaleSwitcherSelect` component for better locale selection handling.
+
+  These changes aim to improve the user experience with enhanced internationalization features and a more organized layout structure.
+
+- **next-app:** refactor layout and enhance IOC integration ([d3de8f6](https://github.com/qlover/fe-base/commit/d3de8f6a8ca7336b0768835523bdbd573053ce6d)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Replaced `ComboProvider` with `BootstrapsProvider` and `IOCProvider` in `layout.tsx` to improve dependency injection and component structure.
+  - Added `register` method to `IOCInterface` for pre-launch dependency registration, enhancing flexibility in SSR environments.
+  - Updated `BootstrapClient` to support registration of dependencies and prevent multiple initializations.
+  - Introduced `useStrictEffect` hook to ensure effects run correctly in React's Strict Mode.
+  - Refactored `BootstrapsProvider` to ensure proper IOC registration before component rendering.
+
+  These changes aim to streamline the application structure and improve the management of dependencies, enhancing overall performance and maintainability.
+
+- **next-app:** enhance internationalization and layout components ([a588f10](https://github.com/qlover/fe-base/commit/a588f104bb3deb9a1c62d6df0e7bc6478a7b9d6d)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated `layout.tsx` to fetch messages for the current locale, improving language switch experience and preventing flickering.
+  - Refactored `BaseHeader` and `BaseLayout` components to utilize `useMemo` for better performance and optimized rendering.
+  - Removed deprecated `LocaleSwitcher` and `LocaleSwitcherSelect` components to streamline the codebase.
+  - Added `ThemeSwitcher` and `LogoutButton` to `BaseLayout` for enhanced user interface options.
+
+  These changes aim to improve internationalization support and overall component efficiency in the application.
+
+- **next-app:** add internationalization support and new assets ([ae8831f](https://github.com/qlover/fe-base/commit/ae8831f8f580e6e70abcddc5f30885e7baf22864)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated ESLint configuration to include new paths for `manifest.ts` and `*.tsx` files.
+  - Added `favicon.ico` for improved branding and user experience.
+  - Introduced `proxy.ts` for handling locale detection and routing with Next.js middleware.
+  - Created `manifest.ts` to define application metadata and translations.
+  - Added `robots.txt` to guide search engine indexing.
+
+  These changes enhance internationalization capabilities and improve the overall structure of the application.
+
+- **next-app:** enhance internationalization and routing structure ([5f64eb5](https://github.com/qlover/fe-base/commit/5f64eb58083016dfbb6a82eddfa0cac65bc9507b)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated ESLint configuration to include new paths for TypeScript files in the `src/pages` directory.
+  - Added a new constant for the application manifest name in `common.ts` to improve localization.
+  - Updated English and Chinese locale files to include the new manifest name key.
+  - Refactored `manifest.ts` to utilize the new constant for application name.
+  - Introduced `AppPageRouteParams` for better handling of route parameters across the application.
+  - Created new `PagesRouteParams` and `RouteParamsnHandlerInterface` for improved routing parameter management.
+
+  These changes enhance the internationalization capabilities and improve the overall routing structure of the application.
+
+- **next-app:** enhance configuration and logging in Next.js application ([181f522](https://github.com/qlover/fe-base/commit/181f52231da7244ab52bfc1ecf4004751f48ed5f)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `transpilePackages` to `next.config.ts` for improved package handling.
+  - Introduced logging for successful startup in `BootstrapClient` to aid in debugging.
+  - Enhanced `ClientIOC` with logging during registration to track dependency injection.
+  - Updated `_app.tsx` to include `BootstrapsProvider` and `IOCProvider`, ensuring proper context management.
+  - Simplified the `About` page by removing unused translations and components.
+
+  These changes improve the application's configuration, logging capabilities, and overall structure.
+
+- **next-app:** update ESLint config and streamline TypeScript paths ([a1ee3bd](https://github.com/qlover/fe-base/commit/a1ee3bd911516821c793c82a6ecba91a39a058bc)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `manifest.ts` and `proxy.ts` to ESLint configuration for improved linting coverage.
+  - Simplified `transpilePackages` array in `next.config.ts` for better readability.
+  - Cleaned up TypeScript path mappings in `tsconfig.json` for consistency.
+  - Refactored imports in various files to enhance code organization and maintainability.
+
+  These changes enhance the project's configuration and improve code clarity across the application.
+
+- **next-app:** add About page and enhance internationalization support ([49a5108](https://github.com/qlover/fe-base/commit/49a5108800d583f85ce0a97da77fbdbeabcba8c7)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Introduced a new About page with SEO metadata using `ClientSeo`.
+  - Added `page.about.ts` for About page titles, descriptions, and keywords in both English and Chinese.
+  - Updated i18n configuration to include About page translations.
+  - Refactored `PagesRouteParams` to support namespace-specific message loading.
+
+  These changes improve the application's internationalization capabilities and provide a new About page for users.
+
+- **next-app:** enhance internationalization and refactor layout components ([56cca75](https://github.com/qlover/fe-base/commit/56cca75cff33581f2e076598bad95438cefe0605)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `AdminI18nProvider` to manage admin-specific i18n messages, improving localization for admin pages.
+  - Refactored layout components to utilize `AppRoutePage`, streamlining the structure and enhancing code clarity.
+  - Updated `login` and `register` pages to incorporate admin titles in translations, ensuring consistency across the application.
+  - Introduced new `LanguageSwitcher`, `LogoutButton`, and `ThemeSwitcher` components for improved user interface options.
+  - Removed deprecated `BaseLayout` and `BaseHeader` components to simplify the codebase.
+
+  These changes enhance the internationalization capabilities and improve the overall layout structure of the application.
+
+- **next-app:** refactor API handling and enhance localization features ([68b81a1](https://github.com/qlover/fe-base/commit/68b81a1346460779b62db860ae80838aa744df66)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated `useApiLocales` to true, enabling API-based localization data fetching.
+  - Refactored API routes for locales to utilize `NextApiServer`, improving error handling and response management.
+  - Introduced `AdminLocalesController` and `LocalesController` for better separation of concerns in handling locale-related operations.
+  - Enhanced user authentication routes by integrating `UserController` for streamlined login, registration, and logout processes.
+  - Added new validation and service layers to improve data handling and validation for locales and user operations.
+
+  These changes enhance the application's localization capabilities and improve the overall API structure and error handling.
+
+- **next-app:** enhance validation and refactor controller logic ([edce45d](https://github.com/qlover/fe-base/commit/edce45d0879777a2edd6cd3144762fbff91e76e5)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated `ValidatorInterface` to support generic types, allowing for more flexible validation across different data structures.
+  - Refactored `AdminLocalesController` and `UserController` to utilize the updated validation methods, improving error handling and data processing.
+  - Introduced `PaginationParams` type for better pagination handling in `PaginationValidator`.
+  - Enhanced `LocalesValidator` and `LoginValidator` to implement specific data types, ensuring stricter validation rules.
+
+  These changes improve the robustness of data validation and streamline controller logic, enhancing overall application reliability.
+
+- **next-app:** enhance theme management and cookie configuration ([bcfd05d](https://github.com/qlover/fe-base/commit/bcfd05d04a88fd036f1fd15f8227e27c6cc5fe97)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `cookiesConfig` for managing cookie attributes, improving cookie handling in the application.
+  - Updated `i18nConfig` to include a new `storageKey` for locale management.
+  - Refactored `RootLayout` to utilize the theme from URL parameters, enhancing user experience with theme persistence.
+  - Introduced `getTheme` methods in `AppPageRouteParams` and `PagesRouteParams` for consistent theme retrieval.
+  - Enhanced `ThemeSwitcher` to save the selected theme in cookies, ensuring user preferences are maintained across sessions.
+
+  These changes improve the application's theme management and cookie handling, enhancing overall user experience.
+
+- **next-app:** enhance theme configuration and localization support ([4101f66](https://github.com/qlover/fe-base/commit/4101f6690fb28daa173688fe8fb779feeb5ea19f)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Updated theme configuration to include `enableSystem` and improved default theme handling.
+  - Added new constants for light theme labels in both English and Chinese locales.
+  - Refactored `getTheme` method to return the first supported theme if no cookie is found.
+  - Enhanced `ThemeSwitcher` component to utilize new theme constants and improve user experience.
+
+  These changes improve theme management and localization, ensuring a more consistent user interface across different themes.
+
+- **next-app:** integrate client rendering and enhance routing functionality ([79f0353](https://github.com/qlover/fe-base/commit/79f0353315bad3a2d648ebe990a3f81d16dc0446)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Added `ClinetRenderProvider` to manage client-side rendering for components, preventing flickering during language switches.
+  - Updated `AdminRootLayout` to wrap `AdminLayout` with `ClinetRenderProvider` for improved rendering control.
+  - Refactored `RouterService` to introduce `replaceHome` method, enhancing navigation capabilities.
+  - Modified `LoginForm` to use `routerService.replaceHome()` for smoother redirection after login.
+  - Introduced `AppBridge` component to establish a connection between the router and navigation bridge, improving routing management.
+  - Added new `scrollbar.css` for custom scrollbar styling and updated CSS imports accordingly.
+
+  These changes enhance the application's rendering performance and routing structure, providing a better user experience.
+
+#### 🐞 Bug Fixes
+
+- **next-app:** update ESLint config and enhance i18n message loading ([dad47dc](https://github.com/qlover/fe-base/commit/dad47dc9ca3f7c7f9c4d5542ed6adfaf38c8567b)) ([#549](https://github.com/qlover/fe-base/pull/549))
+  - Removed `manifest.ts` from ESLint ignore list to ensure proper linting.
+  - Downgraded `eslint-config-next` to version `15.5.0` for compatibility.
+  - Added `defaultNamespaces` to `i18nConfig` for improved message loading.
+  - Introduced `loadMessages` function to handle loading i18n messages from API or JSON files.
+  - Refactored `request.ts` to utilize the new `loadMessages` function for fetching messages.
+  - Updated `PagesRouteParams` to support loading messages with specified namespaces.
+
+  These changes improve the internationalization message handling and ensure consistent linting across the project.
+
 ## 0.10.1
 
 ### Patch Changes
