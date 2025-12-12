@@ -6,5 +6,65 @@
   "jest.runMode": "on-demand",
   "tailwindCSS.rootFontSize": 10,
   "vitest.configSearchPatternExclude": "{**/**/node_modules,packages/create-app/templates/**}",
-  "vitest.rootConfig": "./vite.config.ts"
+  "vitest.rootConfig": "./vite.config.ts",
+
+  // Search exclusion patterns
+  // These directories will be excluded from search by default
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/coverage": true,
+    "**/.next": true,
+    "**/out": true,
+    "**/.nx": true,
+    "**/.nx/cache": true,
+    "**/.nx/workspace-data": true,
+    "**/test-results": true,
+    "**/playwright-report": true,
+    "**/blob-report": true,
+    "**/playwright/.cache": true,
+    "**/playwright/.auth": true,
+    "**/*.output": true,
+    "**/.eslintcache": true,
+    "**/pnpm-lock.yaml": true,
+    "**/package-lock.json": true,
+    "**/yarn.lock": true,
+    "packages/create-app/templates/": true
+  },
+
+  // File exclusion patterns (also affects search)
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/test-results": true,
+    "**/playwright-report": true,
+    "**/blob-report": true,
+    "**/playwright/.cache": true,
+    "**/playwright/.auth": true,
+    "**/*.output": true,
+    "packages/create-app/templates/": false
+  },
+
+  // Exclude template directories from file watching
+  // This prevents Vitest extension from trying to load template vite.config.ts files
+  "files.watcherExclude": {
+    "**/packages/create-app/templates/**": true,
+    "**/packages/create-app/dist/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true
+  },
+
+  // Vitest extension configuration
+  // Note: vitest.include and vitest.exclude are Vitest config options, not extension settings
+  // They should be configured in vite.config.ts instead
+  // The files.watcherExclude above should prevent the extension from watching template directories
+
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.tsserver.maxTsServerMemory": 4096
 }
