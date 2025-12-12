@@ -6,6 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-plugin-prettier';
+// import jsdoc from 'eslint-plugin-jsdoc';
 import prettierConfig from './.prettierrc.js';
 
 const allGlobals = {
@@ -51,11 +52,14 @@ export default tseslint.config([
     files: ['packages/**/*.{ts,tsx}', 'make/**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
     plugins: {
-      '@qlover-eslint': qloverEslint
+      '@qlover-eslint': qloverEslint,
+      // TODO: open jsdoc later
+      // jsdoc: jsdoc
     },
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-require-override-comment': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-unused-vars': [

@@ -17,7 +17,7 @@ type Options = [
   {
     /**
      * Components to exclude from testid requirement
-     * 
+     *
      * Can be:
      * - Array of strings: ['ConfigProvider', 'Provider']
      * - RegExp: /Provider$/
@@ -76,9 +76,7 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
       return false;
     };
 
-    const parseStringMatcher = (
-      str: string
-    ): string | RegExp => {
+    const parseStringMatcher = (str: string): string | RegExp => {
       // Try to parse as regex if it looks like one, otherwise treat as exact match
       if (str.startsWith('/') && str.endsWith('/')) {
         try {
@@ -97,7 +95,9 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
     ): Array<string | RegExp | ((componentName: string) => boolean)> => {
       if (Array.isArray(matcher)) {
         // Process each element in the array
-        const result: Array<string | RegExp | ((componentName: string) => boolean)> = [];
+        const result: Array<
+          string | RegExp | ((componentName: string) => boolean)
+        > = [];
         for (const item of matcher) {
           if (typeof item === 'string') {
             const parsed = parseStringMatcher(item);
@@ -157,9 +157,7 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
       return null;
     };
 
-    const getComponentName = (
-      node: TSESTree.JSXElement
-    ): string | null => {
+    const getComponentName = (node: TSESTree.JSXElement): string | null => {
       let current: TSESTree.Node | undefined = node;
       while (current) {
         if (
@@ -201,41 +199,51 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
 
                 // Get component name for testid value (but don't use it for exclusion check)
                 const componentName = getComponentName(node);
-                const testIdValue = componentName || jsxElementName || 'component';
+                const testIdValue =
+                  componentName || jsxElementName || 'component';
                 const testIdAttribute = `data-testid="${testIdValue}"`;
 
                 if (hasAttributes) {
                   // If has other attributes, add before first attribute
                   const firstAttribute = openingElement.attributes[0];
-                  const firstAttributeToken = sourceCode.getFirstToken(
-                    firstAttribute
-                  );
+                  const firstAttributeToken =
+                    sourceCode.getFirstToken(firstAttribute);
                   if (!firstAttributeToken) return null;
 
                   // Check if there's already a space before the first attribute
-                  const tokenBefore = sourceCode.getTokenBefore(firstAttributeToken);
+                  const tokenBefore =
+                    sourceCode.getTokenBefore(firstAttributeToken);
                   const textBefore = tokenBefore
-                    ? sourceCode.getText().slice(
-                        tokenBefore.range[1],
-                        firstAttributeToken.range[0]
-                      )
+                    ? sourceCode
+                        .getText()
+                        .slice(
+                          tokenBefore.range[1],
+                          firstAttributeToken.range[0]
+                        )
                     : '';
-                  const hasSpaceBefore = textBefore.trim() === '' && textBefore.includes(' ');
+                  const hasSpaceBefore =
+                    textBefore.trim() === '' && textBefore.includes(' ');
 
                   // Insert before the first attribute with proper spacing
                   // Always ensure space before data-testid and after it (before next attribute)
                   const spaceBefore = hasSpaceBefore ? '' : ' ';
                   const insertText = `${spaceBefore}${testIdAttribute} `;
-                  
-                  return fixer.insertTextBefore(firstAttributeToken, insertText);
+
+                  return fixer.insertTextBefore(
+                    firstAttributeToken,
+                    insertText
+                  );
                 } else {
                   // If no other attributes, add after tag name (not after <)
                   const name = openingElement.name;
                   const nameLastToken = sourceCode.getLastToken(name);
-                  
+
                   if (!nameLastToken) return null;
-                  
-                  return fixer.insertTextAfter(nameLastToken, ` ${testIdAttribute}`);
+
+                  return fixer.insertTextAfter(
+                    nameLastToken,
+                    ` ${testIdAttribute}`
+                  );
                 }
               }
             });

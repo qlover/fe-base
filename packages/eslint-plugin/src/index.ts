@@ -11,6 +11,10 @@ import {
   tsClassMemberAccessibility,
   RULE_NAME as TS_CLASS_MEMBER_ACCESSIBILITY
 } from './rules/ts-class-member-accessibility';
+import {
+  tsRequireOverrideComment,
+  RULE_NAME as TS_REQUIRE_OVERRIDE_COMMENT
+} from './rules/ts-require-override-comment';
 
 // Export utility functions for ESLint globals configuration
 export {
@@ -33,7 +37,8 @@ const configs: {
     rules: {
       [`@qlover-eslint/${TS_CLASS_METHOD_RETURN}`]: 'error',
       [`@qlover-eslint/${REQUIRE_ROOT_TESTID}`]: 'error',
-      [`@qlover-eslint/${TS_CLASS_MEMBER_ACCESSIBILITY}`]: 'error'
+      [`@qlover-eslint/${TS_CLASS_MEMBER_ACCESSIBILITY}`]: 'error',
+      [`@qlover-eslint/${TS_REQUIRE_OVERRIDE_COMMENT}`]: 'error'
     }
   }
 };
@@ -41,7 +46,8 @@ const configs: {
 const rules = {
   [TS_CLASS_METHOD_RETURN]: tsClassMethodReturn,
   [REQUIRE_ROOT_TESTID]: requireRootTestid,
-  [TS_CLASS_MEMBER_ACCESSIBILITY]: tsClassMemberAccessibility
+  [TS_CLASS_MEMBER_ACCESSIBILITY]: tsClassMemberAccessibility,
+  [TS_REQUIRE_OVERRIDE_COMMENT]: tsRequireOverrideComment
 } as const;
 
 export default {
