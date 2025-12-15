@@ -29,6 +29,9 @@ function createMessagesState(): MessagesStateInterface<MessageBaseMsg> {
 }
 
 class MessageBaseApi implements MessageGetwayInterface {
+  /**
+   * @override
+   */
   public async sendMessage<M extends MessageStoreMsg<string>>(
     message: M
   ): Promise<unknown> {

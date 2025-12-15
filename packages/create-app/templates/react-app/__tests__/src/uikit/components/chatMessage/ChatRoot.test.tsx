@@ -24,7 +24,7 @@ const mockI18n: ChatMessageI18nInterface = {
 
 // Simple mock gateway for testing
 class MockMessageGateway implements MessageGetwayInterface {
-  sendMessage = vi.fn();
+  public sendMessage = vi.fn();
 }
 
 describe('ChatRoot Component', () => {

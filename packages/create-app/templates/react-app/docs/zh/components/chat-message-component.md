@@ -42,6 +42,7 @@ src/pages/base/
 ### 1. ChatMessageBridge（桥接层）
 
 连接 UI 和数据层的桥梁，处理：
+
 - 消息发送逻辑
 - 草稿管理
 - 状态控制
@@ -52,20 +53,23 @@ src/pages/base/
 模拟后端 API，支持三种模式：
 
 #### 流式模式 (stream: true)
+
 ```typescript
 {
-  stream: true  // 逐字输出，可停止
+  stream: true; // 逐字输出，可停止
 }
 ```
 
 #### 可中断普通模式
+
 ```typescript
 {
-  stream: false  // 一次性返回，可停止
+  stream: false; // 一次性返回，可停止
 }
 ```
 
 #### 快速普通模式
+
 ```typescript
 // 不传 options，一次性返回，不可停止
 ```
@@ -73,6 +77,7 @@ src/pages/base/
 ### 3. ChatMessageStore（状态管理）
 
 管理所有消息状态：
+
 - `messages` - 历史消息列表
 - `draftMessages` - 草稿消息列表
 - `streaming` - 是否正在流式输出
@@ -104,6 +109,7 @@ export default function ChatMessagePage() {
 ### 消息样式
 
 **用户消息**：
+
 - 蓝色背景
 - 右对齐
 - 最大宽度 80%
@@ -111,6 +117,7 @@ export default function ChatMessagePage() {
 - 带重试按钮
 
 **AI 消息**：
+
 - 浅色背景 + 边框
 - 左对齐
 - 最大宽度 85%
@@ -132,25 +139,25 @@ export default function ChatMessagePage() {
 interface ChatMessageBridgeInterface<T> {
   // 发送消息
   send(message?: ChatMessage<T>): Promise<ChatMessage<T>>;
-  
+
   // 停止发送
   stop(messageId?: string): boolean;
-  
+
   // 停止所有
   stopAll(): void;
-  
+
   // 更新内容
   onChangeContent(content: T): void;
-  
+
   // 获取消息存储
   getMessageStore(): ChatMessageStore<T>;
-  
+
   // 获取第一个草稿消息
   getFirstDraftMessage(): ChatMessage<T> | null;
-  
+
   // 获取正在发送的消息
   getSendingMessage(): ChatMessage<T> | null;
-  
+
   // 是否禁用发送
   getDisabledSend(): boolean;
 }
@@ -160,21 +167,18 @@ interface ChatMessageBridgeInterface<T> {
 
 ```typescript
 class MessageApi {
-  async sendMessage<M>(
-    message: M,
-    options?: GatewayOptions<M>
-  ): Promise<M>;
+  async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M>;
 }
 
 interface GatewayOptions<M> {
-  stream?: boolean;           // 是否流式
-  signal?: AbortSignal;       // 停止信号
-  onConnected?: () => void;   // 连接成功
+  stream?: boolean; // 是否流式
+  signal?: AbortSignal; // 停止信号
+  onConnected?: () => void; // 连接成功
   onChunk?: (msg: M) => void; // 流式块回调
   onProgress?: (p: number) => void; // 进度回调
-  onComplete?: (msg: M) => void;    // 完成回调
-  onAborted?: (msg: M) => void;     // 停止回调
-  onError?: (err: any) => void;     // 错误回调
+  onComplete?: (msg: M) => void; // 完成回调
+  onAborted?: (msg: M) => void; // 停止回调
+  onError?: (err: any) => void; // 错误回调
 }
 ```
 
@@ -189,8 +193,8 @@ const [bridge] = useState(() => {
     gateway: messageApi,
     logger: logger,
     senderName: 'ChatSender',
-    gatewayOptions: { 
-      stream: true  // 改为 false 使用普通模式
+    gatewayOptions: {
+      stream: true // 改为 false 使用普通模式
     }
   }).use(new ChatSenderStrategy(SendFailureStrategy.KEEP_FAILED, logger));
 });
@@ -199,8 +203,8 @@ const [bridge] = useState(() => {
 ### 2. 自定义消息组件
 
 ```typescript
-<MessagesList 
-  bridge={bridge} 
+<MessagesList
+  bridge={bridge}
   getMessageComponent={(props) => CustomMessageItem}
 />
 ```
@@ -217,13 +221,13 @@ async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M> {
     body: JSON.stringify(message),
     signal: options?.signal
   });
-  
+
   // 处理流式响应
   if (options?.stream) {
     const reader = response.body?.getReader();
     // ... 处理流式数据
   }
-  
+
   return response.json();
 }
 ```
@@ -233,6 +237,7 @@ async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M> {
 ### 测试功能
 
 **正常消息**：
+
 ```
 Hello
 你好
@@ -240,6 +245,7 @@ Hello
 ```
 
 **触发错误**：
+
 ```
 error
 Failed
@@ -247,6 +253,7 @@ test error
 ```
 
 **查看流式效果**：
+
 - 发送任意消息
 - 观察逐字输出效果
 - 点击停止按钮测试中断
@@ -277,13 +284,13 @@ MessageSender → MessageApi
     ↓
 [流式模式]
   onConnected → onChunk(逐字) → onComplete
-  
+
 [普通模式]
   onConnected → onComplete
-  
+
 [错误]
   onError
-  
+
 [停止]
   onAborted
     ↓
@@ -311,4 +318,3 @@ UI 自动更新
 ## 🎉 总结
 
 ChatMessage 是一个功能完整、设计优雅的聊天组件系统，开箱即用，支持流式输出、错误处理、状态管理等核心功能。可以直接用于生产环境，也可以根据需要进行扩展和定制。
-

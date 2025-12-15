@@ -52,17 +52,17 @@ export default function MessagePage() {
 
 ### Supported Text
 
-| Text Item | Chinese | English |
-|-----------|---------|---------|
-| Title | 消息网关测试 | Message Gateway Test |
-| Description | 发送消息并等待网关响应 | Send messages and wait for gateway response |
-| Empty State | 暂无消息 | No messages yet |
-| User Label | 你 | You |
-| Gateway Label | 网关 | Gateway |
-| Processing | 处理中... | Processing... |
-| Failed Label | 网关（失败） | Gateway (Failed) |
-| Gateway Response | 网关响应 | Gateway Response |
-| Send Button | 发送 | Send |
+| Text Item        | Chinese                | English                                     |
+| ---------------- | ---------------------- | ------------------------------------------- |
+| Title            | 消息网关测试           | Message Gateway Test                        |
+| Description      | 发送消息并等待网关响应 | Send messages and wait for gateway response |
+| Empty State      | 暂无消息               | No messages yet                             |
+| User Label       | 你                     | You                                         |
+| Gateway Label    | 网关                   | Gateway                                     |
+| Processing       | 处理中...              | Processing...                               |
+| Failed Label     | 网关（失败）           | Gateway (Failed)                            |
+| Gateway Response | 网关响应               | Gateway Response                            |
+| Send Button      | 发送                   | Send                                        |
 
 ## 🧪 Testing Features
 
@@ -169,4 +169,3 @@ Possible feature expansion directions:
 ## 🎉 Summary
 
 `MessageBaseList` is a fully-featured, beautifully styled message component with complete internationalization support, perfect for testing and demonstrating message gateway functionality.
-

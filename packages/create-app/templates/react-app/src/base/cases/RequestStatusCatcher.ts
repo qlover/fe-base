@@ -5,9 +5,7 @@ import type { RequestAdapterResponse } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class RequestStatusCatcher
-  implements RequestCatcherInterface<RequestAdapterResponse>
-{
+export class RequestStatusCatcher implements RequestCatcherInterface<RequestAdapterResponse> {
   constructor(
     @inject(IOCIdentifier.Logger) protected logger: LoggerInterface
   ) {}
@@ -16,7 +14,7 @@ export class RequestStatusCatcher
    * default handler
    * @override
    */
-  default(context: RequestAdapterResponse<unknown, unknown>): void {
+  public default(context: RequestAdapterResponse<unknown, unknown>): void {
     this.logger.warn(`RequestStatusCatcher default handler`, context);
   }
 
@@ -24,7 +22,7 @@ export class RequestStatusCatcher
    * handler
    * @override
    */
-  handler(context: RequestAdapterResponse<unknown, unknown>): void {
+  public handler(context: RequestAdapterResponse<unknown, unknown>): void {
     const { status } = context;
 
     const _handler = this[`case${status}` as keyof RequestStatusCatcher];
@@ -36,7 +34,7 @@ export class RequestStatusCatcher
     return this.default(context);
   }
 
-  case200(_context: RequestAdapterResponse<unknown, unknown>): void {
+  public case200(_context: RequestAdapterResponse<unknown, unknown>): void {
     // this.logger.info(`RequestStatusCatcher case200 handler`, context);
   }
 }

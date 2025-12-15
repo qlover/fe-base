@@ -11,22 +11,26 @@ import type {
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
-export class TestIOC
-  implements IOCInterface<IOCIdentifierMap, IOCContainerInterface>
-{
+export class TestIOC implements IOCInterface<
+  IOCIdentifierMap,
+  IOCContainerInterface
+> {
   protected ioc: IOCFunctionInterface<
     IOCIdentifierMap,
     IOCContainerInterface
   > | null = null;
 
-  getIoc(): IOCFunctionInterface<
+  public getIoc(): IOCFunctionInterface<
     IOCIdentifierMap,
     IOCContainerInterface
   > | null {
     return this.ioc;
   }
 
-  create(
+  /**
+   * @override
+   */
+  public create(
     options: IocRegisterOptions
   ): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
     if (this.ioc) {

@@ -43,31 +43,31 @@ export class AppConfig implements EnvConfigInterface {
    * Application name identifier
    * @description Injected from VITE_APP_NAME environment variable
    */
-  readonly appName = '';
+  public readonly appName = '';
 
   /**
    * Current version of the application
    * @description Injected from VITE_APP_VERSION environment variable
    */
-  readonly appVersion = '';
+  public readonly appVersion = '';
 
   /**
    * Storage key for user authentication token
    * @description Injected from VITE_USER_TOKEN_STORAGE_KEY environment variable
    */
-  readonly userTokenStorageKey = '__fe_user_token__';
+  public readonly userTokenStorageKey = '__fe_user_token__';
 
   /**
    * Storage key for user information
    * @description Injected from VITE_USER_INFO_STORAGE_KEY environment variable
    */
-  readonly userInfoStorageKey = '__fe_user_info__';
+  public readonly userInfoStorageKey = '__fe_user_info__';
 
   /**
    * Available OpenAI model configurations
    * @description List of supported OpenAI models for the application
    */
-  readonly openAiModels = [
+  public readonly openAiModels = [
     'gpt-4o-mini',
     'gpt-3.5-turbo',
     'gpt-3.5-turbo-2',
@@ -76,48 +76,48 @@ export class AppConfig implements EnvConfigInterface {
   ];
 
   /** Base URL for OpenAI API endpoints */
-  readonly openAiBaseUrl = '';
+  public readonly openAiBaseUrl = '';
 
   /** Authentication token for OpenAI API */
-  readonly openAiToken = '';
+  public readonly openAiToken = '';
 
   /** Prefix for OpenAI authentication token */
-  readonly openAiTokenPrefix = '';
+  public readonly openAiTokenPrefix = '';
 
   /** Flag indicating if OpenAI token is required */
-  readonly openAiRequireToken = true;
+  public readonly openAiRequireToken = true;
 
   /** Default login username */
-  readonly loginUser = '';
+  public readonly loginUser = '';
 
   /** Default login password */
-  readonly loginPassword = '';
+  public readonly loginPassword = '';
 
   /** Base URL for frontend API endpoints */
-  readonly feApiBaseUrl = '';
+  public readonly feApiBaseUrl = '';
 
   /** Base URL for user-related API endpoints */
-  readonly userApiBaseUrl = '';
+  public readonly userApiBaseUrl = '';
 
   /** Base URL for AI service API endpoints */
-  readonly aiApiBaseUrl = 'https://api.openai.com/v1';
+  public readonly aiApiBaseUrl = 'https://api.openai.com/v1';
 
   /** Authentication token for AI service API */
-  readonly aiApiToken = '';
+  public readonly aiApiToken = '';
 
   /** Prefix for AI service authentication token */
-  readonly aiApiTokenPrefix = 'Bearer';
+  public readonly aiApiTokenPrefix = 'Bearer';
 
   /** Flag indicating if AI service token is required */
-  readonly aiApiRequireToken = true;
+  public readonly aiApiRequireToken = true;
 
   /**
    * Project startup href, usually from window.location.href
    */
-  readonly bootHref = '';
+  public readonly bootHref = '';
 
   /** Flag indicating if the current environment is production */
-  get isProduction(): boolean {
+  public get isProduction(): boolean {
     return this.env === 'production';
   }
 }

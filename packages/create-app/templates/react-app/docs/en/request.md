@@ -158,9 +158,7 @@ apiAdapter.usePlugin(new ApiMockPlugin(mockDataJson, logger));
 
 ```typescript
 @injectable()
-export class RequestLogger
-  implements ExecutorPlugin<RequestAdapterFetchConfig>
-{
+export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> {
   readonly pluginName = 'RequestLogger';
 
   onBefore(context) {

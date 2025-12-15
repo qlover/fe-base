@@ -12,12 +12,12 @@ export interface PaginationInterface<T> {
 }
 
 export class ResourceState implements ResourceStateInterface {
-  searchParams: ResourceQuery = {
+  public searchParams: ResourceQuery = {
     page: 1,
     pageSize: 10,
     orderBy: 'updated_at',
     order: 1
   };
-  initState = new RequestState<unknown>();
-  listState = new RequestState<PaginationInterface<unknown>>();
+  public initState = new RequestState<unknown>();
+  public listState = new RequestState<PaginationInterface<unknown>>();
 }

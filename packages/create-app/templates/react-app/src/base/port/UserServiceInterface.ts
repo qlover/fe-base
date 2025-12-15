@@ -1,8 +1,10 @@
 import type { UserInfo, UserCredential } from '@/base/apis/userApi/UserApiType';
 import type { UserServiceInterface as CorekitBridgeUserServiceInterface } from '@qlover/corekit-bridge';
 
-export interface UserServiceInterface
-  extends CorekitBridgeUserServiceInterface<UserInfo, UserCredential> {
+export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
+  UserInfo,
+  UserCredential
+> {
   // You can add your own methods here
 
   /**

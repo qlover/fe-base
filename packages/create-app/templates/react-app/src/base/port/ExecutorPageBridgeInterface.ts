@@ -15,9 +15,9 @@ export interface ExecutorPageStateInterface extends StoreStateInterface {
  * const executorPageBridge = new ExecutorPageBridge();
  */
 export abstract class ExecutorPageBridgeInterface extends StoreInterface<ExecutorPageStateInterface> {
-  selector = {
+  public selector = {
     helloState: (state: ExecutorPageStateInterface) => state.helloState
   };
 
-  abstract onTestPlugins: () => Promise<void>;
+  public abstract onTestPlugins: () => Promise<void>;
 }

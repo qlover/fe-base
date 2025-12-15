@@ -19,10 +19,10 @@ class MockI18nService extends I18nService {
     super('/');
   }
 
-  t = vi.fn((key: string) => key);
-  changeLanguage = vi.fn();
-  changeLoading = vi.fn();
-  onBefore = vi.fn();
+  public t = vi.fn((key: string) => key);
+  public changeLanguage = vi.fn();
+  public changeLoading = vi.fn();
+  public onBefore = vi.fn();
 }
 
 describe('I18nKeyErrorPlugin', () => {

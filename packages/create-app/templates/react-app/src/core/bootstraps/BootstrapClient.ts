@@ -47,7 +47,9 @@ export type BootstrapClientArgs = {
 };
 
 export class BootstrapClient {
-  static async main(args: BootstrapClientArgs): Promise<BootstrapClientArgs> {
+  public static async main(
+    args: BootstrapClientArgs
+  ): Promise<BootstrapClientArgs> {
     const {
       root,
       bootHref,

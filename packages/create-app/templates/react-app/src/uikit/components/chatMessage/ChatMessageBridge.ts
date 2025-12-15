@@ -27,6 +27,9 @@ export class ChatMessageBridge<
     this.messageSender = new MessageSender(messages, config);
   }
 
+  /**
+   * @override
+   */
   public use(
     plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]
   ): this {
@@ -39,6 +42,9 @@ export class ChatMessageBridge<
     return this;
   }
 
+  /**
+   * @override
+   */
   public getMessageStore(): ChatMessageStore<T> {
     return this.messages;
   }
@@ -47,7 +53,9 @@ export class ChatMessageBridge<
    * Disable rules
    * 1. If streaming, don't allow sending
    * 2. If sending, don't allow sending
-   */
+
+   * @override
+      */
   public getDisabledSend(params?: DisabledSendParams<T>): boolean {
     const disabledSend =
       params?.disabledSend || this.messages.state.disabledSend;
@@ -64,6 +72,9 @@ export class ChatMessageBridge<
     return false;
   }
 
+  /**
+   * @override
+   */
   public onChangeContent(content: T): void {
     const firstDraft = this.getFirstDraftMessage();
 
@@ -81,6 +92,9 @@ export class ChatMessageBridge<
     }
   }
 
+  /**
+   * @override
+   */
   public getFirstDraftMessage(): ChatMessage<T> | null {
     return this.messages.getFirstDraftMessage();
   }
@@ -114,6 +128,7 @@ export class ChatMessageBridge<
    * - If loading, sending is not allowed
    * - If no message to send, sending is not allowed
    *
+   * @override
    * @param message - Message object
    * @param gatewayOptions - Gateway options
    */
@@ -142,6 +157,9 @@ export class ChatMessageBridge<
     return this.sendMessage(targetMessage, gatewayOptions);
   }
 
+  /**
+   * @override
+   */
   public getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null {
     messages = messages || this.messages.getMessages();
 
@@ -154,6 +172,9 @@ export class ChatMessageBridge<
     );
   }
 
+  /**
+   * @override
+   */
   public stop(messageId?: string): boolean {
     if (!messageId) {
       const sendingMessage = this.getSendingMessage();

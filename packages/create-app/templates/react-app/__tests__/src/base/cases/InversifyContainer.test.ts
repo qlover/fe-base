@@ -86,7 +86,7 @@ describe('InversifyContainer', () => {
     it('should auto bind injectable class', () => {
       @injectable()
       class TestService {
-        getValue(): string {
+        public getValue(): string {
           return 'test';
         }
       }
@@ -100,7 +100,7 @@ describe('InversifyContainer', () => {
     it('should handle manual dependency injection', () => {
       @injectable()
       class ServiceA {
-        getValue(): string {
+        public getValue(): string {
           return 'A';
         }
       }
@@ -109,7 +109,7 @@ describe('InversifyContainer', () => {
       class ServiceB {
         constructor(private serviceA: ServiceA) {}
 
-        getValueWithA(): string {
+        public getValueWithA(): string {
           return `B with ${this.serviceA.getValue()}`;
         }
       }
@@ -129,7 +129,7 @@ describe('InversifyContainer', () => {
       @injectable()
       class TestService {
         private count = 0;
-        increment(): number {
+        public increment(): number {
           return ++this.count;
         }
       }
@@ -147,7 +147,7 @@ describe('InversifyContainer', () => {
       class ComplexService {
         private state = { count: 0 };
 
-        updateState(): { count: number } {
+        public updateState(): { count: number } {
           this.state.count++;
           return this.state;
         }

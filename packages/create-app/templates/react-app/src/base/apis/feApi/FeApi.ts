@@ -10,9 +10,9 @@ export class FeApi extends RequestScheduler<FeApiConfig> {
     super(adapter);
   }
 
-  stop(_config: FeApiConfig): void {}
+  public stop(_config: FeApiConfig): void {}
 
-  async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
+  public async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
     return this.get('http://ip-api.com/json/') as unknown as Promise<
       FeApiGetIpInfo['response']
     >;

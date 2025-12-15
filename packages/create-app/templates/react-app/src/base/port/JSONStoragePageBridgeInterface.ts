@@ -9,13 +9,13 @@ export interface JSONStoragePageStateInterface extends StoreStateInterface {
 }
 
 export abstract class JSONStoragePageBridgeInterface extends StoreInterface<JSONStoragePageStateInterface> {
-  selector = {
+  public selector = {
     requestTimeout: (state: JSONStoragePageStateInterface) =>
       state.requestTimeout
   };
 
-  abstract changeRandomTestKey1: () => void;
-  abstract onChangeRandomTestKey2: () => void;
-  abstract changeExpireTime: (expireTime: number) => void;
-  abstract changeRequestTimeout: (requestTimeout: number) => void;
+  public abstract changeRandomTestKey1: () => void;
+  public abstract onChangeRandomTestKey2: () => void;
+  public abstract changeExpireTime: (expireTime: number) => void;
+  public abstract changeRequestTimeout: (requestTimeout: number) => void;
 }
