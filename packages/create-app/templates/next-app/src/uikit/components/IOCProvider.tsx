@@ -27,7 +27,7 @@ export function IOCProvider(props: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <IOCContext.Provider data-testid="IOCProvider" value={IOCInstance}>
+    <IOCContext.Provider value={IOCInstance}>
       {props.children}
     </IOCContext.Provider>
   );

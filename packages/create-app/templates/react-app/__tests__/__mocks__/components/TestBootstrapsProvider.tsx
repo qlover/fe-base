@@ -41,7 +41,7 @@ export function TestBootstrapsProvider({
   });
 
   return (
-    <IOCContext.Provider data-testid="TestBootstrapsProvider" value={IOC}>
+    <IOCContext.Provider value={IOC}>
       <TestRouter
         initialEntries={routerInitialEntries}
         initialIndex={routerInitialIndex}

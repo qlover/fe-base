@@ -22,7 +22,7 @@ export class MessageApi implements MessageGetwayInterface {
    * - If options provided but stream !== true, use interruptible normal mode
    * - If no options, use fast normal mode (non-interruptible)
    */
-  async sendMessage<M extends MessageStoreMsg<string>>(
+  public async sendMessage<M extends MessageStoreMsg<string>>(
     message: M,
     options?: GatewayOptions<M>
   ): Promise<M> {

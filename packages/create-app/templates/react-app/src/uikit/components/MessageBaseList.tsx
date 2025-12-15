@@ -29,7 +29,7 @@ function createMessagesState(): MessagesStateInterface<MessageBaseMsg> {
 }
 
 class MessageBaseApi implements MessageGetwayInterface {
-  async sendMessage<M extends MessageStoreMsg<string>>(
+  public async sendMessage<M extends MessageStoreMsg<string>>(
     message: M
   ): Promise<unknown> {
     const times = random(200, 1000);

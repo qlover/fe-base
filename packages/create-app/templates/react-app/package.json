@@ -82,7 +82,7 @@
     "@brain-toolkit/ts2locales": "^0.2.3",
     "@playwright/test": "^1.56.1",
     "@qlover/env-loader": "latest",
-    "@qlover/eslint-plugin": "latest",
+    "@qlover/eslint-plugin": "file:../../eslint-plugin",
     "@qlover/fe-scripts": "latest",
     "@qlover/fe-standard": "latest",
     "@testing-library/react": "^16.3.0",
