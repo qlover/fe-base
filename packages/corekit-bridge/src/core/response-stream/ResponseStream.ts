@@ -112,7 +112,7 @@ export interface ResponseStreamConfig {
  * ```
  */
 export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
-  readonly pluginName = 'ResponseStream';
+  public readonly pluginName = 'ResponseStream';
 
   constructor(private config: ResponseStreamConfig = {}) {}
 
@@ -125,7 +125,7 @@ export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
    * @override
    * @param context - Executor context containing response data
    */
-  async onSuccess(
+  public async onSuccess(
     context: ExecutorContext<RequestAdapterConfig>
   ): Promise<void> {
     const response = context.returnValue;
@@ -179,7 +179,7 @@ export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
    * @param config - Optional configuration overrides
    * @returns Final processed data or undefined
    */
-  async handleStreamResponse(
+  public async handleStreamResponse(
     response: Response,
     config?: RequestAdapterConfig<unknown> & ResponseStreamConfig
   ): Promise<string | undefined> {
@@ -231,7 +231,7 @@ export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
    * @param config - Optional configuration overrides
    * @returns Final processed data or undefined
    */
-  async streamWithEvent<R>(
+  public async streamWithEvent<R>(
     reader: ReadableStreamDefaultReader<R>,
     streamEvent: StreamEvent,
     config?: RequestAdapterConfig<unknown> & ResponseStreamConfig

@@ -110,7 +110,7 @@ export class ResourceStore<
    *
    * @param state - New list state
    */
-  changeListState(state: AsyncStateInterface<unknown>): void {
+  public changeListState(state: AsyncStateInterface<unknown>): void {
     this.emit(
       this.cloneState({
         listState: state
@@ -128,7 +128,7 @@ export class ResourceStore<
    *
    * @param params - New search parameters
    */
-  changeSearchParams(params: Partial<ResourceQuery>): void {
+  public changeSearchParams(params: Partial<ResourceQuery>): void {
     this.emit(
       this.cloneState({
         searchParams: params
@@ -146,7 +146,7 @@ export class ResourceStore<
    *
    * @param state - New initialization state
    */
-  changeInitState(state: AsyncStateInterface<unknown>): void {
+  public changeInitState(state: AsyncStateInterface<unknown>): void {
     this.emit(
       this.cloneState({
         initState: state

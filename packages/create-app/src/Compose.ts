@@ -5,33 +5,33 @@ import { GeneratorContext } from './type';
 export class Compose {
   constructor() {}
 
-  isJSONFilePath(filePath: string): boolean {
+  public isJSONFilePath(filePath: string): boolean {
     return filePath.endsWith('.json') || filePath.endsWith('.json.template');
   }
 
-  isTemplateFilePath(filePath: string): boolean {
+  public isTemplateFilePath(filePath: string): boolean {
     return filePath.endsWith('.template');
   }
 
-  getRealTemplateFilePath(filePath: string): string {
+  public getRealTemplateFilePath(filePath: string): string {
     return filePath.replace('.template', '');
   }
 
-  readFile(filePath: string): string {
+  public readFile(filePath: string): string {
     return readFileSync(filePath, 'utf-8');
   }
 
-  readJSONFile(filePath: string): Record<string, unknown> {
+  public readJSONFile(filePath: string): Record<string, unknown> {
     return JSON.parse(this.readFile(filePath));
   }
 
-  writeFile(filePath: string, content: string): void {
+  public writeFile(filePath: string, content: string): void {
     writeFileSync(this.getRealTemplateFilePath(filePath), content, {
       encoding: 'utf-8'
     });
   }
 
-  replaceFile(
+  public replaceFile(
     targetFilePath: string,
     context: Record<string, unknown>
   ): string {
@@ -49,7 +49,7 @@ export class Compose {
     return targetFileContent;
   }
 
-  mergeJSONFile(
+  public mergeJSONFile(
     targetJSONFilePath: string,
     sourceJSONContent: Record<string, unknown>
   ): void {
@@ -63,7 +63,7 @@ export class Compose {
     );
   }
 
-  composeConfigFile(
+  public composeConfigFile(
     context: GeneratorContext,
     sourceFilePath: string,
     targetFilePath: string

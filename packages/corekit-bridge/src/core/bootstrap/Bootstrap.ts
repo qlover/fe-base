@@ -47,12 +47,12 @@ export class Bootstrap<
     }
   }
 
-  setOptions(options: Partial<BootstrapConfig<Container>>): this {
+  public setOptions(options: Partial<BootstrapConfig<Container>>): this {
     this.options = { ...this.options, ...options };
     return this;
   }
 
-  async initialize(): Promise<void> {
+  public async initialize(): Promise<void> {
     const { ioc: iocOptions, envOptions, globalOptions } = this.options;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,7 +73,7 @@ export class Bootstrap<
     this.plugins = [];
   }
 
-  getIOCContainer(): Container | undefined {
+  public getIOCContainer(): Container | undefined {
     const ioc = this.options.ioc as InjectIOCOptions<Container>;
 
     if (ioc?.manager && ioc.manager.implemention) {
@@ -83,7 +83,7 @@ export class Bootstrap<
     return undefined;
   }
 
-  getContext(): BootstrapContextValue {
+  public getContext(): BootstrapContextValue {
     return {
       root: this.options.root,
       ioc: this.getIOCContainer()!,
@@ -91,7 +91,7 @@ export class Bootstrap<
     };
   }
 
-  use(
+  public use(
     plugin: BootstrapExecutorPlugin | BootstrapExecutorPlugin[],
     skip?: boolean
   ): this {
@@ -110,12 +110,12 @@ export class Bootstrap<
     return this;
   }
 
-  start(): Promise<BootstrapContextValue> {
+  public start(): Promise<BootstrapContextValue> {
     const context = this.getContext();
     return this.exec(context, () => Promise.resolve(context));
   }
 
-  startNoError():
+  public startNoError():
     | Promise<BootstrapContextValue | ExecutorError>
     | ExecutorError {
     const context = this.getContext();

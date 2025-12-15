@@ -156,7 +156,7 @@ export class ReleaseLabel {
    * // true
    * ```
    */
-  compare(changedFilePath: string, packagePath: string): boolean {
+  public compare(changedFilePath: string, packagePath: string): boolean {
     if (typeof this.options.compare === 'function') {
       return this.options.compare(changedFilePath, packagePath);
     }
@@ -185,7 +185,7 @@ export class ReleaseLabel {
    * // 'modified:packages/a'
    * ```
    */
-  toChangeLabel(
+  public toChangeLabel(
     packagePath: string,
     label: string = this.options.changePackagesLabel
   ): string {
@@ -215,7 +215,7 @@ export class ReleaseLabel {
    * // ['modified:packages/a', 'modified:packages/b']
    * ```
    */
-  toChangeLabels(
+  public toChangeLabels(
     packages: string[],
     label: string = this.options.changePackagesLabel
   ): string[] {
@@ -250,7 +250,7 @@ export class ReleaseLabel {
    * // ['packages/a']
    * ```
    */
-  pick(
+  public pick(
     changedFiles: Array<string> | Set<string>,
     packages: string[] = this.options.packagesDirectories
   ): string[] {

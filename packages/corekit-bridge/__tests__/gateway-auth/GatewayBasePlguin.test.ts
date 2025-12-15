@@ -13,7 +13,7 @@ interface TestUser {
 }
 
 class MockGateway {
-  async getUser(_params: { id: number }): Promise<TestUser> {
+  public async getUser(_params: { id: number }): Promise<TestUser> {
     return {
       id: 1,
       name: 'John Doe',
@@ -23,15 +23,18 @@ class MockGateway {
 }
 
 class MockLogger implements LoggerInterface {
-  log = vi.fn();
-  fatal = vi.fn();
-  trace = vi.fn();
-  debug = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  addAppender = vi.fn();
-  context<Value>(value?: Value): LogContext<Value> {
+  public log = vi.fn();
+  public fatal = vi.fn();
+  public trace = vi.fn();
+  public debug = vi.fn();
+  public info = vi.fn();
+  public warn = vi.fn();
+  public error = vi.fn();
+  public addAppender = vi.fn();
+  /**
+   * @override
+   */
+  public context<Value>(value?: Value): LogContext<Value> {
     return new LogContext<Value>(value);
   }
 }

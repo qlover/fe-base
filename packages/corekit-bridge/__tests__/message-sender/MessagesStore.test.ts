@@ -37,16 +37,16 @@ interface TestMessage extends MessageStoreMsg<string> {
  * after store operations
  */
 class CustomMessage implements TestMessage {
-  id?: string;
-  content?: string;
-  status?: MessageStatusType;
-  loading: boolean = false;
-  result: string | null = null;
-  error: unknown = null;
-  startTime: number = 0;
-  endTime: number = 0;
-  placeholder?: string;
-  files?: File[];
+  public id?: string;
+  public content?: string;
+  public status?: MessageStatusType;
+  public loading: boolean = false;
+  public result: string | null = null;
+  public error: unknown = null;
+  public startTime: number = 0;
+  public endTime: number = 0;
+  public placeholder?: string;
+  public files?: File[];
 
   constructor(data: Partial<TestMessage> = {}) {
     Object.assign(this, data);
@@ -57,7 +57,7 @@ class CustomMessage implements TestMessage {
    *
    * Returns display content or fallback text
    */
-  getDisplayContent(): string {
+  public getDisplayContent(): string {
     return this.content || 'No content';
   }
 }

@@ -141,7 +141,7 @@ export abstract class GatewayService<
     this.executor = executor;
   }
 
-  getExecutor(): GatewayExecutor<T, Gateway> | undefined {
+  public getExecutor(): GatewayExecutor<T, Gateway> | undefined {
     return this.executor;
   }
 
@@ -288,7 +288,7 @@ export abstract class GatewayService<
    *
    * @internal This method is used internally by `execute` and typically doesn't need to be called directly
    */
-  createExecOptions<Params>(
+  public createExecOptions<Params>(
     action: keyof Gateway,
     params?: Params
   ): GatewayExecutorOptions<T, Gateway, Params> {
@@ -328,6 +328,7 @@ export abstract class GatewayService<
    *
    * If an error occurs, the executor's `onError` hooks are called and the error is rethrown.
    *
+   * @override
    * @template Result - The type of result returned by the action
    * @template Action - The gateway action name type
    * @param action - The gateway action name
@@ -363,26 +364,41 @@ export abstract class GatewayService<
     fn: (gateway: Gateway | null) => Promise<Result>
   ): Promise<Result>;
   // Overload 1.5: execute(action, params, fn) - custom function with params (for type inference)
+  /**
+   * @override
+   */
   public async execute<Result, Action extends string | keyof Gateway, Params>(
     action: Action,
     params: Params,
     fn: (gateway: Gateway | null) => Promise<Result>
   ): Promise<Result>;
   // Overload 2: execute(action) - no parameters
+  /**
+   * @override
+   */
   public async execute<Result, Action extends string | keyof Gateway>(
     action: Action
   ): Promise<Result>;
   // Overload 3: execute(action, params) - single parameter
+  /**
+   * @override
+   */
   public async execute<Result, Action extends string | keyof Gateway, Params>(
     action: Action,
     params: Params
   ): Promise<Result>;
   // Overload 4: execute(action, ...params) - multiple parameters
+  /**
+   * @override
+   */
   public async execute<Result, Action extends string | keyof Gateway>(
     action: Action,
     ...params: unknown[]
   ): Promise<Result>;
   // Implementation
+  /**
+   * @override
+   */
   public async execute<Result, Action extends string | keyof Gateway>(
     action: Action,
     paramsOrFn?: unknown | ((gateway: Gateway | null) => Promise<Result>),

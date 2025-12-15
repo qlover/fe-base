@@ -209,7 +209,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // '/path/to/project'
    * ```
    */
-  get rootPath(): string {
+  public get rootPath(): string {
     return this.getOptions('rootPath');
   }
 
@@ -224,7 +224,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // 'main' or custom branch name
    * ```
    */
-  get sourceBranch(): string {
+  public get sourceBranch(): string {
     return this.getOptions('sourceBranch');
   }
 
@@ -239,7 +239,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // 'development' or custom environment
    * ```
    */
-  get releaseEnv(): string {
+  public get releaseEnv(): string {
     return this.getOptions('releaseEnv');
   }
 
@@ -254,7 +254,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // [{ name: 'pkg-a', version: '1.0.0', ... }]
    * ```
    */
-  get workspaces(): WorkspaceValue[] | undefined {
+  public get workspaces(): WorkspaceValue[] | undefined {
     return this.getOptions('workspaces.workspaces');
   }
 
@@ -269,7 +269,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // { name: 'pkg-a', version: '1.0.0', ... }
    * ```
    */
-  get workspace(): WorkspaceValue | undefined {
+  public get workspace(): WorkspaceValue | undefined {
     return this.getOptions('workspaces.workspace');
   }
 
@@ -289,7 +289,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * }]);
    * ```
    */
-  setWorkspaces(workspaces: WorkspaceValue[]): void {
+  public setWorkspaces(workspaces: WorkspaceValue[]): void {
     this.options.workspaces = {
       ...this.options.workspaces,
       workspaces
@@ -322,7 +322,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * );
    * ```
    */
-  getPkg<T>(key?: string, defaultValue?: T): T {
+  public getPkg<T>(key?: string, defaultValue?: T): T {
     const packageJson = this.workspace?.packageJson;
 
     if (!packageJson) {
@@ -358,7 +358,7 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * // }
    * ```
    */
-  getTemplateContext(): TemplateContext {
+  public getTemplateContext(): TemplateContext {
     return {
       ...this.getOptions(),
       ...this.workspace!,
@@ -391,7 +391,10 @@ export default class ReleaseContext extends ScriptContext<ReleaseContextConfig> 
    * await context.runChangesetsCli('status');
    * ```
    */
-  async runChangesetsCli(name: string, args?: string[]): Promise<string> {
+  public async runChangesetsCli(
+    name: string,
+    args?: string[]
+  ): Promise<string> {
     // is pnpm?
     let packageManager = 'pnpm';
     try {

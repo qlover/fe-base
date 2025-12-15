@@ -105,7 +105,7 @@ export class JSONSerializer<
    * serializer.toString(); // returns '[object JSONSerializer]'
    * ```
    */
-  readonly [Symbol.toStringTag] = 'JSONSerializer';
+  public readonly [Symbol.toStringTag] = 'JSONSerializer';
 
   constructor(
     /**
@@ -185,7 +185,7 @@ export class JSONSerializer<
    * @override
    * @returns Serialized string
    */
-  stringify(
+  public stringify(
     value: unknown,
     replacer?:
       | ((this: unknown, key: string, value: unknown) => unknown)
@@ -224,7 +224,7 @@ export class JSONSerializer<
    * @override
    * @returns Parsed value
    */
-  parse(
+  public parse(
     text: string,
     reviver?: (this: unknown, key: string, value: unknown) => unknown
   ): unknown {
@@ -244,7 +244,7 @@ export class JSONSerializer<
    * @since 1.0.10
    * @returns Serialized string
    */
-  serialize(data: unknown): string {
+  public serialize(data: unknown): string {
     return this.stringify(
       data,
       this.options.replacer || null,
@@ -264,7 +264,7 @@ export class JSONSerializer<
    * @since 1.0.10
    * @returns Parsed value
    */
-  deserialize(data: string, defaultValue?: T): T {
+  public deserialize(data: string, defaultValue?: T): T {
     try {
       return this.parse(data) as T;
     } catch {
@@ -280,7 +280,7 @@ export class JSONSerializer<
    * @returns JSON array string
    * @since 1.0.10
    */
-  serializeArray(arr: (string | number | boolean)[]): string {
+  public serializeArray(arr: (string | number | boolean)[]): string {
     // Use explicit type for Array.prototype.map
     const mapped = arr.map((value: string | number | boolean) =>
       JSON.stringify(value)

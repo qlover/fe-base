@@ -120,6 +120,7 @@ export class ColorFormatter implements FormatterInterface {
    * - Preserves all original log arguments unchanged
    * - Handles both function and string color values
    *
+   * @override
    * @param event - Log event containing level and arguments
    * @returns Array with colored level text followed by original arguments
    *
@@ -141,7 +142,7 @@ export class ColorFormatter implements FormatterInterface {
    * // Returns: [chalk.white('UNKNOWN'), 'Custom message']
    * ```
    */
-  format(event: LogEvent): unknown[] {
+  public format(event: LogEvent): unknown[] {
     const { level, args } = event;
 
     // Apply the appropriate color function to the level

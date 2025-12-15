@@ -99,7 +99,7 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
    * // Scans sourcePath and processes all TypeScript files
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     const { sourcePath } = this.context.options;
     this.logger.info(`Reading entry: ${sourcePath}`);
     const entryAllFiles = this.getEntryAllFiles([sourcePath!]);

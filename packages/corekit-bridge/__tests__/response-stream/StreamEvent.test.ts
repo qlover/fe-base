@@ -19,8 +19,8 @@ import { StreamProcessorInterface } from '../../src/core/response-stream/StreamP
 describe('StreamEvent', () => {
   // Mock processor implementation
   class MockProcessor implements StreamProcessorInterface {
-    processChunk = vi.fn((data: string) => [data]);
-    processFinal = vi.fn((data: string) => data);
+    public processChunk = vi.fn((data: string) => [data]);
+    public processFinal = vi.fn((data: string) => data);
   }
 
   let processor: MockProcessor;

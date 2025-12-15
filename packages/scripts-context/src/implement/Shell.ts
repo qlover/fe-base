@@ -257,7 +257,7 @@ export class Shell implements ShellInterface {
    * logger.info('Shell instance created');
    * ```
    */
-  get logger(): LoggerInterface {
+  public get logger(): LoggerInterface {
     return this.config.logger;
   }
 
@@ -314,7 +314,7 @@ export class Shell implements ShellInterface {
    * // Returns: 'npm install --save-dev'
    * ```
    */
-  static format(
+  public static format(
     template: string = '',
     context: Record<string, unknown> = {}
   ): string {
@@ -368,7 +368,10 @@ export class Shell implements ShellInterface {
    * }
    * ```
    */
-  format(template: string = '', context: Record<string, unknown> = {}): string {
+  public format(
+    template: string = '',
+    context: Record<string, unknown> = {}
+  ): string {
     try {
       return Shell.format(template, context);
     } catch (error) {
@@ -407,6 +410,7 @@ export class Shell implements ShellInterface {
    * - Mixed formats: Handled appropriately based on type
    * - Options: Applied consistently across all command types
    *
+   * @override
    * @param command - Command string (with template) or array of command parts
    * @param options - Execution options including context for template formatting
    * @returns Promise resolving to command output
@@ -432,7 +436,7 @@ export class Shell implements ShellInterface {
    * });
    * ```
    */
-  exec(
+  public exec(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
@@ -479,7 +483,7 @@ export class Shell implements ShellInterface {
    * const output = await shell.exec('npm install', { silent: true });
    * ```
    */
-  run(
+  public run(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {
@@ -546,7 +550,7 @@ export class Shell implements ShellInterface {
    * // Returns 'Would delete all files' without execution
    * ```
    */
-  async execFormattedCommand(
+  public async execFormattedCommand(
     command: string | string[],
     options: ShellExecOptions = {}
   ): Promise<string> {

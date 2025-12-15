@@ -144,7 +144,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Parses all TypeScript files and generates documentation data
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     const entryPoints = this.context.options.readerOutputs!.map(
       (output) => output.relativePath
     );
@@ -204,7 +204,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * });
    * ```
    */
-  async getTypeDocsProject(
+  public async getTypeDocsProject(
     options: Partial<TypeDocOptions>
   ): Promise<[ProjectReflection, Application]> {
     const app = await Application.bootstrap(options, [
@@ -258,7 +258,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * }
    * ```
    */
-  writeJSON(value: unknown, path: string): void {
+  public writeJSON(value: unknown, path: string): void {
     if (!path) {
       this.logger.warn('ProjectReader writeJSON Output path is empty!');
       return;
@@ -310,7 +310,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Returns: []
    * ```
    */
-  formats(project: ProjectReflection): FormatProjectValue[] {
+  public formats(project: ProjectReflection): FormatProjectValue[] {
     if (!project.children) {
       return [];
     }
@@ -968,7 +968,7 @@ export default class TypeDocJson extends ScriptPlugin<
    * // Only returns non-filtered tags like `@param`, `@returns`, `@example`
    * ```
    */
-  formatDescription(comment: any): FormatProjectDescription[] {
+  public formatDescription(comment: any): FormatProjectDescription[] {
     if (!comment) {
       return [];
     }
@@ -1075,7 +1075,9 @@ export default class TypeDocJson extends ScriptPlugin<
    * // ]
    * ```
    */
-  formatParameters(parameters: ParameterReflection[]): FormatProjectValue[] {
+  public formatParameters(
+    parameters: ParameterReflection[]
+  ): FormatProjectValue[] {
     if (!Array.isArray(parameters)) {
       return [];
     }

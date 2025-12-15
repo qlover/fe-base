@@ -181,7 +181,7 @@ export type GatewayBasePluginType<
 export class GatewayBasePlguin<Params, T, Gateway>
   implements ExecutorPlugin<GatewayExecutorOptions<T, Gateway, Params>>
 {
-  readonly pluginName = 'GatewayBasePlguin';
+  public readonly pluginName = 'GatewayBasePlguin';
 
   /**
    * Before action hook
@@ -189,6 +189,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * Sets the store to loading state before action execution.
    * This is called automatically by the executor before the gateway method runs.
    *
+   * @override
    * @param context - The executor context containing store and action parameters
    *
    * @example Override for custom behavior
@@ -199,7 +200,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onBefore(
+  public async onBefore(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const store = context.parameters.store;
@@ -218,6 +219,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * - Updates store with result (`store.success(result)`)
    * - Logs success event with duration if logger is provided
    *
+   * @override
    * @param context - The executor context containing return value, store, and action parameters
    * @throws {ExecutorError} If result is null (error code: 'SERVICE_RESULT_NULL')
    *
@@ -229,7 +231,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onSuccess(
+  public async onSuccess(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const { returnValue } = context;
@@ -258,6 +260,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * Updates the store to failed state with the error.
    * This is called automatically by the executor when an error occurs during action execution.
    *
+   * @override
    * @param context - The executor context containing error and store
    *
    * @example Override for custom error handling
@@ -269,7 +272,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * }
    * ```
    */
-  async onError(
+  public async onError(
     context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const error = context.error;

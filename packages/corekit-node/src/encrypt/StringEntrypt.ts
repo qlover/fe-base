@@ -57,10 +57,11 @@ export class StringEntrypt implements Encryptor<string, string> {
    * Encrypts a string value
    * Uses random IV for each encryption
    *
+   * @override
    * @param value - String to encrypt
    * @returns Encrypted string with IV
    */
-  encrypt(value: string): string {
+  public encrypt(value: string): string {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(this.ALGORITHM, this.KEY, iv);
     let encrypted = cipher.update(value, 'utf8', this.encoding);
@@ -72,10 +73,11 @@ export class StringEntrypt implements Encryptor<string, string> {
    * Decrypts an encrypted string
    * Extracts IV from encrypted data
    *
+   * @override
    * @param encryptedData - Encrypted string with IV
    * @returns Original string
    */
-  decrypt(encryptedData: string): string {
+  public decrypt(encryptedData: string): string {
     const [encrypted, iv] = encryptedData.split(':');
     const decipher = crypto.createDecipheriv(
       this.ALGORITHM,

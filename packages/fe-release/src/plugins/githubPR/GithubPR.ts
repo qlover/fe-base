@@ -260,7 +260,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * plugin2.enabled(); // true
    * ```
    */
-  override enabled(_name: string): boolean {
+  public enabled(_name: string): boolean {
     if (this.getConfig('skip')) {
       return false;
     }
@@ -285,7 +285,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * plugin2.isPublish; // true (publish mode)
    * ```
    */
-  get isPublish(): boolean {
+  public get isPublish(): boolean {
     return !this.getConfig('releasePR');
   }
 
@@ -333,7 +333,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Throws if not GitHub repo or missing NPM token
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     this.logger.debug('GithubPR onBefore');
 
     const isGithub = await this.isGithubRepository();
@@ -375,7 +375,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Transforms changelogs with GitHub links
    * ```
    */
-  override async onExec(): Promise<void> {
+  public async onExec(): Promise<void> {
     const workspaces = this.context.workspaces!;
 
     const githubChangelog = new GithubChangelog(
@@ -412,7 +412,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Publishes to NPM and creates GitHub release
    * ```
    */
-  override async onSuccess(): Promise<void> {
+  public async onSuccess(): Promise<void> {
     if (this.isPublish) {
       await this.publishPR(this.context.workspaces!);
 
@@ -444,7 +444,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Creates PR with release changes
    * ```
    */
-  async releasePR(workspaces: WorkspaceValue[]): Promise<void> {
+  public async releasePR(workspaces: WorkspaceValue[]): Promise<void> {
     await this.step({
       label: 'Release Commit',
       task: () => this.relesaeCommit(workspaces)
@@ -480,7 +480,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Publishes to NPM and creates GitHub releases
    * ```
    */
-  async publishPR(workspaces: WorkspaceValue[]): Promise<void> {
+  public async publishPR(workspaces: WorkspaceValue[]): Promise<void> {
     if (!this.getConfig('dryRunCreatePR')) {
       await this.context.runChangesetsCli('publish');
 
@@ -572,7 +572,7 @@ export default class GithubPR extends GitBase<GithubPRProps> {
    * // Creates and auto-merges PR
    * ```
    */
-  async releasePullRequest(
+  public async releasePullRequest(
     workspaces: WorkspaceValue[],
     releaseBranchParams: ReleaseBranchParams
   ): Promise<void> {

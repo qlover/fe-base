@@ -33,7 +33,7 @@ export abstract class RequestManager<Config extends RequestAdapterConfig> {
    * @param plugin - The plugin to be used by the executor.
    * @returns The current instance of RequestManagerInterface for chaining.
    */
-  usePlugin(plugin: ExecutorPlugin | ExecutorPlugin[]): this {
+  public usePlugin(plugin: ExecutorPlugin | ExecutorPlugin[]): this {
     if (Array.isArray(plugin)) {
       plugin.forEach((p) => this.executor.use(p));
     } else {
@@ -52,7 +52,7 @@ export abstract class RequestManager<Config extends RequestAdapterConfig> {
    * @param config - The configuration for the request.
    * @returns A promise that resolves to the response of the request.
    */
-  request(config: unknown): Promise<unknown> {
+  public request(config: unknown): Promise<unknown> {
     const mergedConfig = merge({}, this.adapter.getConfig(), config);
     return this.executor.exec(mergedConfig, (context) =>
       this.adapter.request(context.parameters)

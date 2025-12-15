@@ -28,8 +28,8 @@ vi.mock('./test-plugin', () => ({
 }));
 
 class TestPlugin extends ScriptPlugin<ReleaseContext> {
-  option1: string;
-  option2: number;
+  public option1: string;
+  public option2: number;
 
   // eslint-disable-next-line
   constructor(context: any, name: string, option1: string, option2: number) {

@@ -179,7 +179,7 @@ export class MessagesStore<
    * // Plain object merge
    * ```
    */
-  override mergeMessage<T extends MessageStoreMsg<unknown, unknown>>(
+  public override mergeMessage<T extends MessageStoreMsg<unknown, unknown>>(
     target: T,
     ...updates: Partial<T>[]
   ): T {
@@ -199,7 +199,7 @@ export class MessagesStore<
    *
    * @returns Array of all messages in the store
    */
-  override getMessages(): MessageType[] {
+  public override getMessages(): MessageType[] {
     return this.state.messages ?? [];
   }
 
@@ -241,7 +241,9 @@ export class MessagesStore<
    * // Full message with generated ID, status=DRAFT, etc.
    * ```
    */
-  override createMessage<T extends MessageType>(message: Partial<T> = {}): T {
+  public override createMessage<T extends MessageType>(
+    message: Partial<T> = {}
+  ): T {
     const startTime = message.startTime ?? Date.now();
     const id = message.id ?? this.defaultId(message);
     const status = message.status ?? MessageStatus.DRAFT;
@@ -265,7 +267,7 @@ export class MessagesStore<
    * @param id - Unique identifier of the message
    * @returns Message object or `undefined` if not found
    */
-  override getMessageById(id: string): MessageType | undefined {
+  public override getMessageById(id: string): MessageType | undefined {
     return this.getMessages().find((message) => message.id === id);
   }
 
@@ -296,7 +298,7 @@ export class MessagesStore<
    * });
    * ```
    */
-  override addMessage<M extends MessageType>(message: Partial<M>): M {
+  public override addMessage<M extends MessageType>(message: Partial<M>): M {
     // If the message has an id, update the message instead of adding it
     if (message.id) {
       const existingMessage = this.getMessageById(message.id) as M;
@@ -339,7 +341,7 @@ export class MessagesStore<
    * });
    * ```
    */
-  override updateMessage<M extends MessageType>(
+  public override updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined {
@@ -378,7 +380,7 @@ export class MessagesStore<
    * store.deleteMessage('msg-123');
    * ```
    */
-  override deleteMessage(id: string): void {
+  public override deleteMessage(id: string): void {
     const messages = this.getMessages();
     // Use filter for single traversal deletion
     const newMessages = messages.filter((message) => message.id !== id);
@@ -410,7 +412,9 @@ export class MessagesStore<
    * }
    * ```
    */
-  override isMessage<T extends MessageType>(message: unknown): message is T {
+  public override isMessage<T extends MessageType>(
+    message: unknown
+  ): message is T {
     return typeof message === 'object' && message !== null;
   }
 
@@ -420,7 +424,7 @@ export class MessagesStore<
    * @param id - Unique identifier of the message
    * @returns Zero-based index of the message, or `-1` if not found
    */
-  override getMessageIndex(id: string): number {
+  public override getMessageIndex(id: string): number {
     return this.getMessages().findIndex((message) => message.id === id);
   }
 
@@ -430,7 +434,7 @@ export class MessagesStore<
    * @param index - Zero-based index position
    * @returns Message at the index or `undefined` if out of bounds
    */
-  override getMessageByIndex(index: number): MessageType | undefined {
+  public override getMessageByIndex(index: number): MessageType | undefined {
     return this.getMessages().at(index);
   }
 
@@ -448,7 +452,7 @@ export class MessagesStore<
    * store.resetMessages([message1, message2, message3]);
    * ```
    */
-  override resetMessages(messages: MessageType[]): void {
+  public override resetMessages(messages: MessageType[]): void {
     this.emit(
       this.cloneState({
         messages: messages.map((message) => this.createMessage(message))
@@ -470,7 +474,7 @@ export class MessagesStore<
    * localStorage.setItem('messages', JSON.stringify(jsonData));
    * ```
    */
-  override toJson(): Record<string, unknown>[] {
+  public override toJson(): Record<string, unknown>[] {
     return JSON.parse(JSON.stringify(this.getMessages()));
   }
 
@@ -480,7 +484,7 @@ export class MessagesStore<
    * Sets the store state to indicate that streaming is active.
    * Emits state change for reactive UI updates.
    */
-  override startStreaming(): void {
+  public override startStreaming(): void {
     this.emit(this.cloneState({ streaming: true } as Partial<State>));
   }
 
@@ -490,7 +494,7 @@ export class MessagesStore<
    * Sets the store state to indicate that streaming has ended.
    * Emits state change for reactive UI updates.
    */
-  override stopStreaming(): void {
+  public override stopStreaming(): void {
     this.emit(this.cloneState({ streaming: false } as Partial<State>));
   }
 }

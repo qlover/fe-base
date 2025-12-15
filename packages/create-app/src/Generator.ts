@@ -41,11 +41,11 @@ export class Generator {
     this.compose = new Compose();
   }
 
-  get logger(): LoggerInterface {
+  public get logger(): LoggerInterface {
     return this.context.logger;
   }
 
-  async steps(prompts: GeneratorPrompt[]): Promise<GeneratorContext> {
+  public async steps(prompts: GeneratorPrompt[]): Promise<GeneratorContext> {
     try {
       const answers = await inquirer.prompt(prompts);
 
@@ -60,7 +60,7 @@ export class Generator {
     }
   }
 
-  async action({
+  public async action({
     label,
     task
   }: {
@@ -106,7 +106,7 @@ export class Generator {
     return context;
   }
 
-  async generate(): Promise<void> {
+  public async generate(): Promise<void> {
     const context = await this.getGeneratorContext();
 
     this.logger.debug(
@@ -145,7 +145,7 @@ export class Generator {
     });
   }
 
-  async generateConfigs(
+  public async generateConfigs(
     context: GeneratorContext,
     targetPath: string,
     configName: string
@@ -179,14 +179,14 @@ export class Generator {
     });
   }
 
-  generateTemplateDir(context: GeneratorContext): Promise<void> {
+  public generateTemplateDir(context: GeneratorContext): Promise<void> {
     return this.copyer.copyPaths({
       sourcePath: join(this.context.options.templateRootPath, context.template),
       targetPath: context.targetPath!
     });
   }
 
-  async generateSubPackages(context: GeneratorContext): Promise<void> {
+  public async generateSubPackages(context: GeneratorContext): Promise<void> {
     // if pack template, copy sub packages
     const {
       packagesNames = 'packages',

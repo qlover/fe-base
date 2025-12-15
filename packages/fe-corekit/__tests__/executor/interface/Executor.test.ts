@@ -62,7 +62,10 @@ class TestExecutor extends Executor<ExecutorConfigInterface> {
     super(config);
   }
 
-  runHooks(
+  /**
+   * @override
+   */
+  public runHooks(
     plugins: ExecutorPlugin[],
     name: unknown,
     ...args: unknown[]
@@ -99,7 +102,10 @@ class TestExecutor extends Executor<ExecutorConfigInterface> {
     return lastResult;
   }
 
-  exec<Result, Params = unknown>(task: Task<Result, Params>): Result {
+  /**
+   * @override
+   */
+  public exec<Result, Params = unknown>(task: Task<Result, Params>): Result {
     const context = createTestContext<Params>();
 
     // Call onBefore hooks
@@ -128,7 +134,10 @@ class TestExecutor extends Executor<ExecutorConfigInterface> {
     }
   }
 
-  execNoError<Result, Params = unknown>(
+  /**
+   * @override
+   */
+  public execNoError<Result, Params = unknown>(
     task: Task<Result, Params>
   ): Result | ExecutorError {
     const context = createTestContext<Params>();

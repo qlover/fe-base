@@ -309,7 +309,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  override restore<R = S['result'] | S>(): R | null {
+  public override restore<R = S['result'] | S>(): R | null {
     if (!this.storage || !this.storageKey) {
       return null;
     }
@@ -382,7 +382,7 @@ export class AsyncStore<
    * // Storage contains full state object with loading, status, timestamps, etc.
    * ```
    */
-  override persist<T extends S>(_state?: T | undefined): void {
+  public override persist<T extends S>(_state?: T | undefined): void {
     if (!this.storage || !this.storageKey) {
       return;
     }
@@ -417,7 +417,7 @@ export class AsyncStore<
    * });
    * ```
    */
-  getStore(): PersistentStore<S, Key, Opt> {
+  public getStore(): PersistentStore<S, Key, Opt> {
     return this;
   }
 
@@ -434,7 +434,6 @@ export class AsyncStore<
    * - Optionally sets `result` if provided
    * - Automatically persists state to storage (if configured)
    *
-   * @override
    * @param result - Optional initial result value to set before operation starts
    *   Useful for optimistic updates or when resuming a previous operation
    *   @optional
@@ -451,7 +450,7 @@ export class AsyncStore<
    * // Start with cached data while fetching fresh data
    * ```
    */
-  start(result?: S['result'] | undefined): void {
+  public start(result?: S['result'] | undefined): void {
     this.updateState({
       loading: true,
       result,
@@ -473,7 +472,6 @@ export class AsyncStore<
    * - Optionally sets `error` and `result` if provided
    * - Automatically persists state to storage (if configured)
    *
-   * @override
    * @param error - Optional error information if operation was stopped due to an error
    *   @optional
    * @param result - Optional result value if partial results are available
@@ -491,7 +489,7 @@ export class AsyncStore<
    * store.stopped(new Error('User cancelled'));
    * ```
    */
-  stopped(error?: unknown, result?: S['result'] | undefined): void {
+  public stopped(error?: unknown, result?: S['result'] | undefined): void {
     // If result is explicitly provided (including null), use it
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
@@ -519,7 +517,6 @@ export class AsyncStore<
    * - Preserves existing `result` if not provided, or sets `result` if explicitly provided
    * - Automatically persists state to storage (if configured)
    *
-   * @override
    * @param error - The error that occurred during the operation
    *   Can be an Error object, string message, or any error information
    * @param result - Optional result value if partial results are available
@@ -561,7 +558,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  failed(error: unknown, result?: S['result'] | undefined): void {
+  public failed(error: unknown, result?: S['result'] | undefined): void {
     // If result is explicitly provided (including null), use it
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
@@ -589,7 +586,6 @@ export class AsyncStore<
    * - Clears `error` (sets to `null`)
    * - Automatically persists state to storage (if configured)
    *
-   * @override
    * @param result - The result of the successful async operation
    *   This is the data returned from the completed operation
    *
@@ -609,7 +605,7 @@ export class AsyncStore<
    * store.success(processedData);
    * ```
    */
-  success(result: S['result']): void {
+  public success(result: S['result']): void {
     this.updateState({
       loading: false,
       result,
@@ -651,7 +647,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getState(): S {
+  public getState(): S {
     return this.state;
   }
 
@@ -667,7 +663,6 @@ export class AsyncStore<
    * - Type-safe: Only accepts properties that exist in the state interface
    * - Automatically persists state to storage (unless `persist: false` is specified)
    *
-   * @override
    * @template T - The state type that extends `AsyncStateInterface<T>`
    * @param state - Partial state object containing properties to update
    *   Only specified properties will be updated, others remain unchanged
@@ -696,7 +691,10 @@ export class AsyncStore<
    * store.updateState({ loading: true }, { persist: false });
    * ```
    */
-  updateState<T = S>(state: Partial<T>, options?: { persist?: boolean }): void {
+  public updateState<T = S>(
+    state: Partial<T>,
+    options?: { persist?: boolean }
+  ): void {
     const newState = this.cloneState(state as Partial<S>);
     this.emit(newState, options);
   }
@@ -717,7 +715,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getLoading(): boolean {
+  public getLoading(): boolean {
     return this.getState().loading;
   }
 
@@ -738,7 +736,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getError(): unknown | null {
+  public getError(): unknown | null {
     return this.getState().error;
   }
 
@@ -759,7 +757,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getResult(): S['result'] | null {
+  public getResult(): S['result'] | null {
     return this.getState().result;
   }
 
@@ -786,7 +784,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  getStatus(): AsyncStoreStatusType {
+  public getStatus(): AsyncStoreStatusType {
     return this.getState().status;
   }
 
@@ -802,7 +800,6 @@ export class AsyncStore<
    * - Returns `0` if startTime is greater than endTime (invalid state)
    * - Prevents overflow by checking against `Number.MAX_SAFE_INTEGER`
    *
-   * @override
    * @returns The duration of the async operation in milliseconds, or `0` if duration cannot be calculated
    *
    * @example Get duration for completed operation
@@ -822,7 +819,7 @@ export class AsyncStore<
    * console.log(`Operation has been running for ${duration}ms`);
    * ```
    */
-  getDuration(): number {
+  public getDuration(): number {
     const state = this.getState();
 
     const startTime = state?.startTime;
@@ -897,7 +894,7 @@ export class AsyncStore<
    * // Ready to retry
    * ```
    */
-  reset(): void {
+  public reset(): void {
     super.reset();
   }
 
@@ -907,7 +904,6 @@ export class AsyncStore<
    * Returns `true` if the operation has completed successfully with a result.
    * This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
    *
-   * @override
    * @returns `true` if the async operation is successful, `false` otherwise
    *
    * @example Check success before accessing result
@@ -918,7 +914,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isSuccess(): boolean {
+  public isSuccess(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.SUCCESS;
   }
 
@@ -928,7 +924,6 @@ export class AsyncStore<
    * Returns `true` if the operation has failed with an error.
    * This typically means `loading` is `false` and `error` is not `null`.
    *
-   * @override
    * @returns `true` if the async operation is failed, `false` otherwise
    *
    * @example Handle failure
@@ -939,7 +934,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isFailed(): boolean {
+  public isFailed(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.FAILED;
   }
 
@@ -949,7 +944,6 @@ export class AsyncStore<
    * Returns `true` if the operation was manually stopped (e.g., user cancellation).
    * This is different from failure - stopping is intentional, failure is an error.
    *
-   * @override
    * @returns `true` if the async operation is stopped, `false` otherwise
    *
    * @example Handle stopped operation
@@ -959,7 +953,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isStopped(): boolean {
+  public isStopped(): boolean {
     return !this.getLoading() && this.getStatus() === AsyncStoreStatus.STOPPED;
   }
 
@@ -969,7 +963,6 @@ export class AsyncStore<
    * Returns `true` if the operation has finished, regardless of outcome.
    * This includes success, failure, and stopped states. Returns `false` if still in progress.
    *
-   * @override
    * @returns `true` if the async operation is completed (success, failed, or stopped), `false` otherwise
    *
    * @example Check if operation finished
@@ -980,7 +973,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isCompleted(): boolean {
+  public isCompleted(): boolean {
     return (
       !this.getLoading() &&
       (this.isSuccess() || this.isFailed() || this.isStopped())
@@ -993,7 +986,6 @@ export class AsyncStore<
    * Returns `true` if the operation is currently in progress.
    * This is equivalent to checking if `loading` is `true`.
    *
-   * @override
    * @returns `true` if the async operation is pending (in progress), `false` otherwise
    *
    * @example Show loading indicator
@@ -1003,7 +995,7 @@ export class AsyncStore<
    * }
    * ```
    */
-  isPending(): boolean {
+  public isPending(): boolean {
     return this.getLoading() && this.getStatus() === AsyncStoreStatus.PENDING;
   }
 }

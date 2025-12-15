@@ -39,22 +39,24 @@ export class CookieStorage
    * Total number of cookie keys currently accessible under the current
    * domain / path.
    *
+   * @override
    * @returns number – Count of stored cookie keys.
    */
-  get length(): number {
+  public get length(): number {
     return Object.keys(Cookies.get()).length;
   }
 
   /**
    * Retrieve the value associated with a cookie key.
    *
+   * @override
    * @typeParam T – Expected type of the stored value.
    * @param key string – Cookie name to read. Must be URL-safe.
    * @param defaultValue T | undefined – Fallback value returned when the cookie
    *        does not exist. No constraint apart from being JSON-serialisable.
    * @returns T | null – Found value, `defaultValue`, or `null` when nothing is found.
    */
-  getItem<T>(key: string, defaultValue?: T): T | null {
+  public getItem<T>(key: string, defaultValue?: T): T | null {
     const value = Cookies.get(key) || defaultValue;
     return typeof value === 'undefined' ? null : (value as T);
   }
@@ -62,6 +64,7 @@ export class CookieStorage
   /**
    * Persist a value under the given cookie name.
    *
+   * @override
    * @typeParam T – Any serialisable value.
    * @param key string – Cookie name to write. Must be URL-safe.
    * @param value T – Value that will be coerced to string before storage.
@@ -69,28 +72,30 @@ export class CookieStorage
    *        such as `expires`, `path`, or `domain`.
    * @returns void
    */
-  setItem<T>(key: string, value: T, options?: CookieAttributes): void {
+  public setItem<T>(key: string, value: T, options?: CookieAttributes): void {
     Cookies.set(key, String(value), { ...this.defaultAttrs, ...options });
   }
 
   /**
    * Remove the cookie identified by the supplied key.
    *
+   * @override
    * @param key string – Cookie name to delete.
    * @param options CookieAttributes | undefined – Optional attributes that
    *        must match the cookie being removed (e.g. `path`, `domain`).
    * @returns void
    */
-  removeItem(key: string, options?: CookieAttributes): void {
+  public removeItem(key: string, options?: CookieAttributes): void {
     Cookies.remove(key, { ...this.defaultAttrs, ...options });
   }
 
   /**
    * Delete every cookie accessible on the current path and domain.
    *
+   * @override
    * @returns void
    */
-  clear(): void {
+  public clear(): void {
     const all = Cookies.get();
     Object.keys(all).forEach((key) => Cookies.remove(key, this.defaultAttrs));
   }
@@ -101,7 +106,7 @@ export class CookieStorage
    * @param index number – Zero-based index in the internal cookie key list.
    * @returns string | null – Cookie name at the index, or `null` when out of bounds.
    */
-  key(index: number): string | null {
+  public key(index: number): string | null {
     const keys = Object.keys(Cookies.get());
     return keys[index] ?? null;
   }

@@ -37,29 +37,44 @@ class TestAuthState extends UserAuthState<TestUser> {
 class MockStorage implements SyncStorageInterface<string, unknown> {
   private data: Record<string, string> = {};
 
-  getItem<T>(key: string, defaultValue?: T): T | null {
+  /**
+   * @override
+   */
+  public getItem<T>(key: string, defaultValue?: T): T | null {
     const value = this.data[key];
     return value ? (value as unknown as T) : (defaultValue ?? null);
   }
 
-  setItem<T>(key: string, value: T): void {
+  /**
+   * @override
+   */
+  public setItem<T>(key: string, value: T): void {
     this.data[key] = String(value);
   }
 
-  removeItem(key: string): void {
+  /**
+   * @override
+   */
+  public removeItem(key: string): void {
     delete this.data[key];
   }
 
-  clear(): void {
+  /**
+   * @override
+   */
+  public clear(): void {
     this.data = {};
   }
 
-  key(index: number): string | null {
+  public key(index: number): string | null {
     const keys = Object.keys(this.data);
     return keys[index] || null;
   }
 
-  get length(): number {
+  /**
+   * @override
+   */
+  public get length(): number {
     return Object.keys(this.data).length;
   }
 }
@@ -73,27 +88,45 @@ class MockUserAuthApi implements UserAuthApiInterface<TestUser> {
   public mockLogout: Mock = vi.fn();
   public mockGetUserInfo: Mock = vi.fn();
 
-  getStore(): UserAuthStoreInterface<TestUser> | null {
+  /**
+   * @override
+   */
+  public getStore(): UserAuthStoreInterface<TestUser> | null {
     return this.store;
   }
 
-  setStore(store: UserAuthStoreInterface<TestUser>): void {
+  /**
+   * @override
+   */
+  public setStore(store: UserAuthStoreInterface<TestUser>): void {
     this.store = store;
   }
 
-  async login(params: unknown): Promise<LoginResponseData> {
+  /**
+   * @override
+   */
+  public async login(params: unknown): Promise<LoginResponseData> {
     return this.mockLogin(params);
   }
 
-  async register(params: unknown): Promise<LoginResponseData> {
+  /**
+   * @override
+   */
+  public async register(params: unknown): Promise<LoginResponseData> {
     return this.mockRegister(params);
   }
 
-  async logout(): Promise<void> {
+  /**
+   * @override
+   */
+  public async logout(): Promise<void> {
     return this.mockLogout();
   }
 
-  async getUserInfo(params?: unknown): Promise<TestUser> {
+  /**
+   * @override
+   */
+  public async getUserInfo(params?: unknown): Promise<TestUser> {
     return this.mockGetUserInfo(params);
   }
 }

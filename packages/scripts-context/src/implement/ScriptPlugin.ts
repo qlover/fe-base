@@ -139,7 +139,7 @@ export abstract class ScriptPlugin<
 > implements ExecutorPlugin<Context>
 {
   /** Ensures only one instance of this plugin can be registered */
-  readonly onlyOne = true;
+  public readonly onlyOne = true;
 
   /**
    * Creates a new script plugin instance
@@ -193,7 +193,7 @@ export abstract class ScriptPlugin<
    * });
    * ```
    */
-  getInitialProps(props?: Props): Props {
+  public getInitialProps(props?: Props): Props {
     if (typeof this.context.options !== 'object') {
       return {} as Props;
     }
@@ -226,7 +226,7 @@ export abstract class ScriptPlugin<
    * this.logger.debug('Debug information', { config: this.options });
    * ```
    */
-  get logger(): LoggerInterface {
+  public get logger(): LoggerInterface {
     return this.context.logger as unknown as LoggerInterface;
   }
 
@@ -250,7 +250,7 @@ export abstract class ScriptPlugin<
    * const content = await this.shell.readFile('./config.json');
    * ```
    */
-  get shell(): ShellInterface {
+  public get shell(): ShellInterface {
     return this.context.shell;
   }
 
@@ -274,7 +274,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  get options(): Props {
+  public get options(): Props {
     return this.context.getOptions(this.pluginName, {} as Props);
   }
 
@@ -286,6 +286,7 @@ export abstract class ScriptPlugin<
    * - Returns `false` if skip matches the lifecycle name (skip specific)
    * - Returns `true` otherwise (execute normally)
    *
+   * @override
    * @param _name - Name of the lifecycle method being checked
    * @param _context - Executor context (unused in base implementation)
    * @returns Whether the lifecycle method should be executed
@@ -302,7 +303,7 @@ export abstract class ScriptPlugin<
    * plugin.enabled('onExec', context);   // Returns true
    * ```
    */
-  enabled(_name: string, _context: ExecutorContext<Context>): boolean {
+  public enabled(_name: string, _context: ExecutorContext<Context>): boolean {
     const skip = this.getConfig('skip');
 
     // if skip is true, then return false
@@ -349,7 +350,7 @@ export abstract class ScriptPlugin<
    * const plugins = this.getConfig<string[]>('plugins', []);
    * ```
    */
-  getConfig<T>(keys?: string | string[], defaultValue?: T): T {
+  public getConfig<T>(keys?: string | string[], defaultValue?: T): T {
     if (!keys) {
       return this.context.getOptions(this.pluginName, defaultValue);
     }
@@ -391,7 +392,7 @@ export abstract class ScriptPlugin<
    * });
    * ```
    */
-  setConfig(config: Partial<Props>): void {
+  public setConfig(config: Partial<Props>): void {
     this.context.setOptions({
       [this.pluginName]: config
     });
@@ -406,6 +407,7 @@ export abstract class ScriptPlugin<
    * - Resource preparation
    * - Pre-execution checks
    *
+   * @override
    * @param _context - Executor context containing execution state
    *
    * @example
@@ -425,7 +427,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  onBefore?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onBefore?(_context: ExecutorContext<Context>): void | Promise<void> {}
 
   /**
    * Lifecycle method called during script execution
@@ -436,6 +438,7 @@ export abstract class ScriptPlugin<
    * - Task orchestration
    * - Process management
    *
+   * @override
    * @param _context - Executor context containing execution state
    *
    * @example
@@ -459,7 +462,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  onExec?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onExec?(_context: ExecutorContext<Context>): void | Promise<void> {}
 
   /**
    * Lifecycle method called after successful script execution
@@ -470,6 +473,7 @@ export abstract class ScriptPlugin<
    * - Result processing
    * - Post-execution reporting
    *
+   * @override
    * @param _context - Executor context containing execution state
    *
    * @example
@@ -490,7 +494,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  onSuccess?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onSuccess?(_context: ExecutorContext<Context>): void | Promise<void> {}
 
   /**
    * Lifecycle method called when script execution fails
@@ -501,6 +505,7 @@ export abstract class ScriptPlugin<
    * - Error notifications
    * - Failure recovery attempts
    *
+   * @override
    * @param _context - Executor context containing execution state
    *
    * @example
@@ -523,7 +528,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  onError?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onError?(_context: ExecutorContext<Context>): void | Promise<void> {}
 
   /**
    * Executes a step with structured logging and error handling
@@ -584,7 +589,7 @@ export abstract class ScriptPlugin<
    * });
    * ```
    */
-  async step<T>(options: StepOption<T>): Promise<T> {
+  public async step<T>(options: StepOption<T>): Promise<T> {
     this.logger.log();
     this.logger.info(options.label);
     this.logger.log();

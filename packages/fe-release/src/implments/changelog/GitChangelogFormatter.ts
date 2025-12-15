@@ -146,6 +146,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * configured template and options. Supports commit body
    * inclusion and type-based sections.
    *
+   * @override
    * @param commits - Array of commit values to format
    * @param options - Optional formatting options
    * @returns Array of formatted changelog lines
@@ -188,7 +189,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * // ]
    * ```
    */
-  format(commits: CommitValue[], options?: Options): string[] {
+  public format(commits: CommitValue[], options?: Options): string[] {
     const { types = [], commitBody = false } = { ...this.options, ...options };
     const changelog: string[] = [];
 
@@ -260,7 +261,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * // '- fix bug ([def456](...)) (#123)'
    * ```
    */
-  formatCommit(commit: CommitValue, options?: Options): string {
+  public formatCommit(commit: CommitValue, options?: Options): string {
     const {
       commitlint,
       base: { hash },
@@ -317,7 +318,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * // '(abc123)'
    * ```
    */
-  foramtLink(target: string, url?: string): string {
+  public foramtLink(target: string, url?: string): string {
     return url ? `([${target}](${url}))` : `(${target})`;
   }
 
@@ -338,7 +339,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * // '([abc123](https://github.com/org/repo/commit/abc123))'
    * ```
    */
-  formatCommitLink(target: string, url?: string): string {
+  public formatCommitLink(target: string, url?: string): string {
     return url ? `([${target}](${url}))` : `(${target})`;
   }
 
@@ -356,7 +357,7 @@ export class GitChangelogFormatter implements ChangelogFormatter {
    * // '**api:**'
    * ```
    */
-  formatScope(scope: string): string {
+  public formatScope(scope: string): string {
     return `**${scope}:**`;
   }
 }

@@ -176,7 +176,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * }
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     const repoInfo = await this.getUserInfo();
 
     if (!repoInfo) {
@@ -217,7 +217,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * // 'main' or 'feature/new-feature'
    * ```
    */
-  async getCurrentBranch(): Promise<string> {
+  public async getCurrentBranch(): Promise<string> {
     // Add a small delay to ensure Git internal state is updated
     await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -243,7 +243,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * // 'git@github.com:org/repo.git'
    * ```
    */
-  async getRemoteUrl(): Promise<string> {
+  public async getRemoteUrl(): Promise<string> {
     return (
       await this.context.shell.exec('git config --get remote.origin.url', {
         dryRun: false
@@ -261,7 +261,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * @returns An object containing repository name and owner name
    * @throws Will throw an error if repository information cannot be determined
    */
-  async getUserInfo(): Promise<UserInfoType> {
+  public async getUserInfo(): Promise<UserInfoType> {
     let repoUrl: string;
     try {
       repoUrl = await this.getRemoteUrl();
@@ -325,7 +325,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * }
    * ```
    */
-  isValidString(value: unknown): value is string {
+  public isValidString(value: unknown): value is string {
     return !!value && isString(value);
   }
 
@@ -356,7 +356,7 @@ export default class GitBase<T extends GitBaseProps> extends ScriptPlugin<
    * // Message is automatically escaped
    * ```
    */
-  commit(message: string, args: string[] = []): Promise<string> {
+  public commit(message: string, args: string[] = []): Promise<string> {
     return this.context.shell.exec([
       'git',
       'commit',

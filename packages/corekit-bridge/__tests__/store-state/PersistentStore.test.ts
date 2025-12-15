@@ -41,11 +41,17 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   public shouldFailSetItem = false;
   public shouldFailGetItem = false;
 
-  get length(): number {
+  /**
+   * @override
+   */
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T, options?: unknown): T {
+  /**
+   * @override
+   */
+  public setItem<T>(key: Key, value: T, options?: unknown): T {
     this.calls.setItem.push({ key, value, options });
     if (this.shouldFailSetItem) {
       throw new Error('Storage setItem failed');
@@ -54,7 +60,10 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     return value;
   }
 
-  getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
+  /**
+   * @override
+   */
+  public getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
     if (this.shouldFailGetItem) {
       throw new Error('Storage getItem failed');
@@ -63,17 +72,23 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     return (value ?? defaultValue ?? null) as T | null;
   }
 
-  removeItem(key: Key, options?: unknown): void {
+  /**
+   * @override
+   */
+  public removeItem(key: Key, options?: unknown): void {
     this.calls.removeItem.push({ key, options });
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  /**
+   * @override
+   */
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.calls = {
       setItem: [],
@@ -86,7 +101,7 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   }
 
   // Helper method to directly set data (simulating existing storage)
-  directSet(key: string, value: unknown): void {
+  public directSet(key: string, value: unknown): void {
     this.data.set(key, value);
   }
 }
@@ -98,9 +113,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
  * In real usage, state interfaces can choose whether to include expiration support or not.
  */
 class TestState implements StoreStateInterface {
-  data: string = '';
-  count: number = 0;
-  expires?: number | Date | null;
+  public data: string = '';
+  public count: number = 0;
+  public expires?: number | Date | null;
 }
 
 /**
@@ -122,7 +137,10 @@ class TestPersistentStore extends PersistentStore<TestState, string> {
     }
   }
 
-  restore<R = TestState>(): R | null {
+  /**
+   * @override
+   */
+  public restore<R = TestState>(): R | null {
     if (!this.storage) return null;
     try {
       const stored = this.storage.getItem(
@@ -158,7 +176,10 @@ class TestPersistentStore extends PersistentStore<TestState, string> {
     return null;
   }
 
-  persist(state?: TestState): void {
+  /**
+   * @override
+   */
+  public persist(state?: TestState): void {
     if (!this.storage) return;
     const stateToPersist = state ?? this.state;
     this.storage.setItem(this.storageKey, stateToPersist);

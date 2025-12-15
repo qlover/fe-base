@@ -412,6 +412,7 @@ export class TimestampFormatter implements FormatterInterface {
    * 3. Builds the prefix using the template
    * 4. Returns the formatted log entry
    *
+   * @override
    * @param event - The log event to format
    * @param event.timestamp - Event timestamp in milliseconds
    * @param event.level - Log level (e.g., INFO, ERROR)
@@ -440,7 +441,13 @@ export class TimestampFormatter implements FormatterInterface {
    * ]
    * ```
    */
-  format({ timestamp, level, args, context, loggerName }: LogEvent): unknown[] {
+  public format({
+    timestamp,
+    level,
+    args,
+    context,
+    loggerName
+  }: LogEvent): unknown[] {
     const {
       locale = 'zh-CN',
       localeOptions,

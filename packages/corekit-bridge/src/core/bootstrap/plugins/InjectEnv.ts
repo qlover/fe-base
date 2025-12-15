@@ -16,7 +16,7 @@ export interface InjectEnvConfig {
 }
 
 export class InjectEnv implements BootstrapExecutorPlugin {
-  readonly pluginName = 'InjectEnv';
+  public readonly pluginName = 'InjectEnv';
 
   constructor(
     /**
@@ -25,7 +25,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     protected options: InjectEnvConfig
   ) {}
 
-  static isJSONString(value: string): boolean {
+  public static isJSONString(value: string): boolean {
     return (
       typeof value === 'string' &&
       value !== '' &&
@@ -36,7 +36,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     );
   }
 
-  env<D>(key: string, defaultValue?: D): D {
+  public env<D>(key: string, defaultValue?: D): D {
     const { prefix = '', source = {} } = this.options;
     // transform key to env key
     const formattedKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
@@ -51,7 +51,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     return (value ?? defaultValue) as D;
   }
 
-  inject(config: EnvConfigInterface): void {
+  public inject(config: EnvConfigInterface): void {
     const { blackList = [] } = this.options;
 
     for (const key in config) {
@@ -69,11 +69,11 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     }
   }
 
-  isEmpty(value: unknown): boolean {
+  public isEmpty(value: unknown): boolean {
     return value === null || value === undefined || value === '';
   }
 
-  onBefore(): void {
+  public onBefore(): void {
     const { target } = this.options;
 
     if (!target) {
@@ -86,7 +86,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     Object.freeze(target);
   }
 
-  onSuccess({ parameters: { logger } }: BootstrapContext): void {
+  public onSuccess({ parameters: { logger } }: BootstrapContext): void {
     logger.debug('InjectEnv success!');
   }
 }

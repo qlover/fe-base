@@ -24,14 +24,14 @@ import { ExecutorContext, RequestAdapterConfig } from '@qlover/fe-corekit';
 describe('ResponseStream', () => {
   // Mock implementations
   class MockStreamProcessor implements StreamProcessorInterface {
-    processChunk = vi.fn().mockImplementation((data: unknown) => {
+    public processChunk = vi.fn().mockImplementation((data: unknown) => {
       if (data && typeof data === 'string') {
         return [data];
       }
       return [];
     });
 
-    processFinal = vi.fn().mockImplementation((data: unknown) => {
+    public processFinal = vi.fn().mockImplementation((data: unknown) => {
       if (data && typeof data === 'string') {
         return data;
       }

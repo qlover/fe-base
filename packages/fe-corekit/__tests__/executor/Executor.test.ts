@@ -37,11 +37,14 @@ class MyExecutor extends Executor<ExecutorConfigInterface> {
     super();
   }
 
-  getPlugins(): ExecutorPlugin[] {
+  public getPlugins(): ExecutorPlugin[] {
     return this.plugins;
   }
 
-  runHooks(plugins: ExecutorPlugin[], hookName: string): void {
+  /**
+   * @override
+   */
+  public runHooks(plugins: ExecutorPlugin[], hookName: string): void {
     const context = {
       parameters: undefined,
       hooksRuntimes: {}
@@ -54,7 +57,10 @@ class MyExecutor extends Executor<ExecutorConfigInterface> {
     }
   }
 
-  exec(task: () => unknown): unknown {
+  /**
+   * @override
+   */
+  public exec(task: () => unknown): unknown {
     try {
       this.runHooks(this.plugins, 'onBefore');
       const result = task();
@@ -66,7 +72,10 @@ class MyExecutor extends Executor<ExecutorConfigInterface> {
     }
   }
 
-  execNoError(task: () => unknown): unknown {
+  /**
+   * @override
+   */
+  public execNoError(task: () => unknown): unknown {
     try {
       return this.exec(task);
     } catch (error) {

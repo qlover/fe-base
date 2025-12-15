@@ -62,7 +62,7 @@ const reqInitAttrs = [
 export class RequestAdapterFetch
   implements RequestAdapterInterface<RequestAdapterFetchConfig>
 {
-  readonly config: RequestAdapterFetchConfig;
+  public readonly config: RequestAdapterFetchConfig;
   private executor: AsyncExecutor;
 
   /**
@@ -96,11 +96,14 @@ export class RequestAdapterFetch
     this.config = config as RequestAdapterFetchConfig;
   }
 
-  getConfig(): RequestAdapterFetchConfig {
+  /**
+   * @override
+   */
+  public getConfig(): RequestAdapterFetchConfig {
     return this.config;
   }
 
-  usePlugin(plugin: ExecutorPlugin): void {
+  public usePlugin(plugin: ExecutorPlugin): void {
     this.executor.use(plugin);
   }
 
@@ -122,7 +125,7 @@ export class RequestAdapterFetch
    * const response = await fetchRequest.request({ url: '/data' });
    * ```
    */
-  async request<Request, Response>(
+  public async request<Request, Response>(
     config: RequestAdapterFetchConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const thisConfig = this.getConfig();
@@ -161,7 +164,7 @@ export class RequestAdapterFetch
     return this.executor.exec(rest, task);
   }
 
-  parametersToRequest(parameters: RequestAdapterFetchConfig): Request {
+  public parametersToRequest(parameters: RequestAdapterFetchConfig): Request {
     const { url = '/', method = 'GET', data } = parameters;
     const init = pick(parameters, reqInitAttrs);
     return new Request(
@@ -182,7 +185,7 @@ export class RequestAdapterFetch
    * @param config The configuration used for the fetch request.
    * @returns A RequestAdapterResponse containing the processed response data.
    */
-  toAdapterResponse<Request, Res = unknown>(
+  public toAdapterResponse<Request, Res = unknown>(
     data: Res,
     response: Response,
     config: RequestAdapterFetchConfig<Request>
@@ -203,7 +206,7 @@ export class RequestAdapterFetch
    * @param response The fetch Response object from which headers are extracted.
    * @returns A record of headers with header names as keys and header values as values.
    */
-  getResponseHeaders(response: Response): Record<string, string> {
+  public getResponseHeaders(response: Response): Record<string, string> {
     const headersObj: Record<string, string> = {};
 
     response.headers.forEach((value, key) => {

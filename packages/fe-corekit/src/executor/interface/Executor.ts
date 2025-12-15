@@ -238,7 +238,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * executor.use(plugin); // Second addition - skipped with warning
    * ```
    */
-  use(plugin: ExecutorPlugin): void {
+  public use(plugin: ExecutorPlugin): void {
     if (typeof plugin !== 'object' || plugin === null) {
       throw new Error('Plugin must be an object');
     }
@@ -294,7 +294,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * const result = await executor.runHooks(plugins, 'customHook', data, options);
    * ```
    */
-  abstract runHooks(
+  public abstract runHooks(
     plugins: ExecutorPlugin[],
     name: unknown,
     ...args: unknown[]
@@ -338,7 +338,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * });
    * ```
    */
-  abstract exec<Result, Params = unknown>(
+  public abstract exec<Result, Params = unknown>(
     task: Task<Result, Params>
   ): Promise<Result> | Result;
 
@@ -381,7 +381,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * });
    * ```
    */
-  abstract exec<Result, Params = unknown>(
+  public abstract exec<Result, Params = unknown>(
     data: unknown,
     task: Task<Result, Params>
   ): Promise<Result> | Result;
@@ -437,7 +437,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * }
    * ```
    */
-  abstract execNoError<Result, Params = unknown>(
+  public abstract execNoError<Result, Params = unknown>(
     task: Task<Result, Params>
   ): Promise<Result | ExecutorError> | Result | ExecutorError;
 
@@ -491,7 +491,7 @@ export abstract class Executor<ExecutorConfig extends ExecutorConfigInterface> {
    * const errors = results.filter(r => r instanceof ExecutorError);
    * ```
    */
-  abstract execNoError<Result, Params = unknown>(
+  public abstract execNoError<Result, Params = unknown>(
     data: unknown,
     task: Task<Result, Params>
   ): Promise<Result | ExecutorError> | Result | ExecutorError;

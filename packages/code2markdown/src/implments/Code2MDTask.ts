@@ -182,7 +182,7 @@ export class Code2MDTask {
    * console.log(`Processed ${reflections?.length || 0} code elements`);
    * ```
    */
-  async run(): Promise<unknown> {
+  public async run(): Promise<unknown> {
     return this.executor.exec(this.context, (context) =>
       Promise.resolve(context)
     );
@@ -205,7 +205,7 @@ export class Code2MDTask {
    * const result = await task.exec();
    * ```
    */
-  async exec(): Promise<unknown> {
+  public async exec(): Promise<unknown> {
     return this.run();
   }
 }

@@ -13,12 +13,12 @@ export type ApiPickDataResponse<_Request, Response> = Response;
  * Return `RequestAdapterResponse`'s `data` property
  */
 export class ApiPickDataPlugin implements ExecutorPlugin {
-  readonly pluginName = 'ApiPickDataPlugin';
+  public readonly pluginName = 'ApiPickDataPlugin';
 
   /**
    * @override
    */
-  onSuccess(
+  public onSuccess(
     context: ExecutorContext<RequestAdapterFetchConfig>
   ): void | Promise<void> {
     const { returnValue } = context;

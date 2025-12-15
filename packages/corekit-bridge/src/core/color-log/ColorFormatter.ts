@@ -14,7 +14,7 @@ export interface ColorSegment {
 }
 
 export class ColorFormatter implements FormatterInterface {
-  static defaultStyle: ColorStyle = {
+  public static defaultStyle: ColorStyle = {
     color: 'inherit',
     background: 'inherit',
     fontWeight: 'normal',
@@ -37,7 +37,7 @@ export class ColorFormatter implements FormatterInterface {
   /**
    * Transform style object to CSS string
    */
-  static styleToCss(style: ColorStyle): string {
+  public static styleToCss(style: ColorStyle): string {
     return Object.entries(style)
       .map(([key, value]) => `${key}: ${value}`)
       .join('; ');
@@ -46,7 +46,7 @@ export class ColorFormatter implements FormatterInterface {
   /**
    * Split text into multiple segments, each with its own style
    */
-  static splitIntoSegments(
+  public static splitIntoSegments(
     _text: string,
     segments: ColorSegment[]
   ): { text: string; styles: string[] } {
@@ -70,7 +70,7 @@ export class ColorFormatter implements FormatterInterface {
    * Format log event
    * @override
    */
-  format(event: LogEvent): unknown[] {
+  public format(event: LogEvent): unknown[] {
     const { level, args, context } = event;
 
     // If the first argument is a string and the context is an array of color segments

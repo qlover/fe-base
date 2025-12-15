@@ -380,7 +380,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * });
    * ```
    */
-  override use(
+  public use(
     plugin:
       | UserServicePluginType<User, Credential>
       | UserServicePluginInterface<User, Credential>
@@ -396,7 +396,6 @@ export class UserService<User, Credential, Key = string | symbol>
    * Performs user authentication using provided credentials through the configured gateway.
    * After successful login, automatically fetches user information.
    *
-   * @override
    * @template Params - The type of login parameters (must extend LoginParams)
    * @param params - Login parameters (email/phone + password, or phone + code)
    * @returns Promise resolving to credential data
@@ -464,7 +463,6 @@ export class UserService<User, Credential, Key = string | symbol>
    * Clears authentication credential state and calls the logout gateway if configured.
    * Resets user info store after logout.
    *
-   * @override
    * @template LogoutParams - Type of logout parameters (default: void)
    * @template LogoutResult - Type of logout result (default: void)
    * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
@@ -506,7 +504,6 @@ export class UserService<User, Credential, Key = string | symbol>
    * Creates a new user account with the provided registration parameters.
    * Uses unified userStore for registration state.
    *
-   * @override
    * @template Params - The type of registration parameters
    * @param params - Registration parameters containing user information
    * @returns Promise resolving to user information if registration succeeds, or `null` if it fails
@@ -547,7 +544,6 @@ export class UserService<User, Credential, Key = string | symbol>
    * Retrieves the current user's information (may use cached data if available).
    * Uses unified userStore for user info operations.
    *
-   * @override
    * @template Params - The type of parameters for fetching user info
    * @param params - Optional parameters for fetching user info
    * @returns Promise resolving to user information, or `null` if not available
@@ -591,7 +587,6 @@ export class UserService<User, Credential, Key = string | symbol>
    * Forces a refresh of user information from the server, bypassing any cache.
    * Uses separate userInfoStore for refresh operations (not authentication store).
    *
-   * @override
    * @template Params - The type of parameters for refreshing user info
    * @param params - Optional parameters for refreshing user info
    * @returns Promise resolving to refreshed user information, or `null` if refresh fails

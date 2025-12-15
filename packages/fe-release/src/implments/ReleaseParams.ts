@@ -233,7 +233,7 @@ export class ReleaseParams {
    * // 'my-pkg-release-v1.0.0'
    * ```
    */
-  getReleaseBranchName(
+  public getReleaseBranchName(
     releaseName: string,
     tagName: string,
     shared: ReleaseContextConfig
@@ -298,7 +298,7 @@ export class ReleaseParams {
    * // Custom formatted branch name
    * ```
    */
-  getBatchReleaseBranchName(
+  public getBatchReleaseBranchName(
     releaseName: string,
     tagName: string,
     shared: ReleaseContextConfig,
@@ -362,7 +362,7 @@ export class ReleaseParams {
    * // Only first 3: 'pkg-a@1.0.0_pkg-b@2.0.0_pkg-c@3.0.0'
    * ```
    */
-  getReleaseName(composeWorkspaces: WorkspaceValue[]): string {
+  public getReleaseName(composeWorkspaces: WorkspaceValue[]): string {
     if (composeWorkspaces.length === 1) {
       return composeWorkspaces[0].name;
     }
@@ -408,7 +408,7 @@ export class ReleaseParams {
    * // 'batch-2-packages-1234567890'
    * ```
    */
-  getReleaseTagName(composeWorkspaces: WorkspaceValue[]): string {
+  public getReleaseTagName(composeWorkspaces: WorkspaceValue[]): string {
     if (composeWorkspaces.length === 1) {
       return composeWorkspaces[0].version;
     }
@@ -459,7 +459,7 @@ export class ReleaseParams {
    * // }
    * ```
    */
-  getReleaseBranchParams(
+  public getReleaseBranchParams(
     composeWorkspaces: WorkspaceValue[],
     shared: ReleaseContextConfig
   ): ReleaseBranchParams {
@@ -526,7 +526,7 @@ export class ReleaseParams {
    * // Custom formatted title
    * ```
    */
-  getPRTitle(
+  public getPRTitle(
     releaseBranchParams: ReleaseBranchParams,
     context: TemplateContext
   ): string {
@@ -602,7 +602,7 @@ export class ReleaseParams {
    * // - Feature: Package B changes
    * ```
    */
-  getPRBody(
+  public getPRBody(
     composeWorkspaces: WorkspaceValue[],
     releaseBranchParams: ReleaseBranchParams,
     context: TemplateContext

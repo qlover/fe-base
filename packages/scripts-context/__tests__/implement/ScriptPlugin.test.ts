@@ -20,24 +20,24 @@ import { LogContext } from '@qlover/logger';
 
 // Mock implementations
 class MockLogger implements LoggerInterface {
-  log = vi.fn();
-  info = vi.fn();
-  error = vi.fn();
-  warn = vi.fn();
-  debug = vi.fn();
-  fatal = vi.fn();
-  trace = vi.fn();
-  addAppender = vi.fn();
-  context = vi.fn(<Value>(value?: Value) => new LogContext(value));
+  public log = vi.fn();
+  public info = vi.fn();
+  public error = vi.fn();
+  public warn = vi.fn();
+  public debug = vi.fn();
+  public fatal = vi.fn();
+  public trace = vi.fn();
+  public addAppender = vi.fn();
+  public context = vi.fn(<Value>(value?: Value) => new LogContext(value));
 }
 
 class MockShell implements ShellInterface {
-  exec = vi.fn();
-  exists = vi.fn();
-  mkdir = vi.fn();
-  rm = vi.fn();
-  pwd = vi.fn();
-  cd = vi.fn();
+  public exec = vi.fn();
+  public exists = vi.fn();
+  public mkdir = vi.fn();
+  public rm = vi.fn();
+  public pwd = vi.fn();
+  public cd = vi.fn();
 }
 
 interface TestScriptShared extends ScriptSharedInterface {
@@ -58,7 +58,10 @@ class TestPlugin extends ScriptPlugin<
   ScriptContext<TestScriptShared>,
   TestPluginProps
 > {
-  async onExec(
+  /**
+   * @override
+   */
+  public async onExec(
     _context: ExecutorContext<ScriptContext<TestScriptShared>>
   ): Promise<void> {
     await this.step({

@@ -282,6 +282,7 @@ export class URLStorage<Key>
    * Returns the key that successfully matched a URL parameter. If a match was found,
    * returns the matched key. Otherwise, returns the first configured key from the options.
    *
+   * @override
    * @returns The matched key or the first configured key
    * @throws {Error} When no key is configured in options
    *
@@ -312,6 +313,7 @@ export class URLStorage<Key>
    * Returns the value that was found during initialization or the last successful
    * lookup. This is a fast operation that doesn't perform any URL parsing.
    *
+   * @override
    * @returns The cached value, or `null` if no value was found or cache was cleared
    *
    * @example
@@ -336,6 +338,7 @@ export class URLStorage<Key>
    * - If options provided: Merges with instance options and searches (uses cache if available)
    * - Options override: `key` and `caseSensitive` can be overridden per call
    *
+   * @override
    * @param options - Optional options to override default configuration
    * @returns The value of the matching URL parameter, or `null` if not found
    *
@@ -388,6 +391,7 @@ export class URLStorage<Key>
    * Use case: This method exists primarily to satisfy the interface requirements.
    * For actual URL modification, use browser history APIs or URL manipulation libraries.
    *
+   * @override
    * @param value - The value to cache internally (does not modify URL)
    * @param _options - Optional options (unused, kept for interface compatibility)
    *
@@ -415,6 +419,7 @@ export class URLStorage<Key>
    * - Clears the matched key (`matchedKey` set to `null`)
    * - Removes the cache entry for current options
    *
+   * @override
    * @param _options - Optional options (unused, kept for interface compatibility)
    *
    * @example

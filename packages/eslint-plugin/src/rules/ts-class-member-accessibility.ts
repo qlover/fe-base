@@ -780,7 +780,8 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             const hasAsync = tokens.some((token) => token.value === 'async');
             // Check for override keyword
             const hasOverride = tokens.some(
-              (token) => token.type === 'Identifier' && token.value === 'override'
+              (token) =>
+                token.type === 'Identifier' && token.value === 'override'
             );
 
             const isAbstract = 'abstract' in node && node.abstract;
@@ -791,7 +792,13 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             // - For static/abstract/async/override/computed methods: report on the entire node
             // - For other methods: report on the method name (node.key)
             let reportNode: TSESTree.Node | TSESTree.Token = node.key;
-            if (isStatic || isAbstract || hasAsync || hasOverride || node.computed) {
+            if (
+              isStatic ||
+              isAbstract ||
+              hasAsync ||
+              hasOverride ||
+              node.computed
+            ) {
               // Report on the entire node for static/abstract/async/override/computed methods
               reportNode = node;
             }
@@ -926,7 +933,8 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             const hasReadonly = hasReadonlyProperty || hasReadonlyToken;
             // Check for override keyword
             const hasOverride = tokens.some(
-              (token) => token.type === 'Identifier' && token.value === 'override'
+              (token) =>
+                token.type === 'Identifier' && token.value === 'override'
             );
 
             // Error reporting strategy:
@@ -942,7 +950,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             //   This ensures the error highlights the property name position
             context.report({
               node:
-                node.static || hasReadonly || hasOverride || node.computed ? node : node.key,
+                node.static || hasReadonly || hasOverride || node.computed
+                  ? node
+                  : node.key,
               messageId: 'missingAccessibilityProperty',
               data: {
                 memberName,

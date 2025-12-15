@@ -12,17 +12,23 @@ const request_timeout = 10;
 class MockRequestAdapter
   implements RequestAdapterInterface<RequestAdapterConfig>
 {
-  config: RequestAdapterConfig;
+  public config: RequestAdapterConfig;
 
   constructor(config: RequestAdapterConfig = {}) {
     this.config = config;
   }
 
-  getConfig(): RequestAdapterConfig {
+  /**
+   * @override
+   */
+  public getConfig(): RequestAdapterConfig {
     return this.config;
   }
 
-  async request<Request, Response>(
+  /**
+   * @override
+   */
+  public async request<Request, Response>(
     config: RequestAdapterConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     const sendConfig = { ...this.config, ...config };

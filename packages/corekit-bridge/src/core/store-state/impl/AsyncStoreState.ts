@@ -51,7 +51,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `false`
    */
-  loading: boolean = false;
+  public loading: boolean = false;
 
   /**
    * The result of the async operation if successful
@@ -63,7 +63,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `null`
    */
-  result: T | null = null;
+  public result: T | null = null;
 
   /**
    * Error information if the async operation failed
@@ -74,7 +74,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `null`
    */
-  error: unknown | null = null;
+  public error: unknown | null = null;
 
   /**
    * Timestamp when the async operation started
@@ -84,7 +84,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `0`
    */
-  startTime: number = 0;
+  public startTime: number = 0;
 
   /**
    * Timestamp when the async operation completed
@@ -94,7 +94,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `0`
    */
-  endTime: number = 0;
+  public endTime: number = 0;
 
   /**
    * Current status of the async operation
@@ -108,7 +108,7 @@ export class AsyncStoreState<T> implements AsyncStoreStateInterface<T> {
    *
    * @default `AsyncStoreStatus.DRAFT`
    */
-  status: AsyncStoreStatusType = AsyncStoreStatus.DRAFT;
+  public status: AsyncStoreStatusType = AsyncStoreStatus.DRAFT;
 
   /**
    * Constructor for async store state
