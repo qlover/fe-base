@@ -528,7 +528,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
 
       /**
        * Get the position to insert 'public' before in a MethodDefinition or TSAbstractMethodDefinition node.
-       * Finds the first modifier (static, abstract, get, set) or method name.
+       * Finds the first modifier (override, static, abstract, get, set) or method name.
+       *
+       * TypeScript modifier order: accessibility -> override -> static -> abstract -> async -> readonly -> get/set
        *
        * @param node - The MethodDefinition or TSAbstractMethodDefinition node
        * @param sourceCode - The source code object from ESLint context
@@ -550,6 +552,14 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
           if (firstToken) {
             return firstToken;
           }
+        }
+
+        // Check for override keyword - insert before it (public comes before override)
+        const overrideToken = tokens.find(
+          (token) => token.type === 'Identifier' && token.value === 'override'
+        );
+        if (overrideToken) {
+          return overrideToken;
         }
 
         // Check for abstract keyword (for MethodDefinition with abstract property)
@@ -625,7 +635,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
 
       /**
        * Get the position to insert 'public' before in a PropertyDefinition or TSAbstractPropertyDefinition node.
-       * Finds the first modifier (static, readonly, abstract) or property name.
+       * Finds the first modifier (override, static, readonly, abstract) or property name.
+       *
+       * TypeScript modifier order: accessibility -> override -> static -> abstract -> readonly
        *
        * @param node - The PropertyDefinition or TSAbstractPropertyDefinition node
        * @param sourceCode - The source code object from ESLint context
@@ -646,6 +658,14 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
           if (firstToken) {
             return firstToken;
           }
+        }
+
+        // Check for override keyword - insert before it (public comes before override)
+        const overrideToken = tokens.find(
+          (token) => token.type === 'Identifier' && token.value === 'override'
+        );
+        if (overrideToken) {
+          return overrideToken;
         }
 
         // Check if property has readonly modifier using node property
@@ -758,17 +778,21 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             });
             // Check for async keyword - don't filter by type, just check value
             const hasAsync = tokens.some((token) => token.value === 'async');
+            // Check for override keyword
+            const hasOverride = tokens.some(
+              (token) => token.type === 'Identifier' && token.value === 'override'
+            );
 
             const isAbstract = 'abstract' in node && node.abstract;
             const isStatic = 'static' in node && node.static;
 
             // Error reporting strategy:
             // - For non-static get/set methods: report on the method name (node.key)
-            // - For static/abstract/async/computed methods: report on the entire node
+            // - For static/abstract/async/override/computed methods: report on the entire node
             // - For other methods: report on the method name (node.key)
             let reportNode: TSESTree.Node | TSESTree.Token = node.key;
-            if (isStatic || isAbstract || hasAsync || node.computed) {
-              // Report on the entire node for static/abstract/async/computed methods
+            if (isStatic || isAbstract || hasAsync || hasOverride || node.computed) {
+              // Report on the entire node for static/abstract/async/override/computed methods
               reportNode = node;
             }
             // For non-static get/set and regular methods, keep reportNode as node.key (default)
@@ -900,19 +924,25 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
               (token) => token.type === 'Keyword' && token.value === 'readonly'
             );
             const hasReadonly = hasReadonlyProperty || hasReadonlyToken;
+            // Check for override keyword
+            const hasOverride = tokens.some(
+              (token) => token.type === 'Identifier' && token.value === 'override'
+            );
 
             // Error reporting strategy:
             // - For static properties: report on the entire node (includes 'static' keyword)
             //   This ensures the error highlights the 'static' keyword position (column 11)
             // - For readonly properties: report on the entire node (includes 'readonly' keyword)
             //   This ensures the error highlights the 'readonly' keyword position (column 11)
+            // - For override properties: report on the entire node (includes 'override' keyword)
+            //   This ensures the error highlights the 'override' keyword position (column 11)
             // - For computed properties: report on the entire node (includes '[' bracket)
             //   This ensures the error highlights the '[' bracket position (column 11)
-            // - For non-static, non-readonly, non-computed properties: report on the property name (node.key)
+            // - For non-static, non-readonly, non-override, non-computed properties: report on the property name (node.key)
             //   This ensures the error highlights the property name position
             context.report({
               node:
-                node.static || hasReadonly || node.computed ? node : node.key,
+                node.static || hasReadonly || hasOverride || node.computed ? node : node.key,
               messageId: 'missingAccessibilityProperty',
               data: {
                 memberName,

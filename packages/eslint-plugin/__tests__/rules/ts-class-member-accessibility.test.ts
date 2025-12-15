@@ -693,6 +693,61 @@ ruleTester.run(RULE_NAME, rule, {
           protected protectedMethod(): void {}
         }
       `
+    },
+    // Override method with accessibility modifier
+    {
+      code: `
+        class Base {
+          public method(): void {}
+        }
+        class Derived extends Base {
+          public override method(): void {}
+        }
+      `
+    },
+    // Override getter with accessibility modifier
+    {
+      code: `
+        class Base {
+          public get logger() { return console; }
+        }
+        class Derived extends Base {
+          public override get logger() { return console; }
+        }
+      `
+    },
+    // Override setter with accessibility modifier
+    {
+      code: `
+        class Base {
+          public set value(v: number) {}
+        }
+        class Derived extends Base {
+          public override set value(v: number) {}
+        }
+      `
+    },
+    // Override static method with accessibility modifier
+    {
+      code: `
+        class Base {
+          public static method(): void {}
+        }
+        class Derived extends Base {
+          public override static method(): void {}
+        }
+      `
+    },
+    // Override property with accessibility modifier
+    {
+      code: `
+        class Base {
+          public value: number = 42;
+        }
+        class Derived extends Base {
+          public override value: number = 100;
+        }
+      `
     }
   ],
   invalid: [
@@ -1841,6 +1896,136 @@ ruleTester.run(RULE_NAME, rule, {
         {
           messageId: 'missingAccessibility',
           line: 3,
+          column: 11
+        }
+      ]
+    },
+    // Override method without accessibility modifier
+    {
+      code: `
+        class Base {
+          public method(): void {}
+        }
+        class Derived extends Base {
+          override method(): void {}
+        }
+      `,
+      output: `
+        class Base {
+          public method(): void {}
+        }
+        class Derived extends Base {
+          public override method(): void {}
+        }
+      `,
+      errors: [
+        {
+          messageId: 'missingAccessibility',
+          line: 6,
+          column: 11
+        }
+      ]
+    },
+    // Override getter without accessibility modifier
+    {
+      code: `
+        class Base {
+          public get logger() { return console; }
+        }
+        class Derived extends Base {
+          override get logger() { return console; }
+        }
+      `,
+      output: `
+        class Base {
+          public get logger() { return console; }
+        }
+        class Derived extends Base {
+          public override get logger() { return console; }
+        }
+      `,
+      errors: [
+        {
+          messageId: 'missingAccessibility',
+          line: 6,
+          column: 11
+        }
+      ]
+    },
+    // Override setter without accessibility modifier
+    {
+      code: `
+        class Base {
+          public set value(v: number) {}
+        }
+        class Derived extends Base {
+          override set value(v: number) {}
+        }
+      `,
+      output: `
+        class Base {
+          public set value(v: number) {}
+        }
+        class Derived extends Base {
+          public override set value(v: number) {}
+        }
+      `,
+      errors: [
+        {
+          messageId: 'missingAccessibility',
+          line: 6,
+          column: 11
+        }
+      ]
+    },
+    // Override static method without accessibility modifier
+    {
+      code: `
+        class Base {
+          public static method(): void {}
+        }
+        class Derived extends Base {
+          override static method(): void {}
+        }
+      `,
+      output: `
+        class Base {
+          public static method(): void {}
+        }
+        class Derived extends Base {
+          public override static method(): void {}
+        }
+      `,
+      errors: [
+        {
+          messageId: 'missingAccessibility',
+          line: 6,
+          column: 11
+        }
+      ]
+    },
+    // Override property without accessibility modifier
+    {
+      code: `
+        class Base {
+          public value: number = 42;
+        }
+        class Derived extends Base {
+          override value: number = 100;
+        }
+      `,
+      output: `
+        class Base {
+          public value: number = 42;
+        }
+        class Derived extends Base {
+          public override value: number = 100;
+        }
+      `,
+      errors: [
+        {
+          messageId: 'missingAccessibilityProperty',
+          line: 6,
           column: 11
         }
       ]
