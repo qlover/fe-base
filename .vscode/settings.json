@@ -13,7 +13,7 @@
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
-    "**/build": true,
+    // "**/build": true,
     "**/.git": true,
     "**/coverage": true,
     "**/.next": true,
@@ -40,7 +40,7 @@
     "**/.DS_Store": true,
     "**/node_modules": true,
     "**/dist": true,
-    "**/build": true,
+    // "**/build": true,
     "**/coverage": true,
     "**/test-results": true,
     "**/playwright-report": true,
