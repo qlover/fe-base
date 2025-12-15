@@ -28,7 +28,12 @@ export default defineConfig(() => {
       ],
       alias: {
         ...parsePackagesMap({
-          onlyPackages: ['scripts-context', 'env-loader', 'fe-corekit', 'logger']
+          onlyPackages: [
+            'scripts-context',
+            'env-loader',
+            'fe-corekit',
+            'logger'
+          ]
         })
       }
     }

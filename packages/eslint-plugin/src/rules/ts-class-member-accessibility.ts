@@ -632,7 +632,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
        * @returns The node or token to insert before
        */
       const getPropertyInsertTarget = (
-        node: TSESTree.PropertyDefinition | TSESTree.TSAbstractPropertyDefinition,
+        node:
+          | TSESTree.PropertyDefinition
+          | TSESTree.TSAbstractPropertyDefinition,
         sourceCode: TSESLint.SourceCode
       ): TSESTree.Node | TSESTree.Token => {
         // Get tokens for the node to find modifiers
@@ -650,8 +652,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
         // PropertyDefinition has readonly property but TypeScript types may not include it
         const hasReadonlyProperty =
           'readonly' in node &&
-          (node as TSESTree.PropertyDefinition & { readonly?: boolean }).readonly === true;
-        
+          (node as TSESTree.PropertyDefinition & { readonly?: boolean })
+            .readonly === true;
+
         // Find 'static' token first (if present, it comes before readonly)
         if ('static' in node && node.static) {
           const staticToken = tokens.find(
@@ -750,15 +753,15 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             const insertTarget = getMethodInsertTarget(node, sourceCode);
 
             // Get tokens for error reporting
-            const tokens = sourceCode.getTokens(node, { includeComments: false });
+            const tokens = sourceCode.getTokens(node, {
+              includeComments: false
+            });
             // Check for async keyword - don't filter by type, just check value
-            const hasAsync = tokens.some(
-              (token) => token.value === 'async'
-            );
+            const hasAsync = tokens.some((token) => token.value === 'async');
 
             const isAbstract = 'abstract' in node && node.abstract;
             const isStatic = 'static' in node && node.static;
-            
+
             // Error reporting strategy:
             // - For non-static get/set methods: report on the method name (node.key)
             // - For static/abstract/async/computed methods: report on the entire node
@@ -888,8 +891,11 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             // We need to check both the node property and tokens to handle all cases
             const hasReadonlyProperty =
               'readonly' in node &&
-              (node as TSESTree.PropertyDefinition & { readonly?: boolean }).readonly === true;
-            const tokens = sourceCode.getTokens(node, { includeComments: false });
+              (node as TSESTree.PropertyDefinition & { readonly?: boolean })
+                .readonly === true;
+            const tokens = sourceCode.getTokens(node, {
+              includeComments: false
+            });
             const hasReadonlyToken = tokens.some(
               (token) => token.type === 'Keyword' && token.value === 'readonly'
             );
@@ -905,7 +911,8 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
             // - For non-static, non-readonly, non-computed properties: report on the property name (node.key)
             //   This ensures the error highlights the property name position
             context.report({
-              node: node.static || hasReadonly || node.computed ? node : node.key,
+              node:
+                node.static || hasReadonly || node.computed ? node : node.key,
               messageId: 'missingAccessibilityProperty',
               data: {
                 memberName,
@@ -930,7 +937,9 @@ export const tsClassMemberAccessibility = createEslintRule<Options, MessageIds>(
          *
          * Note: Abstract properties require accessibility modifiers to clarify their intended visibility.
          */
-        TSAbstractPropertyDefinition(node: TSESTree.TSAbstractPropertyDefinition) {
+        TSAbstractPropertyDefinition(
+          node: TSESTree.TSAbstractPropertyDefinition
+        ) {
           // Computed property names (e.g., [getKey()]) are often used for dynamic property names
           // Some teams prefer to allow these without explicit modifiers since the bracket notation
           // already makes them visually distinct. When allowComputedProperties is true, we skip checking.

@@ -57,7 +57,7 @@ export default tseslint.config([
       }
     },
     plugins: {
-      '@qlover-eslint': qloverEslint,
+      '@qlover-eslint': qloverEslint
       // TODO: open jsdoc later
       // jsdoc: jsdoc
     },
