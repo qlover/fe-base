@@ -26,6 +26,6 @@
     "experimentalSpecifierResolution": "node",
     "transpileOnly": true
   },
-  "include": ["./packages", "vitest.config.ts"],
+  "include": ["./packages", "./make", "vitest.config.ts"],
   "exclude": ["**/node_modules/*", "**/dist", "**/build"]
 }

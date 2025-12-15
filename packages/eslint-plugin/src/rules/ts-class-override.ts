@@ -1,12 +1,12 @@
 /**
  * @module ts-class-override
- * @description ESLint rule that requires @override JSDoc comments only on methods that actually override parent methods or implement interface methods
+ * @description ESLint rule that enforces consistent override notation for methods that override parent class methods or implement interface methods
  *
- * This rule enforces @override JSDoc comments on methods that:
+ * This rule enforces consistent override notation on methods that:
  * - Override a method from a parent class (using `extends`)
  * - Implement a method from an interface (using `implements`)
  *
- * The rule also reports errors if a method has @override but doesn't actually override anything.
+ * The rule also reports errors if a method has @override or override keyword but doesn't actually override anything.
  *
  * This makes method relationships explicit and helps catch errors when parent methods
  * are renamed or removed.
@@ -14,11 +14,14 @@
  * ## Rule Details
  *
  * The rule checks all class methods and:
- * - Requires @override JSDoc comments on methods that actually override parent methods or implement interface methods
- * - Reports errors if a method has @override but doesn't actually override anything
+ * - Enforces consistent override notation on methods that actually override parent methods or implement interface methods
+ * - Reports errors if a method has @override or override keyword but doesn't actually override anything
  * - Only checks methods in classes that extend another class or implement interfaces
+ * - Supports different override styles for parent class methods via configuration
  *
  * ## Examples
+ *
+ * The following examples assume the default configuration: `{ parentClassOverrideStyle: 'either' }`
  *
  * Examples of **incorrect** code for this rule:
  *
@@ -28,18 +31,18 @@
  * }
  *
  * class MyClass implements MyInterface {
- *   method(): void {  // Missing @override comment
+ *   method(): void {  // ❌ Error - interface methods always need @override JSDoc
  *     // implementation
  *   }
  *
- *   ownMethod(): void {  // OK - doesn't need @override
+ *   ownMethod(): void {  // ✅ OK - doesn't need @override
  *     // implementation
  *   }
  *
  *   /**
  *    * @override
  *    *\/
- *   anotherOwnMethod(): void {  // Error - has @override but doesn't override anything
+ *   anotherOwnMethod(): void {  // ❌ Error - has @override but doesn't override anything
  *     // implementation
  *   }
  * }
@@ -49,11 +52,11 @@
  * }
  *
  * class DerivedClass extends BaseClass {
- *   baseMethod(): void {  // Missing @override comment
+ *   baseMethod(): void {  // ❌ Error - needs @override JSDoc or override keyword
  *     // implementation
  *   }
  *
- *   ownMethod(): void {  // OK - doesn't need @override
+ *   ownMethod(): void {  // ✅ OK - doesn't need @override
  *     // implementation
  *   }
  * }
@@ -70,28 +73,41 @@
  *   /**
  *    * @override
  *    *\/
- *   method(): void {
+ *   method(): void {  // ✅ Correct - interface methods need @override JSDoc
  *     // implementation
  *   }
  *
- *   ownMethod(): void {  // OK - doesn't need @override
+ *   ownMethod(): void {  // ✅ OK - doesn't need @override
  *     // implementation
  *   }
  * }
  *
  * class BaseClass {
  *   baseMethod(): void {}
+ *   baseMethod2(): void {}
+ *   baseMethod3(): void {}
  * }
  *
  * class DerivedClass extends BaseClass {
  *   /**
  *    * @override
  *    *\/
- *   baseMethod(): void {
+ *   baseMethod(): void {  // ✅ Correct - has @override JSDoc
  *     // implementation
  *   }
  *
- *   ownMethod(): void {  // OK - doesn't need @override
+ *   override baseMethod2(): void {  // ✅ Correct - has override keyword
+ *     // implementation
+ *   }
+ *
+ *   /**
+ *    * @override
+ *    *\/
+ *   override baseMethod3(): void {  // ✅ Correct - has both (also acceptable)
+ *     // implementation
+ *   }
+ *
+ *   ownMethod(): void {  // ✅ OK - doesn't need @override
  *     // implementation
  *   }
  * }
@@ -113,14 +129,20 @@
  *   /**
  *    * @override
  *    *\/
- *   abstract print(): void;  // ✅ Correct - has @override
+ *   abstract print(): void;  // ✅ Correct - interface methods need @override JSDoc
  *   abstract print2(): void;  // ✅ Correct - doesn't override anything
  * }
  *
- * // Abstract class extending parent class
+ * // Abstract class extending parent class (with default 'either' config)
  * abstract class AbsB extends AbaA {
- *   abstract override print(): void;  // ✅ Correct - has override keyword
- *   abstract print2(): void;  // ❌ Error - missing override (overrides parent)
+ *   /**
+ *    * @override
+ *    *\/
+ *   abstract print(): void;  // ✅ Correct - has @override JSDoc
+ *
+ *   abstract override print2(): void;  // ✅ Correct - has override keyword
+ *
+ *   abstract print3(): void;  // ❌ Error - needs @override JSDoc or override keyword
  * }
  * ```
  *
@@ -131,20 +153,21 @@
  * ```typescript
  * interface MyInterface {
  *   method(): void;
+ *   anotherMethod(): void;
  * }
  *
  * class MyClass implements MyInterface {
  *   /**
- *    * This method must use `@override` comment.  // ❌ Error - @override in backticks is not a tag
+ *    * This method must use `@override` comment.
  *    *\/
- *   method(): void {
+ *   method(): void {  // ❌ Error - @override in backticks is not a real tag
  *     // implementation
  *   }
  *
  *   /**
- *    * @override  // ✅ Correct - actual JSDoc tag
+ *    * @override
  *    *\/
- *   anotherMethod(): void {
+ *   anotherMethod(): void {  // ✅ Correct - actual JSDoc tag
  *     // implementation
  *   }
  * }
@@ -195,9 +218,164 @@
  * }
  * ```
  *
+ * ## Configuration Options
+ *
+ * ### parentClassOverrideStyle
+ *
+ * Controls how parent class method overrides should be marked. This option only affects methods
+ * that override parent class methods. Interface implementations always require @override JSDoc comments.
+ *
+ * Available values:
+ *
+ * #### 'jsdoc' (JSDoc Comment Only)
+ *
+ * Requires only @override JSDoc comments for parent class method overrides.
+ * The TypeScript `override` keyword is not allowed.
+ *
+ * ```typescript
+ * class Parent {
+ *   method(): void {}
+ * }
+ *
+ * class Child extends Parent {
+ *   /**
+ *    * @override
+ *    *\/
+ *   method(): void {}  // ✅ Correct
+ *
+ *   override method2(): void {}  // ❌ Error - override keyword not allowed
+ * }
+ * ```
+ *
+ * #### 'keyword' (TypeScript Keyword Only)
+ *
+ * Requires only TypeScript `override` keyword for parent class method overrides.
+ * @override JSDoc comments are not allowed.
+ *
+ * ```typescript
+ * class Parent {
+ *   method(): void {}
+ * }
+ *
+ * class Child extends Parent {
+ *   override method(): void {}  // ✅ Correct
+ *
+ *   /**
+ *    * @override
+ *    *\/
+ *   method2(): void {}  // ❌ Error - @override JSDoc not allowed
+ * }
+ * ```
+ *
+ * #### 'both' (Both Required)
+ *
+ * Requires both @override JSDoc comment and TypeScript `override` keyword for parent class method overrides.
+ *
+ * ```typescript
+ * class Parent {
+ *   method(): void {}
+ * }
+ *
+ * class Child extends Parent {
+ *   /**
+ *    * @override
+ *    *\/
+ *   override method(): void {}  // ✅ Correct
+ *
+ *   override method2(): void {}  // ❌ Error - missing @override JSDoc
+ *
+ *   /**
+ *    * @override
+ *    *\/
+ *   method3(): void {}  // ❌ Error - missing override keyword
+ * }
+ * ```
+ *
+ * #### 'either' (Either One) - Default
+ *
+ * Requires either @override JSDoc comment or TypeScript `override` keyword (or both) for parent class method overrides.
+ * This is the most flexible option.
+ *
+ * ```typescript
+ * class Parent {
+ *   method(): void {}
+ * }
+ *
+ * class Child extends Parent {
+ *   /**
+ *    * @override
+ *    *\/
+ *   method(): void {}  // ✅ Correct
+ *
+ *   override method2(): void {}  // ✅ Correct
+ *
+ *   /**
+ *    * @override
+ *    *\/
+ *   override method3(): void {}  // ✅ Correct (both is also acceptable)
+ *
+ *   method4(): void {}  // ❌ Error - needs at least one
+ * }
+ * ```
+ *
+ * ### Important Notes
+ *
+ * 1. **Interface implementations always require @override JSDoc comments**, regardless of the `parentClassOverrideStyle` setting:
+ *
+ * ```typescript
+ * interface MyInterface {
+ *   method(): void;
+ * }
+ *
+ * class MyClass implements MyInterface {
+ *   /**
+ *    * @override  // Always required for interface methods
+ *    *\/
+ *   method(): void {}
+ *
+ *   override method(): void {}  // ❌ Error - override keyword not valid for interfaces
+ * }
+ * ```
+ *
+ * 2. **When a method both implements an interface and overrides a parent class**, the interface rule takes precedence (requires @override JSDoc, override keyword is not allowed):
+ *
+ * ```typescript
+ * interface LoggerInterface {
+ *   log(): void;
+ * }
+ *
+ * class BaseLogger {
+ *   log(): void {}
+ * }
+ *
+ * class MyLogger extends BaseLogger implements LoggerInterface {
+ *   /**
+ *    * @override  // Required (interface takes precedence)
+ *    *\/
+ *   log(): void {}  // ✅ Correct
+ *
+ *   override log(): void {}  // ❌ Error - override keyword not allowed
+ * }
+ * ```
+ *
+ * ### Configuration Example
+ *
+ * ```javascript
+ * // eslint.config.js
+ * export default [
+ *   {
+ *     rules: {
+ *       '@qlover-eslint/ts-class-override': ['error', {
+ *         parentClassOverrideStyle: 'either'  // 'jsdoc' | 'keyword' | 'both' | 'either'
+ *       }]
+ *     }
+ *   }
+ * ];
+ * ```
+ *
  * ## When Not To Use It
  *
- * If you prefer not to use @override comments or if your codebase follows a different
+ * If you prefer not to enforce any override notation or if your codebase follows a different
  * style guide, you can disable this rule.
  *
  * ## Auto-Fix Logic
@@ -491,11 +669,48 @@ type Options = readonly [
   {
     /**
      * Override style for parent class methods
-     * - 'jsdoc': Only require @override JSDoc comments
-     * - 'keyword': Only require TypeScript override keyword
+     *
+     * Controls how parent class method overrides should be marked. This option only affects
+     * methods that override parent class methods. Interface implementations always require
+     * @override JSDoc comments.
+     *
+     * - 'jsdoc': Only require @override JSDoc comments (override keyword not allowed)
+     * - 'keyword': Only require TypeScript override keyword (@override JSDoc not allowed)
      * - 'both': Require both @override JSDoc comment and override keyword
      * - 'either': Require either @override JSDoc comment or override keyword (or both)
+     *
      * @default 'either'
+     *
+     * @example
+     * // With 'jsdoc':
+     * class Child extends Parent {
+     *   /** @override *\/
+     *   method(): void {}  // ✅ Correct
+     *   override method2(): void {}  // ❌ Error
+     * }
+     *
+     * @example
+     * // With 'keyword':
+     * class Child extends Parent {
+     *   override method(): void {}  // ✅ Correct
+     *   /** @override *\/ method2(): void {}  // ❌ Error
+     * }
+     *
+     * @example
+     * // With 'both':
+     * class Child extends Parent {
+     *   /** @override *\/ override method(): void {}  // ✅ Correct
+     *   override method2(): void {}  // ❌ Error - missing @override
+     * }
+     *
+     * @example
+     * // With 'either' (default):
+     * class Child extends Parent {
+     *   /** @override *\/ method(): void {}  // ✅ Correct
+     *   override method2(): void {}  // ✅ Correct
+     *   /** @override *\/ override method3(): void {}  // ✅ Correct
+     *   method4(): void {}  // ❌ Error - needs at least one
+     * }
      */
     parentClassOverrideStyle?: 'jsdoc' | 'keyword' | 'both' | 'either';
   }
