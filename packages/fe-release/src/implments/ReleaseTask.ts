@@ -189,7 +189,7 @@ export default class ReleaseTask {
    * console.log(context.sourceBranch);
    * ```
    */
-  getContext(): ReleaseContext {
+  public getContext(): ReleaseContext {
     return this.context;
   }
 
@@ -223,7 +223,7 @@ export default class ReleaseTask {
    * ]);
    * ```
    */
-  async usePlugins(
+  public async usePlugins(
     externalTuples?: PluginTuple<PluginClass>[]
   ): Promise<ScriptPlugin<ScriptContext<any>, ScriptPluginProps>[]> {
     externalTuples = externalTuples || this.context.options.plugins || [];
@@ -254,7 +254,7 @@ export default class ReleaseTask {
    * @returns Execution result
    * @internal
    */
-  async run(): Promise<unknown> {
+  public async run(): Promise<unknown> {
     return this.executor.exec(this.context, (context) =>
       Promise.resolve(context)
     );
@@ -304,7 +304,9 @@ export default class ReleaseTask {
    * }
    * ```
    */
-  async exec(externalTuples?: PluginTuple<PluginClass>[]): Promise<unknown> {
+  public async exec(
+    externalTuples?: PluginTuple<PluginClass>[]
+  ): Promise<unknown> {
     if (this.context.env.get('FE_RELEASE') === 'false') {
       throw new Error('Skip Release');
     }

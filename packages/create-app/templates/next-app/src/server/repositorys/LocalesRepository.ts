@@ -18,7 +18,7 @@ import type {
 
 @injectable()
 export class LocalesRepository implements LocalesRepositoryInterface {
-  readonly name = 'next_app_locales';
+  public readonly name = 'next_app_locales';
 
   protected safeFields = Object.keys(localesSchema.shape);
 
@@ -27,7 +27,10 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     @inject(Datetime) protected datetime: Datetime
   ) {}
 
-  async getAll(): Promise<LocalesSchema[]> {
+  /**
+   * @override
+   */
+  public async getAll(): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
       table: this.name,
       fields: this.safeFields
@@ -35,7 +38,10 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return (result.data as LocalesSchema[]) || [];
   }
 
-  async getLocales(
+  /**
+   * @override
+   */
+  public async getLocales(
     localeName: string,
     orderBy?: BridgeOrderBy
   ): Promise<LocalesSchema[]> {
@@ -49,7 +55,10 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return data && data.length > 0 ? data : [];
   }
 
-  async add(params: LocalesSchema): Promise<LocalesSchema[] | null> {
+  /**
+   * @override
+   */
+  public async add(params: LocalesSchema): Promise<LocalesSchema[] | null> {
     const now = this.datetime.timestampz();
     const data = {
       ...params,
@@ -66,7 +75,10 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     return (result.data as LocalesSchema[]) || null;
   }
 
-  async updateById(
+  /**
+   * @override
+   */
+  public async updateById(
     id: number,
     params: Partial<Omit<LocalesSchema, 'id' | 'created_at'>>
   ): Promise<void> {
@@ -89,7 +101,10 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     });
   }
 
-  async pagination<T = LocalesSchema>(params: {
+  /**
+   * @override
+   */
+  public async pagination<T = LocalesSchema>(params: {
     page: number;
     pageSize: number;
     orderBy?: BridgeOrderBy;
@@ -112,13 +127,14 @@ export class LocalesRepository implements LocalesRepositoryInterface {
 
   /**
    * batch upsert data, support chunk processing and concurrency control
+   * @override
    * @param data - data to upsert
    * @param options - options
    * @param options.chunkSize - chunk size, default 100
    * @param options.concurrency - concurrency, default 3
    * @returns UpsertResult - contains success/failure details with returned data
    */
-  async upsert(
+  public async upsert(
     data: Partial<LocalesSchema>[],
     options?: {
       chunkSize?: number;

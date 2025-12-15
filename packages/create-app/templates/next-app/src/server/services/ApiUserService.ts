@@ -18,7 +18,7 @@ export class ApiUserService {
     protected paginationValidator: ValidatorInterface<PaginationParams>
   ) {}
 
-  async getUsers(params: {
+  public async getUsers(params: {
     page: number;
     pageSize: number;
   }): Promise<PaginationInterface<UserSchema>> {

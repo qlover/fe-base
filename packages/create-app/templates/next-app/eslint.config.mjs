@@ -105,7 +105,11 @@ const eslintConfig = [
     },
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
-      '@qlover-eslint/require-root-testid': 'error',
+      '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-class-override': 'error',
+      '@qlover-eslint/require-root-testid': ['error', {
+        exclude: ['/Provider$/']
+      }],
       // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
       '@typescript-eslint/no-unused-vars': 'off',
       // 强制使用 import type 导入类型

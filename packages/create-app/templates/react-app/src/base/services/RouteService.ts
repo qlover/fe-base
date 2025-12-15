@@ -39,7 +39,7 @@ export class RouteService extends RouteServiceInterface {
     );
   }
 
-  override get logger(): LoggerInterface {
+  public override get logger(): LoggerInterface {
     return this.options.logger;
   }
 
@@ -51,15 +51,15 @@ export class RouteService extends RouteServiceInterface {
     return path.startsWith('/') ? path : `/${path}`;
   }
 
-  override getRoutes(): RouteConfigValue[] {
+  public override getRoutes(): RouteConfigValue[] {
     return this.state.routes;
   }
 
-  override changeRoutes(routes: RouteConfigValue[]): void {
+  public override changeRoutes(routes: RouteConfigValue[]): void {
     this.emit(this.cloneState({ routes }));
   }
 
-  override goto(
+  public override goto(
     path: string,
     options?: NavigateOptions & {
       navigate?: NavigateFunction;
@@ -72,19 +72,19 @@ export class RouteService extends RouteServiceInterface {
     (navigate || this.uiBridge.getUIBridge())?.(path, rest);
   }
 
-  override gotoLogin(): void {
+  public override gotoLogin(): void {
     this.goto('/login', { replace: true });
   }
 
-  override replaceToHome(): void {
+  public override replaceToHome(): void {
     this.goto('/', { replace: true });
   }
 
-  override redirectToDefault(navigate?: NavigateFunction): void {
+  public override redirectToDefault(navigate?: NavigateFunction): void {
     this.goto('/', { replace: true, navigate });
   }
 
-  override i18nGuard(
+  public override i18nGuard(
     currentPath: string,
     lng: string,
     navigate?: NavigateFunction

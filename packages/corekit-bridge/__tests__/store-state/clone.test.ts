@@ -7,7 +7,7 @@ class Person {
     public age: number
   ) {}
 
-  greet(): string {
+  public greet(): string {
     return `Hello, I'm ${this.name}`;
   }
 }

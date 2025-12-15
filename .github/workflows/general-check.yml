@@ -23,19 +23,17 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.16.0'
+          node-version: '20.19.0'
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build:eslint-plugin
-      - run: pnpm lint
-      - run: pnpm test
       
       # CI environment does not have .nx/cache cache, and each new build cannot read the cache, 
       # if there is no cache from the last time, then other packages will not produce dist, but the local will read it directly from .nx/cache
       # TODO: solve nx cache, use incremental build
       # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD --skip-nx-cache
       - run: pnpm nx:build:force
-
+      - run: pnpm lint
+      - run: pnpm test
       - run: pnpm rebuild
 
       # Only run package checks when targeting master

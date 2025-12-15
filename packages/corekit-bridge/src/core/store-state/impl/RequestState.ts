@@ -80,7 +80,7 @@ export class RequestState<T = unknown> implements AsyncStateInterface<T> {
    * - Request timeout detection
    * - Operation duration calculation
    */
-  startTime: number;
+  public startTime: number;
 
   /**
    * Timestamp when the request completed
@@ -91,7 +91,7 @@ export class RequestState<T = unknown> implements AsyncStateInterface<T> {
    * - Request duration calculation
    * - Request completion verification
    */
-  endTime: number;
+  public endTime: number;
 
   /**
    * Creates a new RequestState instance
@@ -147,7 +147,7 @@ export class RequestState<T = unknown> implements AsyncStateInterface<T> {
    * const duration = state.endTime - state.startTime;
    * ```
    */
-  end(): this {
+  public end(): this {
     this.endTime = Date.now();
     return this;
   }

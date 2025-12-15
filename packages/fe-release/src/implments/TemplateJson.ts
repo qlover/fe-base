@@ -17,7 +17,7 @@ export default class TemplateJson {
   /**
    * get the value of nested path, for example 'user.name.first'
    */
-  getNested(
+  public getNested(
     context: Record<string, unknown>,
     path: string
   ): unknown | undefined {
@@ -32,7 +32,7 @@ export default class TemplateJson {
   /**
    * replace all placeholders with corresponding context values
    */
-  resolveString(
+  public resolveString(
     str: string,
     context: Record<string, unknown>,
     open: string,
@@ -65,7 +65,7 @@ export default class TemplateJson {
    * @param options - configuration options, such as custom placeholders
    * @returns replaced string or object
    */
-  format<Input = unknown>(
+  public format<Input = unknown>(
     input: Input,
     context: Record<string, unknown>,
     options: Partial<Options> = {}
@@ -104,7 +104,7 @@ export default class TemplateJson {
     return input;
   }
 
-  static format(
+  public static format(
     input: unknown,
     context: Record<string, unknown>,
     options: Partial<Options> = {}

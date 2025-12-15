@@ -24,11 +24,14 @@ export class BootstrapsRegistry implements BootstrapsRegistryInterface {
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}
 
-  get appConfig(): EnvConfigInterface {
+  public get appConfig(): EnvConfigInterface {
     return this.IOC(I.AppConfig);
   }
 
-  register(): BootstrapExecutorPlugin[] {
+  /**
+   * @override
+   */
+  public register(): BootstrapExecutorPlugin[] {
     const IOC = this.IOC;
 
     const bootstrapList = [

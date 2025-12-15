@@ -10,14 +10,14 @@ export interface RequestPageStateInterface extends StoreStateInterface {
 }
 
 export abstract class RequestPageBridgeInterface extends StoreInterface<RequestPageStateInterface> {
-  abstract onHello: () => void;
-  abstract onIpInfo: () => void;
-  abstract onRandomUser: () => void;
-  abstract onTriggerApiCatchResult: () => void;
-  abstract onTriggerAbortRequest: () => void;
-  abstract stopAbortRequest: () => void;
+  public abstract onHello: () => void;
+  public abstract onIpInfo: () => void;
+  public abstract onRandomUser: () => void;
+  public abstract onTriggerApiCatchResult: () => void;
+  public abstract onTriggerAbortRequest: () => void;
+  public abstract stopAbortRequest: () => void;
 
-  emitState(state: Partial<RequestPageStateInterface>): void {
+  public emitState(state: Partial<RequestPageStateInterface>): void {
     this.emit(this.cloneState(state));
   }
 }

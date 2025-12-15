@@ -143,7 +143,7 @@ export abstract class MessagesStoreInterface<
    * );
    * ```
    */
-  abstract mergeMessage<T extends MessageType>(
+  public abstract mergeMessage<T extends MessageType>(
     target: T,
     ...updates: Partial<T>[]
   ): T;
@@ -169,7 +169,7 @@ export abstract class MessagesStoreInterface<
    * console.log(message.id); // Generated ID
    * ```
    */
-  abstract createMessage<T extends MessageType>(message: Partial<T>): T;
+  public abstract createMessage<T extends MessageType>(message: Partial<T>): T;
 
   /**
    * Get all messages from the store
@@ -186,7 +186,7 @@ export abstract class MessagesStoreInterface<
    * messages.forEach(msg => console.log(msg.content));
    * ```
    */
-  abstract getMessages(): MessageType[];
+  public abstract getMessages(): MessageType[];
 
   /**
    * Get a message by its unique identifier
@@ -207,7 +207,7 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  abstract getMessageById(id: string): MessageType | undefined;
+  public abstract getMessageById(id: string): MessageType | undefined;
 
   /**
    * Add a new message to the store
@@ -230,7 +230,7 @@ export abstract class MessagesStoreInterface<
    * console.log('Added message:', newMessage.id);
    * ```
    */
-  abstract addMessage<M extends MessageType>(message: Partial<M>): M;
+  public abstract addMessage<M extends MessageType>(message: Partial<M>): M;
 
   /**
    * Update an existing message in the store
@@ -262,7 +262,7 @@ export abstract class MessagesStoreInterface<
    * );
    * ```
    */
-  abstract updateMessage<M extends MessageType>(
+  public abstract updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined;
@@ -286,7 +286,7 @@ export abstract class MessagesStoreInterface<
    * console.log(deleted === undefined); // true
    * ```
    */
-  abstract deleteMessage(id: string): void;
+  public abstract deleteMessage(id: string): void;
 
   /**
    * Type guard to check if an unknown value is a message
@@ -311,7 +311,9 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  abstract isMessage<T extends MessageType>(message: unknown): message is T;
+  public abstract isMessage<T extends MessageType>(
+    message: unknown
+  ): message is T;
 
   /**
    * Get the index position of a message in the store
@@ -332,7 +334,7 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  abstract getMessageIndex(id: string): number;
+  public abstract getMessageIndex(id: string): number;
 
   /**
    * Get a message by its index position
@@ -353,7 +355,7 @@ export abstract class MessagesStoreInterface<
    * const last = store.getMessageByIndex(messages.length - 1);
    * ```
    */
-  abstract getMessageByIndex(index: number): MessageType | undefined;
+  public abstract getMessageByIndex(index: number): MessageType | undefined;
 
   /**
    * Replace all messages in the store
@@ -374,7 +376,7 @@ export abstract class MessagesStoreInterface<
    * store.resetMessages([]);
    * ```
    */
-  abstract resetMessages(messages: MessageType[]): void;
+  public abstract resetMessages(messages: MessageType[]): void;
 
   /**
    * Convert all messages to JSON-serializable format
@@ -392,7 +394,7 @@ export abstract class MessagesStoreInterface<
    * localStorage.setItem('messages', jsonString);
    * ```
    */
-  abstract toJson(): Record<string, unknown>[];
+  public abstract toJson(): Record<string, unknown>[];
 
   /**
    * Start streaming mode
@@ -415,7 +417,7 @@ export abstract class MessagesStoreInterface<
    * store.stopStreaming();
    * ```
    */
-  abstract startStreaming(): void;
+  public abstract startStreaming(): void;
 
   /**
    * Stop streaming mode
@@ -434,5 +436,5 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  abstract stopStreaming(): void;
+  public abstract stopStreaming(): void;
 }

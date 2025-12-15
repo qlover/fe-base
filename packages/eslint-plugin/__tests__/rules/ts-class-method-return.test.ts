@@ -58,6 +58,16 @@ ruleTester.run(RULE_NAME, rule, {
         }
       `
     },
+    // Setter (should be skipped - setters cannot have return types)
+    {
+      code: `
+        class Example {
+          set value(v: number) {
+            this._value = v;
+          }
+        }
+      `
+    },
     // Generic method with return type
     {
       code: `

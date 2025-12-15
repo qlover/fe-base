@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 
 export class Env {
-  static searchEnv = vi.fn().mockImplementation(() => {
+  public static searchEnv = vi.fn().mockImplementation(() => {
     return {
       get: vi.fn().mockImplementation((key) => {
         return process.env[key];

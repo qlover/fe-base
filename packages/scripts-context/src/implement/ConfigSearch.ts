@@ -479,7 +479,7 @@ export class ConfigSearch {
    * // }
    * ```
    */
-  get config(): Record<string, unknown> {
+  public get config(): Record<string, unknown> {
     return defaultsDeep({}, this.search(), this._config);
   }
 
@@ -525,7 +525,7 @@ export class ConfigSearch {
    * // ['custom.config.js', 'config/app.js']
    * ```
    */
-  getSearchPlaces(): string[] {
+  public getSearchPlaces(): string[] {
     return this.searchPlaces;
   }
 
@@ -590,7 +590,7 @@ export class ConfigSearch {
    * const config = configSearch.get({ dir: '/path/to/project' });
    * ```
    */
-  get(options: SearchOptions = {}): Record<string, unknown> {
+  public get(options: SearchOptions = {}): Record<string, unknown> {
     const { file, dir = process.cwd() } = options;
     const localConfig = {};
 
@@ -670,7 +670,7 @@ export class ConfigSearch {
    * }
    * ```
    */
-  search(): Record<string, unknown> {
+  public search(): Record<string, unknown> {
     if (this.searchCache) {
       return this.searchCache;
     }

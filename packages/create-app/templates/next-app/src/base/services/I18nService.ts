@@ -9,7 +9,7 @@ import type { useTranslations } from 'next-intl';
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
 export class I18nService extends I18nServiceInterface {
-  readonly pluginName = 'I18nService';
+  public readonly pluginName = 'I18nService';
   protected pathname: string = '';
   protected translator: TranslationFunction | null = null;
 
@@ -17,20 +17,28 @@ export class I18nService extends I18nServiceInterface {
     super(() => new I18nServiceState(i18nConfig.fallbackLng));
   }
 
-  setPathname(pathname: string): void {
+  /**
+   * @override
+   */
+  public setPathname(pathname: string): void {
     this.pathname = pathname;
   }
 
-  setTranslator(translator: TranslationFunction): void {
+  /**
+   * @override
+   */
+  public setTranslator(translator: TranslationFunction): void {
     this.translator = translator;
   }
 
   /**
    * @override
    */
-  async onBefore(): Promise<void> {}
+  public async onBefore(): Promise<void> {}
 
-  override async changeLanguage(language: I18nServiceLocale): Promise<void> {
+  public override async changeLanguage(
+    language: I18nServiceLocale
+  ): Promise<void> {
     try {
       this.changeLoading(true);
 
@@ -46,23 +54,25 @@ export class I18nService extends I18nServiceInterface {
     }
   }
 
-  override changeLoading(loading: boolean): void {
+  public override changeLoading(loading: boolean): void {
     this.emit({ ...this.state, loading });
   }
 
-  override async getCurrentLanguage(): Promise<I18nServiceLocale> {
+  public override async getCurrentLanguage(): Promise<I18nServiceLocale> {
     return this.state.language;
   }
 
-  override isValidLanguage(language: string): language is I18nServiceLocale {
+  public override isValidLanguage(
+    language: string
+  ): language is I18nServiceLocale {
     return i18nConfig.supportedLngs.includes(language as I18nServiceLocale);
   }
 
-  override getSupportedLanguages(): I18nServiceLocale[] {
+  public override getSupportedLanguages(): I18nServiceLocale[] {
     return [...i18nConfig.supportedLngs];
   }
 
-  override t(
+  public override t(
     key: string,
     params?: Record<string, string | number | Date>
   ): string {

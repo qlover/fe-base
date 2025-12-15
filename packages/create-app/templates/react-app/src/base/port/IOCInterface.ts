@@ -32,5 +32,7 @@ export interface IOCInterface<
 /**
  * 提供一个快捷的注册器类型名
  */
-export interface IOCRegister
-  extends IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions> {}
+export interface IOCRegister extends IOCRegisterInterface<
+  IOCContainerInterface,
+  IocRegisterOptions
+> {}

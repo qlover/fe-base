@@ -457,6 +457,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Return the properly configured UserAuthStore instance
    * Main purpose: Enable direct access to authentication state for advanced use cases
    *
+   * @override
    * @returns The configured user authentication store instance
    *
    * @example
@@ -464,7 +465,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * const loginStatus = store.getLoginStatus();
    * const userInfo = store.getUserInfo();
    */
-  get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
+  public get store(): UserAuthStoreInterface<PickUser<InferState<T>>> {
     return this._store;
   }
 
@@ -476,6 +477,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Orchestrate API login call, user info retrieval, and state updates
    * Main purpose: Provide secure, reliable user authentication with proper state synchronization
    *
+   * @override
    * @param params - Login credentials including email/password, OAuth tokens, or other authentication data
    * @returns Promise resolving to login response data containing authentication tokens and metadata
    * @throws {Error} When login fails due to invalid credentials, network issues, or user info retrieval errors
@@ -574,7 +576,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('2FA login failed:', error.message);
    * }
    */
-  async login(params: unknown): Promise<LoginResponseData> {
+  public async login(params: unknown): Promise<LoginResponseData> {
     this.store.startAuth();
 
     try {
@@ -603,6 +605,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Call API for latest user info and merge with local data using API data precedence
    * Main purpose: Ensure user information is current while preserving local modifications and handling data conflicts
    *
+   * @override
    * @param loginData - Optional login response data containing tokens for API authentication
    * @returns Promise resolving to complete user information object with merged data
    * @throws {Error} When user info fetch fails due to network issues, authentication errors, or API failures
@@ -646,7 +649,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * const refreshedData = await tokenService.refreshToken();
    * const user = await authService.userInfo(refreshedData);
    */
-  async userInfo(
+  public async userInfo(
     loginData?: LoginResponseData
   ): Promise<PickUser<InferState<T>>> {
     const result = await this.api.getUserInfo(loginData);
@@ -667,6 +670,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Call API logout endpoint and comprehensively clear all local authentication state
    * Main purpose: Provide secure logout that invalidates sessions and removes sensitive data from storage
    *
+   * @override
    * @returns Promise that resolves when logout process is complete
    * @throws {Error} When logout API call fails (note: local state is still cleared for security)
    *
@@ -709,7 +713,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('Failed to logout from all devices:', error.message);
    * }
    */
-  async logout(): Promise<void> {
+  public async logout(): Promise<void> {
     try {
       await this.api.logout();
     } finally {
@@ -726,6 +730,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Call API register endpoint, fetch user info, and establish authenticated session
    * Main purpose: Streamline user registration by combining account creation with immediate authentication
    *
+   * @override
    * @param params - Registration data including email, password, profile information, and validation data
    * @returns Promise resolving to registration response data with same structure as login response
    * @throws {Error} When registration fails due to validation errors, conflicts, or user info retrieval issues
@@ -850,7 +855,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   console.error('Custom field registration failed:', error.message);
    * }
    */
-  async register(params: unknown): Promise<LoginResponseData> {
+  public async register(params: unknown): Promise<LoginResponseData> {
     this.store.startAuth();
 
     try {
@@ -879,6 +884,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    * Main function: Verify both successful login status and valid user information existence
    * Main purpose: Provide reliable authentication state check for routing, UI rendering, and API access decisions
    *
+   * @override
    * @returns True if user is fully authenticated with valid session, false otherwise
    *
    * @example
@@ -909,7 +915,7 @@ export class UserAuthService<T> implements AuthServiceInterface<InferState<T>> {
    *   return api.getData();
    * };
    */
-  isAuthenticated(): boolean {
+  public isAuthenticated(): boolean {
     return (
       this.store.getLoginStatus() === LOGIN_STATUS.SUCCESS &&
       !!this.store.getUserInfo()

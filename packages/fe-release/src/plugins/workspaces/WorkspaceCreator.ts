@@ -4,12 +4,12 @@ import { join } from 'path';
 import { MANIFEST_PATH } from '../../defaults';
 
 export class WorkspaceCreator {
-  static readJson(path: string): Record<string, unknown> {
+  public static readJson(path: string): Record<string, unknown> {
     const packageJsonContent = readFileSync(path, 'utf-8');
     return JSON.parse(packageJsonContent);
   }
 
-  static toWorkspace(
+  public static toWorkspace(
     workspace: Partial<WorkspaceValue>,
     rootPath: string
   ): WorkspaceValue {

@@ -74,14 +74,23 @@ export class KeyStorage<
     };
   }
 
+  /**
+   * @override
+   */
   public getKey(): Key {
     return this.key;
   }
 
+  /**
+   * @override
+   */
   public getValue(): Value | null {
     return this.value;
   }
 
+  /**
+   * @override
+   */
   public get(options?: Opt): Value | null {
     const { storage, ...reset } = this.mergeOptions(options);
 
@@ -108,6 +117,9 @@ export class KeyStorage<
     return this.value;
   }
 
+  /**
+   * @override
+   */
   public set(token: Value, options?: Opt): void {
     const { storage, ...reset } = this.mergeOptions(options);
 
@@ -118,6 +130,9 @@ export class KeyStorage<
     }
   }
 
+  /**
+   * @override
+   */
   public remove(options?: Opt): void {
     const { storage, ...reset } = this.mergeOptions(options);
 

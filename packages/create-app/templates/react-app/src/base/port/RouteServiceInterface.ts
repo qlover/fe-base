@@ -10,18 +10,18 @@ export interface RouteServiceStateInterface extends StoreStateInterface {
 }
 
 export abstract class RouteServiceInterface extends StoreInterface<RouteServiceStateInterface> {
-  abstract get logger(): LoggerInterface;
+  public abstract get logger(): LoggerInterface;
 
-  abstract getRoutes(): RouteConfigValue[];
-  abstract changeRoutes(routes: RouteConfigValue[]): void;
-  abstract goto(
+  public abstract getRoutes(): RouteConfigValue[];
+  public abstract changeRoutes(routes: RouteConfigValue[]): void;
+  public abstract goto(
     path: string,
     options?: NavigateOptions & { navigate?: NavigateFunction }
   ): void;
-  abstract gotoLogin(): void;
-  abstract replaceToHome(): void;
-  abstract redirectToDefault(navigate: NavigateFunction): void;
-  abstract i18nGuard(
+  public abstract gotoLogin(): void;
+  public abstract replaceToHome(): void;
+  public abstract redirectToDefault(navigate: NavigateFunction): void;
+  public abstract i18nGuard(
     currentPath: string,
     lng: string,
     navigate?: NavigateFunction

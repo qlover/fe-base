@@ -61,8 +61,8 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  * ```
  */
 export class FetchAbortPlugin implements ExecutorPlugin {
-  readonly pluginName = 'FetchAbortPlugin';
-  readonly onlyOne = true;
+  public readonly pluginName = 'FetchAbortPlugin';
+  public readonly onlyOne = true;
 
   /**
    * Map to store active AbortControllers
@@ -96,6 +96,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * Pre-request hook that sets up abort handling
    * Creates new AbortController and cancels any existing request with same key
    *
+   * @override
    * @param config - Request configuration
    * @returns Modified configuration with abort control
    *
@@ -104,7 +105,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const modifiedConfig = abortPlugin.onBefore(config);
    * ```
    */
-  onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
+  public onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const key = this.generateRequestKey(context.parameters);
 
     // abort previous request
@@ -122,7 +123,12 @@ export class FetchAbortPlugin implements ExecutorPlugin {
     }
   }
 
-  onSuccess({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
+  /**
+   * @override
+   */
+  public onSuccess({
+    parameters
+  }: ExecutorContext<RequestAdapterConfig>): void {
     // delete controller
     if (parameters) {
       this.controllers.delete(this.generateRequestKey(parameters));
@@ -133,6 +139,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * Error handling hook for abort scenarios
    * Processes different types of abort errors and cleans up resources
    *
+   * @override
    * @param error - Original error
    * @param config - Request configuration
    * @returns RequestError or void
@@ -142,7 +149,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * const error = abortPlugin.onError(new Error('AbortError'), config);
    * ```
    */
-  onError({
+  public onError({
     error,
     parameters
   }: ExecutorContext<RequestAdapterConfig>): RequestError | void {
@@ -173,7 +180,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * @returns True if the error is an abort error, false otherwise
    *
    */
-  isSameAbortError(error?: Error): boolean {
+  public isSameAbortError(error?: Error): boolean {
     // Check if the error is an instance of AbortError
     if (error instanceof Error && error.name === 'AbortError') {
       return true;
@@ -212,7 +219,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * });
    * ```
    */
-  abort(config: RequestAdapterConfig | string): void {
+  public abort(config: RequestAdapterConfig | string): void {
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
     const controller = this.controllers.get(key);
@@ -244,7 +251,7 @@ export class FetchAbortPlugin implements ExecutorPlugin {
    * }, []);
    * ```
    */
-  abortAll(): void {
+  public abortAll(): void {
     this.controllers.forEach((controller) => controller.abort());
     this.controllers.clear();
   }

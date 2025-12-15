@@ -77,7 +77,7 @@ export abstract class MessageSenderBasePlugin<
    * Must be implemented by subclasses to provide a unique name
    * for the plugin. Used for plugin registration and debugging.
    */
-  abstract readonly pluginName: string;
+  public abstract readonly pluginName: string;
 
   /**
    * Merge message updates into the runtime message

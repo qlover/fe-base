@@ -359,7 +359,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * }
    * ```
    */
-  override restore<R = Credential | null>(): R | null {
+  public override restore<R = Credential | null>(): R | null {
     const storage = this.getStorage();
     if (!storage) {
       return null;
@@ -424,7 +424,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @override
    * @param _state - Optional state parameter (ignored, kept for interface compatibility)
    */
-  override persist<T extends UserStateInterface<User, Credential>>(
+  public override persist<T extends UserStateInterface<User, Credential>>(
     _state?: T | undefined
   ): void {
     const storage = this.getStorage();
@@ -500,7 +500,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * // Credential is set immediately when operation starts
    * ```
    */
-  override start(result?: User, credential?: Credential): void {
+  public start(result?: User, credential?: Credential): void {
     super.start(result);
 
     if (credential) {
@@ -552,7 +552,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * // Only updates userInfo and result, credential remains unchanged
    * ```
    */
-  override success(result: User | null, credential?: Credential | null): void {
+  public success(result: User | null, credential?: Credential | null): void {
     super.success(result);
 
     // Set credential only if explicitly provided (including null)
@@ -571,7 +571,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @override
    * @returns The current credential data, or `null` if not available
    */
-  getCredential(): Credential | null {
+  public getCredential(): Credential | null {
     return this.getState().credential ?? null;
   }
 
@@ -581,9 +581,10 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * Updates the credential in the store state and persists to storage (if configured).
    * **Only credential is persisted**, user information is stored in memory only.
    *
+   * @override
    * @param credential - The credential to store, or `null` to clear
    */
-  setCredential(credential: Credential | null): void {
+  public setCredential(credential: Credential | null): void {
     // Update state with credential
     this.updateState<UserStateInterface<User, Credential>>({
       credential: credential
@@ -599,7 +600,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @override
    * @returns The current user information, or `null` if not available
    */
-  getUser(): User | null {
+  public getUser(): User | null {
     return this.getState().result ?? null;
   }
 
@@ -613,7 +614,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @override
    * @param user - The user information to store, or `null` to clear
    */
-  setUser(user: User | null): void {
+  public setUser(user: User | null): void {
     this.updateState({
       result: user
     });

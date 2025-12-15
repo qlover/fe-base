@@ -23,8 +23,7 @@ import type {
  * extends:
  */
 export interface FeApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>,
-    ApiMockPluginConfig {}
+  extends RequestAdapterConfig<Request>, ApiMockPluginConfig {}
 
 /**
  * FeApiResponse
@@ -35,8 +34,10 @@ export interface FeApiConfig<Request = unknown>
  * extends:
  * - RequestAdapterResponse<Request, Response>
  */
-export interface FeApiResponse<Request = unknown, Response = unknown>
-  extends RequestAdapterResponse<Request, Response> {}
+export interface FeApiResponse<
+  Request = unknown,
+  Response = unknown
+> extends RequestAdapterResponse<Request, Response> {}
 
 /**
  * FeApi common transaction
@@ -45,18 +46,20 @@ export interface FeApiResponse<Request = unknown, Response = unknown>
  *
  * add data property
  */
-export interface FeApiTransaction<Request = unknown, Response = unknown>
-  extends RequestTransactionInterface<
-    FeApiConfig<Request>,
-    FeApiResponse<Request, Response>['data']
-  > {
+export interface FeApiTransaction<
+  Request = unknown,
+  Response = unknown
+> extends RequestTransactionInterface<
+  FeApiConfig<Request>,
+  FeApiResponse<Request, Response>['data']
+> {
   data: FeApiConfig<Request>['data'];
 }
 
 export class FeApiBootstarp implements BootstrapExecutorPlugin {
-  readonly pluginName = 'FeApiBootstarp';
+  public readonly pluginName = 'FeApiBootstarp';
 
-  onBefore({ parameters: { ioc } }: BootstrapContext): void {
+  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<FeApi>(FeApi)
       .usePlugin(new FetchURLPlugin())

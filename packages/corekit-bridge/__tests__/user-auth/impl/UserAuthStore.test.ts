@@ -37,23 +37,32 @@ class MockAuthState extends UserAuthState<MockUser> {
 class MockKeyStorage extends KeyStorage<string, MockUser> {
   private storage = new Map<string, MockUser>();
 
-  get(): MockUser | null {
+  /**
+   * @override
+   */
+  public get(): MockUser | null {
     return this.storage.get(this.key) || null;
   }
 
-  set(value: MockUser): void {
+  /**
+   * @override
+   */
+  public set(value: MockUser): void {
     this.storage.set(this.key, value);
   }
 
-  remove(): void {
+  /**
+   * @override
+   */
+  public remove(): void {
     this.storage.delete(this.key);
   }
 
-  clear(): void {
+  public clear(): void {
     this.storage.clear();
   }
 
-  has(): boolean {
+  public has(): boolean {
     return this.storage.has(this.key);
   }
 }
@@ -61,20 +70,29 @@ class MockKeyStorage extends KeyStorage<string, MockUser> {
 class MockCredentialStorage extends KeyStorage<string, string> {
   private storage = new Map<string, string>();
 
-  get(): string | null {
+  /**
+   * @override
+   */
+  public get(): string | null {
     const value = this.storage.get(this.key);
     return value !== undefined ? value : null;
   }
 
-  set(value: string): void {
+  /**
+   * @override
+   */
+  public set(value: string): void {
     this.storage.set(this.key, value);
   }
 
-  remove(): void {
+  /**
+   * @override
+   */
+  public remove(): void {
     this.storage.delete(this.key);
   }
 
-  clear(): void {
+  public clear(): void {
     this.storage.clear();
   }
 }
@@ -350,7 +368,7 @@ describe('UserAuthStore', () => {
             super(userInfo, credential);
           }
 
-          getCustomProperty(): string {
+          public getCustomProperty(): string {
             return this.customProperty;
           }
         }
@@ -1656,7 +1674,7 @@ describe('UserAuthStore', () => {
           super(userInfo, credential);
         }
 
-        getUserInfo(): MockUser | null {
+        public getUserInfo(): MockUser | null {
           return this.userInfo;
         }
       }

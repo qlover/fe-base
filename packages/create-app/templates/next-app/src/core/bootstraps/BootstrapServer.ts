@@ -28,7 +28,7 @@ export class BootstrapServer implements ServerInterface {
     IOCIdentifierMapServer,
     IOCContainerInterface
   >;
-  readonly logger: LoggerInterface;
+  public readonly logger: LoggerInterface;
 
   constructor() {
     const serverIOC = ServerIOC.create();
@@ -40,12 +40,27 @@ export class BootstrapServer implements ServerInterface {
     this.logger = logger;
   }
 
-  getIOC(): IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
-  getIOC<T extends keyof IOCIdentifierMapServer>(
+  /**
+   * @override
+   */
+  public getIOC(): IOCFunctionInterface<
+    IOCIdentifierMapServer,
+    IOCContainerInterface
+  >;
+  /**
+   * @override
+   */
+  public getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier: T
   ): IOCIdentifierMapServer[T];
-  getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-  getIOC<T extends keyof IOCIdentifierMapServer>(
+  /**
+   * @override
+   */
+  public getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  /**
+   * @override
+   */
+  public getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier?: T
   ):
     | IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>
@@ -59,7 +74,7 @@ export class BootstrapServer implements ServerInterface {
   /**
    * @override
    */
-  use(
+  public use(
     plugin:
       | BootstrapExecutorPlugin
       | BootstrapExecutorPlugin[]
@@ -78,7 +93,10 @@ export class BootstrapServer implements ServerInterface {
     return this;
   }
 
-  execNoError<Result>(
+  /**
+   * @override
+   */
+  public execNoError<Result>(
     task?: PromiseTask<Result, BootstrapServerContextValue>
   ): Promise<Result | ExecutorError> {
     const context = {

@@ -21,8 +21,10 @@ export class MessageApi implements MessageGetwayInterface {
    * - If options.stream === true, use streaming mode (progressive output)
    * - If options provided but stream !== true, use interruptible normal mode
    * - If no options, use fast normal mode (non-interruptible)
-   */
-  async sendMessage<M extends MessageStoreMsg<string>>(
+
+   * @override
+      */
+  public async sendMessage<M extends MessageStoreMsg<string>>(
     message: M,
     options?: GatewayOptions<M>
   ): Promise<M> {

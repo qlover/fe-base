@@ -30,9 +30,10 @@ import type {
 } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 
-export class ClientIOCRegister
-  implements IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>
-{
+export class ClientIOCRegister implements IOCRegisterInterface<
+  IOCContainerInterface,
+  IocRegisterOptions
+> {
   constructor(protected options: IocRegisterOptions) {}
 
   /**
@@ -131,7 +132,7 @@ export class ClientIOCRegister
   /**
    * @override
    */
-  register(
+  public register(
     ioc: IOCContainerInterface,
     _manager: IOCManagerInterface<IOCContainerInterface>
   ): void {

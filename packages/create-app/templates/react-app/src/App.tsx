@@ -24,7 +24,7 @@ const allPages = (function getAllPages() {
 
 function App() {
   return (
-    <BootstrapsProvider data-testid="App">
+    <BootstrapsProvider>
       <ComboProvider themeConfig={themeConfig}>
         <AppRouterProvider pages={allPages} />
       </ComboProvider>

@@ -20,32 +20,47 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     clear: 0
   };
 
-  get length(): number {
+  /**
+   * @override
+   */
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T, options?: unknown): void {
+  /**
+   * @override
+   */
+  public setItem<T>(key: Key, value: T, options?: unknown): void {
     this.calls.setItem.push({ key, value, options });
     this.data.set(String(key), String(value));
   }
 
-  getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
+  /**
+   * @override
+   */
+  public getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
     const value = this.data.get(String(key));
     return (value ?? defaultValue ?? null) as T | null;
   }
 
-  removeItem(key: Key, options?: unknown): void {
+  /**
+   * @override
+   */
+  public removeItem(key: Key, options?: unknown): void {
     this.calls.removeItem.push({ key, options });
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  /**
+   * @override
+   */
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.calls = {
       setItem: [],
@@ -56,7 +71,7 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   }
 
   // Helper method to directly set data (simulating existing storage)
-  directSet(key: string, value: string): void {
+  public directSet(key: string, value: string): void {
     this.data.set(key, value);
   }
 }

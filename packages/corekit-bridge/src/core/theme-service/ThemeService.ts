@@ -26,11 +26,11 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
     }
   }
 
-  getSupportedThemes(): string[] {
+  public getSupportedThemes(): string[] {
     return this.props.supportedThemes!;
   }
 
-  getTarget(): HTMLElement {
+  public getTarget(): HTMLElement {
     const { target, cacheTarget } = this.props;
 
     if (cacheTarget && this._target) {
@@ -51,7 +51,7 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
     return targetElement;
   }
 
-  bindToTheme(): void {
+  public bindToTheme(): void {
     const { theme } = this.state;
 
     const { domAttribute } = this.props;
@@ -71,7 +71,7 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
     }
   }
 
-  changeTheme(theme: string): void {
+  public changeTheme(theme: string): void {
     if (theme === ThemeStateGetter.SYSTEM_THEME) {
       theme = ThemeStateGetter.getSystemTheme();
     }

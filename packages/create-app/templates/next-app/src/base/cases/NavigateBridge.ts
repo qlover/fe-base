@@ -12,11 +12,17 @@ export class NavigateBridge implements UIBridgeInterface<AppRouterInstance> {
 
   constructor(@inject(I.Logger) protected logger: LoggerInterface) {}
 
-  setUIBridge(ui: AppRouterInstance): void {
+  /**
+   * @override
+   */
+  public setUIBridge(ui: AppRouterInstance): void {
     this.navigate = ui;
   }
 
-  getUIBridge(): AppRouterInstance | null {
+  /**
+   * @override
+   */
+  public getUIBridge(): AppRouterInstance | null {
     if (!this.navigate) {
       this.logger.debug('NavigateBridge this.navigate is not set');
     }

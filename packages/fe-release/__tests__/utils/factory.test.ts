@@ -5,8 +5,8 @@ describe('factory utils', () => {
   describe('factory function', () => {
     it('should instantiate a class constructor', () => {
       class TestClass {
-        name: string;
-        value: number;
+        public name: string;
+        public value: number;
 
         constructor(name: string, value: number) {
           this.name = name;

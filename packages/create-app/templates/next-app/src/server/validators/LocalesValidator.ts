@@ -14,7 +14,10 @@ import type { ImportLocalesData } from '../services/ApiLocaleService';
 export class LocalesValidator implements ValidatorInterface<
   Omit<LocalesSchema, 'id' | 'created_at' | 'updated_at'>
 > {
-  validate(data: unknown): void | ValidationFaildResult {
+  /**
+   * @override
+   */
+  public validate(data: unknown): void | ValidationFaildResult {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
@@ -31,7 +34,10 @@ export class LocalesValidator implements ValidatorInterface<
     }
   }
 
-  getThrow(
+  /**
+   * @override
+   */
+  public getThrow(
     data: unknown
   ): Omit<LocalesSchema, 'id' | 'created_at' | 'updated_at'> {
     const result = this.validate(data);
@@ -47,7 +53,10 @@ export class LocalesValidator implements ValidatorInterface<
 }
 
 export class LocalesImportValidator implements ValidatorInterface<ImportLocalesData> {
-  getHasAnyFilesLocale(
+  /**
+   * @override
+   */
+  public getHasAnyFilesLocale(
     values: FormData
   ): { language: LocaleType; value: FormDataEntryValue }[] {
     const hasAnyFilesLocale = [];
@@ -60,7 +69,10 @@ export class LocalesImportValidator implements ValidatorInterface<ImportLocalesD
     return hasAnyFilesLocale;
   }
 
-  async validate(data: {
+  /**
+   * @override
+   */
+  public async validate(data: {
     namespace?: string;
     values: unknown;
   }): Promise<void | ValidationFaildResult> {
@@ -101,7 +113,10 @@ export class LocalesImportValidator implements ValidatorInterface<ImportLocalesD
     }
   }
 
-  async getThrow(data: {
+  /**
+   * @override
+   */
+  public async getThrow(data: {
     namespace?: string;
     values: unknown;
   }): Promise<ImportLocalesData> {

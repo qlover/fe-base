@@ -169,7 +169,7 @@ export class ConsoleHandler implements HandlerInterface {
    * }
    * ```
    */
-  setFormatter(formatter: FormatterInterface): void {
+  public setFormatter(formatter: FormatterInterface): void {
     this.formatter = formatter;
   }
 
@@ -265,7 +265,7 @@ export class ConsoleHandler implements HandlerInterface {
    * });
    * ```
    */
-  append(event: LogEvent): void {
+  public append(event: LogEvent): void {
     const { level, args } = event;
 
     const formattedArgs = this.formatter ? this.formatter.format(event) : args;

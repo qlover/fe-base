@@ -53,6 +53,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * - Whitespace is trimmed from both ends of each line
    * - Partial lines at chunk boundaries are handled by processFinal
    *
+   * @override
    * @param chunk - The raw chunk data from stream
    * @returns Array of processed non-empty lines
    *
@@ -62,7 +63,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * // Result: ["line1", "line2"]
    * ```
    */
-  processChunk(chunk: string): string[] {
+  public processChunk(chunk: string): string[] {
     return chunk
       .split(this.separator)
       .map((line) => line.trim())
@@ -80,6 +81,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * 2. Return trimmed data if non-empty
    * 3. Return undefined if empty after trimming
    *
+   * @override
    * @param data - Remaining data from the last chunk
    * @returns Processed data string if non-empty, undefined otherwise
    *
@@ -89,7 +91,7 @@ export class LineStreamProcessor implements StreamProcessorInterface {
    * // Result: "last line"
    * ```
    */
-  processFinal(data: string): string | undefined {
+  public processFinal(data: string): string | undefined {
     const trimmed = data.trim();
     return trimmed !== '' ? trimmed : undefined;
   }

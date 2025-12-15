@@ -246,6 +246,7 @@ export abstract class PersistentStore<
    * - Access storage for custom operations
    * - Pass storage to other components
    *
+   * @override
    * @returns The storage instance or `null` if not configured
    *
    * @example Check if storage is available
@@ -289,7 +290,6 @@ export abstract class PersistentStore<
    * - State update still succeeds, ensuring application functionality is not affected
    * - Subclasses can override this method to implement custom error handling if needed
    *
-   * @override
    * @param state - The new state to emit and persist
    * @param options - Optional configuration for emit behavior
    * @param options.persist - Whether to persist state to storage
@@ -343,7 +343,7 @@ export abstract class PersistentStore<
    * }
    * ```
    */
-  override emit(state: T, options?: { persist?: boolean }): void {
+  public emit(state: T, options?: { persist?: boolean }): void {
     super.emit(state);
 
     const shouldPersist = options?.persist !== false && this.storage;
@@ -384,6 +384,7 @@ export abstract class PersistentStore<
    * - This prevents triggering `persist()` which would write back to storage unnecessarily
    * - The `{ persist: false }` option ensures no circular updates occur
    *
+   * @override
    * @template R - The type of restored state (defaults to `T`, but can be customized by subclasses)
    *   Some implementations may return only a portion of the state (e.g., just the result value)
    * @returns The restored state of type `R`, or `null` if:
@@ -466,7 +467,7 @@ export abstract class PersistentStore<
    * }
    * ```
    */
-  abstract restore<R = T>(): R | null;
+  public abstract restore<R = T>(): R | null;
 
   /**
    * Persist current state to storage
@@ -493,6 +494,7 @@ export abstract class PersistentStore<
    * - Can be called manually to force persistence of current state
    * - Can be called with a specific state to persist that state instead of current state
    *
+   * @override
    * @param state - Optional state to persist
    *   - If provided: Persist the specified state object
    *   - If `undefined`: Persist the current store state (`this.state`)
@@ -563,5 +565,5 @@ export abstract class PersistentStore<
    * store.persist(customState);
    * ```
    */
-  abstract persist<S extends T>(state?: S): void;
+  public abstract persist<S extends T>(state?: S): void;
 }

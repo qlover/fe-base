@@ -9,15 +9,22 @@ import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import { ClientIOCRegister } from './ClientIOCRegister';
 import { appConfig } from '../globals';
 
-export class ClientIOC
-  implements IOCInterface<IOCIdentifierMap, IOCContainerInterface>
-{
+export class ClientIOC implements IOCInterface<
+  IOCIdentifierMap,
+  IOCContainerInterface
+> {
   protected ioc: IOCFunctionInterface<
     IOCIdentifierMap,
     IOCContainerInterface
   > | null = null;
 
-  create(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
+  /**
+   * @override
+   */
+  public create(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
     if (this.ioc) {
       return this.ioc;
     }

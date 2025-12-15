@@ -1,65 +1,19 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import vitest from 'eslint-plugin-vitest';
-import * as eslintChain from '@qlover/fe-standard/eslint/index.js';
-import qloverEslint from '@qlover/eslint-plugin';
+import qloverEslint, { restrictGlobals } from '@qlover/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-plugin-prettier';
+// import jsdoc from 'eslint-plugin-jsdoc';
 import prettierConfig from './.prettierrc.js';
 
-const { createCommon, chainEnv } = eslintChain;
 const allGlobals = {
   ...globals.browser,
   ...globals.vitest,
   ...vitest.environments.env.globals
 };
-
-function createFeCorekitConfig() {
-  const feCorekitCommon = chainEnv({
-    allGlobals,
-    files: ['packages/fe-corekit/**/*.ts'],
-    languageOptions: {
-      globals: {
-        ...globals.node
-        // console: null
-      }
-    }
-  });
-  const feCorekitServer = chainEnv({
-    allGlobals,
-    files: ['packages/corekit-node/**/*.ts'],
-    languageOptions: {
-      globals: globals.node
-    }
-  });
-
-  return [feCorekitCommon, feCorekitServer];
-}
-
-function createVitestConfig() {
-  const config = chainEnv({
-    allGlobals,
-    files: [
-      'packages/**/__tests__/**/*.test.ts',
-      'packages/**/__tests__/**/*.test.tsx'
-    ],
-    plugins: {
-      vitest
-    },
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...vitest.environments.env.globals
-      }
-    }
-  });
-  return config;
-}
-
-const commonConfig = createCommon();
 
 /**
  * @type {import('eslint').Linter.Config[]}
@@ -77,7 +31,13 @@ export default tseslint.config([
 
   {
     files: ['packages/**/*.{js,jsx,ts,tsx}', 'make/**/*.{js,jsx,ts,tsx}'],
-    extends: [js.configs.recommended, commonConfig],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      globals: {
+        process: true,
+        console: true
+      }
+    },
     plugins: {
       prettier: prettier
     },
@@ -91,11 +51,20 @@ export default tseslint.config([
   {
     files: ['packages/**/*.{ts,tsx}', 'make/**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.json', './packages/*/tsconfig.json']
+      }
+    },
     plugins: {
       '@qlover-eslint': qloverEslint
+      // TODO: open jsdoc later
+      // jsdoc: jsdoc
     },
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
+      '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-class-override': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -111,8 +80,38 @@ export default tseslint.config([
     }
   },
 
-  // fe-corekit
-  ...createFeCorekitConfig(),
+  // fe-corekit common
+  restrictGlobals(
+    {
+      files: ['packages/fe-corekit/**/*.ts'],
+      languageOptions: {
+        globals: {
+          ...globals.node
+          // console: null
+        }
+      },
+      rules: {}
+    },
+    {
+      allowedGlobals: Object.keys(globals.node),
+      allGlobals
+    }
+  ),
+
+  // fe-corekit server
+  restrictGlobals(
+    {
+      files: ['packages/corekit-node/**/*.ts'],
+      languageOptions: {
+        globals: globals.node
+      },
+      rules: {}
+    },
+    {
+      allowedGlobals: Object.keys(globals.node),
+      allGlobals
+    }
+  ),
 
   // react tsx
   {
@@ -135,5 +134,42 @@ export default tseslint.config([
     }
   },
 
-  createVitestConfig()
+  // vitest
+  restrictGlobals(
+    {
+      files: [
+        'packages/**/__tests__/**/*.test.ts',
+        'packages/**/__tests__/**/*.test.tsx'
+      ],
+      plugins: {
+        vitest
+      },
+      languageOptions: {
+        globals: {
+          ...globals.browser,
+          ...globals.node,
+          ...vitest.environments.env.globals
+        }
+      },
+      rules: {
+        // Fix @typescript-eslint/no-unused-expressions rule configuration
+        '@typescript-eslint/no-unused-expressions': [
+          'error',
+          {
+            allowShortCircuit: true,
+            allowTernary: true,
+            allowTaggedTemplates: true
+          }
+        ]
+      }
+    },
+    {
+      allowedGlobals: [
+        ...Object.keys(globals.browser),
+        ...Object.keys(globals.node),
+        ...Object.keys(vitest.environments.env.globals)
+      ],
+      allGlobals
+    }
+  )
 ]);

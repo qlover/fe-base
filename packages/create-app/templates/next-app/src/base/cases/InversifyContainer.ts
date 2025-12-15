@@ -17,15 +17,27 @@ export class InversifyContainer implements IOCContainerInterface {
     });
   }
 
-  bind<T>(key: ServiceIdentifier<T>, value: T): void {
+  /**
+   * @override
+   */
+  public bind<T>(key: ServiceIdentifier<T>, value: T): void {
     this.container.bind<T>(key).toConstantValue(value);
   }
 
-  get<K extends keyof IOCIdentifierMap>(
+  /**
+   * @override
+   */
+  public get<K extends keyof IOCIdentifierMap>(
     serviceIdentifier: K
   ): IOCIdentifierMap[K];
-  get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-  get<T, K extends keyof IOCIdentifierMap>(
+  /**
+   * @override
+   */
+  public get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
+  /**
+   * @override
+   */
+  public get<T, K extends keyof IOCIdentifierMap>(
     serviceIdentifier: ServiceIdentifier<T> | K
   ): T | IOCIdentifierMap[K] {
     return this.container.get<T>(serviceIdentifier);

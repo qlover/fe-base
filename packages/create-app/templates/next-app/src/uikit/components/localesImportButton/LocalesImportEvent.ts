@@ -10,13 +10,19 @@ export class LocalesImportEvent extends StoreInterface<LocalesImportEventState> 
     super(() => new LocalesImportEventState());
   }
 
+  /**
+   * @override
+   */
   protected validate(file: File): void {
     if (file.type !== 'application/json') {
       throw new Error('File must be a JSON file');
     }
   }
 
-  async onImport(type: LocaleType, file: File): Promise<void> {
+  /**
+   * @override
+   */
+  public async onImport(type: LocaleType, file: File): Promise<void> {
     try {
       this.validate(file);
 

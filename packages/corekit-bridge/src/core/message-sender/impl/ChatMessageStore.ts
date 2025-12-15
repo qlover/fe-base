@@ -210,7 +210,7 @@ export class ChatMessageStore<T = unknown>
    * @param message - Partial message specification
    * @returns ChatMessage instance
    */
-  override createMessage<M extends ChatMessage<T>>(
+  public override createMessage<M extends ChatMessage<T>>(
     message: Partial<M> = {} as Partial<M>
   ): M {
     return new ChatMessage<T>(super.createMessage(message)) as M;
@@ -224,7 +224,9 @@ export class ChatMessageStore<T = unknown>
    * @param message - Value to check
    * @returns `true` if value is a ChatMessage instance, `false` otherwise
    */
-  override isMessage<M extends ChatMessage<T>>(message: unknown): message is M {
+  public override isMessage<M extends ChatMessage<T>>(
+    message: unknown
+  ): message is M {
     return message instanceof ChatMessage;
   }
 
@@ -265,6 +267,7 @@ export class ChatMessageStore<T = unknown>
    * according to the configured draft mode. This is the logical "first"
    * message, not necessarily the array's first element.
    *
+   * @override
    * @returns First draft message to process, or `null` if none exists
    *
    * **Mode behavior:**
@@ -299,7 +302,7 @@ export class ChatMessageStore<T = unknown>
    * console.log(first.content); // "C" - newest is first
    * ```
    */
-  getFirstDraftMessage(): ChatMessage<T> | null {
+  public getFirstDraftMessage(): ChatMessage<T> | null {
     if (this.draftMode === DraftMode.STACK) {
       // STACK mode: Get last element (newest)
       return this.getDraftMessages().at(-1) || null;
@@ -316,6 +319,7 @@ export class ChatMessageStore<T = unknown>
    * the configured draft mode. This is the atomic operation that both
    * retrieves and removes the draft in a single transaction.
    *
+   * @override
    * @returns Removed draft message, or `null` if no drafts exist
    *
    * **Behavior examples:**
@@ -360,7 +364,7 @@ export class ChatMessageStore<T = unknown>
    * // Remaining drafts: [A]
    * ```
    */
-  shiftFirstDraftMessage(): ChatMessage<T> | null {
+  public shiftFirstDraftMessage(): ChatMessage<T> | null {
     const draftMessages = this.getDraftMessages();
 
     if (draftMessages.length === 0) {
@@ -382,9 +386,10 @@ export class ChatMessageStore<T = unknown>
   /**
    * Get all draft messages
    *
+   * @override
    * @returns Array of all draft messages in the store
    */
-  getDraftMessages(): ChatMessage<T>[] {
+  public getDraftMessages(): ChatMessage<T>[] {
     return this.state.draftMessages ?? [];
   }
 
@@ -394,6 +399,7 @@ export class ChatMessageStore<T = unknown>
    * Creates and adds a draft message to the store. The message is automatically
    * set to `DRAFT` status regardless of the provided status value.
    *
+   * @override
    * @param message - Partial message content (will be auto-completed with defaults)
    *
    * **Behavior for both modes:**
@@ -426,7 +432,7 @@ export class ChatMessageStore<T = unknown>
    * });
    * ```
    */
-  addDraftMessage(message: Partial<ChatMessage<T>>): void {
+  public addDraftMessage(message: Partial<ChatMessage<T>>): void {
     const draftMessage = this.createMessage(message);
 
     if (draftMessage.status !== MessageStatus.DRAFT) {
@@ -449,6 +455,7 @@ export class ChatMessageStore<T = unknown>
    * Removes the specified draft message from the store. Does nothing
    * if no message with the given ID exists.
    *
+   * @override
    * @param messageId - Unique identifier of the draft message to delete
    *
    * @example
@@ -456,7 +463,7 @@ export class ChatMessageStore<T = unknown>
    * store.deleteDraftMessage('draft-123');
    * ```
    */
-  deleteDraftMessage(messageId: string): void {
+  public deleteDraftMessage(messageId: string): void {
     const draftMessages = this.getDraftMessages();
     const newDraftMessages = draftMessages.filter(
       (msg) => msg.id !== messageId
@@ -480,6 +487,7 @@ export class ChatMessageStore<T = unknown>
    * Applies partial updates to a draft message identified by ID.
    * Uses a single traversal to find and update the message efficiently.
    *
+   * @override
    * @param messageId - Unique identifier of the draft message to update
    * @param updates - Partial message object with fields to update
    * @returns Updated message or `undefined` if message not found
@@ -492,7 +500,7 @@ export class ChatMessageStore<T = unknown>
    * });
    * ```
    */
-  updateDraftMessage(
+  public updateDraftMessage(
     messageId: string,
     updates: Partial<ChatMessage<T>>
   ): ChatMessage<T> | undefined {
@@ -528,6 +536,7 @@ export class ChatMessageStore<T = unknown>
    * Replaces all draft messages with the provided list, or clears all
    * drafts if no messages are provided.
    *
+   * @override
    * @param messages - New draft message list, or omit to clear all drafts
    *
    * @example Clear drafts
@@ -540,7 +549,7 @@ export class ChatMessageStore<T = unknown>
    * store.resetDraftMessages([draft1, draft2]);
    * ```
    */
-  resetDraftMessages(messages?: ChatMessage<T>[]): void {
+  public resetDraftMessages(messages?: ChatMessage<T>[]): void {
     const newDraftMessages = messages
       ? messages.map((msg) => this.createMessage(msg))
       : [];
@@ -569,7 +578,7 @@ export class ChatMessageStore<T = unknown>
    * store.changeDisabledSend(false);
    * ```
    */
-  changeDisabledSend(disabled: boolean): void {
+  public changeDisabledSend(disabled: boolean): void {
     this.emit(this.cloneState({ disabledSend: disabled }));
   }
 
@@ -578,6 +587,7 @@ export class ChatMessageStore<T = unknown>
    *
    * Retrieves a specific draft message from the draft message list.
    *
+   * @override
    * @param messageId - Unique identifier of the draft message
    * @returns Draft message or `null` if not found
    *
@@ -589,7 +599,7 @@ export class ChatMessageStore<T = unknown>
    * }
    * ```
    */
-  getDarftMessageById(messageId: string): ChatMessage<T> | null {
+  public getDarftMessageById(messageId: string): ChatMessage<T> | null {
     return this.getDraftMessages().find((msg) => msg.id === messageId) || null;
   }
 
@@ -601,6 +611,7 @@ export class ChatMessageStore<T = unknown>
    * 2. If the message exists in sent history, use it
    * 3. Otherwise, shift the first draft message from the queue/stack
    *
+   * @override
    * @param message - Optional specific message to validate for sending
    * @returns Message ready to send, or `null` if none available
    *
@@ -621,7 +632,7 @@ export class ChatMessageStore<T = unknown>
    * }
    * ```
    */
-  getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null {
+  public getReadySendMessage(message?: ChatMessage<T>): ChatMessage<T> | null {
     let targetMessage: ChatMessage<T> | null = null;
 
     if (this.isMessage(message) && message.id) {

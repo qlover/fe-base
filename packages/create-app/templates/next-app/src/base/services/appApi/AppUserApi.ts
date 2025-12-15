@@ -23,7 +23,10 @@ export class AppUserApi implements AppUserApiInterface {
     protected client: RequestTransaction<AppApiConfig>
   ) {}
 
-  async login(
+  /**
+   * @override
+   */
+  public async login(
     params: UserApiLoginTransaction['data']
   ): Promise<UserApiLoginTransaction['response']> {
     const response = await this.client.request<UserApiLoginTransaction>({
@@ -36,7 +39,10 @@ export class AppUserApi implements AppUserApiInterface {
     return response;
   }
 
-  async register(
+  /**
+   * @override
+   */
+  public async register(
     params: UserApiRegisterTransaction['data']
   ): Promise<UserApiRegisterTransaction['response']> {
     const response = await this.client.request<UserApiRegisterTransaction>({
@@ -49,7 +55,10 @@ export class AppUserApi implements AppUserApiInterface {
     return response;
   }
 
-  async logout(
+  /**
+   * @override
+   */
+  public async logout(
     _params?: unknown
   ): Promise<UserApiLogoutTransaction['response']> {
     return await this.client.request<UserApiLogoutTransaction>({

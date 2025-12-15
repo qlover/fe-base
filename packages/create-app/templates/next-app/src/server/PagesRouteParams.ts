@@ -36,6 +36,9 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
     this.locale = localeParam || i18nConfig.fallbackLng;
   }
 
+  /**
+   * @override
+   */
   public getLocale(defaultLocale?: string): string {
     if (this.locale) {
       return this.locale;
@@ -53,6 +56,7 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
    * 获取 locale，如果 locale 不支持则抛出错误
    * 注意：在 pages 目录中，应该在 getStaticProps/getServerSideProps 中返回 { notFound: true } 来处理不支持的 locale
    *
+   * @override
    * @returns 支持的 locale 字符串
    * @throws 如果 locale 不支持
    */
@@ -73,6 +77,7 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
    * 使用公共方法加载消息，支持从 API 加载或动态导入 JSON 文件
    * 不依赖 next-intl/server，适用于 getStaticProps/getServerSideProps
    *
+   * @override
    * @param namespace - 可选的命名空间（单个字符串或字符串数组），会与默认命名空间 ['common', 'api'] 合并
    * @returns Promise<Record<string, string>> 返回翻译消息对象
    */
@@ -95,7 +100,9 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
   /**
    * 获取翻译后的 i18n 接口
    * 创建一个简单的翻译函数，基于加载的 messages
-   */
+
+   * @override
+      */
   public async getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
     namespace?: string
@@ -130,6 +137,9 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
     );
   }
 
+  /**
+   * @override
+   */
   public getTheme(): string {
     return themeConfig.defaultTheme;
   }

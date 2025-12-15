@@ -14,11 +14,11 @@ export interface InjectGlobalConfig {
 }
 
 export class InjectGlobal implements BootstrapExecutorPlugin {
-  readonly pluginName = 'InjectGlobal';
+  public readonly pluginName = 'InjectGlobal';
 
   constructor(protected config: InjectGlobalConfig) {}
 
-  onBefore(context: BootstrapContext): void {
+  public onBefore(context: BootstrapContext): void {
     const { sources, target } = this.config;
     // if target is provided, inject globals to target
     if (typeof target === 'string') {

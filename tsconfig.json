@@ -1,8 +1,31 @@
 {
-  "extends": "@qlover/fe-standard/config/tsconfig.base.json",
   "compilerOptions": {
+    "allowJs": true,
+    "target": "ESNEXT",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "outDir": "dist",
+    "baseUrl": "./",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "checkJs": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "strict": true,
     "types": ["vitest/globals"]
   },
-  "include": ["./packages"],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true
+  },
+  "include": ["./packages", "./make", "vitest.config.ts"],
   "exclude": ["**/node_modules/*", "**/dist", "**/build"]
 }

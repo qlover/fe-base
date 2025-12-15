@@ -22,11 +22,17 @@ export class RequestAdapterAxios
     this.axiosInstance = axios.create(config);
   }
 
-  getConfig(): AxiosRequestConfig {
+  /**
+   * @override
+   */
+  public getConfig(): AxiosRequestConfig {
     return this.config;
   }
 
-  async request<Request, Response>(
+  /**
+   * @override
+   */
+  public async request<Request, Response>(
     config: AxiosRequestConfig<Request>
   ): Promise<RequestAdapterResponse<Request, Response>> {
     return this.axiosInstance.request(config);

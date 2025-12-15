@@ -9,7 +9,7 @@ import type { TFunction } from 'i18next';
  * @returns The translated i18n interface
  */
 export class TranslateI18nInterface {
-  static translate<T extends PageI18nInterface | Record<string, string>>(
+  public static translate<T extends PageI18nInterface | Record<string, string>>(
     source: T,
     t: TFunction<string, string>
   ): T {

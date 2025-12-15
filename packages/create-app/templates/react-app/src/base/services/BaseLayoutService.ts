@@ -24,18 +24,18 @@ export class BaseLayoutService {
     this.use(new UserBootstrap(userService));
   }
 
-  use(plugin: ExecutorPlugin): this {
+  public use(plugin: ExecutorPlugin): this {
     this.executor.use(plugin);
     return this;
   }
 
-  handler(): Promise<{ success: boolean }> {
+  public handler(): Promise<{ success: boolean }> {
     return Promise.resolve({
       success: true
     });
   }
 
-  async starup(ioc: IOCContainerInterface): Promise<unknown> {
+  public async starup(ioc: IOCContainerInterface): Promise<unknown> {
     const context: BootstrapContextValue = {
       root: {},
       logger: this.logger,

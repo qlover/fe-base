@@ -34,7 +34,7 @@ export class Pather {
    * // => 'src/a/b' on POSIX, 'src\\a\\b' on Windows
    * ```
    */
-  toLocalPath(sourcePath: string): string {
+  public toLocalPath(sourcePath: string): string {
     // 1. Collapse any kind of repeated separator to the current platform separator.
     const collapsed = sourcePath.replace(/[\\/]+/g, sep);
     // 2. Use `path.normalize` to get rid of '.', '..', etc.
@@ -51,7 +51,7 @@ export class Pather {
    * @param targetPath - string - Candidate parent path.
    * @returns boolean Whether `sourcePath` is within `targetPath`.
    */
-  isSubPath(sourcePath: string, targetPath: string): boolean {
+  public isSubPath(sourcePath: string, targetPath: string): boolean {
     let child = this.toLocalPath(sourcePath);
     let parent = this.toLocalPath(targetPath);
 
@@ -98,7 +98,7 @@ export class Pather {
    * pather.startsWith('src2/utils', 'src')    // false
    * ```
    */
-  startsWith(sourcePath: string, targetPath: string): boolean {
+  public startsWith(sourcePath: string, targetPath: string): boolean {
     let src = this.toLocalPath(sourcePath);
     let tgt = this.toLocalPath(targetPath);
 
@@ -153,7 +153,7 @@ export class Pather {
    * pather.containsPath('src/utils/', 'utils/')    // true
    * ```
    */
-  containsPath(sourcePath: string, targetPath: string): boolean {
+  public containsPath(sourcePath: string, targetPath: string): boolean {
     let src = this.toLocalPath(sourcePath);
     let tgt = this.toLocalPath(targetPath);
 

@@ -125,7 +125,7 @@ describe('Base64Serializer', () => {
       // Mock TextEncoder to throw error in browser environment
       const originalTextEncoder = global.TextEncoder;
       global.TextEncoder = class {
-        encode(): Uint8Array {
+        public encode(): Uint8Array {
           throw new Error('Mock error');
         }
       } as typeof TextEncoder;

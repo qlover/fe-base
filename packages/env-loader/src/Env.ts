@@ -85,11 +85,11 @@ export class Env {
    */
   constructor(private options: EnvOptions) {}
 
-  get rootPath(): string {
+  public get rootPath(): string {
     return this.options.rootPath;
   }
 
-  get logger(): LoggerInterface | typeof console | undefined {
+  public get logger(): LoggerInterface | typeof console | undefined {
     return this.options.logger;
   }
 
@@ -102,7 +102,7 @@ export class Env {
    * @param {number} [options.maxDepth=5] maximum search depth
    * @returns {Env} environment variable loader instance
    */
-  static searchEnv({
+  public static searchEnv({
     cwd = process.cwd(),
     preloadList = ['.env.local', '.env'],
     logger,
@@ -183,7 +183,7 @@ export class Env {
    * });
    * ```
    */
-  load(options: LoadOptions = { preloadList: [] }): void {
+  public load(options: LoadOptions = { preloadList: [] }): void {
     const { preloadList, rootPath } = options;
 
     if (!preloadList.length) {
@@ -219,7 +219,7 @@ export class Env {
    * env.remove('API_KEY');
    * ```
    */
-  remove(variable: string): void {
+  public remove(variable: string): void {
     if (process.env[variable]) {
       delete process.env[variable];
     }
@@ -239,7 +239,7 @@ export class Env {
    * const apiKey = env.get('API_KEY');
    * ```
    */
-  get(variable: string): string | undefined {
+  public get(variable: string): string | undefined {
     return process.env[variable];
   }
 
@@ -258,7 +258,7 @@ export class Env {
    * env.set('DEBUG', 'true');
    * ```
    */
-  set(variable: string, value: string): void {
+  public set(variable: string, value: string): void {
     process.env[variable] = value;
   }
 
@@ -276,7 +276,7 @@ export class Env {
    * const tempKey = env.getDestroy('TEMP_API_KEY');
    * ```
    */
-  getDestroy(variable: string): string | undefined {
+  public getDestroy(variable: string): string | undefined {
     const value = process.env[variable];
     this.remove(variable);
     return value;

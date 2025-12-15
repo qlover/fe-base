@@ -6,11 +6,17 @@ import { NavigateFunction } from 'react-router-dom';
 export class NavigateBridge implements UIBridgeInterface<NavigateFunction> {
   protected navigate: NavigateFunction | null = null;
 
-  setUIBridge(ui: NavigateFunction): void {
+  /**
+   * @override
+   */
+  public setUIBridge(ui: NavigateFunction): void {
     this.navigate = ui;
   }
 
-  getUIBridge(): NavigateFunction | null {
+  /**
+   * @override
+   */
+  public getUIBridge(): NavigateFunction | null {
     return this.navigate;
   }
 }

@@ -27,7 +27,8 @@ import type {
  * - ApiCatchPluginConfig
  */
 export interface UserApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>,
+  extends
+    RequestAdapterConfig<Request>,
     ApiMockPluginOptions,
     ApiCatchPluginConfig {}
 
@@ -41,8 +42,7 @@ export interface UserApiConfig<Request = unknown>
  * - RequestAdapterResponse<Request, Response>
  */
 export interface UserApiResponse<Request = unknown, Response = unknown>
-  extends RequestAdapterResponse<Request, Response>,
-    ApiCatchPluginResponse {}
+  extends RequestAdapterResponse<Request, Response>, ApiCatchPluginResponse {}
 
 /**
  * UserApi common transaction
@@ -51,18 +51,20 @@ export interface UserApiResponse<Request = unknown, Response = unknown>
  *
  * add data property
  */
-export interface UserApiTransaction<Request = unknown, Response = unknown>
-  extends RequestTransactionInterface<
-    UserApiConfig<Request>,
-    UserApiResponse<Request, Response>
-  > {
+export interface UserApiTransaction<
+  Request = unknown,
+  Response = unknown
+> extends RequestTransactionInterface<
+  UserApiConfig<Request>,
+  UserApiResponse<Request, Response>
+> {
   data: UserApiConfig<Request>['data'];
 }
 
 export class UserApiBootstarp implements BootstrapExecutorPlugin {
-  readonly pluginName = 'UserApiBootstarp';
+  public readonly pluginName = 'UserApiBootstarp';
 
-  onBefore({ parameters: { ioc } }: BootstrapContext): void {
+  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<UserApi>(UserApi)
       .usePlugin(new FetchURLPlugin())

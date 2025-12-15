@@ -508,7 +508,12 @@ describe('SenderStrategyPlugin', () => {
         null;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onBefore(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onBefore(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           capturedContext = context.parameters;
           super.onBefore(context);
         }
@@ -601,7 +606,12 @@ describe('SenderStrategyPlugin', () => {
       const callLog: string[] = [];
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onBefore(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onBefore(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           callLog.push('onBefore');
           super.onBefore(context);
         }
@@ -624,7 +634,12 @@ describe('SenderStrategyPlugin', () => {
       const callLog: string[] = [];
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onSuccess(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           callLog.push('onSuccess');
           super.onSuccess(context);
         }
@@ -647,7 +662,10 @@ describe('SenderStrategyPlugin', () => {
       const callLog: string[] = [];
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onError(
+        /**
+         * @override
+         */
+        public onError(
           context: MessageSenderPluginContext<TestMessage>
         ): ExecutorError | void {
           callLog.push('onError');
@@ -672,7 +690,12 @@ describe('SenderStrategyPlugin', () => {
       let addedToStoreInOnSuccess: boolean | undefined;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onSuccess(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           addedToStoreInOnSuccess = context.parameters.addedToStore;
           super.onSuccess(context);
         }
@@ -1050,7 +1073,12 @@ describe('SenderStrategyPlugin', () => {
       let capturedFlag: boolean | undefined;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onSuccess(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
@@ -1068,7 +1096,12 @@ describe('SenderStrategyPlugin', () => {
       let capturedFlag: boolean | undefined;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onSuccess(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
@@ -1086,7 +1119,12 @@ describe('SenderStrategyPlugin', () => {
       let capturedFlag: boolean | undefined;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
-        onSuccess(context: MessageSenderPluginContext<TestMessage>): void {
+        /**
+         * @override
+         */
+        public onSuccess(
+          context: MessageSenderPluginContext<TestMessage>
+        ): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
@@ -1793,6 +1831,9 @@ describe('SenderStrategyPlugin', () => {
       let cleanupCalled = false;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
+        /**
+         * @override
+         */
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {
@@ -1813,6 +1854,9 @@ describe('SenderStrategyPlugin', () => {
       let cleanupCalled = false;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
+        /**
+         * @override
+         */
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {
@@ -1835,6 +1879,9 @@ describe('SenderStrategyPlugin', () => {
       let cleanupCalled = false;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
+        /**
+         * @override
+         */
         protected cleanup(
           context: MessageSenderPluginContext<TestMessage>
         ): void {

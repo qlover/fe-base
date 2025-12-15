@@ -18,23 +18,23 @@ export class JSONStoragePageBridge extends JSONStoragePageBridgeInterface {
     }));
   }
 
-  override changeRandomTestKey1 = (): void => {
+  public override changeRandomTestKey1 = (): void => {
     const value = random(100, 9000);
     this.storage.setItem('testKey1', value);
     this.emit({ ...this.state, testKey1: value });
   };
 
-  override onChangeRandomTestKey2 = (): void => {
+  public override onChangeRandomTestKey2 = (): void => {
     const value = random(100, 9000);
     this.storage.setItem('testKey2', value, Date.now() + this.state.expireTime);
     this.emit({ ...this.state, testKey2: value });
   };
 
-  override changeExpireTime = (expireTime: number): void => {
+  public override changeExpireTime = (expireTime: number): void => {
     this.emit({ ...this.state, expireTime });
   };
 
-  override changeRequestTimeout = (requestTimeout: number): void => {
+  public override changeRequestTimeout = (requestTimeout: number): void => {
     this.storage.setItem('requestTimeout', requestTimeout);
     this.emit({ ...this.state, requestTimeout });
   };

@@ -31,7 +31,10 @@ export class UserService implements UserServiceInterface {
     protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>
   ) {}
 
-  async register(params: {
+  /**
+   * @override
+   */
+  public async register(params: {
     email: string;
     password: string;
   }): Promise<UserSchema> {
@@ -54,7 +57,10 @@ export class UserService implements UserServiceInterface {
     return omit(target, 'password') as UserSchema;
   }
 
-  async login(params: {
+  /**
+   * @override
+   */
+  public async login(params: {
     email: string;
     password: string;
   }): Promise<UserSchema> {
@@ -81,7 +87,10 @@ export class UserService implements UserServiceInterface {
     });
   }
 
-  async logout(): Promise<void> {
+  /**
+   * @override
+   */
+  public async logout(): Promise<void> {
     const auth = await this.userAuth.getAuth();
 
     if (!auth) {

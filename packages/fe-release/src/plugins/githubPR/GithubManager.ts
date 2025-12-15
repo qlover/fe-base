@@ -158,7 +158,7 @@ export default class GithubManager {
    * // { owner: 'org-name', repo: 'repo-name' }
    * ```
    */
-  getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
+  public getGitHubUserInfo(): Omit<PullRequestManagerOptions, 'token'> {
     const { authorName, repoName } =
       this.context.getOptions<ReleaseContextConfig>();
 
@@ -194,7 +194,7 @@ export default class GithubManager {
    * // Uses CUSTOM_TOKEN env var
    * ```
    */
-  getToken(): string {
+  public getToken(): string {
     const { tokenRef = 'GITHUB_TOKEN' } =
       this.context.getOptions<GithubPRProps>('githubPR');
 
@@ -227,7 +227,7 @@ export default class GithubManager {
    * });
    * ```
    */
-  get octokit(): Octokit {
+  public get octokit(): Octokit {
     if (this._octokit) {
       return this._octokit;
     }
@@ -260,7 +260,7 @@ export default class GithubManager {
    * manager.logger.debug('API response:', response);
    * ```
    */
-  get logger(): LoggerInterface {
+  public get logger(): LoggerInterface {
     return this.context.logger;
   }
 
@@ -278,7 +278,7 @@ export default class GithubManager {
    * await manager.shell.exec(['git', 'push', 'origin', 'main']);
    * ```
    */
-  get shell(): ShellInterface {
+  public get shell(): ShellInterface {
     return this.context.shell;
   }
 
@@ -304,7 +304,7 @@ export default class GithubManager {
    * manager.autoMergeType; // 'rebase'
    * ```
    */
-  get autoMergeType(): ReleaseContextConfig['autoMergeType'] {
+  public get autoMergeType(): ReleaseContextConfig['autoMergeType'] {
     return (
       this.context.getOptions<ReleaseContextConfig>().autoMergeType ||
       DEFAULT_AUTO_MERGE_TYPE
@@ -335,7 +335,7 @@ export default class GithubManager {
    * manager.dryRunPRNumber; // '123456'
    * ```
    */
-  get dryRunPRNumber(): string {
+  public get dryRunPRNumber(): string {
     return this.context.getOptions('githubPR.dryRunPRNumber', '999999');
   }
 
@@ -361,7 +361,7 @@ export default class GithubManager {
    * manager.autoMergeReleasePR; // true
    * ```
    */
-  get autoMergeReleasePR(): boolean {
+  public get autoMergeReleasePR(): boolean {
     return (
       this.context.getOptions('autoMergeReleasePR') ||
       DEFAULT_AUTO_MERGE_RELEASE_PR
@@ -398,7 +398,7 @@ export default class GithubManager {
    * // Logs merge action without performing it
    * ```
    */
-  async mergePR(prNumber: string, releaseBranch: string): Promise<void> {
+  public async mergePR(prNumber: string, releaseBranch: string): Promise<void> {
     if (!prNumber) {
       this.logger.error('Failed to create Pull Request.', prNumber);
       return;
@@ -440,7 +440,9 @@ export default class GithubManager {
    * });
    * ```
    */
-  async getPullRequestCommits(prNumber: number): Promise<PullRequestCommits> {
+  public async getPullRequestCommits(
+    prNumber: number
+  ): Promise<PullRequestCommits> {
     const pr = await this.octokit.rest.pulls.listCommits({
       ...this.getGitHubUserInfo(),
       pull_number: prNumber
@@ -466,7 +468,7 @@ export default class GithubManager {
    * console.log(info.files.map(f => f.filename));
    * ```
    */
-  async getCommitInfo(commitSha: string): Promise<CommitInfo> {
+  public async getCommitInfo(commitSha: string): Promise<CommitInfo> {
     const pr = await this.octokit.rest.repos.getCommit({
       ...this.getGitHubUserInfo(),
       ref: commitSha
@@ -493,7 +495,7 @@ export default class GithubManager {
    * console.log(pr.mergeable_state);
    * ```
    */
-  async getPullRequest(
+  public async getPullRequest(
     prNumber: number
   ): Promise<RestEndpointMethodTypes['pulls']['get']['response']['data']> {
     const pr = await this.octokit.rest.pulls.get({
@@ -531,7 +533,10 @@ export default class GithubManager {
    * // Verifies PR #123 and deletes release-1.0.0 if merged
    * ```
    */
-  async checkedPR(prNumber: string, releaseBranch: string): Promise<void> {
+  public async checkedPR(
+    prNumber: string,
+    releaseBranch: string
+  ): Promise<void> {
     try {
       // Get PR information
       await this.getPullRequest(Number(prNumber));
@@ -561,7 +566,7 @@ export default class GithubManager {
    * @returns The created label.
    * @throws If the label is not valid or if the creation fails.
    */
-  async createReleasePRLabel(): Promise<ReleaseContextConfig['label']> {
+  public async createReleasePRLabel(): Promise<ReleaseContextConfig['label']> {
     const label = this.context.getOptions<ReleaseContextConfig>().label;
 
     if (!label || !label.name || !label.description || !label.color) {
@@ -601,7 +606,7 @@ export default class GithubManager {
    * @returns The created pull request number.
    * @throws If the creation fails or if the pull request already exists.
    */
-  async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
+  public async createReleasePR(options: CreatePROptionsArgs): Promise<string> {
     const dryRunCreatePR = this.context.getOptions('githubPR.dryRunCreatePR');
 
     if (dryRunCreatePR || this.context.dryRun) {
@@ -764,7 +769,7 @@ export default class GithubManager {
    * // Logs release info without creating
    * ```
    */
-  async createRelease(workspace: WorkspaceValue): Promise<void> {
+  public async createRelease(workspace: WorkspaceValue): Promise<void> {
     const meragedOptions = this.getOctokitReleaseOptions({
       tag_name: workspace.tagName,
       body: workspace.changelog

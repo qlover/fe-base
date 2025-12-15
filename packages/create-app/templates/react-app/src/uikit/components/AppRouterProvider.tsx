@@ -31,5 +31,5 @@ export function AppRouterProvider(props: { pages: ComponentValue }) {
     return router;
   }, [routes]);
 
-  return <RouterProvider data-testid="AppRouterProvider" router={routerBase} />;
+  return <RouterProvider router={routerBase} />;
 }

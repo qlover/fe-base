@@ -7,9 +7,9 @@ import type {
 } from '../port/AdminLayoutInterface';
 
 class AdminPageManagerState implements AdminPageState {
-  collapsedSidebar = false;
+  public collapsedSidebar = false;
 
-  navItems: NavItemInterface[] = defaultNavItems;
+  public navItems: NavItemInterface[] = defaultNavItems;
 }
 
 @injectable()
@@ -18,7 +18,7 @@ export class AdminPageManager extends AdminLayoutInterface {
     super(() => new AdminPageManagerState());
   }
 
-  override toggleSidebar(): void {
+  public override toggleSidebar(): void {
     this.emit(
       this.cloneState({
         collapsedSidebar: !this.state.collapsedSidebar

@@ -231,6 +231,7 @@ export class MessageSender<
   /**
    * Get the message store instance
    *
+   * @override
    * @returns Message store managing message state
    */
   public getMessageStore(): MessagesStore<MessageType> {
@@ -240,6 +241,7 @@ export class MessageSender<
   /**
    * Get the configured gateway instance
    *
+   * @override
    * @returns Gateway instance or `undefined` if not configured
    */
   public getGateway(): MessageGetwayInterface | undefined {
@@ -252,6 +254,7 @@ export class MessageSender<
    * Plugins are executed in registration order during message sending.
    * Returns `this` for method chaining.
    *
+   * @override
    * @param plugin - Plugin to register
    * @returns This sender instance for chaining
    *
@@ -510,6 +513,7 @@ export class MessageSender<
    * - If no signal provided: AbortPlugin creates one automatically (stoppable via stop method)
    * - Resource cleanup managed automatically by AbortPlugin
    *
+   * @override
    * @param message - Partial message object to send
    * @param gatewayOptions - Optional gateway configuration for this specific send
    * @returns Promise resolving to sent message with response data

@@ -50,26 +50,29 @@ interface TestUser {
  * Note: All methods are mocked using vi.fn() to enable tracking calls and return values
  */
 class MockUserGateway implements UserServiceGateway<TestUser, TestCredential> {
-  login = vi.fn();
-  logout = vi.fn();
-  register = vi.fn();
-  getUserInfo = vi.fn();
-  refreshUserInfo = vi.fn();
+  public login = vi.fn();
+  public logout = vi.fn();
+  public register = vi.fn();
+  public getUserInfo = vi.fn();
+  public refreshUserInfo = vi.fn();
 }
 
 /**
  * Mock logger implementation for testing
  */
 class MockLogger implements LoggerInterface {
-  log = vi.fn();
-  fatal = vi.fn();
-  trace = vi.fn();
-  debug = vi.fn();
-  info = vi.fn();
-  warn = vi.fn();
-  error = vi.fn();
-  addAppender = vi.fn();
-  context<Value>(value?: Value): LogContext<Value> {
+  public log = vi.fn();
+  public fatal = vi.fn();
+  public trace = vi.fn();
+  public debug = vi.fn();
+  public info = vi.fn();
+  public warn = vi.fn();
+  public error = vi.fn();
+  public addAppender = vi.fn();
+  /**
+   * @override
+   */
+  public context<Value>(value?: Value): LogContext<Value> {
     return new LogContext<Value>(value);
   }
 }
@@ -80,29 +83,44 @@ class MockLogger implements LoggerInterface {
 class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   public data = new Map<string, unknown>();
 
-  get length(): number {
+  /**
+   * @override
+   */
+  public get length(): number {
     return this.data.size;
   }
 
-  setItem<T>(key: Key, value: T): T {
+  /**
+   * @override
+   */
+  public setItem<T>(key: Key, value: T): T {
     this.data.set(String(key), value);
     return value;
   }
 
-  getItem<T>(key: Key): T | null {
+  /**
+   * @override
+   */
+  public getItem<T>(key: Key): T | null {
     const value = this.data.get(String(key));
     return (value ?? null) as T | null;
   }
 
-  removeItem(key: Key): void {
+  /**
+   * @override
+   */
+  public removeItem(key: Key): void {
     this.data.delete(String(key));
   }
 
-  clear(): void {
+  /**
+   * @override
+   */
+  public clear(): void {
     this.data.clear();
   }
 
-  reset(): void {
+  public reset(): void {
     this.data.clear();
   }
 }
@@ -404,7 +422,7 @@ describe('UserService', () => {
             TestUser,
             TestCredential
           > {
-            override isAuthenticated(): boolean {
+            public override isAuthenticated(): boolean {
               const credential = this.getCredential();
               if (!credential) return false;
 
@@ -445,7 +463,7 @@ describe('UserService', () => {
             TestUser,
             TestCredential
           > {
-            override isAuthenticated(): boolean {
+            public override isAuthenticated(): boolean {
               const state = this.getStore().getState();
               // Require both credential and user info
               return (

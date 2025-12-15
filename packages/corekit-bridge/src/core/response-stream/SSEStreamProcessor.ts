@@ -60,6 +60,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * - Whitespace is trimmed from both line and extracted data
    * - Partial events at chunk boundaries are handled by processFinal
    *
+   * @override
    * @param chunk - The raw SSE chunk data
    * @returns Array of processed event data strings
    *
@@ -71,7 +72,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * // Result: ["event1", "event2", "event3"]
    * ```
    */
-  processChunk(chunk: string): string[] {
+  public processChunk(chunk: string): string[] {
     return chunk
       .split('\n')
       .map((line) => line.trim())
@@ -96,6 +97,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * - Returns undefined if no valid events found
    * - Follows same prefix and trimming rules as processChunk
    *
+   * @override
    * @param data - Remaining SSE data from the last chunk
    * @returns Last valid event data if any, undefined otherwise
    *
@@ -107,7 +109,7 @@ export class SSEStreamProcessor implements StreamProcessorInterface {
    * // Result: "incomplete"
    * ```
    */
-  processFinal(data: string): string | undefined {
+  public processFinal(data: string): string | undefined {
     const lines = data
       .split('\n')
       .map((line) => line.trim())

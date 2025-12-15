@@ -7,14 +7,14 @@ import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 @injectable()
 export class UserBootstrap implements BootstrapExecutorPlugin {
-  readonly pluginName = 'UserBootstrap';
+  public readonly pluginName = 'UserBootstrap';
 
   constructor(
     @inject(I.UserServiceInterface)
     protected userService: UserServiceInterface
   ) {}
 
-  async onBefore(): Promise<void> {
+  public async onBefore(): Promise<void> {
     const userService = this.userService;
 
     if (userService.isAuthenticated()) {

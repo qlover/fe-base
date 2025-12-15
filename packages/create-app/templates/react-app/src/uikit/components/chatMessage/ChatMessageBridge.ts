@@ -14,9 +14,9 @@ import type {
 } from '@qlover/corekit-bridge';
 import type { TextAreaRef } from 'antd/es/input/TextArea';
 
-export class ChatMessageBridge<T = string>
-  implements ChatMessageBridgeInterface<T>
-{
+export class ChatMessageBridge<
+  T = string
+> implements ChatMessageBridgeInterface<T> {
   protected ref: TextAreaRef | null = null;
   protected readonly messageSender: MessageSender<ChatMessage<T>>;
 
@@ -27,7 +27,12 @@ export class ChatMessageBridge<T = string>
     this.messageSender = new MessageSender(messages, config);
   }
 
-  use(plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]): this {
+  /**
+   * @override
+   */
+  public use(
+    plugin: ChatMessageBridgePlugin<T> | ChatMessageBridgePlugin<T>[]
+  ): this {
     if (Array.isArray(plugin)) {
       plugin.forEach((p) => this.messageSender.use(p));
     } else {
@@ -37,7 +42,10 @@ export class ChatMessageBridge<T = string>
     return this;
   }
 
-  getMessageStore(): ChatMessageStore<T> {
+  /**
+   * @override
+   */
+  public getMessageStore(): ChatMessageStore<T> {
     return this.messages;
   }
 
@@ -45,8 +53,10 @@ export class ChatMessageBridge<T = string>
    * Disable rules
    * 1. If streaming, don't allow sending
    * 2. If sending, don't allow sending
-   */
-  getDisabledSend(params?: DisabledSendParams<T>): boolean {
+
+   * @override
+      */
+  public getDisabledSend(params?: DisabledSendParams<T>): boolean {
     const disabledSend =
       params?.disabledSend || this.messages.state.disabledSend;
 
@@ -62,7 +72,10 @@ export class ChatMessageBridge<T = string>
     return false;
   }
 
-  onChangeContent(content: T): void {
+  /**
+   * @override
+   */
+  public onChangeContent(content: T): void {
     const firstDraft = this.getFirstDraftMessage();
 
     // If draft message exists, update its content
@@ -79,21 +92,24 @@ export class ChatMessageBridge<T = string>
     }
   }
 
-  getFirstDraftMessage(): ChatMessage<T> | null {
+  /**
+   * @override
+   */
+  public getFirstDraftMessage(): ChatMessage<T> | null {
     return this.messages.getFirstDraftMessage();
   }
 
-  setRef(ref: unknown): void {
+  public setRef(ref: unknown): void {
     this.ref = ref as TextAreaRef;
   }
 
-  focus(): void {
+  public focus(): void {
     requestAnimationFrame(() => {
       this.ref?.focus();
     });
   }
 
-  sendMessage(
+  public sendMessage(
     messages: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
@@ -112,10 +128,11 @@ export class ChatMessageBridge<T = string>
    * - If loading, sending is not allowed
    * - If no message to send, sending is not allowed
    *
+   * @override
    * @param message - Message object
    * @param gatewayOptions - Gateway options
    */
-  send(
+  public send(
     message?: ChatMessage<T>,
     gatewayOptions?: GatewayOptions<ChatMessage<T>>
   ): Promise<ChatMessage<T>> {
@@ -140,7 +157,10 @@ export class ChatMessageBridge<T = string>
     return this.sendMessage(targetMessage, gatewayOptions);
   }
 
-  getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null {
+  /**
+   * @override
+   */
+  public getSendingMessage(messages?: ChatMessage<T>[]): ChatMessage<T> | null {
     messages = messages || this.messages.getMessages();
 
     return (
@@ -152,7 +172,10 @@ export class ChatMessageBridge<T = string>
     );
   }
 
-  stop(messageId?: string): boolean {
+  /**
+   * @override
+   */
+  public stop(messageId?: string): boolean {
     if (!messageId) {
       const sendingMessage = this.getSendingMessage();
       if (sendingMessage) {
@@ -170,7 +193,7 @@ export class ChatMessageBridge<T = string>
   /**
    * Stop all sending messages
    */
-  stopAll(): void {
+  public stopAll(): void {
     this.messageSender.stopAll();
   }
 }

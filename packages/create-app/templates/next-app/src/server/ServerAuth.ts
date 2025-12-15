@@ -18,13 +18,19 @@ export class ServerAuth implements ServerAuthInterface {
     this.userTokenKey = server.userTokenKey;
   }
 
-  async setAuth(credential_token: string): Promise<void> {
+  /**
+   * @override
+   */
+  public async setAuth(credential_token: string): Promise<void> {
     const cookieStore = await cookies();
 
     cookieStore.set(this.userTokenKey, credential_token);
   }
 
-  async hasAuth(): Promise<boolean> {
+  /**
+   * @override
+   */
+  public async hasAuth(): Promise<boolean> {
     const token = await this.getAuth();
 
     if (!token) {
@@ -40,17 +46,26 @@ export class ServerAuth implements ServerAuthInterface {
     }
   }
 
-  async getAuth(): Promise<string> {
+  /**
+   * @override
+   */
+  public async getAuth(): Promise<string> {
     const cookieStore = await cookies();
     return cookieStore.get(this.userTokenKey)?.value || '';
   }
 
-  async clear(): Promise<void> {
+  /**
+   * @override
+   */
+  public async clear(): Promise<void> {
     const cookieStore = await cookies();
     cookieStore.delete(this.userTokenKey);
   }
 
-  async throwIfNotAuth(): Promise<void> {
+  /**
+   * @override
+   */
+  public async throwIfNotAuth(): Promise<void> {
     const hasAuth = await this.hasAuth();
 
     if (!hasAuth) {

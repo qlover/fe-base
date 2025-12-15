@@ -14,7 +14,7 @@ export class ResourceService<
   Store extends ResourceStore<ResourceStateInterface> =
     ResourceStore<ResourceStateInterface>
 > implements ResourceServiceInterface<T> {
-  readonly unionKey: string = 'id';
+  public readonly unionKey: string = 'id';
 
   constructor(
     readonly serviceName: string,
@@ -22,14 +22,17 @@ export class ResourceService<
     readonly resourceApi: ResourceInterface<T>
   ) {}
 
-  getStore(): Store {
+  /**
+   * @override
+   */
+  public getStore(): Store {
     return this.store;
   }
 
   /**
    * @override
    */
-  async created(): Promise<unknown> {
+  public async created(): Promise<unknown> {
     this.store.changeInitState(new RequestState(true));
 
     try {
@@ -47,16 +50,19 @@ export class ResourceService<
   /**
    * @override
    */
-  destroyed(): void {
+  public destroyed(): void {
     this.store.reset();
   }
 
   /**
    * @override
    */
-  updated(): void {}
+  public updated(): void {}
 
-  async search(
+  /**
+   * @override
+   */
+  public async search(
     params: Partial<ResourceQuery>
   ): Promise<PaginationInterface<T>> {
     this.store.changeListState(
@@ -84,11 +90,17 @@ export class ResourceService<
     return this.store.state.listState.result! as PaginationInterface<T>;
   }
 
-  refresh(): Promise<unknown> {
+  /**
+   * @override
+   */
+  public refresh(): Promise<unknown> {
     return this.search(this.store.state.searchParams);
   }
 
-  async update(data: Partial<T>): Promise<unknown> {
+  /**
+   * @override
+   */
+  public async update(data: Partial<T>): Promise<unknown> {
     const result = await this.resourceApi.update(data);
 
     // 更新本地列表数据
@@ -109,13 +121,22 @@ export class ResourceService<
     return result;
   }
 
-  create(data: T): Promise<unknown> {
+  /**
+   * @override
+   */
+  public create(data: T): Promise<unknown> {
     return this.resourceApi.create(data);
   }
-  remove(data: T): Promise<unknown> {
+  /**
+   * @override
+   */
+  public remove(data: T): Promise<unknown> {
     return this.resourceApi.remove(data);
   }
-  export(data: T): Promise<unknown> {
+  /**
+   * @override
+   */
+  public export(data: T): Promise<unknown> {
     return this.resourceApi.export(data);
   }
 }

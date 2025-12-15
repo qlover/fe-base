@@ -42,6 +42,7 @@ src/pages/base/
 ### 1. ChatMessageBridge (Bridge Layer)
 
 Bridge connecting UI and data layer, handles:
+
 - Message sending logic
 - Draft management
 - State control
@@ -52,20 +53,23 @@ Bridge connecting UI and data layer, handles:
 Simulates backend API, supports three modes:
 
 #### Streaming Mode (stream: true)
+
 ```typescript
 {
-  stream: true  // Character-by-character output, stoppable
+  stream: true; // Character-by-character output, stoppable
 }
 ```
 
 #### Interruptible Normal Mode
+
 ```typescript
 {
-  stream: false  // One-time return, stoppable
+  stream: false; // One-time return, stoppable
 }
 ```
 
 #### Fast Normal Mode
+
 ```typescript
 // No options passed, one-time return, non-stoppable
 ```
@@ -73,6 +77,7 @@ Simulates backend API, supports three modes:
 ### 3. ChatMessageStore (State Management)
 
 Manages all message states:
+
 - `messages` - History message list
 - `draftMessages` - Draft message list
 - `streaming` - Whether streaming output is in progress
@@ -104,6 +109,7 @@ export default function ChatMessagePage() {
 ### Message Styles
 
 **User Messages**:
+
 - Blue background
 - Right-aligned
 - Max width 80%
@@ -111,6 +117,7 @@ export default function ChatMessagePage() {
 - Has retry button
 
 **AI Messages**:
+
 - Light background + border
 - Left-aligned
 - Max width 85%
@@ -132,25 +139,25 @@ export default function ChatMessagePage() {
 interface ChatMessageBridgeInterface<T> {
   // Send message
   send(message?: ChatMessage<T>): Promise<ChatMessage<T>>;
-  
+
   // Stop sending
   stop(messageId?: string): boolean;
-  
+
   // Stop all
   stopAll(): void;
-  
+
   // Update content
   onChangeContent(content: T): void;
-  
+
   // Get message store
   getMessageStore(): ChatMessageStore<T>;
-  
+
   // Get first draft message
   getFirstDraftMessage(): ChatMessage<T> | null;
-  
+
   // Get sending message
   getSendingMessage(): ChatMessage<T> | null;
-  
+
   // Is send disabled
   getDisabledSend(): boolean;
 }
@@ -160,21 +167,18 @@ interface ChatMessageBridgeInterface<T> {
 
 ```typescript
 class MessageApi {
-  async sendMessage<M>(
-    message: M,
-    options?: GatewayOptions<M>
-  ): Promise<M>;
+  async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M>;
 }
 
 interface GatewayOptions<M> {
-  stream?: boolean;           // Whether streaming
-  signal?: AbortSignal;       // Stop signal
-  onConnected?: () => void;   // Connection success
+  stream?: boolean; // Whether streaming
+  signal?: AbortSignal; // Stop signal
+  onConnected?: () => void; // Connection success
   onChunk?: (msg: M) => void; // Streaming chunk callback
   onProgress?: (p: number) => void; // Progress callback
-  onComplete?: (msg: M) => void;    // Completion callback
-  onAborted?: (msg: M) => void;     // Stop callback
-  onError?: (err: any) => void;     // Error callback
+  onComplete?: (msg: M) => void; // Completion callback
+  onAborted?: (msg: M) => void; // Stop callback
+  onError?: (err: any) => void; // Error callback
 }
 ```
 
@@ -189,8 +193,8 @@ const [bridge] = useState(() => {
     gateway: messageApi,
     logger: logger,
     senderName: 'ChatSender',
-    gatewayOptions: { 
-      stream: true  // Change to false for normal mode
+    gatewayOptions: {
+      stream: true // Change to false for normal mode
     }
   }).use(new ChatSenderStrategy(SendFailureStrategy.KEEP_FAILED, logger));
 });
@@ -199,8 +203,8 @@ const [bridge] = useState(() => {
 ### 2. Custom Message Component
 
 ```typescript
-<MessagesList 
-  bridge={bridge} 
+<MessagesList
+  bridge={bridge}
   getMessageComponent={(props) => CustomMessageItem}
 />
 ```
@@ -217,13 +221,13 @@ async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M> {
     body: JSON.stringify(message),
     signal: options?.signal
   });
-  
+
   // Handle streaming response
   if (options?.stream) {
     const reader = response.body?.getReader();
     // ... process streaming data
   }
-  
+
   return response.json();
 }
 ```
@@ -233,6 +237,7 @@ async sendMessage<M>(message: M, options?: GatewayOptions<M>): Promise<M> {
 ### Test Features
 
 **Normal Messages**:
+
 ```
 Hello
 你好
@@ -240,6 +245,7 @@ Test message
 ```
 
 **Trigger Errors**:
+
 ```
 error
 Failed
@@ -247,6 +253,7 @@ test error
 ```
 
 **See Streaming Effect**:
+
 - Send any message
 - Watch character-by-character output
 - Click stop button to test interruption
@@ -277,13 +284,13 @@ MessageSender → MessageApi
     ↓
 [Streaming Mode]
   onConnected → onChunk(word-by-word) → onComplete
-  
+
 [Normal Mode]
   onConnected → onComplete
-  
+
 [Error]
   onError
-  
+
 [Stop]
   onAborted
     ↓
@@ -311,4 +318,3 @@ UI Auto-updates
 ## 🎉 Summary
 
 ChatMessage is a fully-featured, elegantly designed chat component system, ready to use out of the box, supporting streaming output, error handling, state management, and other core features. Can be used directly in production or extended and customized as needed.
-

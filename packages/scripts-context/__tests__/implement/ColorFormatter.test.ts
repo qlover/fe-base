@@ -93,11 +93,17 @@ class ColorHandler implements HandlerInterface {
     this.formatter = formatter;
   }
 
-  setFormatter(formatter: FormatterInterface): void {
+  /**
+   * @override
+   */
+  public setFormatter(formatter: FormatterInterface): void {
     this.formatter = formatter;
   }
 
-  append(event: LogEvent): void {
+  /**
+   * @override
+   */
+  public append(event: LogEvent): void {
     const formattedArgs = this.formatter.format(event);
     if (Array.isArray(formattedArgs)) {
       console.log(...formattedArgs);

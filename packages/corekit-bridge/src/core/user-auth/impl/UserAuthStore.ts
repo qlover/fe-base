@@ -80,6 +80,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Replace current user storage and sync existing data with new storage
    * Main purpose: Enable flexible storage backend switching while maintaining data consistency
    *
+   * @override
    * @param userStorage - Storage interface for user information persistence
    *
    * @example
@@ -91,7 +92,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * const encryptedStorage = new EncryptedStorage('secure_user');
    * authStore.setUserStorage(encryptedStorage);
    */
-  setUserStorage(
+  public setUserStorage(
     userStorage: KeyStorageInterface<string, PickUser<State>>
   ): void {
     if (this.getUserStorage() !== userStorage) {
@@ -109,6 +110,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Return the currently configured user storage interface
    * Main purpose: Enable direct storage operations and configuration verification
    *
+   * @override
    * @returns The user storage interface or null if not configured
    *
    * @example
@@ -118,7 +120,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   const userData = storage.get();
    * }
    */
-  getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
+  public getUserStorage(): KeyStorageInterface<string, PickUser<State>> | null {
     return this.options.userStorage || null;
   }
 
@@ -130,6 +132,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Replace current credential storage and sync existing credentials with new storage
    * Main purpose: Enable flexible credential storage backend switching while maintaining security
    *
+   * @override
    * @param credentialStorage - Storage interface for credential persistence
    *
    * @example
@@ -141,7 +144,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * const secureStorage = new SecureStorage('credentials');
    * authStore.setCredentialStorage(secureStorage);
    */
-  setCredentialStorage(
+  public setCredentialStorage(
     credentialStorage: KeyStorageInterface<string, string>
   ): void {
     if (this.getCredentialStorage() !== credentialStorage) {
@@ -159,6 +162,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Return the currently configured credential storage interface
    * Main purpose: Enable direct credential operations and security configuration verification
    *
+   * @override
    * @returns The credential storage interface or null if not configured
    *
    * @example
@@ -171,7 +175,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   }
    * }
    */
-  getCredentialStorage(): KeyStorageInterface<string, string> | null {
+  public getCredentialStorage(): KeyStorageInterface<string, string> | null {
     return this.options.credentialStorage || null;
   }
 
@@ -183,6 +187,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Update in-memory user data and automatically persist to configured storage
    * Main purpose: Ensure user information consistency between memory and storage with state change notifications
    *
+   * @override
    * @param userInfo - User information object to store, or null to clear user data
    *
    * @example
@@ -204,7 +209,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   lastLogin: new Date().toISOString()
    * });
    */
-  setUserInfo(userInfo: PickUser<State> | null): void {
+  public setUserInfo(userInfo: PickUser<State> | null): void {
     this.emit(this.cloneState({ userInfo } as Partial<State>));
 
     if (userInfo) {
@@ -220,6 +225,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Return the currently stored user information object
    * Main purpose: Provide consistent access to user data for UI rendering and business logic
    *
+   * @override
    * @returns The stored user information or null if not available
    *
    * @example
@@ -231,7 +237,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   console.log('No user logged in');
    * }
    */
-  getUserInfo(): PickUser<State> | null {
+  public getUserInfo(): PickUser<State> | null {
     return (this.state.userInfo ?? null) as PickUser<State>;
   }
 
@@ -243,6 +249,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Update in-memory credential and automatically persist to secure storage
    * Main purpose: Maintain authentication token security while ensuring availability across sessions
    *
+   * @override
    * @param credential - Authentication credential string (typically a JWT token)
    *
    * @example
@@ -255,7 +262,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * // Clear credential (logout)
    * authStore.setCredential('');
    */
-  setCredential(credential: string): void {
+  public setCredential(credential: string): void {
     this.emit(this.cloneState({ credential } as Partial<State>));
     this.getCredentialStorage()?.set(credential);
   }
@@ -268,6 +275,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Return the currently stored authentication credential
    * Main purpose: Provide secure access to authentication tokens for API calls and session management
    *
+   * @override
    * @returns The stored credential or null if not available
    *
    * @example
@@ -280,7 +288,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   router.push('/login');
    * }
    */
-  getCredential(): string | null {
+  public getCredential(): string | null {
     return this.state.credential;
   }
 
@@ -292,6 +300,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Return the current login status enumeration value
    * Main purpose: Enable authentication state checking for UI rendering and access control
    *
+   * @override
    * @returns The current authentication status or null if not set
    *
    * @example
@@ -310,7 +319,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *     console.log('Not authenticated');
    * }
    */
-  getLoginStatus(): LOGIN_STATUS | null {
+  public getLoginStatus(): LOGIN_STATUS | null {
     return this.state.loginStatus;
   }
 
@@ -322,6 +331,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Clear all authentication data from memory and remove from persistent storage
    * Main purpose: Ensure complete logout with no residual authentication data for security
    *
+   * @override
    * @example
    * // Complete logout with cleanup
    * authStore.reset();
@@ -332,7 +342,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * console.log('Credential:', authStore.getCredential()); // null
    * console.log('Login status:', authStore.getLoginStatus()); // null
    */
-  override reset(): void {
+  public reset(): void {
     this.getUserStorage()?.remove();
     this.getCredentialStorage()?.remove();
     super.reset();
@@ -346,6 +356,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Update login status to LOADING and clear any previous error state
    * Main purpose: Provide consistent authentication state management for UI loading indicators
    *
+   * @override
    * @example
    * // Start login process
    * authStore.startAuth();
@@ -356,7 +367,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   showLoadingSpinner();
    * }
    */
-  startAuth(): void {
+  public startAuth(): void {
     this.emit(
       this.cloneState({
         loginStatus: LOGIN_STATUS.LOADING,
@@ -373,6 +384,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Set success status, clear errors, and optionally update user info and credentials
    * Main purpose: Provide consistent successful authentication state management with optional data updates
    *
+   * @override
    * @param userInfo - Optional user information to store upon successful authentication
    * @param credential - Optional credential to store (string token or login response object)
    *
@@ -393,7 +405,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   expiresIn: 3600
    * });
    */
-  authSuccess(
+  public authSuccess(
     userInfo?: PickUser<State>,
     credential?: string | LoginResponseData
   ): void {
@@ -425,6 +437,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    * Main function: Set failed status and store error details for user feedback and debugging
    * Main purpose: Provide consistent failed authentication state management with error tracking
    *
+   * @override
    * @param error - Optional error information to store for debugging or user feedback
    *
    * @example
@@ -445,7 +458,7 @@ export class UserAuthStore<State extends UserAuthState<unknown>>
    *   console.log('Authentication error:', error);
    * }
    */
-  authFailed(error?: unknown): void {
+  public authFailed(error?: unknown): void {
     this.emit(
       this.cloneState({
         loginStatus: LOGIN_STATUS.FAILED,

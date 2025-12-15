@@ -32,6 +32,9 @@ export class TokenStorage<Key = string, ValueType = string> extends KeyStorage<
     this.quickerTime = this.options.quickerTime || new QuickerTime();
   }
 
+  /**
+   * @override
+   */
   protected mergeOptions(
     options?: TokenStorageOptions<Key>
   ): TokenStorageOptions<Key> {

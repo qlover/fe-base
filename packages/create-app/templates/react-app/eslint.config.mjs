@@ -4,10 +4,9 @@ import { FlatCompat } from '@eslint/eslintrc';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
 import unusedImports from 'eslint-plugin-unused-imports';
-import qloverEslint from '@qlover/eslint-plugin';
+import qloverEslint, { restrictSpecificGlobals } from '@qlover/eslint-plugin';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
-import { restrictSpecificGlobals } from './makes/eslint-utils.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -80,7 +79,7 @@ const eslintConfig = [
       'jest.config.*',
       'babel.config.*',
       'playwright.config.*',
-      
+
       // static assets
       'public/**',
       '**/*.min.js',
@@ -116,8 +115,14 @@ const eslintConfig = [
     },
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
-      '@qlover-eslint/require-root-testid': 'error',
-      // 禁用 import 路径解析检查，TypeScript 编译器会处理
+      '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-class-override': 'error',
+      '@qlover-eslint/require-root-testid': [
+        'error',
+        {
+          exclude: ['/Provider$/']
+        }
+      ], // 禁用 import 路径解析检查，TypeScript 编译器会处理
       'import/no-unresolved': 'off',
       // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
       '@typescript-eslint/no-unused-vars': 'off',

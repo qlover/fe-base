@@ -32,7 +32,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     super(createDefaultState);
   }
 
-  override onHello = async () => {
+  public override onHello = async () => {
     if (this.state.helloState.loading) {
       return;
     }
@@ -52,7 +52,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     }
   };
 
-  override onIpInfo = async () => {
+  public override onIpInfo = async () => {
     if (this.state.ipInfoState.loading) {
       return;
     }
@@ -70,7 +70,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     }
   };
 
-  override onRandomUser = async () => {
+  public override onRandomUser = async () => {
     if (this.state.randomUserState.loading) {
       return;
     }
@@ -89,7 +89,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     }
   };
 
-  override onTriggerApiCatchResult = async () => {
+  public override onTriggerApiCatchResult = async () => {
     if (this.state.apiCatchResultState.loading) {
       return;
     }
@@ -107,7 +107,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     }
   };
 
-  override onTriggerAbortRequest = async () => {
+  public override onTriggerAbortRequest = async () => {
     if (this.state.abortState.loading) {
       this.stopAbortRequest();
       return;
@@ -128,7 +128,7 @@ export class RequestPageBridge extends RequestPageBridgeInterface {
     }
   };
 
-  override stopAbortRequest = async () => {
+  public override stopAbortRequest = async () => {
     this.userApi.stop({
       requestId: 'onTriggerAbortRequest'
     });

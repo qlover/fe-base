@@ -22,5 +22,8 @@ export abstract class AdminLayoutInterface extends StoreInterface<AdminPageState
     navItems: (state: AdminPageState) => state.navItems
   };
 
-  abstract toggleSidebar(): void;
+  /**
+   * @override
+   */
+  public abstract toggleSidebar(): void;
 }

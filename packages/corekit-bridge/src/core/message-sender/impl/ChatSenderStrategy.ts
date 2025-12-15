@@ -47,7 +47,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin<
    * // Result: [user1, assistant1]
    * ```
    */
-  sliceMessages(store: ChatMessageStore<string>, index: number): void {
+  public sliceMessages(store: ChatMessageStore<string>, index: number): void {
     // Delete all messages after nextMessage
     const allMessages = store.getMessages();
     const nextMessageIndex = index + 1;
@@ -74,7 +74,7 @@ export class ChatSenderStrategy extends SenderStrategyPlugin<
    * }
    * ```
    */
-  isAssistantMessage(
+  public isAssistantMessage(
     store: ChatMessageStore<string>,
     message: ChatMessage<string>
   ): boolean {

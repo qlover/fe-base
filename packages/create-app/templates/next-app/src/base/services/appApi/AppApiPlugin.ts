@@ -9,11 +9,14 @@ import type { AppApiConfig } from './AppApiRequester';
 import type { LoggerInterface } from '@qlover/logger';
 
 export class AppApiPlugin implements ExecutorPlugin {
-  readonly pluginName = 'AppApiPlugin';
+  public readonly pluginName = 'AppApiPlugin';
 
   constructor(protected logger: LoggerInterface) {}
 
-  isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
+  /**
+   * @override
+   */
+  public isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
     return (
       typeof value === 'object' &&
       value !== null &&
@@ -24,7 +27,12 @@ export class AppApiPlugin implements ExecutorPlugin {
     );
   }
 
-  onSuccess(context: ExecutorContext<AppApiConfig>): void | Promise<void> {
+  /**
+   * @override
+   */
+  public onSuccess(
+    context: ExecutorContext<AppApiConfig>
+  ): void | Promise<void> {
     const response = context.returnValue;
     const { parameters } = context;
 
@@ -40,7 +48,10 @@ export class AppApiPlugin implements ExecutorPlugin {
     }
   }
 
-  async onError(
+  /**
+   * @override
+   */
+  public async onError(
     context: ExecutorContext<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;
@@ -66,6 +77,9 @@ export class AppApiPlugin implements ExecutorPlugin {
     }
   }
 
+  /**
+   * @override
+   */
   protected async getResponseJson(response: Response): Promise<unknown> {
     try {
       return await response.json();
@@ -74,6 +88,9 @@ export class AppApiPlugin implements ExecutorPlugin {
     }
   }
 
+  /**
+   * @override
+   */
   protected loggerError(config: AppApiConfig, error: unknown): void {
     this.logger.error(
       `%c[AppApi ${config.method} ${config.url}]%c - ${new Date().toLocaleString()}`,

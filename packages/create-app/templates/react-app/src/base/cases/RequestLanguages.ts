@@ -6,14 +6,14 @@ import type {
 } from '@qlover/fe-corekit';
 
 export class RequestLanguages implements ExecutorPlugin {
-  readonly pluginName = 'RequestLanguages';
+  public readonly pluginName = 'RequestLanguages';
 
   constructor(
     protected i18nService: I18nServiceInterface,
     protected headerName = 'accept-language'
   ) {}
 
-  buildAcceptLanguage(langs: string[]): string {
+  public buildAcceptLanguage(langs: string[]): string {
     return langs
       .map((lang, index) => {
         const q = Math.max(1 - index * 0.1, 0.1).toFixed(1);
@@ -22,7 +22,10 @@ export class RequestLanguages implements ExecutorPlugin {
       .join(',');
   }
 
-  onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
+  /**
+   * @override
+   */
+  public onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
     const currentLanguage = this.i18nService.getCurrentLanguage();
     const languages = this.i18nService.getSupportedLanguages();
 

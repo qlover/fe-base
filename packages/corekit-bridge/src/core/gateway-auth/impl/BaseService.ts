@@ -207,7 +207,7 @@ export class BaseService<
    *
    * @readonly
    */
-  readonly serviceName: string | symbol;
+  public readonly serviceName: string | symbol;
 
   /**
    * Gateway instance for API operations
@@ -307,6 +307,7 @@ export class BaseService<
    * Returns the store instance used by this service for state management.
    * The store provides reactive state access and subscription capabilities.
    *
+   * @override
    * @returns The store instance for state management
    *
    * @example Access store state
@@ -324,7 +325,7 @@ export class BaseService<
    * });
    * ```
    */
-  getStore(): Store {
+  public getStore(): Store {
     return this.store;
   }
 
@@ -334,6 +335,7 @@ export class BaseService<
    * Returns the gateway instance used by this service for API operations.
    * Returns `undefined` if no gateway was configured.
    *
+   * @override
    * @returns The gateway instance, or `undefined` if not configured
    *
    * @example Access gateway methods
@@ -352,7 +354,7 @@ export class BaseService<
    * }
    * ```
    */
-  getGateway(): Gateway | undefined {
+  public getGateway(): Gateway | undefined {
     return this.gateway;
   }
 
@@ -362,6 +364,7 @@ export class BaseService<
    * Returns the logger instance used by this service for logging.
    * Returns `undefined` if no logger was configured.
    *
+   * @override
    * @returns The logger instance, or `undefined` if not configured
    *
    * @example Use logger for logging
@@ -373,7 +376,7 @@ export class BaseService<
    * }
    * ```
    */
-  getLogger(): LoggerInterface | undefined {
+  public getLogger(): LoggerInterface | undefined {
     return this.logger;
   }
 }

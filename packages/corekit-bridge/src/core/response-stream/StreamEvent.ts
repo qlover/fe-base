@@ -63,7 +63,7 @@ export class StreamEvent {
    * Useful for monitoring stream progress and debugging
    */
   private _times: number = 0;
-  get times(): number {
+  public get times(): number {
     return this._times;
   }
 
@@ -98,7 +98,7 @@ export class StreamEvent {
    * Used to prevent further processing after stream end
    */
   private _finish: boolean = false;
-  get finish(): boolean {
+  public get finish(): boolean {
     return this._finish;
   }
 
@@ -124,7 +124,7 @@ export class StreamEvent {
    * const text = event.parseChunk(binaryChunk);
    * ```
    */
-  parseChunk<R>(chunk: R): string {
+  public parseChunk<R>(chunk: R): string {
     this._times++;
 
     // Check if chunk is ArrayBuffer or ArrayBufferView
@@ -161,7 +161,7 @@ export class StreamEvent {
    * // Result: ["message1", "message2"]
    * ```
    */
-  processBuffer(): string[] {
+  public processBuffer(): string[] {
     if (this.bufferChunks.length === 0) {
       return [];
     }
@@ -191,7 +191,7 @@ export class StreamEvent {
    *
    * @param chunk - New chunk data to buffer
    */
-  append(chunk: string): void {
+  public append(chunk: string): void {
     if (chunk.length > 0) {
       this.bufferChunks.push(chunk);
     }
@@ -220,7 +220,7 @@ export class StreamEvent {
    * const lastMessage = event.doned();
    * ```
    */
-  doned(): string | undefined {
+  public doned(): string | undefined {
     this.finished();
     if (this.bufferChunks.length === 0) {
       return this.lastMessage;
@@ -241,7 +241,7 @@ export class StreamEvent {
    *
    * Used in conjunction with doned() to handle stream completion
    */
-  finished(): void {
+  public finished(): void {
     this._finish = true;
   }
 
@@ -250,7 +250,7 @@ export class StreamEvent {
    *
    * @returns True if stream is marked as finished, false otherwise
    */
-  isFinished(): boolean {
+  public isFinished(): boolean {
     return this._finish;
   }
 }

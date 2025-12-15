@@ -38,7 +38,7 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  * ```
  */
 export class FetchURLPlugin implements ExecutorPlugin {
-  readonly pluginName = 'FetchURLPlugin';
+  public readonly pluginName = 'FetchURLPlugin';
   /**
    * Checks if URL is absolute (starts with http:// or https://)
    *
@@ -50,7 +50,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const isAbsolute = urlPlugin.isFullURL('https://example.com');
    * ```
    */
-  isFullURL(url: string): boolean {
+  public isFullURL(url: string): boolean {
     return url.startsWith('http://') || url.startsWith('https://');
   }
 
@@ -70,7 +70,10 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * );
    * ```
    */
-  appendQueryParams(url: string, params: Record<string, unknown> = {}): string {
+  public appendQueryParams(
+    url: string,
+    params: Record<string, unknown> = {}
+  ): string {
     const opt = '?';
     const link = '&';
     const [path, search = ''] = url.split(opt);
@@ -103,7 +106,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
    * ```
    */
-  connectBaseURL(url: string, baseURL: string): string {
+  public connectBaseURL(url: string, baseURL: string): string {
     return `${baseURL}/${url}`;
   }
 
@@ -120,7 +123,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const completeUrl = urlPlugin.buildUrl(config);
    * ```
    */
-  buildUrl(config: RequestAdapterConfig): string {
+  public buildUrl(config: RequestAdapterConfig): string {
     let { url = '' } = config;
     const { baseURL = '', params } = config;
 
@@ -145,6 +148,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
   /**
    * Pre-request hook that builds complete URL
    *
+   * @override
    * @param config - Request configuration
    *
    * @example
@@ -152,7 +156,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * urlPlugin.onBefore(config);
    * ```
    */
-  onBefore({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
+  public onBefore({ parameters }: ExecutorContext<RequestAdapterConfig>): void {
     // compose url and params
     parameters.url = this.buildUrl(parameters);
   }
@@ -161,6 +165,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * Success hook that validates response status
    * Throws error for non-OK responses
    *
+   * @override
    * @param result - Fetch response
    * @returns Response if OK
    * @throws {RequestError} If response is not OK
@@ -170,7 +175,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const response = urlPlugin.onSuccess(fetchResponse);
    * ```
    */
-  onSuccess({ returnValue }: ExecutorContext): void {
+  public onSuccess({ returnValue }: ExecutorContext): void {
     const result = returnValue as RequestAdapterResponse<unknown, Response>;
     // if response is not ok, throw error
     if (!result.response.ok) {
@@ -190,6 +195,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * Error handling hook
    * Wraps non-RequestError errors
    *
+   * @override
    * @param error - Original error
    * @returns RequestError
    *
@@ -198,7 +204,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * const error = urlPlugin.onError(new Error('Network Error'));
    * ```
    */
-  onError({ error }: ExecutorContext): RequestError {
+  public onError({ error }: ExecutorContext): RequestError {
     return error instanceof RequestError
       ? error
       : new RequestError(RequestErrorID.REQUEST_ERROR, error);

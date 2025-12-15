@@ -172,7 +172,7 @@ export default class Changelog extends ScriptPlugin<
    * // '/path/to/project/.changeset'
    * ```
    */
-  get changesetRoot(): string {
+  public get changesetRoot(): string {
     return join(this.context.rootPath, this.getConfig('changesetRoot'));
   }
 
@@ -190,7 +190,7 @@ export default class Changelog extends ScriptPlugin<
    * // '/path/to/project/.changeset/config.json'
    * ```
    */
-  get changesetConfigPath(): string {
+  public get changesetConfigPath(): string {
     return join(this.changesetRoot, 'config.json');
   }
 
@@ -211,7 +211,7 @@ export default class Changelog extends ScriptPlugin<
    * plugin2.enabled(); // true
    * ```
    */
-  override enabled(): boolean {
+  public override enabled(): boolean {
     return !this.getConfig('skip');
   }
 
@@ -233,7 +233,7 @@ export default class Changelog extends ScriptPlugin<
    * // Throws if .changeset directory doesn't exist
    * ```
    */
-  override async onBefore(): Promise<void> {
+  public override async onBefore(): Promise<void> {
     if (!existsSync(this.changesetRoot)) {
       throw new Error(
         `Changeset directory ${this.changesetRoot} does not exist`
@@ -270,7 +270,7 @@ export default class Changelog extends ScriptPlugin<
    * // ]
    * ```
    */
-  mergeWorkspaces(workspaces: WorkspaceValue[]): WorkspaceValue[] {
+  public mergeWorkspaces(workspaces: WorkspaceValue[]): WorkspaceValue[] {
     return workspaces.map((workspace) => {
       const newPackgeJson = WorkspaceCreator.toWorkspace(
         {
@@ -309,7 +309,9 @@ export default class Changelog extends ScriptPlugin<
    * // Generates changelogs for all workspaces
    * ```
    */
-  override async onExec(_context: ExecutorReleaseContext): Promise<void> {
+  public override async onExec(
+    _context: ExecutorReleaseContext
+  ): Promise<void> {
     const workspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>
@@ -345,7 +347,7 @@ export default class Changelog extends ScriptPlugin<
    * // - Restores unchanged packages
    * ```
    */
-  override async onSuccess(): Promise<void> {
+  public override async onSuccess(): Promise<void> {
     const workspaces = this.context.workspaces!;
     // create changeset files
     if (!this.getConfig('skipChangeset')) {
@@ -395,7 +397,7 @@ export default class Changelog extends ScriptPlugin<
    * // Restores 'pkg-c' to original state
    * ```
    */
-  async restoreIgnorePackages(): Promise<void> {
+  public async restoreIgnorePackages(): Promise<void> {
     const { changedPaths = [], packages = [] } = this.context.getOptions(
       'workspaces'
     ) as WorkspacesProps;
@@ -436,7 +438,7 @@ export default class Changelog extends ScriptPlugin<
    * // With custom template: 'v1.0.0'
    * ```
    */
-  getTagPrefix(workspace: WorkspaceValue): string {
+  public getTagPrefix(workspace: WorkspaceValue): string {
     return Shell.format(
       this.getConfig('tagPrefix') as string,
       workspace as unknown as Record<string, string>
@@ -470,7 +472,9 @@ export default class Changelog extends ScriptPlugin<
    * // }
    * ```
    */
-  async generateChangelog(workspace: WorkspaceValue): Promise<WorkspaceValue> {
+  public async generateChangelog(
+    workspace: WorkspaceValue
+  ): Promise<WorkspaceValue> {
     // FIXME: where to get the tagName?
     let tagName = await this.getTagName(workspace);
 
@@ -576,7 +580,7 @@ export default class Changelog extends ScriptPlugin<
    * // Returns new tag: 'pkg-b@1.0.0'
    * ```
    */
-  async getTagName(workspace: WorkspaceValue): Promise<string> {
+  public async getTagName(workspace: WorkspaceValue): Promise<string> {
     try {
       const currentTagPattern = this.generateTagName(workspace);
       const tagMatch = Shell.format(
@@ -636,7 +640,7 @@ export default class Changelog extends ScriptPlugin<
    * plugin.getIncrement(); // 'patch'
    * ```
    */
-  getIncrement(): string {
+  public getIncrement(): string {
     const lables = this.context.getOptions('workspaces.changeLabels');
 
     if (Array.isArray(lables) && lables.length > 0) {
@@ -692,7 +696,7 @@ export default class Changelog extends ScriptPlugin<
    * // Logs file content without creating file
    * ```
    */
-  async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
+  public async generateChangesetFile(workspace: WorkspaceValue): Promise<void> {
     const { name, version } = workspace;
     // eslint-disable-next-line no-useless-escape
     const changesetName = `${name}-${version}`.replace(/[\/\\]/g, '_');

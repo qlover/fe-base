@@ -147,7 +147,7 @@ export type ApiMockPluginContext = ExecutorContext<ApiMockPluginConfig>;
  * ```
  */
 export class ApiMockPlugin implements ExecutorPlugin {
-  readonly pluginName = 'ApiMockPlugin';
+  public readonly pluginName = 'ApiMockPlugin';
 
   /**
    * Creates an instance of ApiMockPlugin
@@ -180,7 +180,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
    *
    * @override
    */
-  enabled(
+  public enabled(
     _name: keyof ExecutorPlugin,
     context?: ApiMockPluginContext
   ): boolean {
@@ -336,7 +336,9 @@ export class ApiMockPlugin implements ExecutorPlugin {
    *
    * @override
    */
-  async onExec(context: ApiMockPluginContext): Promise<RequestAdapterResponse> {
+  public async onExec(
+    context: ApiMockPluginContext
+  ): Promise<RequestAdapterResponse> {
     const { parameters } = context;
     const {
       method = 'GET',

@@ -4,7 +4,7 @@ import { BaseHeader } from '../../uikit/components/BaseHeader';
 
 export default function Layout() {
   return (
-    <BaseLayoutProvider data-testid="Layout">
+    <BaseLayoutProvider>
       <div
         data-testid="basic-layout"
         className="text-base min-h-screen bg-primary"

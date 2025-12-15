@@ -44,7 +44,7 @@ export class QuickerTime {
    * @param timestamp - Optional parameter, the default is the current time
    * @returns The calculated timestamp (milliseconds)
    */
-  add(
+  public add(
     unit: TimeUnit,
     value: number = 1,
     timestamp: number = Date.now()
@@ -70,7 +70,7 @@ export class QuickerTime {
    * @param timestamp - Optional parameter, the default is the current time
    * @returns The calculated timestamp (milliseconds)
    */
-  subtract(unit: TimeUnit, value: number, timestamp?: number): number {
+  public subtract(unit: TimeUnit, value: number, timestamp?: number): number {
     return this.add(unit, -value, timestamp);
   }
 }

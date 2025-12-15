@@ -205,7 +205,7 @@ export class AbortError extends ExecutorError {
    * @example `"fetch-user-profile-123"`
    * @example `"upload-file-456"`
    */
-  readonly abortId?: string;
+  public readonly abortId?: string;
 
   /**
    * Timeout duration in milliseconds
@@ -216,7 +216,7 @@ export class AbortError extends ExecutorError {
    * @optional
    * @example `5000` // 5 seconds timeout
    */
-  readonly timeout?: number;
+  public readonly timeout?: number;
 
   /**
    * Creates a new AbortError instance
@@ -262,7 +262,7 @@ export class AbortError extends ExecutorError {
    * }
    * ```
    */
-  isTimeout(): boolean {
+  public isTimeout(): boolean {
     return this.timeout !== undefined && this.timeout > 0;
   }
 
@@ -292,7 +292,7 @@ export class AbortError extends ExecutorError {
    * error.getDescription(); // "Timeout (Request: req-456, Timeout: 5000ms)"
    * ```
    */
-  getDescription(): string {
+  public getDescription(): string {
     const parts: string[] = [];
 
     if (this.abortId) {
@@ -429,14 +429,14 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    *
    * Used by the executor system to identify this plugin
    */
-  readonly pluginName = 'AbortPlugin';
+  public readonly pluginName = 'AbortPlugin';
 
   /**
    * Ensures only one instance of this plugin can be registered
    *
    * Prevents conflicts from multiple abort plugin instances
    */
-  readonly onlyOne = true;
+  public readonly onlyOne = true;
 
   /**
    * Counter for auto-generating request identifiers
@@ -564,7 +564,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * }
    * ```
    */
-  static isAbortError(error?: unknown): error is AbortError {
+  public static isAbortError(error?: unknown): error is AbortError {
     // Check if the error is our custom AbortError
     if (error instanceof AbortError) {
       return true;
@@ -646,7 +646,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * cleanup('fetch-users');
    * ```
    */
-  cleanup(config: AbortPluginConfig | string): void {
+  public cleanup(config: AbortPluginConfig | string): void {
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
 
@@ -680,6 +680,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * 5. Sets up timeout timer if `abortTimeout` configured
    * 6. Injects abort signal into configuration
    *
+   * @override
    * @param context - Executor context containing parameters and metadata
    *
    * @example Configuration in context
@@ -691,7 +692,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * });
    * ```
    */
-  onBefore(context: ExecutorContext<TParameters>): void {
+  public onBefore(context: ExecutorContext<TParameters>): void {
     // Use config extractor to get configuration
     const config = this.getConfig(context.parameters);
     const key = this.generateRequestKey(config);
@@ -753,6 +754,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * Cleans up resources (controller and timeout) for completed operation
    * Ensures no memory leaks from successful operations
    *
+   * @override
    * @param context - Executor context containing parameters and metadata
    *
    * @example
@@ -762,7 +764,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * // AbortController and timeout for 'task-1' are now removed
    * ```
    */
-  onSuccess({ parameters }: ExecutorContext<TParameters>): void {
+  public onSuccess({ parameters }: ExecutorContext<TParameters>): void {
     // Delete controller and clear timeout
     if (parameters) {
       const config = this.getConfig(parameters);
@@ -781,6 +783,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * 2. If abort error: Extract reason from signal, cleanup resources, return `AbortError`
    * 3. If other error: Still cleanup resources to prevent leaks
    *
+   * @override
    * @param context - Executor context containing error, parameters, and metadata
    * @returns `AbortError` if error is abort-related, `void` otherwise
    *
@@ -796,7 +799,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * }
    * ```
    */
-  onError({
+  public onError({
     error,
     parameters
   }: ExecutorContext<TParameters>): ExecutorError | void {
@@ -858,7 +861,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * }
    * ```
    */
-  abort(config: AbortPluginConfig | string): boolean {
+  public abort(config: AbortPluginConfig | string): boolean {
     const key =
       typeof config === 'string' ? config : this.generateRequestKey(config);
 
@@ -917,7 +920,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * }
    * ```
    */
-  abortAll(): void {
+  public abortAll(): void {
     const count = this.controllers.size;
 
     if (count > 0) {

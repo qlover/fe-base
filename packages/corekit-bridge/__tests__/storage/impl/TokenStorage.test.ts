@@ -38,18 +38,22 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
     clear: 0
   };
 
-  get length(): number {
+  /**
+   * @override
+   */
+  public get length(): number {
     return this.data.size;
   }
 
   /**
    * Store an item in mock storage
+   * @override
    * @param key - Storage key
    * @param value - Value to store
    * @param options - Storage options
    * @returns The stored value
    */
-  setItem<T>(key: Key, value: T, options?: unknown): T {
+  public setItem<T>(key: Key, value: T, options?: unknown): T {
     this.calls.setItem.push({ key, value, options });
     this.data.set(String(key), String(value));
     return value;
@@ -57,12 +61,13 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
 
   /**
    * Retrieve an item from mock storage
+   * @override
    * @param key - Storage key
    * @param defaultValue - Default value if not found
    * @param options - Retrieval options
    * @returns Retrieved value or default
    */
-  getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
+  public getItem<T>(key: Key, defaultValue?: T, options?: unknown): T | null {
     this.calls.getItem.push({ key, defaultValue, options });
     const value = this.data.get(String(key));
     return (value ?? defaultValue ?? null) as T | null;
@@ -70,18 +75,21 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
 
   /**
    * Remove an item from mock storage
+   * @override
    * @param key - Storage key
    * @param options - Removal options
    */
-  removeItem(key: Key, options?: unknown): void {
+  public removeItem(key: Key, options?: unknown): void {
     this.calls.removeItem.push({ key, options });
     this.data.delete(String(key));
   }
 
   /**
    * Clear all items from mock storage
-   */
-  clear(): void {
+
+   * @override
+      */
+  public clear(): void {
     this.calls.clear++;
     this.data.clear();
   }
@@ -89,7 +97,7 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
   /**
    * Reset mock storage state
    */
-  reset(): void {
+  public reset(): void {
     this.data.clear();
     this.calls = {
       setItem: [],
@@ -104,17 +112,23 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
    * @param key - Storage key
    * @param value - Value to set
    */
-  directSet(key: string, value: string): void {
+  public directSet(key: string, value: string): void {
     this.data.set(key, value);
   }
 }
 
 class MockEncryptor implements Encryptor<string, string> {
-  encrypt(value: string): string {
+  /**
+   * @override
+   */
+  public encrypt(value: string): string {
     return '__encrypted__' + value;
   }
 
-  decrypt(value: string): string {
+  /**
+   * @override
+   */
+  public decrypt(value: string): string {
     return value.replace('__encrypted__', '');
   }
 }
@@ -623,11 +637,17 @@ describe('TokenStorage', () => {
     it('should work with custom encryptor implementation', () => {
       // Custom encryptor that uses different prefix
       class CustomEncryptor implements Encryptor<string, string> {
-        encrypt(value: string): string {
+        /**
+         * @override
+         */
+        public encrypt(value: string): string {
           return `[CUSTOM_ENCRYPTED]${value}[/CUSTOM_ENCRYPTED]`;
         }
 
-        decrypt(value: string): string {
+        /**
+         * @override
+         */
+        public decrypt(value: string): string {
           return value
             .replace('[CUSTOM_ENCRYPTED]', '')
             .replace('[/CUSTOM_ENCRYPTED]', '');

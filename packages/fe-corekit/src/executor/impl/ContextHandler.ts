@@ -106,7 +106,7 @@ export class ContextHandler {
    * handler.resetHooksRuntimes(context.hooksRuntimes);
    * ```
    */
-  resetHooksRuntimes(hooksRuntimes: HookRuntimes): void {
+  public resetHooksRuntimes(hooksRuntimes: HookRuntimes): void {
     hooksRuntimes.pluginName = '';
     hooksRuntimes.hookName = '';
     hooksRuntimes.returnValue = undefined;
@@ -136,7 +136,7 @@ export class ContextHandler {
    * handler.reset(context);
    * ```
    */
-  reset<Params>(context: ExecutorContext<Params>): void {
+  public reset<Params>(context: ExecutorContext<Params>): void {
     this.resetHooksRuntimes(context.hooksRuntimes);
     context.returnValue = undefined;
     context.error = undefined;
@@ -173,7 +173,7 @@ export class ContextHandler {
    * }
    * ```
    */
-  shouldSkipPluginHook<Params>(
+  public shouldSkipPluginHook<Params>(
     plugin: ExecutorPlugin,
     hookName: string,
     context: ExecutorContext<Params>
@@ -208,7 +208,7 @@ export class ContextHandler {
    * handler.runtimes(context, plugin, 'onBefore', 0);
    * ```
    */
-  runtimes<Params>(
+  public runtimes<Params>(
     context: ExecutorContext<Params>,
     plugin: ExecutorPlugin,
     hookName: string,
@@ -241,7 +241,7 @@ export class ContextHandler {
    * handler.runtimeReturnValue(context, result);
    * ```
    */
-  runtimeReturnValue<Params>(
+  public runtimeReturnValue<Params>(
     context: ExecutorContext<Params>,
     returnValue: unknown
   ): void {
@@ -270,7 +270,7 @@ export class ContextHandler {
    * }
    * ```
    */
-  shouldBreakChain<Params>(context: ExecutorContext<Params>): boolean {
+  public shouldBreakChain<Params>(context: ExecutorContext<Params>): boolean {
     return !!context.hooksRuntimes?.breakChain;
   }
 
@@ -296,7 +296,9 @@ export class ContextHandler {
    * }
    * ```
    */
-  shouldBreakChainOnReturn<Params>(context: ExecutorContext<Params>): boolean {
+  public shouldBreakChainOnReturn<Params>(
+    context: ExecutorContext<Params>
+  ): boolean {
     return !!context.hooksRuntimes?.returnBreakChain;
   }
 
@@ -324,7 +326,10 @@ export class ContextHandler {
    * }
    * ```
    */
-  setError<Params>(context: ExecutorContext<Params>, error: Error): void {
+  public setError<Params>(
+    context: ExecutorContext<Params>,
+    error: Error
+  ): void {
     context.error = error;
   }
 }
