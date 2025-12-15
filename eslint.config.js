@@ -51,6 +51,11 @@ export default tseslint.config([
   {
     files: ['packages/**/*.{ts,tsx}', 'make/**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.json', './packages/*/tsconfig.json']
+      }
+    },
     plugins: {
       '@qlover-eslint': qloverEslint,
       // TODO: open jsdoc later

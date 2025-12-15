@@ -5,7 +5,8 @@ import { builtinModules } from 'module';
 const external = [
   ...builtinModules,
   ...builtinModules.map((mod) => `node:${mod}`),
-  ...Object.keys(pkg.devDependencies || {})
+  ...Object.keys(pkg.devDependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {})
 ];
 
 export default defineConfig([

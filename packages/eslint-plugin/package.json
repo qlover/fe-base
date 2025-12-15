@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "lint": "eslint src --fix",
-    "build": "tsup"
+    "build": "tsup",
+    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/eslint-plugin.json -t ./docs/.output/eslint-plugin.tpl.json --formatOutput prettier"
   },
   "publishConfig": {
     "access": "public"
@@ -30,13 +31,15 @@
   ],
   "peerDependencies": {
     "@typescript-eslint/parser": ">=6.0.0",
-    "eslint": ">=8.0.0"
+    "eslint": ">=8.0.0",
+    "typescript": ">=4.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.24.1",
     "@typescript-eslint/types": "^8.39.1",
     "@typescript-eslint/utils": "^8.24.1",
     "@typescript-eslint/rule-tester": "^8.24.1",
+    "typescript": "^5.4.5",
     "eslint": "^8.56.0"
   },
   "engines": {
