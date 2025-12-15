@@ -14,7 +14,7 @@ import type { UIDialogInterface } from '@qlover/corekit-bridge';
 
 @injectable()
 export class DialogErrorPlugin implements ExecutorPlugin {
-  readonly pluginName = 'DialogErrorPlugin';
+  public readonly pluginName = 'DialogErrorPlugin';
 
   constructor(
     @inject(I.DialogHandler)
@@ -24,7 +24,10 @@ export class DialogErrorPlugin implements ExecutorPlugin {
     protected routerService: RouterService
   ) {}
 
-  onError(context: ExecutorContext<unknown>): void | Promise<void> {
+  /**
+   * @override
+   */
+  public onError(context: ExecutorContext<unknown>): void | Promise<void> {
     const { error, hooksRuntimes } = context;
     const runtimesError = hooksRuntimes.returnValue;
 
@@ -46,6 +49,9 @@ export class DialogErrorPlugin implements ExecutorPlugin {
     }
   }
 
+  /**
+   * @override
+   */
   protected isI18nMessage(message: string): boolean {
     return i18nKeySchema.safeParse(message).success;
   }

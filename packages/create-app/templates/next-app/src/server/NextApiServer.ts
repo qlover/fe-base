@@ -12,11 +12,17 @@ import { AppSuccessApi } from './AppSuccessApi';
 import type { PromiseTask } from '@qlover/fe-corekit';
 
 export class NextApiServer extends BootstrapServer {
+  /**
+   * @override
+   */
   protected isAppApiResult(result: unknown): result is AppApiResult {
     return isAppApiSuccessInterface(result) || isAppApiErrorInterface(result);
   }
 
-  async run<Result>(
+  /**
+   * @override
+   */
+  public async run<Result>(
     task?: PromiseTask<Result | AppApiResult, BootstrapServerContextValue>
   ): Promise<AppApiResult> {
     const result = await this.execNoError(task);
@@ -39,7 +45,10 @@ export class NextApiServer extends BootstrapServer {
     return new AppSuccessApi(result);
   }
 
-  async runWithJson<Result>(
+  /**
+   * @override
+   */
+  public async runWithJson<Result>(
     task?: PromiseTask<Result | AppApiResult, BootstrapServerContextValue>
   ): Promise<NextResponse> {
     const result = await this.run(task);

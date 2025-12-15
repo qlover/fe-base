@@ -28,6 +28,9 @@ export class AppPageRouteParams<
     this.locale = this.params.locale || i18nConfig.fallbackLng;
   }
 
+  /**
+   * @override
+   */
   public getLocale(defaultLocale?: string): string {
     if (this.locale) {
       return this.locale;
@@ -38,6 +41,9 @@ export class AppPageRouteParams<
     return this.locale;
   }
 
+  /**
+   * @override
+   */
   public getI18nWithNotFound(): string {
     const locale = this.getLocale();
 
@@ -52,6 +58,7 @@ export class AppPageRouteParams<
    * 获取 i18n 消息
    * 使用 next-intl 的 getMessages 加载消息
    *
+   * @override
    * @param namespace - 可选的命名空间（单个字符串或字符串数组），会与默认命名空间 ['common', 'api'] 合并
    * @returns Promise<Record<string, string>> 返回翻译消息对象
    */
@@ -72,6 +79,9 @@ export class AppPageRouteParams<
     return filterMessagesByNamespace(messages, namespaces);
   }
 
+  /**
+   * @override
+   */
   public async getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
     _namespace?: string
@@ -84,6 +94,9 @@ export class AppPageRouteParams<
     return TranslateI18nInterface.translate<T>(i18nInterface, t);
   }
 
+  /**
+   * @override
+   */
   public async getTheme(): Promise<string> {
     const cookieStore = await cookies();
     return (

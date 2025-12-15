@@ -45,31 +45,48 @@ export class DialogHandler
     notification?: NotificationApi;
   } = {};
 
-  setMessage(message: MessageApi): void {
+  /**
+   * @override
+   */
+  public setMessage(message: MessageApi): void {
     this.antds.message = message;
   }
 
-  setModal(modal: ModalApi): void {
+  /**
+   * @override
+   */
+  public setModal(modal: ModalApi): void {
     this.antds.modal = modal;
   }
 
-  setNotification(notification: NotificationApi): void {
+  /**
+   * @override
+   */
+  public setNotification(notification: NotificationApi): void {
     this.antds.notification = notification;
   }
 
   /**
    * Formats error message from various error types
-   */
+
+   * @override
+      */
   protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
     if (typeof error === 'string') return error;
     return 'An unknown error occurred';
   }
 
+  /**
+   * @override
+   */
   public success(msg: string, options?: NotificationOptions): void {
     this.antds.message?.success({ content: msg, ...options });
   }
 
+  /**
+   * @override
+   */
   public error(msg: string, options?: NotificationOptions): void {
     this.antds.message?.error({
       content: options?.error ? this.formatErrorMessage(options.error) : msg,
@@ -77,14 +94,23 @@ export class DialogHandler
     });
   }
 
+  /**
+   * @override
+   */
   public info(msg: string, options?: NotificationOptions): void {
     this.antds.message?.info({ content: msg, ...options });
   }
 
+  /**
+   * @override
+   */
   public warn(msg: string, options?: NotificationOptions): void {
     this.antds.message?.warning({ content: msg, ...options });
   }
 
+  /**
+   * @override
+   */
   public confirm(options: DialogHandlerOptions): void {
     this.antds.modal?.confirm(options);
   }

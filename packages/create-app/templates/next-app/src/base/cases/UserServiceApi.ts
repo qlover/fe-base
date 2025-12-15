@@ -17,7 +17,10 @@ export class UserServiceApi implements UserServiceGateway<
 > {
   constructor(@inject(AppUserApi) protected appUserApi: AppUserApiInterface) {}
 
-  getUserInfo(_params?: unknown): Promise<UserSchema | null> {
+  /**
+   * @override
+   */
+  public getUserInfo(_params?: unknown): Promise<UserSchema | null> {
     if (_params && isWebUserSchema(_params).success) {
       return Promise.resolve(omit(_params, 'credential_token') as UserSchema);
     }
@@ -25,13 +28,19 @@ export class UserServiceApi implements UserServiceGateway<
     return Promise.resolve(null);
   }
 
-  refreshUserInfo<Params>(
+  /**
+   * @override
+   */
+  public refreshUserInfo<Params>(
     _params?: Params | undefined
   ): Promise<UserSchema | null> {
     return this.getUserInfo(_params);
   }
 
-  async login(params: LoginValidatorData): Promise<UserCredential> {
+  /**
+   * @override
+   */
+  public async login(params: LoginValidatorData): Promise<UserCredential> {
     const response = await this.appUserApi.login(params);
 
     if (!response.data.success) {
@@ -41,7 +50,10 @@ export class UserServiceApi implements UserServiceGateway<
     return response.data.data as UserCredential;
   }
 
-  async register(params: LoginValidatorData): Promise<UserSchema> {
+  /**
+   * @override
+   */
+  public async register(params: LoginValidatorData): Promise<UserSchema> {
     const response = await this.appUserApi.register(params);
 
     if (!response.data.success) {
@@ -51,7 +63,10 @@ export class UserServiceApi implements UserServiceGateway<
     return response.data.data as UserSchema;
   }
 
-  async logout<P = unknown, Result = void>(params?: P): Promise<Result> {
+  /**
+   * @override
+   */
+  public async logout<P = unknown, Result = void>(params?: P): Promise<Result> {
     const response = await this.appUserApi.logout(params);
 
     if (!response.data.success) {

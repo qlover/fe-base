@@ -46,15 +46,24 @@ export class SupabaseBridge implements DBBridgeInterface {
     );
   }
 
-  getSupabase(): SupabaseClient {
+  /**
+   * @override
+   */
+  public getSupabase(): SupabaseClient {
     return this.supabase;
   }
 
-  async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
     const res = await this.supabase.rpc('exec_sql', { sql });
     return this.catch(res);
   }
 
+  /**
+   * @override
+   */
   protected async catch(
     result: PostgrestSingleResponse<unknown>
   ): Promise<SupabaseBridgeResponse<unknown>> {
@@ -73,12 +82,18 @@ export class SupabaseBridge implements DBBridgeInterface {
     return result as SupabaseBridgeResponse<unknown>;
   }
 
+  /**
+   * @override
+   */
   protected hasPausedProject(error: PostgrestResponseFailure): boolean {
     return (
       error.status === 0 && error.error.message === 'TypeError: fetch failed'
     );
   }
 
+  /**
+   * @override
+   */
   protected handleWhere(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
@@ -101,6 +116,9 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
+  /**
+   * @override
+   */
   protected handleOrderBy(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
@@ -111,7 +129,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  async add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async add(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data } = event;
     if (!data) {
       throw new Error('Data is required for add operation');
@@ -122,7 +143,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(res);
   }
 
-  async upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async upsert(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data, fields = '*' } = event;
     if (!data) {
       throw new Error('Data is required for upsert operation');
@@ -137,7 +161,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(res);
   }
 
-  async update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async update(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, data, where } = event;
     if (!data) {
       throw new Error('Data is required for update operation');
@@ -150,7 +177,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, where } = event;
     const handler = this.supabase.from(table).delete();
 
@@ -159,7 +189,12 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async get(event: BridgeEvent): Promise<SupabaseBridgeResponse<unknown>> {
+  /**
+   * @override
+   */
+  public async get(
+    event: BridgeEvent
+  ): Promise<SupabaseBridgeResponse<unknown>> {
     const { table, fields = '*', where, orderBy } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
     const handler = this.supabase.from(table).select(selectFields);
@@ -171,7 +206,12 @@ export class SupabaseBridge implements DBBridgeInterface {
     return this.catch(await handler);
   }
 
-  async pagination(event: BridgeEvent): Promise<DBBridgeResponse<unknown[]>> {
+  /**
+   * @override
+   */
+  public async pagination(
+    event: BridgeEvent
+  ): Promise<DBBridgeResponse<unknown[]>> {
     const {
       table,
       fields = '*',

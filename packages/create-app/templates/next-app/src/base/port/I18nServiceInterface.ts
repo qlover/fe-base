@@ -10,17 +10,37 @@ export type SupportedNamespace = typeof i18nConfig.fallbackLng;
 export type I18nServiceLocale = Locale;
 
 export class I18nServiceState implements StoreStateInterface {
-  loading: boolean = false;
+  public loading: boolean = false;
   constructor(public language: I18nServiceLocale) {}
 }
 export abstract class I18nServiceInterface
   extends StoreInterface<I18nServiceState>
   implements I18nServiceInterface
 {
-  abstract t(key: string, params?: Record<string, unknown>): string;
-  abstract changeLanguage(language: I18nServiceLocale): Promise<void>;
-  abstract changeLoading(loading: boolean): void;
-  abstract getCurrentLanguage(): Promise<I18nServiceLocale>;
-  abstract isValidLanguage(language: string): language is I18nServiceLocale;
-  abstract getSupportedLanguages(): I18nServiceLocale[];
+  /**
+   * @override
+   */
+  public abstract t(key: string, params?: Record<string, unknown>): string;
+  /**
+   * @override
+   */
+  public abstract changeLanguage(language: I18nServiceLocale): Promise<void>;
+  /**
+   * @override
+   */
+  public abstract changeLoading(loading: boolean): void;
+  /**
+   * @override
+   */
+  public abstract getCurrentLanguage(): Promise<I18nServiceLocale>;
+  /**
+   * @override
+   */
+  public abstract isValidLanguage(
+    language: string
+  ): language is I18nServiceLocale;
+  /**
+   * @override
+   */
+  public abstract getSupportedLanguages(): I18nServiceLocale[];
 }

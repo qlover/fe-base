@@ -34,7 +34,7 @@ export class ApiLocaleService {
     protected localesRepository: LocalesRepositoryInterface
   ) {}
 
-  async getLocalesJson(
+  public async getLocalesJson(
     localeName: string,
     orderBy?: BridgeOrderBy
   ): Promise<Record<string, string>> {
@@ -52,7 +52,7 @@ export class ApiLocaleService {
     );
   }
 
-  async getLocales(
+  public async getLocales(
     params: GetLocalesParams
   ): Promise<PaginationInterface<LocalesSchema>> {
     return this.localesRepository.pagination({
@@ -62,7 +62,7 @@ export class ApiLocaleService {
     });
   }
 
-  async update(data: Partial<LocalesSchema>): Promise<void> {
+  public async update(data: Partial<LocalesSchema>): Promise<void> {
     if (!data.id || typeof data.id !== 'number') {
       throw new Error(
         'ID is required and must be a number for update operation'
@@ -81,7 +81,7 @@ export class ApiLocaleService {
     await Promise.all(revalidatePromises);
   }
 
-  async create(data: Partial<LocalesSchema>): Promise<void> {
+  public async create(data: Partial<LocalesSchema>): Promise<void> {
     await this.localesRepository.add(data as LocalesSchema);
 
     // 清除所有支持的语言的缓存
@@ -91,7 +91,7 @@ export class ApiLocaleService {
     await Promise.all(revalidatePromises);
   }
 
-  async importLocales(data: ImportLocalesData): Promise<UpsertResult> {
+  public async importLocales(data: ImportLocalesData): Promise<UpsertResult> {
     const { namespace = 'common', values } = data;
 
     const result: Record<string, Record<string, string>> = {};

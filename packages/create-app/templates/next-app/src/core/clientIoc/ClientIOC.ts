@@ -30,7 +30,13 @@ export class ClientIOC implements IOCInterface<
     >
   ) {}
 
-  create(): IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> {
+  /**
+   * @override
+   */
+  public create(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
     if (this.ioc) {
       return this.ioc;
     }
@@ -40,7 +46,10 @@ export class ClientIOC implements IOCInterface<
     return this.ioc;
   }
 
-  register(options: IocRegisterOptions): void {
+  /**
+   * @override
+   */
+  public register(options: IocRegisterOptions): void {
     if (this.registers > 0) {
       return;
     }

@@ -25,7 +25,10 @@ export class UserController implements UserControllerInerface {
     @inject(UserService) protected userService: UserServiceInterface
   ) {}
 
-  async login(requestBody: LoginValidatorData): Promise<UserSchema> {
+  /**
+   * @override
+   */
+  public async login(requestBody: LoginValidatorData): Promise<UserSchema> {
     try {
       if (requestBody.password) {
         requestBody.password = this.stringEncryptor.decrypt(
@@ -47,7 +50,10 @@ export class UserController implements UserControllerInerface {
     return user;
   }
 
-  async register(requestBody: LoginValidatorData): Promise<UserSchema> {
+  /**
+   * @override
+   */
+  public async register(requestBody: LoginValidatorData): Promise<UserSchema> {
     try {
       if (requestBody.password) {
         requestBody.password = this.stringEncryptor.decrypt(
@@ -71,7 +77,10 @@ export class UserController implements UserControllerInerface {
     return user;
   }
 
-  async logout(): Promise<void> {
+  /**
+   * @override
+   */
+  public async logout(): Promise<void> {
     return await this.userService.logout();
   }
 }

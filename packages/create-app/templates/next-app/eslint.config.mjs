@@ -106,6 +106,7 @@ const eslintConfig = [
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-class-override': 'error',
       '@qlover-eslint/require-root-testid': ['error', {
         exclude: ['/Provider$/']
       }],

@@ -18,6 +18,9 @@ export class StringEncryptor implements Encryptor<string, string> {
     this.key = appConfig.stringEncryptorKey;
   }
 
+  /**
+   * @override
+   */
   protected encryptWithKey(str: string, key: string): string {
     const result = [];
     for (let i = 0; i < str.length; i++) {
@@ -31,6 +34,9 @@ export class StringEncryptor implements Encryptor<string, string> {
     return result.join('');
   }
 
+  /**
+   * @override
+   */
   protected decryptWithKey(str: string, key: string): string {
     const result = [];
     for (let i = 0; i < str.length; i++) {
@@ -43,7 +49,10 @@ export class StringEncryptor implements Encryptor<string, string> {
     return result.join('');
   }
 
-  encrypt(value: string): string {
+  /**
+   * @override
+   */
+  public encrypt(value: string): string {
     try {
       const encrypted = this.encryptWithKey(value, this.key);
       return this.base64Serializer.serialize(encrypted);
@@ -53,7 +62,10 @@ export class StringEncryptor implements Encryptor<string, string> {
     }
   }
 
-  decrypt(encryptedValue: string): string {
+  /**
+   * @override
+   */
+  public decrypt(encryptedValue: string): string {
     try {
       // 1. 先用 base64 反序列化
       const decoded = this.base64Serializer.deserialize(encryptedValue);

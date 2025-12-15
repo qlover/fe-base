@@ -16,7 +16,7 @@ export class ServerIOC implements IOCInterface<
   IOCIdentifierMapServer,
   IOCContainerInterface
 > {
-  static instance: ServerIOC | null = null;
+  public static instance: ServerIOC | null = null;
 
   protected registers = 0;
 
@@ -25,7 +25,10 @@ export class ServerIOC implements IOCInterface<
     IOCContainerInterface
   > | null = null;
 
-  static create(): ServerIOC {
+  /**
+   * @override
+   */
+  public static create(): ServerIOC {
     if (this.instance) {
       return this.instance;
     }
@@ -35,7 +38,10 @@ export class ServerIOC implements IOCInterface<
     return this.instance;
   }
 
-  create(): IOCFunctionInterface<
+  /**
+   * @override
+   */
+  public create(): IOCFunctionInterface<
     IOCIdentifierMapServer,
     IOCContainerInterface
   > {
@@ -53,7 +59,10 @@ export class ServerIOC implements IOCInterface<
     return this.ioc;
   }
 
-  register(options: IocRegisterOptions): void {
+  /**
+   * @override
+   */
+  public register(options: IocRegisterOptions): void {
     if (this.registers > 0) {
       console.debug('ServerIOC: ioc already registered');
       return;
