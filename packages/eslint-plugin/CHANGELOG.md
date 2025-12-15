@@ -1,5 +1,37 @@
 # @qlover/eslint-plugin
 
+## 1.0.6
+
+### Patch Changes
+
+#### ✨ Features
+
+- **ts-class-override:** Enhance ESLint plugin with new rules and configuration updates ([fc13101](https://github.com/qlover/fe-base/commit/fc1310184367e44fba8d823bc55fce986fb627f8)) ([#551](https://github.com/qlover/fe-base/pull/551))
+  - Added new ESLint rules: `require-root-testid` to enforce `data-testid` attributes on root elements of TSX components, `ts-class-member-accessibility` to require explicit accessibility modifiers on class members, and `ts-class-method-return` to ensure explicit return types for class methods.
+  - Updated ESLint configuration in `eslint.config.js` to include new language options for TypeScript projects.
+  - Enhanced `package.json` with new scripts for building documentation and added TypeScript as a peer dependency.
+  - Introduced comprehensive test cases for the new rules to ensure proper functionality and adherence to coding standards.
+  - Updated documentation for the ESLint plugin to reflect new rules and usage guidelines.
+
+  These changes aim to improve code quality, enforce best practices, and enhance the overall developer experience in TypeScript and React projects.
+
+- **ts-class-override:** Add support for 'override' accessibility modifier in ESLint rules ([a5eb470](https://github.com/qlover/fe-base/commit/a5eb4708f06a8c8bb20142294d0e4657b32d8071)) ([#551](https://github.com/qlover/fe-base/pull/551))
+  - Introduced the '@qlover-eslint/ts-class-override' rule to enforce the use of the 'override' keyword for class methods and properties in TypeScript.
+  - Updated the ESLint configuration to include the new rule.
+  - Enhanced test cases for the 'ts-class-member-accessibility' rule to cover various scenarios involving the 'override' modifier.
+  - Modified the rule implementation to recognize and handle the 'override' keyword appropriately in class definitions.
+
+  These changes aim to improve code quality by ensuring explicit accessibility modifiers are used, enhancing clarity and maintainability in TypeScript projects.
+
+#### ♻️ Refactors
+
+- Update TypeScript class accessibility and improve code clarity ([62f6203](https://github.com/qlover/fe-base/commit/62f620399d79530273fb33e45cb7469e2f241461)) ([#551](https://github.com/qlover/fe-base/pull/551))
+  - Explicitly defined 'public' accessibility for class properties and methods across multiple TypeScript files to enhance clarity and maintainability.
+  - Refactored tests to ensure consistent accessibility modifiers, improving overall code readability.
+  - Updated ESLint configuration to enforce best practices in TypeScript coding standards.
+
+  These changes aim to streamline code quality and maintainability in the project.
+
 ## 1.0.5
 
 ### Patch Changes

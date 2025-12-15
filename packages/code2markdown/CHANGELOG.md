@@ -1,5 +1,18 @@
 # @qlover/code2markdown
 
+## 1.3.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- Update TypeScript class accessibility and improve code clarity ([62f6203](https://github.com/qlover/fe-base/commit/62f620399d79530273fb33e45cb7469e2f241461)) ([#551](https://github.com/qlover/fe-base/pull/551))
+  - Explicitly defined 'public' accessibility for class properties and methods across multiple TypeScript files to enhance clarity and maintainability.
+  - Refactored tests to ensure consistent accessibility modifiers, improving overall code readability.
+  - Updated ESLint configuration to enforce best practices in TypeScript coding standards.
+
+  These changes aim to streamline code quality and maintainability in the project.
+
 ## 1.3.0
 
 ### Minor Changes
