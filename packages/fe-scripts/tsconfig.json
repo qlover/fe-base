@@ -1,12 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "sourceMap": false,
-    "inlineSourceMap": false,
-    "inlineSources": false,
-    "importHelpers": false,
-    "noEmitHelpers": true,
-    "declaration": true
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "ts-build",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
   },
-  "include": ["src"]
+  "include": ["src", "package.json"],
+  "exclude": ["ts-build", "dist", "node_modules"],
+  "references": [
+    { "path": "../env-loader" },
+    { "path": "../fe-corekit" },
+    { "path": "../scripts-context" }
+  ]
 }

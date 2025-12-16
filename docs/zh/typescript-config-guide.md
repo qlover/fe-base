@@ -143,9 +143,73 @@ pnpm tsc --build --dry
 4. **强制依赖顺序**：确保依赖项先于依赖者构建
 5. **更好的编辑器支持**：IDE 可以更好地理解项目结构
 
+## 构建工具集成
+
+### 在 Composite 项目中使用 tsup
+
+本项目使用 **tsup**（或其他打包工具如 rollup）进行包构建，而不是 `tsc`。但我们仍然在 `tsconfig.json` 中启用 `composite: true` 以获得 IDE 性能优势。
+
+#### 为什么在使用 tsup 时保留 Composite？
+
+尽管 tsup 不使用 TypeScript 的增量编译：
+1. **IDE 性能**：VSCode 的 TypeScript Language Server 从 composite 模式中受益
+2. **更快的类型检查**：跨包类型检查显著加快
+3. **更好的导航**："转到定义"跳转到源文件而不是 `.d.ts`
+4. **清晰的依赖关系**：强制显式声明包依赖关系
+
+#### tsup 的 DTS 生成配置
+
+当 tsup 使用 `dts: true` 生成 `.d.ts` 文件时，它内部会使用 TypeScript 编译器。为避免与 `composite: true` 冲突，需要如下配置 tsup：
+
+```typescript
+// tsup.config.ts
+import { defineConfig } from 'tsup';
+
+export default defineConfig([
+  {
+    entry: ['src/index.ts'],
+    format: 'esm',
+    dts: {
+      compilerOptions: {
+        composite: false  // 在 dts 生成时禁用 composite
+      }
+    },
+    outDir: 'dist'
+  }
+]);
+```
+
+**为什么在 tsup 中禁用 composite？**
+
+TypeScript 的 `composite: true` 要求严格的文件列表验证。当 tsup 生成声明文件时，可能会遇到文件解析问题。仅在 dts 生成时禁用 `composite`：
+- ✅ 保留 IDE 优势（主 `tsconfig.json` 仍有 `composite: true`）
+- ✅ 允许 tsup 正常生成 `.d.ts` 文件
+- ✅ 不影响最终构建产物
+
+#### 构建 vs 类型检查
+
+```bash
+# 类型检查（使用带 composite: true 的 tsconfig.json）
+pnpm tsc --noEmit
+
+# 构建包（使用 tsup/rollup，dts 生成时 composite: false）
+pnpm nx run-many --target=build --all
+```
+
+### 配置总结
+
+| 场景 | 配置 | 用途 |
+|------|------|------|
+| **IDE 类型检查** | `tsconfig.json` 的 `composite: true` | 快速的跨包类型检查 |
+| **包构建** | `tsup.config.ts` 使用打包工具 | 生产环境构建 |
+| **DTS 生成** | `dts: { compilerOptions: { composite: false } }` | 生成类型声明文件 |
+| **包依赖关系** | `tsconfig.json` 的 `references` | 声明包间依赖关系 |
+
 ## 注意事项
 
 1. 启用 `composite: true` 后，TypeScript 会生成 `.tsbuildinfo` 文件用于增量编译
 2. 跨项目引用时，TypeScript 会使用编译后的 `.d.ts` 文件而不是源文件
 3. 修改 `tsconfig.json` 后，建议运行 `tsc --build --clean` 清理旧的构建信息
+4. `tsconfig.json` 中的 `composite` 设置用于 IDE/类型检查；tsup 使用自己的配置进行构建
+5. 如果在 dts 生成时遇到 `TS6307` 错误，请确保在 tsup 的 dts 选项中设置了 `composite: false`
 

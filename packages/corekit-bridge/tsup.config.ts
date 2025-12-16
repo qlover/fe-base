@@ -51,7 +51,11 @@ export default defineConfig([
     entry: ['src/core/index.ts'],
     format: ['esm'],
     splitting: false, // 改为 false
-    dts: true,
+    dts: {
+      compilerOptions: {
+        composite: false
+      }
+    },
     minify: false,
     silent: true,
     bundle: false, // 添加这行
@@ -73,7 +77,11 @@ export default defineConfig([
     entry: coreModulesEntry,
     format: ['esm'],
     splitting: false,
-    dts: true,
+    dts: {
+      compilerOptions: {
+        composite: false
+      }
+    },
     minify: false,
     silent: true,
     outDir: 'dist',
@@ -106,7 +114,10 @@ export default defineConfig([
     entry: buildModulesEntry,
     format: ['esm'],
     dts: {
-      resolve: true
+      resolve: true,
+      compilerOptions: {
+        composite: false
+      }
     },
     splitting: false,
     minify: false,

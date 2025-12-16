@@ -59,7 +59,11 @@ export default defineConfig([
       'setup-husky': 'src/scripts/setup-husky.ts'
     },
     format: ['esm'],
-    dts: true,
+    dts: {
+      compilerOptions: {
+        composite: false
+      }
+    },
     clean: false,
     external,
     outDir: 'dist/scripts'

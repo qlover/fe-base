@@ -23,7 +23,11 @@ export default defineConfig([
     entry: ['src/index.mts'],
     format: 'esm',
     minify: true,
-    dts: true,
+    dts: {
+      compilerOptions: {
+        composite: false
+      }
+    },
     onSuccess: async () => {
       await copyAssets('./configs', 'dist/configs');
       await copyAssets('./templates', 'dist/templates', {

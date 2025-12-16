@@ -143,9 +143,73 @@ Benefits of using Project References:
 4. **Enforced dependency order**: Ensures dependencies are built before dependents
 5. **Better editor support**: IDEs can better understand project structure
 
+## Build Tools Integration
+
+### Using tsup with Composite Projects
+
+This project uses **tsup** (or other bundlers like rollup) for building packages, not `tsc`. However, we still enable `composite: true` in `tsconfig.json` for IDE performance benefits.
+
+#### Why Keep Composite with tsup?
+
+Even though tsup doesn't use TypeScript's incremental compilation:
+1. **IDE Performance**: VSCode's TypeScript Language Server benefits from composite mode
+2. **Faster Type Checking**: Cross-package type checking is significantly faster
+3. **Better Navigation**: "Go to Definition" jumps to source files instead of `.d.ts`
+4. **Clear Dependencies**: Enforces explicit package dependency declarations
+
+#### tsup Configuration for DTS Generation
+
+When tsup generates `.d.ts` files with `dts: true`, it internally uses TypeScript compiler. To avoid conflicts with `composite: true`, configure tsup as follows:
+
+```typescript
+// tsup.config.ts
+import { defineConfig } from 'tsup';
+
+export default defineConfig([
+  {
+    entry: ['src/index.ts'],
+    format: 'esm',
+    dts: {
+      compilerOptions: {
+        composite: false  // Disable composite for dts generation
+      }
+    },
+    outDir: 'dist'
+  }
+]);
+```
+
+**Why disable composite in tsup?**
+
+TypeScript's `composite: true` requires strict file list validation. When tsup generates declaration files, it may encounter file resolution issues. Disabling `composite` only for dts generation:
+- ✅ Keeps IDE benefits (main `tsconfig.json` still has `composite: true`)
+- ✅ Allows tsup to generate `.d.ts` files without errors
+- ✅ Doesn't affect the final build output
+
+#### Build vs Type Check
+
+```bash
+# Type checking (uses tsconfig.json with composite: true)
+pnpm tsc --noEmit
+
+# Building packages (uses tsup/rollup, with composite: false for dts)
+pnpm nx run-many --target=build --all
+```
+
+### Configuration Summary
+
+| Scenario | Configuration | Purpose |
+|----------|--------------|---------|
+| **IDE Type Checking** | `tsconfig.json` with `composite: true` | Fast cross-package type checking |
+| **Package Building** | `tsup.config.ts` with bundler | Production builds |
+| **DTS Generation** | `dts: { compilerOptions: { composite: false } }` | Generate type declarations |
+| **Package Dependencies** | `references` in `tsconfig.json` | Declare inter-package dependencies |
+
 ## Notes
 
 1. With `composite: true` enabled, TypeScript generates `.tsbuildinfo` files for incremental compilation
 2. When referencing across projects, TypeScript uses compiled `.d.ts` files instead of source files
 3. After modifying `tsconfig.json`, it's recommended to run `tsc --build --clean` to clear old build info
+4. The `composite` setting in `tsconfig.json` is for IDE/type checking; tsup uses its own configuration for builds
+5. If you encounter `TS6307` errors during dts generation, ensure `composite: false` is set in tsup's dts options
 

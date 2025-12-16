@@ -16,7 +16,11 @@ export default defineConfig([
   {
     entry: ['src/index.ts'],
     format: 'esm',
-    dts: true,
+    dts: {
+      compilerOptions: {
+        composite: false
+      }
+    },
     outDir: 'dist',
     external: Object.keys(pkg.dependencies),
     noExternal: Object.keys(pkg.devDependencies)
