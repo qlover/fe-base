@@ -33,7 +33,8 @@
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --build --noEmit"
   },
   "keywords": [
     "fe",

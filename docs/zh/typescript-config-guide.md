@@ -1,0 +1,151 @@
+# TypeScript 配置指南
+
+## 项目结构
+
+本项目使用 TypeScript Project References 来管理多包（monorepo）的类型检查和构建。
+
+## 配置文件说明
+
+### 1. `tsconfig.base.json` - 基础配置
+
+包含所有子项目共享的 TypeScript 编译选项，如：
+- 目标版本（target）
+- 模块系统（module）
+- 严格模式（strict）
+- 其他编译器选项
+
+所有子项目都应该继承这个基础配置。
+
+### 2. `tsconfig.json` - 根配置
+
+根目录的配置文件，主要作用：
+- 继承 `tsconfig.base.json`
+- 使用 `references` 字段引用所有子项目
+- 使用 `files: []` 表示根配置本身不包含任何文件
+- 用于协调整个项目的类型检查
+
+### 3. 子项目配置 `packages/*/tsconfig.json`
+
+每个子项目的配置特点：
+- 继承 `../../tsconfig.base.json`
+- 启用 `composite: true`（必需，用于 Project References）
+- 设置 `rootDir` 和 `outDir`
+- 配置独立的 `tsBuildInfoFile`
+- 可以覆盖基础配置中的特定选项
+
+### 4. `tsconfig.make.json` - 构建脚本配置
+
+专门用于 `make` 目录和根目录工具脚本的配置：
+- 包含 `make` 目录和 `vitest.config.ts`
+- 引用需要的子项目（如 `fe-release`）
+- 排除 `create-app/templates` 目录
+
+## 使用方法
+
+### 类型检查（不生成文件）
+
+```bash
+# 检查所有项目
+pnpm tsc --noEmit
+
+# 或使用 npx
+npx tsc --noEmit
+```
+
+### 构建所有项目
+
+```bash
+# 增量构建
+pnpm tsc --build
+
+# 强制重新构建
+pnpm tsc --build --force
+
+# 清理构建产物
+pnpm tsc --build --clean
+```
+
+### 构建特定项目
+
+```bash
+# 构建单个项目及其依赖
+pnpm tsc --build packages/fe-corekit
+```
+
+### 查看构建顺序（不实际构建）
+
+```bash
+pnpm tsc --build --dry
+```
+
+## 排除目录说明
+
+以下目录被排除在类型检查之外：
+- `**/node_modules/*` - 依赖包
+- `**/dist` - 构建输出
+- `**/build` - 构建输出
+- `packages/create-app/templates` - 项目模板（包含示例代码，不需要检查）
+
+## 添加新的子包
+
+当添加新的子包时，需要：
+
+1. 在新包目录下创建 `tsconfig.json`：
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "dist",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}
+```
+
+2. 在根目录 `tsconfig.json` 的 `references` 数组中添加新包的引用：
+
+```json
+{
+  "references": [
+    // ... 其他引用
+    { "path": "./packages/your-new-package" }
+  ]
+}
+```
+
+## 项目依赖关系
+
+如果一个子项目依赖另一个子项目，需要在该项目的 `tsconfig.json` 中添加 `references`：
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    // ... 其他选项
+  },
+  "references": [
+    { "path": "../other-package" }
+  ]
+}
+```
+
+## 优势
+
+使用 Project References 的好处：
+1. **更快的类型检查**：只检查修改过的项目
+2. **更好的代码组织**：清晰的项目依赖关系
+3. **增量构建**：只重新构建需要的部分
+4. **强制依赖顺序**：确保依赖项先于依赖者构建
+5. **更好的编辑器支持**：IDE 可以更好地理解项目结构
+
+## 注意事项
+
+1. 启用 `composite: true` 后，TypeScript 会生成 `.tsbuildinfo` 文件用于增量编译
+2. 跨项目引用时，TypeScript 会使用编译后的 `.d.ts` 文件而不是源文件
+3. 修改 `tsconfig.json` 后，建议运行 `tsc --build --clean` 清理旧的构建信息
+
