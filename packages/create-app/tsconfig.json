@@ -12,10 +12,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src"],
+  "include": ["src", "*.ts", "*.mts", "__tests__", "__mocks__"],
   "exclude": ["dist", "node_modules", "templates", "ts-build"],
-  "references": [
-    { "path": "../logger" },
-    { "path": "../scripts-context" }
-  ]
+  "references": [{ "path": "../logger" }, { "path": "../scripts-context" }]
 }

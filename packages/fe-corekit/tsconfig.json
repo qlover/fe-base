@@ -8,9 +8,7 @@
     "strict": true,
     "baseUrl": "./"
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"],
-  "references": [
-    { "path": "../logger" }
-  ]
+  "include": ["src", "*.ts", "__tests__", "__mocks__"],
+  "exclude": ["dist", "node_modules", "ts-build"],
+  "references": [{ "path": "../logger" }]
 }

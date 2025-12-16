@@ -40,13 +40,24 @@
 - 引用需要的子项目（如 `fe-release`）
 - 排除 `create-app/templates` 目录
 
+### 5. `tsconfig.test.json` - 测试文件配置
+
+专门用于所有包的测试文件的配置：
+- 包含所有 `__tests__` 和 `__mocks__` 目录
+- 使用 `composite: false` 和 `noEmit: true`（测试文件不需要构建）
+- 启用 `skipLibCheck` 以加快类型检查
+- 包含 vitest 全局类型
+
 ## 使用方法
 
 ### 类型检查（不生成文件）
 
 ```bash
-# 检查所有项目
+# 检查所有源代码（src 目录）
 pnpm tsc --noEmit
+
+# 仅检查测试文件
+pnpm tsc --project tsconfig.test.json --noEmit
 
 # 或使用 npx
 npx tsc --noEmit

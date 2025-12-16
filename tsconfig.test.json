@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "types": ["vitest/globals", "node"],
+    "skipLibCheck": true
+  },
+  "include": ["packages/**/__tests__/**/*.ts", "packages/**/__mocks__/**/*.ts"],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/ts-build/**",
+    "packages/create-app/templates/**"
+  ]
+}

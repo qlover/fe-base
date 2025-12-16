@@ -40,13 +40,24 @@ Dedicated configuration for the `make` directory and root-level utility scripts:
 - References required sub-projects (e.g., `fe-release`)
 - Excludes the `create-app/templates` directory
 
+### 5. `tsconfig.test.json` - Test Files Configuration
+
+Dedicated configuration for all test files across packages:
+- Includes all `__tests__` and `__mocks__` directories
+- Uses `composite: false` and `noEmit: true` (tests don't need to be built)
+- Enables `skipLibCheck` for faster type checking
+- Includes vitest global types
+
 ## Usage
 
 ### Type Checking (without emitting files)
 
 ```bash
-# Check all projects
+# Check all source code (src directories)
 pnpm tsc --noEmit
+
+# Check test files only
+pnpm tsc --project tsconfig.test.json --noEmit
 
 # Or use npx
 npx tsc --noEmit

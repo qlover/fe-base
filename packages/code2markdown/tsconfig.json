@@ -9,8 +9,15 @@
     "allowUnusedLabels": false,
     "noUnusedLocals": true
   },
-  "include": ["src", "example", "package.json"],
-  "exclude": ["dist", "node_modules"],
+  "include": [
+    "src",
+    "example",
+    "package.json",
+    "*.ts",
+    "__tests__",
+    "__mocks__"
+  ],
+  "exclude": ["dist", "node_modules", "ts-build"],
   "references": [
     { "path": "../fe-corekit" },
     { "path": "../env-loader" },
