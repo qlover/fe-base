@@ -89,7 +89,7 @@ import { LogContext } from './LogContext';
  * );
  * ```
  */
-export class LogEvent<Ctx = unknown> {
+export class LogEvent<Ctx> {
   /**
    * Timestamp when the log event was created
    *
@@ -217,7 +217,7 @@ export class LogEvent<Ctx = unknown> {
      * );
      * ```
      */
-    public context?: LogContext<Ctx>
+    public context?: Ctx
   ) {
     /**
      * Initialize the timestamp to the current time
