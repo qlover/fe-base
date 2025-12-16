@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { KeyStorage } from '../../src/storage/impl/KeyStorage';
 import type { SyncStorageInterface } from '../../src/storage/interface/SyncStorageInterface';
 import { JSONSerializer, ObjectStorage } from '../../src';
@@ -60,6 +59,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.data.clear();
     this.calls = {
@@ -71,6 +73,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   }
 
   // Helper method to directly set data (simulating existing storage)
+  /**
+   * @override
+   */
   public directSet(key: string, value: string): void {
     this.data.set(key, value);
   }

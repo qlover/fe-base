@@ -16,9 +16,18 @@ describe('Env', () => {
 
   beforeEach(() => {
     logger = {
+      fatal: vi.fn(),
+      error: vi.fn(),
       warn: vi.fn(),
-      debug: vi.fn()
-    } as unknown as Logger;
+      info: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      log: vi.fn(),
+      child: vi.fn(),
+      use: vi.fn(),
+      addAppender: vi.fn(),
+      context: {}
+    } as unknown as LoggerInterface;
   });
 
   describe('constructor', () => {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { UserAuthService } from '../../../src/core/user-auth/impl/UserAuthService';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
@@ -66,6 +65,9 @@ class MockStorage implements SyncStorageInterface<string, unknown> {
     this.data = {};
   }
 
+  /**
+   * @override
+   */
   public key(index: number): string | null {
     const keys = Object.keys(this.data);
     return keys[index] || null;
@@ -330,7 +332,7 @@ describe('UserAuthService Options Configuration', () => {
         });
 
         expect(service.store.getUserStorage()).toBeDefined();
-        expect(service.store.getUserStorage()?.key).toBe('user_profile');
+        expect(service.store.getUserStorage()?.getKey()).toBe('user_profile');
       });
 
       it('should configure with string expiration (week)', () => {
@@ -342,7 +344,7 @@ describe('UserAuthService Options Configuration', () => {
         });
 
         expect(service.store.getUserStorage()).toBeDefined();
-        expect(service.store.getUserStorage()?.key).toBe('week_user');
+        expect(service.store.getUserStorage()?.getKey()).toBe('week_user');
       });
 
       it('should configure with direct TokenStorage instance', () => {
@@ -400,7 +402,9 @@ describe('UserAuthService Options Configuration', () => {
         });
 
         expect(service.store.getCredentialStorage()).toBeDefined();
-        expect(service.store.getCredentialStorage()?.key).toBe('auth_token');
+        expect(service.store.getCredentialStorage()?.getKey()).toBe(
+          'auth_token'
+        );
       });
 
       it('should configure with direct TokenStorage instance', () => {
@@ -511,8 +515,10 @@ describe('UserAuthService Options Configuration', () => {
           tokenKey: 'access_token'
         });
 
-        expect(service.store.getUserStorage()?.key).toBe('oauth_user');
-        expect(service.store.getCredentialStorage()?.key).toBe('oauth_token');
+        expect(service.store.getUserStorage()?.getKey()).toBe('oauth_user');
+        expect(service.store.getCredentialStorage()?.getKey()).toBe(
+          'oauth_token'
+        );
         expect(service.store.getCredential()).toBe('oauth_123');
       });
 
@@ -540,8 +546,12 @@ describe('UserAuthService Options Configuration', () => {
           }
         });
 
-        expect(service.store.getUserStorage()?.key).toBe('persistent_user');
-        expect(service.store.getCredentialStorage()?.key).toBe('session_token');
+        expect(service.store.getUserStorage()?.getKey()).toBe(
+          'persistent_user'
+        );
+        expect(service.store.getCredentialStorage()?.getKey()).toBe(
+          'session_token'
+        );
       });
     });
   });
@@ -648,8 +658,8 @@ describe('UserAuthService Options Configuration', () => {
       });
 
       expect(service1.store).not.toBe(service2.store);
-      expect(service1.store.getUserStorage()?.key).toBe('service1_user');
-      expect(service2.store.getUserStorage()?.key).toBe('service2_user');
+      expect(service1.store.getUserStorage()?.getKey()).toBe('service1_user');
+      expect(service2.store.getUserStorage()?.getKey()).toBe('service2_user');
     });
   });
 });

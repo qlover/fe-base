@@ -7,17 +7,11 @@
     "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "allowJs": true
   },
-  "include": [
-    "src",
-    "example",
-    "package.json",
-    "*.ts",
-    "__tests__",
-    "__mocks__"
-  ],
-  "exclude": ["dist", "node_modules", "ts-build"],
+  "include": ["src", "example", "package.json"],
+  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"],
   "references": [
     { "path": "../fe-corekit" },
     { "path": "../env-loader" },

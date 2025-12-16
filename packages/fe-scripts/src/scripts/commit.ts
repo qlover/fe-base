@@ -41,7 +41,9 @@ function getModuleRoot(moduleName: string): string | null {
   }
 }
 
-export function commit(options: ScriptContextInterface<CommitOptions>): void {
+export function commit(
+  options: Partial<ScriptContextInterface<CommitOptions>>
+): void {
   const context = new ScriptContext('fe-scripts-commit', options);
   const { logger, shell } = context;
   const { defaultCzPath } = context.options;

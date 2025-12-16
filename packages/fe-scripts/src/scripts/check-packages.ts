@@ -116,7 +116,7 @@ async function addChangePackagePRLables(
 }
 
 export async function checkPackages(
-  options: ScriptContextInterface<CheckPackagesOptions>
+  options: Partial<ScriptContextInterface<CheckPackagesOptions>>
 ): Promise<void> {
   const context = new ScriptContext('fe-scripts-check-packages', options);
 

@@ -63,7 +63,7 @@ function getIgnoredFiles(
 }
 
 export async function clean(
-  options: ScriptContextInterface<CleanOptions>
+  options: Partial<ScriptContextInterface<CleanOptions>>
 ): Promise<void> {
   const context = new ScriptContext('fe-scripts-clean', options);
   const { logger, feConfig, dryRun } = context;

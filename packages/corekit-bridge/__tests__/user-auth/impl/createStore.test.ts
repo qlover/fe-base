@@ -179,26 +179,44 @@ class MockStorage<Key, Value> extends KeyStorage<Key, Value> {
     this.data.delete(this.key);
   }
 
+  /**
+   * @override
+   */
   public clear(): void {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public has(key: Key): boolean {
     return this.data.has(key);
   }
 
+  /**
+   * @override
+   */
   public keys(): Key[] {
     return Array.from(this.data.keys());
   }
 
+  /**
+   * @override
+   */
   public values(): Value[] {
     return Array.from(this.data.values());
   }
 
+  /**
+   * @override
+   */
   public entries(): [Key, Value][] {
     return Array.from(this.data.entries());
   }
 
+  /**
+   * @override
+   */
   public size(): number {
     return this.data.size;
   }

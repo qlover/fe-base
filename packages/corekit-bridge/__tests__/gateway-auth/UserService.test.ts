@@ -17,7 +17,10 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { UserService } from '../../src/core/gateway-auth/impl/UserService';
+import {
+  UserService,
+  UserServiceConfig
+} from '../../src/core/gateway-auth/impl/UserService';
 import { UserServiceGateway } from '../../src/core/gateway-auth/interface/UserServiceInterface';
 import { LoginParams } from '../../src/core/gateway-auth/interface/LoginInterface';
 import { GatewayExecutor } from '../../src/core/gateway-auth/impl/GatewayExecutor';
@@ -120,6 +123,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.data.clear();
   }
@@ -536,6 +542,9 @@ describe('UserService', () => {
               }
             }
 
+            /**
+             * @override
+             */
             private isCredentialValid(credential: TestCredential): boolean {
               // Example: Check expiration
               return credential.expiresIn > 0;

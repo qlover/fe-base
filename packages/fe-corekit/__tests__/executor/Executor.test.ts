@@ -37,6 +37,9 @@ class MyExecutor extends Executor<ExecutorConfigInterface> {
     super();
   }
 
+  /**
+   * @override
+   */
   public getPlugins(): ExecutorPlugin[] {
     return this.plugins;
   }

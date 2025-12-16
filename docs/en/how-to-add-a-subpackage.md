@@ -119,7 +119,7 @@ touch tsup.config.ts
 ```typescript
 import { defineConfig } from 'tsup';
 import pkg from './package.json';
-import { toPureCamelCase } from '../../make/toPureCamelCase';
+import { toPureCamelCase } from '../../tools/toPureCamelCase';
 
 const pkgName = toPureCamelCase(pkg.name);
 

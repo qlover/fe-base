@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 import pkg from './package.json';
-import { toPureCamelCase } from '../../make/toPureCamelCase';
+import { toPureCamelCase } from '../../tools/toPureCamelCase.js';
 
 const pkgName = toPureCamelCase(pkg.name);
 export default defineConfig([

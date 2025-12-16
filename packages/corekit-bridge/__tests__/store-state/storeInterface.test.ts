@@ -13,9 +13,15 @@ class CounterStore extends StoreInterface<CounterState> {
   constructor() {
     super(() => new CounterState());
   }
+  /**
+   * @override
+   */
   public increment(): void {
     this.emit(this.cloneState({ count: this.state.count + 1 }));
   }
+  /**
+   * @override
+   */
   public setMeta(updated: boolean): void {
     this.emit(this.cloneState({ meta: { updated } }));
   }
@@ -110,6 +116,9 @@ describe('StoreInterface', () => {
   it('cloneState works with class instance state', () => {
     class CustomState implements StoreStateInterface {
       public value = 1;
+      /**
+       * @override
+       */
       public get double(): number {
         return this.value * 2;
       }
@@ -129,13 +138,22 @@ describe('StoreInterface', () => {
     class AdvancedState implements StoreStateInterface {
       public value = 5;
       public _hidden = 10;
+      /**
+       * @override
+       */
       public get double(): number {
         return this.value * 2;
       }
 
+      /**
+       * @override
+       */
       public set double(v: number) {
         this.value = v / 2;
       }
+      /**
+       * @override
+       */
       public inc(): void {
         this.value++;
       }
@@ -189,6 +207,9 @@ describe('StoreInterface', () => {
   it('cloneState can override class methods (not recommended, but possible)', () => {
     class MethodState implements StoreStateInterface {
       public value = 1;
+      /**
+       * @override
+       */
       public fn(): string {
         return 'original';
       }

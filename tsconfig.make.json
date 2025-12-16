@@ -1,18 +1,18 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+    "composite": false,
     "rootDir": ".",
-    "outDir": "./ts-build/make",
     "noEmit": true,
+    "skipLibCheck": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.make.tsbuildinfo"
   },
-  "include": ["./make/**/*.ts", "vitest.config.ts"],
+  "include": ["./tools/**/*.ts"],
   "exclude": [
     "**/node_modules/*",
     "**/dist",
     "**/build",
-    "packages/create-app/templates"
-  ],
-  "references": [{ "path": "./packages/fe-release" }]
+    "packages/create-app/templates",
+    "packages/**"
+  ]
 }

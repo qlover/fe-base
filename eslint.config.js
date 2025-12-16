@@ -35,7 +35,8 @@ export default tseslint.config([
   },
 
   {
-    files: ['packages/**/*.{js,jsx,ts,tsx}', 'make/**/*.{js,jsx,ts,tsx}'],
+    name: 'lint-general',
+    files: ['packages/**/*.{js,jsx}', 'tools/**/*.{js,jsx}'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: {
@@ -54,7 +55,9 @@ export default tseslint.config([
   },
 
   {
-    files: ['packages/**/*.{ts,tsx}', 'make/**/*.{ts,tsx}'],
+    name: 'lint-packages',
+    files: ['packages/**/*.{ts,tsx}'],
+    ignores: ['**/__tests__/**', '**/__mocks__/**', '**/tsup.config.ts'],
     extends: [...tseslint.configs.recommended],
     languageOptions: {
       parserOptions: {
@@ -89,6 +92,7 @@ export default tseslint.config([
   // fe-corekit common
   restrictGlobals(
     {
+      name: 'lint-fe-corekit',
       files: ['packages/fe-corekit/**/*.ts'],
       languageOptions: {
         globals: {
@@ -107,6 +111,7 @@ export default tseslint.config([
   // fe-corekit server
   restrictGlobals(
     {
+      name: 'lint-corekit-node',
       files: ['packages/corekit-node/**/*.ts'],
       languageOptions: {
         globals: globals.node
@@ -121,6 +126,7 @@ export default tseslint.config([
 
   // react tsx
   {
+    name: 'lint-tsx',
     files: ['packages/**/*.{ts,tsx}'],
     ignores: ['packages/create-app/templates/next-app/src/app/**/*.tsx'],
     languageOptions: {
@@ -140,14 +146,35 @@ export default tseslint.config([
     }
   },
 
-  // vitest
+  // tools 和配置文件使用宽松规则
+  {
+    name: 'lint-tools',
+    files: ['tools/**/*.{ts,tsx}', '**/tsup.config.ts'],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    },
+    rules: {
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off'
+    }
+  },
+
+  // vitest (包含所有测试相关文件)
   restrictGlobals(
     {
+      name: 'lint-vitest',
       files: [
-        'packages/**/__tests__/**/*.test.ts',
-        'packages/**/__tests__/**/*.test.tsx'
+        'packages/**/__tests__/**/*.{ts,tsx}',
+        'packages/**/__mocks__/**/*.{ts,tsx}'
       ],
+      extends: [...tseslint.configs.recommended],
       plugins: {
+        '@qlover-eslint': qloverEslint,
         vitest
       },
       languageOptions: {
@@ -158,6 +185,23 @@ export default tseslint.config([
         }
       },
       rules: {
+        '@qlover-eslint/ts-class-method-return': 'error',
+        '@qlover-eslint/ts-class-member-accessibility': 'error',
+        '@qlover-eslint/ts-class-override': 'error',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/no-empty-object-type': 'off',
+        // TODO: 修复 test 文件的 any 类型
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {
+            vars: 'all',
+            varsIgnorePattern: '^_',
+            args: 'after-used',
+            argsIgnorePattern: '^_'
+          }
+        ],
+        '@typescript-eslint/ban-ts-comment': 'off',
         // Fix @typescript-eslint/no-unused-expressions rule configuration
         '@typescript-eslint/no-unused-expressions': [
           'error',

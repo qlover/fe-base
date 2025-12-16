@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 import pkg from './package.json';
-import { toPureCamelCase } from '../../make/toPureCamelCase';
+import { toPureCamelCase } from '../../tools/toPureCamelCase.js';
 import { builtinModules } from 'module';
 import { readdirSync } from 'fs';
 

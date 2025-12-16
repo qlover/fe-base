@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ObjectStorage } from '../../src/storage/impl/ObjectStorage';
 import { JSONSerializer } from '../../src/serializer';
 

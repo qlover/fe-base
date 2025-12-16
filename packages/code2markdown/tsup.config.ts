@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 import { builtinModules } from 'module';
 import pkg from './package.json';
-import { copyAssets } from '../../make/copyAssets';
+import { copyAssets } from '../../tools/copyAssets';
 
 const external = [
   ...builtinModules,

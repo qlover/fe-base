@@ -102,7 +102,7 @@ describe('AbortError', () => {
 });
 
 describe('AbortPlugin', () => {
-  let plugin: AbortPlugin;
+  let plugin: AbortPlugin<any>;
   let mockLogger: LoggerInterface;
 
   beforeEach(() => {

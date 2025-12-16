@@ -2,14 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": ".",
+    "rootDir": "src",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "target": "ES5",
     "strict": true,
     "baseUrl": "./",
-    "allowJs": true
+    "allowJs": true,
+    "checkJs": false
   },
-  "include": ["src", "*.ts", "*.json"],
-  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"],
+  "include": ["src"],
+  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__", "../../tools"],
   "references": [{ "path": "../logger" }]
 }
