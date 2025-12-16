@@ -13,7 +13,11 @@ export interface ColorSegment {
   style?: ColorStyle;
 }
 
-export class ColorFormatter implements FormatterInterface {
+type ColorContext = {
+  value: ColorSegment[];
+};
+
+export class ColorFormatter implements FormatterInterface<ColorContext> {
   public static defaultStyle: ColorStyle = {
     color: 'inherit',
     background: 'inherit',
@@ -70,7 +74,7 @@ export class ColorFormatter implements FormatterInterface {
    * Format log event
    * @override
    */
-  public format(event: LogEvent): unknown[] {
+  public format(event: LogEvent<ColorContext>): unknown[] {
     const { level, args, context } = event;
 
     // If the first argument is a string and the context is an array of color segments

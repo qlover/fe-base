@@ -80,7 +80,7 @@ import { LogEvent } from './interface/LogEvent';
  * // Console output: [2024-03-21 14:30:45 INFO] Formatted message
  * ```
  */
-export class ConsoleHandler implements HandlerInterface {
+export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
   /**
    * Creates a new ConsoleHandler instance
    *
@@ -265,7 +265,7 @@ export class ConsoleHandler implements HandlerInterface {
    * });
    * ```
    */
-  public append(event: LogEvent): void {
+  public append(event: LogEvent<Ctx>): void {
     const { level, args } = event;
 
     const formattedArgs = this.formatter ? this.formatter.format(event) : args;

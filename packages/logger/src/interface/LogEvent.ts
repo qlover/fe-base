@@ -1,5 +1,3 @@
-import { LogContext } from './LogContext';
-
 /**
  * Represents a log event in the logging system
  *
@@ -89,7 +87,7 @@ import { LogContext } from './LogContext';
  * );
  * ```
  */
-export class LogEvent<Ctx> {
+export class LogEvent<Ctx = unknown> {
   /**
    * Timestamp when the log event was created
    *
