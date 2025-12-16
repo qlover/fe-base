@@ -25,6 +25,10 @@ export default tseslint.config([
       '**/build/**',
       '**/ts-build/**',
       '**/node_modules/**',
+      '**/.nx/**',
+      '**/.cache/**',
+      '**/coverage/**',
+      '**/*.d.ts',
       // TODO: open templates later(pnpm lint command very slow)
       'packages/**/templates/**'
     ]
@@ -54,12 +58,8 @@ export default tseslint.config([
     extends: [...tseslint.configs.recommended],
     languageOptions: {
       parserOptions: {
-        project: [
-          './tsconfig.json',
-          './tsconfig.test.json',
-          './tsconfig.make.json',
-          './packages/*/tsconfig.json'
-        ]
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       }
     },
     plugins: {
