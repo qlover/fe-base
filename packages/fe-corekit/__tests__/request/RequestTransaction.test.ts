@@ -322,6 +322,9 @@ describe('RequestTransaction Advanced Tests', () => {
         > {}
 
       class ApiClient extends RequestTransaction<ApiClientConfig> {
+        /**
+         * @override
+         */
         public test(): Promise<ApiTestTransaction['response']> {
           return this.request<ApiTestTransaction>({
             url: 'https://api.example.com/data',
@@ -330,6 +333,9 @@ describe('RequestTransaction Advanced Tests', () => {
           });
         }
 
+        /**
+         * @override
+         */
         public test2(
           data: ApiTestTransaction['request']
         ): Promise<ApiTestTransaction['response']> {

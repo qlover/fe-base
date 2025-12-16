@@ -123,7 +123,7 @@ import { LogEvent } from './LogEvent';
  * }
  * ```
  */
-export interface HandlerInterface {
+export interface HandlerInterface<Ctx = unknown> {
   /**
    * Processes and outputs a log event
    *
@@ -211,7 +211,7 @@ export interface HandlerInterface {
    * }
    * ```
    */
-  append(event: LogEvent): void;
+  append(event: LogEvent<Ctx>): void;
   /**
    * Sets or updates the formatter for this handler
    *

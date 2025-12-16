@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "rootDir": ".",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tools.tsbuildinfo"
+  },
+  "include": ["./tools/**/*.ts", "packages/**/src/**/*.ts"],
+  "exclude": [
+    "**/node_modules/*",
+    "**/dist",
+    "**/build",
+    "packages/create-app/templates"
+  ]
+}

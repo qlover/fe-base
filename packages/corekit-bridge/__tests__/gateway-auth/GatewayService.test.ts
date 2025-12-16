@@ -114,14 +114,23 @@ class TestGatewayService extends GatewayService<
     });
   }
 
+  /**
+   * @override
+   */
   public async getUser(id: number): Promise<TestUser | null> {
     return this.execute('getUser', { id });
   }
 
+  /**
+   * @override
+   */
   public async getUsers(): Promise<TestUser[] | null> {
     return this.execute('getUsers', {});
   }
 
+  /**
+   * @override
+   */
   public async createUser(params: {
     name: string;
     email: string;
@@ -129,6 +138,9 @@ class TestGatewayService extends GatewayService<
     return this.execute('createUser', params);
   }
 
+  /**
+   * @override
+   */
   public async customAction(_params: unknown): Promise<unknown> {
     return this.execute('getUser', _params, async () => {
       return { id: 999, name: 'Custom', email: 'custom@example.com' };

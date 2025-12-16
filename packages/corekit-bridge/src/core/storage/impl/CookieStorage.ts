@@ -1,5 +1,7 @@
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
-import Cookies, { type CookieAttributes } from 'js-cookie';
+import Cookies from 'js-cookie';
+
+type CookieAttributes = Cookies.CookieAttributes;
 
 /**
  * CookieStorage

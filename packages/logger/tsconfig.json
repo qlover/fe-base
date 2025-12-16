@@ -1,13 +1,26 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "./ts-build",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "skipLibCheck": true,
     "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["vitest/globals", "node"]
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src", "src/**/*.ts", "__tests__/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "ts-build",
+    "__mocks__",
+    "../../tools"
+  ]
 }

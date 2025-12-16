@@ -82,6 +82,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.data.clear();
     this.shouldFailGetItem = false;
@@ -1035,14 +1038,18 @@ describe('AsyncStore subclass implementation', () => {
 
     /**
      * Custom method to set custom property
-     */
+
+     * @override
+          */
     public setCustomProperty(value: string): void {
       this.customProperty = value;
     }
 
     /**
      * Custom method to get custom property
-     */
+
+     * @override
+          */
     public getCustomProperty(): string {
       return this.customProperty;
     }
@@ -1075,7 +1082,9 @@ describe('AsyncStore subclass implementation', () => {
 
     /**
      * Custom async operation method
-     */
+
+     * @override
+          */
     public async fetchData(): Promise<void> {
       this.start();
       try {
@@ -1299,7 +1308,9 @@ describe('AsyncStore extension patterns', () => {
 
     /**
      * Set expiration for the current state
-     */
+
+     * @override
+          */
     public setExpiration(expiresInMs: number): void {
       const expires = Date.now() + expiresInMs;
       this.updateState({
@@ -1394,6 +1405,9 @@ describe('AsyncStore extension patterns', () => {
         this.maxRetries = maxRetries;
       }
 
+      /**
+       * @override
+       */
       public getRetryCount(): number {
         return this.retryCount;
       }
@@ -1408,7 +1422,9 @@ describe('AsyncStore extension patterns', () => {
 
       /**
        * Retry the operation
-       */
+
+       * @override
+              */
       public async retry(operation: () => Promise<TestUser>): Promise<void> {
         if (this.retryCount >= this.maxRetries) {
           return;
@@ -1424,6 +1440,9 @@ describe('AsyncStore extension patterns', () => {
         }
       }
 
+      /**
+       * @override
+       */
       public canRetry(): boolean {
         return this.retryCount < this.maxRetries;
       }
@@ -1497,6 +1516,9 @@ describe('AsyncStore extension patterns', () => {
     > {
       protected baseProperty: string = 'base';
 
+      /**
+       * @override
+       */
       public getBaseProperty(): string {
         return this.baseProperty;
       }
@@ -1511,10 +1533,16 @@ describe('AsyncStore extension patterns', () => {
     > {
       private derivedProperty: string = 'derived';
 
+      /**
+       * @override
+       */
       public getDerivedProperty(): string {
         return this.derivedProperty;
       }
 
+      /**
+       * @override
+       */
       public start(result?: TestUser | undefined): void {
         this.baseProperty = 'modified-base';
         this.derivedProperty = 'modified-derived';

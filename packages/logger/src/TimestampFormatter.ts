@@ -355,7 +355,7 @@ const defaultLocaleOptions: Intl.DateTimeFormatOptions = {
  * });
  * ```
  */
-export class TimestampFormatter implements FormatterInterface {
+export class TimestampFormatter<Ctx> implements FormatterInterface<Ctx> {
   /**
    * Creates a new TimestampFormatter instance
    *
@@ -447,7 +447,7 @@ export class TimestampFormatter implements FormatterInterface {
     args,
     context,
     loggerName
-  }: LogEvent): unknown[] {
+  }: LogEvent<Ctx>): unknown[] {
     const {
       locale = 'zh-CN',
       localeOptions,

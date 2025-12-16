@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Mock modules
 vi.mock('fs-extra', () => ({
   default: {

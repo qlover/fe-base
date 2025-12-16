@@ -1,5 +1,3 @@
-import { LogContext } from './LogContext';
-
 /**
  * Represents a log event in the logging system
  *
@@ -217,7 +215,7 @@ export class LogEvent<Ctx = unknown> {
      * );
      * ```
      */
-    public context?: LogContext<Ctx>
+    public context?: Ctx
   ) {
     /**
      * Initialize the timestamp to the current time

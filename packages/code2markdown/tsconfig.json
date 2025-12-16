@@ -1,11 +1,20 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "allowJs": true
   },
-  "include": ["src", "example"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src", "example", "package.json"],
+  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"],
+  "references": [
+    { "path": "../fe-corekit" },
+    { "path": "../env-loader" },
+    { "path": "../scripts-context" }
+  ]
 }

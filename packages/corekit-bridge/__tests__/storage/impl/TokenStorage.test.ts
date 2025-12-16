@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TokenStorage } from '../../../src/core/storage/impl/TokenStorage';
 import {
@@ -96,7 +95,9 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
 
   /**
    * Reset mock storage state
-   */
+
+   * @override
+      */
   public reset(): void {
     this.data.clear();
     this.calls = {
@@ -109,6 +110,7 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
 
   /**
    * Directly set data (simulating existing storage)
+   * @override
    * @param key - Storage key
    * @param value - Value to set
    */

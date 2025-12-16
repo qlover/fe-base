@@ -8,14 +8,14 @@ import { FormatterInterface } from '../src/interface/FormatterInterface';
 
 describe('Logger', () => {
   // Create a mock handler for testing
-  class MockHandler implements HandlerInterface {
-    public events: LogEvent[] = [];
+  class MockHandler<Ctx> implements HandlerInterface<Ctx> {
+    public events: LogEvent<Ctx>[] = [];
     public formatter: FormatterInterface | null = null;
 
     /**
      * @override
      */
-    public append(event: LogEvent): void {
+    public append(event: LogEvent<Ctx>): void {
       this.events.push(event);
     }
 
@@ -27,7 +27,7 @@ describe('Logger', () => {
     }
   }
 
-  let mockHandler: MockHandler;
+  let mockHandler: MockHandler<unknown>;
   let consoleSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -363,8 +363,8 @@ describe('Logger', () => {
 
   describe('appender management', () => {
     let logger: Logger;
-    let mockHandler1: MockHandler;
-    let mockHandler2: MockHandler;
+    let mockHandler1: MockHandler<unknown>;
+    let mockHandler2: MockHandler<unknown>;
 
     beforeEach(() => {
       mockHandler1 = new MockHandler();
@@ -388,7 +388,9 @@ describe('Logger', () => {
       /**
        * @override
        */
-      public format(event: LogEvent): string[] {
+      public format(
+        event: LogEvent
+      ): string[] {
         return [
           `[${event.loggerName}][${event.level}]`,
           ...(event.args as string[])

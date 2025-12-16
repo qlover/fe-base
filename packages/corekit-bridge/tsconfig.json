@@ -1,11 +1,28 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "sourceMap": false,
     "inlineSourceMap": false,
     "inlineSources": false,
     "importHelpers": false,
-    "declaration": false
+    "allowJs": true,
+    "checkJs": false
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "ts-build",
+    "__tests__",
+    "__mocks__",
+    "../../tools"
+  ],
+  "references": [
+    { "path": "../logger" },
+    { "path": "../env-loader" },
+    { "path": "../fe-corekit" }
+  ]
 }

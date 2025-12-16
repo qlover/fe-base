@@ -1,7 +1,7 @@
 import ReleaseContext, {
   ReleaseContextOptions
 } from '../../src/implments/ReleaseContext';
-import { defaultFeConfig } from '../../../scripts-context/src';
+import { defaultFeConfig } from '@qlover/scripts-context';
 import { WorkspaceValue } from '../../src/plugins/workspaces/Workspaces';
 
 describe('ReleaseContext', () => {

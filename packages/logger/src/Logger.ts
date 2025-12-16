@@ -124,7 +124,7 @@ export const defaultLevels = {
  * };
  * ```
  */
-export type LoggerOptions = {
+export type LoggerOptions<Ctx> = {
   /**
    * Silent mode - when true, no logs will be output regardless of level
    * Useful for completely disabling logging in production or test environments
@@ -181,7 +181,7 @@ export type LoggerOptions = {
    *
    * @example [new ConsoleHandler(), new FileAppender('./logs/app.log')]
    */
-  handlers?: HandlerInterface | HandlerInterface[];
+  handlers?: HandlerInterface<Ctx> | HandlerInterface<Ctx>[];
 };
 
 /**
@@ -308,7 +308,7 @@ export type LoggerOptions = {
  * }
  * ```
  */
-export class Logger implements LoggerInterface {
+export class Logger<Ctx = unknown> implements LoggerInterface<Ctx> {
   /**
    * Creates a new Logger instance
    *
@@ -318,7 +318,7 @@ export class Logger implements LoggerInterface {
    * @note If no levels are provided, defaultLevels will be used
    * @note If no handlers are provided, an empty array will be used (silent logging)
    */
-  constructor(protected options: LoggerOptions = {}) {
+  constructor(protected options: LoggerOptions<Ctx> = {}) {
     options.name = options.name || Date.now().toString();
     options.levels = options.levels || defaultLevels;
 
@@ -346,8 +346,8 @@ export class Logger implements LoggerInterface {
    * @important This method is named 'addAppender' for legacy/compatibility reasons,
    * but it works with any object implementing HandlerInterface
    */
-  public addAppender(appender: HandlerInterface): void {
-    (this.options.handlers as HandlerInterface[]).push(appender);
+  public addAppender(appender: HandlerInterface<Ctx>): void {
+    (this.options.handlers as HandlerInterface<Ctx>[]).push(appender);
   }
 
   /**
@@ -420,8 +420,12 @@ export class Logger implements LoggerInterface {
     // Create and distribute log event to all handlers
     const logEvent = new LogEvent(level, args, this.options.name!, ctx);
 
-    for (const handler of handlers as HandlerInterface[]) {
-      handler.append(logEvent);
+    const _handlers = Array.isArray(handlers) ? handlers : [handlers];
+
+    for (const handler of _handlers) {
+      if (handler) {
+        handler.append(logEvent as LogEvent<Ctx>);
+      }
     }
   }
 

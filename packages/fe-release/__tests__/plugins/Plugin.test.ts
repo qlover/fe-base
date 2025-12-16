@@ -16,6 +16,9 @@ class TestPlugin extends ScriptPlugin<ReleaseContext, TestPluginProps> {
     super(context, 'test-plugin', props);
   }
 
+  /**
+   * @override
+   */
   public async testStep<T>(label: string, task: () => Promise<T>): Promise<T> {
     return this.step({ label, task });
   }

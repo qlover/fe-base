@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SyncStorage } from '../../src/storage/impl/SyncStorage';
 import type { SerializerIneterface } from '../../src/serializer';
 import type { Encryptor } from '../../src/encrypt';
@@ -68,6 +67,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.data.clear();
     this.calls = {
@@ -79,6 +81,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
   }
 
   // Helper method to directly set data (simulating existing storage)
+  /**
+   * @override
+   */
   public directSet(key: string, value: unknown): void {
     this.data.set(key, value);
   }
@@ -133,6 +138,9 @@ class MockSerializer<T = unknown> implements SerializerIneterface<T, string> {
     }
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.calls = {
       serialize: [],
@@ -188,6 +196,9 @@ class MockEncryptor<T = unknown> implements Encryptor<T, string> {
     return data.replace('encrypted_', '') as T;
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.calls = {
       encrypt: [],
@@ -240,6 +251,9 @@ class MockJSONEncryptor<T = unknown> implements Encryptor<T, string> {
     }
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.calls = {
       encrypt: [],

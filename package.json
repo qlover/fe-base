@@ -22,9 +22,9 @@
     "nx:build": "nx affected:build",
     "nx:build:force": "pnpm nx run-many --target=build --all --skip-nx-cache --parallel --maxParallel=4",
     "prettier": "prettier --ignore-path .prettierignore **/*.{js,ts,json,cjs,mjs,.md,.mdx} --write",
-    "lint": "eslint ./packages ./make",
-    "lint:logger": "eslint ./packages/logger/src/Logger.ts",
-    "lint:fix": "eslint ./packages ./make --fix",
+    "lint": "eslint ./packages ./tools --cache --cache-location node_modules/.cache/eslint",
+    "lint:logger": "eslint ./packages/logger/src/Logger.ts --cache",
+    "lint:fix": "eslint ./packages ./tools --fix --cache --cache-location node_modules/.cache/eslint",
     "fix": "pnpm lint:fix && pnpm prettier",
     "nx:lint": "nx run-many --target=lint --all",
     "test": "vitest run",
@@ -33,7 +33,8 @@
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --build"
   },
   "keywords": [
     "fe",

@@ -100,6 +100,9 @@ class MockStorage<Key = string> implements SyncStorageInterface<Key> {
     this.data.clear();
   }
 
+  /**
+   * @override
+   */
   public reset(): void {
     this.data.clear();
     this.shouldFailGetItem = false;

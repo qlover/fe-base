@@ -711,42 +711,54 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Get login attempts
-       */
+
+       * @override
+              */
       public getLoginAttempts(): number {
         return this.loginAttempts;
       }
 
       /**
        * Custom method: Reset login attempts
-       */
+
+       * @override
+              */
       public resetLoginAttempts(): void {
         this.loginAttempts = 0;
       }
 
       /**
        * Custom method: Check if rate limited
-       */
+
+       * @override
+              */
       public isRateLimited(): boolean {
         return this.loginAttempts >= this.maxLoginAttempts;
       }
 
       /**
        * Custom method: Get service features
-       */
+
+       * @override
+              */
       public getFeatures(): typeof this.customFeatures {
         return { ...this.customFeatures };
       }
 
       /**
        * Custom method: Toggle feature
-       */
+
+       * @override
+              */
       public toggleFeature(feature: keyof typeof this.customFeatures): void {
         this.customFeatures[feature] = !this.customFeatures[feature];
       }
 
       /**
        * Custom validation for login parameters
-       */
+
+       * @override
+              */
       private validateLoginParams(params: unknown): void {
         if (!params || typeof params !== 'object') {
           throw new Error('Invalid login parameters');
@@ -764,7 +776,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom validation for registration parameters
-       */
+
+       * @override
+              */
       private validateRegistrationParams(params: unknown): void {
         if (!params || typeof params !== 'object') {
           throw new Error('Invalid registration parameters');
@@ -789,7 +803,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Send welcome email
-       */
+
+       * @override
+              */
       private async sendWelcomeEmail(
         _loginData: LoginResponseData
       ): Promise<void> {
@@ -799,7 +815,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Cleanup user sessions
-       */
+
+       * @override
+              */
       private async cleanupUserSessions(): Promise<void> {
         // Mock implementation
         // console.log('Cleaning up user sessions');
@@ -857,7 +875,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Add event listener
-       */
+
+       * @override
+              */
       public addEventListener(
         event: string,
         callback: (data?: unknown) => void
@@ -870,7 +890,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Remove event listener
-       */
+
+       * @override
+              */
       public removeEventListener(
         event: string,
         callback: (data?: unknown) => void
@@ -886,7 +908,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Emit event with error handling
-       */
+
+       * @override
+              */
       private emit(event: string, data?: unknown): void {
         const listeners = this.eventListeners.get(event);
         if (listeners) {
@@ -903,7 +927,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Start session timeout
-       */
+
+       * @override
+              */
       private startSessionTimeout(): void {
         this.clearSessionTimeout();
         this.sessionTimeout = setTimeout(
@@ -917,7 +943,9 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Clear session timeout
-       */
+
+       * @override
+              */
       private clearSessionTimeout(): void {
         if (this.sessionTimeout) {
           clearTimeout(this.sessionTimeout);
@@ -927,14 +955,18 @@ describe('UserAuthService', () => {
 
       /**
        * Custom method: Enable/disable auto refresh
-       */
+
+       * @override
+              */
       public setAutoRefresh(enabled: boolean): void {
         this.autoRefreshEnabled = enabled;
       }
 
       /**
        * Custom method: Get session info
-       */
+
+       * @override
+              */
       public getSessionInfo(): {
         hasTimeout: boolean;
         autoRefreshEnabled: boolean;

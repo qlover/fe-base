@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import { parsePackagesMap } from './make/vite-mock-package/index';
+import { parsePackagesMap } from './tools/vite-mock-package/index';
 
 export default defineConfig(() => {
   // Use function form to defer execution, avoiding blocking VSCode TypeScript server

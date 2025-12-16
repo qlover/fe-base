@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@qlover/fe-corekit": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "lodash": "^4.17.21"
   },
   "dependencies": {

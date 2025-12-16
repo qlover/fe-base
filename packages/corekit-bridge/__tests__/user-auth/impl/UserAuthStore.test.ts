@@ -58,10 +58,16 @@ class MockKeyStorage extends KeyStorage<string, MockUser> {
     this.storage.delete(this.key);
   }
 
+  /**
+   * @override
+   */
   public clear(): void {
     this.storage.clear();
   }
 
+  /**
+   * @override
+   */
   public has(): boolean {
     return this.storage.has(this.key);
   }
@@ -92,6 +98,9 @@ class MockCredentialStorage extends KeyStorage<string, string> {
     this.storage.delete(this.key);
   }
 
+  /**
+   * @override
+   */
   public clear(): void {
     this.storage.clear();
   }
@@ -368,6 +377,9 @@ describe('UserAuthStore', () => {
             super(userInfo, credential);
           }
 
+          /**
+           * @override
+           */
           public getCustomProperty(): string {
             return this.customProperty;
           }
@@ -1674,6 +1686,9 @@ describe('UserAuthStore', () => {
           super(userInfo, credential);
         }
 
+        /**
+         * @override
+         */
         public getUserInfo(): MockUser | null {
           return this.userInfo;
         }

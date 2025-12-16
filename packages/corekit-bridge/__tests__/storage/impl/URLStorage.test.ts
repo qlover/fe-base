@@ -557,8 +557,14 @@ describe('URLStorage', () => {
         caseSensitive: true
       });
 
-      const options1: URLStorageOptions = { key: 'token', caseSensitive: true };
-      const options2: URLStorageOptions = { key: 'token', caseSensitive: true };
+      const options1: URLStorageOptions<string> = {
+        key: 'token',
+        caseSensitive: true
+      };
+      const options2: URLStorageOptions<string> = {
+        key: 'token',
+        caseSensitive: true
+      };
 
       const key1 = storage['getCacheKey'](options1);
       const key2 = storage['getCacheKey'](options2);

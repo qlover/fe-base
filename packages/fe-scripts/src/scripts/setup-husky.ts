@@ -19,7 +19,7 @@ export interface SetupHuskyOptions extends ScriptSharedInterface {
 }
 
 export async function setupHusky(
-  options: ScriptContextInterface<SetupHuskyOptions>
+  options: Partial<ScriptContextInterface<SetupHuskyOptions>>
 ): Promise<void> {
   const context = new ScriptContext('fe-scripts-setup-husky', options);
   const { logger, shell } = context;

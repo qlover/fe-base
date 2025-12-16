@@ -37,7 +37,7 @@ function composeBranches(
 }
 
 export function cleanBranch(
-  options: ScriptContextInterface<CleanBranchOptions>
+  options: Partial<ScriptContextInterface<CleanBranchOptions>>
 ): void {
   const context = new ScriptContext('fe-scripts-clean-branch', options);
   const { logger, verbose, dryRun } = context;

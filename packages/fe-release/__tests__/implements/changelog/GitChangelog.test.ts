@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GitChangelog } from '../../../src/implments/changelog/GitChangeLog';
 import { createTestLogger, createTestShell } from '../../helpers';
 import { vi, describe, it, expect, beforeEach } from 'vitest';

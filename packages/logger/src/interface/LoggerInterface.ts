@@ -75,7 +75,7 @@ import { LogContext } from './LogContext';
  * }));
  * ```
  */
-export interface LoggerInterface {
+export interface LoggerInterface<Ctx = unknown> {
   /**
    * General purpose logging method (alias for info)
    *
@@ -287,7 +287,7 @@ export interface LoggerInterface {
    * }
    * ```
    */
-  addAppender(appender: HandlerInterface): void;
+  addAppender(appender: HandlerInterface<Ctx>): void;
   /**
    * Creates a new LogContext instance for structured logging
    *

@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "target": "ESNEXT",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "outDir": "ts-build",
+    "baseUrl": "./",
+    "rootDir": "src",
+    "noEmit": false,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "checkJs": false,
+    "incremental": true,
+    "strict": true,
+    "types": ["vitest/globals"]
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true
+  }
+}

@@ -56,7 +56,9 @@ class CustomMessage implements TestMessage {
    * Custom method to test prototype chain preservation
    *
    * Returns display content or fallback text
-   */
+
+   * @override
+      */
   public getDisplayContent(): string {
     return this.content || 'No content';
   }
