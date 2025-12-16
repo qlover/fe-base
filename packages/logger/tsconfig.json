@@ -3,14 +3,16 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
+    "outDir": "ts-build",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "skipLibCheck": true,
     "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowJs": true
   },
-  "include": ["src", "*.ts", "__tests__", "__mocks__"],
-  "exclude": ["node_modules", "dist", "ts-build"]
+  "include": ["src", "src/**/*.ts", "*.ts"],
+  "exclude": ["node_modules", "dist", "ts-build", "__tests__", "__mocks__"]
 }

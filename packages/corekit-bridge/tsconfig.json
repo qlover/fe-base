@@ -7,10 +7,11 @@
     "sourceMap": false,
     "inlineSourceMap": false,
     "inlineSources": false,
-    "importHelpers": false
+    "importHelpers": false,
+    "allowJs": true
   },
-  "include": ["src", "*.ts", "__tests__", "__mocks__"],
-  "exclude": ["dist", "node_modules", "ts-build"],
+  "include": ["src", "*.ts"],
+  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"],
   "references": [
     { "path": "../logger" },
     { "path": "../env-loader" },

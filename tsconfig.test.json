@@ -4,7 +4,9 @@
     "composite": false,
     "noEmit": true,
     "types": ["vitest/globals", "node"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "rootDir": ".",
+    "moduleResolution": "bundler"
   },
   "include": ["packages/**/__tests__/**/*.ts", "packages/**/__mocks__/**/*.ts"],
   "exclude": [

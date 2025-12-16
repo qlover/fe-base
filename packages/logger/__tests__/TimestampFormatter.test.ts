@@ -1,5 +1,6 @@
 import { TimestampFormatter, DateFormatType } from '../src/TimestampFormatter';
 import { LogEvent } from '../src/interface/LogEvent';
+import { LogContext } from '../src/interface/LogContext';
 
 describe('TimestampFormatter', () => {
   const TEST_TIMESTAMP = 1634567890123;
@@ -25,9 +26,9 @@ describe('TimestampFormatter', () => {
 
   it('should format with date format type', () => {
     const formatter = new TimestampFormatter();
-    const event = new LogEvent('info', ['Test message'], 'testLogger', {
+    const event = new LogEvent('info', ['Test message'], 'testLogger', new LogContext({
       formatType: 'date'
-    });
+    }));
     event.timestamp = TEST_TIMESTAMP;
 
     const formattedOutput = formatter.format(event);
@@ -48,9 +49,9 @@ describe('TimestampFormatter', () => {
 
   it('should format with time format type', () => {
     const formatter = new TimestampFormatter();
-    const event = new LogEvent('info', ['Test message'], 'testLogger', {
+    const event = new LogEvent('info', ['Test message'], 'testLogger', new LogContext({
       formatType: 'time'
-    });
+    }));
     event.timestamp = TEST_TIMESTAMP;
 
     const formattedOutput = formatter.format(event);
@@ -123,7 +124,7 @@ describe('TimestampFormatter', () => {
     for (const formatType of formatTypes) {
       for (const locale of locales) {
         const formatter = new TimestampFormatter({ locale });
-        const event = new LogEvent('info', ['Test'], 'logger', { formatType });
+        const event = new LogEvent('info', ['Test'], 'logger', new LogContext({ formatType }));
         event.timestamp = TEST_TIMESTAMP;
 
         const formattedOutput = formatter.format(event);

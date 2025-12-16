@@ -34,7 +34,7 @@
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",
     "prepare": "husky",
-    "type-check": "tsc --build --noEmit"
+    "type-check": "tsc --build"
   },
   "keywords": [
     "fe",

@@ -3,9 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
+    "outDir": "./ts-build/make",
+    "noEmit": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.make.tsbuildinfo"
   },
-  "include": ["./make", "vitest.config.ts"],
+  "include": ["./make/**/*.ts", "vitest.config.ts"],
   "exclude": [
     "**/node_modules/*",
     "**/dist",
