@@ -15,5 +15,12 @@
     "checkJs": false
   },
   "include": ["src", "src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "ts-build", "__tests__", "__mocks__", "../../tools"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "ts-build",
+    "__tests__",
+    "__mocks__",
+    "../../tools"
+  ]
 }

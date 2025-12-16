@@ -5,7 +5,7 @@
     "rootDir": ".",
     "noEmit": true,
     "skipLibCheck": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.make.tsbuildinfo"
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tools.tsbuildinfo"
   },
   "include": ["./tools/**/*.ts"],
   "exclude": [

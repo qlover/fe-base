@@ -33,7 +33,7 @@ Each sub-project configuration features:
 - Configures independent `tsBuildInfoFile`
 - Can override specific options from the base configuration
 
-### 4. `tsconfig.make.json` - Build Scripts Configuration
+### 4. `tsconfig.tools.json` - Build Scripts Configuration
 
 Dedicated configuration for the `make` directory and root-level utility scripts:
 - Includes the `make` directory and `vitest.config.ts`

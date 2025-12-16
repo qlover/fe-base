@@ -13,6 +13,13 @@
     "noUnusedParameters": true
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules", "templates", "ts-build", "__tests__", "__mocks__"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "templates",
+    "ts-build",
+    "__tests__",
+    "__mocks__"
+  ],
   "references": [{ "path": "../logger" }, { "path": "../scripts-context" }]
 }

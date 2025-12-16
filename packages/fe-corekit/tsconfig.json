@@ -11,6 +11,13 @@
     "checkJs": false
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__", "../../tools"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "ts-build",
+    "__tests__",
+    "__mocks__",
+    "../../tools"
+  ],
   "references": [{ "path": "../logger" }]
 }

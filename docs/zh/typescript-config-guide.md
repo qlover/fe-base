@@ -33,7 +33,7 @@
 - 配置独立的 `tsBuildInfoFile`
 - 可以覆盖基础配置中的特定选项
 
-### 4. `tsconfig.make.json` - 构建脚本配置
+### 4. `tsconfig.tools.json` - 构建脚本配置
 
 专门用于 `make` 目录和根目录工具脚本的配置：
 - 包含 `make` 目录和 `vitest.config.ts`
