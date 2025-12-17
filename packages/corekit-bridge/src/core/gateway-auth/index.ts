@@ -3,7 +3,7 @@ export * from './impl/GatewayExecutor';
 export * from './impl/GatewayService';
 export * from './impl/UserService';
 export * from './impl/ServiceAction';
-export * from './impl/UserService';
+export * from './impl/UserStore';
 export * from './interface/base/BaseServiceInterface';
 export * from './interface/base/ExecutorServiceInterface';
 export * from './interface/LoginInterface';

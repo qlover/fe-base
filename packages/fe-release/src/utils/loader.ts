@@ -39,8 +39,7 @@
  * );
  * ```
  */
-import type { PluginTuple } from './tuple';
-import type { PluginClass } from './tuple';
+import type { PluginTuple, PluginClass } from './tuple';
 import type {
   ScriptContext,
   ScriptPlugin,

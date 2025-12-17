@@ -1,4 +1,8 @@
-import { AbortPlugin } from '@qlover/fe-corekit';
+import {
+  AbortPlugin,
+  type ExecutorError,
+  type ExecutorContext
+} from '@qlover/fe-corekit';
 import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
 import {
   type MessagesStore,
@@ -10,7 +14,6 @@ import type {
   MessageSenderContextOptions,
   MessageSenderPluginContext
 } from './MessageSenderExecutor';
-import type { ExecutorContext, ExecutorError } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**

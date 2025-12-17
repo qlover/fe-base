@@ -85,7 +85,9 @@ export default tseslint.config([
           argsIgnorePattern: '^_'
         }
       ],
-      '@typescript-eslint/ban-ts-comment': 'off'
+      '@typescript-eslint/ban-ts-comment': 'off',
+      // Check for duplicate imports/exports (TypeScript version handles type vs value correctly)
+      'no-duplicate-imports': 'error',
     }
   },
 

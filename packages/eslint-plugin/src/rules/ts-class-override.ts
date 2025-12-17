@@ -629,8 +629,7 @@
  */
 import type { TSESTree } from '@typescript-eslint/types';
 import { createEslintRule } from '../utils/createEslintRule';
-import type { TSESLint } from '@typescript-eslint/utils';
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { type TSESLint, ESLintUtils } from '@typescript-eslint/utils';
 import * as ts from 'typescript';
 import {
   hasOverrideJSDoc,

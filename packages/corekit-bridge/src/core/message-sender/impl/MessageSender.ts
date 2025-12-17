@@ -1,5 +1,9 @@
-import { ExecutorError } from '@qlover/fe-corekit';
-import { AbortPlugin, type AbortPluginConfig } from '@qlover/fe-corekit';
+import {
+  ExecutorError,
+  AbortPlugin,
+  type ExecutorPlugin,
+  type AbortPluginConfig
+} from '@qlover/fe-corekit';
 import {
   type MessageSenderContextOptions,
   type MessageSenderPluginContext,
@@ -16,7 +20,6 @@ import type {
   MessageGetwayInterface
 } from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**

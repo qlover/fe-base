@@ -179,10 +179,7 @@ import {
 export {
   disableGlobals,
   restrictSpecificGlobals,
-  restrictGlobals
-} from './utils/globals-config';
-
-export type {
+  restrictGlobals,
   DisableGlobalsOptions,
   RestrictSpecificGlobalsOptions,
   RestrictGlobalsOptions

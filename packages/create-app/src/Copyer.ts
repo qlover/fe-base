@@ -1,7 +1,6 @@
 import { dirname, join } from 'path';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, promises as fsPromises } from 'fs';
 import ignore from 'ignore';
-import { promises as fsPromises } from 'fs';
 import { Util } from './Util';
 const { copyFile, stat } = fsPromises;
 

@@ -38,7 +38,6 @@
  * ```
  */
 import { Shell, ShellInterface } from '@qlover/scripts-context';
-import type ReleaseContext from '../../implments/ReleaseContext';
 import type { LoggerInterface } from '@qlover/logger';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import {
@@ -47,7 +46,9 @@ import {
 } from '../../defaults';
 import { GithubPRProps } from './GithubPR';
 import { WorkspaceValue } from '../workspaces/Workspaces';
-import { ReleaseContextConfig } from '../../implments/ReleaseContext';
+import ReleaseContext, {
+  ReleaseContextConfig
+} from '../../implments/ReleaseContext';
 
 export interface PullRequestManagerOptions {
   token: string;
