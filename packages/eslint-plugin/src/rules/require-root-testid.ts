@@ -150,8 +150,7 @@
  * @see [Rule source](../../src/rules/require-root-testid.ts)
  * @see [Test source](../../__tests__/rules/require-root-testid.test.ts)
  */
-import type { TSESTree } from '@typescript-eslint/utils';
-import { AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
 import { createEslintRule } from '../utils/createEslintRule';
 
 export const RULE_NAME = 'require-root-testid';
