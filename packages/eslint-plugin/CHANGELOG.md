@@ -1,5 +1,9 @@
 # @qlover/eslint-plugin
 
+## 1.0.8
+
+### Patch Changes
+
 ## 1.0.6
 
 ### Patch Changes
