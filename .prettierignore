@@ -41,6 +41,7 @@ next-env.d.ts
 public/robots.txt
 public/sitemap*.xml
 dist
+ts-build
 .eslintcache
 .npmrc
 .secrets
@@ -67,4 +68,3 @@ playwright/.auth
 **/.git
 **/pnpm-lock.yaml
 packages/create-app/templates/
-
