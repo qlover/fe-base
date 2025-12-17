@@ -79,7 +79,7 @@ pnpm build
 | ------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------- |
 | [@qlover/fe-corekit](./packages/fe-corekit/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-corekit)           | 前端核心工具包，提供存储、序列化、请求等功能   |
 | [@qlover/fe-scripts](./packages/fe-scripts/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-scripts)           | 前端开发脚本工具集，包含清理、提交、检查等命令 |
-| [@qlover/code2markdown](./packages/fe-code2markdown/README.md)         | ![npm](https://img.shields.io/npm/v/@qlover/code2markdown)     | 代码转 Markdown 文档生成工具                   |
+| [@qlover/code2markdown](./packages/code2markdown/README.md)            | ![npm](https://img.shields.io/npm/v/@qlover/code2markdown)     | 代码转 Markdown 文档生成工具                   |
 | [@qlover/fe-release](./packages/fe-release/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/fe-release)           | 项目发布管理工具                               |
 | [@qlover/logger](./packages/logger/README.md)                             | ![npm](https://img.shields.io/npm/v/@qlover/logger)               | 灵活的日志记录系统                             |
 | [@qlover/env-loader](./packages/env-loader/README.md)                     | ![npm](https://img.shields.io/npm/v/@qlover/env-loader)           | 环境变量加载工具                               |

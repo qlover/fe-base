@@ -2,8 +2,6 @@
 
 ESLint plugin for qlover's TypeScript projects.
 
-👉 中文文档 | [English Docs](./README_EN.md)
-
 ## Installation
 
 ```bash
@@ -84,4 +82,9 @@ class Example {
 }
 ```
 
-For more detailed information about each rule, please check the [rule documentation](docs/rules/). 
+For more detailed information about each rule, please check the [rule documentation](docs/rules/).
+
+## License
+
+ISC
+

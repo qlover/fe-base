@@ -72,27 +72,27 @@ pnpm add @qlover/logger
 
 ### Core Toolkit
 
-- **[@qlover/fe-corekit](../../packages/fe-corekit/README.md)** - Frontend core utility library providing storage, serialization, request functions
-- **[@qlover/corekit-node](../../packages/corekit-node/README.md)** - Node.js environment core tools
-- **[@qlover/corekit-bridge](../../packages/corekit-bridge/README.md)** - Core toolkit bridge
-- **[@qlover/logger](../../packages/logger/README.md)** - Flexible logging system
+- **[@qlover/fe-corekit](../../packages/fe-corekit/README_EN.md)** - Frontend core utility library providing storage, serialization, request functions
+- **[@qlover/corekit-node](../../packages/corekit-node/README_EN.md)** - Node.js environment core tools
+- **[@qlover/corekit-bridge](../../packages/corekit-bridge/README_EN.md)** - Core toolkit bridge
+- **[@qlover/logger](../../packages/logger/README_EN.md)** - Flexible logging system
 
 ### Development Tools
 
 - **[@qlover/fe-scripts](../../packages/fe-scripts/README.md)** - Frontend development script toolkit
-- **[@qlover/code2markdown](../../packages/fe-code2markdown/README.md)** - Code to Markdown documentation generation tool
-- **[@qlover/fe-release](../../packages/fe-release/README.md)** - Project release management tool
-- **[@qlover/create-app](../../packages/create-app/README.md)** - Application scaffolding generation tool
+- **[@qlover/code2markdown](../../packages/code2markdown/README_EN.md)** - Code to Markdown documentation generation tool
+- **[@qlover/fe-release](../../packages/fe-release/README_EN.md)** - Project release management tool
+- **[@qlover/create-app](../../packages/create-app/README_EN.md)** - Application scaffolding generation tool
 
 ### Configuration and Standards
 
-- **[@qlover/fe-standard](../../packages/fe-standard/README.md)** - Frontend development standards and specifications
-- **[@qlover/eslint-plugin](../../packages/eslint-plugin/README.md)** - Frontend development ESLint plugin
-- **[@qlover/env-loader](../../packages/env-loader/README.md)** - Environment variable loading tool
+- **[@qlover/fe-standard](../../packages/fe-standard/README_EN.md)** - Frontend development standards and specifications
+- **[@qlover/eslint-plugin](../../packages/eslint-plugin/README_EN.md)** - Frontend development ESLint plugin
+- **[@qlover/env-loader](../../packages/env-loader/README_EN.md)** - Environment variable loading tool
 
 ### Support Tools
 
-- **[@qlover/scripts-context](../../packages/scripts-context/README.md)** - Script execution context tool
+- **[@qlover/scripts-context](../../packages/scripts-context/README_EN.md)** - Script execution context tool
 
 ## 🔧 Common Commands
 
