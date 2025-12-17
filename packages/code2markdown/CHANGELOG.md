@@ -1,5 +1,9 @@
 # @qlover/code2markdown
 
+## 1.3.3
+
+### Patch Changes
+
 ## 1.3.1
 
 ### Patch Changes

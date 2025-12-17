@@ -1,5 +1,16 @@
 # @qlover/corekit-bridge
 
+## 1.8.3
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **logger:** Enhance logging system with generic context support ([f5af499](https://github.com/qlover/fe-base/commit/f5af499c5c4a9955f36861978448ec497dc6fcae)) ([#553](https://github.com/qlover/fe-base/pull/553))
+  - Updated `ColorFormatter`, `Logger`, and `HandlerInterface` to utilize generic types for improved type safety and flexibility.
+  - Modified `LogEvent` and related interfaces to support context-specific logging, allowing for better handling of diverse log data.
+  - Refactored test implementations to align with the new generic structure, ensuring consistency and clarity in logging tests.
+
 ## 1.8.1
 
 ### Patch Changes

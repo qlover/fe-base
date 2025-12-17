@@ -1,5 +1,9 @@
 # @qlover/fe-corekit
 
+## 2.3.3
+
+### Patch Changes
+
 ## 2.3.1
 
 ### Patch Changes
