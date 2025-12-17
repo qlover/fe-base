@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 0.10.6
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **eslint:** Update ESLint configuration and refactor imports across multiple files ([3498985](https://github.com/qlover/fe-base/commit/34989859443b2df9357869ac0d5720783b90d1b8)) ([#556](https://github.com/qlover/fe-base/pull/556))
+  - Modified `eslint.config.js` to add a rule for detecting duplicate imports.
+  - Refactored import statements in various TypeScript files for improved clarity and organization.
+  - Updated `Copyer.ts` to streamline file system operations by consolidating `fs` imports.
+  - Enhanced type imports in several files to improve type safety and maintainability.
+
+  These changes aim to enhance code quality and maintainability across the project.
+
 ## 0.10.5
 
 ### Patch Changes
