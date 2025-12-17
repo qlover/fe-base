@@ -8,10 +8,7 @@
     "rootDir": ".",
     "moduleResolution": "bundler"
   },
-  "include": [
-    "packages/**/__tests__/**/*.ts",
-    "packages/**/__mocks__/**/*.ts"
-  ],
+  "include": ["packages/**/__tests__/**/*.ts", "packages/**/__mocks__/**/*.ts"],
   "exclude": [
     "**/node_modules/**",
     "**/dist/**",

@@ -388,9 +388,7 @@ describe('Logger', () => {
       /**
        * @override
        */
-      public format(
-        event: LogEvent
-      ): string[] {
+      public format(event: LogEvent): string[] {
         return [
           `[${event.loggerName}][${event.level}]`,
           ...(event.args as string[])
