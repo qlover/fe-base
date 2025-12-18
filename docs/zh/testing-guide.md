@@ -244,81 +244,87 @@ function testFunction({ key1, key2, key3 }: TestParams): string {
 describe('testFunction', () => {
   describe('参数组合测试', () => {
     it('应该处理所有参数都存在的情况', () => {
-      expect(testFunction({ key1: 'test', key2: 1, key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key2: 1, key3: true })).toBe(
+        'expected result'
+      );
     });
 
     it('应该处理只有 key1, key2 的情况', () => {
-      expect(testFunction({ key1: 'test', key2: 1 }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key2: 1 })).toBe('expected result');
     });
 
     it('应该处理只有 key1, key3 的情况', () => {
-      expect(testFunction({ key1: 'test', key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key3: true })).toBe(
+        'expected result'
+      );
     });
 
     it('应该处理只有 key2, key3 的情况', () => {
-      expect(testFunction({ key2: 1, key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key2: 1, key3: true })).toBe('expected result');
     });
 
     it('应该处理只有 key1 的情况', () => {
-      expect(testFunction({ key1: 'test' }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test' })).toBe('expected result');
     });
 
     it('应该处理只有 key2 的情况', () => {
-      expect(testFunction({ key2: 1 }))
-        .toBe('expected result');
+      expect(testFunction({ key2: 1 })).toBe('expected result');
     });
 
     it('应该处理只有 key3 的情况', () => {
-      expect(testFunction({ key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key3: true })).toBe('expected result');
     });
 
     it('应该处理空对象的情况', () => {
-      expect(testFunction({}))
-        .toBe('expected result');
+      expect(testFunction({})).toBe('expected result');
     });
   });
 
   describe('边界值测试', () => {
     it('应该处理极限值情况', () => {
-      expect(testFunction({
-        key1: '', // 空字符串
-        key2: Number.MAX_SAFE_INTEGER, // 最大安全整数
-        key3: false
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: '', // 空字符串
+          key2: Number.MAX_SAFE_INTEGER, // 最大安全整数
+          key3: false
+        })
+      ).toBe('expected result');
 
-      expect(testFunction({
-        key1: 'a'.repeat(1000), // 超长字符串
-        key2: Number.MIN_SAFE_INTEGER, // 最小安全整数
-        key3: true
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: 'a'.repeat(1000), // 超长字符串
+          key2: Number.MIN_SAFE_INTEGER, // 最小安全整数
+          key3: true
+        })
+      ).toBe('expected result');
     });
 
     it('应该处理特殊值情况', () => {
-      expect(testFunction({
-        key1: '   ', // 全空格字符串
-        key2: 0, // 零值
-        key3: false
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: '   ', // 全空格字符串
+          key2: 0, // 零值
+          key3: false
+        })
+      ).toBe('expected result');
 
-      expect(testFunction({
-        key1: null as any, // null 值
-        key2: NaN, // NaN 值
-        key3: undefined as any // undefined 值
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: null as any, // null 值
+          key2: NaN, // NaN 值
+          key3: undefined as any // undefined 值
+        })
+      ).toBe('expected result');
     });
 
     it('应该处理无效值情况', () => {
-      expect(() => testFunction({
-        key1: Symbol() as any, // 无效类型
-        key2: {} as any, // 无效类型
-        key3: 42 as any // 无效类型
-      })).toThrow();
+      expect(() =>
+        testFunction({
+          key1: Symbol() as any, // 无效类型
+          key2: {} as any, // 无效类型
+          key3: 42 as any // 无效类型
+        })
+      ).toThrow();
     });
   });
 });
@@ -621,7 +627,20 @@ describe('AsyncService', () => {
 
 ### 类型安全测试
 
+TypeScript 项目的测试不仅要验证运行时行为，还应该确保类型系统的正确性。Vitest 提供了 `expectTypeOf` 工具来进行编译时类型检查。
+
+#### 为什么需要类型测试？
+
+1. **类型推断验证**：确保 TypeScript 能正确推断复杂类型
+2. **泛型约束检查**：验证泛型参数的约束条件
+3. **类型兼容性**：确保类型定义与实际使用匹配
+4. **API 契约保证**：防止类型定义的破坏性变更
+
+#### 基础类型测试
+
 ```typescript
+import { describe, it, expectTypeOf } from 'vitest';
+
 describe('TypeSafetyTests', () => {
   it('should maintain type safety', () => {
     const processor = new DataProcessor<User>();
@@ -630,7 +649,302 @@ describe('TypeSafetyTests', () => {
     expectTypeOf(processor.process).parameter(0).toEqualTypeOf<User>();
     expectTypeOf(processor.process).returns.toEqualTypeOf<ProcessedUser>();
   });
+
+  it('should infer correct return types', () => {
+    const result = getData();
+
+    // 验证返回值类型
+    expectTypeOf(result).toEqualTypeOf<{ id: number; name: string }>();
+    expectTypeOf(result).not.toEqualTypeOf<{ id: string; name: string }>();
+  });
+
+  it('should validate parameter types', () => {
+    function processUser(user: User): void {
+      // implementation
+    }
+
+    // 验证参数类型
+    expectTypeOf(processUser).parameter(0).toMatchTypeOf<{ id: number }>();
+    expectTypeOf(processUser).parameter(0).toHaveProperty('id');
+  });
 });
+```
+
+#### 泛型类型测试
+
+```typescript
+describe('Generic Type Tests', () => {
+  it('should work with generic constraints', () => {
+    class Storage<T extends { id: number }> {
+      store(item: T): T {
+        return item;
+      }
+    }
+
+    const storage = new Storage<User>();
+
+    // 验证泛型类型
+    expectTypeOf(storage.store).parameter(0).toMatchTypeOf<User>();
+    expectTypeOf(storage.store).returns.toMatchTypeOf<User>();
+  });
+
+  it('should validate complex generic types', () => {
+    type ApiResponse<T> = {
+      data: T;
+      status: number;
+      message?: string;
+    };
+
+    const response: ApiResponse<User[]> = {
+      data: [],
+      status: 200
+    };
+
+    // 验证嵌套泛型类型
+    expectTypeOf(response).toMatchTypeOf<ApiResponse<User[]>>();
+    expectTypeOf(response.data).toEqualTypeOf<User[]>();
+  });
+});
+```
+
+#### 联合类型与交叉类型测试
+
+```typescript
+describe('Union and Intersection Types', () => {
+  it('should handle union types correctly', () => {
+    type Result = Success | Error;
+    type Success = { status: 'success'; data: string };
+    type Error = { status: 'error'; message: string };
+
+    function handleResult(result: Result): void {
+      // implementation
+    }
+
+    // 验证联合类型
+    expectTypeOf(handleResult).parameter(0).toMatchTypeOf<Success>();
+    expectTypeOf(handleResult).parameter(0).toMatchTypeOf<Error>();
+  });
+
+  it('should handle intersection types correctly', () => {
+    type Timestamped = { createdAt: Date; updatedAt: Date };
+    type UserWithTimestamp = User & Timestamped;
+
+    const user: UserWithTimestamp = {
+      id: 1,
+      name: 'John',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // 验证交叉类型包含所有属性
+    expectTypeOf(user).toHaveProperty('id');
+    expectTypeOf(user).toHaveProperty('name');
+    expectTypeOf(user).toHaveProperty('createdAt');
+    expectTypeOf(user).toHaveProperty('updatedAt');
+  });
+});
+```
+
+#### 函数重载类型测试
+
+```typescript
+describe('Function Overload Types', () => {
+  it('should validate function overloads', () => {
+    function getValue(key: string): string;
+    function getValue(key: number): number;
+    function getValue(key: string | number): string | number {
+      return key;
+    }
+
+    // 验证不同重载的类型
+    expectTypeOf(getValue).parameter(0).toMatchTypeOf<string | number>();
+    expectTypeOf(getValue('key')).toEqualTypeOf<string>();
+    expectTypeOf(getValue(123)).toEqualTypeOf<number>();
+  });
+});
+```
+
+#### 工具类型测试
+
+```typescript
+describe('Utility Types Tests', () => {
+  it('should validate Partial type', () => {
+    type PartialUser = Partial<User>;
+
+    const partialUser: PartialUser = { id: 1 };
+
+    expectTypeOf(partialUser).toMatchTypeOf<{ id?: number; name?: string }>();
+  });
+
+  it('should validate Pick type', () => {
+    type UserPreview = Pick<User, 'id' | 'name'>;
+
+    expectTypeOf<UserPreview>().toHaveProperty('id');
+    expectTypeOf<UserPreview>().toHaveProperty('name');
+    expectTypeOf<UserPreview>().not.toHaveProperty('email');
+  });
+
+  it('should validate Omit type', () => {
+    type PublicUser = Omit<User, 'password'>;
+
+    expectTypeOf<PublicUser>().toHaveProperty('id');
+    expectTypeOf<PublicUser>().not.toHaveProperty('password');
+  });
+
+  it('should validate Record type', () => {
+    type UserMap = Record<string, User>;
+
+    const userMap: UserMap = {
+      user1: { id: 1, name: 'John' }
+    };
+
+    expectTypeOf(userMap).toMatchTypeOf<Record<string, User>>();
+  });
+});
+```
+
+#### 类型窄化测试
+
+```typescript
+describe('Type Narrowing Tests', () => {
+  it('should validate type guards', () => {
+    function isString(value: unknown): value is string {
+      return typeof value === 'string';
+    }
+
+    const value: unknown = 'test';
+
+    if (isString(value)) {
+      // 在此作用域内，value 应该被窄化为 string 类型
+      expectTypeOf(value).toEqualTypeOf<string>();
+    }
+  });
+
+  it('should validate discriminated unions', () => {
+    type Shape =
+      | { kind: 'circle'; radius: number }
+      | { kind: 'rectangle'; width: number; height: number };
+
+    function getArea(shape: Shape): number {
+      if (shape.kind === 'circle') {
+        // 在此分支，shape 应该被窄化为 circle 类型
+        expectTypeOf(shape).toHaveProperty('radius');
+        expectTypeOf(shape).not.toHaveProperty('width');
+        return Math.PI * shape.radius ** 2;
+      } else {
+        // 在此分支，shape 应该被窄化为 rectangle 类型
+        expectTypeOf(shape).toHaveProperty('width');
+        expectTypeOf(shape).toHaveProperty('height');
+        return shape.width * shape.height;
+      }
+    }
+  });
+});
+```
+
+#### 异步类型测试
+
+```typescript
+describe('Async Type Tests', () => {
+  it('should validate Promise types', () => {
+    async function fetchUser(): Promise<User> {
+      return { id: 1, name: 'John' };
+    }
+
+    // 验证 Promise 返回类型
+    expectTypeOf(fetchUser).returns.toEqualTypeOf<Promise<User>>();
+    expectTypeOf(fetchUser()).resolves.toEqualTypeOf<User>();
+  });
+
+  it('should validate async function types', () => {
+    async function processData(data: string): Promise<number> {
+      return data.length;
+    }
+
+    expectTypeOf(processData).parameter(0).toEqualTypeOf<string>();
+    expectTypeOf(processData).returns.toEqualTypeOf<Promise<number>>();
+  });
+});
+```
+
+#### 类型兼容性测试
+
+```typescript
+describe('Type Compatibility Tests', () => {
+  it('should validate structural typing', () => {
+    interface Animal {
+      name: string;
+    }
+
+    interface Dog extends Animal {
+      bark(): void;
+    }
+
+    // Dog 应该可以赋值给 Animal（协变）
+    expectTypeOf<Dog>().toMatchTypeOf<Animal>();
+  });
+
+  it('should validate readonly types', () => {
+    type ReadonlyUser = Readonly<User>;
+
+    const user: ReadonlyUser = { id: 1, name: 'John' };
+
+    expectTypeOf(user).toMatchTypeOf<{
+      readonly id: number;
+      readonly name: string;
+    }>();
+    expectTypeOf(user).toHaveProperty('id');
+  });
+});
+```
+
+#### 实用建议
+
+1. **结合运行时测试**：类型测试应该与运行时测试相辅相成
+
+```typescript
+describe('Combined Runtime and Type Tests', () => {
+  it('should validate both runtime behavior and types', () => {
+    function add(a: number, b: number): number {
+      return a + b;
+    }
+
+    // 类型测试
+    expectTypeOf(add).parameter(0).toEqualTypeOf<number>();
+    expectTypeOf(add).returns.toEqualTypeOf<number>();
+
+    // 运行时测试
+    expect(add(1, 2)).toBe(3);
+    expect(add(-1, 1)).toBe(0);
+  });
+});
+```
+
+2. **测试类型推断**：确保 TypeScript 能正确推断类型，避免过度使用 `any`
+
+```typescript
+describe('Type Inference Tests', () => {
+  it('should infer types correctly', () => {
+    const data = { id: 1, name: 'John' };
+
+    // 验证推断的类型
+    expectTypeOf(data).toEqualTypeOf<{ id: number; name: string }>();
+    expectTypeOf(data.id).toEqualTypeOf<number>();
+    expectTypeOf(data.name).toEqualTypeOf<string>();
+  });
+});
+```
+
+3. **使用 TypeScript 编译器检查**：在 CI 中运行 `tsc --noEmit` 确保没有类型错误
+
+```bash
+# 在 package.json 中添加脚本
+{
+  "scripts": {
+    "type-check": "tsc --project tsconfig.test.json --noEmit",
+    "test": "pnpm type-check && vitest run"
+  }
+}
 ```
 
 ---
