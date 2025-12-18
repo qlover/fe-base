@@ -1,5 +1,26 @@
 # @qlover/fe-corekit
 
+## 2.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **fe-corekit:** implement setConfig method for RequestAdapter and add tests ([ecce58d](https://github.com/qlover/fe-base/commit/ecce58d895bbc9dd9dc9080a0a798e7d62605e83)) ([#558](https://github.com/qlover/fe-base/pull/558))
+  - Added the `setConfig` method to `RequestAdapterFetch`, `RequestAdapterAxios`, and mock classes in tests to allow dynamic configuration updates.
+  - Created unit tests for `RequestAdapterFetch` to verify the functionality of `setConfig`, ensuring it correctly updates and merges configuration properties.
+  - Updated interfaces to include the new `setConfig` method, enhancing type safety and usability across request adapters.
+
+  These changes improve the flexibility of request adapters and ensure robust testing for configuration management.
+
+- **tests:** enhance type safety and configuration for ColorFormatter and RequestAdapter ([3651c6f](https://github.com/qlover/fe-base/commit/3651c6fc1a6ad4ceaca8c97d6ffbb1e8961d707f)) ([#558](https://github.com/qlover/fe-base/pull/558))
+  - Updated `ColorFormatter` to utilize generic types for improved type safety in logging events.
+  - Modified `tsconfig.test.json` to include additional paths for test files, enhancing test coverage.
+  - Added new tests for `RequestAdapterFetch` and `RequestAdapterAxios` to verify the functionality of the `setConfig` method, ensuring it correctly updates and merges configuration properties.
+  - Removed outdated test file for `RequestAdapterSetConfig`, streamlining the test suite.
+
+  These changes aim to improve type safety and ensure robust testing for logging and request adapter configurations.
+
 ## 2.3.3
 
 ### Patch Changes
