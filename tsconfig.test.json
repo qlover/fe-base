@@ -1,14 +1,19 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "composite": false,
+    "composite": true,
     "noEmit": true,
     "types": ["vitest/globals", "node"],
     "skipLibCheck": true,
     "rootDir": ".",
     "moduleResolution": "bundler"
   },
-  "include": ["packages/**/__tests__/**/*.ts", "packages/**/__mocks__/**/*.ts"],
+  "include": [
+    "packages/**/__tests__/**/*.ts",
+    "packages/**/__mocks__/**/*.ts",
+    "packages/**/src/**/*.ts",
+    "packages/**/package.json"
+  ],
   "exclude": [
     "**/node_modules/**",
     "**/dist/**",
