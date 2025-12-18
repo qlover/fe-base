@@ -15,6 +15,7 @@
     { "path": "./packages/fe-release" },
     { "path": "./packages/fe-scripts" },
     { "path": "./packages/logger" },
-    { "path": "./packages/scripts-context" }
+    { "path": "./packages/scripts-context" },
+    { "path": "./tsconfig.test.json" }
   ]
 }

@@ -50,4 +50,43 @@ describe('RequestAdapterAxios', () => {
       'Network Error'
     );
   });
+
+  it('should update config using setConfig method', () => {
+    const adapter = new RequestAdapterAxios(axios, {
+      baseURL: 'https://api1.com'
+    });
+
+    expect(adapter.getConfig().baseURL).toBe('https://api1.com');
+
+    adapter.setConfig({ baseURL: 'https://api2.com' });
+
+    expect(adapter.getConfig().baseURL).toBe('https://api2.com');
+  });
+
+  it('should merge partial config with setConfig', () => {
+    const adapter = new RequestAdapterAxios(axios, {
+      baseURL: 'https://api1.com',
+      timeout: 5000
+    });
+
+    adapter.setConfig({ baseURL: 'https://api2.com' });
+
+    expect(adapter.getConfig().baseURL).toBe('https://api2.com');
+    expect(adapter.getConfig().timeout).toBe(5000);
+  });
+
+  it('should allow updating multiple config properties with setConfig', () => {
+    const adapter = new RequestAdapterAxios(axios, {
+      baseURL: 'https://api1.com',
+      timeout: 5000
+    });
+
+    adapter.setConfig({
+      baseURL: 'https://api2.com',
+      timeout: 10000
+    });
+
+    expect(adapter.getConfig().baseURL).toBe('https://api2.com');
+    expect(adapter.getConfig().timeout).toBe(10000);
+  });
 });

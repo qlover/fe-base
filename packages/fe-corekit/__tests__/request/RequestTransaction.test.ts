@@ -28,6 +28,15 @@ class MockAdapter implements RequestAdapterInterface<RequestAdapterConfig> {
   /**
    * @override
    */
+  public setConfig(
+    config: RequestAdapterConfig | Partial<RequestAdapterConfig>
+  ): void {
+    Object.assign(this.config, config);
+  }
+
+  /**
+   * @override
+   */
   public async request<Request, Response>(
     config: RequestAdapterConfig<Request>
   ): Promise<Response> {

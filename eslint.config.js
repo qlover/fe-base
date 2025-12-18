@@ -87,7 +87,7 @@ export default tseslint.config([
       ],
       '@typescript-eslint/ban-ts-comment': 'off',
       // Check for duplicate imports/exports (TypeScript version handles type vs value correctly)
-      'no-duplicate-imports': 'error',
+      'no-duplicate-imports': 'error'
     }
   },
 

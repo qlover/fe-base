@@ -13,7 +13,7 @@ export interface ColorSegment {
   style?: ColorStyle;
 }
 
-type ColorContext = {
+export type ColorContext = {
   value: ColorSegment[];
 };
 

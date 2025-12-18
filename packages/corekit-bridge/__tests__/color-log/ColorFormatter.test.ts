@@ -1,4 +1,7 @@
-import { ColorFormatter } from '../../src/core/color-log/ColorFormatter';
+import {
+  ColorContext,
+  ColorFormatter
+} from '../../src/core/color-log/ColorFormatter';
 import {
   Logger,
   HandlerInterface,
@@ -22,7 +25,7 @@ describe('ColorFormatter', () => {
   });
 
   it('should handle normal strings correctly', () => {
-    const event = new LogEvent('info', ['Hello World'], 'test');
+    const event = new LogEvent<ColorContext>('info', ['Hello World'], 'test');
     const result = formatter.format(event);
 
     expect(result).toEqual([
@@ -33,7 +36,7 @@ describe('ColorFormatter', () => {
   });
 
   it('should handle strings with %c correctly', () => {
-    const event = new LogEvent(
+    const event = new LogEvent<ColorContext>(
       'info',
       [
         'This is %cRed%c and %cBlue%c text',
@@ -50,14 +53,14 @@ describe('ColorFormatter', () => {
   });
 
   it('should handle color segments correctly', () => {
-    const event = new LogEvent(
+    const event = new LogEvent<ColorContext>(
       'info',
       ['Hello World'],
       'test',
       new LogContext([
         { text: 'Hello', style: { color: 'red', fontWeight: 'bold' } },
         { text: ' World', style: { color: 'blue', background: '#f0f0f0' } }
-      ])
+      ]) as ColorContext
     );
 
     const result = formatter.format(event);
@@ -75,7 +78,7 @@ describe('ColorFormatter', () => {
       info: { color: '#ff00ff', fontWeight: 'bold' }
     });
 
-    const event = new LogEvent('info', ['Custom Color'], 'test');
+    const event = new LogEvent<ColorContext>('info', ['Custom Color'], 'test');
     const result = customFormatter.format(event);
 
     expect(result).toEqual([
@@ -89,7 +92,11 @@ describe('ColorFormatter', () => {
     const levels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'log'];
 
     levels.forEach((level) => {
-      const event = new LogEvent(level, [`${level} message`], 'test');
+      const event = new LogEvent<ColorContext>(
+        level,
+        [`${level} message`],
+        'test'
+      );
       const result = formatter.format(event);
 
       expect(result[0]).toContain(level.toUpperCase());

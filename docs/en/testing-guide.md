@@ -244,81 +244,87 @@ function testFunction({ key1, key2, key3 }: TestParams): string {
 describe('testFunction', () => {
   describe('Parameter Combination Testing', () => {
     it('should handle case with all parameters present', () => {
-      expect(testFunction({ key1: 'test', key2: 1, key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key2: 1, key3: true })).toBe(
+        'expected result'
+      );
     });
 
     it('should handle case with key1, key2 only', () => {
-      expect(testFunction({ key1: 'test', key2: 1 }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key2: 1 })).toBe('expected result');
     });
 
     it('should handle case with key1, key3 only', () => {
-      expect(testFunction({ key1: 'test', key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test', key3: true })).toBe(
+        'expected result'
+      );
     });
 
     it('should handle case with key2, key3 only', () => {
-      expect(testFunction({ key2: 1, key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key2: 1, key3: true })).toBe('expected result');
     });
 
     it('should handle case with key1 only', () => {
-      expect(testFunction({ key1: 'test' }))
-        .toBe('expected result');
+      expect(testFunction({ key1: 'test' })).toBe('expected result');
     });
 
     it('should handle case with key2 only', () => {
-      expect(testFunction({ key2: 1 }))
-        .toBe('expected result');
+      expect(testFunction({ key2: 1 })).toBe('expected result');
     });
 
     it('should handle case with key3 only', () => {
-      expect(testFunction({ key3: true }))
-        .toBe('expected result');
+      expect(testFunction({ key3: true })).toBe('expected result');
     });
 
     it('should handle empty object case', () => {
-      expect(testFunction({}))
-        .toBe('expected result');
+      expect(testFunction({})).toBe('expected result');
     });
   });
 
   describe('Boundary Value Testing', () => {
     it('should handle extreme values', () => {
-      expect(testFunction({
-        key1: '', // Empty string
-        key2: Number.MAX_SAFE_INTEGER, // Maximum safe integer
-        key3: false
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: '', // Empty string
+          key2: Number.MAX_SAFE_INTEGER, // Maximum safe integer
+          key3: false
+        })
+      ).toBe('expected result');
 
-      expect(testFunction({
-        key1: 'a'.repeat(1000), // Very long string
-        key2: Number.MIN_SAFE_INTEGER, // Minimum safe integer
-        key3: true
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: 'a'.repeat(1000), // Very long string
+          key2: Number.MIN_SAFE_INTEGER, // Minimum safe integer
+          key3: true
+        })
+      ).toBe('expected result');
     });
 
     it('should handle special values', () => {
-      expect(testFunction({
-        key1: '   ', // All spaces string
-        key2: 0, // Zero value
-        key3: false
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: '   ', // All spaces string
+          key2: 0, // Zero value
+          key3: false
+        })
+      ).toBe('expected result');
 
-      expect(testFunction({
-        key1: null as any, // null value
-        key2: NaN, // NaN value
-        key3: undefined as any // undefined value
-      })).toBe('expected result');
+      expect(
+        testFunction({
+          key1: null as any, // null value
+          key2: NaN, // NaN value
+          key3: undefined as any // undefined value
+        })
+      ).toBe('expected result');
     });
 
     it('should handle invalid values', () => {
-      expect(() => testFunction({
-        key1: Symbol() as any, // Invalid type
-        key2: {} as any, // Invalid type
-        key3: 42 as any // Invalid type
-      })).toThrow();
+      expect(() =>
+        testFunction({
+          key1: Symbol() as any, // Invalid type
+          key2: {} as any, // Invalid type
+          key3: 42 as any // Invalid type
+        })
+      ).toThrow();
     });
   });
 });
@@ -621,7 +627,20 @@ describe('AsyncService', () => {
 
 ### Type Safety Testing
 
+TypeScript project tests should not only verify runtime behavior but also ensure the correctness of the type system. Vitest provides the `expectTypeOf` utility for compile-time type checking.
+
+#### Why Type Testing?
+
+1. **Type Inference Validation**: Ensure TypeScript correctly infers complex types
+2. **Generic Constraint Checking**: Verify generic parameter constraints
+3. **Type Compatibility**: Ensure type definitions match actual usage
+4. **API Contract Guarantee**: Prevent breaking changes in type definitions
+
+#### Basic Type Testing
+
 ```typescript
+import { describe, it, expectTypeOf } from 'vitest';
+
 describe('TypeSafetyTests', () => {
   it('should maintain type safety', () => {
     const processor = new DataProcessor<User>();
@@ -630,7 +649,302 @@ describe('TypeSafetyTests', () => {
     expectTypeOf(processor.process).parameter(0).toEqualTypeOf<User>();
     expectTypeOf(processor.process).returns.toEqualTypeOf<ProcessedUser>();
   });
+
+  it('should infer correct return types', () => {
+    const result = getData();
+
+    // Verify return type
+    expectTypeOf(result).toEqualTypeOf<{ id: number; name: string }>();
+    expectTypeOf(result).not.toEqualTypeOf<{ id: string; name: string }>();
+  });
+
+  it('should validate parameter types', () => {
+    function processUser(user: User): void {
+      // implementation
+    }
+
+    // Verify parameter type
+    expectTypeOf(processUser).parameter(0).toMatchTypeOf<{ id: number }>();
+    expectTypeOf(processUser).parameter(0).toHaveProperty('id');
+  });
 });
+```
+
+#### Generic Type Testing
+
+```typescript
+describe('Generic Type Tests', () => {
+  it('should work with generic constraints', () => {
+    class Storage<T extends { id: number }> {
+      store(item: T): T {
+        return item;
+      }
+    }
+
+    const storage = new Storage<User>();
+
+    // Verify generic type
+    expectTypeOf(storage.store).parameter(0).toMatchTypeOf<User>();
+    expectTypeOf(storage.store).returns.toMatchTypeOf<User>();
+  });
+
+  it('should validate complex generic types', () => {
+    type ApiResponse<T> = {
+      data: T;
+      status: number;
+      message?: string;
+    };
+
+    const response: ApiResponse<User[]> = {
+      data: [],
+      status: 200
+    };
+
+    // Verify nested generic type
+    expectTypeOf(response).toMatchTypeOf<ApiResponse<User[]>>();
+    expectTypeOf(response.data).toEqualTypeOf<User[]>();
+  });
+});
+```
+
+#### Union and Intersection Type Testing
+
+```typescript
+describe('Union and Intersection Types', () => {
+  it('should handle union types correctly', () => {
+    type Result = Success | Error;
+    type Success = { status: 'success'; data: string };
+    type Error = { status: 'error'; message: string };
+
+    function handleResult(result: Result): void {
+      // implementation
+    }
+
+    // Verify union type
+    expectTypeOf(handleResult).parameter(0).toMatchTypeOf<Success>();
+    expectTypeOf(handleResult).parameter(0).toMatchTypeOf<Error>();
+  });
+
+  it('should handle intersection types correctly', () => {
+    type Timestamped = { createdAt: Date; updatedAt: Date };
+    type UserWithTimestamp = User & Timestamped;
+
+    const user: UserWithTimestamp = {
+      id: 1,
+      name: 'John',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Verify intersection type contains all properties
+    expectTypeOf(user).toHaveProperty('id');
+    expectTypeOf(user).toHaveProperty('name');
+    expectTypeOf(user).toHaveProperty('createdAt');
+    expectTypeOf(user).toHaveProperty('updatedAt');
+  });
+});
+```
+
+#### Function Overload Type Testing
+
+```typescript
+describe('Function Overload Types', () => {
+  it('should validate function overloads', () => {
+    function getValue(key: string): string;
+    function getValue(key: number): number;
+    function getValue(key: string | number): string | number {
+      return key;
+    }
+
+    // Verify different overload types
+    expectTypeOf(getValue).parameter(0).toMatchTypeOf<string | number>();
+    expectTypeOf(getValue('key')).toEqualTypeOf<string>();
+    expectTypeOf(getValue(123)).toEqualTypeOf<number>();
+  });
+});
+```
+
+#### Utility Type Testing
+
+```typescript
+describe('Utility Types Tests', () => {
+  it('should validate Partial type', () => {
+    type PartialUser = Partial<User>;
+
+    const partialUser: PartialUser = { id: 1 };
+
+    expectTypeOf(partialUser).toMatchTypeOf<{ id?: number; name?: string }>();
+  });
+
+  it('should validate Pick type', () => {
+    type UserPreview = Pick<User, 'id' | 'name'>;
+
+    expectTypeOf<UserPreview>().toHaveProperty('id');
+    expectTypeOf<UserPreview>().toHaveProperty('name');
+    expectTypeOf<UserPreview>().not.toHaveProperty('email');
+  });
+
+  it('should validate Omit type', () => {
+    type PublicUser = Omit<User, 'password'>;
+
+    expectTypeOf<PublicUser>().toHaveProperty('id');
+    expectTypeOf<PublicUser>().not.toHaveProperty('password');
+  });
+
+  it('should validate Record type', () => {
+    type UserMap = Record<string, User>;
+
+    const userMap: UserMap = {
+      user1: { id: 1, name: 'John' }
+    };
+
+    expectTypeOf(userMap).toMatchTypeOf<Record<string, User>>();
+  });
+});
+```
+
+#### Type Narrowing Testing
+
+```typescript
+describe('Type Narrowing Tests', () => {
+  it('should validate type guards', () => {
+    function isString(value: unknown): value is string {
+      return typeof value === 'string';
+    }
+
+    const value: unknown = 'test';
+
+    if (isString(value)) {
+      // Within this scope, value should be narrowed to string type
+      expectTypeOf(value).toEqualTypeOf<string>();
+    }
+  });
+
+  it('should validate discriminated unions', () => {
+    type Shape =
+      | { kind: 'circle'; radius: number }
+      | { kind: 'rectangle'; width: number; height: number };
+
+    function getArea(shape: Shape): number {
+      if (shape.kind === 'circle') {
+        // In this branch, shape should be narrowed to circle type
+        expectTypeOf(shape).toHaveProperty('radius');
+        expectTypeOf(shape).not.toHaveProperty('width');
+        return Math.PI * shape.radius ** 2;
+      } else {
+        // In this branch, shape should be narrowed to rectangle type
+        expectTypeOf(shape).toHaveProperty('width');
+        expectTypeOf(shape).toHaveProperty('height');
+        return shape.width * shape.height;
+      }
+    }
+  });
+});
+```
+
+#### Async Type Testing
+
+```typescript
+describe('Async Type Tests', () => {
+  it('should validate Promise types', () => {
+    async function fetchUser(): Promise<User> {
+      return { id: 1, name: 'John' };
+    }
+
+    // Verify Promise return type
+    expectTypeOf(fetchUser).returns.toEqualTypeOf<Promise<User>>();
+    expectTypeOf(fetchUser()).resolves.toEqualTypeOf<User>();
+  });
+
+  it('should validate async function types', () => {
+    async function processData(data: string): Promise<number> {
+      return data.length;
+    }
+
+    expectTypeOf(processData).parameter(0).toEqualTypeOf<string>();
+    expectTypeOf(processData).returns.toEqualTypeOf<Promise<number>>();
+  });
+});
+```
+
+#### Type Compatibility Testing
+
+```typescript
+describe('Type Compatibility Tests', () => {
+  it('should validate structural typing', () => {
+    interface Animal {
+      name: string;
+    }
+
+    interface Dog extends Animal {
+      bark(): void;
+    }
+
+    // Dog should be assignable to Animal (covariance)
+    expectTypeOf<Dog>().toMatchTypeOf<Animal>();
+  });
+
+  it('should validate readonly types', () => {
+    type ReadonlyUser = Readonly<User>;
+
+    const user: ReadonlyUser = { id: 1, name: 'John' };
+
+    expectTypeOf(user).toMatchTypeOf<{
+      readonly id: number;
+      readonly name: string;
+    }>();
+    expectTypeOf(user).toHaveProperty('id');
+  });
+});
+```
+
+#### Practical Recommendations
+
+1. **Combine with Runtime Tests**: Type tests should complement runtime tests
+
+```typescript
+describe('Combined Runtime and Type Tests', () => {
+  it('should validate both runtime behavior and types', () => {
+    function add(a: number, b: number): number {
+      return a + b;
+    }
+
+    // Type test
+    expectTypeOf(add).parameter(0).toEqualTypeOf<number>();
+    expectTypeOf(add).returns.toEqualTypeOf<number>();
+
+    // Runtime test
+    expect(add(1, 2)).toBe(3);
+    expect(add(-1, 1)).toBe(0);
+  });
+});
+```
+
+2. **Test Type Inference**: Ensure TypeScript correctly infers types, avoid overusing `any`
+
+```typescript
+describe('Type Inference Tests', () => {
+  it('should infer types correctly', () => {
+    const data = { id: 1, name: 'John' };
+
+    // Verify inferred type
+    expectTypeOf(data).toEqualTypeOf<{ id: number; name: string }>();
+    expectTypeOf(data.id).toEqualTypeOf<number>();
+    expectTypeOf(data.name).toEqualTypeOf<string>();
+  });
+});
+```
+
+3. **Use TypeScript Compiler Checks**: Run `tsc --noEmit` in CI to ensure no type errors
+
+```bash
+# Add script in package.json
+{
+  "scripts": {
+    "type-check": "tsc --project tsconfig.test.json --noEmit",
+    "test": "pnpm type-check && vitest run"
+  }
+}
 ```
 
 ---
