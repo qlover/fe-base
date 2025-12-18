@@ -103,6 +103,16 @@ export class RequestAdapterFetch
     return this.config;
   }
 
+  /**
+   * @since 2.4.0
+   * @override
+   */
+  public setConfig(
+    config: RequestAdapterFetchConfig | Partial<RequestAdapterFetchConfig>
+  ): void {
+    Object.assign(this.config, config);
+  }
+
   public usePlugin(plugin: ExecutorPlugin): void {
     this.executor.use(plugin);
   }

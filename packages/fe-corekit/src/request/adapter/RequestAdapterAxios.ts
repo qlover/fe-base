@@ -30,6 +30,16 @@ export class RequestAdapterAxios
   }
 
   /**
+   * @since 2.4.0
+   * @override
+   */
+  public setConfig(
+    config: AxiosRequestConfig | Partial<AxiosRequestConfig>
+  ): void {
+    Object.assign(this.config, config);
+  }
+
+  /**
    * @override
    */
   public async request<Request, Response>(

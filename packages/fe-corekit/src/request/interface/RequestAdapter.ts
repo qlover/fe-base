@@ -171,4 +171,24 @@ export interface RequestAdapterInterface<Config extends RequestAdapterConfig> {
    * ```
    */
   getConfig: () => Config;
+
+  /**
+   * Sets the configuration for the request adapter.
+   *
+   * @since 2.4.0
+   * @param config - The configuration to set.
+   * @example
+   * ```typescript
+   * adapter.setConfig({ url: '/users', method: 'GET' });
+   * ```
+   *
+   * @example Merge configuration
+   * ```typescript
+   *
+   * adapter.setConfig({ baseURL: 'https://api.example.com' });
+   * adapter.setConfig({ baseURL: 'https://api.example2.com' });
+   * // baseURL = 'https://api.example2.com'
+   * ```
+   */
+  setConfig: (config: Config | Partial<Config>) => void;
 }
