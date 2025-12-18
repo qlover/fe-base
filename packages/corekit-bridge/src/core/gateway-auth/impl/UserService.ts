@@ -1,7 +1,7 @@
 import { AsyncStoreStatus } from '../../store-state';
 import { LoginParams } from '../interface/LoginInterface';
 import { GatewayExecutor } from './GatewayExecutor';
-import { GatewayService, GatewayServiceOptions } from './GatewayService';
+import { GatewayService } from './GatewayService';
 import {
   UserServiceGateway,
   UserServiceInterface,
@@ -9,8 +9,12 @@ import {
   UserServicePluginInterface
 } from '../interface/UserServiceInterface';
 import { UserStore, UserStoreOptions } from './UserStore';
-import { UserStateInterface } from '../interface/UserStoreInterface';
+import {
+  UserStateInterface,
+  UserStoreInterface
+} from '../interface/UserStoreInterface';
 import { createUserStore } from '../utils/createUserStore';
+import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
  * User service configuration
@@ -73,8 +77,8 @@ import { createUserStore } from '../utils/createUserStore';
  */
 export interface UserServiceConfig<User, Credential>
   extends Omit<
-    GatewayServiceOptions<User, UserServiceGateway<User, Credential>>,
-    'store' | 'serviceName'
+    ExecutorServiceOptions<User, UserServiceGateway<User, Credential>>,
+    'serviceName' | 'store'
   > {
   /**
    * Service name
@@ -82,6 +86,7 @@ export interface UserServiceConfig<User, Credential>
    * Allows passing a custom service name.
    * If not provided, the default service name will be used.
    *
+   * @default 'UserService'
    * @example Basic usage
    * ```typescript
    * const userService = new UserService({
@@ -149,9 +154,21 @@ export interface UserServiceConfig<User, Credential>
    *   }
    * });
    * ```
+   *
+   * @example Use a custom UserStore instance
+   * ```typescript
+   * const userStore = new UserStore({
+   *   storage: localStorage,
+   *   storageKey: 'user-info'
+   * });
+   *
+   * const userService = new UserService({
+   *   store: userStore
+   * });
+   *
    */
   store?:
-    | UserStore<User, Credential, string, unknown>
+    | UserStoreInterface<User, Credential>
     | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
 }
 

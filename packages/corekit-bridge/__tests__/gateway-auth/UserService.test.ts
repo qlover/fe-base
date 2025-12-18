@@ -16,7 +16,7 @@
  * 12. integration        – Complete user flow tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, expectTypeOf } from 'vitest';
 import {
   UserService,
   UserServiceConfig
@@ -28,6 +28,7 @@ import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { UserStoreInterface } from '../../src/core/gateway-auth/interface/UserStoreInterface';
 
 /**
  * Test credential type
@@ -1187,6 +1188,97 @@ describe('UserService', () => {
       // Should use credential when undefined is passed
       expect(mockGateway.getUserInfo).toHaveBeenCalled();
       expect(result).toEqual(testUser);
+    });
+  });
+
+  /**
+   * Type safety tests
+   *
+   * Coverage:
+   * 1. Generic type constraints – Verify User and Credential type parameters
+   * 2. Method return types – Verify all method return types
+   * 3. Type inference – Verify TypeScript type inference
+   * 4. Combined runtime and type – Verify both runtime behavior and types
+   */
+  describe('Type Safety Tests', () => {
+    it('should maintain generic types throughout the service', () => {
+      // Verify User type in return values
+      expectTypeOf(
+        userService.getUser
+      ).returns.toEqualTypeOf<TestUser | null>();
+
+      // Verify Credential type in login
+      expectTypeOf(
+        userService.login
+      ).returns.resolves.toEqualTypeOf<TestCredential | null>();
+
+      // Verify store interface type
+      expectTypeOf(userService.getStore).returns.toMatchTypeOf<
+        UserStoreInterface<TestUser, TestCredential>
+      >();
+    });
+
+    it('should validate all async method return types', () => {
+      expectTypeOf(
+        userService.login
+      ).returns.resolves.toEqualTypeOf<TestCredential | null>();
+      // logout returns Promise<void> - verified by runtime tests
+      expectTypeOf(
+        userService.register
+      ).returns.resolves.toEqualTypeOf<TestUser | null>();
+      expectTypeOf(
+        userService.getUserInfo
+      ).returns.resolves.toEqualTypeOf<TestUser | null>();
+      expectTypeOf(
+        userService.refreshUserInfo
+      ).returns.resolves.toEqualTypeOf<TestUser | null>();
+    });
+
+    it('should validate sync method return types', () => {
+      expectTypeOf(
+        userService.isAuthenticated
+      ).returns.toEqualTypeOf<boolean>();
+      expectTypeOf(
+        userService.getUser
+      ).returns.toEqualTypeOf<TestUser | null>();
+    });
+
+    it('should infer types correctly from method calls', async () => {
+      mockGateway.login.mockResolvedValue(testCredential);
+
+      const loginResult = await userService.login(loginParams);
+      expectTypeOf(loginResult).toEqualTypeOf<TestCredential | null>();
+
+      const user = userService.getUser();
+      expectTypeOf(user).toEqualTypeOf<TestUser | null>();
+
+      const isAuth = userService.isAuthenticated();
+      expectTypeOf(isAuth).toEqualTypeOf<boolean>();
+    });
+
+    it('should maintain type safety in store operations', () => {
+      const store = userService.getStore();
+
+      expectTypeOf(
+        store.getCredential
+      ).returns.toEqualTypeOf<TestCredential | null>();
+      expectTypeOf(store.setCredential)
+        .parameter(0)
+        .toEqualTypeOf<TestCredential | null>();
+    });
+
+    it('should validate both types and runtime behavior for login', async () => {
+      mockGateway.login.mockResolvedValue(testCredential);
+
+      // Type validation
+      expectTypeOf(userService.login).parameter(0).toMatchTypeOf<LoginParams>();
+      expectTypeOf(
+        userService.login
+      ).returns.resolves.toEqualTypeOf<TestCredential | null>();
+
+      // Runtime validation
+      const result = await userService.login(loginParams);
+      expect(result).toEqual(testCredential);
     });
   });
 });
