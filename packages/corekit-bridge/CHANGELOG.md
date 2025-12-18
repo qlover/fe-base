@@ -1,5 +1,24 @@
 # @qlover/corekit-bridge
 
+## 1.9.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **tests:** add type safety tests for UserService ([e7104fa](https://github.com/qlover/fe-base/commit/e7104faf826d57175c296eada7a33f587169be8c)) ([#558](https://github.com/qlover/fe-base/pull/558))
+  - Introduced comprehensive type safety tests for the UserService, verifying generic type constraints, method return types, and TypeScript type inference.
+  - Enhanced the UserService implementation by refining the UserServiceConfig interface to improve type safety with UserStoreInterface.
+  - Updated test cases to ensure both runtime behavior and type correctness across various service methods, enhancing overall code reliability.
+
+- **tests:** enhance type safety and configuration for ColorFormatter and RequestAdapter ([3651c6f](https://github.com/qlover/fe-base/commit/3651c6fc1a6ad4ceaca8c97d6ffbb1e8961d707f)) ([#558](https://github.com/qlover/fe-base/pull/558))
+  - Updated `ColorFormatter` to utilize generic types for improved type safety in logging events.
+  - Modified `tsconfig.test.json` to include additional paths for test files, enhancing test coverage.
+  - Added new tests for `RequestAdapterFetch` and `RequestAdapterAxios` to verify the functionality of the `setConfig` method, ensuring it correctly updates and merges configuration properties.
+  - Removed outdated test file for `RequestAdapterSetConfig`, streamlining the test suite.
+
+  These changes aim to improve type safety and ensure robust testing for logging and request adapter configurations.
+
 ## 1.8.4
 
 ### Patch Changes

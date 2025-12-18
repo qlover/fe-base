@@ -1,5 +1,13 @@
 # @qlover/create-app
 
+## 0.11.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- **tests:** add testing-guide type tests ([16870e0](https://github.com/qlover/fe-base/commit/16870e043b130f98cdd98152d816b6b9a7f05719)) ([#558](https://github.com/qlover/fe-base/pull/558))
+
 ## 0.10.6
 
 ### Patch Changes
