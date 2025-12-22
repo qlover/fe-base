@@ -3,7 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "outDir": "ts-build",
+    "tsBuildInfoFile": "ts-build/.tsbuildinfo",
     "downlevelIteration": true,
     "strict": true,
     "allowUnusedLabels": false,

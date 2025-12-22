@@ -4,7 +4,7 @@
     "composite": true,
     "rootDir": ".",
     "outDir": "ts-build",
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "ts-build/.tsbuildinfo"
   },
   "include": ["src", "package.json", "*.ts", "__tests__", "__mocks__"],
   "exclude": ["ts-build", "dist", "node_modules"],

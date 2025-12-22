@@ -4,7 +4,7 @@
     "composite": true,
     "rootDir": "src",
     "outDir": "ts-build",
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "ts-build/.tsbuildinfo",
     "skipLibCheck": true,
     "downlevelIteration": true,
     "strict": true,
