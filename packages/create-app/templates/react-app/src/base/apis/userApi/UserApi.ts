@@ -78,6 +78,7 @@ export class UserApi
   }
 
   /**
+   * @override
    * @param params
    * @returns
    */
@@ -101,6 +102,7 @@ export class UserApi
   }
 
   /**
+   * @override
    * @param params
    * @returns
    */
@@ -112,6 +114,7 @@ export class UserApi
   }
 
   /**
+   * @override
    * @returns
    */
   public async refreshUserInfo(): Promise<UserInfo> {
@@ -119,6 +122,7 @@ export class UserApi
   }
 
   /**
+   * @override
    * @returns
    */
   public logout(): Promise<any> {
@@ -126,6 +130,7 @@ export class UserApi
   }
 
   /**
+   * @override
    * @returns
    */
   public async getUserInfo(_credential?: UserCredential): Promise<UserInfo> {

@@ -108,7 +108,12 @@ export default tseslint.config([
   },
 
   // TypeScript files with type checking for ts-class-override rule
-  // This enables full type information for accurate interface/class method detection
+  // The ts-class-override rule requires full type information to accurately detect:
+  // - Methods that override parent class methods (via extends)
+  // - Methods that implement interface methods (via implements)
+  // Without type checking, the rule falls back to AST-based heuristics which are less accurate
+  // This separate config block enables type checking only for TypeScript files to provide
+  // accurate override detection while maintaining good performance
   {
     name: 'lint-ts-class-override',
     files: ['packages/**/*.ts'],
@@ -141,9 +146,13 @@ export default tseslint.config([
       '@qlover-eslint': qloverEslint
     },
     rules: {
-      // Only enable ts-class-override rule with full type information
+      // Enable ts-class-override rule with full type information
+      // This rule is disabled in the base config above and only enabled here where
+      // type information is available, ensuring accurate detection of override relationships
       '@qlover-eslint/ts-class-override': 'error',
       // Disable other type-checked rules to avoid performance impact
+      // We only need type checking for ts-class-override, so we disable other
+      // type-aware rules that would slow down linting without providing value
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

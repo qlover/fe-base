@@ -41,6 +41,13 @@ export type ClassOverrideOptions = {
    * @default 'either'
    */
   parentClassOverrideStyle?: OverrideStyleType;
+  /**
+   * Enable debug logging for override detection
+   * When enabled, logs detailed information about override source detection
+   *
+   * @default false
+   */
+  debug?: boolean;
 };
 
 /**
@@ -170,6 +177,26 @@ export class ClassOverride {
   }
 
   /**
+   * Check if debug logging is enabled
+   *
+   * @returns True if debug logging is enabled, false otherwise
+   */
+  protected shouldLogDebug(): boolean {
+    return this.options.debug === true;
+  }
+
+  /**
+   * Log debug message if debug logging is enabled
+   *
+   * @param message - The debug message to log
+   */
+  protected debugLog(message: string): void {
+    if (this.shouldLogDebug()) {
+      console.log(message);
+    }
+  }
+
+  /**
    * Check if a class needs override checking
    *
    * Only classes that extend another class or implement interfaces need checking.
@@ -244,25 +271,124 @@ export class ClassOverride {
               this.checker!.getTypeAtLocation(interfaceNode);
 
             if (interfaceType?.symbol) {
+              const interfaceName =
+                interfaceType.symbol.getName() || '<unknown>';
+
+              // Check direct members first
               const interfaceMethodSymbol = interfaceType.symbol.members?.get(
                 methodName as ts.__String
               );
 
               if (interfaceMethodSymbol) {
                 // Get interface name
-                let interfaceName = interfaceType.symbol.getName();
-                if (!interfaceName) {
+                let displayName = interfaceName;
+                if (!displayName || displayName === '<unknown>') {
                   const expr = implementClause.expression;
                   if (expr.type === AST_NODE_TYPES.Identifier) {
-                    interfaceName = expr.name;
+                    displayName = expr.name;
                   } else {
-                    interfaceName = '<interface>';
+                    displayName = '<interface>';
                   }
                 }
-                return { name: interfaceName, type: 'interface' as const };
+                this.debugLog(
+                  `[ts-class-override] Found method "${methodName}" in interface "${displayName}" (direct member)`
+                );
+                return { name: displayName, type: 'interface' as const };
               }
+
+              // Also check inherited interfaces (interface extends other interfaces)
+              // Try to get base types - this will only work for interface types
+              try {
+                // Check if it's an interface type by trying to get base types
+                // getBaseTypes only works on InterfaceType, so if it fails, it's not an interface
+                const baseTypes = this.checker!.getBaseTypes(
+                  interfaceType as ts.InterfaceType
+                );
+
+                if (baseTypes && baseTypes.length > 0) {
+                  this.debugLog(
+                    `[ts-class-override] Checking ${baseTypes.length} base interfaces for "${methodName}" in interface "${interfaceName}"`
+                  );
+
+                  // Recursively check all base interfaces
+                  const checkBaseInterfaces = (
+                    type: ts.Type,
+                    depth = 0
+                  ): OverrideSource | null => {
+                    try {
+                      const types = this.checker!.getBaseTypes(
+                        type as ts.InterfaceType
+                      );
+
+                      if (types && types.length > 0) {
+                        this.debugLog(
+                          `[ts-class-override]   Depth ${depth}: Found ${types.length} base types for "${type.symbol?.getName() || '<unknown>'}"`
+                        );
+
+                        for (const baseType of types) {
+                          if (baseType.symbol) {
+                            const baseName =
+                              baseType.symbol.getName() || '<unknown>';
+                            const baseMethodSymbol =
+                              baseType.symbol.members?.get(
+                                methodName as ts.__String
+                              );
+
+                            this.debugLog(
+                              `[ts-class-override]   Checking base type "${baseName}" for method "${methodName}": ${baseMethodSymbol ? 'FOUND' : 'not found'}`
+                            );
+
+                            if (baseMethodSymbol) {
+                              this.debugLog(
+                                `[ts-class-override] Found method "${methodName}" in base interface "${baseName}"`
+                              );
+                              return {
+                                name: baseName,
+                                type: 'interface' as const
+                              };
+                            }
+
+                            // Recursively check nested base interfaces
+                            const nestedResult = checkBaseInterfaces(
+                              baseType,
+                              depth + 1
+                            );
+                            if (nestedResult) {
+                              return nestedResult;
+                            }
+                          }
+                        }
+                      }
+                    } catch {
+                      // Not an interface type or error getting base types
+                    }
+                    return null;
+                  };
+
+                  const baseResult = checkBaseInterfaces(interfaceType);
+                  if (baseResult) {
+                    return baseResult;
+                  }
+                } else {
+                  this.debugLog(
+                    `[ts-class-override] Interface "${interfaceName}" has no base types`
+                  );
+                }
+              } catch (error) {
+                // Not an interface type or error getting base types
+                this.debugLog(
+                  `[ts-class-override] Type "${interfaceName}" is not an interface type or error getting base types: ${error instanceof Error ? error.message : String(error)}`
+                );
+              }
+            } else {
+              this.debugLog(
+                `[ts-class-override] Interface type has no symbol for method "${methodName}"`
+              );
             }
-          } catch {
+          } catch (error) {
+            this.debugLog(
+              `[ts-class-override] Error checking interface: ${error instanceof Error ? error.message : String(error)}`
+            );
             // Ignore errors when checking interfaces
           }
         }

@@ -532,7 +532,11 @@
 import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/types';
 import { createEslintRule } from '../utils/createEslintRule';
 import { type TSESLint } from '@typescript-eslint/utils';
-import { ClassOverride, ClassOverrideOptions, OverrideStyle } from '../utils/ClassOverride';
+import {
+  ClassOverride,
+  ClassOverrideOptions,
+  OverrideStyle
+} from '../utils/ClassOverride';
 
 /**
  * Message IDs for error reporting

@@ -94,14 +94,14 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
    * 4. Generates output path mappings for markdown files
    * 5. Stores processed file information in context for downstream plugins
    *
- * Business Rules:
- * - Handles both file and directory entry points
- * - Processes all files recursively in directory entries
- * - Filters out excluded files based on exclude patterns
- * - Generates relative paths from current working directory
- * - Maps source file extensions to .md output extensions
- * - Preserves directory structure in output paths
- * - Provides detailed logging for debugging and monitoring
+   * Business Rules:
+   * - Handles both file and directory entry points
+   * - Processes all files recursively in directory entries
+   * - Filters out excluded files based on exclude patterns
+   * - Generates relative paths from current working directory
+   * - Maps source file extensions to .md output extensions
+   * - Preserves directory structure in output paths
+   * - Provides detailed logging for debugging and monitoring
    *
    * @throws {Error} When source path is invalid or inaccessible
    * @throws {Error} When file system operations fail
@@ -119,13 +119,20 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     this.logger.debug('Read entry:', JSON.stringify(entryAllFiles, null, 2));
 
     // Filter out excluded files
-    const filteredFiles = exclude && exclude.length > 0
-      ? entryAllFiles.filter((file) => !this.shouldExcludeFile(file, exclude))
-      : entryAllFiles;
+    const filteredFiles =
+      exclude && exclude.length > 0
+        ? entryAllFiles.filter((file) => !this.shouldExcludeFile(file, exclude))
+        : entryAllFiles;
 
-    if (exclude && exclude.length > 0 && filteredFiles.length < entryAllFiles.length) {
+    if (
+      exclude &&
+      exclude.length > 0 &&
+      filteredFiles.length < entryAllFiles.length
+    ) {
       const excludedCount = entryAllFiles.length - filteredFiles.length;
-      this.logger.info(`Excluded ${excludedCount} file(s) based on exclude patterns`);
+      this.logger.info(
+        `Excluded ${excludedCount} file(s) based on exclude patterns`
+      );
     }
 
     const outputs = filteredFiles.map((entryFile) => {
@@ -295,7 +302,10 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
    * // Returns: true
    * ```
    */
-  private shouldExcludeFile(filePath: string, excludePatterns: string[]): boolean {
+  private shouldExcludeFile(
+    filePath: string,
+    excludePatterns: string[]
+  ): boolean {
     // Normalize the file path for consistent matching
     const normalizedFilePath = normalize(filePath);
 
