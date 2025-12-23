@@ -69,9 +69,9 @@ const config = adapter.getConfig();
 
 #### Parameters
 
-| Name     | Type                          | Optional | Default | Since | Deprecated | Description                                |
-| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
+| Name     | Type                          | Optional | Default | Since | Deprecated | Description |
+| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -79,24 +79,54 @@ const config = adapter.getConfig();
 
 **Type:** `Promise<RequestAdapterResponse<Request, Response>>`
 
-Sends a request using the specified options and returns a promise with the response.
+#### Parameters
 
-**Returns:**
+| Name     | Type                          | Optional | Default | Since | Deprecated | Description |
+| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          |             |
 
-A promise that resolves to the response of the request.
+---
+
+#### `setConfig` (Method)
+
+**Type:** `(config: AxiosRequestConfig<any> \| Partial<AxiosRequestConfig<any>>) => void`
+
+**Since:** `2.4.0`
+
+Sets the configuration for the request adapter.
 
 **Example:**
 
 ```typescript
-adapter
-  .request({ url: '/users', method: 'GET' })
-  .then((response) => console.log(response));
+adapter.setConfig({ url: '/users', method: 'GET' });
+```
+
+**Example:** Merge configuration
+
+```typescript
+adapter.setConfig({ baseURL: 'https://api.example.com' });
+adapter.setConfig({ baseURL: 'https://api.example2.com' });
+// baseURL = 'https://api.example2.com'
 ```
 
 #### Parameters
 
-| Name     | Type                          | Optional | Default | Since | Deprecated | Description                                |
-| -------- | ----------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `config` | `AxiosRequestConfig<Request>` | ❌       | -       | -     | -          | The configuration options for the request. |
+| Name     | Type                                                          | Optional | Default | Since | Deprecated | Description |
+| -------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `AxiosRequestConfig<any> \| Partial<AxiosRequestConfig<any>>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `setConfig` (CallSignature)
+
+**Type:** `void`
+
+**Since:** `2.4.0`
+
+#### Parameters
+
+| Name     | Type                                                          | Optional | Default | Since | Deprecated | Description |
+| -------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `AxiosRequestConfig<any> \| Partial<AxiosRequestConfig<any>>` | ❌       | -       | -     | -          |             |
 
 ---

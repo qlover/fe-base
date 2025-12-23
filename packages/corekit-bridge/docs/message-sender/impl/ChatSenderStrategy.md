@@ -36,14 +36,14 @@ messageSender.use(strategy);
 
 #### `new ChatSenderStrategy` (Constructor)
 
-**Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface) => ChatSenderStrategy`
+**Type:** `(failureStrategy: SendFailureStrategyType, logger: LoggerInterface<unknown>) => ChatSenderStrategy`
 
 #### Parameters
 
-| Name              | Type                      | Optional | Default | Since | Deprecated | Description                                           |
-| ----------------- | ------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `failureStrategy` | `SendFailureStrategyType` | ❌       | -       | -     | -          | Strategy for handling failed message sends            |
-| `logger`          | `LoggerInterface`         | ✅       | -       | -     | -          | Optional logger instance for debugging and monitoring |
+| Name              | Type                       | Optional | Default | Since | Deprecated | Description                                           |
+| ----------------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
+| `failureStrategy` | `SendFailureStrategyType`  | ❌       | -       | -     | -          | Strategy for handling failed message sends            |
+| `logger`          | `LoggerInterface<unknown>` | ✅       | -       | -     | -          | Optional logger instance for debugging and monitoring |
 
 ---
 
@@ -57,7 +57,7 @@ Strategy for handling failed message sends
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Optional logger instance for debugging and monitoring
 

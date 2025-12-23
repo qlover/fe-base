@@ -159,6 +159,50 @@ const response = await fetchRequest.request({ url: '/data' });
 
 ---
 
+#### `setConfig` (Method)
+
+**Type:** `(config: RequestAdapterFetchConfig<unknown> \| Partial<RequestAdapterFetchConfig<unknown>>) => void`
+
+**Since:** `2.4.0`
+
+Sets the configuration for the request adapter.
+
+**Example:**
+
+```typescript
+adapter.setConfig({ url: '/users', method: 'GET' });
+```
+
+**Example:** Merge configuration
+
+```typescript
+adapter.setConfig({ baseURL: 'https://api.example.com' });
+adapter.setConfig({ baseURL: 'https://api.example2.com' });
+// baseURL = 'https://api.example2.com'
+```
+
+#### Parameters
+
+| Name     | Type                                                                                | Optional | Default | Since | Deprecated | Description |
+| -------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `RequestAdapterFetchConfig<unknown> \| Partial<RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `setConfig` (CallSignature)
+
+**Type:** `void`
+
+**Since:** `2.4.0`
+
+#### Parameters
+
+| Name     | Type                                                                                | Optional | Default | Since | Deprecated | Description |
+| -------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `config` | `RequestAdapterFetchConfig<unknown> \| Partial<RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `toAdapterResponse` (Method)
 
 **Type:** `(data: Res, response: Response, config: RequestAdapterFetchConfig<Request>) => RequestAdapterResponse<Request, Res>`

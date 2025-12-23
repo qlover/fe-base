@@ -943,7 +943,7 @@ const options: ShellExecOptions = {
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for command logging and error reporting
 

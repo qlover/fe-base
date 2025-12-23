@@ -99,7 +99,7 @@ const event = new LogEvent<PerformanceContext>(
 
 #### `new LogEvent` (Constructor)
 
-**Type:** `(level: string, args: unknown[], loggerName: string, context: LogContext<Ctx>) => LogEvent<Ctx>`
+**Type:** `(level: string, args: unknown[], loggerName: string, context: Ctx) => LogEvent<Ctx>`
 
 #### Parameters
 
@@ -152,7 +152,7 @@ new LogEvent('debug', ['Cache miss'], 'data.cache');
 new LogEvent('info', ['Render complete'], 'ui.dashboard');
 new LogEvent('error', ['API error'], 'api.users');
 ``` |
-| `context` | `LogContext<Ctx>` | ✅ | - | - | - | Optional typed context data for the log event
+| `context` | `Ctx` | ✅ | - | - | - | Optional typed context data for the log event
 
 Provides additional structured data that can be used by
 formatters and handlers. The context type is controlled
@@ -234,7 +234,7 @@ new LogEvent('error', [
 
 #### `context` (Property)
 
-**Type:** `LogContext<Ctx>`
+**Type:** `Ctx`
 
 Optional typed context data for the log event
 

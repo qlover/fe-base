@@ -16,13 +16,13 @@ Do not throw errors, only return errors and data
 
 #### `new ApiCatchPlugin` (Constructor)
 
-**Type:** `(logger: LoggerInterface, feApiRequestCatcher: RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>) => ApiCatchPlugin`
+**Type:** `(logger: LoggerInterface<unknown>, feApiRequestCatcher: RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>) => ApiCatchPlugin`
 
 #### Parameters
 
 | Name                  | Type                                                                | Optional | Default | Since | Deprecated | Description |
 | --------------------- | ------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `logger`              | `LoggerInterface`                                                   | ❌       | -       | -     | -          |             |
+| `logger`              | `LoggerInterface<unknown>`                                          | ❌       | -       | -     | -          |             |
 | `feApiRequestCatcher` | `RequestCatcherInterface<RequestAdapterResponse<unknown, unknown>>` | ❌       | -       | -     | -          |             |
 
 ---

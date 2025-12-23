@@ -924,7 +924,7 @@ Optional - services can work without gateway (e.g., mock services).
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 

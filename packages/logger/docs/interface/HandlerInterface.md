@@ -6,7 +6,7 @@
 
 ### `HandlerInterface` (Interface)
 
-**Type:** `interface HandlerInterface`
+**Type:** `interface HandlerInterface<Ctx>`
 
 Interface for log event handlers (appenders)
 
@@ -132,13 +132,13 @@ class NetworkHandler implements HandlerInterface {
 
 #### `append` (Method)
 
-**Type:** `(event: LogEvent<unknown>) => void`
+**Type:** `(event: LogEvent<Ctx>) => void`
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description                         |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to process and output |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description                         |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to process and output |
 
 ---
 
@@ -236,9 +236,9 @@ async append(event: LogEvent): Promise<void> {
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description                         |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to process and output |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description                         |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to process and output |
 
 ---
 

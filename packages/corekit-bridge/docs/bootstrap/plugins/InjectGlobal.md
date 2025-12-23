@@ -56,13 +56,6 @@ Plugins with the same pluginName will be merged.
 
 **Type:** `void`
 
-Hook executed before the main task
-Can modify the input data before it reaches the task
-
-**Returns:**
-
-Modified data or Promise of modified data
-
 #### Parameters
 
 | Name      | Type               | Optional | Default | Since | Deprecated | Description |

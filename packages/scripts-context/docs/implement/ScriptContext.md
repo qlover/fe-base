@@ -136,7 +136,7 @@ default fe-config with script-specific overrides.
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for structured logging
 

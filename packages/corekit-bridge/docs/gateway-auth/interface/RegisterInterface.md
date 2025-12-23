@@ -470,13 +470,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface`
+**Type:** `() => undefined \| LoggerInterface<unknown>`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface`
+**Type:** `undefined \| LoggerInterface<unknown>`
 
 Get the logger instance
 

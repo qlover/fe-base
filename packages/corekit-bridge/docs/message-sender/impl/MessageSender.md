@@ -98,7 +98,7 @@ Plugin executor for managing send pipeline
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Optional logger instance
 
@@ -685,7 +685,7 @@ const config = {
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for debugging and monitoring
 

@@ -352,13 +352,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface`
+**Type:** `() => undefined \| LoggerInterface<unknown>`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface`
+**Type:** `undefined \| LoggerInterface<unknown>`
 
 Get the logger instance
 
@@ -574,7 +574,7 @@ Optional - services can work without gateway (e.g., mock services).
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 

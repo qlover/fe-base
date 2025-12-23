@@ -626,7 +626,7 @@ or is a IOCManagerInterface
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 logger
 
