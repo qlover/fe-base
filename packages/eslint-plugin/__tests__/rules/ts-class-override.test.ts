@@ -212,13 +212,13 @@ ruleTester.run(RULE_NAME, rule, {
       `
     },
     {
-      name: 'Private method with override',
+      name: 'Private method (should be skipped, no override needed)',
       code: `
         class BaseClass {
-          private method(): void {}
+          protected method(): void {}
         }
         class DerivedClass extends BaseClass {
-          private override method(): void {}
+          private method(): void {}
         }
       `
     },
@@ -234,13 +234,13 @@ ruleTester.run(RULE_NAME, rule, {
       `
     },
     {
-      name: 'Static method with override',
+      name: 'Static method (should be skipped, no override needed)',
       code: `
         class BaseClass {
           static method(): void {}
         }
         class DerivedClass extends BaseClass {
-          static override method(): void {}
+          static method(): void {}
         }
       `
     },
@@ -416,6 +416,20 @@ ruleTester.run(RULE_NAME, rule, {
           method2(): void {}
         }
       `
+    },
+    {
+      name: 'Interface method with both @override and keyword (both allowed)',
+      code: `
+        interface MyInterface {
+          method(): void;
+        }
+        class MyClass implements MyInterface {
+          /**
+           * @override
+           */
+          override method(): void {}
+        }
+      `
     }
   ],
 
@@ -583,40 +597,6 @@ ruleTester.run(RULE_NAME, rule, {
     },
 
     // ============================================
-    // 4. INTERFACE METHODS - Cannot Use Keyword
-    // ============================================
-    {
-      name: 'Interface method with override keyword (should be removed)',
-      code: `
-        interface MyInterface {
-          method(): void;
-        }
-        class MyClass implements MyInterface {
-          /**
-           * @override
-           */
-          override method(): void {}
-        }
-      `,
-      output: `
-        interface MyInterface {
-          method(): void;
-        }
-        class MyClass implements MyInterface {
-          /**
-           * @override
-           */
-          method(): void {}
-        }
-      `,
-      errors: [
-        {
-          messageId: 'unnecessaryOverrideKeyword'
-        }
-      ]
-    },
-
-    // ============================================
     // 5. ABSTRACT METHODS
     // ============================================
     {
@@ -720,7 +700,19 @@ ruleTester.run(RULE_NAME, rule, {
           method(): void {}
         }
       `,
-      output: `
+      output: [
+        `
+        class BaseClass {
+          method(): void {}
+        }
+        class DerivedClass extends BaseClass {
+          /**
+           * @override
+           */
+          method(): void {}
+        }
+      `,
+        `
         class BaseClass {
           method(): void {}
         }
@@ -730,10 +722,14 @@ ruleTester.run(RULE_NAME, rule, {
            */
           override method(): void {}
         }
-      `,
+      `
+      ],
       errors: [
         {
-          messageId: 'missingOverrideBoth'
+          messageId: 'missingOverrideJSDoc'
+        },
+        {
+          messageId: 'missingOverrideKeyword'
         }
       ]
     },
@@ -764,7 +760,7 @@ ruleTester.run(RULE_NAME, rule, {
       `,
       errors: [
         {
-          messageId: 'missingOverrideBoth'
+          messageId: 'missingOverrideKeyword'
         }
       ]
     },
@@ -792,7 +788,7 @@ ruleTester.run(RULE_NAME, rule, {
       `,
       errors: [
         {
-          messageId: 'missingOverrideBoth'
+          messageId: 'missingOverrideJSDoc'
         }
       ]
     },
@@ -850,33 +846,6 @@ ruleTester.run(RULE_NAME, rule, {
            * @override
            */
           public method(): void {}
-        }
-      `,
-      errors: [
-        {
-          messageId: 'missingOverrideEither'
-        }
-      ]
-    },
-    {
-      name: 'Static method missing override',
-      code: `
-        class BaseClass {
-          static method(): void {}
-        }
-        class DerivedClass extends BaseClass {
-          static method(): void {}
-        }
-      `,
-      output: `
-        class BaseClass {
-          static method(): void {}
-        }
-        class DerivedClass extends BaseClass {
-          /**
-           * @override
-           */
-          static method(): void {}
         }
       `,
       errors: [
