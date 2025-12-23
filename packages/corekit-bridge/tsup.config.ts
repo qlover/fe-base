@@ -47,10 +47,13 @@ export default defineConfig([
     outDir: 'dist'
   },
   // Main entry: ESM format with TypeScript declarations
+  // Use bundle: false to keep only re-exports for better tree-shaking
+  // Submodules are bundled separately, allowing consumers to import only what they need
   {
     entry: ['src/core/index.ts'],
     format: ['esm'],
-    splitting: false, // 改为 false
+    bundle: false, // Only re-export, don't bundle - better tree-shaking
+    splitting: false,
     dts: {
       compilerOptions: {
         composite: false
@@ -58,9 +61,8 @@ export default defineConfig([
     },
     minify: false,
     silent: true,
-    bundle: false, // 添加这行
     outDir: 'dist',
-    external // 添加 external
+    external // External dependencies will not be bundled
   },
   // Core submodules: CJS format
   {
@@ -84,6 +86,7 @@ export default defineConfig([
     },
     minify: false,
     silent: true,
+    // bundle: true by default - bundle code but keep external dependencies external
     outDir: 'dist',
     external
   },
@@ -122,6 +125,7 @@ export default defineConfig([
     splitting: false,
     minify: false,
     silent: true,
+    // bundle: true by default - bundle code but keep external dependencies external
     external
   }
 ]);

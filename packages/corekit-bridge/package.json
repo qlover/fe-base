@@ -4,6 +4,7 @@
   "version": "1.10.0",
   "private": false,
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "package.json",
