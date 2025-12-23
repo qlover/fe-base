@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'fs';
 import Code2MDContext from '../implments/Code2MDContext';
 import { ScriptPlugin } from '@qlover/scripts-context';
-import { basename, dirname, extname, join, relative } from 'path';
+import { basename, dirname, extname, join, relative, normalize } from 'path';
 
 /**
  * Entry file information for file reading operations
@@ -61,6 +61,18 @@ export interface ReaderOutput {
  * await reader.onBefore();
  * // Processes all files in src/ directory
  * ```
+ *
+ * @example With Exclude Patterns
+ * ```typescript
+ * // Context with exclude patterns
+ * const context = new Code2MDContext({
+ *   sourcePath: 'src',
+ *   exclude: ['src/test', 'node_modules']
+ * });
+ * const reader = new Reader(context);
+ * await reader.onBefore();
+ * // Processes files in src/ but excludes test files and node_modules
+ * ```
  */
 export class Reader extends ScriptPlugin<Code2MDContext> {
   /**
@@ -82,13 +94,14 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
    * 4. Generates output path mappings for markdown files
    * 5. Stores processed file information in context for downstream plugins
    *
-   * Business Rules:
-   * - Handles both file and directory entry points
-   * - Processes all files recursively in directory entries
-   * - Generates relative paths from current working directory
-   * - Maps source file extensions to .md output extensions
-   * - Preserves directory structure in output paths
-   * - Provides detailed logging for debugging and monitoring
+ * Business Rules:
+ * - Handles both file and directory entry points
+ * - Processes all files recursively in directory entries
+ * - Filters out excluded files based on exclude patterns
+ * - Generates relative paths from current working directory
+ * - Maps source file extensions to .md output extensions
+ * - Preserves directory structure in output paths
+ * - Provides detailed logging for debugging and monitoring
    *
    * @throws {Error} When source path is invalid or inaccessible
    * @throws {Error} When file system operations fail
@@ -100,12 +113,22 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
    * ```
    */
   public override async onBefore(): Promise<void> {
-    const { sourcePath } = this.context.options;
+    const { sourcePath, exclude } = this.context.options;
     this.logger.info(`Reading entry: ${sourcePath}`);
     const entryAllFiles = this.getEntryAllFiles([sourcePath!]);
     this.logger.debug('Read entry:', JSON.stringify(entryAllFiles, null, 2));
 
-    const outputs = entryAllFiles.map((entryFile) => {
+    // Filter out excluded files
+    const filteredFiles = exclude && exclude.length > 0
+      ? entryAllFiles.filter((file) => !this.shouldExcludeFile(file, exclude))
+      : entryAllFiles;
+
+    if (exclude && exclude.length > 0 && filteredFiles.length < entryAllFiles.length) {
+      const excludedCount = entryAllFiles.length - filteredFiles.length;
+      this.logger.info(`Excluded ${excludedCount} file(s) based on exclude patterns`);
+    }
+
+    const outputs = filteredFiles.map((entryFile) => {
       const relativePath = relative(process.cwd(), entryFile);
       const ext = extname(entryFile);
       const name = basename(entryFile, ext);
@@ -236,5 +259,54 @@ export class Reader extends ScriptPlugin<Code2MDContext> {
     });
 
     return filePaths;
+  }
+
+  /**
+   * Check if a file should be excluded based on exclude patterns
+   *
+   * Implementation Details:
+   * 1. Normalizes file path and exclude patterns for consistent matching
+   * 2. Checks if file path contains any of the exclude patterns
+   * 3. Supports both absolute and relative path matching
+   * 4. Handles Windows and Unix path separators correctly
+   *
+   * Business Rules:
+   * - A file is excluded if its path contains any exclude pattern
+   * - Matching is case-sensitive and uses normalized paths
+   * - Supports directory names, file names, and partial paths
+   * - Exclude patterns are matched against normalized file paths
+   *
+   * @param filePath - Full path to the file to check
+   * @param excludePatterns - Array of exclude patterns to match against
+   * @returns True if file should be excluded, false otherwise
+   *
+   * @example
+   * ```typescript
+   * // Exclude test files
+   * reader.shouldExcludeFile('/project/src/test.ts', ['test']);
+   * // Returns: true
+   *
+   * // Exclude node_modules
+   * reader.shouldExcludeFile('/project/node_modules/lib.ts', ['node_modules']);
+   * // Returns: true
+   *
+   * // Exclude specific directory
+   * reader.shouldExcludeFile('/project/src/utils/helpers.ts', ['src/utils']);
+   * // Returns: true
+   * ```
+   */
+  private shouldExcludeFile(filePath: string, excludePatterns: string[]): boolean {
+    // Normalize the file path for consistent matching
+    const normalizedFilePath = normalize(filePath);
+
+    // Check if any exclude pattern matches the file path
+    return excludePatterns.some((pattern) => {
+      // Normalize the exclude pattern
+      const normalizedPattern = normalize(pattern);
+
+      // Check if file path contains the pattern
+      // This supports both directory and file name matching
+      return normalizedFilePath.includes(normalizedPattern);
+    });
   }
 }

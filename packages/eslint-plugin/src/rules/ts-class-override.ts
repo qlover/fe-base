@@ -417,6 +417,116 @@
  * ];
  * ```
  *
+ * ### Type Checking vs AST-Based Detection
+ *
+ * **Type Checking Mode (Recommended for Accuracy)**:
+ *
+ * When type information is available, the rule uses TypeScript's type checker to accurately
+ * determine if a method actually overrides a parent method or implements an interface method.
+ * This provides the most accurate detection but may slow down ESLint checking, especially when
+ * checking methods that override or implement definitions from other files.
+ *
+ * **Performance Considerations**:
+ * - Type checking requires parsing and analyzing TypeScript type information across files
+ * - **Cross-file analysis impact**: When a method overrides a parent class or implements an interface
+ *   defined in another file, TypeScript must load and analyze those files, which significantly
+ *   impacts performance compared to single-file AST-based detection
+ * - Performance impact is most noticeable in large codebases with many cross-file dependencies
+ * - Recommended for projects where accuracy is more important than speed
+ * - Consider using `projectService: true` for better performance in monorepos
+ *
+ * **AST-Based Fallback**:
+ *
+ * When type information is not available, the rule falls back to AST-based heuristic detection.
+ * This is less accurate but faster. It assumes all methods in classes that extend or implement
+ * need override notation, which may result in false positives.
+ *
+ * **Example: Type Checking Accuracy**:
+ *
+ * ```typescript
+ * // With type checking enabled, the rule accurately detects:
+ *
+ * interface BaseInterface {
+ *   method(): void;
+ * }
+ *
+ * class BaseClass {
+ *   method(): void {}
+ * }
+ *
+ * class DerivedClass extends BaseClass implements BaseInterface {
+ *   // Type checker knows this implements BaseInterface AND overrides BaseClass.method
+ *   // Rule correctly requires @override JSDoc (interface takes precedence)
+ *   method(): void {}
+ * }
+ *
+ * // Without type checking, AST-based detection may incorrectly flag:
+ * class MyClass {
+ *   // AST heuristic might incorrectly require @override here
+ *   // because it can't verify if this actually overrides anything
+ *   method(): void {}
+ * }
+ * ```
+ *
+ * **Example: Cross-File Performance Impact**:
+ *
+ * ```typescript
+ * // File: src/base/BaseService.ts
+ * export class BaseService {
+ *   process(): void {}
+ * }
+ *
+ * // File: src/derived/UserService.ts
+ * import { BaseService } from '../base/BaseService';
+ *
+ * export class UserService extends BaseService {
+ *   // Type checking must load and analyze BaseService.ts to verify this override
+ *   // This cross-file analysis significantly impacts performance
+ *   process(): void {}
+ * }
+ *
+ * // File: src/derived/ProductService.ts
+ * import { BaseService } from '../base/BaseService';
+ *
+ * export class ProductService extends BaseService {
+ *   // Each file that extends BaseService requires loading the base file
+ *   // Performance impact accumulates with many derived classes
+ *   process(): void {}
+ * }
+ * ```
+ *
+ * In the above example, when checking `UserService.ts` and `ProductService.ts`, TypeScript must:
+ * 1. Load `BaseService.ts` from disk
+ * 2. Parse and analyze its type information
+ * 3. Resolve the inheritance relationship
+ * 4. Verify the override relationship
+ *
+ * This cross-file analysis is what causes the performance impact, especially when there are many
+ * files with cross-file dependencies. AST-based detection avoids this overhead but sacrifices accuracy.
+ *
+ * **Performance Optimization Tips**:
+ *
+ * ```javascript
+ * // Use projectService for better performance in monorepos
+ * export default [
+ *   {
+ *     parserOptions: {
+ *       projectService: true  // Better performance than project: './tsconfig.json'
+ *     }
+ *   }
+ * ];
+ *
+ * // Or limit type checking to specific files
+ * export default [
+ *   {
+ *     files: ['src/**\/*.ts'],  // Escaped glob pattern
+ *     parserOptions: {
+ *       project: './tsconfig.json'
+ *     }
+ *   }
+ * ];
+ * ```
+ *
  * @see [TypeScript ESLint Typed Linting](https://typescript-eslint.io/getting-started/typed-linting)
  */
 import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/types';

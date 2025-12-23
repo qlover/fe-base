@@ -26,6 +26,7 @@ The rule checks all class methods and:
 - Reports errors if a method has or override keyword but doesn't actually override anything
 - Only checks methods in classes that extend another class or implement interfaces
 - Supports different override styles for parent class methods via configuration
+- Skips static methods, private methods, constructors, and method overload signatures
 
 ## Examples
 
@@ -166,30 +167,63 @@ abstract class AbsB extends AbaA {
 }
 ```
 
-### Backtick-wrapped in Comments
+### Static Methods
 
-The rule correctly distinguishes between actual JSDoc tags and text mentions:
+Static methods are skipped and do not require override notation:
 
 ```typescript
-interface MyInterface {
-  method(): void;
-  anotherMethod(): void;
+class BaseClass {
+  static method(): void {}
 }
 
-class MyClass implements MyInterface {
+class DerivedClass extends BaseClass {
+  static method(): void {} // ✅ OK - static methods don't override instance methods
+}
+```
+
+### Private Methods
+
+Private methods (using
+`private`
+keyword or
+`#`
+syntax) are skipped:
+
+```typescript
+class BaseClass {
+  protected method(): void {}
+}
+
+class DerivedClass extends BaseClass {
+  private method(): void {} // ✅ OK - private methods don't need override notation
+  #privateMethod(): void {} // ✅ OK - private identifier methods are skipped
+}
+```
+
+### Getters and Setters
+
+Getters and setters are checked the same way as regular methods:
+
+```typescript
+interface StorageInterface {
+  get length(): number;
+  set length(value: number): void;
+}
+
+class Storage implements StorageInterface {
   /**
-   * This method must use `@override` comment.
+   * @override
    */
-  method(): void {
-    // ❌ Error - @override in backticks is not a real tag
-    // implementation
+  get length(): number {
+    // ✅ Correct - Getter needs @override
+    return 0;
   }
 
   /**
    * @override
    */
-  anotherMethod(): void {
-    // ✅ Correct - actual JSDoc tag
+  set length(value: number): void {
+    // ✅ Correct - Setter needs @override
     // implementation
   }
 }
@@ -216,28 +250,6 @@ class MyHandler extends BaseHandler implements LoggerInterface {
     // Also overrides parent, but interface takes precedence
     // implementation
   }
-}
-```
-
-### Class's Own Methods
-
-Methods that don't override anything should not have @override:
-
-```typescript
-interface MyInterface {
-  method(): void;
-}
-
-class MyClass implements MyInterface {
-  /**
-   * @override
-   */
-  method(): void {} // ✅ Correct
-
-  /**
-   * @override  // ❌ Error - unnecessary override
-   */
-  ownMethod(): void {} // This is class's own method, not overriding anything
 }
 ```
 
@@ -365,12 +377,10 @@ class MyClass implements MyInterface {
    * @override  // Always required for interface methods
    */
   method(): void {}
-
-  override method(): void {} // ❌ Error - override keyword not valid for interfaces
 }
 ```
 
-2. **When a method both implements an interface and overrides a parent class**, the interface rule takes precedence (requires JSDoc, override keyword is not allowed):
+2. **When a method both implements an interface and overrides a parent class**, the interface rule takes precedence (requires JSDoc, override keyword is allowed but not required):
 
 ```typescript
 interface LoggerInterface {
@@ -386,8 +396,6 @@ class MyLogger extends BaseLogger implements LoggerInterface {
    * @override  // Required (interface takes precedence)
    */
   log(): void {} // ✅ Correct
-
-  override log(): void {} // ❌ Error - override keyword not allowed
 }
 ```
 
@@ -409,319 +417,187 @@ export default [
 ];
 ```
 
+## Auto-Fix Support
+
+This rule provides automatic fixes for all reported errors:
+
+- **Adding JSDoc**: Automatically inserts tag in the correct position
+- **Adding override keyword**: Inserts override keyword following TypeScript modifier order
+- **Removing unnecessary @override**: Removes tag or entire JSDoc block if only exists
+- **Removing unnecessary override keyword**: Removes override keyword while preserving other modifiers
+
+The fix logic handles various scenarios including existing JSDoc comments, complex modifier combinations,
+and preserves code formatting and indentation.
+
+**Note**: Fix functions may return
+`null`
+if they cannot create a fix (e.g., due to syntax issues
+or edge cases). In such cases, the rule will still report the error but without an automatic fix.
+This ensures compatibility with ESLint's fixable rule requirements.
+
+**Multiple fixes**: When using
+`parentClassOverrideStyle: 'both'`
+and a method is missing both
+the
+`@override`
+JSDoc comment and the
+`override`
+keyword, the rule reports two separate errors
+(one for each missing element). Each error has its own fix, and ESLint will apply them in sequence.
+The first fix adds the JSDoc comment, and the second fix adds the
+`override`
+keyword.
+
 ## When Not To Use It
 
 If you prefer not to enforce any override notation or if your codebase follows a different
 style guide, you can disable this rule.
 
-## Auto-Fix Logic
+## Requirements
 
-This rule provides automatic fixes for all reported errors. The fix logic handles various scenarios:
+This rule requires TypeScript type information. Make sure to enable type checking in your ESLint config:
 
-### 1. Adding JSDoc Comment
-
-#### 1.1 Method Has Existing JSDoc Block with Tags
-
-When a method already has JSDoc comments with tags (
-`@param`
-,
-`@returns`
-, etc.),
-the
-`@override`
-tag is inserted **before the first JSDoc tag** for better semantics:
-
-```typescript
-// Before fix:
-/**
- * Description text here
- * @param x - parameter description
- * @returns return value
- */
-method(x: number): void {}
-
-// After fix:
-/**
- * Description text here
- * @override
- * @param x - parameter description
- * @returns return value
- */
-method(x: number): void {}
+```javascript
+export default [
+  {
+    parserOptions: {
+      project: './tsconfig.json' // or projectService: true
+    }
+  }
+];
 ```
 
-#### 1.2 Method Has JSDoc Block with Only Description
+### Type Checking vs AST-Based Detection
 
-When JSDoc only contains description text without tags,
+**Type Checking Mode (Recommended for Accuracy)**:
 
-`@override`
-is added after the description:
+When type information is available, the rule uses TypeScript's type checker to accurately
+determine if a method actually overrides a parent method or implements an interface method.
+This provides the most accurate detection but may slow down ESLint checking, especially when
+checking methods that override or implement definitions from other files.
 
-```typescript
-// Before fix:
-/**
- * Description text here
- */
-method(): void {}
+**Performance Considerations**:
 
-// After fix:
-/**
- * Description text here
- * @override
- */
-method(): void {}
-```
+- Type checking requires parsing and analyzing TypeScript type information across files
+- **Cross-file analysis impact**: When a method overrides a parent class or implements an interface
+  defined in another file, TypeScript must load and analyze those files, which significantly
+  impacts performance compared to single-file AST-based detection
+- Performance impact is most noticeable in large codebases with many cross-file dependencies
+- Recommended for projects where accuracy is more important than speed
+- Consider using
+  `projectService: true`
+  for better performance in monorepos
 
-#### 1.3 Method Has No JSDoc Block
+**AST-Based Fallback**:
 
-When a method has no JSDoc comment, a new block is created:
+When type information is not available, the rule falls back to AST-based heuristic detection.
+This is less accurate but faster. It assumes all methods in classes that extend or implement
+need override notation, which may result in false positives.
 
-```typescript
-// Before fix:
-method(): void {}
-
-// After fix:
-/**
- * @override
- */
-method(): void {}
-```
-
-### 2. Adding override Keyword
-
-The
-`override`
-keyword is inserted according to TypeScript modifier order:
-
-`[accessibility] [static] [abstract] [override] [async] [get/set] methodName`
-
-#### 2.1 Method with Accessibility Modifiers
+**Example: Type Checking Accuracy**:
 
 ```typescript
-// Before fix:
-public method(): void {}
-private method(): void {}
-protected method(): void {}
+// With type checking enabled, the rule accurately detects:
 
-// After fix:
-public override method(): void {}
-private override method(): void {}
-protected override method(): void {}
+interface BaseInterface {
+  method(): void;
+}
+
+class BaseClass {
+  method(): void {}
+}
+
+class DerivedClass extends BaseClass implements BaseInterface {
+  // Type checker knows this implements BaseInterface AND overrides BaseClass.method
+  // Rule correctly requires @override JSDoc (interface takes precedence)
+  method(): void {}
+}
+
+// Without type checking, AST-based detection may incorrectly flag:
+class MyClass {
+  // AST heuristic might incorrectly require @override here
+  // because it can't verify if this actually overrides anything
+  method(): void {}
+}
 ```
 
-#### 2.2 Abstract Methods
-
-For abstract methods,
-`override`
-is placed before
-`abstract`
-:
+**Example: Cross-File Performance Impact**:
 
 ```typescript
-// Before fix:
-abstract method(): void;
-public abstract method(): void;
+// File: src/base/BaseService.ts
+export class BaseService {
+  process(): void {}
+}
 
-// After fix:
-override abstract method(): void;
-public override abstract method(): void;
+// File: src/derived/UserService.ts
+import { BaseService } from '../base/BaseService';
+
+export class UserService extends BaseService {
+  // Type checking must load and analyze BaseService.ts to verify this override
+  // This cross-file analysis significantly impacts performance
+  process(): void {}
+}
+
+// File: src/derived/ProductService.ts
+import { BaseService } from '../base/BaseService';
+
+export class ProductService extends BaseService {
+  // Each file that extends BaseService requires loading the base file
+  // Performance impact accumulates with many derived classes
+  process(): void {}
+}
 ```
 
-#### 2.3 Static Methods
+In the above example, when checking
+`UserService.ts`
+and
+`ProductService.ts`
+, TypeScript must:
 
-For static methods,
-`override`
-is placed after
-`static`
-:
+1. Load
+   `BaseService.ts`
+   from disk
+2. Parse and analyze its type information
+3. Resolve the inheritance relationship
+4. Verify the override relationship
 
-```typescript
-// Before fix:
-static method(): void {}
-public static method(): void {}
+This cross-file analysis is what causes the performance impact, especially when there are many
+files with cross-file dependencies. AST-based detection avoids this overhead but sacrifices accuracy.
 
-// After fix:
-static override method(): void {}
-public static override method(): void {}
+**Performance Optimization Tips**:
+
+```javascript
+// Use projectService for better performance in monorepos
+export default [
+  {
+    parserOptions: {
+      projectService: true  // Better performance than project: './tsconfig.json'
+    }
+  }
+];
+
+// Or limit type checking to specific files
+export default [
+  {
+    files: ['src/**/*.ts'],  // Escaped glob pattern
+    parserOptions: {
+      project: './tsconfig.json'
+    }
+  }
+];
 ```
-
-#### 2.4 Async Methods
-
-For async methods,
-`override`
-is placed before
-`async`
-:
-
-```typescript
-// Before fix:
-async method(): Promise<void> {}
-public async method(): Promise<void> {}
-
-// After fix:
-override async method(): Promise<void> {}
-public override async method(): Promise<void> {}
-```
-
-#### 2.5 Getters and Setters
-
-For getters/setters,
-`override`
-is placed before
-`get`
-/
-`set`
-:
-
-```typescript
-// Before fix:
-get value(): number { return 0; }
-set value(v: number) {}
-
-// After fix:
-override get value(): number { return 0; }
-override set value(v: number) {}
-```
-
-#### 2.6 Computed Property Methods
-
-For computed properties,
-`override`
-is placed before
-`[`
-:
-
-```typescript
-// Before fix:
-[Symbol.iterator](): Iterator<any> {}
-
-// After fix:
-override [Symbol.iterator](): Iterator<any> {}
-```
-
-#### 2.7 Complex Modifier Combinations
-
-The fix handles complex combinations correctly:
-
-```typescript
-// Before fix:
-public static abstract method(): void;
-private static async method(): Promise<void> {}
-protected abstract get value(): number;
-
-// After fix:
-public static override abstract method(): void;
-private static override async method(): Promise<void> {}
-protected override abstract get value(): number;
-```
-
-### 3. Removing Unnecessary JSDoc Comment
-
-#### 3.1 JSDoc Block Contains Only
-
-If the JSDoc block only contains
-`@override`
-(no other tags or description),
-the entire block is removed:
-
-```typescript
-// Before fix:
-/**
- * @override
- */
-ownMethod(): void {}
-
-// After fix:
-ownMethod(): void {}
-```
-
-#### 3.2 JSDoc Block Contains Other Content
-
-If the JSDoc block has other tags or description, only the
-`@override`
-line is removed:
-
-```typescript
-// Before fix:
-/**
- * Description text
- * @override
- * @param x - parameter
- */
-ownMethod(x: number): void {}
-
-// After fix:
-/**
- * Description text
- * @param x - parameter
- */
-ownMethod(x: number): void {}
-```
-
-### 4. Removing Unnecessary override Keyword
-
-The
-`override`
-keyword is removed while preserving other modifiers:
-
-```typescript
-// Before fix:
-override ownMethod(): void {}
-public override ownMethod(): void {}
-static override async ownMethod(): Promise<void> {}
-
-// After fix:
-ownMethod(): void {}
-public ownMethod(): void {}
-static async ownMethod(): Promise<void> {}
-```
-
-### 5. TypeScript Modifier Order
-
-The fix logic follows TypeScript's standard modifier order:
-
-1. Accessibility:
-   `public`
-   /
-   `private`
-   /
-   `protected`
-
-2. `static`
-
-3. `abstract`
-
-4. `override`
-
-5. `async`
-
-6. `get`
-   /
-   `set`
-
-7. Method name/key
-
-This ensures the generated code follows TypeScript best practices and conventions.
-
-### 6. Edge Cases Handled
-
-- **Readonly modifier**: Handled correctly (e.g.,
-  `readonly override property`
-  )
-- **Decorators**: Preserved and not affected by fixes
-- **Method overloads**: Only the implementation signature is fixed
-- **Computed properties**:
-  `override`
-  placed before
-  `[`
-
-- **Backtick-wrapped @override**: Not treated as actual JSDoc tag
-- **Indentation**: Preserved and matched to existing code style
-- **Comment formatting**: Star alignment and spacing preserved
 
 **See:**
 
-[Rule source](../../src/rules/ts-class-override.ts)
+[TypeScript ESLint Typed Linting](https://typescript-eslint.io/getting-started/typed-linting)
+
+---
+
+### `MessageIds` (TypeAlias)
+
+**Type:** `"missingOverrideJSDoc" \| "missingOverrideKeyword" \| "missingOverrideEither" \| "unnecessaryOverride" \| "unnecessaryOverrideKeyword" \| "requiresTypeInformation"`
+
+Message IDs for error reporting
 
 ---
 

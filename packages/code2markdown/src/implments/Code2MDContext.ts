@@ -72,6 +72,34 @@ export interface Code2MDContextConfig extends ScriptSharedInterface {
   sourcePath?: string;
 
   /**
+   * Files or directories to exclude from processing
+   *
+   * This option allows you to exclude specific files or directories from
+   * being processed during documentation generation. Paths can be:
+   * - Relative paths from project root (e.g., `'src/test'`, `'src/utils/helpers.ts'`)
+   * - Directory names (e.g., `'node_modules'`, `'dist'`)
+   * - File patterns (simple matching, not full glob)
+   *
+   * Excluded paths are matched against file paths using simple string matching.
+   * If a file path contains any of the excluded paths, it will be skipped.
+   *
+   * @default `undefined` (no exclusions)
+   *
+   * @example
+   * ```typescript
+   * // Exclude test files and node_modules
+   * exclude: ['src/test', 'node_modules', '__tests__']
+   *
+   * // Exclude specific files
+   * exclude: ['src/utils/helpers.ts', 'src/index.ts']
+   *
+   * // Exclude multiple directories
+   * exclude: ['dist', 'build', 'coverage']
+   * ```
+   */
+  exclude?: string[];
+
+  /**
    * Output directory path for generated markdown documentation
    *
    * This is where the converted markdown files will be saved. The directory
