@@ -73,6 +73,9 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     return value === null || value === undefined || value === '';
   }
 
+  /**
+   * @override
+   */
   public onBefore(): void {
     const { target } = this.options;
 
@@ -86,6 +89,9 @@ export class InjectEnv implements BootstrapExecutorPlugin {
     Object.freeze(target);
   }
 
+  /**
+   * @override
+   */
   public onSuccess({ parameters: { logger } }: BootstrapContext): void {
     logger.debug('InjectEnv success!');
   }

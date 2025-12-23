@@ -47,6 +47,7 @@
   "scripts": {
     "lint": "eslint src --fix",
     "build": "tsup",
+    "type-check": "tsc --noEmit",
     "build:docs": "fe-code2md -p src -g docs --formatOutput prettier --removePrefix",
     "release": "node dist/cli.js",
     "release-pr": "node dist/cli.js -P",

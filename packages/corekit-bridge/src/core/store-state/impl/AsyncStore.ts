@@ -434,6 +434,7 @@ export class AsyncStore<
    * - Optionally sets `result` if provided
    * - Automatically persists state to storage (if configured)
    *
+   * @override
    * @param result - Optional initial result value to set before operation starts
    *   Useful for optimistic updates or when resuming a previous operation
    *   @optional
@@ -472,6 +473,7 @@ export class AsyncStore<
    * - Optionally sets `error` and `result` if provided
    * - Automatically persists state to storage (if configured)
    *
+   * @override
    * @param error - Optional error information if operation was stopped due to an error
    *   @optional
    * @param result - Optional result value if partial results are available
@@ -517,6 +519,7 @@ export class AsyncStore<
    * - Preserves existing `result` if not provided, or sets `result` if explicitly provided
    * - Automatically persists state to storage (if configured)
    *
+   * @override
    * @param error - The error that occurred during the operation
    *   Can be an Error object, string message, or any error information
    * @param result - Optional result value if partial results are available
@@ -586,6 +589,7 @@ export class AsyncStore<
    * - Clears `error` (sets to `null`)
    * - Automatically persists state to storage (if configured)
    *
+   * @override
    * @param result - The result of the successful async operation
    *   This is the data returned from the completed operation
    *
@@ -663,6 +667,7 @@ export class AsyncStore<
    * - Type-safe: Only accepts properties that exist in the state interface
    * - Automatically persists state to storage (unless `persist: false` is specified)
    *
+   * @override
    * @template T - The state type that extends `AsyncStateInterface<T>`
    * @param state - Partial state object containing properties to update
    *   Only specified properties will be updated, others remain unchanged
@@ -800,6 +805,7 @@ export class AsyncStore<
    * - Returns `0` if startTime is greater than endTime (invalid state)
    * - Prevents overflow by checking against `Number.MAX_SAFE_INTEGER`
    *
+   * @override
    * @returns The duration of the async operation in milliseconds, or `0` if duration cannot be calculated
    *
    * @example Get duration for completed operation
@@ -904,6 +910,7 @@ export class AsyncStore<
    * Returns `true` if the operation has completed successfully with a result.
    * This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
    *
+   * @override
    * @returns `true` if the async operation is successful, `false` otherwise
    *
    * @example Check success before accessing result
@@ -924,6 +931,7 @@ export class AsyncStore<
    * Returns `true` if the operation has failed with an error.
    * This typically means `loading` is `false` and `error` is not `null`.
    *
+   * @override
    * @returns `true` if the async operation is failed, `false` otherwise
    *
    * @example Handle failure
@@ -944,6 +952,7 @@ export class AsyncStore<
    * Returns `true` if the operation was manually stopped (e.g., user cancellation).
    * This is different from failure - stopping is intentional, failure is an error.
    *
+   * @override
    * @returns `true` if the async operation is stopped, `false` otherwise
    *
    * @example Handle stopped operation
@@ -963,6 +972,7 @@ export class AsyncStore<
    * Returns `true` if the operation has finished, regardless of outcome.
    * This includes success, failure, and stopped states. Returns `false` if still in progress.
    *
+   * @override
    * @returns `true` if the async operation is completed (success, failed, or stopped), `false` otherwise
    *
    * @example Check if operation finished
@@ -986,6 +996,7 @@ export class AsyncStore<
    * Returns `true` if the operation is currently in progress.
    * This is equivalent to checking if `loading` is `true`.
    *
+   * @override
    * @returns `true` if the async operation is pending (in progress), `false` otherwise
    *
    * @example Show loading indicator

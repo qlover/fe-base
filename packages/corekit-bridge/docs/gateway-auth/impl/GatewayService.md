@@ -144,7 +144,7 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 
@@ -484,13 +484,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface`
+**Type:** `() => undefined \| LoggerInterface<unknown>`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface`
+**Type:** `undefined \| LoggerInterface<unknown>`
 
 Get the logger instance
 
@@ -716,7 +716,7 @@ which happens BEFORE subclass field initialization. This means:
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 

@@ -257,7 +257,7 @@ Protected to allow subclasses to access while preventing external modification.
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 
@@ -629,13 +629,13 @@ if (!gateway) {
 
 #### `getLogger` (Method)
 
-**Type:** `() => undefined \| LoggerInterface`
+**Type:** `() => undefined \| LoggerInterface<unknown>`
 
 ---
 
 ##### `getLogger` (CallSignature)
 
-**Type:** `undefined \| LoggerInterface`
+**Type:** `undefined \| LoggerInterface<unknown>`
 
 Get the logger instance
 
@@ -1255,38 +1255,9 @@ Optional - services can work without gateway (e.g., mock services).
 
 ---
 
-#### `initRestore` (Property)
-
-**Type:** `boolean`
-
-Whether to automatically restore state from storage during construction
-
-**⚠️ This is primarily a testing/internal property.**
-
-**Initialization Order Issues:**
-When
-`initRestore`
-is
-`true`
-,
-`restore()`
-is called during
-`super()`
-execution,
-which happens BEFORE subclass field initialization. This means:
-
-- Subclass fields (e.g.,
-  `private readonly storageKey = 'my-key'`
-  ) are NOT yet initialized
-- `restore()`
-  cannot access these fields, causing runtime errors or incorrect behavior
-- This is a fundamental limitation of JavaScript/TypeScript class initialization order
-
----
-
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for logging execution events
 
@@ -1298,6 +1269,10 @@ Optional - services can work without logger.
 #### `serviceName` (Property)
 
 **Type:** `string \| symbol`
+
+**Default:** `ts
+'UserService'
+`
 
 Service name
 
@@ -1314,37 +1289,9 @@ const userService = new UserService({
 
 ---
 
-#### `storage` (Property)
-
-**Type:** `null \| SyncStorageInterface<string, unknown>`
-
-Storage implementation for persisting state
-
-If provided, state changes will be automatically persisted to this storage.
-If
-`null`
-or
-`undefined`
-, the store will work without persistence.
-
----
-
-#### `storageKey` (Property)
-
-**Type:** `null \| string`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Required if
-`storage`
-is provided.
-
----
-
 #### `store` (Property)
 
-**Type:** `UserStore<User, Credential, string, unknown> \| UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>`
+**Type:** `UserStoreInterface<User, Credential> \| UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>`
 
 UserStore instance or configuration options
 
@@ -1414,83 +1361,18 @@ const userService = new UserService({
 });
 ```
 
----
-
-#### `defaultState` (Method)
-
-**Type:** `(storage: null \| SyncStorageInterface<string, unknown>, storageKey: null \| string) => null \| AsyncStoreStateInterface<User>`
-
-#### Parameters
-
-| Name         | Type                                            | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<string, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| string`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
-
----
-
-##### `defaultState` (CallSignature)
-
-**Type:** `null \| AsyncStoreStateInterface<User>`
-
-Create a new state instance
-
-Factory function that creates the initial state for the store.
-This function is called during store initialization and when state is reset.
-
-Behavior:
-
-- If
-  `storage`
-  is provided, the function receives storage and storageKey as parameters
-- If
-  `storage`
-  is not provided, the function receives
-  `undefined`
-  for both parameters
-- If the function returns
-  `null`
-  , a new
-  `AsyncStoreState`
-  instance will be created
-- If the function returns a state object, that object will be used as the initial state
-
-**Returns:**
-
-The initial state instance, or
-`null`
-to use default state
-
-**Example:** With storage restoration
+**Example:** Use a custom UserStore instance
 
 ```typescript
-const store = new AsyncStore<User, string>({
+const userStore = new UserStore({
   storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: (storage, storageKey) => {
-    const stored = storage?.getItem(storageKey);
-    if (stored) {
-      return new AsyncStoreState<User>(stored);
-    }
-    return null; // Use default state
-  }
+  storageKey: 'user-info'
 });
-```
 
-**Example:** Without storage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null // Always use default state
+const userService = new UserService({
+  store: userStore
 });
-```
 
-#### Parameters
-
-| Name         | Type                                            | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<string, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| string`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---
+```

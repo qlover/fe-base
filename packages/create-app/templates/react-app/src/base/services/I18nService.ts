@@ -35,6 +35,9 @@ export class I18nService
     super(() => new I18nServiceState(i18n.language as LocaleType));
   }
 
+  /**
+   * @override
+   */
   public onBefore(): void {
     const debug = false;
 

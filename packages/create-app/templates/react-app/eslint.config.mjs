@@ -92,17 +92,14 @@ const eslintConfig = [
       'storybook-static/**'
     ]
   },
+
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: [
-          './tsconfig.app.json',
-          './tsconfig.node.json',
-          './tsconfig.test.json',
-          './tsconfig.e2e.json'
-        ],
+        // Note: 'project' is removed here to avoid conflict with projectService in the type-checked config below
+        // TypeScript files will get type information from the recommendedTypeChecked config
         tsconfigRootDir: __dirname
       }
     },
@@ -116,7 +113,7 @@ const eslintConfig = [
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
-      '@qlover-eslint/ts-class-override': 'error',
+      '@qlover-eslint/ts-class-override': 'off',
       '@qlover-eslint/require-root-testid': [
         'error',
         {
@@ -202,6 +199,81 @@ const eslintConfig = [
       'import/no-default-export': 'error'
     }
   },
+  
+  // TypeScript files with type checking for ts-class-override rule
+  // The ts-class-override rule requires full type information to accurately detect:
+  // - Methods that override parent class methods (via extends)
+  // - Methods that implement interface methods (via implements)
+  // Without type checking, the rule falls back to AST-based heuristics which are less accurate
+  // This separate config block enables type checking only for TypeScript files to provide
+  // accurate override detection while maintaining good performance
+  ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+    ...config,
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/ts-build/**',
+      '**/node_modules/**',
+      '**/.nx/**',
+      '**/.cache/**',
+      '**/coverage/**',
+      '**/*.d.ts',
+      '**/*.config.ts',
+      '**/*.test.ts',
+      '**/__mocks__/**',
+      '**/__tests__/**',
+      '**/*.spec.ts',
+      ...(config.ignores || [])
+    ],
+    languageOptions: {
+      ...config.languageOptions,
+      parserOptions: {
+        ...config.languageOptions?.parserOptions,
+        project: './tsconfig.app.json',
+        tsconfigRootDir: __dirname
+      }
+    },
+    plugins: {
+      ...config.plugins,
+      '@qlover-eslint': qloverEslint
+    },
+    rules: {
+      ...config.rules,
+      // Enable ts-class-override rule with full type information
+      // This rule is disabled in the base config above and only enabled here where
+      // type information is available, ensuring accurate detection of override relationships
+      '@qlover-eslint/ts-class-override': 'error',
+      // Disable other type-checked rules to avoid performance impact
+      // We only need type checking for ts-class-override, so we disable other
+      // type-aware rules that would slow down linting without providing value
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+      '@typescript-eslint/no-unsafe-literal-comparison': 'off',
+      '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
+      '@typescript-eslint/no-unsafe-optional-chaining': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-base-to-string': 'off',
+      '@typescript-eslint/prefer-promise-reject-errors': 'off',
+      '@typescript-eslint/no-duplicate-type-constituents': 'off',
+      // Disable @typescript-eslint/no-unused-vars as we use unused-imports/no-unused-vars instead
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    }
+  })),
   {
     // TODO: antd override theme need use import type
     files: ['src/base/types/deprecated-antd.d.ts'],

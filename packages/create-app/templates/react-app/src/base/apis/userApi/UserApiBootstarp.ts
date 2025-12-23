@@ -64,6 +64,9 @@ export interface UserApiTransaction<
 export class UserApiBootstarp implements BootstrapExecutorPlugin {
   public readonly pluginName = 'UserApiBootstarp';
 
+  /**
+   * @override
+   */
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<UserApi>(UserApi)

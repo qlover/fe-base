@@ -16,6 +16,7 @@
   "scripts": {
     "lint": "eslint src --fix",
     "build": "tsup",
+    "type-check": "tsc --noEmit",
     "create:app": "node ./dist/index.js"
   },
   "repository": {

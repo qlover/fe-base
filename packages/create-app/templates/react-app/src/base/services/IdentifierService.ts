@@ -62,6 +62,9 @@ export class IdentifierService<T> implements ResourceServiceInterface<
     }
   }
 
+  /**
+   * @override
+   */
   public async created(): Promise<unknown> {
     this.unsubscribe = this.i18nService.observe(
       (state) => state.language,
@@ -73,6 +76,9 @@ export class IdentifierService<T> implements ResourceServiceInterface<
     return this.init();
   }
 
+  /**
+   * @override
+   */
   public destroyed(): void {
     this.unsubscribe?.();
     this.unsubscribe = null;
@@ -80,8 +86,14 @@ export class IdentifierService<T> implements ResourceServiceInterface<
     this.store.reset();
   }
 
+  /**
+   * @override
+   */
   public updated(): void {}
 
+  /**
+   * @override
+   */
   public async search(
     params: Partial<ResourceQuery & { locale: LocaleType }>
   ): Promise<PaginationInterface<IdentifierRecord>> {
@@ -122,16 +134,28 @@ export class IdentifierService<T> implements ResourceServiceInterface<
     return this.search(this.store.state.searchParams);
   }
 
+  /**
+   * @override
+   */
   public async update(_data: Partial<T>): Promise<unknown> {
     return Promise.resolve(null);
   }
 
+  /**
+   * @override
+   */
   public create(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }
+  /**
+   * @override
+   */
   public remove(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }
+  /**
+   * @override
+   */
   public export(_data: T): Promise<unknown> {
     return Promise.resolve(null);
   }

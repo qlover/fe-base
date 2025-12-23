@@ -179,10 +179,10 @@ const config = storage.getItem<AppConfig>('app-config');
 
 #### Parameters
 
-| Name           | Type      | Optional | Default | Since | Deprecated | Description                          |
-| -------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
-| `value`        | `unknown` | ❌       | -       | -     | -          | The value to get the raw value from. |
-| `defaultValue` | `T`       | ✅       | -       | -     | -          |                                      |
+| Name           | Type      | Optional | Default | Since | Deprecated | Description |
+| -------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value`        | `unknown` | ❌       | -       | -     | -          |             |
+| `defaultValue` | `T`       | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -190,20 +190,12 @@ const config = storage.getItem<AppConfig>('app-config');
 
 **Type:** `null \| T`
 
-Get the raw value from the storage.
-
-通过这个方法可以获取到内部原始的值
-
-**Returns:**
-
-The raw value.
-
 #### Parameters
 
-| Name           | Type      | Optional | Default | Since | Deprecated | Description                          |
-| -------------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
-| `value`        | `unknown` | ❌       | -       | -     | -          | The value to get the raw value from. |
-| `defaultValue` | `T`       | ✅       | -       | -     | -          |                                      |
+| Name           | Type      | Optional | Default | Since | Deprecated | Description |
+| -------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value`        | `unknown` | ❌       | -       | -     | -          |             |
+| `defaultValue` | `T`       | ✅       | -       | -     | -          |             |
 
 ---
 

@@ -192,6 +192,30 @@ const config = adapter.getConfig();
 
 ---
 
+#### `setConfig` (Property)
+
+**Type:** `Object`
+
+**Since:** `2.4.0`
+
+Sets the configuration for the request adapter.
+
+**Example:**
+
+```typescript
+adapter.setConfig({ url: '/users', method: 'GET' });
+```
+
+**Example:** Merge configuration
+
+```typescript
+adapter.setConfig({ baseURL: 'https://api.example.com' });
+adapter.setConfig({ baseURL: 'https://api.example2.com' });
+// baseURL = 'https://api.example2.com'
+```
+
+---
+
 #### `request` (Method)
 
 **Type:** `(options: RequestAdapterConfig<Request>) => Promise<RequestAdapterResponse<Request, Response>>`

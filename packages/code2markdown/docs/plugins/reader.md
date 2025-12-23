@@ -42,6 +42,19 @@ await reader.onBefore();
 // Processes all files in src/ directory
 ```
 
+**Example:** With Exclude Patterns
+
+```typescript
+// Context with exclude patterns
+const context = new Code2MDContext({
+  sourcePath: 'src',
+  exclude: ['src/test', 'node_modules']
+});
+const reader = new Reader(context);
+await reader.onBefore();
+// Processes files in src/ but excludes test files and node_modules
+```
+
 ---
 
 #### `new Reader` (Constructor)
@@ -289,6 +302,7 @@ Business Rules:
 
 - Handles both file and directory entry points
 - Processes all files recursively in directory entries
+- Filters out excluded files based on exclude patterns
 - Generates relative paths from current working directory
 - Maps source file extensions to .md output extensions
 - Preserves directory structure in output paths

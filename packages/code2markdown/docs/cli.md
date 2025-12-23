@@ -24,19 +24,20 @@ Design Considerations:
 Command Line Interface:
 The CLI provides a comprehensive set of options to control the documentation generation process.
 
-| Option                 | Alias | Type       | Required | Default                                | Description                                   |
-| ---------------------- | ----- | ---------- | -------- | -------------------------------------- | --------------------------------------------- |
-| `--sourcePath`         | `-p`  | `string`   | ❌       | `'src'`                                | Source code directory path to analyze         |
-| `--dry-run`            | `-d`  | `boolean`  | ❌       | `false`                                | Show commands without executing them          |
-| `--verbose`            | `-V`  | `boolean`  | ❌       | `false`                                | Show detailed output information              |
-| `--outputJSONFilePath` | `-o`  | `string`   | ❌       | `docs.output/.output/code2md.json`     | Path for output JSON file                     |
-| `--generatePath`       | `-g`  | `string`   | ❌       | `'docs.output'`                        | Directory for generated documentation         |
-| `--tplPath`            | `-t`  | `string`   | ❌       | `docs.output/.output/code2md.tpl.json` | Template configuration file path              |
-| `--onlyJson`           | -     | `boolean`  | ❌       | `false`                                | Generate only JSON file, skip Markdown        |
-| `--debug`              | `-d`  | `boolean`  | ❌       | `false`                                | Enable debug mode with extra logging          |
-| `--removePrefix`       | -     | `boolean`  | ❌       | `false`                                | Remove entry point prefix from file paths     |
-| `--formatOutput`       | -     | `string`   | ❌       | -                                      | Format output with `'eslint'` or `'prettier'` |
-| `--filterTags`         | -     | `string[]` | ❌       | -                                      | Comma-separated JSDoc tags to filter out      |
+| Option                 | Alias | Type       | Required | Default                                | Description                                                   |
+| ---------------------- | ----- | ---------- | -------- | -------------------------------------- | ------------------------------------------------------------- |
+| `--sourcePath`         | `-p`  | `string`   | ❌       | `'src'`                                | Source code directory path to analyze                         |
+| `--dry-run`            | `-d`  | `boolean`  | ❌       | `false`                                | Show commands without executing them                          |
+| `--verbose`            | `-V`  | `boolean`  | ❌       | `false`                                | Show detailed output information                              |
+| `--outputJSONFilePath` | `-o`  | `string`   | ❌       | `docs.output/.output/code2md.json`     | Path for output JSON file                                     |
+| `--generatePath`       | `-g`  | `string`   | ❌       | `'docs.output'`                        | Directory for generated documentation                         |
+| `--tplPath`            | `-t`  | `string`   | ❌       | `docs.output/.output/code2md.tpl.json` | Template configuration file path                              |
+| `--onlyJson`           | -     | `boolean`  | ❌       | `false`                                | Generate only JSON file, skip Markdown                        |
+| `--debug`              | `-d`  | `boolean`  | ❌       | `false`                                | Enable debug mode with extra logging                          |
+| `--removePrefix`       | -     | `boolean`  | ❌       | `false`                                | Remove entry point prefix from file paths                     |
+| `--formatOutput`       | -     | `string`   | ❌       | -                                      | Format output with `'eslint'` or `'prettier'`                 |
+| `--filterTags`         | -     | `string[]` | ❌       | -                                      | Comma-separated JSDoc tags to filter out                      |
+| `--exclude`            | -     | `string[]` | ❌       | -                                      | Exclude files or directories (comma-separated paths/patterns) |
 
 **Example:** Basic Usage
 
@@ -60,6 +61,12 @@ npx code2markdown -p src -t custom.tpl.json --formatOutput prettier
 
 ```bash
 npx code2markdown -p src --filterTags "internal,deprecated,private"
+```
+
+**Example:** Exclude Files and Directories
+
+```bash
+npx code2markdown -p src --exclude "src/test,src/utils/helpers.ts,node_modules"
 ```
 
 **Example:** Debug Mode

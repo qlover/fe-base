@@ -832,7 +832,7 @@ const config = {
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for debugging and monitoring
 

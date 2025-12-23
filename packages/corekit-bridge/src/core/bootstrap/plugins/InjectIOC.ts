@@ -59,10 +59,16 @@ export class InjectIOC<Container extends IOCContainerInterface>
     }
   }
 
+  /**
+   * @override
+   */
   public onBefore(): void {
     this.startup();
   }
 
+  /**
+   * @override
+   */
   public onSuccess({ parameters: { logger } }: BootstrapContext): void {
     logger.debug('InjectIOC success!');
   }

@@ -6,7 +6,7 @@
 
 ### `LoggerInterface` (Interface)
 
-**Type:** `interface LoggerInterface`
+**Type:** `interface LoggerInterface<Ctx>`
 
 Core interface for logger implementations
 
@@ -92,13 +92,13 @@ logger.info(
 
 #### `addAppender` (Method)
 
-**Type:** `(appender: HandlerInterface) => void`
+**Type:** `(appender: HandlerInterface<Ctx>) => void`
 
 #### Parameters
 
-| Name       | Type               | Optional | Default | Since | Deprecated | Description                 |
-| ---------- | ------------------ | -------- | ------- | ----- | ---------- | --------------------------- |
-| `appender` | `HandlerInterface` | ❌       | -       | -     | -          | The handler instance to add |
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description                 |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `appender` | `HandlerInterface<Ctx>` | ❌       | -       | -     | -          | The handler instance to add |
 
 ---
 
@@ -176,9 +176,9 @@ if (process.env.NODE_ENV === 'production') {
 
 #### Parameters
 
-| Name       | Type               | Optional | Default | Since | Deprecated | Description                 |
-| ---------- | ------------------ | -------- | ------- | ----- | ---------- | --------------------------- |
-| `appender` | `HandlerInterface` | ❌       | -       | -     | -          | The handler instance to add |
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description                 |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
+| `appender` | `HandlerInterface<Ctx>` | ❌       | -       | -     | -          | The handler instance to add |
 
 ---
 

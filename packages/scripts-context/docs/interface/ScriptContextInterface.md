@@ -149,7 +149,7 @@ const envOrder = context.feConfig.envOrder;
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for structured logging and error reporting
 

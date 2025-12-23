@@ -35,6 +35,7 @@
  * | \`--removePrefix\` | - | \`boolean\` | ❌ | \`false\` | Remove entry point prefix from file paths |
  * | \`--formatOutput\` | - | \`string\` | ❌ | - | Format output with \`'eslint'\` or \`'prettier'\` |
  * | \`--filterTags\` | - | \`string[]\` | ❌ | - | Comma-separated JSDoc tags to filter out |
+ * | \`--exclude\` | - | \`string[]\` | ❌ | - | Exclude files or directories (comma-separated paths/patterns) |
  *
  * @example Basic Usage
  * ```bash
@@ -54,6 +55,11 @@
  * @example Filter JSDoc Tags
  * ```bash
  * npx code2markdown -p src --filterTags "internal,deprecated,private"
+ * ```
+ *
+ * @example Exclude Files and Directories
+ * ```bash
+ * npx code2markdown -p src --exclude "src/test,src/utils/helpers.ts,node_modules"
  * ```
  *
  * @example Debug Mode
@@ -148,6 +154,11 @@ program
     '--filterTags <tags>',
     'Filter out specific JSDoc tags (comma-separated)',
     (value) => value.split(',').map((tag) => tag.trim())
+  )
+  .option(
+    '--exclude <paths>',
+    'Exclude files or directories from processing (comma-separated paths/patterns)',
+    (value) => value.split(',').map((path) => path.trim())
   );
 
 program.parse(process.argv);
@@ -210,6 +221,7 @@ const main = async () => {
   const generaterOptions: Code2MDContextOptions['options'] = {
     sourcePath: opts.sourcePath,
     generatePath: generatePath,
+    exclude: opts.exclude,
     // @ts-expect-error - Type definition mismatch in Code2MDContextOptions
     typeDocs: {
       outputJSONFilePath: outputJSONFilePath,

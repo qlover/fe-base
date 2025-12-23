@@ -4,7 +4,8 @@
     "composite": true,
     "rootDir": ".",
     "moduleResolution": "bundler",
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
+    "outDir": "ts-build",
+    "tsBuildInfoFile": "ts-build/.tsbuildinfo"
   },
   "include": ["src", "*.ts", "*.json"],
   "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"]

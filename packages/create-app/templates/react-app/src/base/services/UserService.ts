@@ -71,6 +71,9 @@ export class UserService
     return isObject(value) && 'token' in value && isString(value.token);
   }
 
+  /**
+   * @override
+   */
   public override isAuthenticated(): boolean {
     if (!super.isAuthenticated()) {
       return false;

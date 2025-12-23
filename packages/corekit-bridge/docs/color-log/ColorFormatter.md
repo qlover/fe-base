@@ -2,19 +2,11 @@
 
 **Type:** `module src/core/color-log/ColorFormatter`
 
-
-
-
-
 ---
 
 ### `ColorFormatter` (Class)
 
 **Type:** `class ColorFormatter`
-
-
-
-
 
 ---
 
@@ -22,15 +14,11 @@
 
 **Type:** `(levelColors: Record<string, ColorStyle>) => ColorFormatter`
 
-
-
-
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `levelColors` | `Record<string, ColorStyle>` | ✅ | `{}` | - | - |  |
-
+| Name          | Type                         | Optional | Default | Since | Deprecated | Description |
+| ------------- | ---------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `levelColors` | `Record<string, ColorStyle>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
@@ -38,26 +26,19 @@
 
 **Type:** `ColorStyle`
 
-
 **Default:** `{}`
-
-
 
 ---
 
 #### `format` (Method)
 
-**Type:** `(event: LogEvent<unknown>) => unknown[]`
-
-
-
+**Type:** `(event: LogEvent<ColorContext>) => unknown[]`
 
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `event` | `LogEvent<unknown>` | ❌ | - | - | - |  |
-
+| Name    | Type                     | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `event` | `LogEvent<ColorContext>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -65,19 +46,13 @@
 
 **Type:** `unknown[]`
 
-
-
-
-
-
 Format log event
 
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `event` | `LogEvent<unknown>` | ❌ | - | - | - |  |
-
+| Name    | Type                     | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `event` | `LogEvent<ColorContext>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -85,16 +60,12 @@ Format log event
 
 **Type:** `(_text: string, segments: ColorSegment[]) => Object`
 
-
-
-
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `_text` | `string` | ❌ | - | - | - |  |
-| `segments` | `ColorSegment[]` | ❌ | - | - | - |  |
-
+| Name       | Type             | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_text`    | `string`         | ❌       | -       | -     | -          |             |
+| `segments` | `ColorSegment[]` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -102,20 +73,14 @@ Format log event
 
 **Type:** `Object`
 
-
-
-
-
-
 Split text into multiple segments, each with its own style
 
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `_text` | `string` | ❌ | - | - | - |  |
-| `segments` | `ColorSegment[]` | ❌ | - | - | - |  |
-
+| Name       | Type             | Optional | Default | Since | Deprecated | Description |
+| ---------- | ---------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_text`    | `string`         | ❌       | -       | -     | -          |             |
+| `segments` | `ColorSegment[]` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -123,19 +88,11 @@ Split text into multiple segments, each with its own style
 
 **Type:** `string[]`
 
-
-
-
-
 ---
 
 ###### `text` (Property)
 
 **Type:** `string`
-
-
-
-
 
 ---
 
@@ -143,15 +100,11 @@ Split text into multiple segments, each with its own style
 
 **Type:** `(style: ColorStyle) => string`
 
-
-
-
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `style` | `ColorStyle` | ❌ | - | - | - |  |
-
+| Name    | Type         | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `style` | `ColorStyle` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -159,19 +112,13 @@ Split text into multiple segments, each with its own style
 
 **Type:** `string`
 
-
-
-
-
-
 Transform style object to CSS string
 
 #### Parameters
 
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `style` | `ColorStyle` | ❌ | - | - | - |  |
-
+| Name    | Type         | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `style` | `ColorStyle` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -179,19 +126,11 @@ Transform style object to CSS string
 
 **Type:** `interface ColorSegment`
 
-
-
-
-
 ---
 
 #### `style` (Property)
 
 **Type:** `ColorStyle`
-
-
-
-
 
 ---
 
@@ -199,19 +138,11 @@ Transform style object to CSS string
 
 **Type:** `string`
 
-
-
-
-
 ---
 
 ### `ColorStyle` (Interface)
 
 **Type:** `interface ColorStyle`
-
-
-
-
 
 ---
 
@@ -219,19 +150,11 @@ Transform style object to CSS string
 
 **Type:** `string`
 
-
-
-
-
 ---
 
 #### `color` (Property)
 
 **Type:** `string`
-
-
-
-
 
 ---
 
@@ -239,19 +162,11 @@ Transform style object to CSS string
 
 **Type:** `string`
 
-
-
-
-
 ---
 
 #### `fontWeight` (Property)
 
 **Type:** `string`
-
-
-
-
 
 ---
 
@@ -259,8 +174,16 @@ Transform style object to CSS string
 
 **Type:** `string`
 
+---
 
+### `ColorContext` (TypeAlias)
 
+**Type:** `Object`
 
+---
+
+#### `value` (Property)
+
+**Type:** `ColorSegment[]`
 
 ---

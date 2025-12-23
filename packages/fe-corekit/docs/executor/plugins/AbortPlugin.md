@@ -531,7 +531,7 @@ Enables flexible configuration in different contexts
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Optional logger instance for debugging
 
@@ -1266,7 +1266,7 @@ getConfig: (params) => ({
 
 #### `logger` (Property)
 
-**Type:** `LoggerInterface`
+**Type:** `LoggerInterface<unknown>`
 
 Logger instance for debugging and monitoring
 

@@ -37,7 +37,8 @@
   },
   "scripts": {
     "lint": "eslint src --fix",
-    "build": "tsup"
+    "build": "tsup",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@qlover/logger": "workspace:*"

@@ -6,7 +6,7 @@
 
 ### `ConsoleHandler` (Class)
 
-**Type:** `class ConsoleHandler`
+**Type:** `class ConsoleHandler<Ctx>`
 
 Console output handler for log messages
 
@@ -92,7 +92,7 @@ logger.info('Formatted message');
 
 #### `new ConsoleHandler` (Constructor)
 
-**Type:** `(formatter: null \| FormatterInterface<unknown>) => ConsoleHandler`
+**Type:** `(formatter: null \| FormatterInterface<unknown>) => ConsoleHandler<Ctx>`
 
 #### Parameters
 
@@ -116,13 +116,13 @@ If not provided, raw log messages will be output
 
 #### `append` (Method)
 
-**Type:** `(event: LogEvent<unknown>) => void`
+**Type:** `(event: LogEvent<Ctx>) => void`
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description                         |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to process and output |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description                         |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to process and output |
 
 ---
 
@@ -226,9 +226,9 @@ handler.append({
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description                         |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to process and output |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description                         |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to process and output |
 
 ---
 

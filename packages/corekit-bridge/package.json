@@ -144,6 +144,7 @@
   "scripts": {
     "lint": "eslint src --fix",
     "build": "tsup",
+    "type-check": "tsc --noEmit",
     "build:docs": "fe-code2md -p src/core -g docs --formatOutput prettier --removePrefix"
   },
   "dependencies": {

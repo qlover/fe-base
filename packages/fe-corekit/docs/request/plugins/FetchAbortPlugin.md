@@ -282,13 +282,6 @@ const error = abortPlugin.onError(new Error('AbortError'), config);
 
 **Type:** `void`
 
-Hook executed after successful task completion
-Can transform the task result
-
-**Returns:**
-
-Modified result or Promise of modified result
-
 #### Parameters
 
 | Name                | Type                                             | Optional | Default | Since | Deprecated | Description |

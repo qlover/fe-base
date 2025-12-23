@@ -99,10 +99,16 @@ export class ChatMessageBridge<
     return this.messages.getFirstDraftMessage();
   }
 
+  /**
+   * @override
+   */
   public setRef(ref: unknown): void {
     this.ref = ref as TextAreaRef;
   }
 
+  /**
+   * @override
+   */
   public focus(): void {
     requestAnimationFrame(() => {
       this.ref?.focus();

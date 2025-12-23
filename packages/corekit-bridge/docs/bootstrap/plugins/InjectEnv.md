@@ -126,13 +126,6 @@ Plugins with the same pluginName will be merged.
 
 **Type:** `void`
 
-Hook executed before the main task
-Can modify the input data before it reaches the task
-
-**Returns:**
-
-Modified data or Promise of modified data
-
 ---
 
 #### `onSuccess` (Method)
@@ -150,13 +143,6 @@ Modified data or Promise of modified data
 ##### `onSuccess` (CallSignature)
 
 **Type:** `void`
-
-Hook executed after successful task completion
-Can transform the task result
-
-**Returns:**
-
-Modified result or Promise of modified result
 
 #### Parameters
 

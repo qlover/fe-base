@@ -14,6 +14,9 @@ export class UserBootstrap implements BootstrapExecutorPlugin {
     protected userService: UserServiceInterface
   ) {}
 
+  /**
+   * @override
+   */
   public async onBefore(): Promise<void> {
     const userService = this.userService;
 

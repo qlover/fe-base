@@ -79,11 +79,11 @@ Clear all data, including storage in the pipeline
 
 #### Parameters
 
-| Name           | Type  | Optional | Default | Since | Deprecated | Description                                          |
-| -------------- | ----- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `key`          | `Key` | ❌       | -       | -     | -          | The key of the value to retrieve.                    |
-| `defaultValue` | `T`   | ✅       | -       | -     | -          | The default value to return if the key is not found. |
-| `options`      | `Opt` | ✅       | -       | -     | -          | Optional parameters for retrieval.                   |
+| Name           | Type  | Optional | Default | Since | Deprecated | Description |
+| -------------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`          | `Key` | ❌       | -       | -     | -          |             |
+| `defaultValue` | `T`   | ✅       | -       | -     | -          |             |
+| `options`      | `Opt` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -91,19 +91,13 @@ Clear all data, including storage in the pipeline
 
 **Type:** `null \| T`
 
-Retrieves a value by key.
-
-**Returns:**
-
-The value associated with the key, or the default value if not found.
-
 #### Parameters
 
-| Name           | Type  | Optional | Default | Since | Deprecated | Description                                          |
-| -------------- | ----- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `key`          | `Key` | ❌       | -       | -     | -          | The key of the value to retrieve.                    |
-| `defaultValue` | `T`   | ✅       | -       | -     | -          | The default value to return if the key is not found. |
-| `options`      | `Opt` | ✅       | -       | -     | -          | Optional parameters for retrieval.                   |
+| Name           | Type  | Optional | Default | Since | Deprecated | Description |
+| -------------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`          | `Key` | ❌       | -       | -     | -          |             |
+| `defaultValue` | `T`   | ✅       | -       | -     | -          |             |
+| `options`      | `Opt` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -141,11 +135,11 @@ Delete data items, delete from all storage layers
 
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since | Deprecated | Description                           |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `key`     | `Key` | ❌       | -       | -     | -          | The key to identify the stored value. |
-| `value`   | `T`   | ❌       | -       | -     | -          | The value to store.                   |
-| `options` | `Opt` | ✅       | -       | -     | -          | Optional parameters for storage.      |
+| Name      | Type  | Optional | Default | Since | Deprecated | Description |
+| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`     | `Key` | ❌       | -       | -     | -          |             |
+| `value`   | `T`   | ❌       | -       | -     | -          |             |
+| `options` | `Opt` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -153,15 +147,13 @@ Delete data items, delete from all storage layers
 
 **Type:** `void`
 
-Stores a value with the specified key.
-
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since | Deprecated | Description                           |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `key`     | `Key` | ❌       | -       | -     | -          | The key to identify the stored value. |
-| `value`   | `T`   | ❌       | -       | -     | -          | The value to store.                   |
-| `options` | `Opt` | ✅       | -       | -     | -          | Optional parameters for storage.      |
+| Name      | Type  | Optional | Default | Since | Deprecated | Description |
+| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`     | `Key` | ❌       | -       | -     | -          |             |
+| `value`   | `T`   | ❌       | -       | -     | -          |             |
+| `options` | `Opt` | ✅       | -       | -     | -          |             |
 
 ---
 

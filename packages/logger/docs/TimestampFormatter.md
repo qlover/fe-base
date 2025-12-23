@@ -6,7 +6,7 @@
 
 ### `TimestampFormatter` (Class)
 
-**Type:** `class TimestampFormatter`
+**Type:** `class TimestampFormatter<Ctx>`
 
 Formatter implementation that adds timestamps to log messages
 
@@ -127,7 +127,7 @@ const jpFormatter = new TimestampFormatter({
 
 #### `new TimestampFormatter` (Constructor)
 
-**Type:** `(options: TimestampFormatterOptions) => TimestampFormatter`
+**Type:** `(options: TimestampFormatterOptions) => TimestampFormatter<Ctx>`
 
 #### Parameters
 
@@ -149,13 +149,13 @@ Configuration options for the formatter
 
 #### `format` (Method)
 
-**Type:** `(event: LogEvent<unknown>) => unknown[]`
+**Type:** `(event: LogEvent<Ctx>) => unknown[]`
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description             |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to format |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description             |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to format |
 
 ---
 
@@ -198,9 +198,9 @@ Array containing the formatted prefix followed by original arguments
 
 #### Parameters
 
-| Name    | Type                | Optional | Default | Since | Deprecated | Description             |
-| ------- | ------------------- | -------- | ------- | ----- | ---------- | ----------------------- |
-| `event` | `LogEvent<unknown>` | ❌       | -       | -     | -          | The log event to format |
+| Name    | Type            | Optional | Default | Since | Deprecated | Description             |
+| ------- | --------------- | -------- | ------- | ----- | ---------- | ----------------------- |
+| `event` | `LogEvent<Ctx>` | ❌       | -       | -     | -          | The log event to format |
 
 ---
 

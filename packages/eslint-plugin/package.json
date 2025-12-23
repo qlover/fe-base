@@ -19,7 +19,8 @@
   "scripts": {
     "lint": "eslint src --fix",
     "build": "tsup",
-    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/eslint-plugin.json -t ./docs/.output/eslint-plugin.tpl.json --formatOutput prettier"
+    "type-check": "tsc --noEmit",
+    "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/eslint-plugin.json -t ./docs/.output/eslint-plugin.tpl.json --formatOutput prettier --exclude src/utils"
   },
   "publishConfig": {
     "access": "public"

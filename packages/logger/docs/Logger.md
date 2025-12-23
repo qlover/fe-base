@@ -6,7 +6,7 @@
 
 ### `Logger` (Class)
 
-**Type:** `class Logger`
+**Type:** `class Logger<Ctx>`
 
 Main Logger class that implements the LoggerInterface
 Processes log events and distributes them to registered handlers
@@ -148,19 +148,19 @@ class UserService {
 
 #### `new Logger` (Constructor)
 
-**Type:** `(options: LoggerOptions) => Logger`
+**Type:** `(options: LoggerOptions<Ctx>) => Logger<Ctx>`
 
 #### Parameters
 
-| Name      | Type            | Optional | Default | Since | Deprecated | Description                          |
-| --------- | --------------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
-| `options` | `LoggerOptions` | ✅       | `{}`    | -     | -          | Configuration options for the logger |
+| Name      | Type                 | Optional | Default | Since | Deprecated | Description                          |
+| --------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
+| `options` | `LoggerOptions<Ctx>` | ✅       | `{}`    | -     | -          | Configuration options for the logger |
 
 ---
 
 #### `options` (Property)
 
-**Type:** `LoggerOptions`
+**Type:** `LoggerOptions<Ctx>`
 
 **Default:** `{}`
 
@@ -170,13 +170,13 @@ Configuration options for the logger
 
 #### `addAppender` (Method)
 
-**Type:** `(appender: HandlerInterface) => void`
+**Type:** `(appender: HandlerInterface<Ctx>) => void`
 
 #### Parameters
 
-| Name       | Type               | Optional | Default | Since | Deprecated | Description             |
-| ---------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------- |
-| `appender` | `HandlerInterface` | ❌       | -       | -     | -          | Handler instance to add |
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description             |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------------------- |
+| `appender` | `HandlerInterface<Ctx>` | ❌       | -       | -     | -          | Handler instance to add |
 
 ---
 
@@ -209,9 +209,9 @@ but it works with any object implementing HandlerInterface
 
 #### Parameters
 
-| Name       | Type               | Optional | Default | Since | Deprecated | Description             |
-| ---------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------- |
-| `appender` | `HandlerInterface` | ❌       | -       | -     | -          | Handler instance to add |
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description             |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------------------- |
+| `appender` | `HandlerInterface<Ctx>` | ❌       | -       | -     | -          | Handler instance to add |
 
 ---
 
@@ -743,7 +743,7 @@ const options: LoggerOptions = {
 
 #### `handlers` (Property)
 
-**Type:** `HandlerInterface \| HandlerInterface[]`
+**Type:** `HandlerInterface<Ctx> \| HandlerInterface<Ctx>[]`
 
 Log handlers that process and output the log events
 Can be a single handler or an array of handlers

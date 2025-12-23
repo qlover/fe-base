@@ -59,6 +59,9 @@ export interface FeApiTransaction<
 export class FeApiBootstarp implements BootstrapExecutorPlugin {
   public readonly pluginName = 'FeApiBootstarp';
 
+  /**
+   * @override
+   */
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<FeApi>(FeApi)
