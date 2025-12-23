@@ -1,5 +1,9 @@
 # @qlover/env-loader
 
+## 0.4.0
+
+### Minor Changes
+
 ## 0.3.3
 
 ### Patch Changes

@@ -1,5 +1,39 @@
 # @qlover/code2markdown
 
+## 1.4.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **code2markdown:** Add exclude option for file processing ([eb0a677](https://github.com/qlover/fe-base/commit/eb0a6777da034e7eba0553bf80127f7b3187c4ce)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Introduced a new `--exclude` option in the CLI to allow users to specify files or directories to exclude from processing, enhancing flexibility in documentation generation.
+  - Updated the `Code2MDContext` interface to include the `exclude` property, allowing for better configuration of excluded paths.
+  - Enhanced the `Reader` class to filter out excluded files based on the new option, improving the overall functionality of the documentation generation process.
+  - Added examples in the documentation to demonstrate the usage of the `--exclude` option, ensuring users can easily understand its application.
+
+  These changes aim to provide users with more control over the documentation generation process by allowing them to exclude specific files or directories.
+
+#### 📝 Documentation
+
+- Introduce new modules and enhance CLI functionality ([b27fba0](https://github.com/qlover/fe-base/commit/b27fba01d2227d7b3bde9951f5c7005b5572c657)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Added `FeReleaseCLI`, `FeReleaseDefaults`, and `FeRelease` modules to automate frontend package release processes, including version management and changelog generation.
+  - Implemented command-line interface options for `fe-release`, allowing users to customize release behavior with advanced options.
+  - Introduced type definitions in `FeReleaseTypes` for better TypeScript support across the framework.
+  - Enhanced documentation with examples for new features, ensuring clarity and usability for developers.
+
+  These changes aim to streamline the release process and improve developer experience when managing frontend packages.
+
+#### ♻️ Refactors
+
+- **eslint:** Improve TypeScript class override detection and configuration ([4c57d46](https://github.com/qlover/fe-base/commit/4c57d46428b83ea98ab3bf3bb7ad1656153c2e08)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Enhanced ESLint configuration for TypeScript to enable accurate detection of class method overrides using the `@qlover-eslint/ts-class-override` rule with full type information.
+  - Updated `eslint.config.js` and template ESLint configurations for `next-app` and `react-app` to include separate blocks for type-checked rules, ensuring performance while maintaining linting accuracy.
+  - Added `typescript-eslint` as a dependency to support the new configurations.
+  - Introduced debug logging options in the `ClassOverride` utility to assist in override detection, improving maintainability and debugging capabilities.
+
+  These changes aim to refine TypeScript support in ESLint and enforce best practices for method overrides in class definitions.
+
 ## 1.3.3
 
 ### Patch Changes

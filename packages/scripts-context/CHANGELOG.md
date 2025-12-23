@@ -1,5 +1,19 @@
 # @qlover/scripts-context
 
+## 1.3.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- Introduce new modules and enhance CLI functionality ([b27fba0](https://github.com/qlover/fe-base/commit/b27fba01d2227d7b3bde9951f5c7005b5572c657)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Added `FeReleaseCLI`, `FeReleaseDefaults`, and `FeRelease` modules to automate frontend package release processes, including version management and changelog generation.
+  - Implemented command-line interface options for `fe-release`, allowing users to customize release behavior with advanced options.
+  - Introduced type definitions in `FeReleaseTypes` for better TypeScript support across the framework.
+  - Enhanced documentation with examples for new features, ensuring clarity and usability for developers.
+
+  These changes aim to streamline the release process and improve developer experience when managing frontend packages.
+
 ## 1.2.3
 
 ### Patch Changes

@@ -1,5 +1,54 @@
 # @qlover/eslint-plugin
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **code2markdown:** Add exclude option for file processing ([eb0a677](https://github.com/qlover/fe-base/commit/eb0a6777da034e7eba0553bf80127f7b3187c4ce)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Introduced a new `--exclude` option in the CLI to allow users to specify files or directories to exclude from processing, enhancing flexibility in documentation generation.
+  - Updated the `Code2MDContext` interface to include the `exclude` property, allowing for better configuration of excluded paths.
+  - Enhanced the `Reader` class to filter out excluded files based on the new option, improving the overall functionality of the documentation generation process.
+  - Added examples in the documentation to demonstrate the usage of the `--exclude` option, ensuring users can easily understand its application.
+
+  These changes aim to provide users with more control over the documentation generation process by allowing them to exclude specific files or directories.
+
+#### 📝 Documentation
+
+- Introduce new modules and enhance CLI functionality ([b27fba0](https://github.com/qlover/fe-base/commit/b27fba01d2227d7b3bde9951f5c7005b5572c657)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Added `FeReleaseCLI`, `FeReleaseDefaults`, and `FeRelease` modules to automate frontend package release processes, including version management and changelog generation.
+  - Implemented command-line interface options for `fe-release`, allowing users to customize release behavior with advanced options.
+  - Introduced type definitions in `FeReleaseTypes` for better TypeScript support across the framework.
+  - Enhanced documentation with examples for new features, ensuring clarity and usability for developers.
+
+  These changes aim to streamline the release process and improve developer experience when managing frontend packages.
+
+#### ♻️ Refactors
+
+- **eslint:** Enhance ESLint configuration for TypeScript class overrides ([aa367fd](https://github.com/qlover/fe-base/commit/aa367fd887871c67aca1a683d859acd2b03863cc)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Updated `eslint.config.js` to introduce new linting rules for TypeScript class methods, including `lint-general-js` and `lint-general-ts`, improving code quality and consistency.
+  - Added a new rule for handling class method overrides, ensuring proper usage of `@override` JSDoc comments and the `override` keyword.
+  - Refactored existing rules to streamline linting processes and improve performance by removing unnecessary checks for static and private methods.
+  - Introduced a new utility class, `ClassOverride`, to encapsulate logic for checking method overrides and reporting errors, enhancing maintainability.
+  - Added comprehensive tests for the new rules and utility functions to ensure robust functionality and adherence to coding standards.
+
+  These changes aim to improve TypeScript support in ESLint and enforce best practices for method overrides in class definitions.
+
+- **eslint:** Improve TypeScript class override detection and configuration ([4c57d46](https://github.com/qlover/fe-base/commit/4c57d46428b83ea98ab3bf3bb7ad1656153c2e08)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Enhanced ESLint configuration for TypeScript to enable accurate detection of class method overrides using the `@qlover-eslint/ts-class-override` rule with full type information.
+  - Updated `eslint.config.js` and template ESLint configurations for `next-app` and `react-app` to include separate blocks for type-checked rules, ensuring performance while maintaining linting accuracy.
+  - Added `typescript-eslint` as a dependency to support the new configurations.
+  - Introduced debug logging options in the `ClassOverride` utility to assist in override detection, improving maintainability and debugging capabilities.
+
+  These changes aim to refine TypeScript support in ESLint and enforce best practices for method overrides in class definitions.
+
+- Add @override annotations to methods across multiple classes ([7271c80](https://github.com/qlover/fe-base/commit/7271c80bb7c5e4daeeed5af35c01300479d11717)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Introduced `@override` JSDoc comments in the `InjectEnv`, `InjectGlobal`, `InjectIOC`, `UserService`, `ChatMessageStore`, and `AsyncStore` classes to enhance clarity and enforce best practices for method overrides.
+  - Updated ESLint rules to ensure proper detection of these annotations, improving code quality and maintainability.
+
+  These changes aim to standardize method override documentation and improve TypeScript support in the codebase.
+
 ## 1.0.9
 
 ### Patch Changes

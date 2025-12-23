@@ -1,5 +1,27 @@
 # @qlover/corekit-bridge
 
+## 1.10.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- Introduce new modules and enhance CLI functionality ([b27fba0](https://github.com/qlover/fe-base/commit/b27fba01d2227d7b3bde9951f5c7005b5572c657)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Added `FeReleaseCLI`, `FeReleaseDefaults`, and `FeRelease` modules to automate frontend package release processes, including version management and changelog generation.
+  - Implemented command-line interface options for `fe-release`, allowing users to customize release behavior with advanced options.
+  - Introduced type definitions in `FeReleaseTypes` for better TypeScript support across the framework.
+  - Enhanced documentation with examples for new features, ensuring clarity and usability for developers.
+
+  These changes aim to streamline the release process and improve developer experience when managing frontend packages.
+
+#### ♻️ Refactors
+
+- Add @override annotations to methods across multiple classes ([7271c80](https://github.com/qlover/fe-base/commit/7271c80bb7c5e4daeeed5af35c01300479d11717)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Introduced `@override` JSDoc comments in the `InjectEnv`, `InjectGlobal`, `InjectIOC`, `UserService`, `ChatMessageStore`, and `AsyncStore` classes to enhance clarity and enforce best practices for method overrides.
+  - Updated ESLint rules to ensure proper detection of these annotations, improving code quality and maintainability.
+
+  These changes aim to standardize method override documentation and improve TypeScript support in the codebase.
+
 ## 1.9.0
 
 ### Minor Changes
