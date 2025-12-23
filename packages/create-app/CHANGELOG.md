@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 0.12.0
+
+### Minor Changes
+
+#### ♻️ Refactors
+
+- **eslint:** Improve TypeScript class override detection and configuration ([4c57d46](https://github.com/qlover/fe-base/commit/4c57d46428b83ea98ab3bf3bb7ad1656153c2e08)) ([#560](https://github.com/qlover/fe-base/pull/560))
+  - Enhanced ESLint configuration for TypeScript to enable accurate detection of class method overrides using the `@qlover-eslint/ts-class-override` rule with full type information.
+  - Updated `eslint.config.js` and template ESLint configurations for `next-app` and `react-app` to include separate blocks for type-checked rules, ensuring performance while maintaining linting accuracy.
+  - Added `typescript-eslint` as a dependency to support the new configurations.
+  - Introduced debug logging options in the `ClassOverride` utility to assist in override detection, improving maintainability and debugging capabilities.
+
+  These changes aim to refine TypeScript support in ESLint and enforce best practices for method overrides in class definitions.
+
 ## 0.11.0
 
 ### Minor Changes
