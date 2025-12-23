@@ -570,11 +570,11 @@ export const tsRequireOverrideComment = createEslintRule<Options, MessageIds>({
     fixable: 'code',
     messages: {
       missingOverrideJSDoc:
-        '{{memberType}} "{{methodName}}" must have @override comment (from {{sourceType}} {{sourceName}}).',
+        '{{memberType}} "{{methodName}}" needs @override comment (from {{sourceType}} {{sourceName}}).',
       missingOverrideKeyword:
-        '{{memberType}} "{{methodName}}" must have override keyword (from {{sourceType}} {{sourceName}}).',
+        '{{memberType}} "{{methodName}}" needs override keyword (from {{sourceType}} {{sourceName}}).',
       missingOverrideEither:
-        '{{memberType}} "{{methodName}}" must have @override comment or override keyword (from {{sourceType}} {{sourceName}}).',
+        '{{memberType}} "{{methodName}}" needs @override comment or override keyword (from {{sourceType}} {{sourceName}}).',
       unnecessaryOverride:
         '{{memberType}} "{{methodName}}" does not need @override.',
       unnecessaryOverrideKeyword:

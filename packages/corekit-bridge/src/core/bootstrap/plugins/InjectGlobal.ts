@@ -18,6 +18,9 @@ export class InjectGlobal implements BootstrapExecutorPlugin {
 
   constructor(protected config: InjectGlobalConfig) {}
 
+  /**
+   * @override
+   */
   public onBefore(context: BootstrapContext): void {
     const { sources, target } = this.config;
     // if target is provided, inject globals to target

@@ -205,6 +205,7 @@ export class ChatMessageStore<T = unknown>
    * Overrides the base implementation to ensure messages are created
    * as ChatMessage class instances with proper prototype chain.
    *
+   * @override
    * @template M - Specific ChatMessage type
    *
    * @param message - Partial message specification
@@ -219,6 +220,7 @@ export class ChatMessageStore<T = unknown>
   /**
    * Type guard to check if a value is a ChatMessage instance
    *
+   * @override
    * @template M - Specific ChatMessage type
    *
    * @param message - Value to check
