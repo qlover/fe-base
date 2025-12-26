@@ -684,6 +684,235 @@ describe('SyncExecutor', () => {
         expect(onSuccess).toHaveBeenCalledTimes(0);
       }
     });
+
+    describe('onExec returning values and functions', () => {
+      it('should handle plugin returning a value', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: () => {
+            return 'sync result';
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        expect(result).toBe('sync result');
+      });
+
+      it('should handle plugin returning a function', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: () => {
+            // Return a wrapper function
+            return (_ctx: ExecutorContext<unknown>) => {
+              return 'wrapped from sync';
+            };
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        expect(result).toBe('wrapped from sync');
+      });
+
+      it('should handle plugin returning undefined and continue to next plugin', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: () => {
+            return undefined;
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: () => {
+            return 'second plugin result';
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        expect(result).toBe('second plugin result');
+      });
+
+      it('should handle plugin returning function that wraps the task', () => {
+        const executor = new SyncExecutor();
+        let wrapperCalled = false;
+
+        executor.use({
+          pluginName: 'test',
+          onExec: (_context, task) => {
+            // Return a wrapper function
+            return (ctx: ExecutorContext<unknown>) => {
+              wrapperCalled = true;
+              const originalResult = task(ctx);
+              return `wrapped: ${originalResult}`;
+            };
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        expect(wrapperCalled).toBe(true);
+        expect(result).toBe('wrapped: original task');
+      });
+
+      it('should handle multiple plugins returning functions in chain', () => {
+        const executor = new SyncExecutor();
+        const callOrder: string[] = [];
+
+        executor.use({
+          pluginName: 'wrapper1',
+          onExec: () => {
+            return (_ctx: ExecutorContext<unknown>) => {
+              callOrder.push('wrapper1');
+              return 'wrapper1-result';
+            };
+          }
+        });
+
+        executor.use({
+          pluginName: 'wrapper2',
+          onExec: (_context, task) => {
+            return (ctx: ExecutorContext<unknown>) => {
+              callOrder.push('wrapper2');
+              const prevResult = task(ctx);
+              return `wrapper2-${prevResult}`;
+            };
+          }
+        });
+
+        const result = executor.exec(() => {
+          callOrder.push('original');
+          return 'original-task';
+        });
+
+        // When plugins return functions, they chain: wrapper2 wraps wrapper1
+        // wrapper2 is executed first (outer wrapper), then wrapper1 (inner wrapper)
+        expect(callOrder).toEqual(['wrapper2', 'wrapper1']);
+        expect(result).toBe('wrapper2-wrapper1-result');
+      });
+
+      it('should handle plugin returning value and use last plugin result', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: () => {
+            return 'first result';
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: () => {
+            return 'second result';
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        // All plugins execute, last plugin's result is used
+        expect(result).toBe('second result');
+      });
+
+      it('should handle mixed return types (function and value)', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'wrapper',
+          onExec: () => {
+            // Return a function
+            return (_ctx: ExecutorContext<unknown>) => {
+              return 'wrapped-result';
+            };
+          }
+        });
+        executor.use({
+          pluginName: 'value',
+          onExec: () => {
+            // Return a value (should override the function)
+            return 'value-result';
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        // Value should override function
+        expect(result).toBe('value-result');
+      });
+
+      it('should handle plugin returning function that accesses hooksRuntimes', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: () => {
+            // Return undefined to allow next plugin to wrap
+            return undefined;
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: ({ hooksRuntimes }, task) => {
+            // Access previous plugin's return value (should be undefined)
+            const prevValue = hooksRuntimes.returnValue;
+            // Return a wrapper function that uses the task
+            return (ctx: ExecutorContext<unknown>) => {
+              const taskResult = task(ctx);
+              return `wrapped-${prevValue || taskResult}`;
+            };
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        // Since first plugin returns undefined, second plugin wraps the task
+        expect(result).toBe('wrapped-original task');
+      });
+
+      it('should handle plugin returning value that can be accessed by next plugin returning function', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: () => {
+            return 'first-value';
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: ({ hooksRuntimes }) => {
+            // Access previous plugin's return value
+            const prevValue = hooksRuntimes.returnValue;
+            // Return a function that uses the previous value
+            return (_ctx: ExecutorContext<unknown>) => {
+              return `function-${prevValue}`;
+            };
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        // First plugin returns value, second returns function
+        // Value takes precedence over function
+        expect(result).toBe('first-value');
+      });
+
+      it('should handle multiple plugins returning values in chain', () => {
+        const executor = new SyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: () => {
+            return 'value1';
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: ({ hooksRuntimes }) => {
+            return hooksRuntimes.returnValue + '-value2';
+          }
+        });
+        executor.use({
+          pluginName: 'test3',
+          onExec: ({ hooksRuntimes }) => {
+            return hooksRuntimes.returnValue + '-value3';
+          }
+        });
+
+        const result = executor.exec(() => 'original task');
+        expect(result).toBe('value1-value2-value3');
+      });
+    });
   });
 
   describe('SyncExecutor onError Lifecycle', () => {

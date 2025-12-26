@@ -247,7 +247,7 @@ describe('anySignal', () => {
         const controller1 = new AbortController();
         const controller2 = new AbortController();
 
-        const combined = anySignal([controller1.signal, controller2.signal]);
+        anySignal([controller1.signal, controller2.signal]);
 
         // Should use native API
         expect(mockAny).toHaveBeenCalled();
@@ -279,16 +279,18 @@ describe('anySignal', () => {
 
       const combined = anySignal([controller1.signal, controller2.signal]);
 
-      const mockFetch = vi.fn().mockImplementation(
-        async (_url: string, options: { signal?: AbortSignal }) => {
-          // Simulate async operation
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          if (options.signal?.aborted) {
-            throw new DOMException('Aborted', 'AbortError');
+      const mockFetch = vi
+        .fn()
+        .mockImplementation(
+          async (_url: string, options: { signal?: AbortSignal }) => {
+            // Simulate async operation
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            if (options.signal?.aborted) {
+              throw new DOMException('Aborted', 'AbortError');
+            }
+            return { data: 'success' };
           }
-          return { data: 'success' };
-        }
-      );
+        );
 
       const promise = mockFetch('/api/data', { signal: combined });
 
@@ -414,4 +416,3 @@ describe('anySignal', () => {
     });
   });
 });
-

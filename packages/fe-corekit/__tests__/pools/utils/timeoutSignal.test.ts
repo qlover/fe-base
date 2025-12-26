@@ -81,7 +81,10 @@ describe('timeoutSignal', () => {
       const signal = timeoutSignal(1000);
 
       // clear() is available for fallback implementation
-      if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+      if (
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ) {
         const clearableSignal = signal as ClearableSignal;
         expect(typeof clearableSignal.clear).toBe('function');
       }
@@ -90,7 +93,10 @@ describe('timeoutSignal', () => {
     it('should prevent timeout when clear() is called', () => {
       const signal = timeoutSignal(1000);
 
-      if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+      if (
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ) {
         const clearableSignal = signal as ClearableSignal;
 
         clearableSignal.clear();
@@ -105,7 +111,10 @@ describe('timeoutSignal', () => {
     it('should allow calling clear() multiple times', () => {
       const signal = timeoutSignal(1000);
 
-      if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+      if (
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ) {
         const clearableSignal = signal as ClearableSignal;
 
         expect(() => {
@@ -123,7 +132,10 @@ describe('timeoutSignal', () => {
       await new Promise((resolve) => setTimeout(resolve, 150));
       expect(signal.aborted).toBe(true);
 
-      if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+      if (
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ) {
         const clearableSignal = signal as ClearableSignal;
         expect(() => clearableSignal.clear()).not.toThrow();
       }
@@ -167,7 +179,7 @@ describe('timeoutSignal', () => {
     it('should clamp timeout to maximum safe value for fallback implementation', () => {
       // Test fallback implementation by temporarily removing native API
       const originalTimeout = AbortSignal.timeout;
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -191,7 +203,7 @@ describe('timeoutSignal', () => {
     it('should handle timeout values larger than MAX_TIMEOUT_MS for fallback', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -207,7 +219,7 @@ describe('timeoutSignal', () => {
       expect(signal.aborted).toBe(true);
 
       // Restore native API
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         (AbortSignal as any).timeout = originalTimeout;
       }
     });
@@ -224,7 +236,7 @@ describe('timeoutSignal', () => {
       if (typeof AbortSignal.timeout === 'function') {
         (AbortSignal as any).timeout = mockTimeout;
 
-        const signal = timeoutSignal(1000);
+        timeoutSignal(1000);
 
         // Should use native API
         expect(mockTimeout).toHaveBeenCalledWith(1000);
@@ -237,7 +249,7 @@ describe('timeoutSignal', () => {
     it('should fallback to manual implementation when native API unavailable', () => {
       const originalTimeout = AbortSignal.timeout;
       // Temporarily remove native API
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -250,7 +262,7 @@ describe('timeoutSignal', () => {
       expect(signal.aborted).toBe(true);
 
       // Restore native API if it existed
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         (AbortSignal as any).timeout = originalTimeout;
       }
     });
@@ -261,16 +273,18 @@ describe('timeoutSignal', () => {
       vi.useRealTimers();
       const signal = timeoutSignal(100);
 
-      const mockFetch = vi.fn().mockImplementation(
-        async (_url: string, options: { signal?: AbortSignal }) => {
-          // Simulate slow operation
-          await new Promise((resolve) => setTimeout(resolve, 200));
-          if (options.signal?.aborted) {
-            throw new DOMException('Timeout', 'TimeoutError');
+      const mockFetch = vi
+        .fn()
+        .mockImplementation(
+          async (_url: string, options: { signal?: AbortSignal }) => {
+            // Simulate slow operation
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            if (options.signal?.aborted) {
+              throw new DOMException('Timeout', 'TimeoutError');
+            }
+            return { data: 'success' };
           }
-          return { data: 'success' };
-        }
-      );
+        );
 
       const promise = mockFetch('/api/data', { signal });
 
@@ -323,7 +337,7 @@ describe('timeoutSignal', () => {
     it('should handle negative timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -333,7 +347,7 @@ describe('timeoutSignal', () => {
       expect(signal).toBeInstanceOf(AbortSignal);
 
       // Restore native API
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         (AbortSignal as any).timeout = originalTimeout;
       }
     });
@@ -341,7 +355,7 @@ describe('timeoutSignal', () => {
     it('should handle NaN timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -351,7 +365,7 @@ describe('timeoutSignal', () => {
       expect(signal).toBeInstanceOf(AbortSignal);
 
       // Restore native API
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         (AbortSignal as any).timeout = originalTimeout;
       }
     });
@@ -359,7 +373,7 @@ describe('timeoutSignal', () => {
     it('should handle Infinity timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (originalTimeout) {
+      if (typeof originalTimeout === 'function') {
         delete (AbortSignal as any).timeout;
       }
 
@@ -407,7 +421,10 @@ describe('timeoutSignal', () => {
     it('should cleanup timeout when clear() is called', () => {
       const signal = timeoutSignal(1000);
 
-      if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+      if (
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ) {
         const clearableSignal = signal as ClearableSignal;
 
         clearableSignal.clear();
@@ -423,7 +440,10 @@ describe('timeoutSignal', () => {
 
       for (let i = 0; i < 100; i++) {
         const signal = timeoutSignal(1000);
-        if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+        if (
+          'clear' in signal &&
+          typeof (signal as ClearableSignal).clear === 'function'
+        ) {
           signals.push(signal as ClearableSignal);
         }
       }
@@ -445,7 +465,10 @@ describe('timeoutSignal', () => {
     it('should handle rapid create/clear cycles', () => {
       for (let i = 0; i < 100; i++) {
         const signal = timeoutSignal(1000);
-        if ('clear' in signal && typeof (signal as ClearableSignal).clear === 'function') {
+        if (
+          'clear' in signal &&
+          typeof (signal as ClearableSignal).clear === 'function'
+        ) {
           (signal as ClearableSignal).clear();
         }
       }
@@ -522,4 +545,3 @@ describe('timeoutSignal', () => {
     });
   });
 });
-

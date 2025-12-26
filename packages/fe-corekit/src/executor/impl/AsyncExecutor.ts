@@ -376,12 +376,47 @@ export class AsyncExecutor<
   ): Promise<void> {
     const execHook = this.config?.execHook || 'onExec';
 
-    await this.runHook(this.plugins, execHook, context, actualTask);
+    let currentTask: PromiseTask<Result, Params> = actualTask;
+    let finalResult: Result | undefined;
+    let _index = -1;
 
-    // If exec times is 0, then execute task, otherwise return the result of the last hook
-    context.returnValue = !context.hooksRuntimes.times
-      ? await actualTask(context)
-      : context.hooksRuntimes.returnValue;
+    for (const plugin of this.plugins) {
+      _index++;
+      if (this.contextHandler.shouldSkipPluginHook(plugin, execHook, context)) {
+        continue;
+      }
+
+      if (this.contextHandler.shouldBreakChain(context)) {
+        break;
+      }
+
+      this.contextHandler.runtimes(context, plugin, execHook, _index);
+
+      const pluginReturn = await (
+        plugin[execHook as keyof ExecutorPlugin] as PluginMethod<Params>
+      )(context, currentTask);
+
+      if (typeof pluginReturn === 'function') {
+        // Plugin returned a wrapper function - use it for next plugin
+        // This allows chaining: each plugin wraps the previous plugin's wrapper
+        currentTask = pluginReturn as PromiseTask<Result, Params>;
+        this.contextHandler.runtimeReturnValue(context, pluginReturn);
+      } else {
+        if (pluginReturn === undefined) {
+          continue;
+        }
+
+        // Plugin returned a value - update finalResult and continue to next plugin
+        // This allows subsequent plugins to access the return value via hooksRuntimes.returnValue
+        finalResult = pluginReturn as Result;
+        this.contextHandler.runtimeReturnValue(context, pluginReturn);
+        // Don't break here - allow all plugins to execute so they can access previous return values
+      }
+    }
+
+    // Execute final task or use final result
+    context.returnValue =
+      finalResult !== undefined ? finalResult : await currentTask(context);
   }
 
   /**
