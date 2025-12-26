@@ -51,7 +51,10 @@ export function anySignal(
   signals: Array<AbortSignal | undefined | null>
 ): ClearableSignal {
   // Use native AbortSignal.any() if available (Node.js 20+, modern browsers)
-  if (typeof AbortSignal.any === 'function') {
+  // Type assertion needed because TypeScript types may not include AbortSignal.any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const AbortSignalAny = (AbortSignal as any).any;
+  if (typeof AbortSignalAny === 'function') {
     // Filter out null/undefined for native API
     const validSignals = signals.filter(
       (s): s is AbortSignal => s != null
@@ -59,7 +62,7 @@ export function anySignal(
 
     // Native API requires at least one signal
     if (validSignals.length > 0) {
-      const combinedSignal = AbortSignal.any(validSignals) as ClearableSignal;
+      const combinedSignal = AbortSignalAny(validSignals) as ClearableSignal;
 
       // Native AbortSignal.any() doesn't leak in modern environments,
       // but we still provide a clear() method for API consistency

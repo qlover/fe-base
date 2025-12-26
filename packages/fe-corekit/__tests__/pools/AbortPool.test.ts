@@ -3,8 +3,16 @@ import type { AbortPoolConfig } from '../../src/pools/AbortPool';
 
 describe('AbortPool', () => {
   let pool: AbortPool;
+  let originalTimeout: typeof AbortSignal.timeout | undefined;
 
   beforeEach(() => {
+    // Mock AbortSignal.timeout to use fallback implementation for fake timers compatibility
+    originalTimeout = AbortSignal.timeout;
+    if (typeof originalTimeout === 'function') {
+      // Temporarily remove native API to force fallback to setTimeout-based implementation
+      delete (AbortSignal as any).timeout;
+    }
+    
     pool = new AbortPool('TestPool');
     vi.useFakeTimers();
   });
@@ -12,6 +20,10 @@ describe('AbortPool', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
+    // Restore AbortSignal.timeout if it was removed
+    if (typeof AbortSignal.timeout === 'undefined' && originalTimeout) {
+      (AbortSignal as any).timeout = originalTimeout;
+    }
   });
 
   describe('constructor', () => {

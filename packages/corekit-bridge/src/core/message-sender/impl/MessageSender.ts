@@ -1,8 +1,7 @@
 import {
   ExecutorError,
   AbortPlugin,
-  type ExecutorPlugin,
-  type AbortPluginConfig
+  type ExecutorPlugin
 } from '@qlover/fe-corekit';
 import {
   type MessageSenderContextOptions,
@@ -220,14 +219,12 @@ export class MessageSender<
     this.senderName = config?.senderName || defaultSenderName;
     this.executor = new MessageSenderExecutor();
 
-    this.abortPlugin = new AbortPlugin<
-      MessageSenderContextOptions<MessageType>
-    >({
-      getConfig: (parameters) =>
-        (parameters.gatewayOptions || parameters) as AbortPluginConfig,
+    this.abortPlugin = new AbortPlugin({
+      getConfig: (parameters) => parameters.gatewayOptions || parameters,
       logger: config?.logger,
       timeout: config?.gatewayOptions?.timeout
     });
+
     this.executor.use(this.abortPlugin);
   }
 

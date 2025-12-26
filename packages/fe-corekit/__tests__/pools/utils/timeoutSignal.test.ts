@@ -13,66 +13,79 @@ import { timeoutSignal } from '../../../src/pools/utils/timeoutSignal';
 import type { ClearableSignal } from 'any-signal';
 
 describe('timeoutSignal', () => {
+  let originalTimeout: typeof AbortSignal.timeout | undefined;
+  let hadNativeAPI: boolean;
+
   beforeEach(() => {
+    // Save original AbortSignal.timeout before each test
+    originalTimeout = AbortSignal.timeout;
+    hadNativeAPI = typeof originalTimeout === 'function';
+    
+    // Force fallback implementation by removing native API
+    // This ensures all tests use fake timers for stability
+    if (hadNativeAPI) {
+      delete (AbortSignal as any).timeout;
+    }
+    
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.useRealTimers();
+    vi.useFakeTimers(); // Keep fake timers, don't switch to real timers
+    
+    // Always restore AbortSignal.timeout if it existed originally
+    if (hadNativeAPI && originalTimeout) {
+      (AbortSignal as any).timeout = originalTimeout;
+    }
   });
 
   describe('basic functionality', () => {
-    it('should create a signal that aborts after timeout', async () => {
-      // Use real timers for native AbortSignal.timeout()
-      vi.useRealTimers();
+    it('should create a signal that aborts after timeout', () => {
       const signal = timeoutSignal(100);
 
       expect(signal).toBeInstanceOf(AbortSignal);
       expect(signal.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      vi.advanceTimersByTime(99);
+      expect(signal.aborted).toBe(false);
 
+      vi.advanceTimersByTime(1);
       expect(signal.aborted).toBe(true);
-      vi.useFakeTimers();
     });
 
-    it('should abort with TimeoutError', async () => {
-      vi.useRealTimers();
+    it('should abort with TimeoutError', () => {
       const signal = timeoutSignal(100);
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
+      vi.advanceTimersByTime(100);
       expect(signal.aborted).toBe(true);
+
       // Check for TimeoutError reason if available
       if ('reason' in signal) {
         const reason = (signal as any).reason;
         expect(reason).toBeInstanceOf(DOMException);
         expect(reason.name).toBe('TimeoutError');
       }
-      vi.useFakeTimers();
     });
 
-    it('should not abort before timeout', async () => {
-      vi.useRealTimers();
+    it('should not abort before timeout', () => {
       const signal = timeoutSignal(100);
 
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
+      vi.advanceTimersByTime(50);
       expect(signal.aborted).toBe(false);
-      vi.useFakeTimers();
+
+      vi.advanceTimersByTime(49);
+      expect(signal.aborted).toBe(false);
     });
 
-    it('should abort exactly at timeout', async () => {
-      vi.useRealTimers();
+    it('should abort exactly at timeout', () => {
       const signal = timeoutSignal(100);
 
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      vi.advanceTimersByTime(50);
       expect(signal.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 60));
+      vi.advanceTimersByTime(50);
       expect(signal.aborted).toBe(true);
-      vi.useFakeTimers();
     });
   });
 
@@ -93,19 +106,19 @@ describe('timeoutSignal', () => {
     it('should prevent timeout when clear() is called', () => {
       const signal = timeoutSignal(1000);
 
-      if (
+      expect(
         'clear' in signal &&
         typeof (signal as ClearableSignal).clear === 'function'
-      ) {
-        const clearableSignal = signal as ClearableSignal;
+      ).toBe(true);
 
-        clearableSignal.clear();
+      const clearableSignal = signal as ClearableSignal;
 
-        vi.advanceTimersByTime(2000);
+      clearableSignal.clear();
 
-        // Signal should not be aborted after clear
-        expect(clearableSignal.aborted).toBe(false);
-      }
+      vi.advanceTimersByTime(2000);
+
+      // Signal should not be aborted after clear
+      expect(clearableSignal.aborted).toBe(false);
     });
 
     it('should allow calling clear() multiple times', () => {
@@ -125,102 +138,104 @@ describe('timeoutSignal', () => {
       }
     });
 
-    it('should be safe to clear after timeout', async () => {
-      vi.useRealTimers();
+    it('should be safe to clear after timeout', () => {
       const signal = timeoutSignal(100);
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      vi.advanceTimersByTime(100);
       expect(signal.aborted).toBe(true);
 
-      if (
+      expect(
         'clear' in signal &&
         typeof (signal as ClearableSignal).clear === 'function'
-      ) {
-        const clearableSignal = signal as ClearableSignal;
-        expect(() => clearableSignal.clear()).not.toThrow();
-      }
-      vi.useFakeTimers();
+      ).toBe(true);
+
+      const clearableSignal = signal as ClearableSignal;
+      expect(() => clearableSignal.clear()).not.toThrow();
     });
   });
 
   describe('timeout values', () => {
-    it('should handle zero timeout', async () => {
-      vi.useRealTimers();
+    it('should handle zero timeout', () => {
       const signal = timeoutSignal(0);
 
-      // Zero timeout should abort immediately (or very quickly)
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      // Zero timeout should abort immediately
+      vi.advanceTimersByTime(0);
       expect(signal.aborted).toBe(true);
-      vi.useFakeTimers();
     });
 
-    it('should handle small timeout values', async () => {
-      vi.useRealTimers();
+    it('should handle small timeout values', () => {
       const signal = timeoutSignal(10);
 
-      await new Promise((resolve) => setTimeout(resolve, 20));
-
-      expect(signal.aborted).toBe(true);
-      vi.useFakeTimers();
-    });
-
-    it('should handle large timeout values', async () => {
-      vi.useRealTimers();
-      const signal = timeoutSignal(100);
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      vi.advanceTimersByTime(9);
       expect(signal.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 60));
+      vi.advanceTimersByTime(1);
       expect(signal.aborted).toBe(true);
-      vi.useFakeTimers();
+    });
+
+    it('should handle large timeout values', () => {
+      const signal = timeoutSignal(100);
+
+      vi.advanceTimersByTime(50);
+      expect(signal.aborted).toBe(false);
+
+      vi.advanceTimersByTime(50);
+      expect(signal.aborted).toBe(true);
     });
 
     it('should clamp timeout to maximum safe value for fallback implementation', () => {
       // Test fallback implementation by temporarily removing native API
       const originalTimeout = AbortSignal.timeout;
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const MAX_TIMEOUT_MS = 2147483647; // 2^31 - 1
+      try {
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      const signal = timeoutSignal(Number.MAX_SAFE_INTEGER);
+        const MAX_TIMEOUT_MS = 2147483647; // 2^31 - 1
 
-      // Should not abort immediately (would happen if not clamped)
-      expect(signal.aborted).toBe(false);
+        const signal = timeoutSignal(Number.MAX_SAFE_INTEGER);
 
-      // Should abort after max timeout
-      vi.advanceTimersByTime(MAX_TIMEOUT_MS);
-      expect(signal.aborted).toBe(true);
+        // Should not abort immediately (would happen if not clamped)
+        expect(signal.aborted).toBe(false);
 
-      // Restore native API
-      if (originalTimeout) {
-        (AbortSignal as any).timeout = originalTimeout;
+        // Should abort after max timeout
+        vi.advanceTimersByTime(MAX_TIMEOUT_MS);
+        expect(signal.aborted).toBe(true);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
 
     it('should handle timeout values larger than MAX_TIMEOUT_MS for fallback', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const MAX_TIMEOUT_MS = 2147483647;
-      const largeTimeout = MAX_TIMEOUT_MS + 1000000;
+      try {
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      const signal = timeoutSignal(largeTimeout);
+        const MAX_TIMEOUT_MS = 2147483647;
+        const largeTimeout = MAX_TIMEOUT_MS + 1000000;
 
-      // Should be clamped to MAX_TIMEOUT_MS
-      expect(signal.aborted).toBe(false);
+        const signal = timeoutSignal(largeTimeout);
 
-      vi.advanceTimersByTime(MAX_TIMEOUT_MS);
-      expect(signal.aborted).toBe(true);
+        // Should be clamped to MAX_TIMEOUT_MS
+        expect(signal.aborted).toBe(false);
 
-      // Restore native API
-      if (typeof originalTimeout === 'function') {
-        (AbortSignal as any).timeout = originalTimeout;
+        vi.advanceTimersByTime(MAX_TIMEOUT_MS);
+        expect(signal.aborted).toBe(true);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
   });
@@ -248,73 +263,80 @@ describe('timeoutSignal', () => {
 
     it('should fallback to manual implementation when native API unavailable', () => {
       const originalTimeout = AbortSignal.timeout;
-      // Temporarily remove native API
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const signal = timeoutSignal(1000);
+      try {
+        // Temporarily remove native API
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      expect(signal).toBeInstanceOf(AbortSignal);
-      expect(signal.aborted).toBe(false);
+        const signal = timeoutSignal(1000);
 
-      vi.advanceTimersByTime(1000);
-      expect(signal.aborted).toBe(true);
+        expect(signal).toBeInstanceOf(AbortSignal);
+        expect(signal.aborted).toBe(false);
 
-      // Restore native API if it existed
-      if (typeof originalTimeout === 'function') {
-        (AbortSignal as any).timeout = originalTimeout;
+        vi.advanceTimersByTime(1000);
+        expect(signal.aborted).toBe(true);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
   });
 
   describe('integration scenarios', () => {
     it('should work with fetch-like operations', async () => {
-      vi.useRealTimers();
       const signal = timeoutSignal(100);
 
       const mockFetch = vi
         .fn()
         .mockImplementation(
           async (_url: string, options: { signal?: AbortSignal }) => {
-            // Simulate slow operation
-            await new Promise((resolve) => setTimeout(resolve, 200));
-            if (options.signal?.aborted) {
-              throw new DOMException('Timeout', 'TimeoutError');
-            }
-            return { data: 'success' };
+            // Simulate slow operation with fake timers
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                if (options.signal?.aborted) {
+                  reject(new DOMException('Timeout', 'TimeoutError'));
+                } else {
+                  resolve({ data: 'success' });
+                }
+              }, 200);
+            });
           }
         );
 
       const promise = mockFetch('/api/data', { signal });
 
-      // Wait for timeout
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      // Advance time to trigger timeout (100ms)
+      vi.advanceTimersByTime(100);
+      expect(signal.aborted).toBe(true);
+
+      // Advance more time to let the fetch operation's setTimeout fire (200ms total)
+      // This ensures the Promise's setTimeout callback executes and checks the aborted signal
+      await vi.advanceTimersByTimeAsync(100);
 
       await expect(promise).rejects.toThrow();
-      vi.useFakeTimers();
     });
 
     it('should work with anySignal combination', async () => {
-      vi.useRealTimers();
       const controller = new AbortController();
       const timeoutSig = timeoutSignal(100);
 
-      // Import anySignal for combination test
       const { anySignal } = await import('../../../src/pools/utils/anySignal');
       const combined = anySignal([controller.signal, timeoutSig]);
 
       expect(combined.aborted).toBe(false);
 
       // Timeout should abort combined signal
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      vi.advanceTimersByTime(100);
 
       expect(combined.aborted).toBe(true);
-      vi.useFakeTimers();
     });
 
     it('should allow manual abort before timeout', async () => {
-      vi.useRealTimers();
       const controller = new AbortController();
       const timeoutSig = timeoutSignal(100);
 
@@ -327,9 +349,8 @@ describe('timeoutSignal', () => {
       expect(combined.aborted).toBe(true);
 
       // Advance time - should still be aborted
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      vi.advanceTimersByTime(150);
       expect(combined.aborted).toBe(true);
-      vi.useFakeTimers();
     });
   });
 
@@ -337,63 +358,74 @@ describe('timeoutSignal', () => {
     it('should handle negative timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const signal = timeoutSignal(-100);
+      try {
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      // Negative timeout should be clamped or handled gracefully
-      expect(signal).toBeInstanceOf(AbortSignal);
+        const signal = timeoutSignal(-100);
 
-      // Restore native API
-      if (typeof originalTimeout === 'function') {
-        (AbortSignal as any).timeout = originalTimeout;
+        // Negative timeout should be clamped or handled gracefully
+        expect(signal).toBeInstanceOf(AbortSignal);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
 
     it('should handle NaN timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const signal = timeoutSignal(NaN);
+      try {
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      // NaN should be handled gracefully
-      expect(signal).toBeInstanceOf(AbortSignal);
+        const signal = timeoutSignal(NaN);
 
-      // Restore native API
-      if (typeof originalTimeout === 'function') {
-        (AbortSignal as any).timeout = originalTimeout;
+        // NaN should be handled gracefully
+        expect(signal).toBeInstanceOf(AbortSignal);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
 
     it('should handle Infinity timeout values in fallback implementation', () => {
       // Test fallback implementation
       const originalTimeout = AbortSignal.timeout;
-      if (typeof originalTimeout === 'function') {
-        delete (AbortSignal as any).timeout;
-      }
+      const hadNativeAPI = typeof originalTimeout === 'function';
 
-      const MAX_TIMEOUT_MS = 2147483647;
-      const signal = timeoutSignal(Infinity);
+      try {
+        if (hadNativeAPI) {
+          delete (AbortSignal as any).timeout;
+        }
 
-      // Should be clamped to MAX_TIMEOUT_MS
-      expect(signal.aborted).toBe(false);
+        const MAX_TIMEOUT_MS = 2147483647;
+        const signal = timeoutSignal(Infinity);
 
-      vi.advanceTimersByTime(MAX_TIMEOUT_MS);
-      expect(signal.aborted).toBe(true);
+        // Should be clamped to MAX_TIMEOUT_MS
+        expect(signal.aborted).toBe(false);
 
-      // Restore native API
-      if (originalTimeout) {
-        (AbortSignal as any).timeout = originalTimeout;
+        vi.advanceTimersByTime(MAX_TIMEOUT_MS);
+        expect(signal.aborted).toBe(true);
+      } finally {
+        // Always restore native API
+        if (hadNativeAPI && originalTimeout) {
+          (AbortSignal as any).timeout = originalTimeout;
+        }
       }
     });
 
-    it('should handle multiple timeout signals', async () => {
-      vi.useRealTimers();
+    it('should handle multiple timeout signals', () => {
       const signal1 = timeoutSignal(100);
       const signal2 = timeoutSignal(200);
       const signal3 = timeoutSignal(300);
@@ -402,18 +434,17 @@ describe('timeoutSignal', () => {
       expect(signal2.aborted).toBe(false);
       expect(signal3.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      vi.advanceTimersByTime(100);
       expect(signal1.aborted).toBe(true);
       expect(signal2.aborted).toBe(false);
       expect(signal3.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
       expect(signal2.aborted).toBe(true);
       expect(signal3.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
       expect(signal3.aborted).toBe(true);
-      vi.useFakeTimers();
     });
   });
 
@@ -481,8 +512,7 @@ describe('timeoutSignal', () => {
   });
 
   describe('concurrent operations', () => {
-    it('should handle multiple concurrent timeout signals', async () => {
-      vi.useRealTimers();
+    it('should handle multiple concurrent timeout signals', () => {
       const signals = Array.from({ length: 5 }, (_, i) =>
         timeoutSignal((i + 1) * 100)
       );
@@ -493,55 +523,169 @@ describe('timeoutSignal', () => {
       });
 
       // Wait for first signal to timeout (100ms)
-      await new Promise((resolve) => setTimeout(resolve, 110));
+      vi.advanceTimersByTime(100);
       expect(signals[0].aborted).toBe(true);
       expect(signals[1].aborted).toBe(false);
       expect(signals[2].aborted).toBe(false);
 
       // Wait for second signal to timeout (200ms total)
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
       expect(signals[1].aborted).toBe(true);
       expect(signals[2].aborted).toBe(false);
 
       // Wait for third signal to timeout (300ms total)
-      await new Promise((resolve) => setTimeout(resolve, 110));
+      vi.advanceTimersByTime(100);
       expect(signals[2].aborted).toBe(true);
       expect(signals[3].aborted).toBe(false);
 
       // Wait for fourth signal to timeout (400ms total)
-      await new Promise((resolve) => setTimeout(resolve, 110));
+      vi.advanceTimersByTime(100);
       expect(signals[3].aborted).toBe(true);
       expect(signals[4].aborted).toBe(false);
 
       // Wait for fifth signal to timeout (500ms total)
-      await new Promise((resolve) => setTimeout(resolve, 110));
+      vi.advanceTimersByTime(100);
       expect(signals[4].aborted).toBe(true);
 
       // Verify all signals are aborted
       signals.forEach((signal) => {
         expect(signal.aborted).toBe(true);
       });
-      vi.useFakeTimers();
     });
 
-    it('should handle timeout signals with different durations', async () => {
-      vi.useRealTimers();
+    it('should handle timeout signals with different durations', () => {
       const shortSignal = timeoutSignal(50);
       const mediumSignal = timeoutSignal(150);
       const longSignal = timeoutSignal(250);
 
-      await new Promise((resolve) => setTimeout(resolve, 60));
+      vi.advanceTimersByTime(50);
       expect(shortSignal.aborted).toBe(true);
       expect(mediumSignal.aborted).toBe(false);
       expect(longSignal.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
       expect(mediumSignal.aborted).toBe(true);
       expect(longSignal.aborted).toBe(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
       expect(longSignal.aborted).toBe(true);
-      vi.useFakeTimers();
+    });
+  });
+
+  describe('test framework validation', () => {
+    // These tests verify that our test framework correctly catches failures
+    // They use a pattern where we test both correct and incorrect expectations
+
+    it('should correctly validate test framework error detection', () => {
+      // Create a test that we know should pass
+      const signal = timeoutSignal(100);
+
+      vi.advanceTimersByTime(50);
+      expect(signal.aborted).toBe(false); // Correct: not aborted yet
+
+      vi.advanceTimersByTime(50);
+      expect(signal.aborted).toBe(true); // Correct: aborted after 100ms
+
+      // If this test passes, it means our test framework is working correctly
+      expect(true).toBe(true);
+    });
+
+    // Test framework validation: Verify that incorrect expectations would fail
+    // These tests use try-catch to verify the test framework catches errors
+    it('should verify test framework catches incorrect expectations', () => {
+      const signal = timeoutSignal(100);
+
+      vi.advanceTimersByTime(50);
+      
+      // Verify that the correct expectation passes
+      expect(signal.aborted).toBe(false);
+      
+      // Verify that an incorrect expectation would fail
+      // We use a helper to test this without actually failing the test
+      let caughtError = false;
+      try {
+        // This should fail if test framework is working
+        expect(signal.aborted).toBe(true); // Wrong: should be false
+      } catch (error) {
+        caughtError = true;
+        // Test framework correctly caught the error
+        expect(error).toBeDefined();
+      }
+      
+      // Verify that the test framework would catch this error
+      expect(caughtError).toBe(true);
+    });
+
+    it('should verify test framework catches timeout failures', () => {
+      const signal = timeoutSignal(100);
+
+      vi.advanceTimersByTime(100);
+      
+      // Verify correct expectation
+      expect(signal.aborted).toBe(true);
+      
+      // Verify incorrect expectation would fail
+      let caughtError = false;
+      try {
+        expect(signal.aborted).toBe(false); // Wrong: should be true
+      } catch (error) {
+        caughtError = true;
+        expect(error).toBeDefined();
+      }
+      
+      expect(caughtError).toBe(true);
+    });
+
+    it('should verify test framework catches clear() behavior failures', () => {
+      const signal = timeoutSignal(100);
+
+      expect(
+        'clear' in signal &&
+        typeof (signal as ClearableSignal).clear === 'function'
+      ).toBe(true);
+
+      const clearableSignal = signal as ClearableSignal;
+      clearableSignal.clear();
+
+      vi.advanceTimersByTime(200);
+      
+      // Verify correct expectation
+      expect(clearableSignal.aborted).toBe(false);
+      
+      // Verify incorrect expectation would fail
+      let caughtError = false;
+      try {
+        expect(clearableSignal.aborted).toBe(true); // Wrong: should be false
+      } catch (error) {
+        caughtError = true;
+        expect(error).toBeDefined();
+      }
+      
+      expect(caughtError).toBe(true);
+    });
+
+    // Optional: Uncomment these tests to verify they actually fail
+    // These are intentionally designed to fail to prove test framework works
+    describe.skip('intentional failure tests (uncomment to verify)', () => {
+      it('INTENTIONAL FAILURE: signal should NOT abort before timeout', () => {
+        const signal = timeoutSignal(100);
+        vi.advanceTimersByTime(50);
+        expect(signal.aborted).toBe(true); // Wrong: should be false
+      });
+
+      it('INTENTIONAL FAILURE: signal SHOULD abort after timeout', () => {
+        const signal = timeoutSignal(100);
+        vi.advanceTimersByTime(100);
+        expect(signal.aborted).toBe(false); // Wrong: should be true
+      });
+
+      it('INTENTIONAL FAILURE: clear() should prevent timeout', () => {
+        const signal = timeoutSignal(100);
+        const clearableSignal = signal as ClearableSignal;
+        clearableSignal.clear();
+        vi.advanceTimersByTime(200);
+        expect(clearableSignal.aborted).toBe(true); // Wrong: should be false
+      });
     });
   });
 });

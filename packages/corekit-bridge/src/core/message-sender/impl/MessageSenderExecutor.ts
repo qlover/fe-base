@@ -1,4 +1,5 @@
 import {
+  AbortPluginConfig,
   AsyncExecutor,
   type ExecutorContext,
   type ExecutorPlugin
@@ -31,7 +32,7 @@ import {
  */
 export interface MessageSenderContextOptions<
   MessageType extends MessageInterface<unknown>
-> extends MessageSenderConfig {
+> extends MessageSenderConfig, AbortPluginConfig {
   /**
    * Message store instance
    *

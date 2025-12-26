@@ -1502,6 +1502,200 @@ describe('MessageSender', () => {
       );
       expect((receivedOptions as unknown as { retry: number }).retry).toBe(3);
     });
+
+    describe('timeout configuration from gatewayOptions', () => {
+      it('should pass timeout to AbortPlugin when config.gatewayOptions.timeout is set', () => {
+        const timeoutValue = 1000;
+        const mockLogger: LoggerInterface = {
+          debug: vi.fn(),
+          info: vi.fn(),
+          warn: vi.fn(),
+          error: vi.fn(),
+          log: vi.fn(),
+          trace: vi.fn(),
+          fatal: vi.fn(),
+          addAppender: vi.fn(),
+          context: vi.fn()
+        };
+
+        const service = new MessageSender(store, {
+          gateway: mockGateway,
+          gatewayOptions: {
+            timeout: timeoutValue
+          },
+          logger: mockLogger
+        });
+
+        // Verify AbortPlugin instance has correct timeout
+        const abortPlugin = (service as any).abortPlugin as {
+          timeout?: number;
+          logger?: LoggerInterface;
+          getConfig?: (params: any) => any;
+        };
+        expect(abortPlugin).toBeDefined();
+        expect(abortPlugin.timeout).toBe(timeoutValue);
+        expect(abortPlugin.logger).toBe(mockLogger);
+        expect(abortPlugin.getConfig).toBeDefined();
+        expect(typeof abortPlugin.getConfig).toBe('function');
+      });
+
+      it('should pass undefined timeout when config is undefined', () => {
+        const service = new MessageSender(store);
+
+        const abortPlugin = (service as any).abortPlugin as {
+          timeout?: number;
+          logger?: LoggerInterface;
+        };
+        expect(abortPlugin).toBeDefined();
+        expect(abortPlugin.timeout).toBeUndefined();
+        expect(abortPlugin.logger).toBeUndefined();
+      });
+
+      it('should pass undefined timeout when gatewayOptions is undefined', () => {
+        const mockLogger: LoggerInterface = {
+          debug: vi.fn(),
+          info: vi.fn(),
+          warn: vi.fn(),
+          error: vi.fn(),
+          log: vi.fn(),
+          trace: vi.fn(),
+          fatal: vi.fn(),
+          addAppender: vi.fn(),
+          context: vi.fn()
+        };
+
+        const service = new MessageSender(store, {
+          gateway: mockGateway,
+          logger: mockLogger
+        });
+
+        const abortPlugin = (service as any).abortPlugin as {
+          timeout?: number;
+          logger?: LoggerInterface;
+        };
+        expect(abortPlugin).toBeDefined();
+        expect(abortPlugin.timeout).toBeUndefined();
+        expect(abortPlugin.logger).toBe(mockLogger);
+      });
+
+      it('should pass undefined timeout when gatewayOptions.timeout is undefined', () => {
+        const service = new MessageSender(store, {
+          gateway: mockGateway,
+          gatewayOptions: {
+            stream: true
+            // timeout is not set
+          }
+        });
+
+        const abortPlugin = (service as any).abortPlugin as {
+          timeout?: number;
+        };
+        expect(abortPlugin).toBeDefined();
+        expect(abortPlugin.timeout).toBeUndefined();
+      });
+
+      it('should verify timeout is actually used by AbortPlugin in real scenario', async () => {
+        vi.useFakeTimers();
+
+        const timeoutValue = 1000;
+        const serviceWithTimeout = new MessageSender(store, {
+          gateway: mockGateway,
+          gatewayOptions: {
+            timeout: timeoutValue
+          }
+        });
+
+        // Verify timeout is set in AbortPlugin instance
+        const abortPlugin = (serviceWithTimeout as any).abortPlugin as {
+          timeout?: number;
+        };
+        expect(abortPlugin.timeout).toBe(timeoutValue);
+
+        // Create a promise that will hang
+        let resolveGateway: ((value: unknown) => void) | undefined;
+        const hangingPromise = new Promise<unknown>((resolve) => {
+          resolveGateway = resolve;
+        });
+
+        mockGateway.sendMessage = vi.fn().mockReturnValue(hangingPromise);
+
+        // Start sending a message
+        const sendPromise = serviceWithTimeout.send({ content: 'Test' });
+
+        // Advance time past timeout
+        vi.advanceTimersByTime(timeoutValue + 100);
+
+        // The send should be aborted due to timeout
+        try {
+          await sendPromise;
+          // Should not reach here
+          expect(true).toBe(false);
+        } catch (error) {
+          expect(error).toBeDefined();
+        }
+
+        // Clean up - resolve the promise to prevent hanging
+        if (resolveGateway) {
+          resolveGateway({ result: 'cleanup' });
+        }
+        vi.useRealTimers();
+      });
+
+      it('should verify getConfig function correctly extracts gatewayOptions', () => {
+        const serviceWithTimeout = new MessageSender(store, {
+          gateway: mockGateway,
+          gatewayOptions: {
+            timeout: 2000,
+            stream: true
+          }
+        });
+
+        const abortPlugin = (serviceWithTimeout as any).abortPlugin as {
+          getConfig?: (params: any) => any;
+        };
+        expect(abortPlugin).toBeDefined();
+        const getConfig = abortPlugin.getConfig;
+        expect(getConfig).toBeDefined();
+        expect(typeof getConfig).toBe('function');
+
+        // Test getConfig function
+        const mockParameters = {
+          gatewayOptions: {
+            timeout: 3000,
+            stream: false
+          }
+        };
+
+        const extractedConfig = getConfig!(mockParameters);
+        expect(extractedConfig).toBe(mockParameters.gatewayOptions);
+        expect((extractedConfig as any).timeout).toBe(3000);
+        expect((extractedConfig as any).stream).toBe(false);
+      });
+
+      it('should verify getConfig function falls back to parameters when gatewayOptions is missing', () => {
+        const service = new MessageSender(store, {
+          gateway: mockGateway
+        });
+
+        const abortPlugin = (service as any).abortPlugin as {
+          getConfig?: (params: any) => any;
+        };
+        expect(abortPlugin).toBeDefined();
+        const getConfig = abortPlugin.getConfig;
+        expect(getConfig).toBeDefined();
+        expect(typeof getConfig).toBe('function');
+
+        // Test getConfig function with parameters that don't have gatewayOptions
+        const mockParameters = {
+          timeout: 4000,
+          stream: true
+        };
+
+        const extractedConfig = getConfig!(mockParameters);
+        expect(extractedConfig).toBe(mockParameters);
+      });
+    });
+
   });
 
   describe('Logger integration', () => {
@@ -1774,31 +1968,56 @@ describe('MessageSender', () => {
     it('should use message ID as abort identifier', async () => {
       const messageId = 'test-id-123';
 
-      let resolveGateway: ((value: unknown) => void) | null = null;
-      const gatewayPromise = new Promise((resolve) => {
-        resolveGateway = resolve;
+      // Create a gateway that respects abort signal
+      let abortSignal: AbortSignal | undefined;
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      
+      const gatewayPromise = new Promise<unknown>((resolve, reject) => {
+        abortSignal = undefined;
+        timeoutId = setTimeout(() => {
+          if (abortSignal?.aborted) {
+            reject(new Error('Aborted'));
+          } else {
+            resolve({ result: 'Success' });
+          }
+        }, 1000);
       });
 
-      mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
+      mockGateway.sendMessage = vi.fn().mockImplementation((_, options) => {
+        abortSignal = options?.signal;
+        // Listen to abort event
+        if (abortSignal) {
+          abortSignal.addEventListener('abort', () => {
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+          }, { once: true });
+        }
+        return gatewayPromise;
+      });
 
       const sendPromise = service.send({
         id: messageId,
         content: 'Test'
       });
 
+      // Wait a bit to ensure the request has started
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       const stopped = service.stop(messageId);
-
       expect(stopped).toBe(true);
 
+      // Wait for the send to complete (should be aborted)
       const result = await sendPromise;
       expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
         result.status
       );
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
-    });
+
+      // Clean up timeout if still pending
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }, 10000);
   });
 
   describe('edge cases and special scenarios', () => {

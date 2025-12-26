@@ -23,35 +23,11 @@ export const ABORT_ERROR_ID = 'ABORT_ERROR';
  * Custom error class for abort operations
  *
  * Extends `ExecutorError` to provide rich abort-specific error information,
- * including abort identifiers, timeout details, and user-friendly descriptions
+ * including abort identifiers and timeout details
  *
  * Core features:
  * - Abort identification: Tracks which operation was aborted via `abortId`
  * - Timeout tracking: Records timeout duration when abort is timeout-triggered
- * - Timeout detection: Provides `isTimeout()` method to distinguish timeout aborts
- * - Friendly descriptions: Generates human-readable error messages with context
- *
- * @example Basic abort error
- * ```typescript
- * const error = new AbortError(
- *   'Operation cancelled by user',
- *   'fetch-user-123'
- * );
- * console.log(error.getDescription());
- * // Output: "Operation cancelled by user (Request: fetch-user-123)"
- * ```
- *
- * @example Timeout abort error
- * ```typescript
- * const error = new AbortError(
- *   'Request timed out',
- *   'api-call-456',
- *   5000
- * );
- * if (error.isTimeout()) {
- *   console.log(`Request ${error.abortId} timed out after ${error.timeout}ms`);
- * }
- * ```
  */
 export class AbortError extends ExecutorError {
   /**
@@ -83,8 +59,6 @@ export class AbortError extends ExecutorError {
    * @param message - Human-readable error message describing why the operation was aborted
    * @param abortId - Optional identifier for the aborted operation
    * @param timeout - Optional timeout duration in milliseconds (indicates timeout-based abort)
-   * @see {@link isTimeout} for checking if error is timeout-based
-   * @see {@link getDescription} for formatted error message
    *
    * @example Manual abort
    * ```typescript

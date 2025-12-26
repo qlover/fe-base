@@ -513,18 +513,17 @@ export class AbortPool<T extends AbortPoolConfig = AbortPoolConfig> {
     const signals: AbortPoolSignal[] = [];
     const cleanupCallbacks: Array<() => void> = [];
 
+    // Store timeout signal separately for cleanup
+    let timeoutSig: AbortSignal | ClearableSignal | undefined;
+
     // Add timeout signal if configured
     if (Number.isInteger(config.abortTimeout) && config.abortTimeout! > 0) {
-      const timeoutSig = timeoutSignal(config.abortTimeout!);
+      timeoutSig = timeoutSignal(config.abortTimeout!);
 
-      if (
-        typeof timeoutSig === 'object' &&
-        'clear' in timeoutSig &&
-        typeof timeoutSig.clear === 'function'
-      ) {
-        signals.push(timeoutSig);
-        cleanupCallbacks.push(timeoutSig.clear.bind(timeoutSig));
-      }
+      // Add timeout signal to signals array
+      // Native AbortSignal.timeout() returns AbortSignal without clear() method
+      // Fallback implementation returns ClearableSignal with clear() method
+      signals.push(timeoutSig);
     }
 
     // Add external signal if provided
@@ -536,6 +535,18 @@ export class AbortPool<T extends AbortPoolConfig = AbortPoolConfig> {
     if (signals.length > 0) {
       // Combine external signals (timeout + external) without pool controller
       const externalCombinedSignal = anySignal(signals);
+
+      // Cleanup order: first cleanup timeout signal (if it has clear method),
+      // then cleanup combined signal (which may clean up other signals)
+      // This ensures timeout timer is cleared even if combined signal uses native API
+      if (
+        timeoutSig &&
+        typeof timeoutSig === 'object' &&
+        'clear' in timeoutSig &&
+        typeof timeoutSig.clear === 'function'
+      ) {
+        cleanupCallbacks.push(timeoutSig.clear.bind(timeoutSig));
+      }
 
       // Add external combined signal cleanup
       cleanupCallbacks.push(
@@ -1002,5 +1013,11 @@ export class AbortPool<T extends AbortPoolConfig = AbortPoolConfig> {
 
       return factory({ abortId, signal, finalizer });
     });
+  }
+
+  public getWrapper(
+    abortId: AbortPoolId
+  ): AbortControllerWrapper<T> | undefined {
+    return this.wrappers.get(abortId);
   }
 }

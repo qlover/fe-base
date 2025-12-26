@@ -186,15 +186,18 @@ export class RetryPlugin implements ExecutorPlugin {
    * ```
    */
   public async onExec(
-    context: ExecutorContext<unknown>,
+    _context: ExecutorContext<unknown>,
     task: PromiseTask<unknown, unknown>
-  ): Promise<unknown> {
-    // no retry, just execute
+  ): Promise<PromiseTask<unknown, unknown> | unknown> {
+    // no retry, just pass through
     if (this.options.maxRetries < 1) {
-      return task(context);
+      return undefined; // Let other plugins handle execution
     }
 
-    return this.retry(task, context, this.options, this.options.maxRetries);
+    // Return a wrapper function that applies retry logic
+    return async (ctx: ExecutorContext<unknown>): Promise<unknown> => {
+      return await this.retry(task, ctx, this.options, this.options.maxRetries);
+    };
   }
 
   /**
