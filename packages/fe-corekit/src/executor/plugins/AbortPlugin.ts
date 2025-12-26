@@ -130,6 +130,8 @@ export interface AbortPluginOptions<T> {
 /**
  * Executor plugin for managing request cancellation and timeout handling
  *
+ *
+ *
  * Core concept:
  * Provides comprehensive abort control for asynchronous operations by managing
  * `AbortController` instances, timeout mechanisms, and cleanup operations.
@@ -167,6 +169,8 @@ export interface AbortPluginOptions<T> {
  *   - Maintains error context across plugin lifecycle
  *   - Supports custom error callbacks via `onAborted`
  *
+ * **v2.6.0  After the release of AbortPool, the core logic has been refactored. Please refer to {@link AbortPool} for more details. **
+ * 
  * @template TParameters - Type of executor context parameters, defaults to `AbortPluginConfig`
  *
  * @example Basic usage with executor
@@ -470,7 +474,7 @@ export class AbortPlugin<TParameters extends AbortPluginConfig>
       this.timeout !== undefined &&
       (config.abortTimeout === undefined || config.abortTimeout === null)
     ) {
-      config.abortTimeout = this.timeout;
+      Object.assign(config, { abortTimeout: this.timeout });
     }
 
     this.abortPool.abort(config);

@@ -84,7 +84,7 @@ export interface AbortPoolConfig {
    * - Does not affect operations that complete before timeout
    *
    * `@optional`
-   * `@default` `undefined` (no timeout)
+   * @default `undefined` (no timeout)
    * @example `5000` // 5 seconds timeout for quick operations
    * @example `30000` // 30 seconds timeout for API requests
    * @example `60000` // 1 minute timeout for file uploads
@@ -192,6 +192,7 @@ export type AbortPoolId = string;
  * - Separates `onAborted` and `onAbortedTimeout` callbacks for different abort scenarios
  * - Auto-generates IDs to simplify usage while allowing custom IDs for tracking
  *
+ * @since 2.6.0
  * @template T - Configuration type extending `AbortPoolConfig`, allowing custom properties
  *
  * @example Standalone usage for API requests
@@ -322,8 +323,8 @@ export class AbortPool<T extends AbortPoolConfig = AbortPoolConfig> {
      * - Debugging and logging to distinguish between multiple pools
      * - Identifying pool source in error messages
      *
-     * `@readonly`
-     * `@default` `"AbortPool"`
+     * @readonly
+     * @default `"AbortPool"`
      * @example `"APIPool"` // For API request management
      * @example `"TaskPool"` // For background task management
      * @example `"UploadPool"` // For file upload operations

@@ -26,6 +26,8 @@ interface AutoCleanupFinalizerState {
 /**
  * A lightweight utility to attach one or more cleanup callbacks to a Promise-like workflow.
  *
+ * @since 2.6.0
+ *
  * Design goals:
  * - Return a **native Promise** (do not extend Promise) for maximum compatibility.
  * - Support multiple cleanup callbacks (LIFO order).

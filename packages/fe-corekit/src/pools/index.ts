@@ -74,6 +74,8 @@
 export { AbortPool } from './AbortPool';
 export { AbortError } from './AbortError';
 export { AutoCleanupPromise } from './AutoCleanupPromise';
+export { RetryPool } from './RetryPool';
+export type { RetryOptions } from './RetryPool';
 
 // Utils
 export { timeoutSignal } from './utils/timeoutSignal';
