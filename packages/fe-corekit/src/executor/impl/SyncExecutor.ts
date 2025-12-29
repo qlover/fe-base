@@ -376,8 +376,10 @@ export class SyncExecutor<
    *
    * Execution logic:
    * 1. Execute configured execHook (default: 'onExec')
-   * 2. If no execHook was executed, run the actual task
-   * 3. Otherwise, use the return value from execHook
+   * 2. If plugin returns a function, use it as wrapper for next plugin (chain wrapping)
+   * 3. If plugin returns a value, continue to next plugin so they can access the return value
+   * 4. If no execHook was executed, run the actual task
+   * 5. Otherwise, use the return value from the last execHook
    *
    * @template Result - Type of task return value
    * @template Params - Type of task input parameters
@@ -390,12 +392,47 @@ export class SyncExecutor<
   ): void {
     const execHook = this.config?.execHook || 'onExec';
 
-    this.runHook(this.plugins, execHook, context, actualTask);
+    let currentTask: SyncTask<Result, Params> = actualTask;
+    let finalResult: Result | undefined;
+    let _index = -1;
 
-    // If exec times is 0, then execute task, otherwise return the result of the last hook
-    context.returnValue = !context.hooksRuntimes.times
-      ? actualTask(context)
-      : context.hooksRuntimes.returnValue;
+    for (const plugin of this.plugins) {
+      _index++;
+      if (this.contextHandler.shouldSkipPluginHook(plugin, execHook, context)) {
+        continue;
+      }
+
+      if (this.contextHandler.shouldBreakChain(context)) {
+        break;
+      }
+
+      this.contextHandler.runtimes(context, plugin, execHook, _index);
+
+      const pluginReturn = (
+        plugin[execHook as keyof ExecutorPlugin] as PluginMethod<Params>
+      )(context, currentTask);
+
+      if (typeof pluginReturn === 'function') {
+        // Plugin returned a wrapper function - use it for next plugin
+        // This allows chaining: each plugin wraps the previous plugin's wrapper
+        currentTask = pluginReturn as SyncTask<Result, Params>;
+        this.contextHandler.runtimeReturnValue(context, pluginReturn);
+      } else {
+        if (pluginReturn === undefined) {
+          continue;
+        }
+
+        // Plugin returned a value - update finalResult and continue to next plugin
+        // This allows subsequent plugins to access the return value via hooksRuntimes.returnValue
+        finalResult = pluginReturn as Result;
+        this.contextHandler.runtimeReturnValue(context, pluginReturn);
+        // Don't break here - allow all plugins to execute so they can access previous return values
+      }
+    }
+
+    // Execute final task or use final result
+    context.returnValue =
+      finalResult !== undefined ? finalResult : currentTask(context);
   }
 
   /**

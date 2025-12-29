@@ -997,6 +997,189 @@ describe('AsyncExecutor', () => {
       const result = await executor.exec(async () => 'original task');
       expect(result).toBe('original task');
     });
+
+    describe('onExec returning Promise', () => {
+      it('should handle plugin returning Promise<Result>', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: async () => {
+            // Return a Promise that resolves to a value
+            return Promise.resolve('promise result');
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        expect(result).toBe('promise result');
+      });
+
+      it('should handle plugin returning Promise<function>', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: async () => {
+            // Return a Promise that resolves to a wrapper function
+            return Promise.resolve(
+              async (_ctx: ExecutorContext<unknown>) => {
+                return 'wrapped from promise';
+              }
+            );
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        expect(result).toBe('wrapped from promise');
+      });
+
+      it('should handle plugin returning nested Promise<Promise<Result>>', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: async () => {
+            // Return a nested Promise (JavaScript will auto-flatten)
+            return Promise.resolve(Promise.resolve('nested promise result'));
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        expect(result).toBe('nested promise result');
+      });
+
+      it('should handle plugin returning Promise<undefined> and continue to next plugin', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: async () => {
+            return Promise.resolve(undefined);
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: async () => {
+            return 'second plugin result';
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        expect(result).toBe('second plugin result');
+      });
+
+      it('should handle plugin returning Promise that rejects', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: async () => {
+            return Promise.reject(new Error('Plugin error'));
+          }
+        });
+
+        await expect(
+          executor.exec(async () => 'original task')
+        ).rejects.toThrow('Plugin error');
+      });
+
+      it('should handle plugin returning Promise<function> that wraps the task', async () => {
+        const executor = new AsyncExecutor();
+        let wrapperCalled = false;
+
+        executor.use({
+          pluginName: 'test',
+          onExec: async (_context, task) => {
+            // Return a Promise that resolves to a wrapper function
+            return Promise.resolve(
+              async (ctx: ExecutorContext<unknown>) => {
+                wrapperCalled = true;
+                const originalResult = await task(ctx);
+                return `wrapped: ${originalResult}`;
+              }
+            );
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        expect(wrapperCalled).toBe(true);
+        expect(result).toBe('wrapped: original task');
+      });
+
+      it('should handle multiple plugins returning Promise<function> in chain', async () => {
+        const executor = new AsyncExecutor();
+        const callOrder: string[] = [];
+
+        executor.use({
+          pluginName: 'wrapper1',
+          onExec: async () => {
+            return Promise.resolve(
+              async (_ctx: ExecutorContext<unknown>) => {
+                callOrder.push('wrapper1');
+                return 'wrapper1-result';
+              }
+            );
+          }
+        });
+
+        executor.use({
+          pluginName: 'wrapper2',
+          onExec: async (_context, task) => {
+            return Promise.resolve(
+              async (ctx: ExecutorContext<unknown>) => {
+                callOrder.push('wrapper2');
+                const prevResult = await task(ctx);
+                return `wrapper2-${prevResult}`;
+              }
+            );
+          }
+        });
+
+        const result = await executor.exec(async () => {
+          callOrder.push('original');
+          return 'original-task';
+        });
+
+        // When plugins return functions, they chain: wrapper2 wraps wrapper1
+        // wrapper2 is executed first (outer wrapper), then wrapper1 (inner wrapper)
+        expect(callOrder).toEqual(['wrapper2', 'wrapper1']);
+        expect(result).toBe('wrapper2-wrapper1-result');
+      });
+
+      it('should handle plugin returning Promise<Result> and use last plugin result', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test1',
+          onExec: async () => {
+            return Promise.resolve('first result');
+          }
+        });
+        executor.use({
+          pluginName: 'test2',
+          onExec: async () => {
+            return Promise.resolve('second result');
+          }
+        });
+
+        const result = await executor.exec(async () => 'original task');
+        // All plugins execute, last plugin's result is used
+        expect(result).toBe('second result');
+      });
+
+      it('should handle plugin returning Promise with delay', async () => {
+        const executor = new AsyncExecutor();
+        executor.use({
+          pluginName: 'test',
+          onExec: async () => {
+            return new Promise((resolve) => {
+              setTimeout(() => resolve('delayed result'), 50);
+            });
+          }
+        });
+
+        const startTime = Date.now();
+        const result = await executor.exec(async () => 'original task');
+        const duration = Date.now() - startTime;
+
+        expect(result).toBe('delayed result');
+        expect(duration).toBeGreaterThanOrEqual(50);
+      });
+    });
   });
 
   describe('AsyncExecutor onSuccess Lifecycle', () => {
