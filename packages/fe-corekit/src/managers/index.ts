@@ -76,7 +76,8 @@ export * from './AbortError';
 // Interfaces and types
 export * from './interface/AbortManagerInterface';
 export { RetryPool } from './RetryPool';
-export type { RetryOptions } from './RetryPool';
+// Re-export RetryOptions from RetryPlugin for backward compatibility
+export type { RetryOptions } from '../executor/plugins/RetryPlugin';
 
 // Utils
 export { timeoutSignal } from './utils/timeoutSignal';
