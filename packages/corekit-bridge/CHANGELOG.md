@@ -1,5 +1,16 @@
 # @qlover/corekit-bridge
 
+## 1.10.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **corekit-bridge:** Add sideEffects flag to package.json and update tsup.config.ts for better tree-shaking ([b821865](https://github.com/qlover/fe-base/commit/b82186597e28444beba818adee1aa5332d1e59f5)) ([#562](https://github.com/qlover/fe-base/pull/562))
+  - Added "sideEffects": false to package.json to optimize tree-shaking.
+  - Updated tsup.config.ts to set bundle: false for the main entry, allowing only re-exports and improving tree-shaking efficiency.
+  - Enhanced comments in tsup.config.ts for clarity on bundling behavior and external dependencies.
+
 ## 1.10.0
 
 ### Minor Changes
