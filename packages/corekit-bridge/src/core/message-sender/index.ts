@@ -4,6 +4,7 @@ export * from './impl/ChatSenderStrategy';
 export * from './impl/MessageSender';
 export * from './impl/MessageSenderBasePlugin';
 export * from './impl/MessageSenderExecutor';
+export * from './impl/MessageSenderAbortPlugin';
 export * from './impl/MessageStore';
 export * from './impl/SenderStrategyPlugin';
 export * from './interface/ChatMessageStoreInterface';

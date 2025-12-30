@@ -51,7 +51,7 @@ import type { LoggerInterface } from '@qlover/logger';
  * });
  * ```
  */
-export type AbortConfigExtractor<T> = (parameters: T) => AbortManagerConfig;
+export type AbortConfigExtractor<T> = (parameters: unknown) => T;
 
 /**
  * Configuration options for initializing AbortPlugin
@@ -404,8 +404,7 @@ export class AbortPlugin<TParameters extends AbortManagerConfig>
 
     // Default configuration extractor: directly cast parameters to AbortManagerConfig
     this.getConfig =
-      rest?.getConfig ||
-      ((parameters) => parameters as unknown as AbortManagerConfig);
+      rest?.getConfig || ((parameters) => parameters as TParameters);
 
     this.logger = rest?.logger;
     this.timeout = rest?.timeout;
@@ -559,7 +558,22 @@ export class AbortPlugin<TParameters extends AbortManagerConfig>
     const { signal } = this.abortManager.register(config);
 
     // Inject abort signal into context parameters
-    Object.assign(context.parameters, { signal });
+    this.assignSignalToContext(context, signal);
+  }
+
+  /**
+   * Assigns abort signal to context parameters
+   *
+   * @param context - Executor context containing parameters and metadata
+   * @param signal - Abort signal to assign
+   */
+  protected assignSignalToContext(
+    context: ExecutorContext<unknown>,
+    signal: AbortSignal
+  ): void {
+    if (typeof context.parameters === 'object' && context.parameters !== null) {
+      Object.assign(context.parameters, { signal });
+    }
   }
 
   /**

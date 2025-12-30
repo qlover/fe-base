@@ -6,7 +6,10 @@ import type {
 } from './interface/AbortManagerInterface';
 
 // Re-export types from interface file
-export type { AbortManagerConfig, AbortManagerId } from './interface/AbortManagerInterface';
+export type {
+  AbortManagerConfig,
+  AbortManagerId
+} from './interface/AbortManagerInterface';
 
 /**
  * Wrapper for AbortController with cleanup capability
@@ -233,7 +236,11 @@ export class AbortManager<T extends AbortManagerConfig = AbortManagerConfig>
       return `${this.poolName}-${++this.requestCounter}`;
     }
 
-    return config.abortId || `${this.poolName}-${++this.requestCounter}`;
+    const abortId =
+      config.abortId || `${this.poolName}-${++this.requestCounter}`;
+    // TODO: 如果传入引用相同的config对象，则返回相同的abortId
+
+    return abortId;
   }
 
   /**
@@ -663,7 +670,10 @@ export class AbortManager<T extends AbortManagerConfig = AbortManagerConfig>
    * ```
    */
   public autoCleanup<R>(
-    factory: (ctx: { abortId: AbortManagerId; signal: AbortSignal }) => Promise<R>,
+    factory: (ctx: {
+      abortId: AbortManagerId;
+      signal: AbortSignal;
+    }) => Promise<R>,
     config?: T
   ): Promise<R> {
     const { abortId, signal } = this.register(config ?? ({} as T));
@@ -685,4 +695,3 @@ export class AbortManager<T extends AbortManagerConfig = AbortManagerConfig>
     return this.wrappers.get(abortId)?.controller.signal;
   }
 }
-

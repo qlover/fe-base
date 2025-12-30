@@ -13,7 +13,7 @@
  * - Concurrent message handling
  * - Message state management and transitions
  */
-import { ExecutorError } from '@qlover/fe-corekit';
+import { AbortPlugin, ExecutorError } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   MessageSender,
@@ -24,9 +24,13 @@ import {
   type MessageStoreMsg,
   type MessageGetwayInterface,
   MessageSenderPluginContext,
-  GatewayOptions
+  GatewayOptions,
+  MessageSenderAbortPlugin
 } from '../../src/core/message-sender';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import type {
+  ExecutorPlugin,
+  ProxyAbortManagerConfig
+} from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**
@@ -38,10 +42,15 @@ interface TestMessage extends MessageStoreMsg<string> {
   content?: string;
 }
 
+interface TestAbortManagerConfig extends ProxyAbortManagerConfig {
+  id?: string;
+}
+
 describe('MessageSender', () => {
   let service: MessageSender<TestMessage>;
   let store: MessagesStore<TestMessage>;
   let mockGateway: MessageGetwayInterface;
+  let abortPlugin: AbortPlugin<TestAbortManagerConfig> | undefined;
 
   beforeEach(() => {
     store = new MessagesStore(() => ({
@@ -1160,6 +1169,11 @@ describe('MessageSender', () => {
   });
 
   describe('stop - stop single message', () => {
+    beforeEach(() => {
+      abortPlugin = new MessageSenderAbortPlugin();
+      service.use(abortPlugin);
+    });
+
     it('should be able to stop sending message', async () => {
       // create a delayed gateway response
       let resolveGateway: ((value: unknown) => void) | null = null;
@@ -1177,7 +1191,7 @@ describe('MessageSender', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // stop message sending
-      const stopped = service.stop('test-message');
+      const stopped = abortPlugin!.abort('test-message');
 
       // should return true to indicate successful stop
       expect(stopped).toBe(true);
@@ -1194,7 +1208,7 @@ describe('MessageSender', () => {
     });
 
     it('should return false if message ID does not exist', () => {
-      const stopped = service.stop('non-existent-id');
+      const stopped = abortPlugin!.abort('non-existent-id');
 
       expect(stopped).toBe(false);
     });
@@ -1225,7 +1239,7 @@ describe('MessageSender', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // stop only the first message
-      service.stop('message-1');
+      abortPlugin?.abort('message-1');
 
       // complete the second message
       promises[1]?.({ result: 'Success' });
@@ -1245,6 +1259,11 @@ describe('MessageSender', () => {
   });
 
   describe('stopAll - stop all messages', () => {
+    beforeEach(() => {
+      abortPlugin = new MessageSenderAbortPlugin();
+      service.use(abortPlugin);
+    });
+
     it('should stop all messages sending', async () => {
       // create multiple delayed gateway responses
       const promises: Array<((value: { result: string }) => void) | null> = [];
@@ -1275,7 +1294,7 @@ describe('MessageSender', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // stop all messages
-      service.stopAll();
+      abortPlugin?.abortAll();
 
       // wait for all messages to complete
       const results = await Promise.all([
@@ -1295,18 +1314,18 @@ describe('MessageSender', () => {
     it('should be able to call when there are no messages sending', () => {
       // should not throw error
       expect(() => {
-        service.stopAll();
+        abortPlugin?.abortAll();
       }).not.toThrow();
     });
 
     it('should be able to continue sending new message after stopping', async () => {
-      // create delayed gateway response
+      // create delayed gateway response that listens to abort signal
       let resolveGateway: ((value: unknown) => void) | null = null;
       const gatewayPromise = new Promise((resolve) => {
         resolveGateway = resolve;
       });
 
-      mockGateway.sendMessage = vi.fn().mockReturnValueOnce(gatewayPromise);
+      mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
 
       // start sending message
       const sendPromise = service.send({
@@ -1318,7 +1337,7 @@ describe('MessageSender', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // stop all messages
-      service.stopAll();
+      abortPlugin?.abortAll();
 
       await sendPromise;
 
@@ -1334,6 +1353,150 @@ describe('MessageSender', () => {
       expect(newResult.status).toBe(MessageStatus.SENT);
       expect(resolveGateway).toBeDefined();
       resolveGateway = null;
+    });
+  });
+
+  describe('abort callbacks - callbacks should stop when aborted', () => {
+    // Note: Not using abortPlugin for these tests to focus on AbortController signal behavior
+
+    it('should stop different callbacks when aborted during streaming', async () => {
+      const controller = new AbortController();
+      const callbackCallOrder: string[] = [];
+      let gatewayCallCount = 0;
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          gatewayCallCount++;
+
+          // Simulate gateway that calls various callbacks
+          // Call onConnected
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          // Call onChunk multiple times - these should be aborted
+          if (options?.onChunk) {
+            await options.onChunk({ content: 'chunk1' });
+            await options.onChunk({ content: 'chunk2' });
+            await options.onChunk({ content: 'chunk3' });
+          }
+
+          // Call onComplete
+          if (options?.onComplete) {
+            await options.onComplete({ result: 'Complete' });
+          }
+
+          return { result: 'Success' };
+        });
+
+      // Start sending message with callbacks
+      const sendPromise = service.send(
+        { id: 'test-message', content: 'Test' },
+        {
+          signal: controller.signal,
+          onConnected: () => {
+            callbackCallOrder.push('onConnected');
+            // Abort immediately after onConnected
+            controller.abort();
+          },
+          onChunk: (chunk: any) => {
+            callbackCallOrder.push(`onChunk:${chunk.content}`);
+          },
+          onComplete: () => {
+            callbackCallOrder.push('onComplete');
+          },
+          onError: () => {
+            callbackCallOrder.push('onError');
+          }
+        }
+      );
+
+      const result = await sendPromise;
+
+      // Verify message was aborted (failed due to abort in callback)
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result.status
+      );
+
+      // Verify gateway was called
+      expect(gatewayCallCount).toBe(1);
+
+      // Verify that onConnected was called and triggered abort
+      expect(callbackCallOrder).toContain('onConnected');
+
+      // Verify that onChunk and onComplete were not called because abort happened during onConnected
+      expect(callbackCallOrder).not.toContain('onChunk:chunk1');
+      expect(callbackCallOrder).not.toContain('onChunk:chunk2');
+      expect(callbackCallOrder).not.toContain('onChunk:chunk3');
+      expect(callbackCallOrder).not.toContain('onComplete');
+    });
+
+    it('should stop callbacks when aborted mid-stream', async () => {
+      const controller = new AbortController();
+      const callbackCallOrder: string[] = [];
+
+      mockGateway.sendMessage = vi
+        .fn()
+        .mockImplementation(async (_, options) => {
+          // Call onConnected
+          if (options?.onConnected) {
+            await options.onConnected();
+          }
+
+          // Call onChunk multiple times - these should be aborted after first one
+          if (options?.onChunk) {
+            await options.onChunk({ content: 'chunk1' });
+            await options.onChunk({ content: 'chunk2' });
+            await options.onChunk({ content: 'chunk3' });
+          }
+
+          // Call onComplete
+          if (options?.onComplete) {
+            await options.onComplete({ result: 'Complete' });
+          }
+
+          return { result: 'Success' };
+        });
+
+      // Start sending message
+      const sendPromise = service.send(
+        { id: 'test-message', content: 'Test' },
+        {
+          signal: controller.signal,
+          onConnected: () => {
+            callbackCallOrder.push('onConnected');
+          },
+          onChunk: (chunk: any) => {
+            callbackCallOrder.push(`onChunk:${chunk.content}`);
+            // Abort after first chunk
+            if (chunk.content === 'chunk1') {
+              controller.abort();
+            }
+          },
+          onComplete: () => {
+            callbackCallOrder.push('onComplete');
+          }
+        }
+      );
+
+      const result = await sendPromise;
+
+      // Verify message was aborted (failed due to abort in callback)
+      expect([MessageStatus.FAILED, MessageStatus.STOPPED]).toContain(
+        result.status
+      );
+
+      // Verify that onConnected was called
+      expect(callbackCallOrder).toContain('onConnected');
+
+      // Verify that first chunk was called and triggered abort
+      expect(callbackCallOrder).toContain('onChunk:chunk1');
+
+      // Verify that subsequent chunks and onComplete were not called due to abort
+      expect(callbackCallOrder).not.toContain('onChunk:chunk2');
+      expect(callbackCallOrder).not.toContain('onChunk:chunk3');
+      expect(callbackCallOrder).not.toContain('onComplete');
     });
   });
 
@@ -1761,13 +1924,17 @@ describe('MessageSender', () => {
   });
 
   describe('AbortPlugin integration test', () => {
+    beforeEach(() => {
+      abortPlugin = new MessageSenderAbortPlugin();
+      service.use(abortPlugin);
+    });
     it('should automatically register AbortPlugin when constructed', () => {
       const newService = new MessageSender(store, {
         gateway: mockGateway
       });
 
       // AbortPlugin should have been registered
-      expect(newService['abortPlugin']).toBeDefined();
+      // expect(newService['abortManager']).toBeDefined();
       expect(newService['executor']).toBeDefined();
     });
 
@@ -1788,7 +1955,7 @@ describe('MessageSender', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 10));
 
-      const stopped = service.stop(messageId);
+      const stopped = abortPlugin?.abort(messageId);
 
       expect(stopped).toBe(true);
 

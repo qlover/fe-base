@@ -1,9 +1,4 @@
-import {
-  ExecutorError,
-  AbortPlugin,
-  type ExecutorPlugin,
-  type AbortPluginConfig
-} from '@qlover/fe-corekit';
+import { ExecutorError, type ExecutorPlugin } from '@qlover/fe-corekit';
 import {
   type MessageSenderContextOptions,
   type MessageSenderPluginContext,
@@ -21,12 +16,17 @@ import type {
 } from '../interface/MessageGetwayInterface';
 import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
 import type { LoggerInterface } from '@qlover/logger';
+import { AbortablePromiseRunner } from './AbortablePromiseRunner';
+import { gatewayOptionsWithAbort } from '../utils/callbackWithAbort';
 
 /**
  * Configuration options for message sender
  *
  * Defines behavior, logging, gateway integration, and error handling
  * for the message sender instance.
+ *
+ * @since 1.11.0 - Abort control removed from core MessageSender.
+ * Use AbortPlugin for abort functionality.
  */
 export interface MessageSenderConfig {
   /**
@@ -84,7 +84,6 @@ export interface MessageSenderConfig {
    *
    * Configuration for gateway behavior including:
    * - Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
-   * - Abort signal for cancellation control
    * - Custom request parameters
    *
    * @example
@@ -112,17 +111,19 @@ const defaultSenderName = 'MessageSender';
 const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
 
 /**
+ */
+
+/**
  * Message sender implementation
  *
  * Core class responsible for orchestrating message sending operations,
  * including gateway communication, plugin execution, error handling,
- * abort control, and streaming support.
+ * and streaming support.
  *
  * Core features:
  * - Message sending with plugin pipeline
  * - Gateway integration and abstraction
  * - Streaming and normal mode support
- * - Abort/cancel operations
  * - Comprehensive error handling
  * - Performance logging
  *
@@ -161,6 +162,35 @@ const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
  *   }
  * );
  * ```
+ *
+ * @example Use  abort control
+ *
+ * v1.11.0 - Abort control removed from core MessageSender
+ *
+ * Starting from version 1.11.0, MessageSender no longer provides built-in abort control.
+ * For abort functionality, please use the AbortPlugin:
+ *
+ * ```typescript
+ * import { AbortPlugin } from '@qlover/fe-corekit';
+ *
+ *
+ * // Add abort plugin for cancellation support
+ * // MessageSenderAbortPlugin is a subclass of AbortPlugin that is specific to message sender
+ * // Inner modified the getConfig method to ensure type safety, and the assignSignalToContext method to ensure that the signal is correctly injected into the context
+ * const abortPlugin = new MessageSenderAbortPlugin({
+ *   abortManager: new RequestAbortManager('MessageSender')
+ * });
+ *
+ * const sender = new MessageSender(store, { gateway: myGateway })
+ *   .use(abortPlugin);
+ *
+ * // Send message with abort control
+ * const promise = sender.send({ abortId: 'message-send', content: 'Hello' });
+ *
+ * // Cancel the operation, use abortId
+ * abortPlugin.abort('message-send');
+ * ```
+ *
  */
 export class MessageSender<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,14 +202,6 @@ export class MessageSender<
 
   /** Plugin executor for managing send pipeline */
   protected readonly executor: MessageSenderExecutor<MessageType>;
-
-  /** Abort plugin for handling message cancellation */
-  protected readonly abortPlugin: AbortPlugin<
-    MessageSenderContextOptions<MessageType>
-  >;
-
-  /** Optional logger instance */
-  protected readonly logger?: LoggerInterface;
 
   /** Name of this sender instance */
   protected readonly senderName: string;
@@ -193,7 +215,7 @@ export class MessageSender<
   protected loggerTpl = {
     failed: '[${senderName}] ${messageId} failed',
     success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
-  } as const;
+  };
 
   /**
    * Create a new message sender
@@ -214,25 +236,17 @@ export class MessageSender<
    */
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
-    protected readonly config?: MessageSenderConfig
+    protected readonly config: MessageSenderConfig = {}
   ) {
-    this.logger = config?.logger;
     this.senderName = config?.senderName || defaultSenderName;
     this.executor = new MessageSenderExecutor();
-
-    this.abortPlugin = new AbortPlugin<
-      MessageSenderContextOptions<MessageType>
-    >({
-      getConfig: (parameters) =>
-        (parameters.gatewayOptions || parameters) as AbortPluginConfig,
-      logger: config?.logger,
-      timeout: config?.gatewayOptions?.timeout
-    });
-    this.executor.use(this.abortPlugin);
   }
 
   /**
    * Get the message store instance
+   *
+   * Returns the MessagesStore instance used by this sender to manage
+   * message state, storage, and retrieval operations.
    *
    * @override
    * @returns Message store managing message state
@@ -244,6 +258,10 @@ export class MessageSender<
   /**
    * Get the configured gateway instance
    *
+   * Returns the MessageGetwayInterface instance configured for this sender,
+   * which handles the actual message transmission to external services.
+   * Returns undefined if no gateway was configured during initialization.
+   *
    * @override
    * @returns Gateway instance or `undefined` if not configured
    */
@@ -254,8 +272,9 @@ export class MessageSender<
   /**
    * Register a plugin with the sender
    *
-   * Plugins are executed in registration order during message sending.
-   * Returns `this` for method chaining.
+   * Registers an ExecutorPlugin to be executed during the message sending pipeline.
+   * Plugins are executed in registration order and can intercept, modify, or extend
+   * the sending process. Returns the sender instance to enable method chaining.
    *
    * @override
    * @param plugin - Plugin to register
@@ -277,112 +296,109 @@ export class MessageSender<
   }
 
   /**
-   * Stop sending a specific message
+   * Create gateway options with abort support
    *
-   * Cancels an ongoing message send operation by ID. This only works
-   * for requests created automatically by MessageSender (without custom signal).
+   * Processes and enhances the gateway options from the execution context.
+   * Wraps callback functions (onConnected, onChunk, etc.) with abort signal checking
+   * using `gatewayOptionsWithAbort`, ensuring callbacks are cancelled when abort occurs.
+   * Also resets streaming runtime counters for proper plugin execution.
    *
-   * **Important notes:**
-   * - Only affects requests created by MessageSender (no custom signal provided)
-   * - If a custom signal was provided during send, this method has no effect
-   * - Automatically cleans up related resources (managed by AbortPlugin)
-   *
-   * @param messageId - ID of the message to stop sending
-   * @returns `true` if stop was successful, `false` otherwise
-   *
-   * @example
-   * ```typescript
-   * const message = await sender.send({ content: 'Hello' });
-   *
-   * // Later, cancel the send
-   * const stopped = sender.stop(message.id);
-   * if (stopped) {
-   *   console.log('Send cancelled successfully');
-   * }
-   * ```
+   * @param context - Execution context containing gateway options
+   * @returns Enhanced gateway options with abort-aware callbacks, or undefined if no options
    */
-  public stop(messageId: string): boolean {
-    return this.abortPlugin.abort(messageId);
+  protected createGatewayOptions(
+    context: MessageSenderPluginContext<MessageType>
+  ): GatewayOptions<MessageType> | undefined {
+    const gatewayOptions = context.parameters.gatewayOptions;
+
+    if (typeof gatewayOptions !== 'object' || gatewayOptions == null) {
+      return undefined;
+    }
+
+    // Extract only necessary references to minimize closure capture
+    const originalOnChunk = gatewayOptions.onChunk;
+    const originalOnConnected = gatewayOptions.onConnected;
+    const executor = this.executor;
+
+    executor.resetRuntimesStreamTimes(context);
+
+    return gatewayOptionsWithAbort({
+      ...gatewayOptions,
+      onConnected: async () => {
+        await executor.runConnected(context);
+
+        originalOnConnected?.();
+      },
+      onChunk: async (chunk) => {
+        // Pass context for plugin hooks, but don't capture it in closure unnecessarily
+        const result = await executor.runStream(chunk, context);
+
+        if (originalOnChunk) {
+          originalOnChunk(result || chunk);
+        }
+      }
+    });
   }
 
   /**
-   * Stop all ongoing message sends
+   * Create gateway promise with abort handling
    *
-   * Cancels all currently active message send operations.
-   * Automatically cleans up all related resources (managed by AbortPlugin).
+   * Creates a Promise that wraps the gateway's sendMessage call with abort signal support.
+   * Uses AbortablePromiseRunner.raceWithAbort to ensure the gateway operation can be
+   * cancelled when the abort signal is triggered. Validates that the gateway is properly
+   * configured before attempting to send.
    *
-   * @example
-   * ```typescript
-   * // Cancel all pending sends
-   * sender.stopAll();
-   * console.log('All sends cancelled');
-   * ```
+   * @param message - Message to send through the gateway
+   * @param gatewayOptions - Gateway options including abort signal
+   * @returns Promise that resolves to gateway response or rejects on abort/error
    */
-  public stopAll(): void {
-    this.abortPlugin.abortAll();
+  protected createGatewayPromise(
+    message: MessageType,
+    gatewayOptions: GatewayOptions<MessageType> | undefined
+  ): Promise<unknown> {
+    const gateway = this.getGateway();
+
+    if (
+      typeof gateway === 'object' &&
+      gateway != null &&
+      typeof gateway.sendMessage === 'function'
+    ) {
+      // gateway maybe not handle signal?
+      // so we need to wrap the promise with AbortablePromiseRunner
+      return AbortablePromiseRunner.raceWithAbort(
+        gateway.sendMessage(message, gatewayOptions),
+        gatewayOptions?.signal
+      );
+    }
+
+    this.config.logger?.warn('Gateway is not a valid object');
+
+    return Promise.resolve(null);
   }
 
   /**
    * Send message through gateway
    *
    * Core method that handles the actual message transmission through the
-   * configured gateway. Manages streaming setup, plugin hook execution,
-   * abort signal handling, and response processing.
+   * configured gateway. Creates gateway options with abort support, initiates
+   * the gateway promise, waits for completion, and merges the response data
+   * back into the message with SENT status. Updates message loading state
+   * and end time upon completion.
    *
    * @param message - Message to send
    * @param context - Execution context with sender parameters
    * @returns Sent message with response data merged
-   *
-   * @throws {AbortError} When send operation is cancelled
    */
   protected async sendMessage(
     message: MessageType,
     context: MessageSenderPluginContext<MessageType>
   ): Promise<MessageType> {
-    const gateway = this.getGateway();
-
-    const gatewayOptions = context.parameters.gatewayOptions;
-    let newGatewayOptions: GatewayOptions<MessageType> | undefined;
-    if (gatewayOptions) {
-      // Extract only necessary references to minimize closure capture
-      const originalOnChunk = gatewayOptions.onChunk;
-      const originalOnConnected = gatewayOptions.onConnected;
-      const executor = this.executor;
-      const signal = gatewayOptions.signal;
-
-      executor.resetRuntimesStreamTimes(context);
-
-      newGatewayOptions = {
-        ...gatewayOptions,
-        onConnected: async () => {
-          signal?.throwIfAborted();
-
-          await executor.runConnected(context);
-          originalOnConnected?.();
-        },
-        onChunk: async (chunk) => {
-          signal?.throwIfAborted();
-
-          // Pass context for plugin hooks, but don't capture it in closure unnecessarily
-          const result = await executor.runStream(chunk, context);
-
-          if (originalOnChunk) {
-            originalOnChunk(result || chunk);
-          }
-        }
-      };
-    }
-
-    // Use AbortPlugin.raceWithAbort to ensure abort response even if gateway doesn't check signal
-    const gatewayPromise = gateway?.sendMessage(message, newGatewayOptions);
-    const result = await this.abortPlugin.raceWithAbort(
-      gatewayPromise!,
-      gatewayOptions?.signal
-    );
+    const gatewayOptions = this.createGatewayOptions(context);
+    const gatewayPromise = this.createGatewayPromise(message, gatewayOptions);
 
     return this.messages.mergeMessage(message, {
       status: MessageStatus.SENT,
-      result: result,
+      result: await gatewayPromise!,
       loading: false,
       endTime: Date.now()
     } as Partial<MessageType>);
@@ -391,8 +407,10 @@ export class MessageSender<
   /**
    * Generate a sending message from partial data
    *
-   * Creates a complete message object ready for sending with proper
-   * status, loading state, and timestamps.
+   * Creates a complete message object from partial input data, setting up
+   * all required fields for sending. Sets status to SENDING, loading to true,
+   * initializes startTime to current timestamp, clears endTime, and resets
+   * any existing error state.
    *
    * @param message - Partial message specification
    * @returns Complete message ready for sending
@@ -412,13 +430,14 @@ export class MessageSender<
    * Handle send operation errors
    *
    * Processes errors that occur during message sending. Converts unknown
-   * async errors to MESSAGE_SENDER_ERROR format, logs failures, and either
-   * throws or returns an error message based on configuration.
+   * async errors to MESSAGE_SENDER_ERROR format for consistency, logs failures
+   * using the configured logger, and either throws the error or returns a
+   * failed message based on the throwIfError configuration.
    *
    * **Status handling:**
    * Allows plugins to modify final status. If status is still `SENDING` at
-   * this point, it's reset to `FAILED`. Examples of plugin-modified status:
-   * `STOPPED` for cancelled operations.
+   * this point, it's reset to `FAILED`. Updates message loading state to false,
+   * sets error field, and records end time.
    *
    * @param error - Error that occurred during send
    * @param context - Execution context containing message sender parameters
@@ -433,8 +452,6 @@ export class MessageSender<
     // If is unknown async error, create a new error with MESSAGE_SENDER_ERROR id
     let processedError = error;
     if (error instanceof ExecutorError && error.id === 'UNKNOWN_ASYNC_ERROR') {
-      // Create a new ExecutorError instead of modifying the original
-      // The constructor will automatically preserve the stack trace from the original error
       processedError = new ExecutorError(this.messageSenderErrorId, error);
     }
 
@@ -446,15 +463,14 @@ export class MessageSender<
     const endTime = currentMessage.endTime || Date.now();
     // Allow plugins to modify final status; may not always be FAILED in some cases
     // If status is still SENDING at this final step, reset to FAILED
-    // Example: STOPPED status set by abort handling
     const currentStatus = currentMessage.status;
     const status =
       currentStatus === MessageStatus.SENDING
         ? MessageStatus.FAILED
         : currentStatus;
 
-    if (this.logger) {
-      this.logger.debug(
+    if (this.config.logger) {
+      this.config.logger.debug(
         template(this.loggerTpl.failed, {
           senderName: this.senderName,
           messageId: currentMessage.id!
@@ -475,7 +491,10 @@ export class MessageSender<
    * Create execution context for sending
    *
    * Constructs the complete context object needed for message send execution,
-   * merging configuration and options, and using message ID for abort control.
+   * merging configuration from the sender instance with options provided for
+   * this specific send operation. Combines gateway options from config and
+   * parameters, sets the message ID, and creates the full context with store,
+   * message, error handling settings, gateway, and options.
    *
    * @param sendingMessage - Message being sent
    * @param gatewayOptions - Optional gateway configuration
@@ -488,7 +507,6 @@ export class MessageSender<
     const _gatewayOptions = {
       ...this.config?.gatewayOptions,
       ...gatewayOptions,
-      // Use message ID as AbortPlugin request identifier
       id: sendingMessage.id
     };
 
@@ -506,15 +524,17 @@ export class MessageSender<
    *
    * Main public API for sending messages. Handles the complete send lifecycle
    * including message preparation, plugin execution, gateway communication,
-   * error handling, and logging.
+   * error handling, and logging. Generates a sending message from partial input,
+   * creates execution context, runs through plugin pipeline, and handles success/failure.
    *
    * **Behavior:**
+   * - Prepares message with SENDING status and timestamps
+   * - Executes plugin pipeline with before/after hooks
+   * - Sends through gateway with abort support
+   * - Logs success with duration metrics
    * - If `throwIfError=true`: Throws on send failure
    * - If `throwIfError=false` (default): Returns error message on failure
    * - If `gatewayOptions` provided: Uses specified configuration
-   * - If `gatewayOptions.signal` provided: Uses custom signal (stop method won't work)
-   * - If no signal provided: AbortPlugin creates one automatically (stoppable via stop method)
-   * - Resource cleanup managed automatically by AbortPlugin
    *
    * @override
    * @param message - Partial message object to send
@@ -543,25 +563,6 @@ export class MessageSender<
    *   }
    * );
    * ```
-   *
-   * @example With custom abort control
-   * ```typescript
-   * const controller = new AbortController();
-   *
-   * const promise = sender.send(
-   *   { content: 'Hello' },
-   *   { signal: controller.signal }
-   * );
-   *
-   * // Cancel manually
-   * setTimeout(() => controller.abort(), 5000);
-   *
-   * try {
-   *   await promise;
-   * } catch (error) {
-   *   console.log('Send cancelled');
-   * }
-   * ```
    */
   public async send(
     message: Partial<MessageType>,
@@ -575,8 +576,8 @@ export class MessageSender<
         return await this.sendMessage(ctx.parameters.currentMessage, ctx);
       });
 
-      if (this.logger) {
-        this.logger.info(
+      if (this.config.logger) {
+        this.config.logger.info(
           template(this.loggerTpl.success, {
             senderName: this.senderName,
             messageId: sendingMessage.id!,
@@ -594,11 +595,12 @@ export class MessageSender<
   /**
    * Get message send duration
    *
-   * Calculates the time taken to send a message in milliseconds.
-   * Returns 0 if message has no end time (still in progress).
+   * Calculates the time taken to send a message in milliseconds by subtracting
+   * the startTime from endTime. Returns 0 if message has no endTime (indicating
+   * the message is still in progress or failed before completion).
    *
    * @param message - Message to calculate duration for
-   * @returns Duration in milliseconds
+   * @returns Duration in milliseconds, or 0 if message not completed
    *
    * @example
    * ```typescript

@@ -1,5 +1,5 @@
 import type { MessageInterface } from './MessagesStoreInterface';
-import type { AbortPluginConfig } from '@qlover/fe-corekit';
+import type { ProxyAbortManagerConfig } from '@qlover/fe-corekit';
 
 /**
  * Event callbacks for streaming message operations
@@ -170,7 +170,7 @@ export interface MessageStreamEvent<M = unknown> {
  */
 export interface GatewayOptions<M, P = Record<string, unknown>>
   extends MessageStreamEvent<M>,
-    Omit<AbortPluginConfig, 'onAborted'> {
+    Omit<ProxyAbortManagerConfig, 'onAborted'> {
   /**
    * Whether to use streaming mode
    *
