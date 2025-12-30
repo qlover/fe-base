@@ -9,7 +9,7 @@
  * - Edge cases and error scenarios
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { timeoutSignal } from '../../../src/pools/utils/timeoutSignal';
+import { timeoutSignal } from '../../../src/managers/utils/timeoutSignal';
 import type { ClearableSignal } from 'any-signal';
 
 describe('timeoutSignal', () => {
@@ -20,20 +20,20 @@ describe('timeoutSignal', () => {
     // Save original AbortSignal.timeout before each test
     originalTimeout = AbortSignal.timeout;
     hadNativeAPI = typeof originalTimeout === 'function';
-    
+
     // Force fallback implementation by removing native API
     // This ensures all tests use fake timers for stability
     if (hadNativeAPI) {
       delete (AbortSignal as any).timeout;
     }
-    
+
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useFakeTimers(); // Keep fake timers, don't switch to real timers
-    
+
     // Always restore AbortSignal.timeout if it existed originally
     if (hadNativeAPI && originalTimeout) {
       (AbortSignal as any).timeout = originalTimeout;
@@ -108,7 +108,7 @@ describe('timeoutSignal', () => {
 
       expect(
         'clear' in signal &&
-        typeof (signal as ClearableSignal).clear === 'function'
+          typeof (signal as ClearableSignal).clear === 'function'
       ).toBe(true);
 
       const clearableSignal = signal as ClearableSignal;
@@ -146,7 +146,7 @@ describe('timeoutSignal', () => {
 
       expect(
         'clear' in signal &&
-        typeof (signal as ClearableSignal).clear === 'function'
+          typeof (signal as ClearableSignal).clear === 'function'
       ).toBe(true);
 
       const clearableSignal = signal as ClearableSignal;
@@ -325,7 +325,9 @@ describe('timeoutSignal', () => {
       const controller = new AbortController();
       const timeoutSig = timeoutSignal(100);
 
-      const { anySignal } = await import('../../../src/pools/utils/anySignal');
+      const { anySignal } = await import(
+        '../../../src/managers/utils/anySignal'
+      );
       const combined = anySignal([controller.signal, timeoutSig]);
 
       expect(combined.aborted).toBe(false);
@@ -340,7 +342,9 @@ describe('timeoutSignal', () => {
       const controller = new AbortController();
       const timeoutSig = timeoutSignal(100);
 
-      const { anySignal } = await import('../../../src/pools/utils/anySignal');
+      const { anySignal } = await import(
+        '../../../src/managers/utils/anySignal'
+      );
       const combined = anySignal([controller.signal, timeoutSig]);
 
       // Manual abort before timeout
@@ -596,10 +600,10 @@ describe('timeoutSignal', () => {
       const signal = timeoutSignal(100);
 
       vi.advanceTimersByTime(50);
-      
+
       // Verify that the correct expectation passes
       expect(signal.aborted).toBe(false);
-      
+
       // Verify that an incorrect expectation would fail
       // We use a helper to test this without actually failing the test
       let caughtError = false;
@@ -611,7 +615,7 @@ describe('timeoutSignal', () => {
         // Test framework correctly caught the error
         expect(error).toBeDefined();
       }
-      
+
       // Verify that the test framework would catch this error
       expect(caughtError).toBe(true);
     });
@@ -620,10 +624,10 @@ describe('timeoutSignal', () => {
       const signal = timeoutSignal(100);
 
       vi.advanceTimersByTime(100);
-      
+
       // Verify correct expectation
       expect(signal.aborted).toBe(true);
-      
+
       // Verify incorrect expectation would fail
       let caughtError = false;
       try {
@@ -632,7 +636,7 @@ describe('timeoutSignal', () => {
         caughtError = true;
         expect(error).toBeDefined();
       }
-      
+
       expect(caughtError).toBe(true);
     });
 
@@ -641,17 +645,17 @@ describe('timeoutSignal', () => {
 
       expect(
         'clear' in signal &&
-        typeof (signal as ClearableSignal).clear === 'function'
+          typeof (signal as ClearableSignal).clear === 'function'
       ).toBe(true);
 
       const clearableSignal = signal as ClearableSignal;
       clearableSignal.clear();
 
       vi.advanceTimersByTime(200);
-      
+
       // Verify correct expectation
       expect(clearableSignal.aborted).toBe(false);
-      
+
       // Verify incorrect expectation would fail
       let caughtError = false;
       try {
@@ -660,7 +664,7 @@ describe('timeoutSignal', () => {
         caughtError = true;
         expect(error).toBeDefined();
       }
-      
+
       expect(caughtError).toBe(true);
     });
 

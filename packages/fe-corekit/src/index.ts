@@ -3,9 +3,9 @@
  *
  * we need to export the interface here.
  */
-export * from './pools';
 export * from './encrypt';
 export * from './executor';
+export * from './managers';
 export * from './request';
 export * from './serializer';
 export * from './storage';

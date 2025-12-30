@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { AbortManager } from '../../src/pools/AbortManager';
-import type { AbortManagerConfig } from '../../src/pools/AbortManagerInterface';
+import { AbortManager } from '../../src/managers/AbortManager';
+import type { AbortManagerConfig } from '../../src/managers/interface/AbortManagerInterface';
 
 describe('AbortManager', () => {
   let manager: AbortManager;

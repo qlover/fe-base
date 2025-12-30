@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   ProxyAbortManager,
   type ProxyAbortManagerConfig
-} from '../../src/pools/ProxyAbortManager';
+} from '../../src/managers/ProxyAbortManager';
 
 describe('ProxyAbortManager', () => {
   let proxyManager: ProxyAbortManager;
@@ -15,7 +15,7 @@ describe('ProxyAbortManager', () => {
       // Temporarily remove native API to force fallback to setTimeout-based implementation
       delete (AbortSignal as any).timeout;
     }
-    
+
     proxyManager = new ProxyAbortManager('TestProxyManager');
     vi.useFakeTimers();
   });
@@ -297,7 +297,9 @@ describe('ProxyAbortManager', () => {
 
   describe('abort', () => {
     it('should abort operation by ID string', () => {
-      const { abortId, signal } = proxyManager.register({ abortId: 'test-abort' });
+      const { abortId, signal } = proxyManager.register({
+        abortId: 'test-abort'
+      });
 
       expect(signal.aborted).toBe(false);
 
@@ -342,7 +344,9 @@ describe('ProxyAbortManager', () => {
     });
 
     it('should cleanup resources after abort', () => {
-      const { abortId, signal } = proxyManager.register({ abortId: 'cleanup-test' });
+      const { abortId, signal } = proxyManager.register({
+        abortId: 'cleanup-test'
+      });
 
       proxyManager.abort(abortId);
 
@@ -436,12 +440,12 @@ describe('ProxyAbortManager', () => {
       // is a proxy that delegates external signals, and native AbortSignal.any()
       // doesn't support true cleanup (clear() is a no-op)
       expect(signal.aborted).toBe(true);
-      
+
       // Verify that the operation can be registered again (cleanup worked)
       expect(() => {
         proxyManager.register({ abortId: 'cleanup-external' });
       }).not.toThrow();
-      
+
       // Cleanup the new registration
       proxyManager.cleanup('cleanup-external');
       expect((proxyManager as any).wrappers.size).toBe(0);
@@ -513,7 +517,9 @@ describe('ProxyAbortManager', () => {
 
   describe('race condition prevention', () => {
     it('should handle concurrent abort and cleanup', () => {
-      const { abortId, signal } = proxyManager.register({ abortId: 'race-test' });
+      const { abortId, signal } = proxyManager.register({
+        abortId: 'race-test'
+      });
 
       proxyManager.abort(abortId);
       proxyManager.cleanup(abortId); // Should not throw
@@ -535,7 +541,9 @@ describe('ProxyAbortManager', () => {
     });
 
     it('should handle cleanup during abortAll', () => {
-      const { abortId } = proxyManager.register({ abortId: 'cleanup-during-abortall' });
+      const { abortId } = proxyManager.register({
+        abortId: 'cleanup-during-abortall'
+      });
       proxyManager.register({ abortId: 'other-op' });
 
       // Simulate cleanup happening during abortAll
@@ -693,9 +701,15 @@ describe('ProxyAbortManager', () => {
 
     it('should handle component unmount scenario', () => {
       // Simulate multiple operations in a component
-      const { signal: signal1 } = proxyManager.register({ abortId: 'fetch-users' });
-      const { signal: signal2 } = proxyManager.register({ abortId: 'fetch-posts' });
-      const { signal: signal3 } = proxyManager.register({ abortId: 'fetch-comments' });
+      const { signal: signal1 } = proxyManager.register({
+        abortId: 'fetch-users'
+      });
+      const { signal: signal2 } = proxyManager.register({
+        abortId: 'fetch-posts'
+      });
+      const { signal: signal3 } = proxyManager.register({
+        abortId: 'fetch-comments'
+      });
 
       // Component unmounts
       proxyManager.abortAll();
@@ -786,4 +800,3 @@ describe('ProxyAbortManager', () => {
     });
   });
 });
-

@@ -9,7 +9,7 @@
  * - Edge cases and error scenarios
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { anySignal } from '../../../src/pools/utils/anySignal';
+import { anySignal } from '../../../src/managers/utils/anySignal';
 import type { ClearableSignal } from 'any-signal';
 
 describe('anySignal', () => {

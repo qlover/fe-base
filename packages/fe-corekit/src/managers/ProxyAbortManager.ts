@@ -104,6 +104,7 @@ export interface ProxyAbortManagerConfig extends AbortManagerConfig {
  * `AbortManager` focuses solely on controller management, while `ProxyAbortManager` extends
  * it to handle timeout and external signal combination logic.
  *
+ * @since 2.6.0
  * @template T - Configuration type extending `ProxyAbortManagerConfig`
  *
  * @example Basic usage with external signal

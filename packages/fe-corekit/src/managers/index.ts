@@ -69,15 +69,14 @@
  */
 
 // Core classes
+export * from './AbortError';
 export * from './AbortManager';
 export * from './ProxyAbortManager';
-export * from './AbortError';
+export * from './RetryManager';
 
 // Interfaces and types
 export * from './interface/AbortManagerInterface';
-export { RetryPool } from './RetryPool';
-// Re-export RetryOptions from RetryPlugin for backward compatibility
-export type { RetryOptions } from '../executor/plugins/RetryPlugin';
+export * from './interface/RetryManagerInterface';
 
 // Utils
 export { timeoutSignal } from './utils/timeoutSignal';

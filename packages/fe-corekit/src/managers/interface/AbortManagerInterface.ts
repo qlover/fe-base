@@ -64,7 +64,6 @@ export interface AbortManagerConfig {
   onAborted?<T extends AbortManagerConfig>(config: T): void;
 }
 
-
 /**
  * Interface defining the common API for abort management
  *
@@ -72,23 +71,10 @@ export interface AbortManagerConfig {
  * public API, allowing them to be used interchangeably based on whether external
  * signal delegation is needed.
  *
+ * @since 2.6.0
  * @template T - Configuration type extending `AbortManagerConfig`
  */
-export interface AbortManagerInterface<
-  T extends AbortManagerConfig = AbortManagerConfig
-> {
-  /**
-   * Unique name identifying this manager instance
-   *
-   * Used for:
-   * - Auto-generating operation IDs (e.g., `"APIPool-1"`, `"APIPool-2"`)
-   * - Debugging and logging to distinguish between multiple pools
-   * - Identifying pool source in error messages
-   *
-   * @readonly
-   */
-  readonly poolName: string;
-
+export interface AbortManagerInterface<T extends AbortManagerConfig> {
   /**
    * Generates or retrieves unique operation identifier
    *
@@ -225,7 +211,10 @@ export interface AbortManagerInterface<
    * ```
    */
   autoCleanup<R>(
-    factory: (ctx: { abortId: AbortManagerId; signal: AbortSignal }) => Promise<R>,
+    factory: (ctx: {
+      abortId: AbortManagerId;
+      signal: AbortSignal;
+    }) => Promise<R>,
     config?: T
   ): Promise<R>;
 
