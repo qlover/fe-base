@@ -135,6 +135,15 @@ export interface AbortPluginOptions<T> {
    * ```
    */
   abortManager?: AbortManagerInterface<AbortManagerConfig>;
+
+  /**
+   * Plugin name
+   *
+   * Used by the executor system to identify this plugin
+   *
+   * @default 'AbortPlugin'
+   */
+  pluginName?: string;
 }
 
 /**
@@ -286,7 +295,7 @@ export class AbortPlugin<TParameters extends AbortManagerConfig>
    *
    * Used by the executor system to identify this plugin
    */
-  public readonly pluginName = 'AbortPlugin';
+  public readonly pluginName: string;
 
   /**
    * Ensures only one instance of this plugin can be registered
@@ -389,15 +398,19 @@ export class AbortPlugin<TParameters extends AbortManagerConfig>
    * ```
    */
   constructor(options?: AbortPluginOptions<TParameters>) {
+    const { pluginName, ...rest } = options ?? {};
+
+    this.pluginName = pluginName ?? 'AbortPlugin';
+
     // Default configuration extractor: directly cast parameters to AbortManagerConfig
     this.getConfig =
-      options?.getConfig ||
+      rest?.getConfig ||
       ((parameters) => parameters as unknown as AbortManagerConfig);
 
-    this.logger = options?.logger;
-    this.timeout = options?.timeout;
+    this.logger = rest?.logger;
+    this.timeout = rest?.timeout;
     this.abortManager =
-      options?.abortManager ??
+      rest?.abortManager ??
       new AbortManager<AbortManagerConfig>(this.pluginName);
   }
 

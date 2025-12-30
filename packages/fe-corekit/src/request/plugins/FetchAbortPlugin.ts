@@ -29,6 +29,8 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  *
  * @implements {ExecutorPlugin}
  *
+ * @deprecated Use `RequestAbortPlugin` or `AbortPlugin`
+ *
  * @example
  * ```typescript
  * // Basic usage

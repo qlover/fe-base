@@ -5,6 +5,8 @@ import {
   type RequestAdapterResponse
 } from '../interface';
 import type { ExecutorPlugin, ExecutorContext } from '../../executor';
+import type { UrlBuilderInterface } from '../interface/UrlBuilder';
+import { SimpleUrlBuilder } from './SimpleUrlBuilder';
 
 /**
  * Plugin for URL manipulation and response handling
@@ -35,85 +37,29 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  *   url: '/users',
  *   params: { role: 'admin' }
  * });
+ *
+ * // Custom URL builder
+ * const customUrlBuilder = new MyCustomUrlBuilder();
+ * const urlPlugin = new FetchURLPlugin(customUrlBuilder);
  * ```
  */
 export class FetchURLPlugin implements ExecutorPlugin {
-  public readonly pluginName = 'FetchURLPlugin';
   /**
-   * Checks if URL is absolute (starts with http:// or https://)
-   *
-   * @param url - URL to check
-   * @returns Boolean indicating if URL is absolute
-   *
-   * @example
-   * ```typescript
-   * const isAbsolute = urlPlugin.isFullURL('https://example.com');
-   * ```
+   * URL builder instance
    */
-  public isFullURL(url: string): boolean {
-    return url.startsWith('http://') || url.startsWith('https://');
-  }
+  private readonly urlBuilder: UrlBuilderInterface;
 
-  /**
-   * Appends query parameters to URL
-   * Handles existing query parameters in URL
-   *
-   * @param url - Base URL
-   * @param params - Parameters to append
-   * @returns URL with query parameters
-   *
-   * @example
-   * ```typescript
-   * const url = urlPlugin.appendQueryParams(
-   *   'https://api.example.com/users',
-   *   { role: 'admin', status: 'active' }
-   * );
-   * ```
-   */
-  public appendQueryParams(
-    url: string,
-    params: Record<string, unknown> = {}
-  ): string {
-    const opt = '?';
-    const link = '&';
-    const [path, search = ''] = url.split(opt);
-
-    search.split(link).forEach((item) => {
-      const [key, value] = item.split('=');
-      if (key && value) {
-        params[key] = value;
-      }
-    });
-
-    const queryString = Object.entries(params)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
-
-    return [path, queryString].join(opt);
-  }
-
-  /**
-   * Combines base URL with path.
-   *
-   * Ensures proper slash handling
-   *
-   * @param url - URL path
-   * @param baseURL - Base URL
-   * @returns Combined URL
-   *
-   * @example
-   * ```typescript
-   * const fullUrl = urlPlugin.connectBaseURL('/users', 'https://api.example.com');
-   * ```
-   */
-  public connectBaseURL(url: string, baseURL: string): string {
-    return `${baseURL}/${url}`;
+  constructor(
+    public readonly pluginName = 'FetchURLPlugin',
+    urlBuilder?: UrlBuilderInterface
+  ) {
+    this.urlBuilder = urlBuilder || new SimpleUrlBuilder();
   }
 
   /**
    * Builds complete URL from configuration.
    *
-   * Handles base URL, path normalization, and query parameters.
+   * Delegates to the configured URL builder implementation.
    *
    * @param config - Request configuration
    * @returns Complete URL
@@ -124,25 +70,7 @@ export class FetchURLPlugin implements ExecutorPlugin {
    * ```
    */
   public buildUrl(config: RequestAdapterConfig): string {
-    let { url = '' } = config;
-    const { baseURL = '', params } = config;
-
-    // has full url
-    if (!this.isFullURL(url)) {
-      // normalize baseUrl and path, only one slash
-      const normalizedPath = url.startsWith('/') ? url.slice(1) : url;
-      const normalizedBaseUrl = baseURL.endsWith('/')
-        ? baseURL.slice(0, -1)
-        : baseURL;
-      url = this.connectBaseURL(normalizedPath, normalizedBaseUrl);
-    }
-
-    // handle params
-    if (params && Object.keys(params).length > 0) {
-      url = this.appendQueryParams(url, params);
-    }
-
-    return url;
+    return this.urlBuilder.buildUrl(config);
   }
 
   /**

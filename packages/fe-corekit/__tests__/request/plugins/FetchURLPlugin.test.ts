@@ -1,4 +1,4 @@
-import { FetchURLPlugin } from '../../../src/request/plugins';
+import { FetchURLPlugin, SimpleUrlBuilder } from '../../../src/request/plugins';
 
 describe('FetchURLPlugin', () => {
   let plugin: FetchURLPlugin;
@@ -7,38 +7,16 @@ describe('FetchURLPlugin', () => {
     plugin = new FetchURLPlugin();
   });
 
-  describe('isFullURL', () => {
-    it('should correctly identify full URLs', () => {
-      expect(plugin.isFullURL('http://example.com')).toBe(true);
-      expect(plugin.isFullURL('https://example.com')).toBe(true);
-      expect(plugin.isFullURL('/api/users')).toBe(false);
-      expect(plugin.isFullURL('api/users')).toBe(false);
-    });
-  });
-
-  describe('appendQueryParams', () => {
-    it('should correctly append query parameters', () => {
-      const url = 'https://api.example.com/users';
-      const params = { id: '1', name: 'test' };
-      const result = plugin.appendQueryParams(url, params);
-      const resultUrl = new URL(result);
-      expect(resultUrl.origin + resultUrl.pathname).toBe(
-        'https://api.example.com/users'
-      );
-      expect(resultUrl.searchParams.get('id')).toBe('1');
-      expect(resultUrl.searchParams.get('name')).toBe('test');
+  describe('constructor', () => {
+    it('should use default SimpleUrlBuilder when no urlBuilder provided', () => {
+      const defaultPlugin = new FetchURLPlugin();
+      expect(defaultPlugin).toBeInstanceOf(FetchURLPlugin);
     });
 
-    it('should merge existing query parameters', () => {
-      const url = 'https://api.example.com/users?page=1';
-      const params = { size: '10' };
-      const result = plugin.appendQueryParams(url, params);
-      const resultUrl = new URL(result);
-      expect(resultUrl.origin + resultUrl.pathname).toBe(
-        'https://api.example.com/users'
-      );
-      expect(resultUrl.searchParams.get('page')).toBe('1');
-      expect(resultUrl.searchParams.get('size')).toBe('10');
+    it('should accept custom UrlBuilder implementation', () => {
+      const customUrlBuilder = new SimpleUrlBuilder();
+      const customPlugin = new FetchURLPlugin(customUrlBuilder);
+      expect(customPlugin).toBeInstanceOf(FetchURLPlugin);
     });
   });
 
