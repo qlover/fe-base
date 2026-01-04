@@ -212,7 +212,7 @@ export interface ExecutorPluginInterface<
   Ctx extends ExecutorContextInterface<unknown>
 > {
   /** Optional plugin name for identification */
-  readonly pluginName?: string;
+  readonly pluginName: ExecutorPluginNameType;
 
   /** If true, ensures only one instance of this plugin type */
   readonly onlyOne?: boolean;
@@ -223,7 +223,7 @@ export interface ExecutorPluginInterface<
    * @param context - Optional execution context
    * @returns true if plugin should execute, false otherwise
    */
-  enabled(name: ExecutorPluginNameType, context?: Ctx): boolean;
+  enabled?(name: ExecutorPluginNameType, context?: Ctx): boolean;
 }
 
 /**
