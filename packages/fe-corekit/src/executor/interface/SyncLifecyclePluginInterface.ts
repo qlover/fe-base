@@ -49,7 +49,7 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  *
  * Relationship with LifecyclePluginInterface:
  * - Both extend ExecutorPluginInterface
- * - SyncLifecyclePluginInterface: All methods return non-Promise values
+ * - LifecycleSyncPluginInterface: All methods return non-Promise values
  * - LifecyclePluginInterface: Methods can return Promise or non-Promise values
  * - They are parallel interfaces, not hierarchical
  *
@@ -57,7 +57,7 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  *
  * @example Basic sync plugin
  * ```typescript
- * const validationPlugin: SyncLifecyclePluginInterface<ExecutorContextInterface<UserData>> = {
+ * const validationPlugin: LifecycleSyncPluginInterface<ExecutorContextInterface<UserData>> = {
  *   pluginName: 'validation',
  *   enabled: () => true,
  *   onBefore: (ctx) => {
@@ -71,7 +71,7 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  *
  * @example Parameter transformation
  * ```typescript
- * const transformPlugin: SyncLifecyclePluginInterface<ExecutorContextInterface<any>> = {
+ * const transformPlugin: LifecycleSyncPluginInterface<ExecutorContextInterface<any>> = {
  *   pluginName: 'transform',
  *   onBefore: (ctx) => {
  *     // Synchronous transformation
@@ -86,7 +86,7 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  *
  * @example Error handling
  * ```typescript
- * const errorPlugin: SyncLifecyclePluginInterface<ExecutorContextInterface<any>> = {
+ * const errorPlugin: LifecycleSyncPluginInterface<ExecutorContextInterface<any>> = {
  *   pluginName: 'errorHandler',
  *   onError: (ctx) => {
  *     console.error('Sync error:', ctx.error);
@@ -101,9 +101,9 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  * @see SyncLifecycleExecutor - Executor that uses this interface
  * @see ExecutorPluginInterface - Base plugin interface
  *
- * @category SyncLifecyclePluginInterface
+ * @category LifecycleSyncPluginInterface
  */
-export interface SyncLifecyclePluginInterface<
+export interface LifecycleSyncPluginInterface<
   Ctx extends ExecutorContextInterface<unknown> = ExecutorContextInterface<unknown>
 > extends ExecutorPluginInterface<Ctx> {
   /**

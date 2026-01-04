@@ -2,190 +2,70 @@ import { ExecutorError } from '../interface';
 import {
   ExecutorAsyncTask,
   ExecutorContextInterface,
-  ExecutorInterface,
   ExecutorPluginNameType,
   ExecutorTask,
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
 import { LifecyclePluginInterface } from '../interface/LifecyclePluginInterface';
 import { ExecutorContextImpl } from './ExecutorContextImpl';
-import { HookExecutor } from './HookExecutor';
-import { TaskExecutor } from './TaskExecutor';
-import { ErrorProcessor } from './ErrorProcessor';
-import { isPromise } from '../utils/isPromise';
-import { EXECUTOR_SYNC_ERROR, EXECUTOR_ASYNC_ERROR } from '../utils/constants';
+import { BasePluginExecutor, PluginExecutorConfig } from './BasePluginExecutor';
+import { EXECUTOR_ASYNC_ERROR } from '../utils/constants';
+import { runPluginHook } from '../utils/pluginUtil';
 
-export interface LifecycleExecutorConfig {
-  /**
-   * Hook names to execute before task execution
-   *
-   * These hooks are executed in the order they appear in the array.
-   * Each hook can modify the input data or perform validation.
-   *
-   * @default `'onBefore'`
-   * @example `['validate', 'transform']`
-   * @example `'preProcess'`
-   */
-  beforeHooks?: ExecutorPluginNameType | ExecutorPluginNameType[];
-
-  /**
-   * Hook names to execute after successful task execution
-   *
-   * These hooks are executed in the order they appear in the array.
-   * Each hook can process the result or perform cleanup operations.
-   *
-   * @default `'onSuccess'`
-   * @example `['log', 'cleanup']`
-   * @example `'postProcess'`
-   */
-  afterHooks?: ExecutorPluginNameType | ExecutorPluginNameType[];
-
-  /**
-   * Hook name for the main execution logic
-   *
-   * This hook contains the core business logic for task execution.
-   * If not specified, the default `'onExec'` hook is used.
-   *
-   * @default `'onExec'`
-   * @example `'process'`
-   * @example `'execute'`
-   */
-  execHook?: ExecutorPluginNameType;
-}
+export interface LifecycleExecutorConfig extends PluginExecutorConfig {}
 
 /**
- * Lifecycle executor that supports both synchronous and asynchronous execution
+ * Simplified async lifecycle executor implementation
  *
  * Core Concept:
- * Provides a unified executor implementation that automatically handles both
- * synchronous and asynchronous tasks based on method overloads and return types.
- * This eliminates the need to choose between AsyncExecutor and SyncExecutor.
+ * A simpler, fully asynchronous implementation of LifecycleExecutor that follows
+ * the AsyncExecutor pattern. All operations are async, eliminating the complexity
+ * of runtime sync/async detection and ensuring consistent behavior.
  *
- * Key Differences from AsyncExecutor/SyncExecutor:
+ * Key Design Decisions:
  *
- * Architecture Changes:
- * - No Base Class Inheritance: Directly implements `ExecutorInterface` instead of extending `Executor`
- *   - Eliminates dependency on base class
- *   - More flexible and maintainable
- *   - Clearer interface contract
+ * Fully Async Architecture:
+ * - All methods are async: No sync/async branching logic needed
+ * - Consistent behavior: Same execution path for all tasks
+ * - Simpler code: ~50% less code than mixed sync/async approach
+ * - Type safety: Return type is always Promise<R>, no type mismatches
  *
- * - Modular Design: Logic split into focused helper classes
- *   - `HookExecutor`: Handles all hook execution logic (onBefore, onSuccess, onError)
- *   - `TaskExecutor`: Handles main task execution and execHook pipeline
- *   - `ErrorProcessor`: Centralized error handling and onError hook execution
- *   - Benefits: Better separation of concerns, easier testing, improved maintainability
+ * Why Fully Async?
+ * - `await` works on both sync and async values seamlessly
+ * - No performance penalty in modern JavaScript engines
+ * - Avoids runtime type detection complexity (no isPromise checks)
+ * - Prevents type system vs runtime behavior mismatches
+ * - Plugins can freely mix sync and async operations
  *
- * - Integrated Context: No separate `ContextHandler` class
- *   - All context management integrated into `ExecutorContextImpl`
- *   - Simpler API, fewer dependencies
- *   - Direct access to context methods
- *
- * Parameter Safety and Performance:
- * - Parameter Isolation: Parameters are cloned in constructor to prevent memory leaks
- *   - Original parameters can be garbage collected independently
- *   - Prevents external code from holding references to internal state
- *   - Uses efficient shallow cloning strategy (primitives zero overhead, objects shallow copy)
- *
- * - Security: Parameters are isolated from original objects
- *   - External modifications don't affect executor's internal state
- *   - Prevents accidental parameter pollution
- *   - Safe for concurrent usage scenarios
- *
- * Type System Improvements:
- * - Default Plugin Type: Uses `LifecyclePluginInterface` as default plugin type
- *   - More specific type constraints than generic `ExecutorPluginInterface`
- *   - Better IDE support and type inference
- *   - Clearer plugin contract
- *
- * - Generic Constraints: Plugin type must extend `LifecyclePluginInterface`
- *   - Ensures plugins implement lifecycle hooks
- *   - Type-safe plugin registration
- *   - Better compile-time checks
- *
- * Hook Execution Enhancements:
- * - onBefore Return Value: Can return new parameters to update context
- *   - More flexible than direct parameter modification
- *   - Supports both sync and async return values
- *   - Automatically clones returned values for safety
- *
- * - Dynamic Sync/Async Handling: Automatically detects and handles sync/async plugins
- *   - No need to separate sync and async plugin implementations
- *   - Seamless mixing of sync and async plugins
- *   - Runtime type detection using is-promise
- *
- * Performance Optimizations:
- * - Cached Property Access: Hook methods are cached to avoid repeated property lookups
- * - Early Returns: Empty plugin arrays return early without processing
- * - Efficient Loops: Uses index-based loops instead of indexOf for O(1) access
- * - Minimal Object Creation: Reuses context instances, avoids unnecessary cloning
+ * Simplified Architecture:
+ * - No Helper Classes: All logic directly in the main class
+ *   - Original LifecycleExecutor: Uses HookExecutor, TaskExecutor, ErrorProcessor
+ *   - LifecycleExecutor2: All methods in one class
+ *   - Benefits: Easier to understand, less indirection, simpler debugging
  *
  * Main Features:
- * - Automatic sync/async detection: Determines execution mode based on task return type
- * - Method overloads: Type-safe overloads for sync and async tasks
+ * - Fully async execution: All operations use async/await
  * - Plugin compatibility: Works with both sync and async plugins
- * - Runtime type checking: Uses is-promise to detect Promise return values
  * - Unified API: Single executor class for all use cases
- * - Parameter safety: Cloned parameters prevent memory leaks and ensure isolation
- * - Modular architecture: Separated concerns for better maintainability
+ * - Simpler codebase: Much less code to maintain
+ * - Type safe: No runtime type mismatches
  *
  * Execution Flow:
- * 1. Parameters are cloned in constructor (prevents memory leaks)
- * 2. onBefore hooks execute (can return new parameters)
- * 3. Parameters updated if onBefore returned a value
- * 4. onExec hooks execute (can modify or wrap task)
- * 5. Main task executes
- * 6. onSuccess hooks execute (can transform result)
- * 7. On error, onError hooks execute
- * 8. Result returned (sync or async based on task type)
- *
- * Migration from AsyncExecutor/SyncExecutor:
- *
- * Simple Migration:
- * ```typescript
- * // Before (AsyncExecutor)
- * const executor = new AsyncExecutor();
- *
- * // After (LifecycleExecutor)
- * const executor = new LifecycleExecutor();
- * // Same API, works with both sync and async tasks
- * ```
- *
- * Plugin Migration:
- * ```typescript
- * // Plugins now use LifecyclePluginInterface by default
- * // Old plugins still work, but should be updated to use setParameters
- * const plugin = {
- *   onBefore: (ctx) => {
- *     // Old way (still works but not recommended)
- *     // ctx.parameters.newField = 'value';
- *
- *     // New way (recommended)
- *     ctx.setParameters({ ...ctx.parameters, newField: 'value' });
- *     // Or return new parameters
- *     return { ...ctx.parameters, newField: 'value' };
- *   }
- * };
- * ```
- *
- * Use Cases:
- * - Replacement for AsyncExecutor/SyncExecutor: Drop-in replacement with unified API
- * - Mixed Sync/Async Workflows: When you have both sync and async operations
- * - Type-Safe Plugin System: When you need strict plugin type checking
- * - Memory-Sensitive Applications: When parameter isolation is important
- * - Large-Scale Applications: When modular architecture is beneficial
- *
- * Performance Considerations:
- * - Parameter Cloning: One-time clone in constructor (minimal overhead)
- * - Hook Execution: Cached property access, early returns for empty arrays
- * - Memory: Parameters isolated, allowing garbage collection of original objects
- * - Type Checking: Runtime Promise detection (minimal overhead)
+ * 1. Create context with parameters
+ * 2. Execute beforeHooks (can return new parameters)
+ * 3. Update parameters if beforeHooks returned a value
+ * 4. Execute execHook (can modify or wrap task)
+ * 5. Execute main task
+ * 6. Execute afterHooks (can transform result)
+ * 7. On error, execute onError hooks
+ * 8. Return result as Promise
  *
  * @template Ctx - Type of executor context interface (defaults to ExecutorContextInterface<unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecyclePluginInterface<Ctx>)
  *
  * @example Basic async usage
  * ```typescript
- * const executor = new LifecycleExecutor();
+ * const executor = new LifecycleExecutor2();
  * executor.use(new LogPlugin());
  *
  * const result = await executor.exec(async (ctx) => {
@@ -194,197 +74,157 @@ export interface LifecycleExecutorConfig {
  * });
  * ```
  *
- * @example Basic sync usage
+ * @example Sync task (still returns Promise)
  * ```typescript
- * const executor = new LifecycleExecutor();
+ * const executor = new LifecycleExecutor2();
  * executor.use(new ValidationPlugin());
  *
- * const result = executor.exec((ctx) => {
+ * // Note: Must await even for sync tasks
+ * const result = await executor.exec((ctx) => {
  *   return ctx.parameters.toUpperCase();
  * });
  * ```
  *
- * @example With input data and parameter modification
- * ```typescript
- * const executor = new LifecycleExecutor();
- * executor.use({
- *   onBefore: (ctx) => {
- *     // Return new parameters to update context
- *     return { ...ctx.parameters, timestamp: Date.now() };
- *   }
- * });
- *
- * const result = await executor.exec(
- *   { userId: 123 },
- *   async (ctx) => {
- *     // ctx.parameters now includes timestamp
- *     return await fetchUserData(ctx.parameters.userId);
- *   }
- * );
- * ```
- *
- * @example Custom plugin type
- * ```typescript
- * interface CustomPlugin extends LifecyclePluginInterface<ExecutorContextInterface<UserParams>> {
- *   customMethod(): void;
- * }
- *
- * const executor = new LifecycleExecutor<
- *   ExecutorContextInterface<UserParams>,
- *   CustomPlugin
- * >();
- * ```
- *
  * @since 2.6.0
- * @see AsyncExecutor - Original async-only executor implementation
- * @see SyncExecutor - Original sync-only executor implementation
+ * @see AsyncExecutor - Inspiration for this implementation
+ * @see LifecycleExecutor - Original modular implementation
  * @see LifecyclePluginInterface - Default plugin interface
- * @see ExecutorContextImpl - Context implementation with integrated functionality
  *
  * @category LifecycleExecutor
  */
 export class LifecycleExecutor<
-  Ctx extends
-    ExecutorContextInterface<unknown> = ExecutorContextInterface<unknown>,
+  Ctx extends ExecutorContextInterface<unknown> = ExecutorContextImpl<unknown>,
   Plugin extends LifecyclePluginInterface<Ctx> = LifecyclePluginInterface<Ctx>
-> implements ExecutorInterface<Plugin>
-{
+> extends BasePluginExecutor<Ctx, Plugin> {
   /**
-   * Array of active plugins for this executor
-   * All plugins must be of type Plugin which extends ExecutorPluginInterface<Ctx>
-   * Type safety is enforced at compile time through generic constraints
-   */
-  protected plugins: Plugin[] = [];
-
-  /**
-   * Hook executor for handling plugin hooks
-   */
-  private hookExecutor: HookExecutor<Ctx>;
-
-  /**
-   * Task executor for handling task execution
-   */
-  private taskExecutor: TaskExecutor<Ctx, Plugin>;
-
-  /**
-   * Error processor for handling errors
-   */
-  private errorProcessor: ErrorProcessor<Ctx>;
-
-  constructor(
-    /**
-     * Configuration for this executor
-     */
-    protected config: LifecycleExecutorConfig = {}
-  ) {
-    // Initialize helper classes
-    this.hookExecutor = new HookExecutor<Ctx>();
-    this.errorProcessor = new ErrorProcessor<Ctx>(this.hookExecutor);
-    this.taskExecutor = new TaskExecutor<Ctx, Plugin>(
-      this.plugins,
-      this.config,
-      this.hookExecutor,
-      this.errorProcessor
-    );
-  }
-
-  /**
-   * Add a plugin to the executor's execution pipeline
+   * Execute a single plugin hook asynchronously
    *
    * Core concept:
-   * Registers a plugin to participate in the executor's execution pipeline,
-   * extending the executor's functionality with additional capabilities.
-   * Plugin type is enforced at compile time through generic constraints.
+   * Sequential async plugin execution with chain breaking and return value handling
    *
-   * Main features:
-   * - Plugin registration: Adds plugins to the execution pipeline
-   * - Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
-   * - Deduplication: Prevents duplicate plugins when `onlyOne` is true
-   * - Order preservation: Maintains plugin execution order
-   * - Validation: Ensures plugin is a valid object
+   * Execution flow:
+   * 1. Check if plugin is enabled for the hook
+   * 2. Execute plugin hook with await
+   * 3. Handle plugin results and chain breaking conditions
+   * 4. Continue to next plugin or break chain
    *
-   * Type constraints:
-   * - Plugin type is constrained by class generic: Plugin extends ExecutorPluginInterface<Ctx>
-   * - All plugins must be of the same type Plugin
-   * - Type safety is enforced at compile time, preventing mixing different plugin types
+   * Key features:
+   * - Plugin enablement checking
+   * - Chain breaking support
+   * - Return value management
+   * - Fully async execution with await
    *
-   * @override
-   * @param plugin - Plugin instance of type Plugin to add to the execution pipeline
-   *
-   * @throws {Error} When plugin is not a valid object
-   *
-   * @example
-   * ```typescript
-   * // Define a specific plugin type
-   * interface UserPlugin extends ExecutorPluginInterface<ExecutorContextInterface<UserParams>> {
-   *   onBefore?(ctx: ExecutorContextInterface<UserParams>): void;
-   * }
-   *
-   * // Create executor with plugin type constraint
-   * const executor = new LifecycleExecutor<ExecutorContextInterface<UserParams>, UserPlugin>();
-   * executor.use(new UserPlugin()); // ✅ Correct type
-   * executor.use(new AdminPlugin()); // ❌ Type error - AdminPlugin is not UserPlugin
-   * ```
+   * @param plugins - Array of plugins to execute
+   * @param hookName - Name of the hook function to execute
+   * @param context - Execution context containing data and runtime information
+   * @param args - Additional arguments to pass to the hook function
+   * @returns Promise resolving to the result of the hook function execution
    */
-  public use(plugin: Plugin): void {
-    // Security: Validate plugin input
-    if (typeof plugin !== 'object' || plugin === null) {
-      throw new Error('Plugin must be an object');
-    }
+  protected async runHook<Params>(
+    plugins: Plugin[],
+    hookName: ExecutorPluginNameType,
+    context: ExecutorContextImpl<Params>,
+    ...args: unknown[]
+  ): Promise<Params | undefined> {
+    let returnValue: Params | undefined;
 
-    // Check for duplicate plugins if onlyOne is set
-    if (plugin.onlyOne) {
-      const isDuplicate = this.plugins.some(
-        (p) =>
-          p === plugin ||
-          (p.pluginName &&
-            plugin.pluginName &&
-            p.pluginName === plugin.pluginName) ||
-          p.constructor === plugin.constructor
-      );
+    // Reset hook runtimes
+    context.resetHooksRuntimes();
 
-      if (isDuplicate) {
-        const pluginName = plugin.pluginName || 'Unknown';
-        console.warn(`Plugin ${pluginName} is already used, skip adding`);
-        return;
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i];
+
+      // Skip plugin if hook should be skipped
+      if (context.shouldSkipPluginHook(plugin, hookName)) {
+        continue;
+      }
+
+      // Break chain if breakChain flag is set
+      if (context.shouldBreakChain()) {
+        break;
+      }
+
+      // Update runtime info
+      context.runtimes(plugin, hookName, i);
+
+      const result = await runPluginHook(plugin, hookName, context, ...args);
+
+      if (result !== undefined) {
+        returnValue = result as Params;
+        context.runtimeReturnValue(result);
+
+        // Break chain if returnBreakChain flag is set
+        if (context.shouldBreakChainOnReturn()) {
+          break;
+        }
       }
     }
 
-    this.plugins.push(plugin);
-
-    // Performance optimization: TaskExecutor holds a reference to plugins array
-    // so it automatically sees new plugins. No need to recreate TaskExecutor.
-    // This avoids unnecessary object creation on every plugin addition.
+    return returnValue;
   }
 
   /**
-   * Create a new execution context instance
+   * Execute multiple plugin hooks in sequence asynchronously
    *
    * Core concept:
-   * Factory method for creating execution contexts. This allows subclasses
-   * to override context creation behavior if needed.
+   * Sequential execution of multiple hooks with chain breaking support
    *
-   * @template Params - Type of context parameters
-   * @param parameters - The initial parameters for the context
-   * @returns A new ExecutorContextImpl instance
-   *
-   * @example Override in subclass
-   * ```typescript
-   * protected createContext<Params>(parameters: Params): ExecutorContextImpl<Params> {
-   *   return new CustomContextImpl(parameters);
-   * }
-   * ```
+   * @param plugins - Array of plugins to execute
+   * @param hookNames - Single hook name or array of hook names to execute in sequence
+   * @param context - Execution context containing data and runtime information
+   * @param args - Additional arguments to pass to the hook functions
+   * @returns Promise resolving to the result of the last executed hook function
    */
-  protected createContext<Params>(
-    parameters: Params
-  ): ExecutorContextImpl<Params> {
-    return new ExecutorContextImpl<Params>(parameters);
+  protected async runHooks<Params>(
+    plugins: Plugin[],
+    hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
+    context: ExecutorContextImpl<Params>,
+    ...args: unknown[]
+  ): Promise<Params | undefined> {
+    const hookNameArray = Array.isArray(hookNames) ? hookNames : [hookNames];
+    let lastReturnValue: Params | undefined;
+
+    for (const hookName of hookNameArray) {
+      const result = await this.runHook(plugins, hookName, context, ...args);
+
+      if (result !== undefined) {
+        lastReturnValue = result;
+      }
+
+      // Check if we should break the chain
+      if (context.shouldBreakChain()) {
+        break;
+      }
+    }
+
+    return lastReturnValue;
   }
 
   /**
    * Execute task without throwing errors
-   * Automatically handles both sync and async tasks
+   * Always returns a Promise (async execution)
+   *
+   * Core concept:
+   * Error-safe execution pipeline that returns errors instead of throwing
+   *
    * @override
+   * @template R - Type of task return value
+   * @template P - Type of task input parameters
+   * @param task - Task function to execute
+   * @returns Promise resolving to result or ExecutorError
+   *
+   * @example
+   * ```typescript
+   * const result = await executor.execNoError(async (ctx) => {
+   *   return await fetchData();
+   * });
+   *
+   * if (result instanceof ExecutorError) {
+   *   console.error('Task failed:', result);
+   * } else {
+   *   console.log('Task succeeded:', result);
+   * }
+   * ```
    */
   public execNoError<R, P>(
     task: ExecutorAsyncTask<R, P>
@@ -395,73 +235,81 @@ export class LifecycleExecutor<
     task: ExecutorAsyncTask<R, P>
   ): Promise<R | ExecutorError>;
   /** @override */
-  public execNoError<R, P>(task: ExecutorSyncTask<R, P>): R | ExecutorError;
+  public execNoError<R, P>(
+    task: ExecutorSyncTask<R, P>
+  ): Promise<R | ExecutorError>;
   /** @override */
   public execNoError<R, P>(
     data: P,
     task: ExecutorSyncTask<R, P>
-  ): R | ExecutorError;
+  ): Promise<R | ExecutorError>;
   /** @override */
-  public execNoError<R, P>(
+  public async execNoError<R, P>(
     dataOrTask: P | ExecutorTask<R, P>,
     task?: ExecutorTask<R, P>
-  ): R | ExecutorError | Promise<R | ExecutorError> {
+  ): Promise<R | ExecutorError> {
     try {
-      // Call exec directly - it will handle both sync and async cases
-      const result =
-        task !== undefined
-          ? (
-              this.exec as <R, P>(
-                data: P,
-                task: ExecutorTask<R, P>
-              ) => R | Promise<R>
-            )(dataOrTask as P, task)
-          : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
-              dataOrTask as ExecutorTask<R, P>
-            );
-
-      // Check if result is a Promise (async case)
-      if (isPromise(result)) {
-        return result.catch((error) => {
-          if (error instanceof ExecutorError) {
-            return error;
-          }
-          const errorObj =
-            error instanceof Error ? error : new Error(String(error));
-          return new ExecutorError(EXECUTOR_ASYNC_ERROR, errorObj);
-        }) as Promise<R | ExecutorError>;
-      }
-
-      // Sync result - return directly
-      return result;
+      return task !== undefined
+        ? (
+            this.exec as <R, P>(
+              data: P,
+              task: ExecutorTask<R, P>
+            ) => R | Promise<R>
+          )(dataOrTask as P, task)
+        : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
+            dataOrTask as ExecutorTask<R, P>
+          );
     } catch (error) {
-      // Sync error case
       if (error instanceof ExecutorError) {
         return error;
       }
       const errorObj =
         error instanceof Error ? error : new Error(String(error));
-      return new ExecutorError(EXECUTOR_SYNC_ERROR, errorObj);
+      return new ExecutorError(EXECUTOR_ASYNC_ERROR, errorObj);
     }
   }
 
   /**
    * Execute task with full plugin pipeline
-   * Automatically handles both sync and async tasks based on method overloads
+   * Always returns a Promise (async execution)
+   *
+   * Core concept:
+   * Complete async execution pipeline with plugin lifecycle management
+   * Works with both sync and async tasks through await
+   *
    * @override
+   * @template R - Type of task return value
+   * @template P - Type of task input parameters
+   * @param task - Task function to execute (can be sync or async)
+   * @returns Promise resolving to task execution result
+   *
+   * @example Async task
+   * ```typescript
+   * const result = await executor.exec(async (ctx) => {
+   *   const response = await fetch('https://api.example.com/data');
+   *   return response.json();
+   * });
+   * ```
+   *
+   * @example Sync task (still returns Promise)
+   * ```typescript
+   * const result = await executor.exec((ctx) => {
+   *   return ctx.parameters.toUpperCase();
+   * });
+   * ```
    */
   public exec<R, P>(task: ExecutorAsyncTask<R, P>): Promise<R>;
   /** @override */
   public exec<R, P>(data: P, task: ExecutorAsyncTask<R, P>): Promise<R>;
   /** @override */
-  public exec<R, P>(task: ExecutorSyncTask<R, P>): R;
+  public exec<R, P>(task: ExecutorSyncTask<R, P>): Promise<R>;
   /** @override */
-  public exec<R, P>(data: P, task: ExecutorSyncTask<R, P>): R;
+  public exec<R, P>(data: P, task: ExecutorSyncTask<R, P>): Promise<R>;
   /** @override */
   public exec<R, P>(
     dataOrTask: P | ExecutorTask<R, P>,
     task?: ExecutorTask<R, P>
-  ): R | Promise<R> {
+  ): Promise<R> {
     const actualTask = (task || dataOrTask) as ExecutorTask<R, P>;
     const data = (task ? dataOrTask : undefined) as P | undefined;
 
@@ -470,6 +318,116 @@ export class LifecycleExecutor<
     }
 
     const context = this.createContext<P>(data ?? ({} as P));
-    return this.taskExecutor.run(context, actualTask);
+    return this.run(context, actualTask);
+  }
+
+  /**
+   * Execute core task logic with execHook support asynchronously
+   *
+   * Core concept:
+   * Handles the execution phase with optional plugin intervention
+   *
+   * Execution logic:
+   * 1. Execute configured execHook (default: 'onExec')
+   * 2. If no execHook was executed, run the actual task
+   * 3. Otherwise, use the return value from execHook
+   *
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
+   * @param context - Execution context
+   * @param actualTask - Task function to execute
+   */
+  protected async runExec<Result, Params>(
+    context: ExecutorContextImpl<Params>,
+    actualTask: ExecutorTask<Result, Params>
+  ): Promise<Result> {
+    const execHook = this.getExecHook();
+
+    await this.runHook(this.plugins, execHook, context, actualTask);
+
+    // If exec times is 0, then execute task
+    const result = !context.hooksRuntimes.times
+      ? await actualTask(context as unknown as ExecutorContextInterface<Params>)
+      : context.hooksRuntimes.returnValue;
+
+    context.setReturnValue(result);
+    return result as Result;
+  }
+
+  /**
+   * Core task execution method with plugin hooks
+   *
+   * Core concept:
+   * Complete async execution pipeline with configurable hook lifecycle
+   *
+   * Pipeline stages:
+   * 1. beforeHooks - Pre-process input data (configurable, default: 'onBefore')
+   * 2. Task execution - Run the actual task with execHook support
+   * 3. afterHooks - Post-process results (configurable, default: 'onSuccess')
+   * 4. onError hooks - Handle any errors
+   *
+   * @template Result - Type of task return value
+   * @template Params - Type of task input parameters
+   * @param context - Execution context
+   * @param actualTask - Actual task function to execute
+   * @throws {ExecutorError} When task execution fails
+   * @returns Promise resolving to task execution result
+   */
+  protected async run<Result, Params>(
+    context: ExecutorContextImpl<Params>,
+    actualTask: ExecutorTask<Result, Params>
+  ): Promise<Result> {
+    const beforeHooks = this.getBeforeHooks();
+    const afterHooks = this.getAfterHooks();
+
+    try {
+      // Execute beforeHooks
+      const beforeValue = await this.runHooks(
+        this.plugins,
+        beforeHooks,
+        context
+      );
+
+      // Update parameters if beforeHooks returned a value
+      if (beforeValue !== undefined) {
+        context.setParameters(beforeValue);
+      }
+
+      // Execute core logic
+      await this.runExec(context, actualTask);
+
+      // Execute afterHooks
+      await this.runHooks(this.plugins, afterHooks, context);
+
+      return context.returnValue as Result;
+    } catch (error) {
+      const errorObj =
+        error instanceof Error ? error : new Error(String(error));
+      context.setError(
+        errorObj instanceof ExecutorError
+          ? errorObj
+          : new ExecutorError(EXECUTOR_ASYNC_ERROR, errorObj)
+      );
+
+      // Handle errors with onError hooks
+      await this.runHook(this.plugins, 'onError', context);
+
+      // If onError hook returns an ExecutorError, use it
+      if (context.hooksRuntimes.returnValue) {
+        const returnedError = context.hooksRuntimes.returnValue as Error;
+        context.setError(
+          returnedError instanceof ExecutorError
+            ? returnedError
+            : new ExecutorError(EXECUTOR_ASYNC_ERROR, returnedError)
+        );
+      }
+
+      const finalError =
+        context.error ||
+        new ExecutorError(EXECUTOR_ASYNC_ERROR, new Error('Unknown error'));
+      throw finalError;
+    } finally {
+      context.reset();
+    }
   }
 }

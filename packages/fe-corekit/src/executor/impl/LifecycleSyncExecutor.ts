@@ -1,52 +1,53 @@
 import { ExecutorError } from '../interface';
 import {
-  ExecutorAsyncTask,
   ExecutorContextInterface,
   ExecutorPluginNameType,
-  ExecutorTask,
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
-import { LifecyclePluginInterface } from '../interface/LifecyclePluginInterface';
+import { LifecycleSyncPluginInterface } from '../interface/SyncLifecyclePluginInterface';
 import { ExecutorContextImpl } from './ExecutorContextImpl';
-import { PluginExecutor, PluginExecutorConfig } from './PluginExecutor';
-import { EXECUTOR_ASYNC_ERROR } from '../utils/constants';
-
-export interface LifecycleExecutorConfig extends PluginExecutorConfig {}
+import { BasePluginExecutor } from './BasePluginExecutor';
+import { EXECUTOR_SYNC_ERROR } from '../utils/constants';
+import { runPluginHook } from '../utils/pluginUtil';
 
 /**
- * Simplified async lifecycle executor implementation
+ * Simplified synchronous lifecycle executor implementation
  *
  * Core Concept:
- * A simpler, fully asynchronous implementation of LifecycleExecutor that follows
- * the AsyncExecutor pattern. All operations are async, eliminating the complexity
- * of runtime sync/async detection and ensuring consistent behavior.
+ * A simpler, fully synchronous implementation of LifecycleExecutor that provides
+ * immediate execution without Promise overhead. All operations are synchronous,
+ * ensuring predictable execution order and no async context switching.
  *
  * Key Design Decisions:
  *
- * Fully Async Architecture:
- * - All methods are async: No sync/async branching logic needed
+ * Fully Sync Architecture:
+ * - All methods are synchronous: No Promise overhead
  * - Consistent behavior: Same execution path for all tasks
- * - Simpler code: ~50% less code than mixed sync/async approach
- * - Type safety: Return type is always Promise<R>, no type mismatches
+ * - Simpler code: No async/await complexity
+ * - Type safety: Return type is always R, no Promise wrapping
  *
- * Why Fully Async?
- * - `await` works on both sync and async values seamlessly
- * - No performance penalty in modern JavaScript engines
- * - Avoids runtime type detection complexity (no isPromise checks)
- * - Prevents type system vs runtime behavior mismatches
- * - Plugins can freely mix sync and async operations
+ * Why Fully Sync?
+ * - Immediate execution: No event loop delays
+ * - Predictable timing: Synchronous execution order guaranteed
+ * - Performance: No Promise allocation overhead
+ * - Debugging: Simpler stack traces
+ * - Use cases: Hot paths, constructors, getters, legacy APIs
+ *
+ * Limitations:
+ * - Cannot use async plugins: All plugins must be synchronous
+ * - Cannot use async tasks: Task function must return non-Promise values
+ * - No I/O operations: Cannot perform async I/O (fetch, file operations, etc.)
  *
  * Simplified Architecture:
  * - No Helper Classes: All logic directly in the main class
- *   - Original LifecycleExecutor: Uses HookExecutor, TaskExecutor, ErrorProcessor
- *   - LifecycleExecutor2: All methods in one class
+ *   - Similar to LifecycleExecutor2 but fully synchronous
  *   - Benefits: Easier to understand, less indirection, simpler debugging
  *
  * Main Features:
- * - Fully async execution: All operations use async/await
- * - Plugin compatibility: Works with both sync and async plugins
- * - Unified API: Single executor class for all use cases
- * - Simpler codebase: Much less code to maintain
+ * - Fully sync execution: All operations are immediate
+ * - Plugin compatibility: Works with synchronous plugins only
+ * - Unified API: Single executor class for sync use cases
+ * - Simpler codebase: Much less code than mixed sync/async approach
  * - Type safe: No runtime type mismatches
  *
  * Execution Flow:
@@ -57,54 +58,74 @@ export interface LifecycleExecutorConfig extends PluginExecutorConfig {}
  * 5. Execute main task
  * 6. Execute afterHooks (can transform result)
  * 7. On error, execute onError hooks
- * 8. Return result as Promise
+ * 8. Return result immediately
  *
  * @template Ctx - Type of executor context interface (defaults to ExecutorContextInterface<unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecyclePluginInterface<Ctx>)
  *
- * @example Basic async usage
+ * @example Basic sync usage
  * ```typescript
- * const executor = new LifecycleExecutor2();
- * executor.use(new LogPlugin());
- *
- * const result = await executor.exec(async (ctx) => {
- *   const response = await fetch('https://api.example.com/data');
- *   return response.json();
- * });
- * ```
- *
- * @example Sync task (still returns Promise)
- * ```typescript
- * const executor = new LifecycleExecutor2();
+ * const executor = new LifecycleSyncExecutor();
  * executor.use(new ValidationPlugin());
  *
- * // Note: Must await even for sync tasks
- * const result = await executor.exec((ctx) => {
+ * // No await needed - immediate execution
+ * const result = executor.exec((ctx) => {
  *   return ctx.parameters.toUpperCase();
  * });
  * ```
  *
+ * @example With data transformation
+ * ```typescript
+ * const executor = new LifecycleSyncExecutor();
+ * executor.use({
+ *   onBefore: (ctx) => {
+ *     // Transform parameters synchronously
+ *     return { ...ctx.parameters, timestamp: Date.now() };
+ *   }
+ * });
+ *
+ * const result = executor.exec({ text: 'hello' }, (ctx) => {
+ *   return ctx.parameters.text.toUpperCase();
+ * });
+ * ```
+ *
+ * @example Performance-critical hot path
+ * ```typescript
+ * class GameEngine {
+ *   private executor = new LifecycleSyncExecutor();
+ *
+ *   onFrame() {
+ *     // Must complete within 16.6ms for 60fps
+ *     const deltaTime = this.executor.exec(() => {
+ *       return performance.now() - this.lastFrameTime;
+ *     });
+ *     this.update(deltaTime);
+ *   }
+ * }
+ * ```
+ *
  * @since 2.6.0
- * @see AsyncExecutor - Inspiration for this implementation
- * @see LifecycleExecutor - Original modular implementation
+ * @see LifecycleExecutor2 - Async version of this executor
+ * @see SyncExecutor - Original sync executor implementation
  * @see LifecyclePluginInterface - Default plugin interface
  *
- * @category LifecycleExecutor
+ * @category LifecycleSyncExecutor
  */
-export class LifecycleExecutor2<
+export class LifecycleSyncExecutor<
   Ctx extends
     ExecutorContextInterface<unknown> = ExecutorContextInterface<unknown>,
-  Plugin extends LifecyclePluginInterface<Ctx> = LifecyclePluginInterface<Ctx>
-> extends PluginExecutor<Ctx, Plugin> {
+  Plugin extends
+    LifecycleSyncPluginInterface<Ctx> = LifecycleSyncPluginInterface<Ctx>
+> extends BasePluginExecutor<Ctx, Plugin> {
   /**
-   * Execute a single plugin hook asynchronously
+   * Execute a single plugin hook synchronously
    *
    * Core concept:
-   * Sequential async plugin execution with chain breaking and return value handling
+   * Sequential sync plugin execution with chain breaking and return value handling
    *
    * Execution flow:
    * 1. Check if plugin is enabled for the hook
-   * 2. Execute plugin hook with await
+   * 2. Execute plugin hook immediately
    * 3. Handle plugin results and chain breaking conditions
    * 4. Continue to next plugin or break chain
    *
@@ -112,20 +133,20 @@ export class LifecycleExecutor2<
    * - Plugin enablement checking
    * - Chain breaking support
    * - Return value management
-   * - Fully async execution with await
+   * - Fully sync execution (no await)
    *
    * @param plugins - Array of plugins to execute
    * @param hookName - Name of the hook function to execute
    * @param context - Execution context containing data and runtime information
    * @param args - Additional arguments to pass to the hook function
-   * @returns Promise resolving to the result of the hook function execution
+   * @returns Result of the hook function execution
    */
-  protected async runHook<Params>(
+  protected runHook<Params>(
     plugins: Plugin[],
     hookName: ExecutorPluginNameType,
     context: ExecutorContextImpl<Params>,
     ...args: unknown[]
-  ): Promise<Params | undefined> {
+  ): Params | undefined {
     let returnValue: Params | undefined;
 
     // Reset hook runtimes
@@ -148,16 +169,7 @@ export class LifecycleExecutor2<
       // Update runtime info
       context.runtimes(plugin, hookName, i);
 
-      // Execute hook with await (works for both sync and async)
-      const hookFn = plugin[hookName as keyof Plugin] as (
-        ctx: Ctx,
-        ...args: unknown[]
-      ) => unknown;
-      const result = await hookFn.call(
-        plugin,
-        context as unknown as Ctx,
-        ...args
-      );
+      const result = runPluginHook(plugin, hookName, context, ...args);
 
       if (result !== undefined) {
         returnValue = result as Params;
@@ -174,7 +186,7 @@ export class LifecycleExecutor2<
   }
 
   /**
-   * Execute multiple plugin hooks in sequence asynchronously
+   * Execute multiple plugin hooks in sequence synchronously
    *
    * Core concept:
    * Sequential execution of multiple hooks with chain breaking support
@@ -183,19 +195,19 @@ export class LifecycleExecutor2<
    * @param hookNames - Single hook name or array of hook names to execute in sequence
    * @param context - Execution context containing data and runtime information
    * @param args - Additional arguments to pass to the hook functions
-   * @returns Promise resolving to the result of the last executed hook function
+   * @returns Result of the last executed hook function
    */
-  protected async runHooks<Params>(
+  protected runHooks<Params>(
     plugins: Plugin[],
     hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
     context: ExecutorContextImpl<Params>,
     ...args: unknown[]
-  ): Promise<Params | undefined> {
+  ): Params | undefined {
     const hookNameArray = Array.isArray(hookNames) ? hookNames : [hookNames];
     let lastReturnValue: Params | undefined;
 
     for (const hookName of hookNameArray) {
-      const result = await this.runHook(plugins, hookName, context, ...args);
+      const result = this.runHook(plugins, hookName, context, ...args);
 
       if (result !== undefined) {
         lastReturnValue = result;
@@ -211,7 +223,7 @@ export class LifecycleExecutor2<
   }
 
   /**
-   * Execute core task logic with execHook support asynchronously
+   * Execute core task logic with execHook support synchronously
    *
    * Core concept:
    * Handles the execution phase with optional plugin intervention
@@ -226,17 +238,17 @@ export class LifecycleExecutor2<
    * @param context - Execution context
    * @param actualTask - Task function to execute
    */
-  protected async runExec<Result, Params>(
+  protected runExec<Result, Params>(
     context: ExecutorContextImpl<Params>,
-    actualTask: ExecutorTask<Result, Params>
-  ): Promise<Result> {
+    actualTask: ExecutorSyncTask<Result, Params>
+  ): Result {
     const execHook = this.getExecHook();
 
-    await this.runHook(this.plugins, execHook, context, actualTask);
+    this.runHook(this.plugins, execHook, context, actualTask);
 
     // If exec times is 0, then execute task
     const result = !context.hooksRuntimes.times
-      ? await actualTask(context as unknown as ExecutorContextInterface<Params>)
+      ? actualTask(context as unknown as ExecutorContextInterface<Params>)
       : context.hooksRuntimes.returnValue;
 
     context.setReturnValue(result);
@@ -247,7 +259,7 @@ export class LifecycleExecutor2<
    * Core task execution method with plugin hooks
    *
    * Core concept:
-   * Complete async execution pipeline with configurable hook lifecycle
+   * Complete sync execution pipeline with configurable hook lifecycle
    *
    * Pipeline stages:
    * 1. beforeHooks - Pre-process input data (configurable, default: 'onBefore')
@@ -260,22 +272,18 @@ export class LifecycleExecutor2<
    * @param context - Execution context
    * @param actualTask - Actual task function to execute
    * @throws {ExecutorError} When task execution fails
-   * @returns Promise resolving to task execution result
+   * @returns Task execution result
    */
-  protected async run<Result, Params>(
+  protected run<Result, Params>(
     context: ExecutorContextImpl<Params>,
-    actualTask: ExecutorTask<Result, Params>
-  ): Promise<Result> {
+    actualTask: ExecutorSyncTask<Result, Params>
+  ): Result {
     const beforeHooks = this.getBeforeHooks();
     const afterHooks = this.getAfterHooks();
 
     try {
       // Execute beforeHooks
-      const beforeValue = await this.runHooks(
-        this.plugins,
-        beforeHooks,
-        context
-      );
+      const beforeValue = this.runHooks(this.plugins, beforeHooks, context);
 
       // Update parameters if beforeHooks returned a value
       if (beforeValue !== undefined) {
@@ -283,10 +291,10 @@ export class LifecycleExecutor2<
       }
 
       // Execute core logic
-      const result = await this.runExec(context, actualTask);
+      const result = this.runExec(context, actualTask);
 
       // Execute afterHooks
-      await this.runHooks(this.plugins, afterHooks, context);
+      this.runHooks(this.plugins, afterHooks, context);
 
       return result as Result;
     } catch (error) {
@@ -295,11 +303,11 @@ export class LifecycleExecutor2<
       context.setError(
         errorObj instanceof ExecutorError
           ? errorObj
-          : new ExecutorError(EXECUTOR_ASYNC_ERROR, errorObj)
+          : new ExecutorError(EXECUTOR_SYNC_ERROR, errorObj)
       );
 
       // Handle errors with onError hooks
-      await this.runHook(this.plugins, 'onError', context);
+      this.runHook(this.plugins, 'onError', context);
 
       // If onError hook returns an ExecutorError, use it
       if (context.hooksRuntimes.returnValue) {
@@ -307,13 +315,13 @@ export class LifecycleExecutor2<
         context.setError(
           returnedError instanceof ExecutorError
             ? returnedError
-            : new ExecutorError(EXECUTOR_ASYNC_ERROR, returnedError)
+            : new ExecutorError(EXECUTOR_SYNC_ERROR, returnedError)
         );
       }
 
       const finalError =
         context.error ||
-        new ExecutorError(EXECUTOR_ASYNC_ERROR, new Error('Unknown error'));
+        new ExecutorError(EXECUTOR_SYNC_ERROR, new Error('Unknown error'));
       throw finalError;
     } finally {
       context.reset();
@@ -322,7 +330,7 @@ export class LifecycleExecutor2<
 
   /**
    * Execute task without throwing errors
-   * Always returns a Promise (async execution)
+   * Always returns synchronously
    *
    * Core concept:
    * Error-safe execution pipeline that returns errors instead of throwing
@@ -331,12 +339,12 @@ export class LifecycleExecutor2<
    * @template R - Type of task return value
    * @template P - Type of task input parameters
    * @param task - Task function to execute
-   * @returns Promise resolving to result or ExecutorError
+   * @returns Result or ExecutorError
    *
    * @example
    * ```typescript
-   * const result = await executor.execNoError(async (ctx) => {
-   *   return await fetchData();
+   * const result = executor.execNoError((ctx) => {
+   *   return processData(ctx.parameters);
    * });
    *
    * if (result instanceof ExecutorError) {
@@ -346,91 +354,76 @@ export class LifecycleExecutor2<
    * }
    * ```
    */
-  public execNoError<R, P>(
-    task: ExecutorAsyncTask<R, P>
-  ): Promise<R | ExecutorError>;
-  /** @override */
-  public execNoError<R, P>(
-    data: P,
-    task: ExecutorAsyncTask<R, P>
-  ): Promise<R | ExecutorError>;
-  /** @override */
-  public execNoError<R, P>(
-    task: ExecutorSyncTask<R, P>
-  ): Promise<R | ExecutorError>;
+  public execNoError<R, P>(task: ExecutorSyncTask<R, P>): R | ExecutorError;
   /** @override */
   public execNoError<R, P>(
     data: P,
     task: ExecutorSyncTask<R, P>
-  ): Promise<R | ExecutorError>;
+  ): R | ExecutorError;
   /** @override */
-  public async execNoError<R, P>(
-    dataOrTask: P | ExecutorTask<R, P>,
-    task?: ExecutorTask<R, P>
-  ): Promise<R | ExecutorError> {
+  public execNoError<R, P>(
+    dataOrTask: P | ExecutorSyncTask<R, P>,
+    task?: ExecutorSyncTask<R, P>
+  ): R | ExecutorError {
     try {
-      return task !== undefined
-        ? (
-            this.exec as <R, P>(
-              data: P,
-              task: ExecutorTask<R, P>
-            ) => R | Promise<R>
-          )(dataOrTask as P, task)
-        : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
-            dataOrTask as ExecutorTask<R, P>
-          );
+      // Call the implementation directly
+      const actualTask = (task || dataOrTask) as ExecutorSyncTask<R, P>;
+      const data = (task ? dataOrTask : undefined) as P | undefined;
+
+      if (typeof actualTask !== 'function') {
+        throw new Error('Task must be a function!');
+      }
+
+      const context = this.createContext<P>(data ?? ({} as P));
+      const result = this.run(context, actualTask);
+      return result as R;
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;
       }
       const errorObj =
         error instanceof Error ? error : new Error(String(error));
-      return new ExecutorError(EXECUTOR_ASYNC_ERROR, errorObj);
+      return new ExecutorError(EXECUTOR_SYNC_ERROR, errorObj);
     }
   }
 
   /**
    * Execute task with full plugin pipeline
-   * Always returns a Promise (async execution)
+   * Always returns synchronously
    *
    * Core concept:
-   * Complete async execution pipeline with plugin lifecycle management
-   * Works with both sync and async tasks through await
+   * Complete sync execution pipeline with plugin lifecycle management
+   * Works only with synchronous tasks
    *
    * @override
    * @template R - Type of task return value
    * @template P - Type of task input parameters
-   * @param task - Task function to execute (can be sync or async)
-   * @returns Promise resolving to task execution result
+   * @param task - Task function to execute (must be synchronous)
+   * @returns Task execution result
    *
-   * @example Async task
+   * @example Sync task
    * ```typescript
-   * const result = await executor.exec(async (ctx) => {
-   *   const response = await fetch('https://api.example.com/data');
-   *   return response.json();
-   * });
-   * ```
-   *
-   * @example Sync task (still returns Promise)
-   * ```typescript
-   * const result = await executor.exec((ctx) => {
+   * const result = executor.exec((ctx) => {
    *   return ctx.parameters.toUpperCase();
    * });
    * ```
+   *
+   * @example With data
+   * ```typescript
+   * const result = executor.exec({ text: 'hello' }, (ctx) => {
+   *   return ctx.parameters.text.toUpperCase();
+   * });
+   * ```
    */
-  public exec<R, P>(task: ExecutorAsyncTask<R, P>): Promise<R>;
+  public exec<R, P>(task: ExecutorSyncTask<R, P>): R;
   /** @override */
-  public exec<R, P>(data: P, task: ExecutorAsyncTask<R, P>): Promise<R>;
-  /** @override */
-  public exec<R, P>(task: ExecutorSyncTask<R, P>): Promise<R>;
-  /** @override */
-  public exec<R, P>(data: P, task: ExecutorSyncTask<R, P>): Promise<R>;
+  public exec<R, P>(data: P, task: ExecutorSyncTask<R, P>): R;
   /** @override */
   public exec<R, P>(
-    dataOrTask: P | ExecutorTask<R, P>,
-    task?: ExecutorTask<R, P>
-  ): Promise<R> {
-    const actualTask = (task || dataOrTask) as ExecutorTask<R, P>;
+    dataOrTask: P | ExecutorSyncTask<R, P>,
+    task?: ExecutorSyncTask<R, P>
+  ): R {
+    const actualTask = (task || dataOrTask) as ExecutorSyncTask<R, P>;
     const data = (task ? dataOrTask : undefined) as P | undefined;
 
     if (typeof actualTask !== 'function') {

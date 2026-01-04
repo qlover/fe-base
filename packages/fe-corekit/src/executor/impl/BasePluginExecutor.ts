@@ -1,4 +1,4 @@
-import {
+import type {
   ExecutorContextInterface,
   ExecutorInterface,
   ExecutorPluginNameType,
@@ -7,6 +7,11 @@ import {
 } from '../interface/ExecutorInterface';
 import { ExecutorContextImpl } from './ExecutorContextImpl';
 import { ExecutorError } from '../interface';
+import {
+  DEFAULT_HOOK_ON_BEFORE,
+  DEFAULT_HOOK_ON_SUCCESS,
+  DEFAULT_HOOK_ON_EXEC
+} from '../utils/constants';
 
 /**
  * Base configuration for lifecycle executors
@@ -82,7 +87,7 @@ export interface PluginExecutorConfig {
  * @since 2.6.0
  * @category BaseLifecycleExecutor
  */
-export abstract class PluginExecutor<
+export abstract class BasePluginExecutor<
   Ctx extends ExecutorContextInterface<unknown>,
   Plugin extends ExecutorPluginInterface<Ctx>
 > implements ExecutorInterface<Plugin>
@@ -136,7 +141,7 @@ export abstract class PluginExecutor<
   protected validePlugin(plugin: Plugin): void {
     // Security: Validate plugin input
     if (typeof plugin !== 'object' || plugin === null) {
-      throw new Error('Plugin must be an object and have a pluginName');
+      throw new Error('Plugin must be an object');
     }
 
     // Check for duplicate plugins if onlyOne is set
@@ -180,48 +185,21 @@ export abstract class PluginExecutor<
   protected getBeforeHooks():
     | ExecutorPluginNameType
     | ExecutorPluginNameType[] {
-    return this.config?.beforeHooks || 'onBefore';
+    return this.config?.beforeHooks ?? DEFAULT_HOOK_ON_BEFORE;
   }
 
   /**
    * Get configured afterHooks or default
    */
   protected getAfterHooks(): ExecutorPluginNameType | ExecutorPluginNameType[] {
-    return this.config?.afterHooks || 'onSuccess';
+    return this.config?.afterHooks ?? DEFAULT_HOOK_ON_SUCCESS;
   }
 
   /**
    * Get configured execHook or default
    */
   protected getExecHook(): ExecutorPluginNameType {
-    return this.config?.execHook || 'onExec';
-  }
-
-  /**
-   * Parse exec method arguments
-   * 
-   * Handles both overload cases:
-   * - exec(task)
-   * - exec(data, task)
-   * 
-   * @template R - Type of task return value
-   * @template P - Type of task input parameters
-   * @param dataOrTask - Either data or task function
-   * @param task - Optional task function
-   * @returns Parsed actualTask and data
-   */
-  protected parseExecArgs<R, P>(
-    dataOrTask: P | ExecutorTask<R, P>,
-    task?: ExecutorTask<R, P>
-  ): { actualTask: ExecutorTask<R, P>; data: P | undefined } {
-    const actualTask = (task || dataOrTask) as ExecutorTask<R, P>;
-    const data = (task ? dataOrTask : undefined) as P | undefined;
-
-    if (typeof actualTask !== 'function') {
-      throw new Error('Task must be a function!');
-    }
-
-    return { actualTask, data };
+    return this.config?.execHook ?? DEFAULT_HOOK_ON_EXEC;
   }
 
   /**
