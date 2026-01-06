@@ -270,7 +270,8 @@ export default tseslint.config([
       allowedGlobals: [
         ...Object.keys(globals.browser),
         ...Object.keys(globals.node),
-        ...Object.keys(vitest.environments.env.globals)
+        ...Object.keys(vitest.environments.env.globals),
+        'expectTypeOf'
       ],
       allGlobals
     }
