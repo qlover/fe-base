@@ -20,7 +20,7 @@ import { ExecutorHookRuntimesInterface } from './ExecutorHookRuntimesInterface';
  * ```
  */
 export type ExecutorAsyncTask<R, P> = (
-  ctx: ExecutorContextInterface<P>
+  ctx: ExecutorContextInterface<P, R>
 ) => Promise<R>;
 
 /**
@@ -39,7 +39,7 @@ export type ExecutorAsyncTask<R, P> = (
  * };
  * ```
  */
-export type ExecutorSyncTask<R, P> = (ctx: ExecutorContextInterface<P>) => R;
+export type ExecutorSyncTask<R, P> = (ctx: ExecutorContextInterface<P, R>) => R;
 
 /**
  * Union type for both sync and async tasks
@@ -65,91 +65,20 @@ export type ExecutorTask<R, P> =
 export type ExecutorPluginNameType = string; // TODO: Add symbol support | symbol;
 
 /**
- * Executor context interface
- *
- * ## Purpose
- * Provides the execution context for tasks and plugins. Contains all state
- * information needed during task execution, including parameters, errors,
- * return values, and runtime tracking.
- *
- * Key Features:
- *
- * Parameter Management:
- * - Read-only Access: Parameters are read-only to prevent accidental modification
- * - Safe Updates: Use `setParameters` to update parameters (clones internally)
- * - Type Safety: Generic type parameter ensures type-safe parameter access
- *
- * Error Handling:
- * - Error State: Tracks current error state
- * - Error Setting: Use `setError` to set errors
- * - Error Access: Read-only error property for safe access
- *
- * Return Value Tracking:
- * - Return Value Storage: Stores task return values
- * - Plugin Access: Plugins can access return values
- * - Type Safety: Return values are typed as unknown for flexibility
- *
- * Runtime Tracking:
- * - Hook Runtimes: Extends ExecutorHookRuntimesInterface for runtime tracking
- * - Plugin Metadata: Tracks plugin execution information
- * - Chain Control: Manages chain breaking conditions
- *
- * Differences from Original Implementation:
- *
- * Integrated Functionality:
- * - No Separate Handler: All functionality integrated into context
- *   - Original: Separate ContextHandler class
- *   - New: All methods in context interface
- *   - Benefits: Simpler API, better encapsulation
- *
- * Parameter Safety:
- * - Cloned Parameters: Parameters are cloned in implementation
- *   - Prevents memory leaks
- *   - Ensures parameter isolation
- *   - Safe for concurrent usage
- *
- * Enhanced Methods:
- * - setParameters: Clones parameters before setting
- *   - Ensures isolation
- *   - Prevents external modifications
- *   - Safe for long-running contexts
- *
- * @since 2.6.0
- * @template T - Type of context parameters
- *
- * @example Basic usage
- * ```typescript
- * const context: ExecutorContextInterface<UserParams> = new ExecutorContextImpl({
- *   userId: 123,
- *   name: 'John'
- * });
- *
- * // Access parameters (read-only)
- * const userId = context.parameters.userId;
- *
- * // Update parameters (clones internally)
- * context.setParameters({ userId: 456, name: 'Jane' });
- *
- * // Set return value
- * context.setReturnValue({ success: true });
- *
- * // Handle errors
- * context.setError(new ExecutorError('ERROR_CODE', error));
- * ```
- *
- * @see ExecutorContextImpl - Default implementation
- * @see ExecutorHookRuntimesInterface - Runtime tracking interface
- * @see LifecycleExecutor - Executor that uses this context
- */
-/**
  * Executor context interface with generic runtime support
  *
  * @template T - Type of execution parameters
+ * @template R - Type of return value (required for type safety)
  * @template RuntimesType - Type of hook runtimes (extends HookRuntimes, defaults to HookRuntimes)
  *
- * @example Basic usage (default HookRuntimes)
+ * @example Basic usage
  * ```typescript
- * const context: ExecutorContextInterface<UserParams> = new ExecutorContextImpl(params);
+ * const context: ExecutorContextInterface<UserParams, UserResult> = new ExecutorContextImpl(params);
+ * ```
+ *
+ * @example With unknown return type
+ * ```typescript
+ * const context: ExecutorContextInterface<UserParams, unknown> = new ExecutorContextImpl(params);
  * ```
  *
  * @example Extended runtimes
@@ -157,11 +86,12 @@ export type ExecutorPluginNameType = string; // TODO: Add symbol support | symbo
  * interface CustomRuntimes extends HookRuntimes {
  *   executionTime: number;
  * }
- * const context: ExecutorContextInterface<UserParams, CustomRuntimes>;
+ * const context: ExecutorContextInterface<UserParams, UserResult, CustomRuntimes>;
  * ```
  */
 export interface ExecutorContextInterface<
   T,
+  R = unknown,
   RuntimesType extends HookRuntimes = HookRuntimes
 > extends ExecutorHookRuntimesInterface<RuntimesType> {
   /** Read-only access to execution parameters */
@@ -171,7 +101,7 @@ export interface ExecutorContextInterface<
   readonly error: unknown;
 
   /** Task return value */
-  readonly returnValue: unknown;
+  readonly returnValue: R | undefined;
 
   /**
    * Set the error state
@@ -222,7 +152,7 @@ export interface ExecutorContextInterface<
  *
  * @example Basic plugin
  * ```typescript
- * const plugin: ExecutorPluginInterface<ExecutorContextInterface<unknown>> = {
+ * const plugin: ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>> = {
  *   pluginName: 'myPlugin',
  *   onlyOne: true,
  *   enabled: (name, context) => {
@@ -235,7 +165,7 @@ export interface ExecutorContextInterface<
  * @see LifecycleExecutor - Executor that uses plugins
  */
 export interface ExecutorPluginInterface<
-  Ctx extends ExecutorContextInterface<unknown>
+  Ctx extends ExecutorContextInterface<unknown, unknown>
 > {
   /** Optional plugin name for identification */
   readonly pluginName: ExecutorPluginNameType;
@@ -303,7 +233,7 @@ export interface ExecutorPluginInterface<
  *
  * @example Basic usage
  * ```typescript
- * const executor: ExecutorInterface<LifecyclePluginInterface<ExecutorContextInterface<unknown>>> =
+ * const executor: ExecutorInterface<LifecyclePluginInterface<ExecutorContextInterface<unknown, unknown>>> =
  *   new LifecycleExecutor();
  *
  * executor.use({
@@ -340,8 +270,8 @@ export interface ExecutorPluginInterface<
  */
 export interface ExecutorInterface<
   Plugin extends ExecutorPluginInterface<
-    ExecutorContextInterface<unknown>
-  > = ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+    ExecutorContextInterface<unknown, unknown>
+  > = ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
 > {
   /**
    * Register a plugin with the executor

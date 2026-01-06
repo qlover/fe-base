@@ -56,7 +56,8 @@ import { ExecutorError } from '../../../src/executor/interface';
 import type {
   ExecutorContextInterface,
   ExecutorAsyncTask,
-  ExecutorSyncTask
+  ExecutorSyncTask,
+  ExecutorTask
 } from '../../../src/executor/interface';
 import type { LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
 
@@ -71,14 +72,25 @@ interface TestResult {
   processed?: boolean;
 }
 
-// Test helper functions
-function createMockPlugin(
-  overrides: Partial<LifecyclePluginInterface<ExecutorContextInterface<unknown>>> = {}
-): LifecyclePluginInterface<ExecutorContextInterface<unknown>> {
+type TestParamsContext<R = unknown> = ExecutorContextInterface<TestParams, R>;
+type TestMockContext<R = unknown> = ExecutorContextInterface<unknown, R>;
+
+function createMockPlugin<R>(
+  overrides: Partial<LifecyclePluginInterface<TestMockContext<R>>> = {}
+): LifecyclePluginInterface<TestMockContext<R>> {
   return {
-    pluginName: 'test-plugin',
+    pluginName: 'test-mock-plugin',
     ...overrides
-  } as LifecyclePluginInterface<ExecutorContextInterface<unknown>>;
+  };
+}
+
+function createTestParamsPlugin<R>(
+  overrides: Partial<LifecyclePluginInterface<TestParamsContext<R>>> = {}
+): LifecyclePluginInterface<TestParamsContext<R>> {
+  return {
+    pluginName: 'test-params-plugin',
+    ...overrides
+  };
 }
 
 function delay(ms: number): Promise<void> {
@@ -173,7 +185,7 @@ describe('LifecycleExecutor', () => {
 
       try {
         const result = await executor.execNoError({ value: 'test' }, task);
-        
+
         expect(result).toBeInstanceOf(ExecutorError);
         if (result instanceof ExecutorError) {
           expect(result.cause).toBeInstanceOf(Error);
@@ -187,7 +199,10 @@ describe('LifecycleExecutor', () => {
 
     it('should return ExecutorError for ExecutorError thrown', async () => {
       const executor = new LifecycleExecutor();
-      const customError = new ExecutorError('CUSTOM_ERROR', new Error('Custom'));
+      const customError = new ExecutorError(
+        'CUSTOM_ERROR',
+        new Error('Custom')
+      );
       const task: ExecutorAsyncTask<string, TestParams> = async () => {
         throw customError;
       };
@@ -338,7 +353,7 @@ describe('LifecycleExecutor', () => {
 
   describe('execHook (onExec)', () => {
     it('should execute onExec hook with task as argument', async () => {
-      let receivedTask: any = null;
+      let receivedTask: ExecutorTask<unknown, TestParams> | null = null;
       const plugin = createMockPlugin({
         onExec: async (_ctx, task) => {
           receivedTask = task;
@@ -379,9 +394,9 @@ describe('LifecycleExecutor', () => {
     it('should use onExec return value instead of executing task', async () => {
       const executionOrder: string[] = [];
       const plugin = createMockPlugin({
-        onExec: async () => {
+        onExec: async (_ctx, _task) => {
           executionOrder.push('onExec');
-          return 'intercepted-result';
+          return 'intercepted-result' as ReturnType<typeof _task>;
         }
       });
 
@@ -399,7 +414,7 @@ describe('LifecycleExecutor', () => {
 
     it('should allow plugin to wrap task execution', async () => {
       const plugin = createMockPlugin({
-        onExec: async (ctx, task: any) => {
+        onExec: async (ctx, task) => {
           const result = await task(ctx);
           return `wrapped: ${result}`;
         }
@@ -415,13 +430,13 @@ describe('LifecycleExecutor', () => {
 
     it('should execute multiple onExec hooks', async () => {
       const executionOrder: string[] = [];
-      const plugin1 = createMockPlugin({
+      const plugin1 = createMockPlugin<string>({
         pluginName: 'plugin1',
         onExec: async () => {
           executionOrder.push('plugin1');
         }
       });
-      const plugin2 = createMockPlugin({
+      const plugin2 = createMockPlugin<string>({
         pluginName: 'plugin2',
         onExec: async () => {
           executionOrder.push('plugin2');
@@ -429,7 +444,7 @@ describe('LifecycleExecutor', () => {
         }
       });
 
-      const executor = new LifecycleExecutor();
+      const executor = new LifecycleExecutor<TestMockContext<string>>();
       executor.use(plugin1);
       executor.use(plugin2);
 
@@ -465,7 +480,7 @@ describe('LifecycleExecutor', () => {
     });
 
     it('should have access to task result in context', async () => {
-      let capturedResult: any = null;
+      let capturedResult: unknown = null;
       const plugin = createMockPlugin({
         onSuccess: async (ctx) => {
           capturedResult = ctx.returnValue;
@@ -506,7 +521,8 @@ describe('LifecycleExecutor', () => {
 
     it('should not affect return value', async () => {
       const plugin = createMockPlugin({
-        onSuccess: async () => {
+        // @ts-expect-error For test purpose
+        onSuccess: async (): Promise<string> => {
           return 'modified-result';
         }
       });
@@ -543,7 +559,7 @@ describe('LifecycleExecutor', () => {
     });
 
     it('should have access to error in context', async () => {
-      let capturedError: any = null;
+      let capturedError: unknown = null;
       const plugin = createMockPlugin({
         onError: async (ctx) => {
           capturedError = ctx.error;
@@ -922,9 +938,7 @@ describe('LifecycleExecutor', () => {
       executor.use(plugin);
 
       // Should not throw, error in finally hook should be silently ignored
-      await expect(
-        executor.exec(async () => 'result')
-      ).resolves.toBe('result');
+      await expect(executor.exec(async () => 'result')).resolves.toBe('result');
     });
 
     it('should not mask original error when onFinally hook throws error', async () => {
@@ -967,9 +981,7 @@ describe('LifecycleExecutor', () => {
       executor.use(plugin2);
 
       // Should not throw, all finally hooks should execute
-      await expect(
-        executor.exec(async () => 'result')
-      ).resolves.toBe('result');
+      await expect(executor.exec(async () => 'result')).resolves.toBe('result');
 
       expect(executionOrder).toEqual(['plugin1', 'plugin2']);
     });
@@ -1280,7 +1292,7 @@ describe('LifecycleExecutor', () => {
         func: () => 'test'
       };
 
-      const task: ExecutorAsyncTask<any, any> = async (ctx) => {
+      const task: ExecutorAsyncTask<unknown, unknown> = async (ctx) => {
         return ctx.parameters;
       };
 
@@ -1391,12 +1403,17 @@ describe('LifecycleExecutor', () => {
         return 'result';
       });
 
-      expect(executionOrder).toEqual(['onBefore', 'onExec', 'task', 'onSuccess']);
+      expect(executionOrder).toEqual([
+        'onBefore',
+        'onExec',
+        'task',
+        'onSuccess'
+      ]);
     });
 
     it('should pass data through complete lifecycle', async () => {
-      const plugin = createMockPlugin({
-        onBefore: async (ctx: ExecutorContextInterface<TestParams>) => {
+      const plugin = createTestParamsPlugin({
+        onBefore: async (ctx) => {
           return { value: ctx.parameters.value.toUpperCase(), count: 1 };
         },
         onSuccess: async (ctx) => {
@@ -1404,10 +1421,10 @@ describe('LifecycleExecutor', () => {
         }
       });
 
-      const executor = new LifecycleExecutor();
+      const executor = new LifecycleExecutor<TestParamsContext>();
       executor.use(plugin);
 
-      const task: ExecutorAsyncTask<any, TestParams> = async (ctx) => {
+      const task: ExecutorAsyncTask<unknown, TestParams> = async (ctx) => {
         return {
           data: ctx.parameters.value,
           count: ctx.parameters.count
@@ -1462,7 +1479,7 @@ describe('LifecycleExecutor', () => {
         onExec: async (_ctx, task) => {
           executionOrder.push('onExec');
           // Return a new function that wraps the original task
-          return async (ctx: any) => {
+          return async (ctx) => {
             executionOrder.push('wrapper-before');
             const result = await task(ctx);
             executionOrder.push('wrapper-after');
@@ -1471,7 +1488,7 @@ describe('LifecycleExecutor', () => {
         }
       });
 
-      const executor = new LifecycleExecutor();
+      const executor = new LifecycleExecutor<TestMockContext>();
       executor.use(plugin);
 
       const result = await executor.exec(async () => {
@@ -1479,16 +1496,21 @@ describe('LifecycleExecutor', () => {
         return 'result';
       });
 
-      expect(executionOrder).toEqual(['onExec', 'wrapper-before', 'task', 'wrapper-after']);
+      expect(executionOrder).toEqual([
+        'onExec',
+        'wrapper-before',
+        'task',
+        'wrapper-after'
+      ]);
       expect(result).toBe('wrapped-result');
     });
 
     it('should support plugin returning function for retry logic', async () => {
       let attemptCount = 0;
       const plugin = createMockPlugin({
-        onExec: async (_ctx, task) => {
+        onExec: (_ctx, task) => {
           // Return a retry wrapper function
-          return async (ctx: any) => {
+          return async (ctx: typeof _ctx) => {
             for (let i = 0; i < 3; i++) {
               try {
                 attemptCount++;
@@ -1604,4 +1626,3 @@ describe('LifecycleExecutor', () => {
     });
   });
 });
-

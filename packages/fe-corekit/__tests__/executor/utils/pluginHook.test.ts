@@ -558,6 +558,7 @@ describe('pluginHook utilities', () => {
         pluginName: 'plugin1',
         onBefore: async () => ({ value: 'before' }),
         onExec: async () => undefined,
+        // @ts-expect-error for test
         onSuccess: async () => ({ value: 'success' })
       });
 

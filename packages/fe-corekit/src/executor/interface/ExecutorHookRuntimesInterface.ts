@@ -61,7 +61,7 @@ export interface ExecutorHookRuntimesInterface<
    * @param hookName - The name of the hook to validate
    * @returns True if the hook should be skipped, false otherwise
    */
-  shouldSkipPluginHook<Ctx extends ExecutorContextInterface<unknown>>(
+  shouldSkipPluginHook<Ctx extends ExecutorContextInterface<unknown, unknown>>(
     plugin: ExecutorPluginInterface<Ctx>,
     hookName: string
   ): boolean;

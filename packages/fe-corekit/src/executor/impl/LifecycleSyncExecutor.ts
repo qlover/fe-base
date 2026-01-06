@@ -115,8 +115,10 @@ import {
  * @category Executor
  */
 export class LifecycleSyncExecutor<
-  Ctx extends
-    ExecutorContextInterface<unknown> = ExecutorContextInterface<unknown>,
+  Ctx extends ExecutorContextInterface<
+    unknown,
+    unknown
+  > = ExecutorContextInterface<unknown, unknown>,
   Plugin extends
     LifecycleSyncPluginInterface<Ctx> = LifecycleSyncPluginInterface<Ctx>
 > extends BasePluginExecutor<Ctx, Plugin> {
@@ -176,7 +178,7 @@ export class LifecycleSyncExecutor<
   protected runHook<Result, Params>(
     plugins: Plugin[],
     hookName: ExecutorPluginNameType,
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, unknown>,
     ...args: unknown[]
   ): Result | undefined {
     return runPluginsHookSync(plugins, hookName, context, ...args);
@@ -248,7 +250,7 @@ export class LifecycleSyncExecutor<
   protected runHooks<Result, Params>(
     plugins: Plugin[],
     hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, unknown>,
     ...args: unknown[]
   ): Result | undefined {
     return runPluginsHooksSync(plugins, hookNames, context, ...args);
@@ -278,7 +280,7 @@ export class LifecycleSyncExecutor<
    * @returns Task execution result
    */
   protected runExec<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorSyncTask<Result, Params>
   ): Result {
     const execHook = this.getExecHook();
@@ -289,13 +291,13 @@ export class LifecycleSyncExecutor<
 
     if (!context.hooksRuntimes.times) {
       // No plugin handled execution, run actual task
-      result = actualTask(context);
+      result = actualTask(context as ExecutorContextInterface<Params, Result>);
     } else {
       const hookReturnValue = context.hooksRuntimes.returnValue;
 
       // If hook returned undefined/void, let original task run
       if (hookReturnValue === undefined) {
-        result = actualTask(context);
+        result = actualTask(context as ExecutorContextInterface<Params, Result>);
       } else if (typeof hookReturnValue === 'function') {
         // Plugin returned a new task function, execute it
         result = hookReturnValue(context);
@@ -330,7 +332,7 @@ export class LifecycleSyncExecutor<
    * @returns Task execution result
    */
   protected run<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorSyncTask<Result, Params>
   ): Result {
     try {
@@ -397,7 +399,7 @@ export class LifecycleSyncExecutor<
    * ```
    */
   protected handler<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorSyncTask<Result, Params>
   ): Result {
     const beforeResult = this.runHooks<Params, Params>(
@@ -468,11 +470,10 @@ export class LifecycleSyncExecutor<
    * ```
    */
   protected handlerCatch(
-    context: ExecutorContextImpl<unknown>,
+    context: ExecutorContextImpl<unknown, unknown>,
     error: unknown
   ): ExecutorError {
-    const errorObj =
-      error instanceof Error ? error : new Error(String(error));
+    const errorObj = error instanceof Error ? error : new Error(String(error));
     context.setError(
       errorObj instanceof ExecutorError
         ? errorObj
@@ -556,7 +557,7 @@ export class LifecycleSyncExecutor<
     // Enable continue on error for finally hooks to ensure all hooks execute
     // even if one throws an error
     context.runtimes({ continueOnError: true });
-    
+
     this.runHooks(this.plugins, this.getFinallyHook(), context);
 
     context.reset();
@@ -608,7 +609,7 @@ export class LifecycleSyncExecutor<
         throw new Error('Task must be a function!');
       }
 
-      const context = this.createContext<P>(data ?? ({} as P));
+      const context = this.createContext<P, R>(data ?? ({} as P));
       const result = this.run(context, actualTask);
       return result as R;
     } catch (error) {
@@ -663,7 +664,7 @@ export class LifecycleSyncExecutor<
       throw new Error('Task must be a function!');
     }
 
-    const context = this.createContext<P>(data ?? ({} as P));
+    const context = this.createContext<P, R>(data ?? ({} as P));
     return this.run(context, actualTask);
   }
 }

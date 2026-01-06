@@ -58,7 +58,7 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * 8. Execute onFinally hooks for cleanup
  * 9. Return result as Promise
  *
- * @template Ctx - Type of executor context interface (defaults to ExecutorContextImpl<unknown>)
+ * @template Ctx - Type of executor context interface (defaults to ExecutorContextImpl<unknown, unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecyclePluginInterface<Ctx>)
  *
  * @example Basic async usage
@@ -88,7 +88,7 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * @see LifecyclePluginInterface - Default plugin interface
  */
 export class LifecycleExecutor<
-  Ctx extends ExecutorContextInterface<unknown> = ExecutorContextImpl<unknown>,
+  Ctx extends ExecutorContextInterface<unknown, unknown> = ExecutorContextImpl<unknown, unknown>,
   Plugin extends LifecyclePluginInterface<Ctx> = LifecyclePluginInterface<Ctx>
 > extends BasePluginExecutor<Ctx, Plugin> {
   /**
@@ -206,7 +206,7 @@ export class LifecycleExecutor<
       throw new Error('Task must be a function!');
     }
 
-    const context = this.createContext<P>(data ?? ({} as P));
+    const context = this.createContext<P, R>(data ?? ({} as P));
     return this.run(context, actualTask);
   }
 
@@ -266,7 +266,7 @@ export class LifecycleExecutor<
   protected async runHook<Result, Params>(
     plugins: Plugin[],
     hookName: ExecutorPluginNameType,
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     ...args: unknown[]
   ): Promise<Result | undefined> {
     return runPluginsHookAsync(plugins, hookName, context, ...args);
@@ -338,7 +338,7 @@ export class LifecycleExecutor<
   protected async runHooks<Result, Params>(
     plugins: Plugin[],
     hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     ...args: unknown[]
   ): Promise<Result | undefined> {
     return runPluginsHooksAsync(plugins, hookNames, context, ...args);
@@ -415,7 +415,7 @@ export class LifecycleExecutor<
    * ```
    */
   protected async runExec<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
     const execHook = this.getExecHook();
@@ -427,7 +427,7 @@ export class LifecycleExecutor<
 
     if (!context.hooksRuntimes.times) {
       // No plugin handled execution, run actual task
-      result = await actualTask(context);
+      result = await actualTask(context as ExecutorContextInterface<Params, Result>);
     } else {
       const hookReturnValue = context.hooksRuntimes.returnValue;
 
@@ -466,7 +466,7 @@ export class LifecycleExecutor<
    * @returns Promise resolving to task execution result
    */
   protected async run<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
     try {
@@ -533,17 +533,17 @@ export class LifecycleExecutor<
    * ```
    */
   protected async handler<Result, Params>(
-    context: ExecutorContextImpl<Params>,
+    context: ExecutorContextImpl<Params, Result>,
     actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
-    const beforeResult = await this.runHooks<Params, Params>(
+    const beforeResult = await this.runHooks<Result, Params>(
       this.plugins,
       this.getBeforeHooks(),
       context
     );
 
     if (beforeResult !== undefined) {
-      context.setParameters(beforeResult);
+      context.setParameters(beforeResult as Params);
     }
 
     await this.runExec(context, actualTask);
@@ -603,7 +603,7 @@ export class LifecycleExecutor<
    * ```
    */
   protected async handlerCatch(
-    context: ExecutorContextImpl<unknown>,
+    context: ExecutorContextImpl<unknown, unknown>,
     error: unknown
   ): Promise<ExecutorError> {
     context.setError(error);

@@ -2,6 +2,7 @@ import { ExecutorContextInterface } from './ExecutorInterface';
 import { ExecutorPluginInterface } from './ExecutorInterface';
 import { ExecutorError } from './ExecutorError';
 import { ExecutorSyncTask } from './ExecutorInterface';
+import { LifecycleExecResult } from './LifecyclePluginInterface';
 
 /**
  * Synchronous lifecycle plugin interface for executor plugins
@@ -104,7 +105,9 @@ import { ExecutorSyncTask } from './ExecutorInterface';
  * @category LifecycleSyncPluginInterface
  */
 export interface LifecycleSyncPluginInterface<
-  Ctx extends ExecutorContextInterface<unknown> = ExecutorContextInterface<unknown>
+  Ctx extends ExecutorContextInterface<unknown, unknown>,
+  Result = Ctx['returnValue'],
+  Param = Ctx['parameters']
 > extends ExecutorPluginInterface<Ctx> {
   /**
    * Hook executed before task execution (synchronous only)
@@ -261,10 +264,10 @@ export interface LifecycleSyncPluginInterface<
    * }
    * ```
    */
-  onExec?: <Result>(
+  onExec?: (
     context: Ctx,
-    task: ExecutorSyncTask<Result, Ctx['parameters']>
-  ) => Result | void;
+    task: ExecutorSyncTask<Result, Param>
+  ) => LifecycleExecResult<Result, Param>;
 
   /**
    * Hook executed in finally block after task execution (synchronous only)
