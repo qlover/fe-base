@@ -22,6 +22,20 @@ interface TestOptions extends ScriptSharedInterface {
   nested?: {
     value?: string;
   };
+  build?: {
+    target?: string;
+    minify?: boolean;
+    sourcemap?: boolean;
+  };
+  deploy?: {
+    aws?: {
+      region?: string;
+    };
+  };
+  option1?: string;
+  option2?: string;
+  option3?: string;
+  [key: string]: unknown;
 }
 
 interface MockEnvVars {
@@ -241,6 +255,164 @@ describe('ScriptContext', () => {
       });
 
       expect(fallbackContext.options.sourceBranch).toBe('fallback');
+    });
+
+    it('should handle default branch fallback', () => {
+      const mockEnvWithoutBranch = {
+        get: vi.fn(() => undefined)
+      } as unknown as Env;
+
+      const defaultBranchContext = new ScriptContext<TestOptions>(
+        'test-script',
+        {
+          options: {
+            env: mockEnvWithoutBranch
+          }
+        }
+      );
+
+      expect(defaultBranchContext.options.sourceBranch).toBe('master');
+    });
+  });
+
+  describe('feConfig integration', () => {
+    it('should merge feConfig with defaults', () => {
+      const customContext = new ScriptContext<TestOptions>('test-script', {
+        feConfig: {
+          protectedBranches: ['main', 'develop'],
+          customOption: 'custom-value'
+        },
+        options: {
+          env: mockEnv
+        }
+      });
+
+      // feConfig merges with defaults, so it includes default protectedBranches
+      expect(customContext.feConfig.protectedBranches).toContain('main');
+      expect(customContext.feConfig.protectedBranches).toContain('develop');
+      expect(customContext.feConfig.customOption).toBe('custom-value');
+    });
+
+    it('should access feConfig through context', () => {
+      expect(context.feConfig).toBeDefined();
+      expect(context.feConfig).toHaveProperty('protectedBranches');
+    });
+  });
+
+  describe('dryRun and verbose flags', () => {
+    it('should set dryRun flag', () => {
+      const dryRunContext = new ScriptContext<TestOptions>('test-script', {
+        dryRun: true,
+        options: {
+          env: mockEnv
+        }
+      });
+
+      expect(dryRunContext.dryRun).toBe(true);
+    });
+
+    it('should set verbose flag', () => {
+      const verboseContext = new ScriptContext<TestOptions>('test-script', {
+        verbose: true,
+        options: {
+          env: mockEnv
+        }
+      });
+
+      expect(verboseContext.verbose).toBe(true);
+    });
+
+    it('should default dryRun and verbose to false', () => {
+      const defaultContext = new ScriptContext<TestOptions>('test-script', {
+        options: {
+          env: mockEnv
+        }
+      });
+
+      expect(defaultContext.dryRun).toBe(false);
+      expect(defaultContext.verbose).toBe(false);
+    });
+  });
+
+  describe('options property', () => {
+    it('should return options through options property', () => {
+      const options = context.options;
+      expect(options).toBeDefined();
+      expect(options.env).toBe(mockEnv);
+    });
+
+    it('should maintain reference to parameters', () => {
+      const options1 = context.options;
+      const options2 = context.options;
+      expect(options1).toBe(options2);
+    });
+  });
+
+  describe('getOptions with string path', () => {
+    beforeEach(() => {
+      context.setOptions({
+        build: {
+          target: 'production',
+          minify: true
+        }
+      });
+    });
+
+    it('should access nested options with string path', () => {
+      const target = context.getOptions('build.target');
+      expect(target).toBe('production');
+    });
+
+    it('should access deeply nested options', () => {
+      context.setOptions({
+        deploy: {
+          aws: {
+            region: 'us-east-1'
+          }
+        }
+      });
+
+      const region = context.getOptions('deploy.aws.region');
+      expect(region).toBe('us-east-1');
+    });
+  });
+
+  describe('setOptions deep merge', () => {
+    it('should deep merge nested objects', () => {
+      context.setOptions({
+        build: {
+          target: 'production',
+          minify: true
+        }
+      });
+
+      context.setOptions({
+        build: {
+          sourcemap: false
+        }
+      });
+
+      const buildOptions = context.getOptions('build');
+      expect(buildOptions).toEqual({
+        target: 'production',
+        minify: true,
+        sourcemap: false
+      });
+    });
+
+    it('should preserve unrelated options', () => {
+      context.setOptions({
+        option1: 'value1',
+        option2: 'value2'
+      });
+
+      context.setOptions({
+        option3: 'value3'
+      });
+
+      expect(context.getOptions('option1')).toBe('value1');
+      expect(context.getOptions('option2')).toBe('value2');
+      expect(context.getOptions('option3')).toBe('value3');
     });
   });
 });
