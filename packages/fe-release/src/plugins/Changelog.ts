@@ -39,7 +39,6 @@ import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
-import { ExecutorReleaseContext } from '../type';
 import { GitChangelogOptions } from '../interface/ChangeLog';
 import {
   CHANGELOG_ALL_FIELDS,
@@ -305,13 +304,11 @@ export default class Changelog extends ScriptPlugin<
    * @example
    * ```typescript
    * const plugin = new Changelog(context, {});
-   * await plugin.onExec(execContext);
+   * await plugin.onExec(context);
    * // Generates changelogs for all workspaces
    * ```
    */
-  public override async onExec(
-    _context: ExecutorReleaseContext
-  ): Promise<void> {
+  public override async onExec(_context: ReleaseContext): Promise<void> {
     const workspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>

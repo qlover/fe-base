@@ -191,7 +191,7 @@ export async function load<T>(pluginName: string): Promise<[string, T]> {
  * ```
  */
 export async function loaderPluginsFromPluginTuples<
-  T extends ScriptPlugin<ScriptContext<any>, ScriptPluginProps>
+  T extends ScriptPlugin<ReleaseContext, ScriptPluginProps>
 >(
   context: ReleaseContext,
   pluginsTuples: PluginTuple<PluginClass>[],

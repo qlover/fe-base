@@ -1,4 +1,4 @@
-import { AsyncExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit';
 import Code2MDContext, { Code2MDContextOptions } from './Code2MDContext';
 import TypeDocJson from '../plugins/typeDocs';
 import { Reader } from '../plugins/reader';
@@ -59,7 +59,7 @@ export const CODE2MD_NAME = 'code2md' as const;
  *
  * @example With Custom Executor
  * ```typescript
- * const customExecutor = new AsyncExecutor();
+ * const customExecutor = new LifecycleExecutor<Code2MDContext>();
  * const task = new Code2MDTask(config, customExecutor);
  *
  * await task.exec();
@@ -97,7 +97,7 @@ export class Code2MDTask {
    *
    * @param options - Configuration options for the conversion task
    * @param executor - AsyncExecutor instance for plugin orchestration
-   *   @default new AsyncExecutor()
+   *   @default new LifecycleExecutor<Code2MDContext>()
    *
    * @example Basic Construction
    * ```typescript
@@ -111,13 +111,13 @@ export class Code2MDTask {
    *
    * @example With Custom Executor
    * ```typescript
-   * const executor = new AsyncExecutor();
+   * const executor = new LifecycleExecutor<Code2MDContext>();
    * const task = new Code2MDTask(config, executor);
    * ```
    */
   constructor(
     options: Partial<Code2MDContextOptions>,
-    private executor: AsyncExecutor = new AsyncExecutor()
+    private executor = new LifecycleExecutor<Code2MDContext>()
   ) {
     // Create context with task name and configuration
     this.context = new Code2MDContext(CODE2MD_NAME, options);

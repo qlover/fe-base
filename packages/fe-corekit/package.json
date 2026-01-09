@@ -48,8 +48,10 @@
   },
   "dependencies": {
     "@qlover/logger": "workspace:*",
-    "@types/lodash": "^4.17.12",
     "axios": "^1.7.9",
-    "lodash": "^4.17.21"
+    "lodash-es": "^4.17.22"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12"
   }
 }
