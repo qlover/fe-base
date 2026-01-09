@@ -49,9 +49,9 @@ import { normalizeHookNames, runPluginHook } from './pluginHook';
  * ```
  */
 export function runPluginsHookSync<Result, Params = unknown>(
-  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params>>[],
+  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>[],
   hookName: ExecutorPluginNameType,
-  context: ExecutorContextInterface<Params>,
+  context: ExecutorContextInterface<Params, unknown>,
   ...args: unknown[]
 ): Result | undefined {
   let returnValue: Result | undefined;
@@ -134,9 +134,9 @@ export function runPluginsHookSync<Result, Params = unknown>(
  * ```
  */
 export function runPluginsHooksSync<Result, Params = unknown>(
-  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params>>[],
+  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>[],
   hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
-  context: ExecutorContextInterface<Params>,
+  context: ExecutorContextInterface<Params, unknown>,
   ...args: unknown[]
 ): Result | undefined {
   const hookNameArray = normalizeHookNames(hookNames);

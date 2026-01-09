@@ -90,7 +90,7 @@ export interface PluginExecutorConfig {
  * @category BaseLifecycleExecutor
  */
 export abstract class BasePluginExecutor<
-  Ctx extends ExecutorContextInterface<unknown>,
+  Ctx extends ExecutorContextInterface<unknown, unknown>,
   Plugin extends ExecutorPluginInterface<Ctx>
 > implements ExecutorInterface<Plugin>
 {
@@ -172,13 +172,14 @@ export abstract class BasePluginExecutor<
    * to override context creation behavior if needed.
    *
    * @template Params - Type of context parameters
+   * @template Result - Type of return value (defaults to unknown)
    * @param parameters - The initial parameters for the context
    * @returns A new ExecutorContextImpl instance
    */
-  protected createContext<Params>(
+  protected createContext<Params, Result = unknown>(
     parameters: Params
-  ): ExecutorContextImpl<Params> {
-    return new ExecutorContextImpl<Params>(parameters);
+  ): ExecutorContextImpl<Params, Result> {
+    return new ExecutorContextImpl<Params, Result>(parameters);
   }
 
   /**

@@ -105,6 +105,75 @@ describe('Shell', () => {
         expect(e).toBeDefined();
       }
     });
+
+    it('should handle lodash template syntax with <%= %>', () => {
+      const template = 'git clone <%= repo %>';
+      const context = { repo: 'https://github.com/user/repo.git' };
+
+      const result = Shell.format(template, context);
+
+      expect(result).toBe('git clone https://github.com/user/repo.git');
+    });
+
+    it('should handle nested object access in templates', () => {
+      const template = 'Server: <%= server.host %>:<%= server.port %>';
+      const context = {
+        server: { host: 'localhost', port: 3000 }
+      };
+
+      const result = Shell.format(template, context);
+
+      expect(result).toBe('Server: localhost:3000');
+    });
+
+    it('should handle conditional logic in templates', () => {
+      const template = 'npm install<% if (dev) { %> --save-dev<% } %>';
+      const context = { dev: true };
+
+      const result = Shell.format(template, context);
+
+      expect(result).toBe('npm install --save-dev');
+    });
+
+    it('should handle multiple variables in template', () => {
+      const template = '<%= cmd %> <%= arg1 %> <%= arg2 %>';
+      const context = { cmd: 'git', arg1: 'commit', arg2: '-m "Update"' };
+
+      const result = Shell.format(template, context);
+
+      expect(result).toBe('git commit -m "Update"');
+    });
+
+    it('should handle empty template', () => {
+      const result = Shell.format('', {});
+      expect(result).toBe('');
+    });
+
+    it('should handle template without variables', () => {
+      const template = 'npm install';
+      const result = Shell.format(template, {});
+      expect(result).toBe('npm install');
+    });
+
+    it('should handle undefined context values', () => {
+      const template = 'Value: <%= value %>';
+      const context = { value: undefined };
+
+      const result = Shell.format(template, context);
+
+      expect(result).toBe('Value: ');
+    });
+
+    it('should log error when template formatting fails', () => {
+      const invalidTemplate = 'Hello, <%= name.invalid.property %>';
+      const context = { name: 'World' };
+
+      try {
+        shellInstance.format(invalidTemplate, context);
+      } catch {
+        expect(logger.error).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('run', () => {
@@ -228,6 +297,107 @@ describe('Shell', () => {
         command,
         expect.objectContaining({ isCache: true })
       );
+    });
+  });
+
+  describe('exec with template context', () => {
+    it('should format command with context before execution', async () => {
+      const command = 'git clone <%= repo %>';
+      const context = { repo: 'https://github.com/user/repo.git' };
+      execPromiseMock.mockResolvedValue('Cloned successfully');
+
+      await shellInstance.exec(command, { context });
+
+      expect(execPromiseMock).toHaveBeenCalledWith(
+        'git clone https://github.com/user/repo.git',
+        expect.any(Object)
+      );
+    });
+
+    it('should handle array commands without template formatting', async () => {
+      const command = ['git', 'clone', 'https://github.com/user/repo.git'];
+      execPromiseMock.mockResolvedValue('Cloned successfully');
+
+      await shellInstance.exec(command);
+
+      expect(execPromiseMock).toHaveBeenCalledWith(command, expect.any(Object));
+    });
+
+    it('should handle complex template context', async () => {
+      const command =
+        'npm run build --mode <%= mode %> --output <%= output.dir %>';
+      const context = {
+        mode: 'production',
+        output: { dir: './dist' }
+      };
+      execPromiseMock.mockResolvedValue('Build completed');
+
+      await shellInstance.exec(command, { context });
+
+      expect(execPromiseMock).toHaveBeenCalledWith(
+        'npm run build --mode production --output ./dist',
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('logger access', () => {
+    it('should provide access to logger', () => {
+      expect(shellInstance.logger).toBe(logger);
+    });
+  });
+
+  describe('execFormattedCommand', () => {
+    it('should log command when not silent', async () => {
+      const command = 'npm install';
+      execPromiseMock.mockResolvedValue('Installed');
+
+      await shellInstance.execFormattedCommand(command, { silent: false });
+
+      expect(logger.debug).toHaveBeenCalledWith(command);
+    });
+
+    it('should not log command when silent', async () => {
+      const command = 'npm install';
+      execPromiseMock.mockResolvedValue('Installed');
+
+      await shellInstance.execFormattedCommand(command, { silent: true });
+
+      expect(logger.debug).not.toHaveBeenCalled();
+    });
+
+    it('should use per-command dryRun setting over global', async () => {
+      const config: ShellConfig = {
+        logger,
+        dryRun: true,
+        execPromise: execPromiseMock
+      };
+      const shellWithDryRun = new Shell(config);
+      const command = 'npm install';
+      execPromiseMock.mockResolvedValue('Installed');
+
+      // Override global dryRun with per-command setting
+      await shellWithDryRun.exec(command, { dryRun: false });
+
+      expect(execPromiseMock).toHaveBeenCalled();
+    });
+
+    it('should use per-command isCache setting over global', async () => {
+      const config: ShellConfig = {
+        logger,
+        isCache: true,
+        execPromise: execPromiseMock
+      };
+      const shellWithCache = new Shell(config);
+      const command = 'npm install';
+      execPromiseMock.mockResolvedValue('Installed');
+
+      // Override global isCache with per-command setting
+      await shellWithCache.exec(command, { isCache: false });
+      await shellWithCache.exec(command, { isCache: false });
+
+      // Should execute twice because cache is disabled per-command
+      expect(execPromiseMock).toHaveBeenCalledTimes(2);
     });
   });
 });

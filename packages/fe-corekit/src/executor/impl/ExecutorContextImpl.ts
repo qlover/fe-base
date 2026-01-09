@@ -25,7 +25,7 @@ import { cloneParameters } from '../utils/cloneParameters';
  * - Type-safe at compile time
  */
 const runtimesStorage = new WeakMap<
-  ExecutorContextImpl<unknown, HookRuntimes>,
+  ExecutorContextImpl<unknown, unknown, HookRuntimes>,
   HookRuntimes
 >();
 
@@ -178,11 +178,17 @@ const runtimesStorage = new WeakMap<
  * Base implementation of ExecutorContextInterface with generic runtime support
  *
  * @template T - Type of execution parameters
+ * @template R - Type of return value (defaults to unknown)
  * @template RuntimesType - Type of hook runtimes (extends HookRuntimes, defaults to HookRuntimes)
  *
  * @example Basic usage (default HookRuntimes)
  * ```typescript
- * const context = new ExecutorContextImpl<UserParams>({ userId: 123 });
+ * const context = new ExecutorContextImpl<UserParams, UserResult>({ userId: 123 });
+ * ```
+ *
+ * @example With unknown return type
+ * ```typescript
+ * const context = new ExecutorContextImpl<UserParams, unknown>({ userId: 123 });
  * ```
  *
  * @example Extended runtimes
@@ -191,19 +197,20 @@ const runtimesStorage = new WeakMap<
  *   executionTime: number;
  *   memoryUsage: number;
  * }
- * class CustomContext extends ExecutorContextImpl<UserParams, CustomRuntimes> {
+ * class CustomContext extends ExecutorContextImpl<UserParams, UserResult, CustomRuntimes> {
  *   // Can work with custom runtime properties
  * }
  * ```
  */
 export class ExecutorContextImpl<
-  T = unknown,
+  T,
+  R = unknown,
   RuntimesType extends HookRuntimes = HookRuntimes
-> implements ExecutorContextInterface<T, RuntimesType>
+> implements ExecutorContextInterface<T, R, RuntimesType>
 {
   private _parameters: T;
   private _error: unknown;
-  private _returnValue: unknown;
+  private _returnValue?: R;
 
   /**
    * Creates a new ExecutorContextImpl instance
@@ -261,7 +268,7 @@ export class ExecutorContextImpl<
    * @override
    * @returns The return value, if any
    */
-  public get returnValue(): unknown {
+  public get returnValue(): R | undefined {
     return this._returnValue;
   }
 
@@ -346,7 +353,7 @@ export class ExecutorContextImpl<
    * @override
    * @param value - The value to set as return value
    */
-  public setReturnValue(value: unknown): void {
+  public setReturnValue(value: R): void {
     this._returnValue = value;
   }
 
@@ -445,10 +452,9 @@ export class ExecutorContextImpl<
    * @param hookName - The name of the hook to validate
    * @returns True if the hook should be skipped, false otherwise
    */
-  public shouldSkipPluginHook<Ctx extends ExecutorContextInterface<unknown>>(
-    plugin: ExecutorPluginInterface<Ctx>,
-    hookName: string
-  ): boolean {
+  public shouldSkipPluginHook<
+    Ctx extends ExecutorContextInterface<unknown, unknown>
+  >(plugin: ExecutorPluginInterface<Ctx>, hookName: string): boolean {
     return (
       typeof plugin[hookName as keyof ExecutorPluginInterface<Ctx>] !==
         'function' ||

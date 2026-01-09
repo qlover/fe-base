@@ -50,10 +50,10 @@ import {
  * );
  * ```
  */
-export function runPluginHook<Ctx extends ExecutorContextInterface<unknown>>(
+export function runPluginHook<Ctx extends ExecutorContextInterface<unknown, unknown>>(
   plugin: ExecutorPluginInterface<Ctx>,
   hookName: ExecutorPluginNameType,
-  context: ExecutorContextInterface<unknown>,
+  context: ExecutorContextInterface<unknown, unknown>,
   ...args: unknown[]
 ): unknown | Promise<unknown> {
   // Validate hook exists and is a function
@@ -63,7 +63,7 @@ export function runPluginHook<Ctx extends ExecutorContextInterface<unknown>>(
 
   return (
     plugin[hookName as keyof typeof plugin] as unknown as (
-      ctx: ExecutorContextInterface<unknown>,
+      ctx: ExecutorContextInterface<unknown, unknown>,
       ...args: unknown[]
     ) => unknown
   )(context, ...args);
@@ -106,11 +106,11 @@ export function normalizeHookNames(
  *
  * Type Parameters:
  * - Uses flexible type constraints to work with any ExecutorPluginInterface subtype
- * - Accepts plugins with any Ctx that extends ExecutorContextInterface<unknown>
+ * - Accepts plugins with any Ctx that extends ExecutorContextInterface<unknown, unknown>
  * - Returns Params type based on the context's parameter type
  *
  * Why flexible types?
- * - LifecycleExecutor has class-level Ctx generic (ExecutorContextInterface<unknown>)
+ * - LifecycleExecutor has class-level Ctx generic (ExecutorContextInterface<unknown, unknown>)
  * - runHook has method-level Params generic
  * - These are independent type parameters that TypeScript can't automatically relate
  * - Flexible constraint allows safe type coercion at call site
@@ -133,9 +133,9 @@ export function normalizeHookNames(
  * ```
  */
 export async function runPluginsHookAsync<Result, Params = unknown>(
-  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params>>[],
+  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>[],
   hookName: ExecutorPluginNameType,
-  context: ExecutorContextInterface<Params>,
+  context: ExecutorContextInterface<Params, unknown>,
   ...args: unknown[]
 ): Promise<Result | undefined> {
   let returnValue: Result | undefined;
@@ -217,9 +217,9 @@ export async function runPluginsHookAsync<Result, Params = unknown>(
  * ```
  */
 export async function runPluginsHooksAsync<Result, Params = unknown>(
-  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params>>[],
+  plugins: ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>[],
   hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
-  context: ExecutorContextInterface<Params>,
+  context: ExecutorContextInterface<Params, unknown>,
   ...args: unknown[]
 ): Promise<Result | undefined> {
   const hookNameArray = normalizeHookNames(hookNames);

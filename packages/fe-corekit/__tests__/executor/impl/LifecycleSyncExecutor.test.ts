@@ -73,16 +73,25 @@ interface TestResult {
   processed?: boolean;
 }
 
-// Test helper functions
-function createMockPlugin<Params = unknown>(
-  overrides: Partial<
-    LifecycleSyncPluginInterface<ExecutorContextInterface<Params>>
-  > = {}
-): LifecycleSyncPluginInterface<ExecutorContextInterface<unknown>> {
+type TestParamsContext<R = unknown> = ExecutorContextInterface<TestParams, R>;
+type TestMockContext<R = unknown> = ExecutorContextInterface<unknown, R>;
+
+function createMockPlugin<R>(
+  overrides: Partial<LifecycleSyncPluginInterface<TestMockContext<R>>> = {}
+): LifecycleSyncPluginInterface<TestMockContext<R>> {
   return {
-    pluginName: 'test-plugin',
+    pluginName: 'test-mock-plugin',
     ...overrides
-  } as unknown as LifecycleSyncPluginInterface<ExecutorContextInterface<unknown>>;
+  };
+}
+
+function createTestParamsPlugin<R>(
+  overrides: Partial<LifecycleSyncPluginInterface<TestParamsContext<R>>> = {}
+): LifecycleSyncPluginInterface<TestParamsContext<R>> {
+  return {
+    pluginName: 'test-params-plugin',
+    ...overrides
+  };
 }
 
 describe('LifecycleSyncExecutor', () => {
@@ -235,13 +244,13 @@ describe('LifecycleSyncExecutor', () => {
     });
 
     it('should modify parameters in onBefore', () => {
-      const plugin = createMockPlugin({
+      const plugin = createTestParamsPlugin({
         onBefore: (_ctx: ExecutorContextInterface<TestParams>) => {
           return { value: 'modified', count: 1 };
         }
       });
 
-      const executor = new LifecycleSyncExecutor();
+      const executor = new LifecycleSyncExecutor<TestParamsContext>();
       executor.use(plugin);
 
       const task: ExecutorSyncTask<TestParams, TestParams> = (ctx) => {
@@ -325,7 +334,7 @@ describe('LifecycleSyncExecutor', () => {
 
   describe('execHook (onExec)', () => {
     it('should execute onExec hook with task as argument', () => {
-      let receivedTask: ExecutorSyncTask<unknown, unknown> | null = null;
+      let receivedTask: ExecutorSyncTask<any, unknown> | null = null;
       const plugin = createMockPlugin({
         onExec: (_ctx, task) => {
           receivedTask = task;
@@ -343,17 +352,17 @@ describe('LifecycleSyncExecutor', () => {
 
     it('should execute task if onExec does not return value', () => {
       const executionOrder: string[] = [];
-      const plugin = createMockPlugin({
+      const plugin = createMockPlugin<string>({
         onExec: (_ctx, task) => {
           executionOrder.push('onExec');
           return task(_ctx);
         }
       });
 
-      const executor = new LifecycleSyncExecutor();
+      const executor = new LifecycleSyncExecutor<TestMockContext<string>>();
       executor.use(plugin);
 
-      const result = executor.exec(() => {
+      const result = executor.exec<string, {}>(() => {
         executionOrder.push('task');
         return 'task-result';
       });
@@ -384,14 +393,14 @@ describe('LifecycleSyncExecutor', () => {
     });
 
     it('should allow plugin to wrap task execution', () => {
-      const plugin = createMockPlugin({
-        onExec: <Result>(ctx: ExecutorContextInterface<unknown>, task: ExecutorSyncTask<Result, unknown>) => {
+      const plugin = createMockPlugin<string>({
+        onExec: (ctx, task) => {
           const result = task(ctx);
-          return `wrapped: ${result}` as Result;
+          return `wrapped: ${result}`;
         }
       });
 
-      const executor = new LifecycleSyncExecutor();
+      const executor = new LifecycleSyncExecutor<TestMockContext<string>>();
       executor.use(plugin);
 
       const result = executor.exec(() => 'original');
@@ -401,21 +410,21 @@ describe('LifecycleSyncExecutor', () => {
 
     it('should execute multiple onExec hooks', () => {
       const executionOrder: string[] = [];
-      const plugin1 = createMockPlugin({
+      const plugin1 = createMockPlugin<string>({
         pluginName: 'plugin1',
         onExec: () => {
           executionOrder.push('plugin1');
         }
       });
-      const plugin2 = createMockPlugin({
+      const plugin2 = createMockPlugin<string>({
         pluginName: 'plugin2',
-        onExec: <Result>() => {
+        onExec: () => {
           executionOrder.push('plugin2');
-          return 'plugin2-result' as Result;
+          return 'plugin2-result';
         }
       });
 
-      const executor = new LifecycleSyncExecutor();
+      const executor = new LifecycleSyncExecutor<TestMockContext<string>>();
       executor.use(plugin1);
       executor.use(plugin2);
 
@@ -1357,8 +1366,8 @@ describe('LifecycleSyncExecutor', () => {
     });
 
     it('should pass data through complete lifecycle', () => {
-      const plugin = createMockPlugin({
-        onBefore: (ctx: ExecutorContextInterface<TestParams>) => {
+      const plugin = createTestParamsPlugin<TestResult>({
+        onBefore: (ctx) => {
           return { value: ctx.parameters.value.toUpperCase(), count: 1 };
         },
         onSuccess: (ctx) => {
@@ -1369,7 +1378,9 @@ describe('LifecycleSyncExecutor', () => {
         }
       });
 
-      const executor = new LifecycleSyncExecutor();
+      const executor = new LifecycleSyncExecutor<
+        TestParamsContext<TestResult>
+      >();
       executor.use(plugin);
 
       const task: ExecutorSyncTask<TestResult, TestParams> = (ctx) => {

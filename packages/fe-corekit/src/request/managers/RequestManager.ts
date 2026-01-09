@@ -3,7 +3,7 @@ import type {
   RequestAdapterConfig,
   RequestAdapterInterface
 } from '../interface/RequestAdapter';
-import merge from 'lodash/merge';
+import { merge } from 'lodash-es';
 
 /**
  * Represents a manager for handling HTTP requests.

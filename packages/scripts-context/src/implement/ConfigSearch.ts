@@ -1,6 +1,5 @@
 import { cosmiconfigSync } from 'cosmiconfig';
-import defaultsDeep from 'lodash/defaultsDeep';
-import isPlainObject from 'lodash/isPlainObject';
+import { defaultsDeep, isPlainObject } from 'lodash-es';
 
 /**
  * Configuration search options for initializing ConfigSearch instances

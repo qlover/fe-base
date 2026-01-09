@@ -8,6 +8,7 @@ import type {
 } from '../../../src/executor/interface/ExecutorInterface';
 import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
 import { LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
+import type { HookRuntimes } from '../../../src/executor/interface/ExecutorContext';
 
 class MockExecutorError extends ExecutorError {
   constructor(message: string) {
@@ -16,19 +17,22 @@ class MockExecutorError extends ExecutorError {
   }
 }
 
-class MockExecutorContext<T> implements ExecutorContextInterface<T> {
+class MockExecutorContext<T, R = unknown>
+  implements ExecutorContextInterface<T, R>
+{
   private _parameters: T;
-  private _error: ExecutorError | undefined;
-  private _returnValue: unknown;
-  private _hooksRuntimes: {
-    pluginName?: string;
-    hookName?: string;
-    returnValue?: unknown;
-    returnBreakChain?: boolean;
-    times?: number;
-    breakChain?: boolean;
-    index?: number;
-  } = {};
+  private _error: unknown;
+  private _returnValue?: R;
+  private _hooksRuntimes: HookRuntimes = {
+    pluginName: '',
+    hookName: '',
+    returnValue: undefined,
+    returnBreakChain: false,
+    times: 0,
+    breakChain: false,
+    pluginIndex: undefined,
+    continueOnError: false
+  };
 
   constructor(initialParams: T) {
     this._parameters = initialParams;
@@ -40,19 +44,19 @@ class MockExecutorContext<T> implements ExecutorContextInterface<T> {
     return this._parameters;
   }
 
-  public get error(): ExecutorError | undefined {
+  public get error(): unknown {
     return this._error;
   }
 
-  public get returnValue(): unknown {
-    return this._returnValue;
+  public get returnValue(): R {
+    return this._returnValue as R;
   }
 
-  public setError(error: ExecutorError): void {
+  public setError(error: unknown): void {
     this._error = error;
   }
 
-  public setReturnValue(value: unknown): void {
+  public setReturnValue(value: R): void {
     this._returnValue = value;
   }
 
@@ -60,14 +64,34 @@ class MockExecutorContext<T> implements ExecutorContextInterface<T> {
     this._parameters = params;
   }
 
-  public resetHooksRuntimes(): void {
-    this._hooksRuntimes.pluginName = '';
-    this._hooksRuntimes.hookName = '';
-    this._hooksRuntimes.returnValue = undefined;
-    this._hooksRuntimes.returnBreakChain = false;
-    this._hooksRuntimes.times = 0;
-    this._hooksRuntimes.breakChain = false;
-    this._hooksRuntimes.index = undefined;
+  public resetHooksRuntimes(hookName?: string): void {
+    if (hookName) {
+      // Reset only specific hook
+      if (this._hooksRuntimes.hookName === hookName) {
+        this._hooksRuntimes = {
+          ...this._hooksRuntimes,
+          pluginName: '',
+          hookName: '',
+          returnValue: undefined,
+          returnBreakChain: false,
+          times: 0,
+          breakChain: false,
+          pluginIndex: undefined
+        };
+      }
+    } else {
+      // Reset all
+      this._hooksRuntimes = {
+        pluginName: '',
+        hookName: '',
+        returnValue: undefined,
+        returnBreakChain: false,
+        times: 0,
+        breakChain: false,
+        pluginIndex: undefined,
+        continueOnError: false
+      };
+    }
   }
 
   public reset(): void {
@@ -76,27 +100,26 @@ class MockExecutorContext<T> implements ExecutorContextInterface<T> {
     this._error = undefined;
   }
 
-  public shouldSkipPluginHook<Ctx extends ExecutorContextInterface<unknown>>(
-    plugin: ExecutorPluginInterface<Ctx>,
-    hookName: string
-  ): boolean {
+  public shouldSkipPluginHook<
+    Ctx extends ExecutorContextInterface<unknown, unknown>
+  >(plugin: ExecutorPluginInterface<Ctx>, hookName: string): boolean {
     const hookMethod = plugin[hookName as keyof ExecutorPluginInterface<Ctx>];
     return (
       typeof hookMethod !== 'function' ||
-      (typeof plugin.enabled === 'function' &&
+      (plugin.enabled !== undefined &&
         !plugin.enabled(hookName, this as unknown as Ctx))
     );
   }
 
-  public runtimes<Ctx extends ExecutorContextInterface<unknown>>(
-    plugin: ExecutorPluginInterface<Ctx>,
-    hookName: string,
-    index: number
-  ): void {
-    this._hooksRuntimes.pluginName = plugin.pluginName || '';
-    this._hooksRuntimes.hookName = hookName;
-    this._hooksRuntimes.times = (this._hooksRuntimes.times || 0) + 1;
-    this._hooksRuntimes.index = index;
+  public get hooksRuntimes(): Readonly<HookRuntimes> {
+    return Object.freeze({ ...this._hooksRuntimes });
+  }
+
+  public runtimes(runtimes: Partial<HookRuntimes>): void {
+    this._hooksRuntimes = {
+      ...this._hooksRuntimes,
+      ...runtimes
+    };
   }
 
   public runtimeReturnValue(returnValue: unknown): void {
@@ -110,16 +133,21 @@ class MockExecutorContext<T> implements ExecutorContextInterface<T> {
   public shouldBreakChainOnReturn(): boolean {
     return !!this._hooksRuntimes?.returnBreakChain;
   }
+
+  public shouldContinueOnError(): boolean {
+    return !!this._hooksRuntimes?.continueOnError;
+  }
 }
 
 class TestPlugin
-  implements ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+  implements ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
 {
+  public readonly pluginName = 'TestPlugin';
   private _callCount = 0;
 
   public enabled(
     name: string | symbol,
-    _context?: ExecutorContextInterface<unknown>
+    _context?: ExecutorContextInterface<unknown, unknown>
   ): boolean {
     this._callCount++;
     return name !== 'skip';
@@ -133,18 +161,20 @@ class TestPlugin
 class MockExecutor
   implements
     ExecutorInterface<
-      ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+      ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
     >
 {
   private plugins: ExecutorPluginInterface<
-    ExecutorContextInterface<unknown>
+    ExecutorContextInterface<unknown, unknown>
   >[] = [];
 
   public use(
-    plugin: ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+    plugin: ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
   ): void {
     this.plugins.push(
-      plugin as ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+      plugin as ExecutorPluginInterface<
+        ExecutorContextInterface<unknown, unknown>
+      >
     );
   }
 
@@ -205,18 +235,23 @@ class MockExecutor
     }
   }
 
-  private createContext<P>(params: P): ExecutorContextInterface<P> {
-    return new MockExecutorContext(params) as ExecutorContextInterface<P>;
+  private createContext<P, R = unknown>(
+    params: P
+  ): ExecutorContextInterface<P, R> {
+    return new MockExecutorContext<P, R>(params) as ExecutorContextInterface<
+      P,
+      R
+    >;
   }
 
   private executeWithData<R, P>(
     data: P,
     task: ExecutorAsyncTask<R, P> | ExecutorSyncTask<R, P>
   ): R | Promise<R> {
-    const context = this.createContext(data);
+    const context = this.createContext<P, R>(data);
 
     const shouldExecute = this.plugins.every((plugin) =>
-      plugin.enabled('test', context)
+      plugin.enabled?.('test', context)
     );
     if (!shouldExecute) {
       throw new MockExecutorError('Plugin blocked execution');
@@ -243,7 +278,7 @@ class MockExecutor
 
 describe('Executor Types', () => {
   let executor: ExecutorInterface<
-    ExecutorPluginInterface<ExecutorContextInterface<unknown>>
+    ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
   >;
   let plugin: TestPlugin;
 
@@ -260,8 +295,8 @@ describe('Executor Types', () => {
         name: string;
       }
 
-      const context: ExecutorContextInterface<UserData> =
-        new MockExecutorContext({
+      const context: ExecutorContextInterface<UserData, unknown> =
+        new MockExecutorContext<UserData, unknown>({
           id: 1,
           name: 'John'
         });
@@ -594,11 +629,12 @@ describe('Executor Types', () => {
   describe('Plugin System Types', () => {
     it('should correctly type plugins', () => {
       const customPlugin: ExecutorPluginInterface<
-        ExecutorContextInterface<{ id: number }>
+        ExecutorContextInterface<{ id: number }, unknown>
       > = {
+        pluginName: 'CustomPlugin',
         enabled(
           _name: string | symbol,
-          context?: ExecutorContextInterface<{ id: number }>
+          context?: ExecutorContextInterface<{ id: number }, unknown>
         ) {
           if (context && context.parameters.id === 999) {
             return false;
@@ -631,22 +667,23 @@ describe('Executor Types', () => {
       }
 
       const lifecyclePlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<UserData>
+        ExecutorContextInterface<UserData, unknown>
       > = {
+        pluginName: 'LifecyclePlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<UserData>
+          _context?: ExecutorContextInterface<UserData, unknown>
         ): boolean {
           return true;
         },
-        onBefore(ctx: ExecutorContextInterface<UserData>) {
+        onBefore(ctx: ExecutorContextInterface<UserData, unknown>) {
           expect(ctx.parameters.id).toBeDefined();
           expect(ctx.parameters.name).toBeDefined();
         },
-        onSuccess(ctx: ExecutorContextInterface<UserData>) {
+        onSuccess(ctx: ExecutorContextInterface<UserData, unknown>) {
           expect(ctx.returnValue).toBeDefined();
         },
-        onError(_ctx: ExecutorContextInterface<UserData>) {
+        onError(_ctx: ExecutorContextInterface<UserData, unknown>) {
           // ctx.error is ExecutorError | undefined
         }
       };
@@ -655,11 +692,11 @@ describe('Executor Types', () => {
       expect(lifecyclePlugin.onSuccess).toBeDefined();
       expect(lifecyclePlugin.onError).toBeDefined();
 
-      const context = new MockExecutorContext<UserData>({
+      const context = new MockExecutorContext<UserData, unknown>({
         id: 1,
         name: 'John'
       });
-      context.setReturnValue('User 1 processed');
+      context.setReturnValue('User 1 processed' as unknown);
 
       lifecyclePlugin.onBefore?.(context);
       lifecyclePlugin.onSuccess?.(context);
@@ -677,20 +714,21 @@ describe('Executor Types', () => {
       let onSuccessCalled = false;
 
       const asyncLifecyclePlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<ProcessData>
+        ExecutorContextInterface<ProcessData, unknown>
       > = {
+        pluginName: 'AsyncLifecyclePlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<ProcessData>
+          _context?: ExecutorContextInterface<ProcessData, unknown>
         ): boolean {
           return true;
         },
-        async onBefore(ctx: ExecutorContextInterface<ProcessData>) {
+        async onBefore(ctx: ExecutorContextInterface<ProcessData, unknown>) {
           await new Promise((resolve) => setTimeout(resolve, 10));
           onBeforeCalled = true;
           expect(ctx.parameters.value).toBe(42);
         },
-        async onSuccess(ctx: ExecutorContextInterface<ProcessData>) {
+        async onSuccess(ctx: ExecutorContextInterface<ProcessData, unknown>) {
           await new Promise((resolve) => setTimeout(resolve, 10));
           onSuccessCalled = true;
           expect(ctx.returnValue).toBe(84);
@@ -699,15 +737,15 @@ describe('Executor Types', () => {
 
       // Async hooks should return Promise<void>
       const beforeResult = asyncLifecyclePlugin.onBefore?.(
-        new MockExecutorContext({ value: 42 })
+        new MockExecutorContext<ProcessData, unknown>({ value: 42 })
       );
       expect(beforeResult).toBeInstanceOf(Promise);
       await beforeResult;
 
-      const successContext = new MockExecutorContext<ProcessData>({
+      const successContext = new MockExecutorContext<ProcessData, unknown>({
         value: 42
       });
-      successContext.setReturnValue(84);
+      successContext.setReturnValue(84 as unknown);
       const successResult = asyncLifecyclePlugin.onSuccess?.(successContext);
       successResult && (await successResult);
 
@@ -718,11 +756,12 @@ describe('Executor Types', () => {
     it('should handle optional lifecycle hooks', () => {
       // enabled is required (inherited from ExecutorPluginInterface), lifecycle hooks are optional
       const partialPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<unknown>
+        ExecutorContextInterface<unknown, unknown>
       > = {
+        pluginName: 'PartialPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<unknown>
+          _context?: ExecutorContextInterface<unknown, unknown>
         ): boolean {
           return true;
         },
@@ -737,11 +776,12 @@ describe('Executor Types', () => {
       expect(partialPlugin.onError).toBeUndefined();
 
       const minimalPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<unknown>
+        ExecutorContextInterface<unknown, unknown>
       > = {
+        pluginName: 'MinimalPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<unknown>
+          _context?: ExecutorContextInterface<unknown, unknown>
         ): boolean {
           return true;
         }
@@ -760,11 +800,12 @@ describe('Executor Types', () => {
       }
 
       const apiLifecyclePlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<ApiParams>
+        ExecutorContextInterface<ApiParams, unknown>
       > = {
+        pluginName: 'ApiLifecyclePlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<ApiParams>
+          _context?: ExecutorContextInterface<ApiParams, unknown>
         ): boolean {
           return true;
         },
@@ -782,7 +823,7 @@ describe('Executor Types', () => {
         }
       };
 
-      const context = new MockExecutorContext<ApiParams>({
+      const context = new MockExecutorContext<ApiParams, unknown>({
         endpoint: '/api/users',
         method: 'GET'
       });
@@ -794,11 +835,12 @@ describe('Executor Types', () => {
 
     it('should handle lifecycle plugins with different context types', () => {
       const stringPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<string>
+        ExecutorContextInterface<string, unknown>
       > = {
+        pluginName: 'StringPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<string>
+          _context?: ExecutorContextInterface<string, unknown>
         ): boolean {
           return true;
         },
@@ -808,11 +850,12 @@ describe('Executor Types', () => {
       };
 
       const numberPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<number>
+        ExecutorContextInterface<number, unknown>
       > = {
+        pluginName: 'NumberPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<number>
+          _context?: ExecutorContextInterface<number, unknown>
         ): boolean {
           return true;
         },
@@ -827,11 +870,12 @@ describe('Executor Types', () => {
         };
       }
       const complexPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<ComplexParams>
+        ExecutorContextInterface<ComplexParams, unknown>
       > = {
+        pluginName: 'ComplexPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<ComplexParams>
+          _context?: ExecutorContextInterface<ComplexParams, unknown>
         ): boolean {
           return true;
         },
@@ -840,10 +884,12 @@ describe('Executor Types', () => {
         }
       };
 
-      stringPlugin.onBefore?.(new MockExecutorContext('test'));
-      numberPlugin.onBefore?.(new MockExecutorContext(123));
+      stringPlugin.onBefore?.(new MockExecutorContext<string, unknown>('test'));
+      numberPlugin.onBefore?.(new MockExecutorContext<number, unknown>(123));
       complexPlugin.onBefore?.(
-        new MockExecutorContext({ nested: { value: 'test' } })
+        new MockExecutorContext<ComplexParams, unknown>({
+          nested: { value: 'test' }
+        })
       );
     });
 
@@ -854,11 +900,12 @@ describe('Executor Types', () => {
       }
 
       const strictPlugin: LifecyclePluginInterface<
-        ExecutorContextInterface<StrictParams>
+        ExecutorContextInterface<StrictParams, unknown>
       > = {
+        pluginName: 'StrictPlugin',
         enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<StrictParams>
+          _context?: ExecutorContextInterface<StrictParams, unknown>
         ): boolean {
           return true;
         },
@@ -972,8 +1019,9 @@ describe('Executor Types', () => {
       // const result: string = executor.exec({ value: 5 }, task2); // Error: Type 'number' is not assignable to type 'string'
 
       const pluginForString: ExecutorPluginInterface<
-        ExecutorContextInterface<string>
+        ExecutorContextInterface<string, unknown>
       > = {
+        pluginName: 'PluginForString',
         enabled(_name, context) {
           return (context?.parameters.length ?? 0) > 0;
         }
@@ -1005,8 +1053,8 @@ describe('Executor Types', () => {
         }
 
         class ExtendedContext<T extends ExtendedParams>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           private _metadata: Record<string, unknown> = {};
 
@@ -1034,7 +1082,7 @@ describe('Executor Types', () => {
         expect(extendedContext.parameters.name).toBe('Test');
         expect(extendedContext.metadata.version).toBe('1.0');
 
-        const context: ExecutorContextInterface<ExtendedParams> =
+        const context: ExecutorContextInterface<ExtendedParams, unknown> =
           extendedContext;
         expect(context.parameters.id).toBe(1);
         expect(context.parameters.name).toBe('Test');
@@ -1054,8 +1102,8 @@ describe('Executor Types', () => {
         }
 
         class MultiLevelContext<T extends Level2Params>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           public getLevel1Value(): number {
             return this.parameters.level1;
@@ -1088,8 +1136,8 @@ describe('Executor Types', () => {
         }
 
         class InheritedContext<T extends UserParams>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           public override setParameters(params: T): void {
             if (params.userId <= 0) {
@@ -1125,8 +1173,8 @@ describe('Executor Types', () => {
         }
 
         class IdentifiableContext<T extends Identifiable>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           public getId(): number | string {
             return this.parameters.id;
@@ -1170,13 +1218,14 @@ describe('Executor Types', () => {
 
         class ExtendedPlugin
           implements
-            ExecutorPluginInterface<ExecutorContextInterface<ApiParams>>
+            ExecutorPluginInterface<ExecutorContextInterface<ApiParams, unknown>>
         {
+          public readonly pluginName = 'ExtendedPlugin';
           private _callHistory: string[] = [];
 
           public enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<ApiParams>
+            context?: ExecutorContextInterface<ApiParams, unknown>
           ): boolean {
             if (context) {
               this._callHistory.push(
@@ -1198,7 +1247,7 @@ describe('Executor Types', () => {
         const extendedPlugin = new ExtendedPlugin();
         executor.use(extendedPlugin);
 
-        const context = new MockExecutorContext<ApiParams>({
+        const context = new MockExecutorContext<ApiParams, unknown>({
           endpoint: '/api/users',
           method: 'GET'
         });
@@ -1217,30 +1266,37 @@ describe('Executor Types', () => {
 
         class LifecycleExtendedPlugin
           implements
-            LifecyclePluginInterface<ExecutorContextInterface<ProcessParams>>
+            LifecyclePluginInterface<
+              ExecutorContextInterface<ProcessParams, unknown>
+            >
         {
+          public readonly pluginName = 'LifecycleExtendedPlugin';
           private _beforeCount = 0;
           private _successCount = 0;
           private _errorCount = 0;
 
           public enabled(
             _name: string | symbol,
-            _context?: ExecutorContextInterface<ProcessParams>
+            _context?: ExecutorContextInterface<ProcessParams, unknown>
           ): boolean {
             return true;
           }
 
-          public onBefore(_ctx: ExecutorContextInterface<ProcessParams>): void {
+          public onBefore(
+            _ctx: ExecutorContextInterface<ProcessParams, unknown>
+          ): void {
             this._beforeCount++;
           }
 
           public onSuccess(
-            _ctx: ExecutorContextInterface<ProcessParams>
+            _ctx: ExecutorContextInterface<ProcessParams, unknown>
           ): void {
             this._successCount++;
           }
 
-          public onError(_ctx: ExecutorContextInterface<ProcessParams>): void {
+          public onError(
+            _ctx: ExecutorContextInterface<ProcessParams, unknown>
+          ): void {
             this._errorCount++;
           }
 
@@ -1258,7 +1314,7 @@ describe('Executor Types', () => {
         }
 
         const lifecyclePlugin = new LifecycleExtendedPlugin();
-        const context = new MockExecutorContext<ProcessParams>({
+        const context = new MockExecutorContext<ProcessParams, unknown>({
           data: 'test'
         });
 
@@ -1281,13 +1337,16 @@ describe('Executor Types', () => {
 
         class BaseAuthPlugin
           implements
-            ExecutorPluginInterface<ExecutorContextInterface<AuthParams>>
+            ExecutorPluginInterface<
+              ExecutorContextInterface<AuthParams, unknown>
+            >
         {
+          public readonly pluginName = 'BaseAuthPlugin';
           protected _isAuthenticated = false;
 
           public enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<AuthParams>
+            context?: ExecutorContextInterface<AuthParams, unknown>
           ): boolean {
             if (context) {
               this._isAuthenticated = !!context.parameters.token;
@@ -1305,7 +1364,7 @@ describe('Executor Types', () => {
 
           public override enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<AuthParams>
+            context?: ExecutorContextInterface<AuthParams, unknown>
           ): boolean {
             const baseResult = super.enabled(_name, context);
             if (context && baseResult) {
@@ -1320,7 +1379,7 @@ describe('Executor Types', () => {
         }
 
         const inheritedPlugin = new InheritedAuthPlugin();
-        const context = new MockExecutorContext<AuthParams>({
+        const context = new MockExecutorContext<AuthParams, unknown>({
           token: 'valid-token',
           userId: 123
         });
@@ -1337,13 +1396,14 @@ describe('Executor Types', () => {
         }
 
         class GenericPlugin<T extends BaseParams>
-          implements ExecutorPluginInterface<ExecutorContextInterface<T>>
+          implements ExecutorPluginInterface<ExecutorContextInterface<T, unknown>>
         {
+          public readonly pluginName = 'GenericPlugin';
           protected _lastId: number | null = null;
 
           public enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<T>
+            context?: ExecutorContextInterface<T, unknown>
           ): boolean {
             if (context) {
               this._lastId = context.parameters.id;
@@ -1367,12 +1427,12 @@ describe('Executor Types', () => {
         const userPlugin = new GenericPlugin<UserParams>();
         const productPlugin = new GenericPlugin<ProductParams>();
 
-        const userContext = new MockExecutorContext<UserParams>({
+        const userContext = new MockExecutorContext<UserParams, unknown>({
           id: 1,
           name: 'User'
         });
 
-        const productContext = new MockExecutorContext<ProductParams>({
+        const productContext = new MockExecutorContext<ProductParams, unknown>({
           id: 2,
           price: 99.99
         });
@@ -1394,8 +1454,8 @@ describe('Executor Types', () => {
         }
 
         class ExtendedApiContext<T extends ExtendedApiParams>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           public getEndpoint(): string {
             return this.parameters.endpoint;
@@ -1408,11 +1468,14 @@ describe('Executor Types', () => {
 
         class ExtendedApiPlugin
           implements
-            ExecutorPluginInterface<ExecutorContextInterface<ExtendedApiParams>>
+            ExecutorPluginInterface<
+              ExecutorContextInterface<ExtendedApiParams, unknown>
+            >
         {
+          public readonly pluginName = 'ExtendedApiPlugin';
           public enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<ExtendedApiParams>
+            context?: ExecutorContextInterface<ExtendedApiParams, unknown>
           ): boolean {
             if (context) {
               const endpoint = context.parameters.endpoint;
@@ -1427,12 +1490,16 @@ describe('Executor Types', () => {
           endpoint: '/api/users',
           method: 'GET',
           headers: { Authorization: 'Bearer token' }
-        });
+        }) as ExecutorContextInterface<ExtendedApiParams, unknown>;
 
         const extendedPlugin = new ExtendedApiPlugin();
 
-        expect(extendedContext.getEndpoint()).toBe('/api/users');
-        expect(extendedContext.getMethod()).toBe('GET');
+        expect(
+          (extendedContext as ExtendedApiContext<ExtendedApiParams>).getEndpoint()
+        ).toBe('/api/users');
+        expect(
+          (extendedContext as ExtendedApiContext<ExtendedApiParams>).getMethod()
+        ).toBe('GET');
         expect(extendedPlugin.enabled('test', extendedContext)).toBe(true);
       });
 
@@ -1451,8 +1518,8 @@ describe('Executor Types', () => {
         }
 
         class BaseDataContext<T extends BaseData>
-          extends MockExecutorContext<T>
-          implements ExecutorContextInterface<T>
+          extends MockExecutorContext<T, unknown>
+          implements ExecutorContextInterface<T, unknown>
         {
           public getTimestamp(): number {
             return this.parameters.timestamp;
@@ -1461,7 +1528,7 @@ describe('Executor Types', () => {
 
         class UserDataContext<T extends UserData>
           extends BaseDataContext<T>
-          implements ExecutorContextInterface<T>
+          implements ExecutorContextInterface<T, unknown>
         {
           public getUserInfo(): string {
             return `${this.parameters.username} (${this.parameters.userId})`;
@@ -1495,8 +1562,11 @@ describe('Executor Types', () => {
 
         class ComprehensivePlugin
           implements
-            LifecyclePluginInterface<ExecutorContextInterface<LogParams>>
+            LifecyclePluginInterface<
+              ExecutorContextInterface<LogParams, unknown>
+            >
         {
+          public readonly pluginName = 'ComprehensivePlugin';
           private _logs: string[] = [];
           private _beforeExecuted = false;
           private _successExecuted = false;
@@ -1504,7 +1574,7 @@ describe('Executor Types', () => {
           // enabled is inherited from ExecutorPluginInterface (via LifecyclePluginInterface)
           public enabled(
             _name: string | symbol,
-            context?: ExecutorContextInterface<LogParams>
+            context?: ExecutorContextInterface<LogParams, unknown>
           ): boolean {
             if (context) {
               this._logs.push(
@@ -1515,11 +1585,15 @@ describe('Executor Types', () => {
           }
 
           // Lifecycle methods from LifecyclePluginInterface
-          public onBefore(_ctx: ExecutorContextInterface<LogParams>): void {
+          public onBefore(
+            _ctx: ExecutorContextInterface<LogParams, unknown>
+          ): void {
             this._beforeExecuted = true;
           }
 
-          public onSuccess(_ctx: ExecutorContextInterface<LogParams>): void {
+          public onSuccess(
+            _ctx: ExecutorContextInterface<LogParams, unknown>
+          ): void {
             this._successExecuted = true;
           }
 
@@ -1539,7 +1613,7 @@ describe('Executor Types', () => {
         }
 
         const comprehensivePlugin = new ComprehensivePlugin();
-        const context = new MockExecutorContext<LogParams>({
+        const context = new MockExecutorContext<LogParams, unknown>({
           level: 'info',
           message: 'Test message'
         });
@@ -1567,13 +1641,14 @@ describe('Executor Types', () => {
       }
 
       class UserPlugin
-        implements ExecutorPluginInterface<ExecutorContextInterface<UserParams>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<UserParams, unknown>>
       {
-        public pluginName = 'UserPlugin';
+        public readonly pluginName = 'UserPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<UserParams>
+          _context?: ExecutorContextInterface<UserParams, unknown>
         ): boolean {
           return true;
         }
@@ -1581,24 +1656,26 @@ describe('Executor Types', () => {
 
       class AdminPlugin
         implements
-          ExecutorPluginInterface<ExecutorContextInterface<AdminParams>>
+          ExecutorPluginInterface<
+            ExecutorContextInterface<AdminParams, unknown>
+          >
       {
-        public pluginName = 'AdminPlugin';
+        public readonly pluginName = 'AdminPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<AdminParams>
+          _context?: ExecutorContextInterface<AdminParams, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const userContext = new MockExecutorContext<UserParams>({
+      const userContext = new MockExecutorContext<UserParams, unknown>({
         userId: 1,
         username: 'user'
       });
 
-      const adminContext = new MockExecutorContext<AdminParams>({
+      const adminContext = new MockExecutorContext<AdminParams, unknown>({
         userId: 2,
         username: 'admin',
         role: 'administrator'
@@ -1608,25 +1685,29 @@ describe('Executor Types', () => {
       const adminPlugin = new AdminPlugin();
 
       // Test runtimes with UserParams context
-      userContext.runtimes(userPlugin, 'onBefore', 0);
+      userContext.runtimes({
+        pluginName: userPlugin.pluginName,
+        hookName: 'onBefore',
+        pluginIndex: 0,
+        times: 1
+      });
       expect(userContext.shouldBreakChain()).toBe(false);
 
       // Test runtimes with AdminParams context
-      adminContext.runtimes(adminPlugin, 'onSuccess', 1);
+      adminContext.runtimes({
+        pluginName: adminPlugin.pluginName,
+        hookName: 'onSuccess',
+        pluginIndex: 1,
+        times: 1
+      });
       expect(adminContext.shouldBreakChain()).toBe(false);
 
       // Verify type safety: should compile without errors
-      const runtimesUser: (
-        plugin: ExecutorPluginInterface<ExecutorContextInterface<UserParams>>,
-        hookName: string,
-        index: number
-      ) => void = userContext.runtimes.bind(userContext);
+      const runtimesUser: (runtimes: Partial<HookRuntimes>) => void =
+        userContext.runtimes.bind(userContext);
 
-      const runtimesAdmin: (
-        plugin: ExecutorPluginInterface<ExecutorContextInterface<AdminParams>>,
-        hookName: string,
-        index: number
-      ) => void = adminContext.runtimes.bind(adminContext);
+      const runtimesAdmin: (runtimes: Partial<HookRuntimes>) => void =
+        adminContext.runtimes.bind(adminContext);
 
       expect(typeof runtimesUser).toBe('function');
       expect(typeof runtimesAdmin).toBe('function');
@@ -1638,53 +1719,74 @@ describe('Executor Types', () => {
       }
 
       class PluginA
-        implements ExecutorPluginInterface<ExecutorContextInterface<DataParams>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<DataParams, unknown>>
       {
-        public pluginName = 'PluginA';
+        public readonly pluginName = 'PluginA';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<DataParams>
+          _context?: ExecutorContextInterface<DataParams, unknown>
         ): boolean {
           return true;
         }
       }
 
       class PluginB
-        implements ExecutorPluginInterface<ExecutorContextInterface<DataParams>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<DataParams, unknown>>
       {
-        public pluginName = 'PluginB';
-        public onlyOne = true;
+        public readonly pluginName = 'PluginB';
+        public readonly onlyOne = true;
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<DataParams>
+          _context?: ExecutorContextInterface<DataParams, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const context = new MockExecutorContext<DataParams>({ value: 42 });
+      const context = new MockExecutorContext<DataParams, unknown>({
+        value: 42
+      });
       const pluginA = new PluginA();
       const pluginB = new PluginB();
 
       // Test runtimes with PluginA
-      context.runtimes(pluginA, 'onBefore', 0);
+      context.runtimes({
+        pluginName: pluginA.pluginName,
+        hookName: 'onBefore',
+        pluginIndex: 0,
+        times: 1
+      });
       expect(context.shouldBreakChain()).toBe(false);
 
       // Test runtimes with PluginB
-      context.runtimes(pluginB, 'onExec', 1);
+      context.runtimes({
+        pluginName: pluginB.pluginName,
+        hookName: 'onExec',
+        pluginIndex: 1,
+        times: 1
+      });
       expect(context.shouldBreakChain()).toBe(false);
 
       // Verify that runtimes accepts both plugin types
-      const runtimesMethod: <Ctx extends ExecutorContextInterface<unknown>>(
-        plugin: ExecutorPluginInterface<Ctx>,
-        hookName: string,
-        index: number
-      ) => void = context.runtimes.bind(context);
+      const runtimesMethod: (runtimes: Partial<HookRuntimes>) => void =
+        context.runtimes.bind(context);
 
-      runtimesMethod(pluginA, 'onSuccess', 2);
-      runtimesMethod(pluginB, 'onError', 3);
+      runtimesMethod({
+        pluginName: pluginA.pluginName,
+        hookName: 'onSuccess',
+        pluginIndex: 2,
+        times: 1
+      });
+      runtimesMethod({
+        pluginName: pluginB.pluginName,
+        hookName: 'onError',
+        pluginIndex: 3,
+        times: 1
+      });
 
       expect(typeof runtimesMethod).toBe('function');
     });
@@ -1695,19 +1797,22 @@ describe('Executor Types', () => {
       }
 
       class TestPlugin
-        implements ExecutorPluginInterface<ExecutorContextInterface<TestParams>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<TestParams, unknown>>
       {
-        public pluginName = 'TestPlugin';
+        public readonly pluginName = 'TestPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<TestParams>
+          _context?: ExecutorContextInterface<TestParams, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const context = new MockExecutorContext<TestParams>({ test: 'value' });
+      const context = new MockExecutorContext<TestParams, unknown>({
+        test: 'value'
+      });
       const plugin = new TestPlugin();
 
       // Test with various hook name strings
@@ -1720,7 +1825,12 @@ describe('Executor Types', () => {
       ];
 
       hookNames.forEach((hookName, index) => {
-        context.runtimes(plugin, hookName, index);
+        context.runtimes({
+          pluginName: plugin.pluginName,
+          hookName,
+          pluginIndex: index,
+          times: 1
+        });
       });
 
       expect(context.shouldBreakChain()).toBe(false);
@@ -1732,23 +1842,31 @@ describe('Executor Types', () => {
       }
 
       class TestPlugin
-        implements ExecutorPluginInterface<ExecutorContextInterface<Params>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
       {
-        public pluginName = 'TestPlugin';
+        public readonly pluginName = 'TestPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<Params>
+          _context?: ExecutorContextInterface<Params, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const context = new MockExecutorContext<Params>({ data: 'test' });
+      const context = new MockExecutorContext<Params, unknown>({
+        data: 'test'
+      });
       const plugin = new TestPlugin();
 
       // Verify return type is void
-      const result: void = context.runtimes(plugin, 'onBefore', 0);
+      const result: void = context.runtimes({
+        pluginName: plugin.pluginName,
+        hookName: 'onBefore',
+        pluginIndex: 0,
+        times: 1
+      });
       expect(result).toBeUndefined();
     });
 
@@ -1762,13 +1880,14 @@ describe('Executor Types', () => {
       }
 
       class BasePlugin
-        implements ExecutorPluginInterface<ExecutorContextInterface<BaseParams>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<BaseParams, unknown>>
       {
-        public pluginName = 'BasePlugin';
+        public readonly pluginName = 'BasePlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<BaseParams>
+          _context?: ExecutorContextInterface<BaseParams, unknown>
         ): boolean {
           return true;
         }
@@ -1776,20 +1895,24 @@ describe('Executor Types', () => {
 
       class ExtendedPlugin
         implements
-          ExecutorPluginInterface<ExecutorContextInterface<ExtendedParams>>
+          ExecutorPluginInterface<
+            ExecutorContextInterface<ExtendedParams, unknown>
+          >
       {
-        public pluginName = 'ExtendedPlugin';
+        public readonly pluginName = 'ExtendedPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<ExtendedParams>
+          _context?: ExecutorContextInterface<ExtendedParams, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const baseContext = new MockExecutorContext<BaseParams>({ id: 1 });
-      const extendedContext = new MockExecutorContext<ExtendedParams>({
+      const baseContext = new MockExecutorContext<BaseParams, unknown>({
+        id: 1
+      });
+      const extendedContext = new MockExecutorContext<ExtendedParams, unknown>({
         id: 2,
         name: 'test'
       });
@@ -1798,26 +1921,40 @@ describe('Executor Types', () => {
       const extendedPlugin = new ExtendedPlugin();
 
       // Test with base context and plugin
-      baseContext.runtimes(basePlugin, 'onBefore', 0);
+      baseContext.runtimes({
+        pluginName: basePlugin.pluginName,
+        hookName: 'onBefore',
+        pluginIndex: 0,
+        times: 1
+      });
 
       // Test with extended context and plugin
-      extendedContext.runtimes(extendedPlugin, 'onSuccess', 1);
+      extendedContext.runtimes({
+        pluginName: extendedPlugin.pluginName,
+        hookName: 'onSuccess',
+        pluginIndex: 1,
+        times: 1
+      });
 
       // Verify type constraints work correctly
-      const runtimesBase: <Ctx extends ExecutorContextInterface<unknown>>(
-        plugin: ExecutorPluginInterface<Ctx>,
-        hookName: string,
-        index: number
-      ) => void = baseContext.runtimes.bind(baseContext);
+      const runtimesBase: (runtimes: Partial<HookRuntimes>) => void =
+        baseContext.runtimes.bind(baseContext);
 
-      const runtimesExtended: <Ctx extends ExecutorContextInterface<unknown>>(
-        plugin: ExecutorPluginInterface<Ctx>,
-        hookName: string,
-        index: number
-      ) => void = extendedContext.runtimes.bind(extendedContext);
+      const runtimesExtended: (runtimes: Partial<HookRuntimes>) => void =
+        extendedContext.runtimes.bind(extendedContext);
 
-      runtimesBase(basePlugin, 'onExec', 2);
-      runtimesExtended(extendedPlugin, 'onError', 3);
+      runtimesBase({
+        pluginName: basePlugin.pluginName,
+        hookName: 'onExec',
+        pluginIndex: 2,
+        times: 1
+      });
+      runtimesExtended({
+        pluginName: extendedPlugin.pluginName,
+        hookName: 'onError',
+        pluginIndex: 3,
+        times: 1
+      });
 
       expect(typeof runtimesBase).toBe('function');
       expect(typeof runtimesExtended).toBe('function');
@@ -1829,36 +1966,44 @@ describe('Executor Types', () => {
       }
 
       class TrackingPlugin
-        implements ExecutorPluginInterface<ExecutorContextInterface<Params>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
       {
-        public pluginName = 'TrackingPlugin';
+        public readonly pluginName = 'TrackingPlugin';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<Params>
+          _context?: ExecutorContextInterface<Params, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const context = new MockExecutorContext<Params>({ value: 100 });
+      const context = new MockExecutorContext<Params, unknown>({ value: 100 });
       const plugin1 = new TrackingPlugin();
       const plugin2 = new TrackingPlugin();
 
       // Track first plugin execution
-      context.runtimes(plugin1, 'onBefore', 0);
+      context.runtimes({
+        pluginName: plugin1.pluginName,
+        hookName: 'onBefore',
+        pluginIndex: 0,
+        times: 1
+      });
       expect(context.shouldBreakChain()).toBe(false);
 
       // Track second plugin execution
-      context.runtimes(plugin2, 'onExec', 1);
+      context.runtimes({
+        pluginName: plugin2.pluginName,
+        hookName: 'onExec',
+        pluginIndex: 1,
+        times: 1
+      });
       expect(context.shouldBreakChain()).toBe(false);
 
       // Verify runtimes method signature
-      const runtimesSignature: <Ctx extends ExecutorContextInterface<unknown>>(
-        plugin: ExecutorPluginInterface<Ctx>,
-        hookName: string,
-        index: number
-      ) => void = context.runtimes.bind(context);
+      const runtimesSignature: (runtimes: Partial<HookRuntimes>) => void =
+        context.runtimes.bind(context);
 
       expect(typeof runtimesSignature).toBe('function');
     });
@@ -1869,42 +2014,51 @@ describe('Executor Types', () => {
       }
 
       class PluginA
-        implements ExecutorPluginInterface<ExecutorContextInterface<Params>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
       {
-        public pluginName = 'PluginA';
+        public readonly pluginName = 'PluginA';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<Params>
+          _context?: ExecutorContextInterface<Params, unknown>
         ): boolean {
           return true;
         }
       }
 
       class PluginB
-        implements ExecutorPluginInterface<ExecutorContextInterface<Params>>
+        implements
+          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
       {
-        public pluginName = 'PluginB';
+        public readonly pluginName = 'PluginB';
 
         public enabled(
           _name: string | symbol,
-          _context?: ExecutorContextInterface<Params>
+          _context?: ExecutorContextInterface<Params, unknown>
         ): boolean {
           return true;
         }
       }
 
-      const context = new MockExecutorContext<Params>({ data: 'test' });
+      const context = new MockExecutorContext<Params, unknown>({
+        data: 'test'
+      });
       const pluginA = new PluginA();
       const pluginB = new PluginB();
 
       // Test runtimes accepts union of plugin types
       const plugins: ExecutorPluginInterface<
-        ExecutorContextInterface<Params>
+        ExecutorContextInterface<Params, unknown>
       >[] = [pluginA, pluginB];
 
       plugins.forEach((plugin, index) => {
-        context.runtimes(plugin, 'onBefore', index);
+        context.runtimes({
+          pluginName: plugin.pluginName,
+          hookName: 'onBefore',
+          pluginIndex: index,
+          times: 1
+        });
       });
 
       expect(context.shouldBreakChain()).toBe(false);

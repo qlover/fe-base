@@ -3,6 +3,9 @@ import { ExecutorPluginInterface } from './ExecutorInterface';
 import { ExecutorError } from './ExecutorError';
 import { ExecutorTask } from './ExecutorInterface';
 
+export type LifecycleErrorResult = ExecutorError | Error | void;
+export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
+
 /**
  * Lifecycle plugin interface for executor plugins
  *
@@ -79,12 +82,12 @@ import { ExecutorTask } from './ExecutorInterface';
  *
  * Explicit Type Usage:
  * ```typescript
- * interface MyPlugin extends LifecyclePluginInterface<ExecutorContextInterface<MyParams>> {
+ * interface MyPlugin extends LifecyclePluginInterface<ExecutorContextInterface<MyParams, MyResult>> {
  *   customMethod(): void;
  * }
  *
  * const executor = new LifecycleExecutor<
- *   ExecutorContextInterface<MyParams>,
+ *   ExecutorContextInterface<MyParams, MyResult>,
  *   MyPlugin
  * >();
  * ```
@@ -101,7 +104,7 @@ import { ExecutorTask } from './ExecutorInterface';
  *
  * @example Basic lifecycle plugin
  * ```typescript
- * const plugin: LifecyclePluginInterface<ExecutorContextInterface<UserParams>> = {
+ * const plugin: LifecyclePluginInterface<ExecutorContextInterface<UserParams, UserResult>> = {
  *   pluginName: 'userPlugin',
  *   enabled: () => true,
  *   onBefore: (ctx) => {
@@ -119,7 +122,7 @@ import { ExecutorTask } from './ExecutorInterface';
  *
  * @example onBefore returning new parameters (async)
  * ```typescript
- * const plugin: LifecyclePluginInterface<ExecutorContextInterface<ApiParams>> = {
+ * const plugin: LifecyclePluginInterface<ExecutorContextInterface<ApiParams, ApiResult>> = {
  *   onBefore: async (ctx) => {
  *     const apiKey = await fetchApiKey();
  *     // Return new parameters - automatically updates context
@@ -135,7 +138,10 @@ import { ExecutorTask } from './ExecutorInterface';
  * @category Plugin
  */
 export interface LifecyclePluginInterface<
-  Ctx extends ExecutorContextInterface<unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Ctx extends ExecutorContextInterface<any, any>,
+  Result = Ctx['returnValue'],
+  Param = Ctx['parameters']
 > extends ExecutorPluginInterface<Ctx> {
   /**
    * Hook executed before the main task
@@ -149,11 +155,7 @@ export interface LifecyclePluginInterface<
    * @param ctx - Execution context
    * @returns Modified parameters (will update context parameters), void, or Promise of either
    */
-  onBefore?(
-    ctx: Ctx
-  ): Ctx extends ExecutorContextInterface<infer P>
-    ? P | Promise<P> | void | Promise<void>
-    : unknown | Promise<unknown> | void | Promise<void>;
+  onBefore?(ctx: Ctx): Param | Promise<Param> | void | Promise<void>;
 
   /**
    * Hook executed after successful task completion
@@ -162,7 +164,7 @@ export interface LifecyclePluginInterface<
    * @param ctx - Execution context
    * @returns void or Promise<void>
    */
-  onSuccess?(ctx: Ctx): void | Promise<void> | unknown | Promise<unknown>;
+  onSuccess?(ctx: Ctx): void | Promise<void>;
 
   /**
    * Error handling hook
@@ -174,9 +176,7 @@ export interface LifecyclePluginInterface<
    * @param ctx - Execution context containing error information
    * @returns ExecutorError, Error, void, or Promise of either
    */
-  onError?(
-    ctx: Ctx
-  ): Promise<ExecutorError | void> | ExecutorError | Error | void;
+  onError?(ctx: Ctx): LifecycleErrorResult | Promise<LifecycleErrorResult>;
 
   /**
    * Custom execution logic hook
@@ -186,14 +186,85 @@ export interface LifecyclePluginInterface<
    * Plugins can return a value directly, return a new task function, or execute
    * the task within the hook.
    *
+   * Return value behavior:
+   * - If returns a function (ExecutorTask): The function will be executed as the new task
+   * - If returns any other value: The value will be used as the task result (skips task execution)
+   * - Supports both sync and async return values
+   *
+   * Type inference:
+   * - The return type `R` is automatically inferred from the task parameter
+   * - Return values are type-safe and match the task's return type
+   * - TypeScript can infer types from return statements without explicit annotations
+   *
+   * Use cases:
+   * - Return a wrapped task function to add middleware behavior
+   * - Return a direct value to bypass task execution
+   * - Execute the task with custom logic and return the result
+   *
+   * @template R - Return type of the task (automatically inferred from task parameter)
    * @param ctx - Execution context
-   * @param task - Task to be executed
-   * @returns Task result, modified task function, or Promise of either
+   * @param task - Original task to be executed
+   * @returns Task result (type R), modified task function, or Promise of either
+   *
+   * @example Return a direct value (bypass task) - type automatically inferred
+   * ```typescript
+   * onExec: async () => {
+   *   return 'intercepted-result'; // Type inferred as Promise<string>
+   * }
+   * ```
+   *
+   * @example Return a wrapped task function
+   * ```typescript
+   * onExec: (ctx, task) => {
+   *   // Return a new task function that wraps the original
+   *   return async (wrappedCtx) => {
+   *     console.log('Before task execution');
+   *     const result = await task(wrappedCtx);
+   *     console.log('After task execution');
+   *     return result;
+   *   };
+   * }
+   * ```
+   *
+   * @example Return a direct value (bypass task)
+   * ```typescript
+   * onExec: (ctx, task) => {
+   *   // Return cached result, skip task execution
+   *   if (cache.has(ctx.parameters.id)) {
+   *     return cache.get(ctx.parameters.id);
+   *   }
+   *   // Or execute task and return result
+   *   return task(ctx);
+   * }
+   * ```
+   *
+   * 如果需要手动覆盖返回类型，可以使用提供的 R 泛型手动推断类型，但是这样不够安全，
+   * 未来可能会加入接口类型的泛型
+   *
+   * @example 使用手动推断类型
+   * ```typescript
+   * interface TestResult {
+   *   data: string;
+   *   processed?: boolean;
+   * }
+   *
+   * type TestContext = ExecutorContextInterface<TestParams>;
+   *
+   * const plugin: LifecyclePluginInterface<TestContext> = {
+   *   pluginName: 'plugin',
+   *   onExec: async <R>(ctx, task) => {
+   *     const result = await task(ctx);
+   *     return `wrapped: ${result}` as R;
+   *   }
+   * };
+   * ```
    */
-  onExec?(
+  onExec?: (
     ctx: Ctx,
-    task: ExecutorTask<unknown, unknown>
-  ): Promise<unknown> | unknown;
+    task: ExecutorTask<Result, Param>
+  ) =>
+    | LifecycleExecResult<Result, Param>
+    | Promise<LifecycleExecResult<Result, Param>>;
 
   /**
    * Hook executed in finally block after task execution

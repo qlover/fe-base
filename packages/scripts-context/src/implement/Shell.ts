@@ -3,7 +3,7 @@ import type {
   ShellExecOptions,
   ShellInterface
 } from '../interface/ShellInterface';
-import lodashTemplate from 'lodash/template';
+import { template as lodashTemplate } from 'lodash-es';
 
 /**
  * Function type for executing shell commands

@@ -1,8 +1,12 @@
 import type { LoggerInterface } from '@qlover/logger';
 import type { ScriptContext } from './ScriptContext';
 import type { ShellInterface } from '../interface/ShellInterface';
-import type { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
-import merge from 'lodash/merge';
+import type {
+  ExecutorContextInterface,
+  ExecutorError,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
+import { merge } from 'lodash-es';
 
 /**
  * Configuration for a single execution step
@@ -136,7 +140,7 @@ export abstract class ScriptPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Context extends ScriptContext<any>,
   Props extends ScriptPluginProps = ScriptPluginProps
-> implements ExecutorPlugin<Context>
+> implements LifecyclePluginInterface<Context>
 {
   /** Ensures only one instance of this plugin can be registered */
   public readonly onlyOne = true;
@@ -303,7 +307,7 @@ export abstract class ScriptPlugin<
    * plugin.enabled('onExec', context);   // Returns true
    * ```
    */
-  public enabled(_name: string, _context: ExecutorContext<Context>): boolean {
+  public enabled(_name: string, _context: Context): boolean {
     const skip = this.getConfig('skip');
 
     // if skip is true, then return false
@@ -427,7 +431,17 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onBefore?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onBefore?(
+    _context: Context
+  ): Context extends ExecutorContextInterface<infer P>
+    ? P | Promise<P> | void | Promise<void>
+    : unknown | Promise<unknown> | void | Promise<void> {
+    return undefined as unknown as Context extends ExecutorContextInterface<
+      infer P
+    >
+      ? P | Promise<P> | void | Promise<void>
+      : unknown | Promise<unknown> | void | Promise<void>;
+  }
 
   /**
    * Lifecycle method called during script execution
@@ -443,7 +457,7 @@ export abstract class ScriptPlugin<
    *
    * @example
    * ```typescript
-   * async onExec(context: ExecutorContext<MyContext>): Promise<void> {
+   * async onExec(context: Context): Promise<void> {
    *   await this.step({
    *     label: 'Building project',
    *     task: async () => {
@@ -462,7 +476,7 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onExec?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onExec?(_context: Context): void | Promise<void> {}
 
   /**
    * Lifecycle method called after successful script execution
@@ -478,7 +492,7 @@ export abstract class ScriptPlugin<
    *
    * @example
    * ```typescript
-   * async onSuccess(context: ExecutorContext<MyContext>): Promise<void> {
+   * async onSuccess(context: Context): Promise<void> {
    *   // Send success notification
    *   await this.sendNotification('Build completed successfully');
    *
@@ -494,7 +508,9 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onSuccess?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onSuccess?(_context: Context): void | Promise<void> {
+    return undefined;
+  }
 
   /**
    * Lifecycle method called when script execution fails
@@ -510,7 +526,7 @@ export abstract class ScriptPlugin<
    *
    * @example
    * ```typescript
-   * async onError(context: ExecutorContext<MyContext>): Promise<void> {
+   * async onError(context: Context): Promise<void> {
    *   // Log detailed error information
    *   this.logger.error('Script execution failed', {
    *     error: context.error,
@@ -528,7 +544,33 @@ export abstract class ScriptPlugin<
    * }
    * ```
    */
-  public onError?(_context: ExecutorContext<Context>): void | Promise<void> {}
+  public onError?(
+    _context: Context
+  ): Promise<ExecutorError | void> | ExecutorError | Error | void {}
+
+  /**
+   * Lifecycle method called after script execution
+   *
+   * Override this method to perform cleanup tasks such as:
+   * - Resource cleanup
+   * - Success notifications
+   * - Result processing
+   * - Post-execution reporting
+   *
+   * @override
+   * @param _context - Executor context containing execution state
+   *
+   * @example
+   * ```typescript
+   * async onFinally(context: Context): Promise<void> {
+   *   // Clean up temporary files
+   *   await this.shell.rmdir('./temp');
+   * }
+   * ```
+   */
+  public onFinally?(_context: Context): void | Promise<void> {
+    return undefined;
+  }
 
   /**
    * Executes a step with structured logging and error handling
