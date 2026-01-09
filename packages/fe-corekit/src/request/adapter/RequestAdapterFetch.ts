@@ -1,8 +1,9 @@
 import {
-  type ExecutorPlugin,
-  type PromiseTask,
-  AsyncExecutor,
-  ExecutorError
+  ExecutorAsyncTask,
+  ExecutorContextInterface,
+  ExecutorError,
+  LifecycleExecutor,
+  LifecyclePluginInterface
 } from '../../executor';
 import {
   type RequestAdapterConfig,
@@ -45,6 +46,11 @@ export interface RequestAdapterFetchConfig<Request = unknown>
   fetcher?: typeof fetch;
 }
 
+export type RequestAdapterFetchContext = ExecutorContextInterface<
+  RequestAdapterFetchConfig,
+  unknown
+>;
+
 const reqInitAttrs = [
   'cache',
   'credentials',
@@ -61,8 +67,15 @@ const reqInitAttrs = [
 export class RequestAdapterFetch
   implements RequestAdapterInterface<RequestAdapterFetchConfig>
 {
+  /**
+   * Default configuration for the request adapter
+   */
   public readonly config: RequestAdapterFetchConfig;
-  private executor: AsyncExecutor;
+
+  /**
+   * Allows extending RequestAdapterFetch to get the executor instance
+   */
+  protected executor: LifecycleExecutor<RequestAdapterFetchContext>;
 
   /**
    * Creates a new FetchRequest instance
@@ -89,8 +102,7 @@ export class RequestAdapterFetch
       config.fetcher = fetch;
     }
 
-    // use AsyncExecutor
-    this.executor = new AsyncExecutor();
+    this.executor = new LifecycleExecutor<RequestAdapterFetchContext>();
 
     this.config = config as RequestAdapterFetchConfig;
   }
@@ -112,8 +124,38 @@ export class RequestAdapterFetch
     Object.assign(this.config, config);
   }
 
-  public usePlugin(plugin: ExecutorPlugin): void {
+  /**
+   *
+   * @deprecated use `use` method instead
+   * @param plugin
+   */
+  public usePlugin(
+    plugin: LifecyclePluginInterface<RequestAdapterFetchContext>
+  ): this {
+    return this.use(plugin);
+  }
+
+  /**
+   * Adds a plugin to the executor.
+   *
+   * @example Chaining usage
+   * ```typescript
+   * const fetchRequest = new FetchRequest()
+   *   .use(new LogPlugin())
+   *   .use(new ErrorPlugin())
+   *   .use(new SuccessPlugin())
+   * ```
+   *
+   * @since 3.0.0
+   * @param plugin - The plugin to be used by the executor.
+   * @returns The current instance of RequestAdapterFetch for chaining.
+   */
+  public use(
+    plugin: LifecyclePluginInterface<RequestAdapterFetchContext>
+  ): this {
     this.executor.use(plugin);
+
+    return this;
   }
 
   /**
@@ -153,7 +195,7 @@ export class RequestAdapterFetch
       throw new ExecutorError(RequestErrorID.URL_NONE);
     }
 
-    const task: PromiseTask<
+    const task: ExecutorAsyncTask<
       RequestAdapterResponse<Request, Response>,
       RequestAdapterFetchConfig<Request>
     > = async (context) => {
@@ -173,7 +215,9 @@ export class RequestAdapterFetch
     return this.executor.exec(rest, task);
   }
 
-  public parametersToRequest(parameters: RequestAdapterFetchConfig): Request {
+  protected parametersToRequest(
+    parameters: RequestAdapterFetchConfig
+  ): Request {
     const { url = '/', method = 'GET', data } = parameters;
     const init = pick(parameters, reqInitAttrs);
     return new Request(
@@ -194,7 +238,7 @@ export class RequestAdapterFetch
    * @param config The configuration used for the fetch request.
    * @returns A RequestAdapterResponse containing the processed response data.
    */
-  public toAdapterResponse<Request, Res = unknown>(
+  protected toAdapterResponse<Request, Res = unknown>(
     data: Res,
     response: Response,
     config: RequestAdapterFetchConfig<Request>
@@ -215,7 +259,7 @@ export class RequestAdapterFetch
    * @param response The fetch Response object from which headers are extracted.
    * @returns A record of headers with header names as keys and header values as values.
    */
-  public getResponseHeaders(response: Response): Record<string, string> {
+  protected getResponseHeaders(response: Response): Record<string, string> {
     const headersObj: Record<string, string> = {};
 
     response.headers.forEach((value, key) => {

@@ -21,7 +21,7 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  * - Response status validation
  *
  * @implements {ExecutorPlugin}
- *
+ * @deprecated use `RequestPlugin`
  * @example
  * ```typescript
  * // Basic usage
