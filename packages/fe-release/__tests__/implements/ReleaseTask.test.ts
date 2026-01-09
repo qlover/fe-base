@@ -1,22 +1,33 @@
 import ReleaseTask from '../../src/implments/ReleaseTask';
-import { AsyncExecutor, PromiseTask } from '@qlover/fe-corekit';
+import ReleaseContext from '../../src/implments/ReleaseContext';
+import {
+  ExecutorAsyncTask,
+  ExecutorContextImpl,
+  ExecutorSyncTask,
+  ExecutorTask,
+  LifecycleExecutor
+} from '@qlover/fe-corekit';
 import { createTestReleaseOptions } from '../helpers';
 import { defaultFeConfig } from '@qlover/scripts-context';
 
-class MockExecutor extends AsyncExecutor {
-  public override async run<Result, Params = unknown>(
-    _data: Params,
-    _actualTask: PromiseTask<Result, Params>
+class MockExecutor extends LifecycleExecutor<ReleaseContext> {
+  protected override async run<Result, Params>(
+    _context: ExecutorContextImpl<Params, Result>,
+    _actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
     return Promise.resolve('test run' as Result);
   }
 
-  public override async exec<Result, Params = unknown>(
-    _dataOrTask: Params | PromiseTask<Result, Params>,
-    _task?: PromiseTask<Result, Params>
-  ): Promise<Result> {
+  public exec<R, P>(task: ExecutorAsyncTask<R, P>): Promise<R>;
+  public exec<R, P>(data: P, task: ExecutorAsyncTask<R, P>): Promise<R>;
+  public exec<R, P>(task: ExecutorSyncTask<R, P>): Promise<R>;
+  public exec<R, P>(data: P, task: ExecutorSyncTask<R, P>): Promise<R>;
+  public exec<R, P>(
+    _dataOrTask: P | ExecutorTask<R, P>,
+    task?: ExecutorTask<R, P>
+  ): Promise<R> {
     // @ts-expect-error
-    return _task?.('test exec result');
+    return task?.('test exec result');
   }
 }
 

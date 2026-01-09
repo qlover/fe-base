@@ -227,6 +227,32 @@ export interface ExecutorContext<Params = unknown> {
  */
 export interface HookRuntimes {
   /**
+   * Name of the current plugin being executed
+   *
+   * Core concept:
+   * Identifies which plugin is currently executing, enabling plugin-specific
+   * debugging and tracking
+   *
+   * @optional
+   * @example `'ValidationPlugin'`
+   * @example `'CachePlugin'`
+   */
+  pluginName?: string;
+
+  /**
+   * Index of the current plugin in the plugins array
+   *
+   * Core concept:
+   * Tracks the position of the current plugin in the execution chain,
+   * useful for debugging execution order
+   *
+   * @optional
+   * @example `0` // First plugin
+   * @example `2` // Third plugin
+   */
+  pluginIndex?: number;
+
+  /**
    * Name of the current hook being executed
    *
    * Core concept:
@@ -269,27 +295,32 @@ export interface HookRuntimes {
   returnValue?: unknown;
 
   /**
-   * Number of times the hook has been executed
+   * Number of times the current hook has been executed
    *
    * Core concept:
-   * Tracks the execution frequency of hooks, enabling performance
-   * optimization and debugging of repeated executions
+   * Tracks how many plugins have executed the current hook (e.g., onBefore).
+   * This counter increments for each plugin that successfully executes the hook.
+   *
+   * Important:
+   * - This is per-hook, not global
+   * - Reset when switching to a different hook
+   * - Represents "which plugin is executing this hook" (1st, 2nd, 3rd, etc.)
    *
    * Main features:
-   * - Execution counting: Monitors how many times hooks are called
+   * - Execution counting: Monitors how many plugins executed this hook
    * - Performance analysis: Identifies frequently executed hooks
    * - Loop detection: Helps identify potential infinite loops
    * - Optimization insights: Provides data for performance optimization
    *
    * Usage scenarios:
-   * - Performance monitoring: Track hook execution frequency
-   * - Debugging: Identify hooks that execute more than expected
-   * - Optimization: Focus optimization efforts on frequently called hooks
+   * - Know if any plugin executed the hook (times > 0)
+   * - Track which plugin number is executing (useful for debugging)
+   * - Detect if hook was skipped by all plugins (times === 0)
    *
    * @optional
-   * @example `1` // First execution
-   * @example `5` // Hook executed 5 times
-   * @example `0` // Hook not yet executed
+   * @example `0` // No plugin has executed this hook yet
+   * @example `1` // First plugin executed this hook
+   * @example `3` // Third plugin is executing this hook
    */
   times?: number;
 
@@ -342,6 +373,31 @@ export interface HookRuntimes {
    * @example `false` // Continue regardless of returnValue
    */
   returnBreakChain?: boolean;
+
+  /**
+   * Flag to continue execution on error
+   *
+   * Core concept:
+   * Provides a mechanism to continue executing subsequent plugins even when
+   * a plugin hook throws an error, enabling resilient execution pipelines
+   *
+   * Main features:
+   * - Error resilience: Continues execution despite individual plugin failures
+   * - Fault tolerance: Enables graceful degradation in plugin chains
+   * - Cleanup guarantees: Ensures all cleanup hooks execute even if some fail
+   * - Flexible error handling: Allows selective error suppression
+   *
+   * Use cases:
+   * - Finally hooks: Ensure all cleanup operations execute even if one fails
+   * - Logging hooks: Continue logging even if one logger fails
+   * - Monitoring hooks: Collect metrics from all plugins despite failures
+   * - Non-critical operations: Continue execution for non-critical hooks
+   *
+   * @optional
+   * @example `true` // Continue to next plugin even if current plugin throws error
+   * @example `false` // Stop execution and throw error (default behavior)
+   */
+  continueOnError?: boolean;
 
   /**
    * Additional custom properties for extensibility

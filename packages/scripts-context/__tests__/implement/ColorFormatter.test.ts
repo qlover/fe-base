@@ -84,6 +84,117 @@ describe('ColorFormatter', () => {
       expect(result[1]).toBe(`${level} message`);
     });
   });
+
+  it('should handle empty arguments array', () => {
+    const event = new LogEvent('info', [], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result.length).toBe(1);
+  });
+
+  it('should handle object arguments', () => {
+    const obj = { key: 'value', nested: { prop: 'data' } };
+    const event = new LogEvent('info', [obj], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(obj);
+  });
+
+  it('should handle null and undefined arguments', () => {
+    const event = new LogEvent('info', [null, undefined, 'message'], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(null);
+    expect(result[2]).toBe(undefined);
+    expect(result[3]).toBe('message');
+  });
+
+  it('should handle boolean arguments', () => {
+    const event = new LogEvent('info', [true, false], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(true);
+    expect(result[2]).toBe(false);
+  });
+
+  it('should handle number arguments', () => {
+    const event = new LogEvent('info', [0, 42, -10, 3.14], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result.slice(1)).toEqual([0, 42, -10, 3.14]);
+  });
+
+  it('should handle mixed type arguments', () => {
+    const event = new LogEvent(
+      'info',
+      ['string', 123, true, { obj: 'value' }, null],
+      'test'
+    );
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result.slice(1)).toEqual([
+      'string',
+      123,
+      true,
+      { obj: 'value' },
+      null
+    ]);
+  });
+
+  it('should preserve Error objects', () => {
+    const error = new Error('Test error');
+    const event = new LogEvent('error', ['Operation failed', error], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('ERROR');
+    expect(result[1]).toBe('Operation failed');
+    expect(result[2]).toBe(error);
+  });
+
+  it('should handle string color function', () => {
+    const customFormatter = new ColorFormatter({
+      info: 'blue' // String instead of function
+    });
+
+    const event = new LogEvent('info', ['Test message'], 'test');
+    const result = customFormatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe('Test message');
+  });
+
+  it('should handle very long messages', () => {
+    const longMessage = 'A'.repeat(10000);
+    const event = new LogEvent('info', [longMessage], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(longMessage);
+  });
+
+  it('should handle special characters in messages', () => {
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/\\`~';
+    const event = new LogEvent('info', [specialChars], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(specialChars);
+  });
+
+  it('should handle unicode characters', () => {
+    const unicode = '你好世界 🌍 مرحبا العالم';
+    const event = new LogEvent('info', [unicode], 'test');
+    const result = formatter.format(event);
+
+    expect(result[0]).toMatch('INFO');
+    expect(result[1]).toBe(unicode);
+  });
 });
 
 class ColorHandler implements HandlerInterface {
@@ -219,5 +330,134 @@ describe('Logger with ColorFormatter', () => {
     expect(lastCall[0]).toMatch('ERROR');
     expect(lastCall[1]).toBe('Operation failed');
     expect(lastCall[2]).toBe(error);
+  });
+
+  it('should handle empty log messages', () => {
+    logger.info();
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+  });
+
+  it('should handle very long messages in logger', () => {
+    const longMessage = 'A'.repeat(10000);
+    logger.info(longMessage);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall[1]).toBe(longMessage);
+  });
+
+  it('should handle mixed arguments in logger', () => {
+    logger.info('Message', 123, true, { key: 'value' }, null, undefined);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall.slice(1)).toEqual([
+      'Message',
+      123,
+      true,
+      { key: 'value' },
+      null,
+      undefined
+    ]);
+  });
+
+  it('should handle trace level correctly', () => {
+    const traceLogger = new Logger({
+      name: 'test',
+      level: 'trace',
+      handlers: new ColorHandler(new ColorFormatter())
+    });
+
+    traceLogger.trace('Trace message');
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('TRACE');
+    expect(lastCall[1]).toBe('Trace message');
+  });
+
+  it('should handle fatal level correctly', () => {
+    logger.fatal('Fatal error occurred');
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('FATAL');
+    expect(lastCall[1]).toBe('Fatal error occurred');
+  });
+
+  it('should maintain color consistency across multiple logs', () => {
+    logger.error('Error 1');
+    logger.error('Error 2');
+    logger.info('Info 1');
+    logger.info('Info 2');
+
+    const calls = consoleSpy.mock.calls;
+    const errorCalls = calls.filter(
+      (call) =>
+        typeof call[0] === 'string' && call[0].toString().includes('ERROR')
+    );
+    const infoCalls = calls.filter(
+      (call) => typeof call[0] === 'string' && call[0].toString().includes('INFO')
+    );
+
+    expect(errorCalls.length).toBeGreaterThanOrEqual(2);
+    expect(infoCalls.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('should handle array arguments in logger', () => {
+    const arr = [1, 2, 3, 4, 5];
+    logger.info('Array data:', arr);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall[1]).toBe('Array data:');
+    expect(lastCall[2]).toBe(arr);
+  });
+
+  it('should handle nested objects in logger', () => {
+    const nested = {
+      level1: {
+        level2: {
+          level3: {
+            value: 'deep'
+          }
+        }
+      }
+    };
+    logger.info('Nested object:', nested);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall[1]).toBe('Nested object:');
+    expect(lastCall[2]).toBe(nested);
+  });
+
+  it('should handle function arguments in logger', () => {
+    const fn = () => 'test';
+    logger.info('Function:', fn);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall[1]).toBe('Function:');
+    expect(lastCall[2]).toBe(fn);
+  });
+
+  it('should handle symbol arguments in logger', () => {
+    const sym = Symbol('test');
+    logger.info('Symbol:', sym);
+
+    const calls = consoleSpy.mock.calls;
+    const lastCall = calls[calls.length - 1];
+    expect(lastCall[0]).toMatch('INFO');
+    expect(lastCall[1]).toBe('Symbol:');
+    expect(lastCall[2]).toBe(sym);
   });
 });

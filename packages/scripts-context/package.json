@@ -48,14 +48,14 @@
   "devDependencies": {
     "@commitlint/types": "^19.8.0",
     "@qlover/logger": "workspace:*",
-    "@types/lodash": "^4.17.16",
-    "@types/shelljs": "^0.8.15",
-    "lodash": "^4.17.21"
+    "@types/lodash-es": "^4.17.12",
+    "@types/shelljs": "^0.8.15"
   },
   "dependencies": {
     "@qlover/env-loader": "workspace:*",
-    "@qlover/fe-corekit": "^2.1.0",
+    "@qlover/fe-corekit": "workspace:*",
     "chalk": "^5.3.0",
-    "cosmiconfig": "^9.0.0"
+    "cosmiconfig": "^9.0.0",
+    "lodash-es": "^4.17.22"
   }
 }

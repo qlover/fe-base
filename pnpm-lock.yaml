@@ -179,6 +179,9 @@ importers:
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
+      lodash-es:
+        specifier: ^4.17.22
+        version: 4.17.22
       typedoc:
         specifier: ~0.25.0
         version: 0.25.13(typescript@5.4.5)
@@ -192,9 +195,9 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
 
   packages/corekit-bridge:
     dependencies:
@@ -291,16 +294,16 @@ importers:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
-      '@types/lodash':
-        specifier: ^4.17.12
-        version: 4.17.20
       axios:
         specifier: ^1.7.9
         version: 1.11.0
+      lodash-es:
+        specifier: ^4.17.22
+        version: 4.17.22
     devDependencies:
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
 
   packages/fe-release:
     dependencies:
@@ -423,14 +426,17 @@ importers:
         specifier: workspace:*
         version: link:../env-loader
       '@qlover/fe-corekit':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: workspace:*
+        version: link:../fe-corekit
       chalk:
         specifier: ^5.3.0
         version: 5.6.0
       cosmiconfig:
         specifier: ^9.0.0
         version: 9.0.0(typescript@5.8.2)
+      lodash-es:
+        specifier: ^4.17.22
+        version: 4.17.22
     devDependencies:
       '@commitlint/types':
         specifier: ^19.8.0
@@ -438,15 +444,12 @@ importers:
       '@qlover/logger':
         specifier: workspace:*
         version: link:../logger
-      '@types/lodash':
-        specifier: ^4.17.16
-        version: 4.17.20
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/shelljs':
         specifier: ^0.8.15
         version: 0.8.17
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
 
 packages:
 
@@ -1989,9 +1992,6 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@qlover/fe-corekit@2.1.0':
-    resolution: {integrity: sha512-rckj7nx21MFhael3dBpC1xHd83Wv9PGEOAYhHa5uDfizUru18sDDlseYlzpDI4KpRL34BMLoE0fqT91bLyJxTQ==}
-
   '@qlover/slice-store@1.4.1':
     resolution: {integrity: sha512-HkczkS+pEQ4x6YbQoq78hlOlAfkWyMdHHvWOpgNxXWFfpS/y1fS1E7pR7NRp7dt+1Ypad4jOhQS6ZkXiPW8fZQ==}
 
@@ -2345,6 +2345,9 @@ packages:
 
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
+
+  '@types/lodash-es@4.17.12':
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
 
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
@@ -4166,6 +4169,9 @@ packages:
   locate-path@7.2.0:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  lodash-es@4.17.22:
+    resolution: {integrity: sha512-XEawp1t0gxSi9x01glktRZ5HDy0HXqrM0x5pXQM98EaI0NxO6jVM7omDOxsuEo5UIASAnm2bRp1Jt/e0a2XU8Q==}
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
@@ -7400,13 +7406,6 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@qlover/fe-corekit@2.1.0':
-    dependencies:
-      '@types/lodash': 4.17.20
-      axios: 1.11.0
-    transitivePeerDependencies:
-      - debug
-
   '@qlover/slice-store@1.4.1': {}
 
   '@rollup/plugin-commonjs@28.0.6(rollup@4.48.1)':
@@ -7692,6 +7691,10 @@ snapshots:
   '@types/jsonfile@6.1.4':
     dependencies:
       '@types/node': 22.17.2
+
+  '@types/lodash-es@4.17.12':
+    dependencies:
+      '@types/lodash': 4.17.20
 
   '@types/lodash@4.17.20': {}
 
@@ -9753,6 +9756,8 @@ snapshots:
   locate-path@7.2.0:
     dependencies:
       p-locate: 6.0.0
+
+  lodash-es@4.17.22: {}
 
   lodash.camelcase@4.3.0: {}
 

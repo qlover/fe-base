@@ -10,8 +10,7 @@ import {
   type RequestAdapterResponse,
   RequestErrorID
 } from '../interface';
-import merge from 'lodash/merge';
-import pick from 'lodash/pick';
+import { merge, pick } from 'lodash-es';
 
 /**
  * Request adapter fetch configuration

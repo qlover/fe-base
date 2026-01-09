@@ -41,7 +41,7 @@
  *   }
  * }
  *
- * const task = new ReleaseTask({}, new AsyncExecutor(), [
+ * const task = new ReleaseTask({}, new LifecycleExecutor<ReleaseContext>(), [
  *   tuple(CustomPlugin, { option: 'value' })
  * ]);
  *
@@ -68,7 +68,7 @@ import type {
   ScriptPluginProps
 } from '@qlover/scripts-context';
 import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
-import { AsyncExecutor } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit';
 import ReleaseContext, { ReleaseContextOptions } from './ReleaseContext';
 import GithubPR from '../plugins/githubPR/GithubPR';
 import Workspaces from '../plugins/workspaces/Workspaces';
@@ -115,7 +115,7 @@ const defaultName = 'release';
  *
  * @example Custom executor
  * ```typescript
- * const executor = new AsyncExecutor({
+ * const executor = new LifecycleExecutor<ReleaseContext>({
  *   onError: (err) => console.error('Release failed:', err)
  * });
  *
@@ -126,7 +126,7 @@ const defaultName = 'release';
  * ```typescript
  * const task = new ReleaseTask(
  *   {}, // options
- *   new AsyncExecutor(),
+ *   new LifecycleExecutor<ReleaseContext>(),
  *   [
  *     tuple(CustomPlugin, { config: 'value' }),
  *     ...innerTuples // include default plugins
@@ -162,14 +162,14 @@ export default class ReleaseTask {
    * // With custom executor and plugins
    * const task = new ReleaseTask(
    *   { rootPath: '/path/to/project' },
-   *   new AsyncExecutor(),
+   *   new LifecycleExecutor<ReleaseContext>(),
    *   [tuple(CustomPlugin, { option: 'value' })]
    * );
    * ```
    */
   constructor(
     options: Partial<ReleaseContextOptions> = {},
-    private executor: AsyncExecutor = new AsyncExecutor(),
+    private executor: LifecycleExecutor<ReleaseContext> = new LifecycleExecutor<ReleaseContext>(),
     private defaultTuples: PluginTuple<PluginClass>[] = innerTuples
   ) {
     this.context = new ReleaseContext(defaultName, options);

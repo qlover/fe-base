@@ -217,6 +217,7 @@ describe('MessageSender', () => {
 
     it('should rewrite UNKNOWN_ASYNC_ERROR to MESSAGE_SENDER_ERROR', async () => {
       const unknownError = new ExecutorError('Unknown error');
+      // @ts-expect-error
       unknownError.id = 'UNKNOWN_ASYNC_ERROR';
 
       mockGateway.sendMessage = vi.fn().mockRejectedValue(unknownError);
@@ -229,6 +230,7 @@ describe('MessageSender', () => {
 
     it('should not modify other ExecutorError IDs', async () => {
       const customError = new ExecutorError('Custom error');
+      // @ts-expect-error
       customError.id = 'CUSTOM_ERROR_ID';
 
       mockGateway.sendMessage = vi.fn().mockRejectedValue(customError);
