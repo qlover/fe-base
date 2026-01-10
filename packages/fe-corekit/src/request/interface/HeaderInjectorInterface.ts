@@ -45,7 +45,15 @@ export interface HeaderInjectorConfig {
 }
 
 export interface HeaderInjectorInterface {
+  /**
+   * Inject default headers into request configuration
+   *
+   * Returns normalized headers with all values as strings (required by fetch API).
+   *
+   * @param config - Request configuration
+   * @returns Headers object with injected default headers, all values normalized to strings
+   */
   inject(
     config: RequestAdapterConfig & HeaderInjectorConfig
-  ): Record<string, unknown>;
+  ): Record<string, string>;
 }

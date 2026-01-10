@@ -176,9 +176,12 @@ describe('FetchAbortPlugin with multiple plugins', () => {
     const abortPlugin = new FetchAbortPlugin();
     const TestErrorPlugin: ExecutorPlugin = {
       pluginName: 'TestErrorPlugin',
-      onError: vi.fn(({ hooksRuntimes }): RequestError => {
+      onError: vi.fn((context): RequestError => {
         // break the chain
-        hooksRuntimes.returnBreakChain = true;
+        context.runtimes({
+          returnBreakChain: true
+        });
+
 
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
@@ -224,6 +227,7 @@ describe('FetchAbortPlugin with multiple plugins', () => {
 
       throw new Error('Request should have been aborted');
     } catch (error: unknown) {
+      console.log(error);
       expect((error as RequestError).id).toBe(RequestErrorID.ABORT_ERROR);
       expect((error as RequestError).message).toBe('TestErrorPlugin abort');
       expect(onAbortMock).toHaveBeenCalledTimes(1);

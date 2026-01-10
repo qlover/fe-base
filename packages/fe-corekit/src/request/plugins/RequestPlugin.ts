@@ -1,5 +1,7 @@
-import { ExecutorContextInterface } from 'src/executor';
-import { LifecyclePluginInterface } from '../../executor/interface/LifecyclePluginInterface';
+import {
+  LifecyclePluginInterface,
+  ExecutorContextInterface
+} from '../../executor/interface';
 import {
   RequestAdapterFetchConfig,
   RequestAdapterFetchContext
@@ -13,7 +15,11 @@ import {
   HeaderInjectorInterface
 } from '../interface/HeaderInjectorInterface';
 import { hasObjectKeyWithValue } from '../utils/isAsString';
-import { JSON_RESPONSE_TYPE, CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE } from './consts';
+import {
+  JSON_RESPONSE_TYPE,
+  CONTENT_TYPE_HEADER,
+  JSON_CONTENT_TYPE
+} from './consts';
 
 export type RequestAdapterContext = ExecutorContextInterface<
   RequestAdapterConfig,
@@ -64,7 +70,8 @@ export interface RequestPluginInnerConfig {
  *
  * @example
  * ```typescript
- * const request = new RequestPlugin(new SimpleUrlBuilder(), {
+ * const request = new RequestPlugin({
+ *   urlBuilder: new SimpleUrlBuilder(),
  *   token: 'your-token',
  *   tokenPrefix: 'Bearer'
  * });
@@ -91,7 +98,10 @@ export class RequestPlugin
    * //   params: { role: 'admin' },
    * // }
    *
-   * const request = new RequestUrlBuilder(new SimpleUrlBuilder());
+   * const request = new RequestPlugin({
+   *   urlBuilder: new SimpleUrlBuilder(),
+   *   token: 'your-token'
+   * });
    * request.onBefore(ctx);
    *
    * // url = 'https://api.example.com/users?role=admin'
@@ -112,7 +122,8 @@ export class RequestPlugin
      *
      * @example
      * ```typescript
-     * const plugin = new RequestPlugin(new SimpleUrlBuilder(), {
+     * const plugin = new RequestPlugin({
+     *   urlBuilder: new SimpleUrlBuilder(),
      *   token: () => localStorage.getItem('token'),
      *   tokenPrefix: 'Bearer',
      *   authKey: 'Authorization'
@@ -138,7 +149,11 @@ export class RequestPlugin
    *
    * @example
    * ```typescript
-   * const request = new RequestUrlBuilder(new SimpleUrlBuilder());
+   * const request = new RequestPlugin({
+   *   urlBuilder: new SimpleUrlBuilder(),
+   *   token: 'your-token',
+   *   tokenPrefix: 'Bearer'
+   * });
    * request.onBefore(ctx);
    * ```
    * @override
@@ -149,12 +164,16 @@ export class RequestPlugin
     // Merge default config with context config
     const mergedConfig = this.mergeConfig(ctx.parameters);
 
+    const processedData = this.processRequestData(mergedConfig);
+    const builtUrl = this.buildUrl(mergedConfig);
+    const injectedHeaders = this.injectHeaders(mergedConfig);
+
     return {
       ...ctx.parameters,
       ...mergedConfig,
-      data: this.processRequestData(mergedConfig),
-      url: this.buildUrl(mergedConfig),
-      headers: this.injectHeaders(mergedConfig)
+      data: processedData,
+      url: builtUrl,
+      headers: injectedHeaders
     };
   }
 
@@ -164,7 +183,8 @@ export class RequestPlugin
    * Context configuration takes precedence over default configuration.
    * Data merging is delegated to RequestDataProcessor.
    *
-   * If contextConfig has data, it will override the default data, and will not be merged.
+   * If contextConfig has data (including null), it will override the default data.
+   * If contextConfig.data is undefined, the default data will be preserved.
    *
    * @param contextConfig - Configuration from request context
    * @returns Merged configuration
@@ -172,7 +192,15 @@ export class RequestPlugin
   protected mergeConfig(
     contextConfig: RequestAdapterConfig
   ): RequestAdapterConfig & RequestPluginConfig {
-    return { ...this.config, ...contextConfig };
+    const merged = { ...this.config, ...contextConfig };
+
+    // Preserve default data if contextConfig.data is undefined
+    // Only override if contextConfig explicitly provides data (including null)
+    if (!('data' in contextConfig) && 'data' in this.config) {
+      merged.data = this.config.data;
+    }
+
+    return merged;
   }
 
   /**
@@ -180,46 +208,106 @@ export class RequestPlugin
    *
    * @param config - Request configuration
    * @returns The built URL
+   * @throws {Error} If the built URL is empty or invalid
    */
   protected buildUrl(config: RequestAdapterConfig): string {
-    // TODO: need cache?
-    return this.urlBuilder.buildUrl(config);
+    const url = this.urlBuilder.buildUrl(config);
+
+    // Validate URL is not empty
+    if (!url || url.trim() === '') {
+      throw new Error(
+        `RequestPlugin: Invalid URL. URL cannot be empty. ` +
+          `baseURL: ${config.baseURL ?? 'undefined'}, url: ${config.url ?? 'undefined'}`
+      );
+    }
+
+    return url;
   }
 
   /**
    * Inject default headers into request configuration
    *
    * This method delegates to RequestHeaderInjector to handle header injection logic.
+   * Header normalization is handled by the injector itself.
    *
    * @param config - Request configuration (merged with plugin config)
-   * @returns Headers object with injected default headers
+   * @returns Headers object with injected default headers, all values normalized to strings
    */
   protected injectHeaders(
     config: RequestAdapterConfig & RequestPluginConfig
-  ): Record<string, unknown> {
+  ): Record<string, string> {
     return this.headerInjector.inject(config);
   }
 
+  /**
+   * Process request data before sending
+   *
+   * Handles data serialization based on content type and request method.
+   * GET/HEAD/OPTIONS requests should not have a body, so null is returned.
+   *
+   * @param config - Request configuration
+   * @returns Processed data (stringified JSON, FormData, or null for methods without body)
+   * @throws {Error} If JSON.stringify fails or custom serializer throws
+   */
   protected processRequestData(
     config: RequestAdapterConfig & RequestPluginConfig
-  ): unknown {
-    const { requestDataSerializer, data, headers, responseType } = config;
+  ): BodyInit | null | undefined {
+    const { requestDataSerializer, data, headers, responseType, method } =
+      config;
 
-    if (typeof requestDataSerializer === 'function') {
-      return requestDataSerializer(data);
+    // HTTP methods that should not have a body
+    const methodWithoutBody = method?.toUpperCase()?.trim();
+    if (
+      methodWithoutBody === 'GET' ||
+      methodWithoutBody === 'HEAD' ||
+      methodWithoutBody === 'OPTIONS'
+    ) {
+      return null;
     }
 
-    // default serializer
-    if (
+    // If data is undefined or null, return as-is
+    if (data == null) {
+      return data;
+    }
+
+    // Use custom serializer if provided
+    if (typeof requestDataSerializer === 'function') {
+      try {
+        return requestDataSerializer(data) as BodyInit | null | undefined;
+      } catch (error) {
+        throw new Error(
+          `RequestPlugin: Custom requestDataSerializer threw an error: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    // Default serializer: JSON.stringify for JSON content type
+    const isJsonContentType =
       responseType === JSON_RESPONSE_TYPE ||
       hasObjectKeyWithValue(headers, CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE, {
         keyCaseSensitive: false,
         valueCaseSensitive: false
-      })
-    ) {
-      return JSON.stringify(data);
+      });
+
+    if (isJsonContentType) {
+      try {
+        // JSON.stringify returns undefined for undefined input, but we want to handle it explicitly
+        return JSON.stringify(data);
+      } catch (error) {
+        // Handle circular references and other JSON.stringify errors
+        if (error instanceof TypeError && error.message.includes('circular')) {
+          throw new Error(
+            'RequestPlugin: Cannot stringify data with circular references. ' +
+              'Consider using a custom requestDataSerializer to handle this case.'
+          );
+        }
+        throw new Error(
+          `RequestPlugin: Failed to stringify request data: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
     }
 
-    return data;
+    // For non-JSON data, return as-is (could be FormData, Blob, ArrayBuffer, etc.)
+    return data as BodyInit;
   }
 }

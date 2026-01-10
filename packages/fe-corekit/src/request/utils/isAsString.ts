@@ -159,46 +159,6 @@ export function hasObjectKey<
  * that the value matches a target value. Supports case-insensitive key lookup
  * and case-sensitive/case-insensitive value comparison.
  *
- * @param obj - The object to check
- * @param key - The key to look for
- * @param value - The value to compare against (optional)
- * @param options - Options for key and value matching
- * @param options.keyCaseSensitive - Whether key lookup is case-sensitive (default: true)
- * @param options.valueCaseSensitive - Whether value comparison is case-sensitive (default: true)
- * @returns True if obj has the key and (if value provided) the value matches
- *
- * @example Basic key check
- * ```typescript
- * const obj = { 'Content-Type': 'application/json' };
- * hasObjectKeyWithValue(obj, 'Content-Type'); // true
- * ```
- *
- * @example Key with value check
- * ```typescript
- * const obj = { 'Content-Type': 'application/json' };
- * hasObjectKeyWithValue(obj, 'Content-Type', 'application/json'); // true
- * hasObjectKeyWithValue(obj, 'Content-Type', 'text/html'); // false
- * ```
- *
- * @example Case-insensitive key lookup
- * ```typescript
- * const obj = { 'Content-Type': 'application/json' };
- * hasObjectKeyWithValue(obj, 'content-type', 'application/json', { keyCaseSensitive: false }); // true
- * ```
- *
- * @example Case-insensitive value comparison
- * ```typescript
- * const obj = { 'Content-Type': 'Application/JSON' };
- * hasObjectKeyWithValue(obj, 'Content-Type', 'application/json', { valueCaseSensitive: false }); // true
- * ```
- */
-/**
- * Check if an object has a specific key with a specific value
- *
- * This function checks if an object contains a key and optionally verifies
- * that the value matches a target value. Supports case-insensitive key lookup
- * and case-sensitive/case-insensitive value comparison.
- *
  * When value is not provided, this function behaves similarly to `hasObjectKey`,
  * but without type narrowing. Use `hasObjectKey` if you need type guards.
  *

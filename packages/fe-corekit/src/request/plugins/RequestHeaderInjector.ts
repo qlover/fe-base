@@ -36,34 +36,64 @@ export class RequestHeaderInjector implements HeaderInjectorInterface {
    *
    * This method adds default headers based on the request configuration.
    * It handles cases where headers may be null or undefined.
+   * All header values are normalized to strings (required by fetch API).
    *
    * @override
    * @param config - Request configuration (merged with plugin config)
-   * @returns Headers object with injected default headers
+   * @returns Headers object with injected default headers, all values normalized to strings
    */
   public inject(
     config: RequestAdapterConfig & HeaderInjectorConfig
-  ): Record<string, unknown> {
-    let headers = config.headers ?? {};
+  ): Record<string, string> {
+    // Merge constructor config with passed config (passed config takes precedence)
+    const mergedConfig = { ...this.config, ...config };
+    // Merge headers (passed headers take precedence)
+    const constructorHeaders = (this.config as RequestAdapterConfig).headers ?? {};
+    const configHeaders = config.headers ?? {};
+    let headers = { ...constructorHeaders, ...configHeaders };
 
     // Add Content-Type header for JSON requests if not already present
     if (
       !hasObjectKeyWithValue(headers, CONTENT_TYPE_HEADER) &&
-      isAsString(config.responseType, JSON_RESPONSE_TYPE, true)
+      isAsString(mergedConfig.responseType, JSON_RESPONSE_TYPE, true)
     ) {
       headers = appendHeaders(headers, CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE);
     }
 
     // Add auth header if token is provided
-    const authKey = this.getAuthKey(config);
+    const authKey = this.getAuthKey(mergedConfig);
     if (authKey !== false && !hasObjectKeyWithValue(headers, authKey)) {
-      const authValue = this.getAuthToken(config);
-      if (isAsString(authValue)) {
+      const authValue = this.getAuthToken(mergedConfig);
+      if (isAsString(authValue) && authValue.length > 0) {
         headers = appendHeaders(headers, authKey, authValue);
       }
     }
 
-    return headers;
+    // Normalize all header values to strings (required by fetch API)
+    return this.normalizeHeaders(headers);
+  }
+
+  /**
+   * Normalize header values to strings
+   *
+   * Ensures all header values are strings as required by the fetch API.
+   * Filters out null and undefined values.
+   *
+   * @param headers - Headers object with potentially non-string values
+   * @returns Normalized headers object with all values as strings
+   */
+  protected normalizeHeaders(
+    headers: Record<string, unknown>
+  ): Record<string, string> {
+    const normalizedHeaders: Record<string, string> = {};
+    
+    for (const [key, value] of Object.entries(headers)) {
+      if (value != null) {
+        normalizedHeaders[key] = String(value);
+      }
+    }
+    
+    return normalizedHeaders;
   }
 
   /**
@@ -100,7 +130,7 @@ export class RequestHeaderInjector implements HeaderInjectorInterface {
     }
 
     const tokenPrefix = config.tokenPrefix;
-    return isAsString(tokenPrefix)
+    return isAsString(tokenPrefix) && tokenPrefix.length > 0
       ? `${tokenPrefix} ${tokenValue}`
       : tokenValue;
   }
