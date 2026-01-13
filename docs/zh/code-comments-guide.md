@@ -697,6 +697,77 @@ if (hasPermissions && !isActive) {
 }
 ```
 
+### 代码内部注释
+
+代码内部不需要每行都保留注释，仅保留或提供核心注释，比如 `Note`、`Important` 等关键信息注释，其他显而易见的注释都不需要。
+
+**原则：**
+
+- 优先让代码本身表达意图，通过清晰的变量名和函数名实现自文档化
+- 只添加必要的注释，解释"为什么"而不是"是什么"
+- 保留重要的警告、注意事项和关键业务逻辑说明
+
+**示例：**
+
+```typescript
+// ❌ 不好：每行都有冗余注释
+function calculateTotal(items: Item[]) {
+  // 初始化总数为 0
+  let total = 0;
+
+  // 遍历所有项目
+  for (const item of items) {
+    // 累加每个项目的价格
+    total += item.price;
+  }
+
+  // 返回总数
+  return total;
+}
+
+// ✅ 好：代码清晰，无需注释
+function calculateTotal(items: Item[]) {
+  let total = 0;
+  for (const item of items) {
+    total += item.price;
+  }
+  return total;
+}
+
+// ✅ 好：保留核心注释（重要业务逻辑或注意事项）
+function processPayment(amount: number, userId: string) {
+  // Note: 金额必须大于 0，负数会被拒绝
+  if (amount <= 0) {
+    throw new ValidationError('Amount must be positive');
+  }
+
+  const balance = getBalance(userId);
+
+  // Important: 检查余额是否充足，避免透支
+  if (balance < amount) {
+    throw new InsufficientFundsError();
+  }
+
+  return deductBalance(userId, amount);
+}
+```
+
+**应该保留的注释类型：**
+
+- `Note:` - 重要的实现说明或注意事项
+- `Important:` - 关键的业务规则或安全考虑
+- `Warning:` - 潜在的陷阱或边界情况
+- `TODO:` - 待办事项（需包含工单引用）
+- 复杂的业务逻辑说明
+- 不明显的技术决策原因
+
+**应该删除的注释类型：**
+
+- 描述代码显而易见行为的注释
+- 重复函数名或变量名的注释
+- 每行代码的逐行解释
+- 过时或不再适用的注释
+
 ## TODO 注释
 
 - 始终包含工单/问题引用

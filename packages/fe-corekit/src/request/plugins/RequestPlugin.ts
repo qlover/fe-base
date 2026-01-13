@@ -2,10 +2,7 @@ import {
   LifecyclePluginInterface,
   ExecutorContextInterface
 } from '../../executor/interface';
-import {
-  RequestAdapterFetchConfig,
-  RequestAdapterFetchContext
-} from '../adapter/RequestAdapterFetch';
+
 import { UrlBuilderInterface } from '../interface/UrlBuilderInterface';
 import { RequestAdapterConfig } from '../interface';
 import { SimpleUrlBuilder } from '../utils/SimpleUrlBuilder';
@@ -158,9 +155,7 @@ export class RequestPlugin
    * ```
    * @override
    */
-  public onBefore(
-    ctx: RequestAdapterFetchContext
-  ): RequestAdapterFetchConfig<unknown> {
+  public onBefore(ctx: RequestAdapterContext): void {
     // Merge default config with context config
     const mergedConfig = this.mergeConfig(ctx.parameters);
 
@@ -168,13 +163,13 @@ export class RequestPlugin
     const builtUrl = this.buildUrl(mergedConfig);
     const injectedHeaders = this.injectHeaders(mergedConfig);
 
-    return {
+    ctx.setParameters({
       ...ctx.parameters,
       ...mergedConfig,
       data: processedData,
       url: builtUrl,
       headers: injectedHeaders
-    };
+    });
   }
 
   /**
@@ -245,9 +240,12 @@ export class RequestPlugin
    * Handles data serialization based on content type and request method.
    * GET/HEAD/OPTIONS requests should not have a body, so null is returned.
    *
+   * Errors from JSON.stringify or custom serializer are propagated without modification.
+   *
    * @param config - Request configuration
    * @returns Processed data (stringified JSON, FormData, or null for methods without body)
-   * @throws {Error} If JSON.stringify fails or custom serializer throws
+   * @throws {TypeError} If JSON.stringify fails (e.g., circular references)
+   * @throws {Error} If custom serializer throws
    */
   protected processRequestData(
     config: RequestAdapterConfig & RequestPluginConfig
@@ -272,13 +270,7 @@ export class RequestPlugin
 
     // Use custom serializer if provided
     if (typeof requestDataSerializer === 'function') {
-      try {
-        return requestDataSerializer(data) as BodyInit | null | undefined;
-      } catch (error) {
-        throw new Error(
-          `RequestPlugin: Custom requestDataSerializer threw an error: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+      return requestDataSerializer(data) as BodyInit | null | undefined;
     }
 
     // Default serializer: JSON.stringify for JSON content type
@@ -290,21 +282,8 @@ export class RequestPlugin
       });
 
     if (isJsonContentType) {
-      try {
-        // JSON.stringify returns undefined for undefined input, but we want to handle it explicitly
-        return JSON.stringify(data);
-      } catch (error) {
-        // Handle circular references and other JSON.stringify errors
-        if (error instanceof TypeError && error.message.includes('circular')) {
-          throw new Error(
-            'RequestPlugin: Cannot stringify data with circular references. ' +
-              'Consider using a custom requestDataSerializer to handle this case.'
-          );
-        }
-        throw new Error(
-          `RequestPlugin: Failed to stringify request data: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+      // JSON.stringify returns undefined for undefined input, but we want to handle it explicitly
+      return JSON.stringify(data);
     }
 
     // For non-JSON data, return as-is (could be FormData, Blob, ArrayBuffer, etc.)

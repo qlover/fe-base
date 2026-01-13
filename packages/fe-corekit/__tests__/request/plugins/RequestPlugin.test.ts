@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RequestPlugin } from '../../../src/request/plugins/RequestPlugin';
-import { RequestAdapterFetchContext } from '../../../src/request/adapter/RequestAdapterFetch';
+import { RequestAdapterContext } from '../../../src/request/plugins/RequestPlugin';
 import { UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
 import { HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
 import { RequestAdapterConfig } from '../../../src/request/interface';
@@ -12,7 +12,7 @@ import {
 
 describe('RequestPlugin', () => {
   let plugin: RequestPlugin;
-  let mockContext: RequestAdapterFetchContext;
+  let mockContext: RequestAdapterContext;
 
   beforeEach(() => {
     mockContext = {
@@ -20,8 +20,11 @@ describe('RequestPlugin', () => {
         url: '/api/users',
         method: 'GET'
       },
-      hooksRuntimes: {}
-    } as RequestAdapterFetchContext;
+      hooksRuntimes: {},
+      setParameters: vi.fn().mockImplementation((params) => {
+        Object.assign(mockContext, { parameters: params });
+      })
+    } as unknown as RequestAdapterContext;
   });
 
   describe('Constructor', () => {
@@ -46,7 +49,8 @@ describe('RequestPlugin', () => {
         urlBuilder: customUrlBuilder
       });
 
-      const result = plugin.onBefore(mockContext);
+      plugin.onBefore(mockContext);
+      const result = mockContext.parameters;
       expect(result.url).toBe('https://custom.com/api');
     });
 
@@ -58,8 +62,9 @@ describe('RequestPlugin', () => {
         headerInjector: customInjector
       });
 
-      const result = plugin.onBefore(mockContext);
-      expect(result.headers).toEqual({ 'X-Custom': 'value' });
+      plugin.onBefore(mockContext);
+
+      expect(mockContext.parameters.headers).toEqual({ 'X-Custom': 'value' });
     });
   });
 
@@ -76,9 +81,11 @@ describe('RequestPlugin', () => {
           params: { role: 'admin' }
         }
       });
-      const result = plugin.onBefore(mockContext);
+      plugin.onBefore(mockContext);
 
-      expect(result.url).toBe('https://api.example.com/users?role=admin');
+      expect(mockContext.parameters.url).toBe(
+        'https://api.example.com/users?role=admin'
+      );
     });
 
     it('should inject headers', () => {
@@ -86,10 +93,12 @@ describe('RequestPlugin', () => {
         token: 'test-token',
         tokenPrefix: 'Bearer'
       });
-      const result = plugin.onBefore(mockContext);
+      plugin.onBefore(mockContext);
 
-      expect(result.headers).toBeDefined();
-      expect(result.headers?.['Authorization']).toBe('Bearer test-token');
+      expect(mockContext.parameters.headers).toBeDefined();
+      expect(mockContext.parameters.headers?.['Authorization']).toBe(
+        'Bearer test-token'
+      );
     });
 
     it('should process request data', () => {
@@ -101,9 +110,9 @@ describe('RequestPlugin', () => {
           responseType: JSON_RESPONSE_TYPE
         }
       });
-      const result = plugin.onBefore(mockContext);
+      plugin.onBefore(mockContext);
 
-      expect(result.data).toBe('{"name":"John"}');
+      expect(mockContext.parameters.data).toBe('{"name":"John"}');
     });
 
     it('should merge context config with plugin config', () => {
@@ -118,10 +127,10 @@ describe('RequestPlugin', () => {
           token: 'context-token'
         }
       });
-      const result = plugin.onBefore(mockContext);
+      plugin.onBefore(mockContext);
 
-      expect(result.token).toBe('context-token');
-      expect(result.baseURL).toBe('https://api.example.com');
+      expect(mockContext.parameters.token).toBe('context-token');
+      expect(mockContext.parameters.baseURL).toBe('https://api.example.com');
     });
   });
 
@@ -386,9 +395,7 @@ describe('RequestPlugin', () => {
 
         expect(() => {
           plugin['processRequestData'](mergedConfig);
-        }).toThrow(
-          'RequestPlugin: Custom requestDataSerializer threw an error'
-        );
+        }).toThrow('Serializer error');
       });
     });
 
@@ -440,11 +447,10 @@ describe('RequestPlugin', () => {
           responseType: JSON_RESPONSE_TYPE
         };
 
+        // JSON.stringify throws TypeError for circular references
         expect(() => {
           plugin['processRequestData'](config);
-        }).toThrow(
-          'RequestPlugin: Cannot stringify data with circular references'
-        );
+        }).toThrow(TypeError);
       });
 
       it('should throw error for other JSON.stringify errors', () => {
@@ -460,9 +466,10 @@ describe('RequestPlugin', () => {
           responseType: JSON_RESPONSE_TYPE
         };
 
+        // Errors from JSON.stringify are propagated without modification
         expect(() => {
           plugin['processRequestData'](config);
-        }).toThrow('RequestPlugin: Failed to stringify request data');
+        }).toThrow('Custom toJSON error');
       });
 
       it('should handle case-insensitive Content-Type header key', () => {

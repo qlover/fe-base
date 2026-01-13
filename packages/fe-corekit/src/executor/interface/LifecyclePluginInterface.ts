@@ -138,8 +138,7 @@ export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
  * @category Plugin
  */
 export interface LifecyclePluginInterface<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Ctx extends ExecutorContextInterface<any, any>,
+  Ctx extends ExecutorContextInterface<unknown, unknown>,
   Result = Ctx['returnValue'],
   Param = Ctx['parameters']
 > extends ExecutorPluginInterface<Ctx> {

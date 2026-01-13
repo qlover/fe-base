@@ -51,7 +51,5 @@ export const RequestErrorID = {
   /** Response status is not OK (not in 200-299 range) */
   RESPONSE_NOT_OK: 'RESPONSE_NOT_OK',
   /** Request was aborted */
-  ABORT_ERROR: 'ABORT_ERROR',
-  /** URL is not provided */
-  URL_NONE: 'URL_NONE'
+  ABORT_ERROR: 'ABORT_ERROR'
 } as const;

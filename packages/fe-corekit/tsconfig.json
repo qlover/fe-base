@@ -7,7 +7,6 @@
     "tsBuildInfoFile": "ts-build/.tsbuildinfo",
     "target": "ES5",
     "strict": true,
-    "baseUrl": "./",
     "allowJs": true,
     "checkJs": false
   },

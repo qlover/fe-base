@@ -5,7 +5,6 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "outDir": "ts-build",
-    "baseUrl": "./",
     "rootDir": "src",
     "noEmit": false,
     "sourceMap": true,

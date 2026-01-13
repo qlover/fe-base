@@ -6,13 +6,13 @@
  * The main purpose is to provide a flexible structure for configuring HTTP requests.
  *
  * TODO: Should fix the generic type to a specific type instead of unknown
- * 
+ *
  * Because the unknown type is not type-safe and can cause type errors.
  * For example, if you want to use the request adapter to send a request to a API,
  * you need to know the type of the request data and the type of the response data.
  * If you use the unknown type, you will not know the type of the request data and the type of the response data.
  * This will cause type errors.
- * 
+ *
  * @example
  * ```typescript
  * const requestAdapter = new RequestAdapter<{ name: string }>();
@@ -26,7 +26,8 @@ export interface RequestAdapterConfig<RequestData = unknown> {
    *
    * Processed by FetchURLPlugin during request
    *
-   * @todo Change to URL | Request, add attribute `input`
+   * TODO: Change to URL | Request, add attribute `input`
+   *
    * @example
    * ```typescript
    * url: '/users/1'
