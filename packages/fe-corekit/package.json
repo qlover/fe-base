@@ -50,7 +50,8 @@
     "@qlover/logger": "workspace:*",
     "any-signal": "^4.2.0",
     "axios": "^1.7.9",
-    "lodash-es": "^4.17.22"
+    "lodash-es": "^4.17.22",
+    "p-retry": "^7.1.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12"
