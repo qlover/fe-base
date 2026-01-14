@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@qlover/logger": "workspace:*",
+    "any-signal": "^4.2.0",
     "axios": "^1.7.9",
     "lodash-es": "^4.17.22"
   },

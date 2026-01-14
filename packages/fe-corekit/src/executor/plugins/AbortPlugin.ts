@@ -1,4 +1,12 @@
 import {
+  AbortError,
+  Aborter,
+  AborterConfig,
+  AborterId,
+  AborterInterface,
+  isAbortError
+} from '../../aborter';
+import {
   type ExecutorPlugin,
   type ExecutorContext,
   ExecutorError
@@ -6,111 +14,53 @@ import {
 import type { LoggerInterface } from '@qlover/logger';
 
 /**
- * Configuration interface for AbortPlugin
+ * Configuration extractor function type for AbortPlugin
  *
- * Defines the parameters needed to control request cancellation behavior,
- * including identifiers, abort signals, timeout settings, and callback functions
- */
-export interface AbortPluginConfig {
-  /**
-   * Unique identifier for the abort operation
-   *
-   * Used to identify and manage specific abort controller instances
-   * If not provided, will use `requestId` or auto-generated value
-   *
-   * @optional
-   * @example `"user-profile-fetch"`
-   */
-  id?: string;
-
-  /**
-   * Request unique identifier
-   *
-   * Alternative to `id`, used for identifying specific requests
-   * Useful when tracking requests across different systems
-   *
-   * @optional
-   * @example `"req_123456789"`
-   */
-  requestId?: string;
-
-  /**
-   * Callback function triggered when operation is aborted
-   *
-   * Receives the abort configuration (excluding the callback itself to prevent recursion)
-   * Useful for cleanup operations or user notifications
-   *
-   * @optional
-   * @example
-   * ```typescript
-   * onAborted: (config) => {
-   *   console.log(`Request ${config.id} was cancelled`);
-   *   // Perform cleanup operations
-   * }
-   * ```
-   */
-  onAborted?<T extends AbortPluginConfig>(config: T): void;
-
-  /**
-   * AbortSignal instance for request cancellation
-   *
-   * If not provided, the plugin will create and manage one automatically
-   * Can be provided externally to integrate with existing abort mechanisms
-   *
-   * @optional
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal | AbortSignal MDN}
-   */
-  signal?: AbortSignal;
-
-  /**
-   * Timeout duration in milliseconds
-   *
-   * When set, the operation will be automatically aborted after this duration
-   * Helps prevent hanging requests and manages resource cleanup
-   *
-   * @optional
-   * @default `undefined` (no timeout)
-   * @example `5000` // 5 seconds timeout
-   * @example `30000` // 30 seconds timeout
-   */
-  abortTimeout?: number;
-}
-
-/**
- * Error identifier constant for abort-related errors
- *
- * Used to identify abort errors in error handling logic
- */
-export const ABORT_ERROR_ID = 'ABORT_ERROR';
-
-/**
- * Configuration extractor function type
- *
- * Extracts `AbortPluginConfig` from executor context parameters
+ * Extracts `AborterConfig` from executor context parameters.
  * Enables flexible configuration passing in different execution contexts
+ * by mapping custom parameter structures to the standard abort configuration format.
  *
- * @template T - Type of the parameters object
- * @param parameters - Executor context parameters
- * @returns Extracted abort configuration
+ * @template T - Type of the input parameters object
+ * @param parameters - Executor context parameters to extract configuration from
+ * @returns Extracted abort configuration compatible with `AborterConfig`
  *
- * @example
+ * @example Basic usage
  * ```typescript
  * const extractor: AbortConfigExtractor<MyParams> = (params) => ({
- *   id: params.requestId,
+ *   abortId: params.requestId,
  *   abortTimeout: params.timeout,
  *   signal: params.customSignal
  * });
  * ```
+ *
+ * @example Complex mapping
+ * ```typescript
+ * interface ApiRequestParams {
+ *   url: string;
+ *   method: 'GET' | 'POST';
+ *   timeoutMs?: number;
+ *   requestId?: string;
+ * }
+ *
+ * const extractor: AbortConfigExtractor<ApiRequestParams> = (params) => ({
+ *   abortId: params.requestId || `api-${params.method}-${Date.now()}`,
+ *   abortTimeout: params.timeoutMs || 30000,
+ *   onAborted: (config) => {
+ *     console.log(`API request aborted: ${config.abortId}`);
+ *   }
+ * });
+ * ```
  */
-export type AbortConfigExtractor<T> = (parameters: T) => AbortPluginConfig;
+export type AbortConfigExtractor<T> = (parameters: unknown) => T;
 
 /**
  * Configuration options for initializing AbortPlugin
  *
- * Defines optional settings for logger integration, default timeout,
- * and custom configuration extraction logic
+ * Defines comprehensive settings for customizing AbortPlugin behavior,
+ * including logger integration, default timeout, custom configuration extraction,
+ * and dependency injection of abort manager instance.
  *
- * @template T - Type of the executor parameters
+ * @template T - Type of the executor context parameters
  */
 export interface AbortPluginOptions<T> {
   /**
@@ -129,24 +79,23 @@ export interface AbortPluginOptions<T> {
   logger?: LoggerInterface;
 
   /**
-   * Default timeout duration in milliseconds
-   *
-   * Applied to all requests unless overridden by individual request config
-   * Helps establish consistent timeout behavior across the application
+   * Default timeout duration for all requests
    *
    * @optional
-   * @default `undefined` (no default timeout)
-   * @example `10000` // 10 seconds default timeout
+   * @example
+   * ```typescript
+   * timeout: 10000 // 10 seconds default timeout
+   * ```
    */
   timeout?: number;
 
   /**
    * Custom configuration extractor function
    *
-   * Extracts `AbortPluginConfig` from executor context parameters
+   * Extracts `AborterConfig` from executor context parameters
    * Allows customization of how abort configuration is retrieved
    *
-   * @default Direct cast of parameters to `AbortPluginConfig`
+   * @default Direct cast of parameters to `AborterConfig`
    * @optional
    * @example
    * ```typescript
@@ -158,159 +107,49 @@ export interface AbortPluginOptions<T> {
    * ```
    */
   getConfig?: AbortConfigExtractor<T>;
-}
 
-/**
- * Custom error class for abort operations
- *
- * Extends `ExecutorError` to provide rich abort-specific error information,
- * including abort identifiers, timeout details, and user-friendly descriptions
- *
- * Core features:
- * - Abort identification: Tracks which operation was aborted via `abortId`
- * - Timeout tracking: Records timeout duration when abort is timeout-triggered
- * - Timeout detection: Provides `isTimeout()` method to distinguish timeout aborts
- * - Friendly descriptions: Generates human-readable error messages with context
- *
- * @example Basic abort error
- * ```typescript
- * const error = new AbortError(
- *   'Operation cancelled by user',
- *   'fetch-user-123'
- * );
- * console.log(error.getDescription());
- * // Output: "Operation cancelled by user (Request: fetch-user-123)"
- * ```
- *
- * @example Timeout abort error
- * ```typescript
- * const error = new AbortError(
- *   'Request timed out',
- *   'api-call-456',
- *   5000
- * );
- * if (error.isTimeout()) {
- *   console.log(`Request ${error.abortId} timed out after ${error.timeout}ms`);
- * }
- * ```
- */
-export class AbortError extends ExecutorError {
   /**
-   * Unique identifier for the aborted operation
+   * Custom abort manager instance for managing abort controllers and resources
    *
-   * Helps track and identify which specific operation was aborted
-   * Corresponds to `id` or `requestId` from `AbortPluginConfig`
+   * Allows dependency injection of a custom abort manager implementation.
+   * Useful for testing, custom abort logic, or sharing abort state across multiple plugins.
    *
+   * @default `new Aborter<AborterConfig>(this.pluginName)`
    * @optional
-   * @example `"fetch-user-profile-123"`
-   * @example `"upload-file-456"`
+   * @example Basic usage
+   * ```typescript
+   * abortManager: new Aborter<AborterConfig>('MyCustomPool')
+   * ```
+   *
+   * @example For testing
+   * ```typescript
+   * abortManager: mockAborter // Mock implementation for unit tests
+   * ```
+   *
+   * @example Shared abort manager
+   * ```typescript
+   * const sharedAborter = new Aborter('SharedPool');
+   * const plugin1 = new AbortPlugin({ abortManager: sharedAborter });
+   * const plugin2 = new AbortPlugin({ abortManager: sharedAborter });
+   * ```
    */
-  public readonly abortId?: string;
+  abortManager?: Aborter<AborterConfig>;
 
   /**
-   * Timeout duration in milliseconds
+   * Plugin name
    *
-   * Only populated when abort was triggered by a timeout
-   * Used to distinguish between manual aborts and timeout-based aborts
+   * Used by the executor system to identify this plugin
    *
-   * @optional
-   * @example `5000` // 5 seconds timeout
+   * @default 'AbortPlugin'
    */
-  public readonly timeout?: number;
-
-  /**
-   * Creates a new AbortError instance
-   *
-   * @param message - Human-readable error message describing why the operation was aborted
-   * @param abortId - Optional identifier for the aborted operation
-   * @param timeout - Optional timeout duration in milliseconds (indicates timeout-based abort)
-   *
-   * @example Manual abort
-   * ```typescript
-   * new AbortError('User cancelled the upload', 'upload-123')
-   * ```
-   *
-   * @example Timeout abort
-   * ```typescript
-   * new AbortError('Request exceeded time limit', 'api-call-456', 5000)
-   * ```
-   */
-  constructor(message: string, abortId?: string, timeout?: number) {
-    super(ABORT_ERROR_ID, message);
-    this.abortId = abortId;
-    this.timeout = timeout;
-  }
-
-  /**
-   * Checks if the abort was triggered by a timeout
-   *
-   * Useful for distinguishing between manual cancellations and timeout-based aborts,
-   * enabling different error handling strategies
-   *
-   * @returns `true` if abort was caused by timeout, `false` otherwise
-   *
-   * @example
-   * ```typescript
-   * try {
-   *   await fetchData();
-   * } catch (error) {
-   *   if (error instanceof AbortError && error.isTimeout()) {
-   *     console.log('Request timed out, please try again');
-   *   } else {
-   *     console.log('Request was cancelled');
-   *   }
-   * }
-   * ```
-   */
-  public isTimeout(): boolean {
-    return this.timeout !== undefined && this.timeout > 0;
-  }
-
-  /**
-   * Generates a user-friendly error description with context
-   *
-   * Combines the error message with additional context like request ID and timeout duration
-   * Provides more informative error messages for debugging and user feedback
-   *
-   * @returns Formatted error description string
-   *
-   * @example Without context
-   * ```typescript
-   * const error = new AbortError('Operation aborted');
-   * error.getDescription(); // "Operation aborted"
-   * ```
-   *
-   * @example With request ID
-   * ```typescript
-   * const error = new AbortError('Operation aborted', 'req-123');
-   * error.getDescription(); // "Operation aborted (Request: req-123)"
-   * ```
-   *
-   * @example With timeout context
-   * ```typescript
-   * const error = new AbortError('Timeout', 'req-456', 5000);
-   * error.getDescription(); // "Timeout (Request: req-456, Timeout: 5000ms)"
-   * ```
-   */
-  public getDescription(): string {
-    const parts: string[] = [];
-
-    if (this.abortId) {
-      parts.push(`Request: ${this.abortId}`);
-    }
-
-    if (this.isTimeout()) {
-      parts.push(`Timeout: ${this.timeout}ms`);
-    }
-
-    return parts.length > 0
-      ? `${this.message} (${parts.join(', ')})`
-      : this.message;
-  }
+  pluginName?: string;
 }
 
 /**
  * Executor plugin for managing request cancellation and timeout handling
+ *
+ * **Architecture**: Uses composition over inheritance by implementing `AborterInterface`
+ * to delegate abort management to specialized aborter instances.
  *
  * Core concept:
  * Provides comprehensive abort control for asynchronous operations by managing
@@ -321,24 +160,23 @@ export class AbortError extends ExecutorError {
  * Main features:
  * - Request cancellation: Manual and automatic abort control with per-request tracking
  *   - Generates unique identifiers for each request
- *   - Manages `AbortController` instances lifecycle
+ *   - Manages `AbortController` instances lifecycle via `AborterInterface`
  *   - Supports both programmatic and user-triggered cancellation
  *   - Prevents duplicate requests by aborting previous ones with same ID
  *
  * - Timeout management: Automatic operation timeout with configurable duration
- *   - Sets up timeout timers for each operation
+ *   - Sets up timeout timers for each operation via aborter
  *   - Automatically aborts operations exceeding timeout
  *   - Provides timeout-specific error information
  *   - Cleans up timers to prevent memory leaks
  *
  * - Signal integration: Seamless integration with AbortSignal API
- *   - Creates and manages `AbortSignal` instances
+ *   - Creates and manages `AbortSignal` instances via aborter
  *   - Supports external signal injection
- *   - Provides `raceWithAbort` for signal-unaware operations
  *   - Handles signal events and state changes
  *
  * - Resource cleanup: Automatic cleanup of controllers and timers
- *   - Removes completed operation resources
+ *   - Removes completed operation resources via aborter
  *   - Clears timeout timers on success or error
  *   - Prevents memory leaks from abandoned operations
  *   - Supports batch cleanup with `abortAll()`
@@ -349,20 +187,27 @@ export class AbortError extends ExecutorError {
  *   - Maintains error context across plugin lifecycle
  *   - Supports custom error callbacks via `onAborted`
  *
- * @template TParameters - Type of executor context parameters, defaults to `AbortPluginConfig`
+ * **v2.6.0**: Refactored to use `AborterInterface` for better testability and decoupling.
+ * The plugin now composes with aborter instances rather than extending them.
+ *
+ * **Migration Guide**:
+ * - `id` and `requestId` fields are no longer supported. Use `abortId` instead.
+ * - Configuration now uses `AborterConfig` instead of `AbortPluginConfig`.
+ * - For custom ID generation, implement your own `AborterInterface`.
+ *
+ * @template TParameters - Type of executor context parameters, defaults to `AborterConfig`
  *
  * @example Basic usage with executor
  * ```typescript
- * import { Executor } from '@/executor';
- * import { AbortPlugin } from '@/executor/plugins';
+ * import { AsyncExecutor, AbortPlugin } from '@qlover-corekit';
  *
- * const executor = new Executor();
+ * const executor = new AsyncExecutor();
  * const abortPlugin = new AbortPlugin();
  * executor.use(abortPlugin);
  *
  * // Execute with abort support
- * const result = await executor.execute({
- *   id: 'fetch-users',
+ * const result = await executor.exec({
+ *   abortId: 'fetch-users',  // Use abortId instead of id/requestId
  *   abortTimeout: 5000
  * });
  * ```
@@ -373,7 +218,7 @@ export class AbortError extends ExecutorError {
  * executor.use(abortPlugin);
  *
  * // Start operation
- * const promise = executor.execute({ id: 'long-running-task' });
+ * const promise = executor.exec({ abortId: 'long-running-task' });
  *
  * // Cancel after 2 seconds
  * setTimeout(() => {
@@ -392,7 +237,7 @@ export class AbortError extends ExecutorError {
  * const abortPlugin = new AbortPlugin<MyParams>({
  *   logger: myLogger,
  *   getConfig: (params) => ({
- *     id: params.requestId,
+ *     abortId: params.requestId,
  *     abortTimeout: params.timeout,
  *     signal: params.customSignal
  *   })
@@ -401,11 +246,11 @@ export class AbortError extends ExecutorError {
  *
  * @example With abort callback
  * ```typescript
- * await executor.execute({
- *   id: 'upload-file',
+ * await executor.exec({
+ *   abortId: 'upload-file',
  *   abortTimeout: 30000,
  *   onAborted: (config) => {
- *     console.log(`Upload ${config.id} was cancelled`);
+ *     console.log(`Upload ${config.abortId} was cancelled`);
  *     // Clean up temporary files
  *     cleanupTempFiles();
  *   }
@@ -415,21 +260,41 @@ export class AbortError extends ExecutorError {
  * @example Abort all pending operations
  * ```typescript
  * // Start multiple operations
- * executor.execute({ id: 'task-1' });
- * executor.execute({ id: 'task-2' });
- * executor.execute({ id: 'task-3' });
+ * executor.exec({ abortId: 'task-1' });
+ * executor.exec({ abortId: 'task-2' });
+ * executor.exec({ abortId: 'task-3' });
  *
  * // Cancel all at once
  * abortPlugin.abortAll();
  * ```
+ *
+ * @example Dependency injection for testing
+ * ```typescript
+ * import { AborterInterface } from '@/managers';
+ *
+ * const mockAborter: AborterInterface = {
+ *   poolName: 'MockAborter',
+ *   register: vi.fn(),
+ *   abort: vi.fn(),
+ *   cleanup: vi.fn(),
+ *   abortAll: vi.fn(),
+ *   generateAbortedId: vi.fn(),
+ * };
+ *
+ * const plugin = new AbortPlugin({
+ *   abortManager: mockAborter
+ * });
+ * ```
  */
-export class AbortPlugin<TParameters> implements ExecutorPlugin {
+export class AbortPlugin<TParameters extends AborterConfig>
+  implements ExecutorPlugin<TParameters>
+{
   /**
    * Plugin identifier name
    *
    * Used by the executor system to identify this plugin
    */
-  public readonly pluginName = 'AbortPlugin';
+  public readonly pluginName: string;
 
   /**
    * Ensures only one instance of this plugin can be registered
@@ -439,38 +304,9 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
   public readonly onlyOne = true;
 
   /**
-   * Counter for auto-generating request identifiers
-   *
-   * Incremented each time a new request without ID is processed
-   *
-   * @private
-   */
-  private requestCounter = 0;
-
-  /**
-   * Map of active abort controllers indexed by request key
-   *
-   * Stores `AbortController` instances for ongoing operations
-   * Enables abort operations by request identifier
-   *
-   * @protected
-   */
-  protected readonly controllers: Map<string, AbortController> = new Map();
-
-  /**
-   * Map of active timeout timers indexed by request key
-   *
-   * Stores timeout IDs for cleanup when operations complete
-   * Prevents memory leaks from abandoned timers
-   *
-   * @protected
-   */
-  protected readonly timeouts: Map<string, NodeJS.Timeout> = new Map();
-
-  /**
    * Configuration extractor function
    *
-   * Extracts `AbortPluginConfig` from executor parameters
+   * Extracts `AborterConfig` from executor parameters
    * Enables flexible configuration in different contexts
    *
    * @protected
@@ -488,39 +324,91 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
   protected readonly logger?: LoggerInterface;
 
   /**
-   * Creates a new AbortPlugin instance
+   * Default timeout duration for all requests
+   *
+   * Applied to all requests unless overridden by individual request config's `abortTimeout`
+   *
+   * @protected
+   * @optional
+   */
+  protected readonly timeout?: number;
+
+  /**
+   * Abort manager instance for managing abort controllers and resources
+   *
+   * Delegates all abort-related operations to this aborter instance.
+   * Uses composition pattern to achieve better testability and decoupling.
+   * Can be injected via constructor options for dependency injection.
+   *
+   * @protected
+   */
+  protected readonly abortManager: AborterInterface<TParameters>;
+
+  /**
+   * Creates a new AbortPlugin instance with configurable abort management
+   *
+   * Initializes the plugin with optional logger, default timeout, custom configuration
+   * extractor, and abort manager instance. Uses composition pattern to delegate
+   * abort management to the injected abort manager.
    *
    * @param options - Plugin configuration options
-   * @param options.logger - Logger instance for debugging and monitoring
-   * @param options.timeout - Default timeout duration for all requests
-   * @param options.getConfig - Custom configuration extractor function
+   * @param options.logger - Optional logger instance for debugging and monitoring abort events
+   * @param options.timeout - Optional default timeout duration (ms) applied to all requests
+   * @param options.getConfig - Optional custom function to extract abort config from executor parameters
+   * @param options.abortManager - Optional custom abort manager instance (dependency injection)
    *
-   * @example With logger
+   * @example Basic usage
+   * ```typescript
+   * const abortPlugin = new AbortPlugin();
+   * ```
+   *
+   * @example With logger and timeout
    * ```typescript
    * import { Logger } from '@qlover/logger';
    *
    * const abortPlugin = new AbortPlugin({
-   *   logger: new Logger({ level: 'debug' })
+   *   logger: new Logger({ level: 'debug' }),
+   *   timeout: 30000 // 30 second default timeout
    * });
    * ```
    *
-   * @example With custom extractor
+   * @example With custom configuration extractor
    * ```typescript
-   * const abortPlugin = new AbortPlugin({
+   * interface ApiRequest {
+   *   url: string;
+   *   requestId: string;
+   *   timeout?: number;
+   * }
+   *
+   * const abortPlugin = new AbortPlugin<ApiRequest>({
    *   getConfig: (params) => ({
-   *     id: params.customId,
-   *     abortTimeout: params.maxWaitTime
+   *     abortId: params.requestId,
+   *     abortTimeout: params.timeout || 10000
    *   })
+   * });
+   * ```
+   *
+   * @example Dependency injection for testing
+   * ```typescript
+   * const mockManager: AbortManagerInterface = { ... };
+   * const abortPlugin = new AbortPlugin({
+   *   abortManager: mockManager
    * });
    * ```
    */
   constructor(options?: AbortPluginOptions<TParameters>) {
-    // Default configuration extractor: directly cast parameters to AbortPluginConfig
-    this.getConfig =
-      options?.getConfig ||
-      ((parameters) => parameters as unknown as AbortPluginConfig);
+    const { pluginName, ...rest } = options ?? {};
 
-    this.logger = options?.logger;
+    this.pluginName = pluginName ?? 'AbortPlugin';
+
+    // Default configuration extractor: directly cast parameters to AborterConfig
+    this.getConfig =
+      rest?.getConfig || ((parameters) => parameters as TParameters);
+
+    this.logger = rest?.logger;
+    this.timeout = rest?.timeout;
+    this.abortManager =
+      rest?.abortManager ?? (new Aborter(this.pluginName) as unknown as Aborter<TParameters>);
   }
 
   /**
@@ -565,36 +453,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * ```
    */
   public static isAbortError(error?: unknown): error is AbortError {
-    // Check if the error is our custom AbortError
-    if (error instanceof AbortError) {
-      return true;
-    }
-
-    // Check if the error is an instance of AbortError
-    if (error instanceof Error && error.name === 'AbortError') {
-      return true;
-    }
-
-    // Check if the error is an ExecutorError with ABORT_ERROR_ID
-    if (error instanceof ExecutorError && error?.id === ABORT_ERROR_ID) {
-      return true;
-    }
-
-    // Check for DOMException with abort-related message
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      return true;
-    }
-
-    // Check for Event with auto trigger abort
-    // use: signal.addEventListener('abort')
-    if (error instanceof Event && error.type === 'abort') {
-      return true;
-    }
-
-    // Add any additional conditions that signify an abort error
-    // For example, custom error types or specific error codes
-
-    return false;
+    return isAbortError(error);
   }
 
   /**
@@ -621,10 +480,11 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * generateRequestKey({}) // "AbortPlugin-1"
    * ```
    */
-  protected generateRequestKey(config: AbortPluginConfig): string {
-    // Prioritize requestId or id, otherwise use auto-incremented counter
-    const { requestId, id } = config;
-    return requestId || id || `${this.pluginName}-${++this.requestCounter}`;
+  protected generateRequestKey(config: TParameters): string {
+    if (this.abortManager instanceof Aborter) {
+      return this.abortManager.generateAbortedId(config);
+    }
+    return config.abortId || `${this.pluginName}-${Date.now()}`;
   }
 
   /**
@@ -646,27 +506,8 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * cleanup('fetch-users');
    * ```
    */
-  public cleanup(config: AbortPluginConfig | string): void {
-    const key =
-      typeof config === 'string' ? config : this.generateRequestKey(config);
-
-    // Only cleanup and log when resources exist
-    const hasController = this.controllers.has(key);
-    const hasTimeout = this.timeouts.has(key);
-
-    if (hasController || hasTimeout) {
-      // Remove controller
-      this.controllers.delete(key);
-
-      // Clear timeout timer
-      const timeoutId = this.timeouts.get(key);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        this.timeouts.delete(key);
-      }
-
-      this.logger?.debug(`[${this.pluginName}] cleanup: ${key}`);
-    }
+  public cleanup(config: TParameters | AborterId): void {
+    this.abortManager.cleanup(config);
   }
 
   /**
@@ -677,7 +518,7 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * 2. Generates unique request key
    * 3. Aborts any existing request with same key (prevents duplicates)
    * 4. Creates new `AbortController` if signal not provided
-   * 5. Sets up timeout timer if `abortTimeout` configured
+   * 5. Sets up timeout timer if `abortTimeout` configured (or uses default timeout)
    * 6. Injects abort signal into configuration
    *
    * @override
@@ -685,66 +526,54 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    *
    * @example Configuration in context
    * ```typescript
-   * executor.execute({
+   * executor.exec({
    *   id: 'fetch-data',
    *   abortTimeout: 5000,
    *   onAborted: (config) => console.log('Aborted:', config.id)
    * });
    * ```
+   *
+   * @example With default timeout
+   * ```typescript
+   * const abortPlugin = new AbortPlugin({ timeout: 10000 });
+   * // All requests will use 10s timeout unless overridden
+   * executor.exec({ id: 'fetch-data' }); // Uses 10s timeout
+   * executor.exec({ id: 'fetch-data', abortTimeout: 5000 }); // Uses 5s timeout
+   * ```
    */
   public onBefore(context: ExecutorContext<TParameters>): void {
-    // Use config extractor to get configuration
-    const config = this.getConfig(context.parameters);
-    const key = this.generateRequestKey(config);
-    const { abortTimeout } = config;
+    const config = this.getConfig(context.parameters) as TParameters;
 
-    // Abort previous request with same key
-    if (this.controllers.has(key)) {
-      this.logger?.debug(
-        `[${this.pluginName}] aborting previous request: ${key}`
-      );
-      this.abort(key);
+    // Apply default timeout if not specified in config
+    // Only apply if timeout is defined and config doesn't have abortTimeout
+    if (
+      this.timeout !== undefined &&
+      'abortTimeout' in config &&
+      (config.abortTimeout === undefined || config.abortTimeout === null)
+    ) {
+      Object.assign(config, { abortTimeout: this.timeout });
     }
 
-    // Check if config already has a signal
-    if (!config.signal) {
-      const controller = new AbortController();
-      this.controllers.set(key, controller);
+    this.abortManager.abort(config);
 
-      // Extend config with abort signal
-      config.signal = controller.signal;
+    const { signal } = this.abortManager.register(config);
 
-      // Set up timeout mechanism to prevent memory leaks
-      if (abortTimeout && abortTimeout > 0) {
-        const timeoutId = setTimeout(() => {
-          const ctrl = this.controllers.get(key);
-          if (ctrl) {
-            ctrl.abort(
-              new AbortError(
-                'The operation was aborted due to timeout',
-                key,
-                abortTimeout
-              )
-            );
+    // Inject abort signal into context parameters
+    this.assignSignalToContext(context, signal);
+  }
 
-            this.logger?.info(
-              `[${this.pluginName}] timeout abort: ${key} (${abortTimeout}ms)`
-            );
-
-            this.cleanup(key);
-
-            // Trigger onAborted callback
-            if (typeof config.onAborted === 'function') {
-              config.onAborted({
-                ...config,
-                onAborted: undefined
-              });
-            }
-          }
-        }, abortTimeout);
-
-        this.timeouts.set(key, timeoutId);
-      }
+  /**
+   * Assigns abort signal to context parameters
+   *
+   * @param context - Executor context containing parameters and metadata
+   * @param signal - Abort signal to assign
+   */
+  protected assignSignalToContext(
+    context: ExecutorContext<unknown>,
+    signal: AbortSignal
+  ): void {
+    if (typeof context.parameters === 'object' && context.parameters !== null) {
+      Object.assign(context.parameters, { signal });
     }
   }
 
@@ -760,14 +589,14 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * @example
    * ```typescript
    * // After successful execution, resources are automatically cleaned
-   * await executor.execute({ id: 'task-1' });
+   * await executor.exec({ id: 'task-1' });
    * // AbortController and timeout for 'task-1' are now removed
    * ```
    */
   public onSuccess({ parameters }: ExecutorContext<TParameters>): void {
     // Delete controller and clear timeout
     if (parameters) {
-      const config = this.getConfig(parameters);
+      const config = this.getConfig(parameters) as TParameters;
       const key = this.generateRequestKey(config);
       this.cleanup(key);
     }
@@ -790,11 +619,11 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * @example Abort error handling
    * ```typescript
    * try {
-   *   await executor.execute({ id: 'task-1', abortTimeout: 100 });
+   *   await executor.exec({ id: 'task-1', abortTimeout: 100 });
    * } catch (error) {
    *   if (error instanceof AbortError) {
-   *     console.log(error.getDescription());
-   *     // "The operation was aborted due to timeout (Request: task-1, Timeout: 100ms)"
+   *     console.log(error.message);
+   *     // "The operation was aborted due to timeout"
    *   }
    * }
    * ```
@@ -805,27 +634,25 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
   }: ExecutorContext<TParameters>): ExecutorError | void {
     if (!parameters) return;
 
-    const config = this.getConfig(parameters);
-    const key = this.generateRequestKey(config);
+    const key = this.generateRequestKey(
+      this.getConfig(parameters) as TParameters
+    );
 
     // Only handle plugin-related errors, other errors should be handled by other plugins
     if (AbortPlugin.isAbortError(error)) {
-      // Controller may be deleted in .abort(), this will be undefined
-      const controller = this.controllers.get(key);
-      const reason = controller?.signal.reason;
-
       this.cleanup(key);
 
-      // If signal.reason is already AbortError, return it directly
-      if (reason instanceof AbortError) {
-        return reason;
+      // If error is already AbortError, return it directly
+      if (error instanceof AbortError) {
+        return error;
       }
 
       // Otherwise create new AbortError
-      return new AbortError(
-        reason?.message || error?.message || 'The operation was aborted',
-        key
-      );
+      let errorMessage = 'The operation was aborted';
+      if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = String((error as { message: unknown }).message);
+      }
+      return new AbortError(errorMessage, key);
     } else {
       // Cleanup resources even for non-abort errors
       this.cleanup(key);
@@ -861,30 +688,8 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * }
    * ```
    */
-  public abort(config: AbortPluginConfig | string): boolean {
-    const key =
-      typeof config === 'string' ? config : this.generateRequestKey(config);
-
-    const controller = this.controllers.get(key);
-    if (controller) {
-      controller.abort(new AbortError('The operation was aborted', key));
-
-      this.logger?.info(`[${this.pluginName}] manual abort: ${key}`);
-      this.cleanup(key);
-
-      if (
-        typeof config !== 'string' &&
-        typeof config.onAborted === 'function'
-      ) {
-        config.onAborted({
-          ...config,
-          onAborted: undefined
-        });
-      }
-      return true;
-    }
-
-    return false;
+  public abort(config: TParameters | AborterId): boolean {
+    return this.abortManager.abort(config);
   }
 
   /**
@@ -921,154 +726,6 @@ export class AbortPlugin<TParameters> implements ExecutorPlugin {
    * ```
    */
   public abortAll(): void {
-    const count = this.controllers.size;
-
-    if (count > 0) {
-      this.logger?.debug(`[${this.pluginName}] aborting all ${count} requests`);
-    }
-
-    this.controllers.forEach((controller, key) => {
-      controller.abort(new AbortError('All operations were aborted', key));
-    });
-    this.controllers.clear();
-
-    // Clear all timeout timers
-    this.timeouts.forEach((timeoutId) => {
-      clearTimeout(timeoutId);
-    });
-    this.timeouts.clear();
-  }
-
-  /**
-   * Creates a Promise that rejects when signal is aborted
-   *
-   * Returns both the promise and a cleanup function to remove event listener
-   * Prevents memory leaks by allowing proper cleanup of abort event handlers
-   *
-   * Implementation details:
-   * 1. Immediately rejects if signal is already aborted
-   * 2. Attaches event listener for future abort events
-   * 3. Returns cleanup function to remove listener
-   * 4. Uses signal reason if available, otherwise creates new `AbortError`
-   *
-   * @param signal - AbortSignal to monitor
-   * @returns Object containing promise and cleanup function
-   * @returns promise - Promise that rejects on abort
-   * @returns cleanup - Function to remove event listener
-   *
-   * @private Internal use only
-   *
-   * @example Internal usage
-   * ```typescript
-   * const { promise, cleanup } = this.createAbortPromise(signal);
-   * try {
-   *   await Promise.race([someOperation(), promise]);
-   * } finally {
-   *   cleanup(); // Always cleanup to prevent memory leak
-   * }
-   * ```
-   */
-  private createAbortPromise(signal: AbortSignal): {
-    promise: Promise<never>;
-    cleanup: () => void;
-  } {
-    let cleanup: () => void = () => {};
-
-    const promise = new Promise<never>((_, reject) => {
-      // If already aborted, immediately reject
-      if (signal.aborted) {
-        reject(signal.reason || new AbortError('The operation was aborted'));
-        return;
-      }
-
-      // Listen for abort event
-      const onAbort = () => {
-        reject(signal.reason || new AbortError('The operation was aborted'));
-      };
-
-      signal.addEventListener('abort', onAbort);
-
-      // Provide cleanup function to remove event listener
-      cleanup = () => {
-        signal.removeEventListener('abort', onAbort);
-      };
-    });
-
-    return { promise, cleanup };
-  }
-
-  /**
-   * Wraps an async operation with `Promise.race` to ensure abort signal responsiveness
-   *
-   * Defensive mechanism for operations that don't natively check abort signals
-   * Uses promise racing to interrupt operations when signal is aborted,
-   * even if the underlying operation ignores the signal
-   *
-   * Use cases:
-   * - Third-party APIs that don't support `AbortSignal`
-   * - Legacy code without abort handling
-   * - Gateway operations that don't check signal
-   * - Any async operation needing guaranteed cancellation
-   *
-   * @template T - Type of the promise result
-   * @param promise - Promise to wrap with abort capability
-   * @param signal - AbortSignal to monitor, if not provided returns original promise
-   * @returns Wrapped promise that rejects immediately when signal is aborted
-   *
-   * @example Basic usage
-   * ```typescript
-   * const controller = new AbortController();
-   * const result = await abortPlugin.raceWithAbort(
-   *   fetch('/api/data'), // Even if fetch doesn't check signal
-   *   controller.signal
-   * );
-   * ```
-   *
-   * @example With third-party library
-   * ```typescript
-   * const result = await abortPlugin.raceWithAbort(
-   *   legacyApiCall(), // Library doesn't support abort
-   *   signal
-   * );
-   * ```
-   *
-   * @example Without signal (pass-through)
-   * ```typescript
-   * // When signal is not provided, returns original promise
-   * const result = await abortPlugin.raceWithAbort(somePromise());
-   * ```
-   *
-   * @example Timeout with abort
-   * ```typescript
-   * const controller = new AbortController();
-   * setTimeout(() => controller.abort(), 5000);
-   *
-   * try {
-   *   const result = await abortPlugin.raceWithAbort(
-   *     longRunningOperation(),
-   *     controller.signal
-   *   );
-   * } catch (error) {
-   *   if (AbortPlugin.isAbortError(error)) {
-   *     console.log('Operation timed out');
-   *   }
-   * }
-   * ```
-   */
-  public raceWithAbort<T>(
-    promise: Promise<T>,
-    signal?: AbortSignal
-  ): Promise<T> {
-    if (!signal) {
-      return promise;
-    }
-
-    const { promise: abortPromise, cleanup } = this.createAbortPromise(signal);
-
-    // Use Promise.race - whichever completes first wins
-    return Promise.race([promise, abortPromise]).finally(() => {
-      // Always cleanup event listener to prevent memory leaks
-      cleanup();
-    });
+    this.abortManager.abortAll();
   }
 }
