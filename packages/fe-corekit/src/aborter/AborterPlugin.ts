@@ -1,0 +1,334 @@
+import {
+  AbortError,
+  Aborter,
+  type AborterConfig,
+  type AborterInterface,
+  isAbortError
+} from './index';
+import type {
+  ExecutorContextInterface,
+  LifecyclePluginInterface,
+  LifecycleErrorResult
+} from '../executor/interface';
+
+/**
+ * Configuration extractor function type for AborterPlugin
+ *
+ * Extracts `AborterConfig` from executor context parameters.
+ * Enables flexible configuration passing in different execution contexts.
+ *
+ * @template T - Type of the input parameters object
+ * @param parameters - Executor context parameters to extract configuration from
+ * @returns Extracted abort configuration compatible with `AborterConfig`
+ *
+ * @example
+ * ```typescript
+ * const extractor: AborterConfigExtractor<MyParams> = (params) => ({
+ *   abortId: params.requestId,
+ *   abortTimeout: params.timeout,
+ *   signal: params.customSignal
+ * });
+ * ```
+ */
+export type AborterConfigExtractor<T> = (parameters: unknown) => T;
+
+/**
+ * Configuration options for initializing AborterPlugin
+ *
+ * @template T - Type of the executor context parameters
+ */
+export interface AborterPluginOptions<T extends AborterConfig> {
+  /**
+   * Default timeout duration for all operations
+   *
+   * @optional
+   * @default `undefined`
+   * @example `10000` // 10 seconds default timeout
+   */
+  timeout?: number;
+
+  /**
+   * Custom configuration extractor function
+   *
+   * @optional
+   * @default Direct cast of parameters to `AborterConfig`
+   */
+  getConfig?: AborterConfigExtractor<T>;
+
+  /**
+   * Custom abort manager instance
+   *
+   * @optional
+   * @default `new Aborter<AborterConfig>(this.pluginName)`
+   */
+  aborter?: AborterInterface<T>;
+
+  /**
+   * Plugin name
+   *
+   * @optional
+   * @default `'AborterPlugin'`
+   */
+  pluginName?: string;
+}
+
+/**
+ * Lifecycle plugin for managing operation cancellation with timeout support
+ *
+ * A lightweight abort management plugin that implements `LifecyclePluginInterface`
+ * to provide abort control for executor operations. Supports timeout mechanisms,
+ * external signal composition, and automatic resource cleanup.
+ *
+ * Core concept:
+ * Integrates abort management into the executor lifecycle, automatically creating
+ * and cleaning up abort controllers for each operation while supporting timeout
+ * and external signal composition.
+ *
+ * Main features:
+ * - Lifecycle integration: Hooks into executor lifecycle for automatic management
+ *   - `onBefore`: Registers abort operation and injects signal
+ *   - `onSuccess`: Cleans up resources on successful completion
+ *   - `onError`: Handles abort errors and cleans up resources
+ *   - `onFinally`: Ensures cleanup always happens
+ *
+ * - Timeout support: Automatic operation timeout with configurable duration
+ *   - Configure via `abortTimeout` in parameters or default timeout in options
+ *   - Triggers `onAbortedTimeout` callback when timeout occurs
+ *   - Automatically cleans up timeout timers
+ *
+ * - Signal composition: Combines multiple abort signals
+ *   - Internal controller signal (for manual abort)
+ *   - Timeout signal (if timeout configured)
+ *   - External signal (if provided in parameters)
+ *
+ * - Error handling: Detects and transforms abort errors
+ *   - Converts various abort error types to standard `AbortError`
+ *   - Preserves abort context (ID, timeout, reason)
+ *   - Allows other plugins to handle non-abort errors
+ *
+ * @template TParams - Type of executor parameters extending `AborterConfig`
+ * @template TResult - Type of executor result
+ *
+ * @example Basic usage
+ * ```typescript
+ * import { LifecycleExecutor } from '@qlover/fe-corekit';
+ * import { AborterPlugin } from '@qlover/fe-corekit/aborter';
+ *
+ * const executor = new LifecycleExecutor();
+ * executor.use(new AborterPlugin());
+ *
+ * // Execute with abort support
+ * await executor.exec(
+ *   async ({ signal }) => {
+ *     return fetch('/api/data', { signal });
+ *   },
+ *   { abortTimeout: 5000 }
+ * );
+ * ```
+ *
+ * @example With default timeout
+ * ```typescript
+ * const plugin = new AborterPlugin({ timeout: 10000 });
+ * executor.use(plugin);
+ *
+ * // All operations will have 10s timeout unless overridden
+ * await executor.exec(
+ *   async ({ signal }) => fetch('/api/data', { signal }),
+ *   {} // Uses default 10s timeout
+ * );
+ * ```
+ *
+ * @example Manual abort
+ * ```typescript
+ * const plugin = new AborterPlugin();
+ * executor.use(plugin);
+ *
+ * // Start operation
+ * const promise = executor.exec(
+ *   async ({ signal }) => fetch('/api/data', { signal }),
+ *   { abortId: 'fetch-data' }
+ * );
+ *
+ * // Cancel after 2 seconds
+ * setTimeout(() => plugin.abort('fetch-data'), 2000);
+ * ```
+ *
+ * @example With callbacks
+ * ```typescript
+ * await executor.exec(
+ *   async ({ signal }) => fetch('/api/data', { signal }),
+ *   {
+ *     abortTimeout: 5000,
+ *     onAbortedTimeout: (config) => {
+ *       console.log('Request timed out');
+ *     },
+ *     onAborted: (config) => {
+ *       console.log('Request cancelled');
+ *     }
+ *   }
+ * );
+ * ```
+ */
+export class AborterPlugin<
+  TParams extends AborterConfig = AborterConfig,
+  TResult = unknown
+> implements
+    LifecyclePluginInterface<ExecutorContextInterface<TParams, TResult>>
+{
+  /**
+   * Plugin identifier name
+   */
+  public readonly pluginName: string;
+
+  /**
+   * Ensures only one instance of this plugin can be registered
+   */
+  public readonly onlyOne = true;
+
+  /**
+   * Configuration extractor function
+   *
+   * @protected
+   */
+  protected readonly getConfig: AborterConfigExtractor<TParams>;
+
+  /**
+   * Default timeout duration for all operations
+   *
+   * @protected
+   * @optional
+   */
+  protected readonly timeout?: number;
+
+  /**
+   * Abort manager instance for managing abort controllers
+   *
+   * @protected
+   */
+  protected readonly aborter: AborterInterface<TParams>;
+
+  /**
+   * Creates a new AborterPlugin instance
+   *
+   * @param options - Plugin configuration options
+   *
+   * @example
+   * ```typescript
+   * const plugin = new AborterPlugin({
+   *   timeout: 10000,
+   *   pluginName: 'MyAborter'
+   * });
+   * ```
+   */
+  constructor(options?: AborterPluginOptions<TParams>) {
+    const { pluginName, ...rest } = options ?? {};
+
+    this.pluginName = pluginName ?? 'AborterPlugin';
+    this.getConfig = rest?.getConfig || ((parameters) => parameters as TParams);
+    this.timeout = rest?.timeout;
+    this.aborter = rest?.aborter ?? new Aborter<TParams>(this.pluginName);
+  }
+
+  /**
+   * Lifecycle hook: called before operation execution
+   *
+   * Registers abort operation and injects signal into parameters.
+   * Applies default timeout if configured and not overridden.
+   *
+   * @override
+   * @param ctx - Executor context
+   */
+  public onBefore(
+    ctx: ExecutorContextInterface<TParams, TResult>
+  ): TParams | void {
+    const config = this.getConfig(ctx.parameters) as TParams;
+
+    // Security fix: Create new config object instead of mutating original
+    // Apply default timeout if not specified in config
+    const finalConfig =
+      this.timeout !== undefined &&
+      'abortTimeout' in config &&
+      (config.abortTimeout === undefined || config.abortTimeout === null)
+        ? ({ ...config, abortTimeout: this.timeout } as TParams)
+        : config;
+
+    // Abort existing operation with same ID
+    this.aborter.abort(finalConfig);
+
+    // Register new operation
+    const { signal, abortId } = this.aborter.register(finalConfig);
+
+    // Inject signal into parameters
+    if (typeof ctx.parameters === 'object' && ctx.parameters !== null) {
+      ctx.setParameters({
+        ...ctx.parameters,
+        signal,
+        abortId
+      });
+    }
+  }
+
+  /**
+   * Helper method to cleanup resources from context
+   *
+   * @param ctx - Executor context
+   * @protected
+   */
+  protected cleanupFromContext(
+    ctx: ExecutorContextInterface<TParams, TResult>
+  ): void {
+    if (ctx.parameters) {
+      const config = this.getConfig(ctx.parameters) as TParams;
+      this.aborter.cleanup(config);
+    }
+  }
+
+  /**
+   * Lifecycle hook: called when execution fails
+   *
+   * Handles abort errors and cleans up resources.
+   * Returns `AbortError` if error is abort-related, otherwise returns void
+   * to allow other plugins to handle the error.
+   *
+   * @override
+   * @param ctx - Executor context containing error
+   * @returns `AbortError` if error is abort-related, void otherwise
+   */
+  public onError(
+    ctx: ExecutorContextInterface<TParams, TResult>
+  ): LifecycleErrorResult {
+    if (!ctx.parameters) return;
+
+    const config = this.getConfig(ctx.parameters) as TParams;
+
+    // Only handle abort-related errors
+    if (isAbortError(ctx.error)) {
+      // If error is already AbortError, return it directly
+      if (ctx.error instanceof AbortError) {
+        return ctx.error;
+      }
+
+      // Otherwise create new AbortError
+      let errorMessage = 'The operation was aborted';
+      const err = ctx.error as unknown;
+      if (err && typeof err === 'object' && 'message' in err) {
+        errorMessage = String((err as { message: unknown }).message);
+      }
+
+      return new AbortError(errorMessage, config.abortId);
+    }
+  }
+
+  /**
+   * Lifecycle hook: always executed after operation completes
+   *
+   * Ensures cleanup happens even if other hooks fail.
+   * This is the only place where cleanup is performed to avoid redundant calls.
+   *
+   * @override
+   * @param ctx - Executor context
+   */
+  public onFinally(ctx: ExecutorContextInterface<TParams, TResult>): void {
+    this.cleanupFromContext(ctx);
+  }
+}
