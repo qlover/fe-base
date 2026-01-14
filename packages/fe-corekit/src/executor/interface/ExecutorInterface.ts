@@ -229,6 +229,10 @@ export interface ExecutorPluginInterface<
  * Implement this interface to create custom executor implementations.
  * LifecycleExecutor is the default implementation.
  *
+ * TODO: Need to keep the context type of the exec/execNoError method parameters consistent with the interface generic
+ *
+ * For example, the context type of the ExecutorAsyncTask interface should directly use the context type of the Plugin generic
+ *
  * @template Plugin - Type of plugin interface (defaults to ExecutorPluginInterface)
  *
  * @example Basic usage

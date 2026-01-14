@@ -1,10 +1,10 @@
 import {
-  AbortError,
-  Aborter,
   type AborterConfig,
-  type AborterInterface,
-  isAbortError
-} from './index';
+  AborterId,
+  type AborterInterface
+} from './AborterInterface';
+import { AbortError, isAbortError } from './AbortError';
+import { Aborter } from './Aborter';
 import type {
   ExecutorContextInterface,
   LifecyclePluginInterface,
@@ -330,5 +330,80 @@ export class AborterPlugin<
    */
   public onFinally(ctx: ExecutorContextInterface<TParams, TResult>): void {
     this.cleanupFromContext(ctx);
+  }
+
+  /**
+   * Manually aborts a specific operation
+   *
+   * Delegates to the internal aborter instance. Provides convenient
+   * access to abort functionality without exposing the aborter directly.
+   *
+   * @param config - Configuration object or abort ID string
+   * @returns `true` if operation was aborted, `false` if not found
+   *
+   * @example
+   * ```typescript
+   * const plugin = new AborterPlugin();
+   * executor.use(plugin);
+   *
+   * // Start operation
+   * executor.exec(async ({ signal }) => fetch('/api/data', { signal }), {
+   *   abortId: 'fetch-data'
+   * });
+   *
+   * // Cancel after 2 seconds
+   * setTimeout(() => plugin.abort('fetch-data'), 2000);
+   * ```
+   */
+  public abort(config: TParams | AborterId): boolean {
+    return this.aborter.abort(config);
+  }
+
+  /**
+   * Aborts all pending operations
+   *
+   * Delegates to the internal aborter instance. Provides convenient
+   * access to abort all functionality without exposing the aborter directly.
+   *
+   * @example
+   * ```typescript
+   * const plugin = new AborterPlugin();
+   * executor.use(plugin);
+   *
+   * // Start multiple operations
+   * executor.exec(async ({ signal }) => fetch('/api/data1', { signal }), {
+   *   abortId: 'fetch-1'
+   * });
+   * executor.exec(async ({ signal }) => fetch('/api/data2', { signal }), {
+   *   abortId: 'fetch-2'
+   * });
+   *
+   * // Cancel all operations
+   * plugin.abortAll();
+   * ```
+   */
+  public abortAll(): void {
+    this.aborter.abortAll();
+  }
+
+  /**
+   * Get the internal aborter instance
+   *
+   * Provides access to the underlying aborter for advanced use cases.
+   * Most users should use `abort()` and `abortAll()` methods instead.
+   *
+   * @returns The internal aborter instance
+   *
+   * @example
+   * ```typescript
+   * const plugin = new AborterPlugin();
+   * const aborter = plugin.getAborter();
+   *
+   * // Use advanced aborter features
+   * aborter.register({ abortId: 'custom-op' });
+   * ```
+   */
+  public getAborter(): AborterInterface<TParams> {
+    return this.aborter;
   }
 }

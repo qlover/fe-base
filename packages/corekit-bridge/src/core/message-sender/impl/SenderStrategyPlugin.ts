@@ -1,20 +1,19 @@
 import {
-  AbortPlugin,
   type ExecutorError,
-  type ExecutorContext
+  isAbortError as isAbortErrorFn
 } from '@qlover/fe-corekit';
-import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
 import {
   type MessagesStore,
   MessageStatus,
   type MessageStoreMsg
 } from './MessageStore';
 import { template } from './utils';
-import type {
-  MessageSenderContextOptions,
-  MessageSenderPluginContext
-} from './MessageSenderExecutor';
 import type { LoggerInterface } from '@qlover/logger';
+import {
+  MessageSenderContext,
+  MessageSenderOptions,
+  MessageSenderPlugin
+} from '../interface/MessageSenderPlugin';
 
 /**
  * Send failure handling strategies
@@ -122,9 +121,9 @@ export type SendFailureStrategyType =
  * // No loading state visible to users
  * ```
  */
-export class SenderStrategyPlugin<
-  T extends MessageStoreMsg<unknown, unknown>
-> extends MessageSenderBasePlugin<T> {
+export class SenderStrategyPlugin<T extends MessageStoreMsg<unknown, unknown>>
+  implements MessageSenderPlugin<T>
+{
   /** Plugin identifier */
   public readonly pluginName = 'SenderStrategyPlugin';
 
@@ -157,9 +156,7 @@ export class SenderStrategyPlugin<
   constructor(
     protected failureStrategy: SendFailureStrategyType,
     protected logger?: LoggerInterface
-  ) {
-    super();
-  }
+  ) {}
 
   /**
    * Check if an error is an abort error
@@ -182,7 +179,7 @@ export class SenderStrategyPlugin<
    * ```
    */
   protected isAbortError(error: unknown): boolean {
-    return AbortPlugin.isAbortError(error);
+    return isAbortErrorFn(error);
   }
 
   /**
@@ -195,7 +192,7 @@ export class SenderStrategyPlugin<
    * @returns Added message from the store
    */
   protected handleBefore_KEEP_FAILED(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
+    parameters: MessageSenderOptions<T>
   ): MessageStoreMsg<unknown, unknown> {
     const { currentMessage, store } = parameters;
 
@@ -210,7 +207,7 @@ export class SenderStrategyPlugin<
    *
    * @param context - Execution context containing message sender parameters
    */
-  protected cleanup(context: MessageSenderPluginContext<T>): void {
+  protected cleanup(context: MessageSenderContext<T>): void {
     const { store } = context.parameters;
     store.stopStreaming();
 
@@ -231,14 +228,16 @@ export class SenderStrategyPlugin<
    * - `ADD_ON_SUCCESS`: Message not added yet, wait for success
    * - `KEEP_FAILED` / `DELETE_FAILED`: Add message immediately for loading state
    *
+   * @override
    * @param context - Execution context containing message sender parameters
    */
-  public onBefore(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onBefore(context: MessageSenderContext<T>): void {
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
-        this.closeAddedToStore(context);
+        context.setParameters({
+          ...context.parameters,
+          addedToStore: false
+        });
         break;
 
       case SendFailureStrategy.KEEP_FAILED:
@@ -249,8 +248,11 @@ export class SenderStrategyPlugin<
             context.parameters
           );
 
-          this.mergeRuntimeMessage(context, addedMessage as Partial<T>);
-          this.openAddedToStore(context);
+          context.setParameters({
+            ...context.parameters,
+            currentMessage: addedMessage as T,
+            addedToStore: true
+          });
         }
         break;
     }
@@ -267,14 +269,14 @@ export class SenderStrategyPlugin<
    * @returns Updated message from store, or `undefined` if update failed
    */
   protected handleSuccess_KEEP_FAILED(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
-    successData: MessageStoreMsg<unknown, unknown>
-  ): MessageStoreMsg<unknown, unknown> | undefined {
+    parameters: MessageSenderOptions<T>,
+    successData: T
+  ): T | undefined {
     const { currentMessage, store } = parameters;
 
     const updatedMessage = store.updateMessage(
       currentMessage.id!,
-      successData as Partial<MessageStoreMsg<unknown, unknown>>
+      successData as Partial<T>
     );
 
     return updatedMessage;
@@ -291,9 +293,9 @@ export class SenderStrategyPlugin<
    * @returns Newly added message from store
    */
   protected handleSuccess_ADD_ON_SUCCESS(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
-    successData: MessageStoreMsg<unknown, unknown>
-  ): MessageStoreMsg<unknown, unknown> {
+    parameters: MessageSenderOptions<T>,
+    successData: T
+  ): T {
     const { currentMessage, store } = parameters;
 
     const addedMessage = store.addMessage({
@@ -310,13 +312,12 @@ export class SenderStrategyPlugin<
    * Handles message updates after successful send operation.
    * Updates existing messages or adds new ones based on strategy.
    *
+   * @override
    * @param context - Execution context containing message sender parameters
    *
    * @throws {Error} When message update fails for already-added messages
    */
-  public onSuccess(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onSuccess(context: MessageSenderContext<T>): void {
     const { addedToStore } = context.parameters;
 
     const successData = context.returnValue as MessageStoreMsg<
@@ -327,23 +328,29 @@ export class SenderStrategyPlugin<
     if (addedToStore) {
       const updatedMessage = this.handleSuccess_KEEP_FAILED(
         context.parameters,
-        successData
+        successData as T
       );
 
       if (!updatedMessage) {
         throw new Error('Failed to update message');
       }
 
-      this.mergeRuntimeMessage(context, updatedMessage as Partial<T>);
-      this.asyncReturnValue(context, updatedMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: updatedMessage as T
+      });
+      context.setReturnValue(updatedMessage);
     } else {
       const addedMessage = this.handleSuccess_ADD_ON_SUCCESS(
         context.parameters,
-        successData
+        successData as T
       );
 
-      this.mergeRuntimeMessage(context, addedMessage as Partial<T>);
-      this.asyncReturnValue(context, addedMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: addedMessage as T
+      });
+      context.setReturnValue(addedMessage);
     }
 
     this.cleanup(context);
@@ -373,7 +380,7 @@ export class SenderStrategyPlugin<
    * ```
    */
   protected onStopError(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
+    context: MessageSenderContext<T>
   ): ExecutorError | void {
     const { currentMessage, store, addedToStore, gatewayOptions } =
       context.parameters;
@@ -394,8 +401,11 @@ export class SenderStrategyPlugin<
       finalMessage = store.mergeMessage(currentMessage, stoppedData);
     }
 
-    this.mergeRuntimeMessage(context, finalMessage as Partial<T>);
-    this.asyncReturnValue(context, finalMessage);
+    context.setParameters({
+      ...context.parameters,
+      currentMessage: finalMessage as T
+    });
+    context.setReturnValue(finalMessage);
 
     if (typeof gatewayOptions?.onAborted === 'function') {
       try {
@@ -422,13 +432,12 @@ export class SenderStrategyPlugin<
    * - `DELETE_FAILED`: Remove message from store completely
    * - `ADD_ON_SUCCESS`: Keep message data but don't add to store
    *
+   * @override
    * @param context - Execution context containing message sender parameters
    *
    * @throws {Error} When message update fails for KEEP_FAILED strategy
    */
-  public onError(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): ExecutorError | void {
+  public onError(context: MessageSenderContext<T>): ExecutorError | void {
     const error = context.error;
 
     // Use specialized abort error handling for stop operations
@@ -477,8 +486,11 @@ export class SenderStrategyPlugin<
     }
 
     if (finalMessage) {
-      this.mergeRuntimeMessage(context, finalMessage as Partial<T>);
-      this.asyncReturnValue(context, finalMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: finalMessage as T
+      });
+      context.setReturnValue(finalMessage);
     }
 
     this.cleanup(context);
@@ -499,6 +511,7 @@ export class SenderStrategyPlugin<
    * in loading state, automatically triggers connection establishment logic.
    * This ensures proper state management even if connection hook is missed.
    *
+   * @override
    * @param context - Execution context with message sender parameters
    * @param chunk - Data chunk received from the stream
    * @returns Processed chunk or updated message
@@ -513,7 +526,7 @@ export class SenderStrategyPlugin<
    * ```
    */
   public onStream(
-    context: MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>,
+    context: MessageSenderContext<T>,
     chunk: unknown
   ): Promise<unknown> | unknown | void {
     const { addedToStore, currentMessage, store } = context.parameters;
@@ -542,9 +555,7 @@ export class SenderStrategyPlugin<
     }
 
     // Ensure global streaming state is started (prevents edge cases)
-    this.startStreaming(
-      store as MessagesStore<MessageStoreMsg<unknown, unknown>>
-    );
+    this.startStreaming(store as MessagesStore<T>);
 
     if (!store.isMessage(chunk)) {
       return chunk;
@@ -606,14 +617,12 @@ export class SenderStrategyPlugin<
    * @param parameters - Message sender context parameters
    */
   protected handleConnectionEstablished(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
+    parameters: MessageSenderOptions<T>
   ): void {
     const { store, currentMessage, addedToStore } = parameters;
 
     // Start global streaming state
-    this.startStreaming(
-      store as MessagesStore<MessageStoreMsg<unknown, unknown>>
-    );
+    this.startStreaming(store as MessagesStore<T>);
 
     // Set user message loading to false, indicating request was sent successfully
     if (addedToStore && currentMessage.id) {
@@ -622,7 +631,7 @@ export class SenderStrategyPlugin<
         // Follows sending rule 1: message sent, awaiting response
         status: MessageStatus.SENDING,
         endTime: Date.now()
-      });
+      } as Partial<T>);
     }
   }
 
@@ -632,11 +641,10 @@ export class SenderStrategyPlugin<
    * Called when streaming connection is successfully established.
    * Delegates to the common connection handling logic.
    *
+   * @override
    * @param context - Execution context containing message sender parameters
    */
-  public onConnected(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onConnected(context: MessageSenderContext<T>): void {
     this.handleConnectionEstablished(context.parameters);
   }
 
@@ -652,7 +660,7 @@ export class SenderStrategyPlugin<
    * @returns Updated or added message, or original chunk if not a message
    */
   protected handleStream_UpdateExisting(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
+    parameters: MessageSenderOptions<T>,
     chunkMessage: unknown
   ): unknown | void {
     const { store } = parameters;

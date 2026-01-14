@@ -1,14 +1,11 @@
 import {
+  AborterConfig,
+  AborterId,
+  AborterInterface,
   ExecutorError,
-  AbortPlugin,
-  type ExecutorPlugin,
-  type AbortPluginConfig
+  raceWithAbort
 } from '@qlover/fe-corekit';
-import {
-  type MessageSenderContextOptions,
-  type MessageSenderPluginContext,
-  MessageSenderExecutor
-} from './MessageSenderExecutor';
+import { MessageSenderExecutor } from './MessageSenderExecutor';
 import {
   MessageStatus,
   type MessageStoreMsg,
@@ -19,87 +16,16 @@ import type {
   GatewayOptions,
   MessageGetwayInterface
 } from '../interface/MessageGetwayInterface';
-import type { MessageSenderInterface } from '../interface/MessageSenderInterface';
+import type {
+  MessageSenderBaseConfig,
+  MessageSenderInterface
+} from '../interface/MessageSenderInterface';
 import type { LoggerInterface } from '@qlover/logger';
-
-/**
- * Configuration options for message sender
- *
- * Defines behavior, logging, gateway integration, and error handling
- * for the message sender instance.
- */
-export interface MessageSenderConfig {
-  /**
-   * Sender instance name
-   *
-   * Used for logging and identification purposes. Helpful when
-   * multiple sender instances exist in the application.
-   *
-   * @default `'MessageSender'`
-   *
-   * @example
-   * ```typescript
-   * const config = {
-   *   senderName: 'ChatSender'
-   * };
-   * ```
-   */
-  senderName?: string;
-
-  /**
-   * Logger instance for debugging and monitoring
-   *
-   * Optional logger for tracking message send operations,
-   * errors, and performance metrics.
-   */
-  logger?: LoggerInterface;
-
-  /**
-   * Whether to throw errors on send failure
-   *
-   * When `true`, failed send operations throw errors instead of
-   * returning error messages. Useful for error boundary handling.
-   *
-   * @default `false`
-   *
-   * @example
-   * ```typescript
-   * const config = {
-   *   throwIfError: true // Throw on failures
-   * };
-   * ```
-   */
-  throwIfError?: boolean;
-
-  /**
-   * Message gateway instance
-   *
-   * Gateway responsible for actually sending messages to external
-   * services (APIs, WebSocket servers, etc.).
-   */
-  gateway?: MessageGetwayInterface;
-
-  /**
-   * Gateway options for message operations
-   *
-   * Configuration for gateway behavior including:
-   * - Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
-   * - Abort signal for cancellation control
-   * - Custom request parameters
-   *
-   * @example
-   * ```typescript
-   * const config = {
-   *   gatewayOptions: {
-   *     stream: true,
-   *     onChunk: (chunk) => console.log(chunk),
-   *     timeout: 30000
-   *   }
-   * };
-   * ```
-   */
-  gatewayOptions?: GatewayOptions<unknown>;
-}
+import {
+  MessageSenderContext,
+  MessageSenderOptions,
+  MessageSenderPlugin
+} from '../interface/MessageSenderPlugin';
 
 /**
  * Default sender name constant
@@ -109,7 +35,36 @@ const defaultSenderName = 'MessageSender';
 /**
  * Default error ID for message sender errors
  */
-const defaultMessageSenderErrorId = 'MESSAGE_SENDER_ERROR';
+export const MESSAGE_SENDER_ERROR_ID = 'MESSAGE_SENDER_ERROR';
+
+const defaultLoggerTpl = {
+  failed: '[${senderName}] ${messageId} failed',
+  success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
+} as const;
+
+export interface MessageSenderConfig<
+  MessageType extends MessageStoreMsg<unknown, unknown>
+> extends MessageSenderBaseConfig {
+  executor?: MessageSenderExecutor<MessageType>;
+  aborter?: AborterInterface<AborterConfig>;
+
+  /**
+   * Logger templates
+   *
+   * Templates for logging messages.
+   *
+   * @example
+   * ```typescript
+   * const loggerTpl = {
+   *   failed: '[${senderName}] ${messageId} failed',
+   *   success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
+   * };
+   */
+  loggerTpl?: {
+    failed?: string;
+    success?: string;
+  };
+}
 
 /**
  * Message sender implementation
@@ -167,68 +122,34 @@ export class MessageSender<
   MessageType extends MessageStoreMsg<any, any>
 > implements MessageSenderInterface<MessageType>
 {
-  /** Error ID for message sender errors */
-  protected messageSenderErrorId = defaultMessageSenderErrorId;
-
-  /** Plugin executor for managing send pipeline */
-  protected readonly executor: MessageSenderExecutor<MessageType>;
-
-  /** Abort plugin for handling message cancellation */
-  protected readonly abortPlugin: AbortPlugin<
-    MessageSenderContextOptions<MessageType>
-  >;
-
-  /** Optional logger instance */
-  protected readonly logger?: LoggerInterface;
-
-  /** Name of this sender instance */
   protected readonly senderName: string;
 
-  /**
-   * Logger message templates
-   *
-   * Predefined templates for consistent logging throughout
-   * the sender's lifecycle.
-   */
-  protected loggerTpl = {
-    failed: '[${senderName}] ${messageId} failed',
-    success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
-  } as const;
+  protected loggerTpl: {
+    failed: string;
+    success: string;
+  };
 
-  /**
-   * Create a new message sender
-   *
-   * @param messages - Message store instance for managing message state
-   * @param config - Optional configuration for sender behavior
-   *
-   * @example
-   * ```typescript
-   * const store = new MessagesStore();
-   * const sender = new MessageSender(store, {
-   *   senderName: 'ChatSender',
-   *   gateway: chatGateway,
-   *   logger: consoleLogger,
-   *   throwIfError: true
-   * });
-   * ```
-   */
   constructor(
     protected readonly messages: MessagesStore<MessageType>,
-    protected readonly config?: MessageSenderConfig
+    protected readonly config?: MessageSenderConfig<MessageType>
   ) {
-    this.logger = config?.logger;
     this.senderName = config?.senderName || defaultSenderName;
-    this.executor = new MessageSenderExecutor();
+    this.loggerTpl = {
+      ...defaultLoggerTpl,
+      ...config?.loggerTpl
+    };
+  }
 
-    this.abortPlugin = new AbortPlugin<
-      MessageSenderContextOptions<MessageType>
-    >({
-      getConfig: (parameters) =>
-        (parameters.gatewayOptions || parameters) as AbortPluginConfig,
-      logger: config?.logger,
-      timeout: config?.gatewayOptions?.timeout
-    });
-    this.executor.use(this.abortPlugin);
+  public get executor(): MessageSenderExecutor<MessageType> | undefined {
+    return this.config?.executor;
+  }
+
+  public get aborter(): AborterInterface<AborterConfig> | undefined {
+    return this.config?.aborter;
+  }
+
+  public get logger(): LoggerInterface | undefined {
+    return this.config?.logger;
   }
 
   /**
@@ -269,9 +190,11 @@ export class MessageSender<
    *   .use(transformPlugin);
    * ```
    */
-  public use<T = MessageSenderContextOptions<MessageType>>(
-    plugin: ExecutorPlugin<T>
-  ): this {
+  public use(plugin: MessageSenderPlugin<MessageType>): this {
+    if (!this.executor) {
+      throw new Error(this.senderName + ' executor is not set');
+    }
+
     this.executor.use(plugin);
     return this;
   }
@@ -301,8 +224,8 @@ export class MessageSender<
    * }
    * ```
    */
-  public stop(messageId: string): boolean {
-    return this.abortPlugin.abort(messageId);
+  public stop(messageId: AborterId): boolean {
+    return this.aborter?.abort(messageId) || false;
   }
 
   /**
@@ -319,7 +242,7 @@ export class MessageSender<
    * ```
    */
   public stopAll(): void {
-    this.abortPlugin.abortAll();
+    this.aborter?.abortAll();
   }
 
   /**
@@ -337,23 +260,22 @@ export class MessageSender<
    */
   protected async sendMessage(
     message: MessageType,
-    context: MessageSenderPluginContext<MessageType>
+    context?: MessageSenderContext<MessageType>
   ): Promise<MessageType> {
     const gateway = this.getGateway();
+    const executor = this.executor;
 
-    const gatewayOptions = context.parameters.gatewayOptions;
+    const gatewayOptions = context?.parameters.gatewayOptions;
     let newGatewayOptions: GatewayOptions<MessageType> | undefined;
-    if (gatewayOptions) {
-      // Extract only necessary references to minimize closure capture
+
+    if (executor && gatewayOptions && context) {
       const originalOnChunk = gatewayOptions.onChunk;
       const originalOnConnected = gatewayOptions.onConnected;
-      const executor = this.executor;
       const signal = gatewayOptions.signal;
 
       executor.resetRuntimesStreamTimes(context);
 
-      newGatewayOptions = {
-        ...gatewayOptions,
+      newGatewayOptions = Object.assign({}, gatewayOptions, {
         onConnected: async () => {
           signal?.throwIfAborted();
 
@@ -370,15 +292,11 @@ export class MessageSender<
             originalOnChunk(result || chunk);
           }
         }
-      };
+      } as GatewayOptions<MessageType>);
     }
 
-    // Use AbortPlugin.raceWithAbort to ensure abort response even if gateway doesn't check signal
     const gatewayPromise = gateway?.sendMessage(message, newGatewayOptions);
-    const result = await this.abortPlugin.raceWithAbort(
-      gatewayPromise!,
-      gatewayOptions?.signal
-    );
+    const result = await raceWithAbort(gatewayPromise!, gatewayOptions?.signal);
 
     return this.messages.mergeMessage(message, {
       status: MessageStatus.SENT,
@@ -428,14 +346,14 @@ export class MessageSender<
    */
   protected async handleError(
     error: unknown,
-    context: MessageSenderContextOptions<MessageType>
+    context: MessageSenderOptions<MessageType>
   ): Promise<MessageType> {
     // If is unknown async error, create a new error with MESSAGE_SENDER_ERROR id
     let processedError = error;
     if (error instanceof ExecutorError && error.id === 'UNKNOWN_ASYNC_ERROR') {
       // Create a new ExecutorError instead of modifying the original
       // The constructor will automatically preserve the stack trace from the original error
-      processedError = new ExecutorError(this.messageSenderErrorId, error);
+      processedError = new ExecutorError(MESSAGE_SENDER_ERROR_ID, error);
     }
 
     if (this.config?.throwIfError) {
@@ -481,10 +399,10 @@ export class MessageSender<
    * @param gatewayOptions - Optional gateway configuration
    * @returns Complete execution context for message sending
    */
-  protected createSendContext(
+  protected createSendOptions(
     sendingMessage: MessageType,
     gatewayOptions?: GatewayOptions<MessageType>
-  ): MessageSenderContextOptions<MessageType> {
+  ): MessageSenderOptions<MessageType> {
     const _gatewayOptions = {
       ...this.config?.gatewayOptions,
       ...gatewayOptions,
@@ -568,26 +486,32 @@ export class MessageSender<
     gatewayOptions?: GatewayOptions<MessageType>
   ): Promise<MessageType> {
     const sendingMessage = this.generateSendingMessage(message);
-    const context = this.createSendContext(sendingMessage, gatewayOptions);
+    const options = this.createSendOptions(sendingMessage, gatewayOptions);
 
     try {
-      const reuslt = await this.executor.exec(context, async (ctx) => {
-        return await this.sendMessage(ctx.parameters.currentMessage, ctx);
-      });
+      let result: MessageType | undefined;
+
+      if (!this.executor) {
+        result = await this.sendMessage(options.currentMessage);
+      } else {
+        result = await this.executor.exec(options, async (ctx) => {
+          return await this.sendMessage(ctx.parameters.currentMessage, ctx);
+        });
+      }
 
       if (this.logger) {
         this.logger.info(
           template(this.loggerTpl.success, {
             senderName: this.senderName,
             messageId: sendingMessage.id!,
-            speed: String(this.getDuration(reuslt))
+            speed: String(this.getDuration(result))
           })
         );
       }
 
-      return reuslt;
+      return result;
     } catch (error) {
-      return this.handleError(error, context);
+      return this.handleError(error, options);
     }
   }
 

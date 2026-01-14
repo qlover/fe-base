@@ -1,199 +1,10 @@
+import { ExecutorAsyncTask, LifecycleExecutor } from '@qlover/fe-corekit';
+import { MessageInterface } from '../interface/MessagesStoreInterface';
 import {
-  AsyncExecutor,
-  type ExecutorContext,
-  type ExecutorPlugin
-} from '@qlover/fe-corekit';
-import type { MessageSenderConfig } from './MessageSender';
-import {
-  MessageInterface,
-  MessagesStateInterface,
-  MessagesStoreInterface
-} from '../interface/MessagesStoreInterface';
-
-/**
- * Message sender execution context
- *
- * Provides the complete execution context for message sender operations,
- * including configuration, store access, and message state tracking.
- * This context is passed through the plugin execution chain.
- *
- * @template MessageType - Type of message being processed
- *
- * @example
- * ```typescript
- * const context: MessageSenderContext<ChatMessage> = {
- *   store: messageStore,
- *   currentMessage: message,
- *   addedToStore: false,
- *   // ... other config properties
- * };
- * ```
- */
-export interface MessageSenderContextOptions<
-  MessageType extends MessageInterface<unknown>
-> extends MessageSenderConfig {
-  /**
-   * Message store instance
-   *
-   * Provides access to the message store for persistence and
-   * state management operations during message sending.
-   */
-  store: MessagesStoreInterface<
-    MessageType,
-    MessagesStateInterface<MessageType>
-  >;
-
-  /**
-   * Current message in the execution flow
-   *
-   * The message being processed in the current execution cycle.
-   * This message may be updated by plugins as it flows through
-   * the execution pipeline.
-   */
-  currentMessage: MessageType;
-
-  /**
-   * Whether message has been added to store
-   *
-   * Tracks if the current message has been persisted to the store.
-   * Used by plugins to avoid duplicate additions and manage
-   * message lifecycle properly.
-   *
-   * @default `false`
-   */
-  addedToStore?: boolean;
-}
-
-/**
- * Type alias for message sender plugin context
- *
- * Wraps the message sender context in an executor context for use
- * in plugin implementations.
- *
- * @template T - Type of message being processed
- */
-export type MessageSenderPluginContext<T extends MessageInterface<unknown>> =
-  ExecutorContext<MessageSenderContextOptions<T>>;
-
-/**
- * Message sender plugin interface
- *
- * Defines the contract for message sender plugins with support for
- * streaming operations. Plugins can hook into the send lifecycle
- * to modify messages, handle streaming chunks, and respond to
- * connection events.
- *
- * @template T - Type of message being processed
- *
- * @example Basic plugin
- * ```typescript
- * const plugin: MessageSenderPlugin<ChatMessage> = {
- *   name: 'logger',
- *   execute: async (context, next) => {
- *     console.log('Sending:', context.parameters.currentMessage);
- *     return next();
- *   }
- * };
- * ```
- *
- * @example Plugin with streaming support
- * ```typescript
- * const streamPlugin: MessageSenderPlugin<ChatMessage> = {
- *   name: 'stream-handler',
- *   execute: async (context, next) => next(),
- *   onConnected: (context) => {
- *     console.log('Stream connected');
- *   },
- *   onStream: (context, chunk) => {
- *     console.log('Received chunk:', chunk);
- *     return chunk;
- *   }
- * };
- * ```
- */
-export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
-  extends ExecutorPlugin<MessageSenderContextOptions<T>> {
-  /**
-   * Stream chunk received hook
-   *
-   * Called each time a chunk is received when sending in streaming mode.
-   * This hook can process, transform, or log chunk data as it arrives.
-   *
-   * Behavior:
-   * - Can return a message object to be used as the final return value
-   * - Can return nothing (void) to pass through the chunk unchanged
-   * - Can transform the chunk before passing to the next plugin
-   *
-   * @param context - Execution context with message sender parameters
-   * @param chunk - Data chunk received from the stream
-   * @returns Optional transformed chunk or message object
-   *
-   * @example Log chunks
-   * ```typescript
-   * onStream: (context, chunk) => {
-   *   console.log('Chunk received:', chunk);
-   * }
-   * ```
-   *
-   * @example Transform chunks
-   * ```typescript
-   * onStream: (context, chunk) => {
-   *   return {
-   *     ...chunk,
-   *     timestamp: Date.now()
-   *   };
-   * }
-   * ```
-   *
-   * @example Update message state
-   * ```typescript
-   * onStream: async (context, chunk) => {
-   *   const { currentMessage, store } = context.parameters;
-   *   store.updateMessage(currentMessage.id, {
-   *     content: chunk.content,
-   *     loading: true
-   *   });
-   * }
-   * ```
-   */
-  onStream?(
-    context: MessageSenderPluginContext<T>,
-    chunk: unknown
-  ): Promise<unknown> | unknown | void;
-
-  /**
-   * Stream connection established hook
-   *
-   * Called when a streaming connection is successfully established,
-   * before any chunks are received. Use this to initialize streaming
-   * state or prepare for incoming data.
-   *
-   * @param context - Execution context with message sender parameters
-   * @returns Promise that resolves when connection handling is complete
-   *
-   * @example Initialize streaming state
-   * ```typescript
-   * onConnected: (context) => {
-   *   const { currentMessage, store } = context.parameters;
-   *   store.updateMessage(currentMessage.id, {
-   *     loading: true,
-   *     status: 'streaming'
-   *   });
-   *   console.log('Stream connected, ready to receive');
-   * }
-   * ```
-   *
-   * @example Setup progress tracking
-   * ```typescript
-   * onConnected: async (context) => {
-   *   await analytics.trackEvent('stream_started', {
-   *     messageId: context.parameters.currentMessage.id
-   *   });
-   * }
-   * ```
-   */
-  onConnected?(context: MessageSenderPluginContext<T>): Promise<void> | void;
-}
+  MessageSenderContext,
+  MessageSenderOptions,
+  MessageSenderPlugin
+} from '../interface/MessageSenderPlugin';
 
 /**
  * Message sender executor for managing plugin execution
@@ -235,9 +46,37 @@ export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
  * executor.resetRuntimesStreamTimes(context);
  * ```
  */
+type MessageSenderTask<R, MessageType extends MessageInterface<unknown>> = (
+  ctx: MessageSenderContext<MessageType>
+) => Promise<R> | R;
+
 export class MessageSenderExecutor<
   MessageType extends MessageInterface<unknown>
-> extends AsyncExecutor {
+> extends LifecycleExecutor<
+  MessageSenderContext<MessageType>,
+  MessageSenderPlugin<MessageType>
+> {
+  /** @override */
+  public exec<R>(task: MessageSenderTask<R, MessageType>): Promise<R>;
+
+  /** @override */
+  public exec<R>(
+    data: MessageSenderOptions<MessageType>,
+    task: MessageSenderTask<R, MessageType>
+  ): Promise<R>;
+  /** @override */
+  public exec<R>(
+    dataOrTask:
+      | MessageSenderOptions<MessageType>
+      | MessageSenderTask<R, MessageType>,
+    task?: MessageSenderTask<R, MessageType>
+  ): Promise<R> {
+    return super.exec(
+      dataOrTask as MessageSenderOptions<MessageType>,
+      task as ExecutorAsyncTask<R, MessageSenderOptions<MessageType>>
+    );
+  }
+
   /**
    * Reset stream timing counter
    *
@@ -255,9 +94,11 @@ export class MessageSenderExecutor<
    * ```
    */
   public resetRuntimesStreamTimes(
-    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
+    context: MessageSenderContext<MessageType>
   ): void {
-    context.hooksRuntimes.streamTimes = 0;
+    context.runtimes({
+      streamTimes: 0
+    });
   }
 
   /**
@@ -290,14 +131,16 @@ export class MessageSenderExecutor<
    */
   public async runStream(
     chunk: unknown,
-    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
+    context: MessageSenderContext<MessageType>
   ): Promise<unknown> {
     if (context.hooksRuntimes.streamTimes === undefined) {
-      context.hooksRuntimes.streamTimes = 0;
+      this.resetRuntimesStreamTimes(context);
     }
 
     if (typeof context.hooksRuntimes.streamTimes === 'number') {
-      context.hooksRuntimes.streamTimes++;
+      context.runtimes({
+        streamTimes: context.hooksRuntimes.streamTimes + 1
+      });
     }
 
     return await this.runHooks(this.plugins, 'onStream', context, chunk);
@@ -327,7 +170,7 @@ export class MessageSenderExecutor<
    * ```
    */
   public async runConnected(
-    context: ExecutorContext<MessageSenderContextOptions<MessageType>>
+    context: MessageSenderContext<MessageType>
   ): Promise<void> {
     await this.runHooks(this.plugins, 'onConnected', context);
   }
