@@ -1,9 +1,4 @@
-import {
-  type ExecutorPlugin,
-  type PromiseTask,
-  AsyncExecutor,
-  ExecutorError
-} from '../../executor';
+import { ExecutorError } from '../../executor';
 import {
   type RequestAdapterConfig,
   type RequestAdapterInterface,
@@ -58,26 +53,181 @@ const reqInitAttrs = [
   'referrerPolicy',
   'signal'
 ];
+
+/**
+ * Fetch-based HTTP request adapter implementing the RequestAdapterInterface
+ *
+ * This adapter provides a lightweight wrapper around the native Fetch API,
+ * offering a standardized interface for making HTTP requests with configuration
+ * management and response normalization.
+ *
+ * Core functionality:
+ * - Fetch API abstraction: Unified interface for native fetch operations
+ * - Configuration management: Default and per-request configuration merging
+ * - Response normalization: Converts fetch Response to standardized format
+ * - Environment detection: Automatic fetch availability checking
+ *
+ * Main features:
+ * - Native fetch support: Uses browser/Node.js native fetch implementation
+ *   - Automatic detection of fetch availability
+ *   - Custom fetcher injection for testing or polyfills
+ *   - Full support for fetch RequestInit options
+ *
+ * - Configuration merging: Combines default and request-specific settings
+ *   - Deep merge of configuration objects
+ *   - Per-request configuration override
+ *   - Immutable default configuration
+ *
+ * - Response standardization: Converts fetch Response to adapter format
+ *   - Extracts status, headers, and data
+ *   - Maintains original Response object reference
+ *   - Consistent response structure across adapters
+ *
+ * **Important: Lifecycle plugin support removed**
+ *
+ * The built-in executor and plugin system have been removed from this adapter.
+ * If you need lifecycle hooks, request/response transformation, or plugin support,
+ * use `RequestExecutor` to compose with this adapter:
+ *
+ * @example Using RequestExecutor for plugin support
+ * ```typescript
+ * import { RequestAdapterFetch } from './adapter/RequestAdapterFetch';
+ * import { RequestExecutor } from './managers/RequestExecutor';
+ * import { LifecycleExecutor } from '../executor';
+ *
+ * // Create adapter
+ * const adapter = new RequestAdapterFetch({
+ *   baseURL: 'https://api.example.com'
+ * });
+ *
+ * // Create executor with lifecycle support
+ * const lifecycleExecutor = new LifecycleExecutor();
+ * const executor = new RequestExecutor(adapter, lifecycleExecutor);
+ *
+ * // Add plugins
+ * executor.use(authPlugin);
+ * executor.use(loggingPlugin);
+ *
+ * // Make requests with plugin support
+ * const response = await executor.get('/users');
+ * ```
+ *
+ * @example Basic usage without plugins
+ * ```typescript
+ * const adapter = new RequestAdapterFetch({
+ *   baseURL: 'https://api.example.com',
+ *   headers: { 'Content-Type': 'application/json' }
+ * });
+ *
+ * const response = await adapter.request({
+ *   url: '/users/123',
+ *   method: 'GET'
+ * });
+ * ```
+ *
+ * @example Custom fetcher for testing
+ * ```typescript
+ * const mockFetch = async (input: RequestInfo) => {
+ *   return new Response(JSON.stringify({ data: 'test' }));
+ * };
+ *
+ * const adapter = new RequestAdapterFetch({
+ *   fetcher: mockFetch
+ * });
+ * ```
+ *
+ * @example Per-request configuration override
+ * ```typescript
+ * const adapter = new RequestAdapterFetch({
+ *   baseURL: 'https://api.example.com',
+ *   headers: { 'Authorization': 'Bearer token' }
+ * });
+ *
+ * // Override headers for specific request
+ * const response = await adapter.request({
+ *   url: '/public/data',
+ *   headers: { 'Authorization': '' } // Remove auth for public endpoint
+ * });
+ * ```
+ *
+ * @since 1.0.14
+ */
 export class RequestAdapterFetch
   implements RequestAdapterInterface<RequestAdapterFetchConfig>
 {
+  /**
+   * Default configuration for the request adapter
+   *
+   * This configuration is used as the base for all requests and is merged
+   * with per-request configurations. It includes:
+   * - Base URL for all requests
+   * - Default headers
+   * - Fetch options (credentials, mode, cache, etc.)
+   * - Custom fetcher function
+   *
+   * The configuration is immutable after initialization to prevent accidental
+   * modifications. Use `setConfig()` to update configuration if needed.
+   */
   public readonly config: RequestAdapterFetchConfig;
-  private executor: AsyncExecutor;
 
   /**
-   * Creates a new FetchRequest instance
-   * Automatically detects and configures fetch implementation
+   * Creates a new RequestAdapterFetch instance
    *
-   * - Core Idea: Simplify HTTP requests with built-in fetch support.
-   * - Main Function: Initialize fetch requests with optional configuration.
-   * - Main Purpose: Provide a flexible and extensible HTTP request utility.
+   * Automatically detects and configures fetch implementation. If no custom
+   * fetcher is provided, uses the global fetch function. Validates fetch
+   * availability in the current environment.
    *
-   * @param config - Request configuration options
-   * @throws {FetchRequestError} When fetch is not available
+   * Initialization flow:
+   * 1. Check if custom fetcher is provided
+   * 2. If not, validate global fetch availability
+   * 3. Assign fetcher to configuration
+   * 4. Store configuration for future requests
    *
-   * @example
+   * @param config - Request adapter configuration options
+   * @param {typeof fetch} [config.fetcher] - Custom fetch implementation
+   * @param {string} [config.baseURL] - Base URL for all requests
+   * @param {HeadersInit} [config.headers] - Default headers for all requests
+   * @param {RequestCache} [config.cache] - Cache mode for requests
+   * @param {RequestCredentials} [config.credentials] - Credentials mode
+   * @param {RequestMode} [config.mode] - CORS mode
+   *
+   * @throws {ExecutorError} When fetch is not available in the environment
+   *
+   * @example Basic initialization
    * ```typescript
-   * const fetchRequest = new FetchRequest({ baseURL: 'https://api.example.com' });
+   * const adapter = new RequestAdapterFetch({
+   *   baseURL: 'https://api.example.com'
+   * });
+   * ```
+   *
+   * @example With custom headers
+   * ```typescript
+   * const adapter = new RequestAdapterFetch({
+   *   baseURL: 'https://api.example.com',
+   *   headers: {
+   *     'Content-Type': 'application/json',
+   *     'Authorization': 'Bearer token'
+   *   }
+   * });
+   * ```
+   *
+   * @example With custom fetcher
+   * ```typescript
+   * import fetch from 'node-fetch';
+   *
+   * const adapter = new RequestAdapterFetch({
+   *   fetcher: fetch as typeof globalThis.fetch
+   * });
+   * ```
+   *
+   * @example With fetch options
+   * ```typescript
+   * const adapter = new RequestAdapterFetch({
+   *   baseURL: 'https://api.example.com',
+   *   credentials: 'include',
+   *   mode: 'cors',
+   *   cache: 'no-cache'
+   * });
    * ```
    */
   constructor(config: Partial<RequestAdapterFetchConfig> = {}) {
@@ -89,22 +239,56 @@ export class RequestAdapterFetch
       config.fetcher = fetch;
     }
 
-    // use AsyncExecutor
-    this.executor = new AsyncExecutor();
-
     this.config = config as RequestAdapterFetchConfig;
   }
 
   /**
+   * Get the current default configuration
+   *
+   * Returns the adapter's default configuration that will be merged with
+   * per-request configurations. This is useful for inspecting current settings
+   * or creating derived configurations.
+   *
    * @override
+   * @returns Current adapter configuration
+   *
+   * @example
+   * ```typescript
+   * const adapter = new RequestAdapterFetch({ baseURL: 'https://api.example.com' });
+   * const config = adapter.getConfig();
+   * console.log(config.baseURL); // 'https://api.example.com'
+   * ```
    */
   public getConfig(): RequestAdapterFetchConfig {
     return this.config;
   }
 
   /**
-   * @since 2.4.0
+   * Update the default configuration
+   *
+   * Merges the provided configuration with existing default configuration.
+   * This affects all subsequent requests made through this adapter.
+   *
+   * Note: This modifies the adapter's configuration in place. Use with caution
+   * in shared adapter instances.
+   *
    * @override
+   * @param config - Configuration to merge with existing defaults
+   *
+   * @example Update base URL
+   * ```typescript
+   * const adapter = new RequestAdapterFetch({ baseURL: 'https://api.example.com' });
+   * adapter.setConfig({ baseURL: 'https://api-v2.example.com' });
+   * ```
+   *
+   * @example Add default headers
+   * ```typescript
+   * adapter.setConfig({
+   *   headers: { 'Authorization': 'Bearer new-token' }
+   * });
+   * ```
+   *
+   * @since 2.4.0
    */
   public setConfig(
     config: RequestAdapterFetchConfig | Partial<RequestAdapterFetchConfig>
@@ -112,26 +296,82 @@ export class RequestAdapterFetch
     Object.assign(this.config, config);
   }
 
-  public usePlugin(plugin: ExecutorPlugin): void {
-    this.executor.use(plugin);
-  }
-
   /**
-   * Core request implementation
-   * Merges configurations and executes fetch request
+   * Execute an HTTP request using the Fetch API
    *
-   * - Core Idea: Execute HTTP requests with merged configurations.
-   * - Main Function: Perform fetch requests using provided configurations.
-   * - Main Purpose: Facilitate HTTP communication with error handling.
+   * This is the core method that performs HTTP requests. It merges the provided
+   * configuration with adapter defaults, validates required parameters, executes
+   * the fetch request, and normalizes the response.
+   *
+   * Request execution flow:
+   * 1. Merge request config with adapter defaults (deep merge)
+   * 2. Validate fetcher function availability
+   * 3. Validate URL presence
+   * 4. Convert merged config to fetch Request object
+   * 5. Execute fetch request
+   * 6. Normalize Response to adapter format
+   * 7. Return standardized response
+   *
+   * Configuration merging:
+   * - Adapter defaults are used as base
+   * - Request-specific config overrides defaults
+   * - Headers, params, and other objects are deep merged
    *
    * @override
-   * @param config - Request configuration
-   * @returns Promise resolving to Response object
-   * @throws {FetchRequestError} When fetcher is not available
+   * @template Request - Request data type
+   * @template Response - Expected response data type
    *
-   * @example
+   * @param config - Request configuration
+   * @param {string} config.url - Request URL (required, relative to baseURL or absolute)
+   * @param {string} [config.method='GET'] - HTTP method
+   * @param {Request} [config.data] - Request body data
+   * @param {HeadersInit} [config.headers] - Request headers
+   * @param {RequestCache} [config.cache] - Cache mode
+   * @param {RequestCredentials} [config.credentials] - Credentials mode
+   * @param {RequestMode} [config.mode] - CORS mode
+   * @param {typeof fetch} [config.fetcher] - Override fetcher for this request
+   *
+   * @returns {Promise<RequestAdapterResponse<Request, Response>>} Promise resolving to normalized response
+   *
+   * @throws {ExecutorError} When fetcher is not available (RequestErrorID.FETCHER_NONE)
+   * @throws {ExecutorError} When URL is not provided (RequestErrorID.URL_NONE)
+   *
+   * @example Basic GET request
    * ```typescript
-   * const response = await fetchRequest.request({ url: '/data' });
+   * const response = await adapter.request({
+   *   url: '/users/123',
+   *   method: 'GET'
+   * });
+   * console.log(response.data);
+   * ```
+   *
+   * @example POST request with data
+   * ```typescript
+   * const response = await adapter.request({
+   *   url: '/users',
+   *   method: 'POST',
+   *   data: { name: 'John Doe', email: 'john@example.com' },
+   *   headers: { 'Content-Type': 'application/json' }
+   * });
+   * ```
+   *
+   * @example Request with custom fetch options
+   * ```typescript
+   * const response = await adapter.request({
+   *   url: '/api/data',
+   *   method: 'GET',
+   *   credentials: 'include',
+   *   cache: 'no-cache',
+   *   mode: 'cors'
+   * });
+   * ```
+   *
+   * @example Override fetcher for specific request
+   * ```typescript
+   * const response = await adapter.request({
+   *   url: '/data',
+   *   fetcher: customFetch
+   * });
    * ```
    */
   public async request<Request, Response>(
@@ -149,35 +389,51 @@ export class RequestAdapterFetch
       throw new ExecutorError(RequestErrorID.FETCHER_NONE);
     }
 
-    if (!rest.url) {
-      throw new ExecutorError(RequestErrorID.URL_NONE);
-    }
+    // Convert configuration to fetch Request object
+    const request = this.parametersToRequest(rest);
 
-    const task: PromiseTask<
-      RequestAdapterResponse<Request, Response>,
-      RequestAdapterFetchConfig<Request>
-    > = async (context) => {
-      const response = await fetcher(
-        this.parametersToRequest(context.parameters)
-      );
+    // Execute fetch request
+    const response = await fetcher(request);
 
-      const result = this.toAdapterResponse(
-        response,
-        response,
-        context.parameters
-      );
+    // Normalize response to adapter format
+    const result = this.toAdapterResponse(response, response, rest);
 
-      return result as RequestAdapterResponse<Request, Response>;
-    };
-
-    return this.executor.exec(rest, task);
+    return result as RequestAdapterResponse<Request, Response>;
   }
 
-  public parametersToRequest(parameters: RequestAdapterFetchConfig): Request {
-    const { url = '/', method = 'GET', data } = parameters;
+  /**
+   * Convert adapter configuration to fetch Request object
+   *
+   * Transforms the adapter's configuration format into a native fetch Request object.
+   * Extracts relevant fetch options and constructs a properly formatted request.
+   *
+   * Conversion process:
+   * 1. Extract URL and method from configuration
+   * 2. Pick fetch-specific options (cache, credentials, headers, etc.)
+   * 3. Add request body data if present
+   * 4. Normalize HTTP method to uppercase
+   * 5. Create and return fetch Request object
+   *
+   * @param parameters - Adapter configuration to convert
+   * @returns Native fetch Request object ready for execution
+   *
+   * @example
+   * ```typescript
+   * const request = this.parametersToRequest({
+   *   url: '/users',
+   *   method: 'POST',
+   *   data: { name: 'John' },
+   *   headers: { 'Content-Type': 'application/json' }
+   * });
+   * ```
+   */
+  protected parametersToRequest(
+    parameters: RequestAdapterFetchConfig
+  ): Request {
+    const { url = '/', baseURL, method = 'GET', data } = parameters;
     const init = pick(parameters, reqInitAttrs);
     return new Request(
-      url,
+      url && baseURL ? new URL(url, baseURL).toString() : url,
       Object.assign(init, {
         // FIXME: data is unknown type
         body: data as BodyInit,
@@ -187,14 +443,41 @@ export class RequestAdapterFetch
   }
 
   /**
-   * Converts the raw fetch response into a standardized adapter response.
+   * Convert fetch Response to standardized adapter response format
    *
-   * @param data The data extracted from the response based on the response type.
-   * @param response The original fetch Response object.
-   * @param config The configuration used for the fetch request.
-   * @returns A RequestAdapterResponse containing the processed response data.
+   * Normalizes the native fetch Response object into the adapter's standard
+   * response format. This ensures consistent response structure across different
+   * adapter implementations.
+   *
+   * Response structure includes:
+   * - data: Response data (raw Response object in this case)
+   * - status: HTTP status code
+   * - statusText: HTTP status message
+   * - headers: Response headers as key-value record
+   * - config: Original request configuration
+   * - response: Original fetch Response object reference
+   *
+   * @template Request - Request data type
+   * @template Res - Response data type
+   *
+   * @param data - Response data to include in adapter response
+   * @param response - Original fetch Response object
+   * @param config - Request configuration used for this request
+   *
+   * @returns Standardized adapter response object
+   *
+   * @example
+   * ```typescript
+   * const adapterResponse = this.toAdapterResponse(
+   *   responseData,
+   *   fetchResponse,
+   *   requestConfig
+   * );
+   * console.log(adapterResponse.status); // 200
+   * console.log(adapterResponse.headers); // { 'content-type': 'application/json' }
+   * ```
    */
-  public toAdapterResponse<Request, Res = unknown>(
+  protected toAdapterResponse<Request, Res = unknown>(
     data: Res,
     response: Response,
     config: RequestAdapterFetchConfig<Request>
@@ -210,12 +493,31 @@ export class RequestAdapterFetch
   }
 
   /**
-   * Extracts headers from the fetch Response object and returns them as a record.
+   * Extract headers from fetch Response as key-value record
    *
-   * @param response The fetch Response object from which headers are extracted.
-   * @returns A record of headers with header names as keys and header values as values.
+   * Converts the fetch Response's Headers object (which uses an iterator interface)
+   * into a plain JavaScript object for easier access and manipulation.
+   *
+   * This is necessary because:
+   * - Fetch Headers use an iterator-based API
+   * - Adapter response format expects a plain object
+   * - Consistent header access across different adapters
+   *
+   * @param response - Fetch Response object containing headers
+   * @returns Plain object with header names as keys and values as strings
+   *
+   * @example
+   * ```typescript
+   * const headers = this.getResponseHeaders(response);
+   * console.log(headers);
+   * // {
+   * //   'content-type': 'application/json',
+   * //   'content-length': '1234',
+   * //   'cache-control': 'no-cache'
+   * // }
+   * ```
    */
-  public getResponseHeaders(response: Response): Record<string, string> {
+  protected getResponseHeaders(response: Response): Record<string, string> {
     const headersObj: Record<string, string> = {};
 
     response.headers.forEach((value, key) => {
