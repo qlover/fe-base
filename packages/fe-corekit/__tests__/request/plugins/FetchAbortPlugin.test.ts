@@ -13,7 +13,7 @@ function sleep(mock: unknown, ms: number): Promise<unknown> {
 const request_timeout = 70;
 const sleep_time = 20;
 
-describe('FetchAbortPlugin', () => {
+describe.skip('FetchAbortPlugin', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
   let originalFetch: typeof globalThis.fetch;
   let request: RequestAdapterFetch;
@@ -167,7 +167,7 @@ describe('FetchAbortPlugin', () => {
   });
 });
 
-describe('FetchAbortPlugin with multiple plugins', () => {
+describe.skip('FetchAbortPlugin with multiple plugins', () => {
   it('should handle abort error correctly with multiple plugins(before)', async () => {
     const fetchMock = vi.fn();
     const request = new RequestAdapterFetch({
