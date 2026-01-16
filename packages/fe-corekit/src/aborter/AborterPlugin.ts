@@ -50,8 +50,25 @@ export interface AborterPluginOptions<T extends AborterConfig> {
   /**
    * Custom configuration extractor function
    *
+   * Extracts `AborterConfig` from executor context parameters.
+   * This is crucial when using the plugin with custom parameter structures.
+   *
+   * **Important:** Make sure to extract the `signal` property if it exists
+   * in the original parameters. The plugin will warn in development mode
+   * if `signal` is missing or invalid.
+   *
    * @optional
    * @default Direct cast of parameters to `AborterConfig`
+   * @example
+   * ```typescript
+   * // For MessageSender integration
+   * getConfig: (params) => ({
+   *   abortId: params.currentMessage.id,
+   *   signal: params.gatewayOptions?.signal,  // Extract signal!
+   *   onAborted: params.gatewayOptions?.onAborted,
+   *   abortTimeout: params.gatewayOptions?.timeout
+   * })
+   * ```
    */
   getConfig?: AborterConfigExtractor<T>;
 
@@ -86,8 +103,7 @@ export interface AborterPluginOptions<T extends AborterConfig> {
  *
  * Main features:
  * - Lifecycle integration: Hooks into executor lifecycle for automatic management
- *   - `onBefore`: Registers abort operation and injects signal
- *   - `onSuccess`: Cleans up resources on successful completion
+ *   - `onBefore`: Registers abort operation, injects signal, validates config
  *   - `onError`: Handles abort errors and cleans up resources
  *   - `onFinally`: Ensures cleanup always happens
  *
@@ -99,12 +115,18 @@ export interface AborterPluginOptions<T extends AborterConfig> {
  * - Signal composition: Combines multiple abort signals
  *   - Internal controller signal (for manual abort)
  *   - Timeout signal (if timeout configured)
- *   - External signal (if provided in parameters)
+ *   - External signal (if provided in parameters via `getConfig`)
  *
  * - Error handling: Detects and transforms abort errors
  *   - Converts various abort error types to standard `AbortError`
  *   - Preserves abort context (ID, timeout, reason)
  *   - Allows other plugins to handle non-abort errors
+ *
+ * - Development warnings: Validates configuration in development mode
+ *   - Warns if `signal` property is missing from extracted config
+ *   - Warns if `signal` is not an `AbortSignal` instance
+ *   - Only active when `NODE_ENV !== 'production'`
+ *   - Helps catch `getConfig` implementation errors early
  *
  * @template TParams - Type of executor parameters extending `AborterConfig`
  * @template TResult - Type of executor result
@@ -167,6 +189,23 @@ export interface AborterPluginOptions<T extends AborterConfig> {
  *     }
  *   }
  * );
+ * ```
+ *
+ * @example With custom getConfig (MessageSender integration)
+ * ```typescript
+ * // Extract AborterConfig from MessageSenderOptions
+ * const plugin = new AborterPlugin({
+ *   getConfig: (params) => ({
+ *     abortId: params.currentMessage.id,
+ *     signal: params.gatewayOptions?.signal,      // Important: extract signal
+ *     onAborted: params.gatewayOptions?.onAborted,
+ *     abortTimeout: params.gatewayOptions?.timeout
+ *   })
+ * });
+ *
+ * sender.use(plugin);
+ *
+ * // Development warning will alert if signal is not extracted correctly
  * ```
  */
 export class AborterPlugin<
@@ -232,18 +271,43 @@ export class AborterPlugin<
   /**
    * Lifecycle hook: called before operation execution
    *
-   * Registers abort operation and injects signal into parameters.
-   * Applies default timeout if configured and not overridden.
+   * Performs the following operations:
+   * 1. Extracts configuration using `getConfig`
+   * 2. Validates signal extraction (development mode only)
+   * 3. Applies default timeout if not specified
+   * 4. Aborts any existing operation with the same ID
+   * 5. Registers new abort operation
+   * 6. Injects signal and abortId into context parameters
+   *
+   * **Development mode validation:**
+   * - Warns if `config.signal` is missing or not an `AbortSignal` instance
+   * - Only active when `NODE_ENV !== 'production'`
+   * - Helps catch `getConfig` implementation errors
    *
    * @override
-   * @param ctx - Executor context
+   * @param ctx - Executor context containing parameters
+   *
+   * @example Context after execution
+   * ```typescript
+   * // Before: ctx.parameters = { abortId: 'task-1' }
+   * // After:  ctx.parameters = { abortId: 'task-1', signal: AbortSignal }
+   * ```
    */
   public onBefore(
     ctx: ExecutorContextInterface<TParams, TResult>
   ): TParams | void {
     const config = this.getConfig(ctx.parameters) as TParams;
 
-    // Security fix: Create new config object instead of mutating original
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      !('signal' in config && config.signal instanceof AbortSignal)
+    ) {
+      console.warn(
+        `[${this.pluginName}] Warning: config.signal is missing. Make sure your getConfig extracts the signal property.`
+      );
+    }
+
+    // Note: this is a security fix: Create new config object instead of mutating original
     // Apply default timeout if not specified in config
     const finalConfig =
       this.timeout !== undefined &&
@@ -252,13 +316,10 @@ export class AborterPlugin<
         ? ({ ...config, abortTimeout: this.timeout } as TParams)
         : config;
 
-    // Abort existing operation with same ID
     this.aborter.abort(finalConfig);
 
-    // Register new operation
     const { signal, abortId } = this.aborter.register(finalConfig);
 
-    // Inject signal into parameters
     if (typeof ctx.parameters === 'object' && ctx.parameters !== null) {
       ctx.setParameters({ ...ctx.parameters, signal, abortId });
     }
@@ -292,14 +353,11 @@ export class AborterPlugin<
 
     const config = this.getConfig(ctx.parameters) as TParams;
 
-    // Only handle abort-related errors
     if (isAbortError(ctx.error)) {
-      // If error is already AbortError, return it directly
       if (ctx.error instanceof AbortError) {
         return ctx.error;
       }
 
-      // Otherwise create new AbortError
       let errorMessage = 'The operation was aborted';
       const err = ctx.error as unknown;
       if (err && typeof err === 'object' && 'message' in err) {

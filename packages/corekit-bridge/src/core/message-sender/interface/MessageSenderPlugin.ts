@@ -91,6 +91,13 @@ export interface MessageSenderOptions<
    * @default `false`
    */
   addedToStore?: boolean;
+
+  /**
+   * Abort signal for request cancellation
+   *
+   * @optional
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -195,10 +202,7 @@ export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
    * }
    * ```
    */
-  onStream?(
-    context: MessageSenderContext<T>,
-    chunk: unknown
-  ): Promise<unknown> | unknown | void;
+  onStream?(context: MessageSenderContext<T>, chunk: unknown): unknown | void;
 
   /**
    * Stream connection established hook
@@ -231,5 +235,5 @@ export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
    * }
    * ```
    */
-  onConnected?(context: MessageSenderContext<T>): Promise<void> | void;
+  onConnected?(context: MessageSenderContext<T>): void;
 }

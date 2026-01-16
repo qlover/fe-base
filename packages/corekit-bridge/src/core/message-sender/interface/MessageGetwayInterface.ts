@@ -11,7 +11,7 @@ import type { MessageInterface } from './MessagesStoreInterface';
  *
  * @example
  * ```typescript
- * const streamEvents: MessageStreamEvent<ChatMessage> = {
+ * const streamEvents: GatewayEventInterface<ChatMessage> = {
  *   onConnected: () => console.log('Connected'),
  *   onChunk: (chunk) => console.log('Received:', chunk),
  *   onComplete: (msg) => console.log('Complete:', msg),
@@ -19,7 +19,7 @@ import type { MessageInterface } from './MessagesStoreInterface';
  * };
  * ```
  */
-export interface MessageStreamEvent<M = unknown> {
+export interface GatewayEventInterface<M = unknown> {
   /**
    * Called when network connection is successfully established
    *
@@ -168,7 +168,7 @@ export interface MessageStreamEvent<M = unknown> {
  * ```
  */
 export interface GatewayOptions<M, P = Record<string, unknown>>
-  extends MessageStreamEvent<M> {
+  extends GatewayEventInterface<M> {
   /**
    * Whether to use streaming mode
    *
@@ -226,6 +226,7 @@ export interface GatewayOptions<M, P = Record<string, unknown>>
    * ```
    */
   params?: P;
+
 
   /**
    * Abort signal for request cancellation

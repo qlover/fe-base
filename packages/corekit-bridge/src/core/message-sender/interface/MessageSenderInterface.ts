@@ -2,7 +2,7 @@ import { LoggerInterface } from '@qlover/logger';
 import type {
   GatewayOptions,
   MessageGetwayInterface,
-  MessageStreamEvent
+  GatewayEventInterface
 } from './MessageGetwayInterface';
 import type {
   MessageInterface,
@@ -258,6 +258,6 @@ export interface MessageSenderInterface<
    */
   send(
     message: Partial<Message>,
-    streamEvent?: MessageStreamEvent
+    streamEvent?: GatewayEventInterface
   ): Promise<Message>;
 }

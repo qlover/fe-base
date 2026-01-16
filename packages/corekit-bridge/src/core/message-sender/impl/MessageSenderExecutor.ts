@@ -129,7 +129,7 @@ export class MessageSenderExecutor<
    * console.log(`Processed ${chunkCount} chunks`);
    * ```
    */
-  public async runStream(
+  public runStream(
     chunk: unknown,
     context: MessageSenderContext<MessageType>
   ): Promise<unknown> {
@@ -143,7 +143,7 @@ export class MessageSenderExecutor<
       });
     }
 
-    return await this.runHooks(this.plugins, 'onStream', context, chunk);
+    return this.runHooks(this.plugins, 'onStream', context, chunk);
   }
 
   /**
@@ -169,9 +169,7 @@ export class MessageSenderExecutor<
    * }
    * ```
    */
-  public async runConnected(
-    context: MessageSenderContext<MessageType>
-  ): Promise<void> {
-    await this.runHooks(this.plugins, 'onConnected', context);
+  public runConnected(context: MessageSenderContext<MessageType>): void {
+    this.runHooks(this.plugins, 'onConnected', context);
   }
 }
