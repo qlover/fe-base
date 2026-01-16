@@ -260,11 +260,7 @@ export class AborterPlugin<
 
     // Inject signal into parameters
     if (typeof ctx.parameters === 'object' && ctx.parameters !== null) {
-      ctx.setParameters({
-        ...ctx.parameters,
-        signal,
-        abortId
-      });
+      ctx.setParameters({ ...ctx.parameters, signal, abortId });
     }
   }
 
@@ -274,13 +270,8 @@ export class AborterPlugin<
    * @param ctx - Executor context
    * @protected
    */
-  protected cleanupFromContext(
-    ctx: ExecutorContextInterface<TParams, TResult>
-  ): void {
-    if (ctx.parameters) {
-      const config = this.getConfig(ctx.parameters) as TParams;
-      this.aborter.cleanup(config);
-    }
+  protected cleanupFromContext(parameters: TParams): void {
+    this.aborter.cleanup(parameters);
   }
 
   /**
@@ -329,7 +320,9 @@ export class AborterPlugin<
    * @param ctx - Executor context
    */
   public onFinally(ctx: ExecutorContextInterface<TParams, TResult>): void {
-    this.cleanupFromContext(ctx);
+    if (ctx.parameters) {
+      this.cleanupFromContext(ctx.parameters);
+    }
   }
 
   /**

@@ -3,7 +3,6 @@ import {
   ExecutorPluginInterface
 } from '../interface/ExecutorInterface';
 import { HookRuntimes } from '../interface';
-import { cloneParameters } from '../utils/cloneParameters';
 
 /**
  * Private storage for runtime state
@@ -51,21 +50,21 @@ const runtimesStorage = new WeakMap<
  *   - More intuitive API
  *   - Better encapsulation
  *
- * Parameter Safety and Memory Management:
- * - Parameter Cloning: Parameters are cloned in constructor
- *   - Original: Direct reference to parameters (potential memory leaks)
- *   - New: Cloned parameters (prevents memory leaks)
- *   - Benefits: Safe garbage collection, parameter isolation
+ * Parameter Handling (Reference-Based):
+ * - **No Cloning**: Parameters are stored by reference, not cloned
+ *   - Original: Parameters were cloned automatically
+ *   - New: Parameters are used directly (zero overhead)
+ *   - Benefits: Better performance, user control, predictable behavior
  *
- * - Shallow Copy Strategy: Efficient cloning for performance
- *   - Primitives: Zero overhead (direct return)
- *   - Objects/Arrays: Shallow copy (minimal overhead)
- *   - Special objects: Proper cloning (Date, RegExp, Set, Map)
+ * - **User Responsibility**: Users must clone parameters if isolation is needed
+ *   - If you need isolation: `new ExecutorContextImpl({ ...params })`
+ *   - If you don't need isolation: `new ExecutorContextImpl(params)`
+ *   - Trade-off: More control vs. more responsibility
  *
- * - Memory Leak Prevention: Breaks references to original parameters
- *   - Original parameters can be garbage collected
- *   - External code cannot hold references to internal state
- *   - Safe for long-running applications
+ * - **Performance**: Zero cloning overhead
+ *   - No Object.assign or spread operations
+ *   - No memory allocation for parameter copies
+ *   - Ideal for high-performance scenarios
  *
  * Enhanced Runtime Tracking:
  * - Integrated Tracking: All runtime tracking in context
@@ -92,40 +91,43 @@ const runtimesStorage = new WeakMap<
  * - Chain control: Manages execution chain breaking conditions
  * - Error handling: Context error state management
  * - Hook validation: Checks plugin hook availability and enablement
- * - Parameter safety: Cloned parameters prevent memory leaks
- * - Memory management: Safe garbage collection of original parameters
+ * - Reference-based parameters: No automatic cloning (user control)
+ * - High performance: Zero overhead parameter handling
  *
- * Parameter Cloning Behavior:
+ * Parameter Handling (Important):
  *
- * Cloning Strategy:
- * - Primitives (string, number, boolean, null, undefined): Direct return (zero overhead)
- * - Arrays: Shallow copy using spread operator
- * - Objects: Shallow copy using Object.assign
- * - Special Objects: Proper cloning (Date, RegExp, Set, Map)
+ * **No Automatic Cloning**:
+ * - Parameters are stored by reference
+ * - Modifications affect the original object
+ * - Users must clone parameters themselves if isolation is needed
  *
- * Memory Safety:
+ * **Usage Examples**:
  * ```typescript
- * const originalParams = { userId: 123, data: 'test' };
- * const context = new ExecutorContextImpl(originalParams);
+ * // Without isolation (parameters will be modified)
+ * const params = { userId: 123, data: 'test' };
+ * const context = new ExecutorContextImpl(params);
+ * context.setParameters({ userId: 456 });
+ * console.log(params.userId); // 456 - original modified
  *
- * // Parameters are cloned - originalParams can be GC'd
- * // context.parameters is isolated from originalParams
- * expect(context.parameters).not.toBe(originalParams);
- * expect(context.parameters).toEqual(originalParams);
+ * // With isolation (clone parameters first)
+ * const params = { userId: 123, data: 'test' };
+ * const context = new ExecutorContextImpl({ ...params }); // shallow clone
+ * context.setParameters({ userId: 456 });
+ * console.log(params.userId); // 123 - original unchanged
  * ```
  *
- * Performance Impact:
- * - Constructor: One-time clone (minimal overhead)
- * - Getter: Direct return (zero overhead after construction)
- * - setParameters: Clone on update (only when needed)
+ * **Performance**:
+ * - Constructor: Zero overhead (no cloning)
+ * - Getter: Direct return (zero overhead)
+ * - setParameters: Zero overhead (no cloning)
  *
  * Design Considerations:
  * - Integrates ContextHandler functionality directly into the context
  * - Provides all methods needed for executor plugin lifecycle management
  * - Maintains backward compatibility with existing ExecutorContext interface
  * - Eliminates the need for separate ContextHandler instance
- * - Ensures parameter isolation and memory safety
- * - Optimized for performance with efficient cloning strategy
+ * - Delegates parameter isolation responsibility to users
+ * - Optimized for maximum performance with zero-overhead parameter handling
  *
  * @since 2.6.0
  * @template T - Type of context parameters
@@ -170,7 +172,6 @@ const runtimesStorage = new WeakMap<
  *
  * @see ExecutorContextInterface - Interface that this class implements
  * @see LifecycleExecutor - Executor that uses this context implementation
- * @see cloneParameters - Utility function used for parameter cloning
  *
  * @category ExecutorContextImpl
  */
@@ -215,18 +216,31 @@ export class ExecutorContextImpl<
   /**
    * Creates a new ExecutorContextImpl instance
    *
-   * Security: Parameters are immediately cloned to prevent memory leaks
-   * and ensure isolation from the original parameter object.
-   *
-   * Performance: Uses efficient shallow cloning strategy optimized for
-   * common use cases (primitives, arrays, plain objects).
+   * **Important**: Parameters are stored by reference, not cloned.
+   * If you need parameter isolation, clone them before passing to the constructor.
    *
    * @param parameters - The initial parameters for the context
+   *
+   * @example Without isolation (parameters will be modified)
+   * ```typescript
+   * const params = { value: 1 };
+   * const context = new ExecutorContextImpl(params);
+   * context.setParameters({ value: 2 });
+   * console.log(params.value); // 2 - original object is modified
+   * ```
+   *
+   * @example With isolation (clone parameters first)
+   * ```typescript
+   * const params = { value: 1 };
+   * const context = new ExecutorContextImpl({ ...params }); // shallow clone
+   * context.setParameters({ value: 2 });
+   * console.log(params.value); // 1 - original object is unchanged
+   * ```
    */
   constructor(parameters: T) {
-    // Immediately clone parameters to break reference and prevent memory leaks
-    // This ensures the context owns its parameter data independently
-    this._parameters = cloneParameters(parameters);
+    // Store parameters by reference - no cloning
+    // Users should clone parameters themselves if isolation is needed
+    this._parameters = parameters;
 
     // Initialize runtime state in module-private WeakMap
     runtimesStorage.set(this, {
@@ -243,12 +257,14 @@ export class ExecutorContextImpl<
   /**
    * Get the context parameters
    *
+   * **Important**: Returns the parameters by reference.
+   * Modifications to the returned object will affect the context's internal state.
+   *
    * @override
+   * @returns The parameters object (by reference)
    */
   public get parameters(): T {
-    // Return the stored reference directly - it's already a clone from constructor
-    // This provides optimal performance: clone once in constructor, reuse the reference
-    // Security is maintained because _parameters is already isolated from original params
+    // Return the stored reference directly
     return this._parameters;
   }
 
@@ -360,17 +376,22 @@ export class ExecutorContextImpl<
   /**
    * Set parameters in context
    *
-   * Security: Parameters are cloned before storage to ensure isolation
-   * and prevent memory leaks from external references.
-   *
-   * Performance: Uses efficient cloning strategy optimized for common types.
+   * **Important**: Parameters are stored by reference, not cloned.
+   * The provided parameters object will be used directly.
    *
    * @override
-   * @param params - The parameters to set (will be cloned before storage)
+   * @param params - The parameters to set (stored by reference)
+   *
+   * @example
+   * ```typescript
+   * const newParams = { value: 2 };
+   * context.setParameters(newParams);
+   * // context.parameters === newParams (same reference)
+   * ```
    */
   public setParameters(params: T): void {
-    // Clone parameters before storing to maintain isolation
-    this._parameters = cloneParameters(params);
+    // Store parameters by reference - no cloning
+    this._parameters = params;
   }
 
   /**
