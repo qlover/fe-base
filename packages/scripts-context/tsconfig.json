@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "ts-build", "__tests__", "__mocks__"],
   "references": [
     { "path": "../logger" },

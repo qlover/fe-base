@@ -15,6 +15,6 @@
     "checkJs": false,
     "types": ["vitest/globals", "node"]
   },
-  "include": ["src", "src/**/*.ts", "__tests__/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "ts-build", "__mocks__", "../../tools"]
 }

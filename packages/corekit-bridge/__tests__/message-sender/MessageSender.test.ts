@@ -955,7 +955,7 @@ describe('MessageSender', () => {
         const controller = new AbortController();
 
         mockGateway.sendMessage = vi.fn().mockImplementation(() => {
-          return new Promise((resolve, reject) => {
+          return new Promise((_resolve, reject) => {
             setTimeout(() => {
               controller.abort();
               reject(new Error('Aborted'));

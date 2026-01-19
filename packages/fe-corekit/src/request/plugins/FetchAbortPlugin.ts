@@ -27,6 +27,7 @@ import type { ExecutorPlugin, ExecutorContext } from '../../executor';
  *
  * You can also manually specify an onAbort callback that will be executed after termination.
  *
+ * @deprecated
  * @implements {ExecutorPlugin}
  *
  * @example

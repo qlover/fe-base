@@ -47,7 +47,6 @@
     "build:docs": "fe-code2md --removePrefix -p ./src/index.ts -g ./docs -o ./docs/.output/fe-corekit.json -t ./docs/.output/fe-corekit.tpl.json --formatOutput prettier && rimraf './doc/**/index.md' -g"
   },
   "dependencies": {
-    "@qlover/logger": "workspace:*",
     "any-signal": "^4.2.0",
     "axios": "^1.7.9",
     "lodash-es": "^4.17.22",
