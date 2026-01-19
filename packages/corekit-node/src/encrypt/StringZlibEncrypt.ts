@@ -1,4 +1,4 @@
-import type { Encryptor } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 import crypto from 'crypto';
 import { Buffer } from 'buffer';
 import zlib from 'zlib';
@@ -13,7 +13,7 @@ import zlib from 'zlib';
  * - IV support
  * - Configurable encoding
  *
- * @implements {Encryptor<string, string>}
+ * @implements {EncryptorInterface<string, string>}
  *
  * @example
  * ```typescript
@@ -26,7 +26,7 @@ import zlib from 'zlib';
  * const decrypted = encryptor.decrypt(encrypted);
  * ```
  */
-export class StringZlibEncrypt implements Encryptor<string, string> {
+export class StringZlibEncrypt implements EncryptorInterface<string, string> {
   private ALGORITHM = 'aes-128-cbc';
   private KEY: Buffer;
   private IV_LENGTH = 16;

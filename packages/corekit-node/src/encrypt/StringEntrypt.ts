@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Buffer } from 'buffer';
-import type { Encryptor } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 
 /**
  * Represents a string encryption utility using AES-256-CBC algorithm.
@@ -15,7 +15,7 @@ import type { Encryptor } from '@qlover/fe-corekit';
  * const decrypted = encryptor.decrypt(encrypted);
  * ```
  */
-export class StringEntrypt implements Encryptor<string, string> {
+export class StringEntrypt implements EncryptorInterface<string, string> {
   private ALGORITHM = 'aes-256-cbc';
   private KEY: Buffer;
   private KEY_LENGTH = 32; // AES-256 needs 32 bytes key

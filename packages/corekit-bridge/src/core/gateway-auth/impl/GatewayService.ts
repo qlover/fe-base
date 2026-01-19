@@ -7,9 +7,9 @@ import {
   type GatewayExecutor,
   type GatewayExecutorOptions
 } from './GatewayExecutor';
-import { type ExecutorPlugin } from '@qlover/fe-corekit';
-import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceOptions, type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
 import { BaseService, type BaseServiceOptions } from './BaseService';
+import { type ExecutorContextInterface, type LifecyclePluginInterface } from '@qlover/fe-corekit';
 
 /**
  * Gateway service options
@@ -199,15 +199,15 @@ export abstract class GatewayService<
    * });
    * ```
    */
-  public use<
-    Plugin extends ExecutorPlugin<GatewayExecutorOptions<T, Gateway, unknown>>
-  >(plugin: Plugin | Plugin[]): this {
+  public use<Plugin = LifecyclePluginInterface<ExecutorContextInterface<GatewayExecutorOptions<T, Gateway>>>>(plugin: Plugin | Plugin[]): this {
     if (!this.executor) {
       throw new Error(`${String(this.serviceName)} Executor is not set`);
     }
 
     if (Array.isArray(plugin)) {
-      plugin.forEach((p) => this.getExecutor()?.use(p));
+      plugin.forEach((p) => {
+        this.executor!.use(p);
+      });
       return this;
     }
 

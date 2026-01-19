@@ -5,7 +5,7 @@ import {
   type TimeUnit
 } from '../../../src/core/storage/utils/QuickerTime';
 import {
-  type Encryptor,
+  type EncryptorInterface,
   type SyncStorageInterface,
   SyncStorage
 } from '@qlover/fe-corekit';
@@ -119,7 +119,7 @@ class MockStorage<Key> implements SyncStorageInterface<Key> {
   }
 }
 
-class MockEncryptor implements Encryptor<string, string> {
+class MockEncryptor implements EncryptorInterface<string, string> {
   /**
    * @override
    */
@@ -638,7 +638,7 @@ describe('TokenStorage', () => {
 
     it('should work with custom encryptor implementation', () => {
       // Custom encryptor that uses different prefix
-      class CustomEncryptor implements Encryptor<string, string> {
+      class CustomEncryptor implements EncryptorInterface<string, string> {
         /**
          * @override
          */

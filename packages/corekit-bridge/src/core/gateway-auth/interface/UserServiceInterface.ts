@@ -1,11 +1,11 @@
-import { type ExecutorContext, type ExecutorPlugin } from '@qlover/fe-corekit';
-import { type LoginInterface } from './LoginInterface';
-import { type RegisterInterface } from './RegisterInterface';
-import { type UserInfoInterface } from './UserInfoInterface';
-import { type UserStoreInterface } from './UserStoreInterface';
-import { type GatewayBasePluginType } from '../impl/GatewayBasePlguin';
-import { type GatewayExecutorOptions } from '../impl/GatewayExecutor';
-import { type ServiceActionType } from '../impl/ServiceAction';
+import type { LoginInterface } from './LoginInterface';
+import type { RegisterInterface } from './RegisterInterface';
+import type { UserInfoInterface } from './UserInfoInterface';
+import type { UserStoreInterface } from './UserStoreInterface';
+import type { GatewayBasePluginType } from '../impl/GatewayBasePlguin';
+import type { GatewayExecutorOptions } from '../impl/GatewayExecutor';
+import type { ServiceActionType } from '../impl/ServiceAction';
+import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
 
 /**
  * User service gateway interface
@@ -168,7 +168,7 @@ export type UserServicePluginType<
   User,
   Credential,
   Actions extends readonly string[] = readonly ServiceActionType[]
-> = ExecutorPlugin<UserServiceExecutorOptions<User, Credential>> &
+> = LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> &
   GatewayBasePluginType<Actions, User, UserServiceGateway<User, Credential>>;
 
 /**
@@ -200,7 +200,7 @@ export type UserServicePluginType<
  * };
  * ```
  */
-export type UserPluginContext<User, Credential> = ExecutorContext<
+export type UserPluginContext<User, Credential> = ExecutorContextInterface<
   UserServiceExecutorOptions<User, Credential>
 >;
 
@@ -283,7 +283,7 @@ export type UserPluginContext<User, Credential> = ExecutorContext<
  * ```
  */
 export interface UserServicePluginInterface<User, Credential>
-  extends ExecutorPlugin<UserServiceExecutorOptions<User, Credential>> {
+  extends LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> {
   /**
    * Hook called before login action
    *
