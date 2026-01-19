@@ -14,8 +14,6 @@
     "build": "pnpm -r --workspace-concurrency=4 run build && pnpm rebuild",
     "build:docs": "pnpm -r run build:docs",
     "build:eslint-plugin": "nx build @qlover/eslint-plugin",
-    "build:fe-release": "pnpm --filter @qlover/fe-release build",
-    "build:logger": "pnpm --filter @qlover/logger build",
     "dryrun:releasePR": "node ./packages/fe-release/dist/cli.js -V -P --githubPR.dry-run-create-PR",
     "dryrun:release": "node ./packages/fe-release/dist/cli.js -V --changelog.skip-changeset --githubPR.dry-run-create-PR",
     "release": "pnpm --filter @qlover/fe-release release",
@@ -33,10 +31,10 @@
     "commit": "fe-commit",
     "clean-branch": "fe-clean-branch",
     "check-packages": "fe-check-packages",
-    "prepare": "husky && pnpm prebuild",
+    "prepare": "husky",
     "type-check": "tsc --build --force",
     "version:patch": " pnpm -r exec npm version patch --no-git-tag-version",
-    "test-lint": "pnpm --filter @qlover/eslint-plugin build && pnpm eslint ./packages/scripts-context/src/implement/Shell.ts"
+    "start:react-app": "pnpm --filter templates/react-app dev"
   },
   "keywords": [
     "fe",
