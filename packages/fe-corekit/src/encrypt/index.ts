@@ -1,1 +1,1 @@
-export * from './Encryptor';
+export * from './EncryptorInterface';

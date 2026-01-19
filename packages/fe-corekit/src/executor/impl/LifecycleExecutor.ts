@@ -1,11 +1,11 @@
 import { ExecutorError } from '../interface';
 import type {
   ExecutorAsyncTask,
-  ExecutorContextInterface,
   ExecutorPluginNameType,
   ExecutorTask,
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
+import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import type { LifecyclePluginInterface } from '../interface/LifecyclePluginInterface';
 import { type ExecutorContextImpl } from './ExecutorContextImpl';
 import { BasePluginExecutor } from './BasePluginExecutor';
@@ -58,6 +58,7 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * 8. Execute onFinally hooks for cleanup
  * 9. Return result as Promise
  *
+ * @since 3.0.0
  * @template Ctx - Type of executor context interface (defaults to ExecutorContextImpl<unknown, unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecyclePluginInterface<Ctx>)
  *
@@ -83,7 +84,6 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * });
  * ```
  *
- * @since 2.6.0
  * @see LifecycleSyncExecutor - Synchronous version of this executor
  * @see LifecyclePluginInterface - Default plugin interface
  */
@@ -145,14 +145,14 @@ export class LifecycleExecutor<
     try {
       return task !== undefined
         ? (
-            this.exec as <R, P>(
-              data: P,
-              task: ExecutorTask<R, P>
-            ) => R | Promise<R>
-          )(dataOrTask as P, task)
+          this.exec as <R, P>(
+            data: P,
+            task: ExecutorTask<R, P>
+          ) => R | Promise<R>
+        )(dataOrTask as P, task)
         : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
-            dataOrTask as ExecutorTask<R, P>
-          );
+          dataOrTask as ExecutorTask<R, P>
+        );
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;

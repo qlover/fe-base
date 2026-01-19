@@ -26,6 +26,7 @@ export const ABORT_ERROR_ID = 'ABORT_ERROR';
  * - Timeout tracking: Records timeout duration when abort is timeout-triggered
  * - Standard error properties: Inherits `message`, `name`, `stack` from Error
  *
+ * @since 3.0.0
  * @example Manual abort
  * ```typescript
  * throw new AbortError('User cancelled the upload', 'upload-123');

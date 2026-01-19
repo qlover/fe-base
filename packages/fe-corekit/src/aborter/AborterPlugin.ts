@@ -128,6 +128,7 @@ export interface AborterPluginOptions<T extends AborterConfig> {
  *   - Only active when `NODE_ENV !== 'production'`
  *   - Helps catch `getConfig` implementation errors early
  *
+ * @since 3.0.0
  * @template TParams - Type of executor parameters extending `AborterConfig`
  * @template TResult - Type of executor result
  *

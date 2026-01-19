@@ -2,9 +2,9 @@ import type {
   RequestAdapterConfig,
   RequestAdapterInterface,
   RequestAdapterResponse
-} from '../interface/RequestAdapter';
+} from '../interface/RequestAdapterInterface';
 import { clone } from 'lodash-es';
-import { type RequestInterface } from '../interface/RequestInterface';
+import { type RequestExecutorInterface } from '../interface/RequestExecutorInterface';
 import {
   type ExecutorContextInterface,
   type LifecycleExecutor,
@@ -97,6 +97,7 @@ type ShortcutNoBodyConfig<
  *   - Automatic method and URL configuration
  *   - Type-safe request/response handling
  *
+ * @since 3.0.0
  * @template Config - Request adapter configuration type extending `RequestAdapterConfig`
  * @template Ctx - Executor context type extending `ExecutorContextInterface<Config>`
  *
@@ -178,7 +179,7 @@ type ShortcutNoBodyConfig<
 export class RequestExecutor<
   Config extends RequestAdapterConfig,
   Ctx extends ExecutorContextInterface<Config>
-> implements RequestInterface<Config>
+> implements RequestExecutorInterface<Config>
 {
   constructor(
     /**

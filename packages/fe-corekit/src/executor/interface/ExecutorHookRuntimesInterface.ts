@@ -1,8 +1,259 @@
-import { type HookRuntimes } from './ExecutorContext';
+import { type ExecutorContextInterface } from './ExecutorContextInterface';
 import {
   type ExecutorPluginInterface,
-  type ExecutorContextInterface
 } from './ExecutorInterface';
+
+
+/**
+ * Runtime information interface for hook execution tracking
+ *
+ * Core concept:
+ * Provides detailed runtime metadata for individual hook execution,
+ * enabling performance monitoring, flow control, and execution state tracking
+ *
+ * Main features:
+ * - Execution tracking: Monitors hook execution state and performance
+ * - Flow control: Provides mechanisms to control execution pipeline flow
+ * - Performance metrics: Tracks execution times and performance data
+ * - State preservation: Maintains execution state throughout the pipeline
+ * - Extensibility: Supports additional custom properties for specific use cases
+ *
+ * Flow control mechanisms:
+ * - breakChain: Immediately stops execution pipeline
+ * - returnBreakChain: Stops pipeline when return value is present
+ * - times: Tracks execution frequency for optimization
+ *
+ * @since 3.0.0
+ * @example Basic runtime information
+ * ```typescript
+ * const runtime: HookRuntimes = {
+ *   hookName: 'onBefore',
+ *   returnValue: { validated: true },
+ *   times: 1,
+ *   breakChain: false,
+ *   returnBreakChain: false
+ * };
+ * ```
+ *
+ * @example Runtime with custom properties
+ * ```typescript
+ * const runtime: HookRuntimes = {
+ *   hookName: 'customHook',
+ *   returnValue: { processed: true },
+ *   times: 3,
+ *   breakChain: false,
+ *   returnBreakChain: true,
+ *   customMetric: 'performance_data',
+ *   executionTime: 150
+ * };
+ * ```
+ */
+export interface HookRuntimes {
+  /**
+   * Name of the current plugin being executed
+   *
+   * Core concept:
+   * Identifies which plugin is currently executing, enabling plugin-specific
+   * debugging and tracking
+   *
+   * @optional
+   * @example `'ValidationPlugin'`
+   * @example `'CachePlugin'`
+   */
+  pluginName?: string;
+
+  /**
+   * Index of the current plugin in the plugins array
+   *
+   * Core concept:
+   * Tracks the position of the current plugin in the execution chain,
+   * useful for debugging execution order
+   *
+   * @optional
+   * @example `0` // First plugin
+   * @example `2` // Third plugin
+   */
+  pluginIndex?: number;
+
+  /**
+   * Name of the current hook being executed
+   *
+   * Core concept:
+   * Identifies the specific hook that is currently being executed,
+   * enabling targeted debugging and monitoring of hook performance
+   *
+   * Main features:
+   * - Hook identification: Clearly identifies which hook is executing
+   * - Debugging support: Enables targeted debugging of specific hooks
+   * - Performance monitoring: Allows tracking of individual hook performance
+   * - Pipeline visibility: Provides visibility into execution pipeline state
+   *
+   * @optional
+   * @example `'onBefore'`
+   * @example `'onExec'`
+   * @example `'onAfter'`
+   * @example `'customValidationHook'`
+   */
+  hookName?: string;
+
+  /**
+   * Return value from the current hook execution
+   *
+   * Core concept:
+   * Captures the return value from the current hook execution,
+   * enabling result tracking and flow control based on hook output
+   *
+   * Main features:
+   * - Result tracking: Monitors what each hook returns
+   * - Flow control: Enables conditional execution based on return values
+   * - Debugging support: Provides visibility into hook output
+   * - Pipeline integration: Results can influence downstream execution
+   *
+   * @readonly
+   * @optional
+   * @example `{ validated: true, data: 'processed' }`
+   * @example `'hook_result'`
+   * @example `{ error: 'validation_failed' }`
+   */
+  returnValue?: unknown;
+
+  /**
+   * Number of times the current hook has been executed
+   *
+   * Core concept:
+   * Tracks how many plugins have executed the current hook (e.g., onBefore).
+   * This counter increments for each plugin that successfully executes the hook.
+   *
+   * Important:
+   * - This is per-hook, not global
+   * - Reset when switching to a different hook
+   * - Represents "which plugin is executing this hook" (1st, 2nd, 3rd, etc.)
+   *
+   * Main features:
+   * - Execution counting: Monitors how many plugins executed this hook
+   * - Performance analysis: Identifies frequently executed hooks
+   * - Loop detection: Helps identify potential infinite loops
+   * - Optimization insights: Provides data for performance optimization
+   *
+   * Usage scenarios:
+   * - Know if any plugin executed the hook (times > 0)
+   * - Track which plugin number is executing (useful for debugging)
+   * - Detect if hook was skipped by all plugins (times === 0)
+   *
+   * @optional
+   * @example `0` // No plugin has executed this hook yet
+   * @example `1` // First plugin executed this hook
+   * @example `3` // Third plugin is executing this hook
+   */
+  times?: number;
+
+  /**
+   * Flag to immediately break the execution chain
+   *
+   * Core concept:
+   * Provides a mechanism to immediately stop the execution pipeline,
+   * enabling early termination when certain conditions are met
+   *
+   * Main features:
+   * - Immediate termination: Stops execution pipeline immediately
+   * - Conditional control: Enables conditional execution flow
+   * - Error handling: Allows early termination on critical errors
+   * - Performance optimization: Avoids unnecessary processing
+   *
+   * Use cases:
+   * - Error conditions: Stop execution when critical errors occur
+   * - Validation failures: Terminate when validation fails
+   * - Early success: Stop when desired result is achieved early
+   * - Resource constraints: Terminate when resources are exhausted
+   *
+   * @optional
+   * @example `true` // Break execution chain immediately
+   * @example `false` // Continue normal execution
+   */
+  breakChain?: boolean;
+
+  /**
+   * Flag to break chain when return value exists
+   *
+   * Core concept:
+   * Enables conditional chain breaking based on the presence of a return value,
+   * commonly used in error handling and early termination scenarios
+   *
+   * Main features:
+   * - Conditional termination: Breaks chain only when return value exists
+   * - Error handling: Commonly used in `onError` lifecycle hooks
+   * - Result-based control: Enables flow control based on hook results
+   * - Flexible termination: Provides more nuanced control than `breakChain`
+   *
+   * Common usage:
+   * - Error handlers: Break chain when error is handled and result is returned
+   * - Validation: Stop processing when validation result is returned
+   * - Caching: Terminate when cached result is found
+   * - Early success: Stop when desired result is achieved
+   *
+   * @optional
+   * @example `true` // Break chain if returnValue exists
+   * @example `false` // Continue regardless of returnValue
+   */
+  returnBreakChain?: boolean;
+
+  /**
+   * Flag to continue execution on error
+   *
+   * Core concept:
+   * Provides a mechanism to continue executing subsequent plugins even when
+   * a plugin hook throws an error, enabling resilient execution pipelines
+   *
+   * Main features:
+   * - Error resilience: Continues execution despite individual plugin failures
+   * - Fault tolerance: Enables graceful degradation in plugin chains
+   * - Cleanup guarantees: Ensures all cleanup hooks execute even if some fail
+   * - Flexible error handling: Allows selective error suppression
+   *
+   * Use cases:
+   * - Finally hooks: Ensure all cleanup operations execute even if one fails
+   * - Logging hooks: Continue logging even if one logger fails
+   * - Monitoring hooks: Collect metrics from all plugins despite failures
+   * - Non-critical operations: Continue execution for non-critical hooks
+   *
+   * @optional
+   * @example `true` // Continue to next plugin even if current plugin throws error
+   * @example `false` // Stop execution and throw error (default behavior)
+   */
+  continueOnError?: boolean;
+
+  /**
+   * Additional custom properties for extensibility
+   *
+   * Core concept:
+   * Provides a flexible mechanism to add custom properties to runtime
+   * information, enabling plugin-specific metadata and custom tracking
+   *
+   * Main features:
+   * - Extensibility: Allows plugins to add custom runtime data
+   * - Custom metrics: Enables plugin-specific performance tracking
+   * - Metadata storage: Provides space for custom execution metadata
+   * - Plugin integration: Enables rich plugin-to-plugin communication
+   *
+   * Common custom properties:
+   * - executionTime: Hook execution time in milliseconds
+   * - memoryUsage: Memory consumption during hook execution
+   * - customMetrics: Plugin-specific performance metrics
+   * - debugInfo: Additional debugging information
+   *
+   * @example
+   * ```typescript
+   * {
+   *   executionTime: 150,
+   *   memoryUsage: '2.5MB',
+   *   customMetric: 'validation_score',
+   *   debugInfo: { step: 'validation', level: 'info' }
+   * }
+   * ```
+   */
+  [key: string]: unknown;
+}
+
 
 /**
  * Interface for runtime tracking of executor hooks

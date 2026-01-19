@@ -2,7 +2,7 @@ import {
   RequestAdapterFetch,
   type RequestAdapterFetchConfig
 } from '../../../src/request/adapter/RequestAdapterFetch';
-import { RequestExecutor } from '../../../src/request/managers/RequestExecutor';
+import { RequestExecutor } from '../../../src/request/impl/RequestExecutor';
 import { LifecycleExecutor } from '../../../src/executor/impl/LifecycleExecutor';
 import { type ExecutorContextImpl } from '../../../src/executor/impl/ExecutorContextImpl';
 

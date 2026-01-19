@@ -2,7 +2,6 @@ import {
   type LifecyclePluginInterface,
   type ExecutorContextInterface
 } from '../../executor/interface';
-
 import { type UrlBuilderInterface } from '../interface/UrlBuilderInterface';
 import { type RequestAdapterConfig } from '../interface';
 import { SimpleUrlBuilder } from '../utils/SimpleUrlBuilder';

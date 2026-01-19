@@ -1,5 +1,5 @@
 import type { SerializerIneterface } from '../../serializer';
-import type { Encryptor } from '../../encrypt';
+import type { EncryptorInterface } from '../../encrypt';
 import type { SyncStorageInterface } from '../interface/SyncStorageInterface';
 import type {
   PipeType,
@@ -39,7 +39,7 @@ const operationMaps = {
       pipe: SerializerIneterface<unknown, unknown>,
       args: unknown[]
     ) => pipe.serialize(...(args as [unknown])),
-    encrypt: (pipe: Encryptor<unknown, unknown>, args: unknown[]) =>
+    encrypt: (pipe: EncryptorInterface<unknown, unknown>, args: unknown[]) =>
       pipe.encrypt(...(args as [unknown])),
     storage: (pipe: SyncStorageInterface<unknown>, args: unknown[]) =>
       pipe.setItem(...(args as [unknown, unknown]))
@@ -49,7 +49,7 @@ const operationMaps = {
       pipe: SerializerIneterface<unknown, unknown>,
       args: unknown[]
     ) => pipe.deserialize(...(args as [unknown])),
-    encrypt: (pipe: Encryptor<unknown, unknown>, args: unknown[]) =>
+    encrypt: (pipe: EncryptorInterface<unknown, unknown>, args: unknown[]) =>
       pipe.decrypt(...(args as [unknown])),
     storage: (pipe: SyncStorageInterface<unknown>, args: unknown[]) =>
       pipe.getItem(...(args as [unknown]))
@@ -170,7 +170,7 @@ export class SyncStorage<Key, Opt = unknown>
 
       processedValue = operationMaps.getItem[type](
         pipe as SerializerIneterface<unknown, unknown> &
-          Encryptor<unknown, unknown>,
+          EncryptorInterface<unknown, unknown>,
         [processedValue]
       ) as T;
     }

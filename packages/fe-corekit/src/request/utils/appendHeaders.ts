@@ -6,6 +6,7 @@
  * For Headers objects, it modifies the original object.
  * If headers is null or undefined, it creates a new object.
  *
+ * @since 3.0.0
  * @param headers - The headers object (plain object, Headers instance, or null/undefined)
  * @param key - The header key to set
  * @param value - The header value (will be converted to string)

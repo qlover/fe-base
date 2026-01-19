@@ -1,7 +1,7 @@
 import {
-  type ExecutorContextInterface,
   type ExecutorPluginInterface
 } from '../interface/ExecutorInterface';
+import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import { type HookRuntimes } from '../interface';
 
 /**
@@ -129,7 +129,7 @@ const runtimesStorage = new WeakMap<
  * - Delegates parameter isolation responsibility to users
  * - Optimized for maximum performance with zero-overhead parameter handling
  *
- * @since 2.6.0
+ * @since 3.0.0
  * @template T - Type of context parameters
  *
  * @example Basic usage
@@ -175,40 +175,11 @@ const runtimesStorage = new WeakMap<
  *
  * @category ExecutorContextImpl
  */
-/**
- * Base implementation of ExecutorContextInterface with generic runtime support
- *
- * @template T - Type of execution parameters
- * @template R - Type of return value (defaults to unknown)
- * @template RuntimesType - Type of hook runtimes (extends HookRuntimes, defaults to HookRuntimes)
- *
- * @example Basic usage (default HookRuntimes)
- * ```typescript
- * const context = new ExecutorContextImpl<UserParams, UserResult>({ userId: 123 });
- * ```
- *
- * @example With unknown return type
- * ```typescript
- * const context = new ExecutorContextImpl<UserParams, unknown>({ userId: 123 });
- * ```
- *
- * @example Extended runtimes
- * ```typescript
- * interface CustomRuntimes extends HookRuntimes {
- *   executionTime: number;
- *   memoryUsage: number;
- * }
- * class CustomContext extends ExecutorContextImpl<UserParams, UserResult, CustomRuntimes> {
- *   // Can work with custom runtime properties
- * }
- * ```
- */
 export class ExecutorContextImpl<
   T,
   R = unknown,
   RuntimesType extends HookRuntimes = HookRuntimes
-> implements ExecutorContextInterface<T, R, RuntimesType>
-{
+> implements ExecutorContextInterface<T, R, RuntimesType> {
   private _parameters: T;
   private _error: unknown;
   private _returnValue?: R;
@@ -478,7 +449,7 @@ export class ExecutorContextImpl<
   >(plugin: ExecutorPluginInterface<Ctx>, hookName: string): boolean {
     return (
       typeof plugin[hookName as keyof ExecutorPluginInterface<Ctx>] !==
-        'function' ||
+      'function' ||
       (typeof plugin.enabled === 'function' &&
         !plugin.enabled(hookName, this as unknown as Ctx))
     );

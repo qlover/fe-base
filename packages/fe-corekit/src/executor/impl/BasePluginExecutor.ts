@@ -1,10 +1,10 @@
 import type {
-  ExecutorContextInterface,
   ExecutorInterface,
   ExecutorPluginNameType,
   ExecutorTask,
   ExecutorPluginInterface
 } from '../interface/ExecutorInterface';
+import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import { ExecutorContextImpl } from './ExecutorContextImpl';
 import { type ExecutorError } from '../interface';
 import {
@@ -86,7 +86,7 @@ export interface PluginExecutorConfig {
  * @template Ctx - Type of executor context interface
  * @template Plugin - Type of plugin interface
  *
- * @since 2.6.0
+ * @since 3.0.0
  * @category BaseLifecycleExecutor
  */
 export abstract class BasePluginExecutor<

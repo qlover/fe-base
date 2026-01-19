@@ -1,11 +1,11 @@
 import { ExecutorError } from '../../executor';
-import {
-  type RequestAdapterConfig,
-  type RequestAdapterInterface,
-  type RequestAdapterResponse,
-  RequestErrorID
+import type {
+  RequestAdapterConfig,
+  RequestAdapterInterface,
+  RequestAdapterResponse,
 } from '../interface';
 import { merge, pick } from 'lodash-es';
+import { ENV_FETCH_NOT_SUPPORT_ID, FETCHER_NONE_ID } from '../impl/consts';
 
 /**
  * Request adapter fetch configuration
@@ -18,7 +18,7 @@ import { merge, pick } from 'lodash-es';
  */
 export interface RequestAdapterFetchConfig<Request = unknown>
   extends RequestAdapterConfig<Request>,
-    Omit<globalThis.RequestInit, 'headers'> {
+  Omit<globalThis.RequestInit, 'headers'> {
   /**
    * The fetcher function
    *
@@ -153,8 +153,7 @@ const reqInitAttrs = [
  * @since 1.0.14
  */
 export class RequestAdapterFetch
-  implements RequestAdapterInterface<RequestAdapterFetchConfig>
-{
+  implements RequestAdapterInterface<RequestAdapterFetchConfig> {
   /**
    * Default configuration for the request adapter
    *
@@ -233,7 +232,7 @@ export class RequestAdapterFetch
   constructor(config: Partial<RequestAdapterFetchConfig> = {}) {
     if (!config.fetcher) {
       if (typeof fetch !== 'function') {
-        throw new ExecutorError(RequestErrorID.ENV_FETCH_NOT_SUPPORT);
+        throw new ExecutorError(ENV_FETCH_NOT_SUPPORT_ID);
       }
 
       config.fetcher = fetch;
@@ -386,7 +385,7 @@ export class RequestAdapterFetch
     const { fetcher, ...rest } = mergedConfig;
 
     if (typeof fetcher !== 'function') {
-      throw new ExecutorError(RequestErrorID.FETCHER_NONE);
+      throw new ExecutorError(FETCHER_NONE_ID);
     }
 
     // Convert configuration to fetch Request object

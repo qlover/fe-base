@@ -27,7 +27,7 @@ export const RETRY_ERROR_ID = 'RETRY_ERROR';
  * - ❌ **Not Supported:** `AsyncExecutor` - This plugin no longer supports `AsyncExecutor`.
  *   If you need retry functionality with `AsyncExecutor`, consider migrating to `LifecycleExecutor`.
  *
- * **v2.6.0  Refactored to use Retryer for retry logic. All retry logic is now delegated to Retryer. **
+ * **v3.0.0  Refactored to use Retryer for retry logic. All retry logic is now delegated to Retryer. **
  *
  * @implements {LifecyclePluginInterface<ExecutorContextInterface<RetryOptions, unknown>>}
  *

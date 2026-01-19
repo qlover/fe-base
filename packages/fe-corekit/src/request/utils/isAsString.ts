@@ -2,6 +2,7 @@
  * Type guard function to check if a value is a string
  * Optionally compares the string with a target value
  *
+ * @since 3.0.0
  * @param value - The value to check
  * @param compareTo - Optional string to compare against
  * @param caseSensitive - Optional flag to control case sensitivity (default: true)

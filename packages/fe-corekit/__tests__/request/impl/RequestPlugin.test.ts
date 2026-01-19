@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RequestPlugin } from '../../../src/request/plugins/RequestPlugin';
-import { type RequestAdapterContext } from '../../../src/request/plugins/RequestPlugin';
-import { type UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
-import { type HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
-import { type RequestAdapterConfig } from '../../../src/request/interface';
+import { RequestPlugin } from '../../../src/request/impl/RequestPlugin';
+import type { RequestAdapterContext } from '../../../src/request/impl/RequestPlugin';
+import type { UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
+import type { HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
+import type { RequestAdapterConfig } from '../../../src/request/interface';
 import {
   JSON_RESPONSE_TYPE,
   JSON_CONTENT_TYPE,
   CONTENT_TYPE_HEADER
-} from '../../../src/request/plugins/consts';
+} from '../../../src/request/impl/consts';
 
 describe('RequestPlugin', () => {
   let plugin: RequestPlugin;

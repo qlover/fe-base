@@ -1,4 +1,4 @@
-import { ExecutorError } from '../../../src';
+import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
 
 describe('ExecutorError', () => {
   it('should create an error with a message from a string', () => {

@@ -149,6 +149,7 @@ export interface RequestAdapterResponse<Req = unknown, Res = unknown> {
  * Adapters are responsible for handling the specific details of a request,
  * such as URL construction, headers, and response handling.
  *
+ * 3.0.0 changed name from RequestAdapter to RequestAdapterInterface
  */
 export interface RequestAdapterInterface<Config extends RequestAdapterConfig> {
   /**

@@ -114,6 +114,7 @@ export interface AborterConfig {
  * - Aborting non-existent operations returns `false`
  * - Multiple cleanups of same operation are safe
  *
+ * @since 3.0.0
  * @template T - Configuration type extending `AborterConfig`
  *
  * @example Basic implementation

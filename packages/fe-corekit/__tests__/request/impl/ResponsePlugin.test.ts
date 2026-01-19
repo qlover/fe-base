@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ResponsePlugin } from '../../../src/request/plugins/ResponsePlugin';
-import { type RequestAdapterResponse } from '../../../src/request/interface/RequestAdapter';
-import { JSON_RESPONSE_TYPE } from '../../../src/request/plugins/consts';
+import { ResponsePlugin } from '../../../src/request/impl/ResponsePlugin';
+import type { RequestAdapterResponse } from '../../../src/request/interface/RequestAdapterInterface';
+import { JSON_RESPONSE_TYPE } from '../../../src/request/impl/consts';
 import { ExecutorError, type RequestAdapterConfig } from '@qlover/fe-corekit';
 
 describe('ResponsePlugin', () => {

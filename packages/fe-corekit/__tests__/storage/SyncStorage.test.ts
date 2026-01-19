@@ -1,6 +1,6 @@
 import { SyncStorage } from '../../src/storage/impl/SyncStorage';
 import type { SerializerIneterface } from '../../src/serializer';
-import type { Encryptor } from '../../src/encrypt';
+import type { EncryptorInterface } from '../../src/encrypt';
 import type { SyncStorageInterface } from '../../src/storage/interface/SyncStorageInterface';
 import { Base64Serializer, JSONSerializer, ObjectStorage } from '../../src';
 
@@ -159,7 +159,7 @@ class MockSerializer<T = unknown> implements SerializerIneterface<T, string> {
  * Main function: Encrypt/decrypt data with prefix for identification
  * Main purpose: Verify encryption pipeline behavior
  */
-class MockEncryptor<T = unknown> implements Encryptor<T, string> {
+class MockEncryptor<T = unknown> implements EncryptorInterface<T, string> {
   public calls: {
     encrypt: T[];
     decrypt: string[];
@@ -209,7 +209,7 @@ class MockEncryptor<T = unknown> implements Encryptor<T, string> {
   }
 }
 
-class MockJSONEncryptor<T = unknown> implements Encryptor<T, string> {
+class MockJSONEncryptor<T = unknown> implements EncryptorInterface<T, string> {
   public calls: {
     encrypt: T[];
     decrypt: string[];

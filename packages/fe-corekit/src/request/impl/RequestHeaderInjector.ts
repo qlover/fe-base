@@ -19,6 +19,7 @@ import {
  * This class is responsible for injecting default headers into request configuration,
  * including Content-Type headers and authentication headers.
  *
+ * @since 3.0.0
  * @example
  * ```typescript
  * const injector = new RequestHeaderInjector({
