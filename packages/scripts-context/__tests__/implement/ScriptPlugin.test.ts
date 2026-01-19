@@ -243,10 +243,7 @@ describe('ScriptPlugin', () => {
         }
       }
 
-      const pluginWithBefore = new TestPluginWithBefore(
-        context,
-        'test-plugin'
-      );
+      const pluginWithBefore = new TestPluginWithBefore(context, 'test-plugin');
       await pluginWithBefore.onBefore?.(context);
 
       expect(mockLogger.info).toHaveBeenCalledWith('Before execution');

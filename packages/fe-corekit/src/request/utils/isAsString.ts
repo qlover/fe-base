@@ -123,11 +123,7 @@ function findObjectKeyValue(
 export function hasObjectKey<
   T extends Record<string, unknown>,
   K extends string
->(
-  obj: unknown,
-  key: K,
-  caseSensitive?: true
-): obj is T & Record<K, unknown>;
+>(obj: unknown, key: K, caseSensitive?: true): obj is T & Record<K, unknown>;
 
 export function hasObjectKey<T extends Record<string, unknown>>(
   obj: unknown,
@@ -148,7 +144,11 @@ export function hasObjectKey<
     return false;
   }
 
-  const result = findObjectKeyValue(obj as Record<string, unknown>, key, caseSensitive);
+  const result = findObjectKeyValue(
+    obj as Record<string, unknown>,
+    key,
+    caseSensitive
+  );
   return result.found;
 }
 

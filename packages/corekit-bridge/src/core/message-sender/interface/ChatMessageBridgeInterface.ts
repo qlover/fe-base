@@ -1,8 +1,8 @@
 import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { MessageSenderContextOptions } from '../impl/MessageSenderExecutor';
 import { ChatMessage } from '../impl/ChatMessage';
 import { ChatMessageStoreInterface } from './ChatMessageStoreInterface';
 import { GatewayOptions } from './MessageGetwayInterface';
+import { MessageSenderOptions } from './MessageSenderPlugin';
 
 /**
  * Input reference interface for managing input element references and focus control
@@ -60,7 +60,7 @@ export interface InputRefInterface {
  * ```
  */
 export type ChatMessageBridgePlugin<T = unknown> = ExecutorPlugin<
-  MessageSenderContextOptions<ChatMessage<T>>
+  MessageSenderOptions<ChatMessage<T>>
 >;
 
 /**

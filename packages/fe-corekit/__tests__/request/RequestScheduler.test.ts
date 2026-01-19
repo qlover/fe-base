@@ -152,23 +152,21 @@ describe('RequestScheduler', () => {
     // Note: This is a workaround for AsyncExecutor compatibility
     // RetryPlugin is designed for LifecycleExecutor, but RequestScheduler uses AsyncExecutor
     // So we manually create a plugin that uses Retryer.retry() directly
-    scheduler.usePlugin(
-      {
-        pluginName: 'RetryPlugin',
-        onExec: (context, task) => {
-          const retyer = new Retryer({
-            maxRetries: 2,
-            retryDelay: default_retry_delay,
-            shouldRetry: shouldRetry
-          });
-          // Wrap task execution to match retry() signature: (attemptNumber) => Promise<Result>
-          // task is PromiseTask: (context) => Promise<Result>
-          return retyer.retry(async () => {
-            return await task(context);
-          });
-        }
+    scheduler.usePlugin({
+      pluginName: 'RetryPlugin',
+      onExec: (context, task) => {
+        const retyer = new Retryer({
+          maxRetries: 2,
+          retryDelay: default_retry_delay,
+          shouldRetry: shouldRetry
+        });
+        // Wrap task execution to match retry() signature: (attemptNumber) => Promise<Result>
+        // task is PromiseTask: (context) => Promise<Result>
+        return retyer.retry(async () => {
+          return await task(context);
+        });
       }
-    );
+    });
     await expect(scheduler.get('/test/fail')).rejects.toThrow();
     expect(shouldRetry).toHaveBeenCalledTimes(2);
   });

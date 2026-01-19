@@ -23,9 +23,7 @@ export type ResponsePluginContext = ExecutorContextInterface<
  * @param response - The fetch Response object
  * @returns Parsed response data
  */
-export type ResponseParser = (
-  response: Response
-) => Promise<unknown> | unknown;
+export type ResponseParser = (response: Response) => Promise<unknown> | unknown;
 
 /**
  * Response parsers mapping
@@ -234,10 +232,7 @@ export class ResponsePlugin
    * @param _context - Optional execution context
    * @returns true if plugin should execute, false otherwise
    */
-  public enabled?(
-    _name: string,
-    _context?: ResponsePluginContext
-  ): boolean {
+  public enabled?(_name: string, _context?: ResponsePluginContext): boolean {
     // If responseParsers is false, disable the plugin
     if (this.config.responseParsers === false) {
       return false;
@@ -404,7 +399,8 @@ export class ResponsePlugin
     response: Response,
     responseType?: string
   ): Promise<unknown> {
-    const normalizedType = responseType?.toLowerCase()?.trim() ?? JSON_RESPONSE_TYPE;
+    const normalizedType =
+      responseType?.toLowerCase()?.trim() ?? JSON_RESPONSE_TYPE;
 
     // Get parser for the response type
     const parser = this.parsers[normalizedType];

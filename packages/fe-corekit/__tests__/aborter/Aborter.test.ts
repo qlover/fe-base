@@ -22,25 +22,25 @@ describe('Aborter', () => {
   beforeEach(() => {
     // Use fake timers to speed up timeout tests
     vi.useFakeTimers();
-    
+
     // Temporarily disable native AbortSignal.timeout to use fake timers
     originalAbortSignalTimeout = AbortSignal.timeout;
     // @ts-ignore - Temporarily override for testing
     AbortSignal.timeout = undefined;
-    
+
     aborter = new Aborter('TestAborter');
   });
 
   afterEach(() => {
     // Cleanup all operations
     aborter.abortAll();
-    
+
     // Restore native AbortSignal.timeout
     if (originalAbortSignalTimeout) {
       // @ts-ignore
       AbortSignal.timeout = originalAbortSignalTimeout;
     }
-    
+
     // Restore real timers
     vi.useRealTimers();
   });
@@ -249,7 +249,11 @@ describe('Aborter', () => {
       expect(onAbortedTimeout).not.toHaveBeenCalled();
 
       // Timeout abort
-      const config2 = { abortId: 'timeout', abortTimeout: 5000, onAbortedTimeout };
+      const config2 = {
+        abortId: 'timeout',
+        abortTimeout: 5000,
+        onAbortedTimeout
+      };
       const { signal } = aborter.register(config2);
 
       // Fast-forward time and wait for abort event
@@ -451,7 +455,9 @@ describe('Aborter', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       const onAborted = vi.fn(() => {
         throw new Error('Callback error');
       });
@@ -478,7 +484,9 @@ describe('Aborter', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       const onAborted = vi.fn(() => {
         throw new Error('Callback error');
       });
@@ -502,7 +510,9 @@ describe('Aborter', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       const onAbortedTimeout = vi.fn(() => {
         throw new Error('Timeout callback error');
       });
@@ -522,7 +532,9 @@ describe('Aborter', () => {
 
       // Error should be logged
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[TestAborter] Error in onAbortedTimeout callback:'),
+        expect.stringContaining(
+          '[TestAborter] Error in onAbortedTimeout callback:'
+        ),
         expect.any(Error)
       );
 
@@ -550,13 +562,10 @@ describe('Aborter', () => {
 
   describe('Auto cleanup', () => {
     it('should auto cleanup on successful completion', async () => {
-      const result = await aborter.autoCleanup(
-        async ({ signal }) => {
-          expect(signal.aborted).toBe(false);
-          return 'success';
-        },
-        {}
-      );
+      const result = await aborter.autoCleanup(async ({ signal }) => {
+        expect(signal.aborted).toBe(false);
+        return 'success';
+      }, {});
 
       expect(result).toBe('success');
     });

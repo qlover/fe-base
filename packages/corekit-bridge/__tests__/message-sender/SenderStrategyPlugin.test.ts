@@ -1,16 +1,34 @@
-import { ExecutorError } from '@qlover/fe-corekit';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+  ExecutorError,
+  Aborter,
+  AborterPlugin,
+  AborterConfig
+} from '@qlover/fe-corekit';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   MessageSender,
   MessagesStore,
   MessageStatus,
   SendFailureStrategy,
   SenderStrategyPlugin,
+  MessageSenderExecutor,
   type MessageGetwayInterface,
-  type MessageSenderContextOptions,
   type MessageStoreMsg,
-  MessageSenderPluginContext
+  MessageSenderContext,
+  MessageSenderOptions
 } from '../../src/core/message-sender';
+
+function toAborterConfig(
+  parameters: unknown | MessageSenderOptions<TestMessage>
+): AborterConfig {
+  const options = parameters as MessageSenderOptions<TestMessage>;
+  return {
+    abortId: options.currentMessage.id,
+    onAborted: options.gatewayOptions?.onAborted,
+    abortTimeout: options.gatewayOptions?.timeout,
+    signal: options.gatewayOptions?.signal
+  };
+}
 
 interface TestMessage extends MessageStoreMsg<string> {
   content?: string;
@@ -20,8 +38,10 @@ describe('SenderStrategyPlugin', () => {
   let sender: MessageSender<TestMessage>;
   let store: MessagesStore<TestMessage>;
   let mockGateway: MessageGetwayInterface;
+  let aborter: Aborter;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     store = new MessagesStore(() => ({
       messages: []
     }));
@@ -29,6 +49,11 @@ describe('SenderStrategyPlugin', () => {
     mockGateway = {
       sendMessage: vi.fn().mockResolvedValue({ result: 'Gateway response' })
     };
+    aborter = new Aborter('TestAborter');
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('constructor', () => {
@@ -55,7 +80,8 @@ describe('SenderStrategyPlugin', () => {
   describe('KEEP_FAILED strategy - keep failed message', () => {
     beforeEach(() => {
       sender = new MessageSender(store, {
-        gateway: mockGateway
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
     });
@@ -192,7 +218,8 @@ describe('SenderStrategyPlugin', () => {
   describe('DELETE_FAILED strategy - delete failed message', () => {
     beforeEach(() => {
       sender = new MessageSender(store, {
-        gateway: mockGateway
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
     });
@@ -288,7 +315,8 @@ describe('SenderStrategyPlugin', () => {
   describe('ADD_ON_SUCCESS strategy - delay adding', () => {
     beforeEach(() => {
       sender = new MessageSender(store, {
-        gateway: mockGateway
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
     });
@@ -351,7 +379,7 @@ describe('SenderStrategyPlugin', () => {
 
       mockGateway.sendMessage = vi.fn().mockImplementation(async () => {
         statesLog.push(store.getMessages().length);
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await vi.advanceTimersByTimeAsync(10);
         statesLog.push(store.getMessages().length);
         return { result: 'Success' };
       });
@@ -414,7 +442,8 @@ describe('SenderStrategyPlugin', () => {
           sendMessage: vi.fn().mockRejectedValue(new Error('Failed'))
         };
         const testSender = new MessageSender(testStore, {
-          gateway: testGateway
+          gateway: testGateway,
+          executor: new MessageSenderExecutor()
         });
         testSender.use(new SenderStrategyPlugin(strategy));
 
@@ -462,7 +491,8 @@ describe('SenderStrategyPlugin', () => {
           sendMessage: vi.fn().mockResolvedValue({ result: 'Success' })
         };
         const testSender = new MessageSender(testStore, {
-          gateway: testGateway
+          gateway: testGateway,
+          executor: new MessageSenderExecutor()
         });
         testSender.use(new SenderStrategyPlugin(strategy));
 
@@ -504,22 +534,22 @@ describe('SenderStrategyPlugin', () => {
 
   describe('integration test with MessageSender', () => {
     it('the plugin should be able to correctly access MessageSenderContext', async () => {
-      let capturedContext: MessageSenderContextOptions<TestMessage> | null =
-        null;
+      let capturedContext: MessageSenderOptions<TestMessage> | null = null;
 
       class TestPlugin extends SenderStrategyPlugin<TestMessage> {
         /**
          * @override
          */
-        public onBefore(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onBefore(context: MessageSenderContext<TestMessage>): void {
           capturedContext = context.parameters;
           super.onBefore(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -531,7 +561,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('the plugin should be able to correctly update the currentMessage in the context', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result = await sender.send({ content: 'Test' });
@@ -549,7 +582,10 @@ describe('SenderStrategyPlugin', () => {
 
       mockGateway.sendMessage = vi.fn().mockResolvedValue(gatewayResult);
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result = await sender.send({ content: 'Test' });
@@ -563,12 +599,15 @@ describe('SenderStrategyPlugin', () => {
     it('multiple plugins working together: strategy plugin + custom plugin', async () => {
       const customPlugin = {
         pluginName: 'custom-modifier',
-        onBefore({ parameters }: MessageSenderPluginContext<TestMessage>) {
+        onBefore({ parameters }: MessageSenderContext<TestMessage>) {
           parameters.currentMessage.content = `[Modified] ${parameters.currentMessage.content}`;
         }
       };
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender
         .use(customPlugin)
         .use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
@@ -582,7 +621,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('should support sending messages using simplified parameters', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       // use content + files way
@@ -609,9 +651,7 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onBefore(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onBefore(context: MessageSenderContext<TestMessage>): void {
           callLog.push('onBefore');
           super.onBefore(context);
         }
@@ -622,7 +662,10 @@ describe('SenderStrategyPlugin', () => {
         return Promise.resolve({ result: 'Success' });
       });
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -637,9 +680,7 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onSuccess(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onSuccess(context: MessageSenderContext<TestMessage>): void {
           callLog.push('onSuccess');
           super.onSuccess(context);
         }
@@ -650,7 +691,10 @@ describe('SenderStrategyPlugin', () => {
         return Promise.resolve({ result: 'Success' });
       });
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -666,7 +710,7 @@ describe('SenderStrategyPlugin', () => {
          * @override
          */
         public onError(
-          context: MessageSenderPluginContext<TestMessage>
+          context: MessageSenderContext<TestMessage>
         ): ExecutorError | void {
           callLog.push('onError');
           return super.onError(context);
@@ -678,7 +722,10 @@ describe('SenderStrategyPlugin', () => {
         return Promise.reject(new Error('Failed'));
       });
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -693,15 +740,16 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onSuccess(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onSuccess(context: MessageSenderContext<TestMessage>): void {
           addedToStoreInOnSuccess = context.parameters.addedToStore;
           super.onSuccess(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -709,23 +757,29 @@ describe('SenderStrategyPlugin', () => {
       expect(addedToStoreInOnSuccess).toBe(true);
     });
 
-    it('onError 应该正确设置 returnValue', async () => {
+    it('onError should correctly set returnValue', async () => {
       mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result = await sender.send({ content: 'Test' });
 
-      // returnValue 应该是失败消息
+      // returnValue should be the failed message
       expect(result.status).toBe(MessageStatus.FAILED);
       expect(result.error).toBeDefined();
     });
   });
 
-  describe('边界情况和错误处理', () => {
-    it('应该处理空 content', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+  describe('Edge cases and error handling', () => {
+    it('should handle empty content', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result = await sender.send({ content: '' });
@@ -737,8 +791,11 @@ describe('SenderStrategyPlugin', () => {
       expect(messages[0].content).toBe('');
     });
 
-    it('应该处理 null/undefined content', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('should handle null/undefined content', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result1 = await sender.send({ content: null as unknown as string });
@@ -748,8 +805,10 @@ describe('SenderStrategyPlugin', () => {
       expect(result2.content).toBeUndefined();
     });
 
-    it('应该处理没有 gateway 的情况', async () => {
-      const senderWithoutGateway = new MessageSender(store);
+    it('should handle no gateway cases', async () => {
+      const senderWithoutGateway = new MessageSender(store, {
+        executor: new MessageSenderExecutor()
+      });
       senderWithoutGateway.use(
         new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED)
       );
@@ -762,14 +821,15 @@ describe('SenderStrategyPlugin', () => {
       expect(messages).toHaveLength(1);
     });
 
-    it('KEEP_FAILED: 应该处理 updateMessage 返回 null 的情况', async () => {
+    it('KEEP_FAILED: should handle updateMessage returning null cases', async () => {
       sender = new MessageSender(store, {
         gateway: mockGateway,
-        throwIfError: true
+        throwIfError: true,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
-      // Mock updateMessage 返回 null
+      // Mock updateMessage returning null
       const originalUpdate = store.updateMessage;
       store.updateMessage = vi.fn().mockReturnValue(null);
 
@@ -779,18 +839,19 @@ describe('SenderStrategyPlugin', () => {
         'Failed to call updateMessage in store'
       );
 
-      // 恢复原始方法
+      // Restore original method
       store.updateMessage = originalUpdate;
     });
 
-    it('KEEP_FAILED: 失败时 updateMessage 返回 null 应该抛出错误', async () => {
+    it('KEEP_FAILED: should throw error when updateMessage returns null', async () => {
       sender = new MessageSender(store, {
         gateway: mockGateway,
-        throwIfError: true
+        throwIfError: true,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
-      // Mock updateMessage 返回 null
+      // Mock updateMessage returning null
       const originalUpdate = store.updateMessage;
       store.updateMessage = vi.fn().mockReturnValue(null);
 
@@ -800,14 +861,15 @@ describe('SenderStrategyPlugin', () => {
         'Failed to call updateMessage in store'
       );
 
-      // 恢复原始方法
+      // Restore original method
       store.updateMessage = originalUpdate;
     });
 
-    it('DELETE_FAILED: 删除消息失败时应该仍然返回失败消息', async () => {
+    it('DELETE_FAILED: should return failed message when deleteMessage fails', async () => {
       sender = new MessageSender(store, {
         gateway: mockGateway,
-        throwIfError: true
+        throwIfError: true,
+        executor: new MessageSenderExecutor()
       });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
@@ -815,17 +877,20 @@ describe('SenderStrategyPlugin', () => {
         .fn()
         .mockRejectedValue(new Error('Send failed'));
 
-      // 应该捕获 deleteMessage 的错误并继续
+      // Should catch deleteMessage error and continue
       await expect(sender.send({ content: 'Test' })).rejects.toThrow(
         'Send failed'
       );
     });
 
-    it('应该处理消息 ID 的变化', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('should handle message ID changes', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
-      // 创建一个自定义 ID 的消息
+      // Create a custom ID message
       const customId = 'custom-123';
       const result = await sender.send({
         id: customId,
@@ -838,8 +903,11 @@ describe('SenderStrategyPlugin', () => {
       expect(messages[0].id).toBe(customId);
     });
 
-    it('应该处理并发发送场景', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('should handle concurrent send scenarios', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const promises = [
@@ -860,53 +928,62 @@ describe('SenderStrategyPlugin', () => {
     });
   });
 
-  describe('实际应用场景', () => {
-    it('聊天应用：使用 KEEP_FAILED 策略保留失败消息以便重试', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+  describe('Real-world scenarios', () => {
+    it('should use KEEP_FAILED strategy to keep failed messages for retry', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
-      // 模拟网络错误
+      // Mock network error
       mockGateway.sendMessage = vi
         .fn()
         .mockRejectedValue(new Error('Network timeout'));
 
       const failedResult = await sender.send({ content: 'Hello' });
 
-      // 失败消息保留在 store 中，用户可以看到并重试
+      // Failed message remains in store, user can see and retry
       expect(store.getMessages()).toHaveLength(1);
       expect(store.getMessages()[0].status).toBe(MessageStatus.FAILED);
 
-      // 用户点击重试
+      // User clicks retry
       mockGateway.sendMessage = vi.fn().mockResolvedValue({ result: 'OK' });
 
       const retryResult = await sender.send(failedResult);
 
-      // 重试成功
+      // Retry successful
       expect(retryResult.status).toBe(MessageStatus.SENT);
       expect(store.getMessages()).toHaveLength(1);
     });
 
-    it('表单提交：使用 DELETE_FAILED 策略保持界面干净', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('should use DELETE_FAILED strategy to remove failed messages from the store and keep successful messages', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
-      // 提交失败
+      // Submission failed
       mockGateway.sendMessage = vi
         .fn()
         .mockRejectedValue(new Error('Validation failed'));
 
       const result = await sender.send({ content: 'Form data' });
 
-      // 失败消息不在列表中，但返回错误信息供 UI 显示
+      // Failed message not in list, but returns error information for UI display
       expect(result.status).toBe(MessageStatus.FAILED);
       expect(store.getMessages()).toHaveLength(0);
     });
 
-    it('后台任务：使用 ADD_ON_SUCCESS 策略只显示成功结果', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('should use ADD_ON_SUCCESS strategy to add successful messages to the store only after successful send operation', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
-      // 发送多个任务
+      // Send multiple tasks
       mockGateway.sendMessage = vi.fn().mockImplementation((msg) => {
         if (msg.content === 'Task 2') {
           return Promise.reject(new Error('Task failed'));
@@ -918,18 +995,21 @@ describe('SenderStrategyPlugin', () => {
       await sender.send({ content: 'Task 2' });
       await sender.send({ content: 'Task 3' });
 
-      // 只有成功的任务出现在列表中
+      // Only successful tasks appear in the list
       const messages = store.getMessages();
       expect(messages).toHaveLength(2);
       expect(messages[0].content).toBe('Task 1');
       expect(messages[1].content).toBe('Task 3');
     });
 
-    it('引用不变：返回的对象和内部使用的应该是同一个对象', async () => {
+    it('should return the same object as the internal object', async () => {
       const message = {
         content: 'Test'
       };
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
       const result = await sender.send(message);
 
@@ -940,9 +1020,12 @@ describe('SenderStrategyPlugin', () => {
     });
   });
 
-  describe('消息状态转换', () => {
-    it('KEEP_FAILED: SENDING -> SENT 状态转换', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+  describe('Message status transitions', () => {
+    it('KEEP_FAILED: SENDING -> SENT transition', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let sendingMessage: TestMessage | null = null;
@@ -954,16 +1037,19 @@ describe('SenderStrategyPlugin', () => {
 
       const result = await sender.send({ content: 'Test' });
 
-      // 发送过程中是 SENDING
+      // Sending process is SENDING
       expect(sendingMessage!.status).toBe(MessageStatus.SENDING);
 
-      // 完成后是 SENT
+      // After completion is SENT
       expect(result.status).toBe(MessageStatus.SENT);
       expect(store.getMessages()[0].status).toBe(MessageStatus.SENT);
     });
 
-    it('KEEP_FAILED: SENDING -> FAILED 状态转换', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('KEEP_FAILED: SENDING -> FAILED transition', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let sendingMessage: TestMessage | null = null;
@@ -975,16 +1061,19 @@ describe('SenderStrategyPlugin', () => {
 
       const result = await sender.send({ content: 'Test' });
 
-      // 发送过程中是 SENDING
+      // Sending process is SENDING
       expect(sendingMessage!.status).toBe(MessageStatus.SENDING);
 
-      // 失败后是 FAILED
+      // After failure is FAILED
       expect(result.status).toBe(MessageStatus.FAILED);
       expect(store.getMessages()[0].status).toBe(MessageStatus.FAILED);
     });
 
-    it('DELETE_FAILED: SENDING -> SENT (不删除)', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('DELETE_FAILED: SENDING -> SENT (not deleted)', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
       const result = await sender.send({ content: 'Test' });
@@ -994,7 +1083,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('DELETE_FAILED: SENDING -> FAILED -> deleted', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
       mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
@@ -1005,31 +1097,37 @@ describe('SenderStrategyPlugin', () => {
       expect(store.getMessages()).toHaveLength(0);
     });
 
-    it('ADD_ON_SUCCESS: 成功时才进入 store', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+    it('ADD_ON_SUCCESS: only enter store when successful', async () => {
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
       const statusLog: number[] = [];
 
       mockGateway.sendMessage = vi.fn().mockImplementation(() => {
-        statusLog.push(store.getMessages().length); // 应该是 0
+        statusLog.push(store.getMessages().length); // Should be 0
         return Promise.resolve({ result: 'OK' });
       });
 
       await sender.send({ content: 'Test' });
 
-      statusLog.push(store.getMessages().length); // 应该是 1
+      statusLog.push(store.getMessages().length); // Should be 1
 
       expect(statusLog).toEqual([0, 1]);
     });
   });
 
-  describe('错误信息完整性', () => {
-    it('失败消息应该包含完整的错误信息', async () => {
+  describe('Error information completeness', () => {
+    it('failed message should contain complete error information', async () => {
       const testError = new Error('Detailed error message');
       mockGateway.sendMessage = vi.fn().mockRejectedValue(testError);
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const result = await sender.send({ content: 'Test' });
@@ -1040,7 +1138,7 @@ describe('SenderStrategyPlugin', () => {
       );
     });
 
-    it('不同策略返回的错误信息应该一致', async () => {
+    it('different strategies should return the same error information', async () => {
       const testError = new Error('Test error');
       const testGateway = {
         sendMessage: vi.fn().mockRejectedValue(testError)
@@ -1055,7 +1153,8 @@ describe('SenderStrategyPlugin', () => {
       for (const strategy of strategies) {
         const testStore = new MessagesStore(() => ({ messages: [] }));
         const testSender = new MessageSender(testStore, {
-          gateway: testGateway
+          gateway: testGateway,
+          executor: new MessageSenderExecutor()
         });
         testSender.use(new SenderStrategyPlugin(strategy));
 
@@ -1068,7 +1167,7 @@ describe('SenderStrategyPlugin', () => {
     });
   });
 
-  describe('context.parameters.addedToStore 标志', () => {
+  describe('context.parameters.addedToStore flag', () => {
     it('KEEP_FAILED: addedToStore should be true', async () => {
       let capturedFlag: boolean | undefined;
 
@@ -1076,15 +1175,16 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onSuccess(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onSuccess(context: MessageSenderContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -1099,15 +1199,16 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onSuccess(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onSuccess(context: MessageSenderContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.DELETE_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -1122,15 +1223,16 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        public onSuccess(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        public onSuccess(context: MessageSenderContext<TestMessage>): void {
           capturedFlag = context.parameters.addedToStore;
           super.onSuccess(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
       await sender.send({ content: 'Test' });
@@ -1141,7 +1243,10 @@ describe('SenderStrategyPlugin', () => {
 
   describe('streaming test - onStream', () => {
     it('KEEP_FAILED: onStream should update the message in the store (update result field)', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const chunks: unknown[] = [];
@@ -1181,7 +1286,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('DELETE_FAILED: onStream should update the message in the store (update result field)', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
       mockGateway.sendMessage = vi
@@ -1208,7 +1316,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('ADD_ON_SUCCESS: onStream should not update the store', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
       let storeCountDuringChunk = 0;
@@ -1238,7 +1349,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('onStream should handle non-message object chunks', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const receivedChunks: unknown[] = [];
@@ -1277,7 +1391,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('onStream should start streaming status during streaming', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let streamingDuringChunk = false;
@@ -1307,7 +1424,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('onStream should handle new message addition (message not in the store)', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       mockGateway.sendMessage = vi
@@ -1345,7 +1465,10 @@ describe('SenderStrategyPlugin', () => {
 
   describe('streaming test - onConnected', () => {
     it('onConnected should set message to non-loading status', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let messageDuringConnected: TestMessage | undefined;
@@ -1369,7 +1492,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('onConnected should start streaming status', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let streamingDuringConnected = false;
@@ -1392,7 +1518,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('ADD_ON_SUCCESS: onConnected should not affect the store', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
       let storeCountDuringConnected = -1;
@@ -1420,7 +1549,10 @@ describe('SenderStrategyPlugin', () => {
 
   describe('Fallback logic - onConnected not called when the first chunk is sent', () => {
     it('should automatically trigger the connection establishment logic when the first chunk is sent', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let messageBeforeFirstChunk: TestMessage | undefined;
@@ -1453,7 +1585,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('Fallback should not be triggered when the second chunk is sent', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const loadingStates: boolean[] = [];
@@ -1481,7 +1616,18 @@ describe('SenderStrategyPlugin', () => {
 
   describe('Abort error handling - MessageStatus.STOPPED', () => {
     it('stopped message should set status to STOPPED', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor(),
+        aborter: aborter
+      });
+
+      sender.use(
+        new AborterPlugin({
+          aborter: sender.aborter,
+          getConfig: toAborterConfig
+        })
+      );
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let resolveGateway: ((value: unknown) => void) | null = null;
@@ -1491,51 +1637,69 @@ describe('SenderStrategyPlugin', () => {
 
       mockGateway.sendMessage = vi.fn().mockReturnValue(gatewayPromise);
 
-      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
+      const sendPromise = sender.send({ id: 'test-msg-3', content: 'Test' });
 
       // wait for the message to start sending
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await vi.advanceTimersByTimeAsync(0);
 
       // stop the message
-      sender.stop('test-msg');
+      const stopped = sender.stop('test-msg-3');
+      expect(stopped).toBe(true);
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
 
       const result = await sendPromise;
-
+      console.log('result', result);
       // should be STOPPED status
       expect(result.status).toBe(MessageStatus.STOPPED);
       expect(result.loading).toBe(false);
       expect(result.error).toBeDefined();
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
 
     it('KEEP_FAILED: stopped message should be kept in the store', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor(),
+        aborter: aborter
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
-      let resolveGateway: ((value: unknown) => void) | null = null;
+      let resolveGateway: (value: unknown) => void;
       mockGateway.sendMessage = vi.fn().mockReturnValue(
-        new Promise((resolve) => {
+        new Promise<unknown>((resolve) => {
           resolveGateway = resolve;
         })
       );
 
-      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      const options = { id: 'test-msg', content: 'Test' };
+      const { signal } = aborter.register({
+        abortId: options.id
+      });
 
-      sender.stop('test-msg');
+      const sendPromise = sender.send(options, { signal });
+      await vi.advanceTimersByTimeAsync(0);
+
+      sender.stop(options.id);
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
+
       const result = await sendPromise;
-
       const messages = store.getMessages();
+
       expect(messages).toHaveLength(1);
       expect(messages[0].status).toBe(MessageStatus.STOPPED);
       expect(messages[0].id).toBe(result.id);
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
 
     it('DELETE_FAILED: stopped message should not be deleted (only delete FAILED)', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      const controller = new AbortController();
+
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.DELETE_FAILED));
 
       let resolveGateway: ((value: unknown) => void) | null = null;
@@ -1545,10 +1709,19 @@ describe('SenderStrategyPlugin', () => {
         })
       );
 
-      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      const sendPromise = sender.send(
+        { id: 'test-msg', content: 'Test' },
+        {
+          signal: controller.signal
+        }
+      );
+      await vi.advanceTimersByTimeAsync(0);
 
-      sender.stop('test-msg');
+      controller.abort();
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
+
       const result = await sendPromise;
 
       // STOPPED message should be kept (different from FAILED)
@@ -1556,14 +1729,24 @@ describe('SenderStrategyPlugin', () => {
       expect(messages).toHaveLength(1);
       expect(messages[0].status).toBe(MessageStatus.STOPPED);
       expect(result).toBeDefined();
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
 
     it('ADD_ON_SUCCESS: stopped message should not be added to the store', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      const aborterPlugin = new AborterPlugin({
+        pluginName: 'test-aborter',
+        getConfig: toAborterConfig
+      });
+
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor(),
+        aborter: aborterPlugin.getAborter()
+      });
+
+      sender.use(aborterPlugin);
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
+      console.log('aborterPlugin', aborterPlugin);
       let resolveGateway: ((value: unknown) => void) | null = null;
       mockGateway.sendMessage = vi.fn().mockReturnValue(
         new Promise((resolve) => {
@@ -1572,19 +1755,27 @@ describe('SenderStrategyPlugin', () => {
       );
 
       const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await vi.advanceTimersByTimeAsync(0);
 
-      sender.stop('test-msg');
+      const stopped = sender.stop('test-msg');
+      expect(stopped).toBe(true);
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
+
       await sendPromise;
 
       // the store should be empty
       expect(store.getMessages()).toHaveLength(0);
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
 
     it('should call the gatewayOptions.onAborted callback', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      const controller = new AbortController();
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
+
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let abortedMessage: TestMessage | undefined;
@@ -1600,6 +1791,7 @@ describe('SenderStrategyPlugin', () => {
       const sendPromise = sender.send(
         { id: 'test-msg', content: 'Test' },
         {
+          signal: controller.signal,
           onAborted: (msg) => {
             onAbortedCalled = true;
             abortedMessage = msg as TestMessage;
@@ -1607,19 +1799,25 @@ describe('SenderStrategyPlugin', () => {
         }
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      sender.stop('test-msg');
+      await vi.advanceTimersByTimeAsync(0);
+      controller.abort();
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
+
       await sendPromise;
 
       expect(onAbortedCalled).toBe(true);
       expect(abortedMessage).toBeDefined();
       expect(abortedMessage?.status).toBe(MessageStatus.STOPPED);
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
 
     it('onAborted callback error should not affect the main process', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor(),
+        aborter: aborter
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let resolveGateway: ((value: unknown) => void) | null = null;
@@ -1629,25 +1827,27 @@ describe('SenderStrategyPlugin', () => {
         })
       );
 
-      const sendPromise = sender.send(
-        { id: 'test-msg', content: 'Test' },
-        {
-          onAborted: () => {
-            throw new Error('Callback error');
-          }
+      const sendConfig = { id: 'test-msg', content: 'Test' };
+      const signal = aborter.register({ abortId: sendConfig.id }).signal;
+      const sendPromise = sender.send(sendConfig, {
+        signal,
+        onAborted: () => {
+          throw new Error('Callback error');
         }
-      );
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      sender.stop('test-msg');
+      await vi.advanceTimersByTimeAsync(0);
+      const stopped = sender.stop('test-msg');
+      expect(stopped).toBe(true);
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
 
       // should not throw an error
       await expect(sendPromise).resolves.toBeDefined();
 
       const result = await sendPromise;
       expect(result.status).toBe(MessageStatus.STOPPED);
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
   });
 
@@ -1665,7 +1865,10 @@ describe('SenderStrategyPlugin', () => {
         context: vi.fn()
       };
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(
         new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
       );
@@ -1699,7 +1902,10 @@ describe('SenderStrategyPlugin', () => {
         context: vi.fn()
       };
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(
         new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
       );
@@ -1733,7 +1939,10 @@ describe('SenderStrategyPlugin', () => {
         context: vi.fn()
       };
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(
         new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
       );
@@ -1781,7 +1990,10 @@ describe('SenderStrategyPlugin', () => {
         context: vi.fn()
       };
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(
         new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED, mockLogger)
       );
@@ -1809,7 +2021,10 @@ describe('SenderStrategyPlugin', () => {
 
   describe('cleanup method test', () => {
     it('cleanup should stop streaming status', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       mockGateway.sendMessage = vi
@@ -1834,15 +2049,16 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        protected cleanup(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        protected cleanup(context: MessageSenderContext<TestMessage>): void {
           cleanupCalled = true;
           super.cleanup(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -1857,9 +2073,7 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        protected cleanup(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        protected cleanup(context: MessageSenderContext<TestMessage>): void {
           cleanupCalled = true;
           super.cleanup(context);
         }
@@ -1867,7 +2081,10 @@ describe('SenderStrategyPlugin', () => {
 
       mockGateway.sendMessage = vi.fn().mockRejectedValue(new Error('Failed'));
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       await sender.send({ content: 'Test' });
@@ -1882,15 +2099,17 @@ describe('SenderStrategyPlugin', () => {
         /**
          * @override
          */
-        protected cleanup(
-          context: MessageSenderPluginContext<TestMessage>
-        ): void {
+        protected cleanup(context: MessageSenderContext<TestMessage>): void {
           cleanupCalled = true;
           super.cleanup(context);
         }
       }
 
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor(),
+        aborter: aborter
+      });
       sender.use(new TestPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let resolveGateway: ((value: unknown) => void) | null = null;
@@ -1900,21 +2119,29 @@ describe('SenderStrategyPlugin', () => {
         })
       );
 
-      const sendPromise = sender.send({ id: 'test-msg', content: 'Test' });
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      const sendConfig = { id: 'test-msg', content: 'Test' };
+      const signal = aborter.register({ abortId: sendConfig.id }).signal;
+      const sendPromise = sender.send(sendConfig, { signal });
+      await vi.advanceTimersByTimeAsync(0);
 
-      sender.stop('test-msg');
+      const stopped = sender.stop('test-msg');
+      expect(stopped).toBe(true);
+
+      // @ts-expect-error resolve the gateway promise to allow the abort to complete
+      resolveGateway?.('Should not reach');
+
       await sendPromise;
 
       expect(cleanupCalled).toBe(true);
-      expect(resolveGateway).toBeDefined();
-      resolveGateway = null;
     });
   });
 
   describe('complex streaming scenario', () => {
     it('should support mixed content streaming', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       const allChunks: unknown[] = [];
@@ -1956,7 +2183,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('should support error recovery in streaming', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       let errorThrown = false;
@@ -1994,7 +2224,10 @@ describe('SenderStrategyPlugin', () => {
     });
 
     it('should handle empty chunk list', async () => {
-      sender = new MessageSender(store, { gateway: mockGateway });
+      sender = new MessageSender(store, {
+        gateway: mockGateway,
+        executor: new MessageSenderExecutor()
+      });
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED));
 
       mockGateway.sendMessage = vi

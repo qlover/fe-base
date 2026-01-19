@@ -111,3 +111,4 @@ export * from './Aborter';
 export * from './AborterInterface';
 export * from './AbortError';
 export * from './AborterPlugin';
+export * from './utils/raceWithAbort';

@@ -30,17 +30,17 @@ describe('ExecutorContextImpl', () => {
       expect(context.returnValue).toBeUndefined();
     });
 
-    it('should clone parameters to prevent memory leaks', () => {
+    it('should store parameters by reference', () => {
       const params = { userId: 123, name: 'John' };
       const context = new ExecutorContextImpl(params);
 
       // Parameters should be cloned, not the same reference
-      expect(context.parameters).not.toBe(params);
+      expect(context.parameters).toBe(params);
       expect(context.parameters).toEqual(params);
 
       // Modifying original should not affect context
       params.userId = 456;
-      expect(context.parameters.userId).toBe(123);
+      expect(context.parameters.userId).toBe(456);
     });
   });
 
@@ -194,11 +194,22 @@ describe('ExecutorContextImpl', () => {
       context.setParameters(newParams);
 
       expect(context.parameters).toEqual(newParams);
-      expect(context.parameters).not.toBe(newParams);
+      // context don't modify the parameters, this should be the responsibility of the user
+      expect(context.parameters).toBe(newParams);
 
-      // Modifying newParams should not affect context
       newParams.value = 'modified';
-      expect(context.parameters.value).toBe('updated');
+      expect(context.parameters.value).toBe('modified');
+    });
+
+    it('should update parameters without cloning', () => {
+      const initialParams = { value: 'initial' };
+      const context = new ExecutorContextImpl(initialParams);
+
+      const newParams = { value: 'updated' };
+      context.setParameters(newParams);
+
+      expect(context.parameters).toEqual(newParams);
+      expect(context.parameters).not.toBe(initialParams);
     });
   });
 
@@ -371,7 +382,7 @@ describe('ExecutorContextImpl', () => {
 
     it('should maintain parameter isolation throughout execution', () => {
       const originalParams = { value: 'original' };
-      const context = new ExecutorContextImpl(originalParams);
+      const context = new ExecutorContextImpl({ ...originalParams }); // shallow clone
 
       // Modify original params
       originalParams.value = 'modified';

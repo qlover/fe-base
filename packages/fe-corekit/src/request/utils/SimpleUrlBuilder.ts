@@ -22,7 +22,7 @@ import type { UrlBuilderInterface } from '../interface/UrlBuilderInterface';
  *   baseURL: 'https://api.example.com',
  *   params: { role: 'admin' }
  * });
- * 
+ *
  * // Returns: 'https://api.example.com/users?role=admin'
  * ```
  */

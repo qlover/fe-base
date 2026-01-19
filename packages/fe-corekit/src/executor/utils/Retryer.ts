@@ -186,14 +186,14 @@ export class Retryer implements RetryInterface<RetryOptions> {
       ...Retryer.defaultOptions,
       ...options
     };
-    
+
     // Apply specific overrides
     normalized.useExponentialBackoff = options.useExponentialBackoff ?? false;
     normalized.maxRetries = Math.min(
       Math.max(1, options.maxRetries ?? Retryer.DEFAULT_MAX_RETRIES),
       Retryer.SAFE_MAX_RETRIES
     );
-    
+
     return normalized;
   }
 
@@ -205,7 +205,9 @@ export class Retryer implements RetryInterface<RetryOptions> {
     options?: RetryOptions
   ): (...args: Arguments) => Promise<Result> {
     // Merge instance options with method options
-    const mergedOptions = options ? { ...this.options, ...options } : this.options;
+    const mergedOptions = options
+      ? { ...this.options, ...options }
+      : this.options;
     return makeRetriable(
       fn,
       this.convertToPRetryOptions(this.normalizeOptions(mergedOptions))
@@ -243,7 +245,9 @@ export class Retryer implements RetryInterface<RetryOptions> {
     options?: RetryOptions
   ): Promise<Result> {
     // Merge instance options with method options
-    const mergedOptions = options ? { ...this.options, ...options } : this.options;
+    const mergedOptions = options
+      ? { ...this.options, ...options }
+      : this.options;
     return retry(
       fn,
       this.convertToPRetryOptions(this.normalizeOptions(mergedOptions))

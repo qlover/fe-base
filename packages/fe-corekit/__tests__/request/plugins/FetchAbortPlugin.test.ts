@@ -182,7 +182,6 @@ describe.skip('FetchAbortPlugin with multiple plugins', () => {
           returnBreakChain: true
         });
 
-
         return new RequestError(
           RequestErrorID.ABORT_ERROR,
           'TestErrorPlugin abort'
