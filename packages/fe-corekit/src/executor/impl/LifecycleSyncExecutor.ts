@@ -297,7 +297,9 @@ export class LifecycleSyncExecutor<
 
       // If hook returned undefined/void, let original task run
       if (hookReturnValue === undefined) {
-        result = actualTask(context as ExecutorContextInterface<Params, Result>);
+        result = actualTask(
+          context as ExecutorContextInterface<Params, Result>
+        );
       } else if (typeof hookReturnValue === 'function') {
         // Plugin returned a new task function, execute it
         result = hookReturnValue(context);

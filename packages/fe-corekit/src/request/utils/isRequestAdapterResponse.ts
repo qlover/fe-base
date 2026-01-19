@@ -62,4 +62,3 @@ export function isRequestAdapterResponse(
     obj.config !== null
   );
 }
-

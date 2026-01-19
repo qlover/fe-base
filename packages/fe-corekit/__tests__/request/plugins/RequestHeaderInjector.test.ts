@@ -41,7 +41,7 @@ describe('RequestHeaderInjector', () => {
       const config: RequestAdapterConfig = {
         headers: {
           'X-Custom': 'value',
-          'Authorization': 'Bearer existing'
+          Authorization: 'Bearer existing'
         }
       };
       const headers = injector.inject(config);
@@ -304,11 +304,11 @@ describe('RequestHeaderInjector', () => {
     it('should normalize all header values to strings', () => {
       injector = new RequestHeaderInjector({});
       const headers = {
-        'String': 'value',
-        'Number': 123,
-        'Boolean': true,
-        'Null': null,
-        'Undefined': undefined
+        String: 'value',
+        Number: 123,
+        Boolean: true,
+        Null: null,
+        Undefined: undefined
       } as Record<string, unknown>;
 
       const normalized = (injector as any).normalizeHeaders(headers);
@@ -447,4 +447,3 @@ describe('RequestHeaderInjector', () => {
     });
   });
 });
-

@@ -444,11 +444,7 @@ describe('pluginHookSync utilities', () => {
       });
 
       const context = createMockContext<TestParams>({ value: 'test' });
-      runPluginsHooksSync(
-        [plugin],
-        ['onBefore', 'onSuccess'],
-        context
-      );
+      runPluginsHooksSync([plugin], ['onBefore', 'onSuccess'], context);
 
       expect(executionOrder).toEqual(['onBefore', 'onSuccess']);
     });

@@ -53,7 +53,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users'
+        );
       });
 
       it('should build URL with baseURL and path without leading slash', () => {
@@ -62,7 +64,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users'
+        );
       });
 
       it('should handle baseURL with trailing slash', () => {
@@ -71,7 +75,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com/'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users'
+        );
       });
 
       it('should handle both baseURL and path with slashes', () => {
@@ -80,7 +86,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com/'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users/');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users/'
+        );
       });
 
       it('should use absolute URL directly when provided', () => {
@@ -89,7 +97,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://other.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users'
+        );
       });
 
       it('should ignore baseURL when url is absolute', () => {
@@ -98,7 +108,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://other.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('http://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'http://api.example.com/users'
+        );
       });
     });
 
@@ -123,7 +135,9 @@ describe('SimpleUrlBuilder', () => {
           params: { role: 'admin' }
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users?role=admin');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users?role=admin'
+        );
       });
 
       it('should encode query parameter values', () => {
@@ -220,7 +234,9 @@ describe('SimpleUrlBuilder', () => {
           params: {}
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/users');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/users'
+        );
       });
     });
 
@@ -269,7 +285,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/posts');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/posts'
+        );
       });
 
       it('should handle complex paths', () => {
@@ -278,7 +296,9 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'https://api.example.com'
         };
 
-        expect(urlBuilder.buildUrl(config)).toBe('https://api.example.com/api/v1/users/123');
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/api/v1/users/123'
+        );
       });
     });
 
@@ -363,4 +383,3 @@ describe('SimpleUrlBuilder', () => {
     });
   });
 });
-

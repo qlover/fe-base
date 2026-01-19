@@ -402,7 +402,8 @@ describe('Logger with ColorFormatter', () => {
         typeof call[0] === 'string' && call[0].toString().includes('ERROR')
     );
     const infoCalls = calls.filter(
-      (call) => typeof call[0] === 'string' && call[0].toString().includes('INFO')
+      (call) =>
+        typeof call[0] === 'string' && call[0].toString().includes('INFO')
     );
 
     expect(errorCalls.length).toBeGreaterThanOrEqual(2);

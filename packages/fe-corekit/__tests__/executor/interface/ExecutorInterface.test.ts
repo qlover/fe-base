@@ -1218,7 +1218,9 @@ describe('Executor Types', () => {
 
         class ExtendedPlugin
           implements
-            ExecutorPluginInterface<ExecutorContextInterface<ApiParams, unknown>>
+            ExecutorPluginInterface<
+              ExecutorContextInterface<ApiParams, unknown>
+            >
         {
           public readonly pluginName = 'ExtendedPlugin';
           private _callHistory: string[] = [];
@@ -1396,7 +1398,8 @@ describe('Executor Types', () => {
         }
 
         class GenericPlugin<T extends BaseParams>
-          implements ExecutorPluginInterface<ExecutorContextInterface<T, unknown>>
+          implements
+            ExecutorPluginInterface<ExecutorContextInterface<T, unknown>>
         {
           public readonly pluginName = 'GenericPlugin';
           protected _lastId: number | null = null;
@@ -1495,7 +1498,9 @@ describe('Executor Types', () => {
         const extendedPlugin = new ExtendedApiPlugin();
 
         expect(
-          (extendedContext as ExtendedApiContext<ExtendedApiParams>).getEndpoint()
+          (
+            extendedContext as ExtendedApiContext<ExtendedApiParams>
+          ).getEndpoint()
         ).toBe('/api/users');
         expect(
           (extendedContext as ExtendedApiContext<ExtendedApiParams>).getMethod()

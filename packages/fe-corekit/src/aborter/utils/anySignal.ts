@@ -64,7 +64,7 @@ export function anySignal(
 ): ClearableSignal {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const AbortSignalAny = (AbortSignal as any).any;
-  
+
   // Note: Use native AbortSignal.any() when available (Node.js 20+)
   if (typeof AbortSignalAny === 'function') {
     const validSignals = signals.filter((s): s is AbortSignal => s != null);

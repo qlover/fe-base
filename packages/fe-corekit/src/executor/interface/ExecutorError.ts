@@ -237,7 +237,6 @@ export class ExecutorError extends Error {
     // The message will be set below based on the cause type
     super();
 
-
     // TODO: Maybe the constructor name is compressed after bundling, we need to consider other ways to ensure the error name is correct
     this.name =
       this.constructor !== ExecutorError

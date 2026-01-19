@@ -50,7 +50,9 @@ import {
  * );
  * ```
  */
-export function runPluginHook<Ctx extends ExecutorContextInterface<unknown, unknown>>(
+export function runPluginHook<
+  Ctx extends ExecutorContextInterface<unknown, unknown>
+>(
   plugin: ExecutorPluginInterface<Ctx>,
   hookName: ExecutorPluginNameType,
   context: ExecutorContextInterface<unknown, unknown>,

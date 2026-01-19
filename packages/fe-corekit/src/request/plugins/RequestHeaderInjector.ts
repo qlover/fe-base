@@ -48,7 +48,8 @@ export class RequestHeaderInjector implements HeaderInjectorInterface {
     // Merge constructor config with passed config (passed config takes precedence)
     const mergedConfig = { ...this.config, ...config };
     // Merge headers (passed headers take precedence)
-    const constructorHeaders = (this.config as RequestAdapterConfig).headers ?? {};
+    const constructorHeaders =
+      (this.config as RequestAdapterConfig).headers ?? {};
     const configHeaders = config.headers ?? {};
     let headers = { ...constructorHeaders, ...configHeaders };
 
@@ -86,13 +87,13 @@ export class RequestHeaderInjector implements HeaderInjectorInterface {
     headers: Record<string, unknown>
   ): Record<string, string> {
     const normalizedHeaders: Record<string, string> = {};
-    
+
     for (const [key, value] of Object.entries(headers)) {
       if (value != null) {
         normalizedHeaders[key] = String(value);
       }
     }
-    
+
     return normalizedHeaders;
   }
 

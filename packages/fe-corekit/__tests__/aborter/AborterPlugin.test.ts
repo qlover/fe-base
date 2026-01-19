@@ -25,12 +25,12 @@ describe('AborterPlugin', () => {
   beforeEach(() => {
     // Use fake timers to speed up timeout tests
     vi.useFakeTimers();
-    
+
     // Temporarily disable native AbortSignal.timeout to use fake timers
     originalAbortSignalTimeout = AbortSignal.timeout;
     // @ts-ignore - Temporarily override for testing
     AbortSignal.timeout = undefined;
-    
+
     plugin = new AborterPlugin();
     context = new ExecutorContextImpl<AborterConfig, unknown>({});
   });
@@ -41,7 +41,7 @@ describe('AborterPlugin', () => {
       // @ts-ignore
       AbortSignal.timeout = originalAbortSignalTimeout;
     }
-    
+
     // Restore real timers
     vi.useRealTimers();
   });

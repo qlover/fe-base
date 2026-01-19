@@ -83,12 +83,15 @@ export function timeoutSignal(ms: number): ClearableSignal | AbortSignal {
 
   // Important: Clamp timeout to maximum safe value to prevent immediate timeout
   // Handle invalid values: NaN, Infinity, negative numbers
-  const safeTimeout = Number.isFinite(ms) && ms >= 0
-    ? Math.min(ms, MAX_TIMEOUT_MS)
-    : MAX_TIMEOUT_MS;
+  const safeTimeout =
+    Number.isFinite(ms) && ms >= 0
+      ? Math.min(ms, MAX_TIMEOUT_MS)
+      : MAX_TIMEOUT_MS;
 
   const timeoutId = setTimeout(() => {
-    controller.abort(new DOMException('The operation timed out', 'TimeoutError'));
+    controller.abort(
+      new DOMException('The operation timed out', 'TimeoutError')
+    );
   }, safeTimeout);
 
   const signal = controller.signal as ClearableSignal;

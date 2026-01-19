@@ -227,7 +227,6 @@ export interface GatewayOptions<M, P = Record<string, unknown>>
    */
   params?: P;
 
-
   /**
    * Abort signal for request cancellation
    *

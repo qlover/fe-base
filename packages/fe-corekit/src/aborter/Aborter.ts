@@ -469,7 +469,10 @@ export class Aborter<T extends AborterConfig = AborterConfig>
       } catch (error) {
         // Security improvement: Log errors in development for debugging
         // but ignore in production to prevent breaking abort flow
-        if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+        if (
+          typeof process !== 'undefined' &&
+          process.env?.NODE_ENV === 'development'
+        ) {
           console.error(
             `[${this.aborterName}] Error in ${callbackName} callback:`,
             error
