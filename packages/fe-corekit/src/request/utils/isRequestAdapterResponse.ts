@@ -1,4 +1,4 @@
-import { RequestAdapterResponse } from '../interface/RequestAdapter';
+import { type RequestAdapterResponse } from '../interface/RequestAdapter';
 
 /**
  * Type guard function to check if a value is a RequestAdapterResponse

@@ -1,5 +1,5 @@
 import type { FormatterInterface } from './interface/FormatterInterface';
-import { LogEvent } from './interface/LogEvent';
+import { type LogEvent } from './interface/LogEvent';
 
 /**
  * Defines the format type for timestamp formatting

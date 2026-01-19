@@ -1,12 +1,12 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import { type KeyStorageInterface } from '@qlover/fe-corekit';
 import {
-  UserAuthStoreOptions,
+  type UserAuthStoreOptions,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
 import { UserAuthStore } from './UserAuthStore';
-import { PickUser, UserAuthState } from './UserAuthState';
-import { InferState, UserAuthOptions } from './UserAuthService';
-import { TokenStorage, TokenStorageOptions } from '../../storage';
+import { type PickUser, type UserAuthState } from './UserAuthState';
+import { type InferState, type UserAuthOptions } from './UserAuthService';
+import { TokenStorage, type TokenStorageOptions } from '../../storage';
 
 const defaultCredentialKey = 'auth_token';
 

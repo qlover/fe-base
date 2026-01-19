@@ -36,14 +36,17 @@
  * // Adds formatted changelog to each workspace
  * ```
  */
-import ReleaseContext from '../../implments/ReleaseContext';
-import { WorkspaceValue } from '../workspaces/Workspaces';
-import GithubManager from './GithubManager';
-import { CommitValue, GitChangelogOptions } from '../../interface/ChangeLog';
+import type ReleaseContext from '../../implments/ReleaseContext';
+import { type WorkspaceValue } from '../workspaces/Workspaces';
+import type GithubManager from './GithubManager';
+import {
+  type CommitValue,
+  type GitChangelogOptions
+} from '../../interface/ChangeLog';
 import {
   CHANGELOG_ALL_FIELDS,
   GitChangelog,
-  GitChangelogProps
+  type GitChangelogProps
 } from '../../implments/changelog/GitChangeLog';
 import { GitChangelogFormatter } from '../../implments/changelog/GitChangelogFormatter';
 import { Pather } from '../../utils/pather';

@@ -1,11 +1,11 @@
 import {
-  ExecutorContextInterface,
+  type ExecutorContextInterface,
   ExecutorError,
-  LifecyclePluginInterface
+  type LifecyclePluginInterface
 } from '../../executor/interface';
 import {
-  RequestAdapterConfig,
-  RequestAdapterResponse,
+  type RequestAdapterConfig,
+  type RequestAdapterResponse,
   RequestErrorID
 } from '../interface';
 import { JSON_RESPONSE_TYPE } from './consts';

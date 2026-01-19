@@ -1,4 +1,7 @@
-import { TimestampFormatter, DateFormatType } from '../src/TimestampFormatter';
+import {
+  TimestampFormatter,
+  type DateFormatType
+} from '../src/TimestampFormatter';
 import { LogEvent } from '../src/interface/LogEvent';
 
 describe('TimestampFormatter', () => {

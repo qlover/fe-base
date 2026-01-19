@@ -2,7 +2,7 @@ import {
   ExecutorError,
   Aborter,
   AborterPlugin,
-  AborterConfig
+  type AborterConfig
 } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
@@ -14,8 +14,8 @@ import {
   MessageSenderExecutor,
   type MessageGetwayInterface,
   type MessageStoreMsg,
-  MessageSenderContext,
-  MessageSenderOptions
+  type MessageSenderContext,
+  type MessageSenderOptions
 } from '../../src/core/message-sender';
 
 function toAborterConfig(

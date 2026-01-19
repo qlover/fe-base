@@ -1,6 +1,6 @@
-import { Encryptor } from '../../encrypt';
-import { SerializerIneterface } from '../../serializer';
-import { SyncStorageInterface } from './SyncStorageInterface';
+import { type Encryptor } from '../../encrypt';
+import { type SerializerIneterface } from '../../serializer';
+import { type SyncStorageInterface } from './SyncStorageInterface';
 
 /**
  * Pipe processor type definition

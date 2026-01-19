@@ -1,4 +1,8 @@
-import { ExecutorContext, ExecutorPlugin, HookRuntimes } from '../interface';
+import {
+  type ExecutorContext,
+  type ExecutorPlugin,
+  type HookRuntimes
+} from '../interface';
 
 /**
  * Create a reusable context with shared hooksRuntimes object

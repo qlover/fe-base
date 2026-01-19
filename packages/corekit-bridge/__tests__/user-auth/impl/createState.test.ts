@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createState } from '../../../src/core/user-auth/impl/createState';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import {
-  UserAuthStoreOptions,
+  type UserAuthStoreOptions,
   LOGIN_STATUS
 } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
 import { TokenStorage } from '../../../src/core/storage';

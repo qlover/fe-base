@@ -1,8 +1,8 @@
-import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { ChatMessage } from '../impl/ChatMessage';
-import { ChatMessageStoreInterface } from './ChatMessageStoreInterface';
-import { GatewayOptions } from './MessageGetwayInterface';
-import { MessageSenderOptions } from './MessageSenderPlugin';
+import { type ExecutorPlugin } from '@qlover/fe-corekit';
+import { type ChatMessage } from '../impl/ChatMessage';
+import { type ChatMessageStoreInterface } from './ChatMessageStoreInterface';
+import { type GatewayOptions } from './MessageGetwayInterface';
+import { type MessageSenderOptions } from './MessageSenderPlugin';
 
 /**
  * Input reference interface for managing input element references and focus control

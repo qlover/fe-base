@@ -14,12 +14,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   ResponseStream,
-  ResponseStreamConfig
+  type ResponseStreamConfig
 } from '../../src/core/response-stream/ResponseStream';
-import { StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
+import { type StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
 import { StreamEvent } from '../../src/core/response-stream/StreamEvent';
 import { SSEStreamProcessor } from '../../src/core/response-stream/SSEStreamProcessor';
-import { ExecutorContext, RequestAdapterConfig } from '@qlover/fe-corekit';
+import {
+  type ExecutorContext,
+  type RequestAdapterConfig
+} from '@qlover/fe-corekit';
 
 describe('ResponseStream', () => {
   // Mock implementations

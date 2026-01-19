@@ -1,14 +1,14 @@
-import { LoggerInterface } from '@qlover/logger';
+import { type LoggerInterface } from '@qlover/logger';
 import {
-  AsyncStoreInterface,
-  AsyncStoreOptions,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreOptions,
+  type AsyncStoreStateInterface
 } from '../../store-state';
 import {
-  BaseServiceInterface,
-  ServiceGatewayType
+  type BaseServiceInterface,
+  type ServiceGatewayType
 } from '../interface/base/BaseServiceInterface';
-import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
 
 /**

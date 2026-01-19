@@ -1,10 +1,10 @@
 import {
   AsyncExecutor,
-  ExecutorContext,
-  PromiseTask
+  type ExecutorContext,
+  type PromiseTask
 } from '@qlover/fe-corekit';
 import { firstUppercase } from '../utils/firstUppercase';
-import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
  * Gateway executor options

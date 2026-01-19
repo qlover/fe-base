@@ -1,7 +1,7 @@
-import { ChatMessage } from '../impl/ChatMessage';
+import { type ChatMessage } from '../impl/ChatMessage';
 import {
-  MessagesStateInterface,
-  MessagesStoreInterface
+  type MessagesStateInterface,
+  type MessagesStoreInterface
 } from './MessagesStoreInterface';
 
 /**

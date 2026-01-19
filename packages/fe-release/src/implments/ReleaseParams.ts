@@ -50,9 +50,9 @@ import {
   MULTI_WORKSPACE_SEPARATOR,
   WORKSPACE_VERSION_SEPARATOR
 } from '../defaults';
-import { TemplateContext } from '../type';
-import { WorkspaceValue } from '../plugins/workspaces/Workspaces';
-import { ReleaseContextConfig } from './ReleaseContext';
+import { type TemplateContext } from '../type';
+import { type WorkspaceValue } from '../plugins/workspaces/Workspaces';
+import { type ReleaseContextConfig } from './ReleaseContext';
 
 export type ReleaseBranchParams = {
   tagName: string;

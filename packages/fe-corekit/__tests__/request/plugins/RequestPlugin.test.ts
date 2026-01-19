@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RequestPlugin } from '../../../src/request/plugins/RequestPlugin';
-import { RequestAdapterContext } from '../../../src/request/plugins/RequestPlugin';
-import { UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
-import { HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
-import { RequestAdapterConfig } from '../../../src/request/interface';
+import { type RequestAdapterContext } from '../../../src/request/plugins/RequestPlugin';
+import { type UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
+import { type HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
+import { type RequestAdapterConfig } from '../../../src/request/interface';
 import {
   JSON_RESPONSE_TYPE,
   JSON_CONTENT_TYPE,

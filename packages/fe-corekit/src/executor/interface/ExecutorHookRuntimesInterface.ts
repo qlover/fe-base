@@ -1,7 +1,7 @@
-import { HookRuntimes } from './ExecutorContext';
+import { type HookRuntimes } from './ExecutorContext';
 import {
-  ExecutorPluginInterface,
-  ExecutorContextInterface
+  type ExecutorPluginInterface,
+  type ExecutorContextInterface
 } from './ExecutorInterface';
 
 /**

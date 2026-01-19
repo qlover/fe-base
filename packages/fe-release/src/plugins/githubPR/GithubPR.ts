@@ -36,14 +36,13 @@
  * ```
  */
 import {
-  ReleaseBranchParams,
+  type ReleaseBranchParams,
   ReleaseParams,
   type ReleaseParamsConfig
 } from '../../implments/ReleaseParams';
-import ReleaseContext, {
-  ReleaseContextConfig
-} from '../../implments/ReleaseContext';
-import { WorkspaceValue } from '../workspaces/Workspaces';
+import { type ReleaseContextConfig } from '../../implments/ReleaseContext';
+import type ReleaseContext from '../../implments/ReleaseContext';
+import { type WorkspaceValue } from '../workspaces/Workspaces';
 import GithubManager from './GithubManager';
 import GitBase, { type GitBaseProps } from '../GitBase';
 import GithubChangelog from './GithubChangelog';

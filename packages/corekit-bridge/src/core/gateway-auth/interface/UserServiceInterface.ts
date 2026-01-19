@@ -1,11 +1,11 @@
-import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
-import { LoginInterface } from './LoginInterface';
-import { RegisterInterface } from './RegisterInterface';
-import { UserInfoInterface } from './UserInfoInterface';
-import { UserStoreInterface } from './UserStoreInterface';
-import { GatewayBasePluginType } from '../impl/GatewayBasePlguin';
-import { GatewayExecutorOptions } from '../impl/GatewayExecutor';
-import { ServiceActionType } from '../impl/ServiceAction';
+import { type ExecutorContext, type ExecutorPlugin } from '@qlover/fe-corekit';
+import { type LoginInterface } from './LoginInterface';
+import { type RegisterInterface } from './RegisterInterface';
+import { type UserInfoInterface } from './UserInfoInterface';
+import { type UserStoreInterface } from './UserStoreInterface';
+import { type GatewayBasePluginType } from '../impl/GatewayBasePlguin';
+import { type GatewayExecutorOptions } from '../impl/GatewayExecutor';
+import { type ServiceActionType } from '../impl/ServiceAction';
 
 /**
  * User service gateway interface

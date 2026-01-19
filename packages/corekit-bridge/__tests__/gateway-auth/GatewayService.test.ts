@@ -15,17 +15,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   GatewayService,
-  GatewayServiceOptions
+  type GatewayServiceOptions
 } from '../../src/core/gateway-auth/impl/GatewayService';
-import { AsyncStore, AsyncStoreState } from '../../src/core/store-state';
+import { AsyncStore, type AsyncStoreState } from '../../src/core/store-state';
 import {
   GatewayExecutor,
-  GatewayExecutorOptions
+  type GatewayExecutorOptions
 } from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import {
-  ExecutorPlugin,
+  type ExecutorPlugin,
   ExecutorError,
-  ExecutorContext
+  type ExecutorContext
 } from '@qlover/fe-corekit';
 import { GatewayBasePlguin } from '../../src/core/gateway-auth/impl/GatewayBasePlguin';
 import type { LoggerInterface } from '@qlover/logger';

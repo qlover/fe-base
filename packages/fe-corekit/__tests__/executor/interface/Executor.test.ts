@@ -14,11 +14,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   Executor,
-  ExecutorContext,
-  Task,
-  ExecutorConfigInterface
+  type ExecutorContext,
+  type Task,
+  type ExecutorConfigInterface
 } from '../../../src';
-import { ExecutorPlugin } from '../../../src/executor/interface/ExecutorPlugin';
+import { type ExecutorPlugin } from '../../../src/executor/interface/ExecutorPlugin';
 import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
 
 // Test data constants

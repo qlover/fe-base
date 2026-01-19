@@ -1,13 +1,13 @@
 import {
-  BaseServiceInterface,
-  ServiceGatewayType
+  type BaseServiceInterface,
+  type ServiceGatewayType
 } from '../interface/base/BaseServiceInterface';
-import { ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../store-state';
-import { UserStoreInterface } from '../interface/UserStoreInterface';
+import { type UserStoreInterface } from '../interface/UserStoreInterface';
 
 function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function';

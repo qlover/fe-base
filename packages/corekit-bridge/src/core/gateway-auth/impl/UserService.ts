@@ -1,20 +1,20 @@
 import { AsyncStoreStatus } from '../../store-state';
-import { LoginParams } from '../interface/LoginInterface';
-import { GatewayExecutor } from './GatewayExecutor';
+import { type LoginParams } from '../interface/LoginInterface';
+import { type GatewayExecutor } from './GatewayExecutor';
 import { GatewayService } from './GatewayService';
 import {
-  UserServiceGateway,
-  UserServiceInterface,
-  UserServicePluginType,
-  UserServicePluginInterface
+  type UserServiceGateway,
+  type UserServiceInterface,
+  type UserServicePluginType,
+  type UserServicePluginInterface
 } from '../interface/UserServiceInterface';
-import { UserStore, UserStoreOptions } from './UserStore';
+import { type UserStore, type UserStoreOptions } from './UserStore';
 import {
-  UserStateInterface,
-  UserStoreInterface
+  type UserStateInterface,
+  type UserStoreInterface
 } from '../interface/UserStoreInterface';
 import { createUserStore } from '../utils/createUserStore';
-import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
  * User service configuration

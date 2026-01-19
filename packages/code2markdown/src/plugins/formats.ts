@@ -1,11 +1,11 @@
-import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
-import Code2MDContext from '../implments/Code2MDContext';
+import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
+import type Code2MDContext from '../implments/Code2MDContext';
 import { HBSTemplate } from '../implments/HBSTemplate';
 import fsExtra from 'fs-extra';
 import { join, dirname, resolve } from 'path';
 import { mkdirSync } from 'fs';
 import { hbsHelpers } from '../implments/hbsHelper';
-import { FormatProjectValue } from '../type';
+import { type FormatProjectValue } from '../type';
 
 /**
  * Supported format output types for markdown files

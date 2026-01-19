@@ -1,5 +1,5 @@
-import { UserAuthStoreOptions } from '../interface/UserAuthStoreInterface';
-import { PickUser, UserAuthState } from './UserAuthState';
+import { type UserAuthStoreOptions } from '../interface/UserAuthStoreInterface';
+import { type PickUser, UserAuthState } from './UserAuthState';
 
 /**
  * Get default state for the user authentication store

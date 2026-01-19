@@ -1,6 +1,6 @@
-import { HandlerInterface } from './interface/HandlerInterface';
-import { FormatterInterface } from './interface/FormatterInterface';
-import { LogEvent } from './interface/LogEvent';
+import { type HandlerInterface } from './interface/HandlerInterface';
+import { type FormatterInterface } from './interface/FormatterInterface';
+import { type LogEvent } from './interface/LogEvent';
 
 /**
  * Console output handler for log messages

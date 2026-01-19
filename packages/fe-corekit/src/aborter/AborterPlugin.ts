@@ -1,6 +1,6 @@
 import {
   type AborterConfig,
-  AborterId,
+  type AborterId,
   type AborterInterface
 } from './AborterInterface';
 import { AbortError, isAbortError } from './AbortError';

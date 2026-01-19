@@ -29,8 +29,8 @@
 
 import {
   ExecutorError,
-  ExecutorPlugin,
-  ExecutorContext,
+  type ExecutorPlugin,
+  type ExecutorContext,
   SyncExecutor
 } from '../../../src';
 

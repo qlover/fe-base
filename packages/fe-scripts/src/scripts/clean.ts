@@ -1,10 +1,10 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
-import ignore, { Ignore } from 'ignore';
+import ignore, { type Ignore } from 'ignore';
 import {
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
 
 export interface CleanOptions extends ScriptSharedInterface {

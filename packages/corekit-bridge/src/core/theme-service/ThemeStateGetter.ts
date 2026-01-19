@@ -1,4 +1,4 @@
-import { ThemeServiceProps, ThemeServiceState } from './type';
+import { type ThemeServiceProps, type ThemeServiceState } from './type';
 
 export class ThemeStateGetter {
   public static SYSTEM_THEME = 'system';

@@ -6,7 +6,7 @@
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo"
   },
-  "include": ["src/**/*","package.json"],
+  "include": ["src/**/*", "package.json"],
   "exclude": ["dist", "node_modules", "ts-build"],
   "references": [
     { "path": "../logger" },

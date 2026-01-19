@@ -1,9 +1,9 @@
 import { ColorFormatter } from '../../src/implement/ColorFormatter';
 import {
   Logger,
-  HandlerInterface,
+  type HandlerInterface,
   LogEvent,
-  FormatterInterface
+  type FormatterInterface
 } from '@qlover/logger';
 import chalk from 'chalk';
 

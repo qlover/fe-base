@@ -1,4 +1,4 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
+import { type KeyStorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Configuration options for `URLStorage` instance

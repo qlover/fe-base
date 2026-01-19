@@ -4,9 +4,9 @@ import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import {
   LOGIN_STATUS,
-  UserAuthStoreOptions
+  type UserAuthStoreOptions
 } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
-import { LoginResponseData } from '../../../src/core/user-auth/interface/UserAuthApiInterface';
+import { type LoginResponseData } from '../../../src/core/user-auth/interface/UserAuthApiInterface';
 
 interface MockUser {
   /** Unique user identifier */

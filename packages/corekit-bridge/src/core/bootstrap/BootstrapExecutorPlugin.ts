@@ -1,5 +1,5 @@
-import { IOCContainerInterface } from '../ioc';
-import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
+import { type IOCContainerInterface } from '../ioc';
+import { type ExecutorContext, type ExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 export type BootstrapContextValue = {

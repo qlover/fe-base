@@ -1,4 +1,4 @@
-import { RequestAdapterConfig } from './RequestAdapter';
+import { type RequestAdapterConfig } from './RequestAdapter';
 
 export interface HeaderInjectorConfig {
   /**

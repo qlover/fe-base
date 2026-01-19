@@ -1,8 +1,8 @@
-import { GatewayOptions } from '../interface/MessageGetwayInterface';
-import { MessageSenderContext } from '../interface/MessageSenderPlugin';
-import { SenderGatewayInterface } from '../interface/SenderGatewayInterface';
-import { MessageSenderExecutor } from './MessageSenderExecutor';
-import { MessageStoreMsg } from './MessageStore';
+import { type GatewayOptions } from '../interface/MessageGetwayInterface';
+import { type MessageSenderContext } from '../interface/MessageSenderPlugin';
+import { type SenderGatewayInterface } from '../interface/SenderGatewayInterface';
+import { type MessageSenderExecutor } from './MessageSenderExecutor';
+import { type MessageStoreMsg } from './MessageStore';
 
 /**
  * Sender gateway implementation

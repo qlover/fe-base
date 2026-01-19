@@ -7,7 +7,7 @@ import type {
   ExecutorInterface
 } from '../../../src/executor/interface/ExecutorInterface';
 import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
-import { LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
+import { type LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
 import type { HookRuntimes } from '../../../src/executor/interface/ExecutorContext';
 
 class MockExecutorError extends ExecutorError {

@@ -1,7 +1,7 @@
-import { ExecutorContextInterface } from './ExecutorInterface';
-import { ExecutorPluginInterface } from './ExecutorInterface';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorTask } from './ExecutorInterface';
+import { type ExecutorContextInterface } from './ExecutorInterface';
+import { type ExecutorPluginInterface } from './ExecutorInterface';
+import { type ExecutorError } from './ExecutorError';
+import { type ExecutorTask } from './ExecutorInterface';
 
 export type LifecycleErrorResult = ExecutorError | Error | void;
 export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;

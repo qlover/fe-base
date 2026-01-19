@@ -1,3 +1,5 @@
+import type { UserConfig } from '@commitlint/types';
+
 export const defaultFeConfig: FeConfig = {
   protectedBranches: ['master', 'develop', 'main'],
   cleanFiles: [
@@ -71,7 +73,7 @@ export interface FeConfig {
    *
    * @default { "extends": ["@commitlint/config-conventional"] }
    */
-  commitlint?: import('@commitlint/types').UserConfig;
+  commitlint?: UserConfig;
 
   /**
    * config of CI release

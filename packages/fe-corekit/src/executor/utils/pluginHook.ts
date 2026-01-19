@@ -1,7 +1,7 @@
 import {
-  ExecutorContextInterface,
-  ExecutorPluginInterface,
-  ExecutorPluginNameType
+  type ExecutorContextInterface,
+  type ExecutorPluginInterface,
+  type ExecutorPluginNameType
 } from '../interface';
 
 /**

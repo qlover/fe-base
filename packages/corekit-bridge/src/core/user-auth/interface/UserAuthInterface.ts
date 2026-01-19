@@ -1,4 +1,4 @@
-import { PickUser, UserAuthState } from '../impl/UserAuthState';
+import { type PickUser, type UserAuthState } from '../impl/UserAuthState';
 import type {
   LoginResponseData,
   UserAuthApiInterface

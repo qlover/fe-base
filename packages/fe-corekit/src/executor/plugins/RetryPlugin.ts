@@ -1,7 +1,7 @@
 import {
-  ExecutorContextInterface,
-  ExecutorTask,
-  LifecyclePluginInterface
+  type ExecutorContextInterface,
+  type ExecutorTask,
+  type LifecyclePluginInterface
 } from '../interface';
 import type { RetryInterface, RetryOptions } from '../interface/RetryInterface';
 

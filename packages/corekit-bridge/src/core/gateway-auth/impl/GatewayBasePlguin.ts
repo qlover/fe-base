@@ -1,10 +1,10 @@
 import {
-  ExecutorContext,
+  type ExecutorContext,
   ExecutorError,
-  ExecutorPlugin
+  type ExecutorPlugin
 } from '@qlover/fe-corekit';
-import { GatewayExecutorOptions } from './GatewayExecutor';
-import { FirstUppercaseType } from '../utils/firstUppercase';
+import { type GatewayExecutorOptions } from './GatewayExecutor';
+import { type FirstUppercaseType } from '../utils/firstUppercase';
 
 /**
  * Generate hook name type for a specific action

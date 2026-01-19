@@ -1,6 +1,6 @@
-import { HookRuntimes } from './ExecutorContext';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorHookRuntimesInterface } from './ExecutorHookRuntimesInterface';
+import { type HookRuntimes } from './ExecutorContext';
+import { type ExecutorError } from './ExecutorError';
+import { type ExecutorHookRuntimesInterface } from './ExecutorHookRuntimesInterface';
 
 /**
  * Asynchronous task function type

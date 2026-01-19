@@ -1,5 +1,5 @@
-import { ExecutorContext } from './ExecutorContext';
-import { ExecutorError } from './ExecutorError';
+import { type ExecutorContext } from './ExecutorContext';
+import { type ExecutorError } from './ExecutorError';
 
 /**
  * Type definition for promise-based task

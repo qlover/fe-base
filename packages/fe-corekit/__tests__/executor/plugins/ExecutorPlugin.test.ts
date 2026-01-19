@@ -1,4 +1,8 @@
-import { ExecutorPlugin, ExecutorError, ExecutorContext } from '../../../src';
+import {
+  type ExecutorPlugin,
+  ExecutorError,
+  type ExecutorContext
+} from '../../../src';
 
 describe('ExecutorPlugin', () => {
   it('should execute onBefore hook and modify data', async () => {

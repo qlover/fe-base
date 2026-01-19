@@ -12,7 +12,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { hbsHelpers } from '../../src/implments/hbsHelper';
-import Handlebars from 'handlebars';
+import type Handlebars from 'handlebars';
 
 describe('hbsHelpers', () => {
   describe('toLowerCase', () => {

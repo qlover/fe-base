@@ -1,9 +1,9 @@
-import { ExecutorAsyncTask, LifecycleExecutor } from '@qlover/fe-corekit';
-import { MessageInterface } from '../interface/MessagesStoreInterface';
+import { type ExecutorAsyncTask, LifecycleExecutor } from '@qlover/fe-corekit';
+import { type MessageInterface } from '../interface/MessagesStoreInterface';
 import {
-  MessageSenderContext,
-  MessageSenderOptions,
-  MessageSenderPlugin
+  type MessageSenderContext,
+  type MessageSenderOptions,
+  type MessageSenderPlugin
 } from '../interface/MessageSenderPlugin';
 
 /**

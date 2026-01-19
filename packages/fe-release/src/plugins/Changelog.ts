@@ -34,21 +34,24 @@
  * await plugin.exec();
  * ```
  */
-import ReleaseContext from '../implments/ReleaseContext';
-import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
+import type ReleaseContext from '../implments/ReleaseContext';
+import {
+  type WorkspacesProps,
+  type WorkspaceValue
+} from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
-import { GitChangelogOptions } from '../interface/ChangeLog';
+import { type GitChangelogOptions } from '../interface/ChangeLog';
 import {
   CHANGELOG_ALL_FIELDS,
   GitChangelog,
-  GitChangelogProps
+  type GitChangelogProps
 } from '../implments/changelog/GitChangeLog';
 import { GitChangelogFormatter } from '../implments/changelog/GitChangelogFormatter';
 import {
   ScriptPlugin,
-  ScriptPluginProps,
+  type ScriptPluginProps,
   Shell
 } from '@qlover/scripts-context';
 

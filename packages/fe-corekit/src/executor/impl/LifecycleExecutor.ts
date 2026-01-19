@@ -7,7 +7,7 @@ import type {
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
 import type { LifecyclePluginInterface } from '../interface/LifecyclePluginInterface';
-import { ExecutorContextImpl } from './ExecutorContextImpl';
+import { type ExecutorContextImpl } from './ExecutorContextImpl';
 import { BasePluginExecutor } from './BasePluginExecutor';
 import { EXECUTOR_ASYNC_ERROR } from '../utils/constants';
 import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';

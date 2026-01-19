@@ -1,8 +1,8 @@
 import {
-  ExecutorContextInterface,
-  ExecutorPluginInterface
+  type ExecutorContextInterface,
+  type ExecutorPluginInterface
 } from '../interface/ExecutorInterface';
-import { HookRuntimes } from '../interface';
+import { type HookRuntimes } from '../interface';
 
 /**
  * Private storage for runtime state

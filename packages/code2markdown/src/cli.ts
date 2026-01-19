@@ -75,7 +75,7 @@
 
 import { Command } from 'commander';
 import { version, description } from '../package.json';
-import { Code2MDContextOptions } from './implments/Code2MDContext';
+import { type Code2MDContextOptions } from './implments/Code2MDContext';
 import { Code2MDTask } from './implments/Code2MDTask';
 import { dirname, join, resolve } from 'path';
 

@@ -37,18 +37,17 @@
  * });
  * ```
  */
-import { Shell, ShellInterface } from '@qlover/scripts-context';
+import { Shell, type ShellInterface } from '@qlover/scripts-context';
 import type { LoggerInterface } from '@qlover/logger';
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
 import {
   DEFAULT_AUTO_MERGE_RELEASE_PR,
   DEFAULT_AUTO_MERGE_TYPE
 } from '../../defaults';
-import { GithubPRProps } from './GithubPR';
-import { WorkspaceValue } from '../workspaces/Workspaces';
-import ReleaseContext, {
-  ReleaseContextConfig
-} from '../../implments/ReleaseContext';
+import { type GithubPRProps } from './GithubPR';
+import { type WorkspaceValue } from '../workspaces/Workspaces';
+import { type ReleaseContextConfig } from '../../implments/ReleaseContext';
+import type ReleaseContext from '../../implments/ReleaseContext';
 
 export interface PullRequestManagerOptions {
   token: string;
@@ -66,7 +65,7 @@ export type CommitInfo =
   RestEndpointMethodTypes['repos']['getCommit']['response']['data'];
 
 export type CreateReleaseOptions =
-  import('@octokit/rest').RestEndpointMethodTypes['repos']['createRelease']['parameters'];
+  RestEndpointMethodTypes['repos']['createRelease']['parameters'];
 
 type CreatePROptionsArgs = {
   /**

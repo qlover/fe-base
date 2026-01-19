@@ -1,12 +1,15 @@
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../store-state';
-import { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
-import { GatewayExecutor, GatewayExecutorOptions } from './GatewayExecutor';
-import { ExecutorPlugin } from '@qlover/fe-corekit';
-import { ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
-import { BaseService, BaseServiceOptions } from './BaseService';
+import { type ServiceGatewayType } from '../interface/base/BaseServiceInterface';
+import {
+  type GatewayExecutor,
+  type GatewayExecutorOptions
+} from './GatewayExecutor';
+import { type ExecutorPlugin } from '@qlover/fe-corekit';
+import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import { BaseService, type BaseServiceOptions } from './BaseService';
 
 /**
  * Gateway service options

@@ -5,7 +5,7 @@ import type {
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
 import type { LifecycleSyncPluginInterface } from '../interface/SyncLifecyclePluginInterface';
-import { ExecutorContextImpl } from './ExecutorContextImpl';
+import { type ExecutorContextImpl } from './ExecutorContextImpl';
 import { BasePluginExecutor } from './BasePluginExecutor';
 import { EXECUTOR_SYNC_ERROR } from '../utils/constants';
 import {

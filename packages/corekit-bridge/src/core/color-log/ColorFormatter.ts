@@ -1,4 +1,4 @@
-import { FormatterInterface, LogEvent } from '@qlover/logger';
+import { type FormatterInterface, type LogEvent } from '@qlover/logger';
 
 export interface ColorStyle {
   color?: string;

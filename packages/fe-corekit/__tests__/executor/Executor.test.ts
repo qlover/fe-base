@@ -1,9 +1,9 @@
-import { MockInstance } from 'vitest';
+import { type MockInstance } from 'vitest';
 import {
   Executor,
-  ExecutorConfigInterface,
+  type ExecutorConfigInterface,
   ExecutorError,
-  ExecutorPlugin
+  type ExecutorPlugin
 } from '../../src';
 
 function mockLogStdIo(): {

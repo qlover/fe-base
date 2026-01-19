@@ -3,7 +3,7 @@ import { RetryPlugin } from '../../../src/executor/plugins/RetryPlugin';
 import { Retryer } from '../../../src/executor/utils/Retryer';
 import type { ExecutorContextInterface } from '../../../src/executor/interface';
 import { vi } from 'vitest';
-import { RetryOptions } from '../../../src/executor/interface/RetryInterface';
+import { type RetryOptions } from '../../../src/executor/interface/RetryInterface';
 
 const default_retry_delay = 10;
 const delayMs = 8;

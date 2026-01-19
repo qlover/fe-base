@@ -1,9 +1,9 @@
 import { Retryer } from '../../src/executor/utils/Retryer';
 import {
   RequestError,
-  RequestAdapterInterface,
-  RequestAdapterResponse,
-  RequestAdapterConfig,
+  type RequestAdapterInterface,
+  type RequestAdapterResponse,
+  type RequestAdapterConfig,
   RequestScheduler
 } from '../../src/request';
 

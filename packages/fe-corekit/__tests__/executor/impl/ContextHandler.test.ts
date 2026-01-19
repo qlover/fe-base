@@ -13,7 +13,7 @@ import {
   ContextHandler,
   createContext
 } from '../../../src/executor/impl/ContextHandler';
-import { ExecutorPlugin } from '../../../src/executor/interface';
+import { type ExecutorPlugin } from '../../../src/executor/interface';
 
 // Test data factory functions
 function createTestPlugin(overrides = {}): ExecutorPlugin {

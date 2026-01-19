@@ -4,14 +4,14 @@ import {
   type TSESLint,
   type TSESTree
 } from '@typescript-eslint/utils';
-import { MessageIds } from '../rules/ts-class-override';
+import { type MessageIds } from '../rules/ts-class-override';
 import {
   getMethodName,
   getMethodNameString,
   hasOverrideJSDoc,
   hasOverrideKeyword
 } from './override-helpers';
-import { TypeChecker } from 'typescript';
+import { type TypeChecker } from 'typescript';
 import * as ts from 'typescript';
 import { OverrideFixer } from './OverrideFixer';
 

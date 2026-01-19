@@ -1,11 +1,11 @@
 import {
   Executor,
-  ExecutorConfigInterface,
-  ExecutorContext,
+  type ExecutorConfigInterface,
+  type ExecutorContext,
   ExecutorError,
-  ExecutorPlugin,
-  HookType,
-  SyncTask
+  type ExecutorPlugin,
+  type HookType,
+  type SyncTask
 } from '../interface';
 import { ContextHandler, createContext } from './ContextHandler';
 

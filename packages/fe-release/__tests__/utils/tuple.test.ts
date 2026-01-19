@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { tuple } from '../../src/utils/tuple';
 import {
-  ScriptContext,
+  type ScriptContext,
   ScriptPlugin,
-  ScriptPluginProps
+  type ScriptPluginProps
 } from '@qlover/scripts-context';
 
 class TestPlugin extends ScriptPlugin<ScriptContext<any>, ScriptPluginProps> {

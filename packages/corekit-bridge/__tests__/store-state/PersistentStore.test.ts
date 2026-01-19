@@ -14,7 +14,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import {
-  StoreStateInterface,
+  type StoreStateInterface,
   PersistentStore
 } from '../../src/core/store-state';
 

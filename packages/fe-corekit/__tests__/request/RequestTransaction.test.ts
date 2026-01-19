@@ -1,9 +1,9 @@
 import { RequestTransaction } from '../../src/request';
 import {
-  RequestAdapterInterface,
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface,
+  type RequestAdapterInterface,
+  type RequestAdapterConfig,
+  type RequestAdapterResponse,
+  type RequestTransactionInterface,
   RequestError
 } from '../../src/request';
 

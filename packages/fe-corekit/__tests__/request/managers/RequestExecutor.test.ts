@@ -1,10 +1,10 @@
 import {
   RequestAdapterFetch,
-  RequestAdapterFetchConfig
+  type RequestAdapterFetchConfig
 } from '../../../src/request/adapter/RequestAdapterFetch';
 import { RequestExecutor } from '../../../src/request/managers/RequestExecutor';
 import { LifecycleExecutor } from '../../../src/executor/impl/LifecycleExecutor';
-import { ExecutorContextImpl } from '../../../src/executor/impl/ExecutorContextImpl';
+import { type ExecutorContextImpl } from '../../../src/executor/impl/ExecutorContextImpl';
 
 describe('RequestExecutor', () => {
   let fetchMock: ReturnType<typeof vi.fn>;

@@ -1,4 +1,4 @@
-import { GeneratorPrompt } from './type';
+import { type GeneratorPrompt } from './type';
 
 export const validRequiredString = (
   value: string,

@@ -1,15 +1,15 @@
 import {
-  LifecyclePluginInterface,
-  ExecutorContextInterface
+  type LifecyclePluginInterface,
+  type ExecutorContextInterface
 } from '../../executor/interface';
 
-import { UrlBuilderInterface } from '../interface/UrlBuilderInterface';
-import { RequestAdapterConfig } from '../interface';
+import { type UrlBuilderInterface } from '../interface/UrlBuilderInterface';
+import { type RequestAdapterConfig } from '../interface';
 import { SimpleUrlBuilder } from '../utils/SimpleUrlBuilder';
 import { RequestHeaderInjector } from './RequestHeaderInjector';
 import {
-  HeaderInjectorConfig,
-  HeaderInjectorInterface
+  type HeaderInjectorConfig,
+  type HeaderInjectorInterface
 } from '../interface/HeaderInjectorInterface';
 import { hasObjectKeyWithValue } from '../utils/isAsString';
 import {

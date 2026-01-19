@@ -30,8 +30,8 @@
 
 import {
   AsyncExecutor,
-  ExecutorContext,
-  ExecutorPlugin,
+  type ExecutorContext,
+  type ExecutorPlugin,
   ExecutorError
 } from '../../../src';
 

@@ -1,10 +1,10 @@
 import ReleaseTask from '../../src/implments/ReleaseTask';
-import ReleaseContext from '../../src/implments/ReleaseContext';
+import type ReleaseContext from '../../src/implments/ReleaseContext';
 import {
-  ExecutorAsyncTask,
-  ExecutorContextInterface,
-  ExecutorSyncTask,
-  ExecutorTask,
+  type ExecutorAsyncTask,
+  type ExecutorContextInterface,
+  type ExecutorSyncTask,
+  type ExecutorTask,
   LifecycleExecutor
 } from '@qlover/fe-corekit';
 import { createTestReleaseOptions } from '../helpers';

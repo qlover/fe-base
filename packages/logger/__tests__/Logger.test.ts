@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Logger } from '../src/Logger';
 import { ConsoleHandler } from '../src/ConsoleHandler';
 import { TimestampFormatter } from '../src/TimestampFormatter';
-import { LogEvent } from '../src/interface/LogEvent';
-import { HandlerInterface } from '../src/interface/HandlerInterface';
-import { FormatterInterface } from '../src/interface/FormatterInterface';
+import { type LogEvent } from '../src/interface/LogEvent';
+import { type HandlerInterface } from '../src/interface/HandlerInterface';
+import { type FormatterInterface } from '../src/interface/FormatterInterface';
 
 describe('Logger', () => {
   // Create a mock handler for testing

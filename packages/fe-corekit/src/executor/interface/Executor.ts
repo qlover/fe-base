@@ -1,5 +1,5 @@
-import { ExecutorError } from './ExecutorError';
-import { ExecutorPlugin, Task } from './ExecutorPlugin';
+import { type ExecutorError } from './ExecutorError';
+import { type ExecutorPlugin, type Task } from './ExecutorPlugin';
 
 export type HookType = string;
 

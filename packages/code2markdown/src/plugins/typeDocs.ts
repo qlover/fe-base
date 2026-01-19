@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Application,
-  ParameterReflection,
-  ProjectReflection,
+  type ParameterReflection,
+  type ProjectReflection,
   ReflectionKind,
   TSConfigReader,
-  TypeDocOptions,
+  type TypeDocOptions,
   TypeDocReader
 } from 'typedoc';
-import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
+import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 import {
-  FormatProjectDescription,
-  FormatProjectSource,
-  FormatProjectValue,
+  type FormatProjectDescription,
+  type FormatProjectSource,
+  type FormatProjectValue,
   ReflectionKindName
 } from '../type';
 import fsExtra from 'fs-extra';
 import { resolve } from 'path';
-import Code2MDContext from '../implments/Code2MDContext';
+import type Code2MDContext from '../implments/Code2MDContext';
 
 /**
  * Configuration options for the TypeDocs plugin

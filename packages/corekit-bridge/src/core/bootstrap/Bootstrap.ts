@@ -1,12 +1,12 @@
-import { ExecutorError, SyncExecutor } from '@qlover/fe-corekit';
+import { type ExecutorError, SyncExecutor } from '@qlover/fe-corekit';
 import type {
   BootstrapContextValue,
   BootstrapExecutorPlugin
 } from './BootstrapExecutorPlugin';
 import { InjectEnv, type InjectEnvConfig } from './plugins/InjectEnv';
-import { InjectIOC, InjectIOCOptions } from './plugins/InjectIOC';
-import { InjectGlobal, InjectGlobalConfig } from './plugins/InjectGlobal';
-import { IOCContainerInterface, IOCManagerInterface } from '../ioc';
+import { InjectIOC, type InjectIOCOptions } from './plugins/InjectIOC';
+import { InjectGlobal, type InjectGlobalConfig } from './plugins/InjectGlobal';
+import { type IOCContainerInterface, type IOCManagerInterface } from '../ioc';
 
 export interface BootstrapConfig<Container extends IOCContainerInterface>
   extends Omit<BootstrapContextValue, 'ioc'> {

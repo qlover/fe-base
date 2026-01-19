@@ -1,5 +1,5 @@
 import { LOGIN_STATUS } from '../interface/UserAuthStoreInterface';
-import { StoreStateInterface } from '../../store-state';
+import { type StoreStateInterface } from '../../store-state';
 
 export type PickUser<T> = T extends UserAuthState<infer U> ? U : never;
 

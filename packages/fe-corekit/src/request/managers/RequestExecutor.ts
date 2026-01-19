@@ -4,11 +4,11 @@ import type {
   RequestAdapterResponse
 } from '../interface/RequestAdapter';
 import { clone } from 'lodash-es';
-import { RequestInterface } from '../interface/RequestInterface';
+import { type RequestInterface } from '../interface/RequestInterface';
 import {
-  ExecutorContextInterface,
-  LifecycleExecutor,
-  LifecyclePluginInterface
+  type ExecutorContextInterface,
+  type LifecycleExecutor,
+  type LifecyclePluginInterface
 } from '../../executor';
 import { HttpMethods } from '../utils/httpMethods';
 

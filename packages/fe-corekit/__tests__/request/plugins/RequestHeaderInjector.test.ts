@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { RequestHeaderInjector } from '../../../src/request/plugins/RequestHeaderInjector';
-import { RequestAdapterConfig } from '../../../src/request/interface';
+import { type RequestAdapterConfig } from '../../../src/request/interface';
 import {
   CONTENT_TYPE_HEADER,
   JSON_CONTENT_TYPE,

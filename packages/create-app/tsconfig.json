@@ -12,7 +12,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src/**/*","package.json"],
+  "include": ["src/**/*", "package.json"],
   "exclude": [
     "dist",
     "node_modules",

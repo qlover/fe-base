@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ExecutorPlugin } from '@qlover/fe-corekit';
+import { type ExecutorPlugin } from '@qlover/fe-corekit';
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../../store-state';
 import {
-  BaseServiceInterface,
-  ServiceGatewayType
+  type BaseServiceInterface,
+  type ServiceGatewayType
 } from './BaseServiceInterface';
-import { LoggerInterface } from '@qlover/logger';
+import { type LoggerInterface } from '@qlover/logger';
 
 /**
  * Executor service options

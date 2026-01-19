@@ -6,7 +6,7 @@ import type {
   ExecutorPluginInterface
 } from '../interface/ExecutorInterface';
 import { ExecutorContextImpl } from './ExecutorContextImpl';
-import { ExecutorError } from '../interface';
+import { type ExecutorError } from '../interface';
 import {
   DEFAULT_HOOK_ON_BEFORE,
   DEFAULT_HOOK_ON_SUCCESS,

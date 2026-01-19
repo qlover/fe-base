@@ -12,10 +12,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { HBSTemplate } from '../../src/implments/HBSTemplate';
 import { ReflectionKind } from 'typedoc';
 import {
-  FormatProjectValue,
-  ReflectionKindName,
-  FormatProjectKindName,
-  ValueOf
+  type FormatProjectValue,
+  type ReflectionKindName,
+  type FormatProjectKindName,
+  type ValueOf
 } from '../../src/type';
 import fsExtra from 'fs-extra';
 import { join, resolve } from 'path';

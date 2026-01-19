@@ -1,9 +1,9 @@
 import {
-  ExecutorContext,
-  ExecutorPlugin,
-  RequestAdapterConfig
+  type ExecutorContext,
+  type ExecutorPlugin,
+  type RequestAdapterConfig
 } from '@qlover/fe-corekit';
-import { StreamProcessorInterface } from './StreamProcessorInterface';
+import { type StreamProcessorInterface } from './StreamProcessorInterface';
 import { StreamEvent } from './StreamEvent';
 import { LineStreamProcessor } from './LineStreamProcessor';
 import { SSEStreamProcessor } from './SSEStreamProcessor';

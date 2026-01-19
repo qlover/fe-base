@@ -101,7 +101,8 @@ export default tseslint.config([
         'error',
         {
           prefer: 'type-imports',
-          fixStyle: 'inline-type-imports'
+          disallowTypeAnnotations: true,
+          fixStyle: 'separate-type-imports'
         }
       ],
       '@typescript-eslint/ban-ts-comment': 'off',

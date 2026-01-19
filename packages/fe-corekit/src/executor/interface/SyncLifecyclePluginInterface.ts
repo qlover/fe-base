@@ -1,8 +1,8 @@
-import { ExecutorContextInterface } from './ExecutorInterface';
-import { ExecutorPluginInterface } from './ExecutorInterface';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorSyncTask } from './ExecutorInterface';
-import { LifecycleExecResult } from './LifecyclePluginInterface';
+import { type ExecutorContextInterface } from './ExecutorInterface';
+import { type ExecutorPluginInterface } from './ExecutorInterface';
+import { type ExecutorError } from './ExecutorError';
+import { type ExecutorSyncTask } from './ExecutorInterface';
+import { type LifecycleExecResult } from './LifecyclePluginInterface';
 
 /**
  * Synchronous lifecycle plugin interface for executor plugins
