@@ -245,7 +245,7 @@ export class ExecutorError extends Error {
 
     if (cause instanceof Error) {
       this.message = cause.message;
-      this.stack = cause.stack;
+      // this.stack = cause.stack;
     } else if (typeof cause === 'string') {
       this.message = cause;
     }

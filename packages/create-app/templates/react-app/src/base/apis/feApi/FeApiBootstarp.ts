@@ -1,4 +1,3 @@
-import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
@@ -70,7 +69,6 @@ export class FeApiBootstarp implements BootstrapExecutorPlugin {
     ioc
       .get<FeApi>(FeApi)
       .use(new RequestPlugin())
-      .use(ioc.get(IOCIdentifier.FeApiCommonPlugin))
       .use(ioc.get(RequestLogger))
       .use(ioc.get(ApiPickDataPlugin));
   }

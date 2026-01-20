@@ -43,6 +43,7 @@ export class I18nKeyErrorPlugin implements LifecyclePluginInterface<
 
     if (error instanceof ExecutorError) {
       const i18nText = this.translateById(error.id);
+      this.logger.log('i18nText', i18nText);
       return new ExecutorError(error.id, i18nText);
     }
 
@@ -54,7 +55,7 @@ export class I18nKeyErrorPlugin implements LifecyclePluginInterface<
 
         if (i18nText && i18nText !== i18nKey) {
           this.logger.debug('I18nKeyErrorPlugin Error:', i18nText);
-          return new ExecutorError(i18nKey, i18nText);
+          return new ExecutorError(i18nKey, error);
         }
       }
     }

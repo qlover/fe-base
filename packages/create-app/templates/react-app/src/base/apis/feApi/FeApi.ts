@@ -1,5 +1,6 @@
 import {
   ExecutorContextInterface,
+  LifecycleExecutor,
   RequestAdapterFetch,
   RequestExecutor
 } from '@qlover/fe-corekit';
@@ -13,12 +14,12 @@ export class FeApi extends RequestExecutor<
   FeApiConfig,
   ExecutorContextInterface<FeApiConfig>
 > {
-  constructor(@inject(FeApiAdapter) adapter: RequestAdapterFetch) {
-    super(adapter);
+  constructor(
+    @inject(FeApiAdapter) adapter: RequestAdapterFetch,
+  ) {
+    super(adapter, new LifecycleExecutor<ExecutorContextInterface<FeApiConfig, unknown>>());
   }
-
-  public stop(_config: FeApiConfig): void {}
-
+  
   public async getIpInfo(): Promise<FeApiGetIpInfo['response']> {
     return this.get('http://ip-api.com/json/') as unknown as Promise<
       FeApiGetIpInfo['response']

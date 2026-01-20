@@ -75,11 +75,11 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
     ioc
       .get<UserApi>(UserApi)
       .use(new RequestPlugin())
-      .use(ioc.get(IOCIdentifier.FeApiCommonPlugin))
+      .use(new AborterPlugin(ioc.get(Aborter)))
       .use(new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface)))
       .use(ioc.get(IOCIdentifier.ApiMockPlugin))
+      .use(ioc.get(IOCIdentifier.ApiCatchPlugin))
       .use(ioc.get(RequestLogger))
-      .use(new AborterPlugin(ioc.get(Aborter)))
-      .use(ioc.get(IOCIdentifier.ApiCatchPlugin));
+      .use(ioc.get(IOCIdentifier.I18nKeyErrorPlugin));
   }
 }

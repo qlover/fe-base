@@ -1,9 +1,9 @@
 import { LOCAL_NO_USER_TOKEN } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
 import { inject, injectable } from 'inversify';
-import { AppError } from '../cases/AppError';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
+import { ExecutorError } from '@qlover/fe-corekit';
 
 @injectable()
 export class UserBootstrap implements BootstrapExecutorPlugin {
@@ -36,7 +36,7 @@ export class UserBootstrap implements BootstrapExecutorPlugin {
       return;
     }
 
-    const newError = new AppError(LOCAL_NO_USER_TOKEN);
+    const newError = new ExecutorError(LOCAL_NO_USER_TOKEN);
 
     userService.getStore().failed(newError);
 

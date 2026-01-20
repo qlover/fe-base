@@ -4,11 +4,12 @@ import {
   AborterConfig,
   type AborterInterface,
   ExecutorContextInterface,
+  ExecutorError,
+  LifecycleExecutor,
   type RequestAdapterInterface,
   RequestExecutor
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
-import { AppError } from '@/base/cases/AppError';
 import { UserApiAdapter } from './UserApiAdapter';
 import { UserApiConfig } from './UserApiBootstarp';
 import {
@@ -44,9 +45,9 @@ export class UserApi
 
   constructor(
     @inject(Aborter) protected abortPlugin: AborterInterface<AborterConfig>,
-    @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>
+    @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>,
   ) {
-    super(adapter);
+    super(adapter, new LifecycleExecutor<ExecutorContextInterface<UserApiConfig, unknown>>());
   }
 
   public getStore(): UserAuthStoreInterface<UserInfo> | null {
@@ -100,9 +101,9 @@ export class UserApi
       throw response.apiCatchResult;
     }
 
-    if (!response.data.token) {
-      throw new AppError(RES_NO_TOKEN);
-    }
+    // if (!response.data.token) {
+      throw new ExecutorError(RES_NO_TOKEN);
+    // }
 
     return response.data;
   }
