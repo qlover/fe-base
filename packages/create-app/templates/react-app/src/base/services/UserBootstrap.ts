@@ -17,7 +17,7 @@ export class UserBootstrap implements BootstrapExecutorPlugin {
   /**
    * @override
    */
-  public async onBefore(): Promise<void> {
+  public onBefore(): void {
     const userService = this.userService;
 
     if (userService.isAuthenticated()) {
@@ -29,9 +29,9 @@ export class UserBootstrap implements BootstrapExecutorPlugin {
     if (userService.isUserCredential(credential)) {
       userService.getStore().start();
 
-      const user = await userService.refreshUserInfo();
-
-      userService.getStore().success(user);
+      userService.refreshUserInfo().then((user) => {
+        userService.getStore().success(user);
+      });
 
       return;
     }
@@ -40,7 +40,6 @@ export class UserBootstrap implements BootstrapExecutorPlugin {
 
     userService.getStore().failed(newError);
 
-    // 否则还是抛出错误
     throw newError;
   }
 }

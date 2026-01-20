@@ -2,7 +2,10 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "types": ["vitest/globals", "vite/client"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./config/*"],
@@ -10,6 +13,6 @@
       "@__mocks__/*": ["./__tests__/__mocks__/*"]
     }
   },
-  "include": ["__tests__/**/*"],
+  "include": ["src", "config", "__tests__/**/*"],
   "exclude": ["node_modules", "dist"]
 }

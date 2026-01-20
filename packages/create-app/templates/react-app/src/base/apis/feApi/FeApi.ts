@@ -1,11 +1,18 @@
-import { RequestAdapterFetch, RequestScheduler } from '@qlover/fe-corekit';
+import {
+  ExecutorContextInterface,
+  RequestAdapterFetch,
+  RequestExecutor
+} from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { FeApiAdapter } from './FeApiAdapter';
 import { FeApiConfig } from './FeApiBootstarp';
 import { FeApiGetIpInfo } from './FeApiType';
 
 @injectable()
-export class FeApi extends RequestScheduler<FeApiConfig> {
+export class FeApi extends RequestExecutor<
+  FeApiConfig,
+  ExecutorContextInterface<FeApiConfig>
+> {
   constructor(@inject(FeApiAdapter) adapter: RequestAdapterFetch) {
     super(adapter);
   }

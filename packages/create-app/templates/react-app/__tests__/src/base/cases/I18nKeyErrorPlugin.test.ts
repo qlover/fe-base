@@ -9,10 +9,10 @@
  */
 
 import { MockLogger } from '@__mocks__/MockLogger';
+import { ExecutorContextImpl } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { I18nService } from '@/base/services/I18nService';
-import type { ExecutorContext } from '@qlover/fe-corekit';
 
 class MockI18nService extends I18nService {
   constructor() {
@@ -44,12 +44,8 @@ describe('I18nKeyErrorPlugin', () => {
 
   describe('onError handling', () => {
     it('should handle non-Error objects', () => {
-      const context: ExecutorContext<unknown> = {
-        error: new Error('not an error'),
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(new Error('not an error'));
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();
@@ -58,12 +54,8 @@ describe('I18nKeyErrorPlugin', () => {
 
     it('should handle Error objects without i18n key', () => {
       const error = new Error('regular error');
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();
@@ -74,12 +66,8 @@ describe('I18nKeyErrorPlugin', () => {
       const error = new Error('error.key');
       mockI18nService.t.mockReturnValueOnce('Translated error message');
 
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
 
       const result = plugin.onError(context);
 
@@ -96,12 +84,8 @@ describe('I18nKeyErrorPlugin', () => {
       const error = new Error('error.key');
       mockI18nService.t.mockReturnValueOnce('error.key');
 
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
 
       const result = plugin.onError(context);
 
@@ -118,12 +102,8 @@ describe('I18nKeyErrorPlugin', () => {
         'Error with param1: {0} and param2: {1}'
       );
 
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: { param1: 'value1', param2: 'value2' },
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
 
       const result = plugin.onError(context);
 
@@ -142,12 +122,8 @@ describe('I18nKeyErrorPlugin', () => {
         .mockReturnValueOnce('Wrapped Error')
         .mockReturnValueOnce('Original Error');
 
-      const context: ExecutorContext<unknown> = {
-        error: wrappedError,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(wrappedError);
 
       const result = plugin.onError(context);
 
@@ -160,12 +136,8 @@ describe('I18nKeyErrorPlugin', () => {
   describe('edge cases', () => {
     it('should handle empty error message', () => {
       const error = new Error('');
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();
@@ -176,12 +148,8 @@ describe('I18nKeyErrorPlugin', () => {
     it('should handle null error message', () => {
       const error = new Error();
       error.message = ''; // Force empty message
-      const context: ExecutorContext<unknown> = {
-        error,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(error);
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();
@@ -190,12 +158,8 @@ describe('I18nKeyErrorPlugin', () => {
     });
 
     it('should handle undefined context error', () => {
-      const context: ExecutorContext<unknown> = {
-        error: undefined,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(undefined);
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();
@@ -203,12 +167,8 @@ describe('I18nKeyErrorPlugin', () => {
     });
 
     it('should handle null context error', () => {
-      const context: ExecutorContext<unknown> = {
-        error: undefined,
-        parameters: {},
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setError(null);
       const result = plugin.onError(context);
       expect(result).toBeUndefined();
       expect(mockLogger.debug).not.toHaveBeenCalled();

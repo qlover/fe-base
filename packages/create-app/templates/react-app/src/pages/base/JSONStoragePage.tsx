@@ -74,7 +74,7 @@ export default function JSONStoragePage() {
                     type="number"
                     value={pageState.expireTime}
                     onChange={(e) =>
-                      pageBridge.changeExpireTime(Number(e.target.value))
+                      pageBridge.changeExpireTime(Number((e.target as HTMLInputElement).value))
                     }
                     className="w-32"
                     min="1000"
@@ -111,7 +111,7 @@ export default function JSONStoragePage() {
                   type="number"
                   value={pageState.requestTimeout}
                   onChange={(e) =>
-                    pageBridge.changeRequestTimeout(Number(e.target.value))
+                    pageBridge.changeRequestTimeout(Number((e.target as HTMLInputElement).value))
                   }
                   className="w-32"
                   min="1000"

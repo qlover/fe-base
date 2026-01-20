@@ -1,8 +1,8 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import {
+  ExecutorContextInterface,
   ExecutorError,
-  type ExecutorContext,
-  type ExecutorPlugin
+  LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import type { I18nServiceInterface } from '../port/I18nServiceInterface';
@@ -14,7 +14,9 @@ import type { LoggerInterface } from '@qlover/logger';
  * If the error thrown is an i18n key, it will be converted to the corresponding text
  */
 @injectable()
-export class I18nKeyErrorPlugin implements ExecutorPlugin {
+export class I18nKeyErrorPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<unknown, unknown>
+> {
   public readonly pluginName = 'I18nKeyErrorPlugin';
 
   constructor(
@@ -30,7 +32,9 @@ export class I18nKeyErrorPlugin implements ExecutorPlugin {
   /**
    * @override
    */
-  public onError(context: ExecutorContext<unknown>): Error | void {
+  public onError(
+    context: ExecutorContextInterface<unknown, unknown>
+  ): ExecutorError | void {
     const { error } = context;
 
     if (!error) {
@@ -50,7 +54,7 @@ export class I18nKeyErrorPlugin implements ExecutorPlugin {
 
         if (i18nText && i18nText !== i18nKey) {
           this.logger.debug('I18nKeyErrorPlugin Error:', i18nText);
-          return new Error(i18nText);
+          return new ExecutorError(i18nKey, i18nText);
         }
       }
     }

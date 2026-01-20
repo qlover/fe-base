@@ -6,9 +6,9 @@ import { themeConfig } from '@config/theme';
 import {
   ApiCatchPlugin,
   ApiMockPlugin,
-  RequestCommonPlugin,
   ThemeService
 } from '@qlover/corekit-bridge';
+import { RequestPlugin } from '@qlover/fe-corekit';
 import { I18nKeyErrorPlugin } from '@/base/cases/I18nKeyErrorPlugin';
 import { RequestStatusCatcher } from '@/base/cases/RequestStatusCatcher';
 import type { IocRegisterOptions } from '@/base/port/IOCInterface';
@@ -109,9 +109,8 @@ export class ClientIOCRegister implements IOCRegisterInterface<
     const { appConfig } = this.options;
     const logger = ioc.get<LoggerInterface>(I.Logger);
 
-    const feApiRequestCommonPlugin = new RequestCommonPlugin({
+    const feApiRequestCommonPlugin = new RequestPlugin({
       tokenPrefix: appConfig.openAiTokenPrefix,
-      requiredToken: true,
       token: () =>
         ioc.get<UserServiceInterface>(I.UserServiceInterface).getToken()
     });

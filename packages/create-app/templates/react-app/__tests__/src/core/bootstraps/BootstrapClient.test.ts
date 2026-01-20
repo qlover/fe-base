@@ -19,7 +19,6 @@ import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
 
 describe('BootstrapClient', () => {
   describe('bootstrap start flow', () => {
@@ -98,18 +97,19 @@ describe('BootstrapClient', () => {
     });
 
     it('should handle bootstrap UserApiBootstarp', async () => {
-      const mockUserService: ExecutorPlugin = {
-        pluginName: 'TestUserService',
-        onBefore: vi.fn().mockResolvedValue(undefined)
+      const mockOnExec = vi.fn().mockResolvedValue(undefined);
+      const mockUserBootstrap: BootstrapExecutorPlugin = {
+        pluginName: 'TestUserBootstrap',
+        onExec: mockOnExec
       };
       // 将 mock 函数提取出来，以便验证是否被调用
       const mockRegister = vi
         .fn()
         .mockImplementationOnce(
           (
-            ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
+            _ioc: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
           ) => {
-            return [ioc.get(I.UserServiceInterface)];
+            return [mockUserBootstrap];
           }
         );
 
@@ -121,20 +121,6 @@ describe('BootstrapClient', () => {
         root: mockRoot,
         bootHref: mockRoot.location.href,
         ioc: testIOC,
-        iocRegister: {
-          register: vi
-            .fn()
-            .mockImplementationOnce(
-              (
-                ioc: IOCFunctionInterface<
-                  IOCIdentifierMap,
-                  IOCContainerInterface
-                >
-              ) => {
-                ioc.bind(I.UserServiceInterface, mockUserService as any);
-              }
-            )
-        },
         RegistryClass: TestBootstrapsRegistry
       };
 
@@ -142,12 +128,8 @@ describe('BootstrapClient', () => {
       const ioc = testIOC.getIoc();
       expect(ioc).toBeDefined();
 
-      const userService = ioc!.get(I.UserServiceInterface);
-
-      expect(userService).toBeDefined();
-      expect(userService).toEqual(mockUserService);
-      expect(userService.pluginName).toBe('TestUserService');
-      expect(userService.onBefore).toBeCalled();
+      expect(mockRegister).toBeCalled();
+      expect(mockOnExec).toBeCalled();
     });
   });
 });

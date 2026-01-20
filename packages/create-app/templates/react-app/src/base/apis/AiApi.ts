@@ -1,12 +1,9 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { type BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import {
-  type BootstrapExecutorPlugin,
-  RequestCommonPlugin
-} from '@qlover/corekit-bridge';
-import {
-  FetchURLPlugin,
   RequestAdapterFetch,
-  RequestScheduler
+  RequestExecutor,
+  RequestPlugin
 } from '@qlover/fe-corekit';
 import { RequestLogger } from '../cases/RequestLogger';
 import type { AppConfig } from '../cases/AppConfig';
@@ -16,7 +13,7 @@ const apiApiAdapter = new RequestAdapterFetch({
 });
 
 // 使用 RequestScheduler
-const apiApi = new RequestScheduler(apiApiAdapter);
+const apiApi = new RequestExecutor(apiApiAdapter);
 
 // 直接使用 adapter
 // const apiApi = apiApiAdapter;
@@ -29,15 +26,14 @@ export const AiApiBootstarp: BootstrapExecutorPlugin = {
     // dynamic set baseURL
     apiApiAdapter.config.baseURL = appConfig.aiApiBaseUrl;
 
-    apiApiAdapter.usePlugin(new FetchURLPlugin());
-    apiApiAdapter.usePlugin(
-      new RequestCommonPlugin({
+    apiApi.use(
+      new RequestPlugin({
         tokenPrefix: appConfig.aiApiTokenPrefix,
         token: appConfig.aiApiToken
       })
     );
-    apiApiAdapter.usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin));
-    apiApiAdapter.usePlugin(ioc.get(RequestLogger));
+    apiApi.use(ioc.get(IOCIdentifier.ApiMockPlugin));
+    apiApi.use(ioc.get(RequestLogger));
   }
 };
 

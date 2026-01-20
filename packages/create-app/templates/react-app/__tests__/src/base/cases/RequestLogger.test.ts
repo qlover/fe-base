@@ -10,17 +10,14 @@
  */
 
 import { MockLogger } from '@__mocks__/MockLogger';
+import {
+  ExecutorContextImpl,
+  type RequestAdapterFetchConfig,
+  type RequestAdapterResponse
+} from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RequestLogger } from '@/base/cases/RequestLogger';
-import type {
-  ApiCatchPluginConfig,
-  ApiCatchPluginResponse
-} from '@qlover/corekit-bridge';
-import type {
-  ExecutorContext,
-  RequestAdapterFetchConfig,
-  RequestAdapterResponse
-} from '@qlover/fe-corekit';
+import type { ApiCatchPluginResponse } from '@qlover/corekit-bridge';
 
 describe('RequestLogger', () => {
   let logger: MockLogger;
@@ -46,16 +43,11 @@ describe('RequestLogger', () => {
 
   describe('onBefore', () => {
     it('should log request details before execution', () => {
-      const context: ExecutorContext<RequestAdapterFetchConfig<unknown>> = {
-        parameters: {
-          method: 'GET',
-          url: 'https://api.example.com/data',
-          headers: { 'Content-Type': 'application/json' }
-        },
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
-
+      const context = new ExecutorContextImpl({
+        method: 'GET',
+        url: 'https://api.example.com/data',
+        headers: { 'Content-Type': 'application/json' }
+      });
       requestLogger.onBefore(context);
 
       expect(logger.log).toHaveBeenCalledWith(
@@ -70,17 +62,12 @@ describe('RequestLogger', () => {
   describe('onSuccess', () => {
     it('should log successful response', async () => {
       const response = { data: { id: 1 }, status: 200 };
-      const context: ExecutorContext<
-        RequestAdapterFetchConfig & ApiCatchPluginConfig
-      > = {
-        parameters: {
-          method: 'POST',
-          url: 'https://api.example.com/create',
-          headers: { 'Content-Type': 'application/json' }
-        },
-        returnValue: response,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({
+        method: 'POST',
+        url: 'https://api.example.com/create',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      context.setReturnValue(response);
 
       await requestLogger.onSuccess(context);
 
@@ -111,17 +98,12 @@ describe('RequestLogger', () => {
         response: new Response(),
         apiCatchResult: apiError
       };
-      const context: ExecutorContext<
-        RequestAdapterFetchConfig & ApiCatchPluginConfig
-      > = {
-        parameters: {
-          method: 'GET',
-          url: 'https://api.example.com/error',
-          headers: {}
-        },
-        returnValue: response,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({
+        method: 'GET',
+        url: 'https://api.example.com/error',
+        headers: {}
+      });
+      context.setReturnValue(response);
 
       await requestLogger.onSuccess(context);
 
@@ -137,16 +119,12 @@ describe('RequestLogger', () => {
   describe('onError', () => {
     it('should log request error', () => {
       const error = new Error('Network error');
-      const context: ExecutorContext<RequestAdapterFetchConfig> = {
-        parameters: {
-          method: 'PUT',
-          url: 'https://api.example.com/update',
-          headers: {}
-        },
-        error,
-        returnValue: undefined,
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({
+        method: 'PUT',
+        url: 'https://api.example.com/update',
+        headers: {}
+      });
+      context.setError(error);
 
       requestLogger.onError(context);
 
