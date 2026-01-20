@@ -14,13 +14,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   GatewayExecutor,
-  type GatewayExecutorOptions
+  type GatewayExecutorOptions,
+  type GatewayExecutorPlugin,
+  type GatewayExecutorContext
 } from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import { AsyncStore, type AsyncStoreState } from '../../src/core/store-state';
 import {
-  type ExecutorPlugin,
-  type ExecutorContext,
-  ExecutorError
+  ExecutorError,
+  ExecutorContextImpl
 } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
@@ -147,21 +148,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       const actualTask = vi.fn(async () => {
         return await mockGateway.getUser({ id: 1 });
@@ -169,7 +156,7 @@ describe('GatewayExecutor', () => {
 
       const executorWithRunExec = executor as unknown as {
         runExec: (
-          context: ExecutorContext<unknown>,
+          context: GatewayExecutorContext<TestUser, MockGateway, unknown>,
           task: () => Promise<unknown>
         ) => Promise<void>;
       };
@@ -197,27 +184,13 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       const actualTask = vi.fn(async () => null);
 
       const executorWithRunExec = executor as unknown as {
         runExec: (
-          context: ExecutorContext<unknown>,
+          context: GatewayExecutorContext<TestUser, MockGateway, unknown>,
           task: () => Promise<unknown>
         ) => Promise<void>;
       };
@@ -241,21 +214,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       const error = new Error('Task execution failed');
       const actualTask = vi.fn(async () => {
@@ -264,7 +223,7 @@ describe('GatewayExecutor', () => {
 
       const executorWithRunExec = executor as unknown as {
         runExec: (
-          context: ExecutorContext<unknown>,
+          context: GatewayExecutorContext<TestUser, MockGateway, unknown>,
           task: () => Promise<unknown>
         ) => Promise<void>;
       };
@@ -278,12 +237,16 @@ describe('GatewayExecutor', () => {
   describe('runBeforeAction', () => {
     it('should execute action-specific before hook', async () => {
       const onLoginBeforeHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -306,25 +269,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       await executor.runBeforeAction(context);
 
@@ -335,17 +280,23 @@ describe('GatewayExecutor', () => {
     it('should not execute hook if action name does not match', async () => {
       const onLoginBeforeHook = vi.fn();
       const onGetUserBeforeHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
         onGetUserBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -369,21 +320,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       await executor.runBeforeAction(context);
 
@@ -394,24 +331,32 @@ describe('GatewayExecutor', () => {
     it('should execute multiple plugins with same hook', async () => {
       const hook1 = vi.fn();
       const hook2 = vi.fn();
-      const plugin1: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin1: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
         pluginName: 'Plugin1',
         onLoginBefore: hook1
       };
-      const plugin2: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin2: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -435,25 +380,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       await executor.runBeforeAction(context);
 
@@ -466,12 +393,16 @@ describe('GatewayExecutor', () => {
       const onLoginBeforeHook = vi.fn(async () => {
         throw error;
       });
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -494,25 +425,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       await expect(executor.runBeforeAction(context)).rejects.toThrow(
         'Hook error'
@@ -521,8 +434,10 @@ describe('GatewayExecutor', () => {
     });
 
     it('should not throw if hook does not exist', async () => {
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > = {
         pluginName: 'TestPlugin',
         onBefore: vi.fn()
@@ -543,21 +458,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       // Should not throw even if onGetUserBefore hook doesn't exist
       await expect(executor.runBeforeAction(context)).resolves.not.toThrow();
@@ -567,12 +468,16 @@ describe('GatewayExecutor', () => {
   describe('runSuccessAction', () => {
     it('should execute action-specific success hook', async () => {
       const onLoginSuccessHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -595,27 +500,10 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: { token: 'mock-token-123' },
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
+      context.setReturnValue({ token: 'mock-token-123' });
 
-      await executor.runSuccessAction(context);
+      await executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { username: string; password: string }>);
 
       expect(onLoginSuccessHook).toHaveBeenCalledTimes(1);
       expect(onLoginSuccessHook).toHaveBeenCalledWith(context);
@@ -624,17 +512,23 @@ describe('GatewayExecutor', () => {
     it('should not execute hook if action name does not match', async () => {
       const onLoginSuccessHook = vi.fn();
       const onGetUserSuccessHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
         onGetUserSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -658,27 +552,14 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: {
-          id: 1,
-          name: 'John Doe',
-          email: 'john@example.com'
-        },
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
+      context.setReturnValue({
+        id: 1,
+        name: 'John Doe',
+        email: 'john@example.com'
+      });
 
-      await executor.runSuccessAction(context);
+      await executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { id: number }>);
 
       expect(onLoginSuccessHook).not.toHaveBeenCalled();
       expect(onGetUserSuccessHook).toHaveBeenCalledTimes(1);
@@ -687,24 +568,32 @@ describe('GatewayExecutor', () => {
     it('should execute multiple plugins with same hook', async () => {
       const hook1 = vi.fn();
       const hook2 = vi.fn();
-      const plugin1: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin1: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
         pluginName: 'Plugin1',
         onLoginSuccess: hook1
       };
-      const plugin2: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin2: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -728,27 +617,10 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: { token: 'mock-token-123' },
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
+      context.setReturnValue({ token: 'mock-token-123' });
 
-      await executor.runSuccessAction(context);
+      await executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { username: string; password: string }>);
 
       expect(hook1).toHaveBeenCalledTimes(1);
       expect(hook2).toHaveBeenCalledTimes(1);
@@ -759,12 +631,16 @@ describe('GatewayExecutor', () => {
       const onLoginSuccessHook = vi.fn(async () => {
         throw error;
       });
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -787,35 +663,20 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: { token: 'mock-token-123' },
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
+      context.setReturnValue({ token: 'mock-token-123' });
 
-      await expect(executor.runSuccessAction(context)).rejects.toThrow(
+      await expect(executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { username: string; password: string }>)).rejects.toThrow(
         'Hook error'
       );
       expect(onLoginSuccessHook).toHaveBeenCalled();
     });
 
     it('should not throw if hook does not exist', async () => {
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > = {
         pluginName: 'TestPlugin',
         onSuccess: vi.fn()
@@ -836,35 +697,24 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: {
-          id: 1,
-          name: 'John Doe',
-          email: 'john@example.com'
-        },
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
+      context.setReturnValue({
+        id: 1,
+        name: 'John Doe',
+        email: 'john@example.com'
+      });
 
       // Should not throw even if onGetUserSuccess hook doesn't exist
-      await expect(executor.runSuccessAction(context)).resolves.not.toThrow();
+      await expect(executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { id: number }>)).resolves.not.toThrow();
     });
   });
 
   describe('inheritance from AsyncExecutor', () => {
     it('should support use method for plugin registration', () => {
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > = {
         pluginName: 'TestPlugin',
         onBefore: vi.fn()
@@ -876,7 +726,7 @@ describe('GatewayExecutor', () => {
     });
 
     it('should support exec method for task execution', async () => {
-      const result = await executor.exec(async () => {
+      const result = await executor.exec(async (_ctx) => {
         return 'test result';
       });
 
@@ -884,7 +734,7 @@ describe('GatewayExecutor', () => {
     });
 
     it('should support execNoError method', async () => {
-      const result = await executor.execNoError(async () => {
+      const result = await executor.execNoError(async (_ctx) => {
         return 'test result';
       });
 
@@ -893,7 +743,7 @@ describe('GatewayExecutor', () => {
 
     it('should handle errors through execNoError', async () => {
       const error = new Error('Test error');
-      const result = await executor.execNoError(async () => {
+      const result = await executor.execNoError(async (_ctx) => {
         throw error;
       });
 
@@ -917,17 +767,23 @@ describe('GatewayExecutor', () => {
         executionOrder.push('onSuccess');
       });
 
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -954,36 +810,18 @@ describe('GatewayExecutor', () => {
       };
 
       // Simulate execution flow
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       // Execute before hooks (general first, then action-specific)
       const executorWithAccess = executor as unknown as {
         runHook: (
-          plugins: ExecutorPlugin[],
+          plugins: GatewayExecutorPlugin<TestUser, MockGateway, unknown>[],
           hookName: string,
-          context: ExecutorContext<unknown>
+          context: GatewayExecutorContext<TestUser, MockGateway, unknown>
         ) => Promise<void>;
-        plugins: ExecutorPlugin[];
+        plugins: GatewayExecutorPlugin<TestUser, MockGateway, unknown>[];
         runExec: (
-          context: ExecutorContext<unknown>,
+          context: GatewayExecutorContext<TestUser, MockGateway, unknown>,
           task: () => Promise<unknown>
         ) => Promise<void>;
       };
@@ -1023,12 +861,16 @@ describe('GatewayExecutor', () => {
         throw new Error('Before hook error');
       });
 
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginBefore?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -1052,25 +894,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       await expect(executor.runBeforeAction(context)).rejects.toThrow(
         'Before hook error'
@@ -1094,21 +918,7 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<TestUser, MockGateway, { id: number }>
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
       // Should not throw even with no plugins
       await expect(executor.runBeforeAction(context)).resolves.not.toThrow();
@@ -1117,12 +927,16 @@ describe('GatewayExecutor', () => {
 
     it('should handle context with undefined returnValue', async () => {
       const onLoginSuccessHook = vi.fn();
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
+      const plugin: GatewayExecutorPlugin<
+        TestUser,
+        MockGateway,
+        unknown
       > & {
         onLoginSuccess?: (
-          context: ExecutorContext<
-            GatewayExecutorOptions<TestUser, MockGateway, unknown>
+          context: GatewayExecutorContext<
+            TestUser,
+            MockGateway,
+            unknown
           >
         ) => Promise<void> | void;
       } = {
@@ -1145,27 +959,9 @@ describe('GatewayExecutor', () => {
         logger: mockLogger
       };
 
-      const context: ExecutorContext<
-        GatewayExecutorOptions<
-          TestUser,
-          MockGateway,
-          { username: string; password: string }
-        >
-      > = {
-        parameters: options,
-        returnValue: undefined,
-        hooksRuntimes: {
-          pluginName: '',
-          hookName: '',
-          returnValue: undefined,
-          returnBreakChain: false,
-          times: 0,
-          breakChain: false,
-          index: undefined
-        }
-      };
+      const context = new ExecutorContextImpl(options);
 
-      await executor.runSuccessAction(context);
+      await executor.runSuccessAction(context as GatewayExecutorContext<TestUser, MockGateway, { username: string; password: string }>);
       expect(onLoginSuccessHook).toHaveBeenCalledWith(context);
     });
   });

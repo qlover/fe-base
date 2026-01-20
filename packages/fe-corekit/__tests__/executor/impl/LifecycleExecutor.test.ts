@@ -179,21 +179,16 @@ describe('LifecycleExecutor', () => {
 
     it('should return ExecutorError on failure', async () => {
       const executor = new LifecycleExecutor();
-      const task: ExecutorAsyncTask<string, TestParams> = async () => {
+      const task: ExecutorAsyncTask<string, TestParams> = async (_ctx) => {
         throw new Error('Task failed');
       };
 
-      try {
-        const result = await executor.execNoError({ value: 'test' }, task);
+      const result = await executor.execNoError({ value: 'test' }, task);
 
-        expect(result).toBeInstanceOf(ExecutorError);
-        if (result instanceof ExecutorError) {
-          expect(result.cause).toBeInstanceOf(Error);
-          expect((result.cause as Error).message).toBe('Task failed');
-        }
-      } catch (error) {
-        // execNoError should not throw, but if it does, fail the test
-        expect(error).toBeInstanceOf(ExecutorError);
+      expect(result).toBeInstanceOf(ExecutorError);
+      if (result instanceof ExecutorError) {
+        expect(result.cause).toBeInstanceOf(Error);
+        expect((result.cause as Error).message).toBe('Task failed');
       }
     });
 
@@ -203,18 +198,24 @@ describe('LifecycleExecutor', () => {
         'CUSTOM_ERROR',
         new Error('Custom')
       );
-      const task: ExecutorAsyncTask<string, TestParams> = async () => {
+      const task: ExecutorAsyncTask<string, TestParams> = async (_ctx) => {
         throw customError;
       };
 
-      try {
-        const result = await executor.execNoError({ value: 'test' }, task);
+      const result = await executor.execNoError({ value: 'test' }, task);
 
-        expect(result).toBeInstanceOf(ExecutorError);
-      } catch (error) {
-        // execNoError should not throw, but if it does, it should be ExecutorError
-        expect(error).toBeInstanceOf(ExecutorError);
-      }
+      expect(result).toBeInstanceOf(ExecutorError);
+      expect(result).toBe(customError);
+    });
+
+    it('should handle errors through execNoError', async () => {
+      const executor = new LifecycleExecutor();
+      const error = new Error('Test error');
+      const result = await executor.execNoError(async (_ctx) => {
+        throw error;
+      });
+
+      expect(result).toBeInstanceOf(ExecutorError);
     });
 
     it('should work without data parameter', async () => {

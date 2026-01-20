@@ -60,7 +60,7 @@ import type {
   ExecutorSyncTask
 } from '../../../src/executor/interface';
 import type { LifecycleSyncPluginInterface } from '../../../src/executor/interface/SyncLifecyclePluginInterface';
-import type { HookRuntimes } from '../../../src/executor/interface/ExecutorContext';
+import type { HookRuntimes } from '../../../src/executor/interface/ExecutorHookRuntimesInterface';
 
 // Test helper types
 interface TestParams {

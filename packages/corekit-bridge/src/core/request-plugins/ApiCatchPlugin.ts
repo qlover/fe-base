@@ -1,9 +1,9 @@
 import type { RequestCatcherInterface } from './RequestCatcherInterface';
 import {
   ExecutorError,
-  type ExecutorContext,
-  type ExecutorPlugin,
-  type PromiseTask,
+  type ExecutorContextInterface,
+  type ExecutorTask,
+  type LifecyclePluginInterface,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
@@ -28,12 +28,24 @@ export interface ApiCatchPluginResponse {
   apiCatchResult?: ExecutorError;
 }
 
+type ApiCatchPluginContext = ExecutorContextInterface<
+  ApiCatchPluginConfig & RequestAdapterFetchConfig,
+  RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse
+>;
+
 /**
  * Api request error catch plugin
  *
  * Do not throw errors, only return errors and data
  */
-export class ApiCatchPlugin implements ExecutorPlugin {
+export class ApiCatchPlugin
+  implements
+    LifecyclePluginInterface<
+      ApiCatchPluginContext,
+      RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse,
+      ApiCatchPluginConfig & RequestAdapterFetchConfig
+    >
+{
   public readonly pluginName = 'ApiCatchPlugin';
 
   constructor(
@@ -47,10 +59,8 @@ export class ApiCatchPlugin implements ExecutorPlugin {
    * @override
    */
   public enabled(
-    _name: keyof ExecutorPlugin,
-    context?:
-      | ExecutorContext<RequestAdapterFetchConfig & ApiCatchPluginConfig>
-      | undefined
+    _name: string,
+    context?: ApiCatchPluginContext
   ): boolean {
     // If the openApiCatch is true, the plugin will be enabled
     const { openApiCatch } = context?.parameters ?? {};
@@ -61,18 +71,21 @@ export class ApiCatchPlugin implements ExecutorPlugin {
    * @override
    */
   public onExec(
-    context: ExecutorContext<RequestAdapterFetchConfig & ApiCatchPluginConfig>,
-    task: PromiseTask<unknown, unknown>
-  ): Promise<unknown> | unknown {
+    context: ApiCatchPluginContext,
+    task: ExecutorTask<
+      RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse,
+      ApiCatchPluginConfig & RequestAdapterFetchConfig
+    >
+  ): Promise<
+    RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse
+  > {
     const { url } = context.parameters;
 
     this.logger.info(`${url} openApiCatch, rewrite task`);
 
-    const withErrorTask = async () => {
-      let result;
+    return (async () => {
       try {
-        result = await task(context);
-
+        const result = await task(context);
         return result;
       } catch {
         const errorResponse = new Response(null, {
@@ -94,22 +107,21 @@ export class ApiCatchPlugin implements ExecutorPlugin {
           data: null,
           config: context.parameters,
           response: errorResponse
-        } as RequestAdapterResponse & ApiCatchPluginResponse;
+        } as RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse;
       }
-    };
-
-    return withErrorTask();
+    })();
   }
 
   /**
    * @override
    */
-  public onSuccess(context: ExecutorContext<unknown>): void | Promise<void> {
-    const returnValue = context.returnValue as RequestAdapterResponse &
-      ApiCatchPluginResponse;
+  public onSuccess(context: ApiCatchPluginContext): void | Promise<void> {
+    const returnValue = context.returnValue as
+      | (RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse)
+      | undefined;
 
     // When the apiCatchResult is not null, it means that the error has been caught
-    if (returnValue.apiCatchResult) {
+    if (returnValue?.apiCatchResult) {
       this.feApiRequestCatcher.handler(returnValue);
     }
   }

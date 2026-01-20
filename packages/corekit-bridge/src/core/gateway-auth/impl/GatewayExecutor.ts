@@ -1,5 +1,6 @@
-import { type ExecutorTask, LifecycleExecutor, type ExecutorContextInterface } from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit';
 import { firstUppercase } from '../utils/firstUppercase';
+import type { LifecyclePluginInterface, ExecutorTask, ExecutorContextInterface } from '@qlover/fe-corekit';
 import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
@@ -66,6 +67,11 @@ export interface GatewayExecutorOptions<T, Gateway, Params = unknown>
    */
   params?: Params;
 }
+
+
+export type GatewayExecutorContext<T, Gateway, Params = unknown> = ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>;
+
+export type GatewayExecutorPlugin<T, Gateway, Params = unknown> = LifecyclePluginInterface<GatewayExecutorContext<T, Gateway, Params>>;
 
 /**
  * GatewayExecutor for executing gateway actions with plugin support
@@ -156,7 +162,7 @@ export interface GatewayExecutorOptions<T, Gateway, Params = unknown>
  *   }
  * });
  */
-export class GatewayExecutor<T, Gateway> extends LifecycleExecutor<ExecutorContextInterface<GatewayExecutorOptions<T, Gateway>>> {
+export class GatewayExecutor<T, Gateway, Params = unknown> extends LifecycleExecutor<GatewayExecutorContext<T, Gateway, Params>> {
   /**
    * Generate hook name for a specific action and type
    *

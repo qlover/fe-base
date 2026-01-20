@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type {
+  ApiMockPluginConfig
+} from '../../src/core/request-plugins/ApiMockPlugin';
 import {
   ApiMockPlugin,
   type MockDataJson,
@@ -6,6 +9,8 @@ import {
 } from '../../src/core/request-plugins/ApiMockPlugin';
 import type { LoggerInterface } from '@qlover/logger';
 import { ThreadUtil } from '../../src/core/thread/ThreadUtil';
+import type { RequestAdapterResponse } from '@qlover/fe-corekit';
+import { ExecutorContextImpl } from '@qlover/fe-corekit';
 
 type MockPluginParams = ApiMockPluginContext['parameters'];
 
@@ -55,14 +60,11 @@ describe('ApiMockPlugin', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockLogger = new MockLogger();
-    mockContext = {
-      parameters: {
-        method: 'GET',
-        url: '/api/test',
-        headers: {}
-      },
-      hooksRuntimes: {}
-    };
+    mockContext = new ExecutorContextImpl<ApiMockPluginConfig, RequestAdapterResponse>({
+      method: 'GET',
+      url: '/api/test',
+      headers: {}
+    });
   });
 
   describe('Plugin Initialization', () => {
@@ -412,14 +414,11 @@ describe('ApiMockPlugin', () => {
         const methods = ['GET', 'POST', 'PUT', 'DELETE'] as const;
         for (const method of methods) {
           // Create a fresh context for each iteration
-          const testContext: ApiMockPluginContext = {
-            parameters: {
+          const testContext = new ExecutorContextImpl<ApiMockPluginConfig, RequestAdapterResponse>({
               method: method.toLowerCase() as 'get' | 'post' | 'put' | 'delete',
               url: '/api/resource',
               headers: {}
-            },
-            hooksRuntimes: {}
-          };
+          });
           const result = await plugin.onExec(testContext);
           expect(result.data).toEqual({ method });
         }
@@ -922,11 +921,11 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {}
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -945,11 +944,11 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {}
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -968,12 +967,12 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {},
           mockDelay: 500
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -991,12 +990,12 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {},
           mockDelay: 500
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -1014,12 +1013,12 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {},
           mockDelay: 0
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -1037,12 +1036,12 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {},
           mockDelay: -100
-        };
+        })
 
         await plugin.onExec(mockContext);
 
@@ -1061,11 +1060,11 @@ describe('ApiMockPlugin', () => {
         });
 
         sleepSpy.mockClear();
-        mockContext.parameters = {
+        mockContext.setParameters({
           method: 'GET',
           url: '/api/test',
           headers: {}
-        };
+        })
 
         await plugin.onExec(mockContext);
 

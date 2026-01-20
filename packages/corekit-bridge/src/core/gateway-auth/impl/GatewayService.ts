@@ -2,14 +2,16 @@ import {
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
 } from '../../store-state';
-import { type ServiceGatewayType } from '../interface/base/BaseServiceInterface';
+import type { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
+import type {
+  GatewayExecutorPlugin} from './GatewayExecutor';
 import {
   type GatewayExecutor,
   type GatewayExecutorOptions
 } from './GatewayExecutor';
-import { type ExecutorServiceOptions, type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
-import { BaseService, type BaseServiceOptions } from './BaseService';
-import { type ExecutorContextInterface, type LifecyclePluginInterface } from '@qlover/fe-corekit';
+import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import type { BaseServiceOptions } from './BaseService';
+import { BaseService } from './BaseService';
 
 /**
  * Gateway service options
@@ -158,7 +160,7 @@ export abstract class GatewayService<
    * Plugins are executed in registration order for each hook type.
    *
    * @override
-   * @template Plugin - The plugin type that extends `ExecutorPlugin`
+   * @template Plugin - The plugin type that extends `LifecyclePluginInterface`
    * @param plugin - The plugin(s) to register with the service
    *   Can be a single plugin or an array of plugins
    * @returns The GatewayService instance for method chaining
@@ -199,19 +201,19 @@ export abstract class GatewayService<
    * });
    * ```
    */
-  public use<Plugin = LifecyclePluginInterface<ExecutorContextInterface<GatewayExecutorOptions<T, Gateway>>>>(plugin: Plugin | Plugin[]): this {
+  public use<Plugin extends GatewayExecutorPlugin<T, Gateway, unknown>>(plugin: Plugin | Plugin[]): this {
     if (!this.executor) {
       throw new Error(`${String(this.serviceName)} Executor is not set`);
     }
 
     if (Array.isArray(plugin)) {
       plugin.forEach((p) => {
-        this.executor!.use(p);
+        this.executor!.use(p as GatewayExecutorPlugin<T, Gateway>);
       });
       return this;
     }
 
-    this.executor.use(plugin);
+    this.executor.use(plugin as GatewayExecutorPlugin<T, Gateway>);
     return this;
   }
 

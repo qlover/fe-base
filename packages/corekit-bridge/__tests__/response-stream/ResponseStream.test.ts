@@ -20,7 +20,7 @@ import { type StreamProcessorInterface } from '../../src/core/response-stream/St
 import { StreamEvent } from '../../src/core/response-stream/StreamEvent';
 import { SSEStreamProcessor } from '../../src/core/response-stream/SSEStreamProcessor';
 import {
-  type ExecutorContext,
+  ExecutorContextImpl,
   type RequestAdapterConfig
 } from '@qlover/fe-corekit';
 
@@ -101,11 +101,8 @@ describe('ResponseStream', () => {
 
   describe('onSuccess', () => {
     it('should handle non-stream response', async () => {
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: { data: 'test' },
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue({ data: 'test' });
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();
     });
@@ -126,11 +123,8 @@ describe('ResponseStream', () => {
       };
       const customStream = new ResponseStream(customConfig);
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue(mockResponse);
 
       await customStream.onSuccess(context);
       expect(customConfig.onStreamChunk).toHaveBeenCalledWith(
@@ -154,13 +148,8 @@ describe('ResponseStream', () => {
       };
       const streamResponsePlugin = new ResponseStream(streamConfig);
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      context.setReturnValue(mockResponse);
 
       await streamResponsePlugin.onSuccess(context);
       expect(streamConfig.onStreamChunk).toHaveBeenCalledWith(
@@ -177,11 +166,8 @@ describe('ResponseStream', () => {
       });
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: nonStreamResponse,
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();
@@ -189,13 +175,8 @@ describe('ResponseStream', () => {
 
     it('should process stream response', async () => {
       const mockResponse = createMockResponse(['test']);
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      context.setReturnValue(mockResponse);
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).toHaveBeenCalledWith(
         'test',
@@ -208,13 +189,8 @@ describe('ResponseStream', () => {
       const nonStreamResponse = new Response(JSON.stringify({ data: 'test' }));
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: nonStreamResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();

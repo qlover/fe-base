@@ -88,6 +88,8 @@ export interface ExecutorServiceOptions<T, Gateway> {
   store?: AsyncStoreInterface<AsyncStoreStateInterface<T>>;
 }
 
+export type ExecutorServiceContext<T, Gateway> = ExecutorContextInterface<ExecutorServiceOptions<T, Gateway>>;
+
 /**
  * Executor service interface
  *
@@ -228,7 +230,7 @@ export interface ExecutorServiceInterface<
    * });
    * ```
    */
-  use<Plugin = LifecyclePluginInterface<ExecutorContextInterface<ExecutorServiceOptions<any, Gateway>>>>(plugin: Plugin | Plugin[]): void;
+  use<Plugin extends LifecyclePluginInterface<ExecutorContextInterface<any>>>(plugin: Plugin | Plugin[]): void;
 
   /**
    * Create executor options for a service action

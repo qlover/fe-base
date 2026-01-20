@@ -18,14 +18,14 @@ import {
   type GatewayServiceOptions
 } from '../../src/core/gateway-auth/impl/GatewayService';
 import { AsyncStore, type AsyncStoreState } from '../../src/core/store-state';
+import type {
+  GatewayExecutorContext,
+  GatewayExecutorPlugin} from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import {
   GatewayExecutor,
-  type GatewayExecutorOptions
 } from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import {
-  type ExecutorPlugin,
   ExecutorError,
-  type ExecutorContext
 } from '@qlover/fe-corekit';
 import { GatewayBasePlguin } from '../../src/core/gateway-auth/impl/GatewayBasePlguin';
 import type { LoggerInterface } from '@qlover/logger';
@@ -242,27 +242,21 @@ describe('GatewayService', () => {
 
   describe('use', () => {
     it('should register a single plugin', () => {
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
-      > = {
+      const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
         pluginName: 'TestPlugin',
         onBefore: vi.fn()
-      };
+      };  
 
       const result = service.use(plugin);
       expect(result).toBe(service);
     });
 
     it('should register multiple plugins', () => {
-      const plugin1: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
-      > = {
+      const plugin1: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
         pluginName: 'Plugin1',
         onBefore: vi.fn()
       };
-      const plugin2: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
-      > = {
+      const plugin2: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
         pluginName: 'Plugin2',
         onSuccess: vi.fn()
       };
@@ -272,9 +266,7 @@ describe('GatewayService', () => {
     });
 
     it('should allow method chaining', () => {
-      const plugin: ExecutorPlugin<
-        GatewayExecutorOptions<TestUser, MockGateway, unknown>
-      > = {
+      const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
         pluginName: 'TestPlugin',
         onBefore: vi.fn()
       };
@@ -1211,9 +1203,7 @@ describe('GatewayService', () => {
     describe('general hooks', () => {
       it('should call onBefore hook', async () => {
         const onBeforeHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: onBeforeHook
         };
@@ -1234,9 +1224,7 @@ describe('GatewayService', () => {
 
       it('should call onSuccess hook', async () => {
         const onSuccessHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onSuccess: onSuccessHook
         };
@@ -1264,9 +1252,7 @@ describe('GatewayService', () => {
           executor: new GatewayExecutor<TestUser, MockGateway>()
         });
 
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onError: onErrorHook
         };
@@ -1282,9 +1268,7 @@ describe('GatewayService', () => {
 
       it('should call hooks in correct order', async () => {
         const callOrder: string[] = [];
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'OrderPlugin',
           onBefore: async () => {
             callOrder.push('onBefore');
@@ -1311,13 +1295,9 @@ describe('GatewayService', () => {
         const plugin = {
           pluginName: 'TestPlugin',
           onGetUserBefore: onGetUserBeforeHook
-        } as ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > & {
+        } as GatewayExecutorPlugin<TestUser, MockGateway, unknown>  & {
           onGetUserBefore?: (
-            context: ExecutorContext<
-              GatewayExecutorOptions<TestUser, MockGateway, unknown>
-            >
+            context: GatewayExecutorContext<TestUser, MockGateway, unknown>
           ) => Promise<void> | void;
         };
 
@@ -1334,13 +1314,9 @@ describe('GatewayService', () => {
         const plugin = {
           pluginName: 'TestPlugin',
           onGetUserSuccess: onGetUserSuccessHook
-        } as ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > & {
+        } as GatewayExecutorPlugin<TestUser, MockGateway, unknown> & {
           onGetUserSuccess?: (
-            context: ExecutorContext<
-              GatewayExecutorOptions<TestUser, MockGateway, unknown>
-            >
+            context: GatewayExecutorContext<TestUser, MockGateway, unknown>
           ) => Promise<void> | void;
         };
 
@@ -1357,18 +1333,12 @@ describe('GatewayService', () => {
           pluginName: 'TestPlugin',
           onGetUserBefore: onGetUserBeforeHook,
           onCreateUserBefore: onCreateUserBeforeHook
-        } as ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > & {
+        } as GatewayExecutorPlugin<TestUser, MockGateway, unknown> & {
           onGetUserBefore?: (
-            context: ExecutorContext<
-              GatewayExecutorOptions<TestUser, MockGateway, unknown>
-            >
+            context: GatewayExecutorContext<TestUser, MockGateway, unknown>
           ) => Promise<void> | void;
           onCreateUserBefore?: (
-            context: ExecutorContext<
-              GatewayExecutorOptions<TestUser, MockGateway, unknown>
-            >
+            context: GatewayExecutorContext<TestUser, MockGateway, unknown>
           ) => Promise<void> | void;
         };
 
@@ -1385,15 +1355,11 @@ describe('GatewayService', () => {
       it('should register multiple plugins', async () => {
         const plugin1Hook = vi.fn();
         const plugin2Hook = vi.fn();
-        const plugin1: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin1: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'Plugin1',
           onBefore: plugin1Hook
         };
-        const plugin2: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin2: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'Plugin2',
           onBefore: plugin2Hook
         };
@@ -1406,15 +1372,11 @@ describe('GatewayService', () => {
       });
 
       it('should allow method chaining', () => {
-        const plugin1: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin1: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'Plugin1',
           onBefore: vi.fn()
         };
-        const plugin2: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin2: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'Plugin2',
           onBefore: vi.fn()
         };
@@ -1430,9 +1392,7 @@ describe('GatewayService', () => {
           // No executor provided
         });
 
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: vi.fn()
         };
@@ -1446,9 +1406,7 @@ describe('GatewayService', () => {
     describe('plugin with execute patterns', () => {
       it('should call hooks for execute(action)', async () => {
         const onBeforeHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: onBeforeHook
         };
@@ -1475,9 +1433,7 @@ describe('GatewayService', () => {
 
       it('should call hooks for execute(action, params)', async () => {
         const onBeforeHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: onBeforeHook
         };
@@ -1489,9 +1445,7 @@ describe('GatewayService', () => {
 
       it('should call hooks for execute(action, ...params)', async () => {
         const onBeforeHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: onBeforeHook
         };
@@ -1518,9 +1472,7 @@ describe('GatewayService', () => {
 
       it('should call hooks for execute(action, fn)', async () => {
         const onBeforeHook = vi.fn();
-        const plugin: ExecutorPlugin<
-          GatewayExecutorOptions<TestUser, MockGateway, unknown>
-        > = {
+        const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
           pluginName: 'TestPlugin',
           onBefore: onBeforeHook
         };

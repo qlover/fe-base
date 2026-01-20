@@ -143,16 +143,17 @@ export class LifecycleExecutor<
     task?: ExecutorTask<R, P>
   ): Promise<R | ExecutorError> {
     try {
-      return task !== undefined
-        ? (
+      const result = task !== undefined
+        ? await (
           this.exec as <R, P>(
             data: P,
             task: ExecutorTask<R, P>
-          ) => R | Promise<R>
+          ) => Promise<R>
         )(dataOrTask as P, task)
-        : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
+        : await (this.exec as <R, P>(task: ExecutorTask<R, P>) => Promise<R>)(
           dataOrTask as ExecutorTask<R, P>
         );
+      return result;
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;
