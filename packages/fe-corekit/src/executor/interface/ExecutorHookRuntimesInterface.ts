@@ -1,8 +1,5 @@
 import { type ExecutorContextInterface } from './ExecutorContextInterface';
-import {
-  type ExecutorPluginInterface,
-} from './ExecutorInterface';
-
+import { type ExecutorPluginInterface } from './ExecutorInterface';
 
 /**
  * Runtime information interface for hook execution tracking
@@ -253,7 +250,6 @@ export interface HookRuntimes {
    */
   [key: string]: unknown;
 }
-
 
 /**
  * Interface for runtime tracking of executor hooks

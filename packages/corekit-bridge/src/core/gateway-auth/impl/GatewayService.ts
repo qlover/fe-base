@@ -3,8 +3,7 @@ import {
   type AsyncStoreStateInterface
 } from '../../store-state';
 import type { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
-import type {
-  GatewayExecutorPlugin} from './GatewayExecutor';
+import type { GatewayExecutorPlugin } from './GatewayExecutor';
 import {
   type GatewayExecutor,
   type GatewayExecutorOptions
@@ -201,7 +200,9 @@ export abstract class GatewayService<
    * });
    * ```
    */
-  public use<Plugin extends GatewayExecutorPlugin<T, Gateway, unknown>>(plugin: Plugin | Plugin[]): this {
+  public use<Plugin extends GatewayExecutorPlugin<T, Gateway, unknown>>(
+    plugin: Plugin | Plugin[]
+  ): this {
     if (!this.executor) {
       throw new Error(`${String(this.serviceName)} Executor is not set`);
     }

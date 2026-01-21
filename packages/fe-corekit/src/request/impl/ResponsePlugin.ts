@@ -4,8 +4,8 @@ import {
   type LifecyclePluginInterface
 } from '../../executor/interface';
 import type {
-   RequestAdapterConfig,
-   RequestAdapterResponse,
+  RequestAdapterConfig,
+  RequestAdapterResponse
 } from '../interface';
 import { JSON_RESPONSE_TYPE } from './consts';
 import { isFunction } from 'lodash-es';

@@ -4,7 +4,10 @@ import type { UserInfoInterface } from './UserInfoInterface';
 import type { UserStoreInterface } from './UserStoreInterface';
 import type { GatewayExecutorOptions } from '../impl/GatewayExecutor';
 import type { ServiceActionType } from '../impl/ServiceAction';
-import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
+import type {
+  ExecutorContextInterface,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import type { FirstUppercaseType } from '../utils/firstUppercase';
 
 /**
@@ -137,7 +140,9 @@ type UserServiceBasePluginType<
   Credential
 > = Partial<{
   [K in ActionHookNames<Action>]: (
-    context: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>
+    context: ExecutorContextInterface<
+      UserServiceExecutorOptions<User, Credential>
+    >
   ) => Promise<void> | void;
 }>;
 
@@ -202,7 +207,9 @@ export type UserServicePluginType<
   User,
   Credential,
   Actions extends readonly string[] = readonly ServiceActionType[]
-> = LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> &
+> = LifecyclePluginInterface<
+  ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>
+> &
   UserServiceBasePluginType<Actions, User, Credential>;
 
 /**
@@ -317,7 +324,9 @@ export type UserPluginContext<User, Credential> = ExecutorContextInterface<
  * ```
  */
 export interface UserServicePluginInterface<User, Credential>
-  extends LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> {
+  extends LifecyclePluginInterface<
+    ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>
+  > {
   /**
    * Hook called before login action
    *

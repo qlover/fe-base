@@ -1,4 +1,7 @@
-import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHookRuntimesInterface";
+import type {
+  ExecutorHookRuntimesInterface,
+  HookRuntimes
+} from './ExecutorHookRuntimesInterface';
 
 /**
  * Executor context interface with generic runtime support
@@ -56,7 +59,7 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  *   data: User;
  * }
  *
- * const context: ExecutorContextInterface<UserParams, UserResult> = 
+ * const context: ExecutorContextInterface<UserParams, UserResult> =
  *   new ExecutorContextImpl({ userId: 123, action: 'fetch' });
  *
  * console.log(context.parameters.userId); // 123
@@ -66,7 +69,7 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  * ```typescript
  * const plugin: LifecyclePluginInterface<ExecutorContextInterface<UserParams, UserResult>> = {
  *   pluginName: 'logger',
- *   
+ *
  *   onBefore: async (ctx) => {
  *     console.log('Starting with:', ctx.parameters);
  *     // Add timestamp to parameters
@@ -75,12 +78,12 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  *       timestamp: Date.now()
  *     });
  *   },
- *   
+ *
  *   onAfter: async (ctx, result) => {
  *     console.log('Completed with:', ctx.returnValue);
  *     return result;
  *   },
- *   
+ *
  *   onError: async (ctx, error) => {
  *     console.error('Failed with:', ctx.error);
  *     throw error;
@@ -91,7 +94,7 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  * @example Parameter transformation
  * ```typescript
  * const executor = new LifecycleExecutor();
- * 
+ *
  * executor.use({
  *   pluginName: 'validator',
  *   onBefore: async (ctx) => {
@@ -117,7 +120,7 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  *   onError: async (ctx, error) => {
  *     // Access error from context
  *     console.error('Task failed:', ctx.error);
- *     
+ *
  *     // Transform error
  *     if (ctx.error instanceof NetworkError) {
  *       throw new UserFriendlyError('Network connection failed');
@@ -130,7 +133,7 @@ import type { ExecutorHookRuntimesInterface, HookRuntimes } from "./ExecutorHook
  * @example With unknown return type
  * ```typescript
  * // When return type is not known in advance
- * const context: ExecutorContextInterface<UserParams, unknown> = 
+ * const context: ExecutorContextInterface<UserParams, unknown> =
  *   new ExecutorContextImpl(params);
  * ```
  *

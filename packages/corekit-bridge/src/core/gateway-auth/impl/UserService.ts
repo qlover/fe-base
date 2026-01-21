@@ -1,6 +1,9 @@
 import { AsyncStoreStatus } from '../../store-state';
 import { type LoginParams } from '../interface/LoginInterface';
-import { type GatewayExecutor, type GatewayExecutorPlugin } from './GatewayExecutor';
+import {
+  type GatewayExecutor,
+  type GatewayExecutorPlugin
+} from './GatewayExecutor';
 import { GatewayService } from './GatewayService';
 import {
   type UserServiceGateway,
@@ -407,13 +410,23 @@ export class UserService<User, Credential, Key = string | symbol>
   /**
    * @override
    */
-  public use<Plugin extends GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>>(
-    plugin: Plugin | Plugin[]
-  ): this;
+  public use<
+    Plugin extends GatewayExecutorPlugin<
+      User,
+      UserServiceGateway<User, Credential>,
+      unknown
+    >
+  >(plugin: Plugin | Plugin[]): this;
   /**
    * @override
    */
-  public use<Plugin extends GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>>(
+  public use<
+    Plugin extends GatewayExecutorPlugin<
+      User,
+      UserServiceGateway<User, Credential>,
+      unknown
+    >
+  >(
     plugin:
       | UserServicePluginType<User, Credential>
       | UserServicePluginInterface<User, Credential>
@@ -423,7 +436,17 @@ export class UserService<User, Credential, Key = string | symbol>
       | Plugin[]
   ): this {
     return super.use(
-      plugin as GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown> | GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>[]
+      plugin as
+        | GatewayExecutorPlugin<
+            User,
+            UserServiceGateway<User, Credential>,
+            unknown
+          >
+        | GatewayExecutorPlugin<
+            User,
+            UserServiceGateway<User, Credential>,
+            unknown
+          >[]
     );
   }
 

@@ -154,19 +154,19 @@ export class ExecutorError extends Error {
    * console.log(error.name); // 'ExecutorError'
    * ```
    *
- * @example Wrap an existing error
- * ```typescript
- * try {
- *   JSON.parse(invalidJson);
- * } catch (err) {
- *   const error = new ExecutorError('PARSE_ERROR', err);
- *   console.log(error.id); // 'PARSE_ERROR'
- *   console.log(error.message); // 'Unexpected token...' (from err.message)
- *   console.log(error.cause); // Original SyntaxError (stored in cause)
- *   console.log(error.stack); // Stack trace showing where ExecutorError was created
- *   console.log(error.cause.stack); // Original SyntaxError stack trace
- * }
- * ```
+   * @example Wrap an existing error
+   * ```typescript
+   * try {
+   *   JSON.parse(invalidJson);
+   * } catch (err) {
+   *   const error = new ExecutorError('PARSE_ERROR', err);
+   *   console.log(error.id); // 'PARSE_ERROR'
+   *   console.log(error.message); // 'Unexpected token...' (from err.message)
+   *   console.log(error.cause); // Original SyntaxError (stored in cause)
+   *   console.log(error.stack); // Stack trace showing where ExecutorError was created
+   *   console.log(error.cause.stack); // Original SyntaxError stack trace
+   * }
+   * ```
    *
    * @example Create error with custom message
    * ```typescript

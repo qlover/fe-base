@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
+import type {
+  ExecutorContextInterface,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import {
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
@@ -88,7 +91,9 @@ export interface ExecutorServiceOptions<T, Gateway> {
   store?: AsyncStoreInterface<AsyncStoreStateInterface<T>>;
 }
 
-export type ExecutorServiceContext<T, Gateway> = ExecutorContextInterface<ExecutorServiceOptions<T, Gateway>>;
+export type ExecutorServiceContext<T, Gateway> = ExecutorContextInterface<
+  ExecutorServiceOptions<T, Gateway>
+>;
 
 /**
  * Executor service interface
@@ -230,7 +235,9 @@ export interface ExecutorServiceInterface<
    * });
    * ```
    */
-  use<Plugin extends LifecyclePluginInterface<ExecutorContextInterface<any>>>(plugin: Plugin | Plugin[]): void;
+  use<Plugin extends LifecyclePluginInterface<ExecutorContextInterface<any>>>(
+    plugin: Plugin | Plugin[]
+  ): void;
 
   /**
    * Create executor options for a service action

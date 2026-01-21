@@ -148,7 +148,9 @@ describe('ResponseStream', () => {
       };
       const streamResponsePlugin = new ResponseStream(streamConfig);
 
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(mockResponse);
 
       await streamResponsePlugin.onSuccess(context);
@@ -175,7 +177,9 @@ describe('ResponseStream', () => {
 
     it('should process stream response', async () => {
       const mockResponse = createMockResponse(['test']);
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(mockResponse);
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).toHaveBeenCalledWith(
@@ -189,7 +193,9 @@ describe('ResponseStream', () => {
       const nonStreamResponse = new Response(JSON.stringify({ data: 'test' }));
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);

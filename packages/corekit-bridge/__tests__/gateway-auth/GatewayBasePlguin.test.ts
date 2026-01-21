@@ -3,7 +3,10 @@ import { GatewayBasePlguin } from '../../src/core/gateway-auth/impl/GatewayBaseP
 import { LogContext } from '@qlover/logger';
 import { AsyncStore, type AsyncStoreState } from '../../src/core/store-state';
 import { ExecutorError, ExecutorContextImpl } from '@qlover/fe-corekit';
-import type { GatewayExecutorOptions, GatewayExecutorContext } from '../../src/core/gateway-auth/impl/GatewayExecutor';
+import type {
+  GatewayExecutorOptions,
+  GatewayExecutorContext
+} from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import type { LoggerInterface } from '@qlover/logger';
 
 interface TestUser {
@@ -79,7 +82,9 @@ describe('GatewayBasePlguin', () => {
 
       const context = new ExecutorContextImpl(options);
 
-      await plugin.onBefore(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onBefore(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(startSpy).toHaveBeenCalledTimes(1);
       expect(mockStore.getLoading()).toBe(true);
@@ -97,7 +102,11 @@ describe('GatewayBasePlguin', () => {
 
       const context = new ExecutorContextImpl(options);
 
-      await expect(plugin.onBefore(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).resolves.not.toThrow();
+      await expect(
+        plugin.onBefore(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).resolves.not.toThrow();
     });
 
     it('should not throw when store is null', async () => {
@@ -112,7 +121,11 @@ describe('GatewayBasePlguin', () => {
 
       const context = new ExecutorContextImpl(options);
 
-      await expect(plugin.onBefore(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).resolves.not.toThrow();
+      await expect(
+        plugin.onBefore(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).resolves.not.toThrow();
     });
   });
 
@@ -137,7 +150,9 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setReturnValue(result);
 
-      await plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onSuccess(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(successSpy).toHaveBeenCalledTimes(1);
       expect(successSpy).toHaveBeenCalledWith(result);
@@ -157,10 +172,16 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setReturnValue(null);
 
-      await expect(plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).rejects.toThrow(ExecutorError);
-      await expect(plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).rejects.toThrow(
-        'TestService: getUser - Result is null'
-      );
+      await expect(
+        plugin.onSuccess(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).rejects.toThrow(ExecutorError);
+      await expect(
+        plugin.onSuccess(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).rejects.toThrow('TestService: getUser - Result is null');
     });
 
     it('should throw ExecutorError when returnValue is undefined', async () => {
@@ -203,7 +224,9 @@ describe('GatewayBasePlguin', () => {
       // Start store to set startTime for duration calculation
       mockStore.start();
 
-      await plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onSuccess(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(mockLogger.debug).toHaveBeenCalledTimes(1);
       expect(mockLogger.debug).toHaveBeenCalledWith(
@@ -231,7 +254,9 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setReturnValue(result);
 
-      await plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onSuccess(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(mockLogger.debug).not.toHaveBeenCalled();
     });
@@ -255,7 +280,11 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setReturnValue(result);
 
-      await expect(plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).resolves.not.toThrow();
+      await expect(
+        plugin.onSuccess(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).resolves.not.toThrow();
       expect(mockLogger.debug).toHaveBeenCalled();
     });
 
@@ -282,7 +311,9 @@ describe('GatewayBasePlguin', () => {
       // Wait a bit to ensure duration > 0
       await new Promise((resolve) => setTimeout(resolve, 10));
 
-      await plugin.onSuccess(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onSuccess(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/TestService: getUser - success\(\d+ms\)/),
@@ -308,7 +339,9 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setError(error);
 
-      await plugin.onError(context as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onError(
+        context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
 
       expect(failedSpy).toHaveBeenCalledTimes(1);
       expect(failedSpy).toHaveBeenCalledWith(error);
@@ -330,7 +363,11 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setError(error);
 
-      await expect(plugin.onError(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).resolves.not.toThrow();
+      await expect(
+        plugin.onError(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).resolves.not.toThrow();
     });
 
     it('should not throw when store is null', async () => {
@@ -348,7 +385,11 @@ describe('GatewayBasePlguin', () => {
       const context = new ExecutorContextImpl(options);
       context.setError(error);
 
-      await expect(plugin.onError(context as GatewayExecutorContext<TestUser, MockGateway, unknown>)).resolves.not.toThrow();
+      await expect(
+        plugin.onError(
+          context as GatewayExecutorContext<TestUser, MockGateway, unknown>
+        )
+      ).resolves.not.toThrow();
     });
 
     it('should handle different error types', async () => {
@@ -367,14 +408,18 @@ describe('GatewayBasePlguin', () => {
       const context1 = new ExecutorContextImpl(options);
       context1.setError(error1);
 
-      await plugin.onError(context1 as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onError(
+        context1 as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(failedSpy).toHaveBeenCalledWith(error1);
 
       const error2 = new TypeError('Type error');
       const context2 = new ExecutorContextImpl(options);
       context2.setError(error2);
 
-      await plugin.onError(context2 as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onError(
+        context2 as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(failedSpy).toHaveBeenCalledWith(error2);
     });
   });
@@ -399,14 +444,18 @@ describe('GatewayBasePlguin', () => {
       // onBefore
       const beforeContext = new ExecutorContextImpl(options);
 
-      await plugin.onBefore(beforeContext as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onBefore(
+        beforeContext as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(mockStore.getLoading()).toBe(true);
 
       // onSuccess
       const successContext = new ExecutorContextImpl(options);
       successContext.setReturnValue(result);
 
-      await plugin.onSuccess(successContext as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onSuccess(
+        successContext as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(mockStore.getLoading()).toBe(false);
       expect(mockStore.getResult()).toEqual(result);
       expect(mockStore.getError()).toBeNull();
@@ -427,14 +476,18 @@ describe('GatewayBasePlguin', () => {
       // onBefore
       const beforeContext = new ExecutorContextImpl(options);
 
-      await plugin.onBefore(beforeContext as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onBefore(
+        beforeContext as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(mockStore.getLoading()).toBe(true);
 
       // onError
       const errorContext = new ExecutorContextImpl(options);
       errorContext.setError(error);
 
-      await plugin.onError(errorContext as GatewayExecutorContext<TestUser, MockGateway, unknown>);
+      await plugin.onError(
+        errorContext as GatewayExecutorContext<TestUser, MockGateway, unknown>
+      );
       expect(mockStore.getLoading()).toBe(false);
       expect(mockStore.getError()).toBe(error);
       // When failed is called without result parameter, result becomes undefined

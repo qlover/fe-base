@@ -1,4 +1,7 @@
-import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
+import type {
+  ExecutorContextInterface,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import type { ChatMessage } from '../impl/ChatMessage';
 import type { ChatMessageStoreInterface } from './ChatMessageStoreInterface';
 import type { GatewayOptions } from './MessageGetwayInterface';

@@ -58,7 +58,7 @@ export interface HeaderInjectorConfig {
  * });
  * const headers = injector.inject(config);
  * ```
- * 
+ *
  * @since 3.0.0
  */
 export interface HeaderInjectorInterface {

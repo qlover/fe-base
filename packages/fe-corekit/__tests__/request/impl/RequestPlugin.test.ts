@@ -369,7 +369,8 @@ describe('RequestPlugin', () => {
     describe('Custom serializer', () => {
       it('should use custom serializer when provided', () => {
         plugin = new RequestPlugin({
-          requestDataSerializer: (data, config) => `custom:${JSON.stringify(data)}:${config.method}`
+          requestDataSerializer: (data, config) =>
+            `custom:${JSON.stringify(data)}:${config.method}`
         });
         const contextConfig: RequestAdapterConfig = {
           method: 'POST',
@@ -382,7 +383,9 @@ describe('RequestPlugin', () => {
       });
 
       it('should pass config to custom serializer', () => {
-        const serializerSpy = vi.fn((data, config) => JSON.stringify({ data, url: config.url }));
+        const serializerSpy = vi.fn((data, config) =>
+          JSON.stringify({ data, url: config.url })
+        );
         plugin = new RequestPlugin({
           requestDataSerializer: serializerSpy
         });

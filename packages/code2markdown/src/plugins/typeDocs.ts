@@ -282,7 +282,7 @@ export default class TypeDocJson extends ScriptPlugin<
 
     fsExtra.removeSync(path);
     fsExtra.ensureFileSync(path);
-    
+
     // Create a replacer function to handle circular references
     const seen = new WeakSet();
     const replacer = (_key: string, val: any) => {
@@ -294,7 +294,7 @@ export default class TypeDocJson extends ScriptPlugin<
       }
       return val;
     };
-    
+
     fsExtra.writeFileSync(path, JSON.stringify(value, replacer, 2), 'utf-8');
   }
 

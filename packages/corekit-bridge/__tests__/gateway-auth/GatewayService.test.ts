@@ -20,13 +20,10 @@ import {
 import { AsyncStore, type AsyncStoreState } from '../../src/core/store-state';
 import type {
   GatewayExecutorContext,
-  GatewayExecutorPlugin} from '../../src/core/gateway-auth/impl/GatewayExecutor';
-import {
-  GatewayExecutor,
+  GatewayExecutorPlugin
 } from '../../src/core/gateway-auth/impl/GatewayExecutor';
-import {
-  ExecutorError,
-} from '@qlover/fe-corekit';
+import { GatewayExecutor } from '../../src/core/gateway-auth/impl/GatewayExecutor';
+import { ExecutorError } from '@qlover/fe-corekit';
 import { GatewayBasePlguin } from '../../src/core/gateway-auth/impl/GatewayBasePlguin';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
@@ -245,7 +242,7 @@ describe('GatewayService', () => {
       const plugin: GatewayExecutorPlugin<TestUser, MockGateway, unknown> = {
         pluginName: 'TestPlugin',
         onBefore: vi.fn()
-      };  
+      };
 
       const result = service.use(plugin);
       expect(result).toBe(service);
@@ -1295,7 +1292,7 @@ describe('GatewayService', () => {
         const plugin = {
           pluginName: 'TestPlugin',
           onGetUserBefore: onGetUserBeforeHook
-        } as GatewayExecutorPlugin<TestUser, MockGateway, unknown>  & {
+        } as GatewayExecutorPlugin<TestUser, MockGateway, unknown> & {
           onGetUserBefore?: (
             context: GatewayExecutorContext<TestUser, MockGateway, unknown>
           ) => Promise<void> | void;

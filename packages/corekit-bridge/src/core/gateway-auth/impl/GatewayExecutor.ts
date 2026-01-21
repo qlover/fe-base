@@ -1,6 +1,10 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
 import { firstUppercase } from '../utils/firstUppercase';
-import type { LifecyclePluginInterface, ExecutorTask, ExecutorContextInterface } from '@qlover/fe-corekit';
+import type {
+  LifecyclePluginInterface,
+  ExecutorTask,
+  ExecutorContextInterface
+} from '@qlover/fe-corekit';
 import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
@@ -68,10 +72,17 @@ export interface GatewayExecutorOptions<T, Gateway, Params = unknown>
   params?: Params;
 }
 
+export type GatewayExecutorContext<
+  T,
+  Gateway,
+  Params = unknown
+> = ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>;
 
-export type GatewayExecutorContext<T, Gateway, Params = unknown> = ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>;
-
-export type GatewayExecutorPlugin<T, Gateway, Params = unknown> = LifecyclePluginInterface<GatewayExecutorContext<T, Gateway, Params>>;
+export type GatewayExecutorPlugin<
+  T,
+  Gateway,
+  Params = unknown
+> = LifecyclePluginInterface<GatewayExecutorContext<T, Gateway, Params>>;
 
 /**
  * GatewayExecutor for executing gateway actions with plugin support
@@ -162,7 +173,11 @@ export type GatewayExecutorPlugin<T, Gateway, Params = unknown> = LifecyclePlugi
  *   }
  * });
  */
-export class GatewayExecutor<T, Gateway, Params = unknown> extends LifecycleExecutor<GatewayExecutorContext<T, Gateway, Params>> {
+export class GatewayExecutor<
+  T,
+  Gateway,
+  Params = unknown
+> extends LifecycleExecutor<GatewayExecutorContext<T, Gateway, Params>> {
   /**
    * Generate hook name for a specific action and type
    *
@@ -209,7 +224,11 @@ export class GatewayExecutor<T, Gateway, Params = unknown> extends LifecycleExec
    * @param actualTask - The actual task to execute
    * @returns The result of the task
    */
-  protected override async runExec<Result, P = unknown, Params = GatewayExecutorOptions<T, Gateway, P>>(
+  protected override async runExec<
+    Result,
+    P = unknown,
+    Params = GatewayExecutorOptions<T, Gateway, P>
+  >(
     context: ExecutorContextInterface<Params, Result>,
     actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
@@ -253,7 +272,9 @@ export class GatewayExecutor<T, Gateway, Params = unknown> extends LifecycleExec
    * @internal This method is called by `GatewayService.execute` during action execution
    */
   public async runBeforeAction<Params = unknown>(
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, Params>
+    >
   ): Promise<void> {
     await this.runHook(
       this.plugins,
@@ -293,7 +314,9 @@ export class GatewayExecutor<T, Gateway, Params = unknown> extends LifecycleExec
    * @internal This method is called by `GatewayService.execute` after successful action execution
    */
   public async runSuccessAction<Params = unknown>(
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, Params>
+    >
   ): Promise<void> {
     await this.runHook(
       this.plugins,

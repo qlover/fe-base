@@ -138,7 +138,7 @@ export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
  * @category Plugin
  */
 export interface LifecyclePluginInterface<
-  Ctx extends ExecutorContextInterface  <unknown, unknown>,
+  Ctx extends ExecutorContextInterface<unknown, unknown>,
   Result = Ctx['returnValue'],
   Param = Ctx['parameters']
 > extends ExecutorPluginInterface<Ctx> {

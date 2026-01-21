@@ -94,7 +94,9 @@ export type GatewayBasePluginType<
   Gateway
 > = Partial<{
   [K in ActionHookNames<Action>]: (
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, unknown>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, unknown>
+    >
   ) => Promise<void> | void;
 }>;
 
@@ -179,7 +181,10 @@ export type GatewayBasePluginType<
  * ```
  */
 export class GatewayBasePlguin<Params, T, Gateway>
-  implements LifecyclePluginInterface<ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>>
+  implements
+    LifecyclePluginInterface<
+      ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    >
 {
   public readonly pluginName = 'GatewayBasePlguin';
 
@@ -201,7 +206,9 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onBefore(
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, Params>
+    >
   ): Promise<void> {
     const store = context.parameters.store;
 
@@ -232,7 +239,9 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onSuccess(
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, Params>
+    >
   ): Promise<void> {
     const { returnValue } = context;
     const { actionName, serviceName, logger, store } = context.parameters;
@@ -273,7 +282,9 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onError(
-    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<
+      GatewayExecutorOptions<T, Gateway, Params>
+    >
   ): Promise<void> {
     const error = context.error;
     const store = context.parameters.store;
