@@ -36,13 +36,13 @@ property
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<RequestAdapterFetchConfig<unknown>>) => void \| Promise<void>`
+**Type:** `(context: ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                                   | Optional | Default | Since | Deprecated | Description |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -52,9 +52,9 @@ property
 
 #### Parameters
 
-| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description |
-| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                                   | Optional | Default | Since | Deprecated | Description |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ExecutorContextInterface<RequestAdapterFetchConfig<unknown>, RequestAdapterResponse<unknown, unknown>, HookRuntimes>` | ❌       | -       | -     | -          |             |
 
 ---
 

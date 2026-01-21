@@ -10,34 +10,104 @@
 
 **Since:** `1.0.10`
 
-Base64 serialization implementation
-Cross-platform string-to-base64 encoding/decoding for both browser and Node.js
+Base64 serialization implementation with cross-platform support
 
-Significance: Provides universal Base64 serialization across different JavaScript environments
-Core idea: Environment-aware Base64 encoding with consistent API
-Main function: Convert strings to/from Base64 with optional URL-safe encoding
-Main purpose: Enable cross-platform data serialization with Base64 encoding
+Core concept:
+Provides universal Base64 encoding/decoding that works consistently
+across browser and Node.js environments, with automatic environment
+detection and appropriate API usage.
 
-Features:
+Main features:
 
-- Cross-platform compatibility (Browser + Node.js)
-- Base64 encoding/decoding
-- UTF-8 support
-- URL-safe encoding option
-- Robust error handling
+- Cross-platform compatibility: Works in both browser and Node.js
+  - Browser: Uses native
+    `btoa`
+    /
+    `atob`
+    with TextEncoder/TextDecoder
+  - Node.js: Uses Buffer API for optimal performance
+  - Automatic environment detection
+  - Consistent behavior across platforms
+
+- UTF-8 support: Proper handling of Unicode characters
+  - Supports all Unicode characters
+  - Handles multi-byte characters correctly
+  - Prevents encoding errors
+
+- URL-safe encoding: Optional URL-safe Base64 format
+  - Replaces
+    `+`
+    with
+    `-`
+
+  - Replaces
+    `/`
+    with
+    `_`
+
+  - Removes padding
+    `=`
+    characters
+  - Safe for use in URLs and filenames
+
+- Robust error handling: Graceful failure with default values
+  - Validates Base64 format before decoding
+  - Returns default value on error
+  - No exceptions thrown
+
+Use cases:
+
+- Data obfuscation: Hide data in plain sight
+- URL encoding: Encode data for URL parameters
+- Binary data: Encode binary data as text
+- Storage: Store binary data in text-based storage
 
 **Implements:**
 
-**Example:**
+**Example:** Basic usage
+
+```typescript
+const serializer = new Base64Serializer();
+
+// Encode string to Base64
+const encoded = serializer.serialize('Hello World!');
+console.log(encoded); // "SGVsbG8gV29ybGQh"
+
+// Decode Base64 back to string
+const decoded = serializer.deserialize(encoded);
+console.log(decoded); // "Hello World!"
+```
+
+**Example:** URL-safe encoding
 
 ```typescript
 const serializer = new Base64Serializer({ urlSafe: true });
 
-// Encode string to base64
-const encoded = serializer.serialize('Hello World!');
+const data = 'data+with/special=chars';
+const encoded = serializer.serialize(data);
+// URL-safe: no +, /, or = characters
+console.log(encoded); // "ZGF0YSt3aXRoL3NwZWNpYWw9Y2hhcnM"
+```
 
-// Decode base64 back to string
+**Example:** UTF-8 support
+
+```typescript
+const serializer = new Base64Serializer();
+
+// Encode Unicode characters
+const encoded = serializer.serialize('你好世界 🌍');
 const decoded = serializer.deserialize(encoded);
+console.log(decoded); // "你好世界 🌍"
+```
+
+**Example:** Error handling
+
+```typescript
+const serializer = new Base64Serializer();
+
+// Invalid Base64 returns default value
+const result = serializer.deserialize('invalid!!!', 'fallback');
+console.log(result); // "fallback"
 ```
 
 ---
@@ -48,13 +118,16 @@ const decoded = serializer.deserialize(encoded);
 
 #### Parameters
 
-| Name              | Type      | Optional | Default | Since | Deprecated | Description |
-| ----------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `options`         | `Object`  | ✅       | `{}`    | -     | -          |             |
-| `options.urlSafe` | `boolean` | ✅       | `ts     |
+| Name              | Type      | Optional | Default | Since    | Deprecated | Description                  |
+| ----------------- | --------- | -------- | ------- | -------- | ---------- | ---------------------------- |
+| `options`         | `Object`  | ✅       | `{}`    | -        | -          | Configuration options        |
+| `options.urlSafe` | `boolean` | ✅       | `false` | `1.0.10` | -          | Use URL-safe Base64 encoding |
 
-false
-`|`1.0.10` | - | Use URL-safe base64 encoding |
+When enabled:
+
+- Replaces `+` with `-`
+- Replaces `/` with `_`
+- Removes padding `=` characters |
 
 ---
 
@@ -77,11 +150,30 @@ false
 
 **Since:** `1.0.10`
 
-Deserializes base64 string back to original using environment-appropriate method
+Deserializes Base64 string back to original using environment-appropriate method
+
+Validates the Base64 format before decoding and returns default value
+if validation or decoding fails. Automatically handles URL-safe format
+conversion if configured.
 
 **Returns:**
 
-Decoded string
+Decoded string (default value on error)
+
+**Example:**
+
+```typescript
+const serializer = new Base64Serializer();
+const decoded = serializer.deserialize('SGVsbG8gV29ybGQh');
+console.log(decoded); // "Hello World!"
+```
+
+**Example:** With default value
+
+```typescript
+const decoded = serializer.deserialize('invalid', 'fallback');
+console.log(decoded); // "fallback"
+```
 
 #### Parameters
 
@@ -110,11 +202,24 @@ Decoded string
 
 **Since:** `1.0.10`
 
-Serializes string to base64 using environment-appropriate method
+Serializes string to Base64 using environment-appropriate method
+
+Automatically detects the environment and uses the optimal encoding method:
+
+- Node.js: Uses Buffer API for better performance
+- Browser: Uses btoa with TextEncoder for UTF-8 support
 
 **Returns:**
 
-Base64 encoded string
+Base64 encoded string (empty string on error)
+
+**Example:**
+
+```typescript
+const serializer = new Base64Serializer();
+const encoded = serializer.serialize('Hello World!');
+console.log(encoded); // "SGVsbG8gV29ybGQh"
+```
 
 #### Parameters
 

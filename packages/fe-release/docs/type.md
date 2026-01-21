@@ -47,85 +47,9 @@ const context: ExecutorReleaseContext = {
 
 #### `error` (Property)
 
-**Type:** `Error`
+**Type:** `unknown`
 
-Error that occurred during task execution
-
-Core concept:
-Captures and preserves error information when task execution fails,
-enabling comprehensive error handling and debugging capabilities
-
-Main features:
-
-- Error preservation: Maintains original error objects with stack traces
-- Pipeline integration: Errors are propagated through the execution pipeline
-- Debugging support: Provides detailed error information for troubleshooting
-- Optional presence: Only populated when errors occur during execution
-
-Error handling flow:
-
-1. Error occurs during task execution or plugin hook execution
-2. Error is captured and assigned to this property
-3. Error information is preserved for downstream processing
-4. Error can be handled by error-specific plugins or hooks
-
-**Example:**
-
-```ts
-`new Error('Database connection failed')`;
-```
-
-**Example:**
-
-```ts
-`new ValidationError('Invalid input parameters')`;
-```
-
----
-
-#### `hooksRuntimes` (Property)
-
-**Type:** `HookRuntimes`
-
-Runtime information and metadata for hook execution
-
-Core concept:
-Provides detailed runtime information about hook execution, including
-performance metrics, execution state, and control flow information
-
-Main features:
-
-- Performance tracking: Monitors hook execution time and performance
-- State management: Tracks current hook name and execution state
-- Flow control: Provides mechanisms to control execution flow
-- Read-only access: Runtime data is frozen and cannot be modified
-- Auto-cleanup: Data is automatically cleared after execution completes
-
-Runtime data structure:
-
-- hookName: Current hook being executed
-- returnValue: Return value from current hook execution
-- times: Number of times hook has been executed
-- breakChain: Flag to break the execution chain
-- returnBreakChain: Flag to break chain when return value exists
-
-Security and performance:
-
-- Data is frozen to prevent modification during execution
-- Memory is automatically managed and cleared after execution
-- Provides audit trail for debugging and monitoring
-
-**Example:**
-
-```typescript
-hooksRuntimes: {
-  hookName: 'onBefore',
-  returnValue: { validated: true },
-  times: 1,
-  breakChain: false,
-  returnBreakChain: false
-}
-```
+Current error state, if any
 
 ---
 
@@ -133,47 +57,341 @@ hooksRuntimes: {
 
 **Type:** `default`
 
-Input parameters passed to the task for execution
-
-Core concept:
-Contains all input data required for task execution, providing
-the necessary context and parameters for the task to perform its operations
-
-Main features:
-
-- Type safety: Generic type parameter ensures type safety for different parameter types
-- Pipeline persistence: Parameters are maintained throughout the execution pipeline
-- Plugin access: All plugins can access and potentially modify parameters
-- Validation support: Parameters can be validated by validation plugins
-
-Parameter lifecycle:
-
-1. Initial parameters are set when context is created
-2. Parameters can be modified by before hooks (validation, transformation)
-3. Modified parameters are passed to the main task function
-4. Parameters remain available for after hooks (logging, cleanup)
-
-**Example:** Simple parameters
-
-```typescript
-parameters: { id: 1, name: 'test' }
-```
-
-**Example:** Complex parameters
-
-```typescript
-parameters: {
-  user: { id: 1, name: 'John' },
-  options: { timeout: 5000, retries: 3 },
-  metadata: { source: 'api', version: 'v2' }
-}
-```
+Read-only access to execution parameters
 
 ---
 
 #### `returnValue` (Property)
 
 **Type:** `ReleaseReturnValue`
+
+---
+
+#### `hooksRuntimes` (Accessor)
+
+**Type:** `accessor hooksRuntimes`
+
+---
+
+#### `reset` (Method)
+
+**Type:** `() => void`
+
+---
+
+##### `reset` (CallSignature)
+
+**Type:** `void`
+
+Reset entire context to initial state
+
+---
+
+#### `resetHooksRuntimes` (Method)
+
+**Type:** `(hookName: string) => void`
+
+#### Parameters
+
+| Name       | Type     | Optional | Default | Since | Deprecated | Description |
+| ---------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `hookName` | `string` | ✅       | -       | -     | -          |             |
+
+---
+
+##### `resetHooksRuntimes` (CallSignature)
+
+**Type:** `void`
+
+Reset hooks runtime state to initial values
+
+If hookName is provided, only reset the runtime state for that hook.
+
+Core concept:
+Clears all runtime tracking information for fresh execution
+
+#### Parameters
+
+| Name       | Type     | Optional | Default | Since | Deprecated | Description |
+| ---------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `hookName` | `string` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `runtimeReturnValue` (Method)
+
+**Type:** `(returnValue: unknown) => void`
+
+#### Parameters
+
+| Name          | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `returnValue` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+##### `runtimeReturnValue` (CallSignature)
+
+**Type:** `void`
+
+Set return value in context runtime tracking
+
+#### Parameters
+
+| Name          | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `returnValue` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+#### `runtimes` (Method)
+
+**Type:** `(runtimes: Partial<HookRuntimes>) => void`
+
+#### Parameters
+
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description                                                      |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
+| `runtimes` | `Partial<HookRuntimes>` | ❌       | -       | -     | -          | Partial runtime updates to apply (can include custom properties) |
+
+---
+
+##### `runtimes` (CallSignature)
+
+**Type:** `void`
+
+Update runtime tracking information for plugin execution
+
+Core concept:
+Controlled way to update runtime state through partial updates.
+This is the only safe way to modify runtime state.
+
+Generic support:
+
+- Can update custom properties in extended HookRuntimes
+- Type-safe updates with partial type checking
+- Maintains immutability through object replacement
+
+**Example:** Update standard properties
+
+```typescript
+context.runtimes({
+  pluginName: 'ValidationPlugin',
+  hookName: 'onBefore',
+  pluginIndex: 0,
+  times: 1
+});
+```
+
+**Example:** Update custom properties (with extended type)
+
+```typescript
+interface CustomRuntimes extends HookRuntimes {
+  executionTime: number;
+}
+const context: ExecutorHookRuntimesInterface<CustomRuntimes>;
+context.runtimes({
+  executionTime: 150,
+  customMetric: 'performance'
+});
+```
+
+#### Parameters
+
+| Name       | Type                    | Optional | Default | Since | Deprecated | Description                                                      |
+| ---------- | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
+| `runtimes` | `Partial<HookRuntimes>` | ❌       | -       | -     | -          | Partial runtime updates to apply (can include custom properties) |
+
+---
+
+#### `setError` (Method)
+
+**Type:** `(error: unknown) => void`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                                                 |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
+| `error` | `unknown` | ❌       | -       | -     | -          | Error to set (can be any type: Error, string, object, etc.) |
+
+---
+
+##### `setError` (CallSignature)
+
+**Type:** `void`
+
+Set the error state
+
+Accepts any type of error value and converts it to ExecutorError.
+This matches the behavior of JavaScript's catch clause which can catch any type.
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                                                 |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
+| `error` | `unknown` | ❌       | -       | -     | -          | Error to set (can be any type: Error, string, object, etc.) |
+
+---
+
+#### `setParameters` (Method)
+
+**Type:** `(params: default) => void`
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `params` | `default` | ❌       | -       | -     | -          | New parameters to set |
+
+---
+
+##### `setParameters` (CallSignature)
+
+**Type:** `void`
+
+Update parameters (clones internally for safety)
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `params` | `default` | ❌       | -       | -     | -          | New parameters to set |
+
+---
+
+#### `setReturnValue` (Method)
+
+**Type:** `(value: unknown) => void`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description         |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------- |
+| `value` | `unknown` | ❌       | -       | -     | -          | Return value to set |
+
+---
+
+##### `setReturnValue` (CallSignature)
+
+**Type:** `void`
+
+Set the return value
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description         |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------- |
+| `value` | `unknown` | ❌       | -       | -     | -          | Return value to set |
+
+---
+
+#### `shouldBreakChain` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldBreakChain` (CallSignature)
+
+**Type:** `boolean`
+
+Check if the execution chain should be broken
+
+**Returns:**
+
+True if the chain should be broken, false otherwise
+
+---
+
+#### `shouldBreakChainOnReturn` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldBreakChainOnReturn` (CallSignature)
+
+**Type:** `boolean`
+
+Check if the execution chain should be broken due to return value
+
+**Returns:**
+
+True if the chain should be broken due to return value, false otherwise
+
+---
+
+#### `shouldContinueOnError` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldContinueOnError` (CallSignature)
+
+**Type:** `boolean`
+
+Check if execution should continue on error
+
+Core concept:
+Determines whether to continue executing subsequent plugins when a plugin hook
+throws an error, enabling resilient execution pipelines
+
+Main features:
+
+- Error resilience: Allows execution to continue despite individual failures
+- Fault tolerance: Enables graceful degradation in plugin chains
+- Cleanup guarantees: Ensures all cleanup hooks execute even if some fail
+
+Use cases:
+
+- Finally hooks: Ensure all cleanup operations execute even if one fails
+- Logging hooks: Continue logging even if one logger fails
+- Monitoring hooks: Collect metrics from all plugins despite failures
+
+**Returns:**
+
+True if execution should continue on error, false otherwise
+
+**Example:**
+
+```typescript
+// Enable continue on error for finally hooks
+context.runtimes({ continueOnError: true });
+await runPluginsHookAsync(plugins, 'onFinally', context);
+```
+
+---
+
+#### `shouldSkipPluginHook` (Method)
+
+**Type:** `(plugin: ExecutorPluginInterface<Ctx>, hookName: string) => boolean`
+
+#### Parameters
+
+| Name       | Type                           | Optional | Default | Since | Deprecated | Description                      |
+| ---------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `plugin`   | `ExecutorPluginInterface<Ctx>` | ❌       | -       | -     | -          | The plugin to check              |
+| `hookName` | `string`                       | ❌       | -       | -     | -          | The name of the hook to validate |
+
+---
+
+##### `shouldSkipPluginHook` (CallSignature)
+
+**Type:** `boolean`
+
+Check if a plugin hook should be skipped
+
+**Returns:**
+
+True if the hook should be skipped, false otherwise
+
+#### Parameters
+
+| Name       | Type                           | Optional | Default | Since | Deprecated | Description                      |
+| ---------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `plugin`   | `ExecutorPluginInterface<Ctx>` | ❌       | -       | -     | -          | The plugin to check              |
+| `hookName` | `string`                       | ❌       | -       | -     | -          | The name of the hook to validate |
 
 ---
 

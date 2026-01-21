@@ -229,7 +229,8 @@ export default class TypeDocJson extends ScriptPlugin<
    * 2. Removes existing file if it exists
    * 3. Ensures parent directory structure exists
    * 4. Serializes data to JSON with 2-space indentation
-   * 5. Writes formatted JSON to file with UTF-8 encoding
+   * 5. Handles circular references by using a replacer function
+   * 6. Writes formatted JSON to file with UTF-8 encoding
    *
    * Business Rules:
    * - Skips writing if path is empty or invalid
@@ -237,6 +238,13 @@ export default class TypeDocJson extends ScriptPlugin<
    * - Creates parent directories as needed
    * - Uses consistent JSON formatting for readability
    * - Logs warning for empty paths
+   * - Handles circular references gracefully by replacing with "[Circular]"
+   *
+   * Circular Reference Handling:
+   * - Tracks seen objects during serialization
+   * - Replaces circular references with "[Circular]" string
+   * - Prevents "Converting circular structure to JSON" errors
+   * - Maintains serialization for non-circular parts
    *
    * @param value - Data to serialize and write
    * @param path - Output file path
@@ -257,6 +265,14 @@ export default class TypeDocJson extends ScriptPlugin<
    *   console.error('Failed to write JSON:', error.message);
    * }
    * ```
+   *
+   * @example Circular Reference Handling
+   * ```typescript
+   * const obj = { name: 'test' };
+   * obj.self = obj; // Circular reference
+   * this.writeJSON(obj, './output.json');
+   * // Output: { "name": "test", "self": "[Circular]" }
+   * ```
    */
   public writeJSON(value: unknown, path: string): void {
     if (!path) {
@@ -266,7 +282,20 @@ export default class TypeDocJson extends ScriptPlugin<
 
     fsExtra.removeSync(path);
     fsExtra.ensureFileSync(path);
-    fsExtra.writeFileSync(path, JSON.stringify(value, null, 2), 'utf-8');
+    
+    // Create a replacer function to handle circular references
+    const seen = new WeakSet();
+    const replacer = (_key: string, val: any) => {
+      if (val !== null && typeof val === 'object') {
+        if (seen.has(val)) {
+          return '[Circular]';
+        }
+        seen.add(val);
+      }
+      return val;
+    };
+    
+    fsExtra.writeFileSync(path, JSON.stringify(value, replacer, 2), 'utf-8');
   }
 
   /**

@@ -762,13 +762,13 @@ const result = await authService.logout<
 
 #### `use` (Method)
 
-**Type:** `(plugin: Plugin) => void`
+**Type:** `(plugin: Plugin \| Plugin[]) => void`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                     |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `plugin` | `Plugin` | ❌       | -       | -     | -          | The plugin instance to register |
+| Name     | Type                 | Optional | Default | Since | Deprecated | Description                     |
+| -------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          | The plugin instance to register |
 
 ---
 
@@ -858,8 +858,8 @@ service.use({
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                     |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `plugin` | `Plugin` | ❌       | -       | -     | -          | The plugin instance to register |
+| Name     | Type                 | Optional | Default | Since | Deprecated | Description                     |
+| -------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          | The plugin instance to register |
 
 ---

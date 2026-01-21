@@ -162,13 +162,13 @@ A Response object with JSON stringified mock data
 
 #### `enabled` (Method)
 
-**Type:** `(_name: parameter _name, context: ApiMockPluginContext) => boolean`
+**Type:** `(_name: string, context: ApiMockPluginContext) => boolean`
 
 #### Parameters
 
 | Name      | Type                   | Optional | Default | Since | Deprecated | Description                                            |
 | --------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `_name`   | `parameter _name`      | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
+| `_name`   | `string`               | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
 | `context` | `ApiMockPluginContext` | ✅       | -       | -     | -          | The executor context containing request parameters     |
 
 ---
@@ -189,7 +189,7 @@ true if the plugin should be enabled, false otherwise
 
 | Name      | Type                   | Optional | Default | Since | Deprecated | Description                                            |
 | --------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `_name`   | `parameter _name`      | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
+| `_name`   | `string`               | ❌       | -       | -     | -          | The plugin hook name (not used in this implementation) |
 | `context` | `ApiMockPluginContext` | ✅       | -       | -     | -          | The executor context containing request parameters     |
 
 ---
@@ -442,7 +442,7 @@ Can be a static value or a function that receives request parameters
 
 ### `ApiMockPluginContext` (TypeAlias)
 
-**Type:** `ExecutorContext<ApiMockPluginConfig>`
+**Type:** `ExecutorContextInterface<ApiMockPluginConfig, RequestAdapterResponse>`
 
 Type alias for ApiMockPlugin executor context
 

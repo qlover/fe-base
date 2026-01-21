@@ -59,9 +59,11 @@ Execution flow:
 
 ```typescript
 class MyService implements ExecutorServiceInterface<MyStore, MyGateway> {
-  use<Plugin extends ExecutorPlugin<ExecutorServiceOptions<any, MyGateway>>>(
-    plugin: Plugin
-  ): void {
+  use<
+    Plugin extends LifecyclePluginInterface<
+      ExecutorContextInterface<GatewayExecutorOptions<any, MyGateway>>
+    >
+  >(plugin: Plugin | Plugin[]): void {
     // Register plugin
   }
 
@@ -415,13 +417,13 @@ store.observe((state) => {
 
 #### `use` (Method)
 
-**Type:** `(plugin: Plugin) => void`
+**Type:** `(plugin: Plugin \| Plugin[]) => void`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                     |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `plugin` | `Plugin` | ❌       | -       | -     | -          | The plugin instance to register |
+| Name     | Type                 | Optional | Default | Since | Deprecated | Description                     |
+| -------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          | The plugin instance to register |
 
 ---
 
@@ -511,9 +513,9 @@ service.use({
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                     |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `plugin` | `Plugin` | ❌       | -       | -     | -          | The plugin instance to register |
+| Name     | Type                 | Optional | Default | Since | Deprecated | Description                     |
+| -------- | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          | The plugin instance to register |
 
 ---
 
@@ -602,5 +604,11 @@ Store instance for state management
 
 The async store that manages service state (loading, success, error).
 Optional - services can work without store (though uncommon).
+
+---
+
+### `ExecutorServiceContext` (TypeAlias)
+
+**Type:** `ExecutorContextInterface<ExecutorServiceOptions<T, Gateway>>`
 
 ---

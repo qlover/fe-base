@@ -188,7 +188,8 @@ This plugin is particularly useful for:
 
 ## Related Documentation
 
-- [Rule Documentation](./docs/rules/)
+- [Rule Documentation](../../docs/rules/)
+- [Utility Functions Documentation](../../docs/utils/)
 
 **See:**
 

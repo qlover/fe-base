@@ -110,13 +110,13 @@ class MyGatewayPlugin
 
 #### `onBefore` (Method)
 
-**Type:** `(context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                                 |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing store and action parameters |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                                 |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing store and action parameters |
 
 ---
 
@@ -140,21 +140,21 @@ async onBefore(context: ExecutorContext<GatewayExecutorOptions<Params, T, Gatewa
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                                 |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing store and action parameters |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                                 |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing store and action parameters |
 
 ---
 
 #### `onError` (Method)
 
-**Type:** `(context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                     |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing error and store |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                     |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing error and store |
 
 ---
 
@@ -179,21 +179,21 @@ async onError(context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                     |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing error and store |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                     |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing error and store |
 
 ---
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                                                |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing return value, store, and action parameters |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                                                |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing return value, store, and action parameters |
 
 ---
 
@@ -231,9 +231,9 @@ async onSuccess(context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Para
 
 #### Parameters
 
-| Name      | Type                                                          | Optional | Default | Since | Deprecated | Description                                                                |
-| --------- | ------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------- |
-| `context` | `ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>` | ❌       | -       | -     | -          | The executor context containing return value, store, and action parameters |
+| Name      | Type                                                                                          | Optional | Default | Since | Deprecated | Description                                                                |
+| --------- | --------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------- |
+| `context` | `ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | The executor context containing return value, store, and action parameters |
 
 ---
 

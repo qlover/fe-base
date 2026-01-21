@@ -126,7 +126,7 @@ service.use({
 
 #### `executor` (Property)
 
-**Type:** `GatewayExecutor<T, Gateway>`
+**Type:** `GatewayExecutor<T, Gateway, unknown>`
 
 ---
 
@@ -429,13 +429,13 @@ await this.execute(ServiceAction.LOGIN, (gateway) => {
 
 #### `getExecutor` (Method)
 
-**Type:** `() => undefined \| GatewayExecutor<T, Gateway>`
+**Type:** `() => undefined \| GatewayExecutor<T, Gateway, unknown>`
 
 ---
 
 ##### `getExecutor` (CallSignature)
 
-**Type:** `undefined \| GatewayExecutor<T, Gateway>`
+**Type:** `undefined \| GatewayExecutor<T, Gateway, unknown>`
 
 ---
 
@@ -670,7 +670,7 @@ const service = new UserService('UserService', options);
 
 #### `executor` (Property)
 
-**Type:** `GatewayExecutor<T, Gateway>`
+**Type:** `GatewayExecutor<T, Gateway, unknown>`
 
 ---
 

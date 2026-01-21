@@ -68,7 +68,7 @@ await task.run();
 **Example:** With Custom Executor
 
 ```typescript
-const customExecutor = new AsyncExecutor();
+const customExecutor = new LifecycleExecutor<Code2MDContext>();
 const task = new Code2MDTask(config, customExecutor);
 
 await task.exec();
@@ -89,14 +89,14 @@ try {
 
 #### `new Code2MDTask` (Constructor)
 
-**Type:** `(options: Partial<Code2MDContextOptions<Code2MDContextConfig>>, executor: AsyncExecutor<ExecutorConfigInterface>) => Code2MDTask`
+**Type:** `(options: Partial<Code2MDContextOptions<Code2MDContextConfig>>, executor: LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, Code2MDContextConfig>>) => Code2MDTask`
 
 #### Parameters
 
-| Name       | Type                                                   | Optional | Default | Since | Deprecated | Description                                     |
-| ---------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `options`  | `Partial<Code2MDContextOptions<Code2MDContextConfig>>` | ❌       | -       | -     | -          | Configuration options for the conversion task   |
-| `executor` | `AsyncExecutor<ExecutorConfigInterface>`               | ✅       | `{}`    | -     | -          | AsyncExecutor instance for plugin orchestration |
+| Name       | Type                                                                                           | Optional | Default | Since | Deprecated | Description                                     |
+| ---------- | ---------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `options`  | `Partial<Code2MDContextOptions<Code2MDContextConfig>>`                                         | ❌       | -       | -     | -          | Configuration options for the conversion task   |
+| `executor` | `LifecycleExecutor<default, LifecyclePluginInterface<default, unknown, Code2MDContextConfig>>` | ✅       | `{}`    | -     | -          | AsyncExecutor instance for plugin orchestration |
 
 ---
 

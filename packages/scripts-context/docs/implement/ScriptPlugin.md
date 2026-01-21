@@ -140,14 +140,14 @@ Optional runtime configuration overrides
 
 #### `enabled` (Method)
 
-**Type:** `(_name: string, _context: ExecutorContext<Context>) => boolean`
+**Type:** `(_name: string, _context: Context) => boolean`
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                      |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`                   | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
 
 ---
 
@@ -190,10 +190,10 @@ plugin.enabled('onExec', context); // Returns true
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                      |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `_name`    | `string`                   | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                      |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `_name`    | `string`  | ❌       | -       | -     | -          | Name of the lifecycle method being checked       |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context (unused in base implementation) |
 
 ---
 
@@ -303,19 +303,19 @@ const config = this.getInitialProps({
 
 #### `onBefore` (Method)
 
-**Type:** `(_context: ExecutorContext<Context>) => void \| Promise<void>`
+**Type:** `(_context: Context) => callsignature onBefore`
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
 ##### `onBefore` (CallSignature)
 
-**Type:** `void \| Promise<void>`
+**Type:** `callsignature onBefore`
 
 Lifecycle method called before script execution
 
@@ -346,27 +346,27 @@ async onBefore(context: ExecutorContext<MyContext>): Promise<void> {
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
 #### `onError` (Method)
 
-**Type:** `(_context: ExecutorContext<Context>) => void \| Promise<void>`
+**Type:** `(_context: Context) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
 ##### `onError` (CallSignature)
 
-**Type:** `void \| Promise<void>`
+**Type:** `void \| ExecutorError \| Error \| Promise<void \| ExecutorError>`
 
 Lifecycle method called when script execution fails
 
@@ -380,7 +380,7 @@ Override this method to handle errors such as:
 **Example:**
 
 ```typescript
-async onError(context: ExecutorContext<MyContext>): Promise<void> {
+async onError(context: Context): Promise<void> {
   // Log detailed error information
   this.logger.error('Script execution failed', {
     error: context.error,
@@ -400,21 +400,21 @@ async onError(context: ExecutorContext<MyContext>): Promise<void> {
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
 #### `onExec` (Method)
 
-**Type:** `(_context: ExecutorContext<Context>) => void \| Promise<void>`
+**Type:** `(_context: Context) => void \| Promise<void>`
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
@@ -434,7 +434,7 @@ Override this method to implement the main plugin logic:
 **Example:**
 
 ```typescript
-async onExec(context: ExecutorContext<MyContext>): Promise<void> {
+async onExec(context: Context): Promise<void> {
   await this.step({
     label: 'Building project',
     task: async () => {
@@ -455,21 +455,63 @@ async onExec(context: ExecutorContext<MyContext>): Promise<void> {
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+
+---
+
+#### `onFinally` (Method)
+
+**Type:** `(_context: Context) => void \| Promise<void>`
+
+#### Parameters
+
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
+
+---
+
+##### `onFinally` (CallSignature)
+
+**Type:** `void \| Promise<void>`
+
+Lifecycle method called after script execution
+
+Override this method to perform cleanup tasks such as:
+
+- Resource cleanup
+- Success notifications
+- Result processing
+- Post-execution reporting
+
+**Example:**
+
+```typescript
+async onFinally(context: Context): Promise<void> {
+  // Clean up temporary files
+  await this.shell.rmdir('./temp');
+}
+```
+
+#### Parameters
+
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
 #### `onSuccess` (Method)
 
-**Type:** `(_context: ExecutorContext<Context>) => void \| Promise<void>`
+**Type:** `(_context: Context) => void \| Promise<void>`
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 
@@ -489,7 +531,7 @@ Override this method to perform cleanup tasks such as:
 **Example:**
 
 ```typescript
-async onSuccess(context: ExecutorContext<MyContext>): Promise<void> {
+async onSuccess(context: Context): Promise<void> {
   // Send success notification
   await this.sendNotification('Build completed successfully');
 
@@ -507,9 +549,9 @@ async onSuccess(context: ExecutorContext<MyContext>): Promise<void> {
 
 #### Parameters
 
-| Name       | Type                       | Optional | Default | Since | Deprecated | Description                                 |
-| ---------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `_context` | `ExecutorContext<Context>` | ❌       | -       | -     | -          | Executor context containing execution state |
+| Name       | Type      | Optional | Default | Since | Deprecated | Description                                 |
+| ---------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `_context` | `Context` | ❌       | -       | -     | -          | Executor context containing execution state |
 
 ---
 

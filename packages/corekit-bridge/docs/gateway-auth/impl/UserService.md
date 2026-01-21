@@ -239,7 +239,7 @@ class CustomUserService extends UserService<User, Credential> {
 
 #### `executor` (Property)
 
-**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>>`
+**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
 
 ---
 
@@ -574,13 +574,13 @@ if (credential) {
 
 #### `getExecutor` (Method)
 
-**Type:** `() => undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>>`
+**Type:** `() => undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
 
 ---
 
 ##### `getExecutor` (CallSignature)
 
-**Type:** `undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>>`
+**Type:** `undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
 
 ---
 
@@ -1132,6 +1132,18 @@ userService.use({
 
 ---
 
+##### `use` (CallSignature)
+
+**Type:** `this`
+
+#### Parameters
+
+| Name     | Type                 | Optional | Default | Since | Deprecated | Description |
+| -------- | -------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          |             |
+
+---
+
 ### `UserServiceConfig` (Interface)
 
 **Type:** `interface UserServiceConfig<User, Credential>`
@@ -1226,7 +1238,7 @@ const userService = new UserService(config);
 
 #### `executor` (Property)
 
-**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>>`
+**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
 
 Gateway executor
 

@@ -1210,12 +1210,105 @@ const plugin: MyCustomPlugin<User, Credential> = {
 
 ---
 
+#### `onExec` (Property)
+
+**Type:** `Object`
+
+Custom execution logic hook
+
+Purpose:
+Allows plugins to intercept, wrap, or replace the task execution.
+Plugins can return a value directly, return a new task function, or execute
+the task within the hook.
+
+Return value behavior:
+
+- If returns a function (ExecutorTask): The function will be executed as the new task
+- If returns any other value: The value will be used as the task result (skips task execution)
+- Supports both sync and async return values
+
+Type inference:
+
+- The return type
+  `R`
+  is automatically inferred from the task parameter
+- Return values are type-safe and match the task's return type
+- TypeScript can infer types from return statements without explicit annotations
+
+Use cases:
+
+- Return a wrapped task function to add middleware behavior
+- Return a direct value to bypass task execution
+- Execute the task with custom logic and return the result
+
+**Returns:**
+
+Task result (type R), modified task function, or Promise of either
+
+**Example:** Return a direct value (bypass task) - type automatically inferred
+
+```typescript
+onExec: async () => {
+  return 'intercepted-result'; // Type inferred as Promise<string>
+};
+```
+
+**Example:** Return a wrapped task function
+
+```typescript
+onExec: (ctx, task) => {
+  // Return a new task function that wraps the original
+  return async (wrappedCtx) => {
+    console.log('Before task execution');
+    const result = await task(wrappedCtx);
+    console.log('After task execution');
+    return result;
+  };
+};
+```
+
+**Example:** Return a direct value (bypass task)
+
+```typescript
+onExec: (ctx, task) => {
+  // Return cached result, skip task execution
+  if (cache.has(ctx.parameters.id)) {
+    return cache.get(ctx.parameters.id);
+  }
+  // Or execute task and return result
+  return task(ctx);
+};
+```
+
+如果需要手动覆盖返回类型，可以使用提供的 R 泛型手动推断类型，但是这样不够安全，
+未来可能会加入接口类型的泛型
+
+**Example:** 使用手动推断类型
+
+```typescript
+interface TestResult {
+  data: string;
+  processed?: boolean;
+}
+
+type TestContext = ExecutorContextInterface<TestParams>;
+
+const plugin: LifecyclePluginInterface<TestContext> = {
+  pluginName: 'plugin',
+  onExec: async <R>(ctx, task) => {
+    const result = await task(ctx);
+    return `wrapped: ${result}` as R;
+  }
+};
+```
+
+---
+
 #### `onlyOne` (Property)
 
 **Type:** `boolean`
 
-Indicates if only one instance of this plugin should exist in the executor
-When true, attempting to add duplicate plugins will result in a warning
+If true, ensures only one instance of this plugin type
 
 ---
 
@@ -1223,22 +1316,20 @@ When true, attempting to add duplicate plugins will result in a warning
 
 **Type:** `string`
 
-The pluginName of the plugin.
-
-Plugins with the same pluginName will be merged.
+Optional plugin name for identification
 
 ---
 
 #### `enabled` (Method)
 
-**Type:** `(name: parameter name, context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => boolean`
+**Type:** `(name: string, context: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>) => boolean`
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                     |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `parameter name`                                                | ❌       | -       | -     | -          | Name of the hook being executed |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ✅       | -       | -     | -          |                                 |
+| Name      | Type                                                                                            | Optional | Default | Since | Deprecated | Description                |
+| --------- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `name`    | `string`                                                                                        | ❌       | -       | -     | -          | Hook name to check         |
+| `context` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ✅       | -       | -     | -          | Optional execution context |
 
 ---
 
@@ -1246,76 +1337,73 @@ Plugins with the same pluginName will be merged.
 
 **Type:** `boolean`
 
-Controls whether the plugin is active for specific hook executions
+Check if plugin should be enabled for a given hook
 
 **Returns:**
 
-Boolean indicating if the plugin should be executed
-
-**Example:**
-
-```typescript
-enabled(name: keyof ExecutorPlugin, context: ExecutorContextInterface<T>) {
-  // Only enable for error handling
-  return name === 'onError';
-}
-```
+true if plugin should execute, false otherwise
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                     |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `name`    | `parameter name`                                                | ❌       | -       | -     | -          | Name of the hook being executed |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ✅       | -       | -     | -          |                                 |
+| Name      | Type                                                                                            | Optional | Default | Since | Deprecated | Description                |
+| --------- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `name`    | `string`                                                                                        | ❌       | -       | -     | -          | Hook name to check         |
+| `context` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ✅       | -       | -     | -          | Optional execution context |
 
 ---
 
 #### `onBefore` (Method)
 
-**Type:** `(context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => void \| Promise<void>`
+**Type:** `(ctx: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>) => void \| Promise<void> \| UserServiceExecutorOptions<User, Credential> \| Promise<UserServiceExecutorOptions<User, Credential>>`
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description       |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
 ##### `onBefore` (CallSignature)
 
-**Type:** `void \| Promise<void>`
+**Type:** `void \| Promise<void> \| UserServiceExecutorOptions<User, Credential> \| Promise<UserServiceExecutorOptions<User, Credential>>`
 
 Hook executed before the main task
 Can modify the input data before it reaches the task
 
+Return value behavior:
+
+- If returns a value (non-void), it will be used to update context parameters
+- If returns void or undefined, parameters remain unchanged
+- Supports both sync and async return values
+
 **Returns:**
 
-Modified data or Promise of modified data
+Modified parameters (will update context parameters), void, or Promise of either
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description       |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
 #### `onError` (Method)
 
-**Type:** `(context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => void \| ExecutorError \| Error \| Promise<void \| ExecutorError \| Error>`
+**Type:** `(ctx: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>) => LifecycleErrorResult \| Promise<LifecycleErrorResult>`
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description                                    |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
 
 ---
 
 ##### `onError` (CallSignature)
 
-**Type:** `void \| ExecutorError \| Error \| Promise<void \| ExecutorError \| Error>`
+**Type:** `LifecycleErrorResult \| Promise<LifecycleErrorResult>`
 
 Error handling hook
 
@@ -1332,46 +1420,81 @@ can break the chain, best practice is each plugin only handle plugin related err
 
 **Returns:**
 
-ExecutorError, void, or Promise of either
+ExecutorError, Error, void, or Promise of either
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description                                    |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
 
 ---
 
-#### `onExec` (Method)
+#### `onFinally` (Method)
 
-**Type:** `(context: ExecutorContext<unknown>, task: Task<unknown, unknown>) => unknown`
+**Type:** `(ctx: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                       | Optional | Default | Since | Deprecated | Description         |
-| --------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `context` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          |                     |
-| `task`    | `Task<unknown, unknown>`   | ❌       | -       | -     | -          | Task to be executed |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description                                          |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
 
 ---
 
-##### `onExec` (CallSignature)
+##### `onFinally` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `void \| Promise<void>`
 
-Custom execution logic hook
-Only the first plugin with onExec will be used
+Hook executed in finally block after task execution
+
+Purpose:
+Allows plugins to perform cleanup operations that must run regardless
+of whether the task succeeded or failed. Supports both sync and async execution.
+
+Execution Guarantees:
+
+- Always executed after task completion (success or error)
+- Executed in finally block, ensuring cleanup even if errors occur
+- Runs after onSuccess or onError hooks
+- Cannot prevent error propagation
+
+Use Cases:
+
+- Resource cleanup
+- Logging completion status
+- Resetting state
+- Closing connections
+- Finalizing transactions
 
 **Returns:**
 
-Task result or Promise of result
+void or Promise<void>
+
+**Example:** Resource cleanup
+
+```typescript
+onFinally: async (ctx) => {
+  if (ctx.parameters.connection) {
+    await ctx.parameters.connection.close();
+  }
+};
+```
+
+**Example:** Logging completion
+
+```typescript
+onFinally: (ctx) => {
+  const status = ctx.error ? 'failed' : 'succeeded';
+  console.log(`Task ${status}`);
+};
+```
 
 #### Parameters
 
-| Name      | Type                       | Optional | Default | Since | Deprecated | Description         |
-| --------- | -------------------------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `context` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          |                     |
-| `task`    | `Task<unknown, unknown>`   | ❌       | -       | -     | -          | Task to be executed |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description                                          |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context (may contain error if task failed) |
 
 ---
 
@@ -1585,13 +1708,13 @@ Hook called after register action succeeds
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<UserServiceExecutorOptions<User, Credential>>) => void \| Promise<void>`
+**Type:** `(ctx: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description       |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
@@ -1604,13 +1727,13 @@ Can transform the task result
 
 **Returns:**
 
-Modified result or Promise of modified result
+void or Promise<void>
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<UserServiceExecutorOptions<User, Credential>>` | ❌       | -       | -     | -          |             |
+| Name  | Type                                                                                            | Optional | Default | Since | Deprecated | Description       |
+| ----- | ----------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `ctx` | `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context |
 
 ---
 
@@ -1668,7 +1791,7 @@ Hook called after getUserInfo action succeeds
 
 ### `UserPluginContext` (TypeAlias)
 
-**Type:** `ExecutorContext<UserServiceExecutorOptions<User, Credential>>`
+**Type:** `ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>`
 
 User plugin context type
 
@@ -1701,7 +1824,7 @@ const plugin: UserServicePluginInterface<User, Credential> = {
 
 ### `UserServicePluginType` (TypeAlias)
 
-**Type:** `ExecutorPlugin<UserServiceExecutorOptions<User, Credential>> & GatewayBasePluginType<Actions, User, UserServiceGateway<User, Credential>>`
+**Type:** `LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> & UserServiceBasePluginType<Actions, User, Credential>`
 
 User service plugin type
 
@@ -1739,8 +1862,8 @@ Design decisions:
   `ExecutorPlugin`
   : Provides standard executor hooks
 - Intersects with
-  `GatewayBasePluginType`
-  : Adds action-specific hooks
+  `UserServiceBasePluginType`
+  : Adds action-specific hooks with correct context type
 - Default actions: Uses all
   `ServiceActionType`
   actions if not specified

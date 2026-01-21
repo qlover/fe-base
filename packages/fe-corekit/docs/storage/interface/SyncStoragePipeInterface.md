@@ -182,7 +182,7 @@ Stores a value with the specified key.
 
 ### `PipeType` (TypeAlias)
 
-**Type:** `SerializerIneterface<unknown, unknown> \| Encryptor<unknown, unknown> \| SyncStorageInterface<Key, unknown>`
+**Type:** `SerializerIneterface<unknown, unknown> \| EncryptorInterface<unknown, unknown> \| SyncStorageInterface<Key, unknown>`
 
 Pipe processor type definition
 
