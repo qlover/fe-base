@@ -35,7 +35,7 @@ import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
  * - Extends AsyncStoreOptions: Inherits store configuration options
  * - Flexible store configuration: Can accept store instance or store options
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The type of data stored in the async store
  * @template Gateway - The type of gateway object
  * @template Key - The type of key used for store operations (default: string)
@@ -125,7 +125,7 @@ export interface BaseServiceOptions<T, Gateway, Key = string>
  *    - If store options provided → create new store
  *    - If nothing provided → create default store
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The type of data stored in the async store
  * @template Store - The async store type that extends `AsyncStoreInterface`
  * @template Gateway - The gateway type (must be an object type)

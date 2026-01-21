@@ -28,7 +28,7 @@ import { type ExecutorServiceInterface } from './base/ExecutorServiceInterface';
  * - Returns null on failure: Provides clear indication when user info cannot be retrieved
  * - Separate refresh method: Allows explicit refresh without affecting get behavior
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template User - The type of user object returned
  *
  * @example Basic implementation

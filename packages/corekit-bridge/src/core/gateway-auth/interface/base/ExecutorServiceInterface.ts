@@ -34,7 +34,7 @@ import { type LoggerInterface } from '@qlover/logger';
  * - Logger is optional: Services can work without logger
  * - Store is optional: Services can work without store (though uncommon)
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The type of data stored in the async store
  * @template Gateway - The type of gateway object
  *
@@ -124,7 +124,7 @@ export type ExecutorServiceContext<T, Gateway> = ExecutorContextInterface<Execut
  * 5. Executor runs `onSuccess` hooks (including action-specific hooks)
  * 6. Result is returned
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template Store - The async store type that extends `AsyncStoreInterface`
  * @template Gateway - The gateway type (must be an object with methods)
  *

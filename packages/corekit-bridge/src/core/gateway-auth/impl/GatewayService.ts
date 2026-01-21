@@ -85,7 +85,7 @@ type ExecuteFn<Params, Result, Gateway> = (
  * 5. Store state is updated (via `GatewayBasePlugin`)
  * 6. Result is returned
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The type of data stored in the async store
  * @template Gateway - The type of gateway object (must be an object with methods)
  * @template Store - The async store type that manages state

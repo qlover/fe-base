@@ -1,44 +1,117 @@
 import { type SerializerIneterface } from './SerializerIneterface';
 
 /**
- * Base64 serialization implementation
- * Cross-platform string-to-base64 encoding/decoding for both browser and Node.js
+ * Base64 serialization implementation with cross-platform support
  *
- * Significance: Provides universal Base64 serialization across different JavaScript environments
- * Core idea: Environment-aware Base64 encoding with consistent API
- * Main function: Convert strings to/from Base64 with optional URL-safe encoding
- * Main purpose: Enable cross-platform data serialization with Base64 encoding
+ * Core concept:
+ * Provides universal Base64 encoding/decoding that works consistently
+ * across browser and Node.js environments, with automatic environment
+ * detection and appropriate API usage.
  *
- * Features:
- * - Cross-platform compatibility (Browser + Node.js)
- * - Base64 encoding/decoding
- * - UTF-8 support
- * - URL-safe encoding option
- * - Robust error handling
+ * Main features:
+ * - Cross-platform compatibility: Works in both browser and Node.js
+ *   - Browser: Uses native `btoa`/`atob` with TextEncoder/TextDecoder
+ *   - Node.js: Uses Buffer API for optimal performance
+ *   - Automatic environment detection
+ *   - Consistent behavior across platforms
+ *
+ * - UTF-8 support: Proper handling of Unicode characters
+ *   - Supports all Unicode characters
+ *   - Handles multi-byte characters correctly
+ *   - Prevents encoding errors
+ *
+ * - URL-safe encoding: Optional URL-safe Base64 format
+ *   - Replaces `+` with `-`
+ *   - Replaces `/` with `_`
+ *   - Removes padding `=` characters
+ *   - Safe for use in URLs and filenames
+ *
+ * - Robust error handling: Graceful failure with default values
+ *   - Validates Base64 format before decoding
+ *   - Returns default value on error
+ *   - No exceptions thrown
+ *
+ * Use cases:
+ * - Data obfuscation: Hide data in plain sight
+ * - URL encoding: Encode data for URL parameters
+ * - Binary data: Encode binary data as text
+ * - Storage: Store binary data in text-based storage
  *
  * @implements {SerializerIneterface<string, string>}
  *
- * @since 1.0.10
+ * @since `1.0.10`
  *
- * @example
+ * @example Basic usage
+ * ```typescript
+ * const serializer = new Base64Serializer();
+ *
+ * // Encode string to Base64
+ * const encoded = serializer.serialize("Hello World!");
+ * console.log(encoded); // "SGVsbG8gV29ybGQh"
+ *
+ * // Decode Base64 back to string
+ * const decoded = serializer.deserialize(encoded);
+ * console.log(decoded); // "Hello World!"
+ * ```
+ *
+ * @example URL-safe encoding
  * ```typescript
  * const serializer = new Base64Serializer({ urlSafe: true });
  *
- * // Encode string to base64
- * const encoded = serializer.serialize("Hello World!");
+ * const data = "data+with/special=chars";
+ * const encoded = serializer.serialize(data);
+ * // URL-safe: no +, /, or = characters
+ * console.log(encoded); // "ZGF0YSt3aXRoL3NwZWNpYWw9Y2hhcnM"
+ * ```
  *
- * // Decode base64 back to string
+ * @example UTF-8 support
+ * ```typescript
+ * const serializer = new Base64Serializer();
+ *
+ * // Encode Unicode characters
+ * const encoded = serializer.serialize("你好世界 🌍");
  * const decoded = serializer.deserialize(encoded);
+ * console.log(decoded); // "你好世界 🌍"
+ * ```
+ *
+ * @example Error handling
+ * ```typescript
+ * const serializer = new Base64Serializer();
+ *
+ * // Invalid Base64 returns default value
+ * const result = serializer.deserialize('invalid!!!', 'fallback');
+ * console.log(result); // "fallback"
  * ```
  */
 export class Base64Serializer implements SerializerIneterface<string, string> {
+  /**
+   * Creates a new Base64Serializer instance
+   *
+   * @param options - Configuration options
+   * @param {boolean} [options.urlSafe=false] - Use URL-safe Base64 encoding
+   *
+   * @example Standard encoding
+   * ```typescript
+   * const serializer = new Base64Serializer();
+   * ```
+   *
+   * @example URL-safe encoding
+   * ```typescript
+   * const serializer = new Base64Serializer({ urlSafe: true });
+   * ```
+   */
   constructor(
     private options: {
       /**
-       * Use URL-safe base64 encoding
-       * @default false
+       * Use URL-safe Base64 encoding
        *
-       * @since 1.0.10
+       * When enabled:
+       * - Replaces `+` with `-`
+       * - Replaces `/` with `_`
+       * - Removes padding `=` characters
+       *
+       * @default `false`
+       * @since `1.0.10`
        */
       urlSafe?: boolean;
     } = {}
@@ -92,11 +165,24 @@ export class Base64Serializer implements SerializerIneterface<string, string> {
   }
 
   /**
-   * Serializes string to base64 using environment-appropriate method
+   * Serializes string to Base64 using environment-appropriate method
+   *
+   * Automatically detects the environment and uses the optimal encoding method:
+   * - Node.js: Uses Buffer API for better performance
+   * - Browser: Uses btoa with TextEncoder for UTF-8 support
+   *
    * @override
-   * @since 1.0.10
    * @param data - String to encode
-   * @returns Base64 encoded string
+   * @returns Base64 encoded string (empty string on error)
+   *
+   * @since `1.0.10`
+   *
+   * @example
+   * ```typescript
+   * const serializer = new Base64Serializer();
+   * const encoded = serializer.serialize("Hello World!");
+   * console.log(encoded); // "SGVsbG8gV29ybGQh"
+   * ```
    */
   public serialize(data: string): string {
     try {
@@ -125,12 +211,31 @@ export class Base64Serializer implements SerializerIneterface<string, string> {
   }
 
   /**
-   * Deserializes base64 string back to original using environment-appropriate method
+   * Deserializes Base64 string back to original using environment-appropriate method
+   *
+   * Validates the Base64 format before decoding and returns default value
+   * if validation or decoding fails. Automatically handles URL-safe format
+   * conversion if configured.
+   *
    * @override
-   * @since 1.0.10
    * @param data - Base64 string to decode
    * @param defaultValue - Optional default value if decoding fails
-   * @returns Decoded string
+   * @returns Decoded string (default value on error)
+   *
+   * @since `1.0.10`
+   *
+   * @example
+   * ```typescript
+   * const serializer = new Base64Serializer();
+   * const decoded = serializer.deserialize("SGVsbG8gV29ybGQh");
+   * console.log(decoded); // "Hello World!"
+   * ```
+   *
+   * @example With default value
+   * ```typescript
+   * const decoded = serializer.deserialize("invalid", "fallback");
+   * console.log(decoded); // "fallback"
+   * ```
    */
   public deserialize(data: string, defaultValue?: string): string {
     try {
@@ -172,21 +277,48 @@ export class Base64Serializer implements SerializerIneterface<string, string> {
   }
 
   /**
-   * Converts standard base64 to URL-safe base64
-   * @since 1.0.10
-   * @param base64 - Standard base64 string
-   * @returns URL-safe base64 string
+   * Converts standard Base64 to URL-safe Base64
+   *
+   * Transformations:
+   * - `+` → `-`
+   * - `/` → `_`
+   * - Remove trailing `=` padding
+   *
+   * @param base64 - Standard Base64 string
+   * @returns URL-safe Base64 string
+   *
+   * @since `1.0.10`
+   * @private
+   *
+   * @example
+   * ```typescript
+   * makeUrlSafe("Hello+World/Test==");
+   * // Result: "Hello-World_Test"
+   * ```
    */
   private makeUrlSafe(base64: string): string {
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
   /**
-   * Converts URL-safe base64 back to standard base64
+   * Converts URL-safe Base64 back to standard Base64
+   *
+   * Transformations:
+   * - `-` → `+`
+   * - `_` → `/`
+   * - Add `=` padding to make length multiple of 4
+   *
+   * @param safe - URL-safe Base64 string
+   * @returns Standard Base64 string
+   *
+   * @since `1.0.10`
    * @private
-   * @since 1.0.10
-   * @param safe - URL-safe base64 string
-   * @returns Standard base64 string
+   *
+   * @example
+   * ```typescript
+   * makeUrlUnsafe("Hello-World_Test");
+   * // Result: "Hello+World/Test=="
+   * ```
    */
   private makeUrlUnsafe(safe: string): string {
     safe = safe.replace(/-/g, '+').replace(/_/g, '/');

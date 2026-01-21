@@ -31,7 +31,7 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  *   in its own state interface (e.g., `expires?: number | Date | null`). The base interface
  *   doesn't enforce this, allowing subclasses to decide whether expiration is needed.
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The state type that extends `StoreStateInterface`
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`, or custom types)
  * @template Opt - The type of options for storage operations (defaults to `unknown`)
