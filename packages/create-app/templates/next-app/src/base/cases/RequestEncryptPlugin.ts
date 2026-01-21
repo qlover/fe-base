@@ -1,14 +1,13 @@
 import { clone, isObject } from 'lodash';
 import type {
-  Encryptor,
-  ExecutorContext,
-  ExecutorPlugin,
-  RequestAdapterConfig
+  ExecutorContextInterface,
+  LifecyclePluginInterface,
+  RequestAdapterConfig,
+  EncryptorInterface
 } from '@qlover/fe-corekit';
 
-export interface RequestEncryptPluginProps<
-  Request = unknown
-> extends RequestAdapterConfig<Request> {
+export interface RequestEncryptPluginProps<Request = unknown>
+  extends RequestAdapterConfig<Request> {
   /**
    * 加密密码在 HTTP 请求中
    *
@@ -19,16 +18,21 @@ export interface RequestEncryptPluginProps<
   encryptProps?: string[] | string;
 }
 
-export class RequestEncryptPlugin implements ExecutorPlugin<RequestEncryptPluginProps> {
+export class RequestEncryptPlugin
+  implements
+    LifecyclePluginInterface<
+      ExecutorContextInterface<RequestEncryptPluginProps>
+    >
+{
   public readonly pluginName = 'RequestEncryptPlugin';
 
-  constructor(protected encryptor: Encryptor<string, string>) {}
+  constructor(protected encryptor: EncryptorInterface<string, string>) {}
 
   /**
    * @override
    */
   public onBefore(
-    context: ExecutorContext<RequestEncryptPluginProps>
+    context: ExecutorContextInterface<RequestEncryptPluginProps>
   ): void | Promise<void> {
     const { responseType, encryptProps } = context.parameters;
 

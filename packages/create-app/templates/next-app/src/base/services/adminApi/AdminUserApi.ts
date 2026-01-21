@@ -7,7 +7,8 @@ import {
   type AppApiTransaction
 } from '../appApi/AppApiRequester';
 import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
-import type { RequestTransaction } from '@qlover/fe-corekit';
+import { RequestExecutor } from '@qlover/fe-corekit';
+import { AdminApiRequesterContext } from './AdminApiRequester';
 
 export type AdminUserListTransaction = AppApiTransaction<
   ResourceQuery,
@@ -18,7 +19,7 @@ export type AdminUserListTransaction = AppApiTransaction<
 export class AdminUserApi implements ResourceInterface<UserSchema> {
   constructor(
     @inject(AppApiRequester)
-    protected client: RequestTransaction<AppApiConfig>
+    protected client: RequestExecutor<AppApiConfig, AdminApiRequesterContext>
   ) {}
 
   /**
@@ -27,10 +28,13 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
   public async search(
     params: AdminUserListTransaction['request']
   ): Promise<AdminUserListTransaction['response']> {
-    const response = await this.client.request<AdminUserListTransaction>({
+    const response = await this.client.request<
+      AdminUserListTransaction['response'],
+      AdminUserListTransaction['request']
+    >({
       url: '/admin/users',
       method: 'GET',
-      params: params as unknown as Record<string, unknown>
+      params
     });
 
     return response;
@@ -40,10 +44,10 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
    * @override
    */
   public create(data: UserSchema): Promise<unknown> {
-    return this.client.request<AdminUserListTransaction>({
+    return this.client.request({
       url: '/admin/users',
       method: 'POST',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 
@@ -51,10 +55,10 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
    * @override
    */
   public remove(data: UserSchema): Promise<unknown> {
-    return this.client.request<AdminUserListTransaction>({
+    return this.client.request({
       url: '/admin/users',
       method: 'DELETE',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 
@@ -62,10 +66,10 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
    * @override
    */
   public update(data: UserSchema): Promise<unknown> {
-    return this.client.request<AdminUserListTransaction>({
+    return this.client.request({
       url: '/admin/users',
       method: 'PUT',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 
@@ -73,10 +77,10 @@ export class AdminUserApi implements ResourceInterface<UserSchema> {
    * @override
    */
   public export(data: UserSchema): Promise<unknown> {
-    return this.client.request<AdminUserListTransaction>({
+    return this.client.request({
       url: '/admin/users',
       method: 'GET',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 }

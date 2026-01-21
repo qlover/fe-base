@@ -2,10 +2,11 @@ import { ExecutorError } from '../../executor';
 import type {
   RequestAdapterConfig,
   RequestAdapterInterface,
-  RequestAdapterResponse,
+  RequestAdapterResponse
 } from '../interface';
 import { merge, pick } from 'lodash-es';
 import { ENV_FETCH_NOT_SUPPORT_ID, FETCHER_NONE_ID } from '../impl/consts';
+import { isAbsoluteUrl } from '../utils/isAbsoluteUrl';
 
 /**
  * Request adapter fetch configuration
@@ -18,7 +19,7 @@ import { ENV_FETCH_NOT_SUPPORT_ID, FETCHER_NONE_ID } from '../impl/consts';
  */
 export interface RequestAdapterFetchConfig<Request = unknown>
   extends RequestAdapterConfig<Request>,
-  Omit<globalThis.RequestInit, 'headers'> {
+    Omit<globalThis.RequestInit, 'headers'> {
   /**
    * The fetcher function
    *
@@ -153,7 +154,8 @@ const reqInitAttrs = [
  * @since 1.0.14
  */
 export class RequestAdapterFetch
-  implements RequestAdapterInterface<RequestAdapterFetchConfig> {
+  implements RequestAdapterInterface<RequestAdapterFetchConfig>
+{
   /**
    * Default configuration for the request adapter
    *
@@ -401,6 +403,54 @@ export class RequestAdapterFetch
   }
 
   /**
+   * Builds URL from url and baseURL
+   *
+   * Combines the request URL with baseURL if needed. Handles both absolute
+   * and relative URLs appropriately.
+   *
+   * URL construction rules:
+   * - Absolute URLs (starting with `http://` or `https://`) are used directly
+   * - Relative URLs are concatenated with baseURL if provided
+   * - Handles trailing slash in baseURL to avoid double slashes
+   * - If no baseURL, relative URLs are used as-is (browser resolves them)
+   *
+   * @param url - The URL path (absolute or relative)
+   * @param baseURL - The base URL to use for relative paths
+   * @returns Complete URL string
+   *
+   * @example
+   * ```typescript
+   * this.buildRequestUrl('/users', 'https://api.example.com');
+   * // Returns: 'https://api.example.com/users'
+   *
+   * this.buildRequestUrl('/users', 'https://api.example.com/');
+   * // Returns: 'https://api.example.com/users'
+   *
+   * this.buildRequestUrl('https://other.com/data', 'https://api.example.com');
+   * // Returns: 'https://other.com/data'
+   *
+   * this.buildRequestUrl('/users', undefined);
+   * // Returns: '/users'
+   * ```
+   */
+  protected buildRequestUrl(url: string, baseURL?: string): string {
+    if (isAbsoluteUrl(url)) {
+      return url;
+    }
+
+    if (!baseURL) {
+      return url;
+    }
+
+    // Remove trailing slash from baseURL if url starts with slash
+    if (baseURL.endsWith('/') && url.startsWith('/')) {
+      return baseURL.slice(0, -1) + url;
+    }
+
+    return baseURL + url;
+  }
+
+  /**
    * Convert adapter configuration to fetch Request object
    *
    * Transforms the adapter's configuration format into a native fetch Request object.
@@ -408,10 +458,11 @@ export class RequestAdapterFetch
    *
    * Conversion process:
    * 1. Extract URL and method from configuration
-   * 2. Pick fetch-specific options (cache, credentials, headers, etc.)
-   * 3. Add request body data if present
-   * 4. Normalize HTTP method to uppercase
-   * 5. Create and return fetch Request object
+   * 2. Build complete URL using baseURL if needed
+   * 3. Pick fetch-specific options (cache, credentials, headers, etc.)
+   * 4. Add request body data if present
+   * 5. Normalize HTTP method to uppercase
+   * 6. Create and return fetch Request object
    *
    * @param parameters - Adapter configuration to convert
    * @returns Native fetch Request object ready for execution
@@ -432,7 +483,7 @@ export class RequestAdapterFetch
     const { url = '/', baseURL, method = 'GET', data } = parameters;
     const init = pick(parameters, reqInitAttrs);
     return new Request(
-      url && baseURL ? new URL(url, baseURL).toString() : url,
+      this.buildRequestUrl(url, baseURL),
       Object.assign(init, {
         // FIXME: data is unknown type
         body: data as BodyInit,

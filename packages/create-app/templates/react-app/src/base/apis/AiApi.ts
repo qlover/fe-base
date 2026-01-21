@@ -1,22 +1,29 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
 import { type BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import {
-  ExecutorContextInterface,
   LifecycleExecutor,
   RequestAdapterFetch,
-  RequestAdapterFetchConfig,
   RequestExecutor,
   RequestPlugin
 } from '@qlover/fe-corekit';
 import { RequestLogger } from '../cases/RequestLogger';
 import type { AppConfig } from '../cases/AppConfig';
+import type {
+  ExecutorContextInterface,
+  RequestAdapterFetchConfig
+} from '@qlover/fe-corekit';
 
 const apiApiAdapter = new RequestAdapterFetch({
   responseType: 'json'
 });
 
 // 使用 RequestScheduler
-const apiApi = new RequestExecutor(apiApiAdapter, new LifecycleExecutor<ExecutorContextInterface<RequestAdapterFetchConfig, unknown>>());
+const apiApi = new RequestExecutor(
+  apiApiAdapter,
+  new LifecycleExecutor<
+    ExecutorContextInterface<RequestAdapterFetchConfig, unknown>
+  >()
+);
 
 // 直接使用 adapter
 // const apiApi = apiApiAdapter;

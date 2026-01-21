@@ -3,6 +3,7 @@ export * from './impl';
 export * from './interface';
 export * from './utils/appendHeaders';
 export * from './utils/httpMethods';
+export * from './utils/isAbsoluteUrl';
 export * from './utils/isAsString';
 export * from './utils/isRequestAdapterResponse';
 export * from './utils/SimpleUrlBuilder';

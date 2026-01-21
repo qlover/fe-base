@@ -1,14 +1,16 @@
 import {
+  ExecutorContextInterface,
   ExecutorError,
-  RequestError,
-  type ExecutorContext,
-  type ExecutorPlugin
+  isRequestAdapterResponse,
+  LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
 import type { AppApiConfig } from './AppApiRequester';
 import type { LoggerInterface } from '@qlover/logger';
 
-export class AppApiPlugin implements ExecutorPlugin {
+export class AppApiPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<AppApiConfig>
+> {
   public readonly pluginName = 'AppApiPlugin';
 
   constructor(protected logger: LoggerInterface) {}
@@ -30,11 +32,16 @@ export class AppApiPlugin implements ExecutorPlugin {
   /**
    * @override
    */
-  public onSuccess(
-    context: ExecutorContext<AppApiConfig>
-  ): void | Promise<void> {
+  public onSuccess(context: ExecutorContextInterface<AppApiConfig>): void {
     const response = context.returnValue;
     const { parameters } = context;
+
+    // Important: 当响应数据失败则抛出错误
+    if (isRequestAdapterResponse(response)) {
+      if (this.isAppApiErrorInterface(response.data)) {
+        throw new ExecutorError(response.data.message || response.data.id, response);
+      }
+    }
 
     this.logger.info(
       `%c[AppApi ${parameters.method} ${parameters.url}]%c - ${new Date().toLocaleString()}`,
@@ -42,36 +49,29 @@ export class AppApiPlugin implements ExecutorPlugin {
       'color: inherit;',
       response
     );
-
-    if (this.isAppApiErrorInterface(response)) {
-      throw new Error(response.message || response.id);
-    }
   }
 
   /**
    * @override
    */
   public async onError(
-    context: ExecutorContext<AppApiConfig>
+    context: ExecutorContextInterface<AppApiConfig>
   ): Promise<ExecutorError | void> {
     const { error, parameters } = context;
 
     this.loggerError(parameters, error);
 
-    if (error instanceof RequestError && parameters.responseType === 'json') {
-      // @ts-expect-error response is not defined in Error
-      let response = error?.response;
+    if (error instanceof Error && parameters.responseType === 'json') {
+      let response = error?.cause;
 
       if (response instanceof Response) {
         // clone the response to avoid mutating the original response
         response = response.clone();
 
-        const json = await this.getResponseJson(response);
+        const json = await this.getResponseJson(response as Response);
 
         if (this.isAppApiErrorInterface(json)) {
-          const newError = new ExecutorError(json.id, json.message);
-          // context.error = newError;
-          return newError;
+          return new ExecutorError(json.id, json);
         }
       }
     }

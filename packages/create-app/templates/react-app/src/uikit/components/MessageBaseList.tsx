@@ -3,6 +3,7 @@ import { messageBaseListI18n } from '@config/i18n/messageBaseListI18n';
 import { I } from '@config/IOCIdentifier';
 import {
   MessageSender,
+  MessageSenderExecutor,
   MessagesStore,
   MessageStatus,
   SenderStrategyPlugin,
@@ -90,7 +91,8 @@ export function MessageBaseList() {
   const [messagesSender] = useState(() =>
     new MessageSender<MessageBaseMsg>(messagesStore, {
       gateway: messageBaseApi,
-      logger
+      logger,
+      executor: new MessageSenderExecutor()
     }).use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED))
   );
 
@@ -231,7 +233,9 @@ export function MessageBaseList() {
           <Input
             value={inputValue}
             onPressEnter={onSend}
-            onChange={(e) => setInputValue((e.target as HTMLInputElement).value)}
+            onChange={(e) =>
+              setInputValue((e.target as HTMLInputElement).value)
+            }
             placeholder={tt.inputPlaceholder}
             size="large"
             className="flex-1"

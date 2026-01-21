@@ -35,12 +35,19 @@ export type RequestAdapterContext = ExecutorContextInterface<
  *   tokenPrefix: 'Bearer',
  *   authKey: 'Authorization',
  *   data: { version: '1.0' }, // Default request data
- *   requestDataSerializer: (data) => JSON.stringify(data)
+ *   requestDataSerializer: (data, config) => {
+ *     // Access config properties like method, url, headers, etc.
+ *     return config.method === 'POST' ? JSON.stringify(data) : data;
+ *   }
  * };
  * ```
  */
 export type RequestPluginConfig = HeaderInjectorConfig & {
-  requestDataSerializer?: (data: unknown) => unknown;
+  requestDataSerializer?: (
+    data: unknown,
+    config: RequestAdapterConfig &
+      Omit<RequestPluginConfig, 'requestDataSerializer'>
+  ) => unknown;
 };
 
 export interface RequestPluginInnerConfig {
@@ -269,7 +276,10 @@ export class RequestPlugin
 
     // Use custom serializer if provided
     if (typeof requestDataSerializer === 'function') {
-      return requestDataSerializer(data) as BodyInit | null | undefined;
+      return requestDataSerializer(data, {
+        ...config,
+        requestDataSerializer: undefined
+      }) as BodyInit | null | undefined;
     }
 
     // Default serializer: JSON.stringify for JSON content type

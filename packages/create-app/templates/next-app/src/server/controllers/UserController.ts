@@ -12,14 +12,14 @@ import type { ServerAuthInterface } from '../port/ServerAuthInterface';
 import type { UserControllerInerface } from '../port/UserControllerInerface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { ValidatorInterface } from '../port/ValidatorInterface';
-import type { Encryptor } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 
 @injectable()
 export class UserController implements UserControllerInerface {
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(StringEncryptor)
-    protected stringEncryptor: Encryptor<string, string>,
+    protected stringEncryptor: EncryptorInterface<string, string>,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginValidatorData>,
     @inject(UserService) protected userService: UserServiceInterface

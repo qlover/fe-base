@@ -1,10 +1,10 @@
-import { Base64Serializer, type Encryptor } from '@qlover/fe-corekit';
+import { Base64Serializer, type EncryptorInterface } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { I } from '@config/IOCIdentifier';
 import type { AppConfig } from './AppConfig';
 
 @injectable()
-export class StringEncryptor implements Encryptor<string, string> {
+export class StringEncryptor implements EncryptorInterface<string, string> {
   private readonly key;
 
   constructor(

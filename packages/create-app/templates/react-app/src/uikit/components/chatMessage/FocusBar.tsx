@@ -80,7 +80,9 @@ export function FocusBar({ bridge, tt }: FocusBarProps) {
           autoFocus
           value={inputText}
           onKeyDown={handleKeyDown}
-          onChange={(e) => bridge.onChangeContent((e.target as HTMLTextAreaElement).value)}
+          onChange={(e) =>
+            bridge.onChangeContent((e.target as HTMLTextAreaElement).value)
+          }
           placeholder={tt.inputPlaceholder}
           autoSize={{ minRows: 2, maxRows: 6 }}
           className="resize-none"

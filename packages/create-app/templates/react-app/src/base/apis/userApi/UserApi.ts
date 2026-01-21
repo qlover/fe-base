@@ -45,9 +45,12 @@ export class UserApi
 
   constructor(
     @inject(Aborter) protected abortPlugin: AborterInterface<AborterConfig>,
-    @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>,
+    @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>
   ) {
-    super(adapter, new LifecycleExecutor<ExecutorContextInterface<UserApiConfig, unknown>>());
+    super(
+      adapter,
+      new LifecycleExecutor<ExecutorContextInterface<UserApiConfig, unknown>>()
+    );
   }
 
   public getStore(): UserAuthStoreInterface<UserInfo> | null {
@@ -101,9 +104,9 @@ export class UserApi
       throw response.apiCatchResult;
     }
 
-    // if (!response.data.token) {
+    if (!response.data.token) {
       throw new ExecutorError(RES_NO_TOKEN);
-    // }
+    }
 
     return response.data;
   }

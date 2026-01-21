@@ -652,7 +652,7 @@ describe('TypeSafetyTests', () => {
 
   it('should infer correct return types', () => {
     const result = getData();
-    
+
     // 验证返回值类型
     expectTypeOf(result).toEqualTypeOf<{ id: number; name: string }>();
     expectTypeOf(result).not.toEqualTypeOf<{ id: string; name: string }>();
@@ -682,7 +682,7 @@ describe('Generic Type Tests', () => {
     }
 
     const storage = new Storage<User>();
-    
+
     // 验证泛型类型
     expectTypeOf(storage.store).parameter(0).toMatchTypeOf<User>();
     expectTypeOf(storage.store).returns.toMatchTypeOf<User>();
@@ -755,7 +755,7 @@ describe('Type Narrowing Tests', () => {
     }
 
     const value: unknown = 'test';
-    
+
     if (isString(value)) {
       // 在此作用域内，value 应该被窄化为 string 类型
       expectTypeOf(value).toEqualTypeOf<string>();
@@ -763,7 +763,7 @@ describe('Type Narrowing Tests', () => {
   });
 
   it('should validate discriminated unions', () => {
-    type Shape = 
+    type Shape =
       | { kind: 'circle'; radius: number }
       | { kind: 'rectangle'; width: number; height: number };
 
@@ -812,7 +812,7 @@ describe('Combined Runtime and Type Tests', () => {
 describe('Type Inference Tests', () => {
   it('should infer types correctly', () => {
     const data = { id: 1, name: 'John' };
-    
+
     // 验证推断的类型
     expectTypeOf(data).toEqualTypeOf<{ id: number; name: string }>();
     expectTypeOf(data.id).toEqualTypeOf<number>();

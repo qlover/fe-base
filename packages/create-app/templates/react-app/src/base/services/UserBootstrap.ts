@@ -1,9 +1,9 @@
 import { LOCAL_NO_USER_TOKEN } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
+import { ExecutorError } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
-import { ExecutorError } from '@qlover/fe-corekit';
 
 @injectable()
 export class UserBootstrap implements BootstrapExecutorPlugin {

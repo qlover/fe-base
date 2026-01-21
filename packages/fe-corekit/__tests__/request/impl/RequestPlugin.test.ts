@@ -369,7 +369,7 @@ describe('RequestPlugin', () => {
     describe('Custom serializer', () => {
       it('should use custom serializer when provided', () => {
         plugin = new RequestPlugin({
-          requestDataSerializer: (data) => `custom:${JSON.stringify(data)}`
+          requestDataSerializer: (data, config) => `custom:${JSON.stringify(data)}:${config.method}`
         });
         const contextConfig: RequestAdapterConfig = {
           method: 'POST',
@@ -378,7 +378,31 @@ describe('RequestPlugin', () => {
         const mergedConfig = plugin['mergeConfig'](contextConfig);
         const result = plugin['processRequestData'](mergedConfig);
 
-        expect(result).toBe('custom:{"name":"John"}');
+        expect(result).toBe('custom:{"name":"John"}:POST');
+      });
+
+      it('should pass config to custom serializer', () => {
+        const serializerSpy = vi.fn((data, config) => JSON.stringify({ data, url: config.url }));
+        plugin = new RequestPlugin({
+          requestDataSerializer: serializerSpy
+        });
+        const contextConfig: RequestAdapterConfig = {
+          method: 'POST',
+          url: '/api/test',
+          data: { name: 'John' }
+        };
+        const mergedConfig = plugin['mergeConfig'](contextConfig);
+        plugin['processRequestData'](mergedConfig);
+
+        expect(serializerSpy).toHaveBeenCalledWith(
+          { name: 'John' },
+          expect.objectContaining({
+            method: 'POST',
+            url: '/api/test',
+            data: { name: 'John' },
+            requestDataSerializer: undefined
+          })
+        );
       });
 
       it('should throw error when custom serializer throws', () => {

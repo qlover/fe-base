@@ -143,16 +143,17 @@ export class LifecycleExecutor<
     task?: ExecutorTask<R, P>
   ): Promise<R | ExecutorError> {
     try {
-      const result = task !== undefined
-        ? await (
-          this.exec as <R, P>(
-            data: P,
-            task: ExecutorTask<R, P>
-          ) => Promise<R>
-        )(dataOrTask as P, task)
-        : await (this.exec as <R, P>(task: ExecutorTask<R, P>) => Promise<R>)(
-          dataOrTask as ExecutorTask<R, P>
-        );
+      const result =
+        task !== undefined
+          ? await (
+              this.exec as <R, P>(
+                data: P,
+                task: ExecutorTask<R, P>
+              ) => Promise<R>
+            )(dataOrTask as P, task)
+          : await (this.exec as <R, P>(task: ExecutorTask<R, P>) => Promise<R>)(
+              dataOrTask as ExecutorTask<R, P>
+            );
       return result;
     } catch (error) {
       if (error instanceof ExecutorError) {
@@ -267,7 +268,7 @@ export class LifecycleExecutor<
    *
    * @see runPluginsHookAsync - The utility function that performs the actual execution
    */
-  protected async runHook<Result, Params>(
+  protected runHook<Result, Params>(
     plugins: Plugin[],
     hookName: ExecutorPluginNameType,
     context: ExecutorContextInterface<Params, Result>,
@@ -339,7 +340,7 @@ export class LifecycleExecutor<
    * @see runPluginsHooksAsync - The utility function that performs the actual execution
    * @see runHook - For executing a single hook
    */
-  protected async runHooks<Result, Params>(
+  protected runHooks<Result, Params>(
     plugins: Plugin[],
     hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
     context: ExecutorContextInterface<Params, Result>,

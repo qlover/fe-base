@@ -1,3 +1,4 @@
+import { I } from '@config/IOCIdentifier';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
@@ -9,7 +10,9 @@ import {
   type RequestAdapterConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
+import type { AppConfig } from '@/base/cases/AppConfig';
 import { RequestLogger } from '@/base/cases/RequestLogger';
+import type { UserService } from '@/base/services/UserService';
 import { FeApi } from './FeApi';
 
 export interface RequestTransactionInterface<Request, Response> {
@@ -66,9 +69,15 @@ export class FeApiBootstarp implements BootstrapExecutorPlugin {
    * @override
    */
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
+    const appConfig = ioc.get<AppConfig>(I.AppConfig);
     ioc
       .get<FeApi>(FeApi)
-      .use(new RequestPlugin())
+      .use(
+        new RequestPlugin({
+          tokenPrefix: appConfig.openAiTokenPrefix,
+          token: () => ioc.get<UserService>(I.UserServiceInterface).getToken()
+        })
+      )
       .use(ioc.get(RequestLogger))
       .use(ioc.get(ApiPickDataPlugin));
   }
