@@ -43,7 +43,7 @@ export class I18nKeyErrorPlugin implements LifecyclePluginInterface<
 
     if (error instanceof ExecutorError) {
       const i18nText = this.translateById(error.id);
-      this.logger.log('i18nText', i18nText);
+      this.logger.error('i18nText', i18nText);
       return new ExecutorError(error.id, i18nText);
     }
 

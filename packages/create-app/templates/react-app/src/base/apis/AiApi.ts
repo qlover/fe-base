@@ -4,7 +4,8 @@ import {
   LifecycleExecutor,
   RequestAdapterFetch,
   RequestExecutor,
-  RequestPlugin
+  RequestPlugin,
+  ResponsePlugin
 } from '@qlover/fe-corekit';
 import { RequestLogger } from '../cases/RequestLogger';
 import type { AppConfig } from '../cases/AppConfig';
@@ -42,6 +43,7 @@ export const AiApiBootstarp: BootstrapExecutorPlugin = {
         token: appConfig.aiApiToken
       })
     );
+    apiApi.use(ioc.get(ResponsePlugin));
     apiApi.use(ioc.get(IOCIdentifier.ApiMockPlugin));
     apiApi.use(ioc.get(RequestLogger));
   }

@@ -34,13 +34,22 @@ export class RequestLanguages implements LifecyclePluginInterface<
     const languages = this.i18nService.getSupportedLanguages();
 
     if (!context.parameters.headers) {
-      context.parameters.headers = {};
+      context.setParameters({
+        ...context.parameters,
+        headers: {}
+      });
     }
 
     const languageValue = this.buildAcceptLanguage(
       Array.from(new Set([currentLanguage, ...languages]))
     );
 
-    context.parameters.headers[this.headerName] = languageValue;
+    context.setParameters({
+      ...context.parameters,
+      headers: {
+        ...context.parameters.headers,
+        [this.headerName]: languageValue
+      }
+    });
   }
 }

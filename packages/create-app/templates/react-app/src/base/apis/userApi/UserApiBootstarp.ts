@@ -10,13 +10,14 @@ import {
   Aborter,
   AborterPlugin,
   RequestPlugin,
+  ResponsePlugin,
   type AborterConfig,
   type RequestAdapterConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
+import { RequestLanguages } from '@/base/cases/RequestLanguages';
 import { RequestLogger } from '@/base/cases/RequestLogger';
 import { UserApi } from './UserApi';
-import { RequestLanguages } from '../../cases/RequestLanguages';
 import type { RequestTransactionInterface } from '../feApi/FeApiBootstarp';
 
 /**
@@ -75,11 +76,11 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
     ioc
       .get<UserApi>(UserApi)
       .use(new RequestPlugin())
+      .use(ioc.get(ResponsePlugin))
       .use(new AborterPlugin(ioc.get(Aborter)))
       .use(new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface)))
       .use(ioc.get(IOCIdentifier.ApiMockPlugin))
       .use(ioc.get(IOCIdentifier.ApiCatchPlugin))
-      .use(ioc.get(RequestLogger))
-      .use(ioc.get(IOCIdentifier.I18nKeyErrorPlugin));
+      .use(ioc.get(RequestLogger));
   }
 }

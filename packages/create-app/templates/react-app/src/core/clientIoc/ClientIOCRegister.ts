@@ -96,8 +96,9 @@ export class ClientIOCRegister implements IOCRegisterInterface<
     ioc.bind(
       I.UserServiceInterface,
       ioc
-        .get<UserServiceInterface>(UserService)
+        .get<UserService>(UserService)
         .use(new UserGatewayPlugin(routeService))
+        .use(ioc.get(I.I18nKeyErrorPlugin))
     );
     ioc.bind(I.RequestCatcherInterface, ioc.get(RequestStatusCatcher));
     ioc.bind(I.ExecutorPageBridgeInterface, ioc.get(ExecutorPageBridge));

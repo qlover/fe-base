@@ -7,6 +7,7 @@ import {
 } from '@qlover/corekit-bridge';
 import {
   RequestPlugin,
+  ResponsePlugin,
   type RequestAdapterConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
@@ -78,6 +79,7 @@ export class FeApiBootstarp implements BootstrapExecutorPlugin {
           token: () => ioc.get<UserService>(I.UserServiceInterface).getToken()
         })
       )
+      .use(ioc.get(ResponsePlugin))
       .use(ioc.get(RequestLogger))
       .use(ioc.get(ApiPickDataPlugin));
   }
