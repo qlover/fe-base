@@ -1,20 +1,20 @@
 import { AsyncStoreStatus } from '../../store-state';
-import { LoginParams } from '../interface/LoginInterface';
-import { GatewayExecutor } from './GatewayExecutor';
+import { type LoginParams } from '../interface/LoginInterface';
+import { type GatewayExecutor, type GatewayExecutorPlugin } from './GatewayExecutor';
 import { GatewayService } from './GatewayService';
 import {
-  UserServiceGateway,
-  UserServiceInterface,
-  UserServicePluginType,
-  UserServicePluginInterface
+  type UserServiceGateway,
+  type UserServiceInterface,
+  type UserServicePluginType,
+  type UserServicePluginInterface
 } from '../interface/UserServiceInterface';
-import { UserStore, UserStoreOptions } from './UserStore';
+import { type UserStore, type UserStoreOptions } from './UserStore';
 import {
-  UserStateInterface,
-  UserStoreInterface
+  type UserStateInterface,
+  type UserStoreInterface
 } from '../interface/UserStoreInterface';
 import { createUserStore } from '../utils/createUserStore';
-import { ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
 
 /**
  * User service configuration
@@ -403,8 +403,28 @@ export class UserService<User, Credential, Key = string | symbol>
       | UserServicePluginInterface<User, Credential>
       | UserServicePluginType<User, Credential>[]
       | UserServicePluginInterface<User, Credential>[]
+  ): this;
+  /**
+   * @override
+   */
+  public use<Plugin extends GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>>(
+    plugin: Plugin | Plugin[]
+  ): this;
+  /**
+   * @override
+   */
+  public use<Plugin extends GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>>(
+    plugin:
+      | UserServicePluginType<User, Credential>
+      | UserServicePluginInterface<User, Credential>
+      | UserServicePluginType<User, Credential>[]
+      | UserServicePluginInterface<User, Credential>[]
+      | Plugin
+      | Plugin[]
   ): this {
-    return super.use(plugin);
+    return super.use(
+      plugin as GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown> | GatewayExecutorPlugin<User, UserServiceGateway<User, Credential>, unknown>[]
+    );
   }
 
   /**

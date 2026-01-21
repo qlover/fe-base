@@ -1,8 +1,8 @@
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../store-state';
-import { StoreInterface } from '../../store-state/interface/StoreInterface';
+import { type StoreInterface } from '../../store-state/interface/StoreInterface';
 
 /**
  * User service store state interface

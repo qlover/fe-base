@@ -12,8 +12,7 @@ import type { RetryInterface, RetryOptions } from '../interface/RetryInterface';
  * - Main Function: Retry failed tasks based on specified conditions and strategies.
  * - Main Purpose: Improve success rates of task executions by handling transient errors.
  *
- * **v2.8.0  Refactored to use p-retry library for retry logic. All retry logic is now self-contained within RetryManager. Added retry() method for direct execution. **
- *
+ * @since 3.0.0
  * @example
  * ```typescript
  * const retryManager = new RetryManager({

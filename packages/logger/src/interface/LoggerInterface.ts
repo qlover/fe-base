@@ -1,5 +1,5 @@
-import { HandlerInterface } from './HandlerInterface';
-import { LogContext } from './LogContext';
+import { type HandlerInterface } from './HandlerInterface';
+import { type LogContext } from './LogContext';
 
 /**
  * Core interface for logger implementations

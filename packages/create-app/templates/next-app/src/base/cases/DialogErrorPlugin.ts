@@ -1,7 +1,7 @@
 import {
+  ExecutorContextInterface,
   ExecutorError,
-  type ExecutorContext,
-  type ExecutorPlugin
+  LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { i18nKeySchema } from '@config/i18n/i18nKeyScheam';
@@ -13,7 +13,9 @@ import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';
 
 @injectable()
-export class DialogErrorPlugin implements ExecutorPlugin {
+export class DialogErrorPlugin
+  implements LifecyclePluginInterface<ExecutorContextInterface<unknown>>
+{
   public readonly pluginName = 'DialogErrorPlugin';
 
   constructor(
@@ -27,7 +29,7 @@ export class DialogErrorPlugin implements ExecutorPlugin {
   /**
    * @override
    */
-  public onError(context: ExecutorContext<unknown>): void | Promise<void> {
+  public onError(context: ExecutorContextInterface<unknown>): void {
     const { error, hooksRuntimes } = context;
     const runtimesError = hooksRuntimes.returnValue;
 

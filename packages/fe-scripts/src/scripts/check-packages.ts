@@ -3,8 +3,8 @@
 import { execSync } from 'child_process';
 import {
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
 import { findWorkspaces } from 'find-workspaces';
 import { relative, join } from 'path';

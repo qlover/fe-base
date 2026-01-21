@@ -12,9 +12,9 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ScriptContext } from '../../src/implement/ScriptContext';
-import { Env } from '@qlover/env-loader';
-import { Logger } from '@qlover/logger';
-import { Shell } from '../../src/implement/Shell';
+import { type Env } from '@qlover/env-loader';
+import { type Logger } from '@qlover/logger';
+import { type Shell } from '../../src/implement/Shell';
 import type { ScriptSharedInterface } from '../../src/interface/ScriptSharedInterface';
 
 interface TestOptions extends ScriptSharedInterface {

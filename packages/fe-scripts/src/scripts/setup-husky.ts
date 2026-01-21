@@ -2,8 +2,8 @@ import { resolve, join } from 'node:path';
 import { writeFileSync, readFileSync } from 'node:fs';
 import {
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
 
 export interface SetupHuskyOptions extends ScriptSharedInterface {

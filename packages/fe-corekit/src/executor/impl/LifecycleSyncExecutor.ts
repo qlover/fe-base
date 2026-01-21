@@ -1,11 +1,11 @@
 import { ExecutorError } from '../interface';
 import type {
-  ExecutorContextInterface,
   ExecutorPluginNameType,
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
+import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import type { LifecycleSyncPluginInterface } from '../interface/SyncLifecyclePluginInterface';
-import { ExecutorContextImpl } from './ExecutorContextImpl';
+import { type ExecutorContextImpl } from './ExecutorContextImpl';
 import { BasePluginExecutor } from './BasePluginExecutor';
 import { EXECUTOR_SYNC_ERROR } from '../utils/constants';
 import {
@@ -64,6 +64,7 @@ import {
  * 8. Execute onFinally hooks for cleanup
  * 9. Return result immediately
  *
+ * @since 3.0.0
  * @template Ctx - Type of executor context interface (defaults to ExecutorContextInterface<unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecycleSyncPluginInterface<Ctx>)
  *
@@ -108,7 +109,6 @@ import {
  * }
  * ```
  *
- * @since 2.6.0
  * @see LifecycleExecutor - Async version of this executor
  * @see LifecycleSyncPluginInterface - Default plugin interface
  *

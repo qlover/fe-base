@@ -10,9 +10,9 @@ import {
 import { template } from './utils';
 import type { LoggerInterface } from '@qlover/logger';
 import {
-  MessageSenderContext,
-  MessageSenderOptions,
-  MessageSenderPlugin
+  type MessageSenderContext,
+  type MessageSenderOptions,
+  type MessageSenderPlugin
 } from '../interface/MessageSenderPlugin';
 
 /**

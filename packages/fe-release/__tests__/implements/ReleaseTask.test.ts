@@ -1,10 +1,10 @@
 import ReleaseTask from '../../src/implments/ReleaseTask';
-import ReleaseContext from '../../src/implments/ReleaseContext';
+import type ReleaseContext from '../../src/implments/ReleaseContext';
 import {
-  ExecutorAsyncTask,
-  ExecutorContextImpl,
-  ExecutorSyncTask,
-  ExecutorTask,
+  type ExecutorAsyncTask,
+  type ExecutorContextInterface,
+  type ExecutorSyncTask,
+  type ExecutorTask,
   LifecycleExecutor
 } from '@qlover/fe-corekit';
 import { createTestReleaseOptions } from '../helpers';
@@ -12,7 +12,7 @@ import { defaultFeConfig } from '@qlover/scripts-context';
 
 class MockExecutor extends LifecycleExecutor<ReleaseContext> {
   protected override async run<Result, Params>(
-    _context: ExecutorContextImpl<Params, Result>,
+    _context: ExecutorContextInterface<Params, Result>,
     _actualTask: ExecutorTask<Result, Params>
   ): Promise<Result> {
     return Promise.resolve('test run' as Result);

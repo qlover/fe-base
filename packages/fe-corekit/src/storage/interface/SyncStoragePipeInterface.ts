@@ -1,6 +1,6 @@
-import { Encryptor } from '../../encrypt';
-import { SerializerIneterface } from '../../serializer';
-import { SyncStorageInterface } from './SyncStorageInterface';
+import { type EncryptorInterface } from '../../encrypt';
+import { type SerializerIneterface } from '../../serializer';
+import { type SyncStorageInterface } from './SyncStorageInterface';
 
 /**
  * Pipe processor type definition
@@ -12,7 +12,7 @@ import { SyncStorageInterface } from './SyncStorageInterface';
  */
 export type PipeType<Key> =
   | SerializerIneterface<unknown, unknown>
-  | Encryptor<unknown, unknown>
+  | EncryptorInterface<unknown, unknown>
   | SyncStorageInterface<Key, unknown>;
 
 /**
@@ -30,7 +30,7 @@ export type PipeValue<Key> =
     }
   | {
       type: 'encrypt';
-      pipe: Encryptor<unknown, unknown>;
+      pipe: EncryptorInterface<unknown, unknown>;
     }
   | {
       type: 'storage';

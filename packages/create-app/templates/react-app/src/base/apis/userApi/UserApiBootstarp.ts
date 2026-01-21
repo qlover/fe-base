@@ -6,15 +6,19 @@ import {
   type ApiCatchPluginConfig,
   type ApiCatchPluginResponse
 } from '@qlover/corekit-bridge';
-import { FetchAbortPlugin, FetchURLPlugin } from '@qlover/fe-corekit';
+import {
+  Aborter,
+  AborterPlugin,
+  RequestPlugin,
+  ResponsePlugin,
+  type AborterConfig,
+  type RequestAdapterConfig,
+  type RequestAdapterResponse
+} from '@qlover/fe-corekit';
+import { RequestLanguages } from '@/base/cases/RequestLanguages';
 import { RequestLogger } from '@/base/cases/RequestLogger';
 import { UserApi } from './UserApi';
-import { RequestLanguages } from '../../cases/RequestLanguages';
-import type {
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface
-} from '@qlover/fe-corekit';
+import type { RequestTransactionInterface } from '../feApi/FeApiBootstarp';
 
 /**
  * UserApiConfig
@@ -30,7 +34,8 @@ export interface UserApiConfig<Request = unknown>
   extends
     RequestAdapterConfig<Request>,
     ApiMockPluginOptions,
-    ApiCatchPluginConfig {}
+    ApiCatchPluginConfig,
+    AborterConfig {}
 
 /**
  * UserApiResponse
@@ -70,14 +75,12 @@ export class UserApiBootstarp implements BootstrapExecutorPlugin {
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     ioc
       .get<UserApi>(UserApi)
-      .usePlugin(new FetchURLPlugin())
-      .usePlugin(ioc.get(IOCIdentifier.FeApiCommonPlugin))
-      .usePlugin(
-        new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface))
-      )
-      .usePlugin(ioc.get(IOCIdentifier.ApiMockPlugin))
-      .usePlugin(ioc.get(RequestLogger))
-      .usePlugin(ioc.get(FetchAbortPlugin))
-      .usePlugin(ioc.get(IOCIdentifier.ApiCatchPlugin));
+      .use(new RequestPlugin())
+      .use(ioc.get(ResponsePlugin))
+      .use(new AborterPlugin(ioc.get(Aborter)))
+      .use(new RequestLanguages(ioc.get(IOCIdentifier.I18nServiceInterface)))
+      .use(ioc.get(IOCIdentifier.ApiMockPlugin))
+      .use(ioc.get(IOCIdentifier.ApiCatchPlugin))
+      .use(ioc.get(RequestLogger));
   }
 }

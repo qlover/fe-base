@@ -1,10 +1,13 @@
-import { SyncStorageInterface } from '@qlover/fe-corekit';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
 import {
-  AsyncStateInterface,
-  AsyncStoreInterface
+  type AsyncStateInterface,
+  type AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
 import { PersistentStore } from './PersistentStore';
-import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
+import {
+  AsyncStoreStatus,
+  type AsyncStoreStatusType
+} from './AsyncStoreStatus';
 import { createAsyncState } from './createAsyncState';
 
 /**

@@ -1,4 +1,4 @@
-import { type ExecutorError, type PromiseTask } from '@qlover/fe-corekit';
+import { ExecutorAsyncTask, type ExecutorError } from '@qlover/fe-corekit';
 import { type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import type {
   ServiceIdentifier,
@@ -17,6 +17,6 @@ export interface ServerInterface {
   getIOC<T>(serviceIdentifier: ServiceIdentifier<T>): T;
 
   execNoError<Result>(
-    task?: PromiseTask<Result, unknown>
+    task?: ExecutorAsyncTask<Result, unknown>
   ): Promise<Result | ExecutorError>;
 }

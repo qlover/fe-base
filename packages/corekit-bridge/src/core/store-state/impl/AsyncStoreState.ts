@@ -1,5 +1,8 @@
-import { AsyncStoreStatus, AsyncStoreStatusType } from './AsyncStoreStatus';
-import { AsyncStoreStateInterface } from './AsyncStore';
+import {
+  AsyncStoreStatus,
+  type AsyncStoreStatusType
+} from './AsyncStoreStatus';
+import { type AsyncStoreStateInterface } from './AsyncStore';
 
 /**
  * Async store state implementation

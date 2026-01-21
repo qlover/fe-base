@@ -83,7 +83,7 @@ export interface RetryOptions extends PRetryOptions {
  * This interface defines the contract for classes that provide retry logic
  * for executing functions with configurable retry behavior.
  *
- * @since 2.6.0
+ * @since 3.0.0
  */
 export interface RetryInterface<Options> {
   /**

@@ -1,5 +1,5 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
-import Code2MDContext, { Code2MDContextOptions } from './Code2MDContext';
+import Code2MDContext, { type Code2MDContextOptions } from './Code2MDContext';
 import TypeDocJson from '../plugins/typeDocs';
 import { Reader } from '../plugins/reader';
 import { Formats } from '../plugins/formats';

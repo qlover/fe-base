@@ -277,7 +277,9 @@ export default function ExecutorPage() {
               <Input
                 placeholder={tt.enterUrl}
                 value={customUrl}
-                onChange={(e) => setCustomUrl(e.target.value)}
+                onChange={(e) =>
+                  setCustomUrl((e.target as HTMLInputElement).value)
+                }
                 className="flex-1"
               />
               <Select

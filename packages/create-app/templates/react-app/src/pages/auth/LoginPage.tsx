@@ -17,7 +17,6 @@ export default function LoginPage() {
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
   const AppConfig = useIOC(IOCIdentifier.AppConfig);
   const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
-  const logger = useIOC(IOCIdentifier.Logger);
 
   const [loading, setLoading] = useState(false);
 
@@ -29,8 +28,8 @@ export default function LoginPage() {
         password: values.password
       });
       routeService.replaceToHome();
-    } catch (error) {
-      logger.error(error);
+    } catch {
+      // do nothing
     } finally {
       setLoading(false);
     }

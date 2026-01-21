@@ -1,4 +1,4 @@
-import type { RequestAdapterConfig } from './RequestAdapter';
+import type { RequestAdapterConfig } from './RequestAdapterInterface';
 
 /**
  * URL builder interface

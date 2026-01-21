@@ -1,10 +1,10 @@
 import type { KeyStorageInterface } from '@qlover/fe-corekit';
 import { StoreInterface } from '../../store-state';
 import type { LoginResponseData } from '../interface/UserAuthApiInterface';
-import { UserAuthState, PickUser } from './UserAuthState';
+import { type UserAuthState, type PickUser } from './UserAuthState';
 import {
   LOGIN_STATUS,
-  UserAuthStoreOptions,
+  type UserAuthStoreOptions,
   type UserAuthStoreInterface
 } from '../interface/UserAuthStoreInterface';
 import { createState } from './createState';

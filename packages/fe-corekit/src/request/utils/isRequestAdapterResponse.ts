@@ -1,4 +1,4 @@
-import { RequestAdapterResponse } from '../interface/RequestAdapter';
+import { type RequestAdapterResponse } from '../interface/RequestAdapterInterface';
 
 /**
  * Type guard function to check if a value is a RequestAdapterResponse
@@ -6,6 +6,7 @@ import { RequestAdapterResponse } from '../interface/RequestAdapter';
  * Checks if the value has the structure of a RequestAdapterResponse object,
  * verifying that it has all required properties: response, status, statusText, headers, and config.
  *
+ * @since 3.0.0
  * @param value - The value to check
  * @returns True if value is a RequestAdapterResponse object
  *

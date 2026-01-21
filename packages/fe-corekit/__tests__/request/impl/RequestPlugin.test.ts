@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RequestPlugin } from '../../../src/request/plugins/RequestPlugin';
-import { RequestAdapterContext } from '../../../src/request/plugins/RequestPlugin';
-import { UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
-import { HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
-import { RequestAdapterConfig } from '../../../src/request/interface';
+import { RequestPlugin } from '../../../src/request/impl/RequestPlugin';
+import type { RequestAdapterContext } from '../../../src/request/impl/RequestPlugin';
+import type { UrlBuilderInterface } from '../../../src/request/interface/UrlBuilderInterface';
+import type { HeaderInjectorInterface } from '../../../src/request/interface/HeaderInjectorInterface';
+import type { RequestAdapterConfig } from '../../../src/request/interface';
 import {
   JSON_RESPONSE_TYPE,
   JSON_CONTENT_TYPE,
   CONTENT_TYPE_HEADER
-} from '../../../src/request/plugins/consts';
+} from '../../../src/request/impl/consts';
 
 describe('RequestPlugin', () => {
   let plugin: RequestPlugin;
@@ -369,7 +369,7 @@ describe('RequestPlugin', () => {
     describe('Custom serializer', () => {
       it('should use custom serializer when provided', () => {
         plugin = new RequestPlugin({
-          requestDataSerializer: (data) => `custom:${JSON.stringify(data)}`
+          requestDataSerializer: (data, config) => `custom:${JSON.stringify(data)}:${config.method}`
         });
         const contextConfig: RequestAdapterConfig = {
           method: 'POST',
@@ -378,7 +378,31 @@ describe('RequestPlugin', () => {
         const mergedConfig = plugin['mergeConfig'](contextConfig);
         const result = plugin['processRequestData'](mergedConfig);
 
-        expect(result).toBe('custom:{"name":"John"}');
+        expect(result).toBe('custom:{"name":"John"}:POST');
+      });
+
+      it('should pass config to custom serializer', () => {
+        const serializerSpy = vi.fn((data, config) => JSON.stringify({ data, url: config.url }));
+        plugin = new RequestPlugin({
+          requestDataSerializer: serializerSpy
+        });
+        const contextConfig: RequestAdapterConfig = {
+          method: 'POST',
+          url: '/api/test',
+          data: { name: 'John' }
+        };
+        const mergedConfig = plugin['mergeConfig'](contextConfig);
+        plugin['processRequestData'](mergedConfig);
+
+        expect(serializerSpy).toHaveBeenCalledWith(
+          { name: 'John' },
+          expect.objectContaining({
+            method: 'POST',
+            url: '/api/test',
+            data: { name: 'John' },
+            requestDataSerializer: undefined
+          })
+        );
       });
 
       it('should throw error when custom serializer throws', () => {

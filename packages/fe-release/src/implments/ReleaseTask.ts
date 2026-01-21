@@ -69,7 +69,7 @@ import type {
 } from '@qlover/scripts-context';
 import { tuple, type PluginClass, type PluginTuple } from '../utils/tuple';
 import { LifecycleExecutor } from '@qlover/fe-corekit';
-import ReleaseContext, { ReleaseContextOptions } from './ReleaseContext';
+import ReleaseContext, { type ReleaseContextOptions } from './ReleaseContext';
 import GithubPR from '../plugins/githubPR/GithubPR';
 import Workspaces from '../plugins/workspaces/Workspaces';
 import { loaderPluginsFromPluginTuples } from '../utils/loader';

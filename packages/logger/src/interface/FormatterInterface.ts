@@ -1,4 +1,4 @@
-import { LogEvent } from './LogEvent';
+import { type LogEvent } from './LogEvent';
 
 /**
  * Interface for log event formatters

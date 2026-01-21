@@ -1,9 +1,9 @@
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../store-state';
-import { ExecutorServiceInterface } from './base/ExecutorServiceInterface';
-import { UserInfoGetter } from './UserInfoInterface';
+import { type ExecutorServiceInterface } from './base/ExecutorServiceInterface';
+import { type UserInfoGetter } from './UserInfoInterface';
 
 /**
  * Register interface

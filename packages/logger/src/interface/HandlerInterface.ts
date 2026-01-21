@@ -1,5 +1,5 @@
-import { FormatterInterface } from './FormatterInterface';
-import { LogEvent } from './LogEvent';
+import { type FormatterInterface } from './FormatterInterface';
+import { type LogEvent } from './LogEvent';
 
 /**
  * Interface for log event handlers (appenders)

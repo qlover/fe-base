@@ -5,8 +5,12 @@ import { createDefaultPrompts, createPackagePrompts } from './prompts';
 import { join } from 'path';
 import { oraPromise } from 'ora';
 import { existsSync } from 'fs';
-import { CopyCallback, Copyer } from './Copyer';
-import { GeneratorOptions, GeneratorPrompt, GeneratorContext } from './type';
+import { type CopyCallback, Copyer } from './Copyer';
+import {
+  type GeneratorOptions,
+  type GeneratorPrompt,
+  type GeneratorContext
+} from './type';
 import { Compose } from './Compose';
 
 const packages = ['pack-app'];

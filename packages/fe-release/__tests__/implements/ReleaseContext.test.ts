@@ -1,8 +1,8 @@
 import ReleaseContext, {
-  ReleaseContextOptions
+  type ReleaseContextOptions
 } from '../../src/implments/ReleaseContext';
 import { defaultFeConfig } from '@qlover/scripts-context';
-import { WorkspaceValue } from '../../src/plugins/workspaces/Workspaces';
+import { type WorkspaceValue } from '../../src/plugins/workspaces/Workspaces';
 
 describe('ReleaseContext', () => {
   const contextName = 'release';

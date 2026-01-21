@@ -1,15 +1,16 @@
-import { ExecutorError, SyncExecutor } from '@qlover/fe-corekit';
+import { LifecycleSyncExecutor, type ExecutorError } from '@qlover/fe-corekit';
 import type {
-  BootstrapContextValue,
-  BootstrapExecutorPlugin
+  BootstrapPluginOptions,
+  BootstrapExecutorPlugin,
+  BootstrapContext
 } from './BootstrapExecutorPlugin';
 import { InjectEnv, type InjectEnvConfig } from './plugins/InjectEnv';
-import { InjectIOC, InjectIOCOptions } from './plugins/InjectIOC';
-import { InjectGlobal, InjectGlobalConfig } from './plugins/InjectGlobal';
-import { IOCContainerInterface, IOCManagerInterface } from '../ioc';
+import { InjectIOC, type InjectIOCOptions } from './plugins/InjectIOC';
+import { InjectGlobal, type InjectGlobalConfig } from './plugins/InjectGlobal';
+import { type IOCContainerInterface, type IOCManagerInterface } from '../ioc';
 
 export interface BootstrapConfig<Container extends IOCContainerInterface>
-  extends Omit<BootstrapContextValue, 'ioc'> {
+  extends Omit<BootstrapPluginOptions, 'ioc'> {
   /**
    * InjectIOC options
    *
@@ -28,9 +29,23 @@ export interface BootstrapConfig<Container extends IOCContainerInterface>
   globalOptions?: InjectGlobalConfig;
 }
 
+/**
+ * Bootstrap executor
+ *
+ * After 3.0.0, SyncExecutor is replaced by LifecycleSyncExecutor
+ *
+ * @template Container - Type of IOC container
+ * @example
+ * ```typescript
+ * const bootstrap = new Bootstrap({
+ *   ioc: new IOCContainer(),
+ * });
+ * await bootstrap.initialize();
+ * ```
+ */
 export class Bootstrap<
   Container extends IOCContainerInterface = IOCContainerInterface
-> extends SyncExecutor {
+> extends LifecycleSyncExecutor<BootstrapContext> {
   constructor(
     /**
      * @since 2.0.0
@@ -83,7 +98,7 @@ export class Bootstrap<
     return undefined;
   }
 
-  public getContext(): BootstrapContextValue {
+  public getContext(): BootstrapPluginOptions {
     return {
       root: this.options.root,
       ioc: this.getIOCContainer()!,
@@ -110,13 +125,13 @@ export class Bootstrap<
     return this;
   }
 
-  public start(): Promise<BootstrapContextValue> {
+  public start(): Promise<BootstrapPluginOptions> {
     const context = this.getContext();
     return this.exec(context, () => Promise.resolve(context));
   }
 
   public startNoError():
-    | Promise<BootstrapContextValue | ExecutorError>
+    | Promise<BootstrapPluginOptions | ExecutorError>
     | ExecutorError {
     const context = this.getContext();
     return this.execNoError(context, () => Promise.resolve(context));

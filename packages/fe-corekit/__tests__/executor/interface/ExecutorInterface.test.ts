@@ -1,15 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
 import type {
   ExecutorAsyncTask,
   ExecutorSyncTask,
-  ExecutorContextInterface,
   ExecutorPluginInterface,
   ExecutorInterface
 } from '../../../src/executor/interface/ExecutorInterface';
-import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
-import { LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
-import type { HookRuntimes } from '../../../src/executor/interface/ExecutorContext';
-
+import type { LifecyclePluginInterface } from '../../../src/executor/interface/LifecyclePluginInterface';
+import type { ExecutorContextInterface } from '../../../src/executor/interface/ExecutorContextInterface';
+import type { HookRuntimes } from '../../../src/executor/interface/ExecutorHookRuntimesInterface';
 class MockExecutorError extends ExecutorError {
   constructor(message: string) {
     super(message);

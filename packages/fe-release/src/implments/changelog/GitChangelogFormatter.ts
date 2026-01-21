@@ -47,9 +47,9 @@
  */
 import { Shell, type ShellInterface } from '@qlover/scripts-context';
 import {
-  ChangelogFormatter,
-  CommitValue,
-  GitChangelogOptions
+  type ChangelogFormatter,
+  type CommitValue,
+  type GitChangelogOptions
 } from '../../interface/ChangeLog';
 import groupBy from 'lodash/groupBy';
 

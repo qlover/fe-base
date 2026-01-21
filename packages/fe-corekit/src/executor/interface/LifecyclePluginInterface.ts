@@ -1,7 +1,7 @@
-import { ExecutorContextInterface } from './ExecutorInterface';
-import { ExecutorPluginInterface } from './ExecutorInterface';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorTask } from './ExecutorInterface';
+import type { ExecutorPluginInterface } from './ExecutorInterface';
+import type { ExecutorError } from './ExecutorError';
+import type { ExecutorTask } from './ExecutorInterface';
+import type { ExecutorContextInterface } from './ExecutorContextInterface';
 
 export type LifecycleErrorResult = ExecutorError | Error | void;
 export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
@@ -99,7 +99,7 @@ export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
  * - Parameter Safety: Supports safe parameter updates via return values
  * - Unified API: Consistent interface across all lifecycle hooks
  *
- * @since 2.6.0
+ * @since 3.0.0
  * @template Ctx - Type of executor context interface
  *
  * @example Basic lifecycle plugin
@@ -138,7 +138,7 @@ export type LifecycleExecResult<R, Param> = R | ExecutorTask<R, Param> | void;
  * @category Plugin
  */
 export interface LifecyclePluginInterface<
-  Ctx extends ExecutorContextInterface<unknown, unknown>,
+  Ctx extends ExecutorContextInterface  <unknown, unknown>,
   Result = Ctx['returnValue'],
   Param = Ctx['parameters']
 > extends ExecutorPluginInterface<Ctx> {

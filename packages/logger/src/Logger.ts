@@ -1,5 +1,5 @@
-import { LoggerInterface } from './interface/LoggerInterface';
-import { HandlerInterface } from './interface/HandlerInterface';
+import { type LoggerInterface } from './interface/LoggerInterface';
+import { type HandlerInterface } from './interface/HandlerInterface';
 import { LogEvent } from './interface/LogEvent';
 import { LogContext } from './interface/LogContext';
 

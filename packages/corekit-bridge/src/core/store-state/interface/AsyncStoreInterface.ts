@@ -1,4 +1,7 @@
-import { StoreInterface, StoreStateInterface } from './StoreInterface';
+import {
+  type StoreInterface,
+  type StoreStateInterface
+} from './StoreInterface';
 
 /**
  * Interface representing the state of an asynchronous operation

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import merge from 'lodash/merge';
-import { GeneratorContext } from './type';
+import { type GeneratorContext } from './type';
 
 export class Compose {
   constructor() {}

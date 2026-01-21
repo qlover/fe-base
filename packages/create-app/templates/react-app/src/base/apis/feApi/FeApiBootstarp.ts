@@ -1,18 +1,25 @@
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { I } from '@config/IOCIdentifier';
 import {
   type BootstrapContext,
   type BootstrapExecutorPlugin,
   type ApiMockPluginConfig,
   ApiPickDataPlugin
 } from '@qlover/corekit-bridge';
-import { FetchURLPlugin } from '@qlover/fe-corekit';
-import { RequestLogger } from '@/base/cases/RequestLogger';
-import { FeApi } from './FeApi';
-import type {
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface
+import {
+  RequestPlugin,
+  ResponsePlugin,
+  type RequestAdapterConfig,
+  type RequestAdapterResponse
 } from '@qlover/fe-corekit';
+import type { AppConfig } from '@/base/cases/AppConfig';
+import { RequestLogger } from '@/base/cases/RequestLogger';
+import type { UserService } from '@/base/services/UserService';
+import { FeApi } from './FeApi';
+
+export interface RequestTransactionInterface<Request, Response> {
+  request: Request;
+  response: Response;
+}
 
 /**
  * FeApiConfig
@@ -22,8 +29,8 @@ import type {
  *
  * extends:
  */
-export interface FeApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>, ApiMockPluginConfig {}
+export type FeApiConfig<Request = unknown> = RequestAdapterConfig<Request> &
+  ApiMockPluginConfig & {};
 
 /**
  * FeApiResponse
@@ -63,11 +70,17 @@ export class FeApiBootstarp implements BootstrapExecutorPlugin {
    * @override
    */
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
+    const appConfig = ioc.get<AppConfig>(I.AppConfig);
     ioc
       .get<FeApi>(FeApi)
-      .usePlugin(new FetchURLPlugin())
-      .usePlugin(ioc.get(IOCIdentifier.FeApiCommonPlugin))
-      .usePlugin(ioc.get(RequestLogger))
-      .usePlugin(ioc.get(ApiPickDataPlugin));
+      .use(
+        new RequestPlugin({
+          tokenPrefix: appConfig.openAiTokenPrefix,
+          token: () => ioc.get<UserService>(I.UserServiceInterface).getToken()
+        })
+      )
+      .use(ioc.get(ResponsePlugin))
+      .use(ioc.get(RequestLogger))
+      .use(ioc.get(ApiPickDataPlugin));
   }
 }

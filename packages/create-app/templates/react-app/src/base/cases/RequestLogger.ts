@@ -1,11 +1,8 @@
 import { IOCIdentifier } from '@config/IOCIdentifier';
+import { type ApiCatchPluginResponse } from '@qlover/corekit-bridge';
 import {
-  type ApiCatchPluginConfig,
-  type ApiCatchPluginResponse
-} from '@qlover/corekit-bridge';
-import {
-  type ExecutorPlugin,
-  type ExecutorContext,
+  type LifecyclePluginInterface,
+  type ExecutorContextInterface,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
@@ -13,7 +10,9 @@ import { injectable, inject } from 'inversify';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
-export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> {
+export class RequestLogger implements LifecyclePluginInterface<
+  ExecutorContextInterface<RequestAdapterFetchConfig, unknown>
+> {
   public readonly pluginName = 'RequestLogger';
 
   constructor(@inject(IOCIdentifier.Logger) public logger: LoggerInterface) {}
@@ -22,7 +21,7 @@ export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> 
    * @override
    */
   public onBefore(
-    context: ExecutorContext<RequestAdapterFetchConfig<unknown>>
+    context: ExecutorContextInterface<RequestAdapterFetchConfig, unknown>
   ): void {
     this.logger.log(
       `%c[Request before]%c [${new Date().toLocaleString()}] ${context.parameters.method} ${context.parameters.url}`,
@@ -38,8 +37,9 @@ export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> 
   public async onSuccess({
     parameters,
     returnValue
-  }: ExecutorContext<
-    RequestAdapterFetchConfig & ApiCatchPluginConfig
+  }: ExecutorContextInterface<
+    RequestAdapterFetchConfig,
+    unknown
   >): Promise<void> {
     const _returnValue = returnValue as RequestAdapterResponse &
       ApiCatchPluginResponse;
@@ -65,7 +65,7 @@ export class RequestLogger implements ExecutorPlugin<RequestAdapterFetchConfig> 
   public onError({
     parameters,
     error
-  }: ExecutorContext<RequestAdapterFetchConfig>): void {
+  }: ExecutorContextInterface<RequestAdapterFetchConfig, unknown>): void {
     this.loggerError(parameters, error);
   }
 

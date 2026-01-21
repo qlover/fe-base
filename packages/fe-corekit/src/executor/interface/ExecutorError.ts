@@ -29,16 +29,18 @@ export const EXECUTOR_ERROR_NAME = 'ExecutorError' as const;
  * Core features:
  * - **Error identification**: Uses unique `id` to categorize different error types without relying on error messages
  * - **Error wrapping**: Preserves original error information through `cause` property, supporting error chaining
- * - **Stack trace preservation**: Maintains original error stack when wrapping errors for better debugging
+ * - **Stack trace independence**: Each error maintains its own stack trace, original error stack accessible via `cause.stack`
  * - **Type safety**: Provides type-safe error handling with TypeScript, enabling compile-time error checking
  * - **Subclass support**: Designed to be extended by specific error types (RequestError, AbortError, etc.)
  *
  * Design considerations:
  * - The `id` field enables error categorization without relying on error messages, which may be localized or changed
  * - The `cause` field supports error chaining (similar to Java's exception chaining), preserving the original error context
- * - When `cause` is an Error, its message and stack are inherited for better debugging experience, and the Error object is stored in `cause`
+ * - When `cause` is an Error, its message is inherited but stack trace remains independent, and the Error object is stored in `cause`
  * - When `cause` is a string, it's used directly as the error message, but not stored in `cause` property (to avoid duplication)
  * - When `cause` is undefined or other types, the error message falls back to `id` value
+ * - Each ExecutorError has its own stack trace showing where it was created, not where the original error occurred
+ * - Original error's stack trace is preserved in `cause.stack` for complete error chain debugging
  * - Stack trace is automatically captured in V8 environments (Node.js, Chrome) for better debugging
  * - For subclasses, `name` is set to `constructor.name`, which may be affected by bundling/minification (see TODO comment in constructor)
  *
@@ -102,7 +104,7 @@ export class ExecutorError extends Error {
    * Creates a new ExecutorError instance
    *
    * The constructor intelligently handles different types of `cause` values:
-   * - If `cause` is an Error: Inherits its message and stack trace for seamless error wrapping
+   * - If `cause` is an Error: Inherits its message but maintains independent stack trace
    * - If `cause` is a string: Uses it as the error message directly
    * - If `cause` is undefined or other types: Uses the `id` as the error message
    *
@@ -111,8 +113,8 @@ export class ExecutorError extends Error {
    * - Sets the error name based on whether this is the base class or a subclass
    * - For base ExecutorError, uses the constant `EXECUTOR_ERROR_NAME`
    * - For subclasses, uses `this.constructor.name` (note: may be affected by bundling/minification)
-   * - When `cause` is an Error, inherits its stack trace directly
-   * - When `cause` is not an Error, uses the default Error stack trace (captured by V8 automatically)
+   * - Each ExecutorError gets its own stack trace (captured by V8 automatically)
+   * - Original error's stack trace is preserved in `cause.stack` for debugging the error chain
    * - The `cause` property is only set when `this.message !== cause` to avoid redundancy
    *
    * Message resolution logic:
@@ -138,7 +140,7 @@ export class ExecutorError extends Error {
    * @param cause - Optional underlying cause of the error
    *
    * Can be:
-   * - An Error object: Original error to wrap, preserving its message and stack. The Error object will be stored in `cause` property.
+   * - An Error object: Original error to wrap, inheriting its message. The Error object will be stored in `cause` property (access original stack via `cause.stack`).
    * - A string: Custom error message describing the failure. The string will be used as `message`, but won't be stored in `cause` (to avoid duplication).
    * - Undefined: Error message will be set to `id`. The `cause` property will be set to `undefined`.
    * - Any other value: Error message will be set to `id`. The value will be stored in `cause` property.
@@ -152,18 +154,19 @@ export class ExecutorError extends Error {
    * console.log(error.name); // 'ExecutorError'
    * ```
    *
-   * @example Wrap an existing error
-   * ```typescript
-   * try {
-   *   JSON.parse(invalidJson);
-   * } catch (err) {
-   *   const error = new ExecutorError('PARSE_ERROR', err);
-   *   console.log(error.id); // 'PARSE_ERROR'
-   *   console.log(error.message); // 'Unexpected token...' (from err.message)
-   *   console.log(error.cause); // Original SyntaxError (stored in cause)
-   *   console.log(error.stack); // Stack trace from original error
-   * }
-   * ```
+ * @example Wrap an existing error
+ * ```typescript
+ * try {
+ *   JSON.parse(invalidJson);
+ * } catch (err) {
+ *   const error = new ExecutorError('PARSE_ERROR', err);
+ *   console.log(error.id); // 'PARSE_ERROR'
+ *   console.log(error.message); // 'Unexpected token...' (from err.message)
+ *   console.log(error.cause); // Original SyntaxError (stored in cause)
+ *   console.log(error.stack); // Stack trace showing where ExecutorError was created
+ *   console.log(error.cause.stack); // Original SyntaxError stack trace
+ * }
+ * ```
    *
    * @example Create error with custom message
    * ```typescript
@@ -216,7 +219,7 @@ export class ExecutorError extends Error {
      * Supports error chaining by preserving the original error or message.
      * The behavior differs based on the type:
      *
-     * - **Error object**: Its message and stack trace are inherited, and the Error object is stored in `cause` property
+     * - **Error object**: Its message is inherited, and the Error object is stored in `cause` property (original stack accessible via `cause.stack`)
      * - **String**: Used as the error message directly, but not stored in `cause` property (to avoid duplication)
      * - **Undefined**: Error message falls back to `id`, and `cause` is set to `undefined`
      * - **Other types**: Error message falls back to `id`, and the value is stored in `cause` property
@@ -245,7 +248,7 @@ export class ExecutorError extends Error {
 
     if (cause instanceof Error) {
       this.message = cause.message;
-      this.stack = cause.stack;
+      // this.stack = cause.stack;
     } else if (typeof cause === 'string') {
       this.message = cause;
     }

@@ -1,4 +1,4 @@
-import { CommentDisplayPart, ReflectionKind } from 'typedoc';
+import { type CommentDisplayPart, ReflectionKind } from 'typedoc';
 
 /**
  * Utility type to extract value types from an object type

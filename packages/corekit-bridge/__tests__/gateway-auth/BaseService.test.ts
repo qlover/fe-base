@@ -14,11 +14,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BaseService } from '../../src/core/gateway-auth/impl/BaseService';
 import {
   AsyncStore,
-  AsyncStoreStateInterface
+  type AsyncStoreStateInterface
 } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
-import { SyncStorageInterface } from '@qlover/fe-corekit';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Test data type

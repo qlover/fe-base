@@ -1,4 +1,4 @@
-import { ExecutorError } from '../../../src';
+import { ExecutorError } from '../../../src/executor/interface/ExecutorError';
 
 describe('ExecutorError', () => {
   it('should create an error with a message from a string', () => {
@@ -14,7 +14,11 @@ describe('ExecutorError', () => {
     expect(error.message).toBe('Original error message');
     expect(error.id).toBe('ERROR_ID');
     expect(error.cause).toBe(originalError);
-    // expect(error.stack).toContain(originalError.stack);
+    // Stack trace should be independent, not copied from cause
+    expect(error.stack).toBeDefined();
+    expect(error.stack).not.toBe(originalError.stack);
+    // Original stack is accessible via cause
+    expect((error.cause as Error).stack).toBe(originalError.stack);
   });
 
   it('should create an error with the id as the message if no originalError is provided', () => {
@@ -105,23 +109,26 @@ describe('ExecutorError', () => {
     expect(chain).toEqual(['LEVEL_3', 'LEVEL_2', 'Level 1 error']);
   });
 
-  // it('should have a stack trace starting with ExecutorError', () => {
-  //   const executorError = new ExecutorError('EXECUTOR_ERROR');
+  it('should have its own stack trace', () => {
+    const executorError = new ExecutorError('EXECUTOR_ERROR');
+    expect(executorError.stack).toBeDefined();
+    expect(executorError.stack).toContain('ExecutorError');
+  });
 
-  //   expect(executorError.stack).toMatch(/^ExecutorError: EXECUTOR_ERROR/);
-  // });
+  it('should maintain independent stack traces for error chain', () => {
+    const originalError = new Error('Original error');
+    const executorError = new ExecutorError('EXECUTOR_ERROR', originalError);
 
-  // it('should maintain the original stack trace order', () => {
-  //   const originalError = new Error('Original error');
-  //   const executorError = new ExecutorError('EXECUTOR_ERROR', originalError);
-
-  //   const originalStackIndex = executorError.stack
-  //     ? executorError.stack.indexOf(originalError.stack!)
-  //     : -1;
-  //   const executorStackIndex = executorError.stack
-  //     ? executorError.stack.indexOf('ExecutorError: EXECUTOR_ERROR')
-  //     : -1;
-
-  //   expect(originalStackIndex).toBeLessThan(executorStackIndex);
-  // });
+    // ExecutorError should have its own stack
+    expect(executorError.stack).toBeDefined();
+    expect(executorError.stack).not.toBe(originalError.stack);
+    
+    // Original error stack should be accessible via cause
+    expect((executorError.cause as Error).stack).toBe(originalError.stack);
+    
+    // ExecutorError stack should not contain original error's stack
+    if (executorError.stack && originalError.stack) {
+      expect(executorError.stack).not.toContain(originalError.stack);
+    }
+  });
 });

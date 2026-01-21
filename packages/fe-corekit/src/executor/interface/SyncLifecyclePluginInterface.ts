@@ -1,8 +1,8 @@
-import { ExecutorContextInterface } from './ExecutorInterface';
-import { ExecutorPluginInterface } from './ExecutorInterface';
-import { ExecutorError } from './ExecutorError';
-import { ExecutorSyncTask } from './ExecutorInterface';
-import { LifecycleExecResult } from './LifecyclePluginInterface';
+import { type ExecutorContextInterface } from './ExecutorContextInterface';
+import { type ExecutorPluginInterface } from './ExecutorInterface';
+import { type ExecutorError } from './ExecutorError';
+import { type ExecutorSyncTask } from './ExecutorInterface';
+import { type LifecycleExecResult } from './LifecyclePluginInterface';
 
 /**
  * Synchronous lifecycle plugin interface for executor plugins
@@ -97,7 +97,7 @@ import { LifecycleExecResult } from './LifecyclePluginInterface';
  * };
  * ```
  *
- * @since 2.6.0
+ * @since 3.0.0
  * @see LifecyclePluginInterface - Async version that supports Promise
  * @see SyncLifecycleExecutor - Executor that uses this interface
  * @see ExecutorPluginInterface - Base plugin interface

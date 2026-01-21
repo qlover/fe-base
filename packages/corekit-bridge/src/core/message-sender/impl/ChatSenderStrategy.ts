@@ -1,7 +1,7 @@
 import { ChatMessageRole, type ChatMessage } from './ChatMessage';
 import { SenderStrategyPlugin } from './SenderStrategyPlugin';
 import type { ChatMessageStore } from './ChatMessageStore';
-import { MessageSenderOptions } from '../interface/MessageSenderPlugin';
+import { type MessageSenderOptions } from '../interface/MessageSenderPlugin';
 
 /**
  * Chat-specific sender strategy plugin

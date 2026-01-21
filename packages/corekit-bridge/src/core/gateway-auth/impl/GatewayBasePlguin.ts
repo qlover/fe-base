@@ -1,10 +1,10 @@
 import {
-  ExecutorContext,
+  type ExecutorContextInterface,
   ExecutorError,
-  ExecutorPlugin
+  type LifecyclePluginInterface
 } from '@qlover/fe-corekit';
-import { GatewayExecutorOptions } from './GatewayExecutor';
-import { FirstUppercaseType } from '../utils/firstUppercase';
+import { type GatewayExecutorOptions } from './GatewayExecutor';
+import { type FirstUppercaseType } from '../utils/firstUppercase';
 
 /**
  * Generate hook name type for a specific action
@@ -94,7 +94,7 @@ export type GatewayBasePluginType<
   Gateway
 > = Partial<{
   [K in ActionHookNames<Action>]: (
-    context: ExecutorContext<GatewayExecutorOptions<T, Gateway, unknown>>
+    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, unknown>>
   ) => Promise<void> | void;
 }>;
 
@@ -179,7 +179,7 @@ export type GatewayBasePluginType<
  * ```
  */
 export class GatewayBasePlguin<Params, T, Gateway>
-  implements ExecutorPlugin<GatewayExecutorOptions<T, Gateway, Params>>
+  implements LifecyclePluginInterface<ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>>
 {
   public readonly pluginName = 'GatewayBasePlguin';
 
@@ -201,7 +201,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onBefore(
-    context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const store = context.parameters.store;
 
@@ -232,7 +232,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onSuccess(
-    context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const { returnValue } = context;
     const { actionName, serviceName, logger, store } = context.parameters;
@@ -273,7 +273,7 @@ export class GatewayBasePlguin<Params, T, Gateway>
    * ```
    */
   public async onError(
-    context: ExecutorContext<GatewayExecutorOptions<T, Gateway, Params>>
+    context: ExecutorContextInterface<GatewayExecutorOptions<T, Gateway, Params>>
   ): Promise<void> {
     const error = context.error;
     const store = context.parameters.store;

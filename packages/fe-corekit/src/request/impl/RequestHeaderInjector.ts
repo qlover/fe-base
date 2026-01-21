@@ -1,4 +1,4 @@
-import { RequestAdapterConfig } from '../interface';
+import { type RequestAdapterConfig } from '../interface';
 import { hasObjectKeyWithValue, isAsString } from '../utils/isAsString';
 import { appendHeaders } from '../utils/appendHeaders';
 import {
@@ -7,10 +7,10 @@ import {
   JSON_RESPONSE_TYPE,
   DEFAULT_AUTH_KEY
 } from './consts';
-import { RequestPluginConfig } from './RequestPlugin';
+import { type RequestPluginConfig } from './RequestPlugin';
 import {
-  HeaderInjectorConfig,
-  HeaderInjectorInterface
+  type HeaderInjectorConfig,
+  type HeaderInjectorInterface
 } from '../interface/HeaderInjectorInterface';
 
 /**
@@ -19,6 +19,7 @@ import {
  * This class is responsible for injecting default headers into request configuration,
  * including Content-Type headers and authentication headers.
  *
+ * @since 3.0.0
  * @example
  * ```typescript
  * const injector = new RequestHeaderInjector({

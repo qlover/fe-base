@@ -1,4 +1,4 @@
-import { LoggerInterface } from '@qlover/logger';
+import { type LoggerInterface } from '@qlover/logger';
 import type {
   GatewayOptions,
   MessageGetwayInterface,
@@ -9,7 +9,7 @@ import type {
   MessagesStateInterface,
   MessagesStoreInterface
 } from './MessagesStoreInterface';
-import { MessageSenderPlugin } from './MessageSenderPlugin';
+import { type MessageSenderPlugin } from './MessageSenderPlugin';
 
 /**
  * Configuration options for message sender

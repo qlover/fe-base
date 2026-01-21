@@ -1,9 +1,9 @@
 import {
-  ExecutorContext,
-  ExecutorPlugin,
-  RequestAdapterConfig
+  type ExecutorContextInterface,
+  type LifecyclePluginInterface,
+  type RequestAdapterConfig
 } from '@qlover/fe-corekit';
-import { StreamProcessorInterface } from './StreamProcessorInterface';
+import { type StreamProcessorInterface } from './StreamProcessorInterface';
 import { StreamEvent } from './StreamEvent';
 import { LineStreamProcessor } from './LineStreamProcessor';
 import { SSEStreamProcessor } from './SSEStreamProcessor';
@@ -111,7 +111,14 @@ export interface ResponseStreamConfig {
  * });
  * ```
  */
-export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
+export class ResponseStream
+  implements
+    LifecyclePluginInterface<
+      ExecutorContextInterface<RequestAdapterConfig>,
+      unknown,
+      RequestAdapterConfig
+    >
+{
   public readonly pluginName = 'ResponseStream';
 
   constructor(private config: ResponseStreamConfig = {}) {}
@@ -126,7 +133,7 @@ export class ResponseStream implements ExecutorPlugin<RequestAdapterConfig> {
    * @param context - Executor context containing response data
    */
   public async onSuccess(
-    context: ExecutorContext<RequestAdapterConfig>
+    context: ExecutorContextInterface<RequestAdapterConfig>
   ): Promise<void> {
     const response = context.returnValue;
     if (!(response instanceof Response)) {

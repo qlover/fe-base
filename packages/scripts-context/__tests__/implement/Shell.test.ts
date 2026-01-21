@@ -1,6 +1,6 @@
-import { Mock } from 'vitest';
-import { Shell, ShellConfig } from '../../src/implement/Shell';
-import { ShellExecOptions } from '../../src/interface/ShellInterface';
+import { type Mock } from 'vitest';
+import { Shell, type ShellConfig } from '../../src/implement/Shell';
+import { type ShellExecOptions } from '../../src/interface/ShellInterface';
 
 describe('Shell', () => {
   let logger: any;

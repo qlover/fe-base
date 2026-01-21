@@ -1,4 +1,4 @@
-import { IOCContainerInterface } from './IOCContainerInterface';
+import { type IOCContainerInterface } from './IOCContainerInterface';
 import type {
   IOCFunctionInterface,
   ServiceIdentifier

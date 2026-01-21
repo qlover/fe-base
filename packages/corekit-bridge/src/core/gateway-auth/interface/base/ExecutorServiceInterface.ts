@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ExecutorPlugin } from '@qlover/fe-corekit';
+import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../../store-state';
 import {
-  BaseServiceInterface,
-  ServiceGatewayType
+  type BaseServiceInterface,
+  type ServiceGatewayType
 } from './BaseServiceInterface';
-import { LoggerInterface } from '@qlover/logger';
+import { type LoggerInterface } from '@qlover/logger';
 
 /**
  * Executor service options
@@ -88,6 +88,8 @@ export interface ExecutorServiceOptions<T, Gateway> {
   store?: AsyncStoreInterface<AsyncStoreStateInterface<T>>;
 }
 
+export type ExecutorServiceContext<T, Gateway> = ExecutorContextInterface<ExecutorServiceOptions<T, Gateway>>;
+
 /**
  * Executor service interface
  *
@@ -129,8 +131,8 @@ export interface ExecutorServiceOptions<T, Gateway> {
  * @example Basic service implementation
  * ```typescript
  * class MyService implements ExecutorServiceInterface<MyStore, MyGateway> {
- *   use<Plugin extends ExecutorPlugin<ExecutorServiceOptions<any, MyGateway>>>(
- *     plugin: Plugin
+ *   use<Plugin extends LifecyclePluginInterface<ExecutorContextInterface<GatewayExecutorOptions<any, MyGateway>>>>(
+ *     plugin: Plugin | Plugin[]
  *   ): void {
  *     // Register plugin
  *   }
@@ -228,9 +230,7 @@ export interface ExecutorServiceInterface<
    * });
    * ```
    */
-  use<Plugin extends ExecutorPlugin<ExecutorServiceOptions<any, Gateway>>>(
-    plugin: Plugin
-  ): void;
+  use<Plugin extends LifecyclePluginInterface<ExecutorContextInterface<any>>>(plugin: Plugin | Plugin[]): void;
 
   /**
    * Create executor options for a service action

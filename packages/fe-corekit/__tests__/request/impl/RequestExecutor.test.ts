@@ -1,10 +1,10 @@
 import {
   RequestAdapterFetch,
-  RequestAdapterFetchConfig
+  type RequestAdapterFetchConfig
 } from '../../../src/request/adapter/RequestAdapterFetch';
-import { RequestExecutor } from '../../../src/request/managers/RequestExecutor';
+import { RequestExecutor } from '../../../src/request/impl/RequestExecutor';
 import { LifecycleExecutor } from '../../../src/executor/impl/LifecycleExecutor';
-import { ExecutorContextImpl } from '../../../src/executor/impl/ExecutorContextImpl';
+import { type ExecutorContextImpl } from '../../../src/executor/impl/ExecutorContextImpl';
 
 describe('RequestExecutor', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -431,6 +431,136 @@ describe('RequestExecutor', () => {
       await expect(executor.get('/users')).rejects.toThrow(
         'Plugin error in onSuccess hook'
       );
+    });
+
+    it('should trigger onError when onSuccess throws error (simulating AppUserApi.login scenario)', async () => {
+      const adapter = new RequestAdapterFetch({
+        baseURL: 'https://api.example.com',
+        fetcher: fetchMock
+      });
+      const executor = new RequestExecutor(
+        adapter,
+        new LifecycleExecutor<ExecutorContextImpl<RequestAdapterFetchConfig>>()
+      );
+
+      const onErrorMock = vi.fn();
+      const onSuccessMock = vi.fn();
+
+      // First plugin: simulates AppApiPlugin behavior
+      // When response has success: false, throw error in onSuccess
+      executor.use({
+        pluginName: 'app-api-plugin',
+        onSuccess: async (ctx) => {
+          onSuccessMock();
+          
+          // Need to parse the response body first
+          const response = ctx.returnValue as any;
+          
+          // For fetch adapter, response.data is a Response object
+          // We need to parse it to get the JSON
+          let jsonData;
+          if (response?.data instanceof Response) {
+            const clonedResponse = response.data.clone();
+            jsonData = await clonedResponse.json();
+          } else {
+            jsonData = response;
+          }
+          
+          // Simulate checking for API error response
+          if (jsonData?.success === false) {
+            throw new Error(jsonData.message || 'API Error');
+          }
+        },
+        onError: async (ctx) => {
+          onErrorMock(ctx.error);
+        }
+      });
+
+      // Mock a failed API response (success: false)
+      const mockResponse = new Response(
+        JSON.stringify({ 
+          success: false, 
+          id: 'LOGIN_FAILED',
+          message: 'Invalid credentials' 
+        }),
+        { status: 200 }
+      );
+      fetchMock.mockResolvedValueOnce(mockResponse);
+
+      // Execute request and expect it to throw
+      await expect(executor.post('/user/login', {
+        username: 'test',
+        password: 'wrong'
+      })).rejects.toThrow('Invalid credentials');
+
+      // Verify that onSuccess was called
+      expect(onSuccessMock).toHaveBeenCalledTimes(1);
+      
+      // CRITICAL: Verify that onError was also triggered
+      expect(onErrorMock).toHaveBeenCalledTimes(1);
+      expect(onErrorMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Invalid credentials'
+        })
+      );
+    });
+
+    it('should trigger onError in second plugin when first plugin onSuccess throws', async () => {
+      const adapter = new RequestAdapterFetch({
+        baseURL: 'https://api.example.com',
+        fetcher: fetchMock
+      });
+      const executor = new RequestExecutor(
+        adapter,
+        new LifecycleExecutor<ExecutorContextImpl<RequestAdapterFetchConfig>>()
+      );
+
+      const firstPluginOnError = vi.fn();
+      const secondPluginOnError = vi.fn();
+
+      // First plugin throws error in onSuccess
+      executor.use({
+        pluginName: 'first-plugin',
+        onSuccess: async (ctx) => {
+          const response = ctx.returnValue as any;
+          
+          // Parse response if it's a Response object
+          let jsonData;
+          if (response?.data instanceof Response) {
+            const clonedResponse = response.data.clone();
+            jsonData = await clonedResponse.json();
+          } else {
+            jsonData = response;
+          }
+          
+          if (jsonData?.success === false) {
+            throw new Error('First plugin error');
+          }
+        },
+        onError: async (ctx) => {
+          firstPluginOnError(ctx.error);
+        }
+      });
+
+      // Second plugin should also receive the error
+      executor.use({
+        pluginName: 'second-plugin',
+        onError: async (ctx) => {
+          secondPluginOnError(ctx.error);
+        }
+      });
+
+      const mockResponse = new Response(
+        JSON.stringify({ success: false }),
+        { status: 200 }
+      );
+      fetchMock.mockResolvedValueOnce(mockResponse);
+
+      await expect(executor.get('/test')).rejects.toThrow('First plugin error');
+
+      // Both plugins' onError should be triggered
+      expect(firstPluginOnError).toHaveBeenCalledTimes(1);
+      expect(secondPluginOnError).toHaveBeenCalledTimes(1);
     });
   });
 

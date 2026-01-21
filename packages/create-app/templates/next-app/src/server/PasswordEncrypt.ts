@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import type { Encryptor } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 
-export class PasswordEncrypt implements Encryptor<string, string> {
+export class PasswordEncrypt implements EncryptorInterface<string, string> {
   /**
    * @override
    */

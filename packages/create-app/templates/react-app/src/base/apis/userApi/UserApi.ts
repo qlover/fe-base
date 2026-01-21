@@ -1,11 +1,15 @@
 import { RES_NO_TOKEN } from '@config/Identifier';
 import {
-  FetchAbortPlugin,
-  RequestAdapterFetch,
-  RequestTransaction
+  Aborter,
+  AborterConfig,
+  type AborterInterface,
+  ExecutorContextInterface,
+  ExecutorError,
+  LifecycleExecutor,
+  type RequestAdapterInterface,
+  RequestExecutor
 } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
-import { AppError } from '@/base/cases/AppError';
 import { UserApiAdapter } from './UserApiAdapter';
 import { UserApiConfig } from './UserApiBootstarp';
 import {
@@ -31,16 +35,22 @@ import type {
  */
 @injectable()
 export class UserApi
-  extends RequestTransaction<UserApiConfig>
+  extends RequestExecutor<
+    UserApiConfig,
+    ExecutorContextInterface<UserApiConfig>
+  >
   implements UserServiceGateway<UserInfo, UserCredential>
 {
   protected store: UserAuthStoreInterface<UserInfo> | null = null;
 
   constructor(
-    @inject(FetchAbortPlugin) protected abortPlugin: FetchAbortPlugin,
-    @inject(UserApiAdapter) adapter: RequestAdapterFetch
+    @inject(Aborter) protected abortPlugin: AborterInterface<AborterConfig>,
+    @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>
   ) {
-    super(adapter);
+    super(
+      adapter,
+      new LifecycleExecutor<ExecutorContextInterface<UserApiConfig, unknown>>()
+    );
   }
 
   public getStore(): UserAuthStoreInterface<UserInfo> | null {
@@ -59,7 +69,7 @@ export class UserApi
   }
 
   public async getRandomUser(): Promise<GetIpInfoTransaction['response']> {
-    return this.request<GetIpInfoTransaction>({
+    return this.request({
       url: 'https://randomuser.me/api/',
       method: 'GET',
       disabledMock: true
@@ -69,7 +79,7 @@ export class UserApi
   public async testApiCatchResult(): Promise<
     UserApiTestApiCatchResultTransaction['response']
   > {
-    return this.request<UserApiTestApiCatchResultTransaction>({
+    return this.request({
       url: 'https://randomuser.me/api/?_name=ApiCatchResult',
       method: 'GET',
       disabledMock: true,
@@ -85,17 +95,17 @@ export class UserApi
   public async login(
     params: UserApiLoginTransaction['data']
   ): Promise<UserCredential> {
-    const response = await this.post<UserApiLoginTransaction>(
-      '/api/login',
-      params
-    );
+    const response = await this.post<
+      UserApiLoginTransaction['response'],
+      UserApiLoginTransaction['data']
+    >('/api/login', params);
 
     if (response.apiCatchResult) {
       throw response.apiCatchResult;
     }
 
     if (!response.data.token) {
-      throw new AppError(RES_NO_TOKEN);
+      throw new ExecutorError(RES_NO_TOKEN);
     }
 
     return response.data;
@@ -134,8 +144,10 @@ export class UserApi
    * @returns
    */
   public async getUserInfo(_credential?: UserCredential): Promise<UserInfo> {
-    const response =
-      await this.get<UserApiGetUserInfoTransaction>('/api/userinfo');
+    const response = await this.get<
+      UserApiGetUserInfoTransaction['response'],
+      UserApiGetUserInfoTransaction['data']
+    >('/api/userinfo');
 
     if (response.apiCatchResult) {
       throw response.apiCatchResult;

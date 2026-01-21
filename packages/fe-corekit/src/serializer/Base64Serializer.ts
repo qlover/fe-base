@@ -1,4 +1,4 @@
-import { SerializerIneterface } from './SerializerIneterface';
+import { type SerializerIneterface } from './SerializerIneterface';
 
 /**
  * Base64 serialization implementation

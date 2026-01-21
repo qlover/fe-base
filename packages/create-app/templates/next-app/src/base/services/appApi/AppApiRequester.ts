@@ -1,19 +1,24 @@
-import {
-  FetchAbortPlugin,
-  RequestAdapterFetch,
-  RequestTransaction
-} from '@qlover/fe-corekit';
-import { inject, injectable } from 'inversify';
+import { LifecycleExecutor, RequestAdapterFetch, RequestExecutor } from '@qlover/fe-corekit';
+import { injectable } from 'inversify';
 import type { RequestEncryptPluginProps } from '@/base/cases/RequestEncryptPlugin';
 import type { AppApiResult } from '@/base/port/AppApiInterface';
 import type {
+  ExecutorContextInterface,
   RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestTransactionInterface
+  RequestAdapterResponse
 } from '@qlover/fe-corekit';
 
+export interface RequestTransactionInterface<Request, Response> {
+  request: Request;
+  response: Response;
+}
+
 export interface AppApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>, RequestEncryptPluginProps<Request> {}
+  extends RequestAdapterConfig<Request>,
+    RequestEncryptPluginProps<Request> {}
+
+export interface AppApiRequesterContext
+  extends ExecutorContextInterface<AppApiConfig> {}
 
 /**
  * UserApiResponse
@@ -32,26 +37,26 @@ export type AppApiResponse<
 /**
  * UserApi common transaction
  */
-export interface AppApiTransaction<
-  Request = unknown,
-  Response = unknown
-> extends RequestTransactionInterface<
-  AppApiConfig<Request>,
-  AppApiResponse<Request, Response>
-> {
+export interface AppApiTransaction<Request = unknown, Response = unknown>
+  extends RequestTransactionInterface<
+    AppApiConfig<Request>,
+    AppApiResponse<Request, Response>
+  > {
   data: AppApiConfig<Request>['data'];
 }
 
 @injectable()
-export class AppApiRequester extends RequestTransaction<AppApiConfig> {
-  constructor(
-    @inject(FetchAbortPlugin) protected abortPlugin: FetchAbortPlugin
-  ) {
+export class AppApiRequester extends RequestExecutor<
+  AppApiConfig,
+  AppApiRequesterContext
+> {
+  constructor() {
     super(
       new RequestAdapterFetch({
         baseURL: '/api',
         responseType: 'json'
-      })
+      }),
+      new LifecycleExecutor()
     );
   }
 }

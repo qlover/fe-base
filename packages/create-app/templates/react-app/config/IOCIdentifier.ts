@@ -81,7 +81,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.RouteServiceInterface]: RouteService;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.I18nKeyErrorPlugin]: I18nKeyErrorPlugin;
-  [IOCIdentifier.FeApiCommonPlugin]: CorekitBridge.RequestCommonPlugin;
+  [IOCIdentifier.FeApiCommonPlugin]: FeCorekit.RequestPlugin;
   [IOCIdentifier.ApiMockPlugin]: CorekitBridge.ApiMockPlugin;
   [IOCIdentifier.ApiCatchPlugin]: CorekitBridge.ApiCatchPlugin;
   [IOCIdentifier.ThemeService]: CorekitBridge.ThemeService;

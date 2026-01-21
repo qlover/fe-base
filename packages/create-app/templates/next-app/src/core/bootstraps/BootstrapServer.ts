@@ -1,28 +1,37 @@
 import 'reflect-metadata';
 import {
   type ServiceIdentifier,
-  type BootstrapContextValue,
-  type BootstrapExecutorPlugin,
   type IOCContainerInterface,
-  type IOCFunctionInterface
+  type IOCFunctionInterface,
+  BootstrapPluginOptions
 } from '@qlover/corekit-bridge';
 import {
-  AsyncExecutor,
-  type ExecutorError,
-  type PromiseTask,
-  type ExecutorPlugin
+  ExecutorAsyncTask,
+  ExecutorContextInterface,
+  LifecycleExecutor,
+  LifecyclePluginInterface,
+  type ExecutorError
 } from '@qlover/fe-corekit';
 import type { ServerInterface } from '@/server/port/ServerInterface';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOC } from '../serverIoc/ServerIOC';
 import type { LoggerInterface } from '@qlover/logger';
 
-export interface BootstrapServerContextValue extends BootstrapContextValue {
+export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
 }
 
+export interface BootstrapServerPlugin
+  extends LifecyclePluginInterface<BootstrapServerContext> {}
+
+export interface BootstrapServerContext
+  extends ExecutorContextInterface<BootstrapServerContextOptions> {}
+
 export class BootstrapServer implements ServerInterface {
-  protected executor: AsyncExecutor;
+  protected executor: LifecycleExecutor<
+    BootstrapServerContext,
+    BootstrapServerPlugin
+  >;
   protected root: Record<string, unknown> = {};
   protected IOC: IOCFunctionInterface<
     IOCIdentifierMapServer,
@@ -35,7 +44,7 @@ export class BootstrapServer implements ServerInterface {
     const ioc = serverIOC.create();
     const logger = ioc(I.Logger);
 
-    this.executor = new AsyncExecutor();
+    this.executor = new LifecycleExecutor();
     this.IOC = ioc;
     this.logger = logger;
   }
@@ -76,20 +85,25 @@ export class BootstrapServer implements ServerInterface {
    */
   public use(
     plugin:
-      | BootstrapExecutorPlugin
-      | BootstrapExecutorPlugin[]
+      | BootstrapServerPlugin
+      | BootstrapServerPlugin[]
       | ((
           ioc: IOCFunctionInterface<
             IOCIdentifierMapServer,
             IOCContainerInterface
           >
-        ) => BootstrapExecutorPlugin)
+        ) => BootstrapServerPlugin)
   ): this {
     if (typeof plugin === 'function') {
       plugin = plugin(this.IOC);
     }
 
-    this.executor.use(plugin as ExecutorPlugin<unknown>);
+    if (Array.isArray(plugin)) {
+      plugin.forEach((p) => this.executor.use(p));
+      return this;
+    }
+
+    this.executor.use(plugin);
     return this;
   }
 
@@ -97,15 +111,18 @@ export class BootstrapServer implements ServerInterface {
    * @override
    */
   public execNoError<Result>(
-    task?: PromiseTask<Result, BootstrapServerContextValue>
+    task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
   ): Promise<Result | ExecutorError> {
-    const context = {
+    const options = {
       logger: this.logger,
       root: this.root,
       ioc: this.IOC.implemention!,
       IOC: this.IOC
     };
 
-    return this.executor.execNoError(context, task);
+    return this.executor.execNoError(
+      options,
+      task ?? (() => Promise.resolve(undefined as Result))
+    );
   }
 }

@@ -1,9 +1,9 @@
 import {
   AsyncStore,
-  AsyncStoreOptions,
-  AsyncStoreStateInterface
+  type AsyncStoreOptions,
+  type AsyncStoreStateInterface
 } from './AsyncStore';
-import { AsyncStoreInterface } from '../interface/AsyncStoreInterface';
+import { type AsyncStoreInterface } from '../interface/AsyncStoreInterface';
 
 /**
  * Type for store parameter - can be an AsyncStoreInterface instance or configuration options

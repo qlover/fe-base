@@ -97,6 +97,14 @@ export default tseslint.config([
           argsIgnorePattern: '^_'
         }
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: true,
+          fixStyle: 'separate-type-imports'
+        }
+      ],
       '@typescript-eslint/ban-ts-comment': 'off',
       // Type-checked rules
       '@typescript-eslint/require-await': 'off',

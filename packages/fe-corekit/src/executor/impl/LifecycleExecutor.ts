@@ -1,13 +1,13 @@
 import { ExecutorError } from '../interface';
 import type {
   ExecutorAsyncTask,
-  ExecutorContextInterface,
   ExecutorPluginNameType,
   ExecutorTask,
   ExecutorSyncTask
 } from '../interface/ExecutorInterface';
+import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import type { LifecyclePluginInterface } from '../interface/LifecyclePluginInterface';
-import { ExecutorContextImpl } from './ExecutorContextImpl';
+import { type ExecutorContextImpl } from './ExecutorContextImpl';
 import { BasePluginExecutor } from './BasePluginExecutor';
 import { EXECUTOR_ASYNC_ERROR } from '../utils/constants';
 import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
@@ -58,6 +58,7 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * 8. Execute onFinally hooks for cleanup
  * 9. Return result as Promise
  *
+ * @since 3.0.0
  * @template Ctx - Type of executor context interface (defaults to ExecutorContextImpl<unknown, unknown>)
  * @template Plugin - Type of plugin interface (defaults to LifecyclePluginInterface<Ctx>)
  *
@@ -83,7 +84,6 @@ import { runPluginsHookAsync, runPluginsHooksAsync } from '../utils/pluginHook';
  * });
  * ```
  *
- * @since 2.6.0
  * @see LifecycleSyncExecutor - Synchronous version of this executor
  * @see LifecyclePluginInterface - Default plugin interface
  */
@@ -143,16 +143,18 @@ export class LifecycleExecutor<
     task?: ExecutorTask<R, P>
   ): Promise<R | ExecutorError> {
     try {
-      return task !== undefined
-        ? (
-            this.exec as <R, P>(
-              data: P,
-              task: ExecutorTask<R, P>
-            ) => R | Promise<R>
-          )(dataOrTask as P, task)
-        : (this.exec as <R, P>(task: ExecutorTask<R, P>) => R | Promise<R>)(
-            dataOrTask as ExecutorTask<R, P>
-          );
+      const result =
+        task !== undefined
+          ? await (
+              this.exec as <R, P>(
+                data: P,
+                task: ExecutorTask<R, P>
+              ) => Promise<R>
+            )(dataOrTask as P, task)
+          : await (this.exec as <R, P>(task: ExecutorTask<R, P>) => Promise<R>)(
+              dataOrTask as ExecutorTask<R, P>
+            );
+      return result;
     } catch (error) {
       if (error instanceof ExecutorError) {
         return error;
@@ -266,7 +268,7 @@ export class LifecycleExecutor<
    *
    * @see runPluginsHookAsync - The utility function that performs the actual execution
    */
-  protected async runHook<Result, Params>(
+  protected runHook<Result, Params>(
     plugins: Plugin[],
     hookName: ExecutorPluginNameType,
     context: ExecutorContextInterface<Params, Result>,
@@ -338,7 +340,7 @@ export class LifecycleExecutor<
    * @see runPluginsHooksAsync - The utility function that performs the actual execution
    * @see runHook - For executing a single hook
    */
-  protected async runHooks<Result, Params>(
+  protected runHooks<Result, Params>(
     plugins: Plugin[],
     hookNames: ExecutorPluginNameType | ExecutorPluginNameType[],
     context: ExecutorContextInterface<Params, Result>,

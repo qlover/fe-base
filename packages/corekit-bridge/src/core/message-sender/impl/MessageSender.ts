@@ -1,12 +1,12 @@
 import {
-  AborterConfig,
-  AborterId,
-  AborterInterface,
-  ExecutorContextInterface,
-  LifecyclePluginInterface,
+  type AborterConfig,
+  type AborterId,
+  type AborterInterface,
+  type ExecutorContextInterface,
+  type LifecyclePluginInterface,
   raceWithAbort
 } from '@qlover/fe-corekit';
-import { MessageSenderExecutor } from './MessageSenderExecutor';
+import { type MessageSenderExecutor } from './MessageSenderExecutor';
 import {
   MessageStatus,
   type MessageStoreMsg,
@@ -23,12 +23,12 @@ import type {
 } from '../interface/MessageSenderInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import {
-  MessageSenderContext,
-  MessageSenderOptions,
-  MessageSenderPlugin
+  type MessageSenderContext,
+  type MessageSenderOptions,
+  type MessageSenderPlugin
 } from '../interface/MessageSenderPlugin';
 import { SenderGateway } from './SenderGateway';
-import { SenderGatewayInterface } from '../interface/SenderGatewayInterface';
+import { type SenderGatewayInterface } from '../interface/SenderGatewayInterface';
 
 /**
  * Default sender name constant

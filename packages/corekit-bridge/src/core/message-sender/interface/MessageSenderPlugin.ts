@@ -1,14 +1,14 @@
 import {
-  ExecutorContextInterface,
-  HookRuntimes,
-  LifecyclePluginInterface
+  type ExecutorContextInterface,
+  type HookRuntimes,
+  type LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import {
-  MessageInterface,
-  MessagesStateInterface,
-  MessagesStoreInterface
+  type MessageInterface,
+  type MessagesStateInterface,
+  type MessagesStoreInterface
 } from './MessagesStoreInterface';
-import { MessageSenderBaseConfig } from './MessageSenderInterface';
+import { type MessageSenderBaseConfig } from './MessageSenderInterface';
 
 /**
  * Extended HookRuntimes for MessageSender with stream tracking support

@@ -1,4 +1,5 @@
-import { RequestErrorID, RequestAdapterFetch } from '../../../src/request';
+import { RequestAdapterFetch } from '../../../src/request';
+import { ENV_FETCH_NOT_SUPPORT_ID } from '../../../src/request/impl/consts';
 
 describe('create a base requestAdapterFetch', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -62,7 +63,7 @@ describe('create a base requestAdapterFetch', () => {
       });
     } catch (error) {
       expect(error).toMatchObject({
-        id: RequestErrorID.ENV_FETCH_NOT_SUPPORT
+        id: ENV_FETCH_NOT_SUPPORT_ID
       });
     }
   });

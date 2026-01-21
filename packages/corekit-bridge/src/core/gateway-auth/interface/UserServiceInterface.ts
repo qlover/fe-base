@@ -1,11 +1,11 @@
-import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
-import { LoginInterface } from './LoginInterface';
-import { RegisterInterface } from './RegisterInterface';
-import { UserInfoInterface } from './UserInfoInterface';
-import { UserStoreInterface } from './UserStoreInterface';
-import { GatewayBasePluginType } from '../impl/GatewayBasePlguin';
-import { GatewayExecutorOptions } from '../impl/GatewayExecutor';
-import { ServiceActionType } from '../impl/ServiceAction';
+import type { LoginInterface } from './LoginInterface';
+import type { RegisterInterface } from './RegisterInterface';
+import type { UserInfoInterface } from './UserInfoInterface';
+import type { UserStoreInterface } from './UserStoreInterface';
+import type { GatewayExecutorOptions } from '../impl/GatewayExecutor';
+import type { ServiceActionType } from '../impl/ServiceAction';
+import type { ExecutorContextInterface, LifecyclePluginInterface } from '@qlover/fe-corekit';
+import type { FirstUppercaseType } from '../utils/firstUppercase';
 
 /**
  * User service gateway interface
@@ -108,6 +108,40 @@ export interface UserServiceExecutorOptions<User, Credential>
 }
 
 /**
+ * Generate hook name type for a specific action
+ * e.g., 'login' -> 'onLoginBefore' | 'onLoginSuccess'
+ */
+type ActionHookName<Action extends string> =
+  | `on${FirstUppercaseType<Action>}Before`
+  | `on${FirstUppercaseType<Action>}Success`;
+
+/**
+ * Generate hook name types for multiple actions
+ * e.g., ['login', 'logout'] -> 'onLoginBefore' | 'onLoginSuccess' | 'onLogoutBefore' | 'onLogoutSuccess' | ...
+ */
+type ActionHookNames<Actions extends readonly string[]> = {
+  [K in keyof Actions]: Actions[K] extends string
+    ? ActionHookName<Actions[K]>
+    : never;
+}[number];
+
+/**
+ * User service base plugin type
+ *
+ * Similar to GatewayBasePluginType but uses UserServiceExecutorOptions for proper type inference.
+ * This ensures that hooks receive the correct context type with UserStoreInterface instead of AsyncStoreInterface.
+ */
+type UserServiceBasePluginType<
+  Action extends readonly string[],
+  User,
+  Credential
+> = Partial<{
+  [K in ActionHookNames<Action>]: (
+    context: ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>
+  ) => Promise<void> | void;
+}>;
+
+/**
  * User service plugin type
  *
  * - Significance: Type-safe plugin interface for user service with action-specific hooks
@@ -132,7 +166,7 @@ export interface UserServiceExecutorOptions<User, Credential>
  *
  * Design decisions:
  * - Extends `ExecutorPlugin`: Provides standard executor hooks
- * - Intersects with `GatewayBasePluginType`: Adds action-specific hooks
+ * - Intersects with `UserServiceBasePluginType`: Adds action-specific hooks with correct context type
  * - Default actions: Uses all `ServiceActionType` actions if not specified
  * - Generic types: Supports different credential and user types
  * - Dynamic generation: Hook types are computed from Actions array for flexibility
@@ -168,8 +202,8 @@ export type UserServicePluginType<
   User,
   Credential,
   Actions extends readonly string[] = readonly ServiceActionType[]
-> = ExecutorPlugin<UserServiceExecutorOptions<User, Credential>> &
-  GatewayBasePluginType<Actions, User, UserServiceGateway<User, Credential>>;
+> = LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> &
+  UserServiceBasePluginType<Actions, User, Credential>;
 
 /**
  * User plugin context type
@@ -200,7 +234,7 @@ export type UserServicePluginType<
  * };
  * ```
  */
-export type UserPluginContext<User, Credential> = ExecutorContext<
+export type UserPluginContext<User, Credential> = ExecutorContextInterface<
   UserServiceExecutorOptions<User, Credential>
 >;
 
@@ -283,7 +317,7 @@ export type UserPluginContext<User, Credential> = ExecutorContext<
  * ```
  */
 export interface UserServicePluginInterface<User, Credential>
-  extends ExecutorPlugin<UserServiceExecutorOptions<User, Credential>> {
+  extends LifecyclePluginInterface<ExecutorContextInterface<UserServiceExecutorOptions<User, Credential>>> {
   /**
    * Hook called before login action
    *

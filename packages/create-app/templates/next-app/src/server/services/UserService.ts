@@ -16,7 +16,7 @@ import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
-import type { Encryptor } from '@qlover/fe-corekit';
+import type { EncryptorInterface } from '@qlover/fe-corekit';
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -26,7 +26,7 @@ export class UserService implements UserServiceInterface {
     @inject(ServerAuth)
     protected userAuth: ServerAuthInterface,
     @inject(PasswordEncrypt)
-    protected encryptor: Encryptor<string, string>,
+    protected encryptor: EncryptorInterface<string, string>,
     @inject(UserCredentialToken)
     protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>
   ) {}

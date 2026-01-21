@@ -1,6 +1,6 @@
-import { KeyStorageInterface } from '@qlover/fe-corekit';
-import { LoginResponseData } from './UserAuthApiInterface';
-import { PickUser, UserAuthState } from '../impl/UserAuthState';
+import { type KeyStorageInterface } from '@qlover/fe-corekit';
+import { type LoginResponseData } from './UserAuthApiInterface';
+import { type PickUser, type UserAuthState } from '../impl/UserAuthState';
 
 /**
  * Login status enumeration

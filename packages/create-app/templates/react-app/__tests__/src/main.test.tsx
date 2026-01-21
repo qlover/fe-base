@@ -1,9 +1,9 @@
 import { BootstrapClient } from '@/core/bootstraps/BootstrapClient';
 
-// Mock BootstrapApp
+// Mock BootstrapApp - must return a resolved promise to prevent hanging
 vi.mock('@/core/bootstraps/BootstrapClient', () => ({
   BootstrapClient: {
-    main: vi.fn()
+    main: vi.fn().mockResolvedValue({})
   }
 }));
 

@@ -652,7 +652,7 @@ describe('TypeSafetyTests', () => {
 
   it('should infer correct return types', () => {
     const result = getData();
-    
+
     // Verify return type
     expectTypeOf(result).toEqualTypeOf<{ id: number; name: string }>();
     expectTypeOf(result).not.toEqualTypeOf<{ id: string; name: string }>();
@@ -682,7 +682,7 @@ describe('Generic Type Tests', () => {
     }
 
     const storage = new Storage<User>();
-    
+
     // Verify generic type
     expectTypeOf(storage.store).parameter(0).toMatchTypeOf<User>();
     expectTypeOf(storage.store).returns.toMatchTypeOf<User>();
@@ -755,7 +755,7 @@ describe('Type Narrowing Tests', () => {
     }
 
     const value: unknown = 'test';
-    
+
     if (isString(value)) {
       // Within this scope, value should be narrowed to string type
       expectTypeOf(value).toEqualTypeOf<string>();
@@ -763,7 +763,7 @@ describe('Type Narrowing Tests', () => {
   });
 
   it('should validate discriminated unions', () => {
-    type Shape = 
+    type Shape =
       | { kind: 'circle'; radius: number }
       | { kind: 'rectangle'; width: number; height: number };
 
@@ -812,7 +812,7 @@ describe('Combined Runtime and Type Tests', () => {
 describe('Type Inference Tests', () => {
   it('should infer types correctly', () => {
     const data = { id: 1, name: 'John' };
-    
+
     // Verify inferred type
     expectTypeOf(data).toEqualTypeOf<{ id: number; name: string }>();
     expectTypeOf(data.id).toEqualTypeOf<number>();

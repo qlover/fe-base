@@ -6,11 +6,11 @@ import { defaultFeConfig } from '../feConfig';
 import {
   ConsoleHandler,
   Logger,
-  LoggerInterface,
+  type LoggerInterface,
   TimestampFormatter
 } from '@qlover/logger';
-import { ScriptSharedInterface } from '../interface/ScriptSharedInterface';
-import { ScriptContextInterface } from '../interface/ScriptContextInterface';
+import { type ScriptSharedInterface } from '../interface/ScriptSharedInterface';
+import { type ScriptContextInterface } from '../interface/ScriptContextInterface';
 import { Shell } from '../implement/Shell';
 
 /**

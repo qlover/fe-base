@@ -79,6 +79,7 @@ interface AbortControllerWrapper<T extends AborterConfig = AborterConfig> {
  *   - Callbacks receive sanitized config (without callback functions)
  *   - Errors in callbacks are caught and ignored to prevent breaking abort flow
  *
+ * @since 3.0.0
  * @template T - Configuration type extending `AborterConfig`
  *
  * @example Basic usage with timeout

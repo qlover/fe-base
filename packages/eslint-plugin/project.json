@@ -1,0 +1,34 @@
+{
+  "name": "@qlover/eslint-plugin",
+  "sourceRoot": "packages/eslint-plugin/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build",
+        "cwd": "packages/eslint-plugin"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/package.json",
+        "{projectRoot}/README.md",
+        "{projectRoot}/README_EN.md",
+        "{workspaceRoot}/nx.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm build:docs",
+        "cwd": "packages/eslint-plugin"
+      },
+      "inputs": ["{projectRoot}/src/**/*.ts"],
+      "outputs": ["{projectRoot}/docs"],
+      "cache": true
+    }
+  }
+}

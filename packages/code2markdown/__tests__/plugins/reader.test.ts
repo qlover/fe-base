@@ -15,10 +15,11 @@ import Code2MDContext from '../../src/implments/Code2MDContext';
 import { mkdirSync, writeFileSync, rmSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import type fs from 'fs';
 
 // Mock fs module
 vi.mock('fs', async () => {
-  const actual = await vi.importActual<typeof import('fs')>('fs');
+  const actual = await vi.importActual<typeof fs>('fs');
   return {
     ...actual,
     readdirSync: vi.fn(actual.readdirSync)

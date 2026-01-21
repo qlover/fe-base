@@ -1,5 +1,5 @@
-import { SyncStorageInterface } from '@qlover/fe-corekit';
-import { StoreStateInterface } from './StoreInterface';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
+import { type StoreStateInterface } from './StoreInterface';
 
 /**
  * Persistent store interface

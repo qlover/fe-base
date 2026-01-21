@@ -1,12 +1,12 @@
 import {
-  ColorContext,
+  type ColorContext,
   ColorFormatter
 } from '../../src/core/color-log/ColorFormatter';
 import {
   Logger,
-  HandlerInterface,
+  type HandlerInterface,
   LogEvent,
-  FormatterInterface,
+  type FormatterInterface,
   ConsoleHandler,
   LogContext
 } from '@qlover/logger';

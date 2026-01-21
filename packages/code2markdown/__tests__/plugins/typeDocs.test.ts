@@ -72,7 +72,7 @@ import Code2MDContext from '../../src/implments/Code2MDContext';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { Application, ProjectReflection } from 'typedoc';
+import { Application, type ProjectReflection } from 'typedoc';
 import fsExtra from 'fs-extra';
 
 // Test type definitions

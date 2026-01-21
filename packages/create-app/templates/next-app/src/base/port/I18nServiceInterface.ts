@@ -13,10 +13,7 @@ export class I18nServiceState implements StoreStateInterface {
   public loading: boolean = false;
   constructor(public language: I18nServiceLocale) {}
 }
-export abstract class I18nServiceInterface
-  extends StoreInterface<I18nServiceState>
-  implements I18nServiceInterface
-{
+export abstract class I18nServiceInterface extends StoreInterface<I18nServiceState> {
   /**
    * @override
    */

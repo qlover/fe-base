@@ -1,9 +1,9 @@
-import { ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../store-state';
-import { ServiceGatewayType } from '../interface/base/BaseServiceInterface';
+import { type ServiceGatewayType } from '../interface/base/BaseServiceInterface';
 import { isExecutorServiceInterface } from './typeGuards';
 
 /**

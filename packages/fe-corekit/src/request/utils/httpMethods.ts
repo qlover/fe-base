@@ -1,3 +1,13 @@
+/**
+ * This is a constant object that contains the HTTP methods.
+ *
+ * @example
+ * ```typescript
+ * const method = HttpMethods.GET;
+ * ```
+ *
+ * @since 3.0.0
+ */
 export const HttpMethods = {
   GET: 'GET',
   POST: 'POST',

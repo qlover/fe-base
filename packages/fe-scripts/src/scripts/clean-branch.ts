@@ -2,8 +2,8 @@ import { execSync } from 'child_process';
 import { createInterface } from 'readline';
 import {
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
 import lodash from 'lodash';
 

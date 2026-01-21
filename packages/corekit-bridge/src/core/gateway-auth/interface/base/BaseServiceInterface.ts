@@ -1,7 +1,7 @@
-import { LoggerInterface } from '@qlover/logger';
+import { type LoggerInterface } from '@qlover/logger';
 import {
-  AsyncStoreInterface,
-  AsyncStoreStateInterface
+  type AsyncStoreInterface,
+  type AsyncStoreStateInterface
 } from '../../../store-state';
 
 export type ServiceGatewayType = object;

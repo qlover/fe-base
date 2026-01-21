@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { isRequestAdapterResponse } from '../../../src/request/utils/isRequestAdapterResponse';
-import { RequestAdapterResponse } from '../../../src/request/interface/RequestAdapter';
+import { type RequestAdapterResponse } from '../../../src/request/interface/RequestAdapterInterface';
 
 describe('isRequestAdapterResponse', () => {
   describe('Valid RequestAdapterResponse objects', () => {

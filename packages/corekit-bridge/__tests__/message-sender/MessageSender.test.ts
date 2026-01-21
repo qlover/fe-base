@@ -17,7 +17,7 @@
 import {
   ExecutorError,
   Aborter,
-  AborterConfig,
+  type AborterConfig,
   AborterPlugin
 } from '@qlover/fe-corekit';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -29,10 +29,10 @@ import {
   type MessageSenderPlugin,
   type MessageStoreMsg,
   type MessageGetwayInterface,
-  GatewayOptions,
+  type GatewayOptions,
   type MessageSenderContext,
-  MessageSenderOptions,
-  MessageSenderConfig
+  type MessageSenderOptions,
+  type MessageSenderConfig
 } from '../../src/core/message-sender';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -955,7 +955,7 @@ describe('MessageSender', () => {
         const controller = new AbortController();
 
         mockGateway.sendMessage = vi.fn().mockImplementation(() => {
-          return new Promise((resolve, reject) => {
+          return new Promise((_resolve, reject) => {
             setTimeout(() => {
               controller.abort();
               reject(new Error('Aborted'));

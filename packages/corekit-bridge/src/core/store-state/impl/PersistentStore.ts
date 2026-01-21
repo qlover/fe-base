@@ -3,7 +3,7 @@ import {
   StoreInterface,
   type StoreStateInterface
 } from '../interface/StoreInterface';
-import { PersistentStoreInterface } from '../interface/PersistentStoreInterface';
+import { type PersistentStoreInterface } from '../interface/PersistentStoreInterface';
 
 /**
  * Abstract persistent store interface

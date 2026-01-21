@@ -1,8 +1,8 @@
 import { readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { Plugin } from 'vite';
+import { type Plugin } from 'vite';
 import { WorkspaceCreator } from '../../packages/fe-release/src/plugins/workspaces/WorkspaceCreator';
-import { AliasOptions } from 'vite';
+import { type AliasOptions } from 'vite';
 
 export type ViteMockPackageOptions = {
   root?: string;

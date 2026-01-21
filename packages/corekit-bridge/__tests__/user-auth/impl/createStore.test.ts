@@ -2,16 +2,16 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createStore } from '../../../src/core/user-auth/impl/createStore';
 import { UserAuthStore } from '../../../src/core/user-auth/impl/UserAuthStore';
 import {
-  UserAuthStoreInterface,
+  type UserAuthStoreInterface,
   LOGIN_STATUS,
-  UserAuthStoreOptions
+  type UserAuthStoreOptions
 } from '../../../src/core/user-auth/interface/UserAuthStoreInterface';
 import {
   KeyStorage,
-  KeyStorageInterface,
-  KeyStorageOptions
+  type KeyStorageInterface,
+  type KeyStorageOptions
 } from '@qlover/fe-corekit';
-import { UserAuthOptions } from '../../../src/core/user-auth/impl/UserAuthService';
+import { type UserAuthOptions } from '../../../src/core/user-auth/impl/UserAuthService';
 import { UserAuthState } from '../../../src/core/user-auth/impl/UserAuthState';
 import { TokenStorage } from '../../../src/core/storage';
 

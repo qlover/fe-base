@@ -19,10 +19,10 @@
 import { describe, it, expect, beforeEach, vi, expectTypeOf } from 'vitest';
 import {
   UserService,
-  UserServiceConfig
+  type UserServiceConfig
 } from '../../src/core/gateway-auth/impl/UserService';
-import { UserServiceGateway } from '../../src/core/gateway-auth/interface/UserServiceInterface';
-import { LoginParams } from '../../src/core/gateway-auth/interface/LoginInterface';
+import { type UserServiceGateway } from '../../src/core/gateway-auth/interface/UserServiceInterface';
+import { type LoginParams } from '../../src/core/gateway-auth/interface/LoginInterface';
 import { GatewayExecutor } from '../../src/core/gateway-auth/impl/GatewayExecutor';
 import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';

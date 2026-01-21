@@ -1,4 +1,8 @@
-import { ThemeConfig, ThemeServiceProps, ThemeServiceState } from './type';
+import {
+  type ThemeConfig,
+  type ThemeServiceProps,
+  type ThemeServiceState
+} from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
 import { StoreInterface } from '../store-state';
 

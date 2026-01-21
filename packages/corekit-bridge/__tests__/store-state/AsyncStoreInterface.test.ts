@@ -13,10 +13,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import {
-  AsyncStateInterface,
+  type AsyncStateInterface,
   AsyncStore,
-  AsyncStoreOptions,
-  AsyncStoreStateInterface,
+  type AsyncStoreOptions,
+  type AsyncStoreStateInterface,
   AsyncStoreStatus
 } from '../../src/core/store-state';
 

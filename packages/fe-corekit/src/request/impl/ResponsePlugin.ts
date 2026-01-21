@@ -1,16 +1,16 @@
 import {
-  ExecutorContextInterface,
+  type ExecutorContextInterface,
   ExecutorError,
-  LifecyclePluginInterface
+  type LifecyclePluginInterface
 } from '../../executor/interface';
-import {
-  RequestAdapterConfig,
-  RequestAdapterResponse,
-  RequestErrorID
+import type {
+   RequestAdapterConfig,
+   RequestAdapterResponse,
 } from '../interface';
 import { JSON_RESPONSE_TYPE } from './consts';
 import { isFunction } from 'lodash-es';
 import { isRequestAdapterResponse } from '../utils/isRequestAdapterResponse';
+import { RESPONSE_NOT_OK_ID } from './consts';
 
 export type ResponsePluginContext = ExecutorContextInterface<
   ResponsePluginConfig & RequestAdapterConfig,
@@ -293,7 +293,7 @@ export class ResponsePlugin
    */
   protected validateResponseStatus(response: Response): void {
     if (!response.ok) {
-      throw new ExecutorError(RequestErrorID.RESPONSE_NOT_OK, response);
+      throw new ExecutorError(RESPONSE_NOT_OK_ID, response);
     }
   }
 
