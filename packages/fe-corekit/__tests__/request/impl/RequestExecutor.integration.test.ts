@@ -9,7 +9,7 @@ import { ExecutorError } from '../../../src/executor/interface';
 
 /**
  * Integration test simulating AppUserApi.login scenario
- * 
+ *
  * This test simulates the exact scenario described:
  * - GatewayExecutor calls a method that uses RequestExecutor
  * - RequestExecutor's onSuccess checks response and throws error if success: false
@@ -36,7 +36,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       baseURL: 'https://api.example.com',
       fetcher: fetchMock
     });
-    
+
     const requestExecutor = new RequestExecutor(
       adapter,
       new LifecycleExecutor<ExecutorContextImpl<RequestAdapterFetchConfig>>()
@@ -50,9 +50,9 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       pluginName: 'AppApiPlugin',
       onSuccess: async (ctx) => {
         hookExecutions.push('AppApiPlugin.onSuccess');
-        
+
         const response = ctx.returnValue as any;
-        
+
         // Parse response body
         let jsonData;
         if (response?.data instanceof Response) {
@@ -61,7 +61,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
         } else {
           jsonData = response;
         }
-        
+
         // Check for API error and throw
         if (jsonData?.success === false) {
           throw new Error(jsonData.message || jsonData.id);
@@ -69,7 +69,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       },
       onError: async (ctx) => {
         hookExecutions.push('AppApiPlugin.onError');
-        
+
         // Log error for debugging
         console.log('AppApiPlugin.onError triggered:', ctx.error);
       }
@@ -101,7 +101,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
         username: 'test',
         password: 'wrong'
       });
-      
+
       // Should not reach here
       expect.fail('Expected request to throw error');
     } catch (error) {
@@ -112,9 +112,9 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
 
     // Verify: Check that hooks were executed in correct order
     expect(hookExecutions).toEqual([
-      'AppApiPlugin.onSuccess',  // onSuccess runs first
-      'AppApiPlugin.onError',    // onError triggered after onSuccess throws
-      'LoggerPlugin.onError'     // Second plugin's onError also triggered
+      'AppApiPlugin.onSuccess', // onSuccess runs first
+      'AppApiPlugin.onError', // onError triggered after onSuccess throws
+      'LoggerPlugin.onError' // Second plugin's onError also triggered
     ]);
 
     console.log('Hook execution order:', hookExecutions);
@@ -126,7 +126,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       baseURL: 'https://api.example.com',
       fetcher: fetchMock
     });
-    
+
     const requestExecutor = new RequestExecutor(
       adapter,
       new LifecycleExecutor<ExecutorContextImpl<RequestAdapterFetchConfig>>()
@@ -140,7 +140,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       pluginName: 'AppApiPlugin',
       onSuccess: async (ctx) => {
         hookExecutions.push('RequestExecutor.onSuccess');
-        
+
         const response = ctx.returnValue as any;
         let jsonData;
         if (response?.data instanceof Response) {
@@ -149,12 +149,12 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
         } else {
           jsonData = response;
         }
-        
+
         if (jsonData?.success === false) {
           throw new Error(jsonData.message || jsonData.id);
         }
       },
-      onError: async (ctx) => {
+      onError: async () => {
         hookExecutions.push('RequestExecutor.onError');
       }
     });
@@ -165,7 +165,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
     // GatewayExecutor plugin
     gatewayExecutor.use({
       pluginName: 'GatewayPlugin',
-      onError: async (ctx) => {
+      onError: async () => {
         hookExecutions.push('GatewayExecutor.onError');
       }
     });
@@ -190,7 +190,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
           password: 'wrong'
         });
       });
-      
+
       expect.fail('Expected request to throw error');
     } catch (error) {
       expect(error).toBeInstanceOf(ExecutorError);
@@ -209,7 +209,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       baseURL: 'https://api.example.com',
       fetcher: fetchMock
     });
-    
+
     const requestExecutor = new RequestExecutor(
       adapter,
       new LifecycleExecutor<ExecutorContextImpl<RequestAdapterFetchConfig>>()
@@ -235,7 +235,7 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
     try {
       await requestExecutor.get('/test');
       expect.fail('Should throw error');
-    } catch (error) {
+    } catch {
       // Expected
     }
 

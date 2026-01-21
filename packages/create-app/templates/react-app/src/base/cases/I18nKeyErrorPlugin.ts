@@ -55,7 +55,8 @@ export class I18nKeyErrorPlugin implements LifecyclePluginInterface<
 
         if (i18nText && i18nText !== i18nKey) {
           this.logger.debug('I18nKeyErrorPlugin Error:', i18nText);
-          return new ExecutorError(i18nKey, error);
+          // Use i18nText as cause (string) so ExecutorError.message will be the translated text
+          return new ExecutorError(i18nKey, i18nText);
         }
       }
     }
