@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   StoreInterface,
-  StoreStateInterface
+  type StoreStateInterface
 } from '../../src/core/store-state';
 
 class CounterState implements StoreStateInterface {

@@ -1,5 +1,5 @@
-import { ScriptSharedInterface } from '@qlover/scripts-context';
-import { DistinctQuestion } from 'inquirer';
+import { type ScriptSharedInterface } from '@qlover/scripts-context';
+import { type DistinctQuestion } from 'inquirer';
 
 export type GeneratorPrompt = DistinctQuestion;
 

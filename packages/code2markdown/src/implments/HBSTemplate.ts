@@ -2,8 +2,8 @@ import fsExtra from 'fs-extra';
 import { join, resolve } from 'path';
 import Handlebars from 'handlebars';
 import { ReflectionKind } from 'typedoc';
-import { FormatProjectValue, ReflectionKindName } from '../type';
-import { ValueOf } from '@qlover/fe-corekit';
+import { type FormatProjectValue, ReflectionKindName } from '../type';
+import { type ValueOf } from '@qlover/fe-corekit';
 
 /**
  * Type mapping for organizing reflection data by kind

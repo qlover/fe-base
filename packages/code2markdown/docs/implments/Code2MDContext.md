@@ -129,17 +129,6 @@ verbosity levels and script name identification.
 
 ---
 
-#### `options` (Property)
-
-**Type:** `Code2MDContextConfig`
-
-Script-specific options
-
-Contains all script configuration options
-with defaults applied and environment integration.
-
----
-
 #### `shell` (Property)
 
 **Type:** `ShellInterface`
@@ -168,156 +157,33 @@ detailed information display.
 
 ---
 
-#### `getDefaultOptions` (Method)
+#### `error` (Accessor)
 
-**Type:** `(options: Code2MDContextConfig) => Code2MDContextConfig`
-
-#### Parameters
-
-| Name      | Type                   | Optional | Default | Since | Deprecated | Description                              |
-| --------- | ---------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `options` | `Code2MDContextConfig` | ❌       | -       | -     | -          | Current options to enhance with defaults |
+**Type:** `accessor error`
 
 ---
 
-##### `getDefaultOptions` (CallSignature)
+#### `hooksRuntimes` (Accessor)
 
-**Type:** `Code2MDContextConfig`
-
-Applies default values to script options with environment integration
-
-Core concept:
-Enhances provided options with sensible defaults and
-environment variable integration, ensuring all required
-configuration is available.
-
-Default logic:
-
-1. Uses existing environment or loads from files
-2. Sets rootPath to current working directory if not specified
-3. Determines sourceBranch from environment or defaults to 'master'
-4. Merges all options with proper precedence
-5. Ensures environment is properly initialized
-
-Environment variable priority:
-
-1. FE_RELEASE_BRANCH (primary environment variable)
-2. FE_RELEASE_SOURCE_BRANCH (fallback environment variable)
-3. 'master' (default value)
-4. Options.sourceBranch (if provided)
-
-Path handling:
-
-- rootPath defaults to process.cwd() if not specified
-- Supports both absolute and relative paths
-- Maintains path consistency across environments
-- Used for file operations and configuration loading
-
-Environment integration:
-
-- Loads environment from files if not provided
-- Uses configurable file loading order
-- Integrates with fe-config environment settings
-- Provides fallback to default environment
-
-**Returns:**
-
-Options with default values and environment integration
-
-**Example:** Basic defaults
-
-```typescript
-const options = this.getDefaultOptions({});
-// Returns: { rootPath: process.cwd(), sourceBranch: 'master', env: Env instance }
-```
-
-**Example:** With environment variables
-
-```typescript
-// If FE_RELEASE_BRANCH=develop
-const options = this.getDefaultOptions({});
-// Returns: { rootPath: process.cwd(), sourceBranch: 'develop', env: Env instance }
-```
-
-#### Parameters
-
-| Name      | Type                   | Optional | Default | Since | Deprecated | Description                              |
-| --------- | ---------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `options` | `Code2MDContextConfig` | ❌       | -       | -     | -          | Current options to enhance with defaults |
+**Type:** `accessor hooksRuntimes`
 
 ---
 
-#### `getDefaultStore` (Method)
+#### `options` (Accessor)
 
-**Type:** `(scriptName: string \| string[], sources: Record<string, unknown>) => Code2MDContextConfig`
-
-#### Parameters
-
-| Name         | Type                      | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `scriptName` | `string \| string[]`      | ❌       | -       | -     | -          | Script name or array of names for nested access |
-| `sources`    | `Record<string, unknown>` | ❌       | -       | -     | -          | Configuration source object (feConfig)          |
+**Type:** `accessor options`
 
 ---
 
-##### `getDefaultStore` (CallSignature)
+#### `parameters` (Accessor)
 
-**Type:** `Code2MDContextConfig`
+**Type:** `accessor parameters`
 
-Extracts configuration store from feConfig based on script name
+---
 
-Core concept:
-Safely extracts script-specific configuration from the
-merged fe-config object, handling various data types
-and providing fallback values.
+#### `returnValue` (Accessor)
 
-Extraction process:
-
-1. Uses lodash get to safely access nested configuration
-2. Validates that the extracted value is an object
-3. Converts primitive values to empty objects
-4. Logs warnings for non-object configurations
-5. Returns type-safe configuration object
-
-Safety features:
-
-- Safe nested property access with lodash get
-- Null and undefined handling
-- Type validation for configuration objects
-- Warning logging for invalid configurations
-- Fallback to empty object for primitives
-
-Configuration validation:
-
-- Checks if extracted value is an object
-- Warns when configuration is not an object
-- Converts primitives to empty objects
-- Maintains type safety through generic constraints
-
-**Returns:**
-
-Extracted configuration object with type safety
-
-**Example:** Basic extraction
-
-```typescript
-const config = this.getDefaultStore('build-script', feConfig);
-// Returns configuration from feConfig['build-script']
-```
-
-**Example:** Nested access
-
-```typescript
-const config = this.getDefaultStore(['scripts', 'build'], feConfig);
-// Returns configuration from feConfig.scripts.build
-```
-
-#### Parameters
-
-| Name         | Type                      | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `scriptName` | `string \| string[]`      | ❌       | -       | -     | -          | Script name or array of names for nested access |
-| `sources`    | `Record<string, unknown>` | ❌       | -       | -     | -          | Configuration source object (feConfig)          |
+**Type:** `accessor returnValue`
 
 ---
 
@@ -481,6 +347,208 @@ const allOptions = this.getOptions();
 
 ---
 
+#### `reset` (Method)
+
+**Type:** `() => void`
+
+---
+
+##### `reset` (CallSignature)
+
+**Type:** `void`
+
+Reset entire context to initial state
+
+Core concept:
+Complete context cleanup for new execution cycle
+
+Reset operations:
+
+- Resets hooks runtime state
+- Clears return value
+- Clears error state
+
+---
+
+#### `resetHooksRuntimes` (Method)
+
+**Type:** `(hookName: string) => void`
+
+#### Parameters
+
+| Name       | Type     | Optional | Default | Since | Deprecated | Description |
+| ---------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `hookName` | `string` | ✅       | -       | -     | -          |             |
+
+---
+
+##### `resetHooksRuntimes` (CallSignature)
+
+**Type:** `void`
+
+Reset hooks runtime state to initial values
+
+Core concept:
+Clears all runtime tracking information for fresh execution
+
+Reset operations:
+
+- Clears plugin name and hook name
+- Resets return value and chain breaking flags
+- Resets execution counter and index
+
+#### Parameters
+
+| Name       | Type     | Optional | Default | Since | Deprecated | Description |
+| ---------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `hookName` | `string` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `runtimeReturnValue` (Method)
+
+**Type:** `(returnValue: unknown) => void`
+
+#### Parameters
+
+| Name          | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `returnValue` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+##### `runtimeReturnValue` (CallSignature)
+
+**Type:** `void`
+
+Set return value in context runtime tracking
+
+Core concept:
+Store plugin hook return value for chain control and debugging.
+Creates a new runtime object with updated return value.
+
+Security:
+
+- Creates new object (immutable update)
+- Stored in WeakMap (truly private)
+
+Usage scenarios:
+
+- Track plugin hook return values
+- Enable chain breaking based on return values
+- Debug plugin execution flow
+
+#### Parameters
+
+| Name          | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `returnValue` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+#### `runtimes` (Method)
+
+**Type:** `(updates: Partial<HookRuntimes>) => void`
+
+#### Parameters
+
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description                      |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `updates` | `Partial<HookRuntimes>` | ❌       | -       | -     | -          | Partial runtime updates to merge |
+
+---
+
+##### `runtimes` (CallSignature)
+
+**Type:** `void`
+
+Update runtime tracking information for plugin execution
+
+Core concept:
+Track plugin execution metadata for debugging and flow control.
+Creates a new runtime object with merged updates to ensure immutability.
+
+Security:
+
+- Always creates a new object (immutable updates)
+- Stored in WeakMap (truly private)
+- Cannot be accessed or modified from outside
+
+Tracking information:
+
+- Current plugin name
+- Current hook name
+- Execution counter (times)
+- Plugin index in execution chain
+
+**Example:**
+
+```typescript
+context.runtimes({
+  pluginName: 'testPlugin',
+  hookName: 'onBefore',
+  times: 1,
+  pluginIndex: 0
+});
+```
+
+#### Parameters
+
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description                      |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `updates` | `Partial<HookRuntimes>` | ❌       | -       | -     | -          | Partial runtime updates to merge |
+
+---
+
+#### `setError` (Method)
+
+**Type:** `(error: unknown) => void`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                                                   |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
+| `error` | `unknown` | ❌       | -       | -     | -          | The error to set in context (ExecutorError or standard Error) |
+
+---
+
+##### `setError` (CallSignature)
+
+**Type:** `void`
+
+Set error in context
+
+Automatically converts standard Error objects to ExecutorError for consistency.
+If the error is already an ExecutorError, it is stored as-is.
+If the error is a standard Error, it is wrapped in an ExecutorError with id 'EXECUTOR_ERROR'.
+
+**Example:** With ExecutorError
+
+```typescript
+context.setError(new ExecutorError('VALIDATION_ERROR', 'Invalid input'));
+console.log(context.error.id); // 'VALIDATION_ERROR'
+```
+
+**Example:** With standard Error (auto-converted)
+
+```typescript
+try {
+  JSON.parse('invalid');
+} catch (error) {
+  context.setError(error); // Auto-converted to ExecutorError
+  console.log(context.error.id); // 'EXECUTOR_ERROR'
+  console.log(context.error.cause); // Original SyntaxError
+}
+```
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                                                   |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
+| `error` | `unknown` | ❌       | -       | -     | -          | The error to set in context (ExecutorError or standard Error) |
+
+---
+
 #### `setOptions` (Method)
 
 **Type:** `(options: Partial<Code2MDContextConfig>) => void`
@@ -548,6 +616,187 @@ this.setOptions({
 | Name      | Type                            | Optional | Default | Since | Deprecated | Description                                         |
 | --------- | ------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
 | `options` | `Partial<Code2MDContextConfig>` | ❌       | -       | -     | -          | Partial options to merge with current configuration |
+
+---
+
+#### `setParameters` (Method)
+
+**Type:** `(params: Code2MDContextConfig) => void`
+
+#### Parameters
+
+| Name     | Type                   | Optional | Default | Since | Deprecated | Description                                 |
+| -------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `params` | `Code2MDContextConfig` | ❌       | -       | -     | -          | The parameters to set (stored by reference) |
+
+---
+
+##### `setParameters` (CallSignature)
+
+**Type:** `void`
+
+Set parameters in context
+
+**Important**: Parameters are stored by reference, not cloned.
+The provided parameters object will be used directly.
+
+**Example:**
+
+```typescript
+const newParams = { value: 2 };
+context.setParameters(newParams);
+// context.parameters === newParams (same reference)
+```
+
+#### Parameters
+
+| Name     | Type                   | Optional | Default | Since | Deprecated | Description                                 |
+| -------- | ---------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `params` | `Code2MDContextConfig` | ❌       | -       | -     | -          | The parameters to set (stored by reference) |
+
+---
+
+#### `setReturnValue` (Method)
+
+**Type:** `(value: unknown) => void`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+##### `setReturnValue` (CallSignature)
+
+**Type:** `void`
+
+Set return value in context
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description                      |
+| ------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to set as return value |
+
+---
+
+#### `shouldBreakChain` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldBreakChain` (CallSignature)
+
+**Type:** `boolean`
+
+Check if the execution chain should be broken
+
+Core concept:
+Chain breaking control for plugin execution flow
+
+Chain breaking scenarios:
+
+- Plugin explicitly sets breakChain flag
+- Error conditions requiring immediate termination
+- Business logic requiring early exit
+
+**Returns:**
+
+True if the chain should be broken, false otherwise
+
+---
+
+#### `shouldBreakChainOnReturn` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldBreakChainOnReturn` (CallSignature)
+
+**Type:** `boolean`
+
+Check if the execution chain should be broken due to return value
+
+Core concept:
+Return value-based chain breaking control
+
+Usage scenarios:
+
+- Plugin returns a value that should terminate execution
+- Error handling hooks return error objects
+- Business logic requires return value-based flow control
+
+**Returns:**
+
+True if the chain should be broken due to return value, false otherwise
+
+---
+
+#### `shouldContinueOnError` (Method)
+
+**Type:** `() => boolean`
+
+---
+
+##### `shouldContinueOnError` (CallSignature)
+
+**Type:** `boolean`
+
+Check if execution should continue on error
+
+Core concept:
+Determines whether to continue executing subsequent plugins when a plugin hook
+throws an error, enabling resilient execution pipelines
+
+**Returns:**
+
+True if execution should continue on error, false otherwise
+
+---
+
+#### `shouldSkipPluginHook` (Method)
+
+**Type:** `(plugin: ExecutorPluginInterface<Ctx>, hookName: string) => boolean`
+
+#### Parameters
+
+| Name       | Type                           | Optional | Default | Since | Deprecated | Description                      |
+| ---------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `plugin`   | `ExecutorPluginInterface<Ctx>` | ❌       | -       | -     | -          | The plugin to check              |
+| `hookName` | `string`                       | ❌       | -       | -     | -          | The name of the hook to validate |
+
+---
+
+##### `shouldSkipPluginHook` (CallSignature)
+
+**Type:** `boolean`
+
+Check if a plugin hook should be skipped
+Returns true if the hook should be skipped (invalid or disabled)
+
+Core concept:
+Plugin hook validation and enablement checking
+
+Validation criteria:
+
+- Hook method exists and is callable
+- Plugin is enabled for the specific hook
+- Plugin enablement function returns true
+
+**Returns:**
+
+True if the hook should be skipped, false otherwise
+
+#### Parameters
+
+| Name       | Type                           | Optional | Default | Since | Deprecated | Description                      |
+| ---------- | ------------------------------ | -------- | ------- | ----- | ---------- | -------------------------------- |
+| `plugin`   | `ExecutorPluginInterface<Ctx>` | ❌       | -       | -     | -          | The plugin to check              |
+| `hookName` | `string`                       | ❌       | -       | -     | -          | The name of the hook to validate |
 
 ---
 

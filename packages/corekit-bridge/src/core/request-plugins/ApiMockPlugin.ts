@@ -1,6 +1,6 @@
 import {
-  type ExecutorContext,
-  type ExecutorPlugin,
+  type ExecutorContextInterface,
+  type LifecyclePluginInterface,
   type RequestAdapterFetchConfig,
   type RequestAdapterResponse
 } from '@qlover/fe-corekit';
@@ -96,7 +96,10 @@ export interface ApiMockPluginOptions {
 /**
  * Type alias for ApiMockPlugin executor context
  */
-export type ApiMockPluginContext = ExecutorContext<ApiMockPluginConfig>;
+export type ApiMockPluginContext = ExecutorContextInterface<
+  ApiMockPluginConfig,
+  RequestAdapterResponse
+>;
 
 /**
  * ApiMockPlugin - Mock API responses for development and testing
@@ -146,7 +149,14 @@ export type ApiMockPluginContext = ExecutorContext<ApiMockPluginConfig>;
  * executor.exec({ baseURL: "https://api.example.com", url: "/api/users", method: "GET", delay: 0 });  // No delay
  * ```
  */
-export class ApiMockPlugin implements ExecutorPlugin {
+export class ApiMockPlugin
+  implements
+    LifecyclePluginInterface<
+      ApiMockPluginContext,
+      RequestAdapterResponse,
+      ApiMockPluginConfig
+    >
+{
   public readonly pluginName = 'ApiMockPlugin';
 
   /**
@@ -180,10 +190,7 @@ export class ApiMockPlugin implements ExecutorPlugin {
    *
    * @override
    */
-  public enabled(
-    _name: keyof ExecutorPlugin,
-    context?: ApiMockPluginContext
-  ): boolean {
+  public enabled(_name: string, context?: ApiMockPluginContext): boolean {
     return !context?.parameters.disabledMock;
   }
 

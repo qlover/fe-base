@@ -40,8 +40,8 @@
  * ```
  */
 import isString from 'lodash/isString';
-import ReleaseContext from '../implments/ReleaseContext';
-import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
+import type ReleaseContext from '../implments/ReleaseContext';
+import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 
 /**
  * Repository information type

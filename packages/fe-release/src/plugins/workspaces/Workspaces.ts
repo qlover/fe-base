@@ -1,11 +1,11 @@
 import type ReleaseTask from '../../implments/ReleaseTask';
 import { join, resolve, relative } from 'node:path';
-import ReleaseContext from '../../implments/ReleaseContext';
+import type ReleaseContext from '../../implments/ReleaseContext';
 import { MANIFEST_PATH } from '../../defaults';
 import { ReleaseLabel } from '../../implments/ReleaseLabel';
 import { findWorkspaces } from 'find-workspaces';
 import { WorkspaceCreator } from './WorkspaceCreator';
-import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
+import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 
 export type PackageJson = Record<string, unknown>;
 export type DeepPartial<T> = {

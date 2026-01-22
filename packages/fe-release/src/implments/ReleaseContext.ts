@@ -52,17 +52,17 @@ import type { TemplateContext } from '../type';
 import get from 'lodash/get';
 import { DEFAULT_SOURCE_BRANCH } from '../defaults';
 import {
-  WorkspacesProps,
-  WorkspaceValue
+  type WorkspacesProps,
+  type WorkspaceValue
 } from '../plugins/workspaces/Workspaces';
 import {
-  FeReleaseConfig,
+  type FeReleaseConfig,
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
-import { GithubPRProps } from '../plugins/githubPR/GithubPR';
-import { PluginClass, PluginTuple } from '../utils/tuple';
+import { type GithubPRProps } from '../plugins/githubPR/GithubPR';
+import { type PluginClass, type PluginTuple } from '../utils/tuple';
 
 export interface ReleaseContextOptions
   extends ScriptContextInterface<ReleaseContextConfig> {}

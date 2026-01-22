@@ -529,12 +529,12 @@
  *
  * @see [TypeScript ESLint Typed Linting](https://typescript-eslint.io/getting-started/typed-linting)
  */
-import { AST_NODE_TYPES, TSESTree } from '@typescript-eslint/types';
+import { AST_NODE_TYPES, type TSESTree } from '@typescript-eslint/types';
 import { createEslintRule } from '../utils/createEslintRule';
 import { type TSESLint } from '@typescript-eslint/utils';
 import {
   ClassOverride,
-  ClassOverrideOptions,
+  type ClassOverrideOptions,
   OverrideStyle
 } from '../utils/ClassOverride';
 

@@ -136,5 +136,200 @@ describe('ConfigSearch', () => {
         }
       });
     });
+
+    it('should return empty object when config is not found', () => {
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => null,
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const result = configSearch.get();
+
+      expect(result).toEqual({});
+    });
+
+    it('should return empty object when config is not a plain object', () => {
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({
+          config: ['array', 'config'],
+          filepath: testConfigPath
+        }),
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const result = configSearch.get();
+
+      expect(result).toEqual({});
+    });
+
+    it('should load from specific file path', () => {
+      const loadMock = vi.fn().mockReturnValue({
+        config: { loaded: 'from-file' },
+        filepath: testConfigPath
+      });
+
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        load: loadMock,
+        search: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const result = configSearch.get({ file: testConfigPath });
+
+      expect(loadMock).toHaveBeenCalledWith(testConfigPath);
+      expect(result).toEqual({ loaded: 'from-file' });
+    });
+
+    it('should search in specific directory', () => {
+      const searchMock = vi.fn().mockReturnValue({
+        config: { searched: 'in-dir' },
+        filepath: testConfigPath
+      });
+
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: searchMock,
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const customDir = '/custom/dir';
+      const result = configSearch.get({ dir: customDir });
+
+      expect(searchMock).toHaveBeenCalledWith(customDir);
+      expect(result).toEqual({ searched: 'in-dir' });
+    });
+  });
+
+  describe('config property', () => {
+    it('should merge default config with discovered config', () => {
+      const mockConfig = { discovered: 'value' };
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({ config: mockConfig, filepath: testConfigPath }),
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { default: 'value', port: 3000 }
+      });
+
+      const config = configSearch.config;
+      expect(config).toEqual({
+        discovered: 'value',
+        default: 'value',
+        port: 3000
+      });
+    });
+
+    it('should prioritize discovered config over defaults', () => {
+      const mockConfig = { port: 8080 };
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({ config: mockConfig, filepath: testConfigPath }),
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { port: 3000 }
+      });
+
+      const config = configSearch.config;
+      expect(config.port).toBe(8080);
+    });
+
+    it('should handle nested object merging', () => {
+      const mockConfig = {
+        server: { port: 8080 }
+      };
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({ config: mockConfig, filepath: testConfigPath }),
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: {
+          server: { port: 3000, host: 'localhost' },
+          debug: false
+        }
+      });
+
+      const config = configSearch.config;
+      expect(config).toEqual({
+        server: { port: 8080, host: 'localhost' },
+        debug: false
+      });
+    });
+  });
+
+  describe('getSearchPlaces', () => {
+    it('should return default search places when name is provided', () => {
+      const configSearch = new ConfigSearch({ name: 'myapp' });
+      const places = configSearch.getSearchPlaces();
+
+      expect(places).toContain('package.json');
+      expect(places).toContain('myapp.json');
+      expect(places).toContain('myapp.js');
+      expect(places).toContain('myapp.ts');
+      expect(places).toContain('.myapp.json');
+    });
+
+    it('should return custom search places when provided', () => {
+      const customPlaces = ['custom.config.js', 'config/app.js'];
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        searchPlaces: customPlaces
+      });
+
+      const places = configSearch.getSearchPlaces();
+      expect(places).toEqual(customPlaces);
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle null config result', () => {
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => null,
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { default: 'value' }
+      });
+
+      const config = configSearch.config;
+      expect(config).toEqual({ default: 'value' });
+    });
+
+    it('should handle undefined config result', () => {
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => undefined,
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({
+        name: 'test',
+        defaultConfig: { default: 'value' }
+      });
+
+      const config = configSearch.config;
+      expect(config).toEqual({ default: 'value' });
+    });
+
+    it('should handle empty default config', () => {
+      const mockConfig = { test: 'value' };
+      (cosmiconfigSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        search: () => ({ config: mockConfig, filepath: testConfigPath }),
+        load: vi.fn()
+      });
+
+      const configSearch = new ConfigSearch({ name: 'test' });
+      const config = configSearch.config;
+
+      expect(config).toEqual({ test: 'value' });
+    });
   });
 });

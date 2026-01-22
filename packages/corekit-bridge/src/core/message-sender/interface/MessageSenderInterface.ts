@@ -1,13 +1,94 @@
+import { type LoggerInterface } from '@qlover/logger';
 import type {
+  GatewayOptions,
   MessageGetwayInterface,
-  MessageStreamEvent
+  GatewayEventInterface
 } from './MessageGetwayInterface';
 import type {
   MessageInterface,
   MessagesStateInterface,
   MessagesStoreInterface
 } from './MessagesStoreInterface';
-import type { ExecutorPlugin } from '@qlover/fe-corekit';
+import { type MessageSenderPlugin } from './MessageSenderPlugin';
+
+/**
+ * Configuration options for message sender
+ *
+ * Defines behavior, logging, gateway integration, and error handling
+ * for the message sender instance.
+ */
+export interface MessageSenderBaseConfig {
+  /**
+   * Sender instance name
+   *
+   * Used for logging and identification purposes. Helpful when
+   * multiple sender instances exist in the application.
+   *
+   * @default `'MessageSender'`
+   *
+   * @example
+   * ```typescript
+   * const config = {
+   *   senderName: 'ChatSender'
+   * };
+   * ```
+   */
+  senderName?: string;
+
+  /**
+   * Logger instance for debugging and monitoring
+   *
+   * Optional logger for tracking message send operations,
+   * errors, and performance metrics.
+   */
+  logger?: LoggerInterface;
+
+  /**
+   * Whether to throw errors on send failure
+   *
+   * When `true`, failed send operations throw errors instead of
+   * returning error messages. Useful for error boundary handling.
+   *
+   * @default `false`
+   *
+   * @example
+   * ```typescript
+   * const config = {
+   *   throwIfError: true // Throw on failures
+   * };
+   * ```
+   */
+  throwIfError?: boolean;
+
+  /**
+   * Message gateway instance
+   *
+   * Gateway responsible for actually sending messages to external
+   * services (APIs, WebSocket servers, etc.).
+   */
+  gateway?: MessageGetwayInterface;
+
+  /**
+   * Gateway options for message operations
+   *
+   * Configuration for gateway behavior including:
+   * - Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
+   * - Abort signal for cancellation control
+   * - Custom request parameters
+   *
+   * @example
+   * ```typescript
+   * const config = {
+   *   gatewayOptions: {
+   *     stream: true,
+   *     onChunk: (chunk) => console.log(chunk),
+   *     timeout: 30000
+   *   }
+   * };
+   * ```
+   */
+  gatewayOptions?: GatewayOptions<unknown>;
+}
 
 /**
  * Message sender interface for managing message transmission
@@ -123,7 +204,7 @@ export interface MessageSenderInterface<
    *   .use(transformPlugin);
    * ```
    */
-  use<T>(plugin: ExecutorPlugin<T>): this;
+  use(plugin: MessageSenderPlugin<Message>): this;
 
   /**
    * Send a message through the sender
@@ -177,6 +258,6 @@ export interface MessageSenderInterface<
    */
   send(
     message: Partial<Message>,
-    streamEvent?: MessageStreamEvent
+    streamEvent?: GatewayEventInterface
   ): Promise<Message>;
 }

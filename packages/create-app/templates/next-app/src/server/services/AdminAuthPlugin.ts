@@ -1,18 +1,17 @@
-import type { BootstrapServerContextValue } from '@/core/bootstraps/BootstrapServer';
+import type {
+  BootstrapServerContext,
+  BootstrapServerPlugin
+} from '@/core/bootstraps/BootstrapServer';
 import { ServerAuth } from '../ServerAuth';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
-import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
-import type { ExecutorContext } from '@qlover/fe-corekit';
 
-export class AdminAuthPlugin implements BootstrapExecutorPlugin {
+export class AdminAuthPlugin implements BootstrapServerPlugin {
   public pluginName = 'AdminAuthPlugin';
 
   /**
    * @override
    */
-  public async onBefore(
-    context: ExecutorContext<BootstrapServerContextValue>
-  ): Promise<void> {
+  public async onBefore(context: BootstrapServerContext): Promise<void> {
     const { IOC } = context.parameters;
 
     const serverAuth: ServerAuthInterface = IOC(ServerAuth);

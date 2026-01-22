@@ -1,0 +1,152 @@
+import { type RequestAdapterConfig } from '../interface';
+import { hasObjectKeyWithValue, isAsString } from '../utils/isAsString';
+import { appendHeaders } from '../utils/appendHeaders';
+import {
+  CONTENT_TYPE_HEADER,
+  JSON_CONTENT_TYPE,
+  JSON_RESPONSE_TYPE,
+  DEFAULT_AUTH_KEY
+} from './consts';
+import { type RequestPluginConfig } from './RequestPlugin';
+import {
+  type HeaderInjectorConfig,
+  type HeaderInjectorInterface
+} from '../interface/HeaderInjectorInterface';
+
+/**
+ * Header injector for handling header injection logic
+ *
+ * This class is responsible for injecting default headers into request configuration,
+ * including Content-Type headers and authentication headers.
+ *
+ * @since 3.0.0
+ * @example
+ * ```typescript
+ * const injector = new RequestHeaderInjector({
+ *   token: 'your-token',
+ *   tokenPrefix: 'Bearer'
+ * });
+ * const headers = injector.inject(config);
+ * ```
+ */
+export class RequestHeaderInjector implements HeaderInjectorInterface {
+  constructor(protected readonly config: HeaderInjectorConfig) {}
+
+  /**
+   * Inject default headers into request configuration
+   *
+   * This method adds default headers based on the request configuration.
+   * It handles cases where headers may be null or undefined.
+   * All header values are normalized to strings (required by fetch API).
+   *
+   * @override
+   * @param config - Request configuration (merged with plugin config)
+   * @returns Headers object with injected default headers, all values normalized to strings
+   */
+  public inject(
+    config: RequestAdapterConfig & HeaderInjectorConfig
+  ): Record<string, string> {
+    // Merge constructor config with passed config (passed config takes precedence)
+    const mergedConfig = { ...this.config, ...config };
+    // Merge headers (passed headers take precedence)
+    const constructorHeaders =
+      (this.config as RequestAdapterConfig).headers ?? {};
+    const configHeaders = config.headers ?? {};
+    let headers = { ...constructorHeaders, ...configHeaders };
+
+    // Add Content-Type header for JSON requests if not already present
+    if (
+      !hasObjectKeyWithValue(headers, CONTENT_TYPE_HEADER) &&
+      isAsString(mergedConfig.responseType, JSON_RESPONSE_TYPE, true)
+    ) {
+      headers = appendHeaders(headers, CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE);
+    }
+
+    // Add auth header if token is provided
+    const authKey = this.getAuthKey(mergedConfig);
+    if (authKey !== false && !hasObjectKeyWithValue(headers, authKey)) {
+      const authValue = this.getAuthToken(mergedConfig);
+      if (isAsString(authValue) && authValue.length > 0) {
+        headers = appendHeaders(headers, authKey, authValue);
+      }
+    }
+
+    // Normalize all header values to strings (required by fetch API)
+    return this.normalizeHeaders(headers);
+  }
+
+  /**
+   * Normalize header values to strings
+   *
+   * Ensures all header values are strings as required by the fetch API.
+   * Filters out null and undefined values.
+   *
+   * @param headers - Headers object with potentially non-string values
+   * @returns Normalized headers object with all values as strings
+   */
+  protected normalizeHeaders(
+    headers: Record<string, unknown>
+  ): Record<string, string> {
+    const normalizedHeaders: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(headers)) {
+      if (value != null) {
+        normalizedHeaders[key] = String(value);
+      }
+    }
+
+    return normalizedHeaders;
+  }
+
+  /**
+   * Get auth token value from configuration
+   *
+   * Supports both string token and function that returns token.
+   * Automatically prepends token prefix if configured.
+   *
+   * @param config - Request configuration
+   * @returns Auth value string (with prefix if configured) or empty string if not found
+   *
+   * @example
+   * ```typescript
+   * // Returns: "Bearer your-token"
+   * getAuthToken({ token: 'your-token', tokenPrefix: 'Bearer' })
+   *
+   * // Returns: "your-token"
+   * getAuthToken({ token: 'your-token' })
+   * ```
+   */
+  protected getAuthToken(config: RequestPluginConfig): string {
+    const token = config.token;
+    let tokenValue = '';
+
+    if (typeof token === 'function') {
+      const result = token.call(config);
+      tokenValue = isAsString(result) ? result : '';
+    } else if (isAsString(token)) {
+      tokenValue = token;
+    }
+
+    if (!tokenValue) {
+      return '';
+    }
+
+    const tokenPrefix = config.tokenPrefix;
+    return isAsString(tokenPrefix) && tokenPrefix.length > 0
+      ? `${tokenPrefix} ${tokenValue}`
+      : tokenValue;
+  }
+
+  /**
+   * Get auth key from configuration
+   *
+   * @param config - Request configuration
+   * @returns Auth key (default: 'Authorization') or false if auth is disabled
+   */
+  protected getAuthKey(config: RequestPluginConfig): string | false {
+    if (config.authKey === false) {
+      return false;
+    }
+    return config.authKey ?? DEFAULT_AUTH_KEY;
+  }
+}

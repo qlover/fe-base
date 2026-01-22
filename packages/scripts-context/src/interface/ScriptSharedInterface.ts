@@ -1,4 +1,4 @@
-import { Env } from '@qlover/env-loader';
+import { type Env } from '@qlover/env-loader';
 
 /**
  * Common/shared configuration options for script execution context

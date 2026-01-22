@@ -161,63 +161,15 @@ Plugin identifier
 
 ---
 
-#### `asyncReturnValue` (Method)
-
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>, returnValue: unknown) => unknown`
-
-#### Parameters
-
-| Name          | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| ------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context`     | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `returnValue` | `unknown`                                         | ❌       | -       | -     | -          | Value to set as the context's return value            |
-
----
-
-##### `asyncReturnValue` (CallSignature)
-
-**Type:** `unknown`
-
-Set the async return value for the execution context
-
-Updates the context's return value and returns it. This is useful
-for plugins that need to modify or wrap the execution result while
-ensuring the context is properly updated.
-
-**Returns:**
-
-The same return value that was set
-
-**Example:**
-
-```typescript
-async execute(context, next) {
-  const result = await next();
-
-  // Transform result and update context
-  const transformed = transformResult(result);
-  return this.asyncReturnValue(context, transformed);
-}
-```
-
-#### Parameters
-
-| Name          | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| ------------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context`     | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `returnValue` | `unknown`                                         | ❌       | -       | -     | -          | Value to set as the context's return value            |
-
----
-
 #### `cleanup` (Method)
 
-**Type:** `(context: MessageSenderPluginContext<T>) => void`
+**Type:** `(context: MessageSenderContext<T>) => void`
 
 #### Parameters
 
-| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `MessageSenderPluginContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -232,70 +184,21 @@ Called after success, error, or abort operations.
 
 #### Parameters
 
-| Name      | Type                            | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `MessageSenderPluginContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
-
----
-
-#### `closeAddedToStore` (Method)
-
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
-
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-
----
-
-##### `closeAddedToStore` (CallSignature)
-
-**Type:** `void`
-
-Mark message as not in store
-
-Sets the
-`addedToStore`
-flag to
-`false`
-in the context parameters,
-indicating that the message is not currently in the store. This can
-be used for cleanup or to track message removal.
-
-**Example:**
-
-```typescript
-async execute(context, next) {
-  try {
-    return await next();
-  } catch (error) {
-    // Remove failed message from store
-    store.deleteMessage(context.parameters.currentMessage.id);
-    this.closeAddedToStore(context);
-    throw error;
-  }
-}
-```
-
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `handleBefore_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>) => MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderOptions<T>) => MessageStoreMsg<unknown, unknown>`
 
 #### Parameters
 
-| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                      | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
@@ -314,21 +217,21 @@ Added message from the store
 
 #### Parameters
 
-| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                      | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
 #### `handleConnectionEstablished` (Method)
 
-**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>) => void`
+**Type:** `(parameters: MessageSenderOptions<T>) => void`
 
 #### Parameters
 
-| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                      | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
@@ -349,22 +252,22 @@ to "sent and waiting for response".
 
 #### Parameters
 
-| Name         | Type                                                             | Optional | Default | Since | Deprecated | Description                       |
-| ------------ | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
-| `parameters` | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters |
+| Name         | Type                      | Optional | Default | Since | Deprecated | Description                       |
+| ------------ | ------------------------- | -------- | ------- | ----- | ---------- | --------------------------------- |
+| `parameters` | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters |
 
 ---
 
 #### `handleStream_UpdateExisting` (Method)
 
-**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, chunkMessage: unknown) => unknown`
+**Type:** `(parameters: MessageSenderOptions<T>, chunkMessage: unknown) => unknown`
 
 #### Parameters
 
-| Name           | Type                                                             | Optional | Default | Since | Deprecated | Description                           |
-| -------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `parameters`   | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
-| `chunkMessage` | `unknown`                                                        | ❌       | -       | -     | -          | Chunk data containing message updates |
+| Name           | Type                      | Optional | Default | Since | Deprecated | Description                           |
+| -------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `parameters`   | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters     |
+| `chunkMessage` | `unknown`                 | ❌       | -       | -     | -          | Chunk data containing message updates |
 
 ---
 
@@ -384,29 +287,29 @@ Updated or added message, or original chunk if not a message
 
 #### Parameters
 
-| Name           | Type                                                             | Optional | Default | Since | Deprecated | Description                           |
-| -------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `parameters`   | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters     |
-| `chunkMessage` | `unknown`                                                        | ❌       | -       | -     | -          | Chunk data containing message updates |
+| Name           | Type                      | Optional | Default | Since | Deprecated | Description                           |
+| -------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `parameters`   | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters     |
+| `chunkMessage` | `unknown`                 | ❌       | -       | -     | -          | Chunk data containing message updates |
 
 ---
 
 #### `handleSuccess_ADD_ON_SUCCESS` (Method)
 
-**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderOptions<T>, successData: T) => T`
 
 #### Parameters
 
-| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                      | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `T`                       | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 ##### `handleSuccess_ADD_ON_SUCCESS` (CallSignature)
 
-**Type:** `MessageStoreMsg<unknown, unknown>`
+**Type:** `T`
 
 Handle successful send for ADD_ON_SUCCESS strategy
 
@@ -419,29 +322,29 @@ Newly added message from store
 
 #### Parameters
 
-| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                      | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `T`                       | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 #### `handleSuccess_KEEP_FAILED` (Method)
 
-**Type:** `(parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>, successData: MessageStoreMsg<unknown, unknown>) => undefined \| MessageStoreMsg<unknown, unknown>`
+**Type:** `(parameters: MessageSenderOptions<T>, successData: T) => undefined \| T`
 
 #### Parameters
 
-| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                      | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `T`                       | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
 ##### `handleSuccess_KEEP_FAILED` (CallSignature)
 
-**Type:** `undefined \| MessageStoreMsg<unknown, unknown>`
+**Type:** `undefined \| T`
 
 Handle successful send for KEEP_FAILED strategy
 
@@ -456,10 +359,10 @@ if update failed
 
 #### Parameters
 
-| Name          | Type                                                             | Optional | Default | Since | Deprecated | Description                                 |
-| ------------- | ---------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
-| `parameters`  | `MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Message sender context parameters           |
-| `successData` | `MessageStoreMsg<unknown, unknown>`                              | ❌       | -       | -     | -          | Success response data to merge into message |
+| Name          | Type                      | Optional | Default | Since | Deprecated | Description                                 |
+| ------------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
+| `parameters`  | `MessageSenderOptions<T>` | ❌       | -       | -     | -          | Message sender context parameters           |
+| `successData` | `T`                       | ❌       | -       | -     | -          | Success response data to merge into message |
 
 ---
 
@@ -511,62 +414,15 @@ try {
 
 ---
 
-#### `mergeRuntimeMessage` (Method)
-
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>, message: Partial<T>) => MessageStoreMsg<unknown, unknown>`
-
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `message` | `Partial<T>`                                      | ❌       | -       | -     | -          | Partial message updates to merge into current message |
-
----
-
-##### `mergeRuntimeMessage` (CallSignature)
-
-**Type:** `MessageStoreMsg<unknown, unknown>`
-
-Merge message updates into the runtime message
-
-Updates the current message in the context by merging the provided
-message updates. This ensures the context always has the latest
-message state and allows plugins to modify the message during execution.
-
-**Returns:**
-
-Merged message with all updates applied
-
-**Example:**
-
-```typescript
-// In a plugin's execute method
-const updated = this.mergeRuntimeMessage(context, {
-  loading: true,
-  startTime: Date.now(),
-  metadata: { plugin: this.pluginName }
-});
-```
-
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-| `message` | `Partial<T>`                                      | ❌       | -       | -     | -          | Partial message updates to merge into current message |
-
----
-
 #### `onBefore` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
+**Type:** `(context: MessageSenderContext<T>) => void`
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -576,35 +432,78 @@ const updated = this.mergeRuntimeMessage(context, {
 
 Before execution hook
 
-Handles message initialization based on the configured failure strategy.
-Determines whether to add the message to the store before or after sending.
+Initializes message state based on the configured failure strategy.
+This hook determines whether to add the message to the store immediately
+or wait until after successful send.
 
-Strategy behavior:
+**Strategy behavior:**
 
-- `ADD_ON_SUCCESS`
-  : Message not added yet, wait for success
-- `KEEP_FAILED`
-  /
-  `DELETE_FAILED`
-  : Add message immediately for loading state
+`ADD_ON_SUCCESS`
+:
+
+- Don't add message to store yet
+- Set
+  `addedToStore=false`
+  flag
+- Message only added after successful send in
+  `onSuccess`
+
+`KEEP_FAILED`
+/
+`DELETE_FAILED`
+:
+
+- Add message to store immediately with
+  `SENDING`
+  status
+- Set
+  `addedToStore=true`
+  flag
+- Update
+  `currentMessage`
+  with store-added version (includes generated ID)
+- Users see loading state in UI
+
+**Important notes:**
+
+- `addedToStore`
+  flag tracked in context parameters
+- Flag used by other hooks to determine update vs add logic
+- Store-added message may have different ID than input message
+
+**Example:** Context after KEEP_FAILED
+
+```typescript
+// Before: context.parameters.currentMessage = { content: 'Hello' }
+// After:  context.parameters.currentMessage = { id: 'msg-1', content: 'Hello', status: 'sending' }
+//         context.parameters.addedToStore = true
+```
+
+**Example:** Context after ADD_ON_SUCCESS
+
+```typescript
+// Before: context.parameters.currentMessage = { content: 'Hello' }
+// After:  context.parameters.currentMessage = { content: 'Hello' } (unchanged)
+//         context.parameters.addedToStore = false
+```
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onConnected` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
+**Type:** `(context: MessageSenderContext<T>) => void`
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -619,21 +518,21 @@ Delegates to the common connection handling logic.
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onError` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| ExecutorError`
+**Type:** `(context: MessageSenderContext<T>) => void \| ExecutorError`
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -644,39 +543,128 @@ Delegates to the common connection handling logic.
 Error execution hook
 
 Handles errors during message send operation based on error type
-and configured failure strategy. Abort errors are handled separately
-to provide better user experience for cancelled operations.
+and configured failure strategy. Abort errors are delegated to
 
-Strategy behavior:
+`onStopError`
+for special handling with
+`STOPPED`
+status.
 
-- `KEEP_FAILED`
-  : Update message with error state, keep in store
-- `DELETE_FAILED`
-  : Remove message from store completely
-- `ADD_ON_SUCCESS`
-  : Keep message data but don't add to store
+**Error type handling:**
+
+- Abort errors: Delegated to
+  `onStopError()`
+  → status
+  `STOPPED`
+
+- Regular errors: Handled here → status
+  `FAILED`
+
+**Strategy behavior:**
+
+`KEEP_FAILED`
+:
+
+- If
+  `addedToStore=true`
+  : Update message in store with
+  `FAILED`
+  status
+- If
+  `addedToStore=false`
+  : Merge error with current message
+- Message kept with error information
+- Throws if update fails
+
+`DELETE_FAILED`
+:
+
+- If
+  `addedToStore=true`
+  : Delete message from store
+- Merge error with current message for return value
+- Message not visible in store
+
+`ADD_ON_SUCCESS`
+:
+
+- Message never added to store
+- Merge error with current message
+- Return failed message without adding
+
+**Data flow:**
+
+1. Check if error is abort error → delegate to
+   `onStopError`
+
+2. Create failed data with
+   `FAILED`
+   status and error
+3. Update, delete, or merge based on strategy
+4. Update context with final failed message
+5. Call
+   `cleanup()`
+   to stop streaming state
 
 **Throws:**
 
-When message update fails for KEEP_FAILED strategy
+When message update fails for
+`KEEP_FAILED`
+strategy
+
+**Example:** KEEP_FAILED with addedToStore=true
+
+```typescript
+// Message in store: { id: 'msg-1', status: 'sending', loading: true }
+// Error occurs: Error('Network error')
+// After onError: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+// Message updated in store with error
+```
+
+**Example:** DELETE_FAILED with addedToStore=true
+
+```typescript
+// Message in store: { id: 'msg-1', status: 'sending', loading: true }
+// Error occurs: Error('Network error')
+// After onError: Message deleted from store
+// Returns: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+```
+
+**Example:** ADD_ON_SUCCESS with addedToStore=false
+
+```typescript
+// Message not in store
+// Error occurs: Error('Network error')
+// After onError: Message not added to store
+// Returns: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+```
+
+**Example:** Abort error delegation
+
+```typescript
+// Error is AbortError
+// Delegated to onStopError()
+// Status set to 'stopped' instead of 'failed'
+// onAborted callback invoked
+```
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onStopError` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void \| ExecutorError`
+**Type:** `(context: MessageSenderContext<T>) => void \| ExecutorError`
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -686,52 +674,125 @@ When message update fails for KEEP_FAILED strategy
 
 Handle abort/stop errors
 
-Special handling when a send operation is cancelled or stopped.
-This prevents abort errors from propagating and ensures proper cleanup.
+Special handling for abort errors when a send operation is cancelled.
+Sets message status to
+`STOPPED`
+(different from
+`FAILED`
+) and invokes
+the
+`onAborted`
+callback if provided. Prevents error propagation to
+maintain proper control flow.
 
-Process:
+**Process flow:**
 
-1. Set message status to
+1. Create stopped data with
    `STOPPED`
-
-2. Call
+   status and error
+2. Update or merge message based on
+   `addedToStore`
+   flag
+3. Update context with final stopped message
+4. Invoke
    `onAborted`
-   callback if provided
-3. Prevent error propagation to other plugins
+   callback (error-safe)
+5. Call
+   `cleanup()`
+   to stop streaming state
+6. Return
+   `undefined`
+   to prevent error propagation
+
+**Message handling:**
+
+- If
+  `addedToStore=true`
+  : Update existing message in store
+- If
+  `addedToStore=false`
+  : Merge with current message (not added to store)
+- Fallback to merge if update returns
+  `null`
+
+**Important notes:**
+
+- Status set to
+  `STOPPED`
+  (not
+  `FAILED`
+  )
+- `onAborted`
+  callback wrapped in try-catch to prevent callback errors
+- Returns
+  `undefined`
+  to stop error propagation through plugin chain
+- Cleanup always called to ensure streaming state is stopped
 
 **Returns:**
 
 `undefined`
-to prevent error propagation
+to prevent error propagation to other plugins
 
-**Example:**
+**Example:** With KEEP_FAILED strategy
 
 ```typescript
-// When user cancels a message send
-controller.abort();
-// onStopError will handle the abort error
-// Message status set to STOPPED
-// onAborted callback invoked with final message state
+// Message in store: { id: 'msg-1', status: 'sending', loading: true }
+sender.stop('msg-1');
+// After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+// Message kept in store with STOPPED status
+```
+
+**Example:** With DELETE_FAILED strategy
+
+```typescript
+// Message in store: { id: 'msg-1', status: 'sending', loading: true }
+sender.stop('msg-1');
+// After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+// Message kept in store (STOPPED is different from FAILED, not deleted)
+```
+
+**Example:** With ADD_ON_SUCCESS strategy
+
+```typescript
+// Message not in store yet
+sender.stop('msg-1');
+// After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+// Message not added to store (returns stopped message)
+```
+
+**Example:** With onAborted callback
+
+```typescript
+sender.send(
+  { content: 'Hello' },
+  {
+    onAborted: (msg) => {
+      console.log('Aborted:', msg.id, msg.status); // 'stopped'
+      // Cleanup UI, show notification, etc.
+    }
+  }
+);
 ```
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
 #### `onStream` (Method)
 
-**Type:** `(context: MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>, chunk: unknown) => unknown`
+**Type:** `(context: MessageSenderContext<T>, chunk: unknown) => unknown`
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `context` | `MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
-| `chunk`   | `unknown`                                                       | ❌       | -       | -     | -          | Data chunk received from the stream              |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| `chunk`   | `unknown`                 | ❌       | -       | -     | -          | Data chunk received from the stream              |
 
 ---
 
@@ -776,22 +837,22 @@ onStream: (context, chunk) => {
 
 #### Parameters
 
-| Name      | Type                                                            | Optional | Default | Since | Deprecated | Description                                      |
-| --------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
-| `context` | `MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
-| `chunk`   | `unknown`                                                       | ❌       | -       | -     | -          | Data chunk received from the stream              |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context with message sender parameters |
+| `chunk`   | `unknown`                 | ❌       | -       | -     | -          | Data chunk received from the stream              |
 
 ---
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
+**Type:** `(context: MessageSenderContext<T>) => void`
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -801,66 +862,85 @@ onStream: (context, chunk) => {
 
 Success execution hook
 
-Handles message updates after successful send operation.
-Updates existing messages or adds new ones based on strategy.
+Handles message finalization after successful send operation.
+Updates existing messages or adds new ones based on the configured
+strategy and
+`addedToStore`
+flag.
+
+**Strategy behavior:**
+
+`KEEP_FAILED`
+/
+`DELETE_FAILED`
+(
+`addedToStore=true`
+):
+
+- Message already in store from
+  `onBefore`
+
+- Update existing message with success data
+- Merge gateway response into store message
+- Throws error if update fails
+
+`ADD_ON_SUCCESS`
+(
+`addedToStore=false`
+):
+
+- Message not in store yet
+- Add message to store with success data
+- Combine current message with gateway response
+- Return newly added message
+
+**Data flow:**
+
+1. Get success data from
+   `context.returnValue`
+   (gateway response)
+2. Update or add message based on
+   `addedToStore`
+   flag
+3. Update
+   `context.parameters.currentMessage`
+   with final message
+4. Update
+   `context.returnValue`
+   with final message
+5. Call
+   `cleanup()`
+   to stop streaming state
 
 **Throws:**
 
-When message update fails for already-added messages
+When message update fails for
+`KEEP_FAILED`
+/
+`DELETE_FAILED`
+strategies
 
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
-
----
-
-#### `openAddedToStore` (Method)
-
-**Type:** `(context: ExecutorContext<MessageSenderContextOptions<T>>) => void`
-
-#### Parameters
-
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
-
----
-
-##### `openAddedToStore` (CallSignature)
-
-**Type:** `void`
-
-Mark message as added to store
-
-Sets the
-`addedToStore`
-flag to
-`true`
-in the context parameters,
-indicating that the message has been added to the store. This flag
-can be used by other plugins to track message state.
-
-**Example:**
+**Example:** KEEP_FAILED flow
 
 ```typescript
-async execute(context, next) {
-  // Add message to store
-  store.addMessage(context.parameters.currentMessage);
+// onBefore: Added { id: 'msg-1', content: 'Hello', status: 'sending' }
+// Gateway returns: { result: 'OK', timestamp: 123 }
+// onSuccess: Updates to { id: 'msg-1', content: 'Hello', status: 'sent', result: 'OK', timestamp: 123 }
+```
 
-  // Mark as added
-  this.openAddedToStore(context);
+**Example:** ADD_ON_SUCCESS flow
 
-  return next();
-}
+```typescript
+// onBefore: Not added to store
+// Gateway returns: { result: 'OK', timestamp: 123 }
+// onSuccess: Adds { id: 'msg-1', content: 'Hello', status: 'sent', result: 'OK', timestamp: 123 }
 ```
 
 #### Parameters
 
-| Name      | Type                                              | Optional | Default | Since | Deprecated | Description                                           |
-| --------- | ------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `context` | `ExecutorContext<MessageSenderContextOptions<T>>` | ❌       | -       | -     | -          | Executor context containing message sender parameters |
+| Name      | Type                      | Optional | Default | Since | Deprecated | Description                                            |
+| --------- | ------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
+| `context` | `MessageSenderContext<T>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
 
 ---
 
@@ -909,19 +989,94 @@ Type representing valid send failure strategies
 
 Send failure handling strategies
 
-Defines how failed messages should be handled in the message store,
-allowing different behaviors based on application requirements.
+Defines how messages should be managed in the store throughout their
+lifecycle, from sending to success/failure. Each strategy provides
+different user experience patterns suitable for various application types.
 
-**Example:**
+**Strategy comparison:**
+
+| Strategy | Add Timing | Failed Messages | Stopped Messages | Use Case |
+| -------- | ---------- | --------------- | ---------------- | -------- |
+
+|
+`KEEP_FAILED`
+| Before send | Kept in store | Kept in store | Chat apps with retry |
+|
+`DELETE_FAILED`
+| Before send | Deleted from store | Kept in store | Clean UI, success only |
+|
+`ADD_ON_SUCCESS`
+| After success | Not added | Not added | Optimistic UI, no loading |
+
+**Message lifecycle by strategy:**
+
+`KEEP_FAILED`
+:
+
+1. Add message to store with
+   `SENDING`
+   status
+2. On success: Update to
+   `SENT`
+   status
+3. On failure: Update to
+   `FAILED`
+   status (kept in store)
+4. On abort: Update to
+   `STOPPED`
+   status (kept in store)
+
+`DELETE_FAILED`
+:
+
+1. Add message to store with
+   `SENDING`
+   status
+2. On success: Update to
+   `SENT`
+   status
+3. On failure: Delete from store (return message with
+   `FAILED`
+   )
+4. On abort: Update to
+   `STOPPED`
+   status (kept in store, different from failed)
+
+`ADD_ON_SUCCESS`
+:
+
+1. Don't add message to store yet
+2. On success: Add message to store with
+   `SENT`
+   status
+3. On failure: Don't add to store (return message with
+   `FAILED`
+   )
+4. On abort: Don't add to store (return message with
+   `STOPPED`
+   )
+
+**Example:** Chat application (KEEP_FAILED)
 
 ```typescript
-// Use KEEP_FAILED for chat apps where users should see failures
+// Users see all messages including failures
+// Can retry failed messages
 const strategy = SendFailureStrategy.KEEP_FAILED;
+```
 
-// Use DELETE_FAILED for clean message lists
+**Example:** Form submission (DELETE_FAILED)
+
+```typescript
+// Clean UI showing only successful submissions
+// Failed attempts don't clutter the list
 const strategy = SendFailureStrategy.DELETE_FAILED;
+```
 
-// Use ADD_ON_SUCCESS for optimistic UI without showing progress
+**Example:** Background task (ADD_ON_SUCCESS)
+
+```typescript
+// No loading state visible to users
+// Results appear only after completion
 const strategy = SendFailureStrategy.ADD_ON_SUCCESS;
 ```
 

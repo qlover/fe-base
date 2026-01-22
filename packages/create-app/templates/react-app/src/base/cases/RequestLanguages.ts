@@ -1,11 +1,13 @@
 import type { I18nServiceInterface } from '@/base/port/I18nServiceInterface';
 import type {
-  ExecutorContext,
-  ExecutorPlugin,
+  ExecutorContextInterface,
+  LifecyclePluginInterface,
   RequestAdapterConfig
 } from '@qlover/fe-corekit';
 
-export class RequestLanguages implements ExecutorPlugin {
+export class RequestLanguages implements LifecyclePluginInterface<
+  ExecutorContextInterface<RequestAdapterConfig, unknown>
+> {
   public readonly pluginName = 'RequestLanguages';
 
   constructor(
@@ -25,18 +27,29 @@ export class RequestLanguages implements ExecutorPlugin {
   /**
    * @override
    */
-  public onBefore(context: ExecutorContext<RequestAdapterConfig>): void {
+  public onBefore(
+    context: ExecutorContextInterface<RequestAdapterConfig, unknown>
+  ): void {
     const currentLanguage = this.i18nService.getCurrentLanguage();
     const languages = this.i18nService.getSupportedLanguages();
 
     if (!context.parameters.headers) {
-      context.parameters.headers = {};
+      context.setParameters({
+        ...context.parameters,
+        headers: {}
+      });
     }
 
     const languageValue = this.buildAcceptLanguage(
       Array.from(new Set([currentLanguage, ...languages]))
     );
 
-    context.parameters.headers[this.headerName] = languageValue;
+    context.setParameters({
+      ...context.parameters,
+      headers: {
+        ...context.parameters.headers,
+        [this.headerName]: languageValue
+      }
+    });
   }
 }

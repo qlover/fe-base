@@ -14,7 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StreamEvent } from '../../src/core/response-stream/StreamEvent';
-import { StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
+import { type StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
 
 describe('StreamEvent', () => {
   // Mock processor implementation

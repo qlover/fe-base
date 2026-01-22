@@ -8,7 +8,8 @@ import {
   type AppApiTransaction
 } from '../appApi/AppApiRequester';
 import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
-import type { RequestTransaction } from '@qlover/fe-corekit';
+import { RequestExecutor } from '@qlover/fe-corekit';
+import { AdminApiRequesterContext } from './AdminApiRequester';
 
 export type AdminLocalesListTransaction = AppApiTransaction<
   ResourceQuery,
@@ -24,17 +25,17 @@ export type AdminLocalesUpdateTransaction = AppApiTransaction<
 export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   constructor(
     @inject(AppApiRequester)
-    protected client: RequestTransaction<AppApiConfig>
+    protected client: RequestExecutor<AppApiConfig, AdminApiRequesterContext>
   ) {}
 
   /**
    * @override
    */
   public create(data: LocalesSchema): Promise<unknown> {
-    return this.client.request<AdminLocalesListTransaction>({
+    return this.client.request({
       url: '/admin/locales/create',
       method: 'POST',
-      data: data as unknown as Record<string, unknown>
+      data: data
     });
   }
 
@@ -42,10 +43,10 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
    * @override
    */
   public remove(data: Partial<LocalesSchema>): Promise<unknown> {
-    return this.client.request<AdminLocalesListTransaction>({
+    return this.client.request({
       url: '/admin/locales',
       method: 'DELETE',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 
@@ -55,7 +56,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   public search(
     params: ResourceQuery
   ): Promise<AdminLocalesListTransaction['response']> {
-    return this.client.request<AdminLocalesListTransaction>({
+    return this.client.request({
       url: '/admin/locales',
       method: 'GET',
       params: params as unknown as Record<string, unknown>
@@ -66,10 +67,10 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
    * @override
    */
   public export(data: LocalesSchema): Promise<unknown> {
-    return this.client.request<AdminLocalesListTransaction>({
+    return this.client.request({
       url: '/admin/locales',
       method: 'GET',
-      data: data as unknown as Record<string, unknown>
+      data
     });
   }
 
@@ -79,7 +80,7 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   public update(
     data: Partial<LocalesSchema>
   ): Promise<AdminLocalesUpdateTransaction['response']> {
-    return this.client.request<AdminLocalesUpdateTransaction>({
+    return this.client.request({
       url: `/admin/locales/update`,
       method: 'POST',
       data

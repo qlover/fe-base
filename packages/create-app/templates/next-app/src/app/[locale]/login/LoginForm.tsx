@@ -19,7 +19,6 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
   const { tt } = props;
   const t = useWarnTranslations();
   const userService = useIOC(I.UserServiceInterface);
-  const logger = useIOC(I.Logger);
   const appConfig = useIOC(I.AppConfig);
   const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
@@ -29,8 +28,8 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
       setLoading(true);
       await userService.login(values);
       routerService.replaceHome();
-    } catch (error) {
-      logger.error(error);
+    } catch {
+      // do nothing
     } finally {
       setLoading(false);
     }

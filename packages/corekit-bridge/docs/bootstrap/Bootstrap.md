@@ -8,6 +8,19 @@
 
 **Type:** `class Bootstrap<Container>`
 
+Bootstrap executor
+
+After 3.0.0, SyncExecutor is replaced by LifecycleSyncExecutor
+
+**Example:**
+
+```typescript
+const bootstrap = new Bootstrap({
+  ioc: new IOCContainer()
+});
+await bootstrap.initialize();
+```
+
 ---
 
 #### `new Bootstrap` (Constructor)
@@ -24,13 +37,9 @@
 
 #### `config` (Property)
 
-**Type:** `ExecutorConfigInterface`
+**Type:** `PluginExecutorConfig`
 
----
-
-#### `contextHandler` (Property)
-
-**Type:** `ContextHandler`
+Configuration for this executor
 
 ---
 
@@ -44,208 +53,251 @@
 
 #### `plugins` (Property)
 
-**Type:** `ExecutorPlugin<unknown>[]`
+**Type:** `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]`
 
 Array of active plugins for this executor
+All plugins must be of type Plugin which extends ExecutorPluginInterface<Ctx>
+Type safety is enforced at compile time through generic constraints
+
+---
+
+#### `createContext` (Method)
+
+**Type:** `(parameters: Params) => ExecutorContextImpl<Params, Result, HookRuntimes>`
+
+#### Parameters
+
+| Name         | Type     | Optional | Default | Since | Deprecated | Description                            |
+| ------------ | -------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `parameters` | `Params` | ❌       | -       | -     | -          | The initial parameters for the context |
+
+---
+
+##### `createContext` (CallSignature)
+
+**Type:** `ExecutorContextImpl<Params, Result, HookRuntimes>`
+
+Create a new execution context instance
 
 Core concept:
-Maintains an ordered collection of plugins that participate in the execution pipeline
+Factory method for creating execution contexts. This allows subclasses
+to override context creation behavior if needed.
 
-Main features:
+**Returns:**
 
-- Plugin storage: Stores all registered plugins in execution order
-- Lifecycle management: Manages plugin initialization and cleanup
-- Execution coordination: Ensures plugins execute in the correct sequence
-- Deduplication support: Prevents duplicate plugins when configured
+A new ExecutorContextImpl instance
 
-Plugin execution order:
+#### Parameters
 
-1. Plugins are executed in the order they were added
-2. Each plugin can modify data or control execution flow
-3. Plugin hooks are called based on executor configuration
-
-**Example:**
-
-```typescript
-protected plugins = [
-  new LoggerPlugin(),
-  new RetryPlugin({ maxAttempts: 3 }),
-  new CachePlugin({ ttl: 300 })
-];
-```
+| Name         | Type     | Optional | Default | Since | Deprecated | Description                            |
+| ------------ | -------- | -------- | ------- | ----- | ---------- | -------------------------------------- |
+| `parameters` | `Params` | ❌       | -       | -     | -          | The initial parameters for the context |
 
 ---
 
 #### `exec` (Method)
 
-**Type:** `(dataOrTask: Params \| SyncTask<Result, Params>, task: SyncTask<Result, Params>) => Result`
+**Type:** `(task: ExecutorSyncTask<R, P>) => R`
 
 #### Parameters
 
-| Name         | Type                                 | Optional | Default | Since | Deprecated | Description                                            |
-| ------------ | ------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `dataOrTask` | `Params \| SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task data or task function                             |
-| `task`       | `SyncTask<Result, Params>`           | ✅       | -       | -     | -          | Task function (optional when dataOrTask is a function) |
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description                                    |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          | Task function to execute (must be synchronous) |
 
 ---
 
 ##### `exec` (CallSignature)
 
-**Type:** `Result`
+**Type:** `R`
 
-Execute synchronous task with full plugin pipeline
-Core method for task execution with plugin support
+Execute task with full plugin pipeline
 
 Core concept:
-Complete execution pipeline with plugin lifecycle management
-
-Execution flow:
-
-1. Validate and prepare task
-2. Execute beforeHooks (configured or default 'onBefore')
-3. Execute core task logic with execHook support
-4. Execute afterHooks (configured or default 'onSuccess')
-5. Handle errors with onError hooks if needed
-
-Performance considerations:
-
-- No async overhead
-- Direct execution path
-- Immediate results
-- Plugin chain optimization
-
-**Throws:**
-
-When task is not a function
-
-**Throws:**
-
-When task execution fails
+Complete sync execution pipeline with plugin lifecycle management.
+Works only with synchronous tasks.
 
 **Returns:**
 
 Task execution result
 
-**Example:** Basic task execution
+**Example:** Sync task
 
 ```typescript
-const result = executor.exec((data) => {
-  return data.toUpperCase();
+const result = executor.exec((ctx) => {
+  return ctx.parameters.toUpperCase();
 });
 ```
 
-**Example:** With input data
+**Example:** With data
 
 ```typescript
-const data = { numbers: [1, 2, 3] };
-const task = (input) => {
-  return input.numbers.map((n) => n * 2);
-};
-
-const result = executor.exec(data, task);
-```
-
-**Example:** With validation
-
-```typescript
-const result = executor.exec((data) => {
-  if (typeof data !== 'string') {
-    throw new Error('Data must be string');
-  }
-  return data.trim();
+const result = executor.exec({ text: 'hello' }, (ctx) => {
+  return ctx.parameters.text.toUpperCase();
 });
 ```
 
 #### Parameters
 
-| Name         | Type                                 | Optional | Default | Since | Deprecated | Description                                            |
-| ------------ | ------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `dataOrTask` | `Params \| SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task data or task function                             |
-| `task`       | `SyncTask<Result, Params>`           | ✅       | -       | -     | -          | Task function (optional when dataOrTask is a function) |
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description                                    |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          | Task function to execute (must be synchronous) |
+
+---
+
+##### `exec` (CallSignature)
+
+**Type:** `R`
+
+#### Parameters
+
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `data` | `P`                      | ❌       | -       | -     | -          |             |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          |             |
 
 ---
 
 #### `execNoError` (Method)
 
-**Type:** `(dataOrTask: Params \| SyncTask<Result, Params>, task: SyncTask<Result, Params>) => ExecutorError \| Result`
+**Type:** `(task: ExecutorSyncTask<R, P>) => ExecutorError \| R`
 
 #### Parameters
 
-| Name         | Type                                 | Optional | Default | Since | Deprecated | Description                                            |
-| ------------ | ------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `dataOrTask` | `Params \| SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task data or task function                             |
-| `task`       | `SyncTask<Result, Params>`           | ✅       | -       | -     | -          | Task function (optional when dataOrTask is a function) |
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description              |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------ |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          | Task function to execute |
 
 ---
 
 ##### `execNoError` (CallSignature)
 
-**Type:** `ExecutorError \| Result`
+**Type:** `ExecutorError \| R`
 
 Execute task without throwing errors
-Wraps all errors in ExecutorError for safe error handling
 
 Core concept:
-Error-safe execution pipeline that returns errors instead of throwing
-
-Advantages over try-catch:
-
-- Standardized error handling
-- No exception propagation
-- Consistent error types
-- Plugin error handling support
+Error-safe execution pipeline that returns errors as values instead of throwing them.
+This allows for functional error handling without try-catch blocks.
 
 **Returns:**
 
-Task result or ExecutorError if execution fails
+Result or ExecutorError
 
-**Throws:**
-
-Never throws - all errors are wrapped in ExecutorError
-
-**Example:** Basic usage
+**Example:**
 
 ```typescript
-const result = executor.execNoError((data) => {
-  if (!data.isValid) {
-    throw new Error('Invalid data');
-  }
-  return data.value;
+const result = executor.execNoError((ctx) => {
+  return processData(ctx.parameters);
 });
 
 if (result instanceof ExecutorError) {
-  console.log('Task failed:', result.message);
+  console.error('Task failed:', result);
 } else {
   console.log('Task succeeded:', result);
 }
 ```
 
-**Example:** With input data
+#### Parameters
 
-```typescript
-const result = executor.execNoError({ value: 'test' }, (data) =>
-  data.value.toUpperCase()
-);
-```
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description              |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ------------------------ |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          | Task function to execute |
+
+---
+
+##### `execNoError` (CallSignature)
+
+**Type:** `ExecutorError \| R`
 
 #### Parameters
 
-| Name         | Type                                 | Optional | Default | Since | Deprecated | Description                                            |
-| ------------ | ------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `dataOrTask` | `Params \| SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task data or task function                             |
-| `task`       | `SyncTask<Result, Params>`           | ✅       | -       | -     | -          | Task function (optional when dataOrTask is a function) |
+| Name   | Type                     | Optional | Default | Since | Deprecated | Description |
+| ------ | ------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `data` | `P`                      | ❌       | -       | -     | -          |             |
+| `task` | `ExecutorSyncTask<R, P>` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `getAfterHooks` (Method)
+
+**Type:** `() => string \| string[]`
+
+---
+
+##### `getAfterHooks` (CallSignature)
+
+**Type:** `string \| string[]`
+
+Get configured afterHooks or default
+
+---
+
+#### `getBeforeHooks` (Method)
+
+**Type:** `() => string \| string[]`
+
+---
+
+##### `getBeforeHooks` (CallSignature)
+
+**Type:** `string \| string[]`
+
+Get configured beforeHooks or default
 
 ---
 
 #### `getContext` (Method)
 
-**Type:** `() => BootstrapContextValue`
+**Type:** `() => BootstrapPluginOptions`
 
 ---
 
 ##### `getContext` (CallSignature)
 
-**Type:** `BootstrapContextValue`
+**Type:** `BootstrapPluginOptions`
+
+---
+
+#### `getErrorHook` (Method)
+
+**Type:** `() => string`
+
+---
+
+##### `getErrorHook` (CallSignature)
+
+**Type:** `string`
+
+Get configured errorHook or default
+
+---
+
+#### `getExecHook` (Method)
+
+**Type:** `() => string`
+
+---
+
+##### `getExecHook` (CallSignature)
+
+**Type:** `string`
+
+Get configured execHook or default
+
+---
+
+#### `getFinallyHook` (Method)
+
+**Type:** `() => string`
+
+---
+
+##### `getFinallyHook` (CallSignature)
+
+**Type:** `string`
+
+Get configured finallyHook or default
 
 ---
 
@@ -258,6 +310,248 @@ const result = executor.execNoError({ value: 'test' }, (data) =>
 ##### `getIOCContainer` (CallSignature)
 
 **Type:** `undefined \| Container`
+
+---
+
+#### `handler` (Method)
+
+**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
+
+#### Parameters
+
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute                          |
+
+---
+
+##### `handler` (CallSignature)
+
+**Type:** `Result`
+
+Main execution handler for the success path
+
+Core concept:
+Orchestrates the complete plugin lifecycle for successful task execution.
+This is the main pipeline that runs when no errors occur.
+
+Execution pipeline:
+
+1. beforeHooks: Pre-process and validate input parameters
+   - Plugins can modify parameters via return value
+   - Common use: validation, normalization, enrichment
+   - If hook returns value, parameters are updated
+
+2. Task execution: Run the actual task with execHook support
+   - Plugins can intercept via execHook
+   - Task receives updated parameters from beforeHooks
+   - Result is stored in context
+
+3. afterHooks: Post-process results
+   - Plugins can transform results, log, notify, etc.
+   - Common use: formatting, caching, analytics
+   - Final result comes from context.returnValue
+
+Parameter flow:
+
+- Initial parameters → beforeHooks → updated parameters → task → result
+- beforeHooks can return new parameters to replace context.parameters
+- Task receives the updated parameters
+- afterHooks work with the result in context.returnValue
+
+Hook configuration:
+
+- beforeHooks: Configured via getBeforeHooks() (default: 'onBefore')
+- afterHooks: Configured via getAfterHooks() (default: 'onSuccess')
+- Can be customized in executor configuration
+
+**Returns:**
+
+Task execution result
+
+**Example:** Typical flow
+
+```typescript
+// 1. beforeHooks modify parameters
+onBefore: (ctx) => ({ ...ctx.parameters, timestamp: Date.now() });
+
+// 2. Task runs with updated parameters
+const task = (ctx) =>
+  fetch(`/api/${ctx.parameters.id}?t=${ctx.parameters.timestamp}`);
+
+// 3. afterHooks process result
+onSuccess: (ctx) => console.log('Fetched:', ctx.returnValue);
+```
+
+#### Parameters
+
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                       |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing parameters and state |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute                          |
+
+---
+
+#### `handlerCatch` (Method)
+
+**Type:** `(context: ExecutorContextImpl<unknown, unknown, HookRuntimes>, error: unknown) => ExecutorError`
+
+#### Parameters
+
+| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                                             | ❌       | -       | -     | -          | Original error                                 |
+
+---
+
+##### `handlerCatch` (CallSignature)
+
+**Type:** `ExecutorError`
+
+Error handler for the catch path
+
+Core concept:
+Handles errors that occur during task execution by running onError hooks
+and normalizing the error to ExecutorError format.
+
+Execution flow:
+
+1. Normalize error to Error object
+2. Set error in context (wrap in ExecutorError if needed)
+3. Execute onError hooks for all plugins
+4. Check if any plugin returned a custom ExecutorError
+5. If plugin provided error, use it; otherwise use context.error
+6. Normalize to ExecutorError if not already
+7. Return the ExecutorError to be thrown
+
+Plugin error handling:
+
+- Plugins can inspect context.error to see what went wrong
+- Plugins can return ExecutorError to customize error details
+- Plugins can log, report, or transform errors
+- Last plugin's return value takes precedence
+
+Error transformation:
+
+- If context.error is already ExecutorError, return as-is
+- Otherwise, wrap in ExecutorError with EXECUTOR_SYNC_ERROR code
+- Preserves original error as cause for debugging
+
+Use cases:
+
+- Error logging: Plugin logs error to monitoring service
+- Error transformation: Plugin converts technical error to user-friendly message
+- Error enrichment: Plugin adds context information to error
+
+**Returns:**
+
+ExecutorError to be thrown
+
+**Example:** Plugin handling errors
+
+```typescript
+onError: (ctx) => {
+  if (ctx.error instanceof NetworkError) {
+    // Transform to user-friendly error
+    return new ExecutorError('NETWORK_ERROR', ctx.error, {
+      message: 'Network connection failed. Please check your internet.'
+    });
+  }
+  // Log and return undefined to use default error
+  logger.error('Task failed:', ctx.error);
+};
+```
+
+#### Parameters
+
+| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                                    |
+| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context containing error information |
+| `error`   | `unknown`                                             | ❌       | -       | -     | -          | Original error                                 |
+
+---
+
+#### `handlerFinally` (Method)
+
+**Type:** `(context: ExecutorContextImpl<unknown, unknown, HookRuntimes>) => void`
+
+#### Parameters
+
+| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                |
+| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
+
+---
+
+##### `handlerFinally` (CallSignature)
+
+**Type:** `void`
+
+Finally handler for cleanup
+
+Core concept:
+Cleanup method that always runs after task execution, regardless of success or failure.
+Ensures context is properly reset for potential reuse and executes onFinally hooks.
+
+Execution:
+
+- Called in finally block of run() method
+- Runs after both success (handler) and error (handlerCatch) paths
+- Guaranteed to execute even if error is thrown
+
+Cleanup operations:
+
+- Executes onFinally hooks for all plugins (before reset so hooks can access context state)
+- Resets context state via context.reset()
+- Clears hook runtimes tracking
+- Prepares context for next execution
+- Prevents state leakage between executions
+
+Why execute hooks before reset:
+
+- Plugins may need access to error or returnValue for cleanup
+- Context state is still available during hook execution
+- Reset happens after hooks complete to ensure clean state
+
+Why cleanup is important:
+
+- Context instances may be reused
+- Hook runtime state should not persist
+- Prevents memory leaks
+- Ensures clean state for next task
+- Allows plugins to perform final cleanup operations
+
+**Example:** Context reset includes:
+
+```typescript
+// Inside context.reset():
+- Clear hook runtimes (times, returnValue, breakChain, etc.)
+- Reset plugin tracking
+- Clear temporary state
+```
+
+**Example:** Plugin cleanup:
+
+```typescript
+onFinally: (ctx) => {
+  // Cleanup resources
+  if (ctx.parameters.connection) {
+    ctx.parameters.connection.close();
+  }
+  // Can access error or returnValue before reset
+  if (ctx.error) {
+    logger.error('Task failed:', ctx.error);
+  }
+};
+```
+
+#### Parameters
+
+| Name      | Type                                                  | Optional | Default | Since | Deprecated | Description                |
+| --------- | ----------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------- |
+| `context` | `ExecutorContextImpl<unknown, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Execution context to reset |
 
 ---
 
@@ -275,14 +569,14 @@ const result = executor.execNoError({ value: 'test' }, (data) =>
 
 #### `run` (Method)
 
-**Type:** `(data: Params, actualTask: SyncTask<Result, Params>) => Result`
+**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
 
 #### Parameters
 
-| Name         | Type                       | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `data`       | `Params`                   | ❌       | -       | -     | -          | Data to pass to the task        |
-| `actualTask` | `SyncTask<Result, Params>` | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
@@ -290,25 +584,18 @@ const result = executor.execNoError({ value: 'test' }, (data) =>
 
 **Type:** `Result`
 
-Core method to run synchronous task with plugin hooks
-Implements the complete execution pipeline with all plugin hooks
+Core task execution method with plugin hooks
 
 Core concept:
-Complete execution pipeline with configurable hook lifecycle
+Complete sync execution pipeline with configurable hook lifecycle.
 
 Pipeline stages:
 
 1. beforeHooks - Pre-process input data (configurable, default: 'onBefore')
 2. Task execution - Run the actual task with execHook support
 3. afterHooks - Post-process results (configurable, default: 'onSuccess')
-4. onError hooks - Handle any errors
-
-Error handling strategy:
-
-- Catches all errors
-- Passes errors through plugin chain
-- Wraps unhandled errors in ExecutorError
-- Supports plugin error handling
+4. onError hooks - Handle any errors (if thrown)
+5. onFinally hooks - Cleanup operations (always executed)
 
 **Throws:**
 
@@ -318,203 +605,237 @@ When task execution fails
 
 Task execution result
 
-**Example:** Internal implementation
-
-```typescript
-protected run(data, task) {
-  try {
-    // Execute beforeHooks (configurable)
-    this.runHooks(this.plugins, beforeHooks, context);
-
-    // Execute core logic with execHook support
-    this.runExec(context, actualTask);
-
-    // Execute afterHooks (configurable)
-    this.runHooks(this.plugins, afterHooks, context);
-
-    return context.returnValue;
-  } catch (error) {
-    // Handle errors with onError hooks
-    this.runHook(this.plugins, 'onError', context);
-  }
-}
-```
-
 #### Parameters
 
-| Name         | Type                       | Optional | Default | Since | Deprecated | Description                     |
-| ------------ | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
-| `data`       | `Params`                   | ❌       | -       | -     | -          | Data to pass to the task        |
-| `actualTask` | `SyncTask<Result, Params>` | ❌       | -       | -     | -          | Actual task function to execute |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                     |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------- |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context               |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Actual task function to execute |
 
 ---
 
 #### `runExec` (Method)
 
-**Type:** `(context: ExecutorContext<Params>, actualTask: SyncTask<Result, Params>) => void`
+**Type:** `(context: ExecutorContextImpl<Params, Result, HookRuntimes>, actualTask: ExecutorSyncTask<Result, Params>) => Result`
 
 #### Parameters
 
-| Name         | Type                       | Optional | Default | Since | Deprecated | Description              |
-| ------------ | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
-| `context`    | `ExecutorContext<Params>`  | ❌       | -       | -     | -          | Execution context        |
-| `actualTask` | `SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task function to execute |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description              |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context        |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute |
 
 ---
 
 ##### `runExec` (CallSignature)
 
-**Type:** `void`
+**Type:** `Result`
 
-Execute core task logic with execHook support
+Execute core task logic with execHook support synchronously
 
 Core concept:
-Handles the execution phase with optional plugin intervention
+Handles the task execution phase with optional plugin intervention through execHook.
+Plugins can intercept, wrap, or completely replace the task execution.
 
 Execution logic:
 
-1. Execute configured execHook (default: 'onExec')
-2. If no execHook was executed, run the actual task
-3. Otherwise, use the return value from execHook
+1. Execute configured execHook (default: 'onExec') for all plugins
+2. Determine which task to execute:
+   - If plugin returned a function: Use it as the new task
+   - If plugin returned a value: Use the value directly (skip task execution)
+   - If plugin returned undefined: Use the original task
+   - If no plugin handled: Use the original task
+3. Execute the determined task (if needed)
+4. Store result in context and return it
+
+**Returns:**
+
+Task execution result
 
 #### Parameters
 
-| Name         | Type                       | Optional | Default | Since | Deprecated | Description              |
-| ------------ | -------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
-| `context`    | `ExecutorContext<Params>`  | ❌       | -       | -     | -          | Execution context        |
-| `actualTask` | `SyncTask<Result, Params>` | ❌       | -       | -     | -          | Task function to execute |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description              |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------ |
+| `context`    | `ExecutorContextImpl<Params, Result, HookRuntimes>` | ❌       | -       | -     | -          | Execution context        |
+| `actualTask` | `ExecutorSyncTask<Result, Params>`                  | ❌       | -       | -     | -          | Task function to execute |
 
 ---
 
 #### `runHook` (Method)
 
-**Type:** `(plugins: ExecutorPlugin<unknown>[], hookName: string, context: ExecutorContext<Params>, args: unknown[]) => Params`
+**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookName: string, context: ExecutorContextImpl<Params, unknown, HookRuntimes>, args: unknown[]) => undefined \| Result`
 
 #### Parameters
 
-| Name       | Type                        | Optional | Default | Since | Deprecated | Description                                               |
-| ---------- | --------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `plugins`  | `ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
-| `hookName` | `string`                    | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContext<Params>`   | ✅       | -       | -     | -          | Execution context containing data and runtime information |
-| `args`     | `unknown[]`                 | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
+| Name       | Type                                                                                | Optional | Default | Since | Deprecated | Description                                               |
+| ---------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `plugins`  | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
+| `hookName` | `string`                                                                            | ❌       | -       | -     | -          | Name of the hook function to execute                      |
+| `context`  | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `args`     | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 ##### `runHook` (CallSignature)
 
-**Type:** `Params`
+**Type:** `undefined \| Result`
 
-**Since:** `2.1.0`
-
-Execute a single plugin hook function synchronously
+Execute a single plugin hook synchronously for all plugins
 
 Core concept:
-Sequential plugin execution with chain breaking and return value handling
+Delegates to utility function for sequential sync plugin execution with chain breaking
+and return value handling. This method serves as a convenient wrapper that maintains
+the executor's API while leveraging shared hook execution logic.
 
-Execution flow:
+Execution flow (delegated to runPluginsHookSync):
 
-1. Check if plugin is enabled for the hook
-2. Execute plugin hook if available
-3. Handle plugin results and chain breaking conditions
-4. Continue to next plugin or break chain
+1. Reset hook runtimes in context
+2. Iterate through all plugins sequentially
+3. Check if each plugin is enabled for the hook
+4. Execute plugin hook immediately (no await)
+5. Handle plugin results and chain breaking conditions
+6. Continue to next plugin or break chain if requested
 
 Key features:
 
-- Plugin enablement checking
-- Chain breaking support
-- Return value management
-- Runtime tracking
+- Plugin enablement checking via context.shouldSkipPluginHook
+- Chain breaking support via context.shouldBreakChain
+- Return value management and tracking
+- Fully sync execution (no Promise overhead)
+- Type-safe generic parameters for Result and Params
+
+Type parameters:
+
+- Result: The expected return type from the hook (can differ from Params)
+- Params: The parameter type in the execution context
+
+Why delegate to utility?
+
+- Code reuse: Same logic shared across different executor types
+- Reduced file size: Moves implementation details to utility module
+- Easier testing: Utility functions can be tested independently
+- Better maintainability: Single source of truth for hook execution logic
 
 **Returns:**
 
-Result of the hook function execution
+Result of the hook function execution, or undefined
 
-**Example:** Internal usage
+**Example:**
 
 ```typescript
-const result = this.runHook(this.plugins, 'onBefore', context, data);
+// Execute onBefore hook, expecting to return modified parameters
+const newParams = this.runHook<UserParams, UserParams>(
+  this.plugins,
+  'onBefore',
+  context
+);
 ```
+
+**See:**
+
+runPluginsHookSync - The utility function that performs the actual execution
 
 #### Parameters
 
-| Name       | Type                        | Optional | Default | Since | Deprecated | Description                                               |
-| ---------- | --------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
-| `plugins`  | `ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
-| `hookName` | `string`                    | ❌       | -       | -     | -          | Name of the hook function to execute                      |
-| `context`  | `ExecutorContext<Params>`   | ✅       | -       | -     | -          | Execution context containing data and runtime information |
-| `args`     | `unknown[]`                 | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
+| Name       | Type                                                                                | Optional | Default | Since | Deprecated | Description                                               |
+| ---------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------- |
+| `plugins`  | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                               |
+| `hookName` | `string`                                                                            | ❌       | -       | -     | -          | Name of the hook function to execute                      |
+| `context`  | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information |
+| `args`     | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook function         |
 
 ---
 
 #### `runHooks` (Method)
 
-**Type:** `(plugins: ExecutorPlugin<unknown>[], hookNames: string \| string[], context: ExecutorContext<Params>, args: unknown[]) => Params`
+**Type:** `(plugins: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[], hookNames: string \| string[], context: ExecutorContextImpl<Params, unknown, HookRuntimes>, args: unknown[]) => undefined \| Result`
 
 #### Parameters
 
-| Name        | Type                        | Optional | Default | Since | Deprecated | Description                                                    |
-| ----------- | --------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `plugins`   | `ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
-| `hookNames` | `string \| string[]`        | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContext<Params>`   | ✅       | -       | -     | -          | Execution context containing data and runtime information      |
-| `args`      | `unknown[]`                 | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
+| Name        | Type                                                                                | Optional | Default | Since | Deprecated | Description                                                    |
+| ----------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
+| `plugins`   | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
+| `hookNames` | `string \| string[]`                                                                | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
+| `context`   | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `args`      | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
 
 ##### `runHooks` (CallSignature)
 
-**Type:** `Params`
+**Type:** `undefined \| Result`
 
-Execute multiple plugin hook functions synchronously
-Supports executing multiple hook names in sequence
+Execute multiple plugin hooks in sequence synchronously
 
 Core concept:
-Sequential execution of multiple hooks with chain breaking support
+Delegates to utility function for sequential execution of multiple hooks with
+chain breaking support. This enables executing a series of lifecycle hooks
+(e.g., validation then transformation) in a single call.
 
-Execution flow:
+Execution flow (delegated to runPluginsHooksSync):
 
-1. For each hook name, check if plugin is enabled
-2. Execute plugin hook if available
-3. Handle plugin results and chain breaking conditions
-4. Continue to next hook name if chain is not broken
+1. Convert hookNames to array if single value provided
+2. Iterate through hook names in order
+3. Execute each hook using runPluginsHookSync
+4. Track and accumulate return values
+5. Check for chain breaking after each hook
+6. Return the last non-undefined result
 
 Key features:
 
-- Supports multiple hook names in sequence
-- Chain breaking support for each hook
-- Return value management across hooks
-- Backward compatibility with single hook execution
+- Sequential hook execution: Hooks run in specified order
+- Chain breaking: Can stop execution early if plugin sets break flag
+- Return value tracking: Returns last hook's result
+- Flexible input: Accepts single hook name or array
+- Type-safe generics: Separate Result and Params types
+
+Use cases:
+
+- Execute multiple lifecycle stages: ['onValidate', 'onTransform']
+- Run custom hook sequences: ['onInit', 'onSetup', 'onReady']
+- Conditional execution: Hooks can break chain to skip remaining hooks
+
+Type parameters:
+
+- Result: The expected return type from the hooks
+- Params: The parameter type in the execution context
 
 **Returns:**
 
-Result of the last executed hook function
+Result of the last executed hook function, or undefined
 
-**Example:** Execute multiple hooks in sequence
+**Example:** Execute multiple hooks
 
 ```typescript
-const result = this.runHooks(
+// Execute both validation and transformation hooks
+const result = this.runHooks<Data, Data>(
   this.plugins,
-  ['onBefore', 'onValidate', 'onProcess'],
-  context,
-  data
+  ['onValidate', 'onTransform'],
+  context
 );
 ```
 
-**Example:** Execute single hook (backward compatibility)
+**Example:** Execute single hook (convenience)
 
 ```typescript
-const result = this.runHooks(this.plugins, 'onBefore', context, data);
+// Same as runHook, but accepts array syntax
+const result = this.runHooks<Data, Data>(this.plugins, 'onBefore', context);
 ```
+
+**See:**
+
+- runPluginsHooksSync - The utility function that performs the actual execution
+
+- runHook - For executing a single hook
 
 #### Parameters
 
-| Name        | Type                        | Optional | Default | Since | Deprecated | Description                                                    |
-| ----------- | --------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `plugins`   | `ExecutorPlugin<unknown>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
-| `hookNames` | `string \| string[]`        | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
-| `context`   | `ExecutorContext<Params>`   | ✅       | -       | -     | -          | Execution context containing data and runtime information      |
-| `args`      | `unknown[]`                 | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
+| Name        | Type                                                                                | Optional | Default | Since | Deprecated | Description                                                    |
+| ----------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
+| `plugins`   | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>[]` | ❌       | -       | -     | -          | Array of plugins to execute                                    |
+| `hookNames` | `string \| string[]`                                                                | ❌       | -       | -     | -          | Single hook name or array of hook names to execute in sequence |
+| `context`   | `ExecutorContextImpl<Params, unknown, HookRuntimes>`                                | ❌       | -       | -     | -          | Execution context containing data and runtime information      |
+| `args`      | `unknown[]`                                                                         | ❌       | -       | -     | -          | Additional arguments to pass to the hook functions             |
 
 ---
 
@@ -544,25 +865,25 @@ const result = this.runHooks(this.plugins, 'onBefore', context, data);
 
 #### `start` (Method)
 
-**Type:** `() => Promise<BootstrapContextValue>`
+**Type:** `() => Promise<BootstrapPluginOptions>`
 
 ---
 
 ##### `start` (CallSignature)
 
-**Type:** `Promise<BootstrapContextValue>`
+**Type:** `Promise<BootstrapPluginOptions>`
 
 ---
 
 #### `startNoError` (Method)
 
-**Type:** `() => ExecutorError \| Promise<BootstrapContextValue \| ExecutorError>`
+**Type:** `() => ExecutorError \| Promise<BootstrapPluginOptions \| ExecutorError>`
 
 ---
 
 ##### `startNoError` (CallSignature)
 
-**Type:** `ExecutorError \| Promise<BootstrapContextValue \| ExecutorError>`
+**Type:** `ExecutorError \| Promise<BootstrapPluginOptions \| ExecutorError>`
 
 ---
 
@@ -589,6 +910,30 @@ const result = this.runHooks(this.plugins, 'onBefore', context, data);
 | -------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
 | `plugin` | `BootstrapExecutorPlugin \| BootstrapExecutorPlugin[]` | ❌       | -       | -     | -          |             |
 | `skip`   | `boolean`                                              | ✅       | -       | -     | -          |             |
+
+---
+
+#### `validePlugin` (Method)
+
+**Type:** `(plugin: LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>) => void`
+
+#### Parameters
+
+| Name     | Type                                                                              | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `validePlugin` (CallSignature)
+
+**Type:** `void`
+
+#### Parameters
+
+| Name     | Type                                                                              | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `plugin` | `LifecycleSyncPluginInterface<BootstrapContext, unknown, BootstrapPluginOptions>` | ❌       | -       | -     | -          |             |
 
 ---
 

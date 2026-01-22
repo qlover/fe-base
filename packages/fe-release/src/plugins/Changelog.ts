@@ -34,22 +34,24 @@
  * await plugin.exec();
  * ```
  */
-import ReleaseContext from '../implments/ReleaseContext';
-import { WorkspacesProps, WorkspaceValue } from './workspaces/Workspaces';
+import type ReleaseContext from '../implments/ReleaseContext';
+import {
+  type WorkspacesProps,
+  type WorkspaceValue
+} from './workspaces/Workspaces';
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { WorkspaceCreator } from './workspaces/WorkspaceCreator';
-import { ExecutorReleaseContext } from '../type';
-import { GitChangelogOptions } from '../interface/ChangeLog';
+import { type GitChangelogOptions } from '../interface/ChangeLog';
 import {
   CHANGELOG_ALL_FIELDS,
   GitChangelog,
-  GitChangelogProps
+  type GitChangelogProps
 } from '../implments/changelog/GitChangeLog';
 import { GitChangelogFormatter } from '../implments/changelog/GitChangelogFormatter';
 import {
   ScriptPlugin,
-  ScriptPluginProps,
+  type ScriptPluginProps,
   Shell
 } from '@qlover/scripts-context';
 
@@ -305,13 +307,11 @@ export default class Changelog extends ScriptPlugin<
    * @example
    * ```typescript
    * const plugin = new Changelog(context, {});
-   * await plugin.onExec(execContext);
+   * await plugin.onExec(context);
    * // Generates changelogs for all workspaces
    * ```
    */
-  public override async onExec(
-    _context: ExecutorReleaseContext
-  ): Promise<void> {
+  public override async onExec(_context: ReleaseContext): Promise<void> {
     const workspaces = await this.step({
       label: 'Generate Changelogs',
       task: () =>

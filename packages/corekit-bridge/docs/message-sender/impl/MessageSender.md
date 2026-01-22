@@ -61,46 +61,20 @@ await sender.send(
 
 #### `new MessageSender` (Constructor)
 
-**Type:** `(messages: MessagesStore<MessageType, MessagesStateInterface<MessageType>>, config: MessageSenderConfig) => MessageSender<MessageType>`
+**Type:** `(messages: MessagesStore<MessageType, MessagesStateInterface<MessageType>>, config: MessageSenderConfig<MessageType>) => MessageSender<MessageType>`
 
 #### Parameters
 
-| Name       | Type                                                              | Optional | Default | Since | Deprecated | Description                                       |
-| ---------- | ----------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
-| `messages` | `MessagesStore<MessageType, MessagesStateInterface<MessageType>>` | ❌       | -       | -     | -          | Message store instance for managing message state |
-| `config`   | `MessageSenderConfig`                                             | ✅       | -       | -     | -          | Optional configuration for sender behavior        |
-
----
-
-#### `abortPlugin` (Property)
-
-**Type:** `AbortPlugin<MessageSenderContextOptions<MessageType>>`
-
-Abort plugin for handling message cancellation
+| Name       | Type                                                              | Optional | Default | Since | Deprecated | Description |
+| ---------- | ----------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `messages` | `MessagesStore<MessageType, MessagesStateInterface<MessageType>>` | ❌       | -       | -     | -          |             |
+| `config`   | `MessageSenderConfig<MessageType>`                                | ✅       | -       | -     | -          |             |
 
 ---
 
 #### `config` (Property)
 
-**Type:** `MessageSenderConfig`
-
-Optional configuration for sender behavior
-
----
-
-#### `executor` (Property)
-
-**Type:** `MessageSenderExecutor<MessageType>`
-
-Plugin executor for managing send pipeline
-
----
-
-#### `logger` (Property)
-
-**Type:** `LoggerInterface<unknown>`
-
-Optional logger instance
+**Type:** `MessageSenderConfig<MessageType>`
 
 ---
 
@@ -108,38 +82,17 @@ Optional logger instance
 
 **Type:** `Object`
 
-**Default:** `{}`
-
-Logger message templates
-
-Predefined templates for consistent logging throughout
-the sender's lifecycle.
-
 ---
 
 ##### `failed` (Property)
 
-**Type:** `"[${senderName}] ${messageId} failed"`
-
-**Default:** `'[${senderName}] ${messageId} failed'`
+**Type:** `string`
 
 ---
 
 ##### `success` (Property)
 
-**Type:** `"[${senderName}] ${messageId} success, speed: ${speed}ms"`
-
-**Default:** `'[${senderName}] ${messageId} success, speed: ${speed}ms'`
-
----
-
-#### `messageSenderErrorId` (Property)
-
 **Type:** `string`
-
-**Default:** `defaultMessageSenderErrorId`
-
-Error ID for message sender errors
 
 ---
 
@@ -147,7 +100,11 @@ Error ID for message sender errors
 
 **Type:** `MessagesStore<MessageType, MessagesStateInterface<MessageType>>`
 
-Message store instance for managing message state
+---
+
+#### `senderGateway` (Property)
+
+**Type:** `SenderGatewayInterface<MessageType>`
 
 ---
 
@@ -155,13 +112,29 @@ Message store instance for managing message state
 
 **Type:** `string`
 
-Name of this sender instance
+---
+
+#### `aborter` (Accessor)
+
+**Type:** `accessor aborter`
 
 ---
 
-#### `createSendContext` (Method)
+#### `executor` (Accessor)
 
-**Type:** `(sendingMessage: MessageType, gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>) => MessageSenderContextOptions<MessageType>`
+**Type:** `accessor executor`
+
+---
+
+#### `logger` (Accessor)
+
+**Type:** `accessor logger`
+
+---
+
+#### `createSendOptions` (Method)
+
+**Type:** `(sendingMessage: MessageType, gatewayOptions: GatewayOptions<MessageType, Record<string, unknown>>) => MessageSenderOptions<MessageType>`
 
 #### Parameters
 
@@ -172,9 +145,9 @@ Name of this sender instance
 
 ---
 
-##### `createSendContext` (CallSignature)
+##### `createSendOptions` (CallSignature)
 
-**Type:** `MessageSenderContextOptions<MessageType>`
+**Type:** `MessageSenderOptions<MessageType>`
 
 Create execution context for sending
 
@@ -308,14 +281,14 @@ Message store managing message state
 
 #### `handleError` (Method)
 
-**Type:** `(error: unknown, context: MessageSenderContextOptions<MessageType>) => Promise<MessageType>`
+**Type:** `(error: unknown, options: MessageSenderOptions<MessageType>) => Promise<MessageType>`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`   | `unknown`                                  | ❌       | -       | -     | -          | Error that occurred during send                        |
-| `context` | `MessageSenderContextOptions<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                | Optional | Default | Since | Deprecated | Description                                                  |
+| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `error`   | `unknown`                           | ❌       | -       | -     | -          | Error that occurred during send (any type)                   |
+| `options` | `MessageSenderOptions<MessageType>` | ❌       | -       | -     | -          | Message sender options containing current message and config |
 
 ---
 
@@ -325,27 +298,54 @@ Message store managing message state
 
 Handle send operation errors
 
-Processes errors that occur during message sending. Converts unknown
-async errors to MESSAGE_SENDER_ERROR format, logs failures, and either
-throws or returns an error message based on configuration.
+Processes errors that occur during message sending. Merges error information
+with the current message state, logs failures, and either throws or returns
+an error message based on configuration.
+
+**Error flow:**
+
+1. Check
+   `throwIfError`
+   configuration
+2. Retrieve current message state from store
+3. Log failure if logger configured
+4. Merge error with message state
+5. Set status to
+   `FAILED`
+   if still
+   `SENDING`
+
+6. Return error message or throw
 
 **Status handling:**
-Allows plugins to modify final status. If status is still
-`SENDING`
-at
-this point, it's reset to
-`FAILED`
-. Examples of plugin-modified status:
+Plugins can modify the final status before this method is called.
+Common plugin-modified statuses:
 
-`STOPPED`
-for cancelled operations.
+- `STOPPED`
+  : Set by
+  `SenderStrategyPlugin`
+  for abort errors
+- `FAILED`
+  : Default for regular errors (set here if still
+  `SENDING`
+  )
+
+**Important notes:**
+
+- Always retrieves latest message state from store
+- Preserves plugin-modified status (e.g.,
+  `STOPPED`
+  )
+- Sets
+  `loading=false`
+  and
+  `endTime`
+  if not already set
+- Error object attached to message for inspection
 
 **Returns:**
 
-Message with error state, or throws if
-`throwIfError`
-is
-`true`
+Message with error state merged
 
 **Throws:**
 
@@ -354,12 +354,27 @@ Error when
 configuration is
 `true`
 
+**Example:** Error message structure
+
+```typescript
+// Returned error message structure:
+{
+  id: 'msg-1',
+  content: 'Hello',
+  status: 'failed', // or 'stopped' if aborted
+  error: Error('Network error'),
+  loading: false,
+  startTime: 1234567890,
+  endTime: 1234567900
+}
+```
+
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description                                            |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------ |
-| `error`   | `unknown`                                  | ❌       | -       | -     | -          | Error that occurred during send                        |
-| `context` | `MessageSenderContextOptions<MessageType>` | ❌       | -       | -     | -          | Execution context containing message sender parameters |
+| Name      | Type                                | Optional | Default | Since | Deprecated | Description                                                  |
+| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `error`   | `unknown`                           | ❌       | -       | -     | -          | Error that occurred during send (any type)                   |
+| `options` | `MessageSenderOptions<MessageType>` | ❌       | -       | -     | -          | Message sender options containing current message and config |
 
 ---
 
@@ -369,10 +384,10 @@ configuration is
 
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                           |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `message`        | `Partial<MessageType>`                                 | ❌       | -       | -     | -          | Partial message object to send                        |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ✅       | -       | -     | -          | Optional gateway configuration for this specific send |
+| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                                   |
+| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
+| `message`        | `Partial<MessageType>`                                 | ❌       | -       | -     | -          | Partial message object to send (ID generated if not provided) |
+| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ✅       | -       | -     | -          | Optional gateway configuration for this specific send         |
 
 ---
 
@@ -382,30 +397,52 @@ configuration is
 
 Send a message through the sender pipeline
 
-Main public API for sending messages. Handles the complete send lifecycle
+Main public API for sending messages. Orchestrates the complete send lifecycle
 including message preparation, plugin execution, gateway communication,
-error handling, and logging.
+error handling, and performance logging.
 
-**Behavior:**
+**Send flow:**
 
-- If
-  `throwIfError=true`
-  : Throws on send failure
-- If
-  `throwIfError=false`
-  (default): Returns error message on failure
-- If
-  `gatewayOptions`
-  provided: Uses specified configuration
-- If
-  `gatewayOptions.signal`
-  provided: Uses custom signal (stop method won't work)
-- If no signal provided: AbortPlugin creates one automatically (stoppable via stop method)
-- Resource cleanup managed automatically by AbortPlugin
+1. Generate sending message with
+   `SENDING`
+   status
+2. Create send options with merged configuration
+3. Execute through plugin pipeline (if executor configured)
+4. Send via gateway with abort signal support
+5. Handle success/error and log performance
+6. Return final message with result or error
+
+**Error handling:**
+
+- `throwIfError=true`
+  : Throws error, no message returned
+- `throwIfError=false`
+  (default): Returns message with error state
+- Plugins can intercept and modify error handling
+
+**Abort signal management:**
+
+- No signal provided +
+  `AborterPlugin`
+  : Plugin creates signal automatically (stoppable via
+  `stop()`
+  )
+- Custom signal provided: Uses custom signal (must abort manually,
+  `stop()`
+  has no effect)
+- No signal + no plugin: Operation not cancellable
+
+**Resource cleanup:**
+
+- Managed automatically by
+  `AborterPlugin`
+  when configured
+- Event listeners removed after operation completes
+- Abort controllers cleaned up properly
 
 **Returns:**
 
-Promise resolving to sent message with response data
+Promise resolving to sent message with response data or error state
 
 **Throws:**
 
@@ -421,21 +458,55 @@ and send fails
 const result = await sender.send({
   content: 'Hello, world!'
 });
-console.log('Sent:', result.id);
+console.log('Sent:', result.id, result.status);
+// Output: Sent: msg-123 sent
+```
+
+**Example:** With error handling
+
+```typescript
+const result = await sender.send({ content: 'Hello' });
+if (result.status === 'failed') {
+  console.error('Send failed:', result.error);
+  // Retry logic here
+}
 ```
 
 **Example:** With streaming
 
 ```typescript
 await sender.send(
-  { content: 'Hello' },
+  { content: 'Generate story' },
   {
     stream: true,
-    onConnected: () => console.log('Connected'),
-    onChunk: (chunk) => updateUI(chunk),
-    onComplete: (msg) => console.log('Complete')
+    onConnected: () => {
+      console.log('Stream connected');
+    },
+    onChunk: (chunk) => {
+      // Update UI with partial content
+      updateUI(chunk.content);
+    },
+    onComplete: (msg) => {
+      console.log('Stream complete:', msg.id);
+    }
   }
 );
+```
+
+**Example:** With automatic abort (AborterPlugin)
+
+```typescript
+// Setup with AborterPlugin
+sender.use(new AborterPlugin({ aborter, getConfig: ... }));
+
+// Send message (plugin creates signal automatically)
+const promise = sender.send({ id: 'msg-1', content: 'Hello' });
+
+// Can stop via sender.stop()
+setTimeout(() => sender.stop('msg-1'), 1000);
+
+const result = await promise;
+console.log('Status:', result.status); // 'stopped'
 ```
 
 **Example:** With custom abort control
@@ -445,10 +516,15 @@ const controller = new AbortController();
 
 const promise = sender.send(
   { content: 'Hello' },
-  { signal: controller.signal }
+  {
+    signal: controller.signal,
+    onAborted: (msg) => {
+      console.log('Aborted:', msg.id);
+    }
+  }
 );
 
-// Cancel manually
+// Must use controller to abort (sender.stop() won't work)
 setTimeout(() => controller.abort(), 5000);
 
 try {
@@ -458,25 +534,34 @@ try {
 }
 ```
 
+**Example:** With timeout
+
+```typescript
+const result = await sender.send(
+  { content: 'Hello' },
+  { timeout: 5000 } // 5 second timeout
+);
+```
+
 #### Parameters
 
-| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                           |
-| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `message`        | `Partial<MessageType>`                                 | ❌       | -       | -     | -          | Partial message object to send                        |
-| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ✅       | -       | -     | -          | Optional gateway configuration for this specific send |
+| Name             | Type                                                   | Optional | Default | Since | Deprecated | Description                                                   |
+| ---------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------- |
+| `message`        | `Partial<MessageType>`                                 | ❌       | -       | -     | -          | Partial message object to send (ID generated if not provided) |
+| `gatewayOptions` | `GatewayOptions<MessageType, Record<string, unknown>>` | ✅       | -       | -     | -          | Optional gateway configuration for this specific send         |
 
 ---
 
 #### `sendMessage` (Method)
 
-**Type:** `(message: MessageType, context: MessageSenderPluginContext<MessageType>) => Promise<MessageType>`
+**Type:** `(options: MessageSenderOptions<MessageType>, context: MessageSenderContext<MessageType>) => Promise<MessageType>`
 
 #### Parameters
 
-| Name      | Type                                      | Optional | Default | Since | Deprecated | Description                              |
-| --------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `message` | `MessageType`                             | ❌       | -       | -     | -          | Message to send                          |
-| `context` | `MessageSenderPluginContext<MessageType>` | ❌       | -       | -     | -          | Execution context with sender parameters |
+| Name      | Type                                | Optional | Default | Since | Deprecated | Description                              |
+| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
+| `options` | `MessageSenderOptions<MessageType>` | ❌       | -       | -     | -          |                                          |
+| `context` | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Execution context with sender parameters |
 
 ---
 
@@ -500,10 +585,36 @@ When send operation is cancelled
 
 #### Parameters
 
-| Name      | Type                                      | Optional | Default | Since | Deprecated | Description                              |
-| --------- | ----------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `message` | `MessageType`                             | ❌       | -       | -     | -          | Message to send                          |
-| `context` | `MessageSenderPluginContext<MessageType>` | ❌       | -       | -     | -          | Execution context with sender parameters |
+| Name      | Type                                | Optional | Default | Since | Deprecated | Description                              |
+| --------- | ----------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
+| `options` | `MessageSenderOptions<MessageType>` | ❌       | -       | -     | -          |                                          |
+| `context` | `MessageSenderContext<MessageType>` | ✅       | -       | -     | -          | Execution context with sender parameters |
+
+---
+
+#### `sendMessageExecutor` (Method)
+
+**Type:** `(options: MessageSenderOptions<MessageType>, executor: MessageSenderExecutor<MessageType>) => Promise<MessageType>`
+
+#### Parameters
+
+| Name       | Type                                 | Optional | Default | Since | Deprecated | Description |
+| ---------- | ------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `options`  | `MessageSenderOptions<MessageType>`  | ❌       | -       | -     | -          |             |
+| `executor` | `MessageSenderExecutor<MessageType>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `sendMessageExecutor` (CallSignature)
+
+**Type:** `Promise<MessageType>`
+
+#### Parameters
+
+| Name       | Type                                 | Optional | Default | Since | Deprecated | Description |
+| ---------- | ------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `options`  | `MessageSenderOptions<MessageType>`  | ❌       | -       | -     | -          |             |
+| `executor` | `MessageSenderExecutor<MessageType>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -525,32 +636,93 @@ When send operation is cancelled
 
 Stop sending a specific message
 
-Cancels an ongoing message send operation by ID. This only works
-for requests created automatically by MessageSender (without custom signal).
+Cancels an ongoing message send operation by message ID. This method
+delegates to the configured aborter to trigger the abort signal.
 
-**Important notes:**
+**Prerequisites:**
 
-- Only affects requests created by MessageSender (no custom signal provided)
-- If a custom signal was provided during send, this method has no effect
-- Automatically cleans up related resources (managed by AbortPlugin)
+- Aborter must be configured in constructor
+- `AborterPlugin`
+  must be registered for automatic signal management
+- Message must be sent without custom signal (plugin creates signal automatically)
+
+**Behavior:**
+
+- With aborter + plugin: Aborts the operation, triggers
+  `AbortError`
+
+- Without aborter: Returns
+  `false`
+  , no effect
+- With custom signal: Returns
+  `true`
+  but doesn't affect custom signal
+
+**Result handling:**
+
+- Message status set to
+  `STOPPED`
+  by
+  `SenderStrategyPlugin`
+
+- `gatewayOptions.onAborted`
+  callback invoked if provided
+- Resources cleaned up automatically by
+  `AborterPlugin`
 
 **Returns:**
 
 `true`
-if stop was successful,
+if abort signal was triggered,
 `false`
-otherwise
+if aborter not configured
 
-**Example:**
+**Example:** Basic usage with AborterPlugin
 
 ```typescript
-const message = await sender.send({ content: 'Hello' });
+// Setup with AborterPlugin
+const aborter = new Aborter();
+sender.use(new AborterPlugin({ aborter, getConfig: ... }));
 
-// Later, cancel the send
-const stopped = sender.stop(message.id);
-if (stopped) {
-  console.log('Send cancelled successfully');
-}
+// Send message (plugin creates signal automatically)
+const promise = sender.send({ id: 'msg-1', content: 'Hello' });
+
+// Stop the send operation
+const stopped = sender.stop('msg-1');
+console.log('Stopped:', stopped); // true
+
+// Promise rejects with AbortError
+const result = await promise;
+console.log('Status:', result.status); // 'stopped'
+```
+
+**Example:** With custom signal (stop has no effect)
+
+```typescript
+const controller = new AbortController();
+sender.send({ id: 'msg-1', content: 'Hello' }, { signal: controller.signal });
+
+// This returns true but doesn't affect the custom signal
+sender.stop('msg-1');
+
+// Must use controller to actually abort
+controller.abort();
+```
+
+**Example:** With abort callback
+
+```typescript
+sender.send(
+  { id: 'msg-1', content: 'Hello' },
+  {
+    onAborted: (msg) => {
+      console.log('Message aborted:', msg.id);
+      // Cleanup UI, show notification, etc.
+    }
+  }
+);
+
+sender.stop('msg-1'); // Triggers onAborted callback
 ```
 
 #### Parameters
@@ -573,28 +745,77 @@ if (stopped) {
 
 Stop all ongoing message sends
 
-Cancels all currently active message send operations.
-Automatically cleans up all related resources (managed by AbortPlugin).
+Cancels all currently active message send operations by triggering
+abort signals for all registered operations in the aborter.
 
-**Example:**
+**Prerequisites:**
+
+- Aborter must be configured in constructor
+- `AborterPlugin`
+  must be registered for automatic signal management
+
+**Behavior:**
+
+- Aborts all operations managed by the aborter
+- Each operation receives
+  `AbortError`
+  and status set to
+  `STOPPED`
+
+- `onAborted`
+  callbacks invoked for each aborted operation
+- Resources cleaned up automatically by
+  `AborterPlugin`
+
+- Operations with custom signals are not affected
+
+**Example:** Basic usage
 
 ```typescript
+// Send multiple messages
+sender.send({ id: 'msg-1', content: 'Hello' });
+sender.send({ id: 'msg-2', content: 'World' });
+sender.send({ id: 'msg-3', content: 'Test' });
+
 // Cancel all pending sends
 sender.stopAll();
 console.log('All sends cancelled');
+```
+
+**Example:** With cleanup handling
+
+```typescript
+// Setup abort handlers
+const sendWithHandler = (content: string) => {
+  return sender.send(
+    { content },
+    {
+      onAborted: (msg) => {
+        console.log('Aborted:', msg.id);
+        // Cleanup for this specific message
+      }
+    }
+  );
+};
+
+sendWithHandler('Message 1');
+sendWithHandler('Message 2');
+
+// Triggers onAborted for all messages
+sender.stopAll();
 ```
 
 ---
 
 #### `use` (Method)
 
-**Type:** `(plugin: ExecutorPlugin<T>) => this`
+**Type:** `(plugin: MessageSenderPlugin<MessageType> \| LifecyclePluginInterface<ExecutorContextInterface<any, any, HookRuntimes>, any, any>) => this`
 
 #### Parameters
 
-| Name     | Type                | Optional | Default | Since | Deprecated | Description        |
-| -------- | ------------------- | -------- | ------- | ----- | ---------- | ------------------ |
-| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register |
+| Name     | Type                                                                                                                       | Optional | Default | Since | Deprecated | Description        |
+| -------- | -------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `plugin` | `MessageSenderPlugin<MessageType> \| LifecyclePluginInterface<ExecutorContextInterface<any, any, HookRuntimes>, any, any>` | ❌       | -       | -     | -          | Plugin to register |
 
 ---
 
@@ -621,20 +842,105 @@ sender.use(validationPlugin).use(loggingPlugin).use(transformPlugin);
 
 #### Parameters
 
-| Name     | Type                | Optional | Default | Since | Deprecated | Description        |
-| -------- | ------------------- | -------- | ------- | ----- | ---------- | ------------------ |
-| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register |
+| Name     | Type                                                                                                                       | Optional | Default | Since | Deprecated | Description        |
+| -------- | -------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `plugin` | `MessageSenderPlugin<MessageType> \| LifecyclePluginInterface<ExecutorContextInterface<any, any, HookRuntimes>, any, any>` | ❌       | -       | -     | -          | Plugin to register |
 
 ---
 
 ### `MessageSenderConfig` (Interface)
 
-**Type:** `interface MessageSenderConfig`
+**Type:** `interface MessageSenderConfig<MessageType>`
 
 Configuration options for message sender
 
 Defines behavior, logging, gateway integration, and error handling
 for the message sender instance.
+
+---
+
+#### `aborter` (Property)
+
+**Type:** `AborterInterface<AborterConfig>`
+
+Aborter for managing abort signals and operation cancellation
+
+Provides centralized abort signal management for message send operations.
+When configured with
+`AborterPlugin`
+, enables automatic signal creation
+and cleanup for each send operation.
+
+**Important notes:**
+
+- Required for
+  `stop()`
+  and
+  `stopAll()`
+  methods to work
+- Must be used with
+  `AborterPlugin`
+  for automatic signal management
+- Without aborter:
+  `stop()`
+  returns
+  `false`
+  , send operations cannot be cancelled
+- With aborter but no plugin: Manual signal registration required
+
+**Recommended setup:**
+
+```typescript
+const aborter = new Aborter('MessageSenderAborter');
+const sender = new MessageSender(store, {
+  aborter,
+  executor: new MessageSenderExecutor()
+});
+
+// Register AborterPlugin for automatic signal management
+sender.use(
+  new AborterPlugin({
+    aborter,
+    getConfig: (params) => ({
+      abortId: params.currentMessage.id,
+      signal: params.gatewayOptions?.signal
+    })
+  })
+);
+```
+
+**Example:** Manual abort control
+
+```typescript
+// Without plugin, use custom signal
+const controller = new AbortController();
+sender.send({ content: 'Hello' }, { signal: controller.signal });
+controller.abort(); // Manual cancellation
+```
+
+---
+
+#### `executor` (Property)
+
+**Type:** `MessageSenderExecutor<MessageType>`
+
+Plugin executor
+
+Executor for managing the plugin pipeline.
+
+If executor is not specified, the send operation will not be executed.
+and can't use the
+`use`
+method to register plugins.
+
+**Example:**
+
+```typescript
+const executor = new MessageSenderExecutor();
+executor.use(validationPlugin);
+executor.use(loggingPlugin);
+executor.use(transformPlugin);
+```
 
 ---
 
@@ -691,6 +997,68 @@ Logger instance for debugging and monitoring
 
 Optional logger for tracking message send operations,
 errors, and performance metrics.
+
+---
+
+#### `loggerTpl` (Property)
+
+**Type:** `Object`
+
+Logger templates
+
+Templates for logging messages.
+
+**Example:**
+
+````typescript
+const loggerTpl = {
+  failed: '[${senderName}] ${messageId} failed',
+  success: '[${senderName}] ${messageId} success, speed: ${speed}ms'
+};
+
+
+---
+
+##### `failed` (Property)
+
+**Type:** `string`
+
+
+
+
+
+---
+
+##### `success` (Property)
+
+**Type:** `string`
+
+
+
+
+
+---
+
+#### `senderGateway` (Property)
+
+**Type:** `SenderGatewayInterface<MessageType>`
+
+
+**Default:** `new SenderGateway()`
+
+
+
+
+Sender gateway
+
+Sender gateway for managing the message send operation.
+
+**Example:**
+
+```typescript
+const senderGateway = new SenderGateway();
+senderGateway.createGatewayOptions(gatewayOptions, context);
+````
 
 ---
 

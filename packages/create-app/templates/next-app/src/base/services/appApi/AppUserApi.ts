@@ -6,8 +6,8 @@ import type {
   UserApiRegisterTransaction
 } from '@/base/port/AppUserApiInterface';
 import { AppApiRequester } from './AppApiRequester';
-import type { AppApiConfig } from './AppApiRequester';
-import type { RequestTransaction } from '@qlover/fe-corekit';
+import type { AppApiConfig, AppApiRequesterContext } from './AppApiRequester';
+import { RequestExecutor } from '@qlover/fe-corekit';
 
 /**
  * UserApi
@@ -20,7 +20,7 @@ import type { RequestTransaction } from '@qlover/fe-corekit';
 export class AppUserApi implements AppUserApiInterface {
   constructor(
     @inject(AppApiRequester)
-    protected client: RequestTransaction<AppApiConfig>
+    protected client: RequestExecutor<AppApiConfig, AppApiRequesterContext>
   ) {}
 
   /**
@@ -29,7 +29,10 @@ export class AppUserApi implements AppUserApiInterface {
   public async login(
     params: UserApiLoginTransaction['data']
   ): Promise<UserApiLoginTransaction['response']> {
-    const response = await this.client.request<UserApiLoginTransaction>({
+    const response = await this.client.request<
+      UserApiLoginTransaction['response'],
+      UserApiLoginTransaction['request']
+    >({
       url: '/user/login',
       method: 'POST',
       data: params,
@@ -45,7 +48,10 @@ export class AppUserApi implements AppUserApiInterface {
   public async register(
     params: UserApiRegisterTransaction['data']
   ): Promise<UserApiRegisterTransaction['response']> {
-    const response = await this.client.request<UserApiRegisterTransaction>({
+    const response = await this.client.request<
+      UserApiRegisterTransaction['response'],
+      UserApiRegisterTransaction['request']
+    >({
       url: '/user/register',
       method: 'POST',
       data: params,
@@ -61,7 +67,10 @@ export class AppUserApi implements AppUserApiInterface {
   public async logout(
     _params?: unknown
   ): Promise<UserApiLogoutTransaction['response']> {
-    return await this.client.request<UserApiLogoutTransaction>({
+    return await this.client.request<
+      UserApiLogoutTransaction['response'],
+      UserApiLogoutTransaction['request']
+    >({
       url: '/user/logout',
       method: 'POST'
     });

@@ -698,6 +698,77 @@ if (hasPermissions && !isActive) {
 }
 ```
 
+### Inline Code Comments
+
+Inline code comments should not be added to every line. Only keep or provide core comments, such as `Note`, `Important`, and other critical information comments. Other obvious comments are not needed.
+
+**Principles:**
+
+- Prioritize code self-documentation through clear variable and function names
+- Only add necessary comments that explain "why" rather than "what"
+- Keep important warnings, notes, and critical business logic explanations
+
+**Examples:**
+
+```typescript
+// ❌ Bad: Redundant comments on every line
+function calculateTotal(items: Item[]) {
+  // Initialize total to 0
+  let total = 0;
+
+  // Iterate through all items
+  for (const item of items) {
+    // Add each item's price to total
+    total += item.price;
+  }
+
+  // Return the total
+  return total;
+}
+
+// ✅ Good: Code is clear, no comments needed
+function calculateTotal(items: Item[]) {
+  let total = 0;
+  for (const item of items) {
+    total += item.price;
+  }
+  return total;
+}
+
+// ✅ Good: Keep core comments (important business logic or notes)
+function processPayment(amount: number, userId: string) {
+  // Note: Amount must be greater than 0, negative values will be rejected
+  if (amount <= 0) {
+    throw new ValidationError('Amount must be positive');
+  }
+
+  const balance = getBalance(userId);
+
+  // Important: Check if balance is sufficient to avoid overdraft
+  if (balance < amount) {
+    throw new InsufficientFundsError();
+  }
+
+  return deductBalance(userId, amount);
+}
+```
+
+**Comment types to keep:**
+
+- `Note:` - Important implementation notes or considerations
+- `Important:` - Critical business rules or security considerations
+- `Warning:` - Potential pitfalls or edge cases
+- `TODO:` - Todo items (must include ticket reference)
+- Complex business logic explanations
+- Non-obvious technical decision reasons
+
+**Comment types to remove:**
+
+- Comments describing obvious code behavior
+- Comments repeating function or variable names
+- Line-by-line explanations of code
+- Outdated or no longer applicable comments
+
 ## TODO Comments
 
 - Always include ticket/issue references

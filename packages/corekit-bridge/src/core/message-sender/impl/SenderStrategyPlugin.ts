@@ -1,61 +1,133 @@
 import {
-  AbortPlugin,
   type ExecutorError,
-  type ExecutorContext
+  isAbortError as isAbortErrorFn
 } from '@qlover/fe-corekit';
-import { MessageSenderBasePlugin } from './MessageSenderBasePlugin';
 import {
   type MessagesStore,
   MessageStatus,
   type MessageStoreMsg
 } from './MessageStore';
 import { template } from './utils';
-import type {
-  MessageSenderContextOptions,
-  MessageSenderPluginContext
-} from './MessageSenderExecutor';
 import type { LoggerInterface } from '@qlover/logger';
+import {
+  type MessageSenderContext,
+  type MessageSenderOptions,
+  type MessageSenderPlugin
+} from '../interface/MessageSenderPlugin';
 
 /**
  * Send failure handling strategies
  *
- * Defines how failed messages should be handled in the message store,
- * allowing different behaviors based on application requirements.
+ * Defines how messages should be managed in the store throughout their
+ * lifecycle, from sending to success/failure. Each strategy provides
+ * different user experience patterns suitable for various application types.
  *
- * @example
+ * **Strategy comparison:**
+ *
+ * | Strategy | Add Timing | Failed Messages | Stopped Messages | Use Case |
+ * |----------|-----------|-----------------|------------------|----------|
+ * | `KEEP_FAILED` | Before send | Kept in store | Kept in store | Chat apps with retry |
+ * | `DELETE_FAILED` | Before send | Deleted from store | Kept in store | Clean UI, success only |
+ * | `ADD_ON_SUCCESS` | After success | Not added | Not added | Optimistic UI, no loading |
+ *
+ * **Message lifecycle by strategy:**
+ *
+ * `KEEP_FAILED`:
+ * 1. Add message to store with `SENDING` status
+ * 2. On success: Update to `SENT` status
+ * 3. On failure: Update to `FAILED` status (kept in store)
+ * 4. On abort: Update to `STOPPED` status (kept in store)
+ *
+ * `DELETE_FAILED`:
+ * 1. Add message to store with `SENDING` status
+ * 2. On success: Update to `SENT` status
+ * 3. On failure: Delete from store (return message with `FAILED`)
+ * 4. On abort: Update to `STOPPED` status (kept in store, different from failed)
+ *
+ * `ADD_ON_SUCCESS`:
+ * 1. Don't add message to store yet
+ * 2. On success: Add message to store with `SENT` status
+ * 3. On failure: Don't add to store (return message with `FAILED`)
+ * 4. On abort: Don't add to store (return message with `STOPPED`)
+ *
+ * @example Chat application (KEEP_FAILED)
  * ```typescript
- * // Use KEEP_FAILED for chat apps where users should see failures
+ * // Users see all messages including failures
+ * // Can retry failed messages
  * const strategy = SendFailureStrategy.KEEP_FAILED;
+ * ```
  *
- * // Use DELETE_FAILED for clean message lists
+ * @example Form submission (DELETE_FAILED)
+ * ```typescript
+ * // Clean UI showing only successful submissions
+ * // Failed attempts don't clutter the list
  * const strategy = SendFailureStrategy.DELETE_FAILED;
+ * ```
  *
- * // Use ADD_ON_SUCCESS for optimistic UI without showing progress
+ * @example Background task (ADD_ON_SUCCESS)
+ * ```typescript
+ * // No loading state visible to users
+ * // Results appear only after completion
  * const strategy = SendFailureStrategy.ADD_ON_SUCCESS;
  * ```
  */
 export const SendFailureStrategy = Object.freeze({
   /**
-   * Keep failed messages (default)
+   * Keep failed messages in store
    *
-   * Suitable for chat applications where users should see failure records
-   * and be able to retry. Failed messages remain in the store with error state.
+   * Messages are added to the store before sending and remain there
+   * regardless of the outcome. Users can see loading states, failures,
+   * and retry failed messages.
+   *
+   * **Behavior:**
+   * - Add message immediately with `SENDING` status
+   * - Update to `SENT` on success
+   * - Update to `FAILED` on error (kept in store)
+   * - Update to `STOPPED` on abort (kept in store)
+   *
+   * **Best for:**
+   * - Chat applications
+   * - Message queues with retry
+   * - Any UI showing send progress
    */
   KEEP_FAILED: 'keep_failed',
 
   /**
-   * Delete failed messages
+   * Delete failed messages from store
    *
-   * Keeps the message list clean by removing failed messages from the store.
-   * Only successfully sent messages are displayed.
+   * Messages are added before sending but removed on failure.
+   * Only successful messages remain visible. Stopped messages
+   * are kept (different from failures).
+   *
+   * **Behavior:**
+   * - Add message immediately with `SENDING` status
+   * - Update to `SENT` on success
+   * - Delete from store on error
+   * - Update to `STOPPED` on abort (kept in store)
+   *
+   * **Best for:**
+   * - Form submissions
+   * - Clean message lists
+   * - Success-only displays
    */
   DELETE_FAILED: 'delete_failed',
 
   /**
-   * Add messages only on success
+   * Add messages only after successful send
    *
-   * Delays adding messages to the store until after successful send.
-   * Messages are not displayed during the sending process.
+   * Messages are not added to the store until send completes successfully.
+   * Users don't see loading states or failures in the message list.
+   *
+   * **Behavior:**
+   * - Don't add message initially
+   * - Add with `SENT` status on success
+   * - Don't add on error
+   * - Don't add on abort
+   *
+   * **Best for:**
+   * - Background tasks
+   * - Optimistic UI patterns
+   * - No loading state required
    */
   ADD_ON_SUCCESS: 'add_on_success'
 });
@@ -122,9 +194,9 @@ export type SendFailureStrategyType =
  * // No loading state visible to users
  * ```
  */
-export class SenderStrategyPlugin<
-  T extends MessageStoreMsg<unknown, unknown>
-> extends MessageSenderBasePlugin<T> {
+export class SenderStrategyPlugin<T extends MessageStoreMsg<unknown, unknown>>
+  implements MessageSenderPlugin<T>
+{
   /** Plugin identifier */
   public readonly pluginName = 'SenderStrategyPlugin';
 
@@ -157,9 +229,7 @@ export class SenderStrategyPlugin<
   constructor(
     protected failureStrategy: SendFailureStrategyType,
     protected logger?: LoggerInterface
-  ) {
-    super();
-  }
+  ) {}
 
   /**
    * Check if an error is an abort error
@@ -182,7 +252,7 @@ export class SenderStrategyPlugin<
    * ```
    */
   protected isAbortError(error: unknown): boolean {
-    return AbortPlugin.isAbortError(error);
+    return isAbortErrorFn(error);
   }
 
   /**
@@ -195,7 +265,7 @@ export class SenderStrategyPlugin<
    * @returns Added message from the store
    */
   protected handleBefore_KEEP_FAILED(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
+    parameters: MessageSenderOptions<T>
   ): MessageStoreMsg<unknown, unknown> {
     const { currentMessage, store } = parameters;
 
@@ -210,7 +280,7 @@ export class SenderStrategyPlugin<
    *
    * @param context - Execution context containing message sender parameters
    */
-  protected cleanup(context: MessageSenderPluginContext<T>): void {
+  protected cleanup(context: MessageSenderContext<T>): void {
     const { store } = context.parameters;
     store.stopStreaming();
 
@@ -224,21 +294,52 @@ export class SenderStrategyPlugin<
   /**
    * Before execution hook
    *
-   * Handles message initialization based on the configured failure strategy.
-   * Determines whether to add the message to the store before or after sending.
+   * Initializes message state based on the configured failure strategy.
+   * This hook determines whether to add the message to the store immediately
+   * or wait until after successful send.
    *
-   * Strategy behavior:
-   * - `ADD_ON_SUCCESS`: Message not added yet, wait for success
-   * - `KEEP_FAILED` / `DELETE_FAILED`: Add message immediately for loading state
+   * **Strategy behavior:**
    *
+   * `ADD_ON_SUCCESS`:
+   * - Don't add message to store yet
+   * - Set `addedToStore=false` flag
+   * - Message only added after successful send in `onSuccess`
+   *
+   * `KEEP_FAILED` / `DELETE_FAILED`:
+   * - Add message to store immediately with `SENDING` status
+   * - Set `addedToStore=true` flag
+   * - Update `currentMessage` with store-added version (includes generated ID)
+   * - Users see loading state in UI
+   *
+   * **Important notes:**
+   * - `addedToStore` flag tracked in context parameters
+   * - Flag used by other hooks to determine update vs add logic
+   * - Store-added message may have different ID than input message
+   *
+   * @override
    * @param context - Execution context containing message sender parameters
+   *
+   * @example Context after KEEP_FAILED
+   * ```typescript
+   * // Before: context.parameters.currentMessage = { content: 'Hello' }
+   * // After:  context.parameters.currentMessage = { id: 'msg-1', content: 'Hello', status: 'sending' }
+   * //         context.parameters.addedToStore = true
+   * ```
+   *
+   * @example Context after ADD_ON_SUCCESS
+   * ```typescript
+   * // Before: context.parameters.currentMessage = { content: 'Hello' }
+   * // After:  context.parameters.currentMessage = { content: 'Hello' } (unchanged)
+   * //         context.parameters.addedToStore = false
+   * ```
    */
-  public onBefore(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onBefore(context: MessageSenderContext<T>): void {
     switch (this.failureStrategy) {
       case SendFailureStrategy.ADD_ON_SUCCESS:
-        this.closeAddedToStore(context);
+        context.setParameters({
+          ...context.parameters,
+          addedToStore: false
+        });
         break;
 
       case SendFailureStrategy.KEEP_FAILED:
@@ -249,8 +350,11 @@ export class SenderStrategyPlugin<
             context.parameters
           );
 
-          this.mergeRuntimeMessage(context, addedMessage as Partial<T>);
-          this.openAddedToStore(context);
+          context.setParameters({
+            ...context.parameters,
+            currentMessage: addedMessage as T,
+            addedToStore: true
+          });
         }
         break;
     }
@@ -267,14 +371,14 @@ export class SenderStrategyPlugin<
    * @returns Updated message from store, or `undefined` if update failed
    */
   protected handleSuccess_KEEP_FAILED(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
-    successData: MessageStoreMsg<unknown, unknown>
-  ): MessageStoreMsg<unknown, unknown> | undefined {
+    parameters: MessageSenderOptions<T>,
+    successData: T
+  ): T | undefined {
     const { currentMessage, store } = parameters;
 
     const updatedMessage = store.updateMessage(
       currentMessage.id!,
-      successData as Partial<MessageStoreMsg<unknown, unknown>>
+      successData as Partial<T>
     );
 
     return updatedMessage;
@@ -291,9 +395,9 @@ export class SenderStrategyPlugin<
    * @returns Newly added message from store
    */
   protected handleSuccess_ADD_ON_SUCCESS(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
-    successData: MessageStoreMsg<unknown, unknown>
-  ): MessageStoreMsg<unknown, unknown> {
+    parameters: MessageSenderOptions<T>,
+    successData: T
+  ): T {
     const { currentMessage, store } = parameters;
 
     const addedMessage = store.addMessage({
@@ -307,16 +411,51 @@ export class SenderStrategyPlugin<
   /**
    * Success execution hook
    *
-   * Handles message updates after successful send operation.
-   * Updates existing messages or adds new ones based on strategy.
+   * Handles message finalization after successful send operation.
+   * Updates existing messages or adds new ones based on the configured
+   * strategy and `addedToStore` flag.
    *
+   * **Strategy behavior:**
+   *
+   * `KEEP_FAILED` / `DELETE_FAILED` (`addedToStore=true`):
+   * - Message already in store from `onBefore`
+   * - Update existing message with success data
+   * - Merge gateway response into store message
+   * - Throws error if update fails
+   *
+   * `ADD_ON_SUCCESS` (`addedToStore=false`):
+   * - Message not in store yet
+   * - Add message to store with success data
+   * - Combine current message with gateway response
+   * - Return newly added message
+   *
+   * **Data flow:**
+   * 1. Get success data from `context.returnValue` (gateway response)
+   * 2. Update or add message based on `addedToStore` flag
+   * 3. Update `context.parameters.currentMessage` with final message
+   * 4. Update `context.returnValue` with final message
+   * 5. Call `cleanup()` to stop streaming state
+   *
+   * @override
    * @param context - Execution context containing message sender parameters
    *
-   * @throws {Error} When message update fails for already-added messages
+   * @throws {Error} When message update fails for `KEEP_FAILED`/`DELETE_FAILED` strategies
+   *
+   * @example KEEP_FAILED flow
+   * ```typescript
+   * // onBefore: Added { id: 'msg-1', content: 'Hello', status: 'sending' }
+   * // Gateway returns: { result: 'OK', timestamp: 123 }
+   * // onSuccess: Updates to { id: 'msg-1', content: 'Hello', status: 'sent', result: 'OK', timestamp: 123 }
+   * ```
+   *
+   * @example ADD_ON_SUCCESS flow
+   * ```typescript
+   * // onBefore: Not added to store
+   * // Gateway returns: { result: 'OK', timestamp: 123 }
+   * // onSuccess: Adds { id: 'msg-1', content: 'Hello', status: 'sent', result: 'OK', timestamp: 123 }
+   * ```
    */
-  public onSuccess(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onSuccess(context: MessageSenderContext<T>): void {
     const { addedToStore } = context.parameters;
 
     const successData = context.returnValue as MessageStoreMsg<
@@ -327,23 +466,29 @@ export class SenderStrategyPlugin<
     if (addedToStore) {
       const updatedMessage = this.handleSuccess_KEEP_FAILED(
         context.parameters,
-        successData
+        successData as T
       );
 
       if (!updatedMessage) {
         throw new Error('Failed to update message');
       }
 
-      this.mergeRuntimeMessage(context, updatedMessage as Partial<T>);
-      this.asyncReturnValue(context, updatedMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: updatedMessage as T
+      });
+      context.setReturnValue(updatedMessage);
     } else {
       const addedMessage = this.handleSuccess_ADD_ON_SUCCESS(
         context.parameters,
-        successData
+        successData as T
       );
 
-      this.mergeRuntimeMessage(context, addedMessage as Partial<T>);
-      this.asyncReturnValue(context, addedMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: addedMessage as T
+      });
+      context.setReturnValue(addedMessage);
     }
 
     this.cleanup(context);
@@ -352,28 +497,72 @@ export class SenderStrategyPlugin<
   /**
    * Handle abort/stop errors
    *
-   * Special handling when a send operation is cancelled or stopped.
-   * This prevents abort errors from propagating and ensures proper cleanup.
+   * Special handling for abort errors when a send operation is cancelled.
+   * Sets message status to `STOPPED` (different from `FAILED`) and invokes
+   * the `onAborted` callback if provided. Prevents error propagation to
+   * maintain proper control flow.
    *
-   * Process:
-   * 1. Set message status to `STOPPED`
-   * 2. Call `onAborted` callback if provided
-   * 3. Prevent error propagation to other plugins
+   * **Process flow:**
+   * 1. Create stopped data with `STOPPED` status and error
+   * 2. Update or merge message based on `addedToStore` flag
+   * 3. Update context with final stopped message
+   * 4. Invoke `onAborted` callback (error-safe)
+   * 5. Call `cleanup()` to stop streaming state
+   * 6. Return `undefined` to prevent error propagation
+   *
+   * **Message handling:**
+   * - If `addedToStore=true`: Update existing message in store
+   * - If `addedToStore=false`: Merge with current message (not added to store)
+   * - Fallback to merge if update returns `null`
+   *
+   * **Important notes:**
+   * - Status set to `STOPPED` (not `FAILED`)
+   * - `onAborted` callback wrapped in try-catch to prevent callback errors
+   * - Returns `undefined` to stop error propagation through plugin chain
+   * - Cleanup always called to ensure streaming state is stopped
    *
    * @param context - Execution context containing message sender parameters
-   * @returns `undefined` to prevent error propagation
+   * @returns `undefined` to prevent error propagation to other plugins
    *
-   * @example
+   * @example With KEEP_FAILED strategy
    * ```typescript
-   * // When user cancels a message send
-   * controller.abort();
-   * // onStopError will handle the abort error
-   * // Message status set to STOPPED
-   * // onAborted callback invoked with final message state
+   * // Message in store: { id: 'msg-1', status: 'sending', loading: true }
+   * sender.stop('msg-1');
+   * // After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+   * // Message kept in store with STOPPED status
+   * ```
+   *
+   * @example With DELETE_FAILED strategy
+   * ```typescript
+   * // Message in store: { id: 'msg-1', status: 'sending', loading: true }
+   * sender.stop('msg-1');
+   * // After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+   * // Message kept in store (STOPPED is different from FAILED, not deleted)
+   * ```
+   *
+   * @example With ADD_ON_SUCCESS strategy
+   * ```typescript
+   * // Message not in store yet
+   * sender.stop('msg-1');
+   * // After onStopError: { id: 'msg-1', status: 'stopped', loading: false, error: AbortError }
+   * // Message not added to store (returns stopped message)
+   * ```
+   *
+   * @example With onAborted callback
+   * ```typescript
+   * sender.send(
+   *   { content: 'Hello' },
+   *   {
+   *     onAborted: (msg) => {
+   *       console.log('Aborted:', msg.id, msg.status); // 'stopped'
+   *       // Cleanup UI, show notification, etc.
+   *     }
+   *   }
+   * );
    * ```
    */
   protected onStopError(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
+    context: MessageSenderContext<T>
   ): ExecutorError | void {
     const { currentMessage, store, addedToStore, gatewayOptions } =
       context.parameters;
@@ -394,8 +583,11 @@ export class SenderStrategyPlugin<
       finalMessage = store.mergeMessage(currentMessage, stoppedData);
     }
 
-    this.mergeRuntimeMessage(context, finalMessage as Partial<T>);
-    this.asyncReturnValue(context, finalMessage);
+    context.setParameters({
+      ...context.parameters,
+      currentMessage: finalMessage as T
+    });
+    context.setReturnValue(finalMessage);
 
     if (typeof gatewayOptions?.onAborted === 'function') {
       try {
@@ -414,21 +606,76 @@ export class SenderStrategyPlugin<
    * Error execution hook
    *
    * Handles errors during message send operation based on error type
-   * and configured failure strategy. Abort errors are handled separately
-   * to provide better user experience for cancelled operations.
+   * and configured failure strategy. Abort errors are delegated to
+   * `onStopError` for special handling with `STOPPED` status.
    *
-   * Strategy behavior:
-   * - `KEEP_FAILED`: Update message with error state, keep in store
-   * - `DELETE_FAILED`: Remove message from store completely
-   * - `ADD_ON_SUCCESS`: Keep message data but don't add to store
+   * **Error type handling:**
+   * - Abort errors: Delegated to `onStopError()` → status `STOPPED`
+   * - Regular errors: Handled here → status `FAILED`
    *
+   * **Strategy behavior:**
+   *
+   * `KEEP_FAILED`:
+   * - If `addedToStore=true`: Update message in store with `FAILED` status
+   * - If `addedToStore=false`: Merge error with current message
+   * - Message kept with error information
+   * - Throws if update fails
+   *
+   * `DELETE_FAILED`:
+   * - If `addedToStore=true`: Delete message from store
+   * - Merge error with current message for return value
+   * - Message not visible in store
+   *
+   * `ADD_ON_SUCCESS`:
+   * - Message never added to store
+   * - Merge error with current message
+   * - Return failed message without adding
+   *
+   * **Data flow:**
+   * 1. Check if error is abort error → delegate to `onStopError`
+   * 2. Create failed data with `FAILED` status and error
+   * 3. Update, delete, or merge based on strategy
+   * 4. Update context with final failed message
+   * 5. Call `cleanup()` to stop streaming state
+   *
+   * @override
    * @param context - Execution context containing message sender parameters
    *
-   * @throws {Error} When message update fails for KEEP_FAILED strategy
+   * @throws {Error} When message update fails for `KEEP_FAILED` strategy
+   *
+   * @example KEEP_FAILED with addedToStore=true
+   * ```typescript
+   * // Message in store: { id: 'msg-1', status: 'sending', loading: true }
+   * // Error occurs: Error('Network error')
+   * // After onError: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+   * // Message updated in store with error
+   * ```
+   *
+   * @example DELETE_FAILED with addedToStore=true
+   * ```typescript
+   * // Message in store: { id: 'msg-1', status: 'sending', loading: true }
+   * // Error occurs: Error('Network error')
+   * // After onError: Message deleted from store
+   * // Returns: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+   * ```
+   *
+   * @example ADD_ON_SUCCESS with addedToStore=false
+   * ```typescript
+   * // Message not in store
+   * // Error occurs: Error('Network error')
+   * // After onError: Message not added to store
+   * // Returns: { id: 'msg-1', status: 'failed', loading: false, error: Error }
+   * ```
+   *
+   * @example Abort error delegation
+   * ```typescript
+   * // Error is AbortError
+   * // Delegated to onStopError()
+   * // Status set to 'stopped' instead of 'failed'
+   * // onAborted callback invoked
+   * ```
    */
-  public onError(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): ExecutorError | void {
+  public onError(context: MessageSenderContext<T>): ExecutorError | void {
     const error = context.error;
 
     // Use specialized abort error handling for stop operations
@@ -477,8 +724,11 @@ export class SenderStrategyPlugin<
     }
 
     if (finalMessage) {
-      this.mergeRuntimeMessage(context, finalMessage as Partial<T>);
-      this.asyncReturnValue(context, finalMessage);
+      context.setParameters({
+        ...context.parameters,
+        currentMessage: finalMessage as T
+      });
+      context.setReturnValue(finalMessage);
     }
 
     this.cleanup(context);
@@ -499,6 +749,7 @@ export class SenderStrategyPlugin<
    * in loading state, automatically triggers connection establishment logic.
    * This ensures proper state management even if connection hook is missed.
    *
+   * @override
    * @param context - Execution context with message sender parameters
    * @param chunk - Data chunk received from the stream
    * @returns Processed chunk or updated message
@@ -513,9 +764,9 @@ export class SenderStrategyPlugin<
    * ```
    */
   public onStream(
-    context: MessageSenderPluginContext<MessageStoreMsg<unknown, unknown>>,
+    context: MessageSenderContext<T>,
     chunk: unknown
-  ): Promise<unknown> | unknown | void {
+  ): unknown | void {
     const { addedToStore, currentMessage, store } = context.parameters;
 
     const times = context.hooksRuntimes.streamTimes;
@@ -542,9 +793,7 @@ export class SenderStrategyPlugin<
     }
 
     // Ensure global streaming state is started (prevents edge cases)
-    this.startStreaming(
-      store as MessagesStore<MessageStoreMsg<unknown, unknown>>
-    );
+    this.startStreaming(store as MessagesStore<T>);
 
     if (!store.isMessage(chunk)) {
       return chunk;
@@ -606,14 +855,12 @@ export class SenderStrategyPlugin<
    * @param parameters - Message sender context parameters
    */
   protected handleConnectionEstablished(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>
+    parameters: MessageSenderOptions<T>
   ): void {
     const { store, currentMessage, addedToStore } = parameters;
 
     // Start global streaming state
-    this.startStreaming(
-      store as MessagesStore<MessageStoreMsg<unknown, unknown>>
-    );
+    this.startStreaming(store as MessagesStore<T>);
 
     // Set user message loading to false, indicating request was sent successfully
     if (addedToStore && currentMessage.id) {
@@ -622,7 +869,7 @@ export class SenderStrategyPlugin<
         // Follows sending rule 1: message sent, awaiting response
         status: MessageStatus.SENDING,
         endTime: Date.now()
-      });
+      } as Partial<T>);
     }
   }
 
@@ -632,11 +879,10 @@ export class SenderStrategyPlugin<
    * Called when streaming connection is successfully established.
    * Delegates to the common connection handling logic.
    *
+   * @override
    * @param context - Execution context containing message sender parameters
    */
-  public onConnected(
-    context: ExecutorContext<MessageSenderContextOptions<T>>
-  ): void {
+  public onConnected(context: MessageSenderContext<T>): void {
     this.handleConnectionEstablished(context.parameters);
   }
 
@@ -652,7 +898,7 @@ export class SenderStrategyPlugin<
    * @returns Updated or added message, or original chunk if not a message
    */
   protected handleStream_UpdateExisting(
-    parameters: MessageSenderContextOptions<MessageStoreMsg<unknown, unknown>>,
+    parameters: MessageSenderOptions<T>,
     chunkMessage: unknown
   ): unknown | void {
     const { store } = parameters;

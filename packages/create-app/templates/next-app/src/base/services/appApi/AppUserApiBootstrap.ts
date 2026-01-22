@@ -1,5 +1,4 @@
-import { RequestCommonPlugin } from '@qlover/corekit-bridge';
-import { FetchURLPlugin } from '@qlover/fe-corekit';
+import { RequestPlugin, ResponsePlugin } from '@qlover/fe-corekit';
 import { DialogErrorPlugin } from '@/base/cases/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/base/cases/RequestEncryptPlugin';
 import { StringEncryptor } from '@/base/cases/StringEncryptor';
@@ -11,7 +10,7 @@ import type {
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge';
-import type { ExecutorContext, SerializerIneterface } from '@qlover/fe-corekit';
+import type { SerializerIneterface } from '@qlover/fe-corekit';
 
 export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
   public readonly pluginName = 'AppUserApiBootstrap';
@@ -21,20 +20,19 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
   /**
    * @override
    */
-  public onBefore({
-    parameters: { ioc }
-  }: BootstrapContext): void | Promise<void> {
+  public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
 
-    appUserApi.usePlugin(new FetchURLPlugin());
-    appUserApi.usePlugin(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
-    appUserApi.usePlugin(
-      new RequestCommonPlugin({
+    // 数据加密优先于 RequestPlugin(会序列化数据)
+    appUserApi.use(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
+    appUserApi.use(
+      new RequestPlugin({
         requestDataSerializer: this.requestDataSerializer.bind(this)
       })
     );
-    appUserApi.usePlugin(new AppApiPlugin(ioc.get(I.Logger)));
-    appUserApi.usePlugin(ioc.get(DialogErrorPlugin));
+    appUserApi.use(new ResponsePlugin());
+    appUserApi.use(new AppApiPlugin(ioc.get(I.Logger)));
+    appUserApi.use(ioc.get(DialogErrorPlugin));
   }
 
   /**
@@ -42,13 +40,13 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
    */
   protected requestDataSerializer(
     data: unknown,
-    context: ExecutorContext<AppApiConfig>
+    config: AppApiConfig
   ): unknown {
     if (data instanceof FormData) {
       return data;
     }
 
-    if (context.parameters?.responseType === 'json') {
+    if (config.responseType === 'json') {
       return this.serializer.serialize(data);
     }
 

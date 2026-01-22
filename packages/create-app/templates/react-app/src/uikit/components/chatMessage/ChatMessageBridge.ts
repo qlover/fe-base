@@ -22,7 +22,7 @@ export class ChatMessageBridge<
 
   constructor(
     protected readonly messages: ChatMessageStore<T>,
-    config?: MessageSenderConfig
+    config?: MessageSenderConfig<ChatMessage<T>>
   ) {
     this.messageSender = new MessageSender(messages, config);
   }

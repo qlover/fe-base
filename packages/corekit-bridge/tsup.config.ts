@@ -56,11 +56,12 @@ export default defineConfig([
     splitting: false,
     dts: {
       compilerOptions: {
-        composite: false
+        composite: false,
+        rootDir: undefined
       }
     },
     minify: false,
-    silent: true,
+    silent: false,
     outDir: 'dist',
     external // External dependencies will not be bundled
   },
@@ -81,7 +82,8 @@ export default defineConfig([
     splitting: false,
     dts: {
       compilerOptions: {
-        composite: false
+        composite: false,
+        rootDir: undefined
       }
     },
     minify: false,
@@ -96,10 +98,20 @@ export default defineConfig([
     entry: ['src/core/index.ts'],
     format: ['iife'],
     dts: false,
-    minify: true,
+    minify: false,
     silent: true,
     globalName: pkgName,
     outExtension: () => ({ js: '.iife.js' }),
+    outDir: 'dist'
+  },
+  {
+    entry: ['src/core/index.ts'],
+    format: ['iife'],
+    dts: false,
+    minify: true,
+    silent: true,
+    globalName: pkgName,
+    outExtension: () => ({ js: '.iife.min.js' }),
     outDir: 'dist'
   },
 
@@ -119,12 +131,13 @@ export default defineConfig([
     dts: {
       resolve: true,
       compilerOptions: {
-        composite: false
+        composite: false,
+        rootDir: undefined
       }
     },
     splitting: false,
     minify: false,
-    silent: true,
+    silent: false,
     // bundle: true by default - bundle code but keep external dependencies external
     external
   }

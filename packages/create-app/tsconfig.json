@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo",
     "skipLibCheck": true,
@@ -12,7 +12,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src"],
+  "include": ["src/**/*", "package.json"],
   "exclude": [
     "dist",
     "node_modules",

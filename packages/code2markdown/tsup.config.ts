@@ -24,7 +24,8 @@ export default defineConfig([
     format: ['esm'],
     dts: {
       compilerOptions: {
-        composite: false
+        composite: false,
+        rootDir: undefined
       }
     },
     onSuccess: async () => {

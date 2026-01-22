@@ -97,6 +97,14 @@ export default tseslint.config([
           argsIgnorePattern: '^_'
         }
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: true,
+          fixStyle: 'separate-type-imports'
+        }
+      ],
       '@typescript-eslint/ban-ts-comment': 'off',
       // Type-checked rules
       '@typescript-eslint/require-await': 'off',
@@ -270,7 +278,8 @@ export default tseslint.config([
       allowedGlobals: [
         ...Object.keys(globals.browser),
         ...Object.keys(globals.node),
-        ...Object.keys(vitest.environments.env.globals)
+        ...Object.keys(vitest.environments.env.globals),
+        'expectTypeOf'
       ],
       allGlobals
     }

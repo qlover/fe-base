@@ -8,7 +8,8 @@ import type {
   MessageStoreMsg,
   ChatMessageStore,
   MessageGetwayInterface,
-  GatewayOptions
+  GatewayOptions,
+  MessageInterface
 } from '@qlover/corekit-bridge';
 
 export class MessageApi implements MessageGetwayInterface {
@@ -24,11 +25,13 @@ export class MessageApi implements MessageGetwayInterface {
 
    * @override
       */
-  public async sendMessage<M extends MessageStoreMsg<string>>(
+  public async sendMessage<M extends MessageInterface<unknown>>(
     message: M,
     options?: GatewayOptions<M>
-  ): Promise<M> {
-    const messageContent = message.content ?? '';
+  ): Promise<unknown | M> {
+    // Type assertion: we expect MessageStoreMsg<string> in this implementation
+    const storeMessage = message as unknown as MessageStoreMsg<string>;
+    const messageContent = storeMessage.content ?? '';
 
     // Check if error simulation is needed
     if (messageContent.includes('Failed') || messageContent.includes('error')) {
@@ -40,13 +43,19 @@ export class MessageApi implements MessageGetwayInterface {
     // Determine which mode to use
     if (options?.stream === true) {
       // Streaming mode: progressive output
-      return this.sendStreamMode(message, options);
+      return this.sendStreamMode(
+        storeMessage,
+        options as GatewayOptions<MessageStoreMsg<string>>
+      ) as Promise<unknown | M>;
     } else if (options) {
       // Interruptible normal mode: one-time return, but supports stop
-      return this.sendInterruptibleMode(message, options);
+      return this.sendInterruptibleMode(
+        storeMessage,
+        options as GatewayOptions<MessageStoreMsg<string>>
+      ) as Promise<unknown | M>;
     } else {
       // Fast normal mode: non-interruptible
-      return this.sendNormalMode(message);
+      return this.sendNormalMode(storeMessage) as Promise<unknown | M>;
     }
   }
 

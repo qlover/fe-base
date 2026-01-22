@@ -133,14 +133,12 @@ describe('Base64Serializer', () => {
 describe('JSONSerializer Performance', () => {
   const serializer = new JSONSerializer();
 
-  // 辅助函数：运行性能测试并返回统计数据
   function runPerformanceTest(
     testFn: () => void,
     iterations: number = 1000
   ): { mean: number; min: number; max: number } {
     const times: number[] = [];
 
-    // 多次运行以获得更稳定的结果
     for (let run = 0; run < 5; run++) {
       const start = performance.now();
       for (let i = 0; i < iterations; i++) {
@@ -159,7 +157,6 @@ describe('JSONSerializer Performance', () => {
   it('should measure array serialization performance', () => {
     const largeArray = Array.from({ length: 1000 }, (_, i) => i);
 
-    // 预热
     for (let i = 0; i < 100; i++) {
       serializer.stringify(largeArray);
       serializer.serializeArray(largeArray);
@@ -175,27 +172,10 @@ describe('JSONSerializer Performance', () => {
       100
     );
 
-    //     console.log(`
-    // Array serialization performance (time per operation in ms):
-    // Normal stringify:
-    //   Mean: ${normalStats.mean.toFixed(4)}
-    //   Min:  ${normalStats.min.toFixed(4)}
-    //   Max:  ${normalStats.max.toFixed(4)}
-    // Fast array:
-    //   Mean: ${fastStats.mean.toFixed(4)}
-    //   Min:  ${fastStats.min.toFixed(4)}
-    //   Max:  ${fastStats.max.toFixed(4)}
-    // Improvement:
-    //   Mean: ${((1 - fastStats.mean / normalStats.mean) * 100).toFixed(2)}%
-    //   Best case: ${((1 - fastStats.min / normalStats.min) * 100).toFixed(2)}%
-    //     `);
-
-    // 验证结果正确性
     const normalResult = serializer.stringify(largeArray);
     const fastResult = serializer.serializeArray(largeArray);
     expect(JSON.parse(fastResult)).toEqual(JSON.parse(normalResult));
 
-    // 记录性能特征而不是比较
     expect(fastStats.mean).toBeDefined();
     expect(normalStats.mean).toBeDefined();
   });

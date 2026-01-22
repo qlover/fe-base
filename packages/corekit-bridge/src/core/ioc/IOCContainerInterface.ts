@@ -1,4 +1,4 @@
-import { IOCManagerInterface } from './IOCManagerInterface';
+import { type IOCManagerInterface } from './IOCManagerInterface';
 
 /**
  * IOC container

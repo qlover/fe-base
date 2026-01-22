@@ -1,6 +1,6 @@
-import { ExpireOptions } from '../interface/ExpireOptions';
-import { KeyStorageInterface } from '../interface/KeyStorageInterface';
-import { SyncStorageInterface } from '../interface/SyncStorageInterface';
+import { type ExpireOptions } from '../interface/ExpireOptions';
+import { type KeyStorageInterface } from '../interface/KeyStorageInterface';
+import { type SyncStorageInterface } from '../interface/SyncStorageInterface';
 
 export interface KeyStorageOptions<Key, Sopt = unknown> extends ExpireOptions {
   /**

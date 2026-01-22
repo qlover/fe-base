@@ -1,4 +1,7 @@
-import { StoreInterface, StoreStateInterface } from './StoreInterface';
+import {
+  type StoreInterface,
+  type StoreStateInterface
+} from './StoreInterface';
 
 /**
  * Interface representing the state of an asynchronous operation
@@ -15,7 +18,7 @@ import { StoreInterface, StoreStateInterface } from './StoreInterface';
  * - Background task progress tracking
  * - Operation performance monitoring
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T The type of the expected result
  *
  * @example Basic usage
@@ -103,7 +106,7 @@ export interface AsyncStateInterface<T> extends StoreStateInterface {
  * - Update state: Partially update state properties
  * - Get duration: Calculate operation duration from timestamps
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The type of the expected result from the async operation
  *
  * @example Basic usage
@@ -515,7 +518,7 @@ export interface AsyncStateStatusInterface {
  * - Combines async operation management with persistent state storage
  * - Provides both imperative API (methods) and reactive API (store subscriptions)
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template State - The state type that extends `AsyncStateInterface<any>`
  *   The state must implement `AsyncStateInterface` with a result type
  *

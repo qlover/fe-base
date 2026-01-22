@@ -53,7 +53,7 @@ import type {
   CommitValue,
   GitChangelogOptions
 } from '../../interface/ChangeLog';
-import gitlog, { CommitField, GitlogOptions } from 'gitlog';
+import gitlog, { type CommitField, type GitlogOptions } from 'gitlog';
 import type { LoggerInterface } from '@qlover/logger';
 
 /**

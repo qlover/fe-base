@@ -25,7 +25,6 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    // Verify that console.info was called with our message
     expect(console.info).toHaveBeenCalledWith('Test message');
   });
 
@@ -39,7 +38,6 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    // Verify that console.debug was called with our arguments
     expect(console.debug).toHaveBeenCalledWith('Debug', 123, { foo: 'bar' });
   });
 
@@ -60,7 +58,6 @@ describe('ConsoleHandler', () => {
       timeZone: 'UTC'
     });
 
-    // Verify that console.warn was called with formatted output
     expect(console.warn).toHaveBeenCalledWith(
       `[${formattedTimestamp} warn]`,
       'Warning message'
@@ -68,7 +65,6 @@ describe('ConsoleHandler', () => {
   });
 
   it('should handle non-array formatter output', () => {
-    // Create a custom formatter that returns a string instead of an array
     const customFormatter: FormatterInterface = {
       format: () => 'Formatted message'
     };
@@ -78,7 +74,6 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    // Verify that console.error was called with the string from the formatter
     expect(console.error).toHaveBeenCalledWith('Formatted message');
   });
 
@@ -93,7 +88,6 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    // Get formatted timestamp
     const formattedTimestamp = new Date(timestamp).toLocaleTimeString('zh-CN', {
       hour: '2-digit',
       minute: '2-digit',
@@ -102,7 +96,6 @@ describe('ConsoleHandler', () => {
       timeZone: 'UTC'
     });
 
-    // Verify that console.info was called with formatted output
     expect(console.info).toHaveBeenCalledWith(
       `[${formattedTimestamp} info]`,
       'Test message'

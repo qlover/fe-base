@@ -1,8 +1,11 @@
-import { IOCContainerInterface } from '../ioc';
-import { ExecutorContext, ExecutorPlugin } from '@qlover/fe-corekit';
+import type {
+  ExecutorContextInterface,
+  LifecycleSyncPluginInterface
+} from '@qlover/fe-corekit';
+import type { IOCContainerInterface } from '../ioc';
 import type { LoggerInterface } from '@qlover/logger';
 
-export type BootstrapContextValue = {
+export type BootstrapPluginOptions = {
   /**
    * starup global object
    *
@@ -22,6 +25,6 @@ export type BootstrapContextValue = {
 };
 
 export interface BootstrapExecutorPlugin
-  extends ExecutorPlugin<BootstrapContextValue> {}
+  extends LifecycleSyncPluginInterface<BootstrapContext> {}
 
-export type BootstrapContext = ExecutorContext<BootstrapContextValue>;
+export type BootstrapContext = ExecutorContextInterface<BootstrapPluginOptions>;

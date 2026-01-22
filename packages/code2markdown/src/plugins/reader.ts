@@ -1,5 +1,5 @@
 import { readdirSync, statSync } from 'fs';
-import Code2MDContext from '../implments/Code2MDContext';
+import type Code2MDContext from '../implments/Code2MDContext';
 import { ScriptPlugin } from '@qlover/scripts-context';
 import { basename, dirname, extname, join, relative, normalize } from 'path';
 

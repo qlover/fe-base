@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTestReleaseOptions } from '../helpers';
 import { ReleaseContext } from '../../src';
 import type { DeepPartial } from '../../src/type';
-import { ScriptPlugin, ScriptPluginProps } from '@qlover/scripts-context';
+import { ScriptPlugin, type ScriptPluginProps } from '@qlover/scripts-context';
 
 interface TestPluginProps extends ScriptPluginProps {
   testValue: string;

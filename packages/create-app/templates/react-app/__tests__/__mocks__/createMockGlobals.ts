@@ -79,6 +79,9 @@ export function createMockGlobals() {
     size: vi.fn(() => Object.keys(mockCookieStorageData).length)
   };
 
+  // Add length property to prevent lodash.omit from treating this as array-like
+  // This is needed because BootstrapClient uses omit(globals, ...) and lodash
+  // checks for length property to determine if object is array-like
   return {
     logger: mockLogger,
     appConfig: mockAppConfig,
@@ -86,6 +89,8 @@ export function createMockGlobals() {
     JSON: mockJSON,
     localStorage: mockLocalStorage,
     localStorageEncrypt: mockLocalStorageEncrypt,
-    cookieStorage: mockCookieStorage
+    cookieStorage: mockCookieStorage,
+    // Explicitly define length as undefined to satisfy lodash's isArrayLike check
+    length: undefined
   };
 }

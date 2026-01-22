@@ -16,7 +16,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   MessagesStore,
   MessageStatus,
-  MessageStatusType,
+  type MessageStatusType,
   type MessageStoreMsg
 } from '../../src/core/message-sender';
 

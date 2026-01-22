@@ -15,6 +15,7 @@ export function LogoutButton() {
   const { t } = useAppTranslation();
   const dialogHandler = useIOC(IOCIdentifier.DialogHandler);
   const userService = useIOC(IOCIdentifier.UserServiceInterface);
+  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
   const breakpoint = useBreakpoint();
   const tTitle = t(AUTH_LOGOUT_DIALOG_TITLE);
   const tContent = t(AUTH_LOGOUT_DIALOG_CONTENT);
@@ -29,7 +30,11 @@ export function LogoutButton() {
         'data-testid': 'LogoutButton-CancelButton'
       },
       content: tContent,
-      onOk: () => userService.logout()
+      onOk: async () => {
+        await userService.logout();
+        routeService.reset();
+        routeService.gotoLogin();
+      }
     });
   }, [tTitle, tContent]);
 

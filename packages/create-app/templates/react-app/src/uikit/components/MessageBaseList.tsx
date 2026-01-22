@@ -3,6 +3,7 @@ import { messageBaseListI18n } from '@config/i18n/messageBaseListI18n';
 import { I } from '@config/IOCIdentifier';
 import {
   MessageSender,
+  MessageSenderExecutor,
   MessagesStore,
   MessageStatus,
   SenderStrategyPlugin,
@@ -15,7 +16,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useI18nInterface } from '../hooks/useI18nInterface';
 import { useIOC } from '../hooks/useIOC';
 import type {
+  GatewayOptions,
   MessageGetwayInterface,
+  MessageInterface,
   MessagesStateInterface,
   MessageStoreMsg
 } from '@qlover/corekit-bridge';
@@ -32,37 +35,46 @@ class MessageBaseApi implements MessageGetwayInterface {
   /**
    * @override
    */
-  public async sendMessage<M extends MessageStoreMsg<string>>(
-    message: M
-  ): Promise<unknown> {
+  public async sendMessage<M extends MessageInterface<unknown>>(
+    message: M,
+    options?: GatewayOptions<M>
+  ): Promise<unknown | M> {
     const times = random(200, 1000);
 
     await ThreadUtil.sleep(times);
 
-    const messageContent = message.content ?? '';
+    const messageContent = (message as any).content ?? '';
     if (messageContent.includes('Failed') || messageContent.includes('error')) {
-      throw new Error('Failed to send message');
+      const error = new Error('Failed to send message');
+      await options?.onError?.(error);
+      throw error;
     }
 
     if (times % 5 === 0) {
-      throw new Error(`Network error(${times})`);
+      const error = new Error(`Network error(${times})`);
+      await options?.onError?.(error);
+      throw error;
     }
 
     // Return object response to demonstrate formatting
-    return {
+    const result = {
       status: 'success',
       timestamp: new Date().toISOString(),
       delay: `${times}ms`,
-      echo: message.content,
+      echo: messageContent,
       data: {
         message: 'Message received successfully',
         processed: true,
         metadata: {
-          length: message.content?.length || 0,
+          length: messageContent?.length || 0,
           type: 'text'
         }
       }
     };
+
+    options?.onComplete?.(message);
+
+    return result;
   }
 }
 
@@ -79,7 +91,8 @@ export function MessageBaseList() {
   const [messagesSender] = useState(() =>
     new MessageSender<MessageBaseMsg>(messagesStore, {
       gateway: messageBaseApi,
-      logger
+      logger,
+      executor: new MessageSenderExecutor()
     }).use(new SenderStrategyPlugin(SendFailureStrategy.KEEP_FAILED))
   );
 
@@ -220,7 +233,9 @@ export function MessageBaseList() {
           <Input
             value={inputValue}
             onPressEnter={onSend}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) =>
+              setInputValue((e.target as HTMLInputElement).value)
+            }
             placeholder={tt.inputPlaceholder}
             size="large"
             className="flex-1"

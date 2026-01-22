@@ -1,5 +1,5 @@
-import { SyncStorageInterface } from '@qlover/fe-corekit';
-import { StoreStateInterface } from '../store-state';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
+import { type StoreStateInterface } from '../store-state';
 
 export interface ThemeServiceState extends StoreStateInterface {
   theme: string;

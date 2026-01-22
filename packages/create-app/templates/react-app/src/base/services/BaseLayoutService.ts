@@ -1,18 +1,22 @@
 import { I } from '@config/IOCIdentifier';
-import { AsyncExecutor, ExecutorPlugin } from '@qlover/fe-corekit';
+import {
+  ExecutorContextInterface,
+  LifecycleExecutor,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import { injectable, inject } from 'inversify';
 import { UserBootstrap } from './UserBootstrap';
 import type { RouteServiceInterface } from '../port/RouteServiceInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type {
-  BootstrapContextValue,
+  BootstrapPluginOptions,
   IOCContainerInterface
 } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
 export class BaseLayoutService {
-  protected executor: AsyncExecutor = new AsyncExecutor();
+  protected executor: LifecycleExecutor = new LifecycleExecutor();
 
   constructor(
     @inject(I.Logger) protected logger: LoggerInterface,
@@ -24,7 +28,9 @@ export class BaseLayoutService {
     this.use(new UserBootstrap(userService));
   }
 
-  public use(plugin: ExecutorPlugin): this {
+  public use(
+    plugin: LifecyclePluginInterface<ExecutorContextInterface<unknown, unknown>>
+  ): this {
     this.executor.use(plugin);
     return this;
   }
@@ -36,7 +42,7 @@ export class BaseLayoutService {
   }
 
   public async starup(ioc: IOCContainerInterface): Promise<unknown> {
-    const context: BootstrapContextValue = {
+    const context: BootstrapPluginOptions = {
       root: {},
       logger: this.logger,
       ioc: ioc

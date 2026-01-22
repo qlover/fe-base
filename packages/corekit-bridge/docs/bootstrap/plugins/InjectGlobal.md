@@ -34,15 +34,57 @@
 
 **Default:** `'InjectGlobal'`
 
-The pluginName of the plugin.
-
-Plugins with the same pluginName will be merged.
+Optional plugin name for identification
 
 ---
 
 #### `onBefore` (Method)
 
 **Type:** `(context: BootstrapContext) => void`
+
+Hook executed before task execution (synchronous only)
+
+Purpose:
+Allows plugins to pre-process input data, validate parameters, or perform
+setup operations before the main task executes. Must be synchronous.
+
+Return Value Behavior:
+
+- If returns a value: Context parameters are updated with the returned value
+- If returns undefined: Context parameters remain unchanged
+- Cannot return Promise
+
+Execution Order:
+
+- Executed in plugin registration order
+- All onBefore hooks execute before the task
+- Each hook can see parameter changes from previous hooks
+
+**Returns:**
+
+New parameters to update context, or undefined to keep current parameters
+
+**Example:** Parameter validation
+
+```typescript
+onBefore: (ctx) => {
+  if (!ctx.parameters.userId) {
+    throw new Error('userId is required');
+  }
+};
+```
+
+**Example:** Parameter transformation
+
+```typescript
+onBefore: (ctx) => {
+  return {
+    ...ctx.parameters,
+    timestamp: Date.now(),
+    normalized: true
+  };
+};
+```
 
 #### Parameters
 

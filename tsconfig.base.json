@@ -5,8 +5,7 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "outDir": "ts-build",
-    "baseUrl": "./",
-    "rootDir": "src",
+    "baseUrl": ".",
     "noEmit": false,
     "sourceMap": true,
     "esModuleInterop": true,
@@ -20,7 +19,21 @@
     "checkJs": false,
     "incremental": true,
     "strict": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "@qlover/code2markdown": ["packages/code2markdown/src"],
+      "@qlover/corekit-bridge": ["packages/corekit-bridge/src"],
+      "@qlover/corekit-bridge/*": ["packages/corekit-bridge/src/*"],
+      "@qlover/corekit-node": ["packages/corekit-node/src"],
+      "@qlover/create-app": ["packages/create-app/src"],
+      "@qlover/env-loader": ["packages/env-loader/src"],
+      "@qlover/eslint-plugin": ["packages/eslint-plugin/src"],
+      "@qlover/fe-corekit": ["packages/fe-corekit/src"],
+      "@qlover/fe-release": ["packages/fe-release/src"],
+      "@qlover/fe-scripts": ["packages/fe-scripts/src"],
+      "@qlover/logger": ["packages/logger/src"],
+      "@qlover/scripts-context": ["packages/scripts-context/src"]
+    }
   },
   "ts-node": {
     "esm": true,

@@ -1,7 +1,7 @@
 import {
   ScriptContext,
-  ScriptContextInterface,
-  ScriptSharedInterface
+  type ScriptContextInterface,
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
 import { bootstrap } from 'commitizen/dist/cli/git-cz.js';
 import { existsSync } from 'node:fs';

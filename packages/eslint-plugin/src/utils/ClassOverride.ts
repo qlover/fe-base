@@ -4,14 +4,14 @@ import {
   type TSESLint,
   type TSESTree
 } from '@typescript-eslint/utils';
-import { MessageIds } from '../rules/ts-class-override';
+import { type MessageIds } from '../rules/ts-class-override';
 import {
   getMethodName,
   getMethodNameString,
   hasOverrideJSDoc,
   hasOverrideKeyword
 } from './override-helpers';
-import { TypeChecker } from 'typescript';
+import { type TypeChecker } from 'typescript';
 import * as ts from 'typescript';
 import { OverrideFixer } from './OverrideFixer';
 
@@ -727,6 +727,28 @@ export class ClassOverride {
             }
             break;
         }
+      }
+    } else {
+      // Method does not override anything - check if it has unnecessary override
+      // This handles the case where a class extends/implements but the method
+      // doesn't actually override anything from the parent/interface
+      if (hasJSDoc) {
+        const removeJSDocFix = fixer.removeJSDocOverride(node);
+        this.context.report({
+          node,
+          messageId: 'unnecessaryOverride',
+          data: { methodName, memberType },
+          ...(removeJSDocFix && { fix: removeJSDocFix })
+        });
+      }
+      if (hasKeyword) {
+        const removeKeywordFix = fixer.removeOverrideKeyword(node);
+        this.context.report({
+          node,
+          messageId: 'unnecessaryOverrideKeyword',
+          data: { methodName, memberType },
+          ...(removeKeywordFix && { fix: removeKeywordFix })
+        });
       }
     }
   }

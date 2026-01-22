@@ -1,3 +1,5 @@
+import type { UserConfig } from '@commitlint/types';
+
 export const defaultFeConfig: FeConfig = {
   protectedBranches: ['master', 'develop', 'main'],
   cleanFiles: [
@@ -31,7 +33,7 @@ export const defaultFeConfig: FeConfig = {
   envOrder: ['.env.local', '.env.production', '.env']
 };
 
-export type FeConfig = {
+export interface FeConfig {
   /**
    * Run `fe-clean-branch` to exclude branches
    *
@@ -71,7 +73,7 @@ export type FeConfig = {
    *
    * @default { "extends": ["@commitlint/config-conventional"] }
    */
-  commitlint?: import('@commitlint/types').UserConfig;
+  commitlint?: UserConfig;
 
   /**
    * config of CI release
@@ -84,7 +86,25 @@ export type FeConfig = {
    * @default ['.env.local', '.env']
    */
   envOrder?: string[];
-};
+
+  /**
+   * Allow additional custom properties for script-specific configurations
+   *
+   * This enables users to add custom configuration properties for their
+   * specific scripts without modifying the core FeConfig type definition.
+   *
+   * @example
+   * ```typescript
+   * const config: FeConfig = {
+   *   protectedBranches: ['main'],
+   *   'my-script': {
+   *     customOption: 'value'
+   *   }
+   * };
+   * ```
+   */
+  [key: string]: unknown;
+}
 
 /**
  * Configuration interface for automated release process management

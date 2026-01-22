@@ -14,12 +14,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   ResponseStream,
-  ResponseStreamConfig
+  type ResponseStreamConfig
 } from '../../src/core/response-stream/ResponseStream';
-import { StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
+import { type StreamProcessorInterface } from '../../src/core/response-stream/StreamProcessorInterface';
 import { StreamEvent } from '../../src/core/response-stream/StreamEvent';
 import { SSEStreamProcessor } from '../../src/core/response-stream/SSEStreamProcessor';
-import { ExecutorContext, RequestAdapterConfig } from '@qlover/fe-corekit';
+import {
+  ExecutorContextImpl,
+  type RequestAdapterConfig
+} from '@qlover/fe-corekit';
 
 describe('ResponseStream', () => {
   // Mock implementations
@@ -98,11 +101,8 @@ describe('ResponseStream', () => {
 
   describe('onSuccess', () => {
     it('should handle non-stream response', async () => {
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: { data: 'test' },
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue({ data: 'test' });
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();
     });
@@ -123,11 +123,8 @@ describe('ResponseStream', () => {
       };
       const customStream = new ResponseStream(customConfig);
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue(mockResponse);
 
       await customStream.onSuccess(context);
       expect(customConfig.onStreamChunk).toHaveBeenCalledWith(
@@ -151,13 +148,10 @@ describe('ResponseStream', () => {
       };
       const streamResponsePlugin = new ResponseStream(streamConfig);
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
+      context.setReturnValue(mockResponse);
 
       await streamResponsePlugin.onSuccess(context);
       expect(streamConfig.onStreamChunk).toHaveBeenCalledWith(
@@ -174,11 +168,8 @@ describe('ResponseStream', () => {
       });
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: nonStreamResponse,
-        parameters: {},
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl({});
+      context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();
@@ -186,13 +177,10 @@ describe('ResponseStream', () => {
 
     it('should process stream response', async () => {
       const mockResponse = createMockResponse(['test']);
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: mockResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
+      context.setReturnValue(mockResponse);
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).toHaveBeenCalledWith(
         'test',
@@ -205,13 +193,10 @@ describe('ResponseStream', () => {
       const nonStreamResponse = new Response(JSON.stringify({ data: 'test' }));
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context: ExecutorContext<RequestAdapterConfig> = {
-        returnValue: nonStreamResponse,
-        parameters: {
-          responseType: 'stream'
-        },
-        hooksRuntimes: {}
-      };
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
+      context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).not.toHaveBeenCalled();
@@ -431,12 +416,7 @@ describe('ResponseStream', () => {
           expect(data.session_id).toBeDefined();
           expect(Array.isArray(data.screens)).toBe(true);
         },
-        onStreamDone: () => {
-          console.log(
-            'Stream completed, total messages:',
-            receivedMessages.length
-          );
-        }
+        onStreamDone: () => {}
       };
 
       const stream = new ResponseStream(localConfig);
@@ -470,21 +450,9 @@ describe('ResponseStream', () => {
         }
       );
 
-      const result = await stream.handleStreamResponse(response);
+      await stream.handleStreamResponse(response);
 
-      console.log(result);
       expect(receivedMessages.length).toBeGreaterThan(0);
-
-      // // Log final results
-      // console.log(
-      //   'Test completed. Total messages received:',
-      //   receivedMessages.length
-      // );
-      // console.log('First message:', JSON.parse(receivedMessages[0]));
-      // console.log(
-      //   'Last message:',
-      //   JSON.parse(receivedMessages[receivedMessages.length - 1])
-      // );
     }, 30000); // Increase timeout to 30s for API call
   });
 });

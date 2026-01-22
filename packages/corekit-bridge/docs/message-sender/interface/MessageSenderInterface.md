@@ -4,6 +4,117 @@
 
 ---
 
+### `MessageSenderBaseConfig` (Interface)
+
+**Type:** `interface MessageSenderBaseConfig`
+
+Configuration options for message sender
+
+Defines behavior, logging, gateway integration, and error handling
+for the message sender instance.
+
+---
+
+#### `gateway` (Property)
+
+**Type:** `MessageGetwayInterface`
+
+Message gateway instance
+
+Gateway responsible for actually sending messages to external
+services (APIs, WebSocket servers, etc.).
+
+---
+
+#### `gatewayOptions` (Property)
+
+**Type:** `GatewayOptions<unknown, Record<string, unknown>>`
+
+Gateway options for message operations
+
+Configuration for gateway behavior including:
+
+- Stream event handlers (
+  `onChunk`
+  ,
+  `onComplete`
+  ,
+  `onError`
+  ,
+  `onProgress`
+  )
+- Abort signal for cancellation control
+- Custom request parameters
+
+**Example:**
+
+```typescript
+const config = {
+  gatewayOptions: {
+    stream: true,
+    onChunk: (chunk) => console.log(chunk),
+    timeout: 30000
+  }
+};
+```
+
+---
+
+#### `logger` (Property)
+
+**Type:** `LoggerInterface<unknown>`
+
+Logger instance for debugging and monitoring
+
+Optional logger for tracking message send operations,
+errors, and performance metrics.
+
+---
+
+#### `senderName` (Property)
+
+**Type:** `string`
+
+**Default:** `'MessageSender'`
+
+Sender instance name
+
+Used for logging and identification purposes. Helpful when
+multiple sender instances exist in the application.
+
+**Example:**
+
+```typescript
+const config = {
+  senderName: 'ChatSender'
+};
+```
+
+---
+
+#### `throwIfError` (Property)
+
+**Type:** `boolean`
+
+**Default:** `false`
+
+Whether to throw errors on send failure
+
+When
+`true`
+, failed send operations throw errors instead of
+returning error messages. Useful for error boundary handling.
+
+**Example:**
+
+```typescript
+const config = {
+  throwIfError: true // Throw on failures
+};
+```
+
+---
+
 ### `MessageSenderInterface` (Interface)
 
 **Type:** `interface MessageSenderInterface<Message>`
@@ -111,14 +222,14 @@ console.log(`Total messages: ${messages.length}`);
 
 #### `send` (Method)
 
-**Type:** `(message: Partial<Message>, streamEvent: MessageStreamEvent<unknown>) => Promise<Message>`
+**Type:** `(message: Partial<Message>, streamEvent: GatewayEventInterface<unknown>) => Promise<Message>`
 
 #### Parameters
 
-| Name          | Type                          | Optional | Default | Since | Deprecated | Description                                                      |
-| ------------- | ----------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `message`     | `Partial<Message>`            | ❌       | -       | -     | -          | Partial message object containing at minimum the required fields |
-| `streamEvent` | `MessageStreamEvent<unknown>` | ✅       | -       | -     | -          | Optional stream event callbacks for streaming mode               |
+| Name          | Type                             | Optional | Default | Since | Deprecated | Description                                                      |
+| ------------- | -------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
+| `message`     | `Partial<Message>`               | ❌       | -       | -     | -          | Partial message object containing at minimum the required fields |
+| `streamEvent` | `GatewayEventInterface<unknown>` | ✅       | -       | -     | -          | Optional stream event callbacks for streaming mode               |
 
 ---
 
@@ -193,22 +304,22 @@ try {
 
 #### Parameters
 
-| Name          | Type                          | Optional | Default | Since | Deprecated | Description                                                      |
-| ------------- | ----------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
-| `message`     | `Partial<Message>`            | ❌       | -       | -     | -          | Partial message object containing at minimum the required fields |
-| `streamEvent` | `MessageStreamEvent<unknown>` | ✅       | -       | -     | -          | Optional stream event callbacks for streaming mode               |
+| Name          | Type                             | Optional | Default | Since | Deprecated | Description                                                      |
+| ------------- | -------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------------- |
+| `message`     | `Partial<Message>`               | ❌       | -       | -     | -          | Partial message object containing at minimum the required fields |
+| `streamEvent` | `GatewayEventInterface<unknown>` | ✅       | -       | -     | -          | Optional stream event callbacks for streaming mode               |
 
 ---
 
 #### `use` (Method)
 
-**Type:** `(plugin: ExecutorPlugin<T>) => this`
+**Type:** `(plugin: MessageSenderPlugin<Message>) => this`
 
 #### Parameters
 
-| Name     | Type                | Optional | Default | Since | Deprecated | Description                        |
-| -------- | ------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register with the sender |
+| Name     | Type                           | Optional | Default | Since | Deprecated | Description                        |
+| -------- | ------------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `plugin` | `MessageSenderPlugin<Message>` | ❌       | -       | -     | -          | Plugin to register with the sender |
 
 ---
 
@@ -248,8 +359,8 @@ sender.use(authPlugin).use(validationPlugin).use(transformPlugin);
 
 #### Parameters
 
-| Name     | Type                | Optional | Default | Since | Deprecated | Description                        |
-| -------- | ------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `plugin` | `ExecutorPlugin<T>` | ❌       | -       | -     | -          | Plugin to register with the sender |
+| Name     | Type                           | Optional | Default | Since | Deprecated | Description                        |
+| -------- | ------------------------------ | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `plugin` | `MessageSenderPlugin<Message>` | ❌       | -       | -     | -          | Plugin to register with the sender |
 
 ---

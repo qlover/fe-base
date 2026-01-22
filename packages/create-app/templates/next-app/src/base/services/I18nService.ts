@@ -5,10 +5,14 @@ import {
 } from '../port/I18nServiceInterface';
 import type { I18nServiceLocale } from '../port/I18nServiceInterface';
 import type { useTranslations } from 'next-intl';
+import { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
-export class I18nService extends I18nServiceInterface {
+export class I18nService
+  extends I18nServiceInterface
+  implements BootstrapExecutorPlugin
+{
   public readonly pluginName = 'I18nService';
   protected pathname: string = '';
   protected translator: TranslationFunction | null = null;
@@ -34,7 +38,7 @@ export class I18nService extends I18nServiceInterface {
   /**
    * @override
    */
-  public async onBefore(): Promise<void> {}
+  public onBefore(): void {}
 
   public override async changeLanguage(
     language: I18nServiceLocale

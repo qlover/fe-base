@@ -110,13 +110,13 @@ Final processed data or undefined
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<RequestAdapterConfig<unknown>>) => Promise<void>`
+**Type:** `(context: ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>) => Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                             | Optional | Default | Since | Deprecated | Description                               |
-| --------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------- |
-| `context` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Executor context containing response data |
+| Name      | Type                                                                             | Optional | Default | Since | Deprecated | Description                               |
+| --------- | -------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
+| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Executor context containing response data |
 
 ---
 
@@ -131,9 +131,9 @@ and processing it accordingly.
 
 #### Parameters
 
-| Name      | Type                                             | Optional | Default | Since | Deprecated | Description                               |
-| --------- | ------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------- |
-| `context` | `ExecutorContext<RequestAdapterConfig<unknown>>` | ❌       | -       | -     | -          | Executor context containing response data |
+| Name      | Type                                                                             | Optional | Default | Since | Deprecated | Description                               |
+| --------- | -------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------- |
+| `context` | `ExecutorContextInterface<RequestAdapterConfig<unknown>, unknown, HookRuntimes>` | ❌       | -       | -     | -          | Executor context containing response data |
 
 ---
 

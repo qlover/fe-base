@@ -1,15 +1,40 @@
 import { defineConfig } from 'vitest/config';
-import { parsePackagesMap } from './tools/vite-mock-package/index';
+import { resolve } from 'path';
 
 export default defineConfig(() => {
   // Use function form to defer execution, avoiding blocking VSCode TypeScript server
   return {
-    // plugins: [
-    // FIXME: not override alias?
-    //   viteMockPackage({
-    //     onlyPackages: ['scripts-context', 'env-loader', 'fe-corekit']
-    //   })
-    // ],
+    resolve: {
+      alias: {
+        '@qlover/code2markdown': resolve(
+          __dirname,
+          './packages/code2markdown/src'
+        ),
+        '@qlover/corekit-bridge': resolve(
+          __dirname,
+          './packages/corekit-bridge/src'
+        ),
+        '@qlover/corekit-node': resolve(
+          __dirname,
+          './packages/corekit-node/src'
+        ),
+        '@qlover/create-app': resolve(__dirname, './packages/create-app/src'),
+        '@qlover/env-loader': resolve(__dirname, './packages/env-loader/src'),
+        '@qlover/eslint-plugin': resolve(
+          __dirname,
+          './packages/eslint-plugin/src'
+        ),
+        '@qlover/fe-corekit': resolve(__dirname, './packages/fe-corekit/src'),
+        '@qlover/fe-release': resolve(__dirname, './packages/fe-release/src'),
+        '@qlover/fe-scripts': resolve(__dirname, './packages/fe-scripts/src'),
+        '@qlover/fe-standard': resolve(__dirname, './packages/fe-standard'),
+        '@qlover/logger': resolve(__dirname, './packages/logger/src'),
+        '@qlover/scripts-context': resolve(
+          __dirname,
+          './packages/scripts-context/src'
+        )
+      }
+    },
     test: {
       environment: 'node',
       globals: true,
@@ -25,17 +50,7 @@ export default defineConfig(() => {
         '**/.vscode/**',
         '**/.nx/**',
         '**/packages/create-app/templates/**'
-      ],
-      alias: {
-        ...parsePackagesMap({
-          onlyPackages: [
-            'scripts-context',
-            'env-loader',
-            'fe-corekit',
-            'logger'
-          ]
-        })
-      }
+      ]
     }
   };
 });

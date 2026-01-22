@@ -1,5 +1,5 @@
-import { SyncStorageInterface } from '@qlover/fe-corekit';
-import { StoreStateInterface } from './StoreInterface';
+import { type SyncStorageInterface } from '@qlover/fe-corekit';
+import { type StoreStateInterface } from './StoreInterface';
 
 /**
  * Persistent store interface
@@ -28,7 +28,7 @@ import { StoreStateInterface } from './StoreInterface';
  * - `restore()` should not trigger persistence to avoid circular updates
  * - `persist()` should handle storage unavailability gracefully (no-op if storage is `null`)
  *
- * @since 1.8.0
+ * @since `1.8.0`
  * @template T - The state type that needs to be persisted
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`, or custom types)
  * @template Opt - The type of options for storage operations (defaults to `unknown`)

@@ -1,4 +1,4 @@
-import { NotificationOptions } from './UINotificationInterface';
+import { type NotificationOptions } from './UINotificationInterface';
 
 export interface UIDialogInterface<T extends NotificationOptions> {
   /**

@@ -19,7 +19,7 @@
  * - Clear deprecation markers
  * - Generic type constraints
  */
-import type { ExecutorContext } from '@qlover/fe-corekit';
+import type { ExecutorContextInterface } from '@qlover/fe-corekit';
 import type ReleaseContext from './implments/ReleaseContext';
 import type { GithubPRProps } from './plugins/githubPR/GithubPR';
 import type {
@@ -46,7 +46,7 @@ import type {
  * ```
  */
 export interface ExecutorReleaseContext
-  extends ExecutorContext<ReleaseContext> {
+  extends ExecutorContextInterface<ReleaseContext> {
   returnValue: ReleaseReturnValue;
 }
 

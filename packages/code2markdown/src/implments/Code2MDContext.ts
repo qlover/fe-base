@@ -1,10 +1,10 @@
 import {
-  ScriptContextInterface,
+  type ScriptContextInterface,
   ScriptContext,
-  ScriptSharedInterface
+  type ScriptSharedInterface
 } from '@qlover/scripts-context';
-import { ReaderOutput } from '../plugins/reader';
-import { FormatProjectValue } from '../type';
+import { type ReaderOutput } from '../plugins/reader';
+import { type FormatProjectValue } from '../type';
 
 /**
  * Configuration options for Code2MDContext

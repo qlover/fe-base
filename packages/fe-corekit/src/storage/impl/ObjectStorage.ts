@@ -1,6 +1,6 @@
 import { type SerializerIneterface } from '../../serializer';
-import { SyncStorageInterface } from '../interface/SyncStorageInterface';
-import { ExpireOptions } from '../interface/ExpireOptions';
+import { type SyncStorageInterface } from '../interface/SyncStorageInterface';
+import { type ExpireOptions } from '../interface/ExpireOptions';
 
 export interface ObjectStorageOptions extends ExpireOptions {}
 

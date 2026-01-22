@@ -589,7 +589,7 @@ bridge.setRef(inputRef.current);
 
 ### `ChatMessageBridgePlugin` (TypeAlias)
 
-**Type:** `ExecutorPlugin<MessageSenderContextOptions<ChatMessage<T>>>`
+**Type:** `LifecyclePluginInterface<ChatMessageBridgeContext<T>>`
 
 Plugin type for chat message bridge executor
 

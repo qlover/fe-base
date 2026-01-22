@@ -1,4 +1,4 @@
-import { StreamProcessorInterface } from './StreamProcessorInterface';
+import { type StreamProcessorInterface } from './StreamProcessorInterface';
 
 /**
  * Stream event handler for processing stream data

@@ -94,9 +94,9 @@ JSON.parse('{ "name": "test" }'); // same as JSON.parse('{ "name": "test" }')
 
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since   | Deprecated | Description                |
-| --------- | ----- | -------- | ------- | ------- | ---------- | -------------------------- |
-| `options` | `Opt` | ✅       | `{}`    | `1.5.0` | -          | Options for JSONSerializer |
+| Name      | Type  | Optional | Default | Since | Deprecated | Description                                      |
+| --------- | ----- | -------- | ------- | ----- | ---------- | ------------------------------------------------ |
+| `options` | `Opt` | ✅       | `{}`    | -     | -          | Configuration options for serialization behavior |
 
 ---
 
@@ -123,8 +123,6 @@ serializer.toString(); // returns '[object JSONSerializer]'
 #### `options` (Property)
 
 **Type:** `Opt`
-
-**Since:** `1.5.0`
 
 **Default:** `{}`
 
@@ -182,10 +180,10 @@ Replacer function or array of properties to include
 
 #### Parameters
 
-| Name           | Type     | Optional | Default | Since | Deprecated | Description |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `data`         | `string` | ❌       | -       | -     | -          |             |
-| `defaultValue` | `T`      | ✅       | -       | -     | -          |             |
+| Name           | Type     | Optional | Default | Since | Deprecated | Description                             |
+| -------------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `data`         | `string` | ❌       | -       | -     | -          | JSON string to deserialize              |
+| `defaultValue` | `T`      | ✅       | -       | -     | -          | Optional default value if parsing fails |
 
 ---
 
@@ -197,6 +195,9 @@ Replacer function or array of properties to include
 
 Implements Serializer.deserialize with enhanced error handling
 
+Safely parses JSON string with automatic error handling. Returns
+default value if parsing fails instead of throwing an error.
+
 Benefits:
 
 1. Safe parsing with default value fallback
@@ -205,14 +206,22 @@ Benefits:
 
 **Returns:**
 
-Parsed value
+Parsed value or default value
+
+**Example:** Safe parsing
+
+```typescript
+const serializer = new JSONSerializer();
+const obj = serializer.deserialize('invalid json', { name: 'Default' });
+// Result: { name: 'Default' }
+```
 
 #### Parameters
 
-| Name           | Type     | Optional | Default | Since | Deprecated | Description |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `data`         | `string` | ❌       | -       | -     | -          |             |
-| `defaultValue` | `T`      | ✅       | -       | -     | -          |             |
+| Name           | Type     | Optional | Default | Since | Deprecated | Description                             |
+| -------------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------- |
+| `data`         | `string` | ❌       | -       | -     | -          | JSON string to deserialize              |
+| `defaultValue` | `T`      | ✅       | -       | -     | -          | Optional default value if parsing fails |
 
 ---
 
@@ -222,10 +231,10 @@ Parsed value
 
 #### Parameters
 
-| Name      | Type     | Optional | Default | Since | Deprecated | Description |
-| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `text`    | `string` | ❌       | -       | -     | -          |             |
-| `reviver` | `Object` | ✅       | -       | -     | -          |             |
+| Name      | Type     | Optional | Default | Since | Deprecated | Description                                  |
+| --------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `text`    | `string` | ❌       | -       | -     | -          | JSON string to parse                         |
+| `reviver` | `Object` | ✅       | -       | -     | -          | Optional function to transform parsed values |
 
 ---
 
@@ -236,18 +245,30 @@ Parsed value
 **Since:** `1.0.10`
 
 Standard JSON.parse implementation
-Note: Error handling is done in deserialize method
+
+Parses a JSON string and returns the corresponding JavaScript value.
+Error handling is done in the
+`deserialize`
+method.
 
 **Returns:**
 
-Parsed value
+Parsed JavaScript value
+
+**Example:**
+
+```typescript
+const serializer = new JSONSerializer();
+const obj = serializer.parse('{"name":"John"}');
+// Result: { name: 'John' }
+```
 
 #### Parameters
 
-| Name      | Type     | Optional | Default | Since | Deprecated | Description |
-| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `text`    | `string` | ❌       | -       | -     | -          |             |
-| `reviver` | `Object` | ✅       | -       | -     | -          |             |
+| Name      | Type     | Optional | Default | Since | Deprecated | Description                                  |
+| --------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `text`    | `string` | ❌       | -       | -     | -          | JSON string to parse                         |
+| `reviver` | `Object` | ✅       | -       | -     | -          | Optional function to transform parsed values |
 
 ---
 
@@ -257,9 +278,9 @@ Parsed value
 
 #### Parameters
 
-| Name   | Type      | Optional | Default | Since | Deprecated | Description |
-| ------ | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `data` | `unknown` | ❌       | -       | -     | -          |             |
+| Name   | Type      | Optional | Default | Since | Deprecated | Description       |
+| ------ | --------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `data` | `unknown` | ❌       | -       | -     | -          | Data to serialize |
 
 ---
 
@@ -270,7 +291,9 @@ Parsed value
 **Since:** `1.0.10`
 
 Implements Serializer.serialize
-Provides a simplified interface with configured options
+
+Provides a simplified interface with configured options.
+Uses the instance's configuration for pretty printing and replacer.
 
 Benefits:
 
@@ -280,13 +303,20 @@ Benefits:
 
 **Returns:**
 
-Serialized string
+Serialized JSON string
+
+**Example:**
+
+```typescript
+const serializer = new JSONSerializer({ pretty: true });
+const json = serializer.serialize({ name: 'John' });
+```
 
 #### Parameters
 
-| Name   | Type      | Optional | Default | Since | Deprecated | Description |
-| ------ | --------- | -------- | ------- | ----- | ---------- | ----------- |
-| `data` | `unknown` | ❌       | -       | -     | -          |             |
+| Name   | Type      | Optional | Default | Since | Deprecated | Description       |
+| ------ | --------- | -------- | ------- | ----- | ---------- | ----------------- |
+| `data` | `unknown` | ❌       | -       | -     | -          | Data to serialize |
 
 ---
 
@@ -309,11 +339,29 @@ Serialized string
 **Since:** `1.0.10`
 
 Optimized serialization for arrays of primitive values
-Avoids object property enumeration
+
+Provides faster serialization for arrays containing only primitives
+by avoiding object property enumeration and using direct array mapping.
+
+Performance benefits:
+
+- Faster than standard
+  `JSON.stringify`
+  for primitive arrays
+- Avoids object property enumeration overhead
+- Direct string concatenation
 
 **Returns:**
 
 JSON array string
+
+**Example:**
+
+```typescript
+const serializer = new JSONSerializer();
+const json = serializer.serializeArray([1, 2, 'test', true]);
+// Result: '[1,2,"test",true]'
+```
 
 #### Parameters
 
@@ -329,11 +377,11 @@ JSON array string
 
 #### Parameters
 
-| Name       | Type                                   | Optional | Default | Since | Deprecated | Description |
-| ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `value`    | `unknown`                              | ❌       | -       | -     | -          |             |
-| `replacer` | `null \| string \| number[] \| Object` | ✅       | -       | -     | -          |             |
-| `space`    | `string \| number`                     | ✅       | -       | -     | -          |             |
+| Name       | Type                                   | Optional | Default | Since | Deprecated | Description                                       |
+| ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `value`    | `unknown`                              | ❌       | -       | -     | -          | Value to serialize                                |
+| `replacer` | `null \| string \| number[] \| Object` | ✅       | -       | -     | -          | Optional replacer function or property array      |
+| `space`    | `string \| number`                     | ✅       | -       | -     | -          | Optional indentation (number of spaces or string) |
 
 ---
 
@@ -356,21 +404,53 @@ Enhancements:
 
 **Returns:**
 
-Serialized string
+Serialized JSON string
+
+**Example:** Basic usage
+
+```typescript
+const serializer = new JSONSerializer();
+const json = serializer.stringify({ name: 'John', age: 30 });
+// Result: '{"name":"John","age":30}'
+```
+
+**Example:** With pretty printing
+
+```typescript
+const json = serializer.stringify({ name: 'John' }, null, 2);
+// Result:
+// {
+//   "name": "John"
+// }
+```
 
 #### Parameters
 
-| Name       | Type                                   | Optional | Default | Since | Deprecated | Description |
-| ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `value`    | `unknown`                              | ❌       | -       | -     | -          |             |
-| `replacer` | `null \| string \| number[] \| Object` | ✅       | -       | -     | -          |             |
-| `space`    | `string \| number`                     | ✅       | -       | -     | -          |             |
+| Name       | Type                                   | Optional | Default | Since | Deprecated | Description                                       |
+| ---------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------- |
+| `value`    | `unknown`                              | ❌       | -       | -     | -          | Value to serialize                                |
+| `replacer` | `null \| string \| number[] \| Object` | ✅       | -       | -     | -          | Optional replacer function or property array      |
+| `space`    | `string \| number`                     | ✅       | -       | -     | -          | Optional indentation (number of spaces or string) |
 
 ---
 
 ### `JSONSerializerOptions` (Interface)
 
 **Type:** `interface JSONSerializerOptions`
+
+Configuration options for JSONSerializer
+
+Provides customization options for JSON serialization behavior,
+including formatting, indentation, and custom transformation logic.
+
+**Example:** Basic configuration
+
+```typescript
+const options: JSONSerializerOptions = {
+  pretty: true,
+  indent: 2
+};
+```
 
 ---
 
@@ -380,12 +460,29 @@ Serialized string
 
 **Since:** `1.0.10`
 
-**Default:** `ts
-2
-`
+**Default:** `2`
 
 Number of spaces to use for indentation when pretty printing
-Only used when pretty is true
+
+Only used when
+`pretty`
+is
+`true`
+. Controls the indentation level
+for nested objects and arrays.
+
+**Example:**
+
+```typescript
+const serializer = new JSONSerializer({ pretty: true, indent: 4 });
+serializer.serialize({ user: { name: 'John' } });
+// Result:
+// {
+//     "user": {
+//         "name": "John"
+//     }
+// }
+```
 
 ---
 
@@ -395,12 +492,24 @@ Only used when pretty is true
 
 **Since:** `1.0.10`
 
-**Default:** `ts
-false
-`
+**Default:** `false`
 
 Enable pretty printing of JSON output
-Adds automatic indentation and line breaks for better readability
+
+When enabled, adds automatic indentation and line breaks for better
+readability. Useful for configuration files, debugging, or human-readable output.
+
+**Example:**
+
+```typescript
+const serializer = new JSONSerializer({ pretty: true });
+serializer.serialize({ name: 'John', age: 30 });
+// Result:
+// {
+//   "name": "John",
+//   "age": 30
+// }
+```
 
 ---
 
@@ -411,7 +520,35 @@ Adds automatic indentation and line breaks for better readability
 **Since:** `1.0.10`
 
 Custom replacer function for JSON.stringify
-Allows custom transformation during serialization
-Note: Will be wrapped to handle line endings
+
+Allows custom transformation during serialization. The function is
+automatically wrapped to handle line ending normalization.
+
+**Example:** Filter properties
+
+```typescript
+const serializer = new JSONSerializer({
+  replacer: (key, value) => {
+    // Exclude password field
+    if (key === 'password') return undefined;
+    return value;
+  }
+});
+
+serializer.serialize({ name: 'John', password: 'secret' });
+// Result: '{"name":"John"}'
+```
+
+**Example:** Transform values
+
+```typescript
+const serializer = new JSONSerializer({
+  replacer: (key, value) => {
+    // Convert dates to ISO strings
+    if (value instanceof Date) return value.toISOString();
+    return value;
+  }
+});
+```
 
 ---
