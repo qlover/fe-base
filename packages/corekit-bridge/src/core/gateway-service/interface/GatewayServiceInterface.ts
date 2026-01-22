@@ -2,7 +2,7 @@ import { type LoggerInterface } from '@qlover/logger';
 import {
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
-} from '../../../store-state';
+} from '../../store-state';
 
 export type ServiceGatewayType = object;
 
@@ -48,7 +48,7 @@ export type ServiceGatewayType = object;
  * }
  * ```
  */
-export interface BaseServiceInterface<
+export interface GatewayServiceInterface<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<any>>,
   Gateway extends ServiceGatewayType

@@ -5,22 +5,21 @@ import {
   type AsyncStoreStateInterface
 } from '../../store-state';
 import {
-  type BaseServiceInterface,
+  type GatewayServiceInterface,
   type ServiceGatewayType
-} from '../interface/base/BaseServiceInterface';
-import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+} from '../interface/GatewayServiceInterface';
 import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
 
 /**
- * Base service options
+ * Gateway service options
  *
- * Configuration options for creating a base service instance.
- * Combines executor service options and async store options to provide complete service configuration.
+ * Configuration options for creating a gateway service instance.
+ * Combines service infrastructure configuration and async store options to provide complete service configuration.
  * This interface merges the configuration needed for both service infrastructure (gateway, logger, service name)
  * and state management (store configuration).
  *
- * - Significance: Provides unified configuration for base services
- * - Core idea: Combine executor and store configuration into a single options object
+ * - Significance: Provides unified configuration for gateway services
+ * - Core idea: Combine service infrastructure and store configuration into a single options object
  * - Main function: Configure service infrastructure and state management
  * - Main purpose: Simplify service initialization with all necessary options
  *
@@ -31,7 +30,6 @@ import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
  * - Store configuration: Store instance or options for state management
  *
  * Design decisions:
- * - Extends ExecutorServiceOptions: Inherits service infrastructure configuration
  * - Extends AsyncStoreOptions: Inherits store configuration options
  * - Flexible store configuration: Can accept store instance or store options
  *
@@ -43,7 +41,7 @@ import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
  * @example Basic usage with store instance
  * ```typescript
  * const store = new AsyncStore<User>();
- * const options: BaseServiceOptions<User, UserGateway> = {
+ * const options: GatewayServiceOptions<User, UserGateway> = {
  *   serviceName: 'UserService',
  *   gateway: new UserGateway(),
  *   logger: new Logger(),
@@ -53,7 +51,7 @@ import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
  *
  * @example Basic usage with store options
  * ```typescript
- * const options: BaseServiceOptions<User, UserGateway> = {
+ * const options: GatewayServiceOptions<User, UserGateway> = {
  *   serviceName: 'UserService',
  *   gateway: new UserGateway(),
  *   logger: new Logger(),
@@ -65,22 +63,59 @@ import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
  * };
  * ```
  */
-export interface BaseServiceOptions<T, Gateway, Key = string>
-  extends ExecutorServiceOptions<T, Gateway>,
-    AsyncStoreOptions<AsyncStoreStateInterface<T>, Key> {}
+export interface GatewayServiceOptions<T, Gateway, Key = string>
+  extends AsyncStoreOptions<AsyncStoreStateInterface<T>, Key> {
+  /**
+   * Service name identifier
+   *
+   * Used for logging, debugging, and service identification.
+   * Should be set during construction and remain constant.
+   */
+  serviceName: string | symbol;
+
+  /**
+   * Gateway instance for API operations
+   *
+   * The gateway object that provides methods for executing API calls.
+   * Optional - services can work without gateway (e.g., mock services).
+   *
+   * @optional
+   */
+  gateway?: Gateway;
+
+  /**
+   * Logger instance for logging execution events
+   *
+   * Used for logging execution flow, errors, and debugging information.
+   * Optional - services can work without logger.
+   *
+   * @optional
+   */
+  logger?: LoggerInterface;
+
+  /**
+   * Store instance for state management
+   *
+   * The async store that manages service state (loading, success, error).
+   * Optional - services can work without store (though uncommon).
+   *
+   * @optional
+   */
+  store?: AsyncStoreInterface<AsyncStoreStateInterface<T>>;
+}
 
 /**
- * Base service implementation
+ * Gateway service implementation
  *
- * Concrete implementation of `BaseServiceInterface` that provides the foundational infrastructure
+ * Concrete implementation of `GatewayServiceInterface` that provides the foundational infrastructure
  * for all gateway services. This class handles the initialization and management of core service
  * components: store, gateway, and logger. It serves as the base class for more specialized service
- * implementations like `GatewayService`.
+ * implementations like `UserService`.
  *
  * **Core Implementation Principles:**
  *
- * 1. **Unified Initialization**: The constructor accepts `BaseServiceOptions` which combines
- *    executor service options and store options, providing a single point of configuration.
+ * 1. **Unified Initialization**: The constructor accepts `GatewayServiceOptions` which combines
+ *    service infrastructure configuration and store options, providing a single point of configuration.
  *
  * 2. **Flexible Store Creation**: Uses `createAsyncStore` factory function to handle store creation:
  *    - If a store instance is provided, it uses it directly (allows dependency injection)
@@ -93,7 +128,7 @@ export interface BaseServiceOptions<T, Gateway, Key = string>
  *    - Prevention of external modification after construction
  *    - Clear encapsulation boundaries
  *
- * 4. **Interface Compliance**: Implements `BaseServiceInterface` to ensure consistent service
+ * 4. **Interface Compliance**: Implements `GatewayServiceInterface` to ensure consistent service
  *    structure across all service implementations.
  *
  * - Significance: Foundation implementation for all gateway services
@@ -116,7 +151,7 @@ export interface BaseServiceOptions<T, Gateway, Key = string>
  * - Readonly properties: Prevents accidental modification after construction
  *
  * Initialization flow:
- * 1. Constructor receives `BaseServiceOptions`
+ * 1. Constructor receives `GatewayServiceOptions`
  * 2. Service name is assigned (required, readonly)
  * 3. Gateway is assigned (optional, readonly)
  * 4. Logger is assigned (optional, readonly)
@@ -130,10 +165,10 @@ export interface BaseServiceOptions<T, Gateway, Key = string>
  * @template Store - The async store type that extends `AsyncStoreInterface`
  * @template Gateway - The gateway type (must be an object type)
  *
- * @example Basic usage - extending BaseService
+ * @example Basic usage - extending GatewayService
  * ```typescript
- * class MyService extends BaseService<User, UserStore, UserGateway> {
- *   constructor(options: BaseServiceOptions<User, UserGateway>) {
+ * class MyService extends GatewayService<User, UserStore, UserGateway> {
+ *   constructor(options: GatewayServiceOptions<User, UserGateway>) {
  *     super(options);
  *   }
  *
@@ -193,11 +228,11 @@ export interface BaseServiceOptions<T, Gateway, Key = string>
  * }
  * ```
  */
-export class BaseService<
+export class GatewayService<
   T,
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<T>>,
   Gateway extends ServiceGatewayType
-> implements BaseServiceInterface<Store, Gateway>
+> implements GatewayServiceInterface<Store, Gateway>
 {
   /**
    * Service name identifier
@@ -267,7 +302,7 @@ export class BaseService<
    *
    * @example Basic initialization
    * ```typescript
-   * const service = new BaseService({
+   * const service = new GatewayService({
    *   serviceName: 'MyService',
    *   gateway: new MyGateway(),
    *   logger: new Logger()
@@ -277,7 +312,7 @@ export class BaseService<
    * @example With store instance
    * ```typescript
    * const store = new AsyncStore<User>();
-   * const service = new BaseService({
+   * const service = new GatewayService({
    *   serviceName: 'MyService',
    *   store: store
    * });
@@ -285,7 +320,7 @@ export class BaseService<
    *
    * @example With store options
    * ```typescript
-   * const service = new BaseService({
+   * const service = new GatewayService({
    *   serviceName: 'MyService',
    *   storage: {
    *     key: 'my_data',
@@ -294,7 +329,7 @@ export class BaseService<
    * });
    * ```
    */
-  constructor(options: BaseServiceOptions<T, Gateway, string>) {
+  constructor(options: GatewayServiceOptions<T, Gateway, string>) {
     this.serviceName = options.serviceName;
     this.gateway = options.gateway;
     this.logger = options.logger;

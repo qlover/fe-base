@@ -509,9 +509,7 @@ describe('Executor Types', () => {
     it('should infer void return type for sync tasks', () => {
       const voidSyncTask: ExecutorSyncTask<void, { message: string }> = (
         _ctx
-      ) => {
-        // console.log(ctx.parameters.message);
-      };
+      ) => {};
 
       // Type should be inferred as void
       const result = executor.exec({ message: 'test' }, voidSyncTask);
@@ -525,9 +523,7 @@ describe('Executor Types', () => {
       const voidAsyncTask: ExecutorAsyncTask<
         void,
         { message: string }
-      > = async (_ctx) => {
-        // console.log(ctx.parameters.message);
-      };
+      > = async (_ctx) => {};
 
       // Type should be inferred as Promise<void>
       const result = executor.exec({ message: 'test' }, voidAsyncTask);
@@ -972,9 +968,7 @@ describe('Executor Types', () => {
     it('should handle tasks with void return type', () => {
       const loggingTask: ExecutorSyncTask<void, { message: string }> = (
         _ctx
-      ) => {
-        // console.log(ctx.parameters.message);
-      };
+      ) => {};
 
       const result = executor.exec({ message: 'Test log' }, loggingTask);
       expect(result).toBeUndefined();

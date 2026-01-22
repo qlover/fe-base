@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { UserStore } from '../../src/core/gateway-auth/impl/UserStore';
+import { UserStore } from '../../src/core/gateway-service/impl/UserStore';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import { AsyncStoreStatus } from '../../src/core/store-state';
 

@@ -1,7 +1,7 @@
 import { UserStore, type UserStoreOptions } from '../impl/UserStore';
-import {
-  type UserStateInterface,
-  type UserStoreInterface
+import type {
+  UserStateInterface,
+  UserStoreInterface
 } from '../interface/UserStoreInterface';
 import { isUserStoreInterface } from './typeGuards';
 

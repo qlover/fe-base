@@ -11,24 +11,22 @@
  * 7. isAuthenticated    – Authentication status check tests
  * 8. getUser            – Get current user tests
  * 9. getStore           – Store instance retrieval tests
- * 10. use                – Plugin registration tests
- * 11. edge cases         – Error handling and boundary tests
- * 12. integration        – Complete user flow tests
+ * 10. edge cases         – Error handling and boundary tests
+ * 11. integration        – Complete user flow tests
  */
 
 import { describe, it, expect, beforeEach, vi, expectTypeOf } from 'vitest';
 import {
   UserService,
   type UserServiceConfig
-} from '../../src/core/gateway-auth/impl/UserService';
-import { type UserServiceGateway } from '../../src/core/gateway-auth/interface/UserServiceInterface';
-import { type LoginParams } from '../../src/core/gateway-auth/interface/LoginInterface';
-import { GatewayExecutor } from '../../src/core/gateway-auth/impl/GatewayExecutor';
+} from '../../src/core/gateway-service/impl/UserService';
+import { type UserServiceGateway } from '../../src/core/gateway-service/interface/UserServiceInterface';
+import { type LoginParams } from '../../src/core/gateway-service/interface/UserServiceInterface';
 import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
-import type { UserStoreInterface } from '../../src/core/gateway-auth/interface/UserStoreInterface';
+import type { UserStoreInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
 
 /**
  * Test credential type
@@ -166,11 +164,7 @@ describe('UserService', () => {
 
     userService = new UserService<TestUser, TestCredential>({
       gateway: mockGateway,
-      logger: mockLogger,
-      executor: new GatewayExecutor<
-        TestUser,
-        UserServiceGateway<TestUser, TestCredential>
-      >()
+      logger: mockLogger
     });
   });
 
@@ -197,15 +191,11 @@ describe('UserService', () => {
       expect(service.getLogger()).toBe(mockLogger);
     });
 
-    it('should create UserService with executor', () => {
-      const executor = new GatewayExecutor<
-        TestUser,
-        UserServiceGateway<TestUser, TestCredential>
-      >();
+    it('should create UserService with gateway', () => {
       const service = new UserService<TestUser, TestCredential>({
-        executor
+        gateway: mockGateway
       });
-      expect(service.getExecutor()).toBe(executor);
+      expect(service.getGateway()).toBe(mockGateway);
     });
 
     describe('store persistence configuration', () => {
@@ -651,8 +641,8 @@ describe('UserService', () => {
       expect(mockGateway.login).toHaveBeenCalled();
       // Verify getUserInfo was called (it's called inside the custom execution function)
       expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      // Verify logger.warn was called with the error
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      // Verify logger.error was called with the error
+      expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to fetch user info after login',
         getUserInfoError
       );
@@ -749,8 +739,8 @@ describe('UserService', () => {
       const store = userService.getStore();
       expect(store.getCredential()).toEqual(testCredential);
       expect(store.getUser()).toEqual(testUser);
-      // Status should be FAILED after logout error
-      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
+      // Status should remain SUCCESS (logout failed, so user is still logged in)
+      expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
   });
 
@@ -1043,47 +1033,6 @@ describe('UserService', () => {
       const store1 = userService.getStore();
       const store2 = userService.getStore();
       expect(store1).toBe(store2);
-    });
-  });
-
-  describe('use', () => {
-    it('should register plugin successfully', () => {
-      const plugin = {
-        pluginName: 'TestPlugin',
-        onLoginBefore: vi.fn()
-      };
-
-      expect(() => userService.use(plugin)).not.toThrow();
-    });
-
-    it('should register multiple plugins', () => {
-      const plugin1 = {
-        pluginName: 'Plugin1',
-        onLoginBefore: vi.fn()
-      };
-      const plugin2 = {
-        pluginName: 'Plugin2',
-        onLogoutBefore: vi.fn()
-      };
-
-      expect(() => userService.use([plugin1, plugin2])).not.toThrow();
-    });
-
-    it('should execute plugin hooks during login', async () => {
-      const plugin = {
-        pluginName: 'TestPlugin',
-        onLoginBefore: vi.fn(),
-        onLoginSuccess: vi.fn()
-      };
-
-      userService.use(plugin);
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockResolvedValue(testUser);
-
-      await userService.login(loginParams);
-
-      expect(plugin.onLoginBefore).toHaveBeenCalled();
-      expect(plugin.onLoginSuccess).toHaveBeenCalled();
     });
   });
 

@@ -1,29 +1,23 @@
 import { AsyncStoreStatus } from '../../store-state';
-import { type LoginParams } from '../interface/LoginInterface';
-import {
-  type GatewayExecutor,
-  type GatewayExecutorPlugin
-} from './GatewayExecutor';
-import { GatewayService } from './GatewayService';
-import {
-  type UserServiceGateway,
-  type UserServiceInterface,
-  type UserServicePluginType,
-  type UserServicePluginInterface
+import type {
+  LoginParams,
+  UserServiceGateway,
+  UserServiceInterface
 } from '../interface/UserServiceInterface';
-import { type UserStore, type UserStoreOptions } from './UserStore';
-import {
-  type UserStateInterface,
-  type UserStoreInterface
+import type {
+  UserStateInterface,
+  UserStoreInterface
 } from '../interface/UserStoreInterface';
 import { createUserStore } from '../utils/createUserStore';
-import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceInterface';
+import type { GatewayServiceOptions } from './GatewayService';
+import { GatewayService } from './GatewayService';
+import type { UserStore, UserStoreOptions } from './UserStore';
 
 /**
  * User service configuration
  *
  * - Significance: Configuration options for creating a user service instance
- * - Core idea: Extend gateway service options with unified UserStore configuration
+ * - Core idea: Extend gateway service options to support user-specific configuration
  * - Main function: Configure user service behavior with unified store
  * - Main purpose: Simplify user service initialization with single store
  *
@@ -80,7 +74,7 @@ import { type ExecutorServiceOptions } from '../interface/base/ExecutorServiceIn
  */
 export interface UserServiceConfig<User, Credential>
   extends Omit<
-    ExecutorServiceOptions<User, UserServiceGateway<User, Credential>>,
+    GatewayServiceOptions<User, UserServiceGateway<User, Credential>>,
     'serviceName' | 'store'
   > {
   /**
@@ -98,22 +92,6 @@ export interface UserServiceConfig<User, Credential>
    * ```
    */
   serviceName?: string | symbol;
-
-  /**
-   * Gateway executor
-   *
-   * Allows user service to support plugin functionality, through which users can access the state of the user service and execute the behavior of the user service.
-   *
-   * You can use the basic implementation class GatewayExecutor to create a basic executor.
-   *
-   * @example Basic usage
-   * ```typescript
-   * const userService = new UserService({
-   *   executor: new GatewayExecutor()
-   * });
-   * ```
-   */
-  executor?: GatewayExecutor<User, UserServiceGateway<User, Credential>>;
 
   /**
    * UserStore instance or configuration options
@@ -359,95 +337,20 @@ export interface UserServiceConfig<User, Credential>
 export class UserService<User, Credential, Key = string | symbol>
   extends GatewayService<
     User,
-    UserServiceGateway<User, Credential>,
-    UserStore<User, Credential, Key, unknown>
+    UserStore<User, Credential, Key, unknown>,
+    UserServiceGateway<User, Credential>
   >
   implements UserServiceInterface<User, Credential>
 {
   constructor(options: UserServiceConfig<User, Credential> = {}) {
-    const {
-      serviceName = 'UserService',
-      executor,
-      gateway,
-      logger,
-      store
-    } = options;
+    const { serviceName = 'UserService', gateway, logger, store } = options;
 
     super({
       serviceName,
-      executor,
       gateway,
       logger,
       store: createUserStore(store)
     });
-  }
-
-  /**
-   * Register a plugin with the user service
-   *
-   * Registers one or more plugins that support user service actions.
-   * Plugins can hook into login, logout, register, getUserInfo, and refreshUserInfo actions.
-   *
-   * @override
-   * @param plugin - The plugin(s) to register, supporting user service action hooks
-   * @returns The UserService instance for method chaining
-   *
-   * @example Register plugin with user service hooks
-   * ```typescript
-   * userService.use({
-   *   onLoginBefore: async (context) => { /* ... *\/ },
-   *   onRegisterSuccess: async (context) => { /* ... *\/ }
-   * });
-   * ```
-   */
-  public use(
-    plugin:
-      | UserServicePluginType<User, Credential>
-      | UserServicePluginInterface<User, Credential>
-      | UserServicePluginType<User, Credential>[]
-      | UserServicePluginInterface<User, Credential>[]
-  ): this;
-  /**
-   * @override
-   */
-  public use<
-    Plugin extends GatewayExecutorPlugin<
-      User,
-      UserServiceGateway<User, Credential>,
-      unknown
-    >
-  >(plugin: Plugin | Plugin[]): this;
-  /**
-   * @override
-   */
-  public use<
-    Plugin extends GatewayExecutorPlugin<
-      User,
-      UserServiceGateway<User, Credential>,
-      unknown
-    >
-  >(
-    plugin:
-      | UserServicePluginType<User, Credential>
-      | UserServicePluginInterface<User, Credential>
-      | UserServicePluginType<User, Credential>[]
-      | UserServicePluginInterface<User, Credential>[]
-      | Plugin
-      | Plugin[]
-  ): this {
-    return super.use(
-      plugin as
-        | GatewayExecutorPlugin<
-            User,
-            UserServiceGateway<User, Credential>,
-            unknown
-          >
-        | GatewayExecutorPlugin<
-            User,
-            UserServiceGateway<User, Credential>,
-            unknown
-          >[]
-    );
   }
 
   /**
@@ -480,42 +383,33 @@ export class UserService<User, Credential, Key = string | symbol>
   public async login<Params extends LoginParams>(
     params: Params
   ): Promise<Credential | null> {
-    return await this.execute('login', params, async (gateway) => {
-      // Use unified store for login
-      this.store.start();
+    // Use unified store for login
+    this.store.start();
+    const gateway = this.getGateway();
 
-      try {
-        // Call gateway login
-        const credential = await gateway?.login(params);
+    try {
+      const credential = await gateway?.login(params);
 
-        if (credential) {
-          // After successful login, automatically fetch user information
-          let user: User | null = null;
-          try {
-            const fetchedUser = await gateway?.getUserInfo(credential);
-            user = fetchedUser ?? null;
-          } catch (error) {
-            // If getUserInfo fails, still mark login as successful with credential
-            // User info can be fetched later via getUserInfo()
-            // However, isAuthenticated() requires both credential and user, so we'll mark
-            // login as successful but user will be null until getUserInfo succeeds
-            this.logger?.warn('Failed to fetch user info after login', error);
-          }
-
-          // Mark success with both credential and user info (user may be null if fetch failed)
-          // This ensures credential is persisted even if user info fetch fails
-          this.store.success(user ?? null, credential);
-
-          return credential;
-        } else {
-          this.store.failed(new Error('Login failed'));
-          return null;
+      if (credential) {
+        let user: User | null = null;
+        try {
+          const fetchedUser = await gateway?.getUserInfo(credential);
+          user = fetchedUser ?? null;
+        } catch (error) {
+          this.logger?.error('Failed to fetch user info after login', error);
         }
-      } catch (error) {
-        this.store.failed(error);
-        throw error;
+
+        this.store.success(user ?? null, credential);
+
+        return credential;
+      } else {
+        this.store.failed(new Error('Login failed'));
+        return null;
       }
-    });
+    } catch (error) {
+      this.store.failed(error);
+      throw error;
+    }
   }
 
   /**
@@ -540,23 +434,18 @@ export class UserService<User, Credential, Key = string | symbol>
    * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
    * ```
    */
-  public async logout<LogoutParams = unknown, LogoutResult = void>(
+  public logout<LogoutParams = unknown, LogoutResult = void>(
     params?: LogoutParams
   ): Promise<LogoutResult> {
-    return await this.execute('logout', params, async (gateway) => {
-      try {
-        // Call gateway logout
-        const result = await gateway?.logout(params);
+    const gateway = this.getGateway();
 
-        // Reset user store after successful logout
-        this.store.reset();
+    if (!gateway) {
+      return Promise.resolve(null as LogoutResult);
+    }
 
-        return result as LogoutResult;
-      } catch (error) {
-        // Logout failed - only mark as failed, don't reset store
-        this.store.failed(error);
-        throw error;
-      }
+    return gateway.logout(params).then((result) => {
+      this.store.reset();
+      return result as LogoutResult;
     });
   }
 
@@ -581,20 +470,16 @@ export class UserService<User, Credential, Key = string | symbol>
    * ```
    */
   public register<Params>(params: Params): Promise<User | null> {
-    return this.execute('register', params, async (gateway) => {
-      // Note: Registration typically doesn't automatically log in the user
-      // If registration includes automatic login, it should return both user and credential
-      // For now, we only update user info without affecting authentication state
+    const gateway = this.getGateway();
 
-      // Call gateway register
-      const user = await gateway?.register(params);
+    if (!gateway) {
+      return Promise.resolve(null);
+    }
 
+    return gateway!.register(params).then((user) => {
       if (user) {
-        // Registration success - only update user info
-        // If registration includes automatic login, credential should be handled separately
-        // For now, we don't change authentication state (status remains unchanged)
         this.store.setUser(user);
-        return user;
+        return user as User;
       } else {
         return null;
       }
@@ -623,20 +508,17 @@ export class UserService<User, Credential, Key = string | symbol>
    * ```
    */
   public getUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.execute('getUserInfo', params, async (gateway) => {
-      // Get credential from store if available
-      const credential = this.store.getCredential();
+    const gateway = this.getGateway();
+    if (!gateway) {
+      return Promise.resolve(null);
+    }
 
-      // Use params if provided, otherwise fallback to credential
-      // If params is explicitly provided (even if null), use it; otherwise use credential
-      const getUserInfoParams = params !== undefined ? params : credential;
+    const credential = this.store.getCredential();
 
-      // Call gateway getUserInfo
-      const user = await gateway?.getUserInfo(getUserInfoParams);
+    const getUserInfoParams = params !== undefined ? params : credential;
 
+    return gateway.getUserInfo(getUserInfoParams).then((user) => {
       if (user) {
-        // Update user info without changing authentication status
-        // Use setUser instead of success to avoid overwriting auth state
         this.store.setUser(user);
         return user;
       } else {
@@ -662,20 +544,17 @@ export class UserService<User, Credential, Key = string | symbol>
    * ```
    */
   public refreshUserInfo<Params>(params?: Params): Promise<User | null> {
-    return this.execute('refreshUserInfo', params, async (gateway) => {
-      // Get credential from store if available
-      const credential = this.store.getCredential();
+    const gateway = this.getGateway();
+    if (!gateway) {
+      return Promise.resolve(null);
+    }
 
-      // Use params if provided, otherwise fallback to credential
-      // If params is explicitly provided (even if null), use it; otherwise use credential
-      const refreshUserInfoParams = params !== undefined ? params : credential;
+    const credential = this.store.getCredential();
 
-      // Call gateway refreshUserInfo
-      const user = await gateway?.refreshUserInfo(refreshUserInfoParams);
+    const refreshUserInfoParams = params !== undefined ? params : credential;
 
+    return gateway.refreshUserInfo(refreshUserInfoParams).then((user) => {
       if (user) {
-        // Update user info without changing authentication status
-        // Use setUser instead of success to avoid overwriting auth state
         this.store.setUser(user);
         return user;
       } else {
@@ -786,8 +665,6 @@ export class UserService<User, Credential, Key = string | symbol>
    */
   public isAuthenticated(): boolean {
     const state = this.store.getState();
-    // Basic check: status must be SUCCESS and credential must exist
-    // Override this method to implement custom authentication logic
     return (
       state.status === AsyncStoreStatus.SUCCESS && !!this.store.getCredential()
     );

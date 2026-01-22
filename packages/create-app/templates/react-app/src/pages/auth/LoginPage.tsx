@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 import { useIOC } from '@/uikit/hooks/useIOC';
+import { LifecycleExecutor } from '@qlover/fe-corekit';
 
 interface LoginFormData {
   email: string;
@@ -28,8 +29,6 @@ export default function LoginPage() {
         password: values.password
       });
       routeService.replaceToHome();
-    } catch {
-      // do nothing
     } finally {
       setLoading(false);
     }

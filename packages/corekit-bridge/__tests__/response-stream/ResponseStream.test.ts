@@ -416,12 +416,7 @@ describe('ResponseStream', () => {
           expect(data.session_id).toBeDefined();
           expect(Array.isArray(data.screens)).toBe(true);
         },
-        onStreamDone: () => {
-          console.log(
-            'Stream completed, total messages:',
-            receivedMessages.length
-          );
-        }
+        onStreamDone: () => {}
       };
 
       const stream = new ResponseStream(localConfig);
@@ -455,21 +450,9 @@ describe('ResponseStream', () => {
         }
       );
 
-      const result = await stream.handleStreamResponse(response);
+      await stream.handleStreamResponse(response);
 
-      console.log(result);
       expect(receivedMessages.length).toBeGreaterThan(0);
-
-      // // Log final results
-      // console.log(
-      //   'Test completed. Total messages received:',
-      //   receivedMessages.length
-      // );
-      // console.log('First message:', JSON.parse(receivedMessages[0]));
-      // console.log(
-      //   'Last message:',
-      //   JSON.parse(receivedMessages[receivedMessages.length - 1])
-      // );
     }, 30000); // Increase timeout to 30s for API call
   });
 });

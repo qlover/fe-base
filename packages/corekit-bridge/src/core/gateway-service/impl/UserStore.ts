@@ -2,9 +2,9 @@ import {
   AsyncStore,
   type AsyncStoreOptions
 } from '../../store-state/impl/AsyncStore';
-import {
-  type UserStateInterface,
-  type UserStoreInterface
+import type {
+  UserStateInterface,
+  UserStoreInterface
 } from '../interface/UserStoreInterface';
 
 /**

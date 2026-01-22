@@ -1,8 +1,7 @@
 import {
-  type BaseServiceInterface,
+  type GatewayServiceInterface,
   type ServiceGatewayType
-} from '../interface/base/BaseServiceInterface';
-import { type ExecutorServiceInterface } from '../interface/base/ExecutorServiceInterface';
+} from '../interface/GatewayServiceInterface';
 import {
   type AsyncStoreInterface,
   type AsyncStoreStateInterface
@@ -40,7 +39,7 @@ export function isBaseServiceInterface<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<any>>,
   Gateway extends ServiceGatewayType
->(obj: unknown): obj is BaseServiceInterface<Store, Gateway> {
+>(obj: unknown): obj is GatewayServiceInterface<Store, Gateway> {
   if (typeof obj !== 'object' || obj === null) {
     return false;
   }
@@ -55,42 +54,6 @@ export function isBaseServiceInterface<
     isFunction(candidate.getGateway) &&
     isFunction(candidate.getLogger)
   );
-}
-
-/**
- * Type guard to check if an object implements ExecutorServiceInterface
- *
- * Checks for the presence of key methods required by ExecutorServiceInterface:
- * - All methods from BaseServiceInterface (serviceName, getStore, getGateway, getLogger)
- * - use() method for plugin registration
- * - execute() method for gateway action execution
- *
- * @template Store - The async store type
- * @template Gateway - The gateway type
- * @param obj - The object to check
- * @returns True if obj implements ExecutorServiceInterface, false otherwise
- *
- * @example
- * ```typescript
- * const service = new MyExecutorService();
- * if (isExecutorServiceInterface(service)) {
- *   service.use(myPlugin);
- *   await service.execute('action', params);
- * }
- * ```
- */
-export function isExecutorServiceInterface<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Store extends AsyncStoreInterface<AsyncStoreStateInterface<any>>,
-  Gateway extends ServiceGatewayType
->(obj: unknown): obj is ExecutorServiceInterface<Store, Gateway> {
-  if (!isBaseServiceInterface<Store, Gateway>(obj)) {
-    return false;
-  }
-
-  const candidate = obj as unknown as Record<string, unknown>;
-
-  return isFunction(candidate.use) && isFunction(candidate.execute);
 }
 
 /**
