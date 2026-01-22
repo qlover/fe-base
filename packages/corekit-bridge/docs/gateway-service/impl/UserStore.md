@@ -1,6 +1,6 @@
-## `src/core/gateway-auth/impl/UserStore` (Module)
+## `src/core/gateway-service/impl/UserStore` (Module)
 
-**Type:** `module src/core/gateway-auth/impl/UserStore`
+**Type:** `module src/core/gateway-service/impl/UserStore`
 
 ---
 

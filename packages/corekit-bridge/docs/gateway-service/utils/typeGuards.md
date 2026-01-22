@@ -1,6 +1,6 @@
-## `src/core/gateway-auth/utils/typeGuards` (Module)
+## `src/core/gateway-service/utils/typeGuards` (Module)
 
-**Type:** `module src/core/gateway-auth/utils/typeGuards`
+**Type:** `module src/core/gateway-service/utils/typeGuards`
 
 ---
 
@@ -40,52 +40,6 @@ const service = new MyService();
 if (isBaseServiceInterface(service)) {
   const store = service.getStore();
   const gateway = service.getGateway();
-}
-```
-
-#### Parameters
-
-| Name  | Type      | Optional | Default | Since | Deprecated | Description         |
-| ----- | --------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `obj` | `unknown` | ❌       | -       | -     | -          | The object to check |
-
----
-
-### `isExecutorServiceInterface` (Function)
-
-**Type:** `(obj: unknown) => callsignature isExecutorServiceInterface<Store, Gateway>`
-
-#### Parameters
-
-| Name  | Type      | Optional | Default | Since | Deprecated | Description         |
-| ----- | --------- | -------- | ------- | ----- | ---------- | ------------------- |
-| `obj` | `unknown` | ❌       | -       | -     | -          | The object to check |
-
----
-
-#### `isExecutorServiceInterface` (CallSignature)
-
-**Type:** `callsignature isExecutorServiceInterface<Store, Gateway>`
-
-Type guard to check if an object implements ExecutorServiceInterface
-
-Checks for the presence of key methods required by ExecutorServiceInterface:
-
-- All methods from BaseServiceInterface (serviceName, getStore, getGateway, getLogger)
-- use() method for plugin registration
-- execute() method for gateway action execution
-
-**Returns:**
-
-True if obj implements ExecutorServiceInterface, false otherwise
-
-**Example:**
-
-```typescript
-const service = new MyExecutorService();
-if (isExecutorServiceInterface(service)) {
-  service.use(myPlugin);
-  await service.execute('action', params);
 }
 ```
 

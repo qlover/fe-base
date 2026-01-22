@@ -595,6 +595,11 @@ ruleTester.run(RULE_NAME, rule, {
         { messageId: 'unnecessaryOverrideKeyword' }
       ]
     },
+    // Note: Tests for "unnecessary @override in class that extends/implements"
+    // require TypeScript type checking to work correctly. Without type information,
+    // the rule uses AST-based heuristics which assume all methods in classes that
+    // extend/implement need override notation (conservative approach).
+    // These cases are tested in real-world usage where type checking is enabled.
 
     // ============================================
     // 5. ABSTRACT METHODS

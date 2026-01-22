@@ -1,12 +1,12 @@
-## `src/core/gateway-auth/interface/base/BaseServiceInterface` (Module)
+## `src/core/gateway-service/interface/GatewayServiceInterface` (Module)
 
-**Type:** `module src/core/gateway-auth/interface/base/BaseServiceInterface`
+**Type:** `module src/core/gateway-service/interface/GatewayServiceInterface`
 
 ---
 
-### `BaseServiceInterface` (Interface)
+### `GatewayServiceInterface` (Interface)
 
-**Type:** `interface BaseServiceInterface<Store, Gateway>`
+**Type:** `interface GatewayServiceInterface<Store, Gateway>`
 
 **Since:** `1.8.0`
 

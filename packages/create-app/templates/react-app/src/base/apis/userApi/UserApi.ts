@@ -21,10 +21,7 @@ import {
   UserInfo,
   UserCredential
 } from './UserApiType';
-import type {
-  UserAuthStoreInterface,
-  UserServiceGateway
-} from '@qlover/corekit-bridge';
+import type { UserServiceGateway } from '@qlover/corekit-bridge';
 
 /**
  * UserApi
@@ -41,8 +38,6 @@ export class UserApi
   >
   implements UserServiceGateway<UserInfo, UserCredential>
 {
-  protected store: UserAuthStoreInterface<UserInfo> | null = null;
-
   constructor(
     @inject(Aborter) protected abortPlugin: AborterInterface<AborterConfig>,
     @inject(UserApiAdapter) adapter: RequestAdapterInterface<UserApiConfig>
@@ -51,17 +46,6 @@ export class UserApi
       adapter,
       new LifecycleExecutor<ExecutorContextInterface<UserApiConfig, unknown>>()
     );
-  }
-
-  public getStore(): UserAuthStoreInterface<UserInfo> | null {
-    return this.store;
-  }
-
-  /**
-   * @param store
-   */
-  public setStore(store: UserAuthStoreInterface<UserInfo>): void {
-    this.store = store;
   }
 
   public stop(request: UserApiConfig): Promise<void> | void {

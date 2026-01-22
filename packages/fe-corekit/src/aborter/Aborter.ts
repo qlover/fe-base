@@ -197,7 +197,6 @@ export class Aborter<T extends AborterConfig = AborterConfig>
    * @param config - Abort configuration (optional)
    * @returns Unique abort identifier
    *
-   * @override
    * @example
    * ```typescript
    * const aborter = new Aborter('MyAborter');

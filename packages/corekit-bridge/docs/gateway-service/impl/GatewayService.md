@@ -1,32 +1,32 @@
-## `src/core/gateway-auth/impl/BaseService` (Module)
+## `src/core/gateway-service/impl/GatewayService` (Module)
 
-**Type:** `module src/core/gateway-auth/impl/BaseService`
+**Type:** `module src/core/gateway-service/impl/GatewayService`
 
 ---
 
-### `BaseService` (Class)
+### `GatewayService` (Class)
 
-**Type:** `class BaseService<T, Store, Gateway>`
+**Type:** `class GatewayService<T, Store, Gateway>`
 
 **Since:** `1.8.0`
 
-Base service implementation
+Gateway service implementation
 
 Concrete implementation of
-`BaseServiceInterface`
+`GatewayServiceInterface`
 that provides the foundational infrastructure
 for all gateway services. This class handles the initialization and management of core service
 components: store, gateway, and logger. It serves as the base class for more specialized service
 implementations like
-`GatewayService`
+`UserService`
 .
 
 **Core Implementation Principles:**
 
 1. **Unified Initialization**: The constructor accepts
-   `BaseServiceOptions`
+   `GatewayServiceOptions`
    which combines
-   executor service options and store options, providing a single point of configuration.
+   service infrastructure configuration and store options, providing a single point of configuration.
 
 2. **Flexible Store Creation**: Uses
    `createAsyncStore`
@@ -44,7 +44,7 @@ implementations like
    - Clear encapsulation boundaries
 
 4. **Interface Compliance**: Implements
-   `BaseServiceInterface`
+   `GatewayServiceInterface`
    to ensure consistent service
    structure across all service implementations.
 
@@ -74,7 +74,7 @@ Design decisions:
 Initialization flow:
 
 1. Constructor receives
-   `BaseServiceOptions`
+   `GatewayServiceOptions`
 
 2. Service name is assigned (required, readonly)
 3. Gateway is assigned (optional, readonly)
@@ -86,11 +86,11 @@ Initialization flow:
    - If store options provided → create new store
    - If nothing provided → create default store
 
-**Example:** Basic usage - extending BaseService
+**Example:** Basic usage - extending GatewayService
 
 ```typescript
-class MyService extends BaseService<User, UserStore, UserGateway> {
-  constructor(options: BaseServiceOptions<User, UserGateway>) {
+class MyService extends GatewayService<User, UserStore, UserGateway> {
+  constructor(options: GatewayServiceOptions<User, UserGateway>) {
     super(options);
   }
 
@@ -155,15 +155,15 @@ if (logger) {
 
 ---
 
-#### `new BaseService` (Constructor)
+#### `new GatewayService` (Constructor)
 
-**Type:** `(options: BaseServiceOptions<T, Gateway, string>) => BaseService<T, Store, Gateway>`
+**Type:** `(options: GatewayServiceOptions<T, Gateway, string>) => GatewayService<T, Store, Gateway>`
 
 #### Parameters
 
-| Name      | Type                                     | Optional | Default | Since | Deprecated | Description                           |
-| --------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
-| `options` | `BaseServiceOptions<T, Gateway, string>` | ❌       | -       | -     | -          | Configuration options for the service |
+| Name      | Type                                        | Optional | Default | Since | Deprecated | Description                           |
+| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------- |
+| `options` | `GatewayServiceOptions<T, Gateway, string>` | ❌       | -       | -     | -          | Configuration options for the service |
 
 ---
 
@@ -330,21 +330,21 @@ store.observe((state) => {
 
 ---
 
-### `BaseServiceOptions` (Interface)
+### `GatewayServiceOptions` (Interface)
 
-**Type:** `interface BaseServiceOptions<T, Gateway, Key>`
+**Type:** `interface GatewayServiceOptions<T, Gateway, Key>`
 
 **Since:** `1.8.0`
 
-Base service options
+Gateway service options
 
-Configuration options for creating a base service instance.
-Combines executor service options and async store options to provide complete service configuration.
+Configuration options for creating a gateway service instance.
+Combines service infrastructure configuration and async store options to provide complete service configuration.
 This interface merges the configuration needed for both service infrastructure (gateway, logger, service name)
 and state management (store configuration).
 
-- Significance: Provides unified configuration for base services
-- Core idea: Combine executor and store configuration into a single options object
+- Significance: Provides unified configuration for gateway services
+- Core idea: Combine service infrastructure and store configuration into a single options object
 - Main function: Configure service infrastructure and state management
 - Main purpose: Simplify service initialization with all necessary options
 
@@ -357,7 +357,6 @@ Core features:
 
 Design decisions:
 
-- Extends ExecutorServiceOptions: Inherits service infrastructure configuration
 - Extends AsyncStoreOptions: Inherits store configuration options
 - Flexible store configuration: Can accept store instance or store options
 
@@ -365,7 +364,7 @@ Design decisions:
 
 ```typescript
 const store = new AsyncStore<User>();
-const options: BaseServiceOptions<User, UserGateway> = {
+const options: GatewayServiceOptions<User, UserGateway> = {
   serviceName: 'UserService',
   gateway: new UserGateway(),
   logger: new Logger(),
@@ -376,7 +375,7 @@ const options: BaseServiceOptions<User, UserGateway> = {
 **Example:** Basic usage with store options
 
 ```typescript
-const options: BaseServiceOptions<User, UserGateway> = {
+const options: GatewayServiceOptions<User, UserGateway> = {
   serviceName: 'UserService',
   gateway: new UserGateway(),
   logger: new Logger(),

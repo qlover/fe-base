@@ -1,12 +1,11 @@
 import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import { login18n } from '@config/i18n/login18n';
-import { IOCIdentifier } from '@config/IOCIdentifier';
+import { I } from '@config/IOCIdentifier';
 import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useI18nInterface } from '@/uikit/hooks/useI18nInterface';
 import { useIOC } from '@/uikit/hooks/useIOC';
-import { LifecycleExecutor } from '@qlover/fe-corekit';
 
 interface LoginFormData {
   email: string;
@@ -15,9 +14,10 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const tt = useI18nInterface(login18n);
-  const userService = useIOC(IOCIdentifier.UserServiceInterface);
-  const AppConfig = useIOC(IOCIdentifier.AppConfig);
-  const routeService = useIOC(IOCIdentifier.RouteServiceInterface);
+  const logger = useIOC(I.Logger);
+  const userService = useIOC(I.UserServiceInterface);
+  const AppConfig = useIOC(I.AppConfig);
+  const routeService = useIOC(I.RouteServiceInterface);
 
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +29,8 @@ export default function LoginPage() {
         password: values.password
       });
       routeService.replaceToHome();
+    } catch (error) {
+      logger.error(error);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
-## `src/core/gateway-auth/impl/UserService` (Module)
+## `src/core/gateway-service/impl/UserService` (Module)
 
-**Type:** `module src/core/gateway-auth/impl/UserService`
+**Type:** `module src/core/gateway-service/impl/UserService`
 
 ---
 
@@ -237,12 +237,6 @@ class CustomUserService extends UserService<User, Credential> {
 
 ---
 
-#### `executor` (Property)
-
-**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
-
----
-
 #### `gateway` (Property)
 
 **Type:** `UserServiceGateway<User, Credential>`
@@ -290,256 +284,6 @@ Protected to allow subclasses to access while preventing external modification.
 
 ---
 
-#### `createDefaultFn` (Method)
-
-**Type:** `(action: parameter action) => ExecuteFn<unknown, unknown, UserServiceGateway<User, Credential>>`
-
-#### Parameters
-
-| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                       |
-| -------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
-| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
-
----
-
-##### `createDefaultFn` (CallSignature)
-
-**Type:** `ExecuteFn<unknown, unknown, UserServiceGateway<User, Credential>>`
-
-Create default execution function for a gateway action
-
-Creates a function that automatically resolves and calls the gateway method
-matching the action name. If the gateway method doesn't exist, returns
-`null`
-.
-
-This is used as the default execution function when
-`execute`
-is called without
-a custom function parameter.
-
-**Returns:**
-
-Execution function that calls the gateway method, or a function that returns
-`null`
-
-**Example:** Automatic gateway method resolution
-
-```typescript
-// Gateway has a method named 'login'
-class UserGateway {
-  async login(params: LoginParams): Promise<Credential> {
-    // Implementation
-  }
-}
-
-// Service automatically resolves 'login' method
-await service.execute('login', params);
-// Equivalent to: await gateway.login(params);
-```
-
-#### Parameters
-
-| Name     | Type               | Optional | Default | Since | Deprecated | Description                                                       |
-| -------- | ------------------ | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------- |
-| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name (must match a method name on the gateway) |
-
----
-
-#### `createExecOptions` (Method)
-
-**Type:** `(action: parameter action, params: Params) => GatewayExecutorOptions<User, UserServiceGateway<User, Credential>, Params>`
-
-#### Parameters
-
-| Name     | Type               | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name                      |
-| `params` | `Params`           | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
-
----
-
-##### `createExecOptions` (CallSignature)
-
-**Type:** `GatewayExecutorOptions<User, UserServiceGateway<User, Credential>, Params>`
-
-Create executor options for a service action
-
-Creates the options object passed to the executor for executing a gateway action.
-This includes action name, service name, store, gateway, logger, and parameters.
-
-The
-`actionName`
-is read-only to ensure execution stability.
-
-**Returns:**
-
-Executor options object with all necessary context
-
-This method is used internally by
-`execute`
-and typically doesn't need to be called directly
-
-#### Parameters
-
-| Name     | Type               | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `action` | `parameter action` | ❌       | -       | -     | -          | The gateway action name                      |
-| `params` | `Params`           | ✅       | -       | -     | -          | The parameters to pass to the gateway method |
-
----
-
-#### `execute` (Method)
-
-**Type:** `(action: Action, fn: Object) => Promise<Result>`
-
-#### Parameters
-
-| Name     | Type     | Optional | Default | Since | Deprecated | Description             |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ----------------------- |
-| `action` | `Action` | ❌       | -       | -     | -          | The gateway action name |
-| `fn`     | `Object` | ❌       | -       | -     | -          |                         |
-
----
-
-##### `execute` (CallSignature)
-
-**Type:** `Promise<Result>`
-
-Execute a gateway action
-
-Executes a gateway action through the executor with plugin support and state management.
-This is the main method used by subclasses to execute gateway operations.
-
-Supports multiple calling patterns:
-
-1.  `execute(action)`
-
-- Execute action without parameters
-
-2.  `execute(action, params)`
-
-- Execute action with single parameter
-
-3.  `execute(action, ...params)`
-
-- Execute action with multiple parameters
-
-4.  `execute(action, fn)`
-
-- Execute action with custom function that receives gateway
-
-Execution flow:
-
-1. Creates executor options with action context
-2. Resolves execution function (custom function or default gateway method)
-3. Executes through executor which runs hooks:
-   - `onBefore`
-     hooks (including action-specific hooks like
-     `onLoginBefore`
-     )
-   - Gateway method execution
-   - `onSuccess`
-     hooks (including action-specific hooks like
-     `onLoginSuccess`
-     )
-4. Returns the result
-
-If an error occurs, the executor's
-`onError`
-hooks are called and the error is rethrown.
-
-**Returns:**
-
-Promise resolving to the action result
-
-**Example:** Execute without parameters
-
-```typescript
-await this.execute(ServiceAction.LOGOUT);
-```
-
-**Example:** Execute with single parameter
-
-```typescript
-await this.execute(ServiceAction.LOGIN, { email, password });
-```
-
-**Example:** Execute with multiple parameters
-
-```typescript
-await this.execute(ServiceAction.LOGIN, params1, params2, params3);
-```
-
-**Example:** Execute with custom function
-
-```typescript
-await this.execute(ServiceAction.LOGIN, (gateway) => {
-  return gateway.login(params1, params2);
-});
-```
-
-#### Parameters
-
-| Name     | Type     | Optional | Default | Since | Deprecated | Description             |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ----------------------- |
-| `action` | `Action` | ❌       | -       | -     | -          | The gateway action name |
-| `fn`     | `Object` | ❌       | -       | -     | -          |                         |
-
----
-
-##### `execute` (CallSignature)
-
-**Type:** `Promise<Result>`
-
-#### Parameters
-
-| Name     | Type     | Optional | Default | Since | Deprecated | Description |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `action` | `Action` | ❌       | -       | -     | -          |             |
-| `params` | `Params` | ❌       | -       | -     | -          |             |
-| `fn`     | `Object` | ❌       | -       | -     | -          |             |
-
----
-
-##### `execute` (CallSignature)
-
-**Type:** `Promise<Result>`
-
-#### Parameters
-
-| Name     | Type     | Optional | Default | Since | Deprecated | Description |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `action` | `Action` | ❌       | -       | -     | -          |             |
-
----
-
-##### `execute` (CallSignature)
-
-**Type:** `Promise<Result>`
-
-#### Parameters
-
-| Name     | Type     | Optional | Default | Since | Deprecated | Description |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
-| `action` | `Action` | ❌       | -       | -     | -          |             |
-| `params` | `Params` | ❌       | -       | -     | -          |             |
-
----
-
-##### `execute` (CallSignature)
-
-**Type:** `Promise<Result>`
-
-#### Parameters
-
-| Name     | Type        | Optional | Default | Since | Deprecated | Description |
-| -------- | ----------- | -------- | ------- | ----- | ---------- | ----------- |
-| `action` | `Action`    | ❌       | -       | -     | -          |             |
-| `params` | `unknown[]` | ❌       | -       | -     | -          |             |
-
----
-
 #### `getCredential` (Method)
 
 **Type:** `() => null \| Credential`
@@ -569,18 +313,6 @@ if (credential) {
   console.log('Current credential:', credential.token);
 }
 ```
-
----
-
-#### `getExecutor` (Method)
-
-**Type:** `() => undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
-
----
-
-##### `getExecutor` (CallSignature)
-
-**Type:** `undefined \| GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
 
 ---
 
@@ -1086,64 +818,6 @@ const user = await userService.register({
 
 ---
 
-#### `use` (Method)
-
-**Type:** `(plugin: UserServicePluginType<User, Credential> \| UserServicePluginInterface<User, Credential> \| UserServicePluginType<User, Credential>[] \| UserServicePluginInterface<User, Credential>[]) => this`
-
-#### Parameters
-
-| Name     | Type                                                                                                                                                                                     | Optional | Default | Since | Deprecated | Description                                                     |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `plugin` | `UserServicePluginType<User, Credential> \| UserServicePluginInterface<User, Credential> \| UserServicePluginType<User, Credential>[] \| UserServicePluginInterface<User, Credential>[]` | ❌       | -       | -     | -          | The plugin(s) to register, supporting user service action hooks |
-
----
-
-##### `use` (CallSignature)
-
-**Type:** `this`
-
-Register a plugin with the user service
-
-Registers one or more plugins that support user service actions.
-Plugins can hook into login, logout, register, getUserInfo, and refreshUserInfo actions.
-
-**Returns:**
-
-The UserService instance for method chaining
-
-**Example:** Register plugin with user service hooks
-
-```typescript
-userService.use({
-  onLoginBefore: async (context) => {
-    /* ... */
-  },
-  onRegisterSuccess: async (context) => {
-    /* ... */
-  }
-});
-```
-
-#### Parameters
-
-| Name     | Type                                                                                                                                                                                     | Optional | Default | Since | Deprecated | Description                                                     |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------- |
-| `plugin` | `UserServicePluginType<User, Credential> \| UserServicePluginInterface<User, Credential> \| UserServicePluginType<User, Credential>[] \| UserServicePluginInterface<User, Credential>[]` | ❌       | -       | -     | -          | The plugin(s) to register, supporting user service action hooks |
-
----
-
-##### `use` (CallSignature)
-
-**Type:** `this`
-
-#### Parameters
-
-| Name     | Type                 | Optional | Default | Since | Deprecated | Description |
-| -------- | -------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `plugin` | `Plugin \| Plugin[]` | ❌       | -       | -     | -          |             |
-
----
-
 ### `UserServiceConfig` (Interface)
 
 **Type:** `interface UserServiceConfig<User, Credential>`
@@ -1153,7 +827,7 @@ userService.use({
 User service configuration
 
 - Significance: Configuration options for creating a user service instance
-- Core idea: Extend gateway service options with unified UserStore configuration
+- Core idea: Extend gateway service options to support user-specific configuration
 - Main function: Configure user service behavior with unified store
 - Main purpose: Simplify user service initialization with single store
 
@@ -1236,26 +910,6 @@ const userService = new UserService(config);
 
 ---
 
-#### `executor` (Property)
-
-**Type:** `GatewayExecutor<User, UserServiceGateway<User, Credential>, unknown>`
-
-Gateway executor
-
-Allows user service to support plugin functionality, through which users can access the state of the user service and execute the behavior of the user service.
-
-You can use the basic implementation class GatewayExecutor to create a basic executor.
-
-**Example:** Basic usage
-
-```typescript
-const userService = new UserService({
-  executor: new GatewayExecutor()
-});
-```
-
----
-
 #### `gateway` (Property)
 
 **Type:** `UserServiceGateway<User, Credential>`
@@ -1264,6 +918,35 @@ Gateway instance for API operations
 
 The gateway object that provides methods for executing API calls.
 Optional - services can work without gateway (e.g., mock services).
+
+---
+
+#### `initRestore` (Property)
+
+**Type:** `boolean`
+
+Whether to automatically restore state from storage during construction
+
+**⚠️ This is primarily a testing/internal property.**
+
+**Initialization Order Issues:**
+When
+`initRestore`
+is
+`true`
+,
+`restore()`
+is called during
+`super()`
+execution,
+which happens BEFORE subclass field initialization. This means:
+
+- Subclass fields (e.g.,
+  `private readonly storageKey = 'my-key'`
+  ) are NOT yet initialized
+- `restore()`
+  cannot access these fields, causing runtime errors or incorrect behavior
+- This is a fundamental limitation of JavaScript/TypeScript class initialization order
 
 ---
 
@@ -1298,6 +981,34 @@ const userService = new UserService({
   serviceName: 'UserService'
 });
 ```
+
+---
+
+#### `storage` (Property)
+
+**Type:** `null \| SyncStorageInterface<string, unknown>`
+
+Storage implementation for persisting state
+
+If provided, state changes will be automatically persisted to this storage.
+If
+`null`
+or
+`undefined`
+, the store will work without persistence.
+
+---
+
+#### `storageKey` (Property)
+
+**Type:** `null \| string`
+
+Storage key for persisting state
+
+The key used to store state in the storage backend.
+Required if
+`storage`
+is provided.
 
 ---
 
@@ -1375,7 +1086,7 @@ const userService = new UserService({
 
 **Example:** Use a custom UserStore instance
 
-```typescript
+````typescript
 const userStore = new UserStore({
   storage: localStorage,
   storageKey: 'user-info'
@@ -1387,4 +1098,90 @@ const userService = new UserService({
 
 
 ---
+
+#### `defaultState` (Method)
+
+**Type:** `(storage: null \| SyncStorageInterface<string, unknown>, storageKey: null \| string) => null \| AsyncStoreStateInterface<User>`
+
+
+
+
+#### Parameters
+
+| Name | Type | Optional | Default | Since | Deprecated | Description |
+|------|------|----------|---------|-------|------------|-------------|
+| `storage` | `null \| SyncStorageInterface<string, unknown>` | ✅ | - | - | - | Storage implementation (if provided in options) |
+| `storageKey` | `null \| string` | ✅ | - | - | - | Storage key (if provided in options) |
+
+
+---
+
+##### `defaultState` (CallSignature)
+
+**Type:** `null \| AsyncStoreStateInterface<User>`
+
+
+
+
+
+
+Create a new state instance
+
+Factory function that creates the initial state for the store.
+This function is called during store initialization and when state is reset.
+
+Behavior:
+- If
+`storage`
+ is provided, the function receives storage and storageKey as parameters
+- If
+`storage`
+ is not provided, the function receives
+`undefined`
+ for both parameters
+- If the function returns
+`null`
+, a new
+`AsyncStoreState`
+ instance will be created
+- If the function returns a state object, that object will be used as the initial state
+
+**Returns:**
+
+The initial state instance, or
+`null`
+ to use default state
+
+**Example:** With storage restoration
+
+```typescript
+const store = new AsyncStore<User, string>({
+  storage: localStorage,
+  storageKey: 'user-state',
+  defaultState: (storage, storageKey) => {
+    const stored = storage?.getItem(storageKey);
+    if (stored) {
+      return new AsyncStoreState<User>(stored);
+    }
+    return null; // Use default state
+  }
+});
+````
+
+**Example:** Without storage
+
+```typescript
+const store = new AsyncStore<User, string>({
+  storage: null,
+  defaultState: () => null // Always use default state
+});
 ```
+
+#### Parameters
+
+| Name         | Type                                            | Optional | Default | Since | Deprecated | Description                                     |
+| ------------ | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `storage`    | `null \| SyncStorageInterface<string, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
+| `storageKey` | `null \| string`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+
+---
