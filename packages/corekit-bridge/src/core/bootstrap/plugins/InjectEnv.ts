@@ -20,7 +20,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
 
   constructor(
     /**
-     * @since 2.0.0
+     * @since `2.0.0`
      */
     protected options: InjectEnvConfig
   ) {}

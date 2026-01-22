@@ -1834,7 +1834,6 @@ describe('MessageSender', () => {
           retry: 3
         } as ReceivedOptions);
 
-        console.log(receivedOptions);
         expect(receivedOptions).toBeDefined();
         expect(receivedOptions!.timeout).toBe(5000);
         expect(receivedOptions!.retry).toBeUndefined();

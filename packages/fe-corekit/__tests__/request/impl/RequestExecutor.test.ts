@@ -452,10 +452,10 @@ describe('RequestExecutor', () => {
         pluginName: 'app-api-plugin',
         onSuccess: async (ctx) => {
           onSuccessMock();
-          
+
           // Need to parse the response body first
           const response = ctx.returnValue as any;
-          
+
           // For fetch adapter, response.data is a Response object
           // We need to parse it to get the JSON
           let jsonData;
@@ -465,7 +465,7 @@ describe('RequestExecutor', () => {
           } else {
             jsonData = response;
           }
-          
+
           // Simulate checking for API error response
           if (jsonData?.success === false) {
             throw new Error(jsonData.message || 'API Error');
@@ -478,24 +478,26 @@ describe('RequestExecutor', () => {
 
       // Mock a failed API response (success: false)
       const mockResponse = new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           id: 'LOGIN_FAILED',
-          message: 'Invalid credentials' 
+          message: 'Invalid credentials'
         }),
         { status: 200 }
       );
       fetchMock.mockResolvedValueOnce(mockResponse);
 
       // Execute request and expect it to throw
-      await expect(executor.post('/user/login', {
-        username: 'test',
-        password: 'wrong'
-      })).rejects.toThrow('Invalid credentials');
+      await expect(
+        executor.post('/user/login', {
+          username: 'test',
+          password: 'wrong'
+        })
+      ).rejects.toThrow('Invalid credentials');
 
       // Verify that onSuccess was called
       expect(onSuccessMock).toHaveBeenCalledTimes(1);
-      
+
       // CRITICAL: Verify that onError was also triggered
       expect(onErrorMock).toHaveBeenCalledTimes(1);
       expect(onErrorMock).toHaveBeenCalledWith(
@@ -523,7 +525,7 @@ describe('RequestExecutor', () => {
         pluginName: 'first-plugin',
         onSuccess: async (ctx) => {
           const response = ctx.returnValue as any;
-          
+
           // Parse response if it's a Response object
           let jsonData;
           if (response?.data instanceof Response) {
@@ -532,7 +534,7 @@ describe('RequestExecutor', () => {
           } else {
             jsonData = response;
           }
-          
+
           if (jsonData?.success === false) {
             throw new Error('First plugin error');
           }
@@ -550,10 +552,9 @@ describe('RequestExecutor', () => {
         }
       });
 
-      const mockResponse = new Response(
-        JSON.stringify({ success: false }),
-        { status: 200 }
-      );
+      const mockResponse = new Response(JSON.stringify({ success: false }), {
+        status: 200
+      });
       fetchMock.mockResolvedValueOnce(mockResponse);
 
       await expect(executor.get('/test')).rejects.toThrow('First plugin error');

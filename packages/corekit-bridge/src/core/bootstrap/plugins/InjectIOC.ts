@@ -27,7 +27,7 @@ export class InjectIOC<Container extends IOCContainerInterface>
 
   constructor(
     /**
-     * @since 2.0.0
+     * @since `2.0.0`
      */
     protected options: InjectIOCOptions<Container>
   ) {}

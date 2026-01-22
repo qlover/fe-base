@@ -93,7 +93,7 @@ export interface ResponseStreamConfig {
  * - Maintains stream state and buffer management
  * - Ensures proper stream cleanup and resource release
  *
- * @since 1.5.0
+ * @since `1.5.0`
  *
  * @example Basic usage
  * ```typescript

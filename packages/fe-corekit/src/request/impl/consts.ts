@@ -18,7 +18,6 @@ export const JSON_CONTENT_TYPE = 'application/json';
  */
 export const JSON_RESPONSE_TYPE = 'json';
 
-
 export const REQUEST_ERROR_ID = 'REQUEST_ERROR';
 export const ENV_FETCH_NOT_SUPPORT_ID = 'ENV_FETCH_NOT_SUPPORT';
 export const FETCHER_NONE_ID = 'FETCHER_NONE';

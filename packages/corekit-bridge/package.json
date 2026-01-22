@@ -93,17 +93,11 @@
       "require": "./dist/ui/index.cjs",
       "default": "./dist/ui/index.js"
     },
-    "./user-auth": {
-      "types": "./dist/user-auth/index.d.ts",
-      "import": "./dist/user-auth/index.js",
-      "require": "./dist/user-auth/index.cjs",
-      "default": "./dist/user-auth/index.js"
-    },
-    "./gateway-auth": {
-      "types": "./dist/gateway-auth/index.d.ts",
-      "import": "./dist/gateway-auth/index.js",
-      "require": "./dist/gateway-auth/index.cjs",
-      "default": "./dist/gateway-auth/index.js"
+    "./gateway-service": {
+      "types": "./dist/gateway-service/index.d.ts",
+      "import": "./dist/gateway-service/index.js",
+      "require": "./dist/gateway-service/index.cjs",
+      "default": "./dist/gateway-service/index.js"
     },
     "./build/tw-root10px": {
       "types": "./dist/build/tw-root10px/index.d.ts",

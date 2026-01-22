@@ -148,7 +148,9 @@ describe('ResponseStream', () => {
       };
       const streamResponsePlugin = new ResponseStream(streamConfig);
 
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(mockResponse);
 
       await streamResponsePlugin.onSuccess(context);
@@ -175,7 +177,9 @@ describe('ResponseStream', () => {
 
     it('should process stream response', async () => {
       const mockResponse = createMockResponse(['test']);
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(mockResponse);
       await responseStream.onSuccess(context);
       expect(config.onStreamChunk).toHaveBeenCalledWith(
@@ -189,7 +193,9 @@ describe('ResponseStream', () => {
       const nonStreamResponse = new Response(JSON.stringify({ data: 'test' }));
       Object.defineProperty(nonStreamResponse, 'body', { value: null });
 
-      const context = new ExecutorContextImpl<RequestAdapterConfig>({ responseType: 'stream' });
+      const context = new ExecutorContextImpl<RequestAdapterConfig>({
+        responseType: 'stream'
+      });
       context.setReturnValue(nonStreamResponse);
 
       await responseStream.onSuccess(context);
@@ -410,12 +416,7 @@ describe('ResponseStream', () => {
           expect(data.session_id).toBeDefined();
           expect(Array.isArray(data.screens)).toBe(true);
         },
-        onStreamDone: () => {
-          console.log(
-            'Stream completed, total messages:',
-            receivedMessages.length
-          );
-        }
+        onStreamDone: () => {}
       };
 
       const stream = new ResponseStream(localConfig);
@@ -449,21 +450,9 @@ describe('ResponseStream', () => {
         }
       );
 
-      const result = await stream.handleStreamResponse(response);
+      await stream.handleStreamResponse(response);
 
-      console.log(result);
       expect(receivedMessages.length).toBeGreaterThan(0);
-
-      // // Log final results
-      // console.log(
-      //   'Test completed. Total messages received:',
-      //   receivedMessages.length
-      // );
-      // console.log('First message:', JSON.parse(receivedMessages[0]));
-      // console.log(
-      //   'Last message:',
-      //   JSON.parse(receivedMessages[receivedMessages.length - 1])
-      // );
     }, 30000); // Increase timeout to 30s for API call
   });
 });

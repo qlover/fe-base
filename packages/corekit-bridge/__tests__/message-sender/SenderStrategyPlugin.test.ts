@@ -1650,8 +1650,6 @@ describe('SenderStrategyPlugin', () => {
       resolveGateway?.('Should not reach');
 
       const result = await sendPromise;
-      console.log('result', result);
-      // should be STOPPED status
       expect(result.status).toBe(MessageStatus.STOPPED);
       expect(result.loading).toBe(false);
       expect(result.error).toBeDefined();
@@ -1746,7 +1744,6 @@ describe('SenderStrategyPlugin', () => {
       sender.use(aborterPlugin);
       sender.use(new SenderStrategyPlugin(SendFailureStrategy.ADD_ON_SUCCESS));
 
-      console.log('aborterPlugin', aborterPlugin);
       let resolveGateway: ((value: unknown) => void) | null = null;
       mockGateway.sendMessage = vi.fn().mockReturnValue(
         new Promise((resolve) => {

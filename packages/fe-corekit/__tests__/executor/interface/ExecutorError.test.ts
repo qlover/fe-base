@@ -122,10 +122,10 @@ describe('ExecutorError', () => {
     // ExecutorError should have its own stack
     expect(executorError.stack).toBeDefined();
     expect(executorError.stack).not.toBe(originalError.stack);
-    
+
     // Original error stack should be accessible via cause
     expect((executorError.cause as Error).stack).toBe(originalError.stack);
-    
+
     // ExecutorError stack should not contain original error's stack
     if (executorError.stack && originalError.stack) {
       expect(executorError.stack).not.toContain(originalError.stack);

@@ -1,8 +1,5 @@
 import { I } from '@config/IOCIdentifier';
-import {
-  UserService as CorekitBridgeUserService,
-  GatewayExecutor
-} from '@qlover/corekit-bridge';
+import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { inject, injectable } from 'inversify';
 import { isObject, isString } from 'lodash';
 import { UserApi } from '@/base/apis/userApi/UserApi';
@@ -28,7 +25,6 @@ export class UserService
     logger: LoggerInterface
   ) {
     super({
-      executor: new GatewayExecutor(),
       gateway: userApi,
       logger: logger,
       store: {

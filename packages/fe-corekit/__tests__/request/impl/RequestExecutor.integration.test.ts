@@ -67,20 +67,16 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
           throw new Error(jsonData.message || jsonData.id);
         }
       },
-      onError: async (ctx) => {
+      onError: async () => {
         hookExecutions.push('AppApiPlugin.onError');
-
-        // Log error for debugging
-        console.log('AppApiPlugin.onError triggered:', ctx.error);
       }
     });
 
     // Plugin 2: Additional plugin to verify error propagation
     requestExecutor.use({
       pluginName: 'LoggerPlugin',
-      onError: async (ctx) => {
+      onError: async () => {
         hookExecutions.push('LoggerPlugin.onError');
-        console.log('LoggerPlugin.onError triggered:', ctx.error);
       }
     });
 
@@ -116,8 +112,6 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
       'AppApiPlugin.onError', // onError triggered after onSuccess throws
       'LoggerPlugin.onError' // Second plugin's onError also triggered
     ]);
-
-    console.log('Hook execution order:', hookExecutions);
   });
 
   it('should handle nested executor scenario (GatewayExecutor -> RequestExecutor)', async () => {
@@ -200,8 +194,6 @@ describe('RequestExecutor Integration Test - AppUserApi.login Scenario', () => {
     expect(hookExecutions).toContain('RequestExecutor.onSuccess');
     expect(hookExecutions).toContain('RequestExecutor.onError');
     expect(hookExecutions).toContain('GatewayExecutor.onError');
-
-    console.log('Nested executor hook execution order:', hookExecutions);
   });
 
   it('should demonstrate that onError is always triggered when onSuccess throws', async () => {

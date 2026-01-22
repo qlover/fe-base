@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type {
-  ApiMockPluginConfig
-} from '../../src/core/request-plugins/ApiMockPlugin';
+import type { ApiMockPluginConfig } from '../../src/core/request-plugins/ApiMockPlugin';
 import {
   ApiMockPlugin,
   type MockDataJson,
@@ -60,7 +58,10 @@ describe('ApiMockPlugin', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockLogger = new MockLogger();
-    mockContext = new ExecutorContextImpl<ApiMockPluginConfig, RequestAdapterResponse>({
+    mockContext = new ExecutorContextImpl<
+      ApiMockPluginConfig,
+      RequestAdapterResponse
+    >({
       method: 'GET',
       url: '/api/test',
       headers: {}
@@ -414,10 +415,13 @@ describe('ApiMockPlugin', () => {
         const methods = ['GET', 'POST', 'PUT', 'DELETE'] as const;
         for (const method of methods) {
           // Create a fresh context for each iteration
-          const testContext = new ExecutorContextImpl<ApiMockPluginConfig, RequestAdapterResponse>({
-              method: method.toLowerCase() as 'get' | 'post' | 'put' | 'delete',
-              url: '/api/resource',
-              headers: {}
+          const testContext = new ExecutorContextImpl<
+            ApiMockPluginConfig,
+            RequestAdapterResponse
+          >({
+            method: method.toLowerCase() as 'get' | 'post' | 'put' | 'delete',
+            url: '/api/resource',
+            headers: {}
           });
           const result = await plugin.onExec(testContext);
           expect(result.data).toEqual({ method });
@@ -925,7 +929,7 @@ describe('ApiMockPlugin', () => {
           method: 'GET',
           url: '/api/test',
           headers: {}
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -948,7 +952,7 @@ describe('ApiMockPlugin', () => {
           method: 'GET',
           url: '/api/test',
           headers: {}
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -972,7 +976,7 @@ describe('ApiMockPlugin', () => {
           url: '/api/test',
           headers: {},
           mockDelay: 500
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -995,7 +999,7 @@ describe('ApiMockPlugin', () => {
           url: '/api/test',
           headers: {},
           mockDelay: 500
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -1018,7 +1022,7 @@ describe('ApiMockPlugin', () => {
           url: '/api/test',
           headers: {},
           mockDelay: 0
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -1041,7 +1045,7 @@ describe('ApiMockPlugin', () => {
           url: '/api/test',
           headers: {},
           mockDelay: -100
-        })
+        });
 
         await plugin.onExec(mockContext);
 
@@ -1064,7 +1068,7 @@ describe('ApiMockPlugin', () => {
           method: 'GET',
           url: '/api/test',
           headers: {}
-        })
+        });
 
         await plugin.onExec(mockContext);
 

@@ -73,7 +73,7 @@ export abstract class StoreInterface<
    *
    * @param source Partial<T> - properties to override in the cloned state
    * @returns T - the new cloned state
-   * @since 1.3.1
+   * @since `1.3.1`
    */
   public cloneState(source?: Partial<T>): T {
     const cloned = clone(this.state);

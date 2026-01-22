@@ -37,14 +37,14 @@ Do not throw errors, only return errors and data
 
 #### `enabled` (Method)
 
-**Type:** `(_name: parameter _name, context: ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>) => boolean`
+**Type:** `(_name: string, context: ApiCatchPluginContext) => boolean`
 
 #### Parameters
 
-| Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_name`   | `parameter _name`                                                            | ❌       | -       | -     | -          |             |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ✅       | -       | -     | -          |             |
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_name`   | `string`                | ❌       | -       | -     | -          |             |
+| `context` | `ApiCatchPluginContext` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -54,48 +54,48 @@ Do not throw errors, only return errors and data
 
 #### Parameters
 
-| Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_name`   | `parameter _name`                                                            | ❌       | -       | -     | -          |             |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ✅       | -       | -     | -          |             |
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_name`   | `string`                | ❌       | -       | -     | -          |             |
+| `context` | `ApiCatchPluginContext` | ✅       | -       | -     | -          |             |
 
 ---
 
 #### `onExec` (Method)
 
-**Type:** `(context: ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>, task: PromiseTask<unknown, unknown>) => unknown`
+**Type:** `(context: ApiCatchPluginContext, task: ExecutorTask<RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse, ApiCatchPluginConfig & RequestAdapterFetchConfig<unknown>>) => Promise<RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse>`
 
 #### Parameters
 
-| Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ❌       | -       | -     | -          |             |
-| `task`    | `PromiseTask<unknown, unknown>`                                              | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                                                         | Optional | Default | Since | Deprecated | Description |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ApiCatchPluginContext`                                                                                                                      | ❌       | -       | -     | -          |             |
+| `task`    | `ExecutorTask<RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse, ApiCatchPluginConfig & RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
 
 ---
 
 ##### `onExec` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `Promise<RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse>`
 
 #### Parameters
 
-| Name      | Type                                                                         | Optional | Default | Since | Deprecated | Description |
-| --------- | ---------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<RequestAdapterFetchConfig<unknown> & ApiCatchPluginConfig>` | ❌       | -       | -     | -          |             |
-| `task`    | `PromiseTask<unknown, unknown>`                                              | ❌       | -       | -     | -          |             |
+| Name      | Type                                                                                                                                         | Optional | Default | Since | Deprecated | Description |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ApiCatchPluginContext`                                                                                                                      | ❌       | -       | -     | -          |             |
+| `task`    | `ExecutorTask<RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse, ApiCatchPluginConfig & RequestAdapterFetchConfig<unknown>>` | ❌       | -       | -     | -          |             |
 
 ---
 
 #### `onSuccess` (Method)
 
-**Type:** `(context: ExecutorContext<unknown>) => void \| Promise<void>`
+**Type:** `(context: ApiCatchPluginContext) => void \| Promise<void>`
 
 #### Parameters
 
-| Name      | Type                       | Optional | Default | Since | Deprecated | Description |
-| --------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          |             |
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ApiCatchPluginContext` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -105,9 +105,9 @@ Do not throw errors, only return errors and data
 
 #### Parameters
 
-| Name      | Type                       | Optional | Default | Since | Deprecated | Description |
-| --------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `context` | `ExecutorContext<unknown>` | ❌       | -       | -     | -          |             |
+| Name      | Type                    | Optional | Default | Since | Deprecated | Description |
+| --------- | ----------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `context` | `ApiCatchPluginContext` | ❌       | -       | -     | -          |             |
 
 ---
 

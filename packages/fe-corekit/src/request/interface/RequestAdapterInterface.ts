@@ -1,23 +1,91 @@
 /**
- * Request adapter configuration
+ * Request adapter configuration interface
  *
- * This type defines the configuration options for a request adapter.
- * It includes properties for URL, method, headers, and other request details.
- * The main purpose is to provide a flexible structure for configuring HTTP requests.
+ * Core concept:
+ * Defines the complete configuration structure for HTTP requests, providing
+ * a unified interface that works across different HTTP clients (fetch, axios).
+ * This abstraction allows switching between adapters without changing request code.
  *
- * TODO: Should fix the generic type to a specific type instead of unknown
+ * Main features:
+ * - URL configuration: Base URL and path management
+ *   - Supports absolute and relative URLs
+ *   - Automatic URL composition with baseURL
+ *   - Query parameter serialization
  *
- * Because the unknown type is not type-safe and can cause type errors.
- * For example, if you want to use the request adapter to send a request to a API,
- * you need to know the type of the request data and the type of the response data.
- * If you use the unknown type, you will not know the type of the request data and the type of the response data.
- * This will cause type errors.
+ * - Request customization: Headers, body, and method configuration
+ *   - Type-safe request data through generic `RequestData`
+ *   - Flexible header management
+ *   - Support for all HTTP methods
  *
- * @example
+ * - Response handling: Response type and transformation options
+ *   - Configurable response type (json, text, blob, etc.)
+ *   - Response timeout configuration
+ *   - Abort signal integration
+ *
+ * Design considerations:
+ * - Generic `RequestData` type for type-safe request bodies
+ * - Extensible configuration for adapter-specific options
+ * - Compatible with both fetch and axios APIs
+ * - Supports middleware and interceptor patterns
+ *
+ * @template RequestData - Type of request body data (defaults to `unknown`)
+ *
+ * @since `1.0.14`
+ *
+ * @example Basic GET request
  * ```typescript
- * const requestAdapter = new RequestAdapter<{ name: string }>();
+ * const config: RequestAdapterConfig = {
+ *   url: '/users/123',
+ *   method: 'GET',
+ *   baseURL: 'https://api.example.com'
+ * };
  * ```
- * @since 1.0.14
+ *
+ * @example POST request with typed data
+ * ```typescript
+ * interface CreateUserData {
+ *   name: string;
+ *   email: string;
+ * }
+ *
+ * const config: RequestAdapterConfig<CreateUserData> = {
+ *   url: '/users',
+ *   method: 'POST',
+ *   data: {
+ *     name: 'John Doe',
+ *     email: 'john@example.com'
+ *   },
+ *   headers: {
+ *     'Content-Type': 'application/json'
+ *   }
+ * };
+ * ```
+ *
+ * @example With query parameters
+ * ```typescript
+ * const config: RequestAdapterConfig = {
+ *   url: '/users',
+ *   method: 'GET',
+ *   params: {
+ *     role: 'admin',
+ *     active: true,
+ *     page: 1
+ *   }
+ * };
+ * // Final URL: /users?role=admin&active=true&page=1
+ * ```
+ *
+ * @example With authentication
+ * ```typescript
+ * const config: RequestAdapterConfig = {
+ *   url: '/protected/data',
+ *   method: 'GET',
+ *   headers: {
+ *     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+ *     'Accept': 'application/json'
+ *   }
+ * };
+ * ```
  */
 export interface RequestAdapterConfig<RequestData = unknown> {
   /**

@@ -15,7 +15,6 @@ import type { IocRegisterOptions } from '@/base/port/IOCInterface';
 import type { UserServiceInterface } from '@/base/port/UserServiceInterface';
 import { I18nService } from '@/base/services/I18nService';
 import { RouteService } from '@/base/services/RouteService';
-import { UserGatewayPlugin } from '@/base/services/UserGatewayPlugin';
 import { UserService } from '@/base/services/UserService';
 import { ExecutorPageBridge } from '@/uikit/bridges/ExecutorPageBridge';
 import { JSONStoragePageBridge } from '@/uikit/bridges/JSONStoragePageBridge';
@@ -95,10 +94,10 @@ export class ClientIOCRegister implements IOCRegisterInterface<
 
     ioc.bind(
       I.UserServiceInterface,
-      ioc
-        .get<UserService>(UserService)
-        .use(new UserGatewayPlugin(routeService))
-        .use(ioc.get(I.I18nKeyErrorPlugin))
+      ioc.get<UserService>(UserService)
+      // TODO: use executor replace
+      // .use(new UserGatewayPlugin(routeService))
+      // .use(ioc.get(I.I18nKeyErrorPlugin))
     );
     ioc.bind(I.RequestCatcherInterface, ioc.get(RequestStatusCatcher));
     ioc.bind(I.ExecutorPageBridgeInterface, ioc.get(ExecutorPageBridge));

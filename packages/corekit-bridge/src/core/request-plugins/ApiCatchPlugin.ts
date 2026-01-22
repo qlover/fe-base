@@ -58,10 +58,7 @@ export class ApiCatchPlugin
   /**
    * @override
    */
-  public enabled(
-    _name: string,
-    context?: ApiCatchPluginContext
-  ): boolean {
+  public enabled(_name: string, context?: ApiCatchPluginContext): boolean {
     // If the openApiCatch is true, the plugin will be enabled
     const { openApiCatch } = context?.parameters ?? {};
     return !!openApiCatch;

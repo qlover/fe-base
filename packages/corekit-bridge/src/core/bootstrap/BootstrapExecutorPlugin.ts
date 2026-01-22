@@ -1,4 +1,7 @@
-import type { ExecutorContextInterface, LifecycleSyncPluginInterface } from '@qlover/fe-corekit';
+import type {
+  ExecutorContextInterface,
+  LifecycleSyncPluginInterface
+} from '@qlover/fe-corekit';
 import type { IOCContainerInterface } from '../ioc';
 import type { LoggerInterface } from '@qlover/logger';
 

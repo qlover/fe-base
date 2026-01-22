@@ -1,6 +1,4 @@
-import {
-  type ExecutorPluginInterface
-} from '../interface/ExecutorInterface';
+import { type ExecutorPluginInterface } from '../interface/ExecutorInterface';
 import type { ExecutorContextInterface } from '../interface/ExecutorContextInterface';
 import { type HookRuntimes } from '../interface';
 
@@ -179,7 +177,8 @@ export class ExecutorContextImpl<
   T,
   R = unknown,
   RuntimesType extends HookRuntimes = HookRuntimes
-> implements ExecutorContextInterface<T, R, RuntimesType> {
+> implements ExecutorContextInterface<T, R, RuntimesType>
+{
   private _parameters: T;
   private _error: unknown;
   private _returnValue?: R;
@@ -449,7 +448,7 @@ export class ExecutorContextImpl<
   >(plugin: ExecutorPluginInterface<Ctx>, hookName: string): boolean {
     return (
       typeof plugin[hookName as keyof ExecutorPluginInterface<Ctx>] !==
-      'function' ||
+        'function' ||
       (typeof plugin.enabled === 'function' &&
         !plugin.enabled(hookName, this as unknown as Ctx))
     );

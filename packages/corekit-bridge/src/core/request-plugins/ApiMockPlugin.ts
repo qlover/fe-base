@@ -190,10 +190,7 @@ export class ApiMockPlugin
    *
    * @override
    */
-  public enabled(
-    _name: string,
-    context?: ApiMockPluginContext
-  ): boolean {
+  public enabled(_name: string, context?: ApiMockPluginContext): boolean {
     return !context?.parameters.disabledMock;
   }
 
