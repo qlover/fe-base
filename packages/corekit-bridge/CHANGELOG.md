@@ -1,5 +1,40 @@
 # @qlover/corekit-bridge
 
+## 2.0.0
+
+### Major Changes
+
+#### ♻️ Refactors
+
+- **scetipts-context:** scripts context with ExecutorInterface ([86a1232](https://github.com/qlover/fe-base/commit/86a1232c1afaa5604c4571f894b02c0c7cc55b98)) ([#565](https://github.com/qlover/fe-base/pull/565))
+  - refactor(fe-corekit): Enhance type safety and context management in executor interfaces
+  * Updated `ExecutorContextInterface` and related classes to support generic return types, improving type safety across executor plugins.
+  * Refactored `LifecycleExecutor` and `LifecycleSyncExecutor` to utilize enhanced context management, allowing for better handling of task execution and plugin interactions.
+  * Introduced new utility functions for plugin hook execution, ensuring consistent behavior and improved maintainability.
+  * Enhanced test coverage for executor functionality, ensuring robust type checks and error handling.
+
+  These changes aim to provide a more flexible and type-safe execution framework for plugins, enhancing overall developer experience and code quality.
+  - feat(scripts-context): Update dependencies and enhance ColorFormatter tests
+  * Replaced `@types/lodash` with `@types/lodash-es` and added `lodash-es` as a dependency for better ES module support.
+  * Updated `@qlover/fe-corekit` dependency to use workspace reference for improved package management.
+  * Expanded test coverage for `ColorFormatter` to handle various argument types, including empty arrays, objects, null, undefined, booleans, numbers, and mixed types.
+  * Added tests for handling long messages, special characters, and unicode characters in logging.
+  * Enhanced `ConfigSearch` tests to cover edge cases and configuration merging scenarios.
+  * Introduced new utility functions for initializing options and managing script context defaults, improving overall maintainability and type safety.
+
+  These changes aim to improve the robustness of the logging and configuration management features within the scripts context.
+  - feat(dependencies): Replace lodash with lodash-es and update related types
+  * Replaced `lodash` with `lodash-es` in multiple packages to enhance ES module support.
+  * Updated `@types/lodash` to `@types/lodash-es` for improved type definitions.
+  * Refactored code to utilize named imports from `lodash-es` for better tree-shaking and performance.
+  * Adjusted executor implementations in `Code2MDTask` and `ReleaseTask` to use `LifecycleExecutor` for improved context management.
+
+  These changes aim to modernize the codebase and improve compatibility with ES module standards.
+
+  ***
+
+  Co-authored-by: QRJ <github-actions[bot]@users.noreply.github.com>
+
 ## 1.10.1
 
 ### Patch Changes
