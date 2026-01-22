@@ -1,5 +1,78 @@
 # @qlover/fe-corekit
 
+## 3.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **fe-corekit:** Enhance executor functionality with new lifecycle and context management ([fb1971f](https://github.com/qlover/fe-base/commit/fb1971fa243d7779dc792fa213122c403a318cb0)) ([#565](https://github.com/qlover/fe-base/pull/565))
+  - Introduced `LifecycleExecutor` and `LifecycleSyncExecutor` for improved task execution management, supporting both async and sync operations.
+  - Added comprehensive tests for `ExecutorContextImpl`, `LifecycleExecutor`, and `LifecycleSyncExecutor`, ensuring robust functionality and error handling.
+  - Enhanced `ExecutorError` class to support error chain traceability and improved error handling capabilities.
+  - Updated `ExecutorContext` interface to include new runtime tracking properties, enabling better debugging and plugin management.
+  - Implemented utility functions for efficient parameter cloning and plugin hook execution, optimizing performance and maintainability.
+
+  These changes aim to provide a more flexible and powerful execution framework for plugins, enhancing overall developer experience and code quality.
+
+  Co-authored-by: QRJ <github-actions[bot]@users.noreply.github.com>
+
+#### 🐞 Bug Fixes
+
+- **fe-corekit:** Optimized signal handling and retry logic by replacing custom implementations with robust libraries (any-signal, p-retry) ([df52b6f](https://github.com/qlover/fe-base/commit/df52b6f40454f1f60c5dc4553924c5abece441b1)) ([#565](https://github.com/qlover/fe-base/pull/565))
+  - feat(fe-corekit): Integrate any-signal for enhanced abort management
+  * Added `any-signal` dependency to support combined abort signals, improving cancellation capabilities for asynchronous operations.
+  * Updated `Aborter` class to utilize `any-signal` for better signal composition, allowing multiple abort signals to be managed seamlessly.
+  * Introduced comprehensive tests for the `Aborter` class, ensuring robust functionality and error handling in various scenarios.
+  * Created new test files for `Aborter` and `AborterPlugin`, validating their integration and performance.
+
+  These changes aim to enhance the abort management system within the `fe-corekit` package, providing developers with more flexible and reliable control over asynchronous operations.
+  - refactor(fe-corekit): Remove AbortPlugin and associated tests
+  * Deleted the `AbortPlugin` implementation and its test suite, streamlining the codebase.
+  * This change aims to simplify the executor plugin system by removing unused or redundant components, enhancing maintainability and clarity.
+  - feat(fe-corekit): Add p-retry for enhanced retry functionality
+  * Introduced `p-retry` as a dependency to improve retry logic in task executions, allowing for customizable retry strategies and conditions.
+  * Refactored `RetryPlugin` to utilize the new `Retryer` class, which encapsulates retry logic and configuration.
+  * Updated tests for `RetryPlugin` to validate the new retry behavior and ensure robust functionality.
+  * Created a new `Retryer` utility class with comprehensive tests to cover various retry scenarios and configurations.
+
+  These changes aim to enhance the reliability and flexibility of task execution within the `fe-corekit` package.
+
+  ***
+
+  Co-authored-by: QRJ <github-actions[bot]@users.noreply.github.com>
+
+#### ♻️ Refactors
+
+- **scetipts-context:** scripts context with ExecutorInterface ([86a1232](https://github.com/qlover/fe-base/commit/86a1232c1afaa5604c4571f894b02c0c7cc55b98)) ([#565](https://github.com/qlover/fe-base/pull/565))
+  - refactor(fe-corekit): Enhance type safety and context management in executor interfaces
+  * Updated `ExecutorContextInterface` and related classes to support generic return types, improving type safety across executor plugins.
+  * Refactored `LifecycleExecutor` and `LifecycleSyncExecutor` to utilize enhanced context management, allowing for better handling of task execution and plugin interactions.
+  * Introduced new utility functions for plugin hook execution, ensuring consistent behavior and improved maintainability.
+  * Enhanced test coverage for executor functionality, ensuring robust type checks and error handling.
+
+  These changes aim to provide a more flexible and type-safe execution framework for plugins, enhancing overall developer experience and code quality.
+  - feat(scripts-context): Update dependencies and enhance ColorFormatter tests
+  * Replaced `@types/lodash` with `@types/lodash-es` and added `lodash-es` as a dependency for better ES module support.
+  * Updated `@qlover/fe-corekit` dependency to use workspace reference for improved package management.
+  * Expanded test coverage for `ColorFormatter` to handle various argument types, including empty arrays, objects, null, undefined, booleans, numbers, and mixed types.
+  * Added tests for handling long messages, special characters, and unicode characters in logging.
+  * Enhanced `ConfigSearch` tests to cover edge cases and configuration merging scenarios.
+  * Introduced new utility functions for initializing options and managing script context defaults, improving overall maintainability and type safety.
+
+  These changes aim to improve the robustness of the logging and configuration management features within the scripts context.
+  - feat(dependencies): Replace lodash with lodash-es and update related types
+  * Replaced `lodash` with `lodash-es` in multiple packages to enhance ES module support.
+  * Updated `@types/lodash` to `@types/lodash-es` for improved type definitions.
+  * Refactored code to utilize named imports from `lodash-es` for better tree-shaking and performance.
+  * Adjusted executor implementations in `Code2MDTask` and `ReleaseTask` to use `LifecycleExecutor` for improved context management.
+
+  These changes aim to modernize the codebase and improve compatibility with ES module standards.
+
+  ***
+
+  Co-authored-by: QRJ <github-actions[bot]@users.noreply.github.com>
+
 ## 2.5.0
 
 ### Minor Changes
