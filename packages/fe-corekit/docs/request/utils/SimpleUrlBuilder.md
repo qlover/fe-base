@@ -22,6 +22,16 @@ Core features:
 - URL normalization: Leverages native URL API for consistent path resolution
 - Extensible design: Protected methods allow subclass customization
 
+Important behaviors:
+
+- Path preservation: When using relative paths with base URLs that contain path segments,
+  the relative path is appended to the base URL's path instead of replacing it
+- Strict vs Non-strict mode: In strict mode, invalid base URLs cause errors;
+  in non-strict mode, they are handled gracefully
+- Authentication info: Preserves authentication credentials in base URLs (e.g., https://user:pass@domain.com/)
+- Hash fragments: Maintains hash fragments from both base URLs and relative paths
+- Query parameters: Combines query parameters from base URL and config, with new parameters taking precedence
+
 Design considerations:
 
 - Uses temporary domain (
@@ -29,6 +39,10 @@ Design considerations:
   ) for relative URL processing to leverage URL API
 - Supports strict mode for stricter baseURL validation
 - Returns path-only strings for relative URLs without valid baseURL
+
+Configuration options:
+
+- strict: Enables strict mode for stricter validation of base URLs (default: false)
 
 `@since`
 
@@ -65,6 +79,18 @@ const url = urlBuilder.buildUrl({
   url: '/users',
   baseURL: 'invalid-url' // Will throw error in strict mode
 });
+```
+
+**Example:** Preserving path segments in baseURL
+
+```typescript
+const urlBuilder = new SimpleUrlBuilder();
+const url = urlBuilder.buildUrl({
+  url: '/api/token.json',
+  baseURL: 'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method'
+});
+// Returns: 'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method/api/token.json'
+// ✅ Correctly preserves the baseURL's path segment: '/v1.0/invoke/brain-user-system/method'
 ```
 
 ---
@@ -167,6 +193,13 @@ URL construction rules:
   parameter values are filtered out
 - Hash fragments are preserved in the final URL
 
+**Bug Fix Note**: This implementation correctly handles baseURLs that contain
+path segments. Previous versions incorrectly lost the path portion when using
+
+`new URL(relativePath, baseURLWithPath)`
+. Now the relative path is properly
+appended to the base URL's path instead of replacing it.
+
 **Returns:**
 
 Complete URL string or empty string if no URL provided
@@ -182,14 +215,16 @@ const url = urlBuilder.buildUrl({
 // Returns: 'https://api.example.com/users?role=admin&page=1'
 ```
 
-**Example:** Relative URL without baseURL
+**Example:** Complex baseURL with path segments (Bug Fix Example)
 
 ```typescript
 const url = urlBuilder.buildUrl({
-  url: '/api/users',
-  params: { status: 'active' }
+  url: '/api/token.json',
+  baseURL: 'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method',
+  params: { grant_type: 'authorization_code' }
 });
-// Returns: '/api/users?status=active'
+// Returns: 'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method/api/token.json?grant_type=authorization_code'
+// ✅ Correctly preserves the baseURL's path segment: '/v1.0/invoke/brain-user-system/method'
 ```
 
 **Example:** Absolute URL ignores baseURL

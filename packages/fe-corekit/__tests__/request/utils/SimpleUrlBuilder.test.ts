@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { SimpleUrlBuilder } from '../../../src/request/utils/SimpleUrlBuilder';
 import type { RequestAdapterConfig } from '../../../src/request/interface';
 
@@ -112,6 +112,41 @@ describe('SimpleUrlBuilder', () => {
           'http://api.example.com/users'
         );
       });
+
+      // Added test: correctly preserve path segments when baseURL contains path
+      it('should preserve baseURL path segments when baseURL contains path', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL:
+            'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://brus-dev.api.brain.ai/v1.0/invoke/brain-user-system/method/api/token.json'
+        );
+      });
+
+      it('should handle complex baseURL with path and relative URL', () => {
+        const config: RequestAdapterConfig = {
+          url: 'token.json',
+          baseURL: 'https://api.example.com/v1/auth'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/v1/auth/token.json'
+        );
+      });
+
+      it('should handle baseURL with multiple path segments', () => {
+        const config: RequestAdapterConfig = {
+          url: 'profile',
+          baseURL: 'https://api.example.com/api/v1/users/123'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/api/v1/users/123/profile'
+        );
+      });
     });
 
     describe('Query parameters', () => {
@@ -126,6 +161,22 @@ describe('SimpleUrlBuilder', () => {
         expect(result).toContain('role=admin');
         expect(result).toContain('page=1');
         expect(result).toMatch(/^https:\/\/api\.example\.com\/users\?/);
+      });
+
+      // Added test: handle baseURL with existing query parameters
+      it('should handle baseURL with existing query parameters', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL: 'https://api.example.com/v1/auth?existing=value',
+          params: { grant_type: 'authorization_code' }
+        };
+
+        const result = urlBuilder.buildUrl(config);
+        expect(result).toContain('existing=value');
+        expect(result).toContain('grant_type=authorization_code');
+        expect(result).toBe(
+          'https://api.example.com/v1/auth/api/token.json?existing=value&grant_type=authorization_code'
+        );
       });
 
       it('should handle single query parameter', () => {
@@ -148,7 +199,6 @@ describe('SimpleUrlBuilder', () => {
         };
 
         const result = urlBuilder.buildUrl(config);
-        // URL API encodes spaces as + in query parameters (standard behavior)
         expect(result).toContain('q=hello+world');
         expect(result).toContain('name=John+Doe');
       });
@@ -161,7 +211,6 @@ describe('SimpleUrlBuilder', () => {
         };
 
         const result = urlBuilder.buildUrl(config);
-        // URL API encodes spaces as + in query parameters (standard behavior)
         expect(result).toContain('user+name=John');
       });
 
@@ -238,6 +287,21 @@ describe('SimpleUrlBuilder', () => {
           'https://api.example.com/users'
         );
       });
+
+      // Added test: when baseURL contains query parameters, new parameters override old ones
+      it('should override existing query parameters when key conflicts', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL: 'https://api.example.com/v1/auth?version=1',
+          params: { version: '2', client_id: 'test' }
+        };
+
+        const result = urlBuilder.buildUrl(config);
+        const params = new URL(result).searchParams;
+        expect(params.getAll('version')).toHaveLength(1);
+        expect(params.get('version')).toBe('2'); // New value overrides old value
+        expect(params.get('client_id')).toBe('test');
+      });
     });
 
     describe('Relative URLs without baseURL', () => {
@@ -276,6 +340,25 @@ describe('SimpleUrlBuilder', () => {
         expect(result).toContain('existing=value');
         expect(result).toContain('role=admin');
       });
+
+      // Added test: concatenate relative baseURL
+      it('should handle relative baseURL', () => {
+        const config: RequestAdapterConfig = {
+          url: 'token.json',
+          baseURL: '/api/v1/auth'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/v1/auth/token.json');
+      });
+
+      it('should handle multiple relative segments', () => {
+        const config: RequestAdapterConfig = {
+          url: 'profile',
+          baseURL: 'api/v1/users/123'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/v1/users/123/profile');
+      });
     });
 
     describe('URL normalization', () => {
@@ -300,6 +383,18 @@ describe('SimpleUrlBuilder', () => {
           'https://api.example.com/api/v1/users/123'
         );
       });
+
+      // Added test: path normalization includes baseURL path
+      it('should normalize path segments including baseURL path', () => {
+        const config: RequestAdapterConfig = {
+          url: '../token.json',
+          baseURL: 'https://api.example.com/v1/auth/users'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/v1/auth/token.json'
+        );
+      });
     });
 
     describe('Edge cases', () => {
@@ -320,6 +415,18 @@ describe('SimpleUrlBuilder', () => {
 
         const result = urlBuilder.buildUrl(config);
         expect(result).toBe('https://api.example.com/users#section');
+      });
+
+      // Added test: preserve hash from baseURL
+      it('should preserve hash from baseURL', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL: 'https://api.example.com/v1/auth#section'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com/v1/auth/api/token.json#section'
+        );
       });
 
       it('should handle URL with existing query and hash', () => {
@@ -346,6 +453,29 @@ describe('SimpleUrlBuilder', () => {
         expect(result).toContain('q=test%26value%3Dtest');
         expect(result).toContain('symbol=%40%23%24%25');
       });
+
+      // Added test: port handling
+      it('should handle baseURL with port', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL: 'https://api.example.com:8080/v1/auth'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://api.example.com:8080/v1/auth/api/token.json'
+        );
+      });
+
+      it('should handle baseURL with authentication', () => {
+        const config: RequestAdapterConfig = {
+          url: '/api/token.json',
+          baseURL: 'https://user:pass@api.example.com/v1/auth'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe(
+          'https://user:pass@api.example.com/v1/auth/api/token.json'
+        );
+      });
     });
 
     describe('Error handling', () => {
@@ -355,9 +485,8 @@ describe('SimpleUrlBuilder', () => {
           baseURL: 'not-a-valid-url'
         };
 
-        // In non-strict mode, invalid baseURL (without protocol) is concatenated
-        // with temp domain and becomes part of hostname, resulting in just the path
         const result = urlBuilder.buildUrl(config);
+        // In non-strict mode, invalid baseURL is ignored and only the URL is returned
         expect(result).toBe('/users');
       });
 
@@ -380,6 +509,33 @@ describe('SimpleUrlBuilder', () => {
         expect(() => {
           urlBuilder.buildUrl(config);
         }).toThrow();
+      });
+
+      // Added test: strict mode
+      describe('strict mode', () => {
+        it('should throw error for invalid baseURL in strict mode', () => {
+          const strictBuilder = new SimpleUrlBuilder({ strict: true });
+          const config: RequestAdapterConfig = {
+            url: '/users',
+            baseURL: 'not-a-valid-url'
+          };
+
+          expect(() => {
+            strictBuilder.buildUrl(config);
+          }).toThrow(/Invalid baseURL format/);
+        });
+
+        it('should work with valid baseURL in strict mode', () => {
+          const strictBuilder = new SimpleUrlBuilder({ strict: true });
+          const config: RequestAdapterConfig = {
+            url: '/api/token.json',
+            baseURL: 'https://api.example.com/v1/auth'
+          };
+
+          expect(strictBuilder.buildUrl(config)).toBe(
+            'https://api.example.com/v1/auth/api/token.json'
+          );
+        });
       });
     });
   });
