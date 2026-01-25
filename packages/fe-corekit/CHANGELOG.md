@@ -1,5 +1,19 @@
 # @qlover/fe-corekit
 
+## 3.0.1
+
+### Patch Changes
+
+#### 🐞 Bug Fixes
+
+- **fe-corekit:** Enhance SimpleUrlBuilder with comprehensive tests and documentation updates ([a44162b](https://github.com/qlover/fe-base/commit/a44162b4f7a4b713c8d756460c861a338949e334)) ([#573](https://github.com/qlover/fe-base/pull/573))
+  - Added multiple tests to `SimpleUrlBuilder` for handling various baseURL scenarios, including path preservation, query parameters, and strict mode validation.
+  - Updated documentation to reflect new behaviors, emphasizing path preservation and strict mode handling.
+  - Introduced a new method for joining paths to ensure correct URL construction when baseURLs contain path segments.
+  - Enhanced type safety and clarity in the implementation, ensuring robust functionality across different use cases.
+
+  These changes aim to improve the reliability and usability of the URL building functionality within the `fe-corekit` package.
+
 ## 3.0.0
 
 ### Major Changes
