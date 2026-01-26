@@ -51,6 +51,19 @@ const context: ExecutorReleaseContext = {
 
 Current error state, if any
 
+Contains the error that occurred during task execution. Only populated
+when an error is thrown. Accessible in error handling hooks.
+
+**Example:**
+
+```typescript
+onError: (ctx, error) => {
+  if (ctx.error instanceof NetworkError) {
+    console.log('Network error occurred');
+  }
+};
+```
+
 ---
 
 #### `parameters` (Property)
@@ -58,6 +71,18 @@ Current error state, if any
 **Type:** `default`
 
 Read-only access to execution parameters
+
+Provides immutable access to the current parameters. To modify parameters,
+use
+`setParameters()`
+method which ensures safe cloning.
+
+**Example:**
+
+```typescript
+console.log(ctx.parameters.userId);
+console.log(ctx.parameters.action);
+```
 
 ---
 
@@ -222,8 +247,21 @@ context.runtimes({
 
 Set the error state
 
-Accepts any type of error value and converts it to ExecutorError.
+Stores an error in the context for access by error handling plugins.
+Accepts any type of error value and converts it to
+`ExecutorError`
+.
 This matches the behavior of JavaScript's catch clause which can catch any type.
+
+**Example:**
+
+```typescript
+try {
+  await riskyOperation();
+} catch (error) {
+  ctx.setError(error);
+}
+```
 
 #### Parameters
 
@@ -251,6 +289,31 @@ This matches the behavior of JavaScript's catch clause which can catch any type.
 
 Update parameters (clones internally for safety)
 
+Updates the execution parameters with a new value. The parameters are
+cloned internally to prevent accidental mutation. This ensures that
+plugins cannot inadvertently affect each other's parameter views.
+
+**Example:**
+
+```typescript
+onBefore: (ctx) => {
+  // Add authentication token
+  ctx.setParameters({
+    ...ctx.parameters,
+    authToken: getAuthToken()
+  });
+};
+```
+
+**Example:** Parameter validation
+
+```typescript
+onBefore: (ctx) => {
+  const validated = validateAndTransform(ctx.parameters);
+  ctx.setParameters(validated);
+};
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description           |
@@ -276,6 +339,20 @@ Update parameters (clones internally for safety)
 **Type:** `void`
 
 Set the return value
+
+Stores the task's return value in the context. Typically called by
+the executor after task completion, but can be used by plugins to
+override the return value.
+
+**Example:**
+
+```typescript
+onAfter: (ctx, result) => {
+  // Override return value
+  ctx.setReturnValue({ ...result, enhanced: true });
+  return ctx.returnValue;
+};
+```
 
 #### Parameters
 

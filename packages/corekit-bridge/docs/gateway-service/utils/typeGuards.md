@@ -51,6 +51,30 @@ if (isBaseServiceInterface(service)) {
 
 ---
 
+### `isServiceName` (Function)
+
+**Type:** `(value: unknown) => callsignature isServiceName`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `isServiceName` (CallSignature)
+
+**Type:** `callsignature isServiceName`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
 ### `isUserStoreInterface` (Function)
 
 **Type:** `(value: unknown) => callsignature isUserStoreInterface<User, Credential>`

@@ -185,26 +185,32 @@ export class SimpleUrlBuilder implements UrlBuilderInterface {
         }
       } else {
         const base = typeof baseURL === 'string' && baseURL ? baseURL : '';
-        
+
         // In non-strict mode, check if base is a valid absolute URL
         if (base && this.isFullURL(base)) {
           // Use our custom path joining method when baseURL is absolute
           urlObject = this.joinPathsToBaseURL(url, base);
-        } else if (base && (base.startsWith('/') || base.startsWith('./') || base.startsWith('../') || base.includes('/'))) {
+        } else if (
+          base &&
+          (base.startsWith('/') ||
+            base.startsWith('./') ||
+            base.startsWith('../') ||
+            base.includes('/'))
+        ) {
           // If base looks like a path (starts with /, ./, ../ or contains a slash),
           // treat it as such and combine it with the url
           let basePath = base;
           if (!basePath.startsWith('/')) {
             basePath = '/' + basePath;
           }
-          
+
           // Then combine the paths
           let combinedPath = basePath;
           if (!combinedPath.endsWith('/') && !url.startsWith('/')) {
             combinedPath += '/';
           }
           combinedPath += url.replace(/^\//, ''); // Remove leading slash if present
-          
+
           urlObject = new URL(combinedPath, 'http://temp');
           shouldReturnPathOnly = true;
         } else if (base) {
@@ -228,7 +234,7 @@ export class SimpleUrlBuilder implements UrlBuilderInterface {
    *
    * This method addresses the issue where using new URL('/path', 'https://domain/base/path')
    * would replace the entire path of the base URL instead of appending to it.
-   * 
+   *
    * @param relativePath - The relative path to append
    * @param baseURL - The base URL to append to
    * @returns URL object with properly joined paths
@@ -236,29 +242,31 @@ export class SimpleUrlBuilder implements UrlBuilderInterface {
   private joinPathsToBaseURL(relativePath: string, baseURL: string): URL {
     // Create a copy of the baseURL to avoid modifying the original
     const baseURLObject = new URL(baseURL);
-    
+
     // Extract hash and query from relativePath if present
     let cleanPath = relativePath;
     let hash = '';
     let query = '';
-    
+
     // Extract hash if present
     const hashIndex = relativePath.indexOf('#');
     if (hashIndex !== -1) {
       hash = relativePath.substring(hashIndex);
       cleanPath = relativePath.substring(0, hashIndex);
     }
-    
+
     // Extract query if present
     const queryIndex = cleanPath.indexOf('?');
     if (queryIndex !== -1) {
       query = cleanPath.substring(queryIndex);
       cleanPath = cleanPath.substring(0, queryIndex);
     }
-    
+
     // If relativePath starts with '/', remove the leading slash to make it truly relative
-    const adjustedPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
-    
+    const adjustedPath = cleanPath.startsWith('/')
+      ? cleanPath.substring(1)
+      : cleanPath;
+
     // Ensure the pathname ends with '/' and the adjustedPath doesn't start with '/'
     // to avoid double slashes or missing slashes
     let newPathname = baseURLObject.pathname;
@@ -266,12 +274,12 @@ export class SimpleUrlBuilder implements UrlBuilderInterface {
       newPathname += '/';
     }
     newPathname += adjustedPath;
-    
+
     // Set the new pathname, search and hash
     baseURLObject.pathname = newPathname;
     baseURLObject.search += query; // Append query to existing search params
     baseURLObject.hash = hash || baseURLObject.hash; // Set hash if provided in relative path, otherwise keep existing
-    
+
     return baseURLObject;
   }
 

@@ -102,7 +102,8 @@ export default defineConfig([
     silent: true,
     globalName: pkgName,
     outExtension: () => ({ js: '.iife.js' }),
-    outDir: 'dist'
+    outDir: 'dist',
+    target: 'es5'
   },
   {
     entry: ['src/core/index.ts'],
@@ -112,7 +113,8 @@ export default defineConfig([
     silent: true,
     globalName: pkgName,
     outExtension: () => ({ js: '.iife.min.js' }),
-    outDir: 'dist'
+    outDir: 'dist',
+    target: 'es5'
   },
 
   // Build tools: CJS format

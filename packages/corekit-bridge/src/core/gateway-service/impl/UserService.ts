@@ -13,6 +13,8 @@ import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
 
+const UserServiceName = 'UserService';
+
 /**
  * User service configuration
  *
@@ -72,9 +74,12 @@ import type { UserStore, UserStoreOptions } from './UserStore';
  * const userService = new UserService(config);
  * ```
  */
-export interface UserServiceConfig<User, Credential>
+export interface UserServiceConfig<User, Credential, GatewayConfig>
   extends Omit<
-    GatewayServiceOptions<User, UserServiceGateway<User, Credential>>,
+    GatewayServiceOptions<
+      User,
+      UserServiceGateway<User, Credential, GatewayConfig>
+    >,
     'serviceName' | 'store'
   > {
   /**
@@ -333,20 +338,32 @@ export interface UserServiceConfig<User, Credential>
  *   }
  * }
  * ```
+ *
+ * @example since 2.1.0 add gateway config
+ *
+ * ```
+ * const service = new UserService();
+ * const abortController = new AbortController();
+ *
+ * service.login({ email, password }, {
+ *   timeout: 1000,
+ *   signal: abortController.signal
+ * })
+ * ```
  */
-export class UserService<User, Credential, Key = string | symbol>
+export class UserService<User, Credential, Cfg = unknown>
   extends GatewayService<
     User,
-    UserStore<User, Credential, Key, unknown>,
-    UserServiceGateway<User, Credential>
+    UserStore<User, Credential, string | symbol, unknown>,
+    UserServiceGateway<User, Credential, Cfg>
   >
-  implements UserServiceInterface<User, Credential>
+  implements UserServiceInterface<User, Credential, Cfg>
 {
-  constructor(options: UserServiceConfig<User, Credential> = {}) {
-    const { serviceName = 'UserService', gateway, logger, store } = options;
+  constructor(options: UserServiceConfig<User, Credential, Cfg> = {}) {
+    const { serviceName, gateway, logger, store } = options;
 
     super({
-      serviceName,
+      serviceName: serviceName ?? UserServiceName,
       gateway,
       logger,
       store: createUserStore(store)
@@ -362,6 +379,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * @override
    * @template Params - The type of login parameters (must extend LoginParams)
    * @param params - Login parameters (email/phone + password, or phone + code)
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to credential data
    *
    * @example Email and password login
@@ -379,21 +397,33 @@ export class UserService<User, Credential, Key = string | symbol>
    *   code: '123456'
    * });
    * ```
+   *
+   * @example Login with additional config
+   * ```typescript
+   * const credential = await userService.login({
+   *   email: 'user@example.com',
+   *   password: 'password123'
+   * }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  public async login<Params extends LoginParams>(
-    params: Params
+  public async login(
+    params: LoginParams,
+    config?: Cfg
   ): Promise<Credential | null> {
     // Use unified store for login
     this.store.start();
     const gateway = this.getGateway();
 
     try {
-      const credential = await gateway?.login(params);
+      const credential = await gateway?.login(params, config);
 
       if (credential) {
         let user: User | null = null;
         try {
-          const fetchedUser = await gateway?.getUserInfo(credential);
+          const fetchedUser = await gateway?.getUserInfo(credential, config);
           user = fetchedUser ?? null;
         } catch (error) {
           this.logger?.error('Failed to fetch user info after login', error);
@@ -422,6 +452,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * @template LogoutParams - Type of logout parameters (default: void)
    * @template LogoutResult - Type of logout result (default: void)
    * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to logout result (e.g., success status, redirect URL)
    *
    * @example Basic logout
@@ -433,19 +464,25 @@ export class UserService<User, Credential, Key = string | symbol>
    * ```typescript
    * await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
    * ```
+   *
+   * @example Logout with additional config
+   * ```typescript
+   * await userService.logout(null, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  public logout<LogoutParams = unknown, LogoutResult = void>(
-    params?: LogoutParams
-  ): Promise<LogoutResult> {
+  public logout<R = void>(params?: unknown, config?: Cfg): Promise<R> {
     const gateway = this.getGateway();
 
     if (!gateway) {
-      return Promise.resolve(null as LogoutResult);
+      return Promise.resolve(null as R);
     }
 
-    return gateway.logout(params).then((result) => {
+    return gateway.logout(params, config).then((result) => {
       this.store.reset();
-      return result as LogoutResult;
+      return result as R;
     });
   }
 
@@ -458,6 +495,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * @override
    * @template Params - The type of registration parameters
    * @param params - Registration parameters containing user information
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to user information if registration succeeds, or `null` if it fails
    *
    * @example Register user
@@ -468,15 +506,27 @@ export class UserService<User, Credential, Key = string | symbol>
    *   code: '123456'
    * });
    * ```
+   *
+   * @example Register user with additional config
+   * ```typescript
+   * const user = await userService.register({
+   *   email: 'user@example.com',
+   *   password: 'password123',
+   *   code: '123456'
+   * }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  public register<Params>(params: Params): Promise<User | null> {
+  public register(params: unknown, config?: Cfg): Promise<User | null> {
     const gateway = this.getGateway();
 
     if (!gateway) {
       return Promise.resolve(null);
     }
 
-    return gateway!.register(params).then((user) => {
+    return gateway!.register(params, config).then((user) => {
       if (user) {
         this.store.setUser(user);
         return user as User;
@@ -495,6 +545,7 @@ export class UserService<User, Credential, Key = string | symbol>
    * @override
    * @template Params - The type of parameters for fetching user info
    * @param params - Optional parameters for fetching user info
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to user information, or `null` if not available
    *
    * @example Get user info
@@ -506,8 +557,16 @@ export class UserService<User, Credential, Key = string | symbol>
    * ```typescript
    * const user = await userService.getUserInfo({ token: 'abc123' });
    * ```
+   *
+   * @example Get user info with additional config
+   * ```typescript
+   * const user = await userService.getUserInfo({ token: 'abc123' }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  public getUserInfo<Params>(params?: Params): Promise<User | null> {
+  public getUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
     const gateway = this.getGateway();
     if (!gateway) {
       return Promise.resolve(null);
@@ -517,7 +576,7 @@ export class UserService<User, Credential, Key = string | symbol>
 
     const getUserInfoParams = params !== undefined ? params : credential;
 
-    return gateway.getUserInfo(getUserInfoParams).then((user) => {
+    return gateway.getUserInfo(getUserInfoParams, config).then((user) => {
       if (user) {
         this.store.setUser(user);
         return user;
@@ -536,24 +595,32 @@ export class UserService<User, Credential, Key = string | symbol>
    * @override
    * @template Params - The type of parameters for refreshing user info
    * @param params - Optional parameters for refreshing user info
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to refreshed user information, or `null` if refresh fails
    *
    * @example Refresh user info
    * ```typescript
    * const user = await userService.refreshUserInfo();
    * ```
+   *
+   * @example Refresh user info with additional config
+   * ```typescript
+   * const user = await userService.refreshUserInfo({ token: 'abc123' }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  public refreshUserInfo<Params>(params?: Params): Promise<User | null> {
+  public refreshUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
     const gateway = this.getGateway();
     if (!gateway) {
       return Promise.resolve(null);
     }
 
-    const credential = this.store.getCredential();
+    const refreshParams =
+      params !== undefined ? params : this.store.getCredential();
 
-    const refreshUserInfoParams = params !== undefined ? params : credential;
-
-    return gateway.refreshUserInfo(refreshUserInfoParams).then((user) => {
+    return gateway.refreshUserInfo(refreshParams, config).then((user) => {
       if (user) {
         this.store.setUser(user);
         return user;

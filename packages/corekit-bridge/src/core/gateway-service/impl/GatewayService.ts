@@ -9,6 +9,7 @@ import {
   type ServiceGatewayType
 } from '../interface/GatewayServiceInterface';
 import { createAsyncStore } from '../../store-state/impl/createAsyncStore';
+import { isServiceName } from '../utils/typeGuards';
 
 /**
  * Gateway service options
@@ -299,6 +300,7 @@ export class GatewayService<
    * @param options.gateway - Optional gateway instance for API operations
    * @param options.logger - Optional logger instance for logging
    * @param options.store - Optional store instance or store options for state management
+   * @param options.config - Optional default configuration that can be passed to gateway methods
    *
    * @example Basic initialization
    * ```typescript
@@ -330,6 +332,12 @@ export class GatewayService<
    * ```
    */
   constructor(options: GatewayServiceOptions<T, Gateway, string>) {
+    if (!isServiceName(options.serviceName)) {
+      throw new Error(`Invalid service name`, {
+        cause: options.serviceName
+      });
+    }
+
     this.serviceName = options.serviceName;
     this.gateway = options.gateway;
     this.logger = options.logger;

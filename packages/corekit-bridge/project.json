@@ -11,8 +11,7 @@
       },
       "inputs": [
         "{projectRoot}/src/**/*.ts",
-        "{projectRoot}/tsconfig.build.json",
-        "{projectRoot}/tsconfig.esm.json",
+        "{projectRoot}/tsconfig.json",
         "{projectRoot}/rollup.config.js",
         "{projectRoot}/package.json",
         "{projectRoot}/README.md",

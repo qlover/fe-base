@@ -12,6 +12,7 @@
       "inputs": [
         "{projectRoot}/src/**/*.ts",
         "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/tsconfig.json",
         "{projectRoot}/package.json",
         "{projectRoot}/README.md",
         "{projectRoot}/README_EN.md",

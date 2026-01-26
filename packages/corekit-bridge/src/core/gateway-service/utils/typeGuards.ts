@@ -76,3 +76,7 @@ export function isUserStoreInterface<User, Credential>(
     'getCredential' in value
   );
 }
+
+export function isServiceName(value: unknown): value is string | symbol {
+  return typeof value === 'string' || typeof value === 'symbol';
+}

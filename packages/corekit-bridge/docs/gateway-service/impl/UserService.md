@@ -6,7 +6,7 @@
 
 ### `UserService` (Class)
 
-**Type:** `class UserService<User, Credential, Key>`
+**Type:** `class UserService<User, Credential, Cfg>`
 
 User service implementation
 
@@ -223,23 +223,35 @@ class CustomUserService extends UserService<User, Credential> {
 }
 ```
 
+**Example:** since 2.1.0 add gateway config
+
+```
+const service = new UserService();
+const abortController = new AbortController();
+
+service.login({ email, password }, {
+  timeout: 1000,
+  signal: abortController.signal
+})
+```
+
 ---
 
 #### `new UserService` (Constructor)
 
-**Type:** `(options: UserServiceConfig<User, Credential>) => UserService<User, Credential, Key>`
+**Type:** `(options: UserServiceConfig<User, Credential, Cfg>) => UserService<User, Credential, Cfg>`
 
 #### Parameters
 
-| Name      | Type                                  | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `options` | `UserServiceConfig<User, Credential>` | ✅       | `{}`    | -     | -          |             |
+| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `options` | `UserServiceConfig<User, Credential, Cfg>` | ✅       | `{}`    | -     | -          |             |
 
 ---
 
 #### `gateway` (Property)
 
-**Type:** `UserServiceGateway<User, Credential>`
+**Type:** `UserServiceGateway<User, Credential, Cfg>`
 
 Gateway instance for API operations
 
@@ -274,7 +286,7 @@ Set during construction and remains constant throughout the service lifecycle.
 
 #### `store` (Property)
 
-**Type:** `UserStore<User, Credential, Key, unknown>`
+**Type:** `UserStore<User, Credential, string \| symbol, unknown>`
 
 Store instance for state management
 
@@ -318,13 +330,13 @@ if (credential) {
 
 #### `getGateway` (Method)
 
-**Type:** `() => undefined \| UserServiceGateway<User, Credential>`
+**Type:** `() => undefined \| UserServiceGateway<User, Credential, Cfg>`
 
 ---
 
 ##### `getGateway` (CallSignature)
 
-**Type:** `undefined \| UserServiceGateway<User, Credential>`
+**Type:** `undefined \| UserServiceGateway<User, Credential, Cfg>`
 
 Get the gateway instance
 
@@ -396,13 +408,13 @@ if (logger) {
 
 #### `getStore` (Method)
 
-**Type:** `() => UserStore<User, Credential, Key, unknown>`
+**Type:** `() => UserStore<User, Credential, string \| symbol, unknown>`
 
 ---
 
 ##### `getStore` (CallSignature)
 
-**Type:** `UserStore<User, Credential, Key, unknown>`
+**Type:** `UserStore<User, Credential, string \| symbol, unknown>`
 
 Get the async store instance
 
@@ -466,13 +478,14 @@ if (user) {
 
 #### `getUserInfo` (Method)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for fetching user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for fetching user info                                       |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -503,11 +516,24 @@ const user = await userService.getUserInfo();
 const user = await userService.getUserInfo({ token: 'abc123' });
 ```
 
+**Example:** Get user info with additional config
+
+```typescript
+const user = await userService.getUserInfo(
+  { token: 'abc123' },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for fetching user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for fetching user info                                       |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -638,13 +664,14 @@ class CustomUserService extends UserService<User, Credential> {
 
 #### `login` (Method)
 
-**Type:** `(params: Params) => Promise<null \| Credential>`
+**Type:** `(params: LoginParams, config: Cfg) => Promise<null \| Credential>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------- |
-| `params` | `Params` | ❌       | -       | -     | -          | Login parameters (email/phone + password, or phone + code) |
+| Name     | Type          | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | ------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `LoginParams` | ❌       | -       | -     | -          | Login parameters (email/phone + password, or phone + code)                       |
+| `config` | `Cfg`         | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -679,29 +706,46 @@ const credential = await userService.login({
 });
 ```
 
+**Example:** Login with additional config
+
+```typescript
+const credential = await userService.login(
+  {
+    email: 'user@example.com',
+    password: 'password123'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                |
-| -------- | -------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------------- |
-| `params` | `Params` | ❌       | -       | -     | -          | Login parameters (email/phone + password, or phone + code) |
+| Name     | Type          | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | ------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `LoginParams` | ❌       | -       | -     | -          | Login parameters (email/phone + password, or phone + code)                       |
+| `config` | `Cfg`         | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 #### `logout` (Method)
 
-**Type:** `(params: LogoutParams) => Promise<LogoutResult>`
+**Type:** `(params: unknown, config: Cfg) => Promise<R>`
 
 #### Parameters
 
-| Name     | Type           | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `LogoutParams` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ##### `logout` (CallSignature)
 
-**Type:** `Promise<LogoutResult>`
+**Type:** `Promise<R>`
 
 Logout current user
 
@@ -724,23 +768,34 @@ await userService.logout();
 await userService.logout<{ revokeAll: boolean }, void>({ revokeAll: true });
 ```
 
+**Example:** Logout with additional config
+
+```typescript
+await userService.logout(null, {
+  timeout: 5000,
+  headers: { 'X-Custom-Header': 'value' }
+});
+```
+
 #### Parameters
 
-| Name     | Type           | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `LogoutParams` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info                                     |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -765,23 +820,37 @@ if refresh fails
 const user = await userService.refreshUserInfo();
 ```
 
+**Example:** Refresh user info with additional config
+
+```typescript
+const user = await userService.refreshUserInfo(
+  { token: 'abc123' },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info                                     |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 #### `register` (Method)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                         |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
-| `params` | `Params` | ❌       | -       | -     | -          | Registration parameters containing user information |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ❌       | -       | -     | -          | Registration parameters containing user information                              |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -810,17 +879,34 @@ const user = await userService.register({
 });
 ```
 
+**Example:** Register user with additional config
+
+```typescript
+const user = await userService.register(
+  {
+    email: 'user@example.com',
+    password: 'password123',
+    code: '123456'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                         |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
-| `params` | `Params` | ❌       | -       | -     | -          | Registration parameters containing user information |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown` | ❌       | -       | -     | -          | Registration parameters containing user information                              |
+| `config` | `Cfg`     | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ### `UserServiceConfig` (Interface)
 
-**Type:** `interface UserServiceConfig<User, Credential>`
+**Type:** `interface UserServiceConfig<User, Credential, GatewayConfig>`
 
 **Since:** `1.8.0`
 
@@ -912,7 +998,7 @@ const userService = new UserService(config);
 
 #### `gateway` (Property)
 
-**Type:** `UserServiceGateway<User, Credential>`
+**Type:** `UserServiceGateway<User, Credential, GatewayConfig>`
 
 Gateway instance for API operations
 
