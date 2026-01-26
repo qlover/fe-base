@@ -1,5 +1,39 @@
 # @qlover/corekit-bridge
 
+## 2.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **corekit-bridge:** Enhance GatewayService and UserService with config parameter support ([adbcc00](https://github.com/qlover/fe-base/commit/adbcc00438eac7281c715c3a6b66ff5cd777b5a3)) ([#575](https://github.com/qlover/fe-base/pull/575))
+  - Introduced a new `config` parameter in `GatewayService` and `UserService` methods to allow passing custom configurations for API operations.
+  - Added validation for service names in `GatewayService` constructor to ensure proper error handling.
+  - Enhanced tests for `GatewayService` to cover service name retrieval and error handling for invalid names.
+  - Expanded `UserService` tests to verify that configuration parameters are correctly passed to login, logout, register, and user info methods.
+  - Updated type definitions across interfaces to support the new configuration capabilities, improving type safety and usability.
+
+  These changes aim to provide greater flexibility and control over service operations, enhancing the overall developer experience.
+
+#### 📝 Documentation
+
+- **corekit-bridge:** Add support for configuration parameters in UserService and enhance documentation ([e47f900](https://github.com/qlover/fe-base/commit/e47f9001ebee3a7ad5fc5bf4301228012ceda745)) ([#575](https://github.com/qlover/fe-base/pull/575))
+  - Introduced a `config` parameter in `UserService` methods to allow passing custom configurations for login, logout, registration, and user info retrieval.
+  - Updated type definitions across `UserService` and related interfaces to reflect the new configuration capabilities, improving type safety.
+  - Enhanced documentation with examples demonstrating the usage of the new `config` parameter, ensuring clarity for developers.
+  - Added a new script in `package.json` for building documentation, streamlining the documentation generation process.
+
+  These changes aim to provide greater flexibility and control over user service operations, enhancing the overall developer experience.
+
+#### ♻️ Refactors
+
+- **corekit-bridge, fe-corekit:** Update build configurations to target ES5 IIFE module ([4c8a3e8](https://github.com/qlover/fe-base/commit/4c8a3e83c44bff3c26c107040a3690e4dfd9cd58)) ([#575](https://github.com/qlover/fe-base/pull/575))
+  - Modified `tsup.config.ts` files in both `corekit-bridge` and `fe-corekit` to include `target: 'es5'`, ensuring compatibility with older JavaScript environments.
+  - Updated `tsconfig.json` in `fe-corekit` to remove the obsolete `target` setting, streamlining TypeScript configuration.
+  - Enhanced output directory settings in build configurations for consistency across packages.
+
+  These changes aim to improve compatibility and maintainability of the build process across the project.
+
 ## 2.0.0
 
 ### Major Changes
