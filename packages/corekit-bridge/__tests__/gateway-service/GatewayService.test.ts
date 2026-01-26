@@ -6,9 +6,11 @@
  * 2. getStore          – Store instance retrieval tests
  * 3. getGateway        – Gateway instance retrieval tests
  * 4. getLogger         – Logger instance retrieval tests
+ * 5. serviceName       – Service name property tests
+ * 6. edge cases        – Error handling and boundary tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GatewayService } from '../../src/core/gateway-service/impl/GatewayService';
 import {
   AsyncStore,
@@ -117,11 +119,35 @@ describe('GatewayService', () => {
     });
   });
 
-  describe('constructor', () => {
-    it('should create service with service name', () => {
-      expect(service.serviceName).toBe('TestService');
+  // Helper method to access the serviceName since it's readonly in the interface
+  class TestableGatewayService extends GatewayService<
+    TestUser,
+    AsyncStore<AsyncStoreStateInterface<TestUser>, string>,
+    MockGateway
+  > {
+    public getServiceName(): string | symbol {
+      return this.serviceName;
+    }
+  }
+
+  describe('serviceName', () => {
+    it('should return the configured service name', () => {
+      const service = new TestableGatewayService({
+        serviceName: 'TestService'
+      });
+      expect(service.getServiceName()).toBe('TestService');
     });
 
+    it('should work with symbol service name', () => {
+      const symbolName = Symbol('uniqueService');
+      const serviceWithSymbol = new TestableGatewayService({
+        serviceName: symbolName
+      });
+      expect(serviceWithSymbol.getServiceName()).toBe(symbolName);
+    });
+  });
+
+  describe('constructor', () => {
     it('should create service with gateway', () => {
       const serviceWithGateway = new GatewayService({
         serviceName: 'TestService',
@@ -135,6 +161,22 @@ describe('GatewayService', () => {
         serviceName: 'TestService'
       });
       expect(serviceWithoutGateway.getGateway()).toBeUndefined();
+    });
+
+    it('should throw error with invalid service name', () => {
+      expect(() => {
+        new GatewayService({
+          // @ts-expect-error Testing invalid service name
+          serviceName: null
+        });
+      }).toThrow('Invalid service name');
+
+      expect(() => {
+        new GatewayService({
+          // @ts-expect-error Testing invalid service name
+          serviceName: undefined
+        });
+      }).toThrow('Invalid service name');
     });
 
     it('should create service with logger', () => {

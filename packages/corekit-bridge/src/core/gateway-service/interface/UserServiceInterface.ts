@@ -107,7 +107,7 @@ export interface LoginParams {
  * }
  * ```
  */
-export interface LoginInterface<CredentialType> {
+export interface LoginInterface<CredentialType, GatewayConfig> {
   /**
    * Authenticate user with credentials
    *
@@ -115,6 +115,7 @@ export interface LoginInterface<CredentialType> {
    * Updates both user and credential stores with the authentication result.
    *
    * @param params - Login parameters (email/phone + password, or phone + code)
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to credential data
    * @throws Error if authentication fails
    *
@@ -132,8 +133,23 @@ export interface LoginInterface<CredentialType> {
    *   code: '123456'
    * });
    * ```
+   *
+   * @example with config
+   * ```typescript
+   * await authService.login({
+   *   email: 'user@example.com',
+   *   password: 'password123'
+   * }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
   login(params: LoginParams): Promise<CredentialType | null>;
+  login(
+    params: LoginParams,
+    config?: GatewayConfig
+  ): Promise<CredentialType | null>;
 
   /**
    * Logout current user
@@ -145,6 +161,7 @@ export interface LoginInterface<CredentialType> {
    * @template LogoutResult - Type of logout result (default: void)
    *
    * @param params - Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to logout result (e.g., success status, redirect URL)
    *
    * @example
@@ -161,8 +178,16 @@ export interface LoginInterface<CredentialType> {
    *   { success: boolean; message: string }
    * >({ revokeAll: true });
    * ```
+   *
+   * @example with config
+   * ```typescript
+   * await authService.logout(null, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  logout<Parmas = unknown, Result = void>(params?: Parmas): Promise<Result>;
+  logout<R = void>(params?: unknown, config?: GatewayConfig): Promise<R>;
 }
 
 /**
@@ -215,7 +240,7 @@ export interface LoginInterface<CredentialType> {
  * }
  * ```
  */
-export interface RegisterInterface<Result> {
+export interface RegisterInterface<Result, GatewayConfig> {
   /**
    * Register a new user
    *
@@ -236,6 +261,7 @@ export interface RegisterInterface<Result> {
    *   - `password`: User password
    *   - `code`: Verification code (for phone/email verification)
    *   - Additional fields as required by the implementation
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to user information if registration succeeds, or `null` if it fails
    *
    * @example Email registration
@@ -263,8 +289,21 @@ export interface RegisterInterface<Result> {
    *   console.error('Registration failed');
    * }
    * ```
+   *
+   * @example Registration with additional config
+   * ```typescript
+   * const user = await authService.register({
+   *   email: 'user@example.com',
+   *   password: 'password123',
+   *   code: '123456'
+   * }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
   register(params: unknown): Promise<Result | null>;
+  register(params: unknown, config?: GatewayConfig): Promise<Result | null>;
 }
 
 /**
@@ -307,7 +346,7 @@ export interface RegisterInterface<Result> {
  * }
  * ```
  */
-export interface UserInfoInterface<User> {
+export interface UserInfoInterface<User, GatewayConfig> {
   /**
    * Get current user information
    *
@@ -326,6 +365,7 @@ export interface UserInfoInterface<User> {
    *   - User ID for direct lookup
    *   - Additional fields as required by the implementation
    *   @optional
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to user information, or `null` if not available
    *
    * @example Get user info
@@ -340,8 +380,17 @@ export interface UserInfoInterface<User> {
    * ```typescript
    * const user = await userAuthService.getUserInfo({ token: 'abc123' });
    * ```
+   *
+   * @example Get user info with config
+   * ```typescript
+   * const user = await userAuthService.getUserInfo({ token: 'abc123' }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
   getUserInfo(params?: unknown): Promise<User | null>;
+  getUserInfo(params?: unknown, config?: GatewayConfig): Promise<User | null>;
 
   /**
    * Refresh user information
@@ -361,6 +410,7 @@ export interface UserInfoInterface<User> {
    *   - Force refresh flag
    *   - Additional fields as required by the implementation
    *   @optional
+   * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to refreshed user information, or `null` if refresh fails
    *
    * @example Refresh user info
@@ -375,8 +425,19 @@ export interface UserInfoInterface<User> {
    * ```typescript
    * const user = await userAuthService.refreshUserInfo({ force: true });
    * ```
+   *
+   * @example Refresh with config
+   * ```typescript
+   * const user = await userAuthService.refreshUserInfo({ force: true }, {
+   *   timeout: 5000,
+   *   headers: { 'X-Custom-Header': 'value' }
+   * });
+   * ```
    */
-  refreshUserInfo<Params>(params?: Params): Promise<User | null>;
+  refreshUserInfo(
+    params?: unknown,
+    config?: GatewayConfig
+  ): Promise<User | null>;
 }
 
 /**
@@ -474,10 +535,10 @@ export interface UserInfoGetter<User> {
  * }
  * ```
  */
-export interface UserServiceGateway<User, Credential>
-  extends LoginInterface<Credential>,
-    RegisterInterface<User>,
-    UserInfoInterface<User> {}
+export interface UserServiceGateway<User, Credential, GatewayConfig>
+  extends LoginInterface<Credential, GatewayConfig>,
+    RegisterInterface<User, GatewayConfig>,
+    UserInfoInterface<User, GatewayConfig> {}
 
 /**
  * User service interface
@@ -507,8 +568,8 @@ export interface UserServiceGateway<User, Credential>
  * }
  * ```
  */
-export interface UserServiceInterface<User, Credential>
-  extends UserServiceGateway<User, Credential> {
+export interface UserServiceInterface<User, Credential, GatewayConfig>
+  extends UserServiceGateway<User, Credential, GatewayConfig> {
   /**
    * Get the credential store instance
    *

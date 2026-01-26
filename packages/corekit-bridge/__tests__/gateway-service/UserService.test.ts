@@ -51,7 +51,9 @@ interface TestUser {
  *
  * Note: All methods are mocked using vi.fn() to enable tracking calls and return values
  */
-class MockUserGateway implements UserServiceGateway<TestUser, TestCredential> {
+class MockUserGateway
+  implements UserServiceGateway<TestUser, TestCredential, any>
+{
   public login = vi.fn();
   public logout = vi.fn();
   public register = vi.fn();
@@ -511,7 +513,9 @@ describe('UserService', () => {
             TestUser,
             TestCredential
           > {
-            constructor(options: UserServiceConfig<TestUser, TestCredential>) {
+            constructor(
+              options: UserServiceConfig<TestUser, TestCredential, any>
+            ) {
               super(options);
 
               // After store initialization, check if credential was restored
@@ -565,7 +569,9 @@ describe('UserService', () => {
             TestUser,
             TestCredential
           > {
-            constructor(options: UserServiceConfig<TestUser, TestCredential>) {
+            constructor(
+              options: UserServiceConfig<TestUser, TestCredential, any>
+            ) {
               super(options);
 
               const credential = this.getStore().getCredential();
@@ -1228,6 +1234,193 @@ describe('UserService', () => {
       // Runtime validation
       const result = await userService.login(loginParams);
       expect(result).toEqual(testCredential);
+    });
+  });
+
+  /**
+   * Config parameter tests
+   *
+   * Coverage:
+   * 1. login method with config – Verify config is passed to gateway
+   * 2. logout method with config – Verify config is passed to gateway
+   * 3. register method with config – Verify config is passed to gateway
+   * 4. getUserInfo method with config – Verify config is passed to gateway
+   * 5. refreshUserInfo method with config – Verify config is passed to gateway
+   */
+  describe('Config Parameter Tests', () => {
+    it('should pass config parameter to login method in gateway', async () => {
+      const testConfig = {
+        timeout: 5000,
+        headers: { 'X-Custom-Header': 'test-value' }
+      };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+
+      const result = await userService.login(loginParams, testConfig);
+
+      expect(mockGateway.login).toHaveBeenCalledWith(loginParams, testConfig);
+      expect(result).toEqual(testCredential);
+    });
+
+    it('should pass config parameter to logout method in gateway', async () => {
+      const testConfig = {
+        timeout: 3000,
+        headers: { Authorization: 'Bearer token' }
+      };
+      const logoutParams = { revokeAll: true };
+      const expectedReturn = { success: true };
+
+      mockGateway.logout.mockResolvedValue(expectedReturn);
+
+      const result = await userService.logout<typeof expectedReturn>(
+        logoutParams,
+        testConfig
+      );
+
+      expect(mockGateway.logout).toHaveBeenCalledWith(logoutParams, testConfig);
+      expect(result).toEqual(expectedReturn);
+    });
+
+    it('should pass config parameter to register method in gateway', async () => {
+      const testConfig = {
+        timeout: 10000,
+        headers: { 'Content-Type': 'application/json' }
+      };
+
+      mockGateway.register.mockResolvedValue(testUser);
+
+      const result = await userService.register(
+        { email: 'test@example.com' },
+        testConfig
+      );
+
+      expect(mockGateway.register).toHaveBeenCalledWith(
+        { email: 'test@example.com' },
+        testConfig
+      );
+      expect(result).toEqual(testUser);
+    });
+
+    it('should pass config parameter to getUserInfo method in gateway', async () => {
+      const testConfig = {
+        timeout: 7000,
+        headers: { 'X-API-Key': 'secret-key' }
+      };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      const result = await userService.getUserInfo(testCredential, testConfig);
+
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
+        testCredential,
+        testConfig
+      );
+      expect(result).toEqual(testUser);
+    });
+
+    it('should pass config parameter to refreshUserInfo method in gateway', async () => {
+      const testConfig = {
+        timeout: 8000,
+        headers: { 'X-Refresh-Token': 'refresh-token' }
+      };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      const result = await userService.refreshUserInfo(
+        testCredential,
+        testConfig
+      );
+
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
+        testCredential,
+        testConfig
+      );
+      expect(result).toEqual(testUser);
+    });
+
+    it('should work with config parameter when no params are provided to getUserInfo', async () => {
+      const testConfig = { timeout: 6000 };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      const result = await userService.getUserInfo(undefined, testConfig);
+
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(
+        testCredential, // Uses credential when params is undefined
+        testConfig
+      );
+      expect(result).toEqual(testUser);
+    });
+
+    it('should work with config parameter when no params are provided to refreshUserInfo', async () => {
+      const testConfig = { timeout: 9000 };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      const result = await userService.refreshUserInfo(undefined, testConfig);
+
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
+        testCredential, // Uses credential when params is undefined
+        testConfig
+      );
+      expect(result).toEqual(testUser);
+    });
+
+    it('should pass null params with config to getUserInfo when null is explicitly provided', async () => {
+      const testConfig = {
+        timeout: 7000,
+        headers: { 'X-API-Key': 'secret-key' }
+      };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      // Pass null explicitly as params
+      const result = await userService.getUserInfo(null, testConfig);
+
+      expect(mockGateway.getUserInfo).toHaveBeenCalledWith(null, testConfig);
+      expect(result).toEqual(testUser);
+    });
+
+    it('should pass null params with config to refreshUserInfo when null is explicitly provided', async () => {
+      const testConfig = {
+        timeout: 8000,
+        headers: { 'X-Refresh-Token': 'refresh-token' }
+      };
+
+      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+
+      // First login to establish credential
+      await userService.login(loginParams);
+
+      // Pass null explicitly as params
+      const result = await userService.refreshUserInfo(null, testConfig);
+
+      expect(mockGateway.refreshUserInfo).toHaveBeenCalledWith(
+        null,
+        testConfig
+      );
+      expect(result).toEqual(testUser);
     });
   });
 });
