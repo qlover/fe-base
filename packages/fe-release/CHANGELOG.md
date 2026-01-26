@@ -1,5 +1,19 @@
 # @qlover/fe-release
 
+## 4.1.0
+
+### Minor Changes
+
+#### 📝 Documentation
+
+- **corekit-bridge:** Add support for configuration parameters in UserService and enhance documentation ([e47f900](https://github.com/qlover/fe-base/commit/e47f9001ebee3a7ad5fc5bf4301228012ceda745)) ([#575](https://github.com/qlover/fe-base/pull/575))
+  - Introduced a `config` parameter in `UserService` methods to allow passing custom configurations for login, logout, registration, and user info retrieval.
+  - Updated type definitions across `UserService` and related interfaces to reflect the new configuration capabilities, improving type safety.
+  - Enhanced documentation with examples demonstrating the usage of the new `config` parameter, ensuring clarity for developers.
+  - Added a new script in `package.json` for building documentation, streamlining the documentation generation process.
+
+  These changes aim to provide greater flexibility and control over user service operations, enhancing the overall developer experience.
+
 ## 4.0.1
 
 ### Patch Changes
