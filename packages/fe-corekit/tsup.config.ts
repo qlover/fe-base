@@ -6,18 +6,28 @@ const pkgName = toPureCamelCase(pkg.name);
 export default defineConfig([
   {
     entry: ['src/index.ts'],
-    format: ['cjs', 'iife'],
+    format: ['cjs'],
     dts: false,
     clean: true,
     silent: true,
     globalName: pkgName,
     outExtension: ({ format }) => {
-      if (format === 'iife') {
-        return { js: '.iife.js' };
-      }
       return { js: '.cjs' };
     },
     outDir: 'dist'
+  },
+  {
+    entry: ['src/index.ts'],
+    format: ['iife'],
+    dts: false,
+    minify: false,
+    silent: true,
+    globalName: pkgName,
+    outExtension: () => {
+      return { js: '.iife.min.js' };
+    },
+    outDir: 'dist',
+    target: 'es5'
   },
   {
     entry: ['src/index.ts'],
@@ -29,7 +39,8 @@ export default defineConfig([
     outExtension: () => {
       return { js: '.iife.min.js' };
     },
-    outDir: 'dist'
+    outDir: 'dist',
+    target: 'es5'
   },
   {
     entry: ['src/index.ts'],

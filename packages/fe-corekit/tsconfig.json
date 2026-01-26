@@ -5,7 +5,6 @@
     "rootDir": ".",
     "outDir": "ts-build",
     "tsBuildInfoFile": "ts-build/.tsbuildinfo",
-    "target": "ES5",
     "strict": true,
     "allowJs": true,
     "checkJs": false
