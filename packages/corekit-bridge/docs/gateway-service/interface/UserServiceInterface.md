@@ -6,7 +6,7 @@
 
 ### `LoginInterface` (Interface)
 
-**Type:** `interface LoginInterface<CredentialType>`
+**Type:** `interface LoginInterface<CredentialType, GatewayConfig>`
 
 **Since:** `1.8.0`
 
@@ -97,6 +97,21 @@ await authService.login({
 });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.login(
+  {
+    email: 'user@example.com',
+    password: 'password123'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type          | Optional | Default | Since | Deprecated | Description                                                |
@@ -105,21 +120,35 @@ await authService.login({
 
 ---
 
-#### `logout` (Method)
+##### `login` (CallSignature)
 
-**Type:** `(params: Parmas) => Promise<Result>`
+**Type:** `Promise<null \| CredentialType>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `LoginParams`   | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `logout` (Method)
+
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<R>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ##### `logout` (CallSignature)
 
-**Type:** `Promise<Result>`
+**Type:** `Promise<R>`
 
 Logout current user
 
@@ -146,11 +175,21 @@ const result = await authService.logout<
 >({ revokeAll: true });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.logout(null, {
+  timeout: 5000,
+  headers: { 'X-Custom-Header': 'value' }
+});
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -232,7 +271,7 @@ Required when using phone-based login.
 
 ### `RegisterInterface` (Interface)
 
-**Type:** `interface RegisterInterface<Result>`
+**Type:** `interface RegisterInterface<Result, GatewayConfig>`
 
 **Since:** `1.8.0`
 
@@ -361,6 +400,22 @@ if (!user) {
 }
 ```
 
+**Example:** Registration with additional config
+
+```typescript
+const user = await authService.register(
+  {
+    email: 'user@example.com',
+    password: 'password123',
+    code: '123456'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                         |
@@ -374,6 +429,19 @@ Common parameters include:
 - `password`: User password
 - `code`: Verification code (for phone/email verification)
 - Additional fields as required by the implementation |
+
+---
+
+##### `register` (CallSignature)
+
+**Type:** `Promise<null \| Result>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -449,7 +517,7 @@ const isAuthenticated = user !== null;
 
 ### `UserInfoInterface` (Interface)
 
-**Type:** `interface UserInfoInterface<User>`
+**Type:** `interface UserInfoInterface<User, GatewayConfig>`
 
 **Since:** `1.8.0`
 
@@ -550,6 +618,18 @@ if (user) {
 const user = await userAuthService.getUserInfo({ token: 'abc123' });
 ```
 
+**Example:** Get user info with config
+
+```typescript
+const user = await userAuthService.getUserInfo(
+  { token: 'abc123' },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                |
@@ -564,21 +644,35 @@ Common parameters include:
 
 ---
 
-#### `refreshUserInfo` (Method)
+##### `getUserInfo` (CallSignature)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `refreshUserInfo` (Method)
+
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<null \| User>`
+
+#### Parameters
+
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -620,23 +714,36 @@ if (user) {
 const user = await userAuthService.refreshUserInfo({ force: true });
 ```
 
+**Example:** Refresh with config
+
+```typescript
+const user = await userAuthService.refreshUserInfo(
+  { force: true },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ### `UserServiceGateway` (Interface)
 
-**Type:** `interface UserServiceGateway<User, Credential>`
+**Type:** `interface UserServiceGateway<User, Credential, GatewayConfig>`
 
 **Since:** `1.8.0`
 
@@ -740,6 +847,18 @@ if (user) {
 const user = await userAuthService.getUserInfo({ token: 'abc123' });
 ```
 
+**Example:** Get user info with config
+
+```typescript
+const user = await userAuthService.getUserInfo(
+  { token: 'abc123' },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                |
@@ -751,6 +870,19 @@ Common parameters include:
 - Login data (token, credential) for authentication
 - User ID for direct lookup
 - Additional fields as required by the implementation |
+
+---
+
+##### `getUserInfo` (CallSignature)
+
+**Type:** `Promise<null \| User>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -799,6 +931,21 @@ await authService.login({
 });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.login(
+  {
+    email: 'user@example.com',
+    password: 'password123'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type          | Optional | Default | Since | Deprecated | Description                                                |
@@ -807,21 +954,35 @@ await authService.login({
 
 ---
 
-#### `logout` (Method)
+##### `login` (CallSignature)
 
-**Type:** `(params: Parmas) => Promise<Result>`
+**Type:** `Promise<null \| Credential>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `LoginParams`   | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `logout` (Method)
+
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<R>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ##### `logout` (CallSignature)
 
-**Type:** `Promise<Result>`
+**Type:** `Promise<R>`
 
 Logout current user
 
@@ -848,29 +1009,40 @@ const result = await authService.logout<
 >({ revokeAll: true });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.logout(null, {
+  timeout: 5000,
+  headers: { 'X-Custom-Header': 'value' }
+});
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -912,17 +1084,30 @@ if (user) {
 const user = await userAuthService.refreshUserInfo({ force: true });
 ```
 
+**Example:** Refresh with config
+
+```typescript
+const user = await userAuthService.refreshUserInfo(
+  { force: true },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -999,6 +1184,22 @@ if (!user) {
 }
 ```
 
+**Example:** Registration with additional config
+
+```typescript
+const user = await authService.register(
+  {
+    email: 'user@example.com',
+    password: 'password123',
+    code: '123456'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                         |
@@ -1015,9 +1216,22 @@ Common parameters include:
 
 ---
 
+##### `register` (CallSignature)
+
+**Type:** `Promise<null \| User>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
+
+---
+
 ### `UserServiceInterface` (Interface)
 
-**Type:** `interface UserServiceInterface<User, Credential>`
+**Type:** `interface UserServiceInterface<User, Credential, GatewayConfig>`
 
 User service interface
 
@@ -1181,6 +1395,18 @@ if (user) {
 const user = await userAuthService.getUserInfo({ token: 'abc123' });
 ```
 
+**Example:** Get user info with config
+
+```typescript
+const user = await userAuthService.getUserInfo(
+  { token: 'abc123' },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                |
@@ -1192,6 +1418,19 @@ Common parameters include:
 - Login data (token, credential) for authentication
 - User ID for direct lookup
 - Additional fields as required by the implementation |
+
+---
+
+##### `getUserInfo` (CallSignature)
+
+**Type:** `Promise<null \| User>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -1274,6 +1513,21 @@ await authService.login({
 });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.login(
+  {
+    email: 'user@example.com',
+    password: 'password123'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type          | Optional | Default | Since | Deprecated | Description                                                |
@@ -1282,21 +1536,35 @@ await authService.login({
 
 ---
 
-#### `logout` (Method)
+##### `login` (CallSignature)
 
-**Type:** `(params: Parmas) => Promise<Result>`
+**Type:** `Promise<null \| Credential>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `LoginParams`   | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
+
+---
+
+#### `logout` (Method)
+
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<R>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 ##### `logout` (CallSignature)
 
-**Type:** `Promise<Result>`
+**Type:** `Promise<R>`
 
 Logout current user
 
@@ -1323,29 +1591,40 @@ const result = await authService.logout<
 >({ revokeAll: true });
 ```
 
+**Example:** with config
+
+```typescript
+await authService.logout(null, {
+  timeout: 5000,
+  headers: { 'X-Custom-Header': 'value' }
+});
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                                           |
-| -------- | -------- | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
-| `params` | `Parmas` | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache) |
+| Name     | Type            | Optional | Default | Since | Deprecated | Description                                                                      |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------------------- |
+| `params` | `unknown`       | ✅       | -       | -     | -          | Optional logout parameters (e.g., revokeAll, redirectUrl, clearCache)            |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: Params) => Promise<null \| User>`
+**Type:** `(params: unknown, config: GatewayConfig) => Promise<null \| User>`
 
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -1387,17 +1666,30 @@ if (user) {
 const user = await userAuthService.refreshUserInfo({ force: true });
 ```
 
+**Example:** Refresh with config
+
+```typescript
+const user = await userAuthService.refreshUserInfo(
+  { force: true },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
-| Name     | Type     | Optional | Default | Since | Deprecated | Description                                  |
-| -------- | -------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
-| `params` | `Params` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
+| Name     | Type      | Optional | Default | Since | Deprecated | Description                                  |
+| -------- | --------- | -------- | ------- | ----- | ---------- | -------------------------------------------- |
+| `params` | `unknown` | ✅       | -       | -     | -          | Optional parameters for refreshing user info |
 
 Common parameters include:
 
 - Login data (token, credential) for authentication
 - Force refresh flag
 - Additional fields as required by the implementation |
+  | `config` | `GatewayConfig` | ✅ | - | - | - | Optional configuration that can be passed to the gateway for customized behavior |
 
 ---
 
@@ -1474,6 +1766,22 @@ if (!user) {
 }
 ```
 
+**Example:** Registration with additional config
+
+```typescript
+const user = await authService.register(
+  {
+    email: 'user@example.com',
+    password: 'password123',
+    code: '123456'
+  },
+  {
+    timeout: 5000,
+    headers: { 'X-Custom-Header': 'value' }
+  }
+);
+```
+
 #### Parameters
 
 | Name     | Type      | Optional | Default | Since | Deprecated | Description                                         |
@@ -1487,5 +1795,18 @@ Common parameters include:
 - `password`: User password
 - `code`: Verification code (for phone/email verification)
 - Additional fields as required by the implementation |
+
+---
+
+##### `register` (CallSignature)
+
+**Type:** `Promise<null \| User>`
+
+#### Parameters
+
+| Name     | Type            | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `params` | `unknown`       | ❌       | -       | -     | -          |             |
+| `config` | `GatewayConfig` | ✅       | -       | -     | -          |             |
 
 ---
