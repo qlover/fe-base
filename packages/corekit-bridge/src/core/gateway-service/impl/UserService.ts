@@ -368,7 +368,7 @@ export class UserService<User, Credential, Cfg = unknown>
     UserServiceGateway<User, Credential, Cfg>
   >;
 
-  protected readonly serviceName!: string | symbol;
+  public readonly serviceName!: string | symbol;
 
   constructor(
     gateway: UserServiceGateway<User, Credential, Cfg>,
