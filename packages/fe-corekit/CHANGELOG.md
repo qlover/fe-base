@@ -1,5 +1,29 @@
 # @qlover/fe-corekit
 
+## 3.1.1
+
+### Patch Changes
+
+#### 📝 Documentation
+
+- **corekit-bridge:** Enhance UserService and UserServiceInterface with new validation methods ([2a0217e](https://github.com/qlover/fe-base/commit/2a0217e23f9acf06e087fb9552141b84b45766f9)) ([#577](https://github.com/qlover/fe-base/pull/577))
+  - Introduced `isCredential` and `isUser` methods in both `UserService` and `UserServiceInterface` to validate credential and user objects, improving type safety and usability.
+  - Updated documentation to include examples for the new validation methods, ensuring clarity for developers.
+  - Enhanced the `UserService` constructor to require a gateway parameter, streamlining service initialization.
+  - Improved type definitions and overall structure of the UserService documentation for better readability.
+
+  These changes aim to strengthen user management capabilities and enhance the developer experience within the corekit-bridge package.
+
+#### ♻️ Refactors
+
+- **fe-corekit:** Update RequestPlugin and ResponsePlugin for improved configuration and error handling ([6b8db08](https://github.com/qlover/fe-base/commit/6b8db08ef02a45ede4047dae80dc09ceaca0795a)) ([#577](https://github.com/qlover/fe-base/pull/577))
+  - Refactored `RequestPlugin` to replace `mergeConfig` with `createConfig`, enhancing clarity and consistency in configuration handling.
+  - Updated tests in `RequestPlugin` to reflect the new `createConfig` method and improved error messages for empty URLs.
+  - Enhanced `ResponsePlugin` with a new test for parsing stream responses, ensuring robust handling of different response types.
+  - Improved documentation and type safety across the `RequestPlugin` and `ResponsePlugin` implementations.
+
+  These changes aim to streamline request and response handling, enhancing overall developer experience and maintainability within the `fe-corekit` package.
+
 ## 3.1.0
 
 ### Minor Changes
