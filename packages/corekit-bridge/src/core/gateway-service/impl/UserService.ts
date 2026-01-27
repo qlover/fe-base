@@ -1,3 +1,4 @@
+import type { LoggerInterface } from '@qlover/logger';
 import { AsyncStoreStatus } from '../../store-state';
 import type {
   LoginParams,
@@ -74,14 +75,10 @@ const UserServiceName = 'UserService';
  * const userService = new UserService(config);
  * ```
  */
-export interface UserServiceConfig<User, Credential, GatewayConfig>
-  extends Omit<
-    GatewayServiceOptions<
-      User,
-      UserServiceGateway<User, Credential, GatewayConfig>
-    >,
-    'serviceName' | 'store'
-  > {
+export type UserServiceConfig<User, Credential> = Omit<
+  GatewayServiceOptions<User, unknown>,
+  'serviceName' | 'store' | 'gateway'
+> & {
   /**
    * Service name
    *
@@ -156,7 +153,14 @@ export interface UserServiceConfig<User, Credential, GatewayConfig>
   store?:
     | UserStoreInterface<User, Credential>
     | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
-}
+
+  /**
+   * Whether to pull user info after login
+   *
+   * @default `true`
+   */
+  pullUserWithLogin?: boolean;
+};
 
 /**
  * User service implementation
@@ -203,6 +207,8 @@ export interface UserServiceConfig<User, Credential, GatewayConfig>
  * - Authentication logic: Checks unified store for authentication status
  * - Gateway type: Uses combined UserServiceGateway interface
  * - Credential-first persistence: Inherits UserStore's default behavior of persisting only credential
+ *
+ * 2.2.0+ Increase verification of data returned by the gateway, and gateway is required
  *
  * @template Credential - The type of credential data returned after login
  * @template User - The type of user object
@@ -352,22 +358,49 @@ export interface UserServiceConfig<User, Credential, GatewayConfig>
  * ```
  */
 export class UserService<User, Credential, Cfg = unknown>
-  extends GatewayService<
+  implements UserServiceInterface<User, Credential, Cfg>
+{
+  protected readonly pullUserWithLogin: boolean;
+
+  protected readonly gatewayService: GatewayService<
     User,
     UserStore<User, Credential, string | symbol, unknown>,
     UserServiceGateway<User, Credential, Cfg>
-  >
-  implements UserServiceInterface<User, Credential, Cfg>
-{
-  constructor(options: UserServiceConfig<User, Credential, Cfg> = {}) {
-    const { serviceName, gateway, logger, store } = options;
+  >;
 
-    super({
-      serviceName: serviceName ?? UserServiceName,
+  protected readonly serviceName!: string | symbol;
+
+  constructor(
+    gateway: UserServiceGateway<User, Credential, Cfg>,
+    options?: UserServiceConfig<User, Credential>
+  ) {
+    this.gatewayService = new GatewayService({
       gateway,
-      logger,
-      store: createUserStore(store)
+      serviceName: options?.serviceName ?? UserServiceName,
+      logger: options?.logger,
+      store: createUserStore(options?.store)
     });
+
+    this.pullUserWithLogin = options?.pullUserWithLogin ?? true;
+    this.serviceName = this.gatewayService.serviceName;
+  }
+
+  public get gateway(): UserServiceGateway<User, Credential, Cfg> {
+    return this.gatewayService.getGateway()!;
+  }
+
+  public get logger(): LoggerInterface | undefined {
+    return this.gatewayService.getLogger();
+  }
+
+  /**
+   * Get the store instance
+   *
+   * @override
+   * @returns
+   */
+  public getStore(): UserStoreInterface<User, Credential> {
+    return this.gatewayService.getStore();
   }
 
   /**
@@ -413,31 +446,33 @@ export class UserService<User, Credential, Cfg = unknown>
     params: LoginParams,
     config?: Cfg
   ): Promise<Credential | null> {
-    // Use unified store for login
-    this.store.start();
-    const gateway = this.getGateway();
+    this.getStore().start();
 
     try {
-      const credential = await gateway?.login(params, config);
+      const credential = await this.gateway.login(params, config);
 
-      if (credential) {
-        let user: User | null = null;
-        try {
-          const fetchedUser = await gateway?.getUserInfo(credential, config);
-          user = fetchedUser ?? null;
-        } catch (error) {
-          this.logger?.error('Failed to fetch user info after login', error);
-        }
-
-        this.store.success(user ?? null, credential);
-
-        return credential;
-      } else {
-        this.store.failed(new Error('Login failed'));
-        return null;
+      if (!this.isCredential(credential)) {
+        throw new Error('Login is not valid credential');
       }
+
+      if (this.pullUserWithLogin) {
+        const user = await this.getUserInfo(credential, config);
+
+        this.logger?.debug(
+          this.serviceName,
+          'login success(pull userinfo)',
+          user,
+          credential
+        );
+        this.getStore().success(user ?? null, credential);
+        return credential;
+      }
+
+      this.logger?.debug(this.serviceName, 'login success', credential);
+      this.getStore().success(null, credential);
+      return credential;
     } catch (error) {
-      this.store.failed(error);
+      this.getStore().failed(error);
       throw error;
     }
   }
@@ -474,14 +509,8 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public logout<R = void>(params?: unknown, config?: Cfg): Promise<R> {
-    const gateway = this.getGateway();
-
-    if (!gateway) {
-      return Promise.resolve(null as R);
-    }
-
-    return gateway.logout(params, config).then((result) => {
-      this.store.reset();
+    return this.gateway.logout(params, config).then((result) => {
+      this.getStore().reset();
       return result as R;
     });
   }
@@ -520,19 +549,14 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public register(params: unknown, config?: Cfg): Promise<User | null> {
-    const gateway = this.getGateway();
-
-    if (!gateway) {
-      return Promise.resolve(null);
-    }
-
-    return gateway!.register(params, config).then((user) => {
-      if (user) {
-        this.store.setUser(user);
-        return user as User;
-      } else {
-        return null;
+    return this.gateway.register(params, config).then((user) => {
+      if (!this.isUser(user)) {
+        throw new Error('Register user is not valid user');
       }
+
+      this.getStore().setUser(user);
+
+      return user;
     });
   }
 
@@ -547,6 +571,7 @@ export class UserService<User, Credential, Cfg = unknown>
    * @param params - Optional parameters for fetching user info
    * @param config - Optional configuration that can be passed to the gateway for customized behavior
    * @returns Promise resolving to user information, or `null` if not available
+   * @throws {Error}
    *
    * @example Get user info
    * ```typescript
@@ -567,22 +592,16 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public getUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
-    const gateway = this.getGateway();
-    if (!gateway) {
-      return Promise.resolve(null);
-    }
+    const uparams =
+      params !== undefined ? params : this.getStore().getCredential();
 
-    const credential = this.store.getCredential();
-
-    const getUserInfoParams = params !== undefined ? params : credential;
-
-    return gateway.getUserInfo(getUserInfoParams, config).then((user) => {
-      if (user) {
-        this.store.setUser(user);
-        return user;
-      } else {
-        return null;
+    return this.gateway.getUserInfo(uparams, config).then((user) => {
+      if (!this.isUser(user)) {
+        throw new Error('getUserInfo is not valid user');
       }
+
+      this.getStore().setUser(user);
+      return user;
     });
   }
 
@@ -612,21 +631,16 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public refreshUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
-    const gateway = this.getGateway();
-    if (!gateway) {
-      return Promise.resolve(null);
-    }
-
     const refreshParams =
-      params !== undefined ? params : this.store.getCredential();
+      params !== undefined ? params : this.getStore().getCredential();
 
-    return gateway.refreshUserInfo(refreshParams, config).then((user) => {
-      if (user) {
-        this.store.setUser(user);
-        return user;
-      } else {
+    return this.gateway.refreshUserInfo(refreshParams, config).then((user) => {
+      if (!this.isUser(user)) {
         return null;
       }
+
+      this.getStore().setUser(user);
+      return user;
     });
   }
 
@@ -731,9 +745,10 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public isAuthenticated(): boolean {
-    const state = this.store.getState();
+    const state = this.getStore().getState();
     return (
-      state.status === AsyncStoreStatus.SUCCESS && !!this.store.getCredential()
+      state.status === AsyncStoreStatus.SUCCESS &&
+      !!this.getStore().getCredential()
     );
   }
 
@@ -755,7 +770,7 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public getUser(): User | null {
-    return this.store.getUser();
+    return this.getStore().getUser();
   }
 
   /**
@@ -776,6 +791,32 @@ export class UserService<User, Credential, Cfg = unknown>
    * ```
    */
   public getCredential(): Credential | null {
-    return this.store.getCredential();
+    return this.getStore().getCredential();
+  }
+
+  /**
+   * Check if value is credential
+   *
+   * runs a type guard to check if a value is a credential.
+   *
+   * @override
+   * @param value
+   * @returns
+   */
+  public isCredential(value: unknown): value is Credential {
+    return !!value;
+  }
+
+  /**
+   * Check if value is user
+   *
+   * runs a type guard to check if a value is a user.
+   *
+   * @override
+   * @param value
+   * @returns
+   */
+  public isUser(value: unknown): value is User {
+    return typeof value === 'object' && value !== null;
   }
 }

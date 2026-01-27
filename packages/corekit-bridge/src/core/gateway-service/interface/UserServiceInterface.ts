@@ -625,4 +625,47 @@ export interface UserServiceInterface<User, Credential, GatewayConfig>
    * ```
    */
   isAuthenticated(): boolean;
+
+  /**
+   * Check if value is a credential
+   *
+   * Checks if a given value is a valid credential object.
+   * This method can be used to validate credential data before using it.
+   *
+   * @param value - The value to check
+   * @returns `true` if the value is a valid credential, `false` otherwise
+   *
+   * @example Validate credential
+   * ```typescript
+   * const isValid = userService.isCredential(credential);
+   * if (isValid) {
+   *   console.log('Credential is valid');
+   * } else {
+   *   console.log('Credential is invalid');
+   * }
+   * ```
+   */
+  isCredential(value: unknown): value is Credential;
+
+  /**
+   * Check if value is a user
+   *
+   * Checks if a given value is a valid user object.
+   * This method can be used to validate user data before using it.
+   *
+   * @param value - The value to check
+   * @returns `true` if the value is a valid user, `false` otherwise
+   *
+   * @example Validate user
+   * ```typescript
+   * const isValid = userService.isUser(user);
+   * if (isValid) {
+   *   console.log('User is valid');
+   * } else {
+   *   console.log('User is invalid');
+   * }
+   * ```
+   *
+   */
+  isUser(value: unknown): value is User;
 }

@@ -27,6 +27,7 @@ import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
 import type { SyncStorageInterface } from '@qlover/fe-corekit';
 import type { UserStoreInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
+import { UserStore } from '@qlover/corekit-bridge/core';
 
 /**
  * Test credential type
@@ -164,47 +165,42 @@ describe('UserService', () => {
     mockGateway = new MockUserGateway();
     mockLogger = new MockLogger();
 
-    userService = new UserService<TestUser, TestCredential>({
-      gateway: mockGateway,
+    userService = new UserService<TestUser, TestCredential>(mockGateway, {
       logger: mockLogger
     });
   });
 
   describe('constructor', () => {
     it('should create UserService with default configuration', () => {
-      const service = new UserService<TestUser, TestCredential>();
+      const service = new UserService<TestUser, TestCredential>(mockGateway);
       expect(service).toBeInstanceOf(UserService);
       expect(service.getStore()).toBeDefined();
     });
 
     it('should create UserService with custom service name', () => {
-      const service = new UserService<TestUser, TestCredential>({
+      const service = new UserService<TestUser, TestCredential>(mockGateway, {
         serviceName: 'CustomUserService'
       });
       expect(service).toBeInstanceOf(UserService);
     });
 
     it('should create UserService with gateway and logger', () => {
-      const service = new UserService<TestUser, TestCredential>({
-        gateway: mockGateway,
+      const service = new UserService<TestUser, TestCredential>(mockGateway, {
         logger: mockLogger
       });
-      expect(service.getGateway()).toBe(mockGateway);
-      expect(service.getLogger()).toBe(mockLogger);
+      expect(service.gateway).toBe(mockGateway);
+      expect(service.logger).toBe(mockLogger);
     });
 
     it('should create UserService with gateway', () => {
-      const service = new UserService<TestUser, TestCredential>({
-        gateway: mockGateway
-      });
-      expect(service.getGateway()).toBe(mockGateway);
+      const service = new UserService<TestUser, TestCredential>(mockGateway);
+      expect(service.gateway).toBe(mockGateway);
     });
 
     describe('store persistence configuration', () => {
       it('should create UserService with store configuration (default: persist credential only)', () => {
         const mockStorage = new MockStorage<string>();
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token'
@@ -213,14 +209,15 @@ describe('UserService', () => {
 
         expect(service.getStore()).toBeDefined();
         const store = service.getStore();
-        // Verify store is configured correctly
-        expect(store.getStorage()).toBe(mockStorage);
+        expect(store).toBeInstanceOf(UserStore);
+        expect(
+          (store as UserStore<TestUser, TestCredential, string>).getStorage()
+        ).toBe(mockStorage);
       });
 
       it('should create UserService with dual persistence configuration', () => {
         const mockStorage = new MockStorage<string>();
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'user-info',
@@ -230,14 +227,17 @@ describe('UserService', () => {
         });
 
         expect(service.getStore()).toBeDefined();
-        const store = service.getStore();
+        const store = service.getStore() as UserStore<
+          TestUser,
+          TestCredential,
+          string
+        >;
         expect(store.getStorage()).toBe(mockStorage);
       });
 
       it('should persist credential only by default after login', async () => {
         const mockStorage = new MockStorage<string>();
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token'
@@ -257,8 +257,7 @@ describe('UserService', () => {
 
       it('should persist both user info and credential when dual persistence is enabled', async () => {
         const mockStorage = new MockStorage<string>();
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'user-info',
@@ -282,8 +281,7 @@ describe('UserService', () => {
         // Pre-populate storage with credential
         mockStorage.setItem('auth-token', testCredential);
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token',
@@ -301,8 +299,7 @@ describe('UserService', () => {
         mockStorage.setItem('auth-token', testCredential);
         mockStorage.setItem('user-info', testUser);
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'user-info',
@@ -322,8 +319,7 @@ describe('UserService', () => {
         // Pre-populate storage with credential
         mockStorage.setItem('auth-token', testCredential);
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token',
@@ -343,8 +339,7 @@ describe('UserService', () => {
         const mockStorage = new MockStorage<string>();
         mockStorage.setItem('auth-token', testCredential);
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token',
@@ -376,8 +371,7 @@ describe('UserService', () => {
         mockStorage.setItem('auth-token', testCredential);
         mockStorage.setItem('user-info', testUser);
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'user-info',
@@ -400,8 +394,7 @@ describe('UserService', () => {
         const mockStorage = new MockStorage<string>();
         // Storage is empty
 
-        const service = new UserService<TestUser, TestCredential>({
-          gateway: mockGateway,
+        const service = new UserService<TestUser, TestCredential>(mockGateway, {
           store: {
             storage: mockStorage,
             storageKey: 'auth-token',
@@ -441,8 +434,7 @@ describe('UserService', () => {
           const expiredCredential = { ...testCredential, expiresIn: -1000 }; // Expired
           mockStorage.setItem('auth-token', expiredCredential);
 
-          const service = new CustomUserService({
-            gateway: mockGateway,
+          const service = new CustomUserService(mockGateway, {
             store: {
               storage: mockStorage,
               storageKey: 'auth-token',
@@ -476,8 +468,7 @@ describe('UserService', () => {
           const mockStorage = new MockStorage<string>();
           mockStorage.setItem('auth-token', testCredential);
 
-          const service = new CustomUserService({
-            gateway: mockGateway,
+          const service = new CustomUserService(mockGateway, {
             store: {
               storage: mockStorage,
               storageKey: 'auth-token',
@@ -514,9 +505,10 @@ describe('UserService', () => {
             TestCredential
           > {
             constructor(
-              options: UserServiceConfig<TestUser, TestCredential, any>
+              gateway: UserServiceGateway<TestUser, TestCredential, unknown>,
+              options: UserServiceConfig<TestUser, TestCredential>
             ) {
-              super(options);
+              super(gateway, options);
 
               // After store initialization, check if credential was restored
               const credential = this.getStore().getCredential();
@@ -549,8 +541,7 @@ describe('UserService', () => {
           const mockStorage = new MockStorage<string>();
           mockStorage.setItem('auth-token', testCredential);
 
-          const service = new CustomUserService({
-            gateway: mockGateway,
+          const service = new CustomUserService(mockGateway, {
             store: {
               storage: mockStorage,
               storageKey: 'auth-token',
@@ -570,9 +561,10 @@ describe('UserService', () => {
             TestCredential
           > {
             constructor(
-              options: UserServiceConfig<TestUser, TestCredential, any>
+              gateway: UserServiceGateway<TestUser, TestCredential, any>,
+              options: UserServiceConfig<TestUser, TestCredential>
             ) {
-              super(options);
+              super(gateway, options);
 
               const credential = this.getStore().getCredential();
               if (credential) {
@@ -597,8 +589,7 @@ describe('UserService', () => {
           const expiredCredential = { ...testCredential, expiresIn: -1000 };
           mockStorage.setItem('auth-token', expiredCredential);
 
-          const service = new CustomUserService({
-            gateway: mockGateway,
+          const service = new CustomUserService(mockGateway, {
             store: {
               storage: mockStorage,
               storageKey: 'auth-token',
@@ -635,38 +626,36 @@ describe('UserService', () => {
       expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
     });
 
-    it('should login successfully even if getUserInfo fails', async () => {
+    it('should fail login if getUserInfo fails', async () => {
       // Setup mocks
-      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.login.mockImplementationOnce(() =>
+        Promise.resolve(testCredential)
+      );
       const getUserInfoError = new Error('Failed to fetch user info');
-      mockGateway.getUserInfo.mockRejectedValue(getUserInfoError);
+      mockGateway.getUserInfo.mockImplementationOnce(() =>
+        Promise.reject(getUserInfoError)
+      );
 
-      const result = await userService.login(loginParams);
+      await expect(userService.login(loginParams)).rejects.toThrow(
+        getUserInfoError
+      );
 
       // Verify login was called
       expect(mockGateway.login).toHaveBeenCalled();
-      // Verify getUserInfo was called (it's called inside the custom execution function)
+      // Verify getUserInfo was called
       expect(mockGateway.getUserInfo).toHaveBeenCalled();
-      // Verify logger.error was called with the error
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to fetch user info after login',
-        getUserInfoError
-      );
-      // Verify result
-      expect(result).toEqual(testCredential);
 
       const store = userService.getStore();
-      expect(store.getCredential()).toEqual(testCredential);
-      expect(store.getUser()).toBeNull();
-      expect(store.getStatus()).toBe(AsyncStoreStatus.SUCCESS);
+      expect(store.getStatus()).toBe(AsyncStoreStatus.FAILED);
     });
 
     it('should handle login failure', async () => {
       mockGateway.login.mockResolvedValue(null);
 
-      const result = await userService.login(loginParams);
+      await expect(userService.login(loginParams)).rejects.toThrow(
+        'Login is not valid credential'
+      );
 
-      expect(result).toBeNull();
       expect(mockGateway.getUserInfo).not.toHaveBeenCalled();
 
       const store = userService.getStore();
@@ -779,9 +768,9 @@ describe('UserService', () => {
 
       mockGateway.register.mockResolvedValue(null);
 
-      const result = await userService.register(registerParams);
-
-      expect(result).toBeNull();
+      await expect(userService.register(registerParams)).rejects.toThrow(
+        'Register user is not valid user'
+      );
     });
 
     it('should handle registration error', async () => {
@@ -850,9 +839,9 @@ describe('UserService', () => {
     it('should return null when getUserInfo returns null', async () => {
       mockGateway.getUserInfo.mockResolvedValue(null);
 
-      const result = await userService.getUserInfo();
-
-      expect(result).toBeNull();
+      await expect(userService.getUserInfo()).rejects.toThrow(
+        'getUserInfo is not valid user'
+      );
     });
   });
 
@@ -965,21 +954,19 @@ describe('UserService', () => {
       expect(userService.isAuthenticated()).toBe(true);
     });
 
-    it('should return true even when getUserInfo fails but credential exists', async () => {
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.getUserInfo.mockRejectedValue(
-        new Error('Failed to fetch user')
+    it('should fail authentication when getUserInfo fails', async () => {
+      mockGateway.login.mockImplementationOnce(() =>
+        Promise.resolve(testCredential)
+      );
+      mockGateway.getUserInfo.mockImplementationOnce(
+        () => Promise.reject(new Error('Failed to fetch user'))
       );
 
-      await userService.login(loginParams);
+      await expect(userService.login(loginParams)).rejects.toThrow();
 
-      // Login succeeded, credential exists, status is SUCCESS
-      // Basic check only requires credential + SUCCESS status
-      // User info failure doesn't affect basic authentication check
-      expect(userService.getStore().getCredential()).toEqual(testCredential);
-      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.SUCCESS);
-      expect(userService.getUser()).toBeNull(); // User info fetch failed
-      expect(userService.isAuthenticated()).toBe(true); // But still authenticated
+      // Login failed, so status is FAILED
+      expect(userService.getStore().getStatus()).toBe(AsyncStoreStatus.FAILED);
+      expect(userService.isAuthenticated()).toBe(false);
     });
 
     it('should return false after logout', async () => {
@@ -1200,6 +1187,7 @@ describe('UserService', () => {
 
     it('should infer types correctly from method calls', async () => {
       mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockResolvedValue(testUser);
 
       const loginResult = await userService.login(loginParams);
       expectTypeOf(loginResult).toEqualTypeOf<TestCredential | null>();
@@ -1224,6 +1212,7 @@ describe('UserService', () => {
 
     it('should validate both types and runtime behavior for login', async () => {
       mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.getUserInfo.mockResolvedValue(testUser);
 
       // Type validation
       expectTypeOf(userService.login).parameter(0).toMatchTypeOf<LoginParams>();
