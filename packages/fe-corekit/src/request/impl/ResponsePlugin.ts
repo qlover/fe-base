@@ -262,24 +262,26 @@ export class ResponsePlugin
     const returnValue = context.returnValue;
     const config = context.parameters;
 
+    const result = await this.handleResponse(returnValue, config);
+
+    if (result) {
+      context.setReturnValue(result);
+    }
+  }
+
+  public handleResponse(
+    returnValue: unknown,
+    config: ResponsePluginConfig & RequestAdapterConfig<unknown>
+  ): Promise<RequestAdapterResponse> | undefined {
     // Handle Response object
     if (returnValue instanceof Response) {
-      const processedResponse = await this.processResponse(returnValue, config);
-      context.setReturnValue(processedResponse);
-      return;
+      return this.processResponse(returnValue, config);
     }
 
     // Handle RequestAdapterResponse object
     if (isRequestAdapterResponse(returnValue)) {
-      const processedResponse = await this.processAdapterResponse(
-        returnValue,
-        config
-      );
-      context.setReturnValue(processedResponse);
-      return;
+      return this.processAdapterResponse(returnValue, config);
     }
-
-    // No processing needed if not a response object
   }
 
   /**

@@ -16,6 +16,7 @@ import {
   CONTENT_TYPE_HEADER,
   JSON_CONTENT_TYPE
 } from './consts';
+import { clone } from 'lodash-es';
 
 export type RequestAdapterContext = ExecutorContextInterface<
   RequestAdapterConfig,
@@ -43,6 +44,17 @@ export type RequestAdapterContext = ExecutorContextInterface<
  * ```
  */
 export type RequestPluginConfig = HeaderInjectorConfig & {
+  /**
+   * Allow empty URL
+   *
+   * If set to `false`, an error will be thrown when both `url` and `baseURL` are empty.
+   * If set to `true` (default), the URL builder will attempt to build the URL even if they are empty.
+   *
+   * @since 3.1.0
+   * @default `true`
+   */
+  allowEmptyUrl?: boolean;
+
   requestDataSerializer?: (
     data: unknown,
     config: RequestAdapterConfig &
@@ -162,16 +174,29 @@ export class RequestPlugin
    * @override
    */
   public onBefore(ctx: RequestAdapterContext): void {
+    ctx.setParameters(this.mergeConfig(ctx.parameters));
+  }
+
+  /**
+   * Main request handler
+   *
+   * This is the core of the plugin. It merges default plugin configuration with request context configuration,
+   * processes request data, builds the URL, and injects headers.
+   *
+   * @param config - Request configuration
+   * @returns Merged configuration with processed data, built URL, and injected headers
+   */
+  public mergeConfig(
+    config: RequestAdapterConfig & RequestPluginConfig
+  ): RequestAdapterConfig & RequestPluginConfig {
     // Merge default config with context config
-    const mergedConfig = this.mergeConfig(ctx.parameters);
+    const mergedConfig = this.createConfig(config);
 
     const processedData = this.processRequestData(mergedConfig);
     const builtUrl = this.buildUrl(mergedConfig);
     const injectedHeaders = this.injectHeaders(mergedConfig);
 
-    ctx.setParameters({
-      ...ctx.parameters,
-      ...mergedConfig,
+    return Object.assign(mergedConfig, {
       data: processedData,
       url: builtUrl,
       headers: injectedHeaders
@@ -190,10 +215,10 @@ export class RequestPlugin
    * @param contextConfig - Configuration from request context
    * @returns Merged configuration
    */
-  protected mergeConfig(
+  protected createConfig(
     contextConfig: RequestAdapterConfig
   ): RequestAdapterConfig & RequestPluginConfig {
-    const merged = { ...this.config, ...contextConfig };
+    const merged = Object.assign(clone(this.config), contextConfig);
 
     // Preserve default data if contextConfig.data is undefined
     // Only override if contextConfig explicitly provides data (including null)
@@ -211,18 +236,13 @@ export class RequestPlugin
    * @returns The built URL
    * @throws {Error} If the built URL is empty or invalid
    */
-  protected buildUrl(config: RequestAdapterConfig): string {
-    const url = this.urlBuilder.buildUrl(config);
-
-    // Validate URL is not empty
-    if (!url || url.trim() === '') {
-      throw new Error(
-        `RequestPlugin: Invalid URL. URL cannot be empty. ` +
-          `baseURL: ${config.baseURL ?? 'undefined'}, url: ${config.url ?? 'undefined'}`
-      );
+  protected buildUrl(
+    config: RequestAdapterConfig & RequestPluginConfig
+  ): string {
+    if (config.allowEmptyUrl === false && !config.url && !config.baseURL) {
+      throw new Error('Empty URL is not allowed');
     }
-
-    return url;
+    return this.urlBuilder.buildUrl(config);
   }
 
   /**

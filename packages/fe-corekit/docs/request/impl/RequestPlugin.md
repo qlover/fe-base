@@ -134,13 +134,13 @@ request.onBefore(ctx);
 
 #### `buildUrl` (Method)
 
-**Type:** `(config: RequestAdapterConfig<unknown>) => string`
+**Type:** `(config: RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object) => string`
 
 #### Parameters
 
-| Name     | Type                            | Optional | Default | Since | Deprecated | Description           |
-| -------- | ------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
-| `config` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Request configuration |
+| Name     | Type                                                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object` | ❌       | -       | -     | -          | Request configuration |
 
 ---
 
@@ -160,9 +160,45 @@ If the built URL is empty or invalid
 
 #### Parameters
 
-| Name     | Type                            | Optional | Default | Since | Deprecated | Description           |
-| -------- | ------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
-| `config` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Request configuration |
+| Name     | Type                                                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object` | ❌       | -       | -     | -          | Request configuration |
+
+---
+
+#### `createConfig` (Method)
+
+**Type:** `(contextConfig: RequestAdapterConfig<unknown>) => RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object`
+
+#### Parameters
+
+| Name            | Type                            | Optional | Default | Since | Deprecated | Description                        |
+| --------------- | ------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `contextConfig` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration from request context |
+
+---
+
+##### `createConfig` (CallSignature)
+
+**Type:** `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object`
+
+Merge default plugin configuration with request context configuration
+
+Context configuration takes precedence over default configuration.
+Data merging is delegated to RequestDataProcessor.
+
+If contextConfig has data (including null), it will override the default data.
+If contextConfig.data is undefined, the default data will be preserved.
+
+**Returns:**
+
+Merged configuration
+
+#### Parameters
+
+| Name            | Type                            | Optional | Default | Since | Deprecated | Description                        |
+| --------------- | ------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `contextConfig` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration from request context |
 
 ---
 
@@ -201,13 +237,13 @@ Headers object with injected default headers, all values normalized to strings
 
 #### `mergeConfig` (Method)
 
-**Type:** `(contextConfig: RequestAdapterConfig<unknown>) => RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object`
+**Type:** `(config: RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object) => RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object`
 
 #### Parameters
 
-| Name            | Type                            | Optional | Default | Since | Deprecated | Description                        |
-| --------------- | ------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `contextConfig` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration from request context |
+| Name     | Type                                                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object` | ❌       | -       | -     | -          | Request configuration |
 
 ---
 
@@ -215,23 +251,20 @@ Headers object with injected default headers, all values normalized to strings
 
 **Type:** `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object`
 
-Merge default plugin configuration with request context configuration
+Main request handler
 
-Context configuration takes precedence over default configuration.
-Data merging is delegated to RequestDataProcessor.
-
-If contextConfig has data (including null), it will override the default data.
-If contextConfig.data is undefined, the default data will be preserved.
+This is the core of the plugin. It merges default plugin configuration with request context configuration,
+processes request data, builds the URL, and injects headers.
 
 **Returns:**
 
-Merged configuration
+Merged configuration with processed data, built URL, and injected headers
 
 #### Parameters
 
-| Name            | Type                            | Optional | Default | Since | Deprecated | Description                        |
-| --------------- | ------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `contextConfig` | `RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          | Configuration from request context |
+| Name     | Type                                                            | Optional | Default | Since | Deprecated | Description           |
+| -------- | --------------------------------------------------------------- | -------- | ------- | ----- | ---------- | --------------------- |
+| `config` | `RequestAdapterConfig<unknown> & HeaderInjectorConfig & Object` | ❌       | -       | -     | -          | Request configuration |
 
 ---
 

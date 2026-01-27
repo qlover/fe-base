@@ -148,7 +148,7 @@ describe('RequestPlugin', () => {
         token: 'context-token',
         url: '/api/users'
       };
-      const merged = plugin['mergeConfig'](contextConfig);
+      const merged = plugin['createConfig'](contextConfig);
 
       expect(merged.token).toBe('context-token');
       expect(merged.url).toBe('/api/users');
@@ -159,7 +159,7 @@ describe('RequestPlugin', () => {
       const contextConfig: RequestAdapterConfig = {
         url: '/api/users'
       };
-      const merged = plugin['mergeConfig'](contextConfig);
+      const merged = plugin['createConfig'](contextConfig);
 
       expect(merged.data).toEqual({ version: '1.0' });
     });
@@ -169,7 +169,7 @@ describe('RequestPlugin', () => {
         url: '/api/users',
         data: { version: '2.0' }
       };
-      const merged = plugin['mergeConfig'](contextConfig);
+      const merged = plugin['createConfig'](contextConfig);
 
       expect(merged.data).toEqual({ version: '2.0' });
     });
@@ -179,7 +179,7 @@ describe('RequestPlugin', () => {
         url: '/api/users',
         data: null
       };
-      const merged = plugin['mergeConfig'](contextConfig);
+      const merged = plugin['createConfig'](contextConfig);
 
       expect(merged.data).toBeNull();
     });
@@ -212,18 +212,40 @@ describe('RequestPlugin', () => {
       expect(url).toContain('page=1');
     });
 
-    it('should throw error when URL is empty', () => {
+    it('should return empty string when URL is empty', () => {
       const config: RequestAdapterConfig = {
         url: '',
         baseURL: ''
       };
 
-      expect(() => {
-        plugin['buildUrl'](config);
-      }).toThrow('RequestPlugin: Invalid URL');
+      const url = plugin['buildUrl'](config);
+      expect(url).toBe('');
     });
 
-    it('should throw error when URL builder returns whitespace only', () => {
+    it('should throw "Empty URL is not allowed" when allowEmptyUrl is false and URL is empty', () => {
+      const config: RequestAdapterConfig & { allowEmptyUrl: boolean } = {
+        url: '',
+        baseURL: '',
+        allowEmptyUrl: false
+      };
+
+      expect(() => {
+        plugin['buildUrl'](config);
+      }).toThrow('Empty URL is not allowed');
+    });
+
+    it('should return empty string when allowEmptyUrl is true and URL is empty', () => {
+      const config: RequestAdapterConfig & { allowEmptyUrl: boolean } = {
+        url: '',
+        baseURL: '',
+        allowEmptyUrl: true
+      };
+
+      const url = plugin['buildUrl'](config);
+      expect(url).toBe('');
+    });
+
+    it('should return whitespace when URL builder returns whitespace only', () => {
       const customUrlBuilder: UrlBuilderInterface = {
         buildUrl: vi.fn().mockReturnValue('   ')
       };
@@ -234,12 +256,11 @@ describe('RequestPlugin', () => {
         url: '/users'
       };
 
-      expect(() => {
-        plugin['buildUrl'](config);
-      }).toThrow('RequestPlugin: Invalid URL');
+      const url = plugin['buildUrl'](config);
+      expect(url).toBe('   ');
     });
 
-    it('should throw error when URL builder returns empty string', () => {
+    it('should return empty string when URL builder returns empty string', () => {
       const customUrlBuilder: UrlBuilderInterface = {
         buildUrl: vi.fn().mockReturnValue('')
       };
@@ -250,12 +271,11 @@ describe('RequestPlugin', () => {
         url: '/users'
       };
 
-      expect(() => {
-        plugin['buildUrl'](config);
-      }).toThrow('RequestPlugin: Invalid URL');
+      const url = plugin['buildUrl'](config);
+      expect(url).toBe('');
     });
 
-    it('should throw error when URL builder returns null', () => {
+    it('should return null when URL builder returns null', () => {
       const customUrlBuilder: UrlBuilderInterface = {
         buildUrl: vi.fn().mockReturnValue(null as unknown as string)
       };
@@ -266,9 +286,8 @@ describe('RequestPlugin', () => {
         url: '/users'
       };
 
-      expect(() => {
-        plugin['buildUrl'](config);
-      }).toThrow('RequestPlugin: Invalid URL');
+      const url = plugin['buildUrl'](config);
+      expect(url).toBeNull();
     });
 
     it('should handle absolute URL without baseURL', () => {
@@ -376,7 +395,7 @@ describe('RequestPlugin', () => {
           method: 'POST',
           data: { name: 'John' }
         };
-        const mergedConfig = plugin['mergeConfig'](contextConfig);
+        const mergedConfig = plugin['createConfig'](contextConfig);
         const result = plugin['processRequestData'](mergedConfig);
 
         expect(result).toBe('custom:{"name":"John"}:POST');
@@ -394,7 +413,7 @@ describe('RequestPlugin', () => {
           url: '/api/test',
           data: { name: 'John' }
         };
-        const mergedConfig = plugin['mergeConfig'](contextConfig);
+        const mergedConfig = plugin['createConfig'](contextConfig);
         plugin['processRequestData'](mergedConfig);
 
         expect(serializerSpy).toHaveBeenCalledWith(
@@ -418,7 +437,7 @@ describe('RequestPlugin', () => {
           method: 'POST',
           data: { name: 'John' }
         };
-        const mergedConfig = plugin['mergeConfig'](contextConfig);
+        const mergedConfig = plugin['createConfig'](contextConfig);
 
         expect(() => {
           plugin['processRequestData'](mergedConfig);
