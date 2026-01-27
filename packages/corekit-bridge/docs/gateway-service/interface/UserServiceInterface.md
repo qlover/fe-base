@@ -1468,6 +1468,100 @@ if (userService.isAuthenticated()) {
 
 ---
 
+#### `isCredential` (Method)
+
+**Type:** `(value: unknown) => callsignature isCredential`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description        |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to check |
+
+---
+
+##### `isCredential` (CallSignature)
+
+**Type:** `callsignature isCredential`
+
+Check if value is a credential
+
+Checks if a given value is a valid credential object.
+This method can be used to validate credential data before using it.
+
+**Returns:**
+
+`true`
+if the value is a valid credential,
+`false`
+otherwise
+
+**Example:** Validate credential
+
+```typescript
+const isValid = userService.isCredential(credential);
+if (isValid) {
+  console.log('Credential is valid');
+} else {
+  console.log('Credential is invalid');
+}
+```
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description        |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to check |
+
+---
+
+#### `isUser` (Method)
+
+**Type:** `(value: unknown) => callsignature isUser`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description        |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to check |
+
+---
+
+##### `isUser` (CallSignature)
+
+**Type:** `callsignature isUser`
+
+Check if value is a user
+
+Checks if a given value is a valid user object.
+This method can be used to validate user data before using it.
+
+**Returns:**
+
+`true`
+if the value is a valid user,
+`false`
+otherwise
+
+**Example:** Validate user
+
+```typescript
+const isValid = userService.isUser(user);
+if (isValid) {
+  console.log('User is valid');
+} else {
+  console.log('User is invalid');
+}
+```
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description        |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ------------------ |
+| `value` | `unknown` | ❌       | -       | -     | -          | The value to check |
+
+---
+
 #### `login` (Method)
 
 **Type:** `(params: LoginParams) => Promise<null \| Credential>`

@@ -85,6 +85,8 @@ Design decisions:
 - Gateway type: Uses combined UserServiceGateway interface
 - Credential-first persistence: Inherits UserStore's default behavior of persisting only credential
 
+  2.2.0+ Increase verification of data returned by the gateway, and gateway is required
+
 **Example:** Basic usage (persist only credential)
 
 ```typescript
@@ -239,37 +241,26 @@ service.login({ email, password }, {
 
 #### `new UserService` (Constructor)
 
-**Type:** `(options: UserServiceConfig<User, Credential, Cfg>) => UserService<User, Credential, Cfg>`
+**Type:** `(gateway: UserServiceGateway<User, Credential, Cfg>, options: UserServiceConfig<User, Credential>) => UserService<User, Credential, Cfg>`
 
 #### Parameters
 
-| Name      | Type                                       | Optional | Default | Since | Deprecated | Description |
-| --------- | ------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
-| `options` | `UserServiceConfig<User, Credential, Cfg>` | ✅       | `{}`    | -     | -          |             |
+| Name      | Type                                        | Optional | Default | Since | Deprecated | Description |
+| --------- | ------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `gateway` | `UserServiceGateway<User, Credential, Cfg>` | ❌       | -       | -     | -          |             |
+| `options` | `UserServiceConfig<User, Credential>`       | ✅       | -       | -     | -          |             |
 
 ---
 
-#### `gateway` (Property)
+#### `gatewayService` (Property)
 
-**Type:** `UserServiceGateway<User, Credential, Cfg>`
-
-Gateway instance for API operations
-
-The gateway object that provides methods for executing API calls.
-Optional - services can work without gateway (e.g., mock services).
-Protected to allow subclasses to access while preventing external modification.
+**Type:** `GatewayService<User, UserStore<User, Credential, string \| symbol, unknown>, UserServiceGateway<User, Credential, Cfg>>`
 
 ---
 
-#### `logger` (Property)
+#### `pullUserWithLogin` (Property)
 
-**Type:** `LoggerInterface<unknown>`
-
-Logger instance for logging execution events
-
-Used for logging execution flow, errors, and debugging information.
-Optional - services can work without logger.
-Protected to allow subclasses to access while preventing external modification.
+**Type:** `boolean`
 
 ---
 
@@ -277,22 +268,17 @@ Protected to allow subclasses to access while preventing external modification.
 
 **Type:** `string \| symbol`
 
-Service name identifier
+---
 
-Used for logging, debugging, and service identification.
-Set during construction and remains constant throughout the service lifecycle.
+#### `gateway` (Accessor)
+
+**Type:** `accessor gateway`
 
 ---
 
-#### `store` (Property)
+#### `logger` (Accessor)
 
-**Type:** `UserStore<User, Credential, string \| symbol, unknown>`
-
-Store instance for state management
-
-The async store that manages service state (loading, success, error).
-Always initialized - created from provided instance or options, or defaults to new store.
-Protected to allow subclasses to access while preventing external modification.
+**Type:** `accessor logger`
 
 ---
 
@@ -328,119 +314,19 @@ if (credential) {
 
 ---
 
-#### `getGateway` (Method)
-
-**Type:** `() => undefined \| UserServiceGateway<User, Credential, Cfg>`
-
----
-
-##### `getGateway` (CallSignature)
-
-**Type:** `undefined \| UserServiceGateway<User, Credential, Cfg>`
-
-Get the gateway instance
-
-Returns the gateway instance used by this service for API operations.
-Returns
-`undefined`
-if no gateway was configured.
-
-**Returns:**
-
-The gateway instance, or
-`undefined`
-if not configured
-
-**Example:** Access gateway methods
-
-```typescript
-const gateway = service.getGateway();
-if (gateway) {
-  await gateway.login(params);
-}
-```
-
-**Example:** Check if gateway is available
-
-```typescript
-const gateway = service.getGateway();
-if (!gateway) {
-  console.warn('Gateway not configured');
-}
-```
-
----
-
-#### `getLogger` (Method)
-
-**Type:** `() => undefined \| LoggerInterface<unknown>`
-
----
-
-##### `getLogger` (CallSignature)
-
-**Type:** `undefined \| LoggerInterface<unknown>`
-
-Get the logger instance
-
-Returns the logger instance used by this service for logging.
-Returns
-`undefined`
-if no logger was configured.
-
-**Returns:**
-
-The logger instance, or
-`undefined`
-if not configured
-
-**Example:** Use logger for logging
-
-```typescript
-const logger = service.getLogger();
-if (logger) {
-  logger.info('Service operation started');
-  logger.error('Service operation failed', error);
-}
-```
-
----
-
 #### `getStore` (Method)
 
-**Type:** `() => UserStore<User, Credential, string \| symbol, unknown>`
+**Type:** `() => UserStoreInterface<User, Credential>`
 
 ---
 
 ##### `getStore` (CallSignature)
 
-**Type:** `UserStore<User, Credential, string \| symbol, unknown>`
+**Type:** `UserStoreInterface<User, Credential>`
 
-Get the async store instance
-
-Returns the store instance used by this service for state management.
-The store provides reactive state access and subscription capabilities.
+Get the store instance
 
 **Returns:**
-
-The store instance for state management
-
-**Example:** Access store state
-
-```typescript
-const store = service.getStore();
-const state = store.getState();
-console.log('Current state:', state);
-```
-
-**Example:** Subscribe to state changes
-
-```typescript
-const store = service.getStore();
-store.observe((state) => {
-  console.log('State changed:', state);
-});
-```
 
 ---
 
@@ -503,6 +389,8 @@ Uses unified userStore for user info operations.
 Promise resolving to user information, or
 `null`
 if not available
+
+**Throws:**
 
 **Example:** Get user info
 
@@ -659,6 +547,66 @@ class CustomUserService extends UserService<User, Credential> {
   }
 }
 ```
+
+---
+
+#### `isCredential` (Method)
+
+**Type:** `(value: unknown) => callsignature isCredential`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `isCredential` (CallSignature)
+
+**Type:** `callsignature isCredential`
+
+Check if value is credential
+
+runs a type guard to check if a value is a credential.
+
+**Returns:**
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `isUser` (Method)
+
+**Type:** `(value: unknown) => callsignature isUser`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `isUser` (CallSignature)
+
+**Type:** `callsignature isUser`
+
+Check if value is user
+
+runs a type guard to check if a value is a user.
+
+**Returns:**
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -904,9 +852,9 @@ const user = await userService.register(
 
 ---
 
-### `UserServiceConfig` (Interface)
+### `UserServiceConfig` (TypeAlias)
 
-**Type:** `interface UserServiceConfig<User, Credential, GatewayConfig>`
+**Type:** `Omit<GatewayServiceOptions<User, unknown>, "serviceName" \| "store" \| "gateway"> & Object`
 
 **Since:** `1.8.0`
 
@@ -993,281 +941,5 @@ const config: UserServiceConfig<User, TokenCredential> = {
 
 const userService = new UserService(config);
 ```
-
----
-
-#### `gateway` (Property)
-
-**Type:** `UserServiceGateway<User, Credential, GatewayConfig>`
-
-Gateway instance for API operations
-
-The gateway object that provides methods for executing API calls.
-Optional - services can work without gateway (e.g., mock services).
-
----
-
-#### `initRestore` (Property)
-
-**Type:** `boolean`
-
-Whether to automatically restore state from storage during construction
-
-**⚠️ This is primarily a testing/internal property.**
-
-**Initialization Order Issues:**
-When
-`initRestore`
-is
-`true`
-,
-`restore()`
-is called during
-`super()`
-execution,
-which happens BEFORE subclass field initialization. This means:
-
-- Subclass fields (e.g.,
-  `private readonly storageKey = 'my-key'`
-  ) are NOT yet initialized
-- `restore()`
-  cannot access these fields, causing runtime errors or incorrect behavior
-- This is a fundamental limitation of JavaScript/TypeScript class initialization order
-
----
-
-#### `logger` (Property)
-
-**Type:** `LoggerInterface<unknown>`
-
-Logger instance for logging execution events
-
-Used for logging execution flow, errors, and debugging information.
-Optional - services can work without logger.
-
----
-
-#### `serviceName` (Property)
-
-**Type:** `string \| symbol`
-
-**Default:** `ts
-'UserService'
-`
-
-Service name
-
-Allows passing a custom service name.
-If not provided, the default service name will be used.
-
-**Example:** Basic usage
-
-```typescript
-const userService = new UserService({
-  serviceName: 'UserService'
-});
-```
-
----
-
-#### `storage` (Property)
-
-**Type:** `null \| SyncStorageInterface<string, unknown>`
-
-Storage implementation for persisting state
-
-If provided, state changes will be automatically persisted to this storage.
-If
-`null`
-or
-`undefined`
-, the store will work without persistence.
-
----
-
-#### `storageKey` (Property)
-
-**Type:** `null \| string`
-
-Storage key for persisting state
-
-The key used to store state in the storage backend.
-Required if
-`storage`
-is provided.
-
----
-
-#### `store` (Property)
-
-**Type:** `UserStoreInterface<User, Credential> \| UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>`
-
-UserStore instance or configuration options
-
-Allows passing a custom UserStore implementation or configuration options.
-If a UserStore instance is provided, it will be used directly.
-If options are provided, a default UserStore will be created with those options.
-If not provided, a default UserStore will be created.
-
-**Persistence Behavior (inherited from UserStore):**
-
-- **Default**: Only
-  `credential`
-  is persisted to storage,
-  `user info`
-  is stored in memory only
-  - When
-    `storage`
-    and
-    `storageKey`
-    are provided, **credential will be persisted using
-    `storageKey`
-    **
-  - **Note:**
-    `storageKey`
-    stores credential (not user info), which is different from AsyncStore
-  - User info will NOT be persisted and will be cleared on page reload
-
-- **Dual persistence** (optional): Set
-  `persistUserInfo: true`
-  and provide
-  `credentialStorageKey`
-  - Credential will be persisted to
-    `credentialStorageKey`
-
-  - User info will be persisted to
-    `storageKey`
-    (when
-    `credentialStorageKey`
-    is different from
-    `storageKey`
-    )
-  - Both will be restored from storage on initialization
-
-**Example:** Persist only credential (default)
-
-```typescript
-const userService = new UserService({
-  store: {
-    storage: localStorage,
-    storageKey: 'auth-token' // This key stores credential, not user info
-    // Only credential is persisted to 'auth-token', user info is in memory only
-  }
-});
-```
-
-**Example:** Persist both user info and credential
-
-```typescript
-const userService = new UserService({
-  store: {
-    storage: localStorage,
-    storageKey: 'user-info',
-    credentialStorageKey: 'auth-token',
-    persistUserInfo: true
-    // Both user info and credential are persisted separately
-  }
-});
-```
-
-**Example:** Use a custom UserStore instance
-
-````typescript
-const userStore = new UserStore({
-  storage: localStorage,
-  storageKey: 'user-info'
-});
-
-const userService = new UserService({
-  store: userStore
-});
-
-
----
-
-#### `defaultState` (Method)
-
-**Type:** `(storage: null \| SyncStorageInterface<string, unknown>, storageKey: null \| string) => null \| AsyncStoreStateInterface<User>`
-
-
-
-
-#### Parameters
-
-| Name | Type | Optional | Default | Since | Deprecated | Description |
-|------|------|----------|---------|-------|------------|-------------|
-| `storage` | `null \| SyncStorageInterface<string, unknown>` | ✅ | - | - | - | Storage implementation (if provided in options) |
-| `storageKey` | `null \| string` | ✅ | - | - | - | Storage key (if provided in options) |
-
-
----
-
-##### `defaultState` (CallSignature)
-
-**Type:** `null \| AsyncStoreStateInterface<User>`
-
-
-
-
-
-
-Create a new state instance
-
-Factory function that creates the initial state for the store.
-This function is called during store initialization and when state is reset.
-
-Behavior:
-- If
-`storage`
- is provided, the function receives storage and storageKey as parameters
-- If
-`storage`
- is not provided, the function receives
-`undefined`
- for both parameters
-- If the function returns
-`null`
-, a new
-`AsyncStoreState`
- instance will be created
-- If the function returns a state object, that object will be used as the initial state
-
-**Returns:**
-
-The initial state instance, or
-`null`
- to use default state
-
-**Example:** With storage restoration
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: localStorage,
-  storageKey: 'user-state',
-  defaultState: (storage, storageKey) => {
-    const stored = storage?.getItem(storageKey);
-    if (stored) {
-      return new AsyncStoreState<User>(stored);
-    }
-    return null; // Use default state
-  }
-});
-````
-
-**Example:** Without storage
-
-```typescript
-const store = new AsyncStore<User, string>({
-  storage: null,
-  defaultState: () => null // Always use default state
-});
-```
-
-#### Parameters
-
-| Name         | Type                                            | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<string, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| string`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---

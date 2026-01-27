@@ -340,6 +340,32 @@ Array of parser functions to try in order
 
 ---
 
+#### `handleResponse` (Method)
+
+**Type:** `(returnValue: unknown, config: ResponsePluginConfig & RequestAdapterConfig<unknown>) => undefined \| Promise<RequestAdapterResponse<unknown, unknown>>`
+
+#### Parameters
+
+| Name          | Type                                                   | Optional | Default | Since | Deprecated | Description |
+| ------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `returnValue` | `unknown`                                              | ❌       | -       | -     | -          |             |
+| `config`      | `ResponsePluginConfig & RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `handleResponse` (CallSignature)
+
+**Type:** `undefined \| Promise<RequestAdapterResponse<unknown, unknown>>`
+
+#### Parameters
+
+| Name          | Type                                                   | Optional | Default | Since | Deprecated | Description |
+| ------------- | ------------------------------------------------------ | -------- | ------- | ----- | ---------- | ----------- |
+| `returnValue` | `unknown`                                              | ❌       | -       | -     | -          |             |
+| `config`      | `ResponsePluginConfig & RequestAdapterConfig<unknown>` | ❌       | -       | -     | -          |             |
+
+---
+
 #### `inferParserFromContentType` (Method)
 
 **Type:** `(contentType: string) => undefined \| ResponseParser`
