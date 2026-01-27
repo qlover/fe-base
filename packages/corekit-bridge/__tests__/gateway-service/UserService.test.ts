@@ -1243,7 +1243,12 @@ describe('UserService', () => {
         headers: { 'X-Custom-Header': 'test-value' }
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
+      mockGateway.login.mockImplementationOnce(async () => {
+        return testCredential;
+      });
+      mockGateway.getUserInfo.mockImplementationOnce(async () => {
+        return testCredential;
+      });
 
       const result = await userService.login(loginParams, testConfig);
 
@@ -1317,8 +1322,9 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
+      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
 
       // First login to establish credential
       await userService.login(loginParams);
@@ -1356,8 +1362,9 @@ describe('UserService', () => {
     it('should work with config parameter when no params are provided to refreshUserInfo', async () => {
       const testConfig = { timeout: 9000 };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
+      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
 
       // First login to establish credential
       await userService.login(loginParams);
@@ -1396,8 +1403,9 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockResolvedValue(testCredential);
-      mockGateway.refreshUserInfo.mockResolvedValue(testUser);
+      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
+      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
 
       // First login to establish credential
       await userService.login(loginParams);
