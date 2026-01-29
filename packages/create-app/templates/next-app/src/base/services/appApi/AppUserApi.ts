@@ -1,3 +1,4 @@
+import { RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import type {
   AppUserApiInterface,
@@ -7,7 +8,6 @@ import type {
 } from '@/base/port/AppUserApiInterface';
 import { AppApiRequester } from './AppApiRequester';
 import type { AppApiConfig, AppApiRequesterContext } from './AppApiRequester';
-import { RequestExecutor } from '@qlover/fe-corekit';
 
 /**
  * UserApi

@@ -27,16 +27,10 @@ export class RouterService implements RouterInterface {
     this.goto('/');
   }
 
-  /**
-   * @override
-   */
   public gotoLogin(): void {
     this.goto('/login');
   }
 
-  /**
-   * @override
-   */
   public replaceHome(): void {
     this.uiBridge.getUIBridge()?.replace('/');
   }

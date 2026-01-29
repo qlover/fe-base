@@ -90,9 +90,6 @@ export class ResourceService<
     return this.store.state.listState.result! as PaginationInterface<T>;
   }
 
-  /**
-   * @override
-   */
   public refresh(): Promise<unknown> {
     return this.search(this.store.state.searchParams);
   }

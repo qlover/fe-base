@@ -1,15 +1,15 @@
+import { RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import type { LocaleType } from '@config/i18n';
+import { AdminApiRequesterContext } from './AdminApiRequester';
 import {
   AppApiRequester,
   type AppApiConfig,
   type AppApiTransaction
 } from '../appApi/AppApiRequester';
 import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
-import { RequestExecutor } from '@qlover/fe-corekit';
-import { AdminApiRequesterContext } from './AdminApiRequester';
 
 export type AdminLocalesListTransaction = AppApiTransaction<
   ResourceQuery,
@@ -87,9 +87,6 @@ export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
     });
   }
 
-  /**
-   * @override
-   */
   public import(data: {
     [key in LocaleType]?: File;
   }): Promise<unknown> {

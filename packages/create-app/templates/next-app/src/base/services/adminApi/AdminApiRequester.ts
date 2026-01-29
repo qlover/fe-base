@@ -6,8 +6,7 @@ import {
 import { injectable } from 'inversify';
 import type { AppApiConfig } from '../appApi/AppApiRequester';
 
-export interface AdminApiRequesterContext
-  extends ExecutorContextInterface<AppApiConfig> {}
+export interface AdminApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 
 @injectable()
 export class AdminApiRequester extends RequestExecutor<

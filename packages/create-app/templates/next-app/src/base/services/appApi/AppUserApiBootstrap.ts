@@ -35,9 +35,6 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
     appUserApi.use(ioc.get(DialogErrorPlugin));
   }
 
-  /**
-   * @override
-   */
   protected requestDataSerializer(
     data: unknown,
     config: AppApiConfig

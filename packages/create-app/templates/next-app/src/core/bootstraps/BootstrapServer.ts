@@ -1,31 +1,29 @@
 import 'reflect-metadata';
 import {
-  type ServiceIdentifier,
-  type IOCContainerInterface,
-  type IOCFunctionInterface,
-  BootstrapPluginOptions
-} from '@qlover/corekit-bridge';
-import {
-  ExecutorAsyncTask,
-  ExecutorContextInterface,
   LifecycleExecutor,
-  LifecyclePluginInterface,
-  type ExecutorError
+  type ExecutorError,
+  type ExecutorAsyncTask,
+  type ExecutorContextInterface,
+  type LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import type { ServerInterface } from '@/server/port/ServerInterface';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOC } from '../serverIoc/ServerIOC';
+import type {
+  ServiceIdentifier,
+  IOCContainerInterface,
+  IOCFunctionInterface,
+  BootstrapPluginOptions
+} from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 
 export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
 }
 
-export interface BootstrapServerPlugin
-  extends LifecyclePluginInterface<BootstrapServerContext> {}
+export interface BootstrapServerPlugin extends LifecyclePluginInterface<BootstrapServerContext> {}
 
-export interface BootstrapServerContext
-  extends ExecutorContextInterface<BootstrapServerContextOptions> {}
+export interface BootstrapServerContext extends ExecutorContextInterface<BootstrapServerContextOptions> {}
 
 export class BootstrapServer implements ServerInterface {
   protected executor: LifecycleExecutor<
@@ -80,9 +78,6 @@ export class BootstrapServer implements ServerInterface {
     return this.IOC(identifier);
   }
 
-  /**
-   * @override
-   */
   public use(
     plugin:
       | BootstrapServerPlugin

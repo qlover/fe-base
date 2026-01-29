@@ -13,9 +13,9 @@ import type { I18nServiceInterface } from '../port/I18nServiceInterface';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';
 
 @injectable()
-export class DialogErrorPlugin
-  implements LifecyclePluginInterface<ExecutorContextInterface<unknown>>
-{
+export class DialogErrorPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<unknown>
+> {
   public readonly pluginName = 'DialogErrorPlugin';
 
   constructor(
@@ -51,9 +51,6 @@ export class DialogErrorPlugin
     }
   }
 
-  /**
-   * @override
-   */
   protected isI18nMessage(message: string): boolean {
     return i18nKeySchema.safeParse(message).success;
   }

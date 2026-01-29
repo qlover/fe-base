@@ -46,24 +46,15 @@ export class SupabaseBridge implements DBBridgeInterface {
     );
   }
 
-  /**
-   * @override
-   */
   public getSupabase(): SupabaseClient {
     return this.supabase;
   }
 
-  /**
-   * @override
-   */
   public async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
     const res = await this.supabase.rpc('exec_sql', { sql });
     return this.catch(res);
   }
 
-  /**
-   * @override
-   */
   protected async catch(
     result: PostgrestSingleResponse<unknown>
   ): Promise<SupabaseBridgeResponse<unknown>> {
@@ -82,18 +73,12 @@ export class SupabaseBridge implements DBBridgeInterface {
     return result as SupabaseBridgeResponse<unknown>;
   }
 
-  /**
-   * @override
-   */
   protected hasPausedProject(error: PostgrestResponseFailure): boolean {
     return (
       error.status === 0 && error.error.message === 'TypeError: fetch failed'
     );
   }
 
-  /**
-   * @override
-   */
   protected handleWhere(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
@@ -116,9 +101,6 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  /**
-   * @override
-   */
   protected handleOrderBy(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,

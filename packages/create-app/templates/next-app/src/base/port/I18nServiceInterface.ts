@@ -14,30 +14,12 @@ export class I18nServiceState implements StoreStateInterface {
   constructor(public language: I18nServiceLocale) {}
 }
 export abstract class I18nServiceInterface extends StoreInterface<I18nServiceState> {
-  /**
-   * @override
-   */
   public abstract t(key: string, params?: Record<string, unknown>): string;
-  /**
-   * @override
-   */
   public abstract changeLanguage(language: I18nServiceLocale): Promise<void>;
-  /**
-   * @override
-   */
   public abstract changeLoading(loading: boolean): void;
-  /**
-   * @override
-   */
   public abstract getCurrentLanguage(): Promise<I18nServiceLocale>;
-  /**
-   * @override
-   */
   public abstract isValidLanguage(
     language: string
   ): language is I18nServiceLocale;
-  /**
-   * @override
-   */
   public abstract getSupportedLanguages(): I18nServiceLocale[];
 }
