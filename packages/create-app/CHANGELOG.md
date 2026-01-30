@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 1.0.2
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-app:** Enhance authentication flow and update configurations ([23fd553](https://github.com/qlover/fe-base/commit/23fd55372b1196d183f423a52607d6eb1c09ca82)) ([#579](https://github.com/qlover/fe-base/pull/579))
+  - Added `transpilePackages` for necessary routing in `next.config.ts`, improving package handling.
+  - Updated package versions for `@brain-toolkit/antd-blocks` and `@brain-toolkit/react-kit` in `package.json` for better stability.
+  - Refactored user schema to change `id` type from `number` to `string` for consistency.
+  - Introduced new routes for login and registration in `route.ts`, enhancing navigation.
+  - Added email verification prompts in registration and login processes, improving user experience.
+  - Implemented new API callback routes for handling authentication responses, streamlining user management.
+  - Enhanced translation utilities for better internationalization support across the application.
+
 ## 1.0.1
 
 ### Patch Changes
