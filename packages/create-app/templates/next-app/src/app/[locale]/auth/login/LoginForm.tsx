@@ -9,6 +9,7 @@ import { useIOC } from '@/uikit/hook/useIOC';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import type { LoginI18nInterface } from '@config/i18n/loginI18n';
 import { I } from '@config/IOCIdentifier';
+import { ROUTE_REGISTER } from '@config/route';
 
 interface LoginFormData {
   email: string;
@@ -116,7 +117,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
       <div className="text-center mt-6">
         <span className="text-text-tertiary">{tt.noAccount} </span>
-        <LocaleLink href="/register" title={tt.createAccountTitle}>
+        <LocaleLink href={ROUTE_REGISTER} title={tt.createAccountTitle}>
           {tt.createAccount}
         </LocaleLink>
       </div>

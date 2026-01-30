@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { ROUTE_LOGIN } from '@config/route';
 import { NavigateBridge } from './NavigateBridge';
 import type { RouterInterface, RouterPathname } from '../port/RouterInterface';
 import type { UIBridgeInterface } from '@qlover/corekit-bridge';
@@ -28,7 +29,7 @@ export class RouterService implements RouterInterface {
   }
 
   public gotoLogin(): void {
-    this.goto('/login');
+    this.goto(ROUTE_LOGIN);
   }
 
   public replaceHome(): void {

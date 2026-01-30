@@ -5,10 +5,17 @@ import createMiddleware from 'next-intl/middleware';
 
 // Import your routing configuration which contains all locales, defaultLocale, and pathnames
 import { routing } from './i18n/routing';
+import { updateSession } from './lib/supabase/proxy';
+import type { NextRequest } from 'next/server';
 
 // Export the middleware created by next-intl
 // This middleware will handle locale detection, redirects, and internationalized routing automatically
-export default createMiddleware(routing);
+// export default createMiddleware(routing);
+
+export default async function proxy(request: NextRequest) {
+  await updateSession(request);
+  return createMiddleware(routing)(request);
+}
 
 // Next.js middleware configuration object
 export const config = {

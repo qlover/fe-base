@@ -57,7 +57,8 @@ export class AppApiRequester extends RequestExecutor<
   constructor() {
     super(
       new RequestAdapterFetch({
-        baseURL: '/api',
+        // TODO: ReqeustPlugin build url 最后需要带上/
+        baseURL: '/api/',
         responseType: 'json'
       }),
       new LifecycleExecutor()

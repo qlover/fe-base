@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
+import { TranslateI18nUtil } from '@/base/cases/TranslateI18nUtil';
 import { useWarnTranslations } from './useWarnTranslations';
 
 /**
@@ -14,7 +14,7 @@ export function useI18nInterface<T extends Record<string, string>>(
   const t = useWarnTranslations();
 
   const i18n = useMemo(
-    () => TranslateI18nInterface.translate(i18nInterface, t),
+    () => TranslateI18nUtil.translate(i18nInterface, t),
     [i18nInterface, t]
   );
 

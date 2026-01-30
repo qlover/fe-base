@@ -31,11 +31,13 @@ export class NextApiServer extends BootstrapServer {
 
     // If result is ExecutorError, return AppErrorApi
     if (result instanceof ExecutorError) {
+      this.logger.debug('NextApiServer run error:', result);
       return new AppErrorApi(result.id, result.message);
     }
 
     // If result is Error, return AppErrorApi
     if (result instanceof Error) {
+      this.logger.debug('NextApiServer run error:', result);
       return new AppErrorApi('SERVER_ERROR', result.message);
     }
 

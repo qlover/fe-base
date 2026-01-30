@@ -1,11 +1,5 @@
 import 'reflect-metadata';
-import {
-  LifecycleExecutor,
-  type ExecutorError,
-  type ExecutorAsyncTask,
-  type ExecutorContextInterface,
-  type LifecyclePluginInterface
-} from '@qlover/fe-corekit';
+import { LifecycleExecutor } from '@qlover/fe-corekit';
 import type { ServerInterface } from '@/server/port/ServerInterface';
 import { I, type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import { ServerIOC } from '../serverIoc/ServerIOC';
@@ -15,6 +9,12 @@ import type {
   IOCFunctionInterface,
   BootstrapPluginOptions
 } from '@qlover/corekit-bridge';
+import type {
+  ExecutorError,
+  ExecutorAsyncTask,
+  ExecutorContextInterface,
+  LifecyclePluginInterface
+} from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
@@ -121,3 +121,5 @@ export class BootstrapServer implements ServerInterface {
     );
   }
 }
+
+export const bootstrapServer = new BootstrapServer();

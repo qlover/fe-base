@@ -1,14 +1,13 @@
 import { Button } from 'antd';
 import type { PageParamsProps } from '@/base/types/AppPageRouter';
-import { BootstrapServer } from '@/core/bootstraps/BootstrapServer';
-import { redirect } from '@/i18n/routing';
+import { bootstrapServer } from '@/core/bootstraps/BootstrapServer';
 import {
   AppPageRouteParams,
   type PageParamsType
 } from '@/server/AppPageRouteParams';
 import { ServerAuth } from '@/server/ServerAuth';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
-import { i18nConfig, homeI18n } from '@config/i18n';
+import { i18nConfig, homeI18n, homeI18nNamespace } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/Identifier';
 import type { Metadata } from 'next';
 
@@ -43,27 +42,27 @@ export async function generateMetadata({
 }
 
 export default async function Home({ params }: PageParamsProps) {
-  const server = new BootstrapServer();
   const pageParams = new AppPageRouteParams(await params!);
-  const locale = pageParams.getLocale();
-  const tt = await pageParams.getI18nInterface({
-    ...homeI18n,
-    adminTitle: COMMON_ADMIN_TITLE
-  });
+  const user = await bootstrapServer.getIOC(ServerAuth).getUser();
 
-  if (!(await server.getIOC(ServerAuth).hasAuth())) {
-    return redirect({ href: '/login', locale });
-  }
+  // const locale = pageParams.getLocale();
+  const tt = await pageParams.getI18nInterface(
+    {
+      ...homeI18n,
+      adminTitle: COMMON_ADMIN_TITLE
+    },
+    homeI18nNamespace
+  );
 
   return (
     <AppRoutePage
       data-testid="AppRoute-HomePage"
-      showLogoutButton
-      showAdminButton
       tt={{
         title: tt.title,
         adminTitle: tt.adminTitle
       }}
+      showAdminButton
+      showAuthButton
     >
       {/* Hero Section */}
       <section className="py-16 px-4">
@@ -71,38 +70,12 @@ export default async function Home({ params }: PageParamsProps) {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
             {tt.welcome}
           </h1>
+          {!!user ? (
+            <p data-testid="AuthUserEmail" className="text-lg text-text">
+              {user.email}
+            </p>
+          ) : null}
           <p className="text-xl text-text-secondary mb-8">{tt.description}</p>
-        </div>
-      </section>
-
-      {/* Navigation Grid */}
-      <section className="max-w-6xl mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* {navigationItems.map((item) => (
-            <LocaleLink
-              data-testid={`HomePage-navigation-${item.href}`}
-              key={item.href}
-              title={item.titleKey}
-              className={clsx(
-              href={item.href}
-                'block rounded-lg p-6',
-                'bg-secondary',
-                'border border-border',
-                'hover:bg-elevated',
-                'transition-colors duration-200'
-              )}
-            >
-              <h3 className={`text-xl font-semibold mb-3 text-text`}>
-                {t(item.titleKey)}
-              </h3>
-              <p className="text-text-secondary mb-4">
-                {t(item.descriptionKey)}
-              </p>
-              <Button type="primary" className="w-full">
-                {t(i18nKeys.HOME_EXPLORE)}
-              </Button>
-            </LocaleLink>
-          ))} */}
         </div>
       </section>
 

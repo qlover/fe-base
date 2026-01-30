@@ -175,5 +175,8 @@
   "page_register:privacy_link": "隐私政策",
   "page_register:have_account": "已有账号？",
   "page_register:login_link": "登录",
-  "page_register:terms_required": "请同意服务条款和隐私政策"
+  "page_register:terms_required": "请同意服务条款和隐私政策",
+  "api:user__not_verfified": "用户未验证",
+  "page_register:email_verify_title": "请查收邮箱完成账号注册",
+  "page_home:welcome_with_user": "欢迎 {email} 来到主页"
 }

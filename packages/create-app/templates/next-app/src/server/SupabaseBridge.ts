@@ -1,11 +1,7 @@
-import {
-  createClient,
-  type PostgrestSingleResponse,
-  type SupabaseClient,
-  type PostgrestResponse
-} from '@supabase/supabase-js';
+import { ExecutorError } from '@qlover/fe-corekit';
+import { AuthError } from '@supabase/supabase-js';
 import { injectable, inject } from 'inversify';
-import type { AppConfig } from '@/base/cases/AppConfig';
+import { createClient } from '@/lib/supabase/server';
 import type {
   BridgeEvent,
   DBBridgeInterface,
@@ -13,12 +9,18 @@ import type {
   BridgeOrderBy,
   Where
 } from '@/server/port/DBBridgeInterface';
+import { UserRole, UserSchema } from '@migrations/schema/UserSchema';
 import { I } from '@config/IOCIdentifier';
 import type { LoggerInterface } from '@qlover/logger';
+import type { PostgrestResponseFailure } from '@supabase/postgrest-js';
 import type {
-  PostgrestFilterBuilder,
-  PostgrestResponseFailure
-} from '@supabase/postgrest-js';
+  PostgrestSingleResponse,
+  SupabaseClient,
+  PostgrestResponse,
+  User,
+  AuthResponse,
+  UserResponse
+} from '@supabase/supabase-js';
 
 const whereHandlerMaps = {
   '=': 'eq',
@@ -34,24 +36,15 @@ export type SupabaseBridgeResponse<T> = DBBridgeResponse<T> &
 
 @injectable()
 export class SupabaseBridge implements DBBridgeInterface {
-  protected supabase: SupabaseClient;
+  constructor(@inject(I.Logger) protected logger: LoggerInterface) {}
 
-  constructor(
-    @inject(I.AppConfig) appConfig: AppConfig,
-    @inject(I.Logger) protected logger: LoggerInterface
-  ) {
-    this.supabase = createClient(
-      appConfig.supabaseUrl,
-      appConfig.supabaseAnonKey
-    );
-  }
-
-  public getSupabase(): SupabaseClient {
-    return this.supabase;
+  public async getSupabase(): Promise<SupabaseClient> {
+    return await createClient();
   }
 
   public async execSql(sql: string): Promise<SupabaseBridgeResponse<unknown>> {
-    const res = await this.supabase.rpc('exec_sql', { sql });
+    const supabase = await this.getSupabase();
+    const res = await supabase.rpc('exec_sql', { sql });
     return this.catch(res);
   }
 
@@ -79,11 +72,8 @@ export class SupabaseBridge implements DBBridgeInterface {
     );
   }
 
-  protected handleWhere(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
-    wheres: Where[]
-  ): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected handleWhere(handler: any, wheres: Where[]): void {
     for (const where of wheres) {
       const [key, operator, value] = where;
       const opr = whereHandlerMaps[operator];
@@ -101,13 +91,38 @@ export class SupabaseBridge implements DBBridgeInterface {
     }
   }
 
-  protected handleOrderBy(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: PostgrestFilterBuilder<any, any, any, any, string, unknown, any>,
-    orderBy?: BridgeOrderBy
-  ): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected handleOrderBy(handler: any, orderBy?: BridgeOrderBy): void {
     if (orderBy) {
       handler.order(orderBy[0], { ascending: orderBy[1] === 0 });
+    }
+  }
+
+  public toUserSchema(user: User): UserSchema {
+    return {
+      id: user.id,
+      email: user.email!,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      role: user.role === 'admin' ? UserRole.ADMIN : UserRole.USER,
+      // 始终为空
+      password: '',
+      credential_token: ''
+    };
+  }
+
+  public throwIfError(
+    response: AuthResponse | UserResponse | { error: unknown }
+  ): void {
+    const { error } = response;
+    if (error) {
+      this.logger.info('SupabaseBridge throw error:', error);
+
+      if (error instanceof AuthError) {
+        throw new ExecutorError('SupabaseAuthError', error);
+      }
+
+      throw new Error(error as string);
     }
   }
 
@@ -119,7 +134,8 @@ export class SupabaseBridge implements DBBridgeInterface {
     if (!data) {
       throw new Error('Data is required for add operation');
     }
-    const res = await this.supabase
+    const supabase = await this.getSupabase();
+    const res = await supabase
       .from(table)
       .insert(Array.isArray(data) ? data : [data]);
     return this.catch(res);
@@ -134,7 +150,9 @@ export class SupabaseBridge implements DBBridgeInterface {
       throw new Error('Data is required for upsert operation');
     }
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
-    const res = await this.supabase
+    const supabase = await this.getSupabase();
+
+    const res = await supabase
       .from(table)
       .upsert(Array.isArray(data) ? data : [data], {
         onConflict: 'value'
@@ -151,8 +169,9 @@ export class SupabaseBridge implements DBBridgeInterface {
     if (!data) {
       throw new Error('Data is required for update operation');
     }
+    const supabase = await this.getSupabase();
 
-    const handler = this.supabase.from(table).update(data);
+    const handler = supabase.from(table).update(data);
 
     this.handleWhere(handler, where ?? []);
 
@@ -164,7 +183,9 @@ export class SupabaseBridge implements DBBridgeInterface {
    */
   public async delete(event: BridgeEvent): Promise<DBBridgeResponse<unknown>> {
     const { table, where } = event;
-    const handler = this.supabase.from(table).delete();
+    const supabase = await this.getSupabase();
+
+    const handler = supabase.from(table).delete();
 
     this.handleWhere(handler, where ?? []);
 
@@ -179,7 +200,9 @@ export class SupabaseBridge implements DBBridgeInterface {
   ): Promise<SupabaseBridgeResponse<unknown>> {
     const { table, fields = '*', where, orderBy } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
-    const handler = this.supabase.from(table).select(selectFields);
+    const supabase = await this.getSupabase();
+
+    const handler = supabase.from(table).select(selectFields);
 
     this.handleWhere(handler, where ?? []);
 
@@ -204,8 +227,10 @@ export class SupabaseBridge implements DBBridgeInterface {
     } = event;
     const selectFields = Array.isArray(fields) ? fields.join(',') : fields;
 
+    const supabase = await this.getSupabase();
+
     // 获取总数
-    const countHandler = this.supabase
+    const countHandler = supabase
       .from(table)
       .select('*', { count: 'exact', head: true });
 
@@ -213,7 +238,7 @@ export class SupabaseBridge implements DBBridgeInterface {
     const countResult = await this.catch(await countHandler);
 
     // 获取分页数据
-    const handler = this.supabase.from(table).select(selectFields);
+    const handler = supabase.from(table).select(selectFields);
 
     this.handleOrderBy(handler, orderBy);
 

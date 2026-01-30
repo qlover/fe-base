@@ -16,6 +16,7 @@ export const dialogHandler = new DialogHandler();
  * Global logger
  */
 export const logger = new Logger({
+  name: 'next-app',
   handlers: new ConsoleHandler(new ColorFormatter(loggerStyles)),
   silent: false,
   level: 'debug'

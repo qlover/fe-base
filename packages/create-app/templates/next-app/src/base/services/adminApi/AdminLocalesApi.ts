@@ -3,12 +3,13 @@ import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { LocalesSchema } from '@migrations/schema/LocalesSchema';
 import type { LocaleType } from '@config/i18n';
-import { AdminApiRequesterContext } from './AdminApiRequester';
+
 import {
   AppApiRequester,
+  AppApiRequesterContext,
   type AppApiConfig,
   type AppApiTransaction
-} from '../appApi/AppApiRequester';
+} from '../AppApiRequester';
 import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
 
 export type AdminLocalesListTransaction = AppApiTransaction<
@@ -25,7 +26,7 @@ export type AdminLocalesUpdateTransaction = AppApiTransaction<
 export class AdminLocalesApi implements ResourceInterface<LocalesSchema> {
   constructor(
     @inject(AppApiRequester)
-    protected client: RequestExecutor<AppApiConfig, AdminApiRequesterContext>
+    protected client: RequestExecutor<AppApiConfig, AppApiRequesterContext>
   ) {}
 
   /**

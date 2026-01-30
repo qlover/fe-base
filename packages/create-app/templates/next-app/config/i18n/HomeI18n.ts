@@ -8,6 +8,8 @@ import * as i18nKeys from '../Identifier/pages/page.home';
  */
 export type HomeI18nInterface = typeof homeI18n;
 
+export const homeI18nNamespace = 'page_home';
+
 export const homeI18n = Object.freeze({
   // basic meta properties
   title: i18nKeys.PAGE_HOME_TITLE,

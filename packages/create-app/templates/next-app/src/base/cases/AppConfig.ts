@@ -35,4 +35,6 @@ export class AppConfig implements EnvConfigInterface {
 
   public readonly openaiBaseUrl: string = process.env.CEREBRAS_BASE_URL!;
   public readonly openaiApiKey: string = process.env.CEREBRAS_API_KEY!;
+
+  public readonly isProduction: boolean = this.env === 'production';
 }

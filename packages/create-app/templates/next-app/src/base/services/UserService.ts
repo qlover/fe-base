@@ -6,9 +6,15 @@ import {
   type UserCredential,
   type UserSchema
 } from '@migrations/schema/UserSchema';
-import { UserServiceApi } from '../cases/UserServiceApi';
-import type { UserServiceInterface } from '../port/UserServiceInterface';
-import type { UserServiceGateway } from '@qlover/corekit-bridge';
+import { AppUserGateway } from './AppUserGateway';
+import type {
+  UserServiceGatewayInterface,
+  UserServiceInterface
+} from '../port/UserServiceInterface';
+import type {
+  StoreInterface,
+  UserStateInterface
+} from '@qlover/corekit-bridge';
 
 @injectable()
 export class UserService
@@ -16,38 +22,43 @@ export class UserService
   implements UserServiceInterface
 {
   constructor(
-    @inject(UserServiceApi)
-    userApi: UserServiceGateway<UserSchema, UserCredential>
+    @inject(AppUserGateway)
+    userApi: UserServiceGatewayInterface
   ) {
-    super({
-      gateway: userApi
-      // next-js ssr 将 credential 存储在 cookie 中无需存储用户信息到本地
-      // store: {
-      //   storageKey: appConfig.userInfoKey,
-      //   credentialStorageKey: appConfig.userTokenKey,
-      //   persistUserInfo: true,
-      // }
-    });
+    super(userApi);
+  }
+
+  /**
+   * @override
+   */
+  public override get gateway(): UserServiceGatewayInterface {
+    return super.gateway as UserServiceGatewayInterface;
   }
 
   /**
    * @override
    */
   public getToken(): string {
-    return this.store.getCredential()?.credential_token ?? '';
+    return this.getStore().getCredential()?.credential_token ?? '';
+  }
+
+  public getUIStore(): StoreInterface<
+    UserStateInterface<UserSchema, UserCredential>
+  > {
+    return this.getStore().getStore();
   }
 
   /**
    * @override
    */
-  public isUserInfo(value: unknown): value is UserSchema {
+  public isUser(value: unknown): value is UserSchema {
     return userSchema.safeParse(value).success;
   }
 
   /**
    * @override
    */
-  public isUserCredential(value: unknown): value is UserCredential {
+  public isCredential(value: unknown): value is UserCredential {
     return (
       isObject(value) &&
       'credential_token' in value &&

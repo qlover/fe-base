@@ -1,8 +1,9 @@
 import { ExecutorError, isRequestAdapterResponse } from '@qlover/fe-corekit';
 import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
-import type { AppApiConfig } from './AppApiRequester';
+import type { AppApiConfig } from '../AppApiRequester';
 import type {
   ExecutorContextInterface,
+  HookRuntimes,
   LifecyclePluginInterface
 } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
@@ -25,6 +26,19 @@ export class AppApiPlugin implements LifecyclePluginInterface<
     );
   }
 
+  /**
+   * @override
+   * @param ctx
+   */
+  public onBefore(
+    ctx: ExecutorContextInterface<AppApiConfig<unknown>, unknown, HookRuntimes>
+  ): void {
+    ctx.setParameters({
+      ...ctx.parameters,
+      // TODO: ReqeustPlugin 在处理路径后会保留baseUrl，然后拼接 url，但是 fetchAdapter 会再次组合两个参数导致重复
+      baseURL: ''
+    });
+  }
   /**
    * @override
    */
@@ -89,7 +103,8 @@ export class AppApiPlugin implements LifecyclePluginInterface<
       `%c[AppApi ${config.method} ${config.url}]%c - ${new Date().toLocaleString()}`,
       'color: #f00;',
       'color: inherit;',
-      error
+      error,
+      config
     );
   }
 }

@@ -1,14 +1,15 @@
-import { RequestExecutor } from '@qlover/fe-corekit';
+import { ExecutorContextInterface, RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 import type { UserSchema } from '@migrations/schema/UserSchema';
-import { AdminApiRequesterContext } from './AdminApiRequester';
 import {
   AppApiRequester,
   type AppApiConfig,
   type AppApiTransaction
-} from '../appApi/AppApiRequester';
+} from '../AppApiRequester';
 import type { ResourceInterface, ResourceQuery } from '@qlover/corekit-bridge';
+
+export interface AdminApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 
 export type AdminUserListTransaction = AppApiTransaction<
   ResourceQuery,

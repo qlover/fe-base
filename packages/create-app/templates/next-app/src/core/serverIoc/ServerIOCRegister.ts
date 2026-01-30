@@ -27,6 +27,7 @@ export class ServerIOCRegister implements IOCRegisterInterface<
     ioc.bind(
       I.Logger,
       new Logger({
+        name: 'next-app-server',
         handlers: new ConsoleHandler(
           new TimestampFormatter({
             localeOptions: {
@@ -40,7 +41,7 @@ export class ServerIOCRegister implements IOCRegisterInterface<
           })
         ),
         silent: false,
-        level: appConfig.env === 'development' ? 'debug' : 'info'
+        level: appConfig.isProduction ? 'warn' : 'debug'
       })
     );
   }

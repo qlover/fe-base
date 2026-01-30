@@ -1,4 +1,4 @@
-import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
+import { TranslateI18nUtil } from '@/base/cases/TranslateI18nUtil';
 import { loadMessages } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
@@ -100,9 +100,8 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
   /**
    * 获取翻译后的 i18n 接口
    * 创建一个简单的翻译函数，基于加载的 messages
-
    * @override
-      */
+   */
   public async getI18nInterface<T extends PageI18nInterface>(
     i18nInterface: T,
     namespace?: string
@@ -131,7 +130,7 @@ export class PagesRouteParams implements RouteParamsnHandlerInterface {
       return message;
     };
 
-    return TranslateI18nInterface.translate<T>(
+    return TranslateI18nUtil.translate<T>(
       i18nInterface,
       t as ReturnType<typeof useTranslations>
     );

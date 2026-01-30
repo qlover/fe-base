@@ -39,10 +39,13 @@ export class RequestEncryptPlugin implements LifecyclePluginInterface<
       isObject(context.parameters.data) &&
       encryptProps
     ) {
-      context.parameters.data = this.encryptData(
-        clone(context.parameters.data),
-        encryptProps
-      );
+      context.setParameters({
+        ...context.parameters,
+        data: {
+          ...context.parameters.data,
+          ...this.encryptData(clone(context.parameters.data), encryptProps)
+        }
+      });
     }
   }
 

@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname // 明确指定根目录
   },
+  // pages 路由需要
+  transpilePackages: ['@qlover/fe-corekit', '@qlover/corekit-bridge'],
   env: {
     APP_ENV: process.env.APP_ENV
   }
