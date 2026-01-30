@@ -23,7 +23,6 @@ export class ClientIOCRegister implements IOCRegisterInterface<
    *
    * 一般用于注册全局
    *
-   * @override
    * @param ioc - IOC container
    */
   protected registerGlobals(ioc: IOCContainerInterface): void {
@@ -48,7 +47,6 @@ export class ClientIOCRegister implements IOCRegisterInterface<
    * - 国际化服务
    * - 主题服务
    *
-   * @override
    * @param ioc
    */
   protected registerImplement(ioc: IOCContainerInterface): void {
@@ -70,9 +68,6 @@ export class ClientIOCRegister implements IOCRegisterInterface<
     // ioc.bind(I.RequestPageBridgeInterface, ioc.get(RequestPageBridge));
   }
 
-  /**
-   * @override
-   */
   protected registerCommon(_ioc: IOCContainerInterface): void {
     // const { appConfig } = this.options;
     // const logger = ioc.get(I.Logger);

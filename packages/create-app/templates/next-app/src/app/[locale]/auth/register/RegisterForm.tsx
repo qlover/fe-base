@@ -1,6 +1,7 @@
 'use client';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { useStore } from '@brain-toolkit/react-kit';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useState } from 'react';
 import { useIOC } from '@/uikit/hook/useIOC';
@@ -13,12 +14,20 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
   const logger = useIOC(I.Logger);
   const routerService = useIOC(I.RouterServiceInterface);
   const [loading, setLoading] = useState(false);
+  const result = useStore(userService.getUIStore(), (state) => state.result);
 
-  const handleRegister = async (values: unknown) => {
+  const handleRegister = async (values: {
+    username: string;
+    email: string;
+    password: string;
+  }) => {
     try {
       setLoading(true);
-      await userService.register(values);
-      routerService.gotoLogin();
+      await userService.register({
+        username: values.username,
+        email: values.email,
+        password: values.password
+      });
     } catch (error) {
       logger.error(error);
     } finally {
@@ -39,7 +48,19 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
       layout="vertical"
       className="space-y-4"
       validateTrigger="onSubmit"
+      disabled={!!result}
+      initialValues={{
+        username: 'myused@sina.com',
+        email: 'myused@sina.com',
+        password: 'q1234566',
+        confirmPassword: 'q1234566',
+        agreeToTerms: true
+      }}
     >
+      {result && result.email_confirmed_at == null ? (
+        <div className="text-xl text-red-500">{tt.email_verify}</div>
+      ) : null}
+
       <Form.Item
         name="username"
         rules={[

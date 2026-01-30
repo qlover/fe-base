@@ -19,7 +19,6 @@ export class ServerIOCRegister implements IOCRegisterInterface<
    *
    * 一般用于注册全局
    *
-   * @override
    * @param ioc - IOC container
    */
   protected registerGlobals(ioc: IOCContainerInterface): void {
@@ -28,6 +27,7 @@ export class ServerIOCRegister implements IOCRegisterInterface<
     ioc.bind(
       I.Logger,
       new Logger({
+        name: 'next-app-server',
         handlers: new ConsoleHandler(
           new TimestampFormatter({
             localeOptions: {
@@ -41,21 +41,15 @@ export class ServerIOCRegister implements IOCRegisterInterface<
           })
         ),
         silent: false,
-        level: appConfig.env === 'development' ? 'debug' : 'info'
+        level: appConfig.isProduction ? 'warn' : 'debug'
       })
     );
   }
 
-  /**
-   * @override
-   */
   protected registerImplement(ioc: IOCContainerInterface): void {
     ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
   }
 
-  /**
-   * @override
-   */
   protected registerCommon(_ioc: IOCContainerInterface): void {}
 
   /**

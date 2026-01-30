@@ -1,10 +1,10 @@
-import { TeamOutlined } from '@ant-design/icons';
 import { clsx } from 'clsx';
 import { useLocale } from 'next-intl';
-import { useMemo, type HTMLAttributes } from 'react';
+import { Suspense, type HTMLAttributes } from 'react';
+import { AdminButton } from './AdminButton';
 import { AppBridge } from './AppBridge';
+import { AuthButton } from './AuthButton';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { LogoutButton } from './LogoutButton';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { LocaleLink } from '../components/LocaleLink';
 
@@ -14,9 +14,9 @@ export interface AppRoutePageTT {
 }
 
 export interface AppRoutePageProps extends HTMLAttributes<HTMLDivElement> {
-  showLogoutButton?: boolean;
   showAdminButton?: boolean;
   mainProps?: HTMLAttributes<HTMLElement>;
+  showAuthButton?: boolean;
   headerClassName?: string;
   headerHref?: string;
   tt: AppRoutePageTT;
@@ -34,38 +34,16 @@ export interface AppRoutePageProps extends HTMLAttributes<HTMLDivElement> {
  */
 export function AppRoutePage({
   children,
-  showLogoutButton,
   showAdminButton,
   mainProps,
   headerClassName,
+  showAuthButton,
   tt,
   headerHref = '/',
   ...props
 }: AppRoutePageProps) {
   const locale = useLocale();
   const adminTitle = tt.adminTitle;
-
-  const actions = useMemo(() => {
-    return [
-      showAdminButton && (
-        <LocaleLink
-          key="admin-button"
-          href="/admin"
-          title={adminTitle}
-          locale={locale}
-          className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
-        >
-          <TeamOutlined className="text-lg text-text" />
-        </LocaleLink>
-      ),
-
-      <LanguageSwitcher key="language-switcher" />,
-
-      <ThemeSwitcher key="theme-switcher" />,
-
-      showLogoutButton && <LogoutButton key="logout-button" />
-    ].filter(Boolean);
-  }, [adminTitle, showAdminButton, showLogoutButton, locale]);
 
   return (
     <div
@@ -100,7 +78,22 @@ export function AppRoutePage({
               </span>
             </LocaleLink>
           </div>
-          <div className="flex items-center gap-2 md:gap-4">{actions}</div>
+          <div className="flex items-center gap-2 md:gap-4">
+            {showAdminButton && (
+              <Suspense>
+                <AdminButton adminTitle={adminTitle} locale={locale} />
+              </Suspense>
+            )}
+
+            <LanguageSwitcher key="language-switcher" />
+            <ThemeSwitcher key="theme-switcher" />
+
+            {showAuthButton && (
+              <Suspense>
+                <AuthButton />
+              </Suspense>
+            )}
+          </div>
         </div>
       </header>
 

@@ -6,6 +6,13 @@
 export const API_USER_NOT_FOUND = 'api:user__not_found';
 
 /**
+ * @description 用户未验证
+ * @localZh 用户未验证
+ * @localEn User not verified
+ */
+export const API_USER_NOT_VERIFIED = 'api:user__not_verfified';
+
+/**
  * @description 用户已存在
  * @localZh 用户已存在
  * @localEn User already exists

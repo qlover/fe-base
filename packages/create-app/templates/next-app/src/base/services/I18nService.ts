@@ -4,8 +4,8 @@ import {
   I18nServiceState
 } from '../port/I18nServiceInterface';
 import type { I18nServiceLocale } from '../port/I18nServiceInterface';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import type { useTranslations } from 'next-intl';
-import { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 type TranslationFunction = ReturnType<typeof useTranslations>;
 
@@ -21,16 +21,10 @@ export class I18nService
     super(() => new I18nServiceState(i18nConfig.fallbackLng));
   }
 
-  /**
-   * @override
-   */
   public setPathname(pathname: string): void {
     this.pathname = pathname;
   }
 
-  /**
-   * @override
-   */
   public setTranslator(translator: TranslationFunction): void {
     this.translator = translator;
   }

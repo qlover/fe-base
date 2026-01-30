@@ -6,7 +6,7 @@ import {
   type ResourceInterface,
   type ResourceQuery
 } from '@qlover/corekit-bridge';
-import type { AppApiResponse } from '@/base/services/appApi/AppApiRequester';
+import type { AppApiResponse } from '@/base/services/AppApiRequester';
 import type { PaginationInterface } from '@/server/port/PaginationInterface';
 
 export class ResourceService<
@@ -90,9 +90,6 @@ export class ResourceService<
     return this.store.state.listState.result! as PaginationInterface<T>;
   }
 
-  /**
-   * @override
-   */
   public refresh(): Promise<unknown> {
     return this.search(this.store.state.searchParams);
   }

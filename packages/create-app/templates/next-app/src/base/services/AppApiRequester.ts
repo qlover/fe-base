@@ -1,4 +1,8 @@
-import { LifecycleExecutor, RequestAdapterFetch, RequestExecutor } from '@qlover/fe-corekit';
+import {
+  LifecycleExecutor,
+  RequestAdapterFetch,
+  RequestExecutor
+} from '@qlover/fe-corekit';
 import { injectable } from 'inversify';
 import type { RequestEncryptPluginProps } from '@/base/cases/RequestEncryptPlugin';
 import type { AppApiResult } from '@/base/port/AppApiInterface';
@@ -14,11 +18,9 @@ export interface RequestTransactionInterface<Request, Response> {
 }
 
 export interface AppApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>,
-    RequestEncryptPluginProps<Request> {}
+  extends RequestAdapterConfig<Request>, RequestEncryptPluginProps<Request> {}
 
-export interface AppApiRequesterContext
-  extends ExecutorContextInterface<AppApiConfig> {}
+export interface AppApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 
 /**
  * UserApiResponse
@@ -37,11 +39,13 @@ export type AppApiResponse<
 /**
  * UserApi common transaction
  */
-export interface AppApiTransaction<Request = unknown, Response = unknown>
-  extends RequestTransactionInterface<
-    AppApiConfig<Request>,
-    AppApiResponse<Request, Response>
-  > {
+export interface AppApiTransaction<
+  Request = unknown,
+  Response = unknown
+> extends RequestTransactionInterface<
+  AppApiConfig<Request>,
+  AppApiResponse<Request, Response>
+> {
   data: AppApiConfig<Request>['data'];
 }
 
@@ -53,7 +57,8 @@ export class AppApiRequester extends RequestExecutor<
   constructor() {
     super(
       new RequestAdapterFetch({
-        baseURL: '/api',
+        // TODO: ReqeustPlugin build url 最后需要带上/
+        baseURL: '/api/',
         responseType: 'json'
       }),
       new LifecycleExecutor()

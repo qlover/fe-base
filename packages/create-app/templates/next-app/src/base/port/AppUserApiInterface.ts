@@ -1,6 +1,6 @@
 import type { LoginValidatorData } from '@/server/validators/LoginValidator';
 import type { UserSchema } from '@migrations/schema/UserSchema';
-import type { AppApiTransaction } from '../services/appApi/AppApiRequester';
+import type { AppApiTransaction } from '../services/AppApiRequester';
 
 export type UserApiLoginTransaction = AppApiTransaction<
   LoginValidatorData,

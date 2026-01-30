@@ -70,9 +70,6 @@ export class ZodColumnBuilder<
     ];
   }
 
-  /**
-   * @override
-   */
   public zod2BaseOption(
     key: string,
     zod: ZodType
@@ -99,9 +96,6 @@ export class ZodColumnBuilder<
     };
   }
 
-  /**
-   * @override
-   */
   public getBaseOptions(input: Input): OptionMap<Value, Input> {
     return Object.entries(input.shape).reduce(
       (acc, [key, zod]) => {
@@ -129,9 +123,6 @@ export class ZodColumnBuilder<
     return this;
   }
 
-  /**
-   * @override
-   */
   public render<K extends keyof Input['shape']>(
     key: K,
     render: (
@@ -146,7 +137,6 @@ export class ZodColumnBuilder<
 
   /**
    * Translate all i18n keys in options to actual text
-   * @override
    * @param t - Translation function from next-intl
    * @returns this for chaining
    */

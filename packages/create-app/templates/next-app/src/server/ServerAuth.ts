@@ -2,8 +2,10 @@ import { ExecutorError } from '@qlover/fe-corekit';
 import { inject, injectable } from 'inversify';
 import { cookies } from 'next/headers';
 import type { AppConfig } from '@/base/cases/AppConfig';
+import { UserSchema } from '@migrations/schema/UserSchema';
 import { API_NOT_AUTHORIZED } from '@config/Identifier';
 import { I } from '@config/IOCIdentifier';
+import { SupabaseBridge } from './SupabaseBridge';
 import { UserCredentialToken } from './UserCredentialToken';
 import type { ServerAuthInterface } from './port/ServerAuthInterface';
 
@@ -13,7 +15,8 @@ export class ServerAuth implements ServerAuthInterface {
   constructor(
     @inject(I.AppConfig) protected server: AppConfig,
     @inject(UserCredentialToken)
-    protected userCredentialToken: UserCredentialToken
+    protected userCredentialToken: UserCredentialToken,
+    @inject(SupabaseBridge) protected supabase: SupabaseBridge
   ) {
     this.userTokenKey = server.userTokenKey;
   }
@@ -31,19 +34,11 @@ export class ServerAuth implements ServerAuthInterface {
    * @override
    */
   public async hasAuth(): Promise<boolean> {
-    const token = await this.getAuth();
+    const supabase = await this.supabase.getSupabase();
 
-    if (!token) {
-      return false;
-    }
+    const { data } = await supabase.auth.getClaims();
 
-    try {
-      const user = await this.userCredentialToken.parseToken(token);
-
-      return !!user;
-    } catch {
-      return false;
-    }
+    return !!data?.claims;
   }
 
   /**
@@ -71,5 +66,16 @@ export class ServerAuth implements ServerAuthInterface {
     if (!hasAuth) {
       throw new ExecutorError(API_NOT_AUTHORIZED, 'Not authorized');
     }
+  }
+
+  /**
+   * @override
+   */
+  public async getUser(): Promise<UserSchema | null> {
+    const supabase = await this.supabase.getSupabase();
+
+    const { data } = await supabase.auth.getUser();
+
+    return data.user ? this.supabase.toUserSchema(data.user) : null;
   }
 }

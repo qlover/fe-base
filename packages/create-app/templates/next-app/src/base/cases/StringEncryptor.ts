@@ -18,9 +18,6 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
     this.key = appConfig.stringEncryptorKey;
   }
 
-  /**
-   * @override
-   */
   protected encryptWithKey(str: string, key: string): string {
     const result = [];
     for (let i = 0; i < str.length; i++) {
@@ -34,9 +31,6 @@ export class StringEncryptor implements EncryptorInterface<string, string> {
     return result.join('');
   }
 
-  /**
-   * @override
-   */
   protected decryptWithKey(str: string, key: string): string {
     const result = [];
     for (let i = 0; i < str.length; i++) {

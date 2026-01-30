@@ -53,9 +53,6 @@ export class LocalesValidator implements ValidatorInterface<
 }
 
 export class LocalesImportValidator implements ValidatorInterface<ImportLocalesData> {
-  /**
-   * @override
-   */
   public getHasAnyFilesLocale(
     values: FormData
   ): { language: LocaleType; value: FormDataEntryValue }[] {

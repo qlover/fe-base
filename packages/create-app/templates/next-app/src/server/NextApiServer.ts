@@ -12,16 +12,10 @@ import { AppSuccessApi } from './AppSuccessApi';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
 
 export class NextApiServer extends BootstrapServer {
-  /**
-   * @override
-   */
   protected isAppApiResult(result: unknown): result is AppApiResult {
     return isAppApiSuccessInterface(result) || isAppApiErrorInterface(result);
   }
 
-  /**
-   * @override
-   */
   public async run<Result>(
     task?: ExecutorAsyncTask<
       Result | AppApiResult,
@@ -37,20 +31,19 @@ export class NextApiServer extends BootstrapServer {
 
     // If result is ExecutorError, return AppErrorApi
     if (result instanceof ExecutorError) {
+      this.logger.debug('NextApiServer run error:', result);
       return new AppErrorApi(result.id, result.message);
     }
 
     // If result is Error, return AppErrorApi
     if (result instanceof Error) {
+      this.logger.debug('NextApiServer run error:', result);
       return new AppErrorApi('SERVER_ERROR', result.message);
     }
 
     return new AppSuccessApi(result);
   }
 
-  /**
-   * @override
-   */
   public async runWithJson<Result>(
     task?: ExecutorAsyncTask<
       Result | AppApiResult,

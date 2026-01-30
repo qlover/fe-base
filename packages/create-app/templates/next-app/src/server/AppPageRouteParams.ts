@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations } from 'next-intl/server';
-import { TranslateI18nInterface } from '@/base/cases/TranslateI18nInterface';
+import { TranslateI18nUtil } from '@/base/cases/TranslateI18nUtil';
 import { filterMessagesByNamespace } from '@/i18n/loadMessages';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType, PageI18nInterface } from '@config/i18n';
@@ -91,7 +91,10 @@ export class AppPageRouteParams<
       // namespace: namespace
     });
 
-    return TranslateI18nInterface.translate<T>(i18nInterface, t);
+    return TranslateI18nUtil.translate<T>(
+      i18nInterface,
+      TranslateI18nUtil.overrideTranslateT(t)
+    );
   }
 
   /**

@@ -27,9 +27,6 @@ const passwordSchema = z
   .regex(/^\S+$/, { message: V_PASSWORD_SPECIAL_CHARS });
 
 export class LoginValidator implements ValidatorInterface<LoginValidatorData> {
-  /**
-   * @override
-   */
   public validateEmail(data: unknown): void | ValidationFaildResult {
     const emailResult = emailSchema.safeParse(data);
     if (!emailResult.success) {
@@ -37,9 +34,6 @@ export class LoginValidator implements ValidatorInterface<LoginValidatorData> {
     }
   }
 
-  /**
-   * @override
-   */
   public validatePassword(data: unknown): void | ValidationFaildResult {
     const passwordResult = passwordSchema.safeParse(data);
     if (!passwordResult.success) {

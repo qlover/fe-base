@@ -2,6 +2,7 @@ import { createNavigation } from 'next-intl/navigation';
 import { defineRouting } from 'next-intl/routing';
 import { useLocaleRoutes } from '@config/common';
 import { i18nConfig } from '@config/i18n';
+import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
 
 const locales = i18nConfig.supportedLngs;
 
@@ -19,9 +20,13 @@ export const routing = defineRouting({
       en: '/',
       zh: '/'
     },
-    '/login': {
-      en: '/login',
-      zh: '/login'
+    [ROUTE_LOGIN]: {
+      en: '/auth/login',
+      zh: '/auth/login'
+    },
+    [ROUTE_REGISTER]: {
+      en: '/auth/register',
+      zh: '/auth/register'
     }
   }
 });

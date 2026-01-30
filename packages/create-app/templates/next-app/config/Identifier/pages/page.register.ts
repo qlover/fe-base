@@ -167,3 +167,11 @@ export const PAGE_REGISTER_LOGIN_LINK = 'page_register:login_link';
  * @localEn Please agree to the Terms of Service and Privacy Policy
  */
 export const PAGE_REGISTER_TERMS_REQUIRED = 'page_register:terms_required';
+
+/**
+ * @description 注册后需要验证邮箱
+ * @localZh 请查收邮箱完成账号注册
+ * @localEn Please check your email to complete the registration
+ */
+export const PAGE_REGISTER_EMAIL_VERIFY_TITLE =
+  'page_register:email_verify_title';

@@ -9,7 +9,7 @@ export const UserRole = {
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 export const userSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
   password: z.string(),

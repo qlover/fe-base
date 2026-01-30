@@ -1,13 +1,15 @@
+import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
+import { Session, User } from '@supabase/supabase-js';
 import { inject, injectable } from 'inversify';
-import { isEmpty, last, omit } from 'lodash';
+import { isString } from 'lodash';
+import { AppConfig } from '@/base/cases/AppConfig';
 import type { UserSchema } from '@migrations/schema/UserSchema';
-import {
-  API_USER_NOT_FOUND,
-  API_USER_ALREADY_EXISTS
-} from '@config/Identifier/api';
+import { API_USER_NOT_FOUND } from '@config/Identifier/api';
+import { I } from '@config/IOCIdentifier';
 import { PasswordEncrypt } from '../PasswordEncrypt';
 import { UserRepository } from '../repositorys/UserRepository';
 import { ServerAuth } from '../ServerAuth';
+import { SupabaseBridge } from '../SupabaseBridge';
 import {
   UserCredentialToken,
   type UserCredentialTokenValue
@@ -15,11 +17,20 @@ import {
 import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
 import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
-import type { UserServiceInterface } from '../port/UserServiceInterface';
-import type { EncryptorInterface } from '@qlover/fe-corekit';
+import type {
+  UserServiceInterface,
+  UserServiceRegisterParams
+} from '../port/UserServiceInterface';
+import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
 export class UserService implements UserServiceInterface {
+  @inject(I.Logger)
+  protected logger!: LoggerInterface;
+
+  @inject(I.AppConfig)
+  protected appConfig!: AppConfig;
+
   constructor(
     @inject(UserRepository)
     protected userRepository: UserRepositoryInterface,
@@ -28,33 +39,39 @@ export class UserService implements UserServiceInterface {
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
     @inject(UserCredentialToken)
-    protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>
+    protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>,
+    @inject(SupabaseBridge) protected supabaseBridge: SupabaseBridge
   ) {}
 
   /**
    * @override
    */
-  public async register(params: {
-    email: string;
-    password: string;
-  }): Promise<UserSchema> {
-    const user = await this.userRepository.getUserByEmail(params.email);
+  public async register(
+    params: UserServiceRegisterParams
+  ): Promise<UserSchema> {
+    const supabase = await this.supabaseBridge.getSupabase();
 
-    if (!isEmpty(user)) {
-      throw new Error(API_USER_ALREADY_EXISTS);
-    }
+    // TODO: 检查 username, 是否重复
+    // const user = await this.userRepository.getUserByEmail(params.email);
+    // if (!isEmpty(user)) {
+    //   throw new Error(API_USER_ALREADY_EXISTS);
+    // }
 
-    const result = await this.userRepository.add({
+    const result = await supabase.auth.signUp({
       email: params.email,
-      password: this.encryptor.encrypt(params.password)
-    });
+      password: params.password
 
-    const target = last(result);
-    if (!target) {
+      // options: {
+      //   emailRedirectTo: 'http://localhost:3100/callback'
+      // }
+    });
+    this.supabaseBridge.throwIfError(result);
+
+    if (!result.data.user) {
       throw new Error(API_USER_NOT_FOUND);
     }
 
-    return omit(target, 'password') as UserSchema;
+    return this.supabaseBridge.toUserSchema(result.data.user);
   }
 
   /**
@@ -63,52 +80,55 @@ export class UserService implements UserServiceInterface {
   public async login(params: {
     email: string;
     password: string;
+    authCode?: string;
   }): Promise<UserSchema> {
-    const user = await this.userRepository.getUserByEmail(params.email);
+    const supabase = await this.supabaseBridge.getSupabase();
 
-    if (!user) {
-      throw new Error(API_USER_NOT_FOUND);
+    if (params.authCode) {
+      const ares = await supabase.auth.exchangeCodeForSession(params.authCode);
+      this.supabaseBridge.throwIfError(ares);
     }
 
-    const encryptedPassword = this.encryptor.encrypt(params.password);
-
-    if (encryptedPassword !== user.password) {
-      throw new Error(API_USER_NOT_FOUND);
-    }
-
-    const credentialToken = await this.credentialToken.generateToken(user);
-
-    await this.userRepository.updateById(user.id, {
-      credential_token: credentialToken
+    const result = await supabase.auth.signInWithPassword({
+      email: params.email,
+      password: params.password
     });
+    this.supabaseBridge.throwIfError(result);
 
-    return Object.assign(omit(user, 'password') as UserSchema, {
-      credential_token: credentialToken
-    });
+    this.logger.info('supbase login succees', result.data);
+
+    return this.supabaseBridge.toUserSchema(result.data.user!);
   }
 
   /**
    * @override
    */
   public async logout(): Promise<void> {
-    const auth = await this.userAuth.getAuth();
+    const supabase = await this.supabaseBridge.getSupabase();
 
-    if (!auth) {
-      return;
+    const response = await supabase.auth.signOut();
+
+    this.supabaseBridge.throwIfError(response);
+  }
+
+  public async exchangeSessionForCode(code: string): Promise<{
+    user: User;
+    session: Session;
+  }> {
+    if (code == null || !isString(code)) {
+      throw new ExecutorError('code is required');
     }
 
-    try {
-      const user = await this.credentialToken.parseToken(auth);
+    const supabase = await this.supabaseBridge.getSupabase();
+    const response = await supabase.auth.exchangeCodeForSession(code);
+    this.supabaseBridge.throwIfError(response);
 
-      console.log('user', user);
+    this.logger.debug('exchangeSessionForCode', response.data);
 
-      await this.userRepository.updateById(user.id, {
-        credential_token: ''
-      });
-    } catch {
-      return;
+    if (!response.data.user) {
+      throw new ExecutorError(API_USER_NOT_FOUND);
     }
 
-    await this.userAuth.clear();
+    return response.data;
   }
 }

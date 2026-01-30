@@ -25,9 +25,6 @@ export class UserRepository implements UserRepositoryInterface {
     @inject(I.DBBridgeInterface) protected dbBridge: DBBridgeInterface
   ) {}
 
-  /**
-   * @override
-   */
   public getAll(): Promise<unknown> {
     return this.dbBridge.get({ table: this.name });
   }

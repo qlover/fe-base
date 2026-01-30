@@ -39,5 +39,6 @@ export const register18n = Object.freeze({
   have_account: i18nKeys.PAGE_REGISTER_HAVE_ACCOUNT,
   confirm_password: i18nKeys.PAGE_REGISTER_CONFIRM_PASSWORD,
   terms_required: i18nKeys.PAGE_REGISTER_TERMS_REQUIRED,
-  login_link: i18nKeys.PAGE_REGISTER_LOGIN_LINK
+  login_link: i18nKeys.PAGE_REGISTER_LOGIN_LINK,
+  email_verify: i18nKeys.PAGE_REGISTER_EMAIL_VERIFY_TITLE
 });

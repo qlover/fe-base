@@ -8,20 +8,25 @@ import {
   LoginValidator,
   type LoginValidatorData
 } from '../validators/LoginValidator';
+import {
+  SignupVerifyParamType,
+  SignupVerifyValidator
+} from '../validators/SignupVerifyValidator';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
-import type { UserControllerInerface } from '../port/UserControllerInerface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
 import type { ValidatorInterface } from '../port/ValidatorInterface';
 import type { EncryptorInterface } from '@qlover/fe-corekit';
 
 @injectable()
-export class UserController implements UserControllerInerface {
+export class UserController implements UserServiceInterface {
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(StringEncryptor)
     protected stringEncryptor: EncryptorInterface<string, string>,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginValidatorData>,
+    @inject(SignupVerifyValidator)
+    protected verifyValidator: ValidatorInterface<SignupVerifyParamType>,
     @inject(UserService) protected userService: UserServiceInterface
   ) {}
 

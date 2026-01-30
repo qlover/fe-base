@@ -1,4 +1,5 @@
-import { ExecutorAsyncTask, type ExecutorError } from '@qlover/fe-corekit';
+import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
+import { type ExecutorError } from '@qlover/fe-corekit';
 import { type IOCIdentifierMapServer } from '@config/IOCIdentifier';
 import type {
   ServiceIdentifier,

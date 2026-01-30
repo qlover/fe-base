@@ -4,8 +4,8 @@ import { RequestEncryptPlugin } from '@/base/cases/RequestEncryptPlugin';
 import { StringEncryptor } from '@/base/cases/StringEncryptor';
 import { I } from '@config/IOCIdentifier';
 import { AppApiPlugin } from './AppApiPlugin';
-import { AppApiRequester } from './AppApiRequester';
-import type { AppApiConfig } from './AppApiRequester';
+import { AppApiRequester } from '../AppApiRequester';
+import type { AppApiConfig } from '../AppApiRequester';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin
@@ -35,9 +35,6 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
     appUserApi.use(ioc.get(DialogErrorPlugin));
   }
 
-  /**
-   * @override
-   */
   protected requestDataSerializer(
     data: unknown,
     config: AppApiConfig

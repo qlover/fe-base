@@ -1,11 +1,11 @@
-import {
+import { ExecutorError, isRequestAdapterResponse } from '@qlover/fe-corekit';
+import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
+import type { AppApiConfig } from '../AppApiRequester';
+import type {
   ExecutorContextInterface,
-  ExecutorError,
-  isRequestAdapterResponse,
+  HookRuntimes,
   LifecyclePluginInterface
 } from '@qlover/fe-corekit';
-import type { AppApiErrorInterface } from '@/base/port/AppApiInterface';
-import type { AppApiConfig } from './AppApiRequester';
 import type { LoggerInterface } from '@qlover/logger';
 
 export class AppApiPlugin implements LifecyclePluginInterface<
@@ -15,9 +15,6 @@ export class AppApiPlugin implements LifecyclePluginInterface<
 
   constructor(protected logger: LoggerInterface) {}
 
-  /**
-   * @override
-   */
   public isAppApiErrorInterface(value: unknown): value is AppApiErrorInterface {
     return (
       typeof value === 'object' &&
@@ -31,6 +28,19 @@ export class AppApiPlugin implements LifecyclePluginInterface<
 
   /**
    * @override
+   * @param ctx
+   */
+  public onBefore(
+    ctx: ExecutorContextInterface<AppApiConfig<unknown>, unknown, HookRuntimes>
+  ): void {
+    ctx.setParameters({
+      ...ctx.parameters,
+      // TODO: ReqeustPlugin 在处理路径后会保留baseUrl，然后拼接 url，但是 fetchAdapter 会再次组合两个参数导致重复
+      baseURL: ''
+    });
+  }
+  /**
+   * @override
    */
   public onSuccess(context: ExecutorContextInterface<AppApiConfig>): void {
     const response = context.returnValue;
@@ -39,7 +49,10 @@ export class AppApiPlugin implements LifecyclePluginInterface<
     // Important: 当响应数据失败则抛出错误
     if (isRequestAdapterResponse(response)) {
       if (this.isAppApiErrorInterface(response.data)) {
-        throw new ExecutorError(response.data.message || response.data.id, response);
+        throw new ExecutorError(
+          response.data.message || response.data.id,
+          response
+        );
       }
     }
 
@@ -77,9 +90,6 @@ export class AppApiPlugin implements LifecyclePluginInterface<
     }
   }
 
-  /**
-   * @override
-   */
   protected async getResponseJson(response: Response): Promise<unknown> {
     try {
       return await response.json();
@@ -88,15 +98,13 @@ export class AppApiPlugin implements LifecyclePluginInterface<
     }
   }
 
-  /**
-   * @override
-   */
   protected loggerError(config: AppApiConfig, error: unknown): void {
     this.logger.error(
       `%c[AppApi ${config.method} ${config.url}]%c - ${new Date().toLocaleString()}`,
       'color: #f00;',
       'color: inherit;',
-      error
+      error,
+      config
     );
   }
 }

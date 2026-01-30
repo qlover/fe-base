@@ -12,10 +12,11 @@ generateLocales().catch((error) => {
 const nextConfig: NextConfig = {
   // reactStrictMode: false,
   // turbopack 在接下本地 file: 依赖时支持还不够好
-  // turbopack: {
-  //   root: __dirname // 明确指定根目录
-  // },
-  transpilePackages: ['@qlover/corekit-bridge', '@qlover/fe-corekit'],
+  turbopack: {
+    root: __dirname // 明确指定根目录
+  },
+  // pages 路由需要
+  transpilePackages: ['@qlover/fe-corekit', '@qlover/corekit-bridge'],
   env: {
     APP_ENV: process.env.APP_ENV
   }

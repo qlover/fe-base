@@ -1,5 +1,8 @@
 import type { UserCredential, UserSchema } from '@migrations/schema/UserSchema';
-import type { UserService as CorekitBridgeUserServiceInterface } from '@qlover/corekit-bridge';
+import type {
+  UserService as CorekitBridgeUserServiceInterface,
+  UserServiceGateway
+} from '@qlover/corekit-bridge';
 
 export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
   UserSchema,
@@ -13,8 +16,10 @@ export interface UserServiceInterface extends CorekitBridgeUserServiceInterface<
    * This is a extends method from the corekit-bridge UserServiceInterface.
    */
   getToken(): string;
-
-  isUserInfo(value: unknown): value is UserSchema;
-
-  isUserCredential(value: unknown): value is UserCredential;
 }
+
+export interface UserServiceGatewayInterface extends UserServiceGateway<
+  UserSchema,
+  UserCredential,
+  {}
+> {}

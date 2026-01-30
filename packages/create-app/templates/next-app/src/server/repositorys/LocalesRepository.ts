@@ -27,9 +27,6 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     @inject(Datetime) protected datetime: Datetime
   ) {}
 
-  /**
-   * @override
-   */
   public async getAll(): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
       table: this.name,

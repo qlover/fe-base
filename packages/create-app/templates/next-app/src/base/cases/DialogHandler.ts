@@ -69,7 +69,6 @@ export class DialogHandler
   /**
    * Formats error message from various error types
 
-   * @override
       */
   protected formatErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
