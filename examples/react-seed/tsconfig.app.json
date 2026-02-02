@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "tsBuildInfoFile": "./node_modules/.tmp/react-seed.app.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -20,9 +20,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@config/*": ["./config/*"],
+      "@qlover/corekit-bridge": ["../../packages/corekit-bridge/src/core"],
+      "@qlover/corekit-bridge/*": ["../../packages/corekit-bridge/src/core/*"],
+      "@qlover/fe-corekit": ["../../packages/fe-corekit/src"],
+      "@qlover/logger": ["../../packages/logger/src"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "config"]
 }
