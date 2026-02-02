@@ -1,0 +1,7 @@
+@import './taiLwind.css';
+
+/* @import './utils/base-root-10px.css'; */
+@import './utils/zIndex.css';
+@import './utils/scrollbar.css';
+
+@import './globals.css';
