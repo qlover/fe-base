@@ -1,5 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { logger } from '@/globals';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/ioc';
+
+// 定义类型
+type ServiceIdentifier<T = unknown> =
+  | string
+  | symbol
+  | Newable<T>
+  | Abstract<T>;
+type Newable<T = unknown> = new (...args: unknown[]) => T;
+type Abstract<T = unknown> = abstract new (...args: unknown[]) => T;
+type Factory<T = unknown> = () => T;
+type ConstructorParameterMetadata = Record<number, ServiceIdentifier>;
 
 // 定义元数据键
 const INJECTABLE_KEY = Symbol('injectable');
@@ -7,59 +18,59 @@ const INJECT_KEY = Symbol('inject');
 const PARAM_TYPES_KEY = 'design:paramtypes';
 
 // 装饰器
-export function injectable() {
-  return function (target: any) {
-    // 标记类为可注入
+export function injectable(): ClassDecorator {
+  return function <T extends Newable>(target: T): T {
     Reflect.defineMetadata(INJECTABLE_KEY, true, target);
-    // 保存原始构造函数参数类型
-    const paramTypes = Reflect.getMetadata(PARAM_TYPES_KEY, target) || [];
-    Reflect.defineMetadata(PARAM_TYPES_KEY, paramTypes, target);
     return target;
-  };
+  } as ClassDecorator;
 }
 
-export function inject(serviceIdentifier: any) {
+export function inject(
+  serviceIdentifier: ServiceIdentifier
+): ParameterDecorator {
   return function (
-    target: any,
-    propertyKey: string | symbol,
+    target: object,
+    propertyKey: string | symbol | undefined,
     parameterIndex: number
   ) {
-    // 获取已存在的注入配置
-    const existingInjections = Reflect.getMetadata(INJECT_KEY, target) || [];
+    if (propertyKey !== undefined) {
+      throw new Error(
+        `@inject decorator can only be used on constructor parameters. ` +
+          `Found on ${String(propertyKey)} instead.`
+      );
+    }
 
-    // 存储注入配置：参数索引 -> 服务标识符
+    const existingInjections: ConstructorParameterMetadata =
+      Reflect.getMetadata(INJECT_KEY, target) || {};
+
     existingInjections[parameterIndex] = serviceIdentifier;
-
-    // 更新元数据
     Reflect.defineMetadata(INJECT_KEY, existingInjections, target);
-
-    return target;
   };
 }
 
 // IOC容器实现
 export class SimpleIOCContainer implements IOCContainerInterface {
-  private bindings = new Map<unknown, any>();
-  private instances = new Map<unknown, any>();
+  private bindings = new Map<ServiceIdentifier, unknown>();
+  private instances = new Map<ServiceIdentifier, unknown>();
+  private factories = new Map<ServiceIdentifier, Factory>();
 
   /**
    * 绑定服务
 
    * @override
       */
-  bind<T>(serviceIdentifier: unknown, value: T): void {
-    // 检查 value 是否为类（构造器）
-    if (typeof value === 'function' && value.prototype) {
-      // 检查是否标记为 @injectable
-      const isInjectable = Reflect.getMetadata(INJECTABLE_KEY, value);
-      if (!isInjectable) {
-        console.warn(
-          `Class ${value.name} is not decorated with @injectable. It may not be properly injected.`
-        );
-      }
-    }
-
+  bind<T>(serviceIdentifier: ServiceIdentifier, value: T | Newable<T>): void {
     this.bindings.set(serviceIdentifier, value);
+  }
+
+  /**
+   * 绑定工厂函数
+   */
+  bindFactory<T>(
+    serviceIdentifier: ServiceIdentifier,
+    factory: Factory<T>
+  ): void {
+    this.factories.set(serviceIdentifier, factory);
   }
 
   /**
@@ -67,68 +78,209 @@ export class SimpleIOCContainer implements IOCContainerInterface {
 
    * @override
       */
-  get<T>(serviceIdentifier: unknown): T {
-    // 先从实例缓存中查找
+  get<T>(serviceIdentifier: ServiceIdentifier<T>): T {
+    // 从实例缓存中查找
     if (this.instances.has(serviceIdentifier)) {
-      return this.instances.get(serviceIdentifier);
+      return this.instances.get(serviceIdentifier) as T;
+    }
+
+    // 检查工厂函数
+    if (this.factories.has(serviceIdentifier)) {
+      const factory = this.factories.get(serviceIdentifier) as Factory<T>;
+      const instance = factory();
+      this.instances.set(serviceIdentifier, instance);
+      return instance;
     }
 
     // 获取绑定
     const binding = this.bindings.get(serviceIdentifier);
 
-    if (!binding) {
-      throw new Error(`No binding found for ${String(serviceIdentifier)}`);
-    }
-
-    // 如果是类（构造器），则创建实例
-    if (typeof binding === 'function' && binding.prototype) {
-      const instance = this.instantiate(binding);
-
-      // 如果是单例模式，则缓存实例
-      if (this.isSingleton(binding)) {
+    if (binding !== undefined) {
+      // 如果是类构造函数，则实例化
+      if (this.isConstructor(binding)) {
+        const instance = this.instantiate<T>(binding as Newable<T>);
         this.instances.set(serviceIdentifier, instance);
+        return instance;
       }
 
-      return instance as T;
+      // 如果不是类，直接返回值
+      return binding as T;
     }
 
-    // 如果不是类，直接返回值（可能是常量、工厂函数结果等）
-    return binding;
+    // 如果没有绑定，检查是否是类构造函数
+    if (this.isConstructor(serviceIdentifier)) {
+      logger.debug(
+        `Auto-instantiating unbound class: ${serviceIdentifier.name}`
+      );
+      const instance = this.instantiate<T>(serviceIdentifier);
+      this.instances.set(serviceIdentifier, instance);
+      return instance;
+    }
+
+    throw new Error(`No binding found for ${String(serviceIdentifier)}`);
+  }
+
+  /**
+   * 检查是否为类构造函数
+   */
+  private isConstructor(value: unknown): value is Newable {
+    return (
+      typeof value === 'function' &&
+      value.prototype &&
+      value.prototype.constructor === value
+    );
   }
 
   /**
    * 实例化类
    */
-  private instantiate<T>(constructor: new (...args: any[]) => T): T {
-    // 获取构造函数参数类型
-    const paramTypes = Reflect.getMetadata(PARAM_TYPES_KEY, constructor) || [];
+  private instantiate<T>(constructor: Newable<T>): T {
+    // 检查是否有 @inject 装饰器
+    const injectMetadata: ConstructorParameterMetadata =
+      Reflect.getMetadata(INJECT_KEY, constructor) || {};
 
-    // 获取 @inject 装饰器指定的参数
-    const injectMetadata = Reflect.getMetadata(INJECT_KEY, constructor) || [];
+    if (Object.keys(injectMetadata).length > 0) {
+      // 使用 @inject 装饰器的配置
+      const args = this.resolveInjectedDependencies(
+        constructor,
+        injectMetadata
+      );
+      return new constructor(...args);
+    }
 
-    // 准备参数
-    const args = paramTypes.map((paramType: any, index: number) => {
-      // 优先使用 @inject 指定的标识符
-      const serviceIdentifier = injectMetadata[index] || paramType;
+    // 如果没有 @inject 装饰器，尝试自动解析
+    if (constructor.length === 0) {
+      return new constructor();
+    }
 
-      if (!serviceIdentifier) {
-        throw new Error(
-          `Cannot resolve parameter at index ${index} for ${constructor.name}`
-        );
+    // 尝试使用设计时类型元数据自动解析
+    try {
+      const paramTypes = this.getParamTypes(constructor);
+      if (
+        paramTypes.length === 0 ||
+        paramTypes.every((type) => type === undefined)
+      ) {
+        throw new Error('No parameter type information available');
       }
 
-      // 递归解析依赖
-      return this.get(serviceIdentifier);
-    });
+      const args = this.resolveParamTypeDependencies(constructor, paramTypes);
+      return new constructor(...args);
+    } catch (error) {
+      logger.warn(
+        `Failed to auto-resolve dependencies for ${constructor.name}: ${error}. ` +
+          `Consider using @injectable() and @inject() decorators.`
+      );
 
-    // 创建实例
-    return new constructor(...args);
+      // 如果无法解析依赖，尝试使用默认值
+      const args = this.getDefaultArguments(constructor);
+      return new constructor(...args);
+    }
   }
 
   /**
-   * 检查是否为单例（简单实现：标记为 @injectable 的类默认单例）
+   * 获取构造函数参数类型
    */
-  private isSingleton(target: any): boolean {
+  private getParamTypes(constructor: Newable): unknown[] {
+    try {
+      return Reflect.getMetadata(PARAM_TYPES_KEY, constructor) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * 解析使用 @inject 装饰器的依赖
+   */
+  private resolveInjectedDependencies(
+    constructor: Newable,
+    injectMetadata: ConstructorParameterMetadata
+  ): unknown[] {
+    const paramCount = constructor.length;
+    const args: unknown[] = new Array(paramCount);
+
+    for (let i = 0; i < paramCount; i++) {
+      const serviceIdentifier = injectMetadata[i];
+      if (!serviceIdentifier) {
+        // 检查是否是可选的构造函数参数
+        if (i >= constructor.length) {
+          args[i] = undefined;
+          continue;
+        }
+
+        throw new Error(
+          `Cannot resolve parameter at index ${i} for ${constructor.name}. ` +
+            `No @inject decorator found.`
+        );
+      }
+
+      try {
+        args[i] = this.get(serviceIdentifier);
+      } catch (error) {
+        throw new Error(
+          `Cannot resolve dependency ${String(serviceIdentifier)} ` +
+            `for parameter at index ${i} of ${constructor.name}: ${error}`
+        );
+      }
+    }
+
+    return args;
+  }
+
+  /**
+   * 解析基于参数类型的依赖
+   */
+  private resolveParamTypeDependencies(
+    constructor: Newable,
+    paramTypes: unknown[]
+  ): unknown[] {
+    return paramTypes.map((paramType, index) => {
+      if (!paramType) {
+        if (index >= constructor.length) {
+          return undefined;
+        }
+        throw new Error(
+          `Cannot resolve parameter at index ${index} for ${constructor.name}: No type information`
+        );
+      }
+
+      if (!this.isConstructor(paramType)) {
+        throw new Error(
+          `Parameter type at index ${index} for ${constructor.name} is not a constructor: ${String(paramType)}`
+        );
+      }
+
+      try {
+        return this.get(paramType);
+      } catch (error) {
+        throw new Error(
+          `Cannot resolve dependency ${String(paramType)} ` +
+            `for parameter at index ${index} of ${constructor.name}: ${error}`
+        );
+      }
+    });
+  }
+
+  /**
+   * 获取默认参数值
+   */
+  private getDefaultArguments(constructor: Newable): unknown[] {
+    const paramCount = constructor.length;
+    if (paramCount === 0) {
+      return [];
+    }
+
+    logger.warn(
+      `Creating ${constructor.name} with ${paramCount} undefined arguments. ` +
+        `This may cause runtime errors. Consider using dependency injection.`
+    );
+
+    return new Array(paramCount).fill(undefined);
+  }
+
+  /**
+   * 检查是否为单例
+   */
+  private isSingleton(target: Newable): boolean {
     return Reflect.getMetadata(INJECTABLE_KEY, target) === true;
   }
 
@@ -138,5 +290,6 @@ export class SimpleIOCContainer implements IOCContainerInterface {
   reset(): void {
     this.bindings.clear();
     this.instances.clear();
+    this.factories.clear();
   }
 }

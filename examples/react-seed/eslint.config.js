@@ -87,7 +87,8 @@ export default defineConfig([
         'sessionStorage',
         'navigator',
         'location',
-        'history'
+        'history',
+        'console'
       ]
     }
   ),

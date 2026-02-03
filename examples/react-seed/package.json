@@ -8,6 +8,7 @@
     "dev:force": "vite --mode localhost --force",
     "dev:staging": "vite --mode staging",
     "dev:prod": "vite --mode production",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "build": "cross-env NODE_ENV=production vite build",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true vite build",
     "lint": "eslint .",
@@ -19,6 +20,7 @@
     "inversify": "^7.11.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.0",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

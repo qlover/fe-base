@@ -31,7 +31,6 @@ export const logger = new Logger({
  * - src/impls/InvertifyContainer
  */
 export const containerImpl: IOCContainerInterface = new SimpleIOCContainer();
-// export const containerImpl: IOCContainerInterface = new InversifyContainer();
 
 /**
  * 这是一个全局快捷方法，用于获取容器中的实例
