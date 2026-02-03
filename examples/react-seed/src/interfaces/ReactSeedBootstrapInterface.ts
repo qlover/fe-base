@@ -1,10 +1,10 @@
+import type { ReactSeedConfigInterface } from './ReactSeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge/ioc';
-import type { ReactSeedConfigInterface } from './ReactSeedConfigInterface';
 
 export interface BootstrapsRegistryInterface {
   register(

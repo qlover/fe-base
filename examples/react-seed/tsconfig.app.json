@@ -25,11 +25,7 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["./config/*"],
-      "@qlover/corekit-bridge": ["../../packages/corekit-bridge/src/core"],
-      "@qlover/corekit-bridge/*": ["../../packages/corekit-bridge/src/core/*"],
-      "@qlover/fe-corekit": ["../../packages/fe-corekit/src"],
-      "@qlover/logger": ["../../packages/logger/src"]
+      "@config/*": ["./config/*"]
     }
   },
   "include": ["src", "config"]

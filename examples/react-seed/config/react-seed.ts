@@ -29,12 +29,7 @@ export const browserGlobalsName = 'reactSeed';
  * ```
  */
 export const omitInjectedGlobals = [
-  'appConfig.openAiTokenPrefix',
-  'appConfig.openAiToken',
-  'appConfig.loginPassword',
-  'appConfig.loginUser',
-  'appConfig.aiApiTokenPrefix',
-  'appConfig.openAiBaseUrl',
-  'appConfig.aiApiBaseUrl',
-  'appConfig.aiApiToken'
+  // 'IOC',
+  // 'containerImpl',
+  'seedConfig.aiApiToken'
 ];

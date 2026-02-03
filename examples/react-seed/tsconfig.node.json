@@ -23,8 +23,7 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["./config/*"],
-      "@qlover/corekit-bridge/build": ["../../packages/corekit-bridge/src/build/*"],
+      "@config/*": ["./config/*"]
     }
   },
   "include": ["vite.config.ts", "tailwind.config.ts"]

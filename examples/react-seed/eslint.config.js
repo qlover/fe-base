@@ -3,8 +3,8 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
+import importPlugin from 'eslint-plugin-import';
 import qloverLint, { restrictSpecificGlobals } from '@qlover/eslint-plugin';
-
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
@@ -25,6 +25,7 @@ export default defineConfig([
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
+      import: importPlugin,
       '@qlover-eslint': qloverLint
     },
     languageOptions: {
@@ -34,7 +35,40 @@ export default defineConfig([
       }
     },
     rules: {
-      '@qlover-eslint/ts-class-override': 'error'
+      '@qlover-eslint/ts-class-override': 'error',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: false,
+          fixStyle: 'separate-type-imports'
+        }
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+            'type'
+          ],
+          pathGroupsExcludedImportTypes: ['type'],
+          pathGroups: [
+            {
+              pattern: '@/**',
+              group: 'internal'
+            }
+          ],
+          'newlines-between': 'never',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true
+          }
+        }
+      ]
     }
   },
   // 限制 src 目录下不能直接使用特定的浏览器全局变量
@@ -54,8 +88,7 @@ export default defineConfig([
         'navigator',
         'location',
         'history'
-      ],
-      // message: '❌ see(./docs/zh/why-no-globals.md)'
+      ]
     }
   ),
   // 为特定文件允许使用全局变量
@@ -70,9 +103,7 @@ export default defineConfig([
     files: ['src/pages/**/*.tsx', 'src/App.tsx', 'vite.config.ts'],
     rules: {
       'import/no-default-export': 'off',
-      // 强制 pages 必须使用 default export，禁止 named export
       'import/no-named-export': 'error',
-      // 建议使用 default export
       'import/prefer-default-export': 'error'
     }
   }
