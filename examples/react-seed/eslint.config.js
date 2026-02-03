@@ -23,19 +23,76 @@ export default defineConfig([
     }
   },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'], // 只针对 src 目录
     plugins: {
       import: importPlugin,
       '@qlover-eslint': qloverLint
     },
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ['./tsconfig.app.json'], // 只使用 tsconfig.app.json
         tsconfigRootDir: import.meta.dirname
       }
     },
     rules: {
       '@qlover-eslint/ts-class-override': 'error',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: false,
+          fixStyle: 'separate-type-imports'
+        }
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+            'type'
+          ],
+          pathGroupsExcludedImportTypes: ['type'],
+          pathGroups: [
+            {
+              pattern: '@/**',
+              group: 'internal'
+            }
+          ],
+          'newlines-between': 'never',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true
+          }
+        }
+      ]
+    }
+  },
+  // 为测试文件单独配置
+  {
+    files: [
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '__tests__/**/*.{ts,tsx}'
+    ],
+    plugins: {
+      import: importPlugin
+    },
+    languageOptions: {
+      globals: {
+        ...globals.vitest,
+        ...globals.browser,
+        ...globals.node
+      },
+      parserOptions: {
+        project: ['./tsconfig.test.json'], // 使用 tsconfig.node.json 或创建 tsconfig.test.json
+        tsconfigRootDir: import.meta.dirname
+      }
+    },
+    rules: {
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {

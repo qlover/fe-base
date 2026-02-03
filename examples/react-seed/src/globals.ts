@@ -5,11 +5,14 @@ import { SimpleIOCContainer } from './impls/SimpleIOCContainer';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { IOCFunctionInterface } from '@qlover/corekit-bridge/ioc';
-import type { TimestampFormatterOptions } from '@qlover/logger';
+import type {
+  LoggerInterface,
+  TimestampFormatterOptions
+} from '@qlover/logger';
 
 export const seedConfig = new ReactSeedConfig();
 
-export const logger = new Logger({
+export const logger: LoggerInterface = new Logger({
   handlers: new ConsoleHandler(
     new TimestampFormatter({
       localeOptions:
@@ -30,7 +33,9 @@ export const logger = new Logger({
  * - src/impls/SimpleIOCContainer
  * - src/impls/InvertifyContainer
  */
-export const containerImpl: IOCContainerInterface = new SimpleIOCContainer();
+export const containerImpl: IOCContainerInterface = new SimpleIOCContainer(
+  logger
+);
 
 /**
  * 这是一个全局快捷方法，用于获取容器中的实例

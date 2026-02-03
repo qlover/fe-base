@@ -12,7 +12,8 @@
     "build": "cross-env NODE_ENV=production vite build",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@typescript-eslint/parser": "^8.54.0",
@@ -41,6 +42,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "jsdom": "^28.0.0",
     "lodash-es": "^4.17.23",
     "postcss": "^8.5.6",
     "rollup-plugin-visualizer": "^6.0.5",
@@ -48,6 +50,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
-    "vite-tsconfig-paths": "^6.0.5"
+    "vite-tsconfig-paths": "^6.0.5",
+    "vitest": "^3.2.4"
   }
 }

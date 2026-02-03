@@ -1,5 +1,5 @@
-import { logger } from '@/globals';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/ioc';
+import type { LoggerInterface } from '@qlover/logger';
 
 // 定义类型
 type ServiceIdentifier<T = unknown> =
@@ -53,6 +53,8 @@ export class SimpleIOCContainer implements IOCContainerInterface {
   private bindings = new Map<ServiceIdentifier, unknown>();
   private instances = new Map<ServiceIdentifier, unknown>();
   private factories = new Map<ServiceIdentifier, Factory>();
+
+  constructor(protected logger: LoggerInterface) {}
 
   /**
    * 绑定服务
@@ -109,7 +111,7 @@ export class SimpleIOCContainer implements IOCContainerInterface {
 
     // 如果没有绑定，检查是否是类构造函数
     if (this.isConstructor(serviceIdentifier)) {
-      logger.debug(
+      this.logger.debug(
         `Auto-instantiating unbound class: ${serviceIdentifier.name}`
       );
       const instance = this.instantiate<T>(serviceIdentifier);
@@ -166,7 +168,7 @@ export class SimpleIOCContainer implements IOCContainerInterface {
       const args = this.resolveParamTypeDependencies(constructor, paramTypes);
       return new constructor(...args);
     } catch (error) {
-      logger.warn(
+      this.logger.warn(
         `Failed to auto-resolve dependencies for ${constructor.name}: ${error}. ` +
           `Consider using @injectable() and @inject() decorators.`
       );
@@ -269,7 +271,7 @@ export class SimpleIOCContainer implements IOCContainerInterface {
       return [];
     }
 
-    logger.warn(
+    this.logger.warn(
       `Creating ${constructor.name} with ${paramCount} undefined arguments. ` +
         `This may cause runtime errors. Consider using dependency injection.`
     );

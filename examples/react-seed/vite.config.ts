@@ -1,8 +1,8 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 import { name, version } from './package.json';
 
 // https://vite.dev/config/
@@ -23,5 +23,12 @@ export default defineConfig({
         brotliSize: true,
         template: 'treemap'
       })
-  ]
+  ],
+  test: {
+    watch: false,
+    environment: 'jsdom',
+    globals: true,
+    include: ['__tests__/**/*.test.{ts,tsx}'],
+    setupFiles: ['./__tests__/index.ts']
+  }
 });
