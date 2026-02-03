@@ -95,9 +95,7 @@ export interface RequestPluginInnerConfig {
  *
  * @since 3.0.0
  */
-export class RequestPlugin
-  implements LifecyclePluginInterface<RequestAdapterContext>
-{
+export class RequestPlugin implements LifecyclePluginInterface<RequestAdapterContext> {
   public readonly pluginName = 'RequestPlugin';
 
   protected readonly config: RequestPluginConfig;
@@ -177,6 +175,9 @@ export class RequestPlugin
     ctx.setParameters(this.mergeConfig(ctx.parameters));
   }
 
+  protected startsWith(url: string, baseUrl: string): boolean {
+    return url.startsWith(baseUrl);
+  }
   /**
    * Main request handler
    *
@@ -189,11 +190,20 @@ export class RequestPlugin
   public mergeConfig(
     config: RequestAdapterConfig & RequestPluginConfig
   ): RequestAdapterConfig & RequestPluginConfig {
-    // Merge default config with context config
     const mergedConfig = this.createConfig(config);
 
     const processedData = this.processRequestData(mergedConfig);
     const builtUrl = this.buildUrl(mergedConfig);
+
+    // remove baseURL if url is absolute
+    if (
+      builtUrl &&
+      mergedConfig.baseURL &&
+      this.startsWith(builtUrl, mergedConfig.baseURL)
+    ) {
+      delete mergedConfig.baseURL;
+    }
+
     const injectedHeaders = this.injectHeaders(mergedConfig);
 
     return Object.assign(mergedConfig, {

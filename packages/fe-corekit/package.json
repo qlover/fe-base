@@ -20,6 +20,36 @@
       "import": "./dist/index.js",
       "browser": "./dist/index.iife.js",
       "require": "./dist/index.cjs"
+    },
+    "./aborter": {
+      "types": "./dist/aborter/index.d.ts",
+      "import": "./dist/aborter/index.js",
+      "require": "./dist/aborter/index.cjs"
+    },
+    "./encrypt": {
+      "types": "./dist/encrypt/index.d.ts",
+      "import": "./dist/encrypt/index.js",
+      "require": "./dist/encrypt/index.cjs"
+    },
+    "./executor": {
+      "types": "./dist/executor/index.d.ts",
+      "import": "./dist/executor/index.js",
+      "require": "./dist/executor/index.cjs"
+    },
+    "./request": {
+      "types": "./dist/request/index.d.ts",
+      "import": "./dist/request/index.js",
+      "require": "./dist/request/index.cjs"
+    },
+    "./serializer": {
+      "types": "./dist/serializer/index.d.ts",
+      "import": "./dist/serializer/index.js",
+      "require": "./dist/serializer/index.cjs"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.js",
+      "require": "./dist/storage/index.cjs"
     }
   },
   "repository": {

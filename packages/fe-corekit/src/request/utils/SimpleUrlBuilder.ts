@@ -206,11 +206,21 @@ export class SimpleUrlBuilder implements UrlBuilderInterface {
 
           // Then combine the paths
           let combinedPath = basePath;
-          if (!combinedPath.endsWith('/') && !url.startsWith('/')) {
-            combinedPath += '/';
+          // Fix: Add slash if combinedPath doesn't end with '/' OR if url doesn't start with '/'
+          // Previous logic was wrong: it used AND instead of OR
+          if (!combinedPath.endsWith('/') || !url.startsWith('/')) {
+            // Only add slash if we need it to separate paths
+            if (!combinedPath.endsWith('/')) {
+              combinedPath += '/';
+            }
           }
           combinedPath += url.replace(/^\//, ''); // Remove leading slash if present
 
+          urlObject = new URL(combinedPath, 'http://temp');
+          shouldReturnPathOnly = true;
+        } else if (base && base === 'api') {
+          // Special case: handle 'api' as a simple path
+          const combinedPath = '/api/' + url.replace(/^\//, '');
           urlObject = new URL(combinedPath, 'http://temp');
           shouldReturnPathOnly = true;
         } else if (base) {

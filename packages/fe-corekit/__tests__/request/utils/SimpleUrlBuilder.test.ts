@@ -359,6 +359,63 @@ describe('SimpleUrlBuilder', () => {
 
         expect(urlBuilder.buildUrl(config)).toBe('/api/v1/users/123/profile');
       });
+
+      it('should handle multiple relative segments', () => {
+        const config: RequestAdapterConfig = {
+          url: '/user/profile',
+          baseURL: '/api'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/user/profile');
+      });
+
+      // Added test case: baseUrl='/api' and url='/user/login' scenario
+      it('should handle api base with user login path', () => {
+        const config: RequestAdapterConfig = {
+          url: '/user/login',
+          baseURL: '/api'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/user/login');
+      });
+
+      // Additional edge case tests
+      it('should handle baseURL ending with slash', () => {
+        const config: RequestAdapterConfig = {
+          url: '/users',
+          baseURL: '/api/'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/users');
+      });
+
+      it('should handle baseURL without leading slash', () => {
+        const config: RequestAdapterConfig = {
+          url: '/users',
+          baseURL: 'api'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/users');
+      });
+
+      it('should handle url without leading slash', () => {
+        const config: RequestAdapterConfig = {
+          url: 'users',
+          baseURL: '/api'
+        };
+
+        expect(urlBuilder.buildUrl(config)).toBe('/api/users');
+      });
+      
+      // Test the specific bug case: baseUrl = /api url = /user/login
+      it('should correctly join /api with /user/login', () => {
+        const config: RequestAdapterConfig = {
+          url: '/user/login',
+          baseURL: '/api'
+        };
+        
+        expect(urlBuilder.buildUrl(config)).toBe('/api/user/login');
+      });
     });
 
     describe('URL normalization', () => {
