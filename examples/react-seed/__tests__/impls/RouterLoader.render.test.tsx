@@ -23,7 +23,7 @@ describe('RouterLoader', () => {
         // Lazy component or regular component
         const Component = element as React.ComponentType;
         return (
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense data-testid="Suspense" fallback={<div>Loading...</div>}>
             <Component />
           </Suspense>
         );
@@ -78,7 +78,9 @@ describe('RouterLoader', () => {
     });
 
     it('should handle lazy loader function in componentMaps', () => {
-      const LazyComponent = vi.fn(() => <div>Lazy Component</div>);
+      const LazyComponent = vi.fn(() => (
+        <div data-testid="LazyComponent">Lazy Component</div>
+      ));
       const lazyLoader = () =>
         Promise.resolve({
           default: LazyComponent
@@ -117,7 +119,7 @@ describe('RouterLoader', () => {
     it('should handle LazyExoticComponent in componentMaps', () => {
       const LazyComponent = lazy(() =>
         Promise.resolve({
-          default: () => <div>Already Lazy</div>
+          default: () => <div data-testid="LazyComponent">Already Lazy</div>
         })
       );
 
@@ -218,8 +220,8 @@ describe('RouterLoader', () => {
   describe('toRoute - nested routes', () => {
     it('should handle nested routes with children', () => {
       const componentMaps: ComponentMap = {
-        Parent: () => <div>Parent</div>,
-        Child: () => <div>Child</div>
+        Parent: () => <div data-testid="componentMaps">Parent</div>,
+        Child: () => <div data-testid="componentMaps">Child</div>
       };
 
       const loader = new RouterLoader({
@@ -249,9 +251,9 @@ describe('RouterLoader', () => {
 
     it('should handle deeply nested routes', () => {
       const componentMaps: ComponentMap = {
-        Level1: () => <div>Level1</div>,
-        Level2: () => <div>Level2</div>,
-        Level3: () => <div>Level3</div>
+        Level1: () => <div data-testid="componentMaps">Level1</div>,
+        Level2: () => <div data-testid="componentMaps">Level2</div>,
+        Level3: () => <div data-testid="componentMaps">Level3</div>
       };
 
       const loader = new RouterLoader({
@@ -290,7 +292,7 @@ describe('RouterLoader', () => {
   describe('toRoute - index routes', () => {
     it('should handle index route correctly', () => {
       const componentMaps: ComponentMap = {
-        Index: () => <div>Index</div>
+        Index: () => <div data-testid="componentMaps">Index</div>
       };
 
       const loader = new RouterLoader({
@@ -314,7 +316,7 @@ describe('RouterLoader', () => {
 
     it('should handle non-index route with index: false', () => {
       const componentMaps: ComponentMap = {
-        Page: () => <div>Page</div>
+        Page: () => <div data-testid="componentMaps">Page</div>
       };
 
       const loader = new RouterLoader({

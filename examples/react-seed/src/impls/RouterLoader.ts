@@ -231,7 +231,7 @@ export class RouterLoader implements RouteLoaderInterface {
    */
   public toRoute(route: RouteConfigValue): RouteObject {
     const { render } = this.options;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { element, children, index, meta: _meta, ...restRouteProps } = route;
 
     // Parse the element configuration

@@ -61,14 +61,17 @@ export class SimpleIOCContainer implements IOCContainerInterface {
 
    * @override
       */
-  bind<T>(serviceIdentifier: ServiceIdentifier, value: T | Newable<T>): void {
+  public bind<T>(
+    serviceIdentifier: ServiceIdentifier,
+    value: T | Newable<T>
+  ): void {
     this.bindings.set(serviceIdentifier, value);
   }
 
   /**
    * 绑定工厂函数
    */
-  bindFactory<T>(
+  public bindFactory<T>(
     serviceIdentifier: ServiceIdentifier,
     factory: Factory<T>
   ): void {
@@ -80,7 +83,7 @@ export class SimpleIOCContainer implements IOCContainerInterface {
 
    * @override
       */
-  get<T>(serviceIdentifier: ServiceIdentifier<T>): T {
+  public get<T>(serviceIdentifier: ServiceIdentifier<T>): T {
     // 从实例缓存中查找
     if (this.instances.has(serviceIdentifier)) {
       return this.instances.get(serviceIdentifier) as T;
@@ -289,7 +292,7 @@ export class SimpleIOCContainer implements IOCContainerInterface {
   /**
    * 重置容器（主要用于测试）
    */
-  reset(): void {
+  public reset(): void {
     this.bindings.clear();
     this.instances.clear();
     this.factories.clear();

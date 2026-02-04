@@ -6,7 +6,10 @@ import { printBootstrap } from '@/utils/PrintBootstrap';
 import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
 import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
-import type { BootstrapPluginOptions, IOCContainerInterface } from '@qlover/corekit-bridge';
+import type {
+  BootstrapPluginOptions,
+  IOCContainerInterface
+} from '@qlover/corekit-bridge';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type { IOCFunctionInterface } from '@qlover/corekit-bridge/ioc';
 
@@ -19,7 +22,7 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
    *
    * @override
    */
-  startup(root?: unknown): Promise<BootstrapPluginOptions> {
+  public startup(root?: unknown): Promise<BootstrapPluginOptions> {
     const { logger, seedConfig } = globals;
 
     const bootstrap = new Bootstrap({

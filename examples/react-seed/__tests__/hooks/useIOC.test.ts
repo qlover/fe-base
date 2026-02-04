@@ -126,7 +126,7 @@ describe('useIOC', () => {
     it('should return instance of the class', () => {
       class TestService {
         public value = 'test-value';
-        public getValue() {
+        public getValue(): string {
           return this.value;
         }
       }
@@ -210,7 +210,7 @@ describe('useIOC', () => {
       // When using a string identifier that is not bound, it should throw
       // Use a valid IOCIdentifierMap key that is not bound
       const unboundIdentifier = 'JSONSerializer' as keyof IOCIdentifierMap;
-      
+
       // Ensure it's not bound
       (globals.containerImpl as SimpleIOCContainer).reset();
 

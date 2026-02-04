@@ -7,7 +7,7 @@ export class RouteService implements RouteServiceInterface {
   /**
    * @override
    */
-  getRoutes(): RouteConfigValue[] {
+  public getRoutes(): RouteConfigValue[] {
     return [];
   }
 }

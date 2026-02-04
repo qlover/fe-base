@@ -117,7 +117,7 @@ describe('globals.ts', () => {
     it('应该能够绑定和获取服务', () => {
       // 创建测试服务
       class TestService {
-        getValue() {
+        public getValue(): string {
           return 'test value';
         }
       }
@@ -151,7 +151,7 @@ describe('globals.ts', () => {
     it('应该能够通过 IOC 函数获取服务', () => {
       // 绑定测试服务
       class TestIOCService {
-        getMessage() {
+        public getMessage(): string {
           return 'IOC test message';
         }
       }
@@ -188,7 +188,7 @@ describe('globals.ts', () => {
       class ServiceWithLogger {
         constructor(private logger: LoggerInterface) {}
 
-        logMessage(message: string) {
+        public logMessage(message: string): string {
           this.logger.info(message);
           return `logged: ${message}`;
         }

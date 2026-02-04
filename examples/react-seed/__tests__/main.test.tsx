@@ -35,7 +35,7 @@ vi.mock('@/impls/BootstrapClient', () => ({
 }));
 
 vi.mock('@/App', () => ({
-  default: vi.fn(() => <div>App Component</div>)
+  default: vi.fn(() => <div data-testid="div">App Component</div>)
 }));
 
 describe('main.tsx', () => {

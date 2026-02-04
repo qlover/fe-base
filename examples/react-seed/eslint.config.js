@@ -1,14 +1,26 @@
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
-import importPlugin from 'eslint-plugin-import';
 import qloverLint, { restrictSpecificGlobals } from '@qlover/eslint-plugin';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import importPlugin from 'eslint-plugin-import';
+import prettierPlugin from 'eslint-plugin-prettier';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'dist',
+    'node_modules',
+    'postcss.config.js',
+    'eslint.config.js'
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -17,28 +29,42 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite
     ],
-    plugins: {
-      import: importPlugin
-    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser
     }
   },
   {
-    files: ['src/**/*.{ts,tsx}'], // 只针对 src 目录
-    plugins: {
-      import: importPlugin,
-      '@qlover-eslint': qloverLint
-    },
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
-        project: ['./tsconfig.app.json'], // 只使用 tsconfig.app.json
-        tsconfigRootDir: import.meta.dirname
+        // Note: 'project' is removed here to avoid conflict with projectService in the type-checked config below
+        // TypeScript files will get type information from the recommendedTypeChecked config
+        tsconfigRootDir: __dirname
       }
     },
+    plugins: {
+      'unused-imports': unusedImports,
+      import: importPlugin,
+      prettier: prettierPlugin,
+      '@qlover-eslint': qloverLint,
+      '@typescript-eslint': tseslint.plugin
+    },
     rules: {
-      '@qlover-eslint/ts-class-override': 'error',
+      '@qlover-eslint/ts-class-method-return': 'error',
+      '@qlover-eslint/ts-class-member-accessibility': 'error',
+      '@qlover-eslint/ts-class-override': 'off',
+      '@qlover-eslint/require-root-testid': [
+        'error',
+        {
+          exclude: ['/Provider$/']
+        }
+      ], // 禁用 import 路径解析检查，TypeScript 编译器会处理
+      'import/no-unresolved': 'off',
+      // 禁用原始的 no-unused-vars，使用 unused-imports 的规则替代
+      '@typescript-eslint/no-unused-vars': 'off',
+      // 强制使用 import type 导入类型
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
@@ -47,16 +73,30 @@ export default defineConfig([
           fixStyle: 'separate-type-imports'
         }
       ],
-      '@typescript-eslint/no-import-type-side-effects': 'error',
+      // 检查未使用的导入
+      'unused-imports/no-unused-imports': 'error',
+      // 检查未使用的变量，但允许以下划线开头的变量
+      'unused-imports/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_'
+        }
+      ],
+      // import 语句排序规则
       'import/order': [
         'error',
         {
           groups: [
-            'builtin',
-            'external',
-            'internal',
-            ['parent', 'sibling', 'index'],
-            'type'
+            'builtin', // Node.js 内置模块
+            'external', // 第三方模块
+            'internal', // 内部模块（使用 alias 的导入）
+            ['parent', 'sibling', 'index'], // 父级和同级模块
+            // 'index', // 当前目录下的模块
+            // 'object', // 对象导入
+            'type' // 类型导入
           ],
           pathGroupsExcludedImportTypes: ['type'],
           pathGroups: [
@@ -65,68 +105,37 @@ export default defineConfig([
               group: 'internal'
             }
           ],
-          'newlines-between': 'never',
+          'newlines-between': 'never', // 不同组之间空一行
           alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
+            order: 'asc', // 按字母顺序排序
+            caseInsensitive: true // 排序时忽略大小写
           }
         }
-      ]
+      ],
+      // Prettier 配置
+      'prettier/prettier': [
+        'error',
+        {
+          singleQuote: true,
+          trailingComma: 'none',
+          endOfLine: 'lf',
+          printWidth: 80
+        },
+        {
+          // 仅用于单独部署时对 eslint prettier 插件自动查找 prettierrc 时报错
+          // 注意: vscode 等编辑器会失效, 作为单独项目开发时可以去掉
+          usePrettierrc: false
+        }
+      ],
+      // 默认禁用 export default
+      'import/no-default-export': 'error'
     }
   },
-  // 为测试文件单独配置
+  // 为特定文件允许使用全局变量
   {
-    files: [
-      '**/*.test.{ts,tsx}',
-      '**/*.spec.{ts,tsx}',
-      '__tests__/**/*.{ts,tsx}'
-    ],
-
-    languageOptions: {
-      globals: {
-        ...globals.vitest,
-        ...globals.browser,
-        ...globals.node
-      },
-      parserOptions: {
-        project: ['./tsconfig.test.json'], // 使用 tsconfig.node.json 或创建 tsconfig.test.json
-        tsconfigRootDir: import.meta.dirname
-      }
-    },
+    files: ['src/main.tsx', 'src/core/globals.ts'],
     rules: {
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          prefer: 'type-imports',
-          disallowTypeAnnotations: false,
-          fixStyle: 'separate-type-imports'
-        }
-      ],
-      '@typescript-eslint/no-import-type-side-effects': 'error',
-      'import/order': [
-        'error',
-        {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            ['parent', 'sibling', 'index'],
-            'type'
-          ],
-          pathGroupsExcludedImportTypes: ['type'],
-          pathGroups: [
-            {
-              pattern: '@/**',
-              group: 'internal'
-            }
-          ],
-          'newlines-between': 'never',
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          }
-        }
-      ]
+      'no-restricted-globals': 'off'
     }
   },
   // 限制 src 目录下不能直接使用特定的浏览器全局变量
@@ -145,24 +154,31 @@ export default defineConfig([
         'sessionStorage',
         'navigator',
         'location',
-        'history',
-        'console'
-      ]
+        'history'
+      ],
+      message: '❌ see(./docs/zh/why-no-globals.md)'
     }
   ),
   // 为特定文件允许使用全局变量
   {
-    files: ['src/main.tsx', 'src/globals.ts'],
+    files: ['src/main.tsx', 'src/core/globals.ts'],
     rules: {
       'no-restricted-globals': 'off'
     }
   },
   // 为特定文件允许 default export
   {
-    files: ['src/pages/**/*.tsx', 'src/App.tsx', 'vite.config.ts'],
+    files: [
+      'src/pages/**/*.tsx',
+      'src/App.tsx',
+      'vite.config.ts',
+      'tailwind.config.ts'
+    ],
     rules: {
       'import/no-default-export': 'off',
+      // 强制 pages 必须使用 default export，禁止 named export
       'import/no-named-export': 'error',
+      // 建议使用 default export
       'import/prefer-default-export': 'error'
     }
   }
