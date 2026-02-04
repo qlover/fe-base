@@ -28,6 +28,8 @@ export interface RouteConfigMeta {
    * The i18n interface of the route
    */
   i18nInterface?: Record<string, string>;
+
+  category?: string;
 }
 
 /**

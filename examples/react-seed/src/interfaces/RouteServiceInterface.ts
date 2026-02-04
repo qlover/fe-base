@@ -1,4 +1,4 @@
-import type { RouteObject } from 'react-router-dom';
+import type { RouteConfigValue } from './RouteLoaderInterface';
 
 export interface RouteMeta {
   /**
@@ -29,28 +29,6 @@ export interface RouteMeta {
    */
   i18nInterface?: Record<string, string>;
 }
-
-export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
-  /**
-   * Component identifier string that maps to a component in componentMaps
-   *
-   * TODO: support `ReactNode`
-   *
-   * @description Used to lookup the actual component implementation
-   */
-  element?: string;
-
-  /**
-   * Nested route configurations
-   */
-  children?: RouteConfigValue[];
-
-  /**
-   * Additional metadata for the route
-   * @description Can store any route-specific data like permissions, titles, etc.
-   */
-  meta?: RouteMeta;
-};
 
 export interface RouteServiceInterface {
   getRoutes(): RouteConfigValue[];

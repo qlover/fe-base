@@ -1,7 +1,5 @@
-import type {
-  RouteConfigValue,
-  RouteServiceInterface
-} from '@/interfaces/RouteServiceInterface';
+import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
+import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 
 export class RouteService implements RouteServiceInterface {
   /**
