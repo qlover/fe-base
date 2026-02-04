@@ -49,4 +49,12 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 }));
 
 // Mock globals
-vi.mock('@/globals', () => createMockGlobals());
+vi.mock('@/globals', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/globals')>();
+  const mock = createMockGlobals();
+  return {
+    ...actual,
+    ...mock,
+    length: undefined
+  };
+});

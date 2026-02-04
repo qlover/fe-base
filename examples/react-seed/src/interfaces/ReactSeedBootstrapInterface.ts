@@ -19,7 +19,7 @@ export interface BootstrapsRegistryInterface {
  */
 export interface ReactSeedBootstrapInterface {
   startup(): void;
-  startup(): Promise<void>;
+  startup(): Promise<unknown>;
 
   getPlugins(seedConfig: ReactSeedConfigInterface): BootstrapExecutorPlugin[];
 }

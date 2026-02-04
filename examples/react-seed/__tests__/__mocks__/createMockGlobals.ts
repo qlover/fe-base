@@ -9,7 +9,7 @@ import type { LoggerInterface } from '@qlover/logger';
 export function createGlobalsLogger(
   seedConfig: ReactSeedConfigInterface
 ): LoggerInterface {
-  return new Logger({
+  const logger = new Logger({
     name: seedConfig.name,
     silent: seedConfig.isProduction,
     level: 'debug',
@@ -19,6 +19,16 @@ export function createGlobalsLogger(
         setFormatter: vi.fn()
       }
     ]
+  });
+
+  return Object.assign(logger, {
+    log: vi.fn(),
+    fatal: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+    trace: vi.fn()
   });
 }
 

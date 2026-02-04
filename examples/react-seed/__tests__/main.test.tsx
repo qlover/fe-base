@@ -57,10 +57,6 @@ describe('main.tsx', () => {
     (createRoot as ReturnType<typeof vi.fn>).mockReturnValue(mockRoot);
   });
 
-  afterEach(() => {
-    vi.resetModules();
-  });
-
   it('should initialize BootstrapClient with IOC from globals', async () => {
     const { BootstrapClient } = await import('@/impls/BootstrapClient');
     const globals = await import('@/globals');
@@ -80,6 +76,7 @@ describe('main.tsx', () => {
   });
 
   it('should use the same IOC reference as globals.IOC', async () => {
+    const { BootstrapClient } = await import('@/impls/BootstrapClient');
     const globals = await import('@/globals');
 
     // Dynamically import main.tsx to execute it
@@ -91,6 +88,7 @@ describe('main.tsx', () => {
     // Verify IOC reference equality - they should be the exact same object
     expect(instance.IOC).toBe(globals.IOC);
     expect(instance.IOC).toStrictEqual(globals.IOC);
+    expect(BootstrapClient).toHaveBeenCalledWith(globals.IOC);
   });
 
   it('should verify IOC.implemention equals containerImpl', async () => {
@@ -114,8 +112,8 @@ describe('main.tsx', () => {
     // Dynamically import main.tsx to execute it
     await import('@/main');
 
-    // Wait for startup promise to resolve
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    // Wait for startup promise to resolve (mock resolves immediately)
+    await Promise.resolve();
 
     // Verify startup was called
     const instance = BootstrapClientInstances[0];
@@ -126,7 +124,7 @@ describe('main.tsx', () => {
     expect(instance.startup).toHaveBeenCalledTimes(1);
   });
 
-  it('should create root and render App component', async () => {
+  it('should create root and render App component inside StrictMode', async () => {
     const { createRoot } = await import('react-dom/client');
     const App = (await import('@/App')).default;
 
@@ -146,24 +144,6 @@ describe('main.tsx', () => {
     // Verify render was called with StrictMode wrapping App
     const renderCall = mockRender.mock.calls[0][0] as ReactElement;
     expect(renderCall.type).toBe(StrictMode);
-    expect((renderCall.props as { children: ReactElement }).children.type).toBe(
-      App
-    );
-  });
-
-  it('should render App inside StrictMode', async () => {
-    const App = (await import('@/App')).default;
-
-    // Dynamically import main.tsx to execute it
-    await import('@/main');
-
-    // Get the rendered component
-    const renderCall = mockRender.mock.calls[0][0] as ReactElement;
-
-    // Verify StrictMode wrapper
-    expect(renderCall.type).toBe(StrictMode);
-
-    // Verify App is the child
     expect((renderCall.props as { children: ReactElement }).children.type).toBe(
       App
     );
