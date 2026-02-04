@@ -13,6 +13,6 @@
       "@__tests__/*": ["./__tests__/*"]
     }
   },
-  "include": ["src", "config", "__tests__/**/*"],
+  "include": ["__tests__", "src", "config"],
   "exclude": ["node_modules", "dist"]
 }

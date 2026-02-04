@@ -17,6 +17,9 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite
     ],
+    plugins: {
+      import: importPlugin
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser
@@ -78,9 +81,7 @@ export default defineConfig([
       '**/*.spec.{ts,tsx}',
       '__tests__/**/*.{ts,tsx}'
     ],
-    plugins: {
-      import: importPlugin
-    },
+
     languageOptions: {
       globals: {
         ...globals.vitest,
