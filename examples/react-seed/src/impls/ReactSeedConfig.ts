@@ -9,5 +9,6 @@ export class ReactSeedConfig implements ReactSeedConfigInterface {
   }
   public readonly name: string = import.meta.env.VITE_APP_NAME;
   public readonly version: string = import.meta.env.VITE_APP_VERSION;
-  public readonly isProduction: boolean = import.meta.env.PROD;
+  // public readonly isProduction: boolean = import.meta.env.PROD;
+  public readonly isProduction: boolean = import.meta.env.MODE === 'production';
 }
