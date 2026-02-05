@@ -1,7 +1,7 @@
 export default function NotFound500() {
   return (
     <div
-      data-testid="NotFound500"
+      data-testid="ServerError"
       className="text-base bg-primary flex flex-col justify-center min-h-screen py-6 sm:py-12"
     >
       <div className="relative py-3 mx-auto sm:max-w-xl">

@@ -33,3 +33,14 @@ export const omitInjectedGlobals = [
   // 'containerImpl',
   'seedConfig.aiApiToken'
 ];
+
+/**
+ * 路由前缀
+ *
+ * - 需要以 / 开头
+ * - 但是不能只有 /
+ *
+ * **TODO: 未来可能需要修改为支持 vercel 环境使用前缀**
+ * @example `/reace-seed`
+ */
+export const routerPrefix = '';

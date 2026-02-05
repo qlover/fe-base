@@ -3,6 +3,7 @@ import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import { omit } from 'lodash-es';
 import * as globals from '@/globals';
 import { printBootstrap } from '@/utils/PrintBootstrap';
+import { I18nService } from './I18nService';
 import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
 import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
@@ -53,7 +54,14 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
   public getPlugins(
     seedConfig: ReactSeedConfigInterface
   ): BootstrapExecutorPlugin[] {
-    const result = [];
+    const result: BootstrapExecutorPlugin[] = [];
+
+    result.push({
+      pluginName: 'I18nService',
+      onBefore: ({ parameters: { ioc } }) => {
+        ioc.get<I18nService>(I18nService).init();
+      }
+    });
 
     if (!seedConfig.isProduction) {
       result.push(printBootstrap);

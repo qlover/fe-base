@@ -22,6 +22,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["vite.config.ts"],
+  "include": ["vite.config.ts", "tools"],
   "exclude": ["node_modules", "dist"]
 }

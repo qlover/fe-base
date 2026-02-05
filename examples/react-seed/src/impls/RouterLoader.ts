@@ -232,7 +232,7 @@ export class RouterLoader implements RouteLoaderInterface {
   public toRoute(route: RouteConfigValue): RouteObject {
     const { render } = this.options;
 
-    const { element, children, index, meta: _meta, ...restRouteProps } = route;
+    const { element, children, index, ...restRouteProps } = route;
 
     // Parse the element configuration
     const parsedComponent = this.parseComponent(element);

@@ -1,12 +1,18 @@
+import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
+import { i18nConfig } from './config/i18n';
+import { routerPrefix } from './config/react-seed';
 import { name, version } from './package.json';
+import { getAllI18nIdentifierFiles } from './tools/i18nIdentifierGenerator';
+import type { Plugin } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: routerPrefix,
   define: {
     'import.meta.env.VITE_APP_NAME': JSON.stringify(name),
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version)
@@ -24,7 +30,15 @@ export default defineConfig({
         gzipSize: true,
         brotliSize: true,
         template: 'treemap'
-      })
+      }),
+    ts2Locales({
+      locales: i18nConfig.supportedLngs as unknown as string[],
+      target: './public/locales/{{lng}}/{{ns}}.json',
+      resolveNs: (key) => key.split(':')[0],
+      // 不保留命名空间
+      // resolveKeyInFile: (key, ns) => key.slice(ns.length + 1),
+      options: getAllI18nIdentifierFiles('./config/i18n-identifier')
+    }) as Plugin
   ],
   test: {
     watch: false,

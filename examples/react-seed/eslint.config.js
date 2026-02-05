@@ -131,6 +131,25 @@ export default defineConfig([
       'import/no-default-export': 'error'
     }
   },
+  // class override rules
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.app.json',
+        tsconfigRootDir: __dirname
+      }
+    },
+    plugins: {
+      '@qlover-eslint': qloverLint
+    },
+    rules: {
+      // Enable ts-class-override rule with full type information
+      // This rule is disabled in the base config above and only enabled here where
+      // type information is available, ensuring accurate detection of override relationships
+      '@qlover-eslint/ts-class-override': 'error'
+    }
+  },
   // 为特定文件允许使用全局变量
   {
     files: ['src/main.tsx', 'src/core/globals.ts'],
