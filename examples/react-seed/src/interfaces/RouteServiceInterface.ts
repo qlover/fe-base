@@ -1,4 +1,8 @@
 import type { RouteConfigValue } from './RouteLoaderInterface';
+import type {
+  AsyncStoreStateInterface,
+  AsyncStoreInterface
+} from '@qlover/corekit-bridge';
 
 export interface RouteMeta {
   /**
@@ -30,6 +34,11 @@ export interface RouteMeta {
   i18nInterface?: Record<string, string>;
 }
 
+export interface RouteServiceState extends AsyncStoreStateInterface<
+  RouteConfigValue[]
+> {}
+
 export interface RouteServiceInterface {
+  getStore(): AsyncStoreInterface<RouteServiceState>;
   getRoutes(): RouteConfigValue[];
 }

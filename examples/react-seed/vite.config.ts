@@ -13,6 +13,11 @@ import type { Plugin } from 'vite';
 // https://vite.dev/config/
 export default defineConfig({
   base: routerPrefix,
+  resolve: {
+    // TODO: brain-toolkit/react-kit 的 useStore 会报错
+    // 原因这个包依赖的 react 但是它在 dependencies, 导致多份实例，目前暂时先手动 dedupe
+    dedupe: ['react', 'react-dom']
+  },
   define: {
     'import.meta.env.VITE_APP_NAME': JSON.stringify(name),
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version)

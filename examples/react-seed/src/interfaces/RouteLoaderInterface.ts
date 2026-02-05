@@ -28,8 +28,6 @@ export interface RouteConfigMeta {
    * The i18n interface of the route
    */
   i18nInterface?: Record<string, string>;
-
-  category?: string;
 }
 
 /**
@@ -41,6 +39,7 @@ export type PgaePath = string;
 
 export type RouteConfigElementType<T> = ReactNode | ComponentType<T>;
 
+export type RouteCategory = 'general' | 'auth' | 'main';
 export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
   /**
    * Component identifier string that maps to a component in componentMaps
@@ -53,6 +52,8 @@ export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
    * Nested route configurations
    */
   children?: RouteConfigValue[];
+
+  category?: RouteCategory;
 
   /**
    * Additional metadata for the route

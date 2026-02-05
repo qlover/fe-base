@@ -16,6 +16,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@brain-toolkit/react-kit": "^0.2.2",
+    "@qlover/slice-store-react": "^1.4.1",
     "clsx": "^2.1.1",
     "eslint-plugin-import": "^2.32.0",
     "i18next": "^25.8.1",
@@ -29,7 +31,7 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@brain-toolkit/ts2locales": "D:\\qrj\\workspace-brain\\brain-toolkit\\packages\\ts2locales",
+    "@brain-toolkit/ts2locales": "^0.4.0",
     "@eslint/js": "^9.39.1",
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/eslint-plugin": "^2.0.0",
@@ -37,11 +39,11 @@
     "@qlover/logger": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
-    "@typescript-eslint/parser": "^8.54.0",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/parser": "^8.54.0",
     "@vitejs/plugin-react": "^5.1.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.1",

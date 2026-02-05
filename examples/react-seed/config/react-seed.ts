@@ -44,3 +44,13 @@ export const omitInjectedGlobals = [
  * @example `/reace-seed`
  */
 export const routerPrefix = '';
+
+/**
+ * 是否使用本地化路径路由
+ *
+ * - true: 使用本地化路由，路由会带有语言前缀 (例如: /en/home)
+ *   语言系统则会优先尝试解析路径中的语言
+ *
+ * - false: 不使用本地化路由，直接使用路径 (例如: /home)
+ */
+export const usePathLocaleRoute = true;

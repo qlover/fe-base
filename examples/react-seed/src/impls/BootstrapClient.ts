@@ -4,6 +4,7 @@ import { omit } from 'lodash-es';
 import * as globals from '@/globals';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { I18nService } from './I18nService';
+import { RouteService } from './RouteService';
 import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
 import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
@@ -58,8 +59,22 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
 
     result.push({
       pluginName: 'I18nService',
-      onBefore: ({ parameters: { ioc } }) => {
+      onBefore({ parameters: { ioc } }) {
         ioc.get<I18nService>(I18nService).init();
+      }
+    });
+
+    // 增加动态路由插件
+    result.push({
+      pluginName: 'dynamicRoute',
+      onBefore({ parameters: { ioc, logger } }) {
+        logger.debug('dynamicRoute before..., await 3s');
+
+        // 可以验证用户是否登录，是否有权限
+        setTimeout(() => {
+          ioc.get<RouteService>(RouteService).useMainRoutes();
+          logger.debug('dynamicRoute success!');
+        }, 3000);
       }
     });
 

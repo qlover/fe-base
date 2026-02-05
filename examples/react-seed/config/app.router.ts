@@ -1,12 +1,37 @@
 import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 
-export const baseNoLocaleRoutes: RouteConfigValue[] = [
+const noMatchRoute: RouteConfigValue = {
+  path: '*',
+  element: '404',
+  category: 'general',
+  meta: {
+    localNamespace: 'common'
+  }
+};
+const staticRoutes: RouteConfigValue[] = [
+  {
+    path: '404',
+    element: '404',
+    category: 'general',
+    meta: {
+      localNamespace: 'common'
+    }
+  },
+  {
+    path: '500',
+    element: '500',
+    category: 'general',
+    meta: {
+      localNamespace: 'common'
+    }
+  }
+];
+
+export const baseRoutes: RouteConfigValue[] = [
   {
     path: '/',
     element: 'base/Layout',
-    meta: {
-      category: 'main'
-    },
+    category: 'main',
     children: [
       {
         index: true,
@@ -21,28 +46,36 @@ export const baseNoLocaleRoutes: RouteConfigValue[] = [
     ]
   },
 
+  ...staticRoutes,
+  noMatchRoute
+];
+
+export const baseRoutesWithLocale: RouteConfigValue[] = [
   {
-    path: '404',
-    element: '404',
-    meta: {
-      category: 'common',
-      localNamespace: 'common'
-    }
+    path: '/',
+    category: 'general',
+    element: 'base/RedirectWithLocalePath'
   },
   {
-    path: '500',
-    element: '500',
-    meta: {
-      category: 'common',
-      localNamespace: 'common'
-    }
+    path: '/:lng',
+    element: 'base/Layout',
+    category: 'general',
+    children: [
+      {
+        index: true,
+        element: 'base/HomePage',
+        category: 'main',
+        meta: {
+          title: 'identifier.PAGE_HOME_TITLE',
+          description: 'identifier.PAGE_HOME_DESCRIPTION',
+          icon: 'home',
+          localNamespace: 'common'
+        }
+      },
+      ...staticRoutes
+    ]
   },
-  {
-    path: '*',
-    element: '404',
-    meta: {
-      category: 'common',
-      localNamespace: 'common'
-    }
-  }
+
+  ...staticRoutes,
+  noMatchRoute
 ];
