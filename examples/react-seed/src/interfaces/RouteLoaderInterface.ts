@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComponentType, ReactNode } from 'react';
 import type { RouteObject } from 'react-router-dom';
 
@@ -46,7 +47,7 @@ export type RouteConfigValue = Omit<RouteObject, 'element' | 'children'> & {
    *
    * @description Used to lookup the actual component implementation
    */
-  element?: PgaePath | RouteConfigElementType<unknown>;
+  element?: PgaePath | RouteConfigElementType<any>;
 
   /**
    * Nested route configurations

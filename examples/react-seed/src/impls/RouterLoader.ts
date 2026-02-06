@@ -22,8 +22,10 @@ type LazyComponentLoader = () => Promise<{
  * @description Can be a component itself, a lazy component, or a lazy loader function
  */
 type ComponentMapValue =
-  | ComponentType<unknown>
-  | LazyExoticComponent<ComponentType<unknown>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | ComponentType<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | LazyExoticComponent<ComponentType<any>>
   | LazyComponentLoader;
 
 /**

@@ -369,12 +369,11 @@ describe('RouterLoader', () => {
       };
 
       const route = loader.toRoute(routeConfig);
-
       expect(route.path).toBe('/test');
       expect(route.caseSensitive).toBe(true);
       expect(route.id).toBe('test-route');
       // meta is not part of RouteObject, so it should be excluded
-      expect((route as RouteConfigValue).meta).toBeUndefined();
+      expect((route as RouteConfigValue).meta).toBe(routeConfig.meta);
     });
   });
 
