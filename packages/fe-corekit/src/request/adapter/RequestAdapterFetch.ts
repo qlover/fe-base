@@ -442,6 +442,11 @@ export class RequestAdapterFetch
       return url;
     }
 
+    // If url starts with baseURL, return url
+    if (url.startsWith(baseURL)) {
+      return url;
+    }
+
     // Remove trailing slash from baseURL if url starts with slash
     if (baseURL.endsWith('/') && url.startsWith('/')) {
       return baseURL.slice(0, -1) + url;
