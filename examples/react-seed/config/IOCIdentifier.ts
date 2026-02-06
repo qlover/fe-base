@@ -1,3 +1,4 @@
+import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
 
@@ -6,7 +7,8 @@ import type * as Logger from '@qlover/logger';
  */
 export const IOCIdentifier = Object.freeze({
   JSONSerializer: 'JSONSerializer',
-  Logger: 'Logger'
+  Logger: 'Logger',
+  Config: 'Config'
 });
 
 export const I = IOCIdentifier;
@@ -20,6 +22,7 @@ export const I = IOCIdentifier;
  * - value: implementation class
  */
 export interface IOCIdentifierMap {
-  [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
-  [IOCIdentifier.Logger]: Logger.LoggerInterface;
+  [I.JSONSerializer]: FeCorekit.JSONSerializer;
+  [I.Logger]: Logger.LoggerInterface;
+  [I.Config]: ReactSeedConfigInterface;
 }

@@ -2,7 +2,6 @@ import { useStore } from '@brain-toolkit/react-kit';
 import { routerPrefix } from '@config/react-seed';
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { logger } from '@/globals';
 import { useIOC } from '@/hooks/useIOC';
 import { RouterLoader } from '@/impls/RouterLoader';
 import { RouteService } from '@/impls/RouteService';
@@ -13,6 +12,7 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
   const { pages } = props;
 
   const routeService = useIOC(RouteService);
+  const logger = useIOC('Logger');
   const routes = useStore(routeService.getStore(), (s) => s.result ?? []);
 
   const routerLoader = useMemo(
@@ -22,7 +22,7 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
         render: RouterRenderComponent,
         logger: logger
       }),
-    [pages]
+    [pages, logger]
   );
 
   const routerBase = useMemo(() => {
@@ -33,7 +33,7 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
     return createBrowserRouter(routeList, {
       basename: routerPrefix
     });
-  }, [routes, routerLoader]);
+  }, [routes, routerLoader, logger]);
 
   return <RouterProvider router={routerBase} />;
 }

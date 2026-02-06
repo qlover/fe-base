@@ -10,6 +10,7 @@ import { RouteService } from './RouteService';
 import { UserGateway } from './UserGateway';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
+import type { LoggerInterface } from '@qlover/logger';
 
 // TODO:
 export type UserGatewayConfig = {
@@ -28,9 +29,12 @@ export class UserService extends BridgeUserService<
       UserCredential,
       UserGatewayConfig
     >,
-    @inject(RouteService) readonly routeService: RouteServiceInterface
+    @inject(RouteService) readonly routeService: RouteServiceInterface,
+    @inject('Logger') logger: LoggerInterface
   ) {
-    super(userGateway);
+    super(userGateway, {
+      logger: logger
+    });
   }
 
   /**
@@ -56,8 +60,12 @@ export class UserService extends BridgeUserService<
       return Promise.resolve(true);
     }
 
-    return this.refreshUserInfo().then((result) => {
-      if (this.isAuthenticated() && this.isUser(result)) {
+    return this.getUserInfo().then((result) => {
+      if (result && this.isUser(result)) {
+        this.getStore().success(result, {
+          token: result.credential_token
+        });
+
         return true;
       }
 

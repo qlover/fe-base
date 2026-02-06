@@ -191,7 +191,8 @@ export default defineConfig([
       'src/pages/**/*.tsx',
       'src/App.tsx',
       'vite.config.ts',
-      'tailwind.config.ts'
+      'tailwind.config.ts',
+      'config/mock/**/*.ts'
     ],
     rules: {
       'import/no-default-export': 'off',

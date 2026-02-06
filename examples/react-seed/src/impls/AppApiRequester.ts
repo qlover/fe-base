@@ -1,9 +1,13 @@
 import {
   LifecycleExecutor,
   RequestAdapterFetch,
-  RequestExecutor
+  RequestExecutor,
+  RequestPlugin,
+  ResponsePlugin
 } from '@qlover/fe-corekit';
 import { injectable } from './Container';
+import { UserService } from './UserService';
+import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type {
   ExecutorContextInterface,
   RequestAdapterConfig,
@@ -67,5 +71,64 @@ export class AppApiRequester extends RequestExecutor<
       }),
       new LifecycleExecutor()
     );
+
+    // this.use(
+    //   new RequestPlugin({
+    //     authKey: 'Authorization',
+    //     tokenPrefix: 'Bearer',
+    //     token() {
+    //       return userService.getCredential()?.token ?? null;
+    //     }
+    //   })
+    // );
+  }
+
+  /**
+   * 你可以创建无数个相同的请求器
+   *
+   * @example 增加一个自定义的插件
+   *
+   * ```typescript
+   * const appApiRequester = new AppApiRequester();
+   *
+   * const withPrintParams = appApiRequester.clone().use({
+   *   pluginName: 'customPlugin',
+   *   onBefore({ parameters }) {
+   *     console.log(parameters)
+   *   }
+   * });
+   *
+   * const withPrintResult = appApiRequester.clone().use({
+   *   pluginName: 'customPlugin',
+   *   onSuccess({ returnValue }) {
+   *     console.log(returnValue)
+   *   }
+   * });
+   * ```
+   *
+   * @returns
+   */
+  public clone(): RequestExecutor<AppApiConfig, AppApiRequesterContext> {
+    return new RequestExecutor(this.adapter, new LifecycleExecutor());
   }
 }
+
+export const appApiRequesterBootstrap: BootstrapExecutorPlugin = {
+  pluginName: 'AppApiRequesterBootstrap',
+  onBefore({ parameters: { ioc } }) {
+    const appApiRequester = ioc.get<AppApiRequester>(AppApiRequester);
+    const userService = ioc.get<UserService>(UserService);
+
+    appApiRequester
+      .use(
+        new RequestPlugin({
+          authKey: 'Authorization',
+          tokenPrefix: 'Bearer',
+          token() {
+            return userService.getCredential()?.token ?? null;
+          }
+        })
+      )
+      .use(new ResponsePlugin());
+  }
+};

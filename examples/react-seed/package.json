@@ -60,6 +60,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
+    "vite-plugin-mock": "^3.0.2",
     "vite-tsconfig-paths": "^6.0.5",
     "vitest": "^3.2.4"
   }

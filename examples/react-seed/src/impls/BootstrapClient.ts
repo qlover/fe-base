@@ -4,6 +4,7 @@ import { omit } from 'lodash-es';
 import * as globals from '@/globals';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { userRoutePlugin } from '@/utils/userRoutePlugin';
+import { appApiRequesterBootstrap } from './AppApiRequester';
 import { I18nService } from './I18nService';
 import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
 import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
@@ -13,7 +14,10 @@ import type {
   IOCContainerInterface
 } from '@qlover/corekit-bridge';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
-import type { IOCFunctionInterface } from '@qlover/corekit-bridge/ioc';
+import type {
+  IOCFunctionInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge/ioc';
 
 export class BootstrapClient implements ReactSeedBootstrapInterface {
   constructor(
@@ -24,13 +28,21 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
    *
    * @override
    */
-  public startup(root?: unknown): Promise<BootstrapPluginOptions | undefined> {
+  public startup(
+    root?: unknown,
+    /**
+     * IOC注册器对象，用于注册IOC容器
+     *
+     * 可能在ioc create 中已经注册，这里可以额外注册
+     */
+    iocRegister?: IOCRegisterInterface<IOCContainerInterface>
+  ): Promise<BootstrapPluginOptions | undefined> {
     const { logger, seedConfig } = globals;
 
     const bootstrap = new Bootstrap({
       root: root,
       logger: logger,
-      ioc: { manager: this.IOC },
+      ioc: { manager: this.IOC, register: iocRegister },
       globalOptions: {
         sources: omit(globals, omitInjectedGlobals),
         target: browserGlobalsName
@@ -69,6 +81,7 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
         ioc.get<I18nService>(I18nService).init();
       }
     });
+    result.push(appApiRequesterBootstrap);
 
     result.push(userRoutePlugin);
 

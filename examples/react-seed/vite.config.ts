@@ -1,7 +1,9 @@
+import { resolve } from 'path';
 import ts2Locales from '@brain-toolkit/ts2locales/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { viteMockServe } from 'vite-plugin-mock';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 import { i18nConfig } from './config/i18n';
@@ -9,6 +11,8 @@ import { routerPrefix } from './config/react-seed';
 import { name, version } from './package.json';
 import { getAllI18nIdentifierFiles } from './tools/i18nIdentifierGenerator';
 import type { Plugin } from 'vite';
+
+const relativePath = (path: string) => resolve(__dirname, path);
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -38,12 +42,20 @@ export default defineConfig({
       }),
     ts2Locales({
       locales: i18nConfig.supportedLngs as unknown as string[],
-      target: './public/locales/{{lng}}/{{ns}}.json',
+      target: relativePath('./public/locales/{{lng}}/{{ns}}.json'),
       resolveNs: (key) => key.split(':')[0],
       // 不保留命名空间
       // resolveKeyInFile: (key, ns) => key.slice(ns.length + 1),
-      options: getAllI18nIdentifierFiles('./config/i18n-identifier')
-    }) as Plugin
+      options: getAllI18nIdentifierFiles(
+        relativePath('./config/i18n-identifier')
+      )
+    }) as Plugin,
+    viteMockServe({
+      mockPath: relativePath('./config/mock'), // 指定 mock 文件目录
+      enable: process.env.NODE_ENV !== 'production',
+      // prodEnabled: false, // 生产环境禁用
+      logger: true // 控制台显示请求日志
+    })
   ],
   test: {
     watch: false,

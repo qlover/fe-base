@@ -1,4 +1,11 @@
-import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
+import { toEndpointObject } from '@config/endpoints/_endpoint';
+import {
+  EP_USER_INFO,
+  EP_USER_LOGIN,
+  EP_USER_LOGOUT,
+  EP_USER_REGISTER
+} from '@config/endpoints/user';
+import { RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from '@/impls/Container';
 import { AppApiRequester } from './AppApiRequester';
 import type { AppApiConfig, AppApiRequesterContext } from './AppApiRequester';
@@ -32,13 +39,12 @@ export class UserGateway implements UserServiceGateway<
    * @override
    */
   public async getUserInfo(
-    data?: UserCredential,
+    _data?: UserCredential,
     config?: AppApiConfig
   ): Promise<UserSchema | null> {
     const response = await this.client.request({
-      url: '/user/info',
-      method: HttpMethods.POST,
-      token: data?.token,
+      ...toEndpointObject(EP_USER_INFO),
+      // token: data?.token, 注释后交个插件管理token, 如果开启则手动管理token，插件会自动获取token
       encryptProps: 'password',
       ...config
     });
@@ -62,8 +68,7 @@ export class UserGateway implements UserServiceGateway<
     params: UserGatewayLoginData & LoginParams
   ): Promise<UserCredential> {
     const response = await this.client.request({
-      url: '/user/login',
-      method: HttpMethods.POST,
+      ...toEndpointObject(EP_USER_LOGIN),
       data: params,
       encryptProps: 'password'
     });
@@ -76,8 +81,7 @@ export class UserGateway implements UserServiceGateway<
    */
   public async register(params: UserGatewayLoginData): Promise<UserSchema> {
     const response = await this.client.request({
-      url: '/user/register',
-      method: HttpMethods.POST,
+      ...toEndpointObject(EP_USER_REGISTER),
       data: params,
       encryptProps: 'password'
     });
@@ -89,10 +93,7 @@ export class UserGateway implements UserServiceGateway<
    * @override
    */
   public async logout<R = void>(_params?: unknown): Promise<R> {
-    await this.client.request({
-      url: '/user/logout',
-      method: HttpMethods.POST
-    });
+    await this.client.request(toEndpointObject(EP_USER_LOGOUT));
 
     return undefined as R;
   }

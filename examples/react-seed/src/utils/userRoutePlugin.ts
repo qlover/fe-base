@@ -20,7 +20,8 @@ export const userRoutePlugin: BootstrapExecutorPlugin = {
       })
       .catch((error) => {
         ioc.get<RouteService>(RouteService).useAuthRoutes();
-        logger.debug('userRoute fail!', error);
+
+        throw error;
       });
   }
 };

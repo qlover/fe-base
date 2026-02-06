@@ -5,12 +5,14 @@ import './styles/index.css';
 import App from './App.tsx';
 import { IOC } from './globals';
 import { BootstrapClient } from './impls/BootstrapClient';
+import { IOCIdentifierRegister } from './impls/IOCIdentifierRegister.ts';
 import { getAllPages } from './utils/getAllPages';
 
 const allPages = getAllPages();
 
 // backend bootstrap
-new BootstrapClient(IOC).startup(window);
+new BootstrapClient(IOC).startup(window, IOCIdentifierRegister);
+
 // frontend bootstrap(UI)
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
