@@ -1,4 +1,5 @@
 import type { RouteConfigValue } from './RouteLoaderInterface';
+import type { routePathLocaleParamKey } from '@config/react-seed';
 import type {
   AsyncStoreStateInterface,
   AsyncStoreInterface
@@ -34,9 +35,18 @@ export interface RouteMeta {
   i18nInterface?: Record<string, string>;
 }
 
-export interface RouteServiceState extends AsyncStoreStateInterface<
-  RouteConfigValue[]
-> {}
+export type RouteParams = {
+  /**
+   * 来自路由地址的path 语言参数
+   *
+   * 目前和 app.router.ts 中的 :lng 对应
+   *
+   * @example /en/home => lng='en'
+   */
+  [routePathLocaleParamKey]?: string;
+};
+
+export type RouteServiceState = AsyncStoreStateInterface<RouteConfigValue[]>;
 
 export interface RouteServiceInterface {
   getStore(): AsyncStoreInterface<RouteServiceState>;

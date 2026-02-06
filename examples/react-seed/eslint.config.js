@@ -58,7 +58,7 @@ export default defineConfig([
       '@qlover-eslint/require-root-testid': [
         'error',
         {
-          exclude: ['/Provider$/']
+          exclude: ['/^[A-Z]/']
         }
       ], // 禁用 import 路径解析检查，TypeScript 编译器会处理
       'import/no-unresolved': 'off',

@@ -32,12 +32,5 @@ export const RouterRenderComponent: RouterLoaderRender = (route) => {
     content = <Component route={rest as Omit<RouteObject, 'element'>} />;
   }
 
-  return (
-    <Suspense
-      data-testid="RouterRenderComponent"
-      fallback={<Loading fullscreen />}
-    >
-      {content}
-    </Suspense>
-  );
+  return <Suspense fallback={<Loading fullscreen />}>{content}</Suspense>;
 };

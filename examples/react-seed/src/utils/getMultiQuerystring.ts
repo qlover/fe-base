@@ -9,7 +9,7 @@ export interface MultiQuerystringOptions {
    * };
    * ```
    */
-  lookupQuerystringKeys?: string[];
+  lookupQuerystringKeys?: readonly string[];
 
   search?: string;
 }

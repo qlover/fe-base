@@ -1,4 +1,5 @@
 import { DetectionOrder, i18nConfig } from '@config/i18n';
+import { pathLocaleQSKeys } from '@config/react-seed';
 import { createInstance } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
@@ -39,7 +40,7 @@ export class I18nService implements I18nInterface<LocaleType> {
           order: DetectionOrder,
           lookupFromPathIndex: 0,
           lookupQuerystring: 'lang',
-          lookupQuerystringKeys: ['lang', 'lng', 'language', 'locale', 'hl'],
+          lookupQuerystringKeys: pathLocaleQSKeys,
           lookupLocalStorage: i18nConfig.storageKey
         }
       });

@@ -1,3 +1,4 @@
+import { routePathLocaleParamKey } from './react-seed';
 import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 
 const noMatchRoute: RouteConfigValue = {
@@ -50,6 +51,8 @@ export const baseRoutes: RouteConfigValue[] = [
   noMatchRoute
 ];
 
+const pathRoutePrefix = '/:' + routePathLocaleParamKey;
+
 export const baseRoutesWithLocale: RouteConfigValue[] = [
   {
     path: '/',
@@ -57,7 +60,7 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
     element: 'base/RedirectWithLocalePath'
   },
   {
-    path: '/:lng',
+    path: pathRoutePrefix,
     element: 'base/Layout',
     category: 'general',
     children: [

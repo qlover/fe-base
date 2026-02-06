@@ -54,3 +54,25 @@ export const routerPrefix = '';
  * - false: 不使用本地化路由，直接使用路径 (例如: /home)
  */
 export const usePathLocaleRoute = true;
+
+/**
+ * 路由路径中的语言参数 key
+ *
+ * @example /en/home => lng='en'
+ */
+export const routePathLocaleParamKey = 'lng';
+
+/**
+ * 查询参数中的语言参数 key
+ *
+ * 按从左到右的顺序匹配
+ *
+ * @example ?lang=en&lng=en&language=en&locale=en&hl=en
+ */
+export const pathLocaleQSKeys = [
+  'lang',
+  'lng',
+  'language',
+  'locale',
+  'hl'
+] as const;

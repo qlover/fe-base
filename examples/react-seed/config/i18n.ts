@@ -1,4 +1,6 @@
 import { routerPrefix, usePathLocaleRoute } from './react-seed';
+import type { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
+import type { DetectorOptions } from 'i18next-browser-languagedetector';
 
 export const i18nConfig = {
   defaultLocale: 'en',
@@ -28,6 +30,19 @@ export const i18nConfig = {
   noValidRedirectFallbackLng: true
 } as const;
 
+/**
+ * 默认语言匹配顺序
+ *
+ * - 'multiQuerystring': 扩展默认的 querysring，从查询参数中匹配语言(支持多 key: lang, lng, language, locale, hl)
+ *   参见 {@link overrideQuerystringDetector}
+ *
+ * - 'cookie': 从 cookie 中匹配语言
+ * - 'localStorage': 从本地存储中匹配语言
+ * - 'navigator': 从浏览器语言中匹配语言
+ *
+ * @see {@link DetectorOptions}
+ * @type {DetectorOptions['order']}
+ */
 export const defaultOrder = ['multiQuerystring', 'localStorage', 'navigator'];
 
 /**
