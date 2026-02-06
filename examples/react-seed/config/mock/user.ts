@@ -6,7 +6,7 @@ export default [
     ...prefixEndpointWithMock(EP_USER_INFO),
     response({ headers }: { headers: Record<string, string> }) {
       if (!headers['Authorization']) {
-        // return null;
+        return null;
       }
 
       return {

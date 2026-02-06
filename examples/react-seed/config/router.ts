@@ -36,9 +36,9 @@ export const authRoutes: RouteConfigValue[] = [
     element: 'auth/Login',
     category: 'auth',
     meta: {
-      title: 'identifier.PAGE_HOME_TITLE',
-      description: 'identifier.PAGE_HOME_DESCRIPTION',
-      icon: 'home',
+      title: 'identifier.PAGE_LOGIN_TITLE',
+      description: 'identifier.PAGE_LOGIN_DESCRIPTION',
+      icon: 'login',
       localNamespace: 'common'
     }
   }

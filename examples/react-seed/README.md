@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+# 如何新增加页面
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+以 HomePage 为例, 描述如何创建一个功能完善的页面
 
-Currently, two official plugins are available:
+1. 创建 config/i18n-identifier/page.home.ts 文件描述页面所需要使用到 i18n 标识符,减少国际化时增加心智负担, 文件的内容遵循特殊的格式,然后启动运行项目或build, ts2locales 插件会自动生成国际化文件
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```ts
+/**
+ * @description Home page title
+ * @localZh 首页
+ * @localEn Home
+ */
+export const PAGE_HOME_TITLE = 'page_home:title';
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+/**
+ * @description Home page description
+ * @localZh 一个现代前端实用库集合，提供各种实用工具和组件
+ * @localEn A modern frontend utility library collection providing various practical tools and components
+ */
+export const PAGE_HOME_DESCRIPTION = 'page_home:description';
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. 创建 config/i18n-mapping/page.home.ts 目录下面同样新增页面需要使用到的i18n对象映射, 它用来快捷描述UI所欲要的文字
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+```ts
+import * as i18nKeys from '../i18n-identifier/page.home';
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+export const pageHomeI18n = {
+  // basic meta properties
+  title: i18nKeys.PAGE_HOME_TITLE,
+  description: i18nKeys.PAGE_HOME_DESCRIPTION,
+  content: i18nKeys.PAGE_HOME_DESCRIPTION,
+  keywords: i18nKeys.PAGE_HOME_KEYWORDS
+} as const;
 ```
+
+3. 在 config/router.ts 中增加页面到路由表中, 其中 element 属性映射到真实的 src/pages/base/HomePage.tsx 页面组件
+
+4. 创建 src/pages/base/HomePage.tsx 文件, 这个文件需要 `export default` 一个默认函数组件, 这是为了简化 glob 匹配用来懒加载组件的逻辑
+
+5. 组件内可以使用 `useI18nMapping(pageHomeI18n)` 获取一个文本对象,这个对象是已经翻译过后到文字对象
+
+6. 页面样式优先使用 tailwind 和 src/themes 中的样式组合, 当然如何可能,你也可以创建页面的 .css/.module.css 样式

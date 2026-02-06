@@ -118,3 +118,10 @@ export const PAGE_HOME_LINK_EN = 'page_home:link.en';
  * @localEn Home (ZH)
  */
 export const PAGE_HOME_LINK_ZH = 'page_home:link.zh';
+
+/**
+ * @description Login page link label
+ * @localZh 登录
+ * @localEn Sign in
+ */
+export const PAGE_HOME_LINK_LOGIN = 'page_home:link.login';
