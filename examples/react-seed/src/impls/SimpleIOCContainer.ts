@@ -7,8 +7,10 @@ type ServiceIdentifier<T = unknown> =
   | symbol
   | Newable<T>
   | Abstract<T>;
-type Newable<T = unknown> = new (...args: unknown[]) => T;
-type Abstract<T = unknown> = abstract new (...args: unknown[]) => T;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Newable<T = unknown> = new (...args: any[]) => T;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Abstract<T = unknown> = abstract new (...args: any[]) => T;
 type Factory<T = unknown> = () => T;
 type ConstructorParameterMetadata = Record<number, ServiceIdentifier>;
 

@@ -27,6 +27,9 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
 
   const routerBase = useMemo(() => {
     const routeList = routes.map((route) => routerLoader.toRoute(route));
+
+    logger.debug(routeList);
+
     return createBrowserRouter(routeList, {
       basename: routerPrefix
     });

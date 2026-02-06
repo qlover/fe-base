@@ -79,6 +79,5 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
     ]
   },
 
-  ...staticRoutes,
   noMatchRoute
 ];

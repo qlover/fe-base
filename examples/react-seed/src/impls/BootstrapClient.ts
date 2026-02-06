@@ -3,8 +3,8 @@ import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import { omit } from 'lodash-es';
 import * as globals from '@/globals';
 import { printBootstrap } from '@/utils/PrintBootstrap';
+import { userRoutePlugin } from '@/utils/userRoutePlugin';
 import { I18nService } from './I18nService';
-import { RouteService } from './RouteService';
 import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
 import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/IOCIdentifier';
@@ -24,7 +24,7 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
    *
    * @override
    */
-  public startup(root?: unknown): Promise<BootstrapPluginOptions> {
+  public startup(root?: unknown): Promise<BootstrapPluginOptions | undefined> {
     const { logger, seedConfig } = globals;
 
     const bootstrap = new Bootstrap({
@@ -37,16 +37,22 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
       }
     });
 
-    return bootstrap.initialize().then(() => {
-      const plugins = this.getPlugins(seedConfig);
+    return bootstrap
+      .initialize()
+      .then(() => {
+        const plugins = this.getPlugins(seedConfig);
 
-      if (Array.isArray(plugins) && plugins.length > 0) {
-        bootstrap.use(plugins);
-        logger.debug(`BootstrapClient Using plugins: ${plugins.length}`);
-      }
+        if (Array.isArray(plugins) && plugins.length > 0) {
+          bootstrap.use(plugins);
+          logger.debug(`BootstrapClient Using plugins: ${plugins.length}`);
+        }
 
-      return bootstrap.start();
-    });
+        return bootstrap.start();
+      })
+      .catch((error) => {
+        logger.error('BootstrapClient startup failed!', error);
+        return undefined;
+      });
   }
 
   /**
@@ -64,19 +70,7 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
       }
     });
 
-    // 增加动态路由插件
-    result.push({
-      pluginName: 'dynamicRoute',
-      onBefore({ parameters: { ioc, logger } }) {
-        logger.debug('dynamicRoute before..., await 3s');
-
-        // 可以验证用户是否登录，是否有权限
-        setTimeout(() => {
-          ioc.get<RouteService>(RouteService).useMainRoutes();
-          logger.debug('dynamicRoute success!');
-        }, 3000);
-      }
-    });
+    result.push(userRoutePlugin);
 
     if (!seedConfig.isProduction) {
       result.push(printBootstrap);
