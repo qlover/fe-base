@@ -28,6 +28,22 @@ const staticRoutes: RouteConfigValue[] = [
   }
 ];
 
+export const pathLocalRoutePrefix = ':' + routePathLocaleParamKey;
+
+export const authRoutes: RouteConfigValue[] = [
+  {
+    index: true,
+    element: 'auth/Login',
+    category: 'auth',
+    meta: {
+      title: 'identifier.PAGE_HOME_TITLE',
+      description: 'identifier.PAGE_HOME_DESCRIPTION',
+      icon: 'home',
+      localNamespace: 'common'
+    }
+  }
+];
+
 export const baseRoutes: RouteConfigValue[] = [
   {
     path: '/',
@@ -47,11 +63,11 @@ export const baseRoutes: RouteConfigValue[] = [
     ]
   },
 
+  ...authRoutes,
+
   ...staticRoutes,
   noMatchRoute
 ];
-
-export const pathLocalRoutePrefix = ':' + routePathLocaleParamKey;
 
 export const baseRoutesWithLocale: RouteConfigValue[] = [
   {
@@ -77,6 +93,13 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
       },
       ...staticRoutes
     ]
+  },
+
+  {
+    path: '/' + pathLocalRoutePrefix,
+    element: 'auth/Layout',
+    category: 'auth',
+    children: authRoutes
   },
 
   noMatchRoute

@@ -1,10 +1,14 @@
-import { prefixEndpoint } from '@config/endpoints/_endpoint';
+import { prefixEndpointWithMock } from '@config/endpoints/_endpoint';
 import { EP_USER_INFO, EP_USER_LOGIN } from '@config/endpoints/user';
 
 export default [
   {
-    ...prefixEndpoint(EP_USER_INFO),
-    response() {
+    ...prefixEndpointWithMock(EP_USER_INFO),
+    response({ headers }: { headers: Record<string, string> }) {
+      if (!headers['Authorization']) {
+        // return null;
+      }
+
       return {
         id: 1,
         role: 1,
@@ -17,7 +21,7 @@ export default [
     }
   },
   {
-    ...prefixEndpoint(EP_USER_LOGIN),
+    ...prefixEndpointWithMock(EP_USER_LOGIN),
     timeout: 500,
     response() {
       return {

@@ -24,3 +24,11 @@ export function prefixEndpoint(
 ): EndPointObject {
   return toEndpointObject(endpoint, prefix);
 }
+
+export function prefixEndpointWithMock(endpoint: EndPoint, prefix?: string) {
+  const { url, method } = prefixEndpoint(endpoint, prefix);
+  return {
+    url: url,
+    method: method.toLocaleLowerCase()
+  };
+}
