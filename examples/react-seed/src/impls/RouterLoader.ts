@@ -1,4 +1,4 @@
-import { default as isString } from 'lodash-es/isString';
+import isString from 'lodash-es/isString';
 import { lazy } from 'react';
 import type {
   RouteLoaderInterface,

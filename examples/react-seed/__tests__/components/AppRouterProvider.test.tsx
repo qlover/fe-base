@@ -48,12 +48,12 @@ const {
   };
 });
 
-vi.mock('@config/app.router', () => ({
+vi.mock('@config/router', () => ({
   baseRoutes: mockBaseRoutes,
   baseRoutesWithLocale: mockBaseRoutes
 }));
 
-vi.mock('@config/react-seed', () => ({
+vi.mock('@config/seed.config', () => ({
   usePathLocaleRoute: false,
   routerPrefix: ''
 }));

@@ -1,6 +1,6 @@
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 
-export class ReactSeedConfig implements ReactSeedConfigInterface {
+export class ReactSeedConfig implements SeedConfigInterface {
   /**
    * @override
    */

@@ -1,5 +1,5 @@
-import type { ReactSeedConfigInterface } from './ReactSeedConfigInterface';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { SeedConfigInterface } from './SeedConfigInterface';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCContainerInterface,
@@ -17,9 +17,9 @@ export interface BootstrapsRegistryInterface {
  *
  * 主要用于初始化项目配置、环境等
  */
-export interface ReactSeedBootstrapInterface {
+export interface SeedBootstrapInterface {
   startup(): void;
   startup(): Promise<unknown>;
 
-  getPlugins(seedConfig: ReactSeedConfigInterface): BootstrapExecutorPlugin[];
+  getPlugins(seedConfig: SeedConfigInterface): BootstrapExecutorPlugin[];
 }

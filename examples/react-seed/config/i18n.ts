@@ -1,4 +1,4 @@
-import { routerPrefix, usePathLocaleRoute } from './react-seed';
+import { routerPrefix, usePathLocaleRoute } from './seed.config';
 import type { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
 import type { DetectorOptions } from 'i18next-browser-languagedetector';
 

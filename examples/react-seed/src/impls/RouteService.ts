@@ -1,5 +1,5 @@
-import { baseRoutes, baseRoutesWithLocale } from '@config/app.router';
-import { usePathLocaleRoute } from '@config/react-seed';
+import { baseRoutes, baseRoutesWithLocale } from '@config/router';
+import { usePathLocaleRoute } from '@config/seed.config';
 import { AsyncStore, AsyncStoreState } from '@qlover/corekit-bridge';
 import { filterRouteByCategorys } from '@/utils/filterAppRoute';
 import type {

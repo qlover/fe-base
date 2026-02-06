@@ -1,5 +1,5 @@
 import type { MultiQuerystringOptions } from '@/utils/getMultiQuerystring';
-import type { browserGlobalsName } from '@config/react-seed';
+import type { browserGlobalsName } from '@config/seed.config';
 import type { DetectorOptions } from 'i18next-browser-languagedetector';
 
 declare global {

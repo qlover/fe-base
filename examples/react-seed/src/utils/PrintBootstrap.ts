@@ -1,4 +1,4 @@
-import { browserGlobalsName } from '@config/react-seed';
+import { browserGlobalsName } from '@config/seed.config';
 import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';

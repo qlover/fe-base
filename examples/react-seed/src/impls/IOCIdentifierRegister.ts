@@ -1,4 +1,4 @@
-import { I } from '@config/IOCIdentifier';
+import { I } from '@config/ioc-identifier';
 import { logger, seedConfig } from '@/globals';
 import type {
   IOCContainerInterface,

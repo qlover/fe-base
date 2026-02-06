@@ -16,12 +16,12 @@ const { mockBaseRoutes, mockBaseRoutesWithLocale } = vi.hoisted(() => {
   return { mockBaseRoutes: base, mockBaseRoutesWithLocale: withLocale };
 });
 
-vi.mock('@config/app.router', () => ({
+vi.mock('@config/router', () => ({
   baseRoutes: mockBaseRoutes,
   baseRoutesWithLocale: mockBaseRoutesWithLocale
 }));
 
-vi.mock('@config/react-seed', () => ({
+vi.mock('@config/seed.config', () => ({
   usePathLocaleRoute: false
 }));
 

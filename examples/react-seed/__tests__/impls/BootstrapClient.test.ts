@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { browserGlobalsName } from '@config/react-seed';
+import { browserGlobalsName } from '@config/seed.config';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import * as globals from '@/globals';
 import { AppApiRequester } from '@/impls/AppApiRequester';
@@ -9,8 +9,8 @@ import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { createMockGlobals } from '../__mocks__/createMockGlobals';
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
@@ -70,7 +70,7 @@ describe('BootstrapClient', () => {
     it('should create Bootstrap instance with correct parameters', async () => {
       const { omit } = await import('lodash-es');
       const { browserGlobalsName, omitInjectedGlobals } =
-        await import('@config/react-seed');
+        await import('@config/seed.config');
 
       const rootElement = {} as Record<string, unknown>;
 
@@ -133,7 +133,7 @@ describe('BootstrapClient', () => {
 
     it('should exclude omitInjectedGlobals properties from injected globals', async () => {
       const { browserGlobalsName, omitInjectedGlobals } =
-        await import('@config/react-seed');
+        await import('@config/seed.config');
       const rootElement = {} as Record<string, unknown>;
 
       await bootstrapClient.startup(rootElement);
@@ -181,7 +181,7 @@ describe('BootstrapClient', () => {
       vi.spyOn(globals, 'seedConfig', 'get').mockReturnValue({
         ...globals.seedConfig,
         isProduction: false
-      } as ReactSeedConfigInterface);
+      } as SeedConfigInterface);
 
       const rootElement = {} as Record<string, unknown>;
       const useSpy = vi.spyOn(Bootstrap.prototype, 'use');
@@ -207,7 +207,7 @@ describe('BootstrapClient', () => {
       vi.spyOn(globals, 'seedConfig', 'get').mockReturnValue({
         ...globals.seedConfig,
         isProduction: true
-      } as ReactSeedConfigInterface);
+      } as SeedConfigInterface);
 
       const rootElement = {} as Record<string, unknown>;
       const useSpy = vi.spyOn(Bootstrap.prototype, 'use');
@@ -268,7 +268,7 @@ describe('BootstrapClient', () => {
       vi.spyOn(globals, 'seedConfig', 'get').mockReturnValue({
         ...globals.seedConfig,
         isProduction: false
-      } as ReactSeedConfigInterface);
+      } as SeedConfigInterface);
 
       const rootElement = {} as Record<string, unknown>;
       await bootstrapClient.startup(rootElement);
@@ -281,7 +281,7 @@ describe('BootstrapClient', () => {
 
   describe('getPlugins', () => {
     it('应该返回正确的启动插件(production=true)', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'production',
         name: 'test',
         version: '1.0.0',
@@ -300,7 +300,7 @@ describe('BootstrapClient', () => {
     });
 
     it('应该包含printBootstrap插件(production=false)', async () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -321,7 +321,7 @@ describe('BootstrapClient', () => {
     });
 
     it('should return array of BootstrapExecutorPlugin type', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -338,7 +338,7 @@ describe('BootstrapClient', () => {
     });
 
     it('should handle different seedConfig values correctly', () => {
-      const configs: ReactSeedConfigInterface[] = [
+      const configs: SeedConfigInterface[] = [
         {
           env: 'development',
           name: 'test',
@@ -381,7 +381,7 @@ describe('BootstrapClient', () => {
     });
 
     it('应该正确初始化国际化', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -416,7 +416,7 @@ describe('BootstrapClient', () => {
     });
 
     it('应该正确启动 appApiRequester 请求器', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -461,7 +461,7 @@ describe('BootstrapClient', () => {
     });
 
     it('getPlugins 在开发环境应返回 4 个插件(含 printBootstrap)', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -478,7 +478,7 @@ describe('BootstrapClient', () => {
     });
 
     it('getPlugins 在生产环境应返回 3 个插件(不含 printBootstrap)', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'production',
         name: 'test',
         version: '1.0.0',
@@ -494,7 +494,7 @@ describe('BootstrapClient', () => {
     });
 
     it('userRoutePlugin onBefore 应按流程获取 UserService 并调用 refreshUser，成功时调用 useMainRoutes', async () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -539,7 +539,7 @@ describe('BootstrapClient', () => {
     });
 
     it('userRoutePlugin onBefore 在 refreshUser 失败时应调用 useAuthRoutes', async () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',
@@ -578,7 +578,7 @@ describe('BootstrapClient', () => {
     });
 
     it('printBootstrap onSuccess 应按流程获取 RouteService/UserService 并调用 logger', () => {
-      const seedConfig: ReactSeedConfigInterface = {
+      const seedConfig: SeedConfigInterface = {
         env: 'development',
         name: 'test',
         version: '1.0.0',

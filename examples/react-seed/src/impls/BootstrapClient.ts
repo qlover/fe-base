@@ -1,4 +1,4 @@
-import { browserGlobalsName, omitInjectedGlobals } from '@config/react-seed';
+import { browserGlobalsName, omitInjectedGlobals } from '@config/seed.config';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import { omit } from 'lodash-es';
 import * as globals from '@/globals';
@@ -6,9 +6,9 @@ import { printBootstrap } from '@/utils/PrintBootstrap';
 import { userRoutePlugin } from '@/utils/userRoutePlugin';
 import { appApiRequesterBootstrap } from './AppApiRequester';
 import { I18nService } from './I18nService';
-import type { ReactSeedBootstrapInterface } from '@/interfaces/ReactSeedBootstrapInterface';
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { SeedBootstrapInterface } from '@/interfaces/SeedBootstrapInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   BootstrapPluginOptions,
   IOCContainerInterface
@@ -19,7 +19,7 @@ import type {
   IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
 
-export class BootstrapClient implements ReactSeedBootstrapInterface {
+export class BootstrapClient implements SeedBootstrapInterface {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}
@@ -71,7 +71,7 @@ export class BootstrapClient implements ReactSeedBootstrapInterface {
    * @override
    */
   public getPlugins(
-    seedConfig: ReactSeedConfigInterface
+    seedConfig: SeedConfigInterface
   ): BootstrapExecutorPlugin[] {
     const result: BootstrapExecutorPlugin[] = [];
 

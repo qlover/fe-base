@@ -2,12 +2,12 @@ import { createIOCFunction } from '@qlover/corekit-bridge/ioc';
 import { Logger } from '@qlover/logger';
 import { ReactSeedConfig } from '@/impls/ReactSeedConfig';
 import { SimpleIOCContainer } from '@/impls/SimpleIOCContainer';
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/ioc';
 import type { LoggerInterface } from '@qlover/logger';
 
 export function createGlobalsLogger(
-  seedConfig: ReactSeedConfigInterface
+  seedConfig: SeedConfigInterface
 ): LoggerInterface {
   const logger = new Logger({
     name: seedConfig.name,
@@ -32,7 +32,7 @@ export function createGlobalsLogger(
   });
 }
 
-export function createGlobalsConfig(): ReactSeedConfigInterface {
+export function createGlobalsConfig(): SeedConfigInterface {
   return new ReactSeedConfig();
 }
 

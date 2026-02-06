@@ -1,5 +1,5 @@
 import { DetectionOrder, i18nConfig } from '@config/i18n';
-import { pathLocaleQSKeys } from '@config/react-seed';
+import { pathLocaleQSKeys } from '@config/seed.config';
 import { createInstance } from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';

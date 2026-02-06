@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
   ServiceIdentifier

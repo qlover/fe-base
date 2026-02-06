@@ -19,7 +19,7 @@ export interface RouteConfigMeta {
   icon?: string;
 
   /**
-   * from app.router.json
+   * from router.json
    *
    * @default 'common'
    */

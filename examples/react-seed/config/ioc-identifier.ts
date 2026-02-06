@@ -1,4 +1,4 @@
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
 
@@ -24,5 +24,5 @@ export const I = IOCIdentifier;
 export interface IOCIdentifierMap {
   [I.JSONSerializer]: FeCorekit.JSONSerializer;
   [I.Logger]: Logger.LoggerInterface;
-  [I.Config]: ReactSeedConfigInterface;
+  [I.Config]: SeedConfigInterface;
 }

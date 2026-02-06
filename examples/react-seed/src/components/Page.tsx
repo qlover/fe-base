@@ -1,8 +1,8 @@
-import { pathLocalRoutePrefix } from '@config/app.router';
+import { pathLocalRoutePrefix } from '@config/router';
 import {
   routePathLocaleParamKey,
   usePathLocaleRoute
-} from '@config/react-seed';
+} from '@config/seed.config';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';

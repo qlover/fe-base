@@ -1,5 +1,5 @@
 import { useStore } from '@brain-toolkit/react-kit';
-import { routerPrefix } from '@config/react-seed';
+import { routerPrefix } from '@config/seed.config';
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';

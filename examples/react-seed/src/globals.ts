@@ -2,7 +2,7 @@ import { createIOCFunction } from '@qlover/corekit-bridge/ioc';
 import { ConsoleHandler, Logger, TimestampFormatter } from '@qlover/logger';
 import { ReactSeedConfig } from './impls/ReactSeedConfig';
 import { SimpleIOCContainer } from './impls/SimpleIOCContainer';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { IOCFunctionInterface } from '@qlover/corekit-bridge/ioc';
 import type {

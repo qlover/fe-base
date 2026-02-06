@@ -7,7 +7,7 @@ import { viteMockServe } from 'vite-plugin-mock';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 import { i18nConfig } from './config/i18n';
-import { routerPrefix } from './config/react-seed';
+import { routerPrefix } from './config/seed.config';
 import { name, version } from './package.json';
 import { getAllI18nIdentifierFiles } from './tools/i18nIdentifierGenerator';
 import type { Plugin } from 'vite';

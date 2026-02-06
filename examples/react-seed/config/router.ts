@@ -1,4 +1,4 @@
-import { routePathLocaleParamKey } from './react-seed';
+import { routePathLocaleParamKey } from './seed.config';
 import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 
 const noMatchRoute: RouteConfigValue = {

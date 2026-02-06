@@ -1,5 +1,5 @@
 import { IOC as GIOC } from '@/globals';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface

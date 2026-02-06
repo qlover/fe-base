@@ -2,7 +2,7 @@ import * as globals from '@/globals';
 import { useIOC } from '@/hooks/useIOC';
 import { inject } from '@/impls/SimpleIOCContainer';
 import type { SimpleIOCContainer } from '@/impls/SimpleIOCContainer';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface

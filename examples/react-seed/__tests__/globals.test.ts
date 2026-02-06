@@ -1,7 +1,7 @@
 import * as globals from '@/globals';
 import { name, version } from '../package.json';
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
-import type { IOCIdentifierMap } from '@config/IOCIdentifier';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
+import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
@@ -18,9 +18,7 @@ describe('globals.ts', () => {
     });
 
     it('应该是正确的类型', () => {
-      expectTypeOf(
-        globals.seedConfig
-      ).toEqualTypeOf<ReactSeedConfigInterface>();
+      expectTypeOf(globals.seedConfig).toEqualTypeOf<SeedConfigInterface>();
       expectTypeOf(globals.logger).toEqualTypeOf<LoggerInterface>();
       expectTypeOf(
         globals.containerImpl

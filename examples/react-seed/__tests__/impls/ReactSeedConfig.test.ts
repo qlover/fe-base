@@ -1,5 +1,5 @@
 import { ReactSeedConfig } from '@/impls/ReactSeedConfig';
-import type { ReactSeedConfigInterface } from '@/interfaces/ReactSeedConfigInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 
 describe('ReactSeedConfig', () => {
   let originalEnv: Record<string, unknown>;
@@ -247,7 +247,7 @@ describe('ReactSeedConfig', () => {
       });
 
       const config = new ReactSeedConfig();
-      const interfaceConfig: ReactSeedConfigInterface = config;
+      const interfaceConfig: SeedConfigInterface = config;
 
       expect(interfaceConfig.env).toBe(config.env);
       expect(interfaceConfig.name).toBe(config.name);
