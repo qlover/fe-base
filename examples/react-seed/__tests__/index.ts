@@ -1,6 +1,9 @@
 import 'reflect-metadata';
 import { createMockGlobals } from './__mocks__/createMockGlobals';
 
+// Tell React we are in a test environment that supports act()
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
 // 设置测试环境
 beforeEach(() => {
   // 清理DOM

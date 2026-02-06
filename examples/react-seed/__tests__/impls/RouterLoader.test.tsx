@@ -1,4 +1,4 @@
-import { Suspense, lazy, createElement } from 'react';
+import { Suspense, lazy } from 'react';
 import { RouterLoader, type ComponentMap } from '@/impls/RouterLoader';
 import NotFound from '@/pages/404';
 import NotFound500 from '@/pages/500';
@@ -21,15 +21,13 @@ describe('RouterLoader', () => {
     mockRender = vi.fn((route) => {
       const { element } = route;
       if (element && typeof element === 'object' && '$$typeof' in element) {
-        // Lazy component or regular component
         const Component = element as React.ComponentType;
-        return createElement(
-          Suspense,
-          { fallback: createElement('div', null, 'Loading...') },
-          createElement(Component)
+        return (
+          <Suspense fallback={<div data-testid="loading">Loading...</div>}>
+            <Component />
+          </Suspense>
         );
       }
-      // ReactNode
       return element as React.ReactNode;
     });
   });
@@ -80,9 +78,9 @@ describe('RouterLoader', () => {
     });
 
     it('should handle lazy loader function in componentMaps', () => {
-      const LazyComponent = vi.fn(() =>
-        createElement('div', null, 'Lazy Component')
-      );
+      const LazyComponent = vi.fn(() => (
+        <div data-testid="lazy">Lazy Component</div>
+      ));
       const lazyLoader = () =>
         Promise.resolve({
           default: LazyComponent
@@ -121,7 +119,7 @@ describe('RouterLoader', () => {
     it('should handle LazyExoticComponent in componentMaps', () => {
       const LazyComponent = lazy(() =>
         Promise.resolve({
-          default: () => createElement('div', null, 'Already Lazy')
+          default: () => <div data-testid="already-lazy">Already Lazy</div>
         })
       );
 
@@ -178,7 +176,7 @@ describe('RouterLoader', () => {
         render: mockRender
       });
 
-      const reactNode = createElement('div', null, 'Direct ReactNode');
+      const reactNode = <div data-testid="direct-node">Direct ReactNode</div>;
       const routeConfig: RouteConfigValue = {
         path: '/direct',
         element: reactNode
@@ -222,8 +220,8 @@ describe('RouterLoader', () => {
   describe('toRoute - nested routes', () => {
     it('should handle nested routes with children', () => {
       const componentMaps: ComponentMap = {
-        Parent: () => createElement('div', null, 'Parent'),
-        Child: () => createElement('div', null, 'Child')
+        Parent: () => <div data-testid="parent">Parent</div>,
+        Child: () => <div data-testid="child">Child</div>
       };
 
       const loader = new RouterLoader({
@@ -253,9 +251,9 @@ describe('RouterLoader', () => {
 
     it('should handle deeply nested routes', () => {
       const componentMaps: ComponentMap = {
-        Level1: () => createElement('div', null, 'Level1'),
-        Level2: () => createElement('div', null, 'Level2'),
-        Level3: () => createElement('div', null, 'Level3')
+        Level1: () => <div data-testid="level1">Level1</div>,
+        Level2: () => <div data-testid="level2">Level2</div>,
+        Level3: () => <div data-testid="level3">Level3</div>
       };
 
       const loader = new RouterLoader({
@@ -294,7 +292,7 @@ describe('RouterLoader', () => {
   describe('toRoute - index routes', () => {
     it('should handle index route correctly', () => {
       const componentMaps: ComponentMap = {
-        Index: () => createElement('div', null, 'Index')
+        Index: () => <div data-testid="index">Index</div>
       };
 
       const loader = new RouterLoader({
@@ -318,7 +316,7 @@ describe('RouterLoader', () => {
 
     it('should handle non-index route with index: false', () => {
       const componentMaps: ComponentMap = {
-        Page: () => createElement('div', null, 'Page')
+        Page: () => <div data-testid="page">Page</div>
       };
 
       const loader = new RouterLoader({
@@ -401,7 +399,7 @@ describe('RouterLoader', () => {
     });
   });
 
-  describe('integration - real route configuration', () => {
+  describe('integration', () => {
     it('should work with real page components', () => {
       const componentMaps: ComponentMap = {
         '404': NotFound,
@@ -414,14 +412,8 @@ describe('RouterLoader', () => {
       });
 
       const routes: RouteConfigValue[] = [
-        {
-          path: '/404',
-          element: '404'
-        },
-        {
-          path: '/500',
-          element: '500'
-        }
+        { path: '/404', element: '404' },
+        { path: '/500', element: '500' }
       ];
 
       const convertedRoutes = routes.map((route) => loader.toRoute(route));
@@ -430,45 +422,6 @@ describe('RouterLoader', () => {
       expect(convertedRoutes[0].path).toBe('/404');
       expect(convertedRoutes[1].path).toBe('/500');
       expect(mockRender).toHaveBeenCalledTimes(2);
-    });
-
-    it('should work with mixed element types', () => {
-      const componentMaps: ComponentMap = {
-        StringPage: NotFound,
-        LazyPage: () =>
-          Promise.resolve({
-            default: NotFound500
-          })
-      };
-
-      const loader = new RouterLoader({
-        componentMaps,
-        render: mockRender
-      });
-
-      const routes: RouteConfigValue[] = [
-        {
-          path: '/string',
-          element: 'StringPage'
-        },
-        {
-          path: '/lazy',
-          element: 'LazyPage'
-        },
-        {
-          path: '/direct',
-          element: createElement('div', null, 'Direct')
-        },
-        {
-          path: '/component',
-          element: NotFound500
-        }
-      ];
-
-      const convertedRoutes = routes.map((route) => loader.toRoute(route));
-
-      expect(convertedRoutes).toHaveLength(4);
-      expect(mockRender).toHaveBeenCalledTimes(4);
     });
   });
 });

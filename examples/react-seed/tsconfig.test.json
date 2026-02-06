@@ -9,7 +9,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@config/*": ["./config/*"],
-      "@__tests__/*": ["./__tests__/*"],
+      "@__tests__/*": ["./__tests__/*"]
     }
   },
   "include": ["src", "config", "__tests__/**/*"],
