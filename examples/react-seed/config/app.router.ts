@@ -51,7 +51,7 @@ export const baseRoutes: RouteConfigValue[] = [
   noMatchRoute
 ];
 
-const pathRoutePrefix = '/:' + routePathLocaleParamKey;
+export const pathLocalRoutePrefix = ':' + routePathLocaleParamKey;
 
 export const baseRoutesWithLocale: RouteConfigValue[] = [
   {
@@ -60,7 +60,7 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
     element: 'base/RedirectWithLocalePath'
   },
   {
-    path: pathRoutePrefix,
+    path: '/' + pathLocalRoutePrefix,
     element: 'base/Layout',
     category: 'general',
     children: [

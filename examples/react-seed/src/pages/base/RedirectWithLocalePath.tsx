@@ -11,22 +11,10 @@ export default function RedirectWithLocalePath() {
 
   useEffect(() => {
     if (usePathLocaleRoute) {
+      console.log('RedirectWithLocalePath to locale', language);
       navigate('/' + language, { replace: true });
     }
   }, [navigate, language]);
-
-  // const routeService = useIOC(RouteService);
-  // const loading = useStore(routeService.getStore(), (s) => s.loading);
-
-  // useEffect(() => {
-  //   if (!loading && usePathLocaleRoute) {
-  //     navigate('/' + language, { replace: true });
-  //   }
-  // }, [navigate, language, loading]);
-
-  // if (loading) {
-  //   return <Loading data-testid="RedirectWithLocalePathLoading" fullscreen />;
-  // }
 
   return null;
 }

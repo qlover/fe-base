@@ -17,6 +17,7 @@ export interface RequestTransactionInterface<Request, Response> {
 
 export type AppApiConfig<Request = unknown> = RequestAdapterConfig<Request> & {
   encryptProps?: string | string[];
+  token?: string;
 };
 
 export type AppApiRequesterContext = ExecutorContextInterface<AppApiConfig>;

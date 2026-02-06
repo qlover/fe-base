@@ -1,11 +1,12 @@
 import { Suspense, isValidElement } from 'react';
 import { Loading } from './Loading';
+import { Page } from './Page';
 import type { RouterLoaderRender } from '@/impls/RouterLoader';
+import type { RouteConfigValue } from '@/interfaces/RouteLoaderInterface';
 import type { ComponentType, ReactNode } from 'react';
-import type { RouteObject } from 'react-router-dom';
 
 export type RouterRenderProps = {
-  route: Omit<RouteObject, 'element'>;
+  route: Omit<RouteConfigValue, 'element'>;
 };
 
 /**
@@ -29,8 +30,12 @@ export const RouterRenderComponent: RouterLoaderRender = (route) => {
     content = element;
   } else {
     const Component = element as ComponentType<RouterRenderProps>;
-    content = <Component route={rest as Omit<RouteObject, 'element'>} />;
+    content = <Component route={rest} />;
   }
 
-  return <Suspense fallback={<Loading fullscreen />}>{content}</Suspense>;
+  return (
+    <Page route={rest}>
+      <Suspense fallback={<Loading fullscreen />}>{content}</Suspense>
+    </Page>
+  );
 };

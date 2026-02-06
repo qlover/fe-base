@@ -31,20 +31,28 @@ export class UserGateway implements UserServiceGateway<
   /**
    * @override
    */
-  public getUserInfo(
-    _params?: unknown,
-    _config?: unknown
+  public async getUserInfo(
+    data?: UserCredential,
+    config?: AppApiConfig
   ): Promise<UserSchema | null> {
-    throw new Error('Method not implemented.');
+    const response = await this.client.request({
+      url: '/user/info',
+      method: HttpMethods.POST,
+      token: data?.token,
+      encryptProps: 'password',
+      ...config
+    });
+
+    return response.data as UserSchema;
   }
   /**
    * @override
    */
   public refreshUserInfo(
-    _params?: unknown,
-    _config?: UserGatewayConfig
+    data?: UserCredential,
+    config?: UserGatewayConfig
   ): Promise<UserSchema | null> {
-    throw new Error('Method not implemented.');
+    return this.getUserInfo(data, config);
   }
 
   /**

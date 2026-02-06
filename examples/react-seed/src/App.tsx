@@ -1,12 +1,11 @@
 import { AppRouterProvider } from './components/AppRouterProvider';
+import { logger } from './globals';
 import type { ComponentMap } from './impls/RouterLoader';
 
 function App({ pages }: { pages: ComponentMap }) {
-  return (
-    <div data-testid="App">
-      <AppRouterProvider pages={pages} />
-    </div>
-  );
+  logger.debug('App pages:', pages);
+
+  return <AppRouterProvider pages={pages} />;
 }
 
 export default App;
