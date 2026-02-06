@@ -2,6 +2,10 @@ import { routerPrefix, usePathLocaleRoute } from './seed.config';
 import type { overrideQuerystringDetector } from '@/utils/overrideQuerystringDetector';
 import type { DetectorOptions } from 'i18next-browser-languagedetector';
 
+export const i18nLoadBasePath = '/locales/{{lng}}.json';
+export const i18nLoadPath = routerPrefix + '/locales/{{lng}}.json';
+// export loadI18nPath = '/locales/{{lng}}/{{ns}}.json'
+
 export const i18nConfig = {
   defaultLocale: 'en',
   storageKey: 'i18nextLng',
@@ -12,7 +16,7 @@ export const i18nConfig = {
   ns: ['common'],
   defaultNS: 'common',
   backend: {
-    loadPath: routerPrefix + '/locales/{{lng}}/{{ns}}.json'
+    loadPath: i18nLoadPath
   },
   supportedLngs: ['en', 'zh'],
   /**

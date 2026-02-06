@@ -21,7 +21,7 @@ export class I18nService implements I18nInterface<LocaleType> {
       debug: i18nConfig.debug,
       defaultNS: i18nConfig.defaultNS,
       interpolation: i18nConfig.interpolation,
-      fallbackLng: i18nConfig.defaultLocale,
+      fallbackLng: false,
       ns: i18nConfig.ns
     });
   }
@@ -60,8 +60,8 @@ export class I18nService implements I18nInterface<LocaleType> {
   /**
    * @override
    */
-  public changeLocale(locale: LocaleType): void {
-    this.instance.changeLanguage(locale);
+  public changeLocale(locale: LocaleType): Promise<void> {
+    return this.instance.changeLanguage(locale).then(() => {});
   }
   /**
    * @override

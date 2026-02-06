@@ -1,4 +1,5 @@
 import { logger } from '@/globals';
+import type { I18nMappingInterface } from '@/interfaces/I18nMappingInterface';
 import type { Namespace, TFunction } from 'i18next';
 
 function mergeNsSeparatorFalse(options: unknown): { nsSeparator: false } {
@@ -7,6 +8,33 @@ function mergeNsSeparatorFalse(options: unknown): { nsSeparator: false } {
     return { ...options, ...base };
   }
   return base;
+}
+
+export function translateWithT<Ns extends Namespace, KPrefix>(
+  t: TFunction<Ns, KPrefix>,
+  key: unknown,
+  ...args: unknown[]
+) {
+  let result: unknown;
+  if (args.length === 0) {
+    result = t(key as never, mergeNsSeparatorFalse(undefined));
+  } else if (args.length === 1) {
+    const arg = args[0];
+    if (typeof arg === 'string') {
+      result = t(key as never, arg, mergeNsSeparatorFalse(undefined));
+    } else {
+      result = t(key as never, mergeNsSeparatorFalse(arg));
+    }
+  } else {
+    const [, options] = args;
+    result = t(key as never, args[0] as never, mergeNsSeparatorFalse(options));
+  }
+
+  if (result === key) {
+    logger.warn(`[i18n] Missing translation: ${key}`);
+    return key;
+  }
+  return result;
 }
 
 /**
@@ -26,34 +54,23 @@ function mergeNsSeparatorFalse(options: unknown): { nsSeparator: false } {
 export function overrideTranslate<Ns extends Namespace, KPrefix>(
   t: TFunction<Ns, KPrefix>
 ): TFunction<Ns, KPrefix> {
-  const overrideT = (key: unknown, ...args: unknown[]) => {
-    let result: unknown;
-    if (args.length === 0) {
-      result = t(key as never, mergeNsSeparatorFalse(undefined));
-    } else if (args.length === 1) {
-      const arg = args[0];
-      if (typeof arg === 'string') {
-        result = t(key as never, arg, mergeNsSeparatorFalse(undefined));
-      } else {
-        result = t(key as never, mergeNsSeparatorFalse(arg));
-      }
-    } else {
-      const [, options] = args;
-      result = t(
-        key as never,
-        args[0] as never,
-        mergeNsSeparatorFalse(options)
-      );
-    }
-
-    if (result === key) {
-      logger.warn(`[i18n] Missing translation: ${key}`);
-      return key;
-    }
-    return result;
-  };
-
   // Object.defineProperty(overrideT, 'name', { value: 'overrideT' });
-
+  const overrideT = translateWithT.bind(null, t);
   return overrideT as unknown as TFunction<Ns, KPrefix>;
+}
+
+export function translateWithMapping<
+  T extends I18nMappingInterface,
+  Ns extends Namespace,
+  KPrefix
+>(t: TFunction<Ns, KPrefix>, mapping: T) {
+  return Object.fromEntries(
+    Object.entries(mapping).map(([key, value]) => {
+      if (typeof value === 'string') {
+        // 禁用命名空间分隔符，避免冒号被解析为命名空间
+        return [key, t(value)];
+      }
+      return [key, value];
+    })
+  ) as T;
 }

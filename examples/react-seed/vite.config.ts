@@ -6,7 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { viteMockServe } from 'vite-plugin-mock';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
-import { i18nConfig } from './config/i18n';
+import { i18nConfig, i18nLoadPath } from './config/i18n';
 import { routerPrefix } from './config/seed.config';
 import { name, version } from './package.json';
 import { getAllI18nIdentifierFiles } from './tools/i18nIdentifierGenerator';
@@ -42,8 +42,10 @@ export default defineConfig({
       }),
     ts2Locales({
       locales: i18nConfig.supportedLngs as unknown as string[],
-      target: relativePath('./public/locales/{{lng}}/{{ns}}.json'),
-      resolveNs: (key) => key.split(':')[0],
+      // target: relativePath('./public/locales/{{lng}}/{{ns}}.json'),
+      target: relativePath('./public/' + i18nLoadPath),
+      // 注释后只保留 common
+      // resolveNs: (key) => key.split(':')[0],
       // 不保留命名空间
       // resolveKeyInFile: (key, ns) => key.slice(ns.length + 1),
       options: getAllI18nIdentifierFiles(

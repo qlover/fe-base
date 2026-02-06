@@ -1,12 +1,4 @@
-/**
- * Page I18n Interface for SEO meta properties
- *
- * value may be undefined, which means the page does not have this meta property
- *
- * - if value is i18n key, it will be translated to the current language
- * - if value is a string, it will be used as is
- */
-export interface PageI18nInterface {
+export interface I18nMappingInterface {
   // Basic meta properties
   title: string;
   description: string;
@@ -48,6 +40,4 @@ export interface PageI18nInterface {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
-
-  [key: string]: unknown;
 }

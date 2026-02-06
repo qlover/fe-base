@@ -3,10 +3,12 @@ import {
   routePathLocaleParamKey,
   usePathLocaleRoute
 } from '@config/seed.config';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';
 import { I18nService } from '@/impls/I18nService';
+import { getLocaleRedirectTo } from '@/utils/getLocaleRedirectTo';
+import { Loading } from './Loading';
 import type { RouterRenderProps } from './RouterRenderComponent';
 import type { RouteParams } from '@/interfaces/RouteServiceInterface';
 import type { PropsWithChildren } from 'react';
@@ -31,33 +33,50 @@ export function Page(props: PropsWithChildren<PageProps>) {
   const { children, route } = props;
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { [routePathLocaleParamKey]: lng } = useParams<RouteParams>();
   const i18nService = useIOC(I18nService);
+  const [isI18nLoading, setIsI18nLoading] = useState(false);
+  const effectCancelledRef = useRef(false);
 
   const redirectToLocalPage = useCallback(
     (locale: string) => {
       if (usePathLocaleRoute) {
-        console.log('Page redirectToLocalPage to locale', locale);
-        // TODO: hash qs 可能会丢失
-        navigate('/' + locale, { replace: true });
+        const to = getLocaleRedirectTo(location.pathname, locale, {
+          search: location.search,
+          hash: location.hash
+        });
+        navigate(to, { replace: true });
       }
     },
-    [navigate]
+    [navigate, location.pathname, location.search, location.hash]
   );
+
   // Sync route locale param to i18n when user navigates (e.g. via LocaleLink)
   useEffect(() => {
+    effectCancelledRef.current = false;
     if (!usePathLocaleRoute || !lng) return;
-    if (i18nService.isLocale(lng)) {
-      i18nService.changeLocale(lng);
 
-      // redirectToLocalPage(lng);
-
+    if (!i18nService.isLocale(lng)) {
+      const currentLocale = i18nService.getLocale();
+      i18nService.changeLocale(currentLocale);
+      redirectToLocalPage(currentLocale);
       return;
     }
 
     const currentLocale = i18nService.getLocale();
-    i18nService.changeLocale(currentLocale);
-    // redirectToLocalPage(currentLocale);
+    if (lng === currentLocale) return;
+
+    setIsI18nLoading(true);
+    i18nService.changeLocale(lng).then(() => {
+      if (!effectCancelledRef.current) {
+        setIsI18nLoading(false);
+      }
+    });
+
+    return () => {
+      effectCancelledRef.current = true;
+    };
   }, [lng, i18nService, redirectToLocalPage]);
 
   const pagePath = useMemo(() => {
@@ -72,6 +91,7 @@ export function Page(props: PropsWithChildren<PageProps>) {
       data-page-path={pagePath}
     >
       {children}
+      {isI18nLoading && <Loading fullscreen />}
     </div>
   );
 }
