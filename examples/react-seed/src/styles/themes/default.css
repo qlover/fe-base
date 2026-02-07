@@ -23,6 +23,7 @@
     --login-social-button-border: var(--fe-color-border);
   }
 
+  html[data-theme='dark'],
   [data-theme='dark'] {
     --color-bg-base: 15 23 42;
     --color-bg-secondary: 30 41 59;
@@ -47,6 +48,7 @@
     --login-social-button-border: var(--fe-color-border);
   }
 
+  html[data-theme='pink'],
   [data-theme='pink'] {
     --color-bg-base: 255 241 242;
     --color-bg-secondary: 255 228 230;

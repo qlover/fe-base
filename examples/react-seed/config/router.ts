@@ -33,12 +33,28 @@ export const pathLocalRoutePrefix = ':' + routePathLocaleParamKey;
 export const authRoutes: RouteConfigValue[] = [
   {
     index: true,
+    element: 'auth/RedirectToLogin',
+    category: 'auth'
+  },
+  {
+    path: 'login',
     element: 'auth/Login',
     category: 'auth',
     meta: {
       title: 'identifier.PAGE_LOGIN_TITLE',
       description: 'identifier.PAGE_LOGIN_DESCRIPTION',
       icon: 'login',
+      localNamespace: 'common'
+    }
+  },
+  {
+    path: 'register',
+    element: 'auth/Register',
+    category: 'auth',
+    meta: {
+      title: 'identifier.PAGE_REGISTER_TITLE',
+      description: 'identifier.PAGE_REGISTER_DESCRIPTION',
+      icon: 'userPlus',
       localNamespace: 'common'
     }
   }

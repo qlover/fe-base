@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IOC as GIOC } from '@/globals';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
@@ -5,9 +6,7 @@ import type {
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
-type IOCIdentifier =
-  | keyof IOCIdentifierMap
-  | (new (...args: unknown[]) => unknown);
+type IOCIdentifier = keyof IOCIdentifierMap | (new (...args: any[]) => any);
 
 export function useIOC(): IOCFunctionInterface<
   IOCIdentifierMap,
@@ -17,7 +16,7 @@ export function useIOC<T extends IOCIdentifier>(
   identifier: T
 ): T extends keyof IOCIdentifierMap
   ? IOCIdentifierMap[T]
-  : T extends new (...args: unknown[]) => unknown
+  : T extends new (...args: any[]) => any
     ? InstanceType<T>
     : never;
 

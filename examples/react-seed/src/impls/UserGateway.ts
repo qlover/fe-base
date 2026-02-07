@@ -6,6 +6,7 @@ import {
   EP_USER_REGISTER
 } from '@config/endpoints/user';
 import { RequestExecutor } from '@qlover/fe-corekit';
+import { isUndefined, omitBy } from 'lodash-es';
 import { inject, injectable } from '@/impls/Container';
 import { AppApiRequester } from './AppApiRequester';
 import type { AppApiConfig, AppApiRequesterContext } from './AppApiRequester';
@@ -39,15 +40,21 @@ export class UserGateway implements UserServiceGateway<
    * @override
    */
   public async getUserInfo(
-    _data?: UserCredential,
+    data?: UserCredential,
     config?: AppApiConfig
   ): Promise<UserSchema | null> {
-    const response = await this.client.request({
-      ...toEndpointObject(EP_USER_INFO),
-      // token: data?.token, 注释后交个插件管理token, 如果开启则手动管理token，插件会自动获取token
-      encryptProps: 'password',
-      ...config
-    });
+    const response = await this.client.request(
+      // 去掉值为 undeinfed 的属性,这样在扩展值的时候不会用undefined覆盖默认值,比如这里的data.token
+      omitBy(
+        {
+          ...toEndpointObject(EP_USER_INFO),
+          token: data?.token,
+          encryptProps: 'password',
+          ...config
+        },
+        isUndefined
+      )
+    );
 
     return response.data as UserSchema;
   }

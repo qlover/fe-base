@@ -1,11 +1,17 @@
 import { prefixEndpointWithMock } from '@config/endpoints/_endpoint';
-import { EP_USER_INFO, EP_USER_LOGIN } from '@config/endpoints/user';
+import {
+  EP_USER_INFO,
+  EP_USER_LOGIN,
+  EP_USER_REGISTER
+} from '@config/endpoints/user';
 
+const authKey = 'Authorization';
 export default [
   {
     ...prefixEndpointWithMock(EP_USER_INFO),
     response({ headers }: { headers: Record<string, string> }) {
-      if (!headers['Authorization']) {
+      const token = headers[authKey] || headers[authKey.toLowerCase()];
+      if (!token) {
         return null;
       }
 
@@ -13,7 +19,7 @@ export default [
         id: 1,
         role: 1,
         email: 'test@example.com',
-        credential_token: 'mock-credential-token-123456',
+        credential_token: token + Date.now(),
         email_confirmed_at: 1717702400,
         created_at: new Date(),
         updated_at: new Date()
@@ -24,8 +30,21 @@ export default [
     ...prefixEndpointWithMock(EP_USER_LOGIN),
     timeout: 500,
     response() {
+      return { token: 'mock-token-123456' };
+    }
+  },
+  {
+    ...prefixEndpointWithMock(EP_USER_REGISTER),
+    timeout: 500,
+    response({ data }: { data: { email?: string } }) {
       return {
-        data: { token: 'mock-token-123456' }
+        id: 1,
+        role: 1,
+        email: data?.email ?? 'test@example.com',
+        credential_token: 'mock-token-' + Date.now(),
+        email_confirmed_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
     }
   }
