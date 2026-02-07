@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "@brain-toolkit/react-kit": "^0.2.2",
+    "@qlover/corekit-bridge": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/logger": "workspace:*",
     "@qlover/slice-store-react": "^1.4.1",
     "clsx": "^2.1.1",
     "eslint-plugin-import": "^2.32.0",
@@ -34,10 +37,7 @@
   "devDependencies": {
     "@brain-toolkit/ts2locales": "^0.4.0",
     "@eslint/js": "^9.39.1",
-    "@qlover/corekit-bridge": "workspace:*",
     "@qlover/eslint-plugin": "^2.0.0",
-    "@qlover/fe-corekit": "workspace:*",
-    "@qlover/logger": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
     "@types/lodash-es": "^4.17.12",

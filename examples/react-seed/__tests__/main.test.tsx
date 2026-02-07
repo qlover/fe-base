@@ -119,8 +119,11 @@ describe('main.tsx', () => {
     const instance = BootstrapClientInstances[0];
     expect(instance.startup).toHaveBeenCalled();
 
-    // Verify startup was called with window
-    expect(instance.startup).toHaveBeenCalledWith(window);
+    // Verify startup was called with window and an IOC register (shape: { register })
+    expect(instance.startup).toHaveBeenCalledWith(
+      window,
+      expect.objectContaining({ register: expect.any(Function) })
+    );
     expect(instance.startup).toHaveBeenCalledTimes(1);
   });
 
