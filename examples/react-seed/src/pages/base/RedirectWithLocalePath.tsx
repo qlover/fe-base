@@ -2,6 +2,7 @@ import { usePathLocaleRoute } from '@config/seed.config';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { logger } from '@/globals';
 
 export default function RedirectWithLocalePath() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function RedirectWithLocalePath() {
 
   useEffect(() => {
     if (usePathLocaleRoute) {
-      console.log('RedirectWithLocalePath to locale', language);
+      logger.log('RedirectWithLocalePath to locale', language);
       navigate('/' + language, { replace: true });
     }
   }, [navigate, language]);

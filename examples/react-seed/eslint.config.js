@@ -173,7 +173,8 @@ export default defineConfig([
         'sessionStorage',
         'navigator',
         'location',
-        'history'
+        'history',
+        'console'
       ],
       message: '❌ see(./docs/zh/why-no-globals.md)'
     }

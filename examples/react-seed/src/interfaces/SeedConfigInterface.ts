@@ -3,4 +3,6 @@ export interface SeedConfigInterface {
   readonly name: string;
   readonly version: string;
   readonly isProduction: boolean;
+
+  readonly userCredentialKey: string;
 }

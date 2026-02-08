@@ -24,7 +24,8 @@ export const PAGE_LOGIN_USERNAME_LABEL = 'page_login:username_label';
  * @localZh 请输入用户名或邮箱
  * @localEn Enter your username or email
  */
-export const PAGE_LOGIN_USERNAME_PLACEHOLDER = 'page_login:username_placeholder';
+export const PAGE_LOGIN_USERNAME_PLACEHOLDER =
+  'page_login:username_placeholder';
 
 /**
  * @description Login form - password label
@@ -38,7 +39,8 @@ export const PAGE_LOGIN_PASSWORD_LABEL = 'page_login:password_label';
  * @localZh 请输入密码
  * @localEn Enter your password
  */
-export const PAGE_LOGIN_PASSWORD_PLACEHOLDER = 'page_login:password_placeholder';
+export const PAGE_LOGIN_PASSWORD_PLACEHOLDER =
+  'page_login:password_placeholder';
 
 /**
  * @description Login form - remember me checkbox

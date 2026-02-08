@@ -75,6 +75,16 @@ export const baseRoutes: RouteConfigValue[] = [
           icon: 'home',
           localNamespace: 'common'
         }
+      },
+      {
+        path: 'login',
+        element: 'base/RedirectToHome',
+        category: 'main'
+      },
+      {
+        path: 'register',
+        element: 'base/RedirectToHome',
+        category: 'main'
       }
     ]
   },
@@ -106,6 +116,16 @@ export const baseRoutesWithLocale: RouteConfigValue[] = [
           icon: 'home',
           localNamespace: 'common'
         }
+      },
+      {
+        path: 'login',
+        element: 'base/RedirectToHome',
+        category: 'main'
+      },
+      {
+        path: 'register',
+        element: 'base/RedirectToHome',
+        category: 'main'
       },
       ...staticRoutes
     ]

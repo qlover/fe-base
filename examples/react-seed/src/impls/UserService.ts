@@ -1,4 +1,6 @@
+import { I } from '@config/ioc-identifier';
 import { UserService as BridgeUserService } from '@qlover/corekit-bridge';
+import { CookieStorage } from '@qlover/corekit-bridge';
 import {
   isWebUserSchema,
   UserCredential,
@@ -9,6 +11,7 @@ import { inject } from './Container';
 import { RouteService } from './RouteService';
 import { UserGateway } from './UserGateway';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
+import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -30,10 +33,15 @@ export class UserService extends BridgeUserService<
       UserGatewayConfig
     >,
     @inject(RouteService) readonly routeService: RouteServiceInterface,
-    @inject('Logger') logger: LoggerInterface
+    @inject('Logger') logger: LoggerInterface,
+    @inject(I.Config) config: SeedConfigInterface
   ) {
     super(userGateway, {
-      logger: logger
+      logger: logger,
+      store: {
+        storageKey: config.userCredentialKey,
+        storage: new CookieStorage()
+      }
     });
   }
 

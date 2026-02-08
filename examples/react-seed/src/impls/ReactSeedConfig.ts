@@ -11,4 +11,6 @@ export class ReactSeedConfig implements SeedConfigInterface {
   public readonly version: string = import.meta.env.VITE_APP_VERSION;
   // public readonly isProduction: boolean = import.meta.env.PROD;
   public readonly isProduction: boolean = import.meta.env.MODE === 'production';
+
+  public readonly userCredentialKey: string = 'koieluf341bj';
 }

@@ -83,7 +83,7 @@ export const UserServiceErrorIds = {
  */
 export type UserServiceConfig<User, Credential> = Omit<
   GatewayServiceOptions<User, unknown>,
-  'serviceName' | 'store' | 'gateway'
+  'serviceName' | 'store' | 'gateway' | 'storage' | 'storageKey'
 > & {
   /**
    * Service name

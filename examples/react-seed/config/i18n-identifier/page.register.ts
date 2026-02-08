@@ -24,7 +24,8 @@ export const PAGE_REGISTER_EMAIL_LABEL = 'page_register:email_label';
  * @localZh 请输入邮箱
  * @localEn Enter your email
  */
-export const PAGE_REGISTER_EMAIL_PLACEHOLDER = 'page_register:email_placeholder';
+export const PAGE_REGISTER_EMAIL_PLACEHOLDER =
+  'page_register:email_placeholder';
 
 /**
  * @description Register form - password label
