@@ -1,5 +1,9 @@
 # @qlover/fe-release
 
+## 4.2.0
+
+### Minor Changes
+
 ## 4.1.0
 
 ### Minor Changes

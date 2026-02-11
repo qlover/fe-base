@@ -1,5 +1,29 @@
 # @qlover/corekit-bridge
 
+## 2.2.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-seed:** Enhance authentication flow with login and register redirects ([3857431](https://github.com/qlover/fe-base/commit/3857431b8991742764857907d7ec94ad84ebddf5)) ([#581](https://github.com/qlover/fe-base/pull/581))
+  - Added `RedirectToHome` component to redirect users from login and register paths to the home page if they are already logged in.
+  - Updated routing configuration to include new routes for login and register, ensuring proper navigation within the application.
+  - Improved i18n identifiers for login and register pages, enhancing localization support.
+  - Refactored `UserService` to utilize a user credential key stored in cookies for better user session management.
+
+  These changes aim to streamline the authentication process and improve user experience by providing clear navigation paths and enhanced localization.
+
+#### ♻️ Refactors
+
+- **vite:** Consolidate test configuration and enhance user service error handling ([c7fd224](https://github.com/qlover/fe-base/commit/c7fd2248398e627e05b802404bb6c1b8d63f2c99)) ([#581](https://github.com/qlover/fe-base/pull/581))
+  - Replaced the `vitest.root.config.ts` with a more structured configuration directly in `vite.config.ts`, improving clarity and organization.
+  - Updated the `UserService` class to throw specific `ExecutorError` instances for invalid credentials and users, enhancing error handling.
+  - Adjusted return types in the `UserServiceInterface` to ensure consistency and clarity in method signatures.
+  - Added workspace dependencies in the `react-seed` example to streamline local development.
+
+  These changes aim to improve the testing framework and error management within the user service, enhancing overall maintainability and developer experience.
+
 ## 2.1.1
 
 ### Patch Changes

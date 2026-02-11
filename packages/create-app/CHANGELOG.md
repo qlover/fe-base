@@ -1,5 +1,20 @@
 # @qlover/create-app
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **react-seed:** Enhance i18n configuration and introduce new home page localization ([1b7a624](https://github.com/qlover/fe-base/commit/1b7a6240b81814838663b151c8728bd67a0a5673)) ([#581](https://github.com/qlover/fe-base/pull/581))
+  - Updated i18n configuration to support dynamic loading paths and improved locale handling.
+  - Refactored the `Page` component to include loading states during locale changes.
+  - Introduced new i18n identifiers for the home page, consolidating localization keys into a dedicated mapping structure.
+  - Created utility functions for locale redirection and streamlined translation handling with a new `useI18nMapping` hook.
+  - Removed deprecated localization constants from the common identifiers to improve clarity and maintainability.
+
+  These changes aim to strengthen the localization framework and enhance the user experience on the home page by providing a more organized and efficient approach to internationalization.
+
 ## 1.0.2
 
 ### Patch Changes
