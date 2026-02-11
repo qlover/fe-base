@@ -1,8 +1,8 @@
-import { useStore } from '@brain-toolkit/react-kit';
 import { routerPrefix } from '@config/seed.config';
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useIOC } from '@/hooks/useIOC';
+import { useStore } from '@/hooks/useStore';
 import { RouterLoader } from '@/impls/RouterLoader';
 import { RouteService } from '@/impls/RouteService';
 import { RouterRenderComponent } from './RouterRenderComponent';

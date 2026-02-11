@@ -16,7 +16,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@brain-toolkit/react-kit": "^0.2.2",
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",

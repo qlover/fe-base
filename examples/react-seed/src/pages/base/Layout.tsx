@@ -1,7 +1,7 @@
-import { useStore } from '@brain-toolkit/react-kit';
 import { Outlet } from 'react-router-dom';
 import { Loading } from '@/components/Loading';
 import { useIOC } from '@/hooks/useIOC';
+import { useStore } from '@/hooks/useStore';
 import { RouteService } from '@/impls/RouteService';
 
 export default function BaseLayout() {

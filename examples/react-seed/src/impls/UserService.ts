@@ -1,6 +1,8 @@
 import { I } from '@config/ioc-identifier';
 import { UserService as BridgeUserService } from '@qlover/corekit-bridge';
 import { CookieStorage } from '@qlover/corekit-bridge';
+import { StorageExecutor } from '@qlover/fe-corekit';
+import { isString } from 'lodash-es';
 import {
   isWebUserSchema,
   UserCredential,
@@ -13,11 +15,29 @@ import { UserGateway } from './UserGateway';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
 import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
+import type { StorageExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 // TODO:
 export type UserGatewayConfig = {
   [key: string]: unknown;
+};
+
+const userStoragePlugin: StorageExecutorPlugin<
+  string,
+  UserCredential,
+  unknown
+> = {
+  get(_, valueFromPrevious) {
+    if (isString(valueFromPrevious)) {
+      return { token: valueFromPrevious };
+    }
+  },
+  set(_, value) {
+    if (userCredentialSchema.safeParse(value).success) {
+      return (value as UserCredential).token;
+    }
+  }
 };
 
 export class UserService extends BridgeUserService<
@@ -40,7 +60,10 @@ export class UserService extends BridgeUserService<
       logger: logger,
       store: {
         storageKey: config.userCredentialKey,
-        storage: new CookieStorage()
+        storage: new StorageExecutor<string, UserSchema | UserCredential>([
+          userStoragePlugin,
+          new CookieStorage()
+        ])
       }
     });
   }

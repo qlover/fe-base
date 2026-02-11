@@ -19,7 +19,7 @@ export default [
         id: 1,
         role: 1,
         email: 'test@example.com',
-        credential_token: token + Date.now(),
+        credential_token: 'mock-token-info',
         email_confirmed_at: 1717702400,
         created_at: new Date(),
         updated_at: new Date()
@@ -30,7 +30,7 @@ export default [
     ...prefixEndpointWithMock(EP_USER_LOGIN),
     timeout: 500,
     response() {
-      return { token: 'mock-token-123456' };
+      return { token: 'mock-token-login' };
     }
   },
   {
@@ -41,7 +41,7 @@ export default [
         id: 1,
         role: 1,
         email: data?.email ?? 'test@example.com',
-        credential_token: 'mock-token-' + Date.now(),
+        credential_token: 'mock-token-register',
         email_confirmed_at: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
