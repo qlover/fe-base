@@ -13,7 +13,7 @@ import { createUserStore } from '../utils/createUserStore';
 import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
-import { ExecutorError } from '@qlover/fe-corekit';
+import { ExecutorError, type StorageInterface } from '@qlover/fe-corekit';
 
 const UserServiceName = 'UserService';
 
@@ -158,7 +158,30 @@ export type UserServiceConfig<User, Credential> = Omit<
    */
   store?:
     | UserStoreInterface<User, Credential>
-    | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
+    | (Omit<
+        UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>,
+        'storage'
+      > & {
+        /**
+         * UserStore Persistence Data may be User or Credential,
+         *
+         * The default is User=UserStateInterface<User, Credential>['result']
+         *
+         * It is determined by the `storageResult` of the parent class AsyncStore
+         * - When storageResult=false, the value is UserStateInterface<User, Credential>, which is the state itself
+         * - When storageResult=true, the value is UserStateInterface<User, Credential>['result'], which is the User
+         *
+         * But UserStore default implementation does not contain the storageResult judgment, so we currently force the user and credential to be stored separately
+         * So here we support three cases
+         *
+         * @optional
+         */
+        storage?: StorageInterface<
+          string,
+          Credential | User | UserStateInterface<User, Credential>,
+          unknown
+        > | null;
+      });
 
   /**
    * Whether to pull user info after login

@@ -27,7 +27,7 @@ import { type LoginParams } from '../../src/core/gateway-service/interface/UserS
 import { AsyncStoreStatus } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import type { UserStoreInterface } from '../../src/core/gateway-service/interface/UserStoreInterface';
 import { UserStore } from '@qlover/corekit-bridge/core';
 
@@ -87,7 +87,7 @@ class MockLogger implements LoggerInterface {
 /**
  * Mock storage implementation for testing persistence
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
 
   /**

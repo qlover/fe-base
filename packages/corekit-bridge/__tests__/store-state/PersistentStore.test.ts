@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import {
   type StoreStateInterface,
   PersistentStore
@@ -24,7 +24,7 @@ import {
  * Tracks all storage operations and allows direct data manipulation
  * for testing purposes
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
   public calls: {
     setItem: Array<{ key: Key; value: unknown; options?: unknown }>;
@@ -131,7 +131,7 @@ class TestPersistentStore extends PersistentStore<TestState, string> {
   private readonly storageKey = 'test-state';
 
   constructor(
-    storage: SyncStorageInterface<string> | null = null,
+    storage: StorageInterface<string, TestState> | null = null,
     initRestore: boolean = true
   ) {
     // Don't auto-restore in super() to avoid initialization order issues

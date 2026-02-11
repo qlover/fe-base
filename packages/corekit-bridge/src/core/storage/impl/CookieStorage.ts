@@ -1,4 +1,4 @@
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import Cookies from 'js-cookie';
 
 type CookieAttributes = Cookies.CookieAttributes;
@@ -28,9 +28,11 @@ type CookieAttributes = Cookies.CookieAttributes;
  * storage.clear();                                       // remove every cookie under the current path/domain
  * ```
  */
-export class CookieStorage
-  implements SyncStorageInterface<string, CookieAttributes>
-{
+export class CookieStorage implements StorageInterface<
+  string,
+  string,
+  CookieAttributes
+> {
   private readonly defaultAttrs: CookieAttributes | undefined;
 
   constructor(attrs?: CookieAttributes) {
@@ -41,7 +43,6 @@ export class CookieStorage
    * Total number of cookie keys currently accessible under the current
    * domain / path.
    *
-   * @override
    * @returns number – Count of stored cookie keys.
    */
   public get length(): number {
