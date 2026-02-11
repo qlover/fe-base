@@ -69,9 +69,10 @@ export type ChatMessageRoleType =
  * });
  * ```
  */
-export class ChatMessage<T = unknown, R = unknown>
-  implements MessageStoreMsg<T, R>
-{
+export class ChatMessage<T = unknown, R = unknown> implements MessageStoreMsg<
+  T,
+  R
+> {
   /**
    * Unique message identifier
    *

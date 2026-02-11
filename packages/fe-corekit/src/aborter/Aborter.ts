@@ -150,9 +150,9 @@ interface AbortControllerWrapper<T extends AborterConfig = AborterConfig> {
  * aborter.abortAll();
  * ```
  */
-export class Aborter<T extends AborterConfig = AborterConfig>
-  implements AborterInterface<T>
-{
+export class Aborter<
+  T extends AborterConfig = AborterConfig
+> implements AborterInterface<T> {
   /**
    * Counter for generating unique abort IDs
    *

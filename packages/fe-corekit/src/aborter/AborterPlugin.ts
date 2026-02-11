@@ -212,9 +212,9 @@ export interface AborterPluginOptions<T extends AborterConfig> {
 export class AborterPlugin<
   TParams extends AborterConfig = AborterConfig,
   TResult = unknown
-> implements
-    LifecyclePluginInterface<ExecutorContextInterface<TParams, TResult>>
-{
+> implements LifecyclePluginInterface<
+  ExecutorContextInterface<TParams, TResult>
+> {
   /**
    * Plugin identifier name
    */

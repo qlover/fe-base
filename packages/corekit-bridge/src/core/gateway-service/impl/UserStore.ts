@@ -127,7 +127,7 @@ export interface UserStoreOptions<
  * - Enhanced methods: `start` and `success` can accept credential for atomic updates
  *
  * TODO: Where should we support the `storageResult` of the parent class
- * 
+ *
  * @since `1.8.0`
  * @template User - The type of user object
  * @template Credential - The type of credential data returned after login

@@ -92,8 +92,7 @@ export interface PluginExecutorConfig {
 export abstract class BasePluginExecutor<
   Ctx extends ExecutorContextInterface<unknown, unknown>,
   Plugin extends ExecutorPluginInterface<Ctx>
-> implements ExecutorInterface<Plugin>
-{
+> implements ExecutorInterface<Plugin> {
   /**
    * Array of active plugins for this executor
    * All plugins must be of type Plugin which extends ExecutorPluginInterface<Ctx>

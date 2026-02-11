@@ -64,8 +64,11 @@ import { isServiceName } from '../utils/typeGuards';
  * };
  * ```
  */
-export interface GatewayServiceOptions<T, Gateway, Key = string>
-  extends AsyncStoreOptions<AsyncStoreStateInterface<T>, Key> {
+export interface GatewayServiceOptions<
+  T,
+  Gateway,
+  Key = string
+> extends AsyncStoreOptions<AsyncStoreStateInterface<T>, Key> {
   /**
    * Service name identifier
    *
@@ -233,8 +236,7 @@ export class GatewayService<
   T,
   Store extends AsyncStoreInterface<AsyncStoreStateInterface<T>>,
   Gateway extends ServiceGatewayType
-> implements GatewayServiceInterface<Store, Gateway>
-{
+> implements GatewayServiceInterface<Store, Gateway> {
   /**
    * Service name identifier
    *

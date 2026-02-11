@@ -143,8 +143,9 @@ export type DisabledSendParams<T = unknown> = {
  * });
  * ```
  */
-export interface ChatMessageBridgeInterface<T = string>
-  extends InputRefInterface {
+export interface ChatMessageBridgeInterface<
+  T = string
+> extends InputRefInterface {
   /**
    * Get the message store instance
    *

@@ -52,10 +52,9 @@ export const RETRY_ERROR_ID = 'RETRY_ERROR';
  *
  * @category RetryPlugin
  */
-export class RetryPlugin
-  implements
-    LifecyclePluginInterface<ExecutorContextInterface<RetryOptions, unknown>>
-{
+export class RetryPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<RetryOptions, unknown>
+> {
   /**
    * The pluginName of the plugin
    */

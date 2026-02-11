@@ -24,7 +24,6 @@ export type BootstrapPluginOptions = {
   logger: LoggerInterface;
 };
 
-export interface BootstrapExecutorPlugin
-  extends LifecycleSyncPluginInterface<BootstrapContext> {}
+export interface BootstrapExecutorPlugin extends LifecycleSyncPluginInterface<BootstrapContext> {}
 
 export type BootstrapContext = ExecutorContextInterface<BootstrapPluginOptions>;

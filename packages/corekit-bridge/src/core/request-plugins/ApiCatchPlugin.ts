@@ -38,14 +38,11 @@ type ApiCatchPluginContext = ExecutorContextInterface<
  *
  * Do not throw errors, only return errors and data
  */
-export class ApiCatchPlugin
-  implements
-    LifecyclePluginInterface<
-      ApiCatchPluginContext,
-      RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse,
-      ApiCatchPluginConfig & RequestAdapterFetchConfig
-    >
-{
+export class ApiCatchPlugin implements LifecyclePluginInterface<
+  ApiCatchPluginContext,
+  RequestAdapterResponse<unknown, unknown> & ApiCatchPluginResponse,
+  ApiCatchPluginConfig & RequestAdapterFetchConfig
+> {
   public readonly pluginName = 'ApiCatchPlugin';
 
   constructor(

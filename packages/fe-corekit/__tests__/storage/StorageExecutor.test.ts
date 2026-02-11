@@ -65,10 +65,7 @@ describe('StorageExecutor', () => {
 
     it('should accept array [serializer, storage]', () => {
       const storage = new MockStorage();
-      const executor = new StorageExecutor([
-        mockSerializer as any,
-        storage
-      ]);
+      const executor = new StorageExecutor([mockSerializer as any, storage]);
       const obj = { a: 1 };
       executor.setItem('k', obj as any);
       expect(storage.data.get('k')).toBe(JSON.stringify(obj));
@@ -101,7 +98,9 @@ describe('StorageExecutor', () => {
       executor.setItem('key', { x: 1 } as any);
       expect(storage.setItemCalls).toHaveLength(1);
       expect(storage.setItemCalls[0].key).toBe('key');
-      expect(storage.setItemCalls[0].value).toBe('enc:' + JSON.stringify({ x: 1 }));
+      expect(storage.setItemCalls[0].value).toBe(
+        'enc:' + JSON.stringify({ x: 1 })
+      );
     });
 
     it('should work with single storage (no transform)', () => {

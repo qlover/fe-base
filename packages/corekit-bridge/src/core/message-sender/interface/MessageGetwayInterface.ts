@@ -167,8 +167,10 @@ export interface GatewayEventInterface<M = unknown> {
  * };
  * ```
  */
-export interface GatewayOptions<M, P = Record<string, unknown>>
-  extends GatewayEventInterface<M> {
+export interface GatewayOptions<
+  M,
+  P = Record<string, unknown>
+> extends GatewayEventInterface<M> {
   /**
    * Whether to use streaming mode
    *

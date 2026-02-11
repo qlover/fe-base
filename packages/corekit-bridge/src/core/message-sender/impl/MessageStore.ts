@@ -142,8 +142,8 @@ export class MessagesStore<
     unknown,
     unknown
   >,
-  State extends
-    MessagesStateInterface<MessageType> = MessagesStateInterface<MessageType>
+  State extends MessagesStateInterface<MessageType> =
+    MessagesStateInterface<MessageType>
 > extends MessagesStoreInterface<MessageType, State> {
   /**
    * Merge message objects while preserving prototype chain

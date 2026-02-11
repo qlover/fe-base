@@ -111,14 +111,11 @@ export interface ResponseStreamConfig {
  * });
  * ```
  */
-export class ResponseStream
-  implements
-    LifecyclePluginInterface<
-      ExecutorContextInterface<RequestAdapterConfig>,
-      unknown,
-      RequestAdapterConfig
-    >
-{
+export class ResponseStream implements LifecyclePluginInterface<
+  ExecutorContextInterface<RequestAdapterConfig>,
+  unknown,
+  RequestAdapterConfig
+> {
   public readonly pluginName = 'ResponseStream';
 
   constructor(private config: ResponseStreamConfig = {}) {}

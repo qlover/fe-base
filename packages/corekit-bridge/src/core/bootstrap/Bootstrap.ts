@@ -9,8 +9,9 @@ import { InjectIOC, type InjectIOCOptions } from './plugins/InjectIOC';
 import { InjectGlobal, type InjectGlobalConfig } from './plugins/InjectGlobal';
 import { type IOCContainerInterface, type IOCManagerInterface } from '../ioc';
 
-export interface BootstrapConfig<Container extends IOCContainerInterface>
-  extends Omit<BootstrapPluginOptions, 'ioc'> {
+export interface BootstrapConfig<
+  Container extends IOCContainerInterface
+> extends Omit<BootstrapPluginOptions, 'ioc'> {
   /**
    * InjectIOC options
    *

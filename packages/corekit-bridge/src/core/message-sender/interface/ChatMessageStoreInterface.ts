@@ -12,8 +12,9 @@ import {
  *
  * @template T - Type of message content
  */
-export interface ChatMessageStoreStateInterface<T = unknown>
-  extends MessagesStateInterface<ChatMessage<T>> {
+export interface ChatMessageStoreStateInterface<
+  T = unknown
+> extends MessagesStateInterface<ChatMessage<T>> {
   /**
    * Draft message list
    *
@@ -67,11 +68,12 @@ export interface ChatMessageStoreStateInterface<T = unknown>
  * store.updateDraftMessage(draft.id, { content: 'Hello, world!' });
  * ```
  */
-export interface ChatMessageStoreInterface<T = unknown>
-  extends MessagesStoreInterface<
-    ChatMessage<T>,
-    ChatMessageStoreStateInterface<T>
-  > {
+export interface ChatMessageStoreInterface<
+  T = unknown
+> extends MessagesStoreInterface<
+  ChatMessage<T>,
+  ChatMessageStoreStateInterface<T>
+> {
   /**
    * Get draft message by ID
    *

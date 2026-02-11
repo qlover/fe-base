@@ -54,9 +54,11 @@ interface TestUser {
  *
  * Note: All methods are mocked using vi.fn() to enable tracking calls and return values
  */
-class MockUserGateway
-  implements UserServiceGateway<TestUser, TestCredential, any>
-{
+class MockUserGateway implements UserServiceGateway<
+  TestUser,
+  TestCredential,
+  any
+> {
   public login = vi.fn();
   public logout = vi.fn();
   public register = vi.fn();
@@ -664,9 +666,7 @@ describe('UserService', () => {
       expect((caught as ExecutorError).id).toBe(
         UserServiceErrorIds.InValidCredential
       );
-      expect((caught as Error).message).toBe(
-        'Login is not valid credential'
-      );
+      expect((caught as Error).message).toBe('Login is not valid credential');
 
       expect(mockGateway.getUserInfo).not.toHaveBeenCalled();
 
@@ -786,10 +786,10 @@ describe('UserService', () => {
         caught = e;
       }
       expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(UserServiceErrorIds.InValidUser);
-      expect((caught as Error).message).toBe(
-        'Register user is not valid user'
+      expect((caught as ExecutorError).id).toBe(
+        UserServiceErrorIds.InValidUser
       );
+      expect((caught as Error).message).toBe('Register user is not valid user');
     });
 
     it('should handle registration error', async () => {
@@ -865,10 +865,10 @@ describe('UserService', () => {
         caught = e;
       }
       expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(UserServiceErrorIds.InValidUser);
-      expect((caught as Error).message).toBe(
-        'getUserInfo is not valid user'
+      expect((caught as ExecutorError).id).toBe(
+        UserServiceErrorIds.InValidUser
       );
+      expect((caught as Error).message).toBe('getUserInfo is not valid user');
     });
   });
 
@@ -940,10 +940,10 @@ describe('UserService', () => {
         caught = e;
       }
       expect(caught).toBeInstanceOf(ExecutorError);
-      expect((caught as ExecutorError).id).toBe(UserServiceErrorIds.InValidUser);
-      expect((caught as Error).message).toBe(
-        'RefreshUser is not valid user'
+      expect((caught as ExecutorError).id).toBe(
+        UserServiceErrorIds.InValidUser
       );
+      expect((caught as Error).message).toBe('RefreshUser is not valid user');
     });
   });
 
@@ -995,8 +995,8 @@ describe('UserService', () => {
       mockGateway.login.mockImplementationOnce(() =>
         Promise.resolve(testCredential)
       );
-      mockGateway.getUserInfo.mockImplementationOnce(
-        () => Promise.reject(new Error('Failed to fetch user'))
+      mockGateway.getUserInfo.mockImplementationOnce(() =>
+        Promise.reject(new Error('Failed to fetch user'))
       );
 
       await expect(userService.login(loginParams)).rejects.toThrow();
@@ -1359,9 +1359,15 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
-      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
-      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.login.mockImplementationOnce(() =>
+        Promise.resolve(testCredential)
+      );
+      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
+      mockGateway.getUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
 
       // First login to establish credential
       await userService.login(loginParams);
@@ -1399,9 +1405,15 @@ describe('UserService', () => {
     it('should work with config parameter when no params are provided to refreshUserInfo', async () => {
       const testConfig = { timeout: 9000 };
 
-      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
-      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
-      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.login.mockImplementationOnce(() =>
+        Promise.resolve(testCredential)
+      );
+      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
+      mockGateway.getUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
 
       // First login to establish credential
       await userService.login(loginParams);
@@ -1440,9 +1452,15 @@ describe('UserService', () => {
         headers: { 'X-Refresh-Token': 'refresh-token' }
       };
 
-      mockGateway.login.mockImplementationOnce(() => Promise.resolve(testCredential));
-      mockGateway.refreshUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
-      mockGateway.getUserInfo.mockImplementationOnce(() => Promise.resolve(testUser));
+      mockGateway.login.mockImplementationOnce(() =>
+        Promise.resolve(testCredential)
+      );
+      mockGateway.refreshUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
+      mockGateway.getUserInfo.mockImplementationOnce(() =>
+        Promise.resolve(testUser)
+      );
 
       // First login to establish credential
       await userService.login(loginParams);

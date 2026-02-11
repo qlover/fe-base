@@ -20,9 +20,9 @@ export interface InjectIOCOptions<Container extends IOCContainerInterface> {
   register?: IOCRegisterInterface<Container>;
 }
 
-export class InjectIOC<Container extends IOCContainerInterface>
-  implements BootstrapExecutorPlugin
-{
+export class InjectIOC<
+  Container extends IOCContainerInterface
+> implements BootstrapExecutorPlugin {
   public readonly pluginName = 'InjectIOC';
 
   constructor(

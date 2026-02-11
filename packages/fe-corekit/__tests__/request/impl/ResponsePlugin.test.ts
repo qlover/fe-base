@@ -703,12 +703,14 @@ describe('ResponsePlugin', () => {
       const stream = new ReadableStream();
       const response = new Response(stream);
 
-      const result = await plugin['defaultParseResponseData'](response, 'stream');
+      const result = await plugin['defaultParseResponseData'](
+        response,
+        'stream'
+      );
 
       // The body property of Response returns a ReadableStream
       expect(result).toBeInstanceOf(ReadableStream);
     });
-
 
     it('should return stream body for stream responseType', async () => {
       plugin = new ResponsePlugin();
