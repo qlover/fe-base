@@ -1,5 +1,25 @@
 # @qlover/fe-corekit
 
+## 3.2.0
+
+### Minor Changes
+
+#### 🐞 Bug Fixes
+
+- **fe-corekit:** Enhance RequestPlugin and URL handling ([1739125](https://github.com/qlover/fe-base/commit/17391256ac5c121b89cb0bddabd0a0b27cd4ebd4)) ([#581](https://github.com/qlover/fe-base/pull/581))
+  - Updated `RequestPlugin` to improve URL construction by removing `baseURL` when the URL is absolute, ensuring cleaner request configurations.
+  - Added multiple tests in `SimpleUrlBuilder` to cover various scenarios for URL building, including handling of base URLs and relative segments.
+  - Introduced new entry points in `tsup.config.ts` for better module management and streamlined build processes.
+  - Expanded package structure in `package.json` to include additional modules, enhancing the overall organization of the codebase.
+
+  These changes aim to improve request handling and URL management, enhancing the developer experience within the `fe-corekit` package.
+
+- **request-adapter:** Add URL handling for baseURL in RequestAdapterFetch ([137a558](https://github.com/qlover/fe-base/commit/137a5581cbbbb3e0b8e8f128001877d68aca202b)) ([#581](https://github.com/qlover/fe-base/pull/581))
+  - Implemented a check to return the original URL if it starts with the baseURL, improving URL management in the request adapter.
+  - This enhancement ensures that requests are correctly formed when the baseURL is part of the URL, streamlining the request process.
+
+  These changes aim to enhance the functionality and reliability of the RequestAdapterFetch class in handling URLs.
+
 ## 3.1.1
 
 ### Patch Changes
