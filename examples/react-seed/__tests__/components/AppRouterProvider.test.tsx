@@ -60,7 +60,7 @@ vi.mock('@config/seed.config', () => ({
 
 vi.mock('@/hooks/useIOC', () => ({ useIOC: mockUseIOC }));
 
-vi.mock('@brain-toolkit/react-kit', () => ({ useStore: mockUseStore }));
+vi.mock('@/hooks/useStore', () => ({ useStore: mockUseStore }));
 
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
@@ -81,7 +81,10 @@ describe('AppRouterProvider', () => {
         ? { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
         : {
             getStore: () => ({
-              getState: () => ({ result: mockRoutesForStore })
+              getState: () => ({ result: mockRoutesForStore }),
+              get state() {
+                return this.getState();
+              }
             })
           }
     );
