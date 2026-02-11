@@ -45,8 +45,7 @@ import type {
  * };
  * ```
  */
-export interface ExecutorReleaseContext
-  extends ExecutorContextInterface<ReleaseContext> {
+export interface ExecutorReleaseContext extends ExecutorContextInterface<ReleaseContext> {
   returnValue: ReleaseReturnValue;
 }
 
@@ -144,8 +143,9 @@ export interface ReleaseConfig extends ScriptSharedInterface {
  * };
  * ```
  */
-export interface ReleaseContextOptions<T extends ReleaseConfig = ReleaseConfig>
-  extends ScriptContextInterface<T> {}
+export interface ReleaseContextOptions<
+  T extends ReleaseConfig = ReleaseConfig
+> extends ScriptContextInterface<T> {}
 
 /**
  * Configuration for a single execution step

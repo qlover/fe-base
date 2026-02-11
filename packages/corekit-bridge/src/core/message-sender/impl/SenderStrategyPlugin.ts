@@ -194,9 +194,9 @@ export type SendFailureStrategyType =
  * // No loading state visible to users
  * ```
  */
-export class SenderStrategyPlugin<T extends MessageStoreMsg<unknown, unknown>>
-  implements MessageSenderPlugin<T>
-{
+export class SenderStrategyPlugin<
+  T extends MessageStoreMsg<unknown, unknown>
+> implements MessageSenderPlugin<T> {
   /** Plugin identifier */
   public readonly pluginName = 'SenderStrategyPlugin';
 

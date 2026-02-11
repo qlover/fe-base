@@ -1,7 +1,8 @@
-import { type SyncStorageInterface } from '@qlover/fe-corekit';
-import {
-  type AsyncStateInterface,
-  type AsyncStoreInterface
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { StorageInterface } from '@qlover/fe-corekit';
+import type {
+  AsyncStateInterface,
+  AsyncStoreInterface
 } from '../interface/AsyncStoreInterface';
 import { PersistentStore } from './PersistentStore';
 import {
@@ -61,7 +62,7 @@ export interface AsyncStoreStateInterface<T> extends AsyncStateInterface<T> {
  * ```
  */
 export interface AsyncStoreOptions<
-  State extends AsyncStoreStateInterface<unknown>,
+  State extends AsyncStoreStateInterface<any>,
   Key,
   Opt = unknown
 > {
@@ -73,7 +74,7 @@ export interface AsyncStoreOptions<
    *
    * @optional
    */
-  storage?: SyncStorageInterface<Key, Opt> | null;
+  storage?: StorageInterface<Key, State['result'], Opt> | null;
 
   /**
    * Storage key for persisting state
@@ -125,7 +126,7 @@ export interface AsyncStoreOptions<
    * ```
    */
   defaultState?(
-    storage?: SyncStorageInterface<Key, Opt> | null,
+    storage?: StorageInterface<Key, State['result'], Opt> | null,
     storageKey?: Key | null
   ): State | null;
 
@@ -209,13 +210,23 @@ export interface AsyncStoreOptions<
  * ```
  */
 export class AsyncStore<
-    S extends AsyncStoreStateInterface<unknown>,
-    Key,
-    Opt = unknown
-  >
+  S extends AsyncStoreStateInterface<any>,
+  Key,
+  Opt = unknown
+>
   extends PersistentStore<S, Key, Opt>
   implements AsyncStoreInterface<S>
 {
+  /**
+   * When storageResult=true, should return S['result']
+   * When storageResult=false, should return S
+   */
+  declare public getStorage: () => StorageInterface<
+    Key,
+    S['result'] | S,
+    Opt
+  > | null;
+
   /**
    * Storage key for persisting state
    *
@@ -272,7 +283,7 @@ export class AsyncStore<
   constructor(options?: AsyncStoreOptions<S, Key, Opt>) {
     super(
       () => createAsyncState(options),
-      options?.storage ?? null,
+      options?.storage,
       options?.initRestore ?? false
     );
     this.storageKey = options?.storageKey ?? null;

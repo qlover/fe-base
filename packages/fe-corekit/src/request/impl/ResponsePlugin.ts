@@ -179,9 +179,7 @@ export interface ResponsePluginConfig {
  *
  * @since 3.0.0
  */
-export class ResponsePlugin
-  implements LifecyclePluginInterface<ResponsePluginContext>
-{
+export class ResponsePlugin implements LifecyclePluginInterface<ResponsePluginContext> {
   public readonly pluginName = 'ResponsePlugin';
 
   protected readonly config: ResponsePluginConfig;

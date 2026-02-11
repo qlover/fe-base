@@ -18,7 +18,7 @@ import {
 } from '../../src/core/store-state';
 import type { LoggerInterface } from '@qlover/logger';
 import { LogContext } from '@qlover/logger';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Test data type
@@ -63,7 +63,7 @@ class MockLogger implements LoggerInterface {
 /**
  * Mock storage implementation for testing
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
 
   public get length(): number {

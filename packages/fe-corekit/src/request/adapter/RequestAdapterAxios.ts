@@ -11,9 +11,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios';
  *
  * @since 1.0.14
  */
-export class RequestAdapterAxios
-  implements RequestAdapterInterface<AxiosRequestConfig>
-{
+export class RequestAdapterAxios implements RequestAdapterInterface<AxiosRequestConfig> {
   private axiosInstance: AxiosInstance;
   constructor(
     axios: AxiosStatic,

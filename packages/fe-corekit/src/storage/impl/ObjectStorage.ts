@@ -1,8 +1,9 @@
-import { type SerializerIneterface } from '../../serializer';
-import { type SyncStorageInterface } from '../interface/SyncStorageInterface';
-import { type ExpireOptions } from '../interface/ExpireOptions';
+import type { SerializerIneterface } from '../../serializer';
+import type { StorageInterface } from '../interface/StorageInterface';
 
-export interface ObjectStorageOptions extends ExpireOptions {}
+export interface ObjectStorageOptions {
+  expires?: number;
+}
 
 /**
  * Storage value wrapper with expiration support
@@ -75,8 +76,7 @@ export class ObjectStorage<
   Key,
   ValueType = string,
   Opt extends ObjectStorageOptions = ObjectStorageOptions
-> implements SyncStorageInterface<Key, Opt>
-{
+> implements StorageInterface<Key, ValueType, Opt> {
   /**
    * In-memory storage map for fast data access
    *
@@ -110,13 +110,12 @@ export class ObjectStorage<
      * Main function: Serialize/deserialize storage values
      * Main purpose: Support type-safe storage operations
      */
-    protected readonly serializer?: SerializerIneterface<unknown, ValueType>
+    protected readonly serializer?: SerializerIneterface<ValueType, string>
   ) {}
 
   /**
    * Gets the number of items stored in the memory cache
    *
-   * @override
    * @returns The number of stored items in memory
    *
    * @example
@@ -155,7 +154,7 @@ export class ObjectStorage<
     key: Key,
     value: T,
     options?: ObjectStorageOptions
-  ): unknown {
+  ): ValueType {
     const parameters = { key, value: value ?? null } as StorageValue<Key, T>;
 
     if (typeof options?.expires === 'number' && options.expires > 0) {
@@ -163,12 +162,12 @@ export class ObjectStorage<
     }
 
     const valueString = this.serializer
-      ? this.serializer.serialize(parameters)
+      ? this.serializer.serialize(parameters as ValueType)
       : parameters;
 
     this.store.set(key, valueString as ValueType);
 
-    return valueString;
+    return valueString as ValueType;
   }
 
   /**
@@ -200,26 +199,24 @@ export class ObjectStorage<
    * const config = storage.getItem<AppConfig>('app-config');
    * ```
    */
-  public getItem<T>(key: Key, defaultValue?: T): T | null {
+  public getItem(key: Key, defaultValue?: unknown): ValueType | null {
     const storeValue = this.store.get(key);
 
-    const _dv = defaultValue ?? null;
+    const _dv = (defaultValue ?? null) as ValueType;
 
     if (!storeValue) {
       return _dv;
     }
 
-    const value = this.serializer
-      ? this.serializer.deserialize(storeValue, _dv)
-      : storeValue;
+    const value =
+      typeof storeValue === 'string' && this.serializer
+        ? this.serializer.deserialize(storeValue, _dv)
+        : storeValue;
 
-    return this.getRawValue(value, _dv);
+    return this.getRawValue<ValueType>(value, _dv);
   }
 
-  /**
-   * @override
-   */
-  public getRawValue<T>(value: unknown, defaultValue?: T): T | null {
+  protected getRawValue<T>(value: unknown, defaultValue?: T): T | null {
     if (this.isStorageValue(value)) {
       if (this.isExpired(value)) {
         this.removeItem(value.key);
@@ -328,27 +325,5 @@ export class ObjectStorage<
       'key' in value &&
       'value' in value
     );
-  }
-
-  /**
-   * Gets the serializer instance
-   *
-   * Significance: Provides access to the serialization logic
-   * Core idea: Expose serializer for advanced use cases
-   * Main function: Return the serializer instance
-   * Main purpose: Enable direct access to serialization when needed
-   *
-   * @returns The serializer instance
-   *
-   * @example
-   * ```typescript
-   * const serializer = storage.getSerializer();
-   * if (serializer) {
-   *   // Direct access to serializer
-   * }
-   * ```
-   */
-  public getSerializer(): SerializerIneterface<unknown, ValueType> | undefined {
-    return this.serializer;
   }
 }

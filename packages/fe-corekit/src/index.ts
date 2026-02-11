@@ -82,7 +82,7 @@
  * - `SyncStorage`: Synchronous storage implementation
  * - `ObjectStorage`: Object-based storage
  * - `KeyStorage`: Key-value storage
- * - `SyncStorageInterface`: Storage interface
+ * - `StorageInterface`: Storage interface
  * - `ExpireOptions`: Expiration configuration
  *
  * **Serializer Module:**

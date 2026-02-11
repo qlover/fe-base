@@ -179,8 +179,7 @@ type ShortcutNoBodyConfig<
 export class RequestExecutor<
   Config extends RequestAdapterConfig,
   Ctx extends ExecutorContextInterface<Config>
-> implements RequestExecutorInterface<Config>
-{
+> implements RequestExecutorInterface<Config> {
   constructor(
     /**
      * HTTP request adapter instance

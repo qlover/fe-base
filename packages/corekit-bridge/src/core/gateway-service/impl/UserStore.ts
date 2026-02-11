@@ -126,6 +126,8 @@ export interface UserStoreOptions<
  * - Flexible persistence: Supports persisting both user info and credential separately when configured
  * - Enhanced methods: `start` and `success` can accept credential for atomic updates
  *
+ * TODO: Where should we support the `storageResult` of the parent class
+ *
  * @since `1.8.0`
  * @template User - The type of user object
  * @template Credential - The type of credential data returned after login
@@ -443,7 +445,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
     // Persist credential
     const credential = this.getCredential();
     if (credential !== null && credential !== undefined) {
-      storage.setItem(credKey, credential);
+      storage.setItem(credKey, credential as User);
     } else {
       // Clear credential from storage if it's null
       storage.removeItem(credKey);

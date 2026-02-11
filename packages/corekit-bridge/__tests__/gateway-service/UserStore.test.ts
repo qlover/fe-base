@@ -13,7 +13,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { UserStore } from '../../src/core/gateway-service/impl/UserStore';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import { AsyncStoreStatus } from '../../src/core/store-state';
 
 /**
@@ -37,7 +37,7 @@ interface TestUser {
 /**
  * Mock storage implementation for testing
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
   public shouldFailGetItem: boolean = false;
   public shouldFailSetItem: boolean = false;

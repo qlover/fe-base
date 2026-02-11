@@ -1,4 +1,4 @@
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import {
   StoreInterface,
   type StoreStateInterface
@@ -16,7 +16,7 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  * Core features:
  * - Automatic persistence: State changes via `emit()` are automatically persisted to storage
  * - Storage restoration: Load state from storage during initialization
- * - Flexible storage backends: Support any `SyncStorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
+ * - Flexible storage backends: Support any `StorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
  * - Error resilience: Persistence failures don't prevent state updates
  * - Optional persistence: Can skip persistence during restore operations to prevent circular updates
  *
@@ -42,10 +42,10 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  *   data: string = '';
  * }
  *
- * class MyStore extends PersistentStoreInterface<MyStoreState, string> {
+ * class MyStore extends PersistentStore<MyStoreState, string> {
  *   private readonly storageKey = 'my-state';
  *
- *   constructor(storage: SyncStorageInterface<string> | null = null) {
+ *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
  *     super(() => new MyStoreState(), storage);
  *   }
  *
@@ -82,7 +82,7 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  *   expires?: number | Date | null; // Optional expiration support
  * }
  *
- * class ExpiringStore extends PersistentStoreInterface<ExpiringStoreState, string> {
+ * class ExpiringStore extends PersistentStore<ExpiringStoreState, string> {
  *   restore(): ExpiringStoreState | null {
  *     if (!this.storage) return null;
  *     try {
@@ -122,10 +122,10 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  * ```
  */
 export abstract class PersistentStore<
-    T extends StoreStateInterface,
-    Key,
-    Opt = unknown
-  >
+  T extends StoreStateInterface,
+  Key,
+  Opt = unknown
+>
   extends StoreInterface<T>
   implements PersistentStoreInterface<T, Key, Opt>
 {
@@ -147,10 +147,10 @@ export abstract class PersistentStore<
    *
    * @example Subclass implementation (recommended)
    * ```typescript
-   * class MyStore extends PersistentStoreInterface<MyStoreState, string> {
+   * class MyStore extends PersistentStore<MyStoreState, string> {
    *   private readonly storageKey = 'my-state';
    *
-   *   constructor(storage: SyncStorageInterface<string> | null = null) {
+   *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
    *     super(() => new MyStoreState(), storage, false); // Don't auto-restore
    *     // Now storageKey is initialized, safe to call restore()
    *     this.restore();
@@ -160,8 +160,8 @@ export abstract class PersistentStore<
    *
    * @example With auto-restore (only if no subclass fields needed)
    * ```typescript
-   * class SimpleStore extends PersistentStoreInterface<MyStoreState, string> {
-   *   constructor(storage: SyncStorageInterface<string> | null = null) {
+   * class SimpleStore extends PersistentStore<MyStoreState, string> {
+   *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
    *     // Can use auto-restore if restore() doesn't need subclass fields
    *     super(() => new MyStoreState(), storage, true);
    *   }
@@ -181,7 +181,7 @@ export abstract class PersistentStore<
    */
   constructor(
     stateFactory: () => T,
-    protected readonly storage: SyncStorageInterface<Key, Opt> | null = null,
+    protected readonly storage: StorageInterface<Key, T, Opt> | null = null,
     /**
      * Whether to automatically restore state from storage during construction
      *
@@ -204,10 +204,10 @@ export abstract class PersistentStore<
      * in their constructor body after fields are initialized:
      *
      * ```typescript
-     * class MyStore extends PersistentStoreInterface<MyStoreState, string> {
+     * class MyStore extends PersistentStore<MyStoreState, string> {
      *   private readonly storageKey = 'my-state';
      *
-     *   constructor(storage: SyncStorageInterface<string> | null = null) {
+     *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
      *     super(() => new MyStoreState(), storage, false); // Don't auto-restore
      *     // Now storageKey is initialized, safe to call restore()
      *     this.restore();
@@ -267,7 +267,7 @@ export abstract class PersistentStore<
    * }
    * ```
    */
-  public getStorage(): SyncStorageInterface<Key, Opt> | null {
+  public getStorage(): StorageInterface<Key, T, Opt> | null {
     return this.storage;
   }
 

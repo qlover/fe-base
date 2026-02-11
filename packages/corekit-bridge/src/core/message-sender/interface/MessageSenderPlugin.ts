@@ -151,14 +151,15 @@ export type MessageSenderContext<T extends MessageInterface<unknown>> =
  * };
  * ```
  */
-export interface MessageSenderPlugin<T extends MessageInterface<unknown>>
-  extends LifecyclePluginInterface<
-    ExecutorContextInterface<
-      MessageSenderOptions<T>,
-      T,
-      MessageSenderHookRuntimes
-    >
-  > {
+export interface MessageSenderPlugin<
+  T extends MessageInterface<unknown>
+> extends LifecyclePluginInterface<
+  ExecutorContextInterface<
+    MessageSenderOptions<T>,
+    T,
+    MessageSenderHookRuntimes
+  >
+> {
   /**
    * Stream chunk received hook
    *

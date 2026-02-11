@@ -61,8 +61,10 @@ import type { StoreInterface } from '../../store-state/interface/StoreInterface'
  * };
  * ```
  */
-export interface UserStateInterface<User, Credential>
-  extends AsyncStoreStateInterface<User> {
+export interface UserStateInterface<
+  User,
+  Credential
+> extends AsyncStoreStateInterface<User> {
   /**
    * Authentication credential (typically a token)
    *
@@ -138,8 +140,10 @@ export interface UserStateInterface<User, Credential>
  * });
  * ```
  */
-export interface UserStoreInterface<User, Credential>
-  extends AsyncStoreInterface<UserStateInterface<User, Credential>> {
+export interface UserStoreInterface<
+  User,
+  Credential
+> extends AsyncStoreInterface<UserStateInterface<User, Credential>> {
   /**
    * Get the underlying store instance
    *

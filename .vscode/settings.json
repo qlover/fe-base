@@ -6,7 +6,7 @@
   "jest.runMode": "on-demand",
   "tailwindCSS.rootFontSize": 10,
   "vitest.configSearchPatternExclude": "{**/**/node_modules,packages/create-app/templates/**}",
-  "vitest.rootConfig": "./vite.config.ts",
+  "vitest.rootConfig": "./vitest.config.ts",
 
   // Search exclusion patterns
   // These directories will be excluded from search by default

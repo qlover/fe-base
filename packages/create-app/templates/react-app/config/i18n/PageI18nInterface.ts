@@ -48,4 +48,6 @@ export interface PageI18nInterface {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
+
+  [key: string]: unknown;
 }

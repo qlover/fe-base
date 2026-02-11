@@ -149,14 +149,11 @@ export type ApiMockPluginContext = ExecutorContextInterface<
  * executor.exec({ baseURL: "https://api.example.com", url: "/api/users", method: "GET", delay: 0 });  // No delay
  * ```
  */
-export class ApiMockPlugin
-  implements
-    LifecyclePluginInterface<
-      ApiMockPluginContext,
-      RequestAdapterResponse,
-      ApiMockPluginConfig
-    >
-{
+export class ApiMockPlugin implements LifecyclePluginInterface<
+  ApiMockPluginContext,
+  RequestAdapterResponse,
+  ApiMockPluginConfig
+> {
   public readonly pluginName = 'ApiMockPlugin';
 
   /**

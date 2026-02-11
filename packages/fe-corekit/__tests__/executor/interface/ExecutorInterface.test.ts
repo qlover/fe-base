@@ -16,9 +16,10 @@ class MockExecutorError extends ExecutorError {
   }
 }
 
-class MockExecutorContext<T, R = unknown>
-  implements ExecutorContextInterface<T, R>
-{
+class MockExecutorContext<T, R = unknown> implements ExecutorContextInterface<
+  T,
+  R
+> {
   private _parameters: T;
   private _error: unknown;
   private _returnValue?: R;
@@ -138,9 +139,9 @@ class MockExecutorContext<T, R = unknown>
   }
 }
 
-class TestPlugin
-  implements ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
-{
+class TestPlugin implements ExecutorPluginInterface<
+  ExecutorContextInterface<unknown, unknown>
+> {
   public readonly pluginName = 'TestPlugin';
   private _callCount = 0;
 
@@ -157,12 +158,9 @@ class TestPlugin
   }
 }
 
-class MockExecutor
-  implements
-    ExecutorInterface<
-      ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
-    >
-{
+class MockExecutor implements ExecutorInterface<
+  ExecutorPluginInterface<ExecutorContextInterface<unknown, unknown>>
+> {
   private plugins: ExecutorPluginInterface<
     ExecutorContextInterface<unknown, unknown>
   >[] = [];
@@ -1209,12 +1207,9 @@ describe('Executor Types', () => {
           method: string;
         }
 
-        class ExtendedPlugin
-          implements
-            ExecutorPluginInterface<
-              ExecutorContextInterface<ApiParams, unknown>
-            >
-        {
+        class ExtendedPlugin implements ExecutorPluginInterface<
+          ExecutorContextInterface<ApiParams, unknown>
+        > {
           public readonly pluginName = 'ExtendedPlugin';
           private _callHistory: string[] = [];
 
@@ -1259,12 +1254,9 @@ describe('Executor Types', () => {
           data: unknown;
         }
 
-        class LifecycleExtendedPlugin
-          implements
-            LifecyclePluginInterface<
-              ExecutorContextInterface<ProcessParams, unknown>
-            >
-        {
+        class LifecycleExtendedPlugin implements LifecyclePluginInterface<
+          ExecutorContextInterface<ProcessParams, unknown>
+        > {
           public readonly pluginName = 'LifecycleExtendedPlugin';
           private _beforeCount = 0;
           private _successCount = 0;
@@ -1330,12 +1322,9 @@ describe('Executor Types', () => {
           userId: number;
         }
 
-        class BaseAuthPlugin
-          implements
-            ExecutorPluginInterface<
-              ExecutorContextInterface<AuthParams, unknown>
-            >
-        {
+        class BaseAuthPlugin implements ExecutorPluginInterface<
+          ExecutorContextInterface<AuthParams, unknown>
+        > {
           public readonly pluginName = 'BaseAuthPlugin';
           protected _isAuthenticated = false;
 
@@ -1390,10 +1379,11 @@ describe('Executor Types', () => {
           id: number;
         }
 
-        class GenericPlugin<T extends BaseParams>
-          implements
-            ExecutorPluginInterface<ExecutorContextInterface<T, unknown>>
-        {
+        class GenericPlugin<
+          T extends BaseParams
+        > implements ExecutorPluginInterface<
+          ExecutorContextInterface<T, unknown>
+        > {
           public readonly pluginName = 'GenericPlugin';
           protected _lastId: number | null = null;
 
@@ -1462,12 +1452,9 @@ describe('Executor Types', () => {
           }
         }
 
-        class ExtendedApiPlugin
-          implements
-            ExecutorPluginInterface<
-              ExecutorContextInterface<ExtendedApiParams, unknown>
-            >
-        {
+        class ExtendedApiPlugin implements ExecutorPluginInterface<
+          ExecutorContextInterface<ExtendedApiParams, unknown>
+        > {
           public readonly pluginName = 'ExtendedApiPlugin';
           public enabled(
             _name: string | symbol,
@@ -1558,12 +1545,9 @@ describe('Executor Types', () => {
           message: string;
         }
 
-        class ComprehensivePlugin
-          implements
-            LifecyclePluginInterface<
-              ExecutorContextInterface<LogParams, unknown>
-            >
-        {
+        class ComprehensivePlugin implements LifecyclePluginInterface<
+          ExecutorContextInterface<LogParams, unknown>
+        > {
           public readonly pluginName = 'ComprehensivePlugin';
           private _logs: string[] = [];
           private _beforeExecuted = false;
@@ -1638,10 +1622,9 @@ describe('Executor Types', () => {
         role: string;
       }
 
-      class UserPlugin
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<UserParams, unknown>>
-      {
+      class UserPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<UserParams, unknown>
+      > {
         public readonly pluginName = 'UserPlugin';
 
         public enabled(
@@ -1652,12 +1635,9 @@ describe('Executor Types', () => {
         }
       }
 
-      class AdminPlugin
-        implements
-          ExecutorPluginInterface<
-            ExecutorContextInterface<AdminParams, unknown>
-          >
-      {
+      class AdminPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<AdminParams, unknown>
+      > {
         public readonly pluginName = 'AdminPlugin';
 
         public enabled(
@@ -1716,10 +1696,9 @@ describe('Executor Types', () => {
         value: number;
       }
 
-      class PluginA
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<DataParams, unknown>>
-      {
+      class PluginA implements ExecutorPluginInterface<
+        ExecutorContextInterface<DataParams, unknown>
+      > {
         public readonly pluginName = 'PluginA';
 
         public enabled(
@@ -1730,10 +1709,9 @@ describe('Executor Types', () => {
         }
       }
 
-      class PluginB
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<DataParams, unknown>>
-      {
+      class PluginB implements ExecutorPluginInterface<
+        ExecutorContextInterface<DataParams, unknown>
+      > {
         public readonly pluginName = 'PluginB';
         public readonly onlyOne = true;
 
@@ -1794,10 +1772,9 @@ describe('Executor Types', () => {
         test: string;
       }
 
-      class TestPlugin
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<TestParams, unknown>>
-      {
+      class TestPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<TestParams, unknown>
+      > {
         public readonly pluginName = 'TestPlugin';
 
         public enabled(
@@ -1839,10 +1816,9 @@ describe('Executor Types', () => {
         data: string;
       }
 
-      class TestPlugin
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
-      {
+      class TestPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<Params, unknown>
+      > {
         public readonly pluginName = 'TestPlugin';
 
         public enabled(
@@ -1877,10 +1853,9 @@ describe('Executor Types', () => {
         name: string;
       }
 
-      class BasePlugin
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<BaseParams, unknown>>
-      {
+      class BasePlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<BaseParams, unknown>
+      > {
         public readonly pluginName = 'BasePlugin';
 
         public enabled(
@@ -1891,12 +1866,9 @@ describe('Executor Types', () => {
         }
       }
 
-      class ExtendedPlugin
-        implements
-          ExecutorPluginInterface<
-            ExecutorContextInterface<ExtendedParams, unknown>
-          >
-      {
+      class ExtendedPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<ExtendedParams, unknown>
+      > {
         public readonly pluginName = 'ExtendedPlugin';
 
         public enabled(
@@ -1963,10 +1935,9 @@ describe('Executor Types', () => {
         value: number;
       }
 
-      class TrackingPlugin
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
-      {
+      class TrackingPlugin implements ExecutorPluginInterface<
+        ExecutorContextInterface<Params, unknown>
+      > {
         public readonly pluginName = 'TrackingPlugin';
 
         public enabled(
@@ -2011,10 +1982,9 @@ describe('Executor Types', () => {
         data: string;
       }
 
-      class PluginA
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
-      {
+      class PluginA implements ExecutorPluginInterface<
+        ExecutorContextInterface<Params, unknown>
+      > {
         public readonly pluginName = 'PluginA';
 
         public enabled(
@@ -2025,10 +1995,9 @@ describe('Executor Types', () => {
         }
       }
 
-      class PluginB
-        implements
-          ExecutorPluginInterface<ExecutorContextInterface<Params, unknown>>
-      {
+      class PluginB implements ExecutorPluginInterface<
+        ExecutorContextInterface<Params, unknown>
+      > {
         public readonly pluginName = 'PluginB';
 
         public enabled(

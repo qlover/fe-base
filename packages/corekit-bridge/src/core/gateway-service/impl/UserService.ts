@@ -13,8 +13,14 @@ import { createUserStore } from '../utils/createUserStore';
 import type { GatewayServiceOptions } from './GatewayService';
 import { GatewayService } from './GatewayService';
 import type { UserStore, UserStoreOptions } from './UserStore';
+import { ExecutorError, type StorageInterface } from '@qlover/fe-corekit';
 
 const UserServiceName = 'UserService';
+
+export const UserServiceErrorIds = {
+  InValidCredential: 'USERSERVICE_INVALID_CREDENTIAL',
+  InValidUser: 'USERSERVICE_INVALID_USER'
+} as const;
 
 /**
  * User service configuration
@@ -77,7 +83,7 @@ const UserServiceName = 'UserService';
  */
 export type UserServiceConfig<User, Credential> = Omit<
   GatewayServiceOptions<User, unknown>,
-  'serviceName' | 'store' | 'gateway'
+  'serviceName' | 'store' | 'gateway' | 'storage' | 'storageKey'
 > & {
   /**
    * Service name
@@ -152,7 +158,30 @@ export type UserServiceConfig<User, Credential> = Omit<
    */
   store?:
     | UserStoreInterface<User, Credential>
-    | UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>;
+    | (Omit<
+        UserStoreOptions<UserStateInterface<User, Credential>, string, unknown>,
+        'storage'
+      > & {
+        /**
+         * UserStore Persistence Data may be User or Credential,
+         *
+         * The default is User=UserStateInterface<User, Credential>['result']
+         *
+         * It is determined by the `storageResult` of the parent class AsyncStore
+         * - When storageResult=false, the value is UserStateInterface<User, Credential>, which is the state itself
+         * - When storageResult=true, the value is UserStateInterface<User, Credential>['result'], which is the User
+         *
+         * But UserStore default implementation does not contain the storageResult judgment, so we currently force the user and credential to be stored separately
+         * So here we support three cases
+         *
+         * @optional
+         */
+        storage?: StorageInterface<
+          string,
+          Credential | User | UserStateInterface<User, Credential>,
+          unknown
+        > | null;
+      });
 
   /**
    * Whether to pull user info after login
@@ -357,9 +386,11 @@ export type UserServiceConfig<User, Credential> = Omit<
  * })
  * ```
  */
-export class UserService<User, Credential, Cfg = unknown>
-  implements UserServiceInterface<User, Credential, Cfg>
-{
+export class UserService<
+  User,
+  Credential,
+  Cfg = unknown
+> implements UserServiceInterface<User, Credential, Cfg> {
   protected readonly pullUserWithLogin: boolean;
 
   protected readonly gatewayService: GatewayService<
@@ -442,17 +473,17 @@ export class UserService<User, Credential, Cfg = unknown>
    * });
    * ```
    */
-  public async login(
-    params: LoginParams,
-    config?: Cfg
-  ): Promise<Credential | null> {
+  public async login(params: LoginParams, config?: Cfg): Promise<Credential> {
     this.getStore().start();
 
     try {
       const credential = await this.gateway.login(params, config);
 
       if (!this.isCredential(credential)) {
-        throw new Error('Login is not valid credential');
+        throw new ExecutorError(
+          UserServiceErrorIds.InValidCredential,
+          'Login is not valid credential'
+        );
       }
 
       if (this.pullUserWithLogin) {
@@ -548,10 +579,13 @@ export class UserService<User, Credential, Cfg = unknown>
    * });
    * ```
    */
-  public register(params: unknown, config?: Cfg): Promise<User | null> {
+  public register(params: unknown, config?: Cfg): Promise<User> {
     return this.gateway.register(params, config).then((user) => {
       if (!this.isUser(user)) {
-        throw new Error('Register user is not valid user');
+        throw new ExecutorError(
+          UserServiceErrorIds.InValidUser,
+          'Register user is not valid user'
+        );
       }
 
       this.getStore().setUser(user);
@@ -591,13 +625,16 @@ export class UserService<User, Credential, Cfg = unknown>
    * });
    * ```
    */
-  public getUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
+  public getUserInfo(params?: unknown, config?: Cfg): Promise<User> {
     const uparams =
       params !== undefined ? params : this.getStore().getCredential();
 
     return this.gateway.getUserInfo(uparams, config).then((user) => {
       if (!this.isUser(user)) {
-        throw new Error('getUserInfo is not valid user');
+        throw new ExecutorError(
+          UserServiceErrorIds.InValidUser,
+          'getUserInfo is not valid user'
+        );
       }
 
       this.getStore().setUser(user);
@@ -630,13 +667,16 @@ export class UserService<User, Credential, Cfg = unknown>
    * });
    * ```
    */
-  public refreshUserInfo(params?: unknown, config?: Cfg): Promise<User | null> {
+  public refreshUserInfo(params?: unknown, config?: Cfg): Promise<User> {
     const refreshParams =
       params !== undefined ? params : this.getStore().getCredential();
 
     return this.gateway.refreshUserInfo(refreshParams, config).then((user) => {
       if (!this.isUser(user)) {
-        return null;
+        throw new ExecutorError(
+          UserServiceErrorIds.InValidUser,
+          'RefreshUser is not valid user'
+        );
       }
 
       this.getStore().setUser(user);

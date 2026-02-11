@@ -115,12 +115,10 @@ import {
  * @category Executor
  */
 export class LifecycleSyncExecutor<
-  Ctx extends ExecutorContextInterface<
-    unknown,
-    unknown
-  > = ExecutorContextInterface<unknown, unknown>,
-  Plugin extends
-    LifecycleSyncPluginInterface<Ctx> = LifecycleSyncPluginInterface<Ctx>
+  Ctx extends ExecutorContextInterface<unknown, unknown> =
+    ExecutorContextInterface<unknown, unknown>,
+  Plugin extends LifecycleSyncPluginInterface<Ctx> =
+    LifecycleSyncPluginInterface<Ctx>
 > extends BasePluginExecutor<Ctx, Plugin> {
   /**
    * Execute a single plugin hook synchronously for all plugins

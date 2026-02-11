@@ -140,8 +140,7 @@ export abstract class ScriptPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Context extends ScriptContext<any>,
   Props extends ScriptPluginProps = ScriptPluginProps
-> implements LifecyclePluginInterface<Context>
-{
+> implements LifecyclePluginInterface<Context> {
   /** Ensures only one instance of this plugin can be registered */
   public readonly onlyOne = true;
 

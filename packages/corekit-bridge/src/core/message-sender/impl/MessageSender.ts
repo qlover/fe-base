@@ -188,8 +188,7 @@ export interface MessageSenderConfig<
 export class MessageSender<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   MessageType extends MessageStoreMsg<any, any>
-> implements MessageSenderInterface<MessageType>
-{
+> implements MessageSenderInterface<MessageType> {
   protected readonly senderName: string;
 
   protected loggerTpl: {

@@ -33,10 +33,10 @@ import type { ResourceStateInterface, ResourceStore } from './ResourceStore';
  */
 export interface ResourceServiceInterface<
   T,
-  Store extends
-    ResourceStore<ResourceStateInterface> = ResourceStore<ResourceStateInterface>
-> extends LifecycleInterface,
-    ResourceInterface<T> {
+  Store extends ResourceStore<ResourceStateInterface> =
+    ResourceStore<ResourceStateInterface>
+>
+  extends LifecycleInterface, ResourceInterface<T> {
   /**
    * Unique identifier for the resource collection
    *

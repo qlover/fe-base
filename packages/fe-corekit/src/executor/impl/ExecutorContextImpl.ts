@@ -177,8 +177,7 @@ export class ExecutorContextImpl<
   T,
   R = unknown,
   RuntimesType extends HookRuntimes = HookRuntimes
-> implements ExecutorContextInterface<T, R, RuntimesType>
-{
+> implements ExecutorContextInterface<T, R, RuntimesType> {
   private _parameters: T;
   private _error: unknown;
   private _returnValue?: R;

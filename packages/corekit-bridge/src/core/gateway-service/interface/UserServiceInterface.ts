@@ -145,11 +145,8 @@ export interface LoginInterface<CredentialType, GatewayConfig> {
    * });
    * ```
    */
-  login(params: LoginParams): Promise<CredentialType | null>;
-  login(
-    params: LoginParams,
-    config?: GatewayConfig
-  ): Promise<CredentialType | null>;
+  login(params: LoginParams): Promise<CredentialType>;
+  login(params: LoginParams, config?: GatewayConfig): Promise<CredentialType>;
 
   /**
    * Logout current user
@@ -302,8 +299,8 @@ export interface RegisterInterface<Result, GatewayConfig> {
    * });
    * ```
    */
-  register(params: unknown): Promise<Result | null>;
-  register(params: unknown, config?: GatewayConfig): Promise<Result | null>;
+  register(params: unknown): Promise<Result>;
+  register(params: unknown, config?: GatewayConfig): Promise<Result>;
 }
 
 /**
@@ -389,8 +386,8 @@ export interface UserInfoInterface<User, GatewayConfig> {
    * });
    * ```
    */
-  getUserInfo(params?: unknown): Promise<User | null>;
-  getUserInfo(params?: unknown, config?: GatewayConfig): Promise<User | null>;
+  getUserInfo(params?: unknown): Promise<User>;
+  getUserInfo(params?: unknown, config?: GatewayConfig): Promise<User>;
 
   /**
    * Refresh user information
@@ -434,10 +431,7 @@ export interface UserInfoInterface<User, GatewayConfig> {
    * });
    * ```
    */
-  refreshUserInfo(
-    params?: unknown,
-    config?: GatewayConfig
-  ): Promise<User | null>;
+  refreshUserInfo(params?: unknown, config?: GatewayConfig): Promise<User>;
 }
 
 /**
@@ -536,7 +530,8 @@ export interface UserInfoGetter<User> {
  * ```
  */
 export interface UserServiceGateway<User, Credential, GatewayConfig>
-  extends LoginInterface<Credential, GatewayConfig>,
+  extends
+    LoginInterface<Credential, GatewayConfig>,
     RegisterInterface<User, GatewayConfig>,
     UserInfoInterface<User, GatewayConfig> {}
 
@@ -568,8 +563,11 @@ export interface UserServiceGateway<User, Credential, GatewayConfig>
  * }
  * ```
  */
-export interface UserServiceInterface<User, Credential, GatewayConfig>
-  extends UserServiceGateway<User, Credential, GatewayConfig> {
+export interface UserServiceInterface<
+  User,
+  Credential,
+  GatewayConfig
+> extends UserServiceGateway<User, Credential, GatewayConfig> {
   /**
    * Get the credential store instance
    *

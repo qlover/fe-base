@@ -1,5 +1,5 @@
-import { type SyncStorageInterface } from '@qlover/fe-corekit';
-import { type StoreStateInterface } from './StoreInterface';
+import type { StorageInterface } from '@qlover/fe-corekit';
+import type { StoreStateInterface } from './StoreInterface';
 
 /**
  * Persistent store interface
@@ -13,7 +13,7 @@ import { type StoreStateInterface } from './StoreInterface';
  * - Storage access: Get underlying storage interface for direct storage operations
  * - State restoration: Load state from storage during initialization or on demand
  * - State persistence: Save state to storage automatically or manually
- * - Flexible storage: Support any `SyncStorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
+ * - Flexible storage: Support any `StorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
  * - Type safety: Generic type parameters ensure type safety for state and storage keys
  *
  * Design decisions:
@@ -43,14 +43,14 @@ import { type StoreStateInterface } from './StoreInterface';
  *   implements PersistentStoreInterface<MyStoreState, string> {
  *   private readonly storageKey = 'my-state';
  *
- *   constructor(storage: SyncStorageInterface<string> | null = null) {
+ *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
  *     super(() => new MyStoreState());
  *     this.storage = storage;
  *   }
  *
- *   private storage: SyncStorageInterface<string> | null;
+ *   private storage: StorageInterface<string, MyStoreState> | null;
  *
- *   getStorage(): SyncStorageInterface<string> | null {
+ *   getStorage(): StorageInterface<string, MyStoreState> | null {
  *     return this.storage;
  *   }
  *
@@ -170,7 +170,7 @@ export interface PersistentStoreInterface<
    * }
    * ```
    */
-  getStorage(): SyncStorageInterface<Key, Opt> | null;
+  getStorage(): StorageInterface<Key, T, Opt> | null;
 
   /**
    * Restore state from storage
@@ -231,7 +231,7 @@ export interface PersistentStoreInterface<
    * ```typescript
    * class MyStore extends StoreInterface<MyStoreState>
    *   implements PersistentStoreInterface<MyStoreState, string> {
-   *   constructor(storage: SyncStorageInterface<string> | null = null) {
+   *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
    *     super(() => new MyStoreState());
    *     this.storage = storage;
    *     // Restore state after initialization

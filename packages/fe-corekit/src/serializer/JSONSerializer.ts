@@ -155,9 +155,9 @@ export interface JSONSerializerOptions {
  * ```
  */
 export class JSONSerializer<
-    T = unknown,
-    Opt extends JSONSerializerOptions = JSONSerializerOptions
-  >
+  T = unknown,
+  Opt extends JSONSerializerOptions = JSONSerializerOptions
+>
   implements SerializerIneterface<T, string>, JSON
 {
   /**

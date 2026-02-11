@@ -64,12 +64,10 @@ import {
 import { type GithubPRProps } from '../plugins/githubPR/GithubPR';
 import { type PluginClass, type PluginTuple } from '../utils/tuple';
 
-export interface ReleaseContextOptions
-  extends ScriptContextInterface<ReleaseContextConfig> {}
+export interface ReleaseContextOptions extends ScriptContextInterface<ReleaseContextConfig> {}
 
 export interface ReleaseContextConfig
-  extends FeReleaseConfig,
-    ScriptSharedInterface {
+  extends FeReleaseConfig, ScriptSharedInterface {
   /**
    * The github PR of the project
    * @private

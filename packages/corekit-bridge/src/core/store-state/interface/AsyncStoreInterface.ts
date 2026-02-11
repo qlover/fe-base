@@ -556,8 +556,7 @@ export interface AsyncStateStatusInterface {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
-  extends AsyncStateAction<State['result']>,
-    AsyncStateStatusInterface {
+  extends AsyncStateAction<State['result']>, AsyncStateStatusInterface {
   /**
    * Get the underlying store instance
    *

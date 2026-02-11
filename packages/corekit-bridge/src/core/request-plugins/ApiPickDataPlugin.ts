@@ -12,17 +12,11 @@ export type ApiPickDataResponse<_Request, Response> = Response;
  *
  * Return `RequestAdapterResponse`'s `data` property
  */
-export class ApiPickDataPlugin
-  implements
-    LifecyclePluginInterface<
-      ExecutorContextInterface<
-        RequestAdapterFetchConfig,
-        RequestAdapterResponse
-      >,
-      RequestAdapterResponse,
-      RequestAdapterFetchConfig
-    >
-{
+export class ApiPickDataPlugin implements LifecyclePluginInterface<
+  ExecutorContextInterface<RequestAdapterFetchConfig, RequestAdapterResponse>,
+  RequestAdapterResponse,
+  RequestAdapterFetchConfig
+> {
   public readonly pluginName = 'ApiPickDataPlugin';
 
   /**

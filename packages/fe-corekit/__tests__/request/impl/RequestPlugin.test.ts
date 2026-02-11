@@ -88,6 +88,18 @@ describe('RequestPlugin', () => {
       );
     });
 
+    it('should build URL from config', () => {
+      Object.assign(mockContext, {
+        parameters: {
+          url: '/users',
+          baseURL: '/api'
+        }
+      });
+      plugin.onBefore(mockContext);
+
+      expect(mockContext.parameters.url).toBe('/api/users');
+    });
+
     it('should inject headers', () => {
       plugin = new RequestPlugin({
         token: 'test-token',
@@ -130,7 +142,7 @@ describe('RequestPlugin', () => {
       plugin.onBefore(mockContext);
 
       expect(mockContext.parameters.token).toBe('context-token');
-      expect(mockContext.parameters.baseURL).toBe('https://api.example.com');
+      expect(mockContext.parameters.baseURL).toBeUndefined();
     });
   });
 

@@ -18,7 +18,8 @@ import { isAbsoluteUrl } from '../utils/isAbsoluteUrl';
  * @since 1.0.14
  */
 export interface RequestAdapterFetchConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>,
+  extends
+    RequestAdapterConfig<Request>,
     Omit<globalThis.RequestInit, 'headers'> {
   /**
    * The fetcher function
@@ -153,9 +154,7 @@ const reqInitAttrs = [
  *
  * @since 1.0.14
  */
-export class RequestAdapterFetch
-  implements RequestAdapterInterface<RequestAdapterFetchConfig>
-{
+export class RequestAdapterFetch implements RequestAdapterInterface<RequestAdapterFetchConfig> {
   /**
    * Default configuration for the request adapter
    *
@@ -439,6 +438,11 @@ export class RequestAdapterFetch
     }
 
     if (!baseURL) {
+      return url;
+    }
+
+    // If url starts with baseURL, return url
+    if (url.startsWith(baseURL)) {
       return url;
     }
 

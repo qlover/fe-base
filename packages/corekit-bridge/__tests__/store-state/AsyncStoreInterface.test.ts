@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { SyncStorageInterface } from '@qlover/fe-corekit';
+import type { StorageInterface } from '@qlover/fe-corekit';
 import {
   type AsyncStateInterface,
   AsyncStore,
@@ -23,7 +23,7 @@ import {
 /**
  * Mock storage implementation for testing
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, unknown> {
   public data = new Map<string, unknown>();
   public shouldFailGetItem: boolean = false;
   public calls: {

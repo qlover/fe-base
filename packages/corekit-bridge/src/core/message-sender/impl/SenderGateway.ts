@@ -37,8 +37,7 @@ import { type MessageStoreMsg } from './MessageStore';
  */
 export class SenderGateway<
   MessageType extends MessageStoreMsg<unknown, unknown>
-> implements SenderGatewayInterface<MessageType>
-{
+> implements SenderGatewayInterface<MessageType> {
   /**
    * Create a sender gateway instance
    *
