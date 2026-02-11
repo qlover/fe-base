@@ -1,11 +1,11 @@
 import { KeyStorage } from '../../src/storage/impl/KeyStorage';
-import type { SyncStorageInterface } from '../../src/storage/interface/SyncStorageInterface';
 import { JSONSerializer, ObjectStorage } from '../../src';
+import type { StorageInterface } from '@qlover/fe-corekit';
 
 /**
  * Mock storage implementation for testing
  */
-class MockStorage<Key = string> implements SyncStorageInterface<Key> {
+class MockStorage<Key = string> implements StorageInterface<Key, string, any> {
   public data = new Map<string, string>();
   public calls: {
     setItem: Array<{ key: Key; value: unknown; options?: unknown }>;
@@ -101,25 +101,25 @@ describe('KeyStorage', () => {
     });
 
     it('should create instance with key and storage', () => {
-      const keyStorage = new KeyStorage<string, string>('test-key', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string, any>(
+        'test-key',
+        mockStorage
+      );
       expect(keyStorage).toBeInstanceOf(KeyStorage);
     });
 
     it('should initialize with existing value from storage', () => {
       mockStorage.directSet('existing-key', 'existing-value');
-      const keyStorage = new KeyStorage<string, string>('existing-key', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'existing-key',
+        mockStorage
+      );
 
       expect(keyStorage.get()).toBe('existing-value');
     });
 
     it('should initialize with null when no existing value', () => {
-      const keyStorage = new KeyStorage<string, string>('new-key', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>('new-key', mockStorage);
       expect(keyStorage.get()).toBeNull();
     });
   });
@@ -162,9 +162,10 @@ describe('KeyStorage', () => {
       let keyStorage: KeyStorage<string, string>;
 
       beforeEach(() => {
-        keyStorage = new KeyStorage<string, string>('persistent-key', {
-          storage: mockStorage
-        });
+        keyStorage = new KeyStorage<string, string>(
+          'persistent-key',
+          mockStorage
+        );
       });
 
       it('should store value to persistent storage', () => {
@@ -173,19 +174,8 @@ describe('KeyStorage', () => {
         expect(mockStorage.calls.setItem).toHaveLength(1);
         expect(mockStorage.calls.setItem[0]).toEqual({
           key: 'persistent-key',
-          value: 'persistent-value',
-          options: {}
+          value: 'persistent-value'
         });
-      });
-
-      it('should retrieve from memory first if available', () => {
-        keyStorage.set('memory-value');
-        mockStorage.reset(); // Clear storage calls
-
-        const result = keyStorage.get();
-
-        expect(result).toBe('memory-value');
-        expect(mockStorage.calls.getItem).toHaveLength(0);
       });
 
       it('should fallback to persistent storage when memory is empty', () => {
@@ -193,9 +183,10 @@ describe('KeyStorage', () => {
         mockStorage.directSet('persistent-key', 'storage-value');
 
         // Create new instance that will load from storage
-        const newKeyStorage = new KeyStorage<string, string>('persistent-key', {
-          storage: mockStorage
-        });
+        const newKeyStorage = new KeyStorage<string, string>(
+          'persistent-key',
+          mockStorage
+        );
 
         // The value should be loaded during construction
         expect(newKeyStorage.get()).toBe('storage-value');
@@ -214,9 +205,7 @@ describe('KeyStorage', () => {
       it('should handle null values from storage', () => {
         const newKeyStorage = new KeyStorage<string, string>(
           'non-existent-key',
-          {
-            storage: mockStorage
-          }
+          mockStorage
         );
 
         const result = newKeyStorage.get();
@@ -224,47 +213,42 @@ describe('KeyStorage', () => {
       });
     });
 
-    describe('Memory caching behavior', () => {
+    describe('Storage as source of truth (no in-memory cache)', () => {
       let keyStorage: KeyStorage<string, string>;
 
       beforeEach(() => {
-        keyStorage = new KeyStorage<string, string>('cache-key', {
-          storage: mockStorage
-        });
+        keyStorage = new KeyStorage<string, string>('cache-key', mockStorage);
       });
 
-      it('should cache value in memory after first retrieval from storage', () => {
-        // Set up storage with a value
+      it('should read from storage on every get (no cache)', () => {
         mockStorage.directSet('cache-key', 'cached-value');
 
-        // Create new instance that will load from storage during construction
-        const newKeyStorage = new KeyStorage<string, string>('cache-key', {
-          storage: mockStorage
-        });
+        const newKeyStorage = new KeyStorage<string, string>(
+          'cache-key',
+          mockStorage
+        );
 
-        // The value should be loaded and cached during construction
         const result1 = newKeyStorage.get();
         expect(result1).toBe('cached-value');
+        expect(mockStorage.calls.getItem).toHaveLength(1);
 
-        // Reset call history after construction and first get
-        mockStorage.reset();
-
-        // Second get should use cached value, no storage call
+        // Second get still calls storage; no in-memory snapshot
         const result2 = newKeyStorage.get();
         expect(result2).toBe('cached-value');
-        expect(mockStorage.calls.getItem).toHaveLength(0);
+        expect(mockStorage.calls.getItem).toHaveLength(2);
       });
 
-      it('should retrieve from storage when memory cache is cleared', () => {
-        // Set up storage with a value
+      it('should return null when storage has been cleared', () => {
         mockStorage.setItem('cache-key', 'storage-value');
+        const result1 = keyStorage.get();
+        expect(result1).toBe('storage-value');
 
-        // Clear memory cache to force storage retrieval
-        (keyStorage as any).value = null;
+        // Clear storage (e.g. logout / clear cache)
+        mockStorage.reset();
 
-        const result = keyStorage.get();
-        expect(result).toBe('storage-value');
-        expect(mockStorage.calls.getItem).toHaveLength(2);
+        const result2 = keyStorage.get();
+        expect(result2).toBeNull();
+        expect(mockStorage.calls.getItem).toHaveLength(1);
       });
     });
 
@@ -272,9 +256,7 @@ describe('KeyStorage', () => {
       let keyStorage: KeyStorage<string, string>;
 
       beforeEach(() => {
-        keyStorage = new KeyStorage<string, string>('remove-key', {
-          storage: mockStorage
-        });
+        keyStorage = new KeyStorage<string, string>('remove-key', mockStorage);
       });
 
       it('should call removeItem twice when remove is followed by get', () => {
@@ -311,67 +293,49 @@ describe('KeyStorage', () => {
     });
   });
 
-  describe('Options Merging', () => {
+  describe('Options passthrough', () => {
     let baseKeyStorage: KeyStorage<string, string>;
 
     beforeEach(() => {
-      baseKeyStorage = new KeyStorage<string, string>('base-key', {
-        storage: mockStorage
-      });
+      baseKeyStorage = new KeyStorage<string, string>('base-key', mockStorage);
     });
 
-    it('should use base options when no override provided', () => {
+    it('should pass options to storage when set is called', () => {
       baseKeyStorage.set('test-value');
 
       expect(mockStorage.calls.setItem).toHaveLength(1);
-    });
-
-    it('should override storage in method options', () => {
-      const alternativeStorage = new MockStorage();
-
-      baseKeyStorage.set('override-test', { storage: alternativeStorage });
-
-      expect(alternativeStorage.calls.setItem).toHaveLength(1);
-      expect(mockStorage.calls.setItem).toHaveLength(0);
-    });
-
-    it('should merge options correctly', () => {
-      const alternativeStorage = new MockStorage();
-
-      baseKeyStorage.set('merge-test', {
-        storage: alternativeStorage
+      expect(mockStorage.calls.setItem[0]).toEqual({
+        key: 'base-key',
+        value: 'test-value',
+        options: undefined
       });
-
-      expect(alternativeStorage.calls.setItem[0].value).toBe('merge-test');
     });
 
-    it('should handle get with options override', () => {
-      const alternativeStorage = new MockStorage();
-      alternativeStorage.directSet('base-key', 'override-value');
+    it('should pass options to storage when get is called', () => {
+      mockStorage.directSet('base-key', 'test-value');
+      const result = baseKeyStorage.get();
 
-      baseKeyStorage.remove(); // Clear memory
-
-      const result = baseKeyStorage.get({ storage: alternativeStorage });
-
-      expect(result).toBe('override-value');
-      expect(alternativeStorage.calls.getItem).toHaveLength(1);
+      expect(result).toBe('test-value');
+      expect(mockStorage.calls.getItem).toHaveLength(1);
+      expect(mockStorage.calls.getItem[0].key).toBe('base-key');
     });
 
-    it('should handle remove with options override', () => {
-      const alternativeStorage = new MockStorage();
+    it('should pass options to storage when remove is called', () => {
+      baseKeyStorage.set('to-remove');
+      mockStorage.reset();
+      baseKeyStorage.remove();
 
-      baseKeyStorage.remove({ storage: alternativeStorage });
-
-      expect(alternativeStorage.calls.removeItem[0].key).toBe('base-key');
-      expect(mockStorage.calls.removeItem).toHaveLength(0);
+      expect(mockStorage.calls.removeItem).toHaveLength(1);
+      expect(mockStorage.calls.removeItem[0].key).toBe('base-key');
     });
   });
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle null and undefined values', () => {
-      const keyStorage = new KeyStorage<string, string>('null-test', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'null-test',
+        mockStorage
+      );
 
       keyStorage.set(null as any);
       expect(keyStorage.get()).toBe('null'); // KeyStorage stores as string
@@ -381,9 +345,10 @@ describe('KeyStorage', () => {
     });
 
     it('should handle empty string values', () => {
-      const keyStorage = new KeyStorage<string, string>('empty-test', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'empty-test',
+        mockStorage
+      );
 
       keyStorage.set('');
       expect(keyStorage.get()).toBe('');
@@ -391,9 +356,10 @@ describe('KeyStorage', () => {
 
     it('should handle special characters in keys', () => {
       const specialKey = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-      const keyStorage = new KeyStorage<string, string>(specialKey, {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        specialKey,
+        mockStorage
+      );
 
       keyStorage.set('special-value');
       expect(keyStorage.get()).toBe('special-value');
@@ -401,18 +367,20 @@ describe('KeyStorage', () => {
     });
 
     it('should handle numeric keys', () => {
-      const keyStorage = new KeyStorage<string, string>(123 as any, {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        123 as any,
+        mockStorage
+      );
 
       keyStorage.set('numeric-key-value');
       expect(keyStorage.get()).toBe('numeric-key-value');
     });
 
     it('should handle large data values', () => {
-      const keyStorage = new KeyStorage<string, string>('large-data', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'large-data',
+        mockStorage
+      );
       const largeValue = 'x'.repeat(10000);
 
       keyStorage.set(largeValue);
@@ -420,9 +388,10 @@ describe('KeyStorage', () => {
     });
 
     it('should handle concurrent operations', () => {
-      const keyStorage = new KeyStorage<string, string>('concurrent', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'concurrent',
+        mockStorage
+      );
 
       // Simulate concurrent set operations
       keyStorage.set('value1');
@@ -446,14 +415,15 @@ describe('KeyStorage', () => {
           throw new Error('Remove error');
         }),
         clear: vi.fn()
-      } as unknown as SyncStorageInterface<string>;
+      } as unknown as StorageInterface<string, string>;
 
       // Constructor should handle storage.getItem failures gracefully
       let keyStorage: KeyStorage<string, string>;
       expect(() => {
-        keyStorage = new KeyStorage<string, string>('fail-test', {
-          storage: failingStorage
-        });
+        keyStorage = new KeyStorage<string, string>(
+          'fail-test',
+          failingStorage
+        );
       }).not.toThrow();
 
       // Instance should be created successfully with null value
@@ -484,9 +454,10 @@ describe('KeyStorage', () => {
       // Set up storage with null value
       mockStorage.directSet('auto-remove-key', 'some-value');
 
-      const keyStorage = new KeyStorage<string, string>('auto-remove-key', {
-        storage: mockStorage
-      });
+      const keyStorage = new KeyStorage<string, string>(
+        'auto-remove-key',
+        mockStorage
+      );
 
       // Clear memory and simulate storage returning null
       keyStorage.remove();
@@ -504,9 +475,10 @@ describe('KeyStorage', () => {
       // Simulate app startup with existing session
       mockStorage.directSet('session-id', 'session-12345');
 
-      const sessionStorage = new KeyStorage<string, string>('session-id', {
-        storage: mockStorage
-      });
+      const sessionStorage = new KeyStorage<string, string>(
+        'session-id',
+        mockStorage
+      );
 
       // Constructor loads value
       expect(sessionStorage.get()).toBe('session-12345');
@@ -586,17 +558,16 @@ describe('KeyStorage', () => {
         );
         const persistentNumberStorage = new KeyStorage<string, number>(
           'number-test',
-          {
-            storage: objectStorage
-          }
+          objectStorage as unknown as StorageInterface<string, number>
         );
 
         persistentNumberStorage.set(123);
 
         // Create new instance to test persistence
-        const newNumberStorage = new KeyStorage<string, number>('number-test', {
-          storage: objectStorage
-        });
+        const newNumberStorage = new KeyStorage<string, number>(
+          'number-test',
+          objectStorage as unknown as StorageInterface<string, number>
+        );
 
         expect(newNumberStorage.get()).toBe(123);
       });
@@ -622,24 +593,20 @@ describe('KeyStorage', () => {
       });
 
       it('should persist boolean values in storage with ObjectStorage', () => {
-        const objectStorage = new ObjectStorage<string, string>(
+        const objectStorage = new ObjectStorage<string, string | boolean>(
           new JSONSerializer()
         );
-        const persistentBooleanStorage = new KeyStorage<string, boolean>(
-          'boolean-test',
-          {
-            storage: objectStorage
-          }
-        );
+        const persistentBooleanStorage = new KeyStorage<
+          string,
+          boolean | string
+        >('boolean-test', objectStorage);
 
         persistentBooleanStorage.set(true);
 
         // Create new instance to test persistence
-        const newBooleanStorage = new KeyStorage<string, boolean>(
+        const newBooleanStorage = new KeyStorage<string, boolean | string>(
           'boolean-test',
-          {
-            storage: objectStorage
-          }
+          objectStorage
         );
 
         expect(newBooleanStorage.get()).toBe(true);
@@ -698,14 +665,12 @@ describe('KeyStorage', () => {
       });
 
       it('should persist object values in storage with ObjectStorage', () => {
-        const objectStorageInstance = new ObjectStorage<string, string>(
+        const objectStorageInstance = new ObjectStorage<string, TestUser>(
           new JSONSerializer()
         );
         const persistentObjectStorage = new KeyStorage<string, TestUser>(
           'object-test',
-          {
-            storage: objectStorageInstance
-          }
+          objectStorageInstance
         );
 
         const user: TestUser = {
@@ -719,9 +684,7 @@ describe('KeyStorage', () => {
         // Create new instance to test persistence
         const newObjectStorage = new KeyStorage<string, TestUser>(
           'object-test',
-          {
-            storage: objectStorageInstance
-          }
+          objectStorageInstance
         );
 
         expect(newObjectStorage.get()).toEqual(user);
@@ -773,23 +736,17 @@ describe('KeyStorage', () => {
       });
 
       it('should persist array values in storage with ObjectStorage', () => {
-        const objectStorage = new ObjectStorage<string, string>(
-          new JSONSerializer()
-        );
-        const persistentArrayStorage = new KeyStorage<string, string[]>(
+        const objectStorage = new ObjectStorage<string>(new JSONSerializer());
+        const persistentArrayStorage = new KeyStorage(
           'array-test',
-          {
-            storage: objectStorage
-          }
+          objectStorage
         );
 
         const testArray = ['test1', 'test2', 'test3'];
         persistentArrayStorage.set(testArray);
 
         // Create new instance to test persistence
-        const newArrayStorage = new KeyStorage<string, string[]>('array-test', {
-          storage: objectStorage
-        });
+        const newArrayStorage = new KeyStorage('array-test', objectStorage);
 
         expect(newArrayStorage.get()).toEqual(testArray);
       });
@@ -865,9 +822,7 @@ describe('KeyStorage', () => {
         keyStorageWithObjectStorage = new KeyStorage<
           string,
           { data: number[] }
-        >('object-storage-test', {
-          storage: objectStorageInstance
-        });
+        >('object-storage-test', objectStorageInstance);
       });
 
       it('should serialize and deserialize complex objects correctly', () => {
@@ -887,9 +842,7 @@ describe('KeyStorage', () => {
         // Create new instance to test persistence
         const newKeyStorage = new KeyStorage<string, { data: number[] }>(
           'object-storage-test',
-          {
-            storage: objectStorageInstance
-          }
+          objectStorageInstance
         );
 
         expect(newKeyStorage.get()).toEqual(testData);
@@ -899,9 +852,10 @@ describe('KeyStorage', () => {
 
   describe('Real-world Usage Patterns', () => {
     it('should work as token storage', () => {
-      const tokenStorage = new KeyStorage<string, string>('auth-token', {
-        storage: mockStorage
-      });
+      const tokenStorage = new KeyStorage<string, string>(
+        'auth-token',
+        mockStorage
+      );
 
       // Store token
       const token = 'jwt-token-123456789';
@@ -919,9 +873,10 @@ describe('KeyStorage', () => {
     });
 
     it('should work as user preference storage', () => {
-      const themeStorage = new KeyStorage<string, string>('user-theme', {
-        storage: mockStorage
-      });
+      const themeStorage = new KeyStorage<string, string>(
+        'user-theme',
+        mockStorage
+      );
 
       themeStorage.set('dark');
       expect(themeStorage.get()).toBe('dark');
@@ -937,9 +892,10 @@ describe('KeyStorage', () => {
 
     beforeEach(() => {
       objectStorage = new ObjectStorage<string, string>(new JSONSerializer());
-      keyStorage = new KeyStorage<string, string>('expire-test-key', {
-        storage: objectStorage
-      });
+      keyStorage = new KeyStorage<string, string>(
+        'expire-test-key',
+        objectStorage
+      );
     });
 
     it('should store value with expiration time', () => {
@@ -1023,9 +979,10 @@ describe('KeyStorage', () => {
     });
 
     it('should work with session-like expiration patterns', () => {
-      const sessionStorage = new KeyStorage<string, string>('session-token', {
-        storage: objectStorage
-      });
+      const sessionStorage = new KeyStorage<string, string>(
+        'session-token',
+        objectStorage
+      );
 
       const sessionToken = 'session-abc123';
       const sessionExpire = Date.now() + 1800000; // 30 minutes
@@ -1055,37 +1012,19 @@ describe('KeyStorage', () => {
       expect(sessionStorage.get()).toBeNull();
     });
 
-    it('should handle expiration when switching between different ObjectStorage instances', () => {
-      const objectStorage2 = new ObjectStorage<string, string>(
-        new JSONSerializer()
-      );
-
-      const testValue = 'switch-storage-test';
+    it('should return null after value expires', () => {
+      const testValue = 'expire-switch-test';
       const expireTime = Date.now() + 1000;
 
-      // Store in first ObjectStorage with expiration
       keyStorage.set(testValue, { expires: expireTime });
+      expect(keyStorage.get()).toBe(testValue);
 
-      // Clear memory
+      // Clear in-memory value so next get() reads from storage
       (keyStorage as any).value = null;
 
-      // Try to get from second ObjectStorage (should be null)
-      expect(keyStorage.get({ storage: objectStorage2 })).toBeNull();
-
-      // Get from original storage before expiration
-      // Need to clear ObjectStorage memory to force retrieval with expiration check
-      objectStorage.removeItem('expire-test-key');
-      keyStorage.set(testValue, { expires: expireTime }); // Re-set the value
-      expect(keyStorage.get({ storage: objectStorage })).toBe(testValue);
-
-      // Advance time past expiration
       vi.advanceTimersByTime(1100);
 
-      // Clear memory and force fresh retrieval
-      (keyStorage as any).value = null;
-
-      // Should be expired in original storage
-      expect(keyStorage.get({ storage: objectStorage })).toBeNull();
+      expect(keyStorage.get()).toBeNull();
     });
 
     it('should handle expiration edge cases', () => {
@@ -1131,83 +1070,43 @@ describe('Use case: token storage', () => {
 
   it('should get value from storage', () => {
     const mockStorage = new MockStorage();
-    const tokenStorage1 = new KeyStorage<string, string>('user-token', {
-      storage: mockStorage
-    });
-    const tokenStorage2 = new KeyStorage<string, string>('user-token2', {
-      storage: mockStorage
-    });
+    const tokenStorage1 = new KeyStorage<string, string>(
+      'user-token',
+      mockStorage
+    );
+    const tokenStorage2 = new KeyStorage<string, string>(
+      'user-token2',
+      mockStorage
+    );
 
     // set default storage value
-    mockStorage.setItem(tokenStorage1.getKey(), 'test-token1');
-    mockStorage.setItem(tokenStorage2.getKey(), 'test-token2');
+    mockStorage.setItem(tokenStorage1.key, 'test-token1');
+    mockStorage.setItem(tokenStorage2.key, 'test-token2');
 
     expect(tokenStorage1.get()).toBe('test-token1');
     expect(tokenStorage1.get()).toBe('test-token1');
     expect(tokenStorage2.get()).toBe('test-token2');
   });
 
-  it('should get value from storage and update memory value', () => {
+  it('should get value from storage and update internal value after get', () => {
     const mockStorage = new MockStorage();
-    const tokenStorage1 = new KeyStorage<string, string>('user-token', {
-      storage: mockStorage
-    });
+    const tokenStorage1 = new KeyStorage<string, string>(
+      'user-token',
+      mockStorage
+    );
 
     const tokenValue = 'test-token1';
-    // set default storage value
-    mockStorage.setItem(tokenStorage1.getKey(), tokenValue);
+    mockStorage.setItem(tokenStorage1.key, tokenValue);
 
-    // @ts-expect-error
-    expect(tokenStorage1.value).toBe(null);
+    // Before first get(), internal value is undefined (not yet loaded)
+    // @ts-expect-error - access protected for test
+    expect(tokenStorage1.value).toBeUndefined();
+
     expect(tokenStorage1.get()).toBe(tokenValue);
 
-    // @ts-expect-error
+    // After get(), implementation stores the value internally
+    // @ts-expect-error - access protected for test
     expect(tokenStorage1.value).toBe(tokenValue);
-  });
-
-  it('should get value from storage and update memory value', () => {
-    const mockStorage = new MockStorage();
-
-    const tokenStorage = new KeyStorage<string, string>('user-token');
-
-    const tokenValue = 'test-token1';
-    mockStorage.setItem(tokenStorage.getKey(), tokenValue);
-
-    // @ts-expect-error
-    expect(tokenStorage.value).toBe(null);
-
-    expect(tokenStorage.get({ storage: mockStorage })).toBe(tokenValue);
-
-    // @ts-expect-error
-    expect(tokenStorage.value).toBe(tokenValue);
-  });
-
-  it('should get value from storage and update memory value', () => {
-    const mockStorage = new MockStorage();
-    const mockStorage2 = new MockStorage();
-
-    const tokenStorage = new KeyStorage<string, string>('user-token');
-
-    const tokenValue = 'test-token1';
-    const tokenValue2 = 'test-token2';
-
-    mockStorage.setItem(tokenStorage.getKey(), tokenValue);
-    mockStorage2.setItem(tokenStorage.getKey(), tokenValue2);
-
-    // @ts-expect-error
-    expect(tokenStorage.value).toBe(null);
-
-    expect(tokenStorage.get({ storage: mockStorage })).toBe(tokenValue);
-
-    // @ts-expect-error
-    expect(tokenStorage.value).toBe(tokenValue);
-
-    tokenStorage.set(null as any);
-
-    expect(tokenStorage.get({ storage: mockStorage2 })).toBe(tokenValue2);
-
-    // @ts-expect-error
-    expect(tokenStorage.value).toBe(tokenValue2);
   });
 
   it('should use objectStorage and serialize with json', () => {
@@ -1215,13 +1114,14 @@ describe('Use case: token storage', () => {
       new JSONSerializer()
     );
 
-    const tokenStorage = new KeyStorage<string, string>('user-token', {
-      storage: objectStorage
-    });
+    const tokenStorage = new KeyStorage<string, string>(
+      'user-token',
+      objectStorage
+    );
     const tokenValue = 'test-token';
     tokenStorage.set(tokenValue);
 
-    const objectStorageValue = objectStorage.getItem(tokenStorage.getKey());
+    const objectStorageValue = objectStorage.getItem(tokenStorage.key);
     expect(tokenStorage.get()).toBe(tokenValue);
     expect(objectStorageValue).toBe(tokenValue);
   });

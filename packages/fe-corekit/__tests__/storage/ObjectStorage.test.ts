@@ -65,13 +65,11 @@ describe('ObjectStorage', () => {
     it('should create instance with serializer only', () => {
       const simpleStorage = new ObjectStorage(mockSerializer as any);
       expect(simpleStorage).toBeInstanceOf(ObjectStorage);
-      expect(simpleStorage.getSerializer()).toBe(mockSerializer);
     });
 
     it('should create instance without serializer', () => {
       const noSerializerStorage = new ObjectStorage();
       expect(noSerializerStorage).toBeInstanceOf(ObjectStorage);
-      expect(noSerializerStorage.getSerializer()).toBeUndefined();
     });
   });
 
@@ -401,17 +399,6 @@ describe('ObjectStorage', () => {
       });
 
       expect(storage.length).toBe(keys.length);
-    });
-  });
-
-  describe('Getter Methods', () => {
-    it('should return serializer instance', () => {
-      expect(storage.getSerializer()).toBe(mockSerializer);
-    });
-
-    it('should return undefined for missing serializer', () => {
-      const memoryStorage = new ObjectStorage();
-      expect(memoryStorage.getSerializer()).toBeUndefined();
     });
   });
 

@@ -1,11 +1,11 @@
 /**
  * @module Storage
- * @description Client-side storage abstractions with expiration and serialization support
+ * @description Client-side storage abstractions with expiration, serialization, and pipeline support
  *
  * This module provides unified abstractions for browser storage APIs (localStorage,
  * sessionStorage) with additional features like expiration management, automatic
- * serialization, and type-safe operations. It simplifies working with browser storage
- * while adding powerful capabilities for data persistence.
+ * serialization, encryption pipelines, and type-safe operations. It simplifies working
+ * with browser storage while adding powerful capabilities for data persistence.
  *
  * Core functionality:
  * - Unified storage API: Consistent interface for different storage backends
@@ -13,6 +13,13 @@
  *   - sessionStorage integration for session-scoped storage
  *   - Memory storage for testing and temporary data
  *   - Custom storage backend support
+ *
+ * - Storage pipeline (StorageExecutor): Plugin chain for set/get
+ *   - setItem: value flows forward (e.g. serialize → encrypt → storage)
+ *   - getItem: value flows backward (storage → decrypt → deserialize). **When multiple
+ *     storage plugins exist, only the value from the last storage (end of the plugin
+ *     array) is used for reading; all other storage plugins are ignored for getItem.**
+ *   - Serializer and encryptor plugins transform values in the chain
  *
  * - Expiration management: Time-based data invalidation
  *   - Configurable expiration times (seconds)
@@ -35,15 +42,16 @@
  * ### Exported Members
  *
  * **Implementations:**
- * - `SyncStorage`: Synchronous storage with serialization and expiration
+ * - `StorageExecutor`: Pipeline-based storage (serializer / encryptor / storage chain);
+ *   getItem uses only the last storage's value when multiple storages are present
  * - `KeyStorage`: Key-value storage with expiration support
  * - `ObjectStorage`: Object-based storage for complex data structures
  *
  * **Interfaces:**
- * - `SyncStorageInterface`: Synchronous storage interface
+ * - `StorageInterface`: Core storage contract (setItem, getItem, removeItem, clear)
+ * - `StorageInterface`: Synchronous storage interface
  * - `AsyncStorageInterface`: Asynchronous storage interface
  * - `KeyStorageInterface`: Key-value storage interface
- * - `ExpireOptions`: Expiration configuration options
  *
  * ### Basic Usage
  *
@@ -189,6 +197,22 @@
  * );
  * ```
  *
+ * ### StorageExecutor pipeline (getItem uses only last storage)
+ *
+ * ```typescript
+ * import { StorageExecutor, JSONSerializer } from '@qlover/fe-corekit';
+ *
+ * // Single storage
+ * const executor = new StorageExecutor([new JSONSerializer(), localStorage]);
+ * executor.setItem('key', { a: 1 });
+ * executor.getItem('key'); // { a: 1 }
+ *
+ * // Multiple storages: setItem writes to all; getItem reads only from the last
+ * const multi = new StorageExecutor([sessionStorage, localStorage]);
+ * multi.setItem('key', 'v');   // writes to both
+ * multi.getItem('key');        // reads only from localStorage (last); sessionStorage is ignored
+ * ```
+ *
  * ### Session Storage
  *
  * ```typescript
@@ -238,14 +262,16 @@
  * );
  * ```
  *
- * @see {@link SyncStorage} for the main storage implementation
+ * @see {@link StorageExecutor} pipeline implementation (getItem uses only the last storage when multiple exist)
+ * @see {@link createStoragePlugin} for building plugin arrays from serializer/encryptor/storage
  * @see {@link KeyStorage} for key-value storage
  * @see {@link ObjectStorage} for object-based storage
  */
 export * from './interface/AsyncStorageInterface';
-export * from './interface/ExpireOptions';
+export * from './interface/StorageInterface';
 export * from './interface/KeyStorageInterface';
-export * from './interface/SyncStorageInterface';
 export * from './impl/KeyStorage';
 export * from './impl/ObjectStorage';
-export * from './impl/SyncStorage';
+export * from './impl/StorageExecutor';
+export * from './utils/createStoragePlugin';
+export * from './utils/isStorage';
