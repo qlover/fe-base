@@ -19,7 +19,7 @@
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
-    "@qlover/slice-store-react": "^1.4.1",
+    "@qlover/slice-store-react": "^1.4.2",
     "clsx": "^2.1.1",
     "eslint-plugin-import": "^2.32.0",
     "i18next": "^25.8.1",
