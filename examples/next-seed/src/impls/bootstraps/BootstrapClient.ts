@@ -1,0 +1,76 @@
+import 'reflect-metadata';
+import { Bootstrap } from '@qlover/corekit-bridge';
+import { isObject } from 'lodash';
+import type { IOCIdentifierMap } from '@shared/config/ioc-identifiter';
+import type { IocRegisterOptions } from '@shared/interfaces/IOCInterface';
+import { browserGlobalsName } from '@config/common';
+import { BootstrapsRegistry } from './BootstrapsRegistry';
+import * as globals from '../globals';
+import type {
+  IOCContainerInterface,
+  IOCFunctionInterface,
+  IOCRegisterInterface
+} from '@qlover/corekit-bridge';
+
+export type BootstrapAppArgs = {
+  /**
+   * 启动的根节点，通常是window
+   */
+  root: unknown;
+  /**
+   * 当前路径
+   */
+  pathname: string;
+  /**
+   * IOC容器
+   */
+  IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
+
+  register?: IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>;
+};
+
+export class BootstrapClient {
+  public static lastTime = 0;
+  public static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
+    const { logger, appConfig } = globals;
+
+    if (BootstrapClient.lastTime) {
+      return args;
+    }
+
+    const { root, IOC, register } = args;
+
+    if (!isObject(root)) {
+      throw new Error('root is not an object');
+    }
+
+    const bootstrap = new Bootstrap({
+      root,
+      logger,
+      ioc: {
+        manager: IOC,
+        register: register
+      },
+      globalOptions: {
+        sources: globals,
+        target: browserGlobalsName
+      }
+    });
+
+    try {
+      await bootstrap.initialize();
+
+      const bootstrapsRegistry = new BootstrapsRegistry(args);
+
+      await bootstrap.use(bootstrapsRegistry.register()).start();
+
+      BootstrapClient.lastTime = Date.now();
+
+      logger.info('BootstrapClient starup success,', BootstrapClient.lastTime);
+    } catch (error) {
+      logger.error(`${appConfig.appName} starup error:`, error);
+    }
+
+    return args;
+  }
+}

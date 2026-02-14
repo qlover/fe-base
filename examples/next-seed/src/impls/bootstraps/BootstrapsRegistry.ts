@@ -1,0 +1,50 @@
+import { AppUserApiBootstrap } from '@/impls/appApi/AppUserApiBootstrap';
+import { I, IOCIdentifier } from '@shared/config/ioc-identifiter';
+import type { IOCIdentifierMap } from '@shared/config/ioc-identifiter';
+import { IocIdentifierTest } from './IocIdentifierTest';
+import { printBootstrap } from './PrintBootstrap';
+import type { BootstrapAppArgs } from './BootstrapClient';
+import type {
+  BootstrapExecutorPlugin,
+  EnvConfigInterface,
+  IOCContainerInterface,
+  IOCFunctionInterface
+} from '@qlover/corekit-bridge';
+
+export class BootstrapsRegistry {
+  constructor(protected args: BootstrapAppArgs) {}
+
+  public get IOC(): IOCFunctionInterface<
+    IOCIdentifierMap,
+    IOCContainerInterface
+  > {
+    return this.args.IOC;
+  }
+
+  public get appConfig(): EnvConfigInterface {
+    return this.IOC(IOCIdentifier.AppConfig);
+  }
+
+  public register(): BootstrapExecutorPlugin[] {
+    const IOC = this.IOC;
+
+    const i18nService = IOC(IOCIdentifier.I18nServiceInterface);
+    i18nService.setPathname(this.args.pathname);
+
+    const bootstrapList: BootstrapExecutorPlugin[] = [
+      i18nService,
+      new AppUserApiBootstrap(IOC(I.JSONSerializer))
+      // new FeApiBootstarp(),
+      // AiApiBootstarp,
+      // IOC(IOCIdentifier.I18nKeyErrorPlugin)
+    ];
+
+    if (!this.appConfig.isProduction) {
+      bootstrapList.push(printBootstrap);
+    }
+
+    bootstrapList.push(IocIdentifierTest);
+
+    return bootstrapList;
+  }
+}

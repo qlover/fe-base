@@ -1,0 +1,29 @@
+import { inject, injectable } from '@shared/container';
+import type { UserSchema } from '@schemas/UserSchema';
+import type { PaginationInterface } from '@server/port/PaginationInterface';
+import { UserRepository } from '../repositorys/UserRepository';
+import {
+  type PaginationParams,
+  PaginationValidator
+} from '../validators/PaginationValidator';
+import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
+import type { ValidatorInterface } from '../port/ValidatorInterface';
+
+@injectable()
+export class ApiUserService {
+  constructor(
+    @inject(UserRepository)
+    protected userRepository: UserRepositoryInterface,
+    @inject(PaginationValidator)
+    protected paginationValidator: ValidatorInterface<PaginationParams>
+  ) {}
+
+  public async getUsers(params: {
+    page: number;
+    pageSize: number;
+  }): Promise<PaginationInterface<UserSchema>> {
+    const result = await this.userRepository.pagination(params);
+
+    return result as PaginationInterface<UserSchema>;
+  }
+}

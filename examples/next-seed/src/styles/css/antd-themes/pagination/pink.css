@@ -1,0 +1,36 @@
+[data-theme='pink'],
+[data-theme='pink'] .fe-theme .ant-pagination-css-var,
+[data-theme='pink'] .fe-theme.ant-pagination {
+  /* Antd Pagination 组件变量 */
+  .ant-pagination-css-var {
+    --fe-pagination-item-bg: var(--ant-color-bg-container);
+    --fe-pagination-item-size: 32px;
+    --fe-pagination-item-size-sm: 24px;
+    --fe-pagination-item-active-bg: var(--ant-color-bg-container);
+    --fe-pagination-item-link-bg: var(--ant-color-bg-container);
+    --fe-pagination-item-active-color-disabled: var(
+      --ant-color-text-quaternary
+    );
+    --fe-pagination-item-active-bg-disabled: var(--ant-color-text-quaternary);
+    --fe-pagination-item-input-bg: var(--ant-color-bg-container);
+    --fe-pagination-mini-options-size-changer-top: 0px;
+    --fe-pagination-padding-block: 4px;
+    --fe-pagination-padding-block-sm: 0px;
+    --fe-pagination-padding-block-lg: 7px;
+    --fe-pagination-padding-inline: 11px;
+    --fe-pagination-padding-inline-sm: 7px;
+    --fe-pagination-padding-inline-lg: 11px;
+    --fe-pagination-addon-bg: var(--fe-input-addon-bg);
+    --fe-pagination-active-border-color: var(--fe-color-primary);
+    --fe-pagination-hover-border-color: var(--fe-color-primary-hover);
+    --fe-pagination-active-shadow: 0 0 0 2px var(--fe-color-primary-bg);
+    --fe-pagination-error-active-shadow: 0 0 0 2px rgba(40, 22, 24, 0.1)
+      --fe-pagination-warning-active-shadow: 0 0 0 2px
+      var(--fe-color-warning-bg);
+    --fe-pagination-hover-bg: var(--ant-color-bg-elevated);
+    --fe-pagination-active-bg: var(--ant-color-bg-elevated);
+    --fe-pagination-input-font-size: 14px;
+    --fe-pagination-input-font-size-lg: 16px;
+    --fe-pagination-input-font-size-sm: 14px;
+  }
+}

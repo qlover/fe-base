@@ -1,0 +1,66 @@
+import {
+  type IOCContainerInterface,
+  type IOCManagerInterface,
+  type IOCRegisterInterface
+} from '@qlover/corekit-bridge';
+import { Logger, ConsoleHandler, TimestampFormatter } from '@qlover/logger';
+import { IOCIdentifier as I } from '@shared/config/ioc-identifiter';
+import type { IocRegisterOptions } from '@shared/interfaces/IOCInterface';
+import { SupabaseBridge } from '@server/SupabaseBridge';
+
+export class ServerIOCRegister implements IOCRegisterInterface<
+  IOCContainerInterface,
+  IocRegisterOptions
+> {
+  constructor(protected options: IocRegisterOptions) {}
+
+  /**
+   * Register globals
+   *
+   * 一般用于注册全局
+   *
+   * @param ioc - IOC container
+   */
+  protected registerGlobals(ioc: IOCContainerInterface): void {
+    const { appConfig } = this.options;
+    ioc.bind(I.AppConfig, appConfig);
+    ioc.bind(
+      I.Logger,
+      new Logger({
+        name: 'next-app-server',
+        handlers: new ConsoleHandler(
+          new TimestampFormatter({
+            localeOptions: {
+              year: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            }
+          })
+        ),
+        silent: false,
+        level: appConfig.isProduction ? 'warn' : 'debug'
+      })
+    );
+  }
+
+  protected registerImplement(ioc: IOCContainerInterface): void {
+    ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
+  }
+
+  protected registerCommon(_ioc: IOCContainerInterface): void {}
+
+  /**
+   * @override
+   */
+  public register(
+    ioc: IOCContainerInterface,
+    _manager: IOCManagerInterface<IOCContainerInterface>
+  ): void {
+    this.registerGlobals(ioc);
+    this.registerCommon(ioc);
+    this.registerImplement(ioc);
+  }
+}
