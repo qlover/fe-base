@@ -1,6 +1,28 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@shared/supabase/server';
 
+/**
+ * @swagger
+ * /api/callback:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: OAuth / auth callback
+ *     description: |
+ *       Handles auth provider callback (e.g. email verification). Exchanges `code` for session via Supabase.
+ *       Redirects to `/` on success (email confirmed), `/auth/verify-email` when email not yet confirmed,
+ *       `/auth/error` on failure, or `/auth/login` when no `code` is provided.
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: One-time code from auth provider to exchange for session.
+ *     responses:
+ *       302:
+ *         description: Redirect to success, verify-email, error, or login page.
+ */
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
