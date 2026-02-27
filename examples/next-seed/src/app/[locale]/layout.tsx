@@ -1,6 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
@@ -50,11 +49,9 @@ export default async function RootLayout({
       <body>
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <BootstrapsProvider>
-              <ClientRootProvider themeConfig={themeConfig}>
-                {children}
-              </ClientRootProvider>
-            </BootstrapsProvider>
+            <ClientRootProvider themeConfig={themeConfig}>
+              {children}
+            </ClientRootProvider>
           </NextIntlClientProvider>
         </IOCProvider>
       </body>
