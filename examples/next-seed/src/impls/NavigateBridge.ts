@@ -1,6 +1,6 @@
 import type { useRouter } from '@/i18n/routing';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
+import { I } from '@config/ioc-identifiter';
 import type { UIBridgeInterface } from '@qlover/corekit-bridge';
 import type { LoggerInterface } from '@qlover/logger';
 

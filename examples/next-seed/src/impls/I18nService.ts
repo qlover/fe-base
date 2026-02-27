@@ -1,9 +1,9 @@
+import { i18nConfig } from '@config/i18n';
 import {
   I18nServiceInterface,
   I18nServiceState
-} from '@shared/interfaces/I18nServiceInterface';
-import type { I18nServiceLocale } from '@shared/interfaces/I18nServiceInterface';
-import { i18nConfig } from '@config/i18n';
+} from '@interfaces/I18nServiceInterface';
+import type { I18nServiceLocale } from '@interfaces/I18nServiceInterface';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 import type { useTranslations } from 'next-intl';
 

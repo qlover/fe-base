@@ -1,12 +1,12 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { NextResponse } from 'next/server';
-import { bootstrapServer } from '@/impls/bootstraps/BootstrapServer';
 import { AppErrorApi } from '@server/AppErrorApi';
 import { AppSuccessApi } from '@server/AppSuccessApi';
+import { BootstrapServer } from '@server/BootstrapServer';
 import { AIService } from '@server/services/AIService';
 
 export async function GET() {
-  const result = await bootstrapServer.execNoError(
+  const result = await new BootstrapServer().execNoError(
     async ({ parameters: { IOC } }) => {
       // const requestBody = await req.json();
 

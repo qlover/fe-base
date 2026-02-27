@@ -1,9 +1,9 @@
 import { inject, injectable } from '@shared/container';
+import { ROUTE_LOGIN } from '@config/route';
 import type {
   RouterInterface,
   RouterPathname
-} from '@shared/interfaces/RouterInterface';
-import { ROUTE_LOGIN } from '@config/route';
+} from '@interfaces/RouterInterface';
 import { NavigateBridge } from './NavigateBridge';
 import type { UIBridgeInterface } from '@qlover/corekit-bridge';
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';

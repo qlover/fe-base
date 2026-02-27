@@ -3,11 +3,11 @@ import {
   ExecutorError,
   LifecyclePluginInterface
 } from '@qlover/fe-corekit';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
-import type { I18nServiceInterface } from '@shared/interfaces/I18nServiceInterface';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
-import { i18nKeySchema } from '@config/i18n-mapping/i18nKeyScheam';
+import { I } from '@config/ioc-identifiter';
+import { i18nKeySchema } from '@schemas/i18nKeyScheam';
+import type { I18nServiceInterface } from '@interfaces/I18nServiceInterface';
 import type { DialogHandlerOptions } from './DialogHandler';
 import type { RouterService } from './RouterService';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';

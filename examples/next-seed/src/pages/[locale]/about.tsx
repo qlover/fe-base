@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { ClientSeo } from '@/uikit/components/ClientSeo';
 import { PagesRoutePage } from '@/uikit/components-pages/PagesRoutePage';
-import { useI18nInterface } from '@/uikit/hook/useI18nInterface';
-import { aboutI18n } from '@shared/config/i18n-mapping/AboutI18n';
+import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
+import { aboutI18n } from '@config/i18n-mapping/AboutI18n';
 import type { PagesRouteParamsType } from '@server/PagesRouteParams';
 import { PagesRouteParams } from '@server/PagesRouteParams';
 import type { GetStaticPropsContext } from 'next';
@@ -22,7 +22,7 @@ export default function About({}: AboutProps) {
       adminTitle: COMMON_ADMIN_TITLE
     };
   }, []);
-  const seoMetadata = useI18nInterface(i18nInterface);
+  const seoMetadata = useI18nMapping(i18nInterface);
 
   return (
     <PagesRoutePage

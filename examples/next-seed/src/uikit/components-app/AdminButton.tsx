@@ -1,5 +1,5 @@
 import { TeamOutlined } from '@ant-design/icons';
-import { bootstrapServer } from '@/impls/bootstraps/BootstrapServer';
+import { BootstrapServer } from '@server/BootstrapServer';
 import { ServerAuth } from '@server/ServerAuth';
 import { LocaleLink } from '../components/LocaleLink';
 
@@ -8,7 +8,7 @@ export async function AdminButton(props: {
   locale?: string;
 }) {
   const { adminTitle, locale } = props;
-  const hasAuth = await bootstrapServer.getIOC(ServerAuth).hasAuth();
+  const hasAuth = await new BootstrapServer().getIOC(ServerAuth).hasAuth();
 
   if (!hasAuth) {
     return null;
@@ -21,9 +21,9 @@ export async function AdminButton(props: {
       href="/admin"
       title={adminTitle}
       locale={locale}
-      className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+      className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
     >
-      <TeamOutlined className="text-lg text-text" />
+      <TeamOutlined className="text-lg text-primary-text" />
     </LocaleLink>
   );
 }

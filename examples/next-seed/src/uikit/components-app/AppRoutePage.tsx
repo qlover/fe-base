@@ -72,7 +72,7 @@ export function AppRoutePage({
             >
               <span
                 data-testid="base-header-app-name"
-                className="text-lg font-semibold text-text"
+                className="text-lg font-semibold text-primary-text"
               >
                 {tt.title}
               </span>

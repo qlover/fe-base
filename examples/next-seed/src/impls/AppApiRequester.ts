@@ -5,7 +5,7 @@ import {
 } from '@qlover/fe-corekit';
 import type { RequestEncryptPluginProps } from '@/impls/RequestEncryptPlugin';
 import { injectable } from '@shared/container';
-import type { AppApiResult } from '@shared/interfaces/AppApiInterface';
+import type { AppApiResult } from '@interfaces/AppApiInterface';
 import type {
   ExecutorContextInterface,
   RequestAdapterConfig,
@@ -57,8 +57,7 @@ export class AppApiRequester extends RequestExecutor<
   constructor() {
     super(
       new RequestAdapterFetch({
-        // TODO: ReqeustPlugin build url 最后需要带上/
-        baseURL: '/api/',
+        baseURL: '/api',
         responseType: 'json'
       }),
       new LifecycleExecutor()

@@ -37,9 +37,9 @@ export function PagesRoutePage({
           href="/admin"
           title={adminTitle}
           locale={locale}
-          className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+          className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
         >
-          <TeamOutlined className="text-lg text-text" />
+          <TeamOutlined className="text-lg text-primary-text" />
         </LocaleLink>
       ),
 
@@ -75,7 +75,7 @@ export function PagesRoutePage({
             >
               <span
                 data-testid="base-header-app-name"
-                className="text-lg font-semibold text-text"
+                className="text-lg font-semibold text-primary-text"
               >
                 {tt.title}
               </span>

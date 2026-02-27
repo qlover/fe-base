@@ -88,7 +88,7 @@ export function LanguageSwitcher() {
     >
       <span
         data-testid="LanguageSwitcher"
-        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+        className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
         onClick={() => handleLanguageChange(nextLocale)}
       >
         <TranslationOutlined />

@@ -4,7 +4,7 @@ import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
 import { ClientRootProvider } from '@/uikit/components/ClientRootProvider';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
 import { i18nConfig } from '@config/i18n';
-import '@/styles/css/index.css';
+import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
 import { AppPageRouteParams } from '@server/AppPageRouteParams';

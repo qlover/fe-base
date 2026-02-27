@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { redirect } from '@/i18n/routing';
-import { bootstrapServer } from '@/impls/bootstraps/BootstrapServer';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
+import { LoginForm } from '@/uikit/components/LoginForm';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
@@ -13,7 +13,7 @@ import {
   type PageParamsType
 } from '@server/AppPageRouteParams';
 import { ServerAuth } from '@server/ServerAuth';
-import { LoginForm } from './LoginForm';
+import { createServerIoc } from '@server/serverIoc';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
@@ -46,8 +46,9 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const params = await props.params;
   const pageParams = new AppPageRouteParams(params);
+  const IOC = createServerIoc();
 
-  if (await bootstrapServer.getIOC(ServerAuth).hasAuth()) {
+  if (await IOC(ServerAuth).hasAuth()) {
     return redirect({ href: '/', locale: params.locale! });
   }
 
@@ -69,8 +70,10 @@ export default async function LoginPage(props: PageParamsProps) {
       }}
     >
       <div className="hidden lg:flex bg-secondary lg:w-1/2 p-12 flex-col">
-        <h1 className="text-4xl font-bold text-text mb-4">{tt.welcome}</h1>
-        <p className="text-text-secondary text-lg mb-8">{tt.subtitle}</p>
+        <h1 className="text-4xl font-bold text-primary-text mb-4">
+          {tt.welcome}
+        </h1>
+        <p className="text-secondary-text text-lg mb-8">{tt.subtitle}</p>
         <div className="space-y-4">
           <FeatureItem icon="🎯" text={tt.feature_ai_paths} />
           <FeatureItem icon="🎯" text={tt.feature_smart_recommendations} />
@@ -80,8 +83,10 @@ export default async function LoginPage(props: PageParamsProps) {
 
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center">
         <div className="w-full max-w-[420px]">
-          <h2 className="text-2xl font-semibold mb-2 text-text">{tt.title}</h2>
-          <p className="text-text-secondary mb-8">{tt.subtitle}</p>
+          <h2 className="text-2xl font-semibold mb-2 text-primary-text">
+            {tt.title}
+          </h2>
+          <p className="text-secondary-text mb-8">{tt.subtitle}</p>
 
           <LoginForm tt={tt} />
         </div>

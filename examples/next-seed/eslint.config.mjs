@@ -27,6 +27,13 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts'
   ]),
+  {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: __dirname
+      }
+    }
+  },
   // Only register plugins not already provided by compat.extends (import, prettier come from compat)
   {
     plugins: {

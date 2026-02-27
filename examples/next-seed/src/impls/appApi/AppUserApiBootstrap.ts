@@ -1,8 +1,13 @@
-import { RequestPlugin, ResponsePlugin } from '@qlover/fe-corekit';
+import {
+  Base64Serializer,
+  RequestPlugin,
+  ResponsePlugin
+} from '@qlover/fe-corekit';
 import { DialogErrorPlugin } from '@/impls/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/impls/RequestEncryptPlugin';
-import { StringEncryptor } from '@/impls/StringEncryptor';
-import { I } from '@shared/config/ioc-identifiter';
+import { StringEncryptor } from '@shared/StringEncryptor';
+import { I } from '@config/ioc-identifiter';
+import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { AppApiPlugin } from './AppApiPlugin';
 import { AppApiRequester } from '../AppApiRequester';
 import type { AppApiConfig } from '../AppApiRequester';
@@ -22,9 +27,17 @@ export class AppUserApiBootstrap implements BootstrapExecutorPlugin {
    */
   public onBefore({ parameters: { ioc } }: BootstrapContext): void {
     const appUserApi = ioc.get<AppApiRequester>(AppApiRequester);
+    const appConfig = ioc.get<SeedSrcConfigInterface>(I.AppConfig);
 
     // 数据加密优先于 RequestPlugin(会序列化数据)
-    appUserApi.use(new RequestEncryptPlugin(ioc.get(StringEncryptor)));
+    appUserApi.use(
+      new RequestEncryptPlugin(
+        new StringEncryptor(
+          appConfig.stringEncryptorKey,
+          new Base64Serializer()
+        )
+      )
+    );
     appUserApi.use(
       new RequestPlugin({
         requestDataSerializer: this.requestDataSerializer.bind(this)

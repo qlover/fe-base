@@ -1,12 +1,12 @@
 import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
+import { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserApiLoginTransaction,
   UserApiLogoutTransaction,
   UserApiRegisterTransaction
-} from '@shared/interfaces/AppUserApiInterface';
-import { UserServiceGatewayInterface } from '@shared/interfaces/UserServiceInterface';
-import { UserCredential, UserSchema } from '@schemas/UserSchema';
+} from '@interfaces/AppUserApiInterface';
+import { UserServiceGatewayInterface } from '@interfaces/UserServiceInterface';
 import {
   AppApiConfig,
   AppApiRequester,
@@ -37,14 +37,26 @@ export class AppUserGateway implements UserServiceGatewayInterface {
   ): Promise<UserSchema> {
     throw new Error('Method not implemented.');
   }
-  /**_
+  /**
    * @override
    */
-  public refreshUserInfo(
+  public async refreshUserInfo(
     _params?: unknown,
     _config?: {} | undefined
   ): Promise<UserSchema> {
-    throw new Error('Method not implemented.');
+    const response = await this.client.request<
+      UserApiLoginTransaction['response'],
+      UserApiLoginTransaction['request']
+    >({
+      url: '/user/session',
+      method: HttpMethods.GET
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data.data as UserSchema;
   }
 
   /**

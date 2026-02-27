@@ -1,15 +1,15 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { isObject, isString } from 'lodash';
 import { inject, injectable } from '@shared/container';
-import type {
-  UserServiceGatewayInterface,
-  UserServiceInterface
-} from '@shared/interfaces/UserServiceInterface';
 import {
   userSchema,
   type UserCredential,
   type UserSchema
 } from '@schemas/UserSchema';
+import type {
+  UserServiceGatewayInterface,
+  UserServiceInterface
+} from '@interfaces/UserServiceInterface';
 import { AppUserGateway } from './AppUserGateway';
 import type {
   StoreInterface,
@@ -25,7 +25,9 @@ export class UserService
     @inject(AppUserGateway)
     userApi: UserServiceGatewayInterface
   ) {
-    super(userApi);
+    super(userApi, {
+      pullUserWithLogin: false
+    });
   }
 
   /**
@@ -64,5 +66,25 @@ export class UserService
       'credential_token' in value &&
       isString(value.credential_token)
     );
+  }
+
+  public refreshUser(): Promise<boolean> {
+    if (this.isAuthenticated()) {
+      return Promise.resolve(true);
+    }
+
+    this.getStore().start();
+
+    return this.refreshUserInfo().then((result) => {
+      if (result && this.isUser(result)) {
+        this.getStore().success(result, {
+          credential_token: result.credential_token
+        });
+
+        return true;
+      }
+
+      return false;
+    });
   }
 }

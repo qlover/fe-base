@@ -1,76 +1,78 @@
-import 'reflect-metadata';
 import { Bootstrap } from '@qlover/corekit-bridge';
-import { isObject } from 'lodash';
-import type { IOCIdentifierMap } from '@shared/config/ioc-identifiter';
-import type { IocRegisterOptions } from '@shared/interfaces/IOCInterface';
 import { browserGlobalsName } from '@config/common';
-import { BootstrapsRegistry } from './BootstrapsRegistry';
+import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
+import type { SeedBootstrapInterface } from '@interfaces/SeedBootstrapInterface';
+import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import * as globals from '../globals';
+import { IocIdentifierTest } from './IocIdentifierTest';
+import { printBootstrap } from './PrintBootstrap';
+import { restoreUserService } from './RestoreUserService';
+import { AppUserApiBootstrap } from '../appApi/AppUserApiBootstrap';
 import type {
+  BootstrapExecutorPlugin,
   IOCContainerInterface,
-  IOCFunctionInterface,
-  IOCRegisterInterface
+  IOCFunctionInterface
 } from '@qlover/corekit-bridge';
 
-export type BootstrapAppArgs = {
+export class BootstrapClient implements SeedBootstrapInterface<BootstrapExecutorPlugin> {
+  constructor(
+    protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
+  ) {}
   /**
-   * 启动的根节点，通常是window
+   * @override
    */
-  root: unknown;
-  /**
-   * 当前路径
-   */
-  pathname: string;
-  /**
-   * IOC容器
-   */
-  IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>;
-
-  register?: IOCRegisterInterface<IOCContainerInterface, IocRegisterOptions>;
-};
-
-export class BootstrapClient {
-  public static lastTime = 0;
-  public static async main(args: BootstrapAppArgs): Promise<BootstrapAppArgs> {
+  public startup(root?: unknown, pathname?: string): Promise<unknown> {
     const { logger, appConfig } = globals;
-
-    if (BootstrapClient.lastTime) {
-      return args;
-    }
-
-    const { root, IOC, register } = args;
-
-    if (!isObject(root)) {
-      throw new Error('root is not an object');
-    }
 
     const bootstrap = new Bootstrap({
       root,
-      logger,
-      ioc: {
-        manager: IOC,
-        register: register
-      },
+      logger: logger,
+      ioc: { manager: this.IOC },
       globalOptions: {
         sources: globals,
         target: browserGlobalsName
       }
     });
 
-    try {
-      await bootstrap.initialize();
+    return bootstrap
+      .initialize()
+      .then(() => {
+        const plugins = this.getPlugins(appConfig, pathname);
 
-      const bootstrapsRegistry = new BootstrapsRegistry(args);
+        if (Array.isArray(plugins) && plugins.length > 0) {
+          bootstrap.use(plugins);
+          logger.debug(`BootstrapClient Using plugins: ${plugins.length}`);
+        }
 
-      await bootstrap.use(bootstrapsRegistry.register()).start();
+        return bootstrap.start();
+      })
+      .catch((error) => {
+        logger.error('BootstrapClient startup failed!', error);
+        return undefined;
+      });
+  }
+  /**
+   * @override
+   */
+  public getPlugins(
+    appConfig: SeedConfigInterface,
+    pathname?: string
+  ): BootstrapExecutorPlugin[] {
+    const i18nService = this.IOC(I.I18nServiceInterface);
+    i18nService.setPathname(pathname ?? '');
 
-      BootstrapClient.lastTime = Date.now();
+    const bootstrapList: BootstrapExecutorPlugin[] = [
+      i18nService,
+      new AppUserApiBootstrap(this.IOC(I.JSONSerializer)),
+      restoreUserService
+    ];
 
-      logger.info('BootstrapClient starup success,', BootstrapClient.lastTime);
-    } catch (error) {
-      logger.error(`${appConfig.appName} starup error:`, error);
+    if (!appConfig.isProduction) {
+      bootstrapList.push(printBootstrap);
     }
 
-    return args;
+    bootstrapList.push(IocIdentifierTest);
+
+    return bootstrapList;
   }
 }

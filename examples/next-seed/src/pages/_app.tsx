@@ -1,12 +1,11 @@
 import dynamic from 'next/dynamic';
 import { withRouter } from 'next/router';
 import { NextIntlClientProvider } from 'next-intl';
-import '@/styles/css/index.css';
-import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
+import '@/styles/index.css';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
-import type { PagesRouterProps } from '@shared/interfaces/PagesRouter';
 import { i18nConfig } from '@config/i18n';
 import { themeConfig } from '@config/theme';
+import type { PagesRouterProps } from '@interfaces/PagesRouter';
 
 /**
  * 动态导入 ClientRootProvider，禁用 SSR，确保只在客户端渲染
@@ -37,11 +36,9 @@ function App({ Component, pageProps, router }: PagesRouterProps) {
   return (
     <IOCProvider>
       <NextIntlClientProvider locale={locale} messages={pageProps.messages}>
-        <BootstrapsProvider>
-          <ClientRootProvider themeConfig={themeConfig}>
-            <Component {...pageProps} />
-          </ClientRootProvider>
-        </BootstrapsProvider>
+        <ClientRootProvider themeConfig={themeConfig}>
+          <Component {...pageProps} />
+        </ClientRootProvider>
       </NextIntlClientProvider>
     </IOCProvider>
   );

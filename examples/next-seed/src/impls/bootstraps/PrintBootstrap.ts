@@ -1,11 +1,12 @@
 import { AppConfig } from '@/impls/AppConfig';
 import { browserGlobalsName } from '@config/common';
+import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const printBootstrap: BootstrapExecutorPlugin = {
   pluginName: 'PrintBootstrap',
   onSuccess({ parameters: { logger, ioc } }) {
-    const appConfig = ioc.get<AppConfig>(AppConfig);
+    const appConfig = ioc.get<SeedConfigInterface>(AppConfig);
     logger.info(
       'bootstrap in(' +
         appConfig.env +

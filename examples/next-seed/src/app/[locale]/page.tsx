@@ -1,5 +1,4 @@
 import { Button } from 'antd';
-import { bootstrapServer } from '@/impls/bootstraps/BootstrapServer';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig } from '@config/i18n';
 import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
@@ -8,6 +7,7 @@ import type { PageParamsProps } from '@interfaces/AppPageRouter';
 import { AppPageRouteParams } from '@server/AppPageRouteParams';
 import type { PageParamsType } from '@server/AppPageRouteParams';
 import { ServerAuth } from '@server/ServerAuth';
+import { createServerIoc } from '@server/serverIoc';
 import type { Metadata } from 'next';
 
 // const navigationItems = [
@@ -42,7 +42,8 @@ export async function generateMetadata({
 
 export default async function Home({ params }: PageParamsProps) {
   const pageParams = new AppPageRouteParams(await params!);
-  const user = await bootstrapServer.getIOC(ServerAuth).getUser();
+  const IOC = createServerIoc();
+  const user = await IOC(ServerAuth).getUser();
 
   // const locale = pageParams.getLocale();
   const tt = await pageParams.getI18nInterface(
@@ -65,25 +66,28 @@ export default async function Home({ params }: PageParamsProps) {
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
             {tt.welcome}
           </h1>
           {!!user ? (
-            <p data-testid="AuthUserEmail" className="text-lg text-text">
+            <p
+              data-testid="AuthUserEmail"
+              className="text-lg text-primary-text"
+            >
               {user.email}
             </p>
           ) : null}
-          <p className="text-xl text-text-secondary mb-8">{tt.description}</p>
+          <p className="text-xl text-secondary-text mb-8">{tt.description}</p>
         </div>
       </section>
 
       {/* Call to Action Section */}
       <section className="py-16 px-4 bg-elevated">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 text-text">
+          <h2 className="text-3xl font-bold mb-4 text-primary-text">
             {tt.getStartedTitle}
           </h2>
-          <p className="text-lg text-text-secondary mb-8">
+          <p className="text-lg text-secondary-text mb-8">
             {tt.getStartedDescription}
           </p>
           <Button type="primary" size="large" className="px-8">

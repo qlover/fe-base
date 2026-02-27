@@ -3,7 +3,8 @@ import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { AntdThemeProvider } from '@brain-toolkit/antd-theme-override/react';
 import { ThemeProvider } from 'next-themes';
-import { I } from '@shared/config/ioc-identifiter';
+import { BootstrapsProvider } from '@/uikit/components/BootstrapsProvider';
+import { I } from '@config/ioc-identifiter';
 import type { CommonThemeConfig } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
 
@@ -57,7 +58,9 @@ export function ClientRootProvider(props: {
         enableColorScheme={false}
         storageKey={themeConfig.storageKey}
       >
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <BootstrapsProvider>{children}</BootstrapsProvider>
+        </AntdRegistry>
       </ThemeProvider>
     </AntdThemeProvider>
   );

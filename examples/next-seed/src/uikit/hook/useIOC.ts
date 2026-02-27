@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import type { IOCIdentifierMap } from '@shared/config/ioc-identifiter';
+import type { IOCIdentifierMap } from '@config/ioc-identifiter';
 import { IOCContext } from '../context/IOCContext';
 import type {
   IOCContainerInterface,

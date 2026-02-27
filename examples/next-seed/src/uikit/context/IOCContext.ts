@@ -1,23 +1,11 @@
 'use client';
 
-import {
-  type IOCContainerInterface,
-  type IOCFunctionInterface
-} from '@qlover/corekit-bridge';
 import { createContext } from 'react';
-import { ClientIOC } from '@/impls/clientIoc/ClientIOC';
-import type { IOCIdentifierMap } from '@shared/config/ioc-identifiter';
-
-// export const IOCInstance = new ClientIOC();
-
-// export const IOCContext =
-//   createContext<IOCInterface<IOCIdentifierMap, IOCContainerInterface>>(
-//     IOCInstance
-//   );
-
-export const clientIOC = new ClientIOC();
-
-export const IOCInstance = clientIOC.create();
+import type { IOCIdentifierMap } from '@config/ioc-identifiter';
+import type {
+  IOCContainerInterface,
+  IOCFunctionInterface
+} from '@qlover/corekit-bridge';
 
 export const IOCContext = createContext<IOCFunctionInterface<
   IOCIdentifierMap,

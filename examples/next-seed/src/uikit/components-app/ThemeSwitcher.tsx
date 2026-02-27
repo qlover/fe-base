@@ -15,13 +15,13 @@ import { Dropdown } from 'antd';
 import { clsx } from 'clsx';
 import { useTheme } from 'next-themes';
 import { useEffect, useMemo } from 'react';
-import { I } from '@shared/config/ioc-identifiter';
 import {
   COMMON_THEME_DARK,
   COMMON_THEME_DEFAULT,
   COMMON_THEME_LIGHT,
   COMMON_THEME_PINK
 } from '@config/i18n-identifier/common/common';
+import { I } from '@config/ioc-identifiter';
 import { type SupportedTheme, themeConfig } from '@config/theme';
 import { useIOC } from '../hook/useIOC';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
@@ -44,15 +44,15 @@ const colorMap: Record<
 > = {
   system: {
     i18nkey: COMMON_THEME_DEFAULT,
-    selectedColor: 'text-text',
-    normalColor: 'text-text-secondary',
+    selectedColor: 'text-primary-text',
+    normalColor: 'text-secondary-text',
     Icon: SettingOutlined,
     SelectedIcon: SettingFilled
   },
   light: {
     i18nkey: COMMON_THEME_LIGHT,
-    selectedColor: 'text-text',
-    normalColor: 'text-text-secondary',
+    selectedColor: 'text-primary-text',
+    normalColor: 'text-secondary-text',
     Icon: SunOutlined,
     SelectedIcon: SunFilled
   },
@@ -134,7 +134,7 @@ export function ThemeSwitcher() {
     >
       <span
         data-testid="ThemeSwitcher"
-        className="text-text hover:text-text-hover cursor-pointer text-lg transition-colors"
+        className="text-primary-text hover:text-primary-text-hover cursor-pointer text-lg transition-colors"
         onClick={() => setTheme(nextTheme)}
       >
         <SunOutlined />
