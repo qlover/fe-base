@@ -1,8 +1,8 @@
-import type { AppConfig } from '@/impls/AppConfig';
 import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
+import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { SupabaseBridge } from '@server/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
@@ -14,7 +14,7 @@ import type { LoggerInterface } from '@qlover/logger';
 export const IOCIdentifier = Object.freeze({
   JSONSerializer: 'JSONSerializer',
   Logger: 'Logger',
-  AppConfig: 'AppConfig',
+  AppConfig: 'SeedConfigInterface',
   DialogHandler: 'DialogHandler',
   LocalStorage: 'LocalStorage',
   LocalStorageEncrypt: 'LocalStorageEncrypt',
@@ -51,16 +51,18 @@ export const I = IOCIdentifier;
 export interface IOCIdentifierMap {
   [IOCIdentifier.JSONSerializer]: FeCorekit.JSONSerializer;
   [IOCIdentifier.Logger]: LoggerInterface;
-  [IOCIdentifier.LocalStorage]: FeCorekit.SyncStorage<
+  [IOCIdentifier.LocalStorage]: FeCorekit.StorageInterface<
+    string,
     unknown,
     FeCorekit.ObjectStorageOptions
   >;
-  [IOCIdentifier.LocalStorageEncrypt]: FeCorekit.SyncStorage<
+  [IOCIdentifier.LocalStorageEncrypt]: FeCorekit.StorageInterface<
+    string,
     unknown,
     FeCorekit.ObjectStorageOptions
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
-  [IOCIdentifier.AppConfig]: AppConfig;
+  [IOCIdentifier.AppConfig]: SeedConfigInterface;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
@@ -68,7 +70,6 @@ export interface IOCIdentifierMap {
 }
 
 export interface IOCIdentifierMapServer {
-  [IOCIdentifier.AppConfig]: AppConfig;
   [IOCIdentifier.Logger]: LoggerInterface;
   [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
 }

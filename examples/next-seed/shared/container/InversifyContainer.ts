@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Container } from 'inversify';
 import type { IOCIdentifierMap } from '../config/ioc-identifiter';
 import type {

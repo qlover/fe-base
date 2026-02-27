@@ -6,6 +6,13 @@
 export const V_LOGIN_PARAMS_REQUIRED = 'common:v:login_params_required';
 
 /**
+ * @description Username required validation message
+ * @localZh 用户名为必填
+ * @localEn Username is required
+ */
+export const V_USERNAME_REQUIRED = 'common:v:username_required';
+
+/**
  * @description Invalid email format validation message
  * @localZh 邮箱格式无效的验证消息
  * @localEn Invalid email format validation message

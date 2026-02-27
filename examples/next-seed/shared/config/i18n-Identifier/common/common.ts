@@ -62,6 +62,35 @@ export const COMMON_THEME_PINK = 'common:theme__pink';
 export const COMMON_ADMIN_TITLE = 'common:admin__title';
 
 /**
+ * @description Admin sidebar nav - Dashboard
+ * @localZh 仪表盘
+ * @localEn Dashboard
+ */
+export const COMMON_ADMIN_NAV_DASHBOARD = 'common:admin_nav__dashboard';
+
+/**
+ * @description Admin sidebar nav - User Management
+ * @localZh 用户管理
+ * @localEn User Management
+ */
+export const COMMON_ADMIN_NAV_USER_MANAGEMENT =
+  'common:admin_nav__user_management';
+
+/**
+ * @description Admin sidebar nav - Locales
+ * @localZh 国际化
+ * @localEn Locales
+ */
+export const COMMON_ADMIN_NAV_LOCALES = 'common:admin_nav__locales';
+
+/**
+ * @description Admin sidebar nav - Login Log
+ * @localZh 登录日志
+ * @localEn Login Log
+ */
+export const COMMON_ADMIN_NAV_LOGINLOG = 'common:admin_nav__loginlog';
+
+/**
  * @description logout dialog title
  * @localZh 登出
  * @localEn Logout
@@ -88,3 +117,26 @@ export const COMMON_I18N_KEY_INVALID = 'common:i18n_key_invalid';
  * @localEn Application Name
  */
 export const COMMON_MANIFEST_NAME = 'common:manifest__name';
+
+/**
+ * @description User auth failed view title (sign in required)
+ * @localZh 需要登录
+ * @localEn Authentication required
+ */
+export const COMMON_USER_AUTH_FAILED_TITLE = 'common:userAuthFailed_title';
+
+/**
+ * @description User auth failed view description
+ * @localZh 请登录后继续访问。
+ * @localEn Please sign in to continue.
+ */
+export const COMMON_USER_AUTH_FAILED_DESCRIPTION =
+  'common:userAuthFailed_description';
+
+/**
+ * @description User auth failed - go to login button/link label
+ * @localZh 去登录
+ * @localEn Sign in
+ */
+export const COMMON_USER_AUTH_FAILED_GO_TO_LOGIN =
+  'common:userAuthFailed_goToLogin';

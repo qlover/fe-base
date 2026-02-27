@@ -1,14 +1,14 @@
+import type { AppApiTransaction } from '@/impls/AppApiRequester';
+import type { LoginSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
-import type { LoginValidatorData } from '@server/validators/LoginValidator';
-import type { AppApiTransaction } from '../../src/impls/AppApiRequester';
 
 export type UserApiLoginTransaction = AppApiTransaction<
-  LoginValidatorData,
+  LoginSchema,
   UserSchema
 >;
 
 export type UserApiRegisterTransaction = AppApiTransaction<
-  LoginValidatorData,
+  LoginSchema,
   UserSchema
 >;
 

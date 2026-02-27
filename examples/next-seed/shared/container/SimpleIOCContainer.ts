@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import type { IOCContainerInterface } from '@qlover/corekit-bridge/ioc';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -13,10 +14,12 @@ type Newable<T = unknown> = new (...args: any[]) => T;
 type Abstract<T = unknown> = abstract new (...args: any[]) => T;
 type Factory<T = unknown> = () => T;
 type ConstructorParameterMetadata = Record<number, ServiceIdentifier>;
+type PropertyInjectMetadata = Record<string | symbol, ServiceIdentifier>;
 
 // 定义元数据键
 const INJECTABLE_KEY = Symbol('injectable');
 const INJECT_KEY = Symbol('inject');
+const PROPERTY_INJECT_KEY = Symbol('property_inject');
 const PARAM_TYPES_KEY = 'design:paramtypes';
 
 // 装饰器
@@ -27,25 +30,37 @@ export function injectable(): ClassDecorator {
   } as ClassDecorator;
 }
 
-export function inject(
-  serviceIdentifier: ServiceIdentifier
-): ParameterDecorator {
+/**
+ * Supports both constructor parameter injection and property injection.
+ * - Use on constructor params: @inject(Id) param: Type
+ * - Use on class properties: @inject(Id) protected prop!: Type
+ */
+export function inject(serviceIdentifier: ServiceIdentifier) {
   return function (
     target: object,
     propertyKey: string | symbol | undefined,
-    parameterIndex: number
-  ) {
+    parameterIndex?: number
+  ): void {
+    // Property injection: propertyKey is set, parameterIndex is undefined (property decorator has 2 args)
+    if (parameterIndex === undefined && propertyKey !== undefined) {
+      const existing: PropertyInjectMetadata =
+        Reflect.getMetadata(PROPERTY_INJECT_KEY, target) || {};
+      existing[propertyKey] = serviceIdentifier;
+      Reflect.defineMetadata(PROPERTY_INJECT_KEY, existing, target);
+      return;
+    }
+    // Constructor parameter injection
     if (propertyKey !== undefined) {
       throw new Error(
-        `@inject decorator can only be used on constructor parameters. ` +
-          `Found on ${String(propertyKey)} instead.`
+        `@inject decorator can only be used on constructor parameters or class properties. ` +
+          `Unexpected usage on ${String(propertyKey)}.`
       );
     }
 
     const existingInjections: ConstructorParameterMetadata =
       Reflect.getMetadata(INJECT_KEY, target) || {};
 
-    existingInjections[parameterIndex] = serviceIdentifier;
+    existingInjections[parameterIndex as number] = serviceIdentifier;
     Reflect.defineMetadata(INJECT_KEY, existingInjections, target);
   };
 }
@@ -146,42 +161,92 @@ export class SimpleIOCContainer implements IOCContainerInterface {
     const injectMetadata: ConstructorParameterMetadata =
       Reflect.getMetadata(INJECT_KEY, constructor) || {};
 
+    let instance: T;
     if (Object.keys(injectMetadata).length > 0) {
       // 使用 @inject 装饰器的配置
       const args = this.resolveInjectedDependencies(
         constructor,
         injectMetadata
       );
-      return new constructor(...args);
-    }
+      instance = new constructor(...args);
+    } else if (constructor.length === 0) {
+      instance = new constructor();
+    } else {
+      // 尝试使用设计时类型元数据自动解析
+      try {
+        const paramTypes = this.getParamTypes(constructor);
+        if (
+          paramTypes.length === 0 ||
+          paramTypes.every((type) => type === undefined)
+        ) {
+          throw new Error('No parameter type information available');
+        }
 
-    // 如果没有 @inject 装饰器，尝试自动解析
-    if (constructor.length === 0) {
-      return new constructor();
-    }
+        const args = this.resolveParamTypeDependencies(constructor, paramTypes);
+        instance = new constructor(...args);
+      } catch (error) {
+        this.logger.warn(
+          `Failed to auto-resolve dependencies for ${constructor.name}: ${error}. ` +
+            `Consider using @injectable() and @inject() decorators.`
+        );
 
-    // 尝试使用设计时类型元数据自动解析
-    try {
-      const paramTypes = this.getParamTypes(constructor);
-      if (
-        paramTypes.length === 0 ||
-        paramTypes.every((type) => type === undefined)
-      ) {
-        throw new Error('No parameter type information available');
+        const args = this.getDefaultArguments(constructor);
+        instance = new constructor(...args);
       }
-
-      const args = this.resolveParamTypeDependencies(constructor, paramTypes);
-      return new constructor(...args);
-    } catch (error) {
-      this.logger.warn(
-        `Failed to auto-resolve dependencies for ${constructor.name}: ${error}. ` +
-          `Consider using @injectable() and @inject() decorators.`
-      );
-
-      // 如果无法解析依赖，尝试使用默认值
-      const args = this.getDefaultArguments(constructor);
-      return new constructor(...args);
     }
+
+    this.applyPropertyInjections(instance, constructor);
+    return instance;
+  }
+
+  /**
+   * Collect property inject metadata from prototype chain and apply to instance.
+   */
+  private applyPropertyInjections<T>(
+    instance: T,
+    constructor: Newable<T>
+  ): void {
+    const propertyMetadata = this.getPropertyInjectMetadata(constructor);
+    const keys = [
+      ...Object.keys(propertyMetadata),
+      ...Object.getOwnPropertySymbols(propertyMetadata)
+    ];
+    if (keys.length === 0) {
+      return;
+    }
+    for (const propertyKey of keys) {
+      const serviceIdentifier = propertyMetadata[propertyKey];
+      try {
+        (instance as Record<string | symbol, unknown>)[propertyKey] =
+          this.get(serviceIdentifier);
+      } catch (error) {
+        throw new Error(
+          `Cannot resolve property injection ${String(serviceIdentifier)} ` +
+            `for property "${String(propertyKey)}" of ${constructor.name}: ${error}`
+        );
+      }
+    }
+  }
+
+  /**
+   * Get merged property inject metadata from constructor's prototype chain.
+   */
+  private getPropertyInjectMetadata(
+    constructor: Newable
+  ): PropertyInjectMetadata {
+    const merged: PropertyInjectMetadata = {};
+    let proto: object | null = constructor.prototype;
+    while (proto !== null && proto !== Object.prototype) {
+      const meta: PropertyInjectMetadata | undefined = Reflect.getMetadata(
+        PROPERTY_INJECT_KEY,
+        proto
+      );
+      if (meta) {
+        Object.assign(merged, meta);
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+    return merged;
   }
 
   /**
