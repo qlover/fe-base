@@ -1,10 +1,8 @@
-html,
-.fe-theme {
+:root {
   --scrollbar-track-color: var(--color-secondary);
-  --scrollbar-thumb-color: var(--color-text-secondary);
-  --scrollbar-thumb-hover-color: var(--color-brand-hover);
+  --scrollbar-thumb-color: var(--color-secondary-text);
+  --scrollbar-thumb-hover-color: var(--fe-color-brand-hover);
 
-  /* Webkit browsers (Chrome, Safari, Edge) - 全局样式，使用最高优先级 */
   body *::-webkit-scrollbar,
   *::-webkit-scrollbar {
     width: 10px;
