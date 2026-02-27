@@ -1,4 +1,4 @@
-import type { PaginationInterface } from '@server/port/PaginationInterface';
+import type { PaginationInterface } from '@shared/interfaces/PaginationInterface';
 import type { BridgeOrderBy } from './DBBridgeInterface';
 
 export interface DBTableInterface {

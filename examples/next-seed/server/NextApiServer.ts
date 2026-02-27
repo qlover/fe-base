@@ -1,14 +1,14 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { NextResponse } from 'next/server';
-import { BootstrapServer } from '@/impls/bootstraps/BootstrapServer';
-import type { BootstrapServerContextOptions } from '@/impls/bootstraps/BootstrapServer';
 import {
   isAppApiErrorInterface,
   isAppApiSuccessInterface,
   type AppApiResult
-} from '@shared/interfaces/AppApiInterface';
+} from '@interfaces/AppApiInterface';
+import { BootstrapServer } from '@server/BootstrapServer';
 import { AppErrorApi } from './AppErrorApi';
 import { AppSuccessApi } from './AppSuccessApi';
+import type { BootstrapServerContextOptions } from './port/ServerInterface';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
 
 export class NextApiServer extends BootstrapServer {

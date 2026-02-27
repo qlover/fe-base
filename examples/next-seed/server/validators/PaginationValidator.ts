@@ -1,25 +1,9 @@
-import { z } from 'zod';
-import { API_PAGE_INVALID } from '@config/i18n-identifier/api';
-import {
-  type ValidationFaildResult,
-  type ValidatorInterface
-} from '../port/ValidatorInterface';
+import type {
+  ValidationFaildResult,
+  ValidatorInterface
+} from '@shared/validators/ValidatorInterface';
+import { paginationSchema } from '@schemas/PaginationSchema';
 import type { BridgeOrderBy } from '../port/DBBridgeInterface';
-
-const numberSchema = z
-  .number()
-  .or(z.string())
-  .transform((val) => Number(val))
-  .refine((val) => val > 0, {
-    message: API_PAGE_INVALID
-  });
-
-const paginationSchema = z.object({
-  page: numberSchema,
-  pageSize: numberSchema.optional().default(10),
-  orderBy: z.string().optional(),
-  order: z.string().optional().default('0')
-});
 
 export type PaginationParams = {
   page: number;

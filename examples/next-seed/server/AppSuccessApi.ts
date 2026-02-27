@@ -1,4 +1,4 @@
-import type { AppApiSuccessInterface } from '@shared/interfaces/AppApiInterface';
+import type { AppApiSuccessInterface } from '@interfaces/AppApiInterface';
 
 export class AppSuccessApi<T = unknown> implements AppApiSuccessInterface<T> {
   public readonly success = true;

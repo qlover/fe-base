@@ -1,17 +1,17 @@
 import { omit } from 'lodash';
 import { revalidateTag } from 'next/cache';
 import { inject, injectable } from '@shared/container';
+import { splitI18nKey } from '@shared/schemas/i18nKeyScheam';
 import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
-import { splitI18nKey } from '@config/i18n-mapping/i18nKeyScheam';
 import type { LocalesSchema } from '@schemas/LocalesSchema';
+import type { PaginationInterface } from '@interfaces/PaginationInterface';
 import { LocalesRepository } from '../repositorys/LocalesRepository';
 import type { BridgeOrderBy } from '../port/DBBridgeInterface';
 import type {
   LocalesRepositoryInterface,
   UpsertResult
 } from '../port/LocalesRepositoryInterface';
-import type { PaginationInterface } from '../port/PaginationInterface';
 
 export type ImportLocalesData = {
   namespace?: string;

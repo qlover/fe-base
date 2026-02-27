@@ -1,10 +1,10 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { cookies } from 'next/headers';
-import type { AppConfig } from '@/impls/AppConfig';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { SupabaseBridge } from './SupabaseBridge';
 import { UserCredentialToken } from './UserCredentialToken';
 import type { ServerAuthInterface } from './port/ServerAuthInterface';
@@ -13,7 +13,7 @@ import type { ServerAuthInterface } from './port/ServerAuthInterface';
 export class ServerAuth implements ServerAuthInterface {
   protected userTokenKey: string;
   constructor(
-    @inject(I.AppConfig) protected server: AppConfig,
+    @inject(I.AppConfig) protected server: SeedServerConfigInterface,
     @inject(UserCredentialToken)
     protected userCredentialToken: UserCredentialToken,
     @inject(SupabaseBridge) protected supabase: SupabaseBridge

@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { AppConfig } from '@/impls/AppConfig';
 import { inject, injectable } from '@shared/container';
+import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { CrentialTokenInterface } from './port/CrentialTokenInterface';
 
 export type UserCredentialTokenValue = Pick<UserSchema, 'id' | 'email'>;
@@ -11,14 +12,13 @@ export class UserCredentialToken implements CrentialTokenInterface<UserCredentia
   protected jwtSecret: string;
   protected jwtExpiresIn: string;
 
-  constructor(@inject(AppConfig) protected config: AppConfig) {
+  constructor(
+    @inject(I.AppConfig) protected config: SeedServerConfigInterface
+  ) {
     this.jwtSecret = config.jwtSecret;
     this.jwtExpiresIn = config.jwtExpiresIn;
   }
 
-  /**
-   * @override
-   */
   public async generateToken(
     data: UserCredentialTokenValue,
     options: { expiresIn?: string } = {}
@@ -32,9 +32,6 @@ export class UserCredentialToken implements CrentialTokenInterface<UserCredentia
     });
   }
 
-  /**
-   * @override
-   */
   public async parseToken(token: string): Promise<UserCredentialTokenValue> {
     try {
       const decoded = jwt.verify(token, this.jwtSecret) as {

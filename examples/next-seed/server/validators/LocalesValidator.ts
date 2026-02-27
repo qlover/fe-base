@@ -1,14 +1,14 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { omit } from 'lodash';
+import type {
+  ValidationFaildResult,
+  ValidatorInterface,
+  ExtendedExecutorError
+} from '@shared/validators/ValidatorInterface';
 import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
 import type { LocalesSchema } from '@schemas/LocalesSchema';
 import { localesSchema } from '@schemas/LocalesSchema';
-import {
-  type ValidationFaildResult,
-  type ValidatorInterface
-} from '../port/ValidatorInterface';
-import type { ExtendedExecutorError } from './ExtendedExecutorError';
 import type { ImportLocalesData } from '../services/ApiLocaleService';
 
 export class LocalesValidator implements ValidatorInterface<

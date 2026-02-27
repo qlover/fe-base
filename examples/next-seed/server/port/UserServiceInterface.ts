@@ -11,4 +11,7 @@ export interface UserServiceInterface {
   login(params: { email: string; password: string }): Promise<UserSchema>;
 
   logout(): Promise<void>;
+
+  refresh(): Promise<UserSchema>;
+  getUser(): Promise<UserSchema>;
 }

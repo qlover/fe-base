@@ -1,39 +1,44 @@
-import { ExecutorError } from '@qlover/fe-corekit';
-import { StringEncryptor } from '@/impls/StringEncryptor';
+import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
-import type { UserSchema } from '@schemas/UserSchema';
-import { ServerAuth } from '../ServerAuth';
-import { UserService } from '../services/UserService';
-import {
-  LoginValidator,
-  type LoginValidatorData
-} from '../validators/LoginValidator';
+import type { SeedServerConfigInterface } from '@shared/interfaces/SeedConfigInterface';
+import { StringEncryptor } from '@shared/StringEncryptor';
+import { LoginValidator } from '@shared/validators/LoginValidator';
 import {
   SignupVerifyParamType,
   SignupVerifyValidator
-} from '../validators/SignupVerifyValidator';
+} from '@shared/validators/SignupVerifyValidator';
+import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
+import type { LoginSchema } from '@schemas/LoginSchema';
+import type { UserSchema } from '@schemas/UserSchema';
+import { ServerConfig } from '@server/ServerConfig';
+import { ServerAuth } from '../ServerAuth';
+import { UserService } from '../services/UserService';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
 import type { UserServiceInterface } from '../port/UserServiceInterface';
-import type { ValidatorInterface } from '../port/ValidatorInterface';
-import type { EncryptorInterface } from '@qlover/fe-corekit';
 
 @injectable()
 export class UserController implements UserServiceInterface {
+  protected stringEncryptor: StringEncryptor;
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
-    @inject(StringEncryptor)
-    protected stringEncryptor: EncryptorInterface<string, string>,
     @inject(LoginValidator)
-    protected loginValidator: ValidatorInterface<LoginValidatorData>,
+    protected loginValidator: ValidatorInterface<LoginSchema>,
     @inject(SignupVerifyValidator)
     protected verifyValidator: ValidatorInterface<SignupVerifyParamType>,
-    @inject(UserService) protected userService: UserServiceInterface
-  ) {}
+    @inject(UserService) protected userService: UserServiceInterface,
+    @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
+    @inject(Base64Serializer) base64Serializer: Base64Serializer
+  ) {
+    this.stringEncryptor = new StringEncryptor(
+      serverConfig.stringEncryptorKey,
+      base64Serializer
+    );
+  }
 
   /**
    * @override
    */
-  public async login(requestBody: LoginValidatorData): Promise<UserSchema> {
+  public async login(requestBody: LoginSchema): Promise<UserSchema> {
     try {
       if (requestBody.password) {
         requestBody.password = this.stringEncryptor.decrypt(
@@ -58,7 +63,7 @@ export class UserController implements UserServiceInterface {
   /**
    * @override
    */
-  public async register(requestBody: LoginValidatorData): Promise<UserSchema> {
+  public async register(requestBody: LoginSchema): Promise<UserSchema> {
     try {
       if (requestBody.password) {
         requestBody.password = this.stringEncryptor.decrypt(
@@ -87,5 +92,19 @@ export class UserController implements UserServiceInterface {
    */
   public async logout(): Promise<void> {
     return await this.userService.logout();
+  }
+
+  /**
+   * @override
+   */
+  public async refresh(): Promise<UserSchema> {
+    return await this.userService.refresh();
+  }
+
+  /**
+   * @override
+   */
+  public async getUser(): Promise<UserSchema> {
+    return await this.userService.getUser();
   }
 }

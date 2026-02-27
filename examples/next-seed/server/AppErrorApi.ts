@@ -1,4 +1,4 @@
-import type { AppApiErrorInterface } from '@shared/interfaces/AppApiInterface';
+import type { AppApiErrorInterface } from '@interfaces/AppApiInterface';
 
 export class AppErrorApi implements AppApiErrorInterface {
   public readonly success = false;

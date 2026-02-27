@@ -1,22 +1,15 @@
 import { ExecutorError, type EncryptorInterface } from '@qlover/fe-corekit';
 import { Session, User } from '@supabase/supabase-js';
 import { isString } from 'lodash';
-import { AppConfig } from '@/impls/AppConfig';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
 import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
+import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { PasswordEncrypt } from '../PasswordEncrypt';
-import { UserRepository } from '../repositorys/UserRepository';
 import { ServerAuth } from '../ServerAuth';
 import { SupabaseBridge } from '../SupabaseBridge';
-import {
-  UserCredentialToken,
-  type UserCredentialTokenValue
-} from '../UserCredentialToken';
-import type { CrentialTokenInterface } from '../port/CrentialTokenInterface';
 import type { ServerAuthInterface } from '../port/ServerAuthInterface';
-import type { UserRepositoryInterface } from '../port/UserRepositoryInterface';
 import type {
   UserServiceInterface,
   UserServiceRegisterParams
@@ -29,17 +22,13 @@ export class UserService implements UserServiceInterface {
   protected logger!: LoggerInterface;
 
   @inject(I.AppConfig)
-  protected appConfig!: AppConfig;
+  protected appConfig!: SeedServerConfigInterface;
 
   constructor(
-    @inject(UserRepository)
-    protected userRepository: UserRepositoryInterface,
     @inject(ServerAuth)
     protected userAuth: ServerAuthInterface,
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
-    @inject(UserCredentialToken)
-    protected credentialToken: CrentialTokenInterface<UserCredentialTokenValue>,
     @inject(SupabaseBridge) protected supabaseBridge: SupabaseBridge
   ) {}
 
@@ -59,11 +48,11 @@ export class UserService implements UserServiceInterface {
 
     const result = await supabase.auth.signUp({
       email: params.email,
-      password: params.password
+      password: params.password,
 
-      // options: {
-      //   emailRedirectTo: 'http://localhost:3100/callback'
-      // }
+      options: {
+        emailRedirectTo: `${this.appConfig.appHost}/callback`
+      }
     });
     this.supabaseBridge.throwIfError(result);
 
@@ -130,5 +119,27 @@ export class UserService implements UserServiceInterface {
     }
 
     return response.data;
+  }
+
+  /**
+   * @override
+   */
+  public async refresh(): Promise<UserSchema> {
+    throw new Error('Method not implemented.');
+  }
+
+  /**
+   * @override
+   */
+  public async getUser(): Promise<UserSchema> {
+    const supabase = await this.supabaseBridge.getSupabase();
+    const response = await supabase.auth.getUser();
+    this.supabaseBridge.throwIfError(response);
+
+    if (!response.data.user) {
+      throw new ExecutorError(API_USER_NOT_FOUND);
+    }
+
+    return this.supabaseBridge.toUserSchema(response.data.user);
   }
 }

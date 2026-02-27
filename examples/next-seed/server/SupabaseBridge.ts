@@ -1,8 +1,8 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { AuthError } from '@supabase/supabase-js';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
 import { createClient } from '@shared/supabase/server';
+import { I } from '@config/ioc-identifiter';
 import { UserRole, UserSchema } from '@schemas/UserSchema';
 import type {
   BridgeEvent,

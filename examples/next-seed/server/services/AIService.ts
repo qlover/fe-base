@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
-import type { AppConfig } from '@/impls/AppConfig';
-import { I } from '@shared/config/ioc-identifiter';
 import { inject, injectable } from '@shared/container';
+import { I } from '@config/ioc-identifiter';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 @injectable()
@@ -10,7 +10,7 @@ export class AIService {
   protected baseUrl: string;
   protected client: OpenAI;
 
-  constructor(@inject(I.AppConfig) appConfig: AppConfig) {
+  constructor(@inject(I.AppConfig) appConfig: SeedServerConfigInterface) {
     this.apiKey = appConfig.openaiApiKey;
     this.baseUrl = appConfig.openaiBaseUrl;
 
