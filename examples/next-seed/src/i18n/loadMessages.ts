@@ -1,5 +1,25 @@
 import { useApiLocales } from '@config/common';
 
+// Static locale loaders so the bundler can resolve the JSON modules
+const localeLoaders: Record<
+  string,
+  () => Promise<{ default: Record<string, string> }>
+> = {
+  en: () => import('../../public/locales/en.json'),
+  zh: () => import('../../public/locales/zh.json')
+};
+
+async function loadLocaleFromFile(
+  locale: string
+): Promise<Record<string, string>> {
+  const loader = localeLoaders[locale];
+  if (!loader) {
+    throw new Error(`Unsupported locale: ${locale}`);
+  }
+  const mod = await loader();
+  return mod.default;
+}
+
 /**
  * 加载 i18n 消息的公共方法
  * 支持从 API 加载或从 JSON 文件加载
@@ -42,12 +62,10 @@ export async function loadMessages(
       allMessages = await response.json();
     } catch (error) {
       console.warn(`Failed to load locale from API for ${locale}`, error);
-      // 如果 API 加载失败，继续尝试从文件加载
-      allMessages = (await import(`../../public/locales/${locale}.json`))
-        .default;
+      allMessages = await loadLocaleFromFile(locale);
     }
   } else {
-    allMessages = (await import(`../../public/locales/${locale}.json`)).default;
+    allMessages = await loadLocaleFromFile(locale);
   }
 
   // 如果指定了命名空间，进行过滤
