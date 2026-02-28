@@ -1,22 +1,15 @@
 import { Button } from 'antd';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
+import { HomeAuthUserEmail } from '@/uikit/components-app/HomeAuthUserEmail';
 import { i18nConfig } from '@config/i18n';
-import { COMMON_ADMIN_TITLE } from '@config/i18n-identifier/common/common';
 import { homeI18n, homeI18nNamespace } from '@config/i18n-mapping/HomeI18n';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';
-import { AppPageRouteParams } from '@server/AppPageRouteParams';
-import type { PageParamsType } from '@server/AppPageRouteParams';
-import { ServerAuth } from '@server/ServerAuth';
-import { createServerIoc } from '@server/serverIoc';
+import {
+  getI18nInterface,
+  getLocale,
+  type PageParamsType
+} from '@server/pageRouteParams';
 import type { Metadata } from 'next';
-
-// const navigationItems = [
-//   {
-//     href: '/identifier',
-//     titleKey: 'HOME_IDENTIFIER',
-//     descriptionKey: 'HOME_IDENTIFIER_DESCRIPTION'
-//   }
-// ];
 
 // Generate static params for all supported locales (used for SSG)
 export async function generateStaticParams() {
@@ -36,47 +29,25 @@ export async function generateMetadata({
 }: {
   params: Promise<PageParamsType>;
 }): Promise<Metadata> {
-  const pageParams = new AppPageRouteParams(await params);
-  return await pageParams.getI18nInterface(homeI18n);
+  const resolvedParams = await params;
+  const locale = getLocale(resolvedParams);
+  return await getI18nInterface(locale, homeI18n);
 }
 
 export default async function Home({ params }: PageParamsProps) {
-  const pageParams = new AppPageRouteParams(await params!);
-  const IOC = createServerIoc();
-  const user = await IOC(ServerAuth).getUser();
-
-  // const locale = pageParams.getLocale();
-  const tt = await pageParams.getI18nInterface(
-    {
-      ...homeI18n,
-      adminTitle: COMMON_ADMIN_TITLE
-    },
-    homeI18nNamespace
-  );
+  const resolvedParams = await params!;
+  const locale = getLocale(resolvedParams);
+  const tt = await getI18nInterface(locale, homeI18n, homeI18nNamespace);
 
   return (
-    <AppRoutePage
-      tt={{
-        title: tt.title,
-        adminTitle: tt.adminTitle
-      }}
-      showAdminButton
-      showAuthButton
-    >
+    <AppRoutePage tt={tt} showAdminButton showAuthButton>
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-text">
             {tt.welcome}
           </h1>
-          {!!user ? (
-            <p
-              data-testid="AuthUserEmail"
-              className="text-lg text-primary-text"
-            >
-              {user.email}
-            </p>
-          ) : null}
+          <HomeAuthUserEmail />
           <p className="text-xl text-secondary-text mb-8">{tt.description}</p>
         </div>
       </section>

@@ -6,6 +6,7 @@ import {
 import type { RequestEncryptPluginProps } from '@/impls/RequestEncryptPlugin';
 import { injectable } from '@shared/container';
 import type { AppApiResult } from '@interfaces/AppApiInterface';
+import type { DialogErrorConfig } from './DialogErrorPlugin';
 import type {
   ExecutorContextInterface,
   RequestAdapterConfig,
@@ -17,8 +18,9 @@ export interface RequestTransactionInterface<Request, Response> {
   response: Response;
 }
 
-export interface AppApiConfig<Request = unknown>
-  extends RequestAdapterConfig<Request>, RequestEncryptPluginProps<Request> {}
+export type AppApiConfig<Request = unknown> = RequestAdapterConfig<Request> &
+  RequestEncryptPluginProps<Request> &
+  DialogErrorConfig;
 
 export interface AppApiRequesterContext extends ExecutorContextInterface<AppApiConfig> {}
 

@@ -29,8 +29,8 @@ export async function loadMessages(
   // 如果配置了使用 API 加载本地化数据
   if (useApiLocales) {
     try {
-      const app_host = process.env.APP_HOST;
-      const localeUrl = `${app_host}/api/locales/json?locale=${locale}`;
+      const SITE_URL = process.env.SITE_URL;
+      const localeUrl = `${SITE_URL}/api/locales/json?locale=${locale}`;
       const response = await fetch(localeUrl);
 
       if (!response.ok) {

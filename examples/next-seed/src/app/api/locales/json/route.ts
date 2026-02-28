@@ -2,8 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
 import { LocalesController } from '@server/controllers/LocalesController';
+import type { LocalesControllerJsonQuery } from '@server/interfaces/LocalesControllerInterface';
 import { NextApiServer } from '@server/NextApiServer';
-import type { LocalesControllerJsonQuery } from '@server/port/LocalesControllerInterface';
 
 // Use literal value instead of imported config to ensure static analysis
 export const revalidate = 60; // Cache time in seconds (matches i18nConfig.localeCacheTime)

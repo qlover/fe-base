@@ -6,16 +6,13 @@ import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { SupabaseBridge } from './SupabaseBridge';
-import { UserCredentialToken } from './UserCredentialToken';
-import type { ServerAuthInterface } from './port/ServerAuthInterface';
+import type { ServerAuthInterface } from './interfaces/ServerAuthInterface';
 
 @injectable()
 export class ServerAuth implements ServerAuthInterface {
   protected userTokenKey: string;
   constructor(
     @inject(I.AppConfig) protected server: SeedServerConfigInterface,
-    @inject(UserCredentialToken)
-    protected userCredentialToken: UserCredentialToken,
     @inject(SupabaseBridge) protected supabase: SupabaseBridge
   ) {
     this.userTokenKey = server.userTokenKey;

@@ -13,8 +13,8 @@ import type { UserSchema } from '@schemas/UserSchema';
 import { ServerConfig } from '@server/ServerConfig';
 import { ServerAuth } from '../ServerAuth';
 import { UserService } from '../services/UserService';
-import type { ServerAuthInterface } from '../port/ServerAuthInterface';
-import type { UserServiceInterface } from '../port/UserServiceInterface';
+import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
+import type { UserServiceInterface } from '../interfaces/UserServiceInterface';
 
 @injectable()
 export class UserController implements UserServiceInterface {

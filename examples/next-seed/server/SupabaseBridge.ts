@@ -10,7 +10,7 @@ import type {
   DBBridgeResponse,
   BridgeOrderBy,
   Where
-} from '@server/port/DBBridgeInterface';
+} from '@server/interfaces/DBBridgeInterface';
 import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestResponseFailure } from '@supabase/postgrest-js';
 import type {

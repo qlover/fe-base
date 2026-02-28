@@ -11,6 +11,7 @@ import type {
   UserServiceInterface
 } from '@interfaces/UserServiceInterface';
 import { AppUserGateway } from './AppUserGateway';
+import type { AppApiConfig } from './AppApiRequester';
 import type {
   StoreInterface,
   UserStateInterface
@@ -68,14 +69,16 @@ export class UserService
     );
   }
 
-  public refreshUser(): Promise<boolean> {
+  public refreshUser(params?: AppApiConfig): Promise<boolean> {
+    // TODO: 验证是否有 token 有才进行刷新
+
     if (this.isAuthenticated()) {
       return Promise.resolve(true);
     }
 
     this.getStore().start();
 
-    return this.refreshUserInfo().then((result) => {
+    return this.refreshUserInfo(null, params).then((result) => {
       if (result && this.isUser(result)) {
         this.getStore().success(result, {
           credential_token: result.credential_token

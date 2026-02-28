@@ -14,6 +14,7 @@ export function BootstrapsProvider(props: { children: React.ReactNode }) {
   const IOC = useIOC();
   const locale = useLocale();
   const t = useWarnTranslations();
+  const logger = IOC('Logger');
 
   const [, setIocMounted] = useState(false);
 
@@ -28,7 +29,7 @@ export function BootstrapsProvider(props: { children: React.ReactNode }) {
         setIocMounted(true);
       })
       .catch((error) => {
-        console.error('BootstrapsProvider startup failed!', error);
+        logger.error('BootstrapsProvider startup failed!', error);
       });
   }, []);
 

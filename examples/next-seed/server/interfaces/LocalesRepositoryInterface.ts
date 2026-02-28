@@ -1,5 +1,5 @@
 import type { LocalesSchema } from '@schemas/LocalesSchema';
-import type { DBTableInterface } from '@server/port/DBTableInterface';
+import type { DBTableInterface } from '@server/interfaces/DBTableInterface';
 import type { BridgeOrderBy } from './DBBridgeInterface';
 
 export interface UpsertChunkResult {

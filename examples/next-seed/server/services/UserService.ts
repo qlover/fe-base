@@ -9,11 +9,11 @@ import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface'
 import { PasswordEncrypt } from '../PasswordEncrypt';
 import { ServerAuth } from '../ServerAuth';
 import { SupabaseBridge } from '../SupabaseBridge';
-import type { ServerAuthInterface } from '../port/ServerAuthInterface';
+import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserServiceInterface,
   UserServiceRegisterParams
-} from '../port/UserServiceInterface';
+} from '../interfaces/UserServiceInterface';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()

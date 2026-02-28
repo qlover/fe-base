@@ -119,7 +119,6 @@ export class LocalesImportValidator implements ValidatorInterface<ImportLocalesD
   }): Promise<ImportLocalesData> {
     const result = await this.validate(data);
 
-    console.log(result);
     if (result == null) {
       const hasAnyFilesLocales = this.getHasAnyFilesLocale(
         data.values as FormData

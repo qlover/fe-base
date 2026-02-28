@@ -1,18 +1,18 @@
+'use client';
+
 import { TeamOutlined } from '@ant-design/icons';
-import { BootstrapServer } from '@server/BootstrapServer';
-import { ServerAuth } from '@server/ServerAuth';
 import { LocaleLink } from '../components/LocaleLink';
+import { useUserAuth } from '../hook/useUserAuth';
 
-export async function AdminButton(props: {
-  adminTitle: string;
-  locale?: string;
-}) {
+/**
+ * Client component: uses user store from bootstrap (one session fetch in restoreUserService).
+ * Avoids ServerAuth/cookies on the server so pages using this can be statically generated.
+ */
+export function AdminButton(props: { adminTitle: string; locale?: string }) {
   const { adminTitle, locale } = props;
-  const hasAuth = await new BootstrapServer().getIOC(ServerAuth).hasAuth();
+  const { success, loading } = useUserAuth();
 
-  if (!hasAuth) {
-    return null;
-  }
+  if (loading || !success) return null;
 
   return (
     <LocaleLink

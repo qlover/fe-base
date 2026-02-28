@@ -12,9 +12,12 @@ import type { DialogHandlerOptions } from './DialogHandler';
 import type { RouterService } from './RouterService';
 import type { UIDialogInterface } from '@qlover/corekit-bridge';
 
+export type DialogErrorConfig = {
+  disabledDialogError?: boolean;
+};
 @injectable()
 export class DialogErrorPlugin implements LifecyclePluginInterface<
-  ExecutorContextInterface<unknown>
+  ExecutorContextInterface<DialogErrorConfig>
 > {
   public readonly pluginName = 'DialogErrorPlugin';
 
@@ -29,7 +32,11 @@ export class DialogErrorPlugin implements LifecyclePluginInterface<
   /**
    * @override
    */
-  public onError(context: ExecutorContextInterface<unknown>): void {
+  public onError(context: ExecutorContextInterface<DialogErrorConfig>): void {
+    if (context?.parameters.disabledDialogError) {
+      return;
+    }
+
     const { error, hooksRuntimes } = context;
     const runtimesError = hooksRuntimes.returnValue;
 

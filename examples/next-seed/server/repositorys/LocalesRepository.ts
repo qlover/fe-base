@@ -6,12 +6,12 @@ import { Datetime } from '@server/Datetime';
 import type {
   BridgeOrderBy,
   DBBridgeInterface
-} from '@server/port/DBBridgeInterface';
+} from '@server/interfaces/DBBridgeInterface';
 import { SupabaseBridge } from '../SupabaseBridge';
 import type {
   LocalesRepositoryInterface,
   UpsertResult
-} from '../port/LocalesRepositoryInterface';
+} from '../interfaces/LocalesRepositoryInterface';
 
 @injectable()
 export class LocalesRepository implements LocalesRepositoryInterface {

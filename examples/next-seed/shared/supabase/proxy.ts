@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
+import { ROUTE_LOGIN, isPublicPath } from '@config/route';
 import { SUPABASE_KEY, SUPABASE_URL } from './conts';
 
 export async function updateSession(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function updateSession(request: NextRequest) {
 
   // If the env vars are not set, skip proxy check. You can remove this
   // once you setup the project.
-  if (!SUPABASE_URL && SUPABASE_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
     return supabaseResponse;
   }
 
@@ -48,20 +48,14 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
+  const pathname = request.nextUrl.pathname;
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  console.log('Proxy(supabase) logged?:', !!user);
+  console.log('Proxy(supabase) logged?', !!user, user?.email);
 
-  if (
-    request.nextUrl.pathname !== '/' &&
-    !user &&
-    !request.nextUrl.pathname.includes(ROUTE_LOGIN) &&
-    !request.nextUrl.pathname.includes(ROUTE_REGISTER)
-  ) {
-    console.log('proxy supabase no user to login');
-
-    // no user, potentially respond by redirecting the user to the login page
+  if (!user && !isPublicPath(pathname)) {
+    // no user on protected route, redirect to login
     const url = request.nextUrl.clone();
     url.pathname = ROUTE_LOGIN;
     return NextResponse.redirect(url);

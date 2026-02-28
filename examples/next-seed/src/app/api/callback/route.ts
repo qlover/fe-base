@@ -35,7 +35,6 @@ export async function GET(request: NextRequest) {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        console.error('验证失败:', error.message);
         // 重定向到错误页面
         return NextResponse.redirect(
           new URL('/auth/error?error=verification_failed', request.url)
@@ -49,18 +48,16 @@ export async function GET(request: NextRequest) {
 
       // 检查邮箱是否已验证
       if (user && user.email_confirmed_at) {
-        console.log('✅ 邮箱已验证成功');
         // 重定向到成功页面
         return NextResponse.redirect(new URL('/', request.url));
       } else {
-        console.log('⏳ 邮箱验证中...');
         // 重定向到验证提醒页面
         return NextResponse.redirect(
           new URL('/auth/verify-email', request.url)
         );
       }
     } catch (error) {
-      console.error('回调处理错误:', error);
+      console.error('api/callback error', error);
       return NextResponse.redirect(new URL('/auth/error', request.url));
     }
   }

@@ -70,7 +70,6 @@ export async function GET() {
   );
 
   if (result instanceof ExecutorError) {
-    console.log(result);
     return NextResponse.json(new AppErrorApi(result.id, result.message), {
       status: 400
     });

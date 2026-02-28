@@ -6,7 +6,7 @@ import { i18nConfig } from '@config/i18n';
 import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
-import { AppPageRouteParams } from '@server/AppPageRouteParams';
+import { getI18nMessages, getLocale } from '@server/pageRouteParams';
 
 export function generateStaticParams() {
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));
@@ -33,19 +33,23 @@ export default async function RootLayout({
   children,
   params
 }: PageLayoutProps) {
-  const pageParams = new AppPageRouteParams(await params!);
-  const locale = pageParams.getLocale();
-  const theme = await pageParams.getTheme();
+  const resolvedParams = await params!;
+  const locale = getLocale(resolvedParams);
 
   // Enable static rendering
   setRequestLocale(locale);
 
   // Get messages for the current locale to prevent flickering during language switch
   // Load default namespaces (common, api) - admin namespaces are loaded in admin layout
-  const messages = await pageParams.getI18nMessages();
+  const messages = await getI18nMessages(locale);
 
   return (
-    <html data-testid="AppRoute-RootLayout" lang={locale} data-theme={theme}>
+    <html
+      data-testid="AppRoute-RootLayout"
+      lang={locale}
+      // 暂时解决主题 hydration 问题
+      suppressHydrationWarning
+    >
       <body>
         <IOCProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>

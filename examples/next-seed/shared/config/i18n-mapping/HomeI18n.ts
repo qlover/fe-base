@@ -1,3 +1,4 @@
+import { COMMON_ADMIN_TITLE } from '../i18n-identifier/common/common';
 import * as i18nKeys from '../i18n-identifier/pages/page.home';
 
 /**
@@ -20,5 +21,7 @@ export const homeI18n = Object.freeze({
   welcome: i18nKeys.PAGE_HOME_WELCOME,
   getStartedTitle: i18nKeys.PAGE_HOME_GET_STARTED,
   getStartedDescription: i18nKeys.PAGE_HOME_GET_STARTED_DESCRIPTION,
-  getStartedButton: i18nKeys.PAGE_HOME_GET_STARTED_BUTTON
+  getStartedButton: i18nKeys.PAGE_HOME_GET_STARTED_BUTTON,
+
+  adminTitle: COMMON_ADMIN_TITLE
 });

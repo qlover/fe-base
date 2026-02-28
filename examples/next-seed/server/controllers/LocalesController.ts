@@ -5,7 +5,7 @@ import { ApiLocaleService } from '../services/ApiLocaleService';
 import type {
   LocalesControllerInterface,
   LocalesControllerJsonQuery
-} from '../port/LocalesControllerInterface';
+} from '../interfaces/LocalesControllerInterface';
 
 @injectable()
 export class LocalesController implements LocalesControllerInterface {

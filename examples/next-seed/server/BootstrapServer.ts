@@ -10,7 +10,7 @@ import type {
   BootstrapServerContextOptions,
   BootstrapServerPlugin,
   ServerInterface
-} from './port/ServerInterface';
+} from './interfaces/ServerInterface';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
@@ -123,8 +123,6 @@ export class BootstrapServer
    * @override
    */
   public startup(): Promise<unknown> {
-    console.log('BootstrapServer startup');
-
     return Promise.resolve(undefined);
   }
 

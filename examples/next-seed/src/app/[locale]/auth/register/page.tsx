@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { redirect } from '@/i18n/routing';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { i18nConfig } from '@config/i18n';
@@ -10,8 +9,6 @@ import {
   AppPageRouteParams,
   type PageParamsType
 } from '@server/AppPageRouteParams';
-import { ServerAuth } from '@server/ServerAuth';
-import { createServerIoc } from '@server/serverIoc';
 import { RegisterForm } from '../../../../uikit/components/RegisterForm';
 import type { Metadata } from 'next';
 
@@ -45,10 +42,6 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const params = await props.params;
   const pageParams = new AppPageRouteParams(params);
-  const IOC = createServerIoc();
-  if (await IOC(ServerAuth).hasAuth()) {
-    return redirect({ href: '/', locale: params.locale! });
-  }
 
   const tt = await pageParams.getI18nInterface({
     ...register18n,

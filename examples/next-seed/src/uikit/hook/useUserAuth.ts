@@ -1,6 +1,5 @@
 import { useStore } from '@brain-toolkit/react-kit';
 import { AsyncStoreStatus } from '@qlover/corekit-bridge';
-import { useEffect } from 'react';
 import { I } from '@shared/config/ioc-identifiter';
 import type { UserCredential, UserSchema } from '@shared/schemas/UserSchema';
 import { useIOC } from './useIOC';
@@ -12,14 +11,20 @@ const successSelector = (
 
 const loadingSelector = (
   state: UserStateInterface<UserSchema, UserCredential>
-) => state.loading;
+) => {
+  return (
+    state.loading ||
+    state.status === AsyncStoreStatus.DRAFT ||
+    state.status === AsyncStoreStatus.PENDING
+  );
+};
 
 const errorSelector = (state: UserStateInterface<UserSchema, UserCredential>) =>
   state.error;
 
-const statusSelector = (
+const userSelector = (
   state: UserStateInterface<UserSchema, UserCredential>
-) => state.status;
+): UserSchema | undefined => state.result as UserSchema | undefined;
 
 export function useUserAuth() {
   const userService = useIOC(I.UserServiceInterface);
@@ -28,12 +33,7 @@ export function useUserAuth() {
   const success = useStore(userStore, successSelector);
   const loading = useStore(userStore, loadingSelector);
   const error = useStore(userStore, errorSelector);
-  const status = useStore(userStore, statusSelector);
+  const user = useStore(userStore, userSelector);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-    }
-  }, []);
-
-  return { success, loading, error, status, userService, userStore };
+  return { success, loading, error, user, userService, userStore };
 }

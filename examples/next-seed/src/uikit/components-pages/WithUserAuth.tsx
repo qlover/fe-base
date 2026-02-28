@@ -1,4 +1,3 @@
-import { AsyncStoreStatus } from '@qlover/corekit-bridge';
 import { isFunction } from 'lodash';
 import { Loading } from '../components/Loading';
 import { useUserAuth } from '../hook/useUserAuth';
@@ -10,16 +9,12 @@ export function WithUserAuth({
   children
 }: {
   children: ReactNode;
-  failedElement: ReactNode | ((props: { error?: unknown }) => ReactNode);
+  failedElement?: ReactNode | ((props: { error?: unknown }) => ReactNode);
   fallback?: ReactNode;
 }) {
-  const { loading, success, error, status } = useUserAuth();
+  const { loading, success, error } = useUserAuth();
 
-  if (
-    loading ||
-    status === AsyncStoreStatus.DRAFT ||
-    status === AsyncStoreStatus.PENDING
-  ) {
+  if (loading) {
     return fallback ?? <Loading fullscreen />;
   }
 

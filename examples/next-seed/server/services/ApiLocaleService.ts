@@ -7,11 +7,11 @@ import { i18nConfig } from '@config/i18n';
 import type { LocalesSchema } from '@schemas/LocalesSchema';
 import type { PaginationInterface } from '@interfaces/PaginationInterface';
 import { LocalesRepository } from '../repositorys/LocalesRepository';
-import type { BridgeOrderBy } from '../port/DBBridgeInterface';
+import type { BridgeOrderBy } from '../interfaces/DBBridgeInterface';
 import type {
   LocalesRepositoryInterface,
   UpsertResult
-} from '../port/LocalesRepositoryInterface';
+} from '../interfaces/LocalesRepositoryInterface';
 
 export type ImportLocalesData = {
   namespace?: string;

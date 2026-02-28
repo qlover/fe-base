@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { redirect } from '@/i18n/routing';
 import { FeatureItem } from '@/uikit/components/FeatureItem';
 import { LoginForm } from '@/uikit/components/LoginForm';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
@@ -12,8 +11,6 @@ import {
   AppPageRouteParams,
   type PageParamsType
 } from '@server/AppPageRouteParams';
-import { ServerAuth } from '@server/ServerAuth';
-import { createServerIoc } from '@server/serverIoc';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
@@ -46,11 +43,6 @@ export default async function LoginPage(props: PageParamsProps) {
 
   const params = await props.params;
   const pageParams = new AppPageRouteParams(params);
-  const IOC = createServerIoc();
-
-  if (await IOC(ServerAuth).hasAuth()) {
-    return redirect({ href: '/', locale: params.locale! });
-  }
 
   const tt = await pageParams.getI18nInterface(
     { ...loginI18n, adminTitle: COMMON_ADMIN_TITLE },

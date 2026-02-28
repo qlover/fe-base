@@ -3,7 +3,7 @@ import type {
   ValidatorInterface
 } from '@shared/validators/ValidatorInterface';
 import { paginationSchema } from '@schemas/PaginationSchema';
-import type { BridgeOrderBy } from '../port/DBBridgeInterface';
+import type { BridgeOrderBy } from '../interfaces/DBBridgeInterface';
 
 export type PaginationParams = {
   page: number;

@@ -8,7 +8,7 @@ import {
 import { BootstrapServer } from '@server/BootstrapServer';
 import { AppErrorApi } from './AppErrorApi';
 import { AppSuccessApi } from './AppSuccessApi';
-import type { BootstrapServerContextOptions } from './port/ServerInterface';
+import type { BootstrapServerContextOptions } from './interfaces/ServerInterface';
 import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
 
 export class NextApiServer extends BootstrapServer {

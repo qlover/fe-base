@@ -48,6 +48,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiLoginTransaction['response'],
       UserApiLoginTransaction['request']
     >({
+      ..._config,
       url: '/user/session',
       method: HttpMethods.GET
     });

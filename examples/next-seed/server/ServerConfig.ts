@@ -8,10 +8,11 @@ export class ServerConfig implements SeedServerConfigInterface {
   public readonly version: string = version;
   public readonly isProduction: boolean = process.env.APP_ENV === 'production';
 
-  public readonly userTokenKey: string = '_user_token';
+  public readonly userTokenKey: string =
+    process.env.NEXT_PUBLIC_USER_TOKEN_KEY!;
 
   public readonly jwtSecret: string = process.env.JWT_SECRET!;
-  public readonly appHost: string = process.env.APP_HOST!;
+  public readonly appHost: string = process.env.SITE_URL!;
   /**
    * login user token expires in
    *

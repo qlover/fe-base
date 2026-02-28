@@ -1,13 +1,11 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { getMessages, getTranslations } from 'next-intl/server';
-import { filterMessagesByNamespace } from '@/i18n/loadMessages';
-import { TranslateI18nUtil } from '@/impls/TranslateI18nUtil';
 import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
 import { themeConfig } from '@config/theme';
-import type { RouteParamsnHandlerInterface } from './port/RouteParamsnHandlerInterface';
+import { getI18nInterface, getI18nMessages } from './pageRouteParams';
+import type { RouteParamsnHandlerInterface } from './interfaces/RouteParamsnHandlerInterface';
 
 export interface PageWithParams {
   params?: Promise<PageParamsType>;
@@ -67,17 +65,7 @@ export class AppPageRouteParams<
     namespace?: string | string[]
   ): Promise<Record<string, string>> {
     const locale = this.getLocale();
-    const messages = await getMessages({ locale });
-    // 将默认命名空间和用户提供的命名空间合并
-    const defaultNamespaces = [...i18nConfig.defaultNamespaces];
-    const userNamespaces = namespace
-      ? Array.isArray(namespace)
-        ? namespace
-        : [namespace]
-      : [];
-    // 合并并去重
-    const namespaces = [...new Set([...defaultNamespaces, ...userNamespaces])];
-    return filterMessagesByNamespace(messages, namespaces);
+    return await getI18nMessages(locale, namespace);
   }
 
   /**
@@ -87,15 +75,8 @@ export class AppPageRouteParams<
     i18nInterface: T,
     _namespace?: string
   ): Promise<T> {
-    const t = await getTranslations({
-      locale: this.getLocale()
-      // namespace: namespace
-    });
-
-    return TranslateI18nUtil.translate<T>(
-      i18nInterface,
-      TranslateI18nUtil.overrideTranslateT(t)
-    );
+    const locale = this.getLocale();
+    return await getI18nInterface(locale, i18nInterface, _namespace);
   }
 
   /**

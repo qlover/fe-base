@@ -1,21 +1,15 @@
-import { Link } from '@/i18n/routing';
-import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
-import { ServerAuth } from '@server/ServerAuth';
-import { createServerIoc } from '@server/serverIoc';
-import { LogoutButton } from './LogoutButton';
+'use client';
 
-export async function AuthButton() {
-  const IOC = createServerIoc();
-  const hasAuth = await IOC(ServerAuth).hasAuth();
+import { AuthButtonUI } from './AuthButtonUI';
+import { useUserAuth } from '../hook/useUserAuth';
 
-  if (hasAuth) {
-    return <LogoutButton data-testid="logout-button" />;
-  }
+/**
+ * Client component: uses user store from bootstrap (one session fetch in restoreUserService).
+ * Avoids ServerAuth/cookies on the server so pages using this can be statically generated.
+ */
+export function AuthButton() {
+  const { success, loading } = useUserAuth();
 
-  return (
-    <div data-testid="AuthButton" className="flex gap-2" data-auth={hasAuth}>
-      <Link href={ROUTE_LOGIN}>Sign in</Link>
-      <Link href={ROUTE_REGISTER}>Sign up</Link>
-    </div>
-  );
+  if (loading) return null;
+  return <AuthButtonUI hasAuth={success} />;
 }
