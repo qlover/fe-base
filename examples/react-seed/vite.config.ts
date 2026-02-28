@@ -17,11 +17,6 @@ const relativePath = (path: string) => resolve(__dirname, path);
 // https://vite.dev/config/
 export default defineConfig({
   base: routerPrefix,
-  resolve: {
-    // TODO: brain-toolkit/react-kit 的 useStore 会报错
-    // 原因这个包依赖的 react 但是它在 dependencies, 导致多份实例，目前暂时先手动 dedupe
-    dedupe: ['react', 'react-dom']
-  },
   define: {
     'import.meta.env.VITE_APP_NAME': JSON.stringify(name),
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(version)
@@ -52,18 +47,20 @@ export default defineConfig({
         relativePath('./config/i18n-identifier')
       )
     }) as Plugin,
-    viteMockServe({
-      mockPath: relativePath('./config/mock'), // 指定 mock 文件目录
-      enable: process.env.NODE_ENV !== 'production',
-      // prodEnabled: false, // 生产环境禁用
-      logger: true // 控制台显示请求日志
-    })
+    process.env.NODE_ENV === 'development' &&
+      viteMockServe({
+        mockPath: relativePath('./config/mock'), // 指定 mock 文件目录
+        enable: true,
+        // prodEnabled: false, // 生产环境禁用
+        logger: true // 控制台显示请求日志
+      })
   ],
   test: {
     watch: false,
     environment: 'jsdom',
     globals: true,
     include: ['__tests__/**/*.test.{ts,tsx}'],
-    setupFiles: ['./__tests__/index.ts']
+    setupFiles: ['./__tests__/index.ts'],
+    reporters: ['default', 'hanging-process']
   }
 });

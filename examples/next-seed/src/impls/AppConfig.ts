@@ -1,0 +1,21 @@
+import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
+import { name, version } from '../../package.json';
+
+export class AppConfig implements SeedSrcConfigInterface {
+  /**
+   * Current environment mode for Vite
+   * @description Represents the running environment (development, production, etc.)
+   * Automatically set based on the current .env file being used
+   */
+  public readonly env: string = process.env.APP_ENV!;
+  public readonly name: string = name;
+  public readonly version: string = version;
+  public readonly isProduction: boolean = process.env.APP_ENV === 'production';
+
+  public readonly testLoginEmail: string = process.env.NEXT_PUBLIC_LOGIN_USER!;
+  public readonly testLoginPassword: string =
+    process.env.NEXT_PUBLIC_LOGIN_PASSWORD!;
+
+  public readonly stringEncryptorKey: string =
+    process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY!;
+}

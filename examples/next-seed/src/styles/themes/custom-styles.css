@@ -1,0 +1,26 @@
+/**
+ * This file is used to define the page styles for the app.
+ * 
+ @see https://tailwindcss.com/docs/adding-custom-styles
+ * @example --color-primary
+ * ```tsx
+ * <div className="bg-primary text-primary border-text-tertiary"></div>
+ * <div className="bg-brand text-brand-hover border-brand-hover"></div>
+ * <div className="bg-primary text-primary-text border-primary-border"></div>
+ * <div className="bg-primary text-primary-text-hover border-primary-border-hover"></div>
+ * <div className="bg-primary text-secondary-text border-primary-border-secondary"></div>
+ * <div className="bg-primary text-tertiary-text border-primary-border-tertiary"></div>
+ * ```
+ */
+@theme {
+  --color-primary: rgba(var(--fe-color-bg-base));
+  --color-secondary: rgba(var(--fe-color-bg-secondary));
+  --color-elevated: rgba(var(--fe-color-bg-elevated));
+  --color-primary-text: rgba(var(--fe-text-primary));
+  --color-primary-text-hover: rgba(var(--fe-text-primary-hover));
+  --color-secondary-text: rgba(var(--fe-text-secondary));
+  --color-tertiary-text: rgba(var(--fe-text-tertiary));
+  --color-primary-border: rgba(var(--fe-color-border));
+  --color-brand: rgb(var(--fe-color-brand));
+  --color-brand-hover: rgb(var(--fe-color-brand-hover));
+}

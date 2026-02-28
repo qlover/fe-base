@@ -1,0 +1,61 @@
+import { ExecutorError } from '@qlover/fe-corekit';
+import { NextResponse } from 'next/server';
+import {
+  isAppApiErrorInterface,
+  isAppApiSuccessInterface,
+  type AppApiResult
+} from '@interfaces/AppApiInterface';
+import { BootstrapServer } from '@server/BootstrapServer';
+import { AppErrorApi } from './AppErrorApi';
+import { AppSuccessApi } from './AppSuccessApi';
+import type { BootstrapServerContextOptions } from './interfaces/ServerInterface';
+import type { ExecutorAsyncTask } from '@qlover/fe-corekit';
+
+export class NextApiServer extends BootstrapServer {
+  protected isAppApiResult(result: unknown): result is AppApiResult {
+    return isAppApiSuccessInterface(result) || isAppApiErrorInterface(result);
+  }
+
+  public async run<Result>(
+    task?: ExecutorAsyncTask<
+      Result | AppApiResult,
+      BootstrapServerContextOptions
+    >
+  ): Promise<AppApiResult> {
+    const result = await this.execNoError(task);
+
+    // Is result is AppApiResult, return it directly
+    if (this.isAppApiResult(result)) {
+      return result;
+    }
+
+    // If result is ExecutorError, return AppErrorApi
+    if (result instanceof ExecutorError) {
+      this.logger.debug('NextApiServer run error:', result);
+      return new AppErrorApi(result.id, result.message);
+    }
+
+    // If result is Error, return AppErrorApi
+    if (result instanceof Error) {
+      this.logger.debug('NextApiServer run error:', result);
+      return new AppErrorApi('SERVER_ERROR', result.message);
+    }
+
+    return new AppSuccessApi(result);
+  }
+
+  public async runWithJson<Result>(
+    task?: ExecutorAsyncTask<
+      Result | AppApiResult,
+      BootstrapServerContextOptions
+    >
+  ): Promise<NextResponse> {
+    const result = await this.run(task);
+
+    if (!result.success) {
+      return NextResponse.json(result, { status: 400 });
+    }
+
+    return NextResponse.json(result);
+  }
+}

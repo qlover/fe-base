@@ -1,0 +1,53 @@
+@layer base {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fe-color-bg-base: 15 23 42;
+      --fe-color-bg-secondary: 30 41 59;
+      --fe-color-bg-elevated: 51 65 85;
+      --fe-text-primary: 255 255 255;
+      --fe-text-primary-hover: 148 163 184;
+      --fe-text-secondary: 148 163 184;
+      --fe-text-tertiary: 100 116 139;
+      --fe-color-border: 51 65 85;
+      --fe-color-brand: 37 99 235;
+      --fe-color-brand-hover: 59 130 246;
+      --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+      --fe-color-bg-container: rgb(30 41 59);
+      --fe-color-border: rgb(51 65 85);
+      --fe-color-primary: rgb(var(--fe-color-brand));
+
+      --login-input-bg: var(--fe-color-bg-container);
+      --login-input-border: var(--fe-color-border);
+      --login-button-text: rgb(255 255 255);
+      --login-social-button-bg: var(--fe-color-bg-container);
+      --login-social-button-border: var(--fe-color-border);
+    }
+  }
+
+  @media (prefers-color-scheme: pink) {
+    :root {
+      --fe-color-bg-base: 255 241 242;
+      --fe-color-bg-secondary: 255 228 230;
+      --fe-color-bg-elevated: 254 205 211;
+      --fe-text-primary: 190 18 60;
+      --fe-text-primary-hover: 244 63 94;
+      --fe-text-secondary: 225 29 72;
+      --fe-text-tertiary: 244 63 94;
+      --fe-color-border: 254 205 211;
+      --fe-color-brand: 225 29 72;
+      --fe-color-brand-hover: 244 63 94;
+      --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
+
+      --fe-color-border: rgb(254 205 211);
+      --fe-color-bg-container: rgb(255 241 242);
+      --fe-color-primary: rgb(var(--fe-color-brand));
+
+      --login-input-bg: var(--fe-color-bg-container);
+      --login-input-border: var(--fe-color-border);
+      --login-button-text: rgb(255 255 255);
+      --login-social-button-bg: var(--fe-color-bg-container);
+      --login-social-button-border: var(--fe-color-border);
+    }
+  }
+}
