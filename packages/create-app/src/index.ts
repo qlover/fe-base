@@ -2,7 +2,10 @@
 
 import { main } from './cli.js';
 
-main(__dirname).catch((err) => {
+main().catch((err) => {
+  if ((err as Error).name === 'ExitPromptError') {
+    process.exit(130);
+  }
   console.error(err);
   process.exit(1);
 });

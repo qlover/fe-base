@@ -27,12 +27,6 @@ export default defineConfig([
       compilerOptions: {
         composite: false
       }
-    },
-    onSuccess: async () => {
-      await copyAssets('./configs', 'dist/configs');
-      await copyAssets('./templates', 'dist/templates', {
-        ignores: ['node_modules', 'dist']
-      });
     }
   }
 ]);

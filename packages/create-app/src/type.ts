@@ -5,66 +5,15 @@ export type GeneratorPrompt = DistinctQuestion;
 
 export interface GeneratorOptions extends ScriptSharedInterface {
   prompts?: GeneratorPrompt[];
-  /**
-   * template root path
-   */
-  templateRootPath: string;
-
-  /**
-   * configs root path
-   */
-  configsRootPath: string;
-
-  /**
-   * whether to copy config files
-   */
-  config?: boolean;
+  /** Template names from GitHub examples (fetched from API). */
+  templateList: string[];
 }
 
 export interface GeneratorContext extends GeneratorOptions {
-  /**
-   * project name
-   */
+  /** Project name. */
   projectName: string;
-
-  /**
-   * choose template name
-   *
-   * mayby is pack-app
-   */
+  /** Chosen template name. */
   template: string;
-
-  /**
-   * choose sub packages
-   *
-   * mayby is ['node-lib', 'react-app']
-   */
-  subPackages?: string[];
-
-  /**
-   * @default `packages`
-   */
-  packagesNames?: string;
-
-  /**
-   * Generated project path
-   * @default `./`
-   */
+  /** Generated project path. */
   targetPath?: string;
-
-  /**
-   * release path
-   * @default `src`
-   */
-  releasePath?: string;
 }
-
-export type TaskOptions = {
-  templateFiles: TemplateFile[];
-  result: GeneratorContext;
-};
-
-export type TemplateFile = {
-  path: string;
-  content: string;
-};

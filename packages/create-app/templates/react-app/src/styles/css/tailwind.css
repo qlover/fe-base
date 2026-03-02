@@ -1,5 +1,0 @@
-@layer theme, base, antd, components, utilities;
-
-@import 'tailwindcss';
-
-@import './themes/index.css';

@@ -1,3 +1,5 @@
+import { join } from 'path';
+import { existsSync } from 'fs';
 import { type GeneratorPrompt } from './type';
 
 export const validRequiredString = (
@@ -10,31 +12,26 @@ export const validRequiredString = (
   return true;
 };
 
-export function createDefaultPrompts(
-  templates: string[],
-  packages: string[]
-): GeneratorPrompt[] {
+export function createDefaultPrompts(templates: string[]): GeneratorPrompt[] {
   return [
     {
       type: 'input',
       name: 'projectName',
       message: 'Project name',
-      validate: (value) => validRequiredString(value, 'Project name')
+      validate: (value) => {
+        const required = validRequiredString(value, 'Project name');
+        if (required !== true) return required;
+        const targetPath = join(process.cwd(), (value as string).trim());
+        if (existsSync(targetPath)) {
+          return `The directory already exists: ${targetPath}. Please choose another name or remove it.`;
+        }
+        return true;
+      }
     },
     {
       type: 'list',
       name: 'template',
       message: 'Template name',
-      choices: [...templates, ...packages]
-    }
-  ];
-}
-export function createPackagePrompts(templates: string[]): GeneratorPrompt[] {
-  return [
-    {
-      type: 'checkbox',
-      name: 'subPackages',
-      message: 'Sub package names',
       choices: templates
     }
   ];
