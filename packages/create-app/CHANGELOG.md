@@ -1,5 +1,33 @@
 # @qlover/create-app
 
+## 2.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **create-app:** update dependencies and remove unused files ([06b5d68](https://github.com/qlover/fe-base/commit/06b5d68480332c4c79bd42c80eeef25e39865c3e)) ([#586](https://github.com/qlover/fe-base/pull/586))
+  - Added `tar` as a dependency in `package.json` for improved file handling.
+  - Updated `pnpm-lock.yaml` to reflect new versions of dependencies, including `@isaacs/fs-minipass`, `chownr`, `minizlib`, and `yallist`.
+  - Removed unused configuration files and test files to streamline the project structure.
+  - Refactored `cli.ts` to fetch template lists from GitHub, enhancing template management.
+  - Introduced `GitHubTemplates.ts` for fetching and downloading templates, improving flexibility in template usage.
+
+  These changes aim to enhance the application's dependency management and overall structure, improving maintainability and usability.
+
+- **create-app:** add directory existence check for project name validation ([ace5cf1](https://github.com/qlover/fe-base/commit/ace5cf166b71ee5c8c8b9b06a1474d265c7a51a5)) ([#586](https://github.com/qlover/fe-base/pull/586))
+  - Implemented a check in the `Generator` class to throw an error if the target directory already exists, preventing overwrites during project generation.
+  - Enhanced the project name validation in `prompts.ts` to include a similar check, providing user feedback if the directory is already taken.
+  - These changes aim to improve user experience by ensuring that project names are unique and preventing accidental data loss.
+
+- **create-app:** add undici dependency and enhance template downloading ([28c9c60](https://github.com/qlover/fe-base/commit/28c9c600967c8dc748859af891cfc65676b6c3ac)) ([#586](https://github.com/qlover/fe-base/pull/586))
+  - Introduced `undici` as a new dependency in `package.json` for improved HTTP request handling.
+  - Updated `pnpm-lock.yaml` to include the latest version of `undici`.
+  - Refactored the `downloadTemplate` function in `GitHubTemplates.ts` to utilize `undici` for fetching templates, enhancing performance and reliability.
+  - Added a new utility function `resolveWorkspaceDepsInDir` to replace `workspace:*` dependencies with their latest versions in `package.json` files, improving dependency management.
+
+  These changes aim to enhance the application's template downloading capabilities and streamline dependency resolution.
+
 ## 1.1.0
 
 ### Minor Changes
