@@ -2,7 +2,7 @@
 
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { clsx } from 'clsx';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useState } from 'react';
 import type { NavItemInterface } from '@config/adminNavs';
@@ -43,8 +43,7 @@ export function AdminLayout({
   seoMetadata,
   className
 }: AdminLayoutProps) {
-  const router = useRouter();
-  const pathname = (router.asPath ?? '').split('?')[0];
+  const pathname = usePathname();
   const locale = useLocale();
   const t = useWarnTranslations();
 

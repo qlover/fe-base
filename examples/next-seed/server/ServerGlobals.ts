@@ -17,6 +17,6 @@ export const logger = new Logger({
       }
     })
   ),
-  silent: false,
+  silent: process.env.NODE_ENV === 'production',
   level: 'debug'
 });

@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic';
-import { withRouter } from 'next/router';
 import { NextIntlClientProvider } from 'next-intl';
 import '@/styles/index.css';
 import { IOCProvider } from '@/uikit/components/IOCProvider';
@@ -30,7 +29,11 @@ const ClientRootProvider = dynamic(
   }
 );
 
-function App({ Component, pageProps, router }: PagesRouterProps) {
+export default function App({
+  Component,
+  pageProps,
+  router
+}: PagesRouterProps) {
   const locale = (router.query.locale as string) || i18nConfig.fallbackLng;
 
   return (
@@ -43,5 +46,3 @@ function App({ Component, pageProps, router }: PagesRouterProps) {
     </IOCProvider>
   );
 }
-
-export default withRouter(App);
