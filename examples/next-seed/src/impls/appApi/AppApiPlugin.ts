@@ -7,6 +7,10 @@ import type {
 } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
+export type AppApiPluginOptions = {
+  disabledLoggerError?: boolean;
+};
+
 export class AppApiPlugin implements LifecyclePluginInterface<
   ExecutorContextInterface<AppApiConfig>
 > {
@@ -85,6 +89,10 @@ export class AppApiPlugin implements LifecyclePluginInterface<
   }
 
   protected loggerError(config: AppApiConfig, error: unknown): void {
+    if (config.disabledLoggerError) {
+      return;
+    }
+
     this.logger.error(
       `%c[AppApi ${config.method} ${config.url}]%c - ${new Date().toLocaleString()}`,
       'color: #f00;',

@@ -2,7 +2,10 @@ import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
+import type {
+  SeedConfigInterface,
+  SeedServerConfigInterface
+} from '@interfaces/SeedConfigInterface';
 import type { SupabaseBridge } from '@server/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
@@ -71,5 +74,6 @@ export interface IOCIdentifierMap {
 
 export interface IOCIdentifierMapServer {
   [IOCIdentifier.Logger]: LoggerInterface;
+  [IOCIdentifier.AppConfig]: SeedServerConfigInterface;
   [IOCIdentifier.DBBridgeInterface]: SupabaseBridge;
 }

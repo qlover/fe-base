@@ -7,6 +7,8 @@ export class ServerConfig implements SeedServerConfigInterface {
   public readonly name: string = name;
   public readonly version: string = version;
   public readonly isProduction: boolean = process.env.APP_ENV === 'production';
+  public readonly logLevel: string =
+    process.env.NEXT_PUBLIC_LOG_LEVEL ?? process.env.LOG_LEVEL ?? 'info';
 
   public readonly userTokenKey: string =
     process.env.NEXT_PUBLIC_USER_TOKEN_KEY ?? '';

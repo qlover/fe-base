@@ -1,5 +1,6 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { NextResponse } from 'next/server';
+import { I } from '@shared/config/ioc-identifiter';
 import {
   isAppApiErrorInterface,
   isAppApiSuccessInterface,
@@ -29,15 +30,26 @@ export class NextApiServer extends BootstrapServer {
       return result;
     }
 
+    const appConfig = this.getIOC(I.AppConfig);
     // If result is ExecutorError, return AppErrorApi
     if (result instanceof ExecutorError) {
-      this.logger.debug('NextApiServer run error:', result);
+      this.logger.error(result);
+
+      if (appConfig.isProduction) {
+        return new AppErrorApi(result.id);
+      }
+
       return new AppErrorApi(result.id, result.message);
     }
 
     // If result is Error, return AppErrorApi
     if (result instanceof Error) {
-      this.logger.debug('NextApiServer run error:', result);
+      this.logger.error(result);
+
+      if (appConfig.isProduction) {
+        return new AppErrorApi('SERVER_ERROR');
+      }
+
       return new AppErrorApi('SERVER_ERROR', result.message);
     }
 

@@ -140,3 +140,10 @@ export const COMMON_USER_AUTH_FAILED_DESCRIPTION =
  */
 export const COMMON_USER_AUTH_FAILED_GO_TO_LOGIN =
   'common:userAuthFailed_goToLogin';
+
+/**
+ * @description Auth nav - Sign up (register) link label
+ * @localZh 注册
+ * @localEn Sign up
+ */
+export const COMMON_AUTH_NAV_SIGN_UP = 'common:authNav_signUp';
