@@ -11,6 +11,10 @@ export class AIService {
   protected client: OpenAI;
 
   constructor(@inject(I.AppConfig) appConfig: SeedServerConfigInterface) {
+    if (!appConfig.openaiApiKey || !appConfig.openaiBaseUrl) {
+      throw new Error('OpenAI API key and base URL are required');
+    }
+
     this.apiKey = appConfig.openaiApiKey;
     this.baseUrl = appConfig.openaiBaseUrl;
 
