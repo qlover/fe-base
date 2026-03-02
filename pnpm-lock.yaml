@@ -565,9 +565,6 @@ importers:
       ignore:
         specifier: ^7.0.3
         version: 7.0.5
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.23
       ora:
         specifier: ^8.1.1
         version: 8.2.0
