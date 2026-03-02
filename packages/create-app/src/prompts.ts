@@ -1,3 +1,5 @@
+import { join } from 'path';
+import { existsSync } from 'fs';
 import { type GeneratorPrompt } from './type';
 
 export const validRequiredString = (
@@ -16,7 +18,15 @@ export function createDefaultPrompts(templates: string[]): GeneratorPrompt[] {
       type: 'input',
       name: 'projectName',
       message: 'Project name',
-      validate: (value) => validRequiredString(value, 'Project name')
+      validate: (value) => {
+        const required = validRequiredString(value, 'Project name');
+        if (required !== true) return required;
+        const targetPath = join(process.cwd(), (value as string).trim());
+        if (existsSync(targetPath)) {
+          return `The directory already exists: ${targetPath}. Please choose another name or remove it.`;
+        }
+        return true;
+      }
     },
     {
       type: 'list',

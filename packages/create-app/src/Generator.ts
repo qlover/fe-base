@@ -11,6 +11,7 @@ import {
   type GeneratorContext
 } from './type';
 import { downloadTemplate } from './GitHubTemplates';
+import { existsSync } from 'fs';
 
 export class Generator {
   private ora: typeof oraPromise;
@@ -81,6 +82,12 @@ export class Generator {
     const context = await this.getGeneratorContext();
 
     this.logger.debug('context is:', context);
+
+    if (existsSync(context.targetPath!)) {
+      throw new Error(
+        `The directory already exists: ${context.targetPath}. Please choose another project name or remove the existing directory.`
+      );
+    }
 
     await this.action({
       label: 'Generate Directory',
