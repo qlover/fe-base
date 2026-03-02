@@ -1,4 +1,4 @@
-import * as commonTablesKeys from '../i18n-identifier/common/admint.table';
+import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
 import * as userKeys from '../i18n-identifier/pages/page.admin.user';

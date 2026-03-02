@@ -4,8 +4,8 @@ import type { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-// 在构建开始时生成本地化文件
-generateLocales().catch((error) => {
+// 在构建开始时生成本地化文件（传入当前 config 所在目录作为项目根）
+generateLocales(__dirname).catch((error) => {
   console.error('Failed to generate locales:', error);
 });
 

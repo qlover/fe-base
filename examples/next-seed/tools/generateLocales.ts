@@ -3,7 +3,10 @@ import { join } from 'path';
 import { Ts2Locales } from '@brain-toolkit/ts2locales';
 import { i18nConfig } from '../shared/config/i18n';
 
-export async function generateLocales() {
+/**
+ * @param projectRoot - Project root directory. Defaults to process.cwd() if not provided.
+ */
+export async function generateLocales(projectRoot: string = process.cwd()) {
   const locales = i18nConfig.supportedLngs as unknown as string[];
   const getAllTsFiles = (dir: string): string[] => {
     const files: string[] = [];
@@ -20,12 +23,16 @@ export async function generateLocales() {
     return files;
   };
 
-  const options = getAllTsFiles('./shared/config/i18n-identifier').map(
-    (path) => ({
-      source: path,
-      target: `./public/locales/{{lng}}.json`
-    })
+  const identifierDir = join(
+    projectRoot,
+    'shared',
+    'config',
+    'i18n-identifier'
   );
+  const options = getAllTsFiles(identifierDir).map((filePath) => ({
+    source: filePath,
+    target: join(projectRoot, 'public', 'locales', '{{lng}}.json')
+  }));
 
   const ts2Locale = new Ts2Locales(locales);
   for (const value of options) {

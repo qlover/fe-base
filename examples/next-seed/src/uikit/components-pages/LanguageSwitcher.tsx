@@ -2,7 +2,7 @@
 
 import { TranslationOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useLocaleRoutes } from '@config/common';
@@ -12,6 +12,11 @@ import type { ItemType } from 'antd/es/menu/interface';
 
 export function LanguageSwitcher() {
   const router = useRouter();
+
+  // 修复点 1: 使用非空断言 (!) 告诉 TS 这里不会是 null
+  // 或者使用默认值: const pathname = usePathname() || '/';
+  const pathname = usePathname()!;
+  const searchParams = useSearchParams()!; // 修复点 1: 同上
   const currentLocale = useLocale() as LocaleType;
   const [isPending, setIsPending] = useState(false);
 
@@ -19,9 +24,7 @@ export function LanguageSwitcher() {
     return i18nConfig.supportedLngs.map(
       (lang) =>
         ({
-          type: 'item',
           key: lang,
-          value: lang,
           label:
             i18nConfig.localeNames[lang as keyof typeof i18nConfig.localeNames]
         }) as ItemType
@@ -35,36 +38,29 @@ export function LanguageSwitcher() {
       setIsPending(true);
 
       try {
-        // Get current path
-        let newPath = router.asPath;
+        let newPath = pathname; // 现在是 string 类型，不再是 null
 
         if (useLocaleRoutes) {
-          // Replace locale in path (e.g., /en/about -> /zh/about)
           const pathWithoutLocale = newPath.replace(
             new RegExp(`^/${currentLocale}(/|$)`),
-            '/'
+            '$1'
           );
-          // Remove leading slash if path is root
-          const cleanPath = pathWithoutLocale === '/' ? '' : pathWithoutLocale;
-          newPath = `/${value}${cleanPath}`;
+          newPath = `/${value}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
         } else {
-          // If not using locale routes, just update query param
-          newPath = router.pathname;
-          router.replace({
-            pathname: router.pathname,
-            query: { ...router.query, locale: value }
-          });
+          // 修复点 2: searchParams 现在有值，可以直接使用
+          const params = new URLSearchParams(searchParams);
+          params.set('locale', value);
+          router.replace(`${pathname}?${params.toString()}`);
           setIsPending(false);
           return;
         }
 
-        // Replace the route
         router.replace(newPath);
       } finally {
         setIsPending(false);
       }
     },
-    [router, currentLocale, isPending]
+    [router, pathname, searchParams, currentLocale, isPending] // 依赖项保持不变
   );
 
   const nextLocale = useMemo(() => {
@@ -76,8 +72,6 @@ export function LanguageSwitcher() {
 
   return (
     <Dropdown
-      data-testid="LanguageSwitcherDropdown"
-      trigger={['hover']}
       menu={{
         selectedKeys: [currentLocale],
         items: options,
@@ -85,6 +79,7 @@ export function LanguageSwitcher() {
           handleLanguageChange(key);
         }
       }}
+      trigger={['hover']}
     >
       <span
         data-testid="LanguageSwitcher"
