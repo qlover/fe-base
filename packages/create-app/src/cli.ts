@@ -1,7 +1,7 @@
-import { resolve } from 'path';
-import { existsSync } from 'fs';
 import { Command } from 'commander';
 import { Generator } from './Generator';
+import { fetchTemplateList } from './GitHubTemplates';
+import type { GeneratorOptions } from './type';
 import pkg from '../package.json';
 
 function programArgs() {
@@ -14,40 +14,30 @@ function programArgs() {
       '-d, --dry-run',
       'Do not touch or write anything, but show the commands'
     )
-    .option('-V, --verbose', 'Show more information')
-    .option('--config', 'Copy config files (default: true)', true)
-    .option('--no-config', 'Do not copy config files');
+    .option('-V, --verbose', 'Show more information');
 
-  // parse arguments
   program.parse();
 
   return program.opts();
 }
 
-export async function main(rootPath: string = process.cwd()) {
-  const { dryRun, verbose, ...commandOptions } = programArgs();
+export async function main(): Promise<void> {
+  const { dryRun, verbose } = programArgs();
 
-  const templateRootPath = resolve(rootPath, './templates');
-  const configsRootPath = resolve(rootPath, './configs');
-
-  if (!existsSync(templateRootPath)) {
-    console.error('Template is empty!');
+  const templateList = await fetchTemplateList();
+  if (!templateList?.length) {
+    console.error('No templates found from GitHub examples.');
     process.exit(1);
   }
 
-  if (!existsSync(configsRootPath)) {
-    console.error('Configs is empty!');
-    process.exit(1);
-  }
+  const options: GeneratorOptions = {
+    templateList
+  };
 
   const generator = new Generator({
     dryRun,
     verbose,
-    options: {
-      ...commandOptions,
-      templateRootPath,
-      configsRootPath
-    }
+    options
   });
 
   await generator.generate();

@@ -10,10 +10,7 @@ export const validRequiredString = (
   return true;
 };
 
-export function createDefaultPrompts(
-  templates: string[],
-  packages: string[]
-): GeneratorPrompt[] {
+export function createDefaultPrompts(templates: string[]): GeneratorPrompt[] {
   return [
     {
       type: 'input',
@@ -25,16 +22,6 @@ export function createDefaultPrompts(
       type: 'list',
       name: 'template',
       message: 'Template name',
-      choices: [...templates, ...packages]
-    }
-  ];
-}
-export function createPackagePrompts(templates: string[]): GeneratorPrompt[] {
-  return [
-    {
-      type: 'checkbox',
-      name: 'subPackages',
-      message: 'Sub package names',
       choices: templates
     }
   ];

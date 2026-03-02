@@ -13,13 +13,16 @@ export class Copyer {
   public static IGNORE_FILE = '.gitignore.template';
 
   constructor(
-    private readonly ignoreTargetPath: string,
+    private readonly ignoreTargetPath: string = '',
     private readonly ignoreFile: string = Copyer.IGNORE_FILE
   ) {}
 
   public getIg(
     targetDir: string = this.ignoreTargetPath
   ): ignore.Ignore | undefined {
+    if (!targetDir) {
+      return undefined;
+    }
     const gitignorePath = join(targetDir, this.ignoreFile);
 
     if (!existsSync(gitignorePath)) {
@@ -91,15 +94,17 @@ export class Copyer {
   public copyPaths({
     sourcePath,
     targetPath,
-    copyCallback
+    copyCallback,
+    ignorePath
   }: {
     sourcePath: string;
     targetPath: string;
     copyCallback?: CopyCallback;
+    /** Override path for .gitignore.template (e.g. sourcePath when copying template). */
+    ignorePath?: string;
   }): Promise<void> {
     Util.ensureDir(targetPath);
-    // if not pack template, copy templates
-    const ig = this.getIg();
+    const ig = this.getIg(ignorePath ?? this.ignoreTargetPath);
 
     return this.copyFiles(sourcePath, targetPath, ig, copyCallback);
   }
