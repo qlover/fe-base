@@ -3,7 +3,7 @@ import { ScriptContext } from '@qlover/scripts-context';
 import inquirer from 'inquirer';
 import { createDefaultPrompts } from './prompts';
 import { join } from 'path';
-import { oraPromise } from 'ora';
+import ora, { oraPromise } from 'ora';
 import { Copyer } from './Copyer';
 import {
   type GeneratorOptions,
@@ -12,6 +12,7 @@ import {
 } from './type';
 import { downloadTemplate } from './GitHubTemplates';
 import { existsSync } from 'fs';
+import { resolveWorkspaceDepsInDir } from './resolveWorkspaceDeps';
 
 export class Generator {
   private ora: typeof oraPromise;
@@ -89,24 +90,50 @@ export class Generator {
       );
     }
 
+    let templatePath: string;
+    let cleanup: () => Promise<void>;
+
+    const downloadLabel = 'Download template from GitHub';
+    const spinner = ora(downloadLabel).start();
+    try {
+      const result = await downloadTemplate(context.template, {
+        onProgress: (loaded, total) => {
+          if (total != null && total > 0) {
+            spinner.text = `${downloadLabel} ${Math.round((loaded / total) * 100)}%`;
+          } else {
+            const mb = (loaded / 1024 / 1024).toFixed(2);
+            spinner.text = `${downloadLabel} ${mb} MB`;
+          }
+        }
+      });
+      templatePath = result.templatePath;
+      cleanup = result.cleanup;
+      spinner.succeed(downloadLabel);
+    } catch (err) {
+      spinner.fail(downloadLabel);
+      throw err;
+    }
+
     await this.action({
-      label: 'Generate Directory',
+      label: 'Generate directory',
       task: async () => {
-        await this.generateTemplateDir(context);
+        try {
+          await this.copyer.copyPaths({
+            sourcePath: templatePath,
+            targetPath: context.targetPath!,
+            ignorePath: templatePath
+          });
+        } finally {
+          await cleanup();
+        }
       }
     });
-  }
 
-  public async generateTemplateDir(context: GeneratorContext): Promise<void> {
-    const { templatePath, cleanup } = await downloadTemplate(context.template);
-    try {
-      await this.copyer.copyPaths({
-        sourcePath: templatePath,
-        targetPath: context.targetPath!,
-        ignorePath: templatePath
-      });
-    } finally {
-      await cleanup();
-    }
+    await this.action({
+      label: 'Replace workspace:* with concrete versions',
+      task: async () => {
+        await resolveWorkspaceDepsInDir(context.targetPath!);
+      }
+    });
   }
 }

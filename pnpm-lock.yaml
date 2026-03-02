@@ -558,6 +558,9 @@ importers:
       tar:
         specifier: ^7.5.0
         version: 7.5.9
+      undici:
+        specifier: ^7.0.0
+        version: 7.21.0
     devDependencies:
       '@qlover/logger':
         specifier: workspace:*
