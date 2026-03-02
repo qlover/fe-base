@@ -1,5 +1,6 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { isObject, isString } from 'lodash';
+import { API_REFRESH_USER_INFO_FAILED } from '@shared/config/i18n-identifier/api';
 import { inject, injectable } from '@shared/container';
 import {
   userSchema,
@@ -78,16 +79,22 @@ export class UserService
 
     this.getStore().start();
 
-    return this.refreshUserInfo(null, params).then((result) => {
-      if (result && this.isUser(result)) {
-        this.getStore().success(result, {
-          credential_token: result.credential_token
-        });
+    return this.refreshUserInfo(null, params)
+      .then((result) => {
+        if (result && this.isUser(result)) {
+          this.getStore().success(result, {
+            credential_token: result.credential_token
+          });
 
-        return true;
-      }
+          return true;
+        }
 
-      return false;
-    });
+        this.getStore().failed(API_REFRESH_USER_INFO_FAILED);
+        return false;
+      })
+      .catch((error) => {
+        this.getStore().failed(error);
+        return false;
+      });
   }
 }

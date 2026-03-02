@@ -11,6 +11,15 @@ export interface SeedConfigInterface {
   readonly version: string;
   readonly isProduction: boolean;
   readonly stringEncryptorKey: string;
+  /**
+   * log level
+   *
+   * @example 'debug'
+   * @example 'info'
+   * @example 'warn'
+   * @example 'error'
+   */
+  readonly logLevel: string;
 }
 
 export interface SeedServerConfigInterface extends SeedConfigInterface {

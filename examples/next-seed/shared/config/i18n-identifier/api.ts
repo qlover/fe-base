@@ -39,3 +39,10 @@ export const API_NOT_AUTHORIZED = 'api:not_authorized';
  * @localEn Page number is incorrect
  */
 export const API_PAGE_INVALID = 'api:page__invalid';
+
+/**
+ * @description 刷新用户信息失败
+ * @localZh 刷新用户信息失败
+ * @localEn Refresh user information failed
+ */
+export const API_REFRESH_USER_INFO_FAILED = 'api:refresh_user_info_failed';
