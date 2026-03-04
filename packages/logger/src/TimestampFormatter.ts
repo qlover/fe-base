@@ -371,7 +371,33 @@ export class TimestampFormatter<Ctx> implements FormatterInterface<Ctx> {
    * });
    * ```
    */
-  constructor(protected readonly options: TimestampFormatterOptions = {}) {}
+  constructor(protected options: TimestampFormatterOptions = {}) {}
+
+  /**
+   * Updates formatter options at runtime.
+   * Merges the given partial options into the current options; subsequent formatting uses the updated values.
+   *
+   * @param partial - Partial options to merge (e.g. locale, prefixTemplate, localeOptions)
+   * @since 1.1.0
+   *
+   * @example Update locale at runtime
+   * ```typescript
+   * const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+   * // later: switch to English
+   * formatter.updateOptions({ locale: 'en-US' });
+   * ```
+   *
+   * @example Update multiple options
+   * ```typescript
+   * formatter.updateOptions({
+   *   locale: 'ja-JP',
+   *   localeOptions: { timeZone: 'Asia/Tokyo', hour12: false }
+   * });
+   * ```
+   */
+  public updateOptions(partial: Partial<TimestampFormatterOptions>): void {
+    this.options = { ...this.options, ...partial };
+  }
 
   /**
    * Replaces template variables in the prefix string with actual values

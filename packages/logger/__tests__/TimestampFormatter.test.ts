@@ -181,4 +181,133 @@ describe('TimestampFormatter', () => {
     );
     expect((formattedOutput[0] as string).includes('unknownVar')).toBe(false);
   });
+
+  describe('updateOptions', () => {
+    it('should update locale at runtime and use it in subsequent format', () => {
+      const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+      const event = new LogEvent('info', ['Test'], 'logger');
+      event.timestamp = TEST_TIMESTAMP;
+
+      const before = formatter.format(event);
+      const expectedZh = new Date(TEST_TIMESTAMP).toLocaleString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC'
+      });
+      expect(before[0]).toBe(`[logger] [${expectedZh} info]`);
+
+      formatter.updateOptions({ locale: 'en-US' });
+      const after = formatter.format(event);
+      const expectedEn = new Date(TEST_TIMESTAMP).toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC'
+      });
+      expect(after[0]).toBe(`[logger] [${expectedEn} info]`);
+    });
+
+    it('should update prefixTemplate at runtime', () => {
+      const formatter = new TimestampFormatter({
+        prefixTemplate: '[{formattedTimestamp}] {level}:'
+      });
+      const event = new LogEvent('info', ['Msg'], 'logger');
+      event.timestamp = TEST_TIMESTAMP;
+
+      const expected = new Date(TEST_TIMESTAMP).toLocaleString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC'
+      });
+      expect(formatter.format(event)[0]).toBe(`[${expected}] info:`);
+
+      formatter.updateOptions({
+        prefixTemplate: '{level} | {formattedTimestamp} -'
+      });
+      expect(formatter.format(event)[0]).toBe(`info | ${expected} -`);
+    });
+
+    it('should update localeOptions at runtime', () => {
+      const formatter = new TimestampFormatter({
+        locale: 'en-US',
+        localeOptions: { hour12: false, timeZone: 'UTC' }
+      });
+      const event = new LogEvent('info', ['Msg'], 'logger');
+      event.timestamp = TEST_TIMESTAMP;
+
+      formatter.updateOptions({
+        localeOptions: {
+          hour12: true,
+          timeZone: 'UTC',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }
+      });
+      const formattedOutput = formatter.format(event);
+      const expectedTimestamp = new Date(TEST_TIMESTAMP).toLocaleString(
+        'en-US',
+        {
+          hour12: true,
+          timeZone: 'UTC',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }
+      );
+      expect(formattedOutput[0]).toBe(`[logger] [${expectedTimestamp} info]`);
+    });
+
+    it('should merge partial options and keep unspecified options', () => {
+      const formatter = new TimestampFormatter({
+        locale: 'zh-CN',
+        prefixTemplate: '[{formattedTimestamp}] {level}'
+      });
+      const event = new LogEvent('info', ['Msg'], 'logger');
+      event.timestamp = TEST_TIMESTAMP;
+
+      formatter.updateOptions({ locale: 'en-US' });
+      const formattedOutput = formatter.format(event);
+      const expectedTimestamp = new Date(TEST_TIMESTAMP).toLocaleString(
+        'en-US',
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'UTC'
+        }
+      );
+      expect(formattedOutput[0]).toBe(
+        `[${expectedTimestamp}] info`
+      );
+      expect((formattedOutput[0] as string).includes('logger')).toBe(false);
+    });
+
+    it('should support multiple updateOptions calls', () => {
+      const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+      const event = new LogEvent('info', ['Msg'], 'logger');
+      event.timestamp = TEST_TIMESTAMP;
+
+      formatter.updateOptions({ locale: 'en-US' });
+      formatter.updateOptions({ locale: 'ja-JP' });
+      const formattedOutput = formatter.format(event);
+      const expectedTimestamp = new Date(TEST_TIMESTAMP).toLocaleString(
+        'ja-JP',
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'UTC'
+        }
+      );
+      expect(formattedOutput[0]).toContain(expectedTimestamp);
+    });
+  });
 });

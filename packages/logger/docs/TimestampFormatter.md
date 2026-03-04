@@ -253,6 +253,52 @@ const result = this.replacePrefix(template, vars);
 
 ---
 
+#### `updateOptions` (Method)
+
+**Type:** `(partial: Partial<TimestampFormatterOptions>) => void`
+
+#### Parameters
+
+| Name      | Type                                 | Optional | Default | Since | Deprecated | Description                                                           |
+| --------- | ------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
+| `partial` | `Partial<TimestampFormatterOptions>` | ❌       | -       | -     | -          | Partial options to merge (e.g. locale, prefixTemplate, localeOptions) |
+
+---
+
+##### `updateOptions` (CallSignature)
+
+**Type:** `void`
+
+**Since:** `1.1.0`
+
+Updates formatter options at runtime.
+Merges the given partial options into the current options; subsequent formatting uses the updated values.
+
+**Example:** Update locale at runtime
+
+```typescript
+const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+// later: switch to English
+formatter.updateOptions({ locale: 'en-US' });
+```
+
+**Example:** Update multiple options
+
+```typescript
+formatter.updateOptions({
+  locale: 'ja-JP',
+  localeOptions: { timeZone: 'Asia/Tokyo', hour12: false }
+});
+```
+
+#### Parameters
+
+| Name      | Type                                 | Optional | Default | Since | Deprecated | Description                                                           |
+| --------- | ------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
+| `partial` | `Partial<TimestampFormatterOptions>` | ❌       | -       | -     | -          | Partial options to merge (e.g. locale, prefixTemplate, localeOptions) |
+
+---
+
 ### `TimestampFormatterContext` (Interface)
 
 **Type:** `interface TimestampFormatterContext`
