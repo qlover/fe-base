@@ -206,14 +206,14 @@ Array containing the formatted prefix followed by original arguments
 
 #### `replacePrefix` (Method)
 
-**Type:** `(template: string, vars: Record<string, string>) => string`
+**Type:** `(template: string, vars: Record<string, undefined \| string>) => string`
 
 #### Parameters
 
-| Name       | Type                     | Optional | Default | Since | Deprecated | Description                                              |
-| ---------- | ------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
-| `template` | `string`                 | ❌       | -       | -     | -          | The template string containing variables in curly braces |
-| `vars`     | `Record<string, string>` | ❌       | -       | -     | -          | Object containing variable names and their values        |
+| Name       | Type                                  | Optional | Default | Since | Deprecated | Description                                              |
+| ---------- | ------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `template` | `string`                              | ❌       | -       | -     | -          | The template string containing variables in curly braces |
+| `vars`     | `Record<string, undefined \| string>` | ❌       | -       | -     | -          | Object containing variable names and their values        |
 
 ---
 
@@ -223,12 +223,12 @@ Array containing the formatted prefix followed by original arguments
 
 Replaces template variables in the prefix string with actual values
 
-This internal method handles the variable substitution in prefix templates,
-replacing placeholders like {timestamp} with their corresponding values.
+Placeholders like {timestamp} are replaced with values from vars.
+Unknown or missing variables are skipped (replaced with empty string), not left as literal.
 
 **Returns:**
 
-The template string with all variables replaced
+The template string with known variables replaced, unknowns removed
 
 **Example:** Internal usage
 
@@ -246,10 +246,56 @@ const result = this.replacePrefix(template, vars);
 
 #### Parameters
 
-| Name       | Type                     | Optional | Default | Since | Deprecated | Description                                              |
-| ---------- | ------------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
-| `template` | `string`                 | ❌       | -       | -     | -          | The template string containing variables in curly braces |
-| `vars`     | `Record<string, string>` | ❌       | -       | -     | -          | Object containing variable names and their values        |
+| Name       | Type                                  | Optional | Default | Since | Deprecated | Description                                              |
+| ---------- | ------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------- |
+| `template` | `string`                              | ❌       | -       | -     | -          | The template string containing variables in curly braces |
+| `vars`     | `Record<string, undefined \| string>` | ❌       | -       | -     | -          | Object containing variable names and their values        |
+
+---
+
+#### `updateOptions` (Method)
+
+**Type:** `(partial: Partial<TimestampFormatterOptions>) => void`
+
+#### Parameters
+
+| Name      | Type                                 | Optional | Default | Since | Deprecated | Description                                                           |
+| --------- | ------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
+| `partial` | `Partial<TimestampFormatterOptions>` | ❌       | -       | -     | -          | Partial options to merge (e.g. locale, prefixTemplate, localeOptions) |
+
+---
+
+##### `updateOptions` (CallSignature)
+
+**Type:** `void`
+
+**Since:** `1.1.0`
+
+Updates formatter options at runtime.
+Merges the given partial options into the current options; subsequent formatting uses the updated values.
+
+**Example:** Update locale at runtime
+
+```typescript
+const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+// later: switch to English
+formatter.updateOptions({ locale: 'en-US' });
+```
+
+**Example:** Update multiple options
+
+```typescript
+formatter.updateOptions({
+  locale: 'ja-JP',
+  localeOptions: { timeZone: 'Asia/Tokyo', hour12: false }
+});
+```
+
+#### Parameters
+
+| Name      | Type                                 | Optional | Default | Since | Deprecated | Description                                                           |
+| --------- | ------------------------------------ | -------- | ------- | ----- | ---------- | --------------------------------------------------------------------- |
+| `partial` | `Partial<TimestampFormatterOptions>` | ❌       | -       | -     | -          | Partial options to merge (e.g. locale, prefixTemplate, localeOptions) |
 
 ---
 
@@ -489,7 +535,7 @@ localeOptions: {
 **Type:** `string`
 
 **Default:** `ts
-'[{formattedTimestamp} {level}]'
+'[{loggerName}] [{formattedTimestamp} {level}]'
 `
 
 Template string for formatting the log prefix
@@ -507,9 +553,9 @@ Available variables:
 **Example:** Basic templates
 
 ```typescript
-// Default style
-prefixTemplate: '[{formattedTimestamp} {level}]';
-// Output: [2024-03-21 14:30:45 INFO]
+// Default style (includes logger name)
+prefixTemplate: '[{loggerName}] [{formattedTimestamp} {level}]';
+// Output: [UserService] [2024-03-21 14:30:45 INFO]
 
 // Custom format
 prefixTemplate: '【{level}】{formattedTimestamp} -';

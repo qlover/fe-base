@@ -11,7 +11,7 @@ import { type LogEvent } from './interface/LogEvent';
  *
  * Core features:
  * - Level-appropriate console method selection
- * - Optional message formatting support
+ * - Optional message formatting support (when no formatter, prepends [loggerName] when present)
  * - Fallback to console.log for unknown levels
  * - Array argument handling
  *
@@ -24,7 +24,7 @@ import { type LogEvent } from './interface/LogEvent';
  * });
  *
  * logger.info('Application started');
- * // Console output: Application started
+ * // Console output: [<loggerName>] Application started
  * ```
  *
  * @example With formatter
@@ -70,14 +70,14 @@ import { type LogEvent } from './interface/LogEvent';
  * const handler = new ConsoleHandler();
  * const logger = new Logger({ handlers: [handler] });
  *
- * // Initially no formatting
+ * // Initially no formatting (logger name prepended when set)
  * logger.info('Plain message');
- * // Console output: Plain message
+ * // Console output: [<loggerName>] Plain message
  *
  * // Add formatter
  * handler.setFormatter(new TimestampFormatter());
  * logger.info('Formatted message');
- * // Console output: [2024-03-21 14:30:45 INFO] Formatted message
+ * // Console output: [<loggerName>] [2024-03-21 14:30:45 INFO] Formatted message
  * ```
  */
 export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
@@ -90,7 +90,7 @@ export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
    * @example Without formatter
    * ```typescript
    * const handler = new ConsoleHandler();
-   * // Output: Raw message without formatting
+   * // Output: [loggerName] + raw message (logger name omitted if empty)
    * ```
    *
    * @example With timestamp formatter
@@ -196,7 +196,7 @@ export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
    *   timestamp: Date.now(),
    *   loggerName: 'app'
    * });
-   * // Console output: Application started
+   * // Console output: [app] Application started
    *
    * // Message with context
    * handler.append({
@@ -208,7 +208,7 @@ export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
    *   timestamp: Date.now(),
    *   loggerName: 'db'
    * });
-   * // Console output: Database connection failed { host: 'localhost', ... }
+   * // Console output: [db] Database connection failed { host: 'localhost', ... }
    * ```
    *
    * @example Formatted event handling
@@ -266,9 +266,13 @@ export class ConsoleHandler<Ctx> implements HandlerInterface<Ctx> {
    * ```
    */
   public append(event: LogEvent<Ctx>): void {
-    const { level, args } = event;
+    const { level, args, loggerName } = event;
 
-    const formattedArgs = this.formatter ? this.formatter.format(event) : args;
+    const formattedArgs = this.formatter
+      ? this.formatter.format(event)
+      : [loggerName ? `[${loggerName}]` : null, ...args].filter(
+          (x): x is unknown => x != null
+        );
 
     (
       console[level as 'log' | 'error' | 'warn' | 'info' | 'debug' | 'trace'] ||

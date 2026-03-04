@@ -14,7 +14,7 @@ export default defineConfig([
     globalName: pkgName,
     outExtension: ({ format }) => {
       if (format === 'iife') {
-        return { js: '.iife.js' };
+        return { js: '.umd.js' };
       }
       return { js: '.cjs' };
     },

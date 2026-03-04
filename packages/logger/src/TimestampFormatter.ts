@@ -178,13 +178,13 @@ export type TimestampFormatterOptions = {
    * - {locale}: Current locale setting
    * - Any property from TimestampFormatterContext
    *
-   * @default '[{formattedTimestamp} {level}]'
+   * @default '[{loggerName}] [{formattedTimestamp} {level}]'
    *
    * @example Basic templates
    * ```typescript
-   * // Default style
-   * prefixTemplate: '[{formattedTimestamp} {level}]'
-   * // Output: [2024-03-21 14:30:45 INFO]
+   * // Default style (includes logger name)
+   * prefixTemplate: '[{loggerName}] [{formattedTimestamp} {level}]'
+   * // Output: [UserService] [2024-03-21 14:30:45 INFO]
    *
    * // Custom format
    * prefixTemplate: '【{level}】{formattedTimestamp} -'
@@ -250,6 +250,8 @@ const defaultLocaleOptions: Intl.DateTimeFormatOptions = {
   hour12: false,
   timeZone: 'UTC'
 };
+
+const defaultPrefixTemplate = '[{loggerName}] [{formattedTimestamp} {level}]';
 
 /**
  * Formatter implementation that adds timestamps to log messages
@@ -369,17 +371,43 @@ export class TimestampFormatter<Ctx> implements FormatterInterface<Ctx> {
    * });
    * ```
    */
-  constructor(protected readonly options: TimestampFormatterOptions = {}) {}
+  constructor(protected options: TimestampFormatterOptions = {}) {}
+
+  /**
+   * Updates formatter options at runtime.
+   * Merges the given partial options into the current options; subsequent formatting uses the updated values.
+   *
+   * @param partial - Partial options to merge (e.g. locale, prefixTemplate, localeOptions)
+   * @since 1.1.0
+   *
+   * @example Update locale at runtime
+   * ```typescript
+   * const formatter = new TimestampFormatter({ locale: 'zh-CN' });
+   * // later: switch to English
+   * formatter.updateOptions({ locale: 'en-US' });
+   * ```
+   *
+   * @example Update multiple options
+   * ```typescript
+   * formatter.updateOptions({
+   *   locale: 'ja-JP',
+   *   localeOptions: { timeZone: 'Asia/Tokyo', hour12: false }
+   * });
+   * ```
+   */
+  public updateOptions(partial: Partial<TimestampFormatterOptions>): void {
+    this.options = { ...this.options, ...partial };
+  }
 
   /**
    * Replaces template variables in the prefix string with actual values
    *
-   * This internal method handles the variable substitution in prefix templates,
-   * replacing placeholders like {timestamp} with their corresponding values.
+   * Placeholders like {timestamp} are replaced with values from vars.
+   * Unknown or missing variables are skipped (replaced with empty string), not left as literal.
    *
    * @param template - The template string containing variables in curly braces
    * @param vars - Object containing variable names and their values
-   * @returns The template string with all variables replaced
+   * @returns The template string with known variables replaced, unknowns removed
    *
    * @example Internal usage
    * ```typescript
@@ -398,9 +426,12 @@ export class TimestampFormatter<Ctx> implements FormatterInterface<Ctx> {
    */
   protected replacePrefix(
     template: string,
-    vars: Record<string, string>
+    vars: Record<string, string | undefined>
   ): string {
-    return template.replace(/\{([^{}]+)\}/g, (match, p1) => vars[p1] || match);
+    // Skip (replace with empty) when variable is not provided; no error
+    return template.replace(/\{([^{}]+)\}/g, (_match, p1) =>
+      p1 in vars ? String(vars[p1] ?? '') : ''
+    );
   }
 
   /**
@@ -451,7 +482,7 @@ export class TimestampFormatter<Ctx> implements FormatterInterface<Ctx> {
     const {
       locale = 'zh-CN',
       localeOptions,
-      prefixTemplate = '[{formattedTimestamp} {level}]'
+      prefixTemplate = defaultPrefixTemplate
     } = this.options;
 
     const formatType =

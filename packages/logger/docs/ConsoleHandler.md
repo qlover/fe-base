@@ -17,7 +17,7 @@ log level. It supports optional formatting through a formatter instance.
 Core features:
 
 - Level-appropriate console method selection
-- Optional message formatting support
+- Optional message formatting support (when no formatter, prepends [loggerName] when present)
 - Fallback to console.log for unknown levels
 - Array argument handling
 
@@ -31,7 +31,7 @@ const logger = new Logger({
 });
 
 logger.info('Application started');
-// Console output: Application started
+// Console output: [<loggerName>] Application started
 ```
 
 **Example:** With formatter
@@ -78,14 +78,14 @@ logger.error('Request failed', { error: new Error('Network error') });
 const handler = new ConsoleHandler();
 const logger = new Logger({ handlers: [handler] });
 
-// Initially no formatting
+// Initially no formatting (logger name prepended when set)
 logger.info('Plain message');
-// Console output: Plain message
+// Console output: [<loggerName>] Plain message
 
 // Add formatter
 handler.setFormatter(new TimestampFormatter());
 logger.info('Formatted message');
-// Console output: [2024-03-21 14:30:45 INFO] Formatted message
+// Console output: [<loggerName>] [2024-03-21 14:30:45 INFO] Formatted message
 ```
 
 ---
@@ -153,7 +153,7 @@ handler.append({
   timestamp: Date.now(),
   loggerName: 'app'
 });
-// Console output: Application started
+// Console output: [app] Application started
 
 // Message with context
 handler.append({
@@ -165,7 +165,7 @@ handler.append({
   timestamp: Date.now(),
   loggerName: 'db'
 });
-// Console output: Database connection failed { host: 'localhost', ... }
+// Console output: [db] Database connection failed { host: 'localhost', ... }
 ```
 
 **Example:** Formatted event handling

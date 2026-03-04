@@ -280,9 +280,9 @@ describe('Logger', () => {
       logger.error('error message');
       logger.warn('warn message');
 
-      expect(infoSpy).toHaveBeenCalledWith('info message');
-      expect(errorSpy).toHaveBeenCalledWith('error message');
-      expect(warnSpy).toHaveBeenCalledWith('warn message');
+      expect(infoSpy).toHaveBeenCalledWith('[TestLogger]', 'info message');
+      expect(errorSpy).toHaveBeenCalledWith('[TestLogger]', 'error message');
+      expect(warnSpy).toHaveBeenCalledWith('[TestLogger]', 'warn message');
 
       infoSpy.mockRestore();
       errorSpy.mockRestore();
@@ -304,7 +304,10 @@ describe('Logger', () => {
 
       logger.info('message');
 
-      expect(infoSpy).toHaveBeenCalledWith('[12:00:00 info]', 'message');
+      expect(infoSpy).toHaveBeenCalledWith(
+        '[TestLogger] [12:00:00 info]',
+        'message'
+      );
 
       // dateSpy.mockRestore();
       infoSpy.mockRestore();
@@ -327,7 +330,10 @@ describe('Logger', () => {
 
       logger.info('message');
 
-      expect(infoSpy).toHaveBeenCalledWith('[12:00:00 info]', 'message');
+      expect(infoSpy).toHaveBeenCalledWith(
+        '[TestLogger] [12:00:00 info]',
+        'message'
+      );
 
       nowSpy.mockRestore();
       infoSpy.mockRestore();
