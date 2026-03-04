@@ -1,5 +1,28 @@
 # @qlover/logger
 
+## 1.1.0
+
+### Minor Changes
+
+#### ✨ Features
+
+- **logger:** add updateOptions method to TimestampFormatter for dynamic configuration ([341a305](https://github.com/qlover/fe-base/commit/341a305fe44bcb8cac5a22da6fa3e8632d874921)) ([#588](https://github.com/qlover/fe-base/pull/588))
+  - Implemented the `updateOptions` method in `TimestampFormatter` to allow runtime updates of locale, prefix template, and locale options.
+  - Enhanced tests to verify the functionality of `updateOptions`, ensuring correct behavior when changing formatting options dynamically.
+  - Updated documentation to include details about the new method and its usage examples, improving clarity for developers.
+
+  These changes aim to enhance the flexibility of the logging system by allowing real-time adjustments to formatting settings.
+
+#### ♻️ Refactors
+
+- **logger:** prepend logger name to console output and update tests ([dc894bd](https://github.com/qlover/fe-base/commit/dc894bd06e76c10218a7ba632f5f0a6b412363bb)) ([#588](https://github.com/qlover/fe-base/pull/588))
+  - Updated ConsoleHandler and Logger tests to prepend the logger name to console output for better context in logs.
+  - Modified TimestampFormatter to include the logger name in formatted output.
+  - Enhanced documentation to reflect changes in output formatting and behavior.
+  - Added handling for unknown variables in prefix templates to prevent errors during logging.
+
+  These changes aim to improve log clarity and maintainability by ensuring consistent output formatting across the logging system.
+
 ## 1.0.0
 
 ### Major Changes
