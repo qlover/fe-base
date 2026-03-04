@@ -25,7 +25,7 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    expect(console.info).toHaveBeenCalledWith('Test message');
+    expect(console.info).toHaveBeenCalledWith('[testLogger]', 'Test message');
   });
 
   it('should append log event with multiple arguments', () => {
@@ -38,7 +38,9 @@ describe('ConsoleHandler', () => {
 
     appender.append(event);
 
-    expect(console.debug).toHaveBeenCalledWith('Debug', 123, { foo: 'bar' });
+    expect(console.debug).toHaveBeenCalledWith('[testLogger]', 'Debug', 123, {
+      foo: 'bar'
+    });
   });
 
   it('should use formatter when provided', () => {
@@ -59,7 +61,7 @@ describe('ConsoleHandler', () => {
     });
 
     expect(console.warn).toHaveBeenCalledWith(
-      `[${formattedTimestamp} warn]`,
+      `[testLogger] [${formattedTimestamp} warn]`,
       'Warning message'
     );
   });
@@ -97,7 +99,7 @@ describe('ConsoleHandler', () => {
     });
 
     expect(console.info).toHaveBeenCalledWith(
-      `[${formattedTimestamp} info]`,
+      `[testLogger] [${formattedTimestamp} info]`,
       'Test message'
     );
   });
@@ -118,7 +120,10 @@ describe('ConsoleHandler', () => {
       appender.append(event);
 
       // Verify the correct console method was called
-      expect(console[level]).toHaveBeenCalledWith(`${level} message`);
+      expect(console[level]).toHaveBeenCalledWith(
+        '[testLogger]',
+        `${level} message`
+      );
     }
   });
 });

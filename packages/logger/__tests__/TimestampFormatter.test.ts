@@ -22,7 +22,7 @@ describe('TimestampFormatter', () => {
       timeZone: 'UTC'
     });
 
-    expect(formattedOutput[0]).toBe(`[${expectedTimestamp} info]`);
+    expect(formattedOutput[0]).toBe(`[testLogger] [${expectedTimestamp} info]`);
     expect(formattedOutput[1]).toBe('Test message');
   });
 
@@ -46,7 +46,7 @@ describe('TimestampFormatter', () => {
       }
     );
 
-    expect(formattedOutput[0]).toBe(`[${expectedTimestamp} info]`);
+    expect(formattedOutput[0]).toBe(`[testLogger] [${expectedTimestamp} info]`);
   });
 
   it('should format with time format type', () => {
@@ -69,7 +69,7 @@ describe('TimestampFormatter', () => {
       }
     );
 
-    expect(formattedOutput[0]).toBe(`[${expectedTimestamp} info]`);
+    expect(formattedOutput[0]).toBe(`[testLogger] [${expectedTimestamp} info]`);
   });
 
   it('should use custom locale', () => {
@@ -87,7 +87,7 @@ describe('TimestampFormatter', () => {
       timeZone: 'UTC'
     });
 
-    expect(formattedOutput[0]).toBe(`[${expectedTimestamp} info]`);
+    expect(formattedOutput[0]).toBe(`[testLogger] [${expectedTimestamp} info]`);
   });
 
   it('should use custom date time options', () => {
@@ -116,7 +116,7 @@ describe('TimestampFormatter', () => {
       options
     );
 
-    expect(formattedOutput[0]).toBe(`[${expectedTimestamp} warn]`);
+    expect(formattedOutput[0]).toBe(`[testLogger] [${expectedTimestamp} warn]`);
   });
 
   it('should handle all format types with different locales', () => {
@@ -153,8 +153,32 @@ describe('TimestampFormatter', () => {
           timeZone: 'UTC'
         });
 
-        expect(formattedOutput[0]).toBe(`[${expectedTimestamp} info]`);
+        expect(formattedOutput[0]).toBe(`[logger] [${expectedTimestamp} info]`);
       }
     }
+  });
+
+  it('should skip unknown variables in prefixTemplate (no error)', () => {
+    const formatter = new TimestampFormatter({
+      prefixTemplate:
+        '[{loggerName}] [{formattedTimestamp} {level}] {unknownVar}'
+    });
+    const event = new LogEvent('info', ['Test message'], 'testLogger');
+    event.timestamp = TEST_TIMESTAMP;
+
+    const formattedOutput = formatter.format(event);
+
+    const expectedTimestamp = new Date(TEST_TIMESTAMP).toLocaleString('zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: 'UTC'
+    });
+    // Unknown {unknownVar} is replaced with empty string, not left as literal
+    expect(formattedOutput[0]).toBe(
+      `[testLogger] [${expectedTimestamp} info] `
+    );
+    expect((formattedOutput[0] as string).includes('unknownVar')).toBe(false);
   });
 });
