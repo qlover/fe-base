@@ -1,0 +1,113 @@
+@layer base {
+  :root,
+  .fe-theme.theme-light {
+    --color-bg-base: 255 255 255;
+    --color-bg-secondary: 241 245 249;
+    --color-bg-elevated: 248 250 252;
+    --text-primary: 15 23 42;
+    --text-primary-hover: 100 116 139;
+    --text-secondary: 71 85 105;
+    --text-tertiary: 100 116 139;
+    --color-border: 226 232 240;
+    --color-brand: 37 99 235;
+    --color-brand-hover: 59 130 246;
+    --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    --fe-color-bg-container: rgb(255 255 255);
+    --fe-color-border: rgb(226 232 240);
+    --fe-color-primary: rgb(var(--color-brand));
+
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: var(--fe-color-border);
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: var(--fe-color-border);
+
+    /* Tailwind 原子类用到的变量：必须在每个主题块里定义，否则微信/小程序里只认 :root 导致 dark/pink 不生效 */
+    --color-primary: rgba(var(--color-bg-base));
+    --color-secondary: rgba(var(--color-bg-secondary));
+    --color-elevated: rgba(var(--color-bg-elevated));
+    --color-primary-text: rgba(var(--text-primary));
+    --color-primary-text-hover: rgba(var(--text-primary-hover));
+    --color-secondary-text: rgba(var(--text-secondary));
+    --color-tertiary-text: rgba(var(--text-tertiary));
+    --color-primary-border: rgba(var(--color-border));
+    --color-brand: rgba(var(--color-brand));
+    --color-brand-hover: rgba(var(--color-brand-hover));
+  }
+
+  /* 使用 class 而非 data-theme，因小程序编译后自定义 data-* 不会输出到模板 */
+  html[data-theme='dark'],
+  [data-theme='dark'],
+  .fe-theme.theme-dark {
+    --color-bg-base: 15 23 42;
+    --color-bg-secondary: 30 41 59;
+    --color-bg-elevated: 51 65 85;
+    --text-primary: 255 255 255;
+    --text-primary-hover: 148 163 184;
+    --text-secondary: 148 163 184;
+    --text-tertiary: 100 116 139;
+    --color-border: 51 65 85;
+    --color-brand: 37 99 235;
+    --color-brand-hover: 59 130 246;
+    --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    --fe-color-bg-container: rgb(30 41 59);
+    --fe-color-border: rgb(51 65 85);
+    --fe-color-primary: rgb(var(--color-brand));
+
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: var(--fe-color-border);
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: var(--fe-color-border);
+
+    --color-primary: rgba(var(--color-bg-base));
+    --color-secondary: rgba(var(--color-bg-secondary));
+    --color-elevated: rgba(var(--color-bg-elevated));
+    --color-primary-text: rgba(var(--text-primary));
+    --color-primary-text-hover: rgba(var(--text-primary-hover));
+    --color-secondary-text: rgba(var(--text-secondary));
+    --color-tertiary-text: rgba(var(--text-tertiary));
+    --color-primary-border: rgba(var(--color-border));
+    --color-brand: rgba(var(--color-brand));
+    --color-brand-hover: rgba(var(--color-brand-hover));
+  }
+
+  html[data-theme='pink'],
+  [data-theme='pink'],
+  .fe-theme.theme-pink {
+    --color-bg-base: 255 241 242;
+    --color-bg-secondary: 255 228 230;
+    --color-bg-elevated: 254 205 211;
+    --text-primary: 190 18 60;
+    --text-primary-hover: 244 63 94;
+    --text-secondary: 225 29 72;
+    --text-tertiary: 244 63 94;
+    --color-border: 254 205 211;
+    --color-brand: 225 29 72;
+    --color-brand-hover: 244 63 94;
+    --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
+
+    --fe-color-border: rgb(254 205 211);
+    --fe-color-bg-container: rgb(255 241 242);
+    --fe-color-primary: rgb(var(--color-brand));
+
+    --login-input-bg: var(--fe-color-bg-container);
+    --login-input-border: var(--fe-color-border);
+    --login-button-text: rgb(255 255 255);
+    --login-social-button-bg: var(--fe-color-bg-container);
+    --login-social-button-border: var(--fe-color-border);
+
+    --color-primary: rgba(var(--color-bg-base));
+    --color-secondary: rgba(var(--color-bg-secondary));
+    --color-elevated: rgba(var(--color-bg-elevated));
+    --color-primary-text: rgba(var(--text-primary));
+    --color-primary-text-hover: rgba(var(--text-primary-hover));
+    --color-secondary-text: rgba(var(--text-secondary));
+    --color-tertiary-text: rgba(var(--text-tertiary));
+    --color-primary-border: rgba(var(--color-border));
+    --color-brand: rgba(var(--color-brand));
+    --color-brand-hover: rgba(var(--color-brand-hover));
+  }
+}

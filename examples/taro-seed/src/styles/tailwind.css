@@ -1,0 +1,9 @@
+@layer theme, base, antd, components, utilities;
+
+@import 'tailwindcss';
+
+@import './themes/default.css';
+/* @import "./themes/color-scheme-default.css"; */
+
+/* custom styles */
+@import './themes/custom-styles.css';
