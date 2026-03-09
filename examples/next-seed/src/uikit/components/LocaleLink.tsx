@@ -5,7 +5,9 @@ import type { LinkProps } from 'next/link';
 import type { ReactNode } from 'react';
 
 interface LocaleLinkProps
-  extends Omit<LinkProps, 'href'>, React.HTMLAttributes<HTMLAnchorElement> {
+  extends
+    Omit<LinkProps, 'href'>,
+    Omit<React.HTMLAttributes<HTMLAnchorElement>, 'children'> {
   href:
     | string
     | {
