@@ -1,7 +1,7 @@
 {
   "name": "browser-plugin-seed",
   "displayName": "Eat flaky ape",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A basic Plasmo extension.",
   "author": "qlover",
   "scripts": {

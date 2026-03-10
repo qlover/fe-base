@@ -1,5 +1,9 @@
 # examples/react-seed
 
+## 0.1.2
+
+### Patch Changes
+
 ## 0.1.0
 
 ### Minor Changes
