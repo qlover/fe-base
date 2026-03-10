@@ -1,0 +1,42 @@
+@layer base {
+  :root {
+    --color-bg-base: 255 255 255;
+    --color-bg-secondary: 241 245 249;
+    --color-bg-elevated: 248 250 252;
+    --text-primary: 15 23 42;
+    --text-primary-hover: 100 116 139;
+    --text-secondary: 71 85 105;
+    --text-tertiary: 100 116 139;
+    --color-border: 226 232 240;
+    --color-brand: 37 99 235;
+    --color-brand-hover: 59 130 246;
+  }
+
+  html[data-theme='dark'],
+  [data-theme='dark'] {
+    --color-bg-base: 15 23 42;
+    --color-bg-secondary: 30 41 59;
+    --color-bg-elevated: 51 65 85;
+    --text-primary: 255 255 255;
+    --text-primary-hover: 148 163 184;
+    --text-secondary: 148 163 184;
+    --text-tertiary: 100 116 139;
+    --color-border: 51 65 85;
+    --color-brand: 37 99 235;
+    --color-brand-hover: 59 130 246;
+  }
+
+  html[data-theme='pink'],
+  [data-theme='pink'] {
+    --color-bg-base: 255 241 242;
+    --color-bg-secondary: 255 228 230;
+    --color-bg-elevated: 254 205 211;
+    --text-primary: 190 18 60;
+    --text-primary-hover: 244 63 94;
+    --text-secondary: 225 29 72;
+    --text-tertiary: 244 63 94;
+    --color-border: 254 205 211;
+    --color-brand: 225 29 72;
+    --color-brand-hover: 244 63 94;
+  }
+}

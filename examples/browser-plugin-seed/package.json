@@ -1,0 +1,69 @@
+{
+  "name": "browser-plugin-seed",
+  "displayName": "Eat flaky ape",
+  "version": "0.0.1",
+  "description": "A basic Plasmo extension.",
+  "author": "qlover",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development npm run startup && plasmo dev",
+    "build:prod": "npm run startup && plasmo build",
+    "package": "npm run startup && plasmo package",
+    "startup": "node srcripts/startup.js",
+    "postinstall": "node srcripts/startup.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write src",
+    "type-check": "tsc --noEmit",
+    "fix": "npm run lint:fix && npm run format"
+  },
+  "dependencies": {
+    "@brain-toolkit/brain-user": "^0.2.0",
+    "@qlover/corekit-bridge": "^2.2.0",
+    "@qlover/fe-corekit": "^3.2.0",
+    "@qlover/logger": "^1.1.0",
+    "any-signal": "^4.2.0",
+    "plasmo": "0.90.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^7.13.1",
+    "tailwindcss": "4.2.0"
+  },
+  "devDependencies": {
+    "@brain-toolkit/ts2locales": "^0.4.0",
+    "@eslint/js": "^10.0.1",
+    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@qlover/eslint-plugin": "^2.0.0",
+    "@tailwindcss/postcss": "^4.2.1",
+    "@types/chrome": "0.0.258",
+    "@types/node": "20.11.5",
+    "@types/react": "18.2.48",
+    "@types/react-dom": "18.2.18",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.0.3",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.4.0",
+    "postcss": "8.4.33",
+    "prettier": "3.2.4",
+    "typescript": "5.3.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "alias": {
+    "@qlover/slice-store": "./node_modules/@qlover/slice-store/dist/index.js",
+    "any-signal": "./node_modules/any-signal/dist/src/index.js"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*/*"
+    ]
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@qlover/corekit-bridge": "patches/@qlover__corekit-bridge.patch",
+      "@qlover/fe-corekit": "patches/@qlover__fe-corekit.patch"
+    }
+  }
+}
