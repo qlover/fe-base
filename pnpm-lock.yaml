@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@types/react': 19.2.13
+  '@types/react-dom': 19.2.3
+
 importers:
 
   .:
@@ -217,11 +221,11 @@ importers:
         specifier: 20.11.5
         version: 20.11.5
       '@types/react':
-        specifier: 18.2.48
-        version: 18.2.48
+        specifier: 19.2.13
+        version: 19.2.13
       '@types/react-dom':
-        specifier: 18.2.18
-        version: 18.2.18
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.13)
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
@@ -383,7 +387,7 @@ importers:
         specifier: ^20
         version: 20.19.33
       '@types/react':
-        specifier: ^19
+        specifier: 19.2.13
         version: 19.2.13
       cross-env:
         specifier: ^7.0.3
@@ -507,10 +511,10 @@ importers:
         specifier: ^24.10.1
         version: 24.10.13
       '@types/react':
-        specifier: ^19.2.5
+        specifier: 19.2.13
         version: 19.2.13
       '@types/react-dom':
-        specifier: ^19.2.3
+        specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.13)
       '@typescript-eslint/parser':
         specifier: ^8.54.0
@@ -586,10 +590,10 @@ importers:
         version: 1.1.0
       '@qlover/slice-store-react':
         specifier: ^1.4.2
-        version: 1.4.2(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.4.2(@types/react@19.2.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tarojs/components':
         specifier: 4.1.11
-        version: 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+        version: 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       '@tarojs/helper':
         specifier: 4.1.11
         version: 4.1.11(@swc/helpers@0.5.18)
@@ -601,10 +605,10 @@ importers:
         version: 4.1.11(@tarojs/service@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)
       '@tarojs/plugin-platform-h5':
         specifier: 4.1.11
-        version: 4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
+        version: 4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
       '@tarojs/plugin-platform-harmony-hybrid':
         specifier: 4.1.11
-        version: 4.1.11(@babel/core@7.29.0)(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
+        version: 4.1.11(@babel/core@7.29.0)(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
       '@tarojs/plugin-platform-jd':
         specifier: 4.1.11
         version: 4.1.11(@tarojs/service@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)
@@ -631,7 +635,7 @@ importers:
         version: 4.1.11
       '@tarojs/taro':
         specifier: 4.1.11
-        version: 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+        version: 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -691,8 +695,8 @@ importers:
         specifier: ^25.3.5
         version: 25.3.5
       '@types/react':
-        specifier: ^18.0.0
-        version: 18.3.28
+        specifier: 19.2.13
+        version: 19.2.13
       '@vitejs/plugin-react':
         specifier: ^4.3.0
         version: 4.7.0(vite@4.5.14(@types/node@25.3.5)(less@4.5.1)(lightningcss@1.31.1)(sass@1.97.3)(terser@5.46.0))
@@ -4649,7 +4653,7 @@ packages:
   '@qlover/slice-store-react@1.4.2':
     resolution: {integrity: sha512-yhYoWhQDdUCeXJlwiZHoA7i1ujEYcz9Gv9ZBDtu5y/yVG45uQLneXfB8GvcjFu8l3nLTrRebUg5DVVUi+IGCJw==}
     peerDependencies:
-      '@types/react': '>=18'
+      '@types/react': 19.2.13
       react: '>=18'
       react-dom: '>=18'
     peerDependenciesMeta:
@@ -6072,7 +6076,7 @@ packages:
       '@tarojs/components': 4.1.11
       '@tarojs/helper': 4.1.11
       '@tarojs/shared': 4.1.11
-      '@types/react': ^18
+      '@types/react': 19.2.13
       html-webpack-plugin: ^5
       postcss: ^8
       rollup: ^3
@@ -6261,25 +6265,13 @@ packages:
   '@types/prismjs@1.26.6':
     resolution: {integrity: sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw==}
 
-  '@types/prop-types@15.7.15':
-    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
-
   '@types/ramda@0.30.2':
     resolution: {integrity: sha512-PyzHvjCalm2BRYjAU6nIB3TprYwMNOUY/7P/N8bSzp9W/yM2YrtGtAnnVtaCNSeOZ8DzKyFDvaqQs7LnWwwmBA==}
-
-  '@types/react-dom@18.2.18':
-    resolution: {integrity: sha512-TJxDm6OfAX2KJWJdMEVTwWke5Sc/E/RlnPGvGfS0W7+6ocy2xhDVQVh/KvC2Uf7kACs+gDytdusDSdWfWkaNzw==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
-      '@types/react': ^19.2.0
-
-  '@types/react@18.2.48':
-    resolution: {integrity: sha512-qboRCl6Ie70DQQG9hhNREz81jqC1cs9EVNcjQ1AU+jH6NFfSAhVVbrrY/+nSF+Bsk4AOwm9Qa61InvMCyV+H3w==}
-
-  '@types/react@18.3.28':
-    resolution: {integrity: sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==}
+      '@types/react': 19.2.13
 
   '@types/react@19.2.13':
     resolution: {integrity: sha512-KkiJeU6VbYbUOp5ITMIc7kBfqlYkKA5KhEHVrGMmUUMt7NeaZg65ojdPk+FtNrBAOXNVM5QM72jnADjM+XVRAQ==}
@@ -6296,9 +6288,6 @@ packages:
   '@types/sass@1.45.0':
     resolution: {integrity: sha512-jn7qwGFmJHwUSphV8zZneO3GmtlgLsmhs/LQyVvQbIIa+fzGMUiHI4HXJZL3FT8MJmgXWbLGiVVY7ElvHq6vDA==}
     deprecated: This is a stub types definition. sass provides its own type definitions, so you do not need this installed.
-
-  '@types/scheduler@0.26.0':
-    resolution: {integrity: sha512-WFHp9YUJQ6CKshqoC37iOlHnQSmxNc795UhB26CyBBttrN9svdIrUjl/NjnNmfcwtncN0h/0PPAFWv9ovP8mLA==}
 
   '@types/semver@7.7.1':
     resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
@@ -11970,7 +11959,7 @@ packages:
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
     peerDependencies:
-      '@types/react': ^18.2.25 || ^19
+      '@types/react': 19.2.13
       react: ^18.0 || ^19
       redux: ^5.0.0
     peerDependenciesMeta:
@@ -18129,12 +18118,12 @@ snapshots:
 
   '@qlover/logger@1.1.0': {}
 
-  '@qlover/slice-store-react@1.4.2(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@qlover/slice-store': 1.4.1
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
-      '@types/react': 18.3.28
+      '@types/react': 19.2.13
       react: 18.3.1
 
   '@qlover/slice-store-react@1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@18.3.1)':
@@ -19487,12 +19476,12 @@ snapshots:
       - debug
       - supports-color
 
-  '@tarojs/components-react@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
+  '@tarojs/components-react@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
     dependencies:
       '@babel/runtime': 7.28.6
-      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       '@tarojs/shared': 4.1.11
-      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       classnames: 2.5.1
       identity-obj-proxy: 3.0.0
       react: 18.3.1
@@ -19510,12 +19499,12 @@ snapshots:
       - webpack-chain
       - webpack-dev-server
 
-  '@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)':
+  '@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)':
     dependencies:
       '@stencil/core': 2.22.3
       '@tarojs/runtime': 4.1.11
       '@tarojs/shared': 4.1.11
-      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       classnames: 2.5.1
       hammerjs: 2.0.8
       hls.js: 1.6.15
@@ -19523,7 +19512,7 @@ snapshots:
       swiper: 11.1.15
       tslib: 2.8.1
     optionalDependencies:
-      '@types/react': 18.3.28
+      '@types/react': 19.2.13
       vue: 3.3.4
     transitivePeerDependencies:
       - '@tarojs/helper'
@@ -19692,16 +19681,16 @@ snapshots:
       '@tarojs/service': 4.1.11(@swc/helpers@0.5.18)
       '@tarojs/shared': 4.1.11
 
-  '@tarojs/plugin-platform-h5@4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
+  '@tarojs/plugin-platform-h5@4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
     dependencies:
       '@babel/core': 7.29.0
-      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
-      '@tarojs/components-react': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
+      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/components-react': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
       '@tarojs/helper': 4.1.11(@swc/helpers@0.5.18)
       '@tarojs/runtime': 4.1.11
       '@tarojs/service': 4.1.11(@swc/helpers@0.5.18)
       '@tarojs/shared': 4.1.11
-      '@tarojs/taro-h5': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
+      '@tarojs/taro-h5': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
       babel-plugin-transform-taroapi: 4.1.11(@babel/core@7.29.0)
       change-case: 4.1.2
       lodash-es: 4.17.21
@@ -19721,18 +19710,18 @@ snapshots:
       - webpack-chain
       - webpack-dev-server
 
-  '@tarojs/plugin-platform-harmony-hybrid@4.1.11(@babel/core@7.29.0)(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
+  '@tarojs/plugin-platform-harmony-hybrid@4.1.11(@babel/core@7.29.0)(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)':
     dependencies:
       '@tarojs/api': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)
-      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
-      '@tarojs/components-react': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
+      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/components-react': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
       '@tarojs/helper': 4.1.11(@swc/helpers@0.5.18)
-      '@tarojs/plugin-platform-h5': 4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@18.3.28)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
-      '@tarojs/router': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
+      '@tarojs/plugin-platform-h5': 4.1.11(@swc/helpers@0.5.18)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@types/react@19.2.13)(postcss@8.5.6)(react@18.3.1)(rollup@3.30.0)(solid-js@1.9.11)(vue@3.3.4)
+      '@tarojs/router': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
       '@tarojs/runtime': 4.1.11
       '@tarojs/service': 4.1.11(@swc/helpers@0.5.18)
       '@tarojs/shared': 4.1.11
-      '@tarojs/taro-h5': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
+      '@tarojs/taro-h5': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
       axios: 1.13.5
       babel-plugin-transform-taroapi: 4.1.11(@babel/core@7.29.0)
       base64-js: 1.5.1
@@ -19791,11 +19780,11 @@ snapshots:
       react: 18.3.1
       react-reconciler: 0.29.0(react@18.3.1)
 
-  '@tarojs/router@4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))':
+  '@tarojs/router@4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))':
     dependencies:
       '@tarojs/runtime': 4.1.11
       '@tarojs/shared': 4.1.11
-      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/taro': 4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       dingtalk-jsapi: 2.15.6
       history: 5.3.0
       mobile-detect: 1.4.5
@@ -19834,11 +19823,11 @@ snapshots:
 
   '@tarojs/shared@4.1.11': {}
 
-  '@tarojs/taro-h5@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))':
+  '@tarojs/taro-h5@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))':
     dependencies:
       '@tarojs/api': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)
-      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
-      '@tarojs/router': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
+      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/router': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)(@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))
       '@tarojs/runtime': 4.1.11
       '@tarojs/shared': 4.1.11
       abortcontroller-polyfill: 1.7.8
@@ -19854,17 +19843,17 @@ snapshots:
     transitivePeerDependencies:
       - '@tarojs/taro'
 
-  '@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)':
+  '@tarojs/taro@4.1.11(@tarojs/components@4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4))(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@tarojs/shared@4.1.11)(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)':
     dependencies:
       '@tarojs/api': 4.1.11(@tarojs/runtime@4.1.11)(@tarojs/shared@4.1.11)
-      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.28)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
+      '@tarojs/components': 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@19.2.13)(postcss@8.5.6)(rollup@3.30.0)(vue@3.3.4)
       '@tarojs/helper': 4.1.11(@swc/helpers@0.5.18)
       '@tarojs/runtime': 4.1.11
       '@tarojs/shared': 4.1.11
       '@types/postcss-url': 10.0.4
       postcss: 8.5.6
     optionalDependencies:
-      '@types/react': 18.3.28
+      '@types/react': 19.2.13
       rollup: 3.30.0
       vue: 3.3.4
 
@@ -20094,30 +20083,13 @@ snapshots:
 
   '@types/prismjs@1.26.6': {}
 
-  '@types/prop-types@15.7.15': {}
-
   '@types/ramda@0.30.2':
     dependencies:
       types-ramda: 0.30.1
 
-  '@types/react-dom@18.2.18':
-    dependencies:
-      '@types/react': 19.2.13
-
   '@types/react-dom@19.2.3(@types/react@19.2.13)':
     dependencies:
       '@types/react': 19.2.13
-
-  '@types/react@18.2.48':
-    dependencies:
-      '@types/prop-types': 15.7.15
-      '@types/scheduler': 0.26.0
-      csstype: 3.2.3
-
-  '@types/react@18.3.28':
-    dependencies:
-      '@types/prop-types': 15.7.15
-      csstype: 3.2.3
 
   '@types/react@19.2.13':
     dependencies:
@@ -20134,8 +20106,6 @@ snapshots:
   '@types/sass@1.45.0':
     dependencies:
       sass: 1.97.3
-
-  '@types/scheduler@0.26.0': {}
 
   '@types/semver@7.7.1': {}
 
