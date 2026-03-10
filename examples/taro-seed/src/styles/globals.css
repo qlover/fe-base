@@ -1,0 +1,8 @@
+@layer base {
+  * {
+    @apply border-primary-border;
+  }
+  body {
+    @apply bg-primary text-primary-text;
+  }
+}

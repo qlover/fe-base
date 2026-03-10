@@ -1,0 +1,21 @@
+/**
+ * This file is used to define the page styles for the app.
+ * 
+ * @see https://tailwindcss.com/docs/adding-custom-styles
+ * @example 原子类（需配合 default.css 各主题块中的变量，dark/pink 才在微信内生效）
+ * ```tsx
+ * <div className="bg-primary text-primary-text border-tertiary-text"></div>
+ * ```
+ */
+@theme {
+  --color-primary: rgba(var(--color-bg-base));
+  --color-secondary: rgba(var(--color-bg-secondary));
+  --color-elevated: rgba(var(--color-bg-elevated));
+  --color-primary-text: rgba(var(--text-primary));
+  --color-primary-text-hover: rgba(var(--text-primary-hover));
+  --color-secondary-text: rgba(var(--text-secondary));
+  --color-tertiary-text: rgba(var(--text-tertiary));
+  --color-primary-border: rgba(var(--color-border));
+  --color-brand: rgba(var(--color-brand));
+  --color-brand-hover: rgba(var(--color-brand-hover));
+}

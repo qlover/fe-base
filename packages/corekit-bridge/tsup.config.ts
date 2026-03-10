@@ -42,7 +42,7 @@ export default defineConfig([
     minify: false,
     clean: true,
     silent: true,
-    bundle: false,
+    bundle: true,
     outExtension: () => ({ js: '.cjs' }),
     outDir: 'dist'
   },
