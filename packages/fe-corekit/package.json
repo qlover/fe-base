@@ -11,14 +11,12 @@
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "browser": "./dist/index.iife.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "browser": "./dist/index.iife.js",
       "require": "./dist/index.cjs"
     },
     "./aborter": {

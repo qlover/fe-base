@@ -1,6 +1,9 @@
 const { resolve } = require('path');
 const { generateLocales } = require('./generate-locales');
-const { main } = require('./patch-jiti');
+// 当运行再 workspace 仓库中时
+const { main } = require('./patch-jiti.workspace');
+// 运行再本地
+// const { main } = require('./patch-jiti');
 
 const relativePath = (path) => resolve(__dirname, path);
 

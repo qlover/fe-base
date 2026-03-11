@@ -112,6 +112,10 @@
     "overrides": {
       "@types/react": "19.2.13",
       "@types/react-dom": "19.2.3"
+    },
+    "patchedDependencies": {
+      "@qlover/corekit-bridge": "examples/browser-plugin-seed/patches/@qlover__corekit-bridge.patch",
+      "@qlover/fe-corekit": "examples/browser-plugin-seed/patches/@qlover__fe-corekit.patch"
     }
   }
 }

@@ -13,7 +13,6 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "browser": "./dist/index.iife.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {

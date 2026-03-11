@@ -8,6 +8,14 @@ overrides:
   '@types/react': 19.2.13
   '@types/react-dom': 19.2.3
 
+patchedDependencies:
+  '@qlover/corekit-bridge':
+    hash: 121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0
+    path: examples/browser-plugin-seed/patches/@qlover__corekit-bridge.patch
+  '@qlover/fe-corekit':
+    hash: c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061
+    path: examples/browser-plugin-seed/patches/@qlover__fe-corekit.patch
+
 importers:
 
   .:
@@ -172,7 +180,7 @@ importers:
   examples/browser-plugin-seed:
     dependencies:
       '@brain-toolkit/brain-user':
-        specifier: ^0.2.0
+        specifier: ^0.2.1
         version: 0.2.1(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
       '@qlover/corekit-bridge':
         specifier: workspace:*
@@ -375,8 +383,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.3
       '@qlover/eslint-plugin':
-        specifier: ^2.0.0
-        version: 2.0.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
+        specifier: workspace:*
+        version: link:../../packages/eslint-plugin
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.2.1
@@ -14549,8 +14557,8 @@ snapshots:
   '@brain-toolkit/antd-blocks@0.1.2(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.2)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@ant-design/icons': 6.1.0(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
-      '@qlover/corekit-bridge': 2.2.0(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
-      '@qlover/fe-corekit': 3.2.0
+      '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/slice-store-react': 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       antd: 5.29.3(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       react: 18.3.1
@@ -14576,8 +14584,8 @@ snapshots:
 
   '@brain-toolkit/brain-user@0.2.1(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
-      '@qlover/corekit-bridge': 2.2.0(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
-      '@qlover/fe-corekit': 3.2.0
+      '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/logger': 1.1.0
       lodash-es: 4.17.23
     transitivePeerDependencies:
@@ -14595,8 +14603,8 @@ snapshots:
 
   '@brain-toolkit/react-kit@0.2.2(@types/node@20.11.5)(@types/react@19.2.13)(less@4.6.2)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
-      '@qlover/corekit-bridge': 2.2.0(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
-      '@qlover/fe-corekit': 3.2.0
+      '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/slice-store-react': 1.4.2(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@18.3.1)
       react: 18.3.1
     transitivePeerDependencies:
@@ -17810,9 +17818,9 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@qlover/corekit-bridge@2.2.0(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
+  '@qlover/corekit-bridge@2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
-      '@qlover/fe-corekit': 3.2.0
+      '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
       '@qlover/logger': 1.0.0
       '@qlover/slice-store': 1.4.1
       js-cookie: 3.0.5
@@ -17841,19 +17849,13 @@ snapshots:
       eslint: 8.57.1
       typescript: 5.4.5
 
-  '@qlover/eslint-plugin@2.0.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)':
-    dependencies:
-      '@typescript-eslint/parser': 8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5)
-      eslint: 9.39.4(jiti@2.6.1)
-      typescript: 5.4.5
-
   '@qlover/eslint-plugin@2.0.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/parser': 8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.4(jiti@2.6.1)
       typescript: 5.9.3
 
-  '@qlover/fe-corekit@3.2.0':
+  '@qlover/fe-corekit@3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)':
     dependencies:
       any-signal: 4.2.0
       axios: 1.13.6
