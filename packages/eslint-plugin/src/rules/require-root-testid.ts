@@ -365,7 +365,7 @@ export const requireRootTestid = createEslintRule<Options, MessageIds>({
               node: node.openingElement,
               messageId: 'missingTestId',
               fix(fixer) {
-                const sourceCode = context.getSourceCode();
+                const sourceCode = context.sourceCode;
                 const openingElement = node.openingElement;
                 const hasAttributes = openingElement.attributes.length > 0;
 
