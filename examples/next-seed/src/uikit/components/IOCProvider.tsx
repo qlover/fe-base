@@ -1,5 +1,5 @@
 'use client';
-
+import 'reflect-metadata';
 import {
   createIOCFunction,
   ReflectionIOCContainer

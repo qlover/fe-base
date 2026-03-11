@@ -11,6 +11,17 @@
       --color-border: 51 65 85;
       --color-brand: 37 99 235;
       --color-brand-hover: 59 130 246;
+      --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+      --fe-color-bg-container: rgb(30 41 59);
+      --fe-color-border: rgb(51 65 85);
+      --fe-color-primary: rgb(var(--color-brand));
+
+      --login-input-bg: var(--fe-color-bg-container);
+      --login-input-border: var(--fe-color-border);
+      --login-button-text: rgb(255 255 255);
+      --login-social-button-bg: var(--fe-color-bg-container);
+      --login-social-button-border: var(--fe-color-border);
     }
   }
 
@@ -26,6 +37,17 @@
       --color-border: 254 205 211;
       --color-brand: 225 29 72;
       --color-brand-hover: 244 63 94;
+      --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
+
+      --fe-color-border: rgb(254 205 211);
+      --fe-color-bg-container: rgb(255 241 242);
+      --fe-color-primary: rgb(var(--color-brand));
+
+      --login-input-bg: var(--fe-color-bg-container);
+      --login-input-border: var(--fe-color-border);
+      --login-button-text: rgb(255 255 255);
+      --login-social-button-bg: var(--fe-color-bg-container);
+      --login-social-button-border: var(--fe-color-border);
     }
   }
 }
