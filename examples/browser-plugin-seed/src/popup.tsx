@@ -8,10 +8,12 @@ import { IOCContext } from '@/contexts/IOCContext';
 import { BootstrapClient } from '@/impls/BootstrapClient';
 import { logger } from '@/impls/globals';
 import { IOCIdentifierRegister } from '@/impls/IOCIdentifierRegister';
-import { SimpleIOCContainer } from '@/impls/SimpleIOCContainer';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import { baseRoutes } from '@config/router';
-import { createIOCFunction } from '@qlover/corekit-bridge/ioc';
+import {
+  createIOCFunction,
+  SimpleIOCContainer
+} from '@qlover/corekit-bridge/ioc';
 import { lazy, useEffect, useMemo, useState } from 'react';
 
 const lazyComponentMap: RouterComponentMap = {

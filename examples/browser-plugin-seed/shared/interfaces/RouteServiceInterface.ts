@@ -46,8 +46,9 @@ export type RouteParams = {
   [routePathLocaleParamKey]?: string;
 };
 
-export interface RouteServiceState
-  extends AsyncStoreStateInterface<RouteConfigValue[]> {
+export interface RouteServiceState extends AsyncStoreStateInterface<
+  RouteConfigValue[]
+> {
   /**
    * 当前激活的路由
    */

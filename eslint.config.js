@@ -29,7 +29,8 @@ export default tseslint.config([
       '**/coverage/**',
       '**/*.d.ts',
       // TODO: open templates later(pnpm lint command very slow)
-      'packages/**/templates/**'
+      'packages/**/templates/**',
+      'examples'
     ]
   },
 

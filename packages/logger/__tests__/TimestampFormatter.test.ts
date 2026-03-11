@@ -283,9 +283,7 @@ describe('TimestampFormatter', () => {
           timeZone: 'UTC'
         }
       );
-      expect(formattedOutput[0]).toBe(
-        `[${expectedTimestamp}] info`
-      );
+      expect(formattedOutput[0]).toBe(`[${expectedTimestamp}] info`);
       expect((formattedOutput[0] as string).includes('logger')).toBe(false);
     });
 

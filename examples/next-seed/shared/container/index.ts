@@ -1,7 +1,7 @@
 import {
   injectable as injectableImpl,
   inject as injectImpl
-} from './SimpleIOCContainer';
+} from '@qlover/corekit-bridge/ioc';
 
 export const injectable = injectableImpl;
 

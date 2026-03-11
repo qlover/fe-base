@@ -1,4 +1,7 @@
-import { createIOCFunction } from '@qlover/corekit-bridge';
+import {
+  createIOCFunction,
+  SimpleIOCContainer
+} from '@qlover/corekit-bridge/ioc';
 import { useLaunch } from '@tarojs/taro';
 import { useState, type PropsWithChildren } from 'react';
 import { I18nProvider } from './contexts/I18nProvider';
@@ -6,7 +9,6 @@ import { IOCContext } from './contexts/IOCContext';
 import { logger } from './globals';
 import { BootstrapClient } from './impls/BootstrapClient';
 import { IOCIdentifierRegister } from './impls/IOCIdentifierRegister';
-import { SimpleIOCContainer } from './impls/SimpleIOCContainer';
 import type { IOCIdentifierMap } from './config/ioc-identifier';
 import './styles/index.css';
 

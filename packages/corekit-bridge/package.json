@@ -150,8 +150,17 @@
     "tailwindcss": "^3.4.16",
     "vite": "^5.4.10"
   },
+  "peerDependencies": {
+    "reflect-metadata": ">=0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "reflect-metadata": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@qlover/env-loader": "workspace:*",
-    "@types/js-cookie": "^3.0.6"
+    "@types/js-cookie": "^3.0.6",
+    "reflect-metadata": "^0.2.2"
   }
 }

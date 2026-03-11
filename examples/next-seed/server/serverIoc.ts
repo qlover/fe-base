@@ -1,10 +1,11 @@
+import 'reflect-metadata';
 import {
   createIOCFunction,
+  ReflectionIOCContainer,
   type IOCContainerInterface,
   type IOCFunctionInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
-import { SimpleIOCContainer } from '@shared/container/SimpleIOCContainer';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import { logger, serverConfig } from './ServerGlobals';
@@ -20,7 +21,7 @@ export function createServerIoc() {
     return ServerIoc;
   }
 
-  ServerIoc = createIOCFunction(new SimpleIOCContainer(logger));
+  ServerIoc = createIOCFunction(new ReflectionIOCContainer(logger));
 
   ServerIocRegister.register(ServerIoc.implemention!, ServerIoc);
 
