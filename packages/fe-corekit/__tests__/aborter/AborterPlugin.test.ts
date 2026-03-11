@@ -23,6 +23,8 @@ describe('AborterPlugin', () => {
   let originalAbortSignalTimeout: typeof AbortSignal.timeout | undefined;
 
   beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     // Use fake timers to speed up timeout tests
     vi.useFakeTimers();
 
@@ -36,6 +38,8 @@ describe('AborterPlugin', () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
+
     // Restore native AbortSignal.timeout
     if (originalAbortSignalTimeout) {
       // @ts-ignore

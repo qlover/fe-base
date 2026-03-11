@@ -1,3 +1,6 @@
+// Force development so React exposes act() when running from IDE (e.g. Cursor Vitest plugin)
+process.env.NODE_ENV = 'development';
+
 import 'reflect-metadata';
 import { createMockGlobals } from './__mocks__/createMockGlobals';
 

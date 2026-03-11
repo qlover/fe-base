@@ -105,6 +105,8 @@ describe('MessageSender', () => {
     let mockGateway: MessageGetwayInterface;
 
     beforeEach(() => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+
       store = createTestStore();
       mockGateway = createMockGateway();
     });

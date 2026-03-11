@@ -41,6 +41,8 @@ describe('SenderStrategyPlugin', () => {
   let aborter: Aborter;
 
   beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     vi.useFakeTimers();
     store = new MessagesStore(() => ({
       messages: []

@@ -16,6 +16,7 @@ import { mkdirSync, writeFileSync, rmSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import type fs from 'fs';
+import type { LoggerInterface } from '@qlover/logger';
 
 // Mock fs module
 vi.mock('fs', async () => {
@@ -30,9 +31,17 @@ describe('Reader', () => {
   let TEST_DIR: string;
   let context: Code2MDContext;
   let reader: Reader;
-
+  let mockLogger: LoggerInterface;
   // Test file structure setup
   beforeEach(() => {
+    // Setup mocks
+    mockLogger = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    } as unknown as LoggerInterface;
+
     // Create unique test directory for each test
     TEST_DIR = join(
       tmpdir(),
@@ -62,7 +71,8 @@ describe('Reader', () => {
       options: {
         sourcePath: join(TEST_DIR, 'src'),
         generatePath: join(TEST_DIR, 'docs')
-      }
+      },
+      logger: mockLogger
     });
     reader = new Reader(context);
 
@@ -117,7 +127,8 @@ describe('Reader', () => {
         options: {
           sourcePath: emptyDir,
           generatePath: join(TEST_DIR, 'docs')
-        }
+        },
+        logger: mockLogger
       });
       reader = new Reader(context);
 
@@ -130,7 +141,8 @@ describe('Reader', () => {
         options: {
           sourcePath: './non-existent-path',
           generatePath: join(TEST_DIR, 'docs')
-        }
+        },
+        logger: mockLogger
       });
       reader = new Reader(context);
 

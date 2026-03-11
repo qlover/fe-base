@@ -112,7 +112,9 @@ describe('ScriptContext', () => {
     });
 
     it('should initialize with default options when not provided', () => {
-      const defaultContext = new ScriptContext('default-test');
+      const defaultContext = new ScriptContext('default-test', {
+        logger: mockLogger
+      });
       expect(defaultContext.options).toBeDefined();
       expect(defaultContext.logger).toBeDefined();
       expect(defaultContext.shell).toBeDefined();
@@ -125,7 +127,9 @@ describe('ScriptContext', () => {
     });
 
     it('should throw error when env is not initialized', () => {
-      const contextWithoutEnv = new ScriptContext<TestOptions>('test-script');
+      const contextWithoutEnv = new ScriptContext<TestOptions>('test-script', {
+        logger: mockLogger
+      });
       // Force env to be undefined
       contextWithoutEnv.options.env = undefined;
       expect(() => contextWithoutEnv.env).toThrow(
