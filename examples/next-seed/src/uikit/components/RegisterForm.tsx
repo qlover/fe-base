@@ -1,9 +1,9 @@
 'use client';
 
-import { useStore } from '@brain-toolkit/react-kit';
 import { type SubmitEvent, useMemo, useState } from 'react';
 import { LocaleLink } from '@/uikit/components/LocaleLink';
 import { useIOC } from '@/uikit/hook/useIOC';
+import { useStore } from '@/uikit/hook/useStore';
 import { useWarnTranslations } from '@/uikit/hook/useWarnTranslations';
 import { RegisterValidator } from '@shared/validators/RegisterValidator';
 import type { RegisterI18nInterface } from '@config/i18n-mapping/register18n';

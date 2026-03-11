@@ -1,5 +1,5 @@
-import { useStore } from '@brain-toolkit/react-kit';
 import { AsyncStoreStatus } from '@qlover/corekit-bridge';
+import { useStore } from '@/uikit/hook/useStore';
 import { I } from '@shared/config/ioc-identifiter';
 import type { UserCredential, UserSchema } from '@shared/schemas/UserSchema';
 import { useIOC } from './useIOC';
