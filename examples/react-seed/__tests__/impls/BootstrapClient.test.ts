@@ -9,7 +9,7 @@ import { RouteService } from '@/impls/RouteService';
 import { UserService } from '@/impls/UserService';
 import { printBootstrap } from '@/utils/PrintBootstrap';
 import { createMockGlobals } from '../__mocks__/createMockGlobals';
-import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,

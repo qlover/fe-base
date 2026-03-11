@@ -1,6 +1,6 @@
 import { AppConfig } from '@/impls/AppConfig';
 import { browserGlobalsName } from '@config/common';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 
 export const printBootstrap: BootstrapExecutorPlugin = {

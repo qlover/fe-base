@@ -2,10 +2,7 @@ import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
-import type {
-  SeedConfigInterface,
-  SeedServerConfigInterface
-} from '@interfaces/SeedConfigInterface';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { SupabaseBridge } from '@server/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
@@ -65,7 +62,7 @@ export interface IOCIdentifierMap {
     FeCorekit.ObjectStorageOptions
   >;
   [IOCIdentifier.CookieStorage]: CorekitBridge.CookieStorage;
-  [IOCIdentifier.AppConfig]: SeedConfigInterface;
+  [IOCIdentifier.AppConfig]: CorekitBridge.SeedConfigInterface;
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;

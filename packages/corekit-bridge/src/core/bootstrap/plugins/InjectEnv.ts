@@ -3,11 +3,7 @@ import type {
   BootstrapExecutorPlugin
 } from '../BootstrapExecutorPlugin';
 
-export interface EnvConfigInterface {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
-
+type EnvConfigInterface = Record<string, unknown>;
 export interface InjectEnvConfig {
   prefix?: string;
   target?: EnvConfigInterface;
@@ -64,7 +60,7 @@ export class InjectEnv implements BootstrapExecutorPlugin {
       const envValue = this.env(key, value);
 
       if (!this.isEmpty(envValue) && envValue !== value) {
-        config[key as keyof typeof config] = envValue;
+        Object.assign(config, { [key]: envValue });
       }
     }
   }

@@ -5,3 +5,5 @@ export * from './plugins/InjectEnv';
 export * from './plugins/InjectGlobal';
 export * from '../ioc/IOCContainerInterface';
 export * from '../ioc/IOCManagerInterface';
+export * from './BootstrapInterface';
+export * from './SeedConfigInterface';

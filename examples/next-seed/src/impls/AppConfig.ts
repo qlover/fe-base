@@ -1,4 +1,4 @@
-import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { SeedSrcConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import { name, version } from '../../package.json';
 
 export class AppConfig implements SeedSrcConfigInterface {

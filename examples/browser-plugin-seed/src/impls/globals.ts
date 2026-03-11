@@ -17,5 +17,5 @@ export const logger: LoggerInterface = new Logger({
   ),
   name: seedConfig.name,
   silent: seedConfig.isProduction,
-  level: 'debug'
+  level: seedConfig.logLevel
 });

@@ -4,5 +4,13 @@ export interface SeedConfigInterface {
   readonly version: string;
   readonly isProduction: boolean;
 
-  readonly userCredentialKey: string;
+  /**
+   * log level
+   *
+   * @example 'debug'
+   * @example 'info'
+   * @example 'warn'
+   * @example 'error'
+   */
+  readonly logLevel: string;
 }

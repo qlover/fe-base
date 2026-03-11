@@ -5,12 +5,14 @@ import { restoreUserService } from '@/utils/restoreUserService';
 import { testAppRequester } from '@/utils/testAppRequester';
 import type { I18nService } from './I18nService';
 import type { ThemeService } from './ThemeService';
-import type { SeedBootstrapInterface } from '@interfaces/SeedBootstrapInterface';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import type {
   BootstrapPluginOptions,
   IOCContainerInterface
 } from '@qlover/corekit-bridge';
+import type {
+  SeedConfigInterface,
+  BootstrapInterface
+} from '@qlover/corekit-bridge/bootstrap';
 import type {
   BootstrapContext,
   BootstrapExecutorPlugin
@@ -20,7 +22,7 @@ import type {
   IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
 
-export class BootstrapClient implements SeedBootstrapInterface {
+export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlugin> {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}

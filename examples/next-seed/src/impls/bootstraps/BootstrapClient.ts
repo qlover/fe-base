@@ -1,8 +1,6 @@
 import { Bootstrap } from '@qlover/corekit-bridge';
 import { browserGlobalsName } from '@config/common';
 import { I, type IOCIdentifierMap } from '@config/ioc-identifiter';
-import type { SeedBootstrapInterface } from '@interfaces/SeedBootstrapInterface';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import * as globals from '../globals';
 import { IocIdentifierTest } from './IocIdentifierTest';
 import { printBootstrap } from './PrintBootstrap';
@@ -13,8 +11,12 @@ import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
+import type {
+  SeedConfigInterface,
+  BootstrapInterface
+} from '@qlover/corekit-bridge/bootstrap';
 
-export class BootstrapClient implements SeedBootstrapInterface<BootstrapExecutorPlugin> {
+export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlugin> {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}

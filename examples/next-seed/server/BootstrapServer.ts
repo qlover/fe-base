@@ -1,8 +1,6 @@
 import 'reflect-metadata';
 import { LifecycleExecutor } from '@qlover/fe-corekit';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
-import type { SeedBootstrapInterface } from '@interfaces/SeedBootstrapInterface';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import { logger } from './ServerGlobals';
 import { createServerIoc } from './serverIoc';
 import type {
@@ -15,12 +13,16 @@ import type {
   IOCContainerInterface,
   IOCFunctionInterface
 } from '@qlover/corekit-bridge';
+import type {
+  SeedConfigInterface,
+  BootstrapInterface
+} from '@qlover/corekit-bridge/bootstrap';
 import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
 import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
 export class BootstrapServer
-  implements SeedBootstrapInterface<BootstrapServerPlugin>, ServerInterface
+  implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
 {
   protected executor: LifecycleExecutor<
     BootstrapServerContext,

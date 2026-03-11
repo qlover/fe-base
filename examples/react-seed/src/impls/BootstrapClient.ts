@@ -6,27 +6,28 @@ import { printBootstrap } from '@/utils/PrintBootstrap';
 import { userRoutePlugin } from '@/utils/userRoutePlugin';
 import { appApiRequesterBootstrap } from './AppApiRequester';
 import { I18nService } from './I18nService';
-import type { SeedBootstrapInterface } from '@/interfaces/SeedBootstrapInterface';
-import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   BootstrapPluginOptions,
   IOCContainerInterface
 } from '@qlover/corekit-bridge';
+import type {
+  SeedConfigInterface,
+  BootstrapInterface
+} from '@qlover/corekit-bridge/bootstrap';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCFunctionInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
 
-export class BootstrapClient implements SeedBootstrapInterface {
+export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlugin> {
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}
   /**
    * Start the client
    *
-   * @override
    */
   public startup(
     root?: unknown,
@@ -67,9 +68,6 @@ export class BootstrapClient implements SeedBootstrapInterface {
       });
   }
 
-  /**
-   * @override
-   */
   public getPlugins(
     seedConfig: SeedConfigInterface
   ): BootstrapExecutorPlugin[] {
