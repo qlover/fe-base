@@ -354,6 +354,32 @@ If custom serializer throws
 
 ---
 
+#### `startsWith` (Method)
+
+**Type:** `(url: string, baseUrl: string) => boolean`
+
+#### Parameters
+
+| Name      | Type     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `url`     | `string` | ❌       | -       | -     | -          |             |
+| `baseUrl` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
+##### `startsWith` (CallSignature)
+
+**Type:** `boolean`
+
+#### Parameters
+
+| Name      | Type     | Optional | Default | Since | Deprecated | Description |
+| --------- | -------- | -------- | ------- | ----- | ---------- | ----------- |
+| `url`     | `string` | ❌       | -       | -     | -          |             |
+| `baseUrl` | `string` | ❌       | -       | -     | -          |             |
+
+---
+
 ### `RequestPluginInnerConfig` (Interface)
 
 **Type:** `interface RequestPluginInnerConfig`

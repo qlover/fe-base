@@ -66,7 +66,7 @@ Whether to prioritize the store
 
 #### `storage` (Property)
 
-**Type:** `SyncStorageInterface<string, string>`
+**Type:** `StorageInterface<string, string, unknown>`
 
 ---
 

@@ -66,8 +66,10 @@ The type of user object
 **Example:** Basic usage
 
 ```typescript
-interface UserServiceState
-  extends UserServiceStoreState<TokenCredential, User> {}
+interface UserServiceState extends UserServiceStoreState<
+  TokenCredential,
+  User
+> {}
 
 const state: UserServiceState = {
   loading: false, // Authentication operation in progress

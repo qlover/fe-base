@@ -6,83 +6,106 @@
 
 ### `KeyStorage` (Class)
 
-**Type:** `class KeyStorage<Key, Value, Opt>`
+**Type:** `class KeyStorage<K, V, Opt>`
 
-**Since:** `1.5.0`
+Storage interface bound to a single fixed key.
 
-KeyStorage is a storage that can be used to store a single value.
+Core concept:
+A storage abstraction that only ever reads/writes one key, exposed as
+`key`
+. Callers use
 
-Typical usage scenario: need to store a value and need to persist it:
+`get`
+/
+`set`
+/
+`remove`
+without passing a key; useful for token storage, single preference,
+or any "one value per instance" scenario.
 
-- token storage
-- user info storage
-- page theme, language
-- ...
+Main features:
 
-And support for data encryption, there are times when reporting errors in the local data can easily be tampered with, this time you can use encryption to protect the data!
+- Fixed key:
+  `readonly key`
+  identifies the sole key this instance operates on
+- Simple API:
+  `get()`
+  /
+  `set(value)`
+  /
+  `remove()`
+  with no key argument
+- Optional parameters: generic
+  `Opt`
+  allows implementations to support expiry, scope, etc.
 
-**Example:** basic usage
+When to use: Prefer this over a generic key-value interface when the semantic is "one
+named slot" (e.g. auth token, theme, locale) and you want to avoid key typos and keep
+API minimal.
 
-use localStorage as storage, persist the value
+**Example:** Basic usage (token)
 
 ```typescript
-const tokenStorage = new KeyStorage('token', localStorage);
-
-tokenStorage.get(); // get from localStorage
-tokenStorage.set('token-123123123'); // set to localStorage
-tokenStorage.remove(); // remove from localStorage
+const tokenStorage: KeyStorageInterface<'token', string> = ...;
+tokenStorage.set('jwt-abc');
+const token = tokenStorage.get();
+tokenStorage.remove();
 ```
 
-**Example:** with encrypt
+**Example:** With options
 
 ```typescript
-const tokenStorage = new KeyStorage('token', localStorage, {
-  encrypt: new Encryptor(new AESCipher('1234567890'))
-});
-
-tokenStorage.get(); // get from localStorage
-tokenStorage.set('token-123123123'); // set to localStorage
-tokenStorage.remove(); // remove from localStorage
+tokenStorage.set('jwt-abc', { maxAge: 3600 });
+const token = tokenStorage.get({ scope: 'session' });
 ```
 
 ---
 
 #### `new KeyStorage` (Constructor)
 
-**Type:** `(key: Key, options: Opt) => KeyStorage<Key, Value, Opt>`
+**Type:** `(key: K, storage: StorageInterface<K, V, Opt>) => KeyStorage<K, V, Opt>`
 
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since | Deprecated | Description |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
-| `key`     | `Key` | ❌       | -       | -     | -          |             |
-| `options` | `Opt` | ✅       | `{}`    | -     | -          |             |
+| Name      | Type                          | Optional | Default | Since | Deprecated | Description |
+| --------- | ----------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `key`     | `K`                           | ❌       | -       | -     | -          |             |
+| `storage` | `StorageInterface<K, V, Opt>` | ✅       | -       | -     | -          |             |
 
 ---
 
 #### `key` (Property)
 
-**Type:** `Key`
+**Type:** `K`
+
+The single key this storage instance is bound to.
+
+All
+`get`
+/
+`set`
+/
+`remove`
+operations act on this key. Read-only so that the binding
+cannot change after creation.
 
 ---
 
-#### `options` (Property)
+#### `storage` (Property)
 
-**Type:** `Opt`
-
-**Default:** `{}`
+**Type:** `StorageInterface<K, V, Opt>`
 
 ---
 
 #### `value` (Property)
 
-**Type:** `null \| Value`
+**Type:** `undefined \| null \| V`
 
 ---
 
 #### `get` (Method)
 
-**Type:** `(options: Opt) => null \| Value`
+**Type:** `(options: Opt) => null \| V`
 
 #### Parameters
 
@@ -94,55 +117,7 @@ tokenStorage.remove(); // remove from localStorage
 
 ##### `get` (CallSignature)
 
-**Type:** `null \| Value`
-
-#### Parameters
-
-| Name      | Type  | Optional | Default | Since | Deprecated | Description |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
-| `options` | `Opt` | ✅       | -       | -     | -          |             |
-
----
-
-#### `getKey` (Method)
-
-**Type:** `() => Key`
-
----
-
-##### `getKey` (CallSignature)
-
-**Type:** `Key`
-
----
-
-#### `getValue` (Method)
-
-**Type:** `() => null \| Value`
-
----
-
-##### `getValue` (CallSignature)
-
-**Type:** `null \| Value`
-
----
-
-#### `mergeOptions` (Method)
-
-**Type:** `(options: Opt) => Opt`
-
-#### Parameters
-
-| Name      | Type  | Optional | Default | Since | Deprecated | Description |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
-| `options` | `Opt` | ✅       | -       | -     | -          |             |
-
----
-
-##### `mergeOptions` (CallSignature)
-
-**Type:** `Opt`
+**Type:** `null \| V`
 
 #### Parameters
 
@@ -178,14 +153,14 @@ tokenStorage.remove(); // remove from localStorage
 
 #### `set` (Method)
 
-**Type:** `(token: Value, options: Opt) => void`
+**Type:** `(value: V, options: Opt) => void`
 
 #### Parameters
 
-| Name      | Type    | Optional | Default | Since | Deprecated | Description |
-| --------- | ------- | -------- | ------- | ----- | ---------- | ----------- |
-| `token`   | `Value` | ❌       | -       | -     | -          |             |
-| `options` | `Opt`   | ✅       | -       | -     | -          |             |
+| Name      | Type  | Optional | Default | Since | Deprecated | Description |
+| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `value`   | `V`   | ❌       | -       | -     | -          |             |
+| `options` | `Opt` | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -195,40 +170,9 @@ tokenStorage.remove(); // remove from localStorage
 
 #### Parameters
 
-| Name      | Type    | Optional | Default | Since | Deprecated | Description |
-| --------- | ------- | -------- | ------- | ----- | ---------- | ----------- |
-| `token`   | `Value` | ❌       | -       | -     | -          |             |
-| `options` | `Opt`   | ✅       | -       | -     | -          |             |
-
----
-
-### `KeyStorageOptions` (Interface)
-
-**Type:** `interface KeyStorageOptions<Key, Sopt>`
-
----
-
-#### `expires` (Property)
-
-**Type:** `unknown`
-
-Expire time
-
-maybe is
-
-- number: milliseconds
-- string: time string, like '1d', '1h', '1m', '1s'
-- object: {}
-- ...
-
-Subclass implementation
-
----
-
-#### `storage` (Property)
-
-**Type:** `SyncStorageInterface<Key, Sopt>`
-
-Persistent storage
+| Name      | Type  | Optional | Default | Since | Deprecated | Description |
+| --------- | ----- | -------- | ------- | ----- | ---------- | ----------- |
+| `value`   | `V`   | ❌       | -       | -     | -          |             |
+| `options` | `Opt` | ✅       | -       | -     | -          |             |
 
 ---

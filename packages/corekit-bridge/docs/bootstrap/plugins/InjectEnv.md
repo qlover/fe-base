@@ -247,12 +247,6 @@ onSuccess: (ctx) => {
 
 ---
 
-### `EnvConfigInterface` (Interface)
-
-**Type:** `interface EnvConfigInterface`
-
----
-
 ### `InjectEnvConfig` (Interface)
 
 **Type:** `interface InjectEnvConfig`

@@ -93,6 +93,15 @@ store.observe((state) => {
 
 ---
 
+#### `getStorage` (Property)
+
+**Type:** `Object`
+
+When storageResult=true, should return S['result']
+When storageResult=false, should return S
+
+---
+
 #### `stateFactory` (Property)
 
 **Type:** `Object`
@@ -103,7 +112,7 @@ store.observe((state) => {
 
 #### `storage` (Property)
 
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
+**Type:** `null \| StorageInterface<Key, S, Opt>`
 
 **Default:** `null`
 
@@ -723,57 +732,6 @@ switch (status) {
     return <SuccessMessage />;
   case AsyncStoreStatus.FAILED:
     return <ErrorMessage />;
-}
-```
-
----
-
-#### `getStorage` (Method)
-
-**Type:** `() => null \| SyncStorageInterface<Key, Opt>`
-
----
-
-##### `getStorage` (CallSignature)
-
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
-
-Get the storage instance
-
-Returns the storage implementation used by this store for persistence operations.
-Returns
-`null`
-if no storage was configured during construction.
-
-Use cases:
-
-- Check if persistence is enabled
-- Access storage for custom operations
-- Pass storage to other components
-
-**Returns:**
-
-The storage instance or
-`null`
-if not configured
-
-**Example:** Check if storage is available
-
-```typescript
-const storage = store.getStorage();
-if (storage) {
-  // Storage is available, perform custom operations
-  storage.clear();
-}
-```
-
-**Example:** Access storage for custom operations
-
-```typescript
-const storage = store.getStorage();
-if (storage) {
-  const customKey = 'custom-data' as Key;
-  storage.setItem(customKey, customValue);
 }
 ```
 
@@ -1752,7 +1710,7 @@ which happens BEFORE subclass field initialization. This means:
 
 #### `storage` (Property)
 
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
+**Type:** `null \| StorageInterface<Key, unknown, Opt>`
 
 Storage implementation for persisting state
 
@@ -1780,14 +1738,14 @@ is provided.
 
 #### `defaultState` (Method)
 
-**Type:** `(storage: null \| SyncStorageInterface<Key, Opt>, storageKey: null \| Key) => null \| State`
+**Type:** `(storage: null \| StorageInterface<Key, unknown, Opt>, storageKey: null \| Key) => null \| State`
 
 #### Parameters
 
-| Name         | Type                                     | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<Key, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                            | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
+| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
+| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---
 
@@ -1850,10 +1808,10 @@ const store = new AsyncStore<User, string>({
 
 #### Parameters
 
-| Name         | Type                                     | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<Key, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                            | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name         | Type                                          | Optional | Default | Since | Deprecated | Description                                     |
+| ------------ | --------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `storage`    | `null \| StorageInterface<Key, unknown, Opt>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
+| `storageKey` | `null \| Key`                                 | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---
 

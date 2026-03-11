@@ -611,7 +611,7 @@ Message IDs for error reporting
 
 ### `tsRequireOverrideComment` (Variable)
 
-**Type:** `RuleModule<MessageIds, Options, unknown, RuleListener>`
+**Type:** `RuleModuleWithName<MessageIds, Options, unknown, RuleListener>`
 
 **Default:** `{}`
 

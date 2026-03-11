@@ -23,7 +23,7 @@ Core features:
 - State restoration: Load state from storage during initialization or on demand
 - State persistence: Save state to storage automatically or manually
 - Flexible storage: Support any
-  `SyncStorageInterface`
+  `StorageInterface`
   implementation (localStorage, sessionStorage, cookies, etc.)
 - Type safety: Generic type parameters ensure type safety for state and storage keys
 
@@ -78,14 +78,14 @@ class MyStore
 {
   private readonly storageKey = 'my-state';
 
-  constructor(storage: SyncStorageInterface<string> | null = null) {
+  constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
     super(() => new MyStoreState());
     this.storage = storage;
   }
 
-  private storage: SyncStorageInterface<string> | null;
+  private storage: StorageInterface<string, MyStoreState> | null;
 
-  getStorage(): SyncStorageInterface<string> | null {
+  getStorage(): StorageInterface<string, MyStoreState> | null {
     return this.storage;
   }
 
@@ -169,13 +169,13 @@ class ExpiringStore
 
 #### `getStorage` (Method)
 
-**Type:** `() => null \| SyncStorageInterface<Key, Opt>`
+**Type:** `() => null \| StorageInterface<Key, T, Opt>`
 
 ---
 
 ##### `getStorage` (CallSignature)
 
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
+**Type:** `null \| StorageInterface<Key, T, Opt>`
 
 Get the underlying storage interface
 
@@ -423,7 +423,7 @@ class MyStore
   extends StoreInterface<MyStoreState>
   implements PersistentStoreInterface<MyStoreState, string>
 {
-  constructor(storage: SyncStorageInterface<string> | null = null) {
+  constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
     super(() => new MyStoreState());
     this.storage = storage;
     // Restore state after initialization

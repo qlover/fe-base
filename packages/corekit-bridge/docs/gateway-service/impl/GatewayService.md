@@ -453,7 +453,7 @@ Should be set during construction and remain constant.
 
 #### `storage` (Property)
 
-**Type:** `null \| SyncStorageInterface<Key, unknown>`
+**Type:** `null \| StorageInterface<Key, null \| T, unknown>`
 
 Storage implementation for persisting state
 
@@ -492,14 +492,14 @@ Optional - services can work without store (though uncommon).
 
 #### `defaultState` (Method)
 
-**Type:** `(storage: null \| SyncStorageInterface<Key, unknown>, storageKey: null \| Key) => null \| AsyncStoreStateInterface<T>`
+**Type:** `(storage: null \| StorageInterface<Key, null \| T, unknown>, storageKey: null \| Key) => null \| AsyncStoreStateInterface<T>`
 
 #### Parameters
 
-| Name         | Type                                         | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | -------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<Key, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                     |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `storage`    | `null \| StorageInterface<Key, null \| T, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
+| `storageKey` | `null \| Key`                                       | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---
 
@@ -562,9 +562,9 @@ const store = new AsyncStore<User, string>({
 
 #### Parameters
 
-| Name         | Type                                         | Optional | Default | Since | Deprecated | Description                                     |
-| ------------ | -------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
-| `storage`    | `null \| SyncStorageInterface<Key, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
-| `storageKey` | `null \| Key`                                | ✅       | -       | -     | -          | Storage key (if provided in options)            |
+| Name         | Type                                                | Optional | Default | Since | Deprecated | Description                                     |
+| ------------ | --------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------- |
+| `storage`    | `null \| StorageInterface<Key, null \| T, unknown>` | ✅       | -       | -     | -          | Storage implementation (if provided in options) |
+| `storageKey` | `null \| Key`                                       | ✅       | -       | -     | -          | Storage key (if provided in options)            |
 
 ---
