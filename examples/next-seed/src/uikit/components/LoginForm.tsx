@@ -9,7 +9,7 @@ import type { LoginI18nInterface } from '@config/i18n-mapping/loginI18n';
 import { I } from '@config/ioc-identifiter';
 import { ROUTE_REGISTER } from '@config/route';
 import type { LoginSchema } from '@schemas/LoginSchema';
-import type { SeedSrcConfigInterface } from '@qlover/corekit-bridge/bootstrap';
+import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 
 function IconGoogle() {
   return (

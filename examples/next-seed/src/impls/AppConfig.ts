@@ -1,5 +1,5 @@
+import type { SeedSrcConfigInterface } from '@interfaces/SeedConfigInterface';
 import { name, version } from '../../package.json';
-import type { SeedSrcConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 
 export class AppConfig implements SeedSrcConfigInterface {
   public readonly env: string = process.env.APP_ENV ?? 'development';

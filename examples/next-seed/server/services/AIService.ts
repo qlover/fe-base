@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { inject, injectable } from '@shared/container';
 import { I } from '@config/ioc-identifiter';
-import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 @injectable()

@@ -5,6 +5,7 @@ import { inject, injectable } from '@shared/container';
 import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { PasswordEncrypt } from '../PasswordEncrypt';
 import { ServerAuth } from '../ServerAuth';
 import { SupabaseBridge } from '../SupabaseBridge';
@@ -13,7 +14,6 @@ import type {
   UserServiceInterface,
   UserServiceRegisterParams
 } from '../interfaces/UserServiceInterface';
-import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { LoggerInterface } from '@qlover/logger';
 
 @injectable()
