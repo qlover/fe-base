@@ -1,5 +1,18 @@
 # @qlover/logger
 
+## 1.1.1
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **dep:** update eslint configuration and package dependencies ([e9275ee](https://github.com/qlover/fe-base/commit/e9275ee01bbab01ef9d95a008f97e18eec4d6895)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `eslint.config.js` to include the `examples` directory in the linting process, improving code quality checks across all examples.
+  - Added a new script `nx:build:packages` in `package.json` to facilitate building packages while excluding the `examples` directory, streamlining the build process.
+  - Updated `pnpm-lock.yaml` to reflect the latest versions of various dependencies, enhancing compatibility and performance across the project.
+
+  These changes aim to improve the development workflow and maintain a cleaner project structure.
+
 ## 1.1.0
 
 ### Minor Changes

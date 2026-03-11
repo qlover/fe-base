@@ -1,5 +1,19 @@
 # @qlover/scripts-context
 
+## 2.1.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **tests:** enhance test configurations and logging ([15baa77](https://github.com/qlover/fe-base/commit/15baa77d26ae38a2306e4f212e8501c281fdcedd)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `vite.config.ts` to set the environment to 'development', ensuring React's `act()` is exposed during testing.
+  - Modified `index.ts` in the tests directory to enforce the development environment for better compatibility with testing tools.
+  - Introduced a mock logger in the `reader.test.ts` to improve logging during tests, enhancing clarity and debugging capabilities.
+  - Added console warning suppression in multiple test files to reduce noise in test outputs.
+
+  These changes aim to improve the testing environment and enhance the clarity of test outputs.
+
 ## 2.1.0
 
 ### Minor Changes
