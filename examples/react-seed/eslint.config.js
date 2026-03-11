@@ -130,7 +130,10 @@ export default defineConfig([
   {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
-      parserOptions: { project: './tsconfig.app.json', tsconfigRootDir: __dirname }
+      parserOptions: {
+        project: './tsconfig.app.json',
+        tsconfigRootDir: __dirname
+      }
     },
     plugins: {
       '@qlover-eslint': qloverLint

@@ -161,9 +161,16 @@ const eslintConfig = defineConfig([
   {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],
     ignores: [
-      '**/node_modules/**', '**/dist/**', '**/build/**', '**/.next/**', '**/*.d.ts',
-      '**/*.config.{ts,js,mjs}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}',
-      '**/__tests__/**', '**/__mocks__/**'
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.next/**',
+      '**/*.d.ts',
+      '**/*.config.{ts,js,mjs}',
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '**/__tests__/**',
+      '**/__mocks__/**'
     ],
     extends: [...configs.recommendedTypeChecked],
     languageOptions: {

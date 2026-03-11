@@ -66,7 +66,10 @@ export default defineConfig([
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
       '@qlover-eslint/ts-class-override': 'off', // enabled in type-checked block below
-      '@qlover-eslint/require-root-testid': ['error', { exclude: ['/^[A-Z]/'] }],
+      '@qlover-eslint/require-root-testid': [
+        'error',
+        { exclude: ['/^[A-Z]/'] }
+      ],
 
       // 禁用原生 no-unused-vars，使用 unused-imports
       '@typescript-eslint/no-unused-vars': 'off',

@@ -1,4 +1,7 @@
 /**
+ * Prettier config. Self-contained so this seed works standalone.
+ * Base options match repo root .prettierrc.js so "prettier" at root and
+ * "eslint --fix" here stay in sync when used inside fe-base.
  * @type {import('prettier').Options}
  */
 export default {
@@ -12,15 +15,11 @@ export default {
   bracketSameLine: true,
   plugins: ['@ianvs/prettier-plugin-sort-imports'],
   importOrder: [
-    '<BUILTIN_MODULES>', // Node.js built-in modules
-    '<THIRD_PARTY_MODULES>', // Imports not matched by other special words or groups.
-    // "", // Empty line
+    '<BUILTIN_MODULES>',
+    '<THIRD_PARTY_MODULES>',
     '^@plasmo/(.*)$',
-    // "",
     '^@plasmohq/(.*)$',
-    // "",
     '^~(.*)$',
-    // "",
     '^[./]'
   ]
 };

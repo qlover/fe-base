@@ -68,3 +68,6 @@ playwright/.auth
 **/.git
 **/pnpm-lock.yaml
 packages/create-app/templates/
+
+# Examples use their own Prettier config; format them from each example dir (e.g. npm run format)
+examples/
