@@ -1,5 +1,28 @@
 # @qlover/fe-corekit
 
+## 3.2.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **tests:** enhance test configurations and logging ([15baa77](https://github.com/qlover/fe-base/commit/15baa77d26ae38a2306e4f212e8501c281fdcedd)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `vite.config.ts` to set the environment to 'development', ensuring React's `act()` is exposed during testing.
+  - Modified `index.ts` in the tests directory to enforce the development environment for better compatibility with testing tools.
+  - Introduced a mock logger in the `reader.test.ts` to improve logging during tests, enhancing clarity and debugging capabilities.
+  - Added console warning suppression in multiple test files to reduce noise in test outputs.
+
+  These changes aim to improve the testing environment and enhance the clarity of test outputs.
+
+#### 📝 Documentation
+
+- **docs:** add BootstrapInterface and SeedConfigInterface documentation ([b488569](https://github.com/qlover/fe-base/commit/b4885693ecb4aa784ac73e2c856ddcdf7f0f1e9b)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Introduced new documentation files for `BootstrapInterface` and `SeedConfigInterface`, detailing their structure, methods, and parameters.
+  - Updated existing documentation for `InjectEnv` and `UserService` to reflect changes in method signatures and types, ensuring consistency and clarity.
+  - Enhanced the `UserStore` and `AsyncStore` documentation to include new properties and methods, improving usability for developers.
+  - Added new IOC container documentation for `ReflectionIOCContainer` and `SimpleIOCContainer`, outlining their functionalities and usage examples.
+  - Introduced `URLParamsStorage` documentation, providing insights into its read-only storage capabilities and examples of usage.
+
 ## 3.2.0
 
 ### Minor Changes

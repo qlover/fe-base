@@ -1,5 +1,45 @@
 # @qlover/corekit-bridge
 
+## 2.2.1
+
+### Patch Changes
+
+#### ✨ Features
+
+- **tests:** enhance test configurations and logging ([15baa77](https://github.com/qlover/fe-base/commit/15baa77d26ae38a2306e4f212e8501c281fdcedd)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `vite.config.ts` to set the environment to 'development', ensuring React's `act()` is exposed during testing.
+  - Modified `index.ts` in the tests directory to enforce the development environment for better compatibility with testing tools.
+  - Introduced a mock logger in the `reader.test.ts` to improve logging during tests, enhancing clarity and debugging capabilities.
+  - Added console warning suppression in multiple test files to reduce noise in test outputs.
+
+  These changes aim to improve the testing environment and enhance the clarity of test outputs.
+
+#### 📝 Documentation
+
+- **docs:** add BootstrapInterface and SeedConfigInterface documentation ([b488569](https://github.com/qlover/fe-base/commit/b4885693ecb4aa784ac73e2c856ddcdf7f0f1e9b)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Introduced new documentation files for `BootstrapInterface` and `SeedConfigInterface`, detailing their structure, methods, and parameters.
+  - Updated existing documentation for `InjectEnv` and `UserService` to reflect changes in method signatures and types, ensuring consistency and clarity.
+  - Enhanced the `UserStore` and `AsyncStore` documentation to include new properties and methods, improving usability for developers.
+  - Added new IOC container documentation for `ReflectionIOCContainer` and `SimpleIOCContainer`, outlining their functionalities and usage examples.
+  - Introduced `URLParamsStorage` documentation, providing insights into its read-only storage capabilities and examples of usage.
+
+#### ♻️ Refactors
+
+- **dep:** update eslint configuration and package dependencies ([e9275ee](https://github.com/qlover/fe-base/commit/e9275ee01bbab01ef9d95a008f97e18eec4d6895)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `eslint.config.js` to include the `examples` directory in the linting process, improving code quality checks across all examples.
+  - Added a new script `nx:build:packages` in `package.json` to facilitate building packages while excluding the `examples` directory, streamlining the build process.
+  - Updated `pnpm-lock.yaml` to reflect the latest versions of various dependencies, enhancing compatibility and performance across the project.
+
+  These changes aim to improve the development workflow and maintain a cleaner project structure.
+
+- **config:** update SeedConfigInterface and BootstrapClient implementation ([af8bc42](https://github.com/qlover/fe-base/commit/af8bc426c3cac801eba6f715fef1d991da1262c0)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Refactored the SeedConfigInterface to be imported from '@qlover/corekit-bridge/bootstrap', enhancing consistency across the project.
+  - Removed obsolete SeedBootstrapInterface and updated BootstrapClient to implement the new BootstrapInterface, streamlining the bootstrapping process.
+  - Adjusted various imports in related files to align with the new structure, improving code organization and maintainability.
+  - Enhanced the logging configuration in the BootstrapClient to utilize a dynamic log level setting.
+
+  These changes aim to improve the overall architecture and maintainability of the project by consolidating configuration interfaces and refining the bootstrapping logic.
+
 ## 2.2.0
 
 ### Minor Changes

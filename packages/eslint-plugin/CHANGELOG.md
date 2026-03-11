@@ -1,5 +1,18 @@
 # @qlover/eslint-plugin
 
+## 2.0.1
+
+### Patch Changes
+
+#### 📝 Documentation
+
+- **docs:** add BootstrapInterface and SeedConfigInterface documentation ([b488569](https://github.com/qlover/fe-base/commit/b4885693ecb4aa784ac73e2c856ddcdf7f0f1e9b)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Introduced new documentation files for `BootstrapInterface` and `SeedConfigInterface`, detailing their structure, methods, and parameters.
+  - Updated existing documentation for `InjectEnv` and `UserService` to reflect changes in method signatures and types, ensuring consistency and clarity.
+  - Enhanced the `UserStore` and `AsyncStore` documentation to include new properties and methods, improving usability for developers.
+  - Added new IOC container documentation for `ReflectionIOCContainer` and `SimpleIOCContainer`, outlining their functionalities and usage examples.
+  - Introduced `URLParamsStorage` documentation, providing insights into its read-only storage capabilities and examples of usage.
+
 ## 2.0.0
 
 ### Major Changes
