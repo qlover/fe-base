@@ -11,6 +11,10 @@
   "homepage": "https://github.com/qlover/fe-base#readme",
   "files": [],
   "scripts": {
+    "start:browser-plugin": "pnpm --filter examples/browser-plugin-seed dev",
+    "start:next-seed": "pnpm --filter examples/next-seed dev",
+    "start:react-seed": "pnpm --filter examples/react-seed dev",
+    "start:taro-seed": "pnpm --filter examples/taro-seed dev:weapp",
     "build": "pnpm -r --workspace-concurrency=4 run build && pnpm rebuild",
     "build:docs": "pnpm -r run build:docs",
     "build:eslint-plugin": "nx build @qlover/eslint-plugin",
