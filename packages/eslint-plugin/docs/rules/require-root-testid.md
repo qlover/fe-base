@@ -217,7 +217,7 @@ to selecting elements in tests, you can disable this rule.
 
 ### `requireRootTestid` (Variable)
 
-**Type:** `RuleModule<"missingTestId", Options, unknown, RuleListener>`
+**Type:** `RuleModuleWithName<"missingTestId", Options, unknown, RuleListener>`
 
 **Default:** `{}`
 

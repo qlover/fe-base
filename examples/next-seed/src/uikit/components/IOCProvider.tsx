@@ -1,10 +1,12 @@
 'use client';
-
-import { createIOCFunction } from '@qlover/corekit-bridge/ioc';
+import 'reflect-metadata';
+import {
+  createIOCFunction,
+  ReflectionIOCContainer
+} from '@qlover/corekit-bridge/ioc';
 import { useState } from 'react';
 import { ClientIOCRegister } from '@/impls/ClientIOCRegister';
 import { logger } from '@/impls/globals';
-import { SimpleIOCContainer } from '@shared/container/SimpleIOCContainer';
 import type { IOCIdentifierMap } from '@config/ioc-identifiter';
 import { IOCContext } from '../context/IOCContext';
 import type {
@@ -14,7 +16,9 @@ import type {
 
 export function IOCProvider(props: { children: React.ReactNode }) {
   const [IOC] = useState(() => {
-    const containerImpl: IOCContainerInterface = new SimpleIOCContainer(logger);
+    const containerImpl: IOCContainerInterface = new ReflectionIOCContainer(
+      logger
+    );
     const IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface> =
       createIOCFunction<IOCIdentifierMap>(containerImpl);
 

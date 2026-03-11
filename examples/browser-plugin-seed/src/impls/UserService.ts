@@ -2,7 +2,7 @@ import {
   BrainUserService,
   type BrainUserFeatureTagType
 } from '@brain-toolkit/brain-user';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 

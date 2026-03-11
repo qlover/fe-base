@@ -1,7 +1,7 @@
 import type { I18nService } from '@/impls/I18nService';
 import type { UserService } from '@/impls/UserService';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { ThemeService } from '@qlover/corekit-bridge';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type * as Logger from '@qlover/logger';
 

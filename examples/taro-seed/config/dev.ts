@@ -1,7 +1,6 @@
-import type { UserConfigExport } from "@tarojs/cli"
+import type { UserConfigExport } from '@tarojs/cli';
 
 export default {
-  
   mini: {},
   h5: {}
-} satisfies UserConfigExport<'vite'>
+} satisfies UserConfigExport<'vite'>;

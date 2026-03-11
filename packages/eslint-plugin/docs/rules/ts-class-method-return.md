@@ -209,7 +209,7 @@ a style guide that doesn't require explicit return types, you can disable this r
 
 ### `tsClassMethodReturn` (Variable)
 
-**Type:** `RuleModule<"missingReturnType", Options, unknown, RuleListener>`
+**Type:** `RuleModuleWithName<"missingReturnType", Options, unknown, RuleListener>`
 
 **Default:** `{}`
 

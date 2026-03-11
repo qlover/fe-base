@@ -5,6 +5,7 @@ export const CountButton = () => {
 
   return (
     <button
+      data-testid="CountButton"
       onClick={() => increase()}
       type="button"
       className="fe:flex fe:flex-row fe:items-center fe:px-4 fe:py-2 fe:text-sm fe:rounded-lg fe:transition-all fe:border-none

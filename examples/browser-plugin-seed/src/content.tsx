@@ -40,7 +40,9 @@ export const getStyle = (): HTMLStyleElement => {
 const PlasmoOverlay = () => {
   console.log('PlasmoOverlay');
   return (
-    <div className="fe:z-50 fe:flex fe:fixed fe:top-32 fe:right-8">
+    <div
+      data-testid="PlasmoOverlay"
+      className="fe:z-50 fe:flex fe:fixed fe:top-32 fe:right-8">
       <CountButton />
     </div>
   );

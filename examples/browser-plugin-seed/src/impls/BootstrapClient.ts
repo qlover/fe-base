@@ -1,7 +1,5 @@
 import * as globals from '@/impls/globals';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
-import type { SeedBootstrapInterface } from '@interfaces/SeedBootstrapInterface';
-import type { SeedConfigInterface } from '@interfaces/SeedConfigInterface';
 import type {
   BootstrapExecutorPlugin,
   BootstrapPluginOptions,
@@ -9,10 +7,16 @@ import type {
   IOCFunctionInterface,
   IOCRegisterInterface
 } from '@qlover/corekit-bridge';
+import type {
+  BootstrapInterface,
+  SeedConfigInterface
+} from '@qlover/corekit-bridge/bootstrap';
 import { Bootstrap } from '@qlover/corekit-bridge/bootstrap';
 import { I18nService } from './I18nService';
 
-export class BootstrapClient implements SeedBootstrapInterface {
+export class BootstrapClient
+  implements BootstrapInterface<BootstrapExecutorPlugin>
+{
   constructor(
     protected IOC: IOCFunctionInterface<IOCIdentifierMap, IOCContainerInterface>
   ) {}

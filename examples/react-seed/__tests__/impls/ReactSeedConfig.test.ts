@@ -1,5 +1,5 @@
 import { ReactSeedConfig } from '@/impls/ReactSeedConfig';
-import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 
 describe('ReactSeedConfig', () => {
   let originalEnv: Record<string, unknown>;

@@ -138,14 +138,21 @@ function renderRouteStack(
   const componentKey = route.element as string;
 
   if (!componentKey) {
-    return <div key={`err-${index}`}>Error: Route missing element</div>;
+    return (
+      <div data-testid="renderRouteStack" key={`err-${index}`}>
+        Error: Route missing element
+      </div>
+    );
   }
 
   const Component = componentMap[componentKey];
 
   if (!Component) {
     return (
-      <div key={`err-${index}`} style={{ color: 'red' }}>
+      <div
+        data-testid="renderRouteStack"
+        key={`err-${index}`}
+        style={{ color: 'red' }}>
         Error: Component "{componentKey}" not registered.
       </div>
     );

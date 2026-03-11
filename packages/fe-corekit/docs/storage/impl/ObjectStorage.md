@@ -48,19 +48,19 @@ const session = storage.getItem('user-session');
 
 #### `new ObjectStorage` (Constructor)
 
-**Type:** `(serializer: SerializerIneterface<unknown, ValueType>) => ObjectStorage<Key, ValueType, Opt>`
+**Type:** `(serializer: SerializerIneterface<ValueType, string>) => ObjectStorage<Key, ValueType, Opt>`
 
 #### Parameters
 
-| Name         | Type                                       | Optional | Default | Since | Deprecated | Description                                                        |
-| ------------ | ------------------------------------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------ |
-| `serializer` | `SerializerIneterface<unknown, ValueType>` | ✅       | -       | -     | -          | Serializer for converting between storage values and stored format |
+| Name         | Type                                      | Optional | Default | Since | Deprecated | Description                                                        |
+| ------------ | ----------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------------ |
+| `serializer` | `SerializerIneterface<ValueType, string>` | ✅       | -       | -     | -          | Serializer for converting between storage values and stored format |
 
 ---
 
 #### `serializer` (Property)
 
-**Type:** `SerializerIneterface<unknown, ValueType>`
+**Type:** `SerializerIneterface<ValueType, string>`
 
 Serializer for data transformation
 
@@ -89,8 +89,6 @@ Main purpose: Minimize latency for storage operations
 #### `length` (Accessor)
 
 **Type:** `accessor length`
-
-The number of items stored.
 
 ---
 
@@ -121,20 +119,20 @@ storage.clear(); // Removes all stored data
 
 #### `getItem` (Method)
 
-**Type:** `(key: Key, defaultValue: T) => null \| T`
+**Type:** `(key: Key, defaultValue: unknown) => null \| ValueType`
 
 #### Parameters
 
-| Name           | Type  | Optional | Default | Since | Deprecated | Description                                          |
-| -------------- | ----- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `key`          | `Key` | ❌       | -       | -     | -          | The key of the item to retrieve                      |
-| `defaultValue` | `T`   | ✅       | -       | -     | -          | Default value to return if item not found or expired |
+| Name           | Type      | Optional | Default | Since | Deprecated | Description                                          |
+| -------------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `key`          | `Key`     | ❌       | -       | -     | -          | The key of the item to retrieve                      |
+| `defaultValue` | `unknown` | ✅       | -       | -     | -          | Default value to return if item not found or expired |
 
 ---
 
 ##### `getItem` (CallSignature)
 
-**Type:** `null \| T`
+**Type:** `null \| ValueType`
 
 Retrieves a stored value by key with fallback strategy
 
@@ -166,10 +164,10 @@ const config = storage.getItem<AppConfig>('app-config');
 
 #### Parameters
 
-| Name           | Type  | Optional | Default | Since | Deprecated | Description                                          |
-| -------------- | ----- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `key`          | `Key` | ❌       | -       | -     | -          | The key of the item to retrieve                      |
-| `defaultValue` | `T`   | ✅       | -       | -     | -          | Default value to return if item not found or expired |
+| Name           | Type      | Optional | Default | Since | Deprecated | Description                                          |
+| -------------- | --------- | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
+| `key`          | `Key`     | ❌       | -       | -     | -          | The key of the item to retrieve                      |
+| `defaultValue` | `unknown` | ✅       | -       | -     | -          | Default value to return if item not found or expired |
 
 ---
 
@@ -196,38 +194,6 @@ const config = storage.getItem<AppConfig>('app-config');
 | -------------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
 | `value`        | `unknown` | ❌       | -       | -     | -          |             |
 | `defaultValue` | `T`       | ✅       | -       | -     | -          |             |
-
----
-
-#### `getSerializer` (Method)
-
-**Type:** `() => undefined \| SerializerIneterface<unknown, ValueType>`
-
----
-
-##### `getSerializer` (CallSignature)
-
-**Type:** `undefined \| SerializerIneterface<unknown, ValueType>`
-
-Gets the serializer instance
-
-Significance: Provides access to the serialization logic
-Core idea: Expose serializer for advanced use cases
-Main function: Return the serializer instance
-Main purpose: Enable direct access to serialization when needed
-
-**Returns:**
-
-The serializer instance
-
-**Example:**
-
-```typescript
-const serializer = storage.getSerializer();
-if (serializer) {
-  // Direct access to serializer
-}
-```
 
 ---
 
@@ -358,7 +324,7 @@ storage.removeItem('expired-session');
 
 #### `setItem` (Method)
 
-**Type:** `(key: Key, value: T, options: ObjectStorageOptions) => unknown`
+**Type:** `(key: Key, value: T, options: ObjectStorageOptions) => ValueType`
 
 #### Parameters
 
@@ -372,7 +338,7 @@ storage.removeItem('expired-session');
 
 ##### `setItem` (CallSignature)
 
-**Type:** `unknown`
+**Type:** `ValueType`
 
 Stores a value with optional expiration time
 
@@ -409,18 +375,7 @@ storage.setItem('session', sessionData, Date.now() + 3600000);
 
 #### `expires` (Property)
 
-**Type:** `unknown`
-
-Expire time
-
-maybe is
-
-- number: milliseconds
-- string: time string, like '1d', '1h', '1m', '1s'
-- object: {}
-- ...
-
-Subclass implementation
+**Type:** `number`
 
 ---
 

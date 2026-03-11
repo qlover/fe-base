@@ -65,15 +65,11 @@ export default defineConfig([
     rules: {
       '@qlover-eslint/ts-class-method-return': 'error',
       '@qlover-eslint/ts-class-member-accessibility': 'error',
-      '@qlover-eslint/ts-class-override': 'off', // 在下方 type-checked 块中开启
-
-      // TODO: update to eslint10
-      // "@qlover-eslint/require-root-testid": [
-      //   "error",
-      //   {
-      //     exclude: ["/^[A-Z]/"]
-      //   }
-      // ],
+      '@qlover-eslint/ts-class-override': 'off', // enabled in type-checked block below
+      '@qlover-eslint/require-root-testid': [
+        'error',
+        { exclude: ['/^[A-Z]/'] }
+      ],
 
       // 禁用原生 no-unused-vars，使用 unused-imports
       '@typescript-eslint/no-unused-vars': 'off',
@@ -184,8 +180,6 @@ export default defineConfig([
     ],
     rules: {
       'no-restricted-syntax': 'off',
-      // 默认禁用 default export
-      'no-restricted-syntax': ['off'],
       'import/prefer-default-export': 'error'
     }
   }

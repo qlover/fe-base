@@ -61,6 +61,7 @@ export default defineConfig({
     globals: true,
     include: ['__tests__/**/*.test.{ts,tsx}'],
     setupFiles: ['./__tests__/index.ts'],
-    reporters: ['default', 'hanging-process']
+    reporters: ['default', 'hanging-process'],
+    env: { NODE_ENV: 'development' }
   }
 });

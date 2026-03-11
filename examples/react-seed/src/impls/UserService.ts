@@ -13,8 +13,8 @@ import { inject } from './Container';
 import { RouteService } from './RouteService';
 import { UserGateway } from './UserGateway';
 import type { RouteServiceInterface } from '@/interfaces/RouteServiceInterface';
-import type { SeedConfigInterface } from '@/interfaces/SeedConfigInterface';
 import type { UserServiceGateway } from '@qlover/corekit-bridge';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StorageExecutorPlugin } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 

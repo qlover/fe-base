@@ -1,6 +1,7 @@
 {
-  "name": "browser-plugin-seed",
-  "displayName": "Eat flaky ape",
+  "name": "examples/browser-plugin-seed",
+  "private": true,
+  "displayName": "Browser Plugin Seed",
   "version": "0.0.1",
   "description": "A basic Plasmo extension.",
   "author": "qlover",
@@ -17,10 +18,10 @@
     "fix": "npm run lint:fix && npm run format"
   },
   "dependencies": {
-    "@brain-toolkit/brain-user": "^0.2.0",
-    "@qlover/corekit-bridge": "^2.2.0",
-    "@qlover/fe-corekit": "^3.2.0",
-    "@qlover/logger": "^1.1.0",
+    "@brain-toolkit/brain-user": "^0.2.1",
+    "@qlover/corekit-bridge": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/logger": "workspace:*",
     "any-signal": "^4.2.0",
     "plasmo": "0.90.5",
     "react": "18.2.0",
@@ -32,7 +33,7 @@
     "@brain-toolkit/ts2locales": "^0.4.0",
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
-    "@qlover/eslint-plugin": "^2.0.0",
+    "@qlover/eslint-plugin": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/chrome": "0.0.258",
     "@types/node": "20.11.5",

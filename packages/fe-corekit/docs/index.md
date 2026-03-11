@@ -111,7 +111,7 @@ Core Components:
   : Object-based storage
 - `KeyStorage`
   : Key-value storage
-- `SyncStorageInterface`
+- `StorageInterface`
   : Storage interface
 - `ExpireOptions`
   : Expiration configuration

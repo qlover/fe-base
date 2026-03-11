@@ -26,7 +26,7 @@ Core features:
   are automatically persisted to storage
 - Storage restoration: Load state from storage during initialization
 - Flexible storage backends: Support any
-  `SyncStorageInterface`
+  `StorageInterface`
   implementation (localStorage, sessionStorage, cookies, etc.)
 - Error resilience: Persistence failures don't prevent state updates
 - Optional persistence: Can skip persistence during restore operations to prevent circular updates
@@ -67,10 +67,10 @@ class MyStoreState implements StoreStateInterface {
   data: string = '';
 }
 
-class MyStore extends PersistentStoreInterface<MyStoreState, string> {
+class MyStore extends PersistentStore<MyStoreState, string> {
   private readonly storageKey = 'my-state';
 
-  constructor(storage: SyncStorageInterface<string> | null = null) {
+  constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
     super(() => new MyStoreState(), storage);
   }
 
@@ -108,10 +108,7 @@ class ExpiringStoreState implements StoreStateInterface {
   expires?: number | Date | null; // Optional expiration support
 }
 
-class ExpiringStore extends PersistentStoreInterface<
-  ExpiringStoreState,
-  string
-> {
+class ExpiringStore extends PersistentStore<ExpiringStoreState, string> {
   restore(): ExpiringStoreState | null {
     if (!this.storage) return null;
     try {
@@ -154,17 +151,17 @@ class ExpiringStore extends PersistentStoreInterface<
 
 #### `new PersistentStore` (Constructor)
 
-**Type:** `(stateFactory: Object, storage: null \| SyncStorageInterface<Key, Opt>, initRestore: boolean) => PersistentStore<T, Key, Opt>`
+**Type:** `(stateFactory: Object, storage: null \| StorageInterface<Key, T, Opt>, initRestore: boolean) => PersistentStore<T, Key, Opt>`
 
 #### Parameters
 
-| Name                                                                                  | Type                                     | Optional | Default | Since | Deprecated | Description                                                                         |
-| ------------------------------------------------------------------------------------- | ---------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------- |
-| `stateFactory`                                                                        | `Object`                                 | ❌       | -       | -     | -          | Factory function that creates a new instance of state type `T`                      |
+| Name                                                                                  | Type                                    | Optional | Default | Since | Deprecated | Description                                                                         |
+| ------------------------------------------------------------------------------------- | --------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------- |
+| `stateFactory`                                                                        | `Object`                                | ❌       | -       | -     | -          | Factory function that creates a new instance of state type `T`                      |
 | Used to initialize the store state and reset state to defaults                        |
-| `storage`                                                                             | `null \| SyncStorageInterface<Key, Opt>` | ✅       | `null`  | -     | -          | Storage implementation for persisting state, or `null` if persistence is not needed |
+| `storage`                                                                             | `null \| StorageInterface<Key, T, Opt>` | ✅       | `null`  | -     | -          | Storage implementation for persisting state, or `null` if persistence is not needed |
 | When `null`, `restore()` and `persist()` methods will not perform any operations      |
-| `initRestore`                                                                         | `boolean`                                | ✅       | `false` | -     | -          | Whether to automatically restore state from storage during construction             |
+| `initRestore`                                                                         | `boolean`                               | ✅       | `false` | -     | -          | Whether to automatically restore state from storage during construction             |
 | Set to `true` only if subclass fields are not needed for restore() (e.g., storageKey) |
 
 ---
@@ -179,7 +176,7 @@ class ExpiringStore extends PersistentStoreInterface<
 
 #### `storage` (Property)
 
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
+**Type:** `null \| StorageInterface<Key, T, Opt>`
 
 **Default:** `null`
 
@@ -379,13 +376,13 @@ override emit(state: T, options?: { persist?: boolean }): void {
 
 #### `getStorage` (Method)
 
-**Type:** `() => null \| SyncStorageInterface<Key, Opt>`
+**Type:** `() => null \| StorageInterface<Key, T, Opt>`
 
 ---
 
 ##### `getStorage` (CallSignature)
 
-**Type:** `null \| SyncStorageInterface<Key, Opt>`
+**Type:** `null \| StorageInterface<Key, T, Opt>`
 
 Get the storage instance
 

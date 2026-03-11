@@ -67,4 +67,3 @@ playwright/.auth
 # vscode search.exclude patterns
 **/.git
 **/pnpm-lock.yaml
-packages/create-app/templates/

@@ -1,5 +1,5 @@
 {
-  "name": "taro-seed",
+  "name": "examples/taro-seed",
   "version": "1.0.0",
   "private": true,
   "description": "taro react vite",
@@ -10,7 +10,6 @@
     "framework": "React"
   },
   "scripts": {
-    "prepare": "husky",
     "new": "taro new",
     "build:weapp": "taro build --type weapp",
     "build:swan": "taro build --type swan",
@@ -56,9 +55,9 @@
   "author": "",
   "dependencies": {
     "@babel/runtime": "^7.24.4",
-    "@qlover/corekit-bridge": "^2.2.0",
-    "@qlover/fe-corekit": "^3.2.0",
-    "@qlover/logger": "^1.1.0",
+    "@qlover/corekit-bridge": "workspace:*",
+    "@qlover/fe-corekit": "workspace:*",
+    "@qlover/logger": "workspace:*",
     "@qlover/slice-store-react": "^1.4.2",
     "@tarojs/components": "4.1.11",
     "@tarojs/helper": "4.1.11",
@@ -87,7 +86,6 @@
     "@brain-toolkit/ts2locales": "^0.4.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@eslint/js": "^8.57.0",
     "@qlover/eslint-plugin": "^2.0.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@tarojs/cli": "4.1.11",
@@ -99,6 +97,8 @@
     "@types/react": "^18.0.0",
     "@vitejs/plugin-react": "^4.3.0",
     "babel-preset-taro": "4.1.11",
+    "@eslint/config-helpers": "^0.3.0",
+    "@eslint/js": "^8.57.0",
     "eslint": "^8.57.0",
     "eslint-config-taro": "4.1.11",
     "eslint-plugin-import": "^2.32.0",

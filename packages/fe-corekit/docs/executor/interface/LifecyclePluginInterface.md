@@ -90,10 +90,9 @@ executor.use({
 Explicit Type Usage:
 
 ```typescript
-interface MyPlugin
-  extends LifecyclePluginInterface<
-    ExecutorContextInterface<MyParams, MyResult>
-  > {
+interface MyPlugin extends LifecyclePluginInterface<
+  ExecutorContextInterface<MyParams, MyResult>
+> {
   customMethod(): void;
 }
 

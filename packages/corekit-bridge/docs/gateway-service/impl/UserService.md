@@ -364,7 +364,7 @@ if (user) {
 
 #### `getUserInfo` (Method)
 
-**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<User>`
 
 #### Parameters
 
@@ -377,7 +377,7 @@ if (user) {
 
 ##### `getUserInfo` (CallSignature)
 
-**Type:** `Promise<null \| User>`
+**Type:** `Promise<User>`
 
 Get current user information
 
@@ -612,7 +612,7 @@ runs a type guard to check if a value is a user.
 
 #### `login` (Method)
 
-**Type:** `(params: LoginParams, config: Cfg) => Promise<null \| Credential>`
+**Type:** `(params: LoginParams, config: Cfg) => Promise<Credential>`
 
 #### Parameters
 
@@ -625,7 +625,7 @@ runs a type guard to check if a value is a user.
 
 ##### `login` (CallSignature)
 
-**Type:** `Promise<null \| Credential>`
+**Type:** `Promise<Credential>`
 
 Login user with credentials
 
@@ -736,7 +736,7 @@ await userService.logout(null, {
 
 #### `refreshUserInfo` (Method)
 
-**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<User>`
 
 #### Parameters
 
@@ -749,7 +749,7 @@ await userService.logout(null, {
 
 ##### `refreshUserInfo` (CallSignature)
 
-**Type:** `Promise<null \| User>`
+**Type:** `Promise<User>`
 
 Refresh user information
 
@@ -791,7 +791,7 @@ const user = await userService.refreshUserInfo(
 
 #### `register` (Method)
 
-**Type:** `(params: unknown, config: Cfg) => Promise<null \| User>`
+**Type:** `(params: unknown, config: Cfg) => Promise<User>`
 
 #### Parameters
 
@@ -804,7 +804,7 @@ const user = await userService.refreshUserInfo(
 
 ##### `register` (CallSignature)
 
-**Type:** `Promise<null \| User>`
+**Type:** `Promise<User>`
 
 Register a new user
 
@@ -854,7 +854,7 @@ const user = await userService.register(
 
 ### `UserServiceConfig` (TypeAlias)
 
-**Type:** `Omit<GatewayServiceOptions<User, unknown>, "serviceName" \| "store" \| "gateway"> & Object`
+**Type:** `Omit<GatewayServiceOptions<User, unknown>, "serviceName" \| "store" \| "gateway" \| "storage" \| "storageKey"> & Object`
 
 **Since:** `1.8.0`
 
@@ -941,5 +941,29 @@ const config: UserServiceConfig<User, TokenCredential> = {
 
 const userService = new UserService(config);
 ```
+
+---
+
+### `UserServiceErrorIds` (Variable)
+
+**Type:** `Object`
+
+**Default:** `{}`
+
+---
+
+#### `InValidCredential` (Property)
+
+**Type:** `"USERSERVICE_INVALID_CREDENTIAL"`
+
+**Default:** `'USERSERVICE_INVALID_CREDENTIAL'`
+
+---
+
+#### `InValidUser` (Property)
+
+**Type:** `"USERSERVICE_INVALID_USER"`
+
+**Default:** `'USERSERVICE_INVALID_USER'`
 
 ---

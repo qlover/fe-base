@@ -1,31 +1,11 @@
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StringValue } from 'ms';
-
-/**
- * 基础配置接口
- *
- * 主要用于初始化项目配置、环境等
- */
-export interface SeedConfigInterface {
-  readonly env: string;
-  readonly name: string;
-  readonly version: string;
-  readonly isProduction: boolean;
-  readonly stringEncryptorKey: string;
-  /**
-   * log level
-   *
-   * @example 'debug'
-   * @example 'info'
-   * @example 'warn'
-   * @example 'error'
-   */
-  readonly logLevel: string;
-}
 
 export interface SeedServerConfigInterface extends SeedConfigInterface {
   readonly userTokenKey: string;
   readonly jwtSecret: string;
   readonly appHost: string;
+  readonly stringEncryptorKey: string;
 
   /**
    * login user token expires in
@@ -39,6 +19,8 @@ export interface SeedServerConfigInterface extends SeedConfigInterface {
   readonly openaiApiKey: string;
 }
 export interface SeedSrcConfigInterface extends SeedConfigInterface {
+  readonly stringEncryptorKey: string;
+
   readonly testLoginEmail: string;
   readonly testLoginPassword: string;
 }

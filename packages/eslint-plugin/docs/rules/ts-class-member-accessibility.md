@@ -397,7 +397,7 @@ style guide that doesn't require explicit modifiers, you can disable this rule.
 
 ### `tsClassMemberAccessibility` (Variable)
 
-**Type:** `RuleModule<MessageIds, Options, unknown, RuleListener>`
+**Type:** `RuleModuleWithName<MessageIds, Options, unknown, RuleListener>`
 
 **Default:** `{}`
 

@@ -1,6 +1,7 @@
 import js from '@eslint/js';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
-import vitest from 'eslint-plugin-vitest';
+import vitest from '@vitest/eslint-plugin';
 import qloverEslint, { restrictGlobals } from '@qlover/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -14,60 +15,86 @@ const allGlobals = {
   ...vitest.environments.env.globals
 };
 
-/**
- * @type {import('eslint').Linter.Config[]}
- */
-export default tseslint.config([
-  {
-    ignores: [
-      '**/dist/**',
-      '**/build/**',
-      '**/ts-build/**',
-      '**/node_modules/**',
-      '**/.nx/**',
-      '**/.cache/**',
-      '**/coverage/**',
-      '**/*.d.ts',
-      // TODO: open templates later(pnpm lint command very slow)
-      'packages/**/templates/**'
-    ]
-  },
+const nodeGlobals = Object.keys(globals.node);
+
+// Ignore patterns for packages/*.ts when using type-checked config (exclude tests, configs)
+const packageTsIgnores = [
+  '**/dist/**',
+  '**/build/**',
+  '**/ts-build/**',
+  '**/node_modules/**',
+  '**/.nx/**',
+  '**/.cache/**',
+  '**/coverage/**',
+  '**/*.d.ts',
+  '**/templates/**',
+  '**/tsup.config.ts',
+  '**/vite.config.ts',
+  '**/vitest.config.ts',
+  '**/*.test.ts',
+  '**/__mocks__/**',
+  '**/__tests__/**',
+  '**/*.spec.ts'
+];
+
+// Turn off type-checked rules we don't need (only enable ts-class-override)
+const typeCheckedRulesOff = {
+  '@typescript-eslint/ban-ts-comment': 'off',
+  '@typescript-eslint/restrict-template-expressions': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+  '@typescript-eslint/no-redundant-type-constituents': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-empty-object-type': 'off',
+  '@typescript-eslint/no-unsafe-call': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+  '@typescript-eslint/no-unsafe-literal-comparison': 'off',
+  '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
+  '@typescript-eslint/no-unsafe-optional-chaining': 'off',
+  '@typescript-eslint/unbound-method': 'off',
+  '@typescript-eslint/await-thenable': 'off',
+  '@typescript-eslint/no-floating-promises': 'off',
+  '@typescript-eslint/no-misused-promises': 'off',
+  '@typescript-eslint/require-await': 'off',
+  '@typescript-eslint/no-base-to-string': 'off',
+  '@typescript-eslint/prefer-promise-reject-errors': 'off',
+  '@typescript-eslint/no-duplicate-type-constituents': 'off'
+};
+
+export default defineConfig([
+  globalIgnores([
+    '**/dist/**',
+    '**/build/**',
+    '**/.next/**',
+    '**/ts-build/**',
+    '**/node_modules/**',
+    '**/.nx/**',
+    '**/.cache/**',
+    '**/coverage/**',
+    '**/*.d.ts',
+    'examples'
+  ]),
 
   {
     name: 'lint-general-js',
     files: ['**/*.{js,jsx}'],
     extends: [js.configs.recommended],
-    languageOptions: {
-      globals: {
-        process: true,
-        console: true
-      }
-    },
-    plugins: {
-      prettier: prettier
-    },
+    languageOptions: { globals: { process: true, console: true } },
+    plugins: { prettier },
     rules: {
-      ...js.configs.recommended.rules,
       'prettier/prettier': ['error', prettierConfig],
       'spaced-comment': 'error'
     }
   },
 
-  // TypeScript files without type checking (faster, for most rules)
   {
     name: 'lint-general-ts',
     files: ['**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
     languageOptions: {
-      parserOptions: {
-        // Removed projectService: true for better performance
-        // Only enable if you need type-aware rules like:
-        // - @typescript-eslint/await-thenable
-        // - @typescript-eslint/no-floating-promises
-        // - @typescript-eslint/no-misused-promises
-        // - @typescript-eslint/require-await
-        tsconfigRootDir: import.meta.dirname
-      }
+      parserOptions: { tsconfigRootDir: import.meta.dirname }
     },
     plugins: {
       '@qlover-eslint': qloverEslint,
@@ -79,11 +106,8 @@ export default tseslint.config([
       ...qloverEslint.configs.recommended.rules,
       '@qlover-eslint/require-root-testid': [
         'error',
-        {
-          exclude: '/Provider$/'
-        }
+        { exclude: '/Provider$/' }
       ],
-      // Disable ts-class-override here, it will be enabled in type-aware config below
       '@qlover-eslint/ts-class-override': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
@@ -106,7 +130,6 @@ export default tseslint.config([
         }
       ],
       '@typescript-eslint/ban-ts-comment': 'off',
-      // Type-checked rules
       '@typescript-eslint/require-await': 'off',
       'react-refresh/only-export-components': [
         'warn',
@@ -115,34 +138,11 @@ export default tseslint.config([
     }
   },
 
-  // TypeScript files with type checking for ts-class-override rule
-  // The ts-class-override rule requires full type information to accurately detect:
-  // - Methods that override parent class methods (via extends)
-  // - Methods that implement interface methods (via implements)
-  // Without type checking, the rule falls back to AST-based heuristics which are less accurate
-  // This separate config block enables type checking only for TypeScript files to provide
-  // accurate override detection while maintaining good performance
+  // Type-checked only for ts-class-override (packages/*.ts, excluding tests/configs)
   {
     name: 'lint-ts-class-override',
     files: ['packages/**/*.ts'],
-    ignores: [
-      '**/dist/**',
-      '**/build/**',
-      '**/ts-build/**',
-      '**/node_modules/**',
-      '**/.nx/**',
-      '**/.cache/**',
-      '**/coverage/**',
-      '**/*.d.ts',
-      '**/templates/**',
-      '**/tsup.config.ts',
-      '**/vite.config.ts',
-      '**/vitest.config.ts',
-      '**/*.test.ts',
-      '**/__mocks__/**',
-      '**/__tests__/**',
-      '**/*.spec.ts'
-    ],
+    ignores: packageTsIgnores,
     extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {
@@ -150,87 +150,30 @@ export default tseslint.config([
         tsconfigRootDir: import.meta.dirname
       }
     },
-    plugins: {
-      '@qlover-eslint': qloverEslint
-    },
+    plugins: { '@qlover-eslint': qloverEslint },
     rules: {
-      // Enable ts-class-override rule with full type information
-      // This rule is disabled in the base config above and only enabled here where
-      // type information is available, ensuring accurate detection of override relationships
       '@qlover-eslint/ts-class-override': 'error',
-      // Disable other type-checked rules to avoid performance impact
-      // We only need type checking for ts-class-override, so we disable other
-      // type-aware rules that would slow down linting without providing value
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-      '@typescript-eslint/no-redundant-type-constituents': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
-      '@typescript-eslint/no-unsafe-literal-comparison': 'off',
-      '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
-      '@typescript-eslint/no-unsafe-optional-chaining': 'off',
-      '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/no-base-to-string': 'off',
-      '@typescript-eslint/prefer-promise-reject-errors': 'off',
-      '@typescript-eslint/no-duplicate-type-constituents': 'off'
+      ...typeCheckedRulesOff
     }
   },
 
-  // fe-corekit common
+  // fe-corekit + corekit-node: node globals only (exclude test dirs)
   restrictGlobals(
     {
-      name: 'lint-fe-corekit',
-      files: ['packages/fe-corekit/**/*.ts'],
-      languageOptions: {
-        globals: {
-          ...globals.node
-          // console: null
-        }
-      },
+      name: 'lint-packages-node',
+      files: ['packages/fe-corekit/**/*.ts', 'packages/corekit-node/**/*.ts'],
+      ignores: ['**/__tests__/**', '**/__mocks__/**'],
+      languageOptions: { globals: globals.node },
       rules: {}
     },
-    {
-      allowedGlobals: Object.keys(globals.node),
-      allGlobals
-    }
+    { allowedGlobals: nodeGlobals, allGlobals }
   ),
 
-  // fe-corekit server
-  restrictGlobals(
-    {
-      name: 'lint-corekit-node',
-      files: ['packages/corekit-node/**/*.ts'],
-      languageOptions: {
-        globals: globals.node
-      },
-      rules: {}
-    },
-    {
-      allowedGlobals: Object.keys(globals.node),
-      allGlobals
-    }
-  ),
-
-  // tools 和配置文件使用宽松规则
   {
     name: 'lint-tools',
     files: ['tools/**/*.{ts,tsx}', '**/tsup.config.ts'],
     extends: [...tseslint.configs.recommended],
-    languageOptions: {
-      globals: {
-        ...globals.node
-      }
-    },
+    languageOptions: { globals: globals.node },
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
@@ -239,7 +182,6 @@ export default tseslint.config([
     }
   },
 
-  // vitest (包含所有测试相关文件)
   restrictGlobals(
     {
       name: 'lint-vitest',
@@ -248,9 +190,7 @@ export default tseslint.config([
         'packages/**/__mocks__/**/*.{ts,tsx}'
       ],
       extends: [...tseslint.configs.recommended],
-      plugins: {
-        vitest
-      },
+      plugins: { vitest },
       languageOptions: {
         globals: {
           ...globals.browser,
@@ -259,11 +199,9 @@ export default tseslint.config([
         }
       },
       rules: {
-        // TODO: 修复 test 文件的 any 类型
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-empty-object-type': 'off',
-        // Fix @typescript-eslint/no-unused-expressions rule configuration
         '@typescript-eslint/no-unused-expressions': [
           'error',
           {
@@ -276,8 +214,8 @@ export default tseslint.config([
     },
     {
       allowedGlobals: [
+        ...nodeGlobals,
         ...Object.keys(globals.browser),
-        ...Object.keys(globals.node),
         ...Object.keys(vitest.environments.env.globals),
         'expectTypeOf'
       ],

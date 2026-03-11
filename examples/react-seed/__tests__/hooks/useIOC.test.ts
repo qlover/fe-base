@@ -1,11 +1,11 @@
+import { inject } from '@qlover/corekit-bridge/ioc';
 import * as globals from '@/globals';
 import { useIOC } from '@/hooks/useIOC';
-import { inject } from '@/impls/SimpleIOCContainer';
-import type { SimpleIOCContainer } from '@/impls/SimpleIOCContainer';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
 import type {
   IOCContainerInterface,
-  IOCFunctionInterface
+  IOCFunctionInterface,
+  SimpleIOCContainer
 } from '@qlover/corekit-bridge/ioc';
 
 describe('useIOC', () => {
