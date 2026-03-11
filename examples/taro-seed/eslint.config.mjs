@@ -2,6 +2,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import js from '@eslint/js';
 import qloverLint, { restrictSpecificGlobals } from '@qlover/eslint-plugin';
+import { defineConfig, globalIgnores } from '@eslint/config-helpers';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -15,28 +16,24 @@ const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export default [
-  {
-    ignores: [
-      'dist',
-      'config',
-      'node_modules',
-      'postcss.config.js',
-      'eslint.config.js'
-    ]
-  },
-  // Base recommended configs (spread in flat config; no "extends")
-  ...(Array.isArray(js.configs.recommended)
-    ? js.configs.recommended
-    : [js.configs.recommended]),
-  ...(Array.isArray(tseslint.configs.recommended)
-    ? tseslint.configs.recommended
-    : [tseslint.configs.recommended]),
-  ...(Array.isArray(reactRefresh.configs.vite)
-    ? reactRefresh.configs.vite
-    : [reactRefresh.configs.vite]),
+export default defineConfig([
+  globalIgnores([
+    'dist',
+    'config',
+    'node_modules',
+    'postcss.config.js',
+    'eslint.config.mjs'
+  ]),
+
   {
     files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...(Array.isArray(reactRefresh.configs.vite)
+        ? reactRefresh.configs.vite
+        : [reactRefresh.configs.vite])
+    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser
@@ -211,4 +208,4 @@ export default [
       'import/prefer-default-export': 'error'
     }
   }
-];
+]);

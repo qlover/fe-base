@@ -11,8 +11,7 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig([
   globalIgnores([
@@ -38,11 +37,7 @@ export default defineConfig([
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
-      parserOptions: {
-        // Note: 'project' is removed here to avoid conflict with projectService in the type-checked config below
-        // TypeScript files will get type information from the recommendedTypeChecked config
-        tsconfigRootDir: __dirname
-      }
+      parserOptions: { tsconfigRootDir: __dirname }
     },
     plugins: {
       'unused-imports': unusedImports,
@@ -135,10 +130,7 @@ export default defineConfig([
   {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
-      parserOptions: {
-        project: './tsconfig.app.json',
-        tsconfigRootDir: __dirname
-      }
+      parserOptions: { project: './tsconfig.app.json', tsconfigRootDir: __dirname }
     },
     plugins: {
       '@qlover-eslint': qloverLint

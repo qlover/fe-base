@@ -1,5 +1,5 @@
-import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import { name, version } from '../package.json';
+import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StringValue } from 'ms';
 
 export class ServerConfig implements SeedServerConfigInterface {

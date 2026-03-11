@@ -28,7 +28,9 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
   /**
    * Start the client
    *
-   */
+
+   * @override
+      */
   public startup(
     root?: unknown,
     /**
@@ -68,6 +70,9 @@ export class BootstrapClient implements BootstrapInterface<BootstrapExecutorPlug
       });
   }
 
+  /**
+   * @override
+   */
   public getPlugins(
     seedConfig: SeedConfigInterface
   ): BootstrapExecutorPlugin[] {

@@ -6,10 +6,8 @@ import type { UserCredentialSchema, UserSchema } from '@schemas/UserSchema';
 
 export type UserCredential = string;
 
-export interface AuthStoreStateInterface extends UserStateInterface<
-  UserSchema,
-  UserCredentialSchema
-> {
+export interface AuthStoreStateInterface
+  extends UserStateInterface<UserSchema, UserCredentialSchema> {
   openLoginForm: boolean;
   code: string;
 }

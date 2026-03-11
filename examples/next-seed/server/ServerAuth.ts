@@ -4,9 +4,9 @@ import { inject, injectable } from '@shared/container';
 import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
-import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import { SupabaseBridge } from './SupabaseBridge';
 import type { ServerAuthInterface } from './interfaces/ServerAuthInterface';
+import type { SeedServerConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 
 @injectable()
 export class ServerAuth implements ServerAuthInterface {

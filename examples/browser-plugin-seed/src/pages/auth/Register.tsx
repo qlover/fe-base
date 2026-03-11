@@ -1,4 +1,4 @@
 /** Placeholder for register page. */
 export default function Register() {
-  return <div>Register</div>;
+  return <div data-testid="Register">Register</div>;
 }

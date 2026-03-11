@@ -4,22 +4,41 @@ import { FlatCompat } from '@eslint/eslintrc';
 import qloverEslint from '@qlover/eslint-plugin';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import unusedImports from 'eslint-plugin-unused-imports';
-import { configs as tseslintConfigs } from 'typescript-eslint';
+import { configs } from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
+const typeCheckedRulesOff = {
+  '@typescript-eslint/ban-ts-comment': 'off',
+  '@typescript-eslint/restrict-template-expressions': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+  '@typescript-eslint/no-redundant-type-constituents': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-empty-object-type': 'off',
+  '@typescript-eslint/no-unsafe-call': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+  '@typescript-eslint/no-unsafe-literal-comparison': 'off',
+  '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
+  '@typescript-eslint/no-unsafe-optional-chaining': 'off',
+  '@typescript-eslint/unbound-method': 'off',
+  '@typescript-eslint/await-thenable': 'off',
+  '@typescript-eslint/no-floating-promises': 'off',
+  '@typescript-eslint/no-misused-promises': 'off',
+  '@typescript-eslint/require-await': 'off',
+  '@typescript-eslint/no-base-to-string': 'off',
+  '@typescript-eslint/prefer-promise-reject-errors': 'off',
+  '@typescript-eslint/no-duplicate-type-constituents': 'off',
+  '@typescript-eslint/no-unused-vars': 'off',
+  '@typescript-eslint/only-throw-error': 'off'
+};
+
 const eslintConfig = defineConfig([
-  ...compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:prettier/recommended'
-  ),
-  // Override default ignores; keep only main entries.
   globalIgnores([
     'node_modules/**',
     '.next/**',
@@ -27,6 +46,13 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts'
   ]),
+  ...compat.extends(
+    'next/core-web-vitals',
+    'next/typescript',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:prettier/recommended'
+  ),
   {
     languageOptions: {
       parserOptions: {
@@ -131,71 +157,24 @@ const eslintConfig = defineConfig([
       'import/no-default-export': 'error'
     }
   },
-  // TypeScript files with type checking for ts-class-override rule (files align with tsconfig.json include)
-  ...tseslintConfigs.recommendedTypeChecked.map((config) => ({
-    ...config,
+  // TypeScript with type checking for ts-class-override (src, server, shared)
+  {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],
     ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/.next/**',
-      '**/*.d.ts',
-      '**/*.config.{ts,js,mjs}',
-      '**/*.test.{ts,tsx}',
-      '**/*.spec.{ts,tsx}',
-      '**/__tests__/**',
-      '**/__mocks__/**',
-      ...(config.ignores || [])
+      '**/node_modules/**', '**/dist/**', '**/build/**', '**/.next/**', '**/*.d.ts',
+      '**/*.config.{ts,js,mjs}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}',
+      '**/__tests__/**', '**/__mocks__/**'
     ],
+    extends: [...configs.recommendedTypeChecked],
     languageOptions: {
-      ...config.languageOptions,
-      parserOptions: {
-        ...config.languageOptions?.parserOptions,
-        project: './tsconfig.json',
-        tsconfigRootDir: __dirname
-      }
+      parserOptions: { project: './tsconfig.json', tsconfigRootDir: __dirname }
     },
-    plugins: {
-      ...config.plugins,
-      '@qlover-eslint': qloverEslint
-    },
+    plugins: { '@qlover-eslint': qloverEslint },
     rules: {
-      ...config.rules,
-      // Enable ts-class-override rule with full type information
-      // This rule is disabled in the base config above and only enabled here where
-      // type information is available, ensuring accurate detection of override relationships
       '@qlover-eslint/ts-class-override': 'error',
-      // Disable other type-checked rules to avoid performance impact
-      // We only need type checking for ts-class-override, so we disable other
-      // type-aware rules that would slow down linting without providing value
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-      '@typescript-eslint/no-redundant-type-constituents': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
-      '@typescript-eslint/no-unsafe-literal-comparison': 'off',
-      '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
-      '@typescript-eslint/no-unsafe-optional-chaining': 'off',
-      '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/no-base-to-string': 'off',
-      '@typescript-eslint/prefer-promise-reject-errors': 'off',
-      '@typescript-eslint/no-duplicate-type-constituents': 'off',
-      // Disable @typescript-eslint/no-unused-vars as we use unused-imports/no-unused-vars instead
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/only-throw-error': 'off'
+      ...typeCheckedRulesOff
     }
-  })),
+  },
   // 为特定文件允许 default export
   {
     files: [

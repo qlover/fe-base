@@ -7,7 +7,6 @@ import { DialogErrorPlugin } from '@/impls/DialogErrorPlugin';
 import { RequestEncryptPlugin } from '@/impls/RequestEncryptPlugin';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { I } from '@config/ioc-identifiter';
-import type { SeedSrcConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import { AppApiPlugin } from './AppApiPlugin';
 import { AppApiRequester } from '../AppApiRequester';
 import type { AppApiConfig } from '../AppApiRequester';
@@ -15,6 +14,7 @@ import type {
   BootstrapContext,
   BootstrapExecutorPlugin
 } from '@qlover/corekit-bridge';
+import type { SeedSrcConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { SerializerIneterface } from '@qlover/fe-corekit';
 
 export class AppUserApiBootstrap implements BootstrapExecutorPlugin {

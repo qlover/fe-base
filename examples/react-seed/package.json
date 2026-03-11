@@ -12,6 +12,7 @@
     "build": "cross-env NODE_ENV=production vite build",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "vitest run"
   },

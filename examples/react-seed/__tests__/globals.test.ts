@@ -1,7 +1,7 @@
 import * as globals from '@/globals';
 import { name, version } from '../package.json';
-import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { IOCIdentifierMap } from '@config/ioc-identifier';
+import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type {
   IOCContainerInterface,
   IOCFunctionInterface
