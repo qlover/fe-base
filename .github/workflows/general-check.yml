@@ -34,7 +34,7 @@ jobs:
       - name: Build (affected)
         run: pnpm nx:build
 
-      - run: pnpm lint
+      - run: pnpm nx:lint
       - run: pnpm test
       - run: pnpm rebuild
 
