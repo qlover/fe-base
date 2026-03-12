@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { LifecycleExecutor } from '@qlover/fe-corekit';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { logger } from './ServerGlobals';

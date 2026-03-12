@@ -10,15 +10,26 @@ jobs:
     if: |
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
+    env:
+      # Allow using Nx cache restored from previous CI runs (different machine)
+      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
     steps:
       # - name: Print GitHub Event Information
       #   run: echo "${{ toJson(github.event.pull_request) }}" > event.json
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      - name: Restore Nx cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -26,12 +37,16 @@ jobs:
           node-version: '20.19.0'
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
-      
-      # CI environment does not have .nx/cache cache, and each new build cannot read the cache, 
-      # if there is no cache from the last time, then other packages will not produce dist, but the local will read it directly from .nx/cache
-      # TODO: solve nx cache, use incremental build
-      # - run: pnpm nx:build --base=origin/${{ github.base_ref }} --head=HEAD --skip-nx-cache
-      - run: pnpm nx:build:force
+
+      - name: Build (affected)
+        run: pnpm nx affected:build --base=origin/${{ github.base_ref }} --head=HEAD --parallel --maxParallel=4
+
+      - name: Save Nx cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild

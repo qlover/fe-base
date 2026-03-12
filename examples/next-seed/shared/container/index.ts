@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   injectable as injectableImpl,
   inject as injectImpl

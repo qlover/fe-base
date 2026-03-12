@@ -157,18 +157,6 @@ export default defineConfig([
     }
   },
 
-  // fe-corekit + corekit-node: node globals only (exclude test dirs)
-  restrictGlobals(
-    {
-      name: 'lint-packages-node',
-      files: ['packages/fe-corekit/**/*.ts', 'packages/corekit-node/**/*.ts'],
-      ignores: ['**/__tests__/**', '**/__mocks__/**'],
-      languageOptions: { globals: globals.node },
-      rules: {}
-    },
-    { allowedGlobals: nodeGlobals, allGlobals }
-  ),
-
   {
     name: 'lint-tools',
     files: ['tools/**/*.{ts,tsx}', '**/tsup.config.ts'],
