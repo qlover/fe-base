@@ -38,9 +38,14 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
+      # NX Cloud Task
+      # - name: NX Cloud Build (affected exclude examples)
+      #   run: pnpm nx:build:packages
+      # - run: pnpm nx:lint
+
+      # 普通 task
       - name: Build (affected force)
         run: pnpm nx:build:force
-
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
@@ -79,9 +84,14 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
+      # NX Cloud Task
+      # - name: NX Cloud Build (affected exclude examples)
+      #   run: pnpm nx:build:packages
+      # - run: pnpm nx:lint
+
+      # 普通 task
       - name: Build (affected force)
         run: pnpm nx:build:force
-
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
