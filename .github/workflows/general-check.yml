@@ -32,13 +32,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build (affected)
-        run: pnpm nx run-many --target=build --all
+        run: pnpm nx:build
 
       - run: pnpm lint
       - run: pnpm test
-
-      # 【建议】确认是否真的需要全局 rebuild，通常不需要
-      # - run: pnpm rebuild
+      - run: pnpm rebuild
 
       - name: Check packages
         if: github.event.pull_request.base.ref == 'master'
