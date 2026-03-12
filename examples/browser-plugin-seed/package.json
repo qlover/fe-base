@@ -18,7 +18,7 @@
     "fix": "npm run lint:fix && npm run format"
   },
   "dependencies": {
-    "@brain-toolkit/brain-user": "^0.2.1",
+    "@brain-toolkit/brain-user": "^0.2.2",
     "@qlover/corekit-bridge": "workspace:*",
     "@qlover/fe-corekit": "workspace:*",
     "@qlover/logger": "workspace:*",
@@ -60,11 +60,5 @@
     "host_permissions": [
       "https://*/*"
     ]
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@qlover/corekit-bridge": "patches/@qlover__corekit-bridge.patch",
-      "@qlover/fe-corekit": "patches/@qlover__fe-corekit.patch"
-    }
   }
 }
