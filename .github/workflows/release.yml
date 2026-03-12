@@ -40,12 +40,12 @@ jobs:
 
       # NX Cloud Task
       # - name: NX Cloud Build (affected exclude examples)
-      #   run: pnpm nx:build:packages
-      # - run: pnpm nx:lint
+      #   run: pnpm build:packages
+      # - run: pnpm lint
 
       # 普通 task
       - name: Build (affected force)
-        run: pnpm nx:build:force
+        run: pnpm build:force
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
@@ -86,12 +86,12 @@ jobs:
 
       # NX Cloud Task
       # - name: NX Cloud Build (affected exclude examples)
-      #   run: pnpm nx:build:packages
-      # - run: pnpm nx:lint
+      #   run: pnpm build:packages
+      # - run: pnpm lint
 
       # 普通 task
       - name: Build (affected force)
-        run: pnpm nx:build:force
+        run: pnpm build:force
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild

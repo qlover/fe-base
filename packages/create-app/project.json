@@ -11,11 +11,10 @@
       },
       "inputs": [
         "{projectRoot}/src/**/*.ts",
-        "{projectRoot}/templates/**/*.ts",
-        "{projectRoot}/configs",
         "{projectRoot}/package.json",
         "{projectRoot}/tsup.config.ts",
         "{projectRoot}/README.md",
+        "{projectRoot}/README_EN.md",
         "{workspaceRoot}/nx.json"
       ],
       "outputs": ["{projectRoot}/dist"],
