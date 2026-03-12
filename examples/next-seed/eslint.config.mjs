@@ -198,6 +198,12 @@ const eslintConfig = defineConfig([
     rules: {
       'import/no-default-export': 'off'
     }
+  },
+  {
+    files: ['src/i18n/loadMessages.ts'],
+    rules: {
+      'import/no-unresolved': 'off'
+    }
   }
 ]);
 
