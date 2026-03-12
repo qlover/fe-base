@@ -17,7 +17,7 @@ jobs:
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -26,18 +26,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Restore Nx cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
-          restore-keys: |
-            nx-${{ runner.os }}-
-
       - name: Config Git
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,15 +38,9 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: Build (affected)
-        run: pnpm nx affected:build --base=HEAD~1 --head=HEAD --parallel --maxParallel=4
+      - name: Build (affected force)
+        run: pnpm nx:build:force
 
-      - name: Save Nx cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
@@ -71,7 +57,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -80,18 +66,10 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Restore Nx cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
-          restore-keys: |
-            nx-${{ runner.os }}-
-
       - name: Config Git
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"  
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -101,15 +79,9 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: Build (affected)
-        run: pnpm nx affected:build --base=HEAD~1 --head=HEAD --parallel --maxParallel=4
+      - name: Build (affected force)
+        run: pnpm nx:build:force
 
-      - name: Save Nx cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
