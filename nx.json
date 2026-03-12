@@ -22,6 +22,7 @@
       "dependsOn": ["^build"]
     },
     "lint": {
+      "dependsOn": ["^build"], 
       "inputs": [
         "default",
         "{workspaceRoot}/.eslint.config.js",
@@ -29,7 +30,8 @@
         "{projectRoot}/.eslint.config.js",
         "{projectRoot}/.eslint.config.mjs",
         "{workspaceRoot}/packages/eslint-plugin/**/*"
-      ]
+      ],
+      "cache": true
     },
     "@nx/esbuild:esbuild": {
       "cache": true,
