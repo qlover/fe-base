@@ -22,8 +22,7 @@ jobs:
       - name: Set SHAs for Nx affected
         uses: nrwl/nx-set-shas@v4
         with:
-          base: ${{ github.event.pull_request.base.sha }}
-          head: ${{ github.event.pull_request.head.sha }}
+          main-branch-name: master
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -33,7 +32,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build (affected)
-        run: pnpm nx affected:build --parallel --maxParallel=4
+        run: pnpm nx run-many --target=build --all
 
       - run: pnpm lint
       - run: pnpm test
