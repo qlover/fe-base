@@ -11,7 +11,7 @@
     "package": "npm run startup && plasmo package",
     "startup": "node srcripts/startup.js",
     "postinstall": "node srcripts/startup.js",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write src",
     "type-check": "tsc --noEmit",

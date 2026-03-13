@@ -46,7 +46,7 @@ jobs:
 
       # 普通 task
       - name: Build (affected force)
-        run: pnpm build:force
+        run: pnpm build:packages:force
       - run: pnpm lint:force
       - run: pnpm test:force
       - run: pnpm rebuild
@@ -93,7 +93,7 @@ jobs:
 
       # 普通 task
       - name: Build (affected force)
-        run: pnpm build:force
+        run: pnpm build:packages:force
       - run: pnpm lint:force
       - run: pnpm test:force
       - run: pnpm rebuild

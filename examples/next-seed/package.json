@@ -11,7 +11,7 @@
     "build:staging": "cross-env APP_ENV=staging NODE_ENV=production next build && next-sitemap",
     "build:dev": "cross-env APP_ENV=localhost NODE_ENV=production next build && next-sitemap",
     "start": "next start --port 3101",
-    "lint": "eslint",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",

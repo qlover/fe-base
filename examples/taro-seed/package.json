@@ -30,7 +30,7 @@
     "dev:jd": "npm run build:jd -- --watch",
     "dev:harmony-hybrid": "npm run build:harmony-hybrid -- --watch",
     "type-check": "tsc --noEmit",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"{src,types}/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "fix": "npm run lint:fix && npm run format"
