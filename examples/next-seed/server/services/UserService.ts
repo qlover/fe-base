@@ -51,7 +51,7 @@ export class UserService implements UserServiceInterface {
       password: params.password,
 
       options: {
-        emailRedirectTo: `${this.appConfig.appHost}/callback`
+        emailRedirectTo: `${this.appConfig.appHost}/api/callback`
       }
     });
     this.supabaseBridge.throwIfError(result);
