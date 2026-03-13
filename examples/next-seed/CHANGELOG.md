@@ -1,5 +1,18 @@
 # examples/next-seed
 
+## 0.0.3
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **eslint:** remove node globals restriction and adjust reflect-metadata imports ([589a430](https://github.com/qlover/fe-base/commit/589a430b5a2c78e9211c0b8d21ce1ebd175ed741)) ([#596](https://github.com/qlover/fe-base/pull/596))
+  - Removed the restriction of node globals in the ESLint configuration for `fe-corekit` and `corekit-node`, simplifying the linting setup.
+  - Eliminated unnecessary `reflect-metadata` imports from several files in the `next-seed` example, streamlining the codebase.
+  - Added `reflect-metadata` import in `index.ts` of the shared container to ensure proper functionality of dependency injection.
+
+  These changes aim to enhance code clarity and maintainability across the project.
+
 ## 0.0.2
 
 ### Patch Changes
