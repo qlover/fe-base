@@ -9,13 +9,27 @@
       --fe-text-secondary: 148 163 184;
       --fe-text-tertiary: 100 116 139;
       --fe-color-border: 51 65 85;
-      --fe-color-brand: 37 99 235;
-      --fe-color-brand-hover: 59 130 246;
+      --fe-color-brand: 147 51 234; /* #9333ea purple for dark */
+      --fe-color-brand-hover: 168 85 247; /* #a855f7 lighter purple */
+      --fe-color-brand-active: 126 34 206;
       --login-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
       --fe-color-bg-container: rgb(30 41 59);
       --fe-color-border: rgb(51 65 85);
       --fe-color-primary: rgb(var(--fe-color-brand));
+      --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
+      --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+
+      --fe-color-success: #52c41a;
+      --fe-color-warning: #faad14;
+      --fe-color-error: #ff4d4f;
+
+      --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
+      --fe-color-text: rgb(var(--fe-text-primary) / 0.85);
+      --fe-color-text-heading: rgb(var(--fe-text-primary));
+      --fe-color-text-disabled: rgb(var(--fe-text-primary) / 0.25);
+      --fe-line-height: 1.5715;
+      --fe-border-radius: 6px;
 
       --login-input-bg: var(--fe-color-bg-container);
       --login-input-border: var(--fe-color-border);
@@ -37,11 +51,25 @@
       --fe-color-border: 254 205 211;
       --fe-color-brand: 225 29 72;
       --fe-color-brand-hover: 244 63 94;
+      --fe-color-brand-active: 190 18 60;
       --login-card-shadow: 0 4px 12px rgba(244 63 94 / 0.15);
 
       --fe-color-border: rgb(254 205 211);
       --fe-color-bg-container: rgb(255 241 242);
       --fe-color-primary: rgb(var(--fe-color-brand));
+      --fe-color-primary-hover: rgb(var(--fe-color-brand-hover));
+      --fe-color-primary-active: rgb(var(--fe-color-brand-active));
+
+      --fe-color-success: #52c41a;
+      --fe-color-warning: #faad14;
+      --fe-color-error: #fb7185;
+
+      --fe-color-primary-bg: rgb(var(--fe-color-brand) / 0.1);
+      --fe-color-text: rgb(var(--fe-text-primary) / 0.85);
+      --fe-color-text-heading: rgb(var(--fe-text-primary));
+      --fe-color-text-disabled: rgb(var(--fe-text-primary) / 0.25);
+      --fe-line-height: 1.5715;
+      --fe-border-radius: 6px;
 
       --login-input-bg: var(--fe-color-bg-container);
       --login-input-border: var(--fe-color-border);
