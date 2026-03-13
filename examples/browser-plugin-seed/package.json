@@ -2,7 +2,7 @@
   "name": "examples/browser-plugin-seed",
   "private": true,
   "displayName": "Browser Plugin Seed",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A basic Plasmo extension.",
   "author": "qlover",
   "scripts": {

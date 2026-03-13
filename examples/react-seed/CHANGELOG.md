@@ -1,5 +1,48 @@
 # examples/react-seed
 
+## 0.1.3
+
+### Patch Changes
+
+#### ✨ Features
+
+- **tests:** enhance test configurations and logging ([15baa77](https://github.com/qlover/fe-base/commit/15baa77d26ae38a2306e4f212e8501c281fdcedd)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `vite.config.ts` to set the environment to 'development', ensuring React's `act()` is exposed during testing.
+  - Modified `index.ts` in the tests directory to enforce the development environment for better compatibility with testing tools.
+  - Introduced a mock logger in the `reader.test.ts` to improve logging during tests, enhancing clarity and debugging capabilities.
+  - Added console warning suppression in multiple test files to reduce noise in test outputs.
+
+  These changes aim to improve the testing environment and enhance the clarity of test outputs.
+
+#### 🐞 Bug Fixes
+
+- **container:** adjust reflect-metadata import in InversifyContainer and IOCProvider ([828ee71](https://github.com/qlover/fe-base/commit/828ee71d14edcce8685c608b18584437ae25dddd)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Removed the import of 'reflect-metadata' from InversifyContainer.ts to streamline the container setup.
+  - Added the 'reflect-metadata' import in IOCProvider.tsx to ensure proper functionality of dependency injection.
+
+  These changes aim to improve the configuration of the Inversify container and ensure correct metadata reflection in the IOC provider.
+
+#### ♻️ Refactors
+
+- **dep:** update eslint configuration and package dependencies ([e9275ee](https://github.com/qlover/fe-base/commit/e9275ee01bbab01ef9d95a008f97e18eec4d6895)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated `eslint.config.js` to include the `examples` directory in the linting process, improving code quality checks across all examples.
+  - Added a new script `nx:build:packages` in `package.json` to facilitate building packages while excluding the `examples` directory, streamlining the build process.
+  - Updated `pnpm-lock.yaml` to reflect the latest versions of various dependencies, enhancing compatibility and performance across the project.
+
+  These changes aim to improve the development workflow and maintain a cleaner project structure.
+
+- **config:** update SeedConfigInterface and BootstrapClient implementation ([af8bc42](https://github.com/qlover/fe-base/commit/af8bc426c3cac801eba6f715fef1d991da1262c0)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Refactored the SeedConfigInterface to be imported from '@qlover/corekit-bridge/bootstrap', enhancing consistency across the project.
+  - Removed obsolete SeedBootstrapInterface and updated BootstrapClient to implement the new BootstrapInterface, streamlining the bootstrapping process.
+  - Adjusted various imports in related files to align with the new structure, improving code organization and maintainability.
+  - Enhanced the logging configuration in the BootstrapClient to utilize a dynamic log level setting.
+
+  These changes aim to improve the overall architecture and maintainability of the project by consolidating configuration interfaces and refining the bootstrapping logic.
+
+- **react-seed:** change env property to a getter in ReactSeedConfig ([f10efb7](https://github.com/qlover/fe-base/commit/f10efb765017467e87e77ff56d60fc1871c3145d)) ([#592](https://github.com/qlover/fe-base/pull/592))
+  - Updated the `env` property in `ReactSeedConfig` to a getter method, improving encapsulation and allowing for dynamic retrieval of the environment mode.
+  - This change enhances the flexibility of the configuration by ensuring the environment value is always up-to-date with `import.meta.env.MODE`.
+
 ## 0.1.2
 
 ### Patch Changes

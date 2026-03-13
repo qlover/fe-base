@@ -1,5 +1,18 @@
 # @qlover/fe-scripts
 
+## 2.0.3
+
+### Patch Changes
+
+#### ♻️ Refactors
+
+- **clean-branch:** improve branch deletion logic for local-only branches ([6434a57](https://github.com/qlover/fe-base/commit/6434a57d3a56676daff251587e6a3214cbcdf1b8)) ([#598](https://github.com/qlover/fe-base/pull/598))
+  - Updated the logic to identify local branches that do not have corresponding remote branches, enhancing the accuracy of the cleanup process.
+  - Changed the user prompt message to clarify that only local-only branches will be deleted.
+  - Improved logging to specify which branches are being considered for deletion.
+
+  These changes aim to streamline the branch cleaning process and provide clearer feedback to the user.
+
 ## 2.0.2
 
 ### Patch Changes

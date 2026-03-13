@@ -1,6 +1,6 @@
 {
   "name": "examples/next-seed",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "dev": "cross-env APP_ENV=localhost next dev --port 3100",
