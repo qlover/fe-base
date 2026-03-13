@@ -6,30 +6,23 @@ on:
 
 jobs:
   check-code:
-    # Skip if has CI-Release label
     if: |
       !contains(github.event.pull_request.labels.*.name, 'CI-Release')
     runs-on: ubuntu-latest
     env:
-      # Allow using Nx cache restored from previous CI runs (different machine)
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
     steps:
-      # - name: Print GitHub Event Information
-      #   run: echo "${{ toJson(github.event.pull_request) }}" > event.json
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Restore Nx cache
-        uses: actions/cache/restore@v4
+      - name: Set SHAs for Nx affected
+        uses: nrwl/nx-set-shas@v4
         with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
-          restore-keys: |
-            nx-${{ runner.os }}-
+          main-branch-name: master
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -38,20 +31,18 @@ jobs:
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
 
-      - name: Build (affected)
-        run: pnpm nx affected:build --base=origin/${{ github.base_ref }} --head=HEAD --parallel --maxParallel=4
-
-      - name: Save Nx cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json') }}
+      # NX Cloud Task
+      - name: NX Cloud Build (exclude examples)
+        run: pnpm build:packages
       - run: pnpm lint
+
+      # 普通 task
+      # - name: Build (affected force)
+      #   run: pnpm build:force
+      # - run: pnpm lint
       - run: pnpm test
       - run: pnpm rebuild
 
-      # Only run package checks when targeting master
       - name: Check packages
         if: github.event.pull_request.base.ref == 'master'
         run: |

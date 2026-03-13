@@ -180,8 +180,8 @@ importers:
   examples/browser-plugin-seed:
     dependencies:
       '@brain-toolkit/brain-user':
-        specifier: ^0.2.1
-        version: 0.2.1(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
+        specifier: ^0.2.2
+        version: 0.2.2(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
       '@qlover/corekit-bridge':
         specifier: workspace:*
         version: link:../../packages/corekit-bridge
@@ -1038,7 +1038,7 @@ importers:
         version: 9.1.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.32.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
+        version: 2.32.0(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-n:
         specifier: ^17.11.1
         version: 17.24.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
@@ -1827,8 +1827,8 @@ packages:
   '@brain-toolkit/antd-theme-override@0.0.3':
     resolution: {integrity: sha512-aedDNwcB5UDG+WYj1wNNQHtfMH6zIsJoZoCk1kr0V+nJMWFmQcZlcGmOj3E2/VeO0Q8XL/4zZHfQXVXum4LHgg==}
 
-  '@brain-toolkit/brain-user@0.2.1':
-    resolution: {integrity: sha512-gee6pP0LiZ7qP1rSZaeH5p6Prpi079G8uhL6t99FuPKnwbET7+qOCu8A9A7BhfLFg/mYwne5H3vzxuv6pJFl9A==}
+  '@brain-toolkit/brain-user@0.2.2':
+    resolution: {integrity: sha512-osv42If7dDVCPwXdqX4HE2jCfnhfwMe3Ql+FKkNy3zYYADNQyiaumJL1fv/1hmcUjqgR0HYKn7ardy51HwRYTQ==}
 
   '@brain-toolkit/react-kit@0.2.2':
     resolution: {integrity: sha512-KFdkTQ996itx7DV7s86AVUwJr0wuNi4eQjHio+MLYo9oNcq7yxuVIQJqRjp+B0qdE7iSoLj/CSia6wJ9NX2aQg==}
@@ -14560,7 +14560,7 @@ snapshots:
 
   '@brain-toolkit/antd-theme-override@0.0.3': {}
 
-  '@brain-toolkit/brain-user@0.2.1(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
+  '@brain-toolkit/brain-user@0.2.2(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)':
     dependencies:
       '@qlover/corekit-bridge': 2.2.0(patch_hash=121f03e882e064d1e5bd43a7072ad501f8c3d1f6671007cb81db586890d9d7f0)(@types/node@20.11.5)(less@4.6.2)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(yaml@2.8.2)
       '@qlover/fe-corekit': 3.2.0(patch_hash=c0af176a04962bd8291f983dd11ed4815a59615e79539e4d5356f31c13c86061)
@@ -22506,6 +22506,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1)):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5)
+      eslint: 9.39.4(jiti@2.6.1)
+      eslint-import-resolver-node: 0.3.9
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-module-utils@2.12.1(@typescript-eslint/parser@8.57.0(eslint@8.57.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
@@ -22616,6 +22626,35 @@ snapshots:
       tsconfig-paths: 3.15.0
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.1)(typescript@5.4.5)
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint@9.39.4(jiti@2.6.1)):
+    dependencies:
+      '@rtsao/scc': 1.1.0
+      array-includes: 3.1.9
+      array.prototype.findlastindex: 1.2.6
+      array.prototype.flat: 1.3.3
+      array.prototype.flatmap: 1.3.3
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 9.39.4(jiti@2.6.1)
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.6.1))
+      hasown: 2.0.2
+      is-core-module: 2.16.1
+      is-glob: 4.0.3
+      minimatch: 3.1.5
+      object.fromentries: 2.0.8
+      object.groupby: 1.0.3
+      object.values: 1.2.1
+      semver: 6.3.1
+      string.prototype.trimend: 1.0.9
+      tsconfig-paths: 3.15.0
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.4.5)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack

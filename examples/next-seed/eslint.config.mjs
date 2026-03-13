@@ -4,39 +4,14 @@ import { FlatCompat } from '@eslint/eslintrc';
 import qloverEslint from '@qlover/eslint-plugin';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import unusedImports from 'eslint-plugin-unused-imports';
-import { configs } from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
-const typeCheckedRulesOff = {
-  '@typescript-eslint/ban-ts-comment': 'off',
-  '@typescript-eslint/restrict-template-expressions': 'off',
-  '@typescript-eslint/no-unsafe-assignment': 'off',
-  '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-  '@typescript-eslint/no-redundant-type-constituents': 'off',
-  '@typescript-eslint/no-unsafe-return': 'off',
-  '@typescript-eslint/no-empty-object-type': 'off',
-  '@typescript-eslint/no-unsafe-call': 'off',
-  '@typescript-eslint/no-unsafe-member-access': 'off',
-  '@typescript-eslint/no-unsafe-argument': 'off',
-  '@typescript-eslint/no-unsafe-enum-comparison': 'off',
-  '@typescript-eslint/no-unsafe-literal-comparison': 'off',
-  '@typescript-eslint/no-unsafe-nullish-coalescing': 'off',
-  '@typescript-eslint/no-unsafe-optional-chaining': 'off',
-  '@typescript-eslint/unbound-method': 'off',
-  '@typescript-eslint/await-thenable': 'off',
-  '@typescript-eslint/no-floating-promises': 'off',
-  '@typescript-eslint/no-misused-promises': 'off',
-  '@typescript-eslint/require-await': 'off',
-  '@typescript-eslint/no-base-to-string': 'off',
-  '@typescript-eslint/prefer-promise-reject-errors': 'off',
-  '@typescript-eslint/no-duplicate-type-constituents': 'off',
-  '@typescript-eslint/no-unused-vars': 'off',
-  '@typescript-eslint/only-throw-error': 'off'
-};
+// Use a smaller tsconfig for ESLint to avoid parsing .next/types (faster lint)
+const eslintTsconfig = './tsconfig.eslint.json';
 
 const eslintConfig = defineConfig([
   globalIgnores([
@@ -69,8 +44,8 @@ const eslintConfig = defineConfig([
     settings: {
       'import/resolver': {
         typescript: {
-          project: './tsconfig.json',
-          alwaysTryTypes: true
+          project: eslintTsconfig,
+          alwaysTryTypes: false
         },
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx']
@@ -154,10 +129,12 @@ const eslintConfig = defineConfig([
         }
       ],
       // 默认禁用 export default
-      'import/no-default-export': 'error'
+      'import/no-default-export': 'error',
+      // Keep off to match previous behavior (was in typeCheckedRulesOff)
+      '@typescript-eslint/no-empty-object-type': 'off'
     }
   },
-  // TypeScript with type checking for ts-class-override (src, server, shared)
+  // Type checking only for ts-class-override (no recommendedTypeChecked for speed)
   {
     files: ['src/**/*.{ts,tsx}', 'server/**/*.ts', 'shared/**/*.{ts,tsx}'],
     ignores: [
@@ -172,14 +149,16 @@ const eslintConfig = defineConfig([
       '**/__tests__/**',
       '**/__mocks__/**'
     ],
-    extends: [...configs.recommendedTypeChecked],
     languageOptions: {
-      parserOptions: { project: './tsconfig.json', tsconfigRootDir: __dirname }
+      parserOptions: {
+        project: eslintTsconfig,
+        tsconfigRootDir: __dirname
+      }
     },
     plugins: { '@qlover-eslint': qloverEslint },
     rules: {
       '@qlover-eslint/ts-class-override': 'error',
-      ...typeCheckedRulesOff
+      '@typescript-eslint/no-empty-object-type': 'off'
     }
   },
   // 为特定文件允许 default export
@@ -197,6 +176,12 @@ const eslintConfig = defineConfig([
     ],
     rules: {
       'import/no-default-export': 'off'
+    }
+  },
+  {
+    files: ['src/i18n/loadMessages.ts'],
+    rules: {
+      'import/no-unresolved': 'off'
     }
   }
 ]);

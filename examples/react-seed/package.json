@@ -11,7 +11,7 @@
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "build": "cross-env NODE_ENV=production vite build",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "vitest run"

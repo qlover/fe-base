@@ -69,21 +69,30 @@ export function cleanBranch(
     );
   }
 
-  // Get the list of local branches
-  const branchesOutput = execSync('git branch -vv', { encoding: 'utf8' });
-  const branches = branchesOutput
+  // Get all local branch names
+  const localBranchesOutput = execSync('git branch', { encoding: 'utf8' });
+  const localBranches = localBranchesOutput
     .split('\n')
-    .map((line) => line.trim())
+    .map((line) => line.trim().replace(/^\*?\s*/, ''))
     .filter((line) => line);
 
-  // Find branches that are gone from the remote and not protected
-  const branchesToDelete = branches
-    .filter((line) => line.includes(': gone]'))
-    .map((line) => line.split(' ')[0].replace('*', '').trim())
-    .filter(
-      (branch) =>
-        branch !== currentBranch && !protectedBranches.includes(branch)
-    );
+  // Get remote branch names (short names that exist on remote after fetch -p)
+  const remoteBranchesOutput = execSync('git branch -r', { encoding: 'utf8' });
+  const remoteBranchNames = new Set(
+    remoteBranchesOutput
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.includes('->'))
+      .map((line) => line.replace(/^[^/]+\//, '')) // e.g. origin/feature -> feature
+  );
+
+  // Local-only branches: exist locally but have no corresponding remote branch
+  const branchesToDelete = localBranches.filter(
+    (branch) =>
+      branch !== currentBranch &&
+      !protectedBranches.includes(branch) &&
+      !remoteBranchNames.has(branch)
+  );
 
   // Function to ask for user confirmation
   const askUserConfirmation = (branchesToDelete: string[]): void => {
@@ -92,14 +101,16 @@ export function cleanBranch(
       output: process.stdout
     });
 
-    logger.log('The following branches will be deleted:');
-    branchesToDelete.forEach((branch) => logger.log(branch));
+    logger.log(
+      'The following local-only branches (no corresponding remote) will be deleted:'
+    );
+    branchesToDelete.forEach((branch) => logger.log(`  - ${branch}`));
 
     rl.question(
-      'Are you sure you want to delete these branches? (yes/no) ',
+      'Proceed to delete these branches? (yes/no) ',
       (answer) => {
         if (answer.toLowerCase() === 'yes') {
-          // Delete the local branches that are gone from the remote
+          // Delete the local-only branches
           branchesToDelete.forEach((branch) => {
             try {
               if (dryRun) {
@@ -141,6 +152,6 @@ export function cleanBranch(
   if (branchesToDelete.length > 0) {
     askUserConfirmation(branchesToDelete);
   } else {
-    logger.log('No branches to delete.');
+    logger.log('No local-only branches to delete.');
   }
 }
