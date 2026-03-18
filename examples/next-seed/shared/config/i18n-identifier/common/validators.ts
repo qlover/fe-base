@@ -39,3 +39,10 @@ export const V_PASSWORD_MAX_LENGTH = 'common:v:password_max_length';
  * @localEn Password cannot contain whitespace characters validation message
  */
 export const V_PASSWORD_SPECIAL_CHARS = 'common:v:password_special_chars';
+
+/**
+ * @description Data validation error
+ * @localZh 数据验证错误
+ * @localEn Data validation error
+ */
+export const V_ZOD_FAILED = 'common:v:zod_failed';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { i18nKeySchema } from '@shared/schemas/i18nKeyScheam';
+import { i18nKeySchema } from '@schemas/i18nKeyScheam';
 
 export const localesSchema = z.object({
   id: z.number(),

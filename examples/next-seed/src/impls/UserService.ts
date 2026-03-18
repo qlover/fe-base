@@ -1,7 +1,7 @@
 import { UserService as CorekitBridgeUserService } from '@qlover/corekit-bridge';
 import { isObject, isString } from 'lodash';
-import { API_REFRESH_USER_INFO_FAILED } from '@shared/config/i18n-identifier/api';
 import { inject, injectable } from '@shared/container';
+import { API_REFRESH_USER_INFO_FAILED } from '@config/i18n-identifier/api';
 import {
   userSchema,
   type UserCredential,
