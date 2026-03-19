@@ -5,6 +5,7 @@ export class AppErrorApi implements AppApiErrorInterface {
 
   constructor(
     public readonly id: string,
-    public readonly message?: string
+    public readonly message?: string,
+    public readonly requestId?: string
   ) {}
 }

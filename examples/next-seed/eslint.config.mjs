@@ -19,6 +19,9 @@ const eslintConfig = defineConfig([
     '.next/**',
     'out/**',
     'build/**',
+    'vitests.config.ts',
+    'vitest.config.*',
+    'vite.config.*',
     'next-env.d.ts'
   ]),
   ...compat.extends(
@@ -131,7 +134,8 @@ const eslintConfig = defineConfig([
       // 默认禁用 export default
       'import/no-default-export': 'error',
       // Keep off to match previous behavior (was in typeCheckedRulesOff)
-      '@typescript-eslint/no-empty-object-type': 'off'
+      '@typescript-eslint/no-empty-object-type': 'off',
+      'import/no-unresolved': 'off'
     }
   },
   // Type checking only for ts-class-override (no recommendedTypeChecked for speed)
@@ -176,12 +180,6 @@ const eslintConfig = defineConfig([
     ],
     rules: {
       'import/no-default-export': 'off'
-    }
-  },
-  {
-    files: ['src/i18n/loadMessages.ts'],
-    rules: {
-      'import/no-unresolved': 'off'
     }
   }
 ]);

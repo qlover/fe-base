@@ -1,3 +1,4 @@
+import { logPrefixTemplate } from '@config/common';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { name, version } from '../package.json';
 import type { StringValue } from 'ms';
@@ -27,4 +28,7 @@ export class ServerConfig implements SeedServerConfigInterface {
   public readonly openaiApiKey: string = process.env.CEREBRAS_API_KEY ?? '';
   public readonly stringEncryptorKey: string =
     process.env.NEXT_PUBLIC_STRING_ENCRYPT_KEY ?? '';
+
+  public readonly logPrefixTemplate: string =
+    process.env.LOG_PREFIX_TEMPLATE ?? logPrefixTemplate;
 }

@@ -1,18 +1,15 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
-import {
-  ConsoleHandler,
-  Logger,
-  TimestampFormatter,
-  type LoggerInterface,
-  type TimestampFormatterOptions
-} from '@qlover/logger';
+import { v4 as uuidv4 } from 'uuid';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
+import { printRequestIdPlugin } from './plugins/printRequestIdPlugin';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
+import { createLogger } from './utils/createLogger';
 import type {
   BootstrapServerContext,
   BootstrapServerContextOptions,
   BootstrapServerPlugin,
+  BootstrapServerRoot,
   ServerInterface
 } from './interfaces/ServerInterface';
 import type {
@@ -25,45 +22,39 @@ import type {
 } from '@qlover/corekit-bridge/bootstrap';
 import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
 import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
+import type { LoggerInterface } from '@qlover/logger';
 
-function createLogger(name: string, level: string): LoggerInterface {
-  const formater = new TimestampFormatter({
-    prefixTemplate: '[({loggerName}) {formattedTimestamp} {level}]',
-    localeOptions:
-      // 本地电脑的时间格式
-      Intl.DateTimeFormat().resolvedOptions() as TimestampFormatterOptions['localeOptions']
-  });
-  return new Logger({
-    name: name,
-    handlers: new ConsoleHandler(formater),
-    silent: false,
-    level: level
-  });
-}
+type BootstrapServerIOC = IOCFunctionInterface<
+  IOCIdentifierMapServer,
+  IOCContainerInterface
+>;
 
 export class BootstrapServer
   implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
 {
-  protected executor: LifecycleExecutor<
+  protected readonly executor: LifecycleExecutor<
     BootstrapServerContext,
     BootstrapServerPlugin
   >;
-  protected root: Record<string, unknown> = {};
+  protected readonly root: BootstrapServerRoot;
 
-  protected IOC: IOCFunctionInterface<
-    IOCIdentifierMapServer,
-    IOCContainerInterface
-  >;
+  protected readonly IOC: BootstrapServerIOC;
 
   public readonly logger: LoggerInterface;
 
-  constructor(protected name: string = '') {
-    this.executor = new LifecycleExecutor();
+  constructor(name?: string) {
     const serverConfig = new ServerConfig();
-    this.logger = createLogger(
-      name || serverConfig.name,
-      serverConfig.logLevel
-    );
+    const serverName = name ?? serverConfig.name;
+
+    this.root = {
+      uuid: uuidv4(),
+      serverName: serverName
+    };
+
+    this.executor = new LifecycleExecutor();
+
+    this.logger = createLogger(this.root.serverName, serverConfig);
+
     this.IOC = createServerIoc(this.logger, serverConfig);
   }
 
@@ -76,12 +67,7 @@ export class BootstrapServer
     plugin:
       | BootstrapServerPlugin
       | BootstrapServerPlugin[]
-      | ((
-          ioc: IOCFunctionInterface<
-            IOCIdentifierMapServer,
-            IOCContainerInterface
-          >
-        ) => BootstrapServerPlugin)
+      | ((ioc: BootstrapServerIOC) => BootstrapServerPlugin)
   ): this {
     if (typeof plugin === 'function') {
       plugin = plugin(this.IOC);
@@ -102,7 +88,7 @@ export class BootstrapServer
   public execNoError<Result>(
     task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
   ): Promise<Result | ExecutorError> {
-    const options = {
+    const options: BootstrapServerContextOptions = {
       logger: this.logger,
       root: this.root,
       ioc: this.IOC.implemention!,
@@ -122,10 +108,7 @@ export class BootstrapServer
   /**
    * @override
    */
-  public getIOC(): IOCFunctionInterface<
-    IOCIdentifierMapServer,
-    IOCContainerInterface
-  >;
+  public getIOC(): BootstrapServerIOC;
   /**
    * @override
    */
@@ -141,9 +124,7 @@ export class BootstrapServer
    */
   public getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier?: T
-  ):
-    | IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>
-    | IOCIdentifierMapServer[T] {
+  ): BootstrapServerIOC | IOCIdentifierMapServer[T] {
     if (identifier === undefined) {
       return this.IOC;
     }
@@ -163,6 +144,6 @@ export class BootstrapServer
    * @override
    */
   public getPlugins(_seedConfig: SeedConfigInterface): BootstrapServerPlugin[] {
-    return [];
+    return [printRequestIdPlugin];
   }
 }

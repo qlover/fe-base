@@ -13,8 +13,21 @@ import type {
 } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
+export interface BootstrapServerRoot {
+  /**
+   * server name
+   */
+  serverName: string;
+
+  /**
+   * server uuid
+   */
+  uuid: string;
+}
+
 export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
+  root: BootstrapServerRoot;
 }
 
 export interface BootstrapServerPlugin extends LifecyclePluginInterface<BootstrapServerContext> {}

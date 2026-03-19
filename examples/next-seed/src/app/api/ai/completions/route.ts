@@ -1,8 +1,4 @@
-import { ExecutorError } from '@qlover/fe-corekit';
-import { NextResponse } from 'next/server';
-import { AppErrorApi } from '@server/AppErrorApi';
-import { AppSuccessApi } from '@server/AppSuccessApi';
-import { BootstrapServer } from '@server/BootstrapServer';
+import { NextApiServer } from '@server/NextApiServer';
 
 /**
  * @swagger
@@ -53,11 +49,9 @@ import { BootstrapServer } from '@server/BootstrapServer';
  *                   nullable: true
  */
 export async function GET() {
-  const result = await new BootstrapServer().execNoError(async () => {
-    // const requestBody = await req.json();
-
-    return 'hello, now is:' + new Date().toISOString();
-    // const result = await IOC(AIService).completions([
+  return await new NextApiServer().runWithJson(async () => {
+    return 'hello';
+    // const result = await IOC(OpenAiAgent).completions([
     //   {
     //     role: 'user',
     //     content: 'hello'
@@ -66,12 +60,4 @@ export async function GET() {
 
     // return result;
   });
-
-  if (result instanceof ExecutorError) {
-    return NextResponse.json(new AppErrorApi(result.id, result.message), {
-      status: 400
-    });
-  }
-
-  return NextResponse.json(new AppSuccessApi(result));
 }

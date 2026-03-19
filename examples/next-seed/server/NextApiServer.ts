@@ -28,13 +28,17 @@ export class NextApiServer extends BootstrapServer {
       const messageList = JSON.parse(error.message);
 
       if (isArray(messageList)) {
-        return new AppErrorApi(V_ZOD_FAILED, first(messageList)?.message);
+        return new AppErrorApi(
+          V_ZOD_FAILED,
+          first(messageList)?.message,
+          this.root.uuid
+        );
       }
 
-      return new AppErrorApi(V_ZOD_FAILED, error.message);
+      return new AppErrorApi(V_ZOD_FAILED, error.message, this.root.uuid);
     } catch {}
 
-    return new AppErrorApi(V_ZOD_FAILED, error.message);
+    return new AppErrorApi(V_ZOD_FAILED, error.message, this.root.uuid);
   }
 
   protected catchExecutorError(
@@ -45,14 +49,14 @@ export class NextApiServer extends BootstrapServer {
     this.logger.error(error.cause ? error.cause : error);
 
     if (appConfig.isProduction) {
-      return new AppErrorApi(error.id);
+      return new AppErrorApi(error.id, undefined, this.root.uuid);
     }
 
     if (error.cause instanceof ZodError) {
       return this.catchZodError(error.cause);
     }
 
-    return new AppErrorApi(error.id, error.message);
+    return new AppErrorApi(error.id, error.message, this.root.uuid);
   }
 
   public async run<Result>(
@@ -80,13 +84,13 @@ export class NextApiServer extends BootstrapServer {
       this.logger.error(result);
 
       if (appConfig.isProduction) {
-        return new AppErrorApi('SERVER_ERROR');
+        return new AppErrorApi('SERVER_ERROR', undefined, this.root.uuid);
       }
 
-      return new AppErrorApi('SERVER_ERROR', result.message);
+      return new AppErrorApi('SERVER_ERROR', result.message, this.root.uuid);
     }
 
-    return new AppSuccessApi(result);
+    return new AppSuccessApi(result, this.root.uuid);
   }
 
   public async runWithJson<Result>(
