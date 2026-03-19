@@ -83,7 +83,7 @@ export function RegisterForm(props: { tt: RegisterI18nInterface }) {
 
     const payload: RegisterSchema = { username, email, password };
     const formResult = formValidator.validate(payload);
-    if (formResult != null) {
+    if (formResult != null && !formResult.success) {
       const key = formResult.path[0] as keyof typeof fieldErrors;
       if (key) {
         setFieldErrors((prev) => ({

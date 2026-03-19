@@ -95,7 +95,7 @@ export function LoginForm(props: { tt: LoginI18nInterface }) {
 
     const payload: LoginSchema = { email, password };
     const formResult = formValidator.validate(payload);
-    if (formResult != null) {
+    if (formResult != null && !formResult.success) {
       if (formResult.path[0] === 'email') {
         setFieldErrors((prev) => ({ ...prev, email: t(formResult.message) }));
       } else if (formResult.path[0] === 'password') {
