@@ -1,4 +1,4 @@
-import { I } from '@shared/config/ioc-identifiter';
+import { I } from '@config/ioc-identifiter';
 import type { UserService } from '../UserService';
 import type { BootstrapExecutorPlugin } from '@qlover/corekit-bridge';
 

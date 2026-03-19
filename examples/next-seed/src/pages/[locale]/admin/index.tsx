@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic';
 import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
-import { defaultNavItems } from '@shared/config/adminNavs';
+import { defaultNavItems } from '@config/adminNavs';
 import { i18nConfig } from '@config/i18n';
 import { admin18n } from '@config/i18n-mapping/admin18n';
 import type { PagesRouteParamsType } from '@server/PagesRouteParams';

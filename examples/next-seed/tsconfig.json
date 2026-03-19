@@ -22,10 +22,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["./shared/*"],
-      "@config/*": ["./shared/config/*"],
       "@schemas/*": ["./shared/schemas/*"],
+      "@config/*": ["./shared/config/*"],
       "@interfaces/*": ["./shared/interfaces/*"],
+      "@shared/*": ["./shared/*"],
       "@server/*": ["./server/*"]
     }
   },

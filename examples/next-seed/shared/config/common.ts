@@ -41,3 +41,29 @@ export const useApiLocales = false;
  * t('missing_translation'); // 警告缺失的翻译
  */
 export const i18nWarnMissingTranslation = true;
+
+/**
+ * 日志前缀模板
+ *
+ * 可支持的变量:
+ *  - timestamp
+ *  - level
+ *  - loggerName
+ *  - formattedTimestamp
+ *  - locale
+ *  - 传入的最后一个对象参数
+ *
+ * @example '[({loggerName}) {formattedTimestamp} {level}]'
+ * @example
+ *
+ * ```ts
+ * logger.log('message', { key: 'value' });
+ * // 此时模板中可以使用 key 属性变量
+ * ```
+ *
+ * nextjs 环境会自动捕获log再 .next/logs 目录下面，其中nextjs会根据调用 console[method] 方法名自动映射等级
+ *
+ * 所以这里可以简短的记录，但是控制台无法看到前缀
+ */
+export const logPrefixTemplate: string =
+  '[({loggerName}) {formattedTimestamp} {level}]';

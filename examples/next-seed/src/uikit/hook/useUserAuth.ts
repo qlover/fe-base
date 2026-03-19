@@ -1,7 +1,7 @@
 import { AsyncStoreStatus } from '@qlover/corekit-bridge';
 import { useStore } from '@/uikit/hook/useStore';
-import { I } from '@shared/config/ioc-identifiter';
-import type { UserCredential, UserSchema } from '@shared/schemas/UserSchema';
+import { I } from '@config/ioc-identifiter';
+import type { UserCredential, UserSchema } from '@schemas/UserSchema';
 import { useIOC } from './useIOC';
 import type { UserStateInterface } from '@qlover/corekit-bridge';
 

@@ -1,7 +1,7 @@
 import pLimit from 'p-limit';
 import { inject, injectable } from '@shared/container';
-import type { PaginationInterface } from '@shared/interfaces/PaginationInterface';
 import { localesSchema, type LocalesSchema } from '@schemas/LocalesSchema';
+import type { PaginationInterface } from '@interfaces/PaginationInterface';
 import { Datetime } from '@server/Datetime';
 import type {
   BridgeOrderBy,

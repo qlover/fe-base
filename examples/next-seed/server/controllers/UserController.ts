@@ -1,15 +1,11 @@
 import { ExecutorError, Base64Serializer } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
-import type { SeedServerConfigInterface } from '@shared/interfaces/SeedConfigInterface';
 import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
-import {
-  SignupVerifyParamType,
-  SignupVerifyValidator
-} from '@shared/validators/SignupVerifyValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
+import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { ServerConfig } from '@server/ServerConfig';
 import { ServerAuth } from '../ServerAuth';
 import { UserService } from '../services/UserService';
@@ -23,8 +19,6 @@ export class UserController implements UserServiceInterface {
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
-    @inject(SignupVerifyValidator)
-    protected verifyValidator: ValidatorInterface<SignupVerifyParamType>,
     @inject(UserService) protected userService: UserServiceInterface,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer

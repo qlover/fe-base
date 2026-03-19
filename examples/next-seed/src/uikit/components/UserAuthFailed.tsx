@@ -5,7 +5,7 @@ import {
   COMMON_USER_AUTH_FAILED_DESCRIPTION,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN,
   COMMON_USER_AUTH_FAILED_TITLE
-} from '@shared/config/i18n-identifier/common/common';
+} from '@config/i18n-identifier/common/common';
 import { ROUTE_LOGIN } from '@config/route';
 import { LocaleLink } from './LocaleLink';
 import { useWarnTranslations } from '../hook/useWarnTranslations';

@@ -2,11 +2,13 @@ export interface AppApiErrorInterface {
   success: false;
   id: string;
   message?: string;
+  requestId?: string;
 }
 
 export interface AppApiSuccessInterface<T = unknown> {
   success: true;
   data?: T;
+  requestId?: string;
 }
 
 export type AppApiResult<T = unknown> =

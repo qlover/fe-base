@@ -19,7 +19,7 @@ export const themeConfig = {
   antdTheme: {
     cssVar: {
       key: 'fe-theme',
-      prefix: 'fe'
+      prefix: 'fantd'
     }
   } as ThemeConfig
 } as const;

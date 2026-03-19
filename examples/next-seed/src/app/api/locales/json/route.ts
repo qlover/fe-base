@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { API_LOCALES_JSON } from '@config/apiRoutes';
 import type { LocaleType } from '@config/i18n';
 import { i18nConfig } from '@config/i18n';
 import { LocalesController } from '@server/controllers/LocalesController';
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
   const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
   const locale = searchParams.locale as LocaleType;
 
-  const result = await new NextApiServer().run(
+  const result = await new NextApiServer(API_LOCALES_JSON).run(
     async ({ parameters: { IOC } }) =>
       IOC(LocalesController).json(
         searchParams as unknown as LocalesControllerJsonQuery

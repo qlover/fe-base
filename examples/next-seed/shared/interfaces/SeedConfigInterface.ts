@@ -2,6 +2,7 @@ import type { SeedConfigInterface } from '@qlover/corekit-bridge/bootstrap';
 import type { StringValue } from 'ms';
 
 export interface SeedServerConfigInterface extends SeedConfigInterface {
+  readonly logPrefixTemplate: string;
   readonly userTokenKey: string;
   readonly jwtSecret: string;
   readonly appHost: string;

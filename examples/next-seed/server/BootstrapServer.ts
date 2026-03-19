@@ -1,11 +1,15 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
+import { v4 as uuidv4 } from 'uuid';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
-import { logger } from './ServerGlobals';
+import { printRequestIdPlugin } from './plugins/printRequestIdPlugin';
+import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
+import { createLogger } from './utils/createLogger';
 import type {
   BootstrapServerContext,
   BootstrapServerContextOptions,
   BootstrapServerPlugin,
+  BootstrapServerRoot,
   ServerInterface
 } from './interfaces/ServerInterface';
 import type {
@@ -20,26 +24,38 @@ import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
 import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
+type BootstrapServerIOC = IOCFunctionInterface<
+  IOCIdentifierMapServer,
+  IOCContainerInterface
+>;
+
 export class BootstrapServer
   implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
 {
-  protected executor: LifecycleExecutor<
+  protected readonly executor: LifecycleExecutor<
     BootstrapServerContext,
     BootstrapServerPlugin
   >;
-  protected root: Record<string, unknown> = {};
+  protected readonly root: BootstrapServerRoot;
 
-  protected IOC: IOCFunctionInterface<
-    IOCIdentifierMapServer,
-    IOCContainerInterface
-  >;
+  protected readonly IOC: BootstrapServerIOC;
 
   public readonly logger: LoggerInterface;
 
-  constructor() {
+  constructor(name?: string) {
+    const serverConfig = new ServerConfig();
+    const serverName = name ?? serverConfig.name;
+
+    this.root = {
+      uuid: uuidv4(),
+      serverName: serverName
+    };
+
     this.executor = new LifecycleExecutor();
-    this.IOC = createServerIoc();
-    this.logger = logger;
+
+    this.logger = createLogger(this.root.serverName, serverConfig);
+
+    this.IOC = createServerIoc(this.logger, serverConfig);
   }
 
   /**
@@ -51,12 +67,7 @@ export class BootstrapServer
     plugin:
       | BootstrapServerPlugin
       | BootstrapServerPlugin[]
-      | ((
-          ioc: IOCFunctionInterface<
-            IOCIdentifierMapServer,
-            IOCContainerInterface
-          >
-        ) => BootstrapServerPlugin)
+      | ((ioc: BootstrapServerIOC) => BootstrapServerPlugin)
   ): this {
     if (typeof plugin === 'function') {
       plugin = plugin(this.IOC);
@@ -77,12 +88,17 @@ export class BootstrapServer
   public execNoError<Result>(
     task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
   ): Promise<Result | ExecutorError> {
-    const options = {
+    const options: BootstrapServerContextOptions = {
       logger: this.logger,
       root: this.root,
       ioc: this.IOC.implemention!,
       IOC: this.IOC
     };
+
+    const plugins = this.getPlugins(this.IOC('SeedConfigInterface'));
+    if (plugins.length > 0) {
+      this.use(plugins);
+    }
 
     return this.executor.execNoError(
       options,
@@ -92,10 +108,7 @@ export class BootstrapServer
   /**
    * @override
    */
-  public getIOC(): IOCFunctionInterface<
-    IOCIdentifierMapServer,
-    IOCContainerInterface
-  >;
+  public getIOC(): BootstrapServerIOC;
   /**
    * @override
    */
@@ -111,9 +124,7 @@ export class BootstrapServer
    */
   public getIOC<T extends keyof IOCIdentifierMapServer>(
     identifier?: T
-  ):
-    | IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>
-    | IOCIdentifierMapServer[T] {
+  ): BootstrapServerIOC | IOCIdentifierMapServer[T] {
     if (identifier === undefined) {
       return this.IOC;
     }
@@ -123,14 +134,16 @@ export class BootstrapServer
   /**
    * @override
    */
-  public startup(): Promise<unknown> {
-    return Promise.resolve(undefined);
+  public startup<Result>(
+    task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
+  ): Promise<Result | ExecutorError> {
+    return this.execNoError(task);
   }
 
   /**
    * @override
    */
   public getPlugins(_seedConfig: SeedConfigInterface): BootstrapServerPlugin[] {
-    return [];
+    return [printRequestIdPlugin];
   }
 }
