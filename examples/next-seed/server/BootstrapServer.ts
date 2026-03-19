@@ -1,6 +1,13 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
+import {
+  ConsoleHandler,
+  Logger,
+  TimestampFormatter,
+  type LoggerInterface,
+  type TimestampFormatterOptions
+} from '@qlover/logger';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
-import { logger } from './ServerGlobals';
+import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import type {
   BootstrapServerContext,
@@ -18,7 +25,21 @@ import type {
 } from '@qlover/corekit-bridge/bootstrap';
 import type { ServiceIdentifier } from '@qlover/corekit-bridge/ioc';
 import type { ExecutorAsyncTask, ExecutorError } from '@qlover/fe-corekit';
-import type { LoggerInterface } from '@qlover/logger';
+
+function createLogger(name: string, level: string): LoggerInterface {
+  const formater = new TimestampFormatter({
+    prefixTemplate: '[({loggerName}) {formattedTimestamp} {level}]',
+    localeOptions:
+      // 本地电脑的时间格式
+      Intl.DateTimeFormat().resolvedOptions() as TimestampFormatterOptions['localeOptions']
+  });
+  return new Logger({
+    name: name,
+    handlers: new ConsoleHandler(formater),
+    silent: false,
+    level: level
+  });
+}
 
 export class BootstrapServer
   implements BootstrapInterface<BootstrapServerPlugin>, ServerInterface
@@ -36,10 +57,14 @@ export class BootstrapServer
 
   public readonly logger: LoggerInterface;
 
-  constructor() {
+  constructor(protected name: string = '') {
     this.executor = new LifecycleExecutor();
-    this.IOC = createServerIoc();
-    this.logger = logger;
+    const serverConfig = new ServerConfig();
+    this.logger = createLogger(
+      name || serverConfig.name,
+      serverConfig.logLevel
+    );
+    this.IOC = createServerIoc(this.logger, serverConfig);
   }
 
   /**
@@ -84,6 +109,11 @@ export class BootstrapServer
       IOC: this.IOC
     };
 
+    const plugins = this.getPlugins(this.IOC('SeedConfigInterface'));
+    if (plugins.length > 0) {
+      this.use(plugins);
+    }
+
     return this.executor.execNoError(
       options,
       task ?? (() => Promise.resolve(undefined as Result))
@@ -123,8 +153,10 @@ export class BootstrapServer
   /**
    * @override
    */
-  public startup(): Promise<unknown> {
-    return Promise.resolve(undefined);
+  public startup<Result>(
+    task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
+  ): Promise<Result | ExecutorError> {
+    return this.execNoError(task);
   }
 
   /**

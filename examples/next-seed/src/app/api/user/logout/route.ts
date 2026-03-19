@@ -1,3 +1,4 @@
+import { API_USER_LOGOUT } from '@config/apiRoutes';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
 
@@ -45,7 +46,7 @@ import { NextApiServer } from '@server/NextApiServer';
  *                   nullable: true
  */
 export async function POST() {
-  return await new NextApiServer().runWithJson(
+  return await new NextApiServer(API_USER_LOGOUT).runWithJson(
     async ({ parameters: { IOC } }) => IOC(UserController).logout()
   );
 }

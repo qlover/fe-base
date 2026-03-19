@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { AppErrorApi } from '@server/AppErrorApi';
 import { AppSuccessApi } from '@server/AppSuccessApi';
 import { BootstrapServer } from '@server/BootstrapServer';
-import { AIService } from '@server/services/AIService';
 
 /**
  * @swagger
@@ -54,20 +53,19 @@ import { AIService } from '@server/services/AIService';
  *                   nullable: true
  */
 export async function GET() {
-  const result = await new BootstrapServer().execNoError(
-    async ({ parameters: { IOC } }) => {
-      // const requestBody = await req.json();
+  const result = await new BootstrapServer().execNoError(async () => {
+    // const requestBody = await req.json();
 
-      const result = await IOC(AIService).completions([
-        {
-          role: 'user',
-          content: 'hello'
-        }
-      ]);
+    return 'hello, now is:' + new Date().toISOString();
+    // const result = await IOC(AIService).completions([
+    //   {
+    //     role: 'user',
+    //     content: 'hello'
+    //   }
+    // ]);
 
-      return result;
-    }
-  );
+    // return result;
+  });
 
   if (result instanceof ExecutorError) {
     return NextResponse.json(new AppErrorApi(result.id, result.message), {
