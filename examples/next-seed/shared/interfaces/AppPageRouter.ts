@@ -1,7 +1,7 @@
 /**
  * 该文件主要用于 /src/app 目录下页面路由的类型定义
  */
-import type { PageWithParams } from '@server/AppPageRouteParams';
+import type { PageWithParams } from '@server/render/AppPageRouteParams';
 
 export interface PageParamsProps extends PageWithParams {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

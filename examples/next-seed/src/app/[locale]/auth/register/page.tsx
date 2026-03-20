@@ -8,7 +8,7 @@ import type { PageParamsProps } from '@interfaces/AppPageRouter';
 import {
   AppPageRouteParams,
   type PageParamsType
-} from '@server/AppPageRouteParams';
+} from '@server/render/AppPageRouteParams';
 import { RegisterForm } from '../../../../uikit/components/RegisterForm';
 import type { Metadata } from 'next';
 

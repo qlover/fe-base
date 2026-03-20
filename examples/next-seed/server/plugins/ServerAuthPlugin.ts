@@ -2,7 +2,7 @@ import type {
   BootstrapServerContext,
   BootstrapServerPlugin
 } from '@server/interfaces/ServerInterface';
-import { ServerAuth } from '@server/ServerAuth';
+import { ServerAuth } from '@server/services/ServerAuth';
 
 export class ServerAuthPlugin implements BootstrapServerPlugin {
   public readonly pluginName = 'ServerAuthPlugin';

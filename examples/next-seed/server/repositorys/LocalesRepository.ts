@@ -2,12 +2,12 @@ import pLimit from 'p-limit';
 import { inject, injectable } from '@shared/container';
 import { localesSchema, type LocalesSchema } from '@schemas/LocalesSchema';
 import type { PaginationInterface } from '@interfaces/PaginationInterface';
-import { Datetime } from '@server/Datetime';
 import type {
   BridgeOrderBy,
   DBBridgeInterface
 } from '@server/interfaces/DBBridgeInterface';
-import { SupabaseBridge } from '../SupabaseBridge';
+import { Datetime } from '@server/utils/Datetime';
+import { SupabaseBridge } from './SupabaseBridge';
 import type {
   LocalesRepositoryInterface,
   UpsertResult

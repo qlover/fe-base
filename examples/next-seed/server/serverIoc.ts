@@ -8,7 +8,7 @@ import {
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { SupabaseBridge } from './SupabaseBridge';
+import { SupabaseBridge } from './repositorys/SupabaseBridge';
 import type { LoggerInterface } from '@qlover/logger';
 
 let ServerIoc: IOCFunctionInterface<

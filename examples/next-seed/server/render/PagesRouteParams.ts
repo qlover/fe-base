@@ -4,7 +4,7 @@ import { i18nConfig } from '@config/i18n';
 import type { LocaleType } from '@config/i18n';
 import type { PageI18nInterface } from '@config/i18n-mapping/PageI18nInterface';
 import { themeConfig } from '@config/theme';
-import type { RouteParamsnHandlerInterface } from './interfaces/RouteParamsnHandlerInterface';
+import type { RouteParamsnHandlerInterface } from '../interfaces/RouteParamsnHandlerInterface';
 import type { useTranslations } from 'next-intl';
 import type { ParsedUrlQuery } from 'querystring';
 

@@ -1,28 +1,29 @@
 export interface AppApiErrorInterface {
   success: false;
   id: string;
+  requestId: string;
   message?: string;
-  requestId?: string;
+  data?: unknown;
 }
 
-export interface AppApiSuccessInterface<T = unknown> {
+export interface AppApiSuccessInterface<T> {
   success: true;
+  requestId: string;
   data?: T;
-  requestId?: string;
 }
 
-export type AppApiResult<T = unknown> =
-  | AppApiErrorInterface
-  | AppApiSuccessInterface<T>;
+export type AppApiResult<T> = AppApiErrorInterface | AppApiSuccessInterface<T>;
 
-export function isAppApiSuccessInterface(
+export function isAppApiSuccessInterface<T>(
   result: unknown
-): result is AppApiSuccessInterface {
+): result is AppApiSuccessInterface<T> {
   return (
     typeof result === 'object' &&
     result !== null &&
     'success' in result &&
-    result.success === true
+    result.success === true &&
+    'requestId' in result &&
+    typeof result.requestId === 'string'
   );
 }
 
@@ -32,7 +33,11 @@ export function isAppApiErrorInterface(
   return (
     typeof result === 'object' &&
     result !== null &&
+    'id' in result &&
+    typeof result.id === 'string' &&
     'success' in result &&
-    result.success === false
+    result.success === false &&
+    'requestId' in result &&
+    typeof result.requestId === 'string'
   );
 }

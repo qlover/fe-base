@@ -5,8 +5,8 @@ import { API_NOT_AUTHORIZED } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { SupabaseBridge } from './SupabaseBridge';
-import type { ServerAuthInterface } from './interfaces/ServerAuthInterface';
+import { SupabaseBridge } from '../repositorys/SupabaseBridge';
+import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 
 @injectable()
 export class ServerAuth implements ServerAuthInterface {

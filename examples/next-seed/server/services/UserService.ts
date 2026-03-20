@@ -6,9 +6,9 @@ import { API_USER_NOT_FOUND } from '@config/i18n-identifier/api';
 import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import { PasswordEncrypt } from '../PasswordEncrypt';
-import { ServerAuth } from '../ServerAuth';
-import { SupabaseBridge } from '../SupabaseBridge';
+import { ServerAuth } from './ServerAuth';
+import { SupabaseBridge } from '../repositorys/SupabaseBridge';
+import { PasswordEncrypt } from '../utils/PasswordEncrypt';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
   UserServiceInterface,
