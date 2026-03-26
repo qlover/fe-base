@@ -1,5 +1,82 @@
 # examples/next-seed
 
+## 0.0.4
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-seed:** update dependencies and enhance .env.template ([eeac3ca](https://github.com/qlover/fe-base/commit/eeac3ca951e4b62dcde307bdb41608378d0cf4da)) ([#601](https://github.com/qlover/fe-base/pull/601))
+  - Added new dependencies: `https-proxy-agent` and `node-fetch` to support proxy functionality in server requests.
+  - Updated `.env.template` to include additional configuration options for API keys and logging settings, enhancing flexibility for environment setup.
+  - Updated `.gitignore` to exclude `.env` and `.cache` files for better security and cleanliness.
+  - Introduced a new SQL script for creating base tables in Supabase, including login audit logs with user-scoped row-level security.
+
+  These changes aim to improve the server's capability to handle API requests through proxies and streamline the environment configuration process.
+
+- **api:** add API route generation and localization enhancements ([b3bdf51](https://github.com/qlover/fe-base/commit/b3bdf5184db9fd543ac5137de916a4f67e457c4d)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Introduced a new tool for generating API routes, `generateApiRoutes`, which scans the `src/app/api` directory and creates a TypeScript file with constants for each route.
+  - Updated `generateLocales` to accept an optional `identifierDir` parameter, allowing for more flexible localization file generation.
+  - Enhanced error handling in both `generateApiRoutes` and `generateLocales` to improve robustness during the build process.
+
+  These changes aim to streamline API route management and localization, improving the overall development experience.
+
+- **server:** enhance logging and server initialization in BootstrapServer ([c55c34a](https://github.com/qlover/fe-base/commit/c55c34aeafceafa83c785212c24660a2833cc8a3)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Introduced a new `createLogger` function to configure logging with a timestamp formatter and console handler.
+  - Updated the `BootstrapServer` constructor to utilize the new logger and server configuration, improving logging capabilities.
+  - Removed the `ServerGlobals` file, consolidating logger and configuration management within `BootstrapServer`.
+  - Adjusted the `createServerIoc` function to accept logger and configuration parameters, enhancing dependency injection.
+  - Updated various API routes to utilize the new server initialization process, ensuring consistent logging and configuration usage.
+
+  These changes aim to improve the maintainability and clarity of server initialization and logging within the application.
+
+- **server:** enhance server configuration and logging capabilities ([e93dba9](https://github.com/qlover/fe-base/commit/e93dba9f9fa3e57d1495d6fb90f7ac04389e02ef)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Added `uuid` package to manage unique identifiers across the server.
+  - Updated `.env.template` to include new logging configuration options: `LOG_LEVEL` and `LOG_PREFIX_TEMPLATE`.
+  - Enhanced `AppErrorApi` and `AppSuccessApi` classes to include `requestId` for better error tracking.
+  - Introduced `printRequestIdPlugin` to log request IDs during server operations.
+  - Refactored `BootstrapServer` to utilize the new logging setup and manage server initialization more effectively.
+
+  These changes aim to improve the server's logging and error handling, enhancing overall maintainability and clarity.
+
+#### 🐞 Bug Fixes
+
+- **UserService:** update email redirect URL to include '/api' path ([e70e0bc](https://github.com/qlover/fe-base/commit/e70e0bc294ff8ac32ddcfe081f28a5eb972242c7)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Changed the email redirect URL in the UserService from `${this.appConfig.appHost}/callback` to `${this.appConfig.appHost}/api/callback` to ensure correct routing for email callbacks.
+
+  This update aims to improve the functionality of the user service by aligning the redirect path with the API structure.
+
+#### ♻️ Refactors
+
+- **validators:** enhance validation result structure and error handling ([c930dc9](https://github.com/qlover/fe-base/commit/c930dc9a7cb6b5d934af0c71c649561d69e973d2)) ([#601](https://github.com/qlover/fe-base/pull/601))
+  - Updated the LoginValidator and RegisterValidator to return a structured validation result, including success status, error path, and message for failed validations.
+  - Refactored the ValidatorInterface to support the new ValidationResult type, improving type safety and clarity in validation outcomes.
+  - Adjusted the LoginForm and RegisterForm components to handle the new validation result format, ensuring proper error display based on validation feedback.
+
+  These changes aim to improve the robustness and maintainability of the validation logic across the application.
+
+- **server:** remove AppErrorApi and AppSuccessApi, enhance BootstrapServer error handling ([ee4e678](https://github.com/qlover/fe-base/commit/ee4e67863e590fe32a5aa5a4693eca62bd5eb387)) ([#601](https://github.com/qlover/fe-base/pull/601))
+  - Deleted the AppErrorApi and AppSuccessApi classes to streamline error handling.
+  - Updated BootstrapServer to improve the typing of execNoError and startup methods, enhancing type safety and clarity.
+  - Introduced a new taskHandler method for better handling of task results.
+  - Removed unused printRequestIdPlugin and adjusted plugin management in BootstrapServer.
+  - Added new ApiResultFactory utility for consistent API result creation and error handling.
+
+  These changes aim to simplify the error management structure and improve the overall robustness of the server's API response handling.
+
+- **theme:** update theme variable prefixes from 'fe' to 'fantd' across styles ([8b6f804](https://github.com/qlover/fe-base/commit/8b6f804ab97d9f01744b8cbafca10027570de842)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Changed the prefix for theme variables in `theme.ts` and various CSS files to 'fantd' for consistency.
+  - Updated color variables in `color-scheme-default.css` and `default.css` to include new brand colors and semantic tokens.
+  - Adjusted styles in `common.css`, `menu.css`, `pagination.css`, `table.css` to reflect the new variable names, ensuring proper theming across components.
+
+  These changes aim to enhance the clarity and maintainability of the theme configuration.
+
+- **validators:** remove unused validators and clean up UserController ([c7f0bfa](https://github.com/qlover/fe-base/commit/c7f0bfa8b7acd7fc6dc7e087c921ac90c7418b16)) ([#600](https://github.com/qlover/fe-base/pull/600))
+  - Deleted the LocalesValidator, PaginationValidator, and SignupVerifyValidator classes as they are no longer needed.
+  - Removed the SignupVerifyValidator injection from UserController to streamline the codebase.
+
+  These changes aim to enhance maintainability by eliminating redundant code and improving the clarity of the UserController.
+
 ## 0.0.3
 
 ### Patch Changes
