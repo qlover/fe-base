@@ -1,8 +1,8 @@
 import { ExecutorError } from '@qlover/fe-corekit';
 import { AuthError } from '@supabase/supabase-js';
-import { inject, injectable } from '@shared/container';
+import { injectable } from '@shared/container';
 import { createClient } from '@shared/supabase/server';
-import { I } from '@config/ioc-identifiter';
+import { isPGRSTSchema } from '@schemas/PGRSTSchema';
 import { UserRole, UserSchema } from '@schemas/UserSchema';
 import type {
   BridgeEvent,
@@ -11,7 +11,6 @@ import type {
   BridgeOrderBy,
   Where
 } from '@server/interfaces/DBBridgeInterface';
-import type { LoggerInterface } from '@qlover/logger';
 import type { PostgrestResponseFailure } from '@supabase/postgrest-js';
 import type {
   PostgrestSingleResponse,
@@ -36,8 +35,6 @@ export type SupabaseBridgeResponse<T> = DBBridgeResponse<T> &
 
 @injectable()
 export class SupabaseBridge implements DBBridgeInterface {
-  constructor(@inject(I.Logger) protected logger: LoggerInterface) {}
-
   public async getSupabase(): Promise<SupabaseClient> {
     return await createClient();
   }
@@ -52,8 +49,6 @@ export class SupabaseBridge implements DBBridgeInterface {
     result: PostgrestSingleResponse<unknown>
   ): Promise<SupabaseBridgeResponse<unknown>> {
     if (result.error) {
-      this.logger.error('', result);
-
       if (this.hasPausedProject(result)) {
         throw new Error(
           'Project is paused, Please Restore project: https://supabase.com/dashboard'
@@ -115,11 +110,15 @@ export class SupabaseBridge implements DBBridgeInterface {
     response: AuthResponse | UserResponse | { error: unknown }
   ): void {
     const { error } = response;
-    if (error) {
-      this.logger.info('SupabaseBridge throw error:', error);
 
-      if (error instanceof AuthError) {
-        throw new ExecutorError('SupabaseAuthError', error);
+    if (error) {
+      if (error instanceof AuthError || error instanceof Error) {
+        throw new ExecutorError('SupabaseAuthError', response);
+      }
+
+      if (isPGRSTSchema(error)) {
+        // FIXME: 拦截返回信息
+        throw new ExecutorError('SupabasePGRSTError', response);
       }
 
       throw new Error(error as string);

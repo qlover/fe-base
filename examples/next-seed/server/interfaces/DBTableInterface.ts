@@ -2,7 +2,7 @@ import type { PaginationInterface } from '@interfaces/PaginationInterface';
 import type { BridgeOrderBy } from './DBBridgeInterface';
 
 export interface DBTableInterface {
-  readonly name: string;
+  readonly repoName: string;
 
   pagination<T = unknown>(params: {
     page: number;

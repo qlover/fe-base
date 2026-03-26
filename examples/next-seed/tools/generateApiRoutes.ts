@@ -102,17 +102,15 @@ function handlerJsdocBlock(
   httpPath: string,
   handlerAbs: string,
   outPath: string,
-  projectRoot: string,
-  dynamic: boolean
+  projectRoot: string
 ): string[] {
   const linkPath = toPosixPath(relative(dirname(outPath), handlerAbs));
   const workspacePath = toPosixPath(relative(projectRoot, handlerAbs));
-  const kind = dynamic ? 'Dynamic API path' : 'API path';
   return [
     '/**',
-    ` * ${kind}: \`${httpPath}\``,
+    ` * API path: \`${httpPath}\``,
     ' *',
-    ` * @see [Open route handler](${linkPath})`,
+    ` * @see [${workspacePath}](${linkPath})`,
     ' *',
     ` * **Fallback:** Ctrl/Cmd+P (Quick Open) → \`${workspacePath}\``,
     ' */'
@@ -142,12 +140,6 @@ function toConstNamePart(seg: string): string {
   return p.param.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
 }
 
-function sanitizeParam(name: string): string {
-  const cleaned = name.replace(/[^a-zA-Z0-9_]/g, '_');
-  if (/^\d/.test(cleaned)) return `_${cleaned}`;
-  return cleaned || 'param';
-}
-
 function staticPath(segments: string[]): string {
   if (segments.length === 0) return '/api';
   return `/api/${segments.join('/')}`;
@@ -169,40 +161,31 @@ function hasDynamic(segments: string[]): boolean {
   return segments.some((s) => parseSegment(s).kind !== 'static');
 }
 
-function escapeStaticUrlSeg(value: string): string {
-  return value
-    .replace(/\\/g, '\\\\')
-    .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$');
-}
-
-function buildDynamicFn(segments: string[]): {
-  args: string;
-  returnLine: string;
-} {
-  const args: string[] = [];
-  let body = 'return `/api';
-  for (const seg of segments) {
-    const p = parseSegment(seg);
-    if (p.kind === 'static') {
-      body += `/${escapeStaticUrlSeg(p.value)}`;
-    } else if (p.kind === 'param') {
-      const n = sanitizeParam(p.param);
-      args.push(`${n}: string`);
-      body += '/${encodeURIComponent(' + n + ')}';
-    } else {
-      const n = sanitizeParam(p.param);
-      args.push(`${n}: string[]`);
-      body += '/${' + n + ".map(encodeURIComponent).join('/')}";
-    }
+/**
+ * `API_*` 导出名：仅使用路径中的静态段（与手写 OpenAPI 风格 `:param` 模板一致）。
+ * 若整段均为动态（极少见），回退为包含参数名的片段以保证唯一。
+ */
+function buildApiConstExportName(segments: string[]): string {
+  const staticParts = segments
+    .filter((s) => parseSegment(s).kind === 'static')
+    .map(toConstNamePart);
+  if (staticParts.length > 0) {
+    return `API_${staticParts.join('_')}`;
   }
-  body += '` as const;';
-  return { args: args.join(', '), returnLine: `  ${body}` };
+  const fallback = segments.map(toConstNamePart).join('_') || 'ROOT';
+  return `API_${fallback}`;
 }
 
-function buildExportName(segments: string[], staticOnly: boolean): string {
-  const base = segments.map(toConstNamePart).join('_') || 'ROOT';
-  return staticOnly ? `API_${base}` : `buildApi_${base}`;
+/** 与 Next / OpenAPI 文档一致的模板串（动态段为 `:param`，catch-all 为 `:param/*`）。 */
+function templatePathForConst(segments: string[]): string {
+  const segs = segments.map((s) => {
+    const p = parseSegment(s);
+    if (p.kind === 'static') return p.value;
+    if (p.kind === 'param') return `:${p.param}`;
+    return `:${p.param}/*`;
+  });
+  if (segs.length === 0) return '/api';
+  return `/api/${segs.join('/')}`;
 }
 
 /**
@@ -256,10 +239,10 @@ export {};
 
   for (const { segments, handlerAbs } of entries) {
     const isStatic = !hasDynamic(segments);
-    let exportName = buildExportName(segments, isStatic);
+    let exportName = buildApiConstExportName(segments);
     let n = 1;
     while (usedNames.has(exportName)) {
-      exportName = `${buildExportName(segments, isStatic)}_${++n}`;
+      exportName = `${buildApiConstExportName(segments)}_${++n}`;
     }
     usedNames.add(exportName);
 
@@ -267,25 +250,19 @@ export {};
       pathPatternForDoc(segments, isStatic),
       handlerAbs,
       outPath,
-      projectRoot,
-      !isStatic
+      projectRoot
     );
 
-    if (isStatic) {
-      lines.push(...doc);
-      lines.push(
-        `export const ${exportName} = '${staticPath(segments)}' as const;`
-      );
-      lines.push('');
-      staticPaths.push(exportName);
-    } else {
-      lines.push(...doc);
-      const { args, returnLine } = buildDynamicFn(segments);
-      lines.push(`export function ${exportName}(${args}): string {`);
-      lines.push(returnLine);
-      lines.push('}');
-      lines.push('');
-    }
+    const pathLiteral = isStatic
+      ? staticPath(segments)
+      : templatePathForConst(segments);
+
+    lines.push(...doc);
+    lines.push(
+      `export const ${exportName} = '${pathLiteral.replace(/'/g, "\\'")}' as const;`
+    );
+    lines.push('');
+    staticPaths.push(exportName);
   }
 
   if (staticPaths.length > 0) {

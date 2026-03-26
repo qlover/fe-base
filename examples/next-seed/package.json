@@ -38,6 +38,7 @@
     "antd": "^5.27.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.18",
+    "https-proxy-agent": "^5.0.1",
     "inversify": "^7.8.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
@@ -48,6 +49,7 @@
     "p-limit": "^7.3.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "node-fetch": "^2.7.0",
     "reflect-metadata": "^0.2.2",
     "uuid": "^13.0.0",
     "zod": "^4.3.6"
@@ -62,6 +64,7 @@
     "@types/lodash": "^4.17.20",
     "@types/ms": "^2.1.0",
     "@types/node": "^20",
+    "@types/node-fetch": "^2.6.13",
     "@types/react": "^19",
     "cross-env": "^7.0.3",
     "dotenv-expand": "^12.0.3",

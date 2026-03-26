@@ -78,9 +78,6 @@ export class ApiResultFactory {
     error: ExecutorError,
     options: CreateOptions<unknown>
   ): AppApiErrorInterface {
-    options.logger.log('NextApiServer ExecutorError', error.id);
-    options.logger.error(error.cause ? error.cause : error);
-
     // 如果配置为生产环境，则返回空消息的错误
     if (options.config.isProduction) {
       return ApiResultFactory.createApiError(error.id, '', options);
@@ -97,7 +94,7 @@ export class ApiResultFactory {
     error: ZodError,
     options: CreateOptions<unknown>
   ): AppApiErrorInterface {
-    options.logger.error(error);
+    // Zod is already logged in BootstrapServer onError (e.g. nextApiServerBackstop); avoid duplicate.
 
     try {
       const messageList = JSON.parse(error.message);

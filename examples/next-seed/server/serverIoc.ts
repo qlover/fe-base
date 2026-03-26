@@ -2,44 +2,37 @@ import {
   createIOCFunction,
   ReflectionIOCContainer,
   type IOCContainerInterface,
-  type IOCFunctionInterface,
   type IOCRegisterInterface
 } from '@qlover/corekit-bridge/ioc';
-import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
 import { I } from '@config/ioc-identifiter';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { SupabaseBridge } from './repositorys/SupabaseBridge';
 import type { LoggerInterface } from '@qlover/logger';
-
-let ServerIoc: IOCFunctionInterface<
-  IOCIdentifierMapServer,
-  IOCContainerInterface
-> | null = null;
 
 type ServerIocOptions = {
   logger: LoggerInterface;
   config: SeedServerConfigInterface;
 };
 
+/**
+ * Builds a fresh server IOC bound to the given logger.
+ * Not a process singleton: each {@link BootstrapServer} / {@link NextApiServer}
+ * instance must use the same logger for plugins and for `I.Logger` in services.
+ */
 export function createServerIoc(
   logger: LoggerInterface,
   config: SeedServerConfigInterface
 ) {
-  if (ServerIoc) {
-    return ServerIoc;
-  }
+  const ioc = createIOCFunction(new ReflectionIOCContainer());
 
-  ServerIoc = createIOCFunction(new ReflectionIOCContainer());
-  // ServerIoc = createIOCFunction(new ReflectionIOCContainer(logger));
-
-  ServerIocRegister.register(ServerIoc.implemention!, ServerIoc, {
+  ServerIocRegister.register(ioc.implemention!, ioc, {
     logger,
     config
   });
 
   logger.debug('Server Ioc created');
 
-  return ServerIoc;
+  return ioc;
 }
 
 const ServerIocRegister: IOCRegisterInterface<
@@ -49,8 +42,8 @@ const ServerIocRegister: IOCRegisterInterface<
   register(ioc, _, options) {
     const { logger, config: serverConfig } = options!;
 
-    ioc.bind(I.AppConfig, serverConfig);
     ioc.bind(I.Logger, logger);
+    ioc.bind(I.AppConfig, serverConfig);
 
     ioc.bind(I.DBBridgeInterface, ioc.get(SupabaseBridge));
   }

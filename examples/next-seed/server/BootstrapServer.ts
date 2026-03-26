@@ -52,7 +52,7 @@ export class BootstrapServer
 
     this.executor = new LifecycleExecutor();
 
-    this.logger = createLogger(this.root.serverName, serverConfig);
+    this.logger = createLogger(serverName, serverConfig);
 
     this.IOC = createServerIoc(this.logger, serverConfig);
   }
