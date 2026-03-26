@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 2.0.7
+
+### Patch Changes
+
+#### ✨ Features
+
+- **next-seed:** update dependencies and enhance .env.template ([eeac3ca](https://github.com/qlover/fe-base/commit/eeac3ca951e4b62dcde307bdb41608378d0cf4da)) ([#601](https://github.com/qlover/fe-base/pull/601))
+  - Added new dependencies: `https-proxy-agent` and `node-fetch` to support proxy functionality in server requests.
+  - Updated `.env.template` to include additional configuration options for API keys and logging settings, enhancing flexibility for environment setup.
+  - Updated `.gitignore` to exclude `.env` and `.cache` files for better security and cleanliness.
+  - Introduced a new SQL script for creating base tables in Supabase, including login audit logs with user-scoped row-level security.
+
+  These changes aim to improve the server's capability to handle API requests through proxies and streamline the environment configuration process.
+
 ## 2.0.5
 
 ### Patch Changes
