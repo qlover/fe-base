@@ -2,12 +2,12 @@ import pLimit from 'p-limit';
 import { inject, injectable } from '@shared/container';
 import { localesSchema, type LocalesSchema } from '@schemas/LocalesSchema';
 import type { PaginationInterface } from '@interfaces/PaginationInterface';
-import { Datetime } from '@server/Datetime';
 import type {
   BridgeOrderBy,
   DBBridgeInterface
 } from '@server/interfaces/DBBridgeInterface';
-import { SupabaseBridge } from '../SupabaseBridge';
+import { Datetime } from '@server/utils/Datetime';
+import { SupabaseBridge } from './SupabaseBridge';
 import type {
   LocalesRepositoryInterface,
   UpsertResult
@@ -15,7 +15,7 @@ import type {
 
 @injectable()
 export class LocalesRepository implements LocalesRepositoryInterface {
-  public readonly name = 'next_app_locales';
+  public readonly repoName = 'next_app_locales';
 
   protected safeFields = Object.keys(localesSchema.shape);
 
@@ -26,7 +26,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
 
   public async getAll(): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
-      table: this.name,
+      table: this.repoName,
       fields: this.safeFields
     });
     return (result.data as LocalesSchema[]) || [];
@@ -40,7 +40,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     orderBy?: BridgeOrderBy
   ): Promise<LocalesSchema[]> {
     const result = await this.dbBridge.get({
-      table: this.name,
+      table: this.repoName,
       fields: this.safeFields,
       orderBy
     });
@@ -61,7 +61,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     };
 
     const result = await this.dbBridge.add({
-      table: this.name,
+      table: this.repoName,
       fields: this.safeFields,
       data
     });
@@ -88,7 +88,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     };
 
     await this.dbBridge.update({
-      table: this.name,
+      table: this.repoName,
       fields: this.safeFields,
       data,
       where: [['id', '=', id]]
@@ -104,7 +104,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
     orderBy?: BridgeOrderBy;
   }): Promise<PaginationInterface<T>> {
     const result = await this.dbBridge.pagination({
-      table: this.name,
+      table: this.repoName,
       fields: this.safeFields,
       page: params.page,
       pageSize: params.pageSize,
@@ -174,7 +174,7 @@ export class LocalesRepository implements LocalesRepositoryInterface {
       limit(async () => {
         try {
           const response = await this.dbBridge.upsert({
-            table: this.name,
+            table: this.repoName,
             fields: this.safeFields,
             data: chunk
           });

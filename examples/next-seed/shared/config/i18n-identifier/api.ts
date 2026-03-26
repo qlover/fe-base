@@ -1,4 +1,11 @@
 /**
+ * @description 服务器错误
+ * @localZh 服务器错误
+ * @localEn Server error
+ */
+export const API_SERVER_ERROR = 'api:server__error';
+
+/**
  * @description 用户未找到
  * @localZh 用户未找到
  * @localEn User not found

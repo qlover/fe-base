@@ -10,7 +10,7 @@ import type { PageParamsProps } from '@interfaces/AppPageRouter';
 import {
   AppPageRouteParams,
   type PageParamsType
-} from '@server/AppPageRouteParams';
+} from '@server/render/AppPageRouteParams';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)

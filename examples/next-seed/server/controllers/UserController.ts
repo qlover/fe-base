@@ -7,7 +7,7 @@ import type { LoginSchema } from '@schemas/LoginSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { ServerConfig } from '@server/ServerConfig';
-import { ServerAuth } from '../ServerAuth';
+import { ServerAuth } from '../services/ServerAuth';
 import { UserService } from '../services/UserService';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type { UserServiceInterface } from '../interfaces/UserServiceInterface';

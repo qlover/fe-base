@@ -4,32 +4,44 @@ import { loginEmailSchema, loginPasswordSchema } from '@schemas/LoginSchema';
 import type { LoginSchema } from '@schemas/LoginSchema';
 import type {
   ValidatorInterface,
-  ValidationFaildResult,
-  ExtendedExecutorError
+  ValidationResult,
+  ExtendedExecutorError,
+  ValidationResultFailed
 } from './ValidatorInterface';
 
 export class LoginValidator implements ValidatorInterface<LoginSchema> {
-  public validateEmail(data: unknown): void | ValidationFaildResult {
+  public validateEmail(data: unknown): void | ValidationResultFailed {
     const emailResult = loginEmailSchema.safeParse(data);
     if (!emailResult.success) {
-      return emailResult.error.issues[0];
+      const error = emailResult.error.issues[0];
+      return {
+        success: false,
+        path: error.path,
+        message: error.message
+      };
     }
   }
 
-  public validatePassword(data: unknown): void | ValidationFaildResult {
+  public validatePassword(data: unknown): void | ValidationResultFailed {
     const passwordResult = loginPasswordSchema.safeParse(data);
     if (!passwordResult.success) {
-      return passwordResult.error.issues[0];
+      const error = passwordResult.error.issues[0];
+      return {
+        success: false,
+        path: error.path,
+        message: error.message
+      };
     }
   }
 
   /**
    * @override
    */
-  public validate(data: unknown): void | ValidationFaildResult {
+  public validate(data: unknown): void | ValidationResult<LoginSchema> {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
+        success: false,
         message: V_LOGIN_PARAMS_REQUIRED
       };
     }
@@ -53,7 +65,7 @@ export class LoginValidator implements ValidatorInterface<LoginSchema> {
   public getThrow(data: unknown): LoginSchema {
     const result = this.validate(data);
 
-    if (result == null) {
+    if (result == null || result.success) {
       return data as LoginSchema;
     }
 

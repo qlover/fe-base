@@ -3,7 +3,7 @@ import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
-import type { SupabaseBridge } from '@server/SupabaseBridge';
+import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
 import type * as FeCorekit from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';

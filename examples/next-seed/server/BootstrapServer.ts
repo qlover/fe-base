@@ -1,7 +1,6 @@
 import { LifecycleExecutor } from '@qlover/fe-corekit';
 import { v4 as uuidv4 } from 'uuid';
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
-import { printRequestIdPlugin } from './plugins/printRequestIdPlugin';
 import { ServerConfig } from './ServerConfig';
 import { createServerIoc } from './serverIoc';
 import { createLogger } from './utils/createLogger';
@@ -53,7 +52,7 @@ export class BootstrapServer
 
     this.executor = new LifecycleExecutor();
 
-    this.logger = createLogger(this.root.serverName, serverConfig);
+    this.logger = createLogger(serverName, serverConfig);
 
     this.IOC = createServerIoc(this.logger, serverConfig);
   }
@@ -85,9 +84,9 @@ export class BootstrapServer
   /**
    * @override
    */
-  public execNoError<Result>(
-    task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
-  ): Promise<Result | ExecutorError> {
+  public execNoError<TaskReturn, Handled = TaskReturn>(
+    task?: ExecutorAsyncTask<TaskReturn, BootstrapServerContextOptions>
+  ): Promise<Handled | ExecutorError> {
     const options: BootstrapServerContextOptions = {
       logger: this.logger,
       root: this.root,
@@ -100,11 +99,30 @@ export class BootstrapServer
       this.use(plugins);
     }
 
-    return this.executor.execNoError(
+    // Inner executor is typed with task return R = TaskReturn; we map to Handled
+    // after user task via taskHandler, then assert the promise for callers.
+    return this.executor.execNoError<TaskReturn, BootstrapServerContextOptions>(
       options,
-      task ?? (() => Promise.resolve(undefined as Result))
-    );
+      async (ctx) => {
+        const result = await task?.(ctx);
+
+        if (result === undefined) {
+          return undefined as TaskReturn;
+        }
+
+        return this.taskHandler<TaskReturn, Handled>(
+          result
+        ) as unknown as TaskReturn;
+      }
+    ) as Promise<Handled | ExecutorError>;
   }
+
+  protected taskHandler<TaskReturn, Handled = TaskReturn>(
+    result: TaskReturn
+  ): Handled {
+    return result as unknown as Handled;
+  }
+
   /**
    * @override
    */
@@ -134,9 +152,9 @@ export class BootstrapServer
   /**
    * @override
    */
-  public startup<Result>(
-    task?: ExecutorAsyncTask<Result, BootstrapServerContextOptions>
-  ): Promise<Result | ExecutorError> {
+  public startup<TaskReturn, Handled = TaskReturn>(
+    task?: ExecutorAsyncTask<TaskReturn, BootstrapServerContextOptions>
+  ): Promise<Handled | ExecutorError> {
     return this.execNoError(task);
   }
 
@@ -144,6 +162,6 @@ export class BootstrapServer
    * @override
    */
   public getPlugins(_seedConfig: SeedConfigInterface): BootstrapServerPlugin[] {
-    return [printRequestIdPlugin];
+    return [];
   }
 }

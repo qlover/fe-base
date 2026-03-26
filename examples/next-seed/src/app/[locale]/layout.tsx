@@ -6,7 +6,7 @@ import { i18nConfig } from '@config/i18n';
 import '@/styles/index.css';
 import { themeConfig } from '@config/theme';
 import type { PageLayoutProps } from '@interfaces/AppPageRouter';
-import { getI18nMessages, getLocale } from '@server/pageRouteParams';
+import { getI18nMessages, getLocale } from '@server/render/pageRouteParams';
 
 export function generateStaticParams() {
   return i18nConfig.supportedLngs.map((locale) => ({ locale }));

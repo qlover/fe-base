@@ -8,7 +8,7 @@
 /**
  * API path: `/api/ai/completions`
  *
- * @see [Open route handler](../../src/app/api/ai/completions/route.ts)
+ * @see [src/app/api/ai/completions/route.ts](../../src/app/api/ai/completions/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/ai/completions/route.ts`
  */
@@ -17,7 +17,7 @@ export const API_AI_COMPLETIONS = '/api/ai/completions' as const;
 /**
  * API path: `/api/callback`
  *
- * @see [Open route handler](../../src/app/api/callback/route.ts)
+ * @see [src/app/api/callback/route.ts](../../src/app/api/callback/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/callback/route.ts`
  */
@@ -26,7 +26,7 @@ export const API_CALLBACK = '/api/callback' as const;
 /**
  * API path: `/api/locales/json`
  *
- * @see [Open route handler](../../src/app/api/locales/json/route.ts)
+ * @see [src/app/api/locales/json/route.ts](../../src/app/api/locales/json/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/locales/json/route.ts`
  */
@@ -35,7 +35,7 @@ export const API_LOCALES_JSON = '/api/locales/json' as const;
 /**
  * API path: `/api/openapi`
  *
- * @see [Open route handler](../../src/app/api/openapi/route.ts)
+ * @see [src/app/api/openapi/route.ts](../../src/app/api/openapi/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/openapi/route.ts`
  */
@@ -44,7 +44,7 @@ export const API_OPENAPI = '/api/openapi' as const;
 /**
  * API path: `/api/reference`
  *
- * @see [Open route handler](../../src/app/api/reference/route.ts)
+ * @see [src/app/api/reference/route.ts](../../src/app/api/reference/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/reference/route.ts`
  */
@@ -53,7 +53,7 @@ export const API_REFERENCE = '/api/reference' as const;
 /**
  * API path: `/api/user/login`
  *
- * @see [Open route handler](../../src/app/api/user/login/route.ts)
+ * @see [src/app/api/user/login/route.ts](../../src/app/api/user/login/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/login/route.ts`
  */
@@ -62,7 +62,7 @@ export const API_USER_LOGIN = '/api/user/login' as const;
 /**
  * API path: `/api/user/logout`
  *
- * @see [Open route handler](../../src/app/api/user/logout/route.ts)
+ * @see [src/app/api/user/logout/route.ts](../../src/app/api/user/logout/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/logout/route.ts`
  */
@@ -71,7 +71,7 @@ export const API_USER_LOGOUT = '/api/user/logout' as const;
 /**
  * API path: `/api/user/register`
  *
- * @see [Open route handler](../../src/app/api/user/register/route.ts)
+ * @see [src/app/api/user/register/route.ts](../../src/app/api/user/register/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/register/route.ts`
  */
@@ -80,7 +80,7 @@ export const API_USER_REGISTER = '/api/user/register' as const;
 /**
  * API path: `/api/user/session`
  *
- * @see [Open route handler](../../src/app/api/user/session/route.ts)
+ * @see [src/app/api/user/session/route.ts](../../src/app/api/user/session/route.ts)
  *
  * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/session/route.ts`
  */

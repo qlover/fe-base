@@ -8,39 +8,56 @@ import {
 import type { RegisterSchema } from '@schemas/RegisterSchema';
 import type {
   ValidatorInterface,
-  ValidationFaildResult,
-  ExtendedExecutorError
+  ValidationResult,
+  ExtendedExecutorError,
+  ValidationResultFailed
 } from './ValidatorInterface';
 
 export class RegisterValidator implements ValidatorInterface<RegisterSchema> {
-  public validateUsername(data: unknown): void | ValidationFaildResult {
+  public validateUsername(data: unknown): void | ValidationResultFailed {
     const result = registerUsernameSchema.safeParse(data);
     if (!result.success) {
-      return result.error.issues[0];
+      const error = result.error.issues[0];
+      return {
+        success: false,
+        path: error.path,
+        message: error.message
+      };
     }
   }
 
-  public validateEmail(data: unknown): void | ValidationFaildResult {
+  public validateEmail(data: unknown): void | ValidationResultFailed {
     const result = registerEmailSchema.safeParse(data);
     if (!result.success) {
-      return result.error.issues[0];
+      const error = result.error.issues[0];
+      return {
+        success: false,
+        path: error.path,
+        message: error.message
+      };
     }
   }
 
-  public validatePassword(data: unknown): void | ValidationFaildResult {
+  public validatePassword(data: unknown): void | ValidationResultFailed {
     const result = registerPasswordSchema.safeParse(data);
     if (!result.success) {
-      return result.error.issues[0];
+      const error = result.error.issues[0];
+      return {
+        success: false,
+        path: error.path,
+        message: error.message
+      };
     }
   }
 
   /**
    * @override
    */
-  public validate(data: unknown): void | ValidationFaildResult {
+  public validate(data: unknown): void | ValidationResult<RegisterSchema> {
     if (typeof data !== 'object' || data === null) {
       return {
         path: ['form'],
+        success: false,
         message: V_LOGIN_PARAMS_REQUIRED
       };
     }
@@ -69,7 +86,7 @@ export class RegisterValidator implements ValidatorInterface<RegisterSchema> {
   public getThrow(data: unknown): RegisterSchema {
     const result = this.validate(data);
 
-    if (result == null) {
+    if (result == null || result.success) {
       return data as RegisterSchema;
     }
 

@@ -8,7 +8,7 @@ import {
   getI18nInterface,
   getLocale,
   type PageParamsType
-} from '@server/pageRouteParams';
+} from '@server/render/pageRouteParams';
 import type { Metadata } from 'next';
 
 // Generate static params for all supported locales (used for SSG)
