@@ -1,4 +1,5 @@
 import type { IOCIdentifierMapServer } from '@config/ioc-identifiter';
+import type { UserLoginContext } from '@server/interfaces/UserServiceInterface';
 import type {
   ServiceIdentifier,
   IOCContainerInterface,
@@ -28,6 +29,10 @@ export interface BootstrapServerRoot {
 export interface BootstrapServerContextOptions extends BootstrapPluginOptions {
   IOC: IOCFunctionInterface<IOCIdentifierMapServer, IOCContainerInterface>;
   root: BootstrapServerRoot;
+  /**
+   * User-agent and IP extracted server-side (`loginContextFromRequest`) when NextApiServer is constructed with `NextRequest`.
+   */
+  ctx?: UserLoginContext;
 }
 
 export interface BootstrapServerPlugin extends LifecyclePluginInterface<BootstrapServerContext> {}

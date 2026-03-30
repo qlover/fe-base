@@ -4,22 +4,30 @@ import { StringEncryptor } from '@shared/StringEncryptor';
 import { LoginValidator } from '@shared/validators/LoginValidator';
 import type { ValidatorInterface } from '@shared/validators/ValidatorInterface';
 import type { LoginSchema } from '@schemas/LoginSchema';
+import type { RequestLogRow } from '@schemas/RequestLogSchema';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { ServerConfig } from '@server/ServerConfig';
+import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { ServerAuth } from '../services/ServerAuth';
 import { UserService } from '../services/UserService';
+import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
-import type { UserServiceInterface } from '../interfaces/UserServiceInterface';
+import type {
+  UserLoginContext,
+  UserServiceInterface
+} from '../interfaces/UserServiceInterface';
 
 @injectable()
-export class UserController implements UserServiceInterface {
+export class UserController {
   protected stringEncryptor: StringEncryptor;
   constructor(
     @inject(ServerAuth) protected serverAuth: ServerAuthInterface,
     @inject(LoginValidator)
     protected loginValidator: ValidatorInterface<LoginSchema>,
     @inject(UserService) protected userService: UserServiceInterface,
+    @inject(RequestLogsRepository)
+    protected requestLogsRepository: RequestLogsRepositoryInterface,
     @inject(ServerConfig) serverConfig: SeedServerConfigInterface,
     @inject(Base64Serializer) base64Serializer: Base64Serializer
   ) {
@@ -29,10 +37,10 @@ export class UserController implements UserServiceInterface {
     );
   }
 
-  /**
-   * @override
-   */
-  public async login(requestBody: LoginSchema): Promise<UserSchema> {
+  public async login(
+    requestBody: LoginSchema,
+    serverLoginContext?: UserLoginContext
+  ): Promise<UserSchema> {
     try {
       if (requestBody.password) {
         requestBody.password = this.stringEncryptor.decrypt(
@@ -47,16 +55,17 @@ export class UserController implements UserServiceInterface {
     }
     const body = await this.loginValidator.getThrow(requestBody);
 
-    const user = await this.userService.login(body);
+    const user = await this.userService.login({
+      email: body.email,
+      password: body.password,
+      loginContext: serverLoginContext
+    });
 
     await this.serverAuth.setAuth(user.credential_token);
 
     return user;
   }
 
-  /**
-   * @override
-   */
   public async register(requestBody: LoginSchema): Promise<UserSchema> {
     try {
       if (requestBody.password) {
@@ -81,24 +90,23 @@ export class UserController implements UserServiceInterface {
     return user;
   }
 
-  /**
-   * @override
-   */
-  public async logout(): Promise<void> {
-    return await this.userService.logout();
+  public async logout(serverContext?: UserLoginContext): Promise<void> {
+    return await this.userService.logout(serverContext);
   }
 
-  /**
-   * @override
-   */
   public async refresh(): Promise<UserSchema> {
     return await this.userService.refresh();
   }
 
-  /**
-   * @override
-   */
   public async getUser(): Promise<UserSchema> {
     return await this.userService.getUser();
+  }
+
+  /** Recent `request_logs` for the current Supabase session (RLS). */
+  public async listRequestLogsForCurrentUser(
+    limit: number
+  ): Promise<RequestLogRow[]> {
+    await this.serverAuth.throwIfNotAuth();
+    return this.requestLogsRepository.listRecentForCurrentUser(limit);
   }
 }

@@ -1,6 +1,7 @@
 import { API_USER_LOGOUT } from '@config/apiRoutes';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
+import type { NextRequest } from 'next/server';
 
 /**
  * @swagger
@@ -45,8 +46,8 @@ import { NextApiServer } from '@server/NextApiServer';
  *                   type: string
  *                   nullable: true
  */
-export async function POST() {
-  return await new NextApiServer(API_USER_LOGOUT).runWithJson(
-    async ({ parameters: { IOC } }) => IOC(UserController).logout()
+export async function POST(req: NextRequest) {
+  return await new NextApiServer(API_USER_LOGOUT, req).runWithJson(
+    async ({ parameters: { IOC, ctx } }) => IOC(UserController).logout(ctx)
   );
 }

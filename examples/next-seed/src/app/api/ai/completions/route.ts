@@ -1,4 +1,5 @@
 import { NextApiServer } from '@server/NextApiServer';
+import type { NextRequest } from 'next/server';
 
 /**
  * @swagger
@@ -48,8 +49,8 @@ import { NextApiServer } from '@server/NextApiServer';
  *                   description: Human-readable error message.
  *                   nullable: true
  */
-export async function GET() {
-  return await new NextApiServer().runWithJson(async () => {
+export async function GET(req: NextRequest) {
+  return await new NextApiServer(undefined, req).runWithJson(async () => {
     return 'hello';
     // const result = await IOC(OpenAiAgent).completions([
     //   {

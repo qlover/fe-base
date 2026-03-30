@@ -1,6 +1,7 @@
 import { API_USER_SESSION } from '@config/apiRoutes';
 import { UserController } from '@server/controllers/UserController';
 import { NextApiServer } from '@server/NextApiServer';
+import type { NextRequest } from 'next/server';
 
 /**
  * @swagger
@@ -65,8 +66,8 @@ import { NextApiServer } from '@server/NextApiServer';
  *                   type: string
  *                   nullable: true
  */
-export async function GET() {
-  return await new NextApiServer(API_USER_SESSION).runWithJson(
+export async function GET(req: NextRequest) {
+  return await new NextApiServer(API_USER_SESSION, req).runWithJson(
     async ({ parameters: { IOC } }) => IOC(UserController).getUser()
   );
 }
