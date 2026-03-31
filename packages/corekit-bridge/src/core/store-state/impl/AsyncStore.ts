@@ -9,7 +9,11 @@ import {
   AsyncStoreStatus,
   type AsyncStoreStatusType
 } from './AsyncStoreStatus';
-import { createAsyncState } from './createAsyncState';
+import { createAsyncStoreInterface } from './createAsyncState';
+import type {
+  StoreInterface,
+  StoreUpdateValue
+} from '../interface/StoreInterface';
 
 /**
  * Async store state interface
@@ -143,6 +147,21 @@ export interface AsyncStoreOptions<
    * - This is a fundamental limitation of JavaScript/TypeScript class initialization order
    */
   initRestore?: boolean;
+
+  /**
+   * Store instance
+   *
+   * The store instance to use for state updates.
+   * If provided, the store will be used to update state.
+   * If not provided, a new store will be created.
+   *
+   * TODO: Remove this option, use store adapter to create store instance instead.
+   *
+   * This option is for compatibility with old code, it will be removed in the future.
+   *
+   * @default `SliceStoreAdapter`
+   */
+  store?: StoreInterface<State>;
 }
 
 /**
@@ -252,6 +271,8 @@ export class AsyncStore<
    */
   protected storageResult: boolean = true;
 
+  protected store: StoreInterface<S>;
+
   /**
    * Constructor for async store
    *
@@ -281,12 +302,16 @@ export class AsyncStore<
    * ```
    */
   constructor(options?: AsyncStoreOptions<S, Key, Opt>) {
-    super(
-      () => createAsyncState(options),
-      options?.storage,
-      options?.initRestore ?? false
-    );
+    super(options?.storage, options?.initRestore);
     this.storageKey = options?.storageKey ?? null;
+    this.store = createAsyncStoreInterface(options);
+  }
+
+  protected override update(
+    _state: S | StoreUpdateValue<S>,
+    _options?: { persist?: boolean }
+  ): void {
+    this.store.update(_state as StoreUpdateValue<S>);
   }
 
   /**
@@ -431,8 +456,8 @@ export class AsyncStore<
    * });
    * ```
    */
-  public getStore(): PersistentStore<S, Key, Opt> {
-    return this;
+  public getStore(): StoreInterface<S> {
+    return this.store;
   }
 
   /**
@@ -666,7 +691,7 @@ export class AsyncStore<
    * ```
    */
   public getState(): S {
-    return this.state;
+    return this.store.getState();
   }
 
   /**
@@ -714,8 +739,7 @@ export class AsyncStore<
     state: Partial<T>,
     options?: { persist?: boolean }
   ): void {
-    const newState = this.cloneState(state as Partial<S>);
-    this.emit(newState, options);
+    return this.update(state as StoreUpdateValue<S>, options);
   }
 
   /**
@@ -915,7 +939,7 @@ export class AsyncStore<
    * ```
    */
   public reset(): void {
-    super.reset();
+    this.store.reset();
   }
 
   /**

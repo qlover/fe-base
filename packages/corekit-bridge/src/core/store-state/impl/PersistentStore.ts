@@ -1,9 +1,9 @@
 import type { StorageInterface } from '@qlover/fe-corekit';
-import {
-  StoreInterface,
-  type StoreStateInterface
+import type {
+  StoreStateInterface,
+  StoreUpdateValue
 } from '../interface/StoreInterface';
-import { type PersistentStoreInterface } from '../interface/PersistentStoreInterface';
+import type { PersistentInterface } from '../interface/PersistentInterface';
 
 /**
  * Abstract persistent store interface
@@ -125,10 +125,7 @@ export abstract class PersistentStore<
   T extends StoreStateInterface,
   Key,
   Opt = unknown
->
-  extends StoreInterface<T>
-  implements PersistentStoreInterface<T, Key, Opt>
-{
+> implements PersistentInterface<T, Key, Opt> {
   /**
    * Constructor for persistent store interface
    *
@@ -180,7 +177,6 @@ export abstract class PersistentStore<
    * ```
    */
   constructor(
-    stateFactory: () => T,
     protected readonly storage: StorageInterface<Key, T, Opt> | null = null,
     /**
      * Whether to automatically restore state from storage during construction
@@ -224,8 +220,6 @@ export abstract class PersistentStore<
      */
     initRestore: boolean = false
   ) {
-    super(stateFactory);
-
     // Note: initRestore is defaulted to false to avoid initialization order issues
     // Subclasses should call restore() manually in their constructors after fields are initialized
     // This prevents issues where subclass fields (like storageKey) are not yet initialized
@@ -344,7 +338,7 @@ export abstract class PersistentStore<
    * ```
    */
   public emit(state: T, options?: { persist?: boolean }): void {
-    super.emit(state);
+    this.update(state);
 
     const shouldPersist = options?.persist !== false && this.storage;
     if (!shouldPersist) {
@@ -358,6 +352,8 @@ export abstract class PersistentStore<
       // Subclasses can override this method to handle errors differently if needed
     }
   }
+
+  protected update(_state: T | StoreUpdateValue<T>): void {}
 
   /**
    * Restore state from storage and merge with current state

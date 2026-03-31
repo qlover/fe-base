@@ -114,11 +114,11 @@ export type StoreUpdateValue<T> = T extends readonly unknown[]
  * @example When use zustand
  * ```ts
  * import { createStore, type StoreApi } from 'zustand';
- * 
+ *
  * class MyState implements StoreStateInterface {
  *   count = 0;
  * }
- * 
+ *
  * export class ZustandStoreAdapter implements StoreInterface<MyState> {
  *   private readonly store: StoreApi<MyState>;
  *   constructor(init: () => MyState = () => new MyState()) {
@@ -174,4 +174,21 @@ export interface StoreInterface<State extends StoreStateInterface> {
    * Subscribe to state changes
    */
   subscribe: (listener: (state: State, prevState: State) => void) => () => void;
+}
+
+export function isStoreInterface<T extends StoreStateInterface>(
+  value: unknown
+): value is StoreInterface<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'reset' in value &&
+    typeof value.reset === 'function' &&
+    'update' in value &&
+    typeof value.update === 'function' &&
+    'getState' in value &&
+    typeof value.getState === 'function' &&
+    'subscribe' in value &&
+    typeof value.subscribe === 'function'
+  );
 }

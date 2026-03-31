@@ -28,6 +28,8 @@ import type { StoreStateInterface } from './StoreInterface';
  * - `restore()` should not trigger persistence to avoid circular updates
  * - `persist()` should handle storage unavailability gracefully (no-op if storage is `null`)
  *
+ * Since 3.0.0 PersistentStoreInterface renamed to PersistentInterface.
+ *
  * @since `1.8.0`
  * @template T - The state type that needs to be persisted
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`, or custom types)
@@ -127,7 +129,7 @@ import type { StoreStateInterface } from './StoreInterface';
  * }
  * ```
  */
-export interface PersistentStoreInterface<
+export interface PersistentInterface<
   T extends StoreStateInterface,
   Key,
   Opt = unknown
