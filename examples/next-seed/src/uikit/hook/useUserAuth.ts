@@ -28,7 +28,8 @@ const userSelector = (
 
 export function useUserAuth() {
   const userService = useIOC(I.UserServiceInterface);
-  const userStore = userService.getStore().getStore();
+
+  const userStore = userService.getUIStore();
 
   const success = useStore(userStore, successSelector);
   const loading = useStore(userStore, loadingSelector);

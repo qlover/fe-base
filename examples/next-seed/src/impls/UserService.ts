@@ -14,7 +14,7 @@ import type {
 import { AppUserGateway } from './AppUserGateway';
 import type { AppApiConfig } from './AppApiRequester';
 import type {
-  StoreInterface,
+  SliceStoreAdapter,
   UserStateInterface
 } from '@qlover/corekit-bridge';
 
@@ -46,10 +46,21 @@ export class UserService
     return this.getStore().getCredential()?.credential_token ?? '';
   }
 
-  public getUIStore(): StoreInterface<
+  /**
+   * Get the UI store instance
+   *
+   * UserStore 默认使用 SliceStoreAdapter 实现，所以需要返回 SliceStoreAdapter 实例
+   *
+   * 如果需要使用其他实现，可以重写这个方法
+   *
+   * @returns The UI store instance
+   */
+  public getUIStore(): SliceStoreAdapter<
     UserStateInterface<UserSchema, UserCredential>
   > {
-    return this.getStore().getStore();
+    return this.getStore().getStore() as SliceStoreAdapter<
+      UserStateInterface<UserSchema, UserCredential>
+    >;
   }
 
   /**
