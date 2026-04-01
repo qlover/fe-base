@@ -1,7 +1,7 @@
-import {
-  type AsyncStateInterface,
+import type {
+  AsyncStateInterface,
   StoreInterface,
-  type StoreStateInterface
+  StoreStateInterface
 } from '../../store-state';
 
 /**
@@ -73,11 +73,11 @@ export interface MessagesStateInterface<T> extends StoreStateInterface {
 }
 
 /**
- * Abstract messages store interface for managing message collections
+ * Messages store contract for managing message collections
  *
- * This abstract class provides a comprehensive interface for message store
- * implementations, handling message CRUD operations, state management,
- * streaming control, and data serialization.
+ * State snapshots and subscriptions live on {@link MessagesStoreInterface.store}
+ * (`StoreInterface<State>`), not on this interface itself. Message CRUD and
+ * helpers are defined here.
  *
  * Core features:
  * - Message CRUD operations (create, read, update, delete)
@@ -91,14 +91,9 @@ export interface MessagesStateInterface<T> extends StoreStateInterface {
  *
  * @example Implementation
  * ```typescript
- * class ChatMessageStore extends MessagesStoreInterface<
- *   ChatMessage,
- *   ChatMessageState
- * > {
- *   createMessage(message: Partial<ChatMessage>): ChatMessage {
- *     return new ChatMessage(message);
- *   }
- *   // ... implement other abstract methods
+ * class ChatMessageStore implements ChatMessageStoreInterface<string> {
+ *   readonly store: StoreInterface<ChatMessageStoreStateInterface<string>>;
+ *   // construct store (e.g. SliceStoreAdapter) + message methods
  * }
  * ```
  *
@@ -112,14 +107,25 @@ export interface MessagesStateInterface<T> extends StoreStateInterface {
  * // Get all messages
  * const messages = store.getMessages();
  *
+ * // Reactive state
+ * store.store.subscribe((state, prev) => { ... });
+ *
  * // Update message
  * store.updateMessage(message.id, { content: 'Hello, world!' });
  * ```
  */
-export abstract class MessagesStoreInterface<
+export interface MessagesStoreInterface<
   MessageType extends MessageInterface<unknown>,
   State extends MessagesStateInterface<MessageType>
-> extends StoreInterface<State> {
+> {
+  /**
+   * Backing store for state: `reset`, `update`, `getState`, `subscribe`
+   *
+   * Default {@link MessagesStore} wiring uses {@link SliceStoreAdapter}; callers
+   * may inject another {@link StoreInterface} implementation.
+   */
+  readonly store: StoreInterface<State>;
+
   /**
    * Merge multiple updates into a target message
    *
@@ -143,7 +149,7 @@ export abstract class MessagesStoreInterface<
    * );
    * ```
    */
-  public abstract mergeMessage<T extends MessageType>(
+  mergeMessage<T extends MessageType>(
     target: T,
     ...updates: Partial<T>[]
   ): T;
@@ -169,7 +175,7 @@ export abstract class MessagesStoreInterface<
    * console.log(message.id); // Generated ID
    * ```
    */
-  public abstract createMessage<T extends MessageType>(message: Partial<T>): T;
+  createMessage<T extends MessageType>(message: Partial<T>): T;
 
   /**
    * Get all messages from the store
@@ -186,7 +192,7 @@ export abstract class MessagesStoreInterface<
    * messages.forEach(msg => console.log(msg.content));
    * ```
    */
-  public abstract getMessages(): MessageType[];
+  getMessages(): MessageType[];
 
   /**
    * Get a message by its unique identifier
@@ -207,7 +213,7 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  public abstract getMessageById(id: string): MessageType | undefined;
+  getMessageById(id: string): MessageType | undefined;
 
   /**
    * Add a new message to the store
@@ -230,7 +236,7 @@ export abstract class MessagesStoreInterface<
    * console.log('Added message:', newMessage.id);
    * ```
    */
-  public abstract addMessage<M extends MessageType>(message: Partial<M>): M;
+  addMessage<M extends MessageType>(message: Partial<M>): M;
 
   /**
    * Update an existing message in the store
@@ -262,7 +268,7 @@ export abstract class MessagesStoreInterface<
    * );
    * ```
    */
-  public abstract updateMessage<M extends MessageType>(
+  updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined;
@@ -286,7 +292,7 @@ export abstract class MessagesStoreInterface<
    * console.log(deleted === undefined); // true
    * ```
    */
-  public abstract deleteMessage(id: string): void;
+  deleteMessage(id: string): void;
 
   /**
    * Type guard to check if an unknown value is a message
@@ -311,9 +317,7 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  public abstract isMessage<T extends MessageType>(
-    message: unknown
-  ): message is T;
+  isMessage<T extends MessageType>(message: unknown): message is T;
 
   /**
    * Get the index position of a message in the store
@@ -334,7 +338,7 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  public abstract getMessageIndex(id: string): number;
+  getMessageIndex(id: string): number;
 
   /**
    * Get a message by its index position
@@ -355,7 +359,7 @@ export abstract class MessagesStoreInterface<
    * const last = store.getMessageByIndex(messages.length - 1);
    * ```
    */
-  public abstract getMessageByIndex(index: number): MessageType | undefined;
+  getMessageByIndex(index: number): MessageType | undefined;
 
   /**
    * Replace all messages in the store
@@ -376,7 +380,7 @@ export abstract class MessagesStoreInterface<
    * store.resetMessages([]);
    * ```
    */
-  public abstract resetMessages(messages: MessageType[]): void;
+  resetMessages(messages: MessageType[]): void;
 
   /**
    * Convert all messages to JSON-serializable format
@@ -394,7 +398,7 @@ export abstract class MessagesStoreInterface<
    * localStorage.setItem('messages', jsonString);
    * ```
    */
-  public abstract toJson(): Record<string, unknown>[];
+  toJson(): Record<string, unknown>[];
 
   /**
    * Start streaming mode
@@ -417,7 +421,7 @@ export abstract class MessagesStoreInterface<
    * store.stopStreaming();
    * ```
    */
-  public abstract startStreaming(): void;
+  startStreaming(): void;
 
   /**
    * Stop streaming mode
@@ -436,5 +440,5 @@ export abstract class MessagesStoreInterface<
    * }
    * ```
    */
-  public abstract stopStreaming(): void;
+  stopStreaming(): void;
 }

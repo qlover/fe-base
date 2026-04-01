@@ -68,7 +68,10 @@ export interface GatewayServiceOptions<
   T,
   Gateway,
   Key = string
-> extends AsyncStoreOptions<AsyncStoreStateInterface<T>, Key> {
+> extends Omit<
+  AsyncStoreOptions<AsyncStoreStateInterface<T>, Key>,
+  'store'
+> {
   /**
    * Service name identifier
    *
@@ -98,10 +101,10 @@ export interface GatewayServiceOptions<
   logger?: LoggerInterface;
 
   /**
-   * Store instance for state management
+   * Async store instance for state management
    *
-   * The async store that manages service state (loading, success, error).
-   * Optional - services can work without store (though uncommon).
+   * Narrower than {@link AsyncStoreOptions.store} (`StoreInterface`): gateway services
+   * accept a full {@link AsyncStoreInterface} implementation (e.g. {@link AsyncStore}).
    *
    * @optional
    */

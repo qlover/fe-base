@@ -652,7 +652,7 @@ describe('AsyncStoreInterface', () => {
 
     it('should allow accessing store state', () => {
       const storeInstance = store.getStore();
-      expect(storeInstance.state).toBeDefined();
+      expect(storeInstance.getState()).toBeDefined();
     });
   });
 
