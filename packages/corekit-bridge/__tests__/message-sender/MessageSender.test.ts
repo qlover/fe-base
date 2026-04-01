@@ -312,11 +312,9 @@ describe('MessageSender', () => {
     });
 
     it('plugins should be able to access and modify context', async () => {
-      let capturedContext: MessageSenderContext<
-        MessageStoreMsg<unknown, unknown>
-      > | null = null;
+      let capturedContext: MessageSenderContext<TestMessage> | null = null;
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'context-capture',
         onBefore(ctx) {
           capturedContext = ctx;
@@ -334,7 +332,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins should be able to modify messages', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'message-modifier',
         onBefore({ parameters }) {
           parameters.currentMessage.content = 'Modified by plugin';
@@ -349,7 +347,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins throw error when throwIfError is false, should return failed message', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'error-plugin',
         onExec() {
           throw new Error('Plugin error');
@@ -370,7 +368,7 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'error-plugin',
         onExec() {
           throw new Error('Plugin error');
@@ -385,7 +383,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins can block message sending', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'block-plugin',
         onExec(ctx, _send) {
           const parameters = ctx.parameters;
@@ -408,12 +406,12 @@ describe('MessageSender', () => {
     });
 
     it('plugins can process result after sending', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'result-processor',
         onSuccess(ctx) {
           Object.assign(ctx.returnValue!, {
             result: {
-              ...(ctx.returnValue as MessageStoreMsg<unknown, unknown>).result!,
+              ...(ctx.returnValue as TestMessage).result!,
               processedBy: 'plugin'
             }
           });
@@ -433,9 +431,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins error should not affect other messages sending', async () => {
-      const errorPlugin: MessageSenderPlugin<
-        MessageStoreMsg<unknown, unknown>
-      > = {
+      const errorPlugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'conditional-error',
         onExec(ctx, next) {
           if (ctx.parameters.currentMessage.content === 'error') {
@@ -460,11 +456,9 @@ describe('MessageSender', () => {
 
     describe('plugin Context integrity', () => {
       it('plugins should be able to access complete context', async () => {
-        let capturedContext: MessageSenderOptions<
-          MessageStoreMsg<unknown, unknown>
-        > | null = null;
+        let capturedContext: MessageSenderOptions<TestMessage> | null = null;
 
-        const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+        const plugin: MessageSenderPlugin<TestMessage> = {
           pluginName: 'context-inspector',
           onExec(ctx, next) {
             capturedContext = ctx.parameters;
@@ -483,7 +477,7 @@ describe('MessageSender', () => {
       });
 
       it('multiple plugins modify currentMessage should accumulate effects', async () => {
-        const plugin1: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> =
+        const plugin1: MessageSenderPlugin<TestMessage> =
           {
             pluginName: 'add-prefix',
             onBefore({ parameters }) {
@@ -491,7 +485,7 @@ describe('MessageSender', () => {
             }
           };
 
-        const plugin2: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> =
+        const plugin2: MessageSenderPlugin<TestMessage> =
           {
             pluginName: 'add-suffix',
             onBefore({ parameters }) {
@@ -507,13 +501,13 @@ describe('MessageSender', () => {
       });
 
       it('plugins can modify different properties in different lifecycle', async () => {
-        const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+        const plugin: MessageSenderPlugin<TestMessage> = {
           pluginName: 'lifecycle-modifier',
           onBefore({ parameters }) {
             parameters.currentMessage.placeholder = 'Modified placeholder';
           },
           onSuccess(ctx) {
-            const msg = ctx.returnValue as MessageStoreMsg<unknown, unknown>;
+            const msg = ctx.returnValue as TestMessage;
             const currentResult =
               typeof msg.result === 'object' && msg.result !== null
                 ? msg.result
@@ -538,11 +532,11 @@ describe('MessageSender', () => {
     });
 
     it('should support chaining use method', () => {
-      const plugin1: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin1: MessageSenderPlugin<TestMessage> = {
         pluginName: 'plugin1'
       };
 
-      const plugin2: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin2: MessageSenderPlugin<TestMessage> = {
         pluginName: 'plugin2'
       };
 
@@ -2063,7 +2057,7 @@ describe('MessageSender', () => {
           .mockResolvedValue({ result: 'gateway result' });
 
         const serviceWithPlugin = createTestSender(store, mockGateway, true);
-        const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+        const plugin: MessageSenderPlugin<TestMessage> = {
           pluginName: 'retry-plugin',
           async onBefore({ parameters }) {
             expect(parameters.currentMessage.id).toEqual(result.id);
@@ -2244,7 +2238,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins throw error in before stage + throwIfError=false', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'before-error',
         onBefore() {
           throw new Error('Before error');
@@ -2267,7 +2261,7 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'before-error',
         onBefore() {
           throw new Error('Before error');
@@ -2282,7 +2276,7 @@ describe('MessageSender', () => {
     });
 
     it('plugins throw error in after stage + throwIfError=false', async () => {
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'after-error',
         onSuccess() {
           throw new Error('After error');
@@ -2305,7 +2299,7 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'after-error',
         onSuccess() {
           throw new Error('After error');
@@ -2323,7 +2317,7 @@ describe('MessageSender', () => {
       const sendError = new Error('Send failed');
       mockGateway.sendMessage = vi.fn().mockRejectedValue(sendError);
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'error-handler',
         async onExec(ctx, next) {
           const parameters = ctx.parameters;
@@ -2358,21 +2352,21 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin1: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin1: MessageSenderPlugin<TestMessage> = {
         pluginName: 'plugin-1',
         onBefore() {
           // do nothing
         }
       };
 
-      const plugin2: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin2: MessageSenderPlugin<TestMessage> = {
         pluginName: 'plugin-2-error',
         onExec() {
           throw new Error('Plugin 2 error');
         }
       };
 
-      const plugin3: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin3: MessageSenderPlugin<TestMessage> = {
         pluginName: 'plugin-3',
         onBefore() {
           // do nothing
@@ -2390,7 +2384,7 @@ describe('MessageSender', () => {
       const sendError = new Error('Gateway error');
       mockGateway.sendMessage = vi.fn().mockRejectedValue(sendError);
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'after-error',
         async onExec(ctx, next) {
           await next(ctx);
@@ -2406,7 +2400,7 @@ describe('MessageSender', () => {
         'Gateway error'
       );
 
-      const plugin2: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin2: MessageSenderPlugin<TestMessage> = {
         pluginName: 'after-error',
         onBefore() {
           throw new ExecutorError('Plugin error');
@@ -2432,7 +2426,7 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'executor-error',
         onExec() {
           throw new ExecutorError('Custom executor error');
@@ -2459,7 +2453,7 @@ describe('MessageSender', () => {
         executor: new MessageSenderExecutor()
       });
 
-      const plugin: MessageSenderPlugin<MessageStoreMsg<unknown, unknown>> = {
+      const plugin: MessageSenderPlugin<TestMessage> = {
         pluginName: 'executor-error',
         onBefore() {
           const undefinedObject: unknown = undefined;

@@ -136,10 +136,9 @@ store.start(undefined, credential);
 
 ```typescript
 const store = new UserStore<User, Credential>({});
-const underlyingStore = store.getStore();
+const port = store.getStore();
 
-// Subscribe to state changes
-underlyingStore.observe((state) => {
+port.subscribe((state) => {
   if (state.loading) {
     console.log('Authentication in progress...');
   } else if (state.status === 'success') {
@@ -200,14 +199,6 @@ Whether to persist user info (result) in addition to credential
 
 ---
 
-#### `stateFactory` (Property)
-
-**Type:** `Object`
-
-() => T, factory function to create the initial state
-
----
-
 #### `storage` (Property)
 
 **Type:** `null \| StorageInterface<Key, UserStateInterface<User, Credential>, Opt>`
@@ -221,9 +212,9 @@ When
 `null`
 ,
 `restore()`
-and
+/
 `persist()`
-methods will not perform any operations
+typically no-op (depending on subclass)
 
 ---
 
@@ -273,88 +264,23 @@ only the result value (
 
 ---
 
-#### `state` (Accessor)
+#### `store` (Property)
 
-**Type:** `accessor state`
-
----
-
-#### `clear` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `clear` (CallSignature)
-
-**Type:** `void`
-
-Clear all observers
-
-This method removes all registered listeners and their last selected values.
-It is useful when the component is unloaded or needs to reset the observer state.
-
-**Example:**
-
-```typescript
-// Register some observers
-observer.observe((state) => console.log(state));
-
-// Remove all observers
-observer.clear();
-
-// Now notifications will not trigger any listeners
-observer.notify({ count: 3 });
-```
-
----
-
-#### `cloneState` (Method)
-
-**Type:** `(source: Partial<UserStateInterface<User, Credential>>) => UserStateInterface<User, Credential>`
-
-#### Parameters
-
-| Name     | Type                                            | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<UserStateInterface<User, Credential>>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
-
----
-
-##### `cloneState` (CallSignature)
-
-**Type:** `UserStateInterface<User, Credential>`
-
-**Since:** `1.3.1`
-
-Clone the state of the store
-
-**Returns:**
-
-T - the new cloned state
-
-#### Parameters
-
-| Name     | Type                                            | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ----------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<UserStateInterface<User, Credential>>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
+**Type:** `StoreInterface<UserStateInterface<User, Credential>>`
 
 ---
 
 #### `emit` (Method)
 
-**Type:** `(state: UserStateInterface<User, Credential>, options: Object) => void`
+**Type:** `(state: UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>, options: Object) => void`
 
 #### Parameters
 
-| Name              | Type                                   | Optional | Default | Since | Deprecated | Description                              |
-| ----------------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `state`           | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state to emit and persist        |
-| `options`         | `Object`                               | ✅       | -       | -     | -          | Optional configuration for emit behavior |
-| `options.persist` | `boolean`                              | ✅       | -       | -     | -          | Whether to persist state to storage      |
-
-- `true` or `undefined`: Persist state to storage (default behavior)
-- `false`: Skip persistence, useful during restore operations to prevent circular updates |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |             |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -362,95 +288,17 @@ T - the new cloned state
 
 **Type:** `void`
 
-**Default:** `true`
-
-Emit state changes and automatically sync to storage
-
-Overrides the base
-`emit()`
-method to add automatic persistence functionality.
-When state is emitted, it is automatically persisted to storage (if configured)
-unless explicitly disabled via options.
-
-Behavior:
-
-- Emits state change to all observers (via parent
-  `emit()`
-  )
-- Automatically persists state to storage if
-  `persist`
-  option is not
-  `false`
-  and storage is configured
-- Persistence failures are silently ignored to prevent state update failures
-- State update always succeeds even if persistence fails
-
-Error handling:
-
-- If persistence fails (e.g., storage quota exceeded, permission denied, storage unavailable),
-  the error is caught and silently ignored
-- State update still succeeds, ensuring application functionality is not affected
-- Subclasses can override this method to implement custom error handling if needed
-
-**Example:** Normal emit with automatic persistence
-
-```typescript
-// State is emitted and automatically persisted
-this.emit(newState);
-```
-
-**Example:** Emit without persistence (during restore)
-
-```typescript
-restore(): MyStoreState | null {
-  if (!this.storage) return null;
-  try {
-    const stored = this.storage.getItem('my-state');
-    if (stored) {
-      const restoredState = new MyStoreState();
-      Object.assign(restoredState, stored);
-      // Update state without triggering persist to avoid circular updates
-      this.emit(restoredState, { persist: false });
-      return restoredState;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-```
-
-**Example:** Custom error handling in subclass
-
-```typescript
-override emit(state: T, options?: { persist?: boolean }): void {
-  super.emit(state);
-
-  const shouldPersist = options?.persist !== false && this.storage;
-  if (!shouldPersist) {
-    return;
-  }
-
-  try {
-    this.persist(state);
-  } catch (error) {
-    // Custom error handling (e.g., logging, retry logic)
-    console.error('Failed to persist state:', error);
-    // Optionally notify error handlers or retry persistence
-  }
-}
-```
+Apply a patch or full snapshot, then persist when configured (see
+PersistentStore.emit
+)
 
 #### Parameters
 
-| Name              | Type                                   | Optional | Default | Since | Deprecated | Description                              |
-| ----------------- | -------------------------------------- | -------- | ------- | ----- | ---------- | ---------------------------------------- |
-| `state`           | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state to emit and persist        |
-| `options`         | `Object`                               | ✅       | -       | -     | -          | Optional configuration for emit behavior |
-| `options.persist` | `boolean`                              | ✅       | -       | -     | -          | Whether to persist state to storage      |
-
-- `true` or `undefined`: Persist state to storage (default behavior)
-- `false`: Skip persistence, useful during restore operations to prevent circular updates |
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          |             |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |             |
 
 ---
 
@@ -860,23 +708,24 @@ switch (status) {
 
 #### `getStore` (Method)
 
-**Type:** `() => PersistentStore<UserStateInterface<User, Credential>, Key, Opt>`
+**Type:** `() => StoreInterface<UserStateInterface<User, Credential>>`
 
 ---
 
 ##### `getStore` (CallSignature)
 
-**Type:** `PersistentStore<UserStateInterface<User, Credential>, Key, Opt>`
+**Type:** `StoreInterface<UserStateInterface<User, Credential>>`
 
 Get the underlying store instance
 
-Returns the store instance itself, enabling reactive state subscriptions.
-This method is required by
-`AsyncStoreInterface`
-and allows consumers to
-subscribe to state changes using the store's
-`observe()`
-method.
+Returns the composed
+StoreInterface
+(typically
+SliceStoreAdapter
+), enabling
+reactive subscriptions via
+StoreInterface.subscribe
+.
 
 **Returns:**
 
@@ -885,8 +734,8 @@ The store instance for reactive subscriptions
 **Example:** Subscribe to state changes
 
 ```typescript
-const store = asyncStore.getStore();
-store.observe((state) => {
+const port = asyncStore.getStore();
+port.subscribe((state) => {
   console.log('State changed:', state);
 });
 ```
@@ -1115,106 +964,6 @@ if (store.isSuccess()) {
 
 ---
 
-#### `notify` (Method)
-
-**Type:** `(value: UserStateInterface<User, Credential>, lastValue: UserStateInterface<User, Credential>) => void`
-
-#### Parameters
-
-| Name        | Type                                   | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | -------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `UserStateInterface<User, Credential>` | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-##### `notify` (CallSignature)
-
-**Type:** `void`
-
-Notify all observers that the state has changed
-
-This method will iterate through all registered observers and call their listeners.
-If an observer has a selector, it will only notify when the selected state part changes.
-
-**Example:**
-
-```typescript
-// Notify observers that the state has changed
-observer.notify({ count: 2, name: 'New name' });
-
-// Provide the previous state for comparison
-const oldState = { count: 1, name: 'Old name' };
-const newState = { count: 2, name: 'New name' };
-observer.notify(newState, oldState);
-```
-
-#### Parameters
-
-| Name        | Type                                   | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | -------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `UserStateInterface<User, Credential>` | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-#### `observe` (Method)
-
-**Type:** `(selectorOrListener: Selector<UserStateInterface<User, Credential>, K> \| Listener<UserStateInterface<User, Credential>>, listener: Listener<K>) => Object`
-
-#### Parameters
-
-| Name                 | Type                                                                                                  | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ----------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<UserStateInterface<User, Credential>, K> \| Listener<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                                                                                         | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
-##### `observe` (CallSignature)
-
-**Type:** `Object`
-
-Register an observer to listen for state changes
-
-This method supports two calling methods:
-
-1. Provide a listener that listens to the entire state
-2. Provide a selector and a listener that listens to the selected part
-
-**Returns:**
-
-The function to unsubscribe, calling it removes the registered observer
-
-**Example:** Listen to the entire state
-
-```typescript
-const unsubscribe = observer.observe((state) => {
-  console.log('Full state:', state);
-});
-
-// Unsubscribe
-unsubscribe();
-```
-
-**Example:** Listen to a specific part of the state
-
-```typescript
-const unsubscribe = observer.observe(
-  (state) => state.user,
-  (user) => console.log('User information changed:', user)
-);
-```
-
-#### Parameters
-
-| Name                 | Type                                                                                                  | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ----------------------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<UserStateInterface<User, Credential>, K> \| Listener<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                                                                                         | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
 #### `persist` (Method)
 
 **Type:** `(_state: T) => void`
@@ -1324,24 +1073,6 @@ store.reset();
 
 ---
 
-#### `resetState` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `resetState` (CallSignature)⚠️
-
-**Type:** `void`
-
-Reset the state of the store
-
-**Returns:**
-
-void
-
----
-
 #### `restore` (Method)
 
 **Type:** `() => null \| R`
@@ -1404,7 +1135,7 @@ if (credential) {
   // Example: Check if credential has expired
   if (credential.expiresAt && Date.now() < credential.expiresAt) {
     // Credential is valid, set status to SUCCESS
-    store.updateState({
+    store.emit({
       status: AsyncStoreStatus.SUCCESS,
       loading: false,
       error: null
@@ -1432,7 +1163,7 @@ if (credential) {
     // Validate credential with server
     const isValid = await validateCredential(credential);
     if (isValid) {
-      store.updateState({
+      store.emit({
         status: AsyncStoreStatus.SUCCESS,
         loading: false,
         error: null
@@ -1443,7 +1174,7 @@ if (credential) {
     }
   } catch (error) {
     // Validation failed, keep status as DRAFT
-    store.updateState({ error });
+    store.emit({ error });
   }
 }
 ```
@@ -1460,7 +1191,7 @@ const store = new UserStore<User, Credential>({
 // After restore, if credential exists, treat as authenticated
 const credential = store.getCredential();
 if (credential) {
-  store.updateState({
+  store.emit({
     status: AsyncStoreStatus.SUCCESS,
     loading: false,
     error: null,
@@ -1497,49 +1228,6 @@ Updates the credential in the store state and persists to storage (if configured
 | Name         | Type                 | Optional | Default | Since | Deprecated | Description                                 |
 | ------------ | -------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------- |
 | `credential` | `null \| Credential` | ❌       | -       | -     | -          | The credential to store, or `null` to clear |
-
----
-
-#### `setDefaultState` (Method)
-
-**Type:** `(value: UserStateInterface<User, Credential>) => this`
-
-#### Parameters
-
-| Name    | Type                                   | Optional | Default | Since | Deprecated | Description                 |
-| ------- | -------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state object to set |
-
----
-
-##### `setDefaultState` (CallSignature)⚠️
-
-**Type:** `this`
-
-Set the default state
-
-Replace the entire state object, but will not trigger the observer notification.
-This method is mainly used for initialization, not recommended for regular state updates.
-
-**Returns:**
-
-The current instance, supporting method chaining
-
-**Example:**
-
-```typescript
-// Not recommended to use
-store.setDefaultState(initialState);
-
-// Recommended alternative
-store.emit(initialState);
-```
-
-#### Parameters
-
-| Name    | Type                                   | Optional | Default | Since | Deprecated | Description                 |
-| ------- | -------------------------------------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `UserStateInterface<User, Credential>` | ❌       | -       | -     | -          | The new state object to set |
 
 ---
 
@@ -1808,77 +1496,27 @@ If string is provided, it will be stored as-is (for simple token scenarios) |
 
 ---
 
-#### `updateState` (Method)
+#### `update` (Method)
 
-**Type:** `(state: Partial<T>, options: Object) => void`
+**Type:** `(_state: UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>) => void`
 
 #### Parameters
 
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<T>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-| `options`                                                          | `Object`     | ✅       | -       | -     | -          | Optional configuration for emit behavior             |
-| `options.persist`                                                  | `boolean`    | ✅       | -       | -     | -          | Whether to persist state to storage                  |
-
-- `true` or `undefined`: Persist state to storage (default behavior)
-- `false`: Skip persistence, useful during restore operations |
+| Name     | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `updateState` (CallSignature)
+##### `update` (CallSignature)
 
 **Type:** `void`
 
-**Default:** `true`
-
-Update store state with partial state object
-
-Merges the provided partial state into the current state. This allows
-fine-grained control over state updates without replacing the entire state.
-
-Behavior:
-
-- Merges provided properties into current state
-- Only updates specified properties, others remain unchanged
-- Type-safe: Only accepts properties that exist in the state interface
-- Automatically persists state to storage (unless
-  `persist: false`
-  is specified)
-
-**Example:** Update loading state only
-
-```typescript
-store.updateState({ loading: true });
-```
-
-**Example:** Update multiple properties
-
-```typescript
-store.updateState({
-  loading: false,
-  result: data,
-  endTime: Date.now()
-});
-```
-
-**Example:** Update without persistence
-
-```typescript
-store.updateState({ loading: true }, { persist: false });
-```
-
 #### Parameters
 
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<T>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-| `options`                                                          | `Object`     | ✅       | -       | -     | -          | Optional configuration for emit behavior             |
-| `options.persist`                                                  | `boolean`    | ✅       | -       | -     | -          | Whether to persist state to storage                  |
-
-- `true` or `undefined`: Persist state to storage (default behavior)
-- `false`: Skip persistence, useful during restore operations |
+| Name     | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
+| -------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -2052,6 +1690,33 @@ The key used to store state in the storage backend.
 Required if
 `storage`
 is provided.
+
+---
+
+#### `store` (Property)
+
+**Type:** `StoreInterface<State>`
+
+Composed
+StoreInterface
+for snapshots (
+`update`
+/
+`getState`
+/
+`subscribe`
+/
+`reset`
+)
+
+If omitted,
+createAsyncStoreInterface
+builds a default
+SliceStoreAdapter
+.
+Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping
+`AsyncStore`
+.
 
 ---
 

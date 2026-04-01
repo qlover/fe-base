@@ -1,5 +1,5 @@
 /**
- * PersistentStoreInterface test suite
+ * PersistentStore / PersistentInterface test suite
  *
  * Coverage:
  * 1. constructor       – Constructor tests with various configurations
@@ -9,14 +9,19 @@
  * 5. persist           – State persistence to storage tests
  * 6. edge cases        – Error handling and boundary tests
  * 7. integration       – Complete persistence flow tests
+ *
+ * Note: {@link PersistentStore} is persistence + `emit`/`update`; subclasses must
+ * implement `update()` to hold reactive state (see {@link AsyncStore} in production).
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import {
   type StoreStateInterface,
+  type StoreUpdateValue,
   PersistentStore
 } from '../../src/core/store-state';
+import { clone } from '../../src/core/store-state/clone';
 
 /**
  * Mock storage implementation for testing
@@ -125,22 +130,43 @@ class TestState implements StoreStateInterface {
 }
 
 /**
- * Concrete implementation of PersistentStoreInterface for testing
+ * Concrete {@link PersistentStore} for tests: in-memory state + storage key.
  */
 class TestPersistentStore extends PersistentStore<TestState, string> {
   private readonly storageKey = 'test-state';
+
+  private _state: TestState;
 
   constructor(
     storage: StorageInterface<string, TestState> | null = null,
     initRestore: boolean = true
   ) {
-    // Don't auto-restore in super() to avoid initialization order issues
-    // Call restore() manually after storageKey is initialized
-    super(() => new TestState(), storage, false);
+    // Always pass initRestore=false to super: subclass fields must exist before restore()
+    super(storage, false);
+    this._state = new TestState();
     if (initRestore) {
-      // Now storageKey is initialized, safe to call restore()
       this.restore();
     }
+  }
+
+  /**
+   * Current snapshot (tests and persist() use this)
+   */
+  public get state(): TestState {
+    return this._state;
+  }
+
+  /**
+   * @override
+   */
+  protected override update(state: TestState | StoreUpdateValue<TestState>): void {
+    if (state instanceof TestState) {
+      this._state = state;
+      return;
+    }
+    const next = clone(this._state);
+    Object.assign(next as object, state as object);
+    this._state = next;
   }
 
   /**
@@ -192,7 +218,7 @@ class TestPersistentStore extends PersistentStore<TestState, string> {
   }
 }
 
-describe('PersistentStoreInterface', () => {
+describe('PersistentStore', () => {
   let mockStorage: MockStorage<string>;
   let store: TestPersistentStore;
 

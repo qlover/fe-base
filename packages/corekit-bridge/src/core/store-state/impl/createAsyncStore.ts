@@ -46,6 +46,8 @@ function isAsyncStoreInterface<T>(
  * - If options are provided, it creates a new AsyncStore (default implementation) with those options
  * - If nothing is provided, it creates a default AsyncStore
  *
+ * Subscriptions: use `instance.getStore().subscribe(...)` on the inner {@link StoreInterface}.
+ *
  * @template T - The type of the result value stored in the async store
  * @template Key - The type of the storage key
  * @template Opt - The type of options for storage operations

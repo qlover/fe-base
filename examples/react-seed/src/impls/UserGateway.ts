@@ -42,7 +42,7 @@ export class UserGateway implements UserServiceGateway<
   public async getUserInfo(
     data?: UserCredential,
     config?: AppApiConfig
-  ): Promise<UserSchema | null> {
+  ): Promise<UserSchema> {
     const response = await this.client.request(
       // 去掉值为 undeinfed 的属性,这样在扩展值的时候不会用undefined覆盖默认值,比如这里的data.token
       omitBy(
@@ -64,7 +64,7 @@ export class UserGateway implements UserServiceGateway<
   public refreshUserInfo(
     data?: UserCredential,
     config?: UserGatewayConfig
-  ): Promise<UserSchema | null> {
+  ): Promise<UserSchema> {
     return this.getUserInfo(data, config);
   }
 

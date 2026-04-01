@@ -1,5 +1,9 @@
 # xOranj Web（`@xOranj/web`）
 
+> English: [README.en.md](./README.en.md)
+
+**TL;DR**：`npm install` → 将 `.env.template` 复制为 `.env` 并按注释填写 → `npm run dev`（默认端口 **3100**，`APP_ENV=localhost`）→ 生产：`npm run build` 后 `npm start`（默认端口 **3101**）。
+
 基于 **Next.js** 的全栈应用（分层思路与早期 **next-seed** 一致）：**清晰分层**、**前后端职责分离**、**面向接口编程**。契约集中在 `shared/`，服务端与客户端通过 **接口 + IOC（Inversify + 项目内 SimpleIOCContainer 等）** 装配。
 
 ---
@@ -28,7 +32,7 @@
 1. 安装依赖：`npm install`
 2. 复制 `.env.template` 为 `.env`，按注释填写；未尽变量见 `server/ServerConfig.ts`
 3. 数据库脚本在 `makes/sql/`，按部署环境执行
-4. 开发：`npm run dev`（默认端口 **3200**，`APP_ENV=localhost`）
+4. 开发：`npm run dev`（默认端口 **3100**，`APP_ENV=localhost`）
 5. 生产：`npm run build` 后 `npm start`（默认端口 **3101**）
 
 常用脚本还包括：`dev:staging` / `dev:prod`、`type-check`、`test`、`lint`、`format` 等，详见 `package.json` 的 `scripts`。

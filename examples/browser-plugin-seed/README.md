@@ -1,5 +1,9 @@
 # Browser Plugin Seed
 
+> English: [README.en.md](./README.en.md)
+
+**TL;DR**：`npm install`（或 `pnpm install`）→ 复制 `.env.example` 为 `.env` → `npm run dev` → 在 Chrome `chrome://extensions` 加载 `build/chrome-mv3-dev`（或 Plasmo 输出的开发目录）→ 生产构建：`npm run build:prod`，打包：`npm run package`。
+
 基于 **Plasmo** + **React** 的浏览器扩展项目模板，集成 **@qlover/corekit-bridge** 与 **@qlover/fe-corekit**，提供 IOC、请求、国际化、主题与鉴权能力，适用于 Chrome 等支持 Manifest V3 的浏览器扩展开发。
 
 ## 技术栈
@@ -17,7 +21,7 @@
 | 形态           | 说明                         | 入口/配置          |
 | -------------- | ---------------------------- | ------------------ |
 | Popup         | 点击扩展图标打开的弹窗       | `src/popup.tsx`    |
-| Content Script| 注入页面的脚本（含 Shadow DOM UI） | `src/content.tsx`  |
+| Content Script | 注入页面的脚本（含 Shadow DOM UI） | `src/content.tsx`  |
 | 其他          | 可按 Plasmo 约定扩展 background、options 等 | - |
 
 Popup 内使用 React Router + 懒加载页面（首页、登录/注册、404/500 等），与 seed 的鉴权、i18n、主题体系一致。
@@ -72,28 +76,29 @@ browser-plugin-seed/
 │   ├── assets/
 │   │   └── locales/             # zh.json、en.json（ts2locales）
 │   └── init-slice-store.ts
-├── srcripts/
+├── srcripts/                    # 工程脚本目录（目录名为历史拼写）
 │   ├── startup.js               # 启动前脚本（如 patch、生成 locales）
 │   └── generate-locales.js      # 国际化生成
-├── patches/                    # pnpm 对 @qlover 包的补丁
+├── patches/                     # 对 @qlover 等包的 patch 文件（按需与包管理器配置配合使用）
 ├── .env.example
 ├── tsconfig.json
 ├── package.json                 # Plasmo 配置、manifest.host_permissions 等
-└── README.md
+└── README.md / README.en.md
 ```
 
 ## 快速开始
 
 ### 环境要求
 
-- Node.js（见项目或 browserslist 要求）
-- pnpm（推荐，用于 patchedDependencies）
+- Node.js（建议与团队 monorepo 根目录要求一致）
 
 ### 安装
 
 ```bash
-pnpm install
+npm install
 ```
+
+也可使用 `pnpm install`（与仓库根目录包管理约定一致即可）。
 
 ### 环境变量
 
@@ -102,15 +107,15 @@ pnpm install
 ### 运行
 
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 会先执行 `startup`（如生成 locales），再启动 Plasmo 开发模式。在浏览器中加载扩展（如 Chrome：`chrome://extensions` → 加载已解压的扩展，选择项目下的 `build/chrome-mv3-dev` 或 Plasmo 输出目录）。
 
 ### 构建与打包
 
-- `pnpm run build` — 生产构建
-- `pnpm run package` — 打包为可分发格式
+- `npm run build:prod` — 生产构建（`package.json` 中脚本名）
+- `npm run package` — 打包为可分发格式
 
 ## 核心概念
 
@@ -133,7 +138,7 @@ pnpm run dev
 ### 国际化（i18n）
 
 - **标识符**: 位于 `shared/config/i18n-identifier/`（如 `page.home.ts`），使用 JSDoc `@localZh` / `@localEn`。
-- **ts2locales**: 通过 `srcripts` 或构建流程扫描并生成 `src/assets/locales/{{lng}}.json`。
+- **ts2locales**: 通过 `srcripts/` 下脚本或构建流程扫描并生成 `src/assets/locales/{{lng}}.json`。
 - **I18nService**: 提供 `t(key, options)`、`changeLocale(locale)`；由 `I18nProvider` 消费。
 - **页面映射**: `shared/config/i18n-mapping/` 将短名称映射到标识符；`useI18nMapping(pageHomeI18n)` 得到翻译后的文案对象。
 
@@ -151,7 +156,7 @@ pnpm run dev
 | 脚本         | 说明                 |
 | ------------ | -------------------- |
 | `dev`        | 先 startup 再 Plasmo 开发 |
-| `build`      | 先 startup 再 Plasmo 生产构建 |
+| `build:prod` | 先 startup 再 Plasmo 生产构建 |
 | `package`    | 先 startup 再 Plasmo 打包 |
 | `startup`    | 启动前脚本（patch、生成 locales 等） |
 | `type-check` | `tsc --noEmit`       |
@@ -163,7 +168,7 @@ pnpm run dev
 
 - **Plasmo**: 根目录 `package.json` 中可配置 `manifest`（如 `host_permissions`）、`alias` 等；扩展名来自 `displayName`。
 - **Seed**: `shared/config/seed.config.ts` 中配置 `routerPrefix`、`usePathLocaleRoute`、`omitInjectedGlobals` 等；与 react-seed 风格一致。
-- **依赖补丁**: `pnpm.patchedDependencies` 指向 `patches/@qlover__*.patch`，用于对 corekit-bridge、fe-corekit 做本地适配。
+- **依赖补丁**: `patches/` 目录含 `@qlover__*.patch`；若使用 pnpm，可通过 `patchedDependencies` 等方式应用，具体以根仓库配置为准。
 
 ## 主要依赖
 

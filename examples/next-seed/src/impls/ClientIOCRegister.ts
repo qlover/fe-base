@@ -2,6 +2,7 @@ import { CookieStorage } from '@qlover/corekit-bridge';
 import { I18nService } from '@/impls/I18nService';
 import { RouterService } from '@/impls/RouterService';
 import { UserService } from '@/impls/UserService';
+import { ZustandCounterService } from '@/impls/ZustandCounterService';
 import { cookiesConfig } from '@config/cookies';
 import { IOCIdentifier as I } from '@config/ioc-identifiter';
 import { dialogHandler, logger, JSON, appConfig } from './globals';
@@ -23,5 +24,6 @@ export const ClientIOCRegister: IOCRegisterInterface<IOCContainerInterface> = {
     ioc.bind(I.I18nServiceInterface, new I18nService());
     ioc.bind(I.RouterServiceInterface, ioc.get(RouterService));
     ioc.bind(I.UserServiceInterface, ioc.get(UserService));
+    ioc.bind(I.ZustandCounterServiceInterface, new ZustandCounterService());
   }
 };

@@ -1,20 +1,21 @@
 import type { StorageInterface } from '@qlover/fe-corekit';
-import {
-  StoreInterface,
-  type StoreStateInterface
+import type {
+  StoreStateInterface,
+  StoreUpdateValue
 } from '../interface/StoreInterface';
-import { type PersistentStoreInterface } from '../interface/PersistentStoreInterface';
+import type { PersistentInterface } from '../interface/PersistentInterface';
 
 /**
  * Abstract persistent store interface
  *
  * - Significance: Provides a base class for stores that need to persist state to storage
- * - Core idea: Extend `StoreInterface` with storage synchronization capabilities
+ * - Core idea: Pair persistence hooks (`restore` / `persist`) with a subclass-defined `update()` path
+ *   (see {@link AsyncStore}, which forwards to a composed {@link StoreInterface})
  * - Main function: Automatically sync state changes to storage and load state from storage
  * - Main purpose: Enable state persistence with flexible storage backends
  *
  * Core features:
- * - Automatic persistence: State changes via `emit()` are automatically persisted to storage
+ * - Automatic persistence: State changes via `emit()` call `update()` then persist (when enabled)
  * - Storage restoration: Load state from storage during initialization
  * - Flexible storage backends: Support any `StorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
  * - Error resilience: Persistence failures don't prevent state updates
@@ -36,17 +37,35 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`, or custom types)
  * @template Opt - The type of options for storage operations (defaults to `unknown`)
  *
- * @example Basic usage
+ * @example Prefer {@link AsyncStore}
+ * For async lifecycle + reactive updates, use {@link AsyncStore}: it extends this class,
+ * implements `restore` / `persist`, and forwards mutations through a composed {@link StoreInterface}.
+ *
+ * @example Subclass sketch (advanced)
+ * The constructor is `super(storage, initRestore)` — there is **no** state factory parameter
+ * on `PersistentStore`. Subclasses must override {@link PersistentStore.update} to apply
+ * snapshots, and keep their own “current” snapshot if `persist()` needs a default when called
+ * with no argument.
  * ```typescript
  * class MyStoreState implements StoreStateInterface {
- *   data: string = '';
+ *   data = '';
  * }
  *
  * class MyStore extends PersistentStore<MyStoreState, string> {
  *   private readonly storageKey = 'my-state';
+ *   private current = new MyStoreState();
  *
  *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
- *     super(() => new MyStoreState(), storage);
+ *     super(storage, false);
+ *     this.restore();
+ *   }
+ *
+ *   protected override update(state: MyStoreState | StoreUpdateValue<MyStoreState>): void {
+ *     if (state instanceof MyStoreState) {
+ *       this.current = state;
+ *     } else {
+ *       Object.assign(this.current, state);
+ *     }
  *   }
  *
  *   restore(): MyStoreState | null {
@@ -54,11 +73,10 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  *     try {
  *       const value = this.storage.getItem(this.storageKey);
  *       if (value) {
- *         const restoredState = new MyStoreState();
- *         Object.assign(restoredState, value);
- *         // Update state without triggering persist
- *         this.emit(restoredState, { persist: false });
- *         return restoredState;
+ *         const restored = new MyStoreState();
+ *         Object.assign(restored, value);
+ *         this.emit(restored, { persist: false });
+ *         return restored;
  *       }
  *     } catch {
  *       return null;
@@ -68,55 +86,8 @@ import { type PersistentStoreInterface } from '../interface/PersistentStoreInter
  *
  *   persist(state?: MyStoreState): void {
  *     if (!this.storage) return;
- *     const stateToPersist = state ?? this.state;
- *     this.storage.setItem(this.storageKey, stateToPersist);
- *   }
- * }
- * ```
- *
- * @example With expiration support (optional)
- * ```typescript
- * // State interface defines expiration field if needed
- * class ExpiringStoreState implements StoreStateInterface {
- *   data: string = '';
- *   expires?: number | Date | null; // Optional expiration support
- * }
- *
- * class ExpiringStore extends PersistentStore<ExpiringStoreState, string> {
- *   restore(): ExpiringStoreState | null {
- *     if (!this.storage) return null;
- *     try {
- *       const stored = this.storage.getItem('expiring-state');
- *       if (stored) {
- *         const state = new ExpiringStoreState();
- *         Object.assign(state, stored);
- *
- *         // Check expiration if present
- *         if (state.expires) {
- *           const expiresAt =
- *             typeof state.expires === 'number'
- *               ? state.expires
- *               : state.expires.getTime();
- *           if (Date.now() > expiresAt) {
- *             // State expired, remove from storage
- *             this.storage.removeItem('expiring-state');
- *             return null;
- *           }
- *         }
- *
- *         this.emit(state, { persist: false });
- *         return state;
- *       }
- *     } catch {
- *       return null;
- *     }
- *     return null;
- *   }
- *
- *   persist(state?: ExpiringStoreState): void {
- *     if (!this.storage) return;
- *     const stateToPersist = state ?? this.state;
- *     this.storage.setItem('expiring-state', stateToPersist);
+ *     const snapshot = state ?? this.current;
+ *     this.storage.setItem(this.storageKey, snapshot);
  *   }
  * }
  * ```
@@ -125,25 +96,19 @@ export abstract class PersistentStore<
   T extends StoreStateInterface,
   Key,
   Opt = unknown
->
-  extends StoreInterface<T>
-  implements PersistentStoreInterface<T, Key, Opt>
-{
+> implements PersistentInterface<T, Key, Opt> {
   /**
    * Constructor for persistent store interface
    *
-   * Initializes the store with a state factory and optional storage backend.
    * By default, `initRestore` is `false` to avoid initialization order issues with subclass fields.
    * Subclasses should call `restore()` manually in their constructors after fields are initialized.
    *
-   * @param stateFactory - Factory function that creates a new instance of state type `T`
-   *   Used to initialize the store state and reset state to defaults
    * @param storage - Storage implementation for persisting state, or `null` if persistence is not needed
-   *   When `null`, `restore()` and `persist()` methods will not perform any operations
+   *   When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
    *   @default `null`
    * @param initRestore - Whether to automatically restore state from storage during construction
-   *   Set to `true` only if subclass fields are not needed for restore() (e.g., storageKey)
-   *   @default `false` - Subclasses should call restore() manually after field initialization
+   *   Set to `true` only if `restore()` does not read subclass fields initialized after `super()`
+   *   @default `false` — call `restore()` manually after subclass fields are ready
    *
    * @example Subclass implementation (recommended)
    * ```typescript
@@ -151,8 +116,7 @@ export abstract class PersistentStore<
    *   private readonly storageKey = 'my-state';
    *
    *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
-   *     super(() => new MyStoreState(), storage, false); // Don't auto-restore
-   *     // Now storageKey is initialized, safe to call restore()
+   *     super(storage, false);
    *     this.restore();
    *   }
    * }
@@ -162,12 +126,10 @@ export abstract class PersistentStore<
    * ```typescript
    * class SimpleStore extends PersistentStore<MyStoreState, string> {
    *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
-   *     // Can use auto-restore if restore() doesn't need subclass fields
-   *     super(() => new MyStoreState(), storage, true);
+   *     super(storage, true);
    *   }
    *
    *   restore(): MyStoreState | null {
-   *     // Uses hardcoded key, no subclass fields needed
    *     return this.storage?.getItem('hardcoded-key') ?? null;
    *   }
    * }
@@ -175,12 +137,19 @@ export abstract class PersistentStore<
    *
    * @example Without storage
    * ```typescript
-   * const store = new MyStore(() => new MyStoreState(), null);
-   * // Store works normally but without persistence
+   * class MyStore extends PersistentStore<MyStoreState, string> {
+   *   constructor() {
+   *     super(null, false);
+   *   }
+   *   restore() {
+   *     return null;
+   *   }
+   *   persist() {}
+   *   protected override update() {}
+   * }
    * ```
    */
   constructor(
-    stateFactory: () => T,
     protected readonly storage: StorageInterface<Key, T, Opt> | null = null,
     /**
      * Whether to automatically restore state from storage during construction
@@ -208,8 +177,7 @@ export abstract class PersistentStore<
      *   private readonly storageKey = 'my-state';
      *
      *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
-     *     super(() => new MyStoreState(), storage, false); // Don't auto-restore
-     *     // Now storageKey is initialized, safe to call restore()
+     *     super(storage, false);
      *     this.restore();
      *   }
      * }
@@ -224,8 +192,6 @@ export abstract class PersistentStore<
      */
     initRestore: boolean = false
   ) {
-    super(stateFactory);
-
     // Note: initRestore is defaulted to false to avoid initialization order issues
     // Subclasses should call restore() manually in their constructors after fields are initialized
     // This prevents issues where subclass fields (like storageKey) are not yet initialized
@@ -274,12 +240,12 @@ export abstract class PersistentStore<
   /**
    * Emit state changes and automatically sync to storage
    *
-   * Overrides the base `emit()` method to add automatic persistence functionality.
+   * Applies a new snapshot then optionally persists it.
    * When state is emitted, it is automatically persisted to storage (if configured)
    * unless explicitly disabled via options.
    *
    * Behavior:
-   * - Emits state change to all observers (via parent `emit()`)
+   * - Dispatches through subclass `update()` (e.g. {@link AsyncStore} → inner {@link StoreInterface})
    * - Automatically persists state to storage if `persist` option is not `false` and storage is configured
    * - Persistence failures are silently ignored to prevent state update failures
    * - State update always succeeds even if persistence fails
@@ -344,7 +310,7 @@ export abstract class PersistentStore<
    * ```
    */
   public emit(state: T, options?: { persist?: boolean }): void {
-    super.emit(state);
+    this.update(state);
 
     const shouldPersist = options?.persist !== false && this.storage;
     if (!shouldPersist) {
@@ -358,6 +324,8 @@ export abstract class PersistentStore<
       // Subclasses can override this method to handle errors differently if needed
     }
   }
+
+  protected update(_state: T | StoreUpdateValue<T>): void {}
 
   /**
    * Restore state from storage and merge with current state
@@ -497,8 +465,7 @@ export abstract class PersistentStore<
    * @override
    * @param state - Optional state to persist
    *   - If provided: Persist the specified state object
-   *   - If `undefined`: Persist the current store state (`this.state`)
-   *   @default `this.state`
+   *   - If `undefined`: Persist the current snapshot your subclass holds (the base class has no `this.state`)
    *
    * @returns `void` - Persisting is a side effect operation with no return value
    *
@@ -510,11 +477,11 @@ export abstract class PersistentStore<
    *
    * @example Basic implementation
    * ```typescript
-   * persist(state?: MyStoreState): void {
-   *   if (!this.storage) return;
-   *   const stateToPersist = state ?? this.state;
-   *   this.storage.setItem('my-state', stateToPersist);
-   * }
+ * persist(state?: MyStoreState): void {
+ *   if (!this.storage) return;
+ *   const stateToPersist = state ?? this.current;
+ *   this.storage.setItem('my-state', stateToPersist);
+ * }
    * ```
    *
    * @example With storage key
@@ -523,7 +490,7 @@ export abstract class PersistentStore<
    *
    * persist(state?: MyStoreState): void {
    *   if (!this.storage) return;
-   *   const stateToPersist = state ?? this.state;
+   *   const stateToPersist = state ?? this.current;
    *   this.storage.setItem(this.storageKey, stateToPersist);
    * }
    * ```
@@ -532,7 +499,7 @@ export abstract class PersistentStore<
    * ```typescript
    * persist(state?: MyStoreState): void {
    *   if (!this.storage) return;
-   *   const stateToPersist = state ?? this.state;
+   *   const stateToPersist = state ?? this.current;
    *   const options: Opt = {
    *     expires: stateToPersist.expires
    *       ? (typeof stateToPersist.expires === 'number'
@@ -548,7 +515,7 @@ export abstract class PersistentStore<
    * ```typescript
    * persist(state?: MyStoreState): void {
    *   if (!this.storage) return;
-   *   const stateToPersist = state ?? this.state;
+   *   const stateToPersist = state ?? this.current;
    *   // Only persist the data field, not the entire state
    *   this.storage.setItem('my-state-data', stateToPersist.data);
    * }

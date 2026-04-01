@@ -25,7 +25,11 @@ including:
 class UserService implements ResourceServiceInterface<User> {
   readonly unionKey = 'users';
   readonly serviceName = 'UserService';
-  readonly store = new ResourceStore<UserState>();
+  readonly store = new ResourceStore<UserState>(() => ({
+    searchParams: {},
+    initState: { loading: false, result: null, error: null },
+    listState: { loading: false, result: null, error: null }
+  }));
   readonly resourceApi = new UserResource();
 
   getStore() {

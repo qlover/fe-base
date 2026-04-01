@@ -3,7 +3,7 @@
  *
  * Coverage:
  * 1. AsyncStateInterface        – State interface structure tests
- * 2. AsyncStateAction           – Action methods tests (start, stop, success, failed, reset, updateState, getDuration)
+ * 2. AsyncStateAction           – Action methods tests (start, stop, success, failed, reset, emit, getDuration)
  * 3. AsyncStateStatusInterface  – Status checking methods tests
  * 4. AsyncStoreInterface        – Complete interface integration tests
  * 5. edge cases                 – Error handling and boundary tests
@@ -425,27 +425,27 @@ describe('AsyncStateAction', () => {
     });
   });
 
-  describe('updateState', () => {
+  describe('emit', () => {
     it('should update loading state', () => {
-      store.updateState({ loading: true });
+      store.emit({ loading: true });
       expect(store.getLoading()).toBe(true);
     });
 
     it('should update result', () => {
       const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
-      store.updateState({ result: user });
+      store.emit({ result: user });
       expect(store.getResult()).toEqual(user);
     });
 
     it('should update error', () => {
       const error = new Error('Test error');
-      store.updateState({ error });
+      store.emit({ error });
       expect(store.getError()).toBe(error);
     });
 
     it('should update multiple properties', () => {
       const user: TestUser = { id: 1, name: 'John', email: 'john@test.com' };
-      store.updateState({
+      store.emit({
         loading: true,
         result: user,
         startTime: Date.now()
@@ -460,7 +460,7 @@ describe('AsyncStateAction', () => {
       store.start();
       const originalStartTime = store.getState().startTime;
 
-      store.updateState({
+      store.emit({
         result: { id: 1, name: 'John', email: 'john@test.com' }
       });
 
@@ -645,14 +645,16 @@ describe('AsyncStoreInterface', () => {
   });
 
   describe('getStore', () => {
-    it('should return the store instance', () => {
-      const storeInstance = store.getStore();
-      expect(storeInstance).toBe(store);
+    it('should return the composed StoreInterface (not the AsyncStore itself)', () => {
+      const port = store.getStore();
+      expect(port).not.toBe(store);
+      expect(port.getState()).toEqual(store.getState());
+      expect(typeof port.subscribe).toBe('function');
     });
 
     it('should allow accessing store state', () => {
       const storeInstance = store.getStore();
-      expect(storeInstance.state).toBeDefined();
+      expect(storeInstance.getState()).toBeDefined();
     });
   });
 
@@ -774,7 +776,7 @@ describe('AsyncStoreInterface', () => {
 
       const initialSetItemCalls = mockStorage.calls.setItem.length;
       store.restore();
-      // restore() calls updateState with { persist: false }, so no additional setItem calls
+      // restore() calls emit with { persist: false }, so no additional setItem calls
       expect(mockStorage.calls.setItem.length).toBe(initialSetItemCalls);
     });
 
@@ -1146,7 +1148,9 @@ describe('AsyncStore subclass implementation', () => {
     });
 
     it('should maintain parent class functionality', () => {
-      expect(store.getStore()).toBe(store);
+      const port = store.getStore();
+      expect(port).not.toBe(store);
+      expect(port.getState()).toEqual(store.getState());
       expect(store.getState()).toBeDefined();
       expect(store.getState().loading).toBe(false);
     });
@@ -1296,7 +1300,7 @@ describe('AsyncStore extension patterns', () => {
             }
           }
 
-          this.updateState(stored, { persist: false });
+          this.emit(stored, { persist: false });
           return this.getResult() as R;
         }
       } catch {
@@ -1313,7 +1317,7 @@ describe('AsyncStore extension patterns', () => {
           */
     public setExpiration(expiresInMs: number): void {
       const expires = Date.now() + expiresInMs;
-      this.updateState({
+      this.emit({
         expires
       } as Partial<ExpiringAsyncStoreState<TestUser>>);
     }

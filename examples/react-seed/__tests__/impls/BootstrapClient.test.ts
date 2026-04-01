@@ -285,7 +285,9 @@ describe('BootstrapClient', () => {
         env: 'production',
         name: 'test',
         version: '1.0.0',
-        isProduction: true
+        isProduction: true,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
 
       const plugins = bootstrapClient.getPlugins(seedConfig);
@@ -304,7 +306,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
 
       const plugins = bootstrapClient.getPlugins(seedConfig);
@@ -325,7 +329,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
 
       const plugins = bootstrapClient.getPlugins(seedConfig);
@@ -343,19 +349,25 @@ describe('BootstrapClient', () => {
           env: 'development',
           name: 'test',
           version: '1.0.0',
-          isProduction: false
+          isProduction: false,
+          logLevel: '',
+          userCredentialKey: 'test'
         },
         {
           env: 'production',
           name: 'test',
           version: '1.0.0',
-          isProduction: true
+          isProduction: true,
+          logLevel: '',
+          userCredentialKey: 'test'
         },
         {
           env: 'test',
           name: 'test-app',
           version: '2.0.0',
-          isProduction: false
+          isProduction: false,
+          logLevel: '',
+          userCredentialKey: 'test'
         }
       ];
 
@@ -385,7 +397,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
 
       const plugins = bootstrapClient.getPlugins(seedConfig);
@@ -420,7 +434,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
 
       const userService = {
@@ -465,7 +481,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
       const plugins = bootstrapClient.getPlugins(seedConfig);
       expect(plugins.length).toBe(4);
@@ -482,7 +500,9 @@ describe('BootstrapClient', () => {
         env: 'production',
         name: 'test',
         version: '1.0.0',
-        isProduction: true
+        isProduction: true,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
       const plugins = bootstrapClient.getPlugins(seedConfig);
       expect(plugins.length).toBe(3);
@@ -498,7 +518,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
       const routeService = {
         useMainRoutes: vi.fn(),
@@ -543,7 +565,9 @@ describe('BootstrapClient', () => {
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        logLevel: '',
+        userCredentialKey: 'test'
       };
       const routeService = {
         useMainRoutes: vi.fn(),
@@ -579,10 +603,12 @@ describe('BootstrapClient', () => {
 
     it('printBootstrap onSuccess 应按流程获取 RouteService/UserService 并调用 logger', () => {
       const seedConfig: SeedConfigInterface = {
+        logLevel: 'debug',
         env: 'development',
         name: 'test',
         version: '1.0.0',
-        isProduction: false
+        isProduction: false,
+        userCredentialKey: 'test'
       };
       const mockRouteService = {};
       const mockUserService = { routeService: mockRouteService };

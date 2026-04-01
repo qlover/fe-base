@@ -4,7 +4,8 @@ import {
   type ThemeServiceState
 } from './type';
 import { ThemeStateGetter } from './ThemeStateGetter';
-import { StoreInterface } from '../store-state';
+import { SliceStoreAdapter, type StoreInterface } from '../store-state';
+import { clone } from '../store-state/clone';
 
 export const defaultThemeConfig: ThemeConfig = {
   domAttribute: 'data-theme',
@@ -17,17 +18,49 @@ export const defaultThemeConfig: ThemeConfig = {
   cacheTarget: true
 };
 
-export class ThemeService extends StoreInterface<ThemeServiceState> {
+/**
+ * Theme DOM + optional persistence; reactive state lives on {@link ThemeService.store}.
+ */
+export class ThemeService {
   private _target: HTMLElement | null = null;
+
+  /**
+   * {@link StoreInterface} port (default {@link SliceStoreAdapter})
+   */
+  public readonly store: StoreInterface<ThemeServiceState>;
 
   constructor(private props: ThemeServiceProps) {
     const config = { ...defaultThemeConfig, ...props };
 
-    super(() => ThemeStateGetter.create(config));
+    this.store = new SliceStoreAdapter(() => ThemeStateGetter.create(config));
 
     if (config.init) {
       this.bindToTheme();
     }
+  }
+
+  public get state(): ThemeServiceState {
+    return this.store.getState();
+  }
+
+  protected cloneState(
+    patch: Partial<ThemeServiceState> = {} as Partial<ThemeServiceState>
+  ): ThemeServiceState {
+    const current = this.state;
+    if (
+      current === null ||
+      current === undefined ||
+      typeof current !== 'object'
+    ) {
+      return current;
+    }
+    const next = clone(current);
+    Object.assign(next as object, patch as object);
+    return next;
+  }
+
+  protected emit(patch: Partial<ThemeServiceState>): void {
+    this.store.update(this.cloneState(patch));
   }
 
   public getSupportedThemes(): string[] {
@@ -80,7 +113,7 @@ export class ThemeService extends StoreInterface<ThemeServiceState> {
       theme = ThemeStateGetter.getSystemTheme();
     }
 
-    this.emit(this.cloneState({ theme }));
+    this.emit({ theme });
 
     this.bindToTheme();
   }

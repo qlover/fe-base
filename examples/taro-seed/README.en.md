@@ -1,5 +1,9 @@
 # Taro Seed
 
+> 中文: [README.md](./README.md)
+
+**TL;DR**: `npm install` → copy `.env.example` to `.env` → WeChat: `npm run dev:weapp` then open `dist` in WeChat DevTools; H5: `npm run dev:h5`.
+
 A modern Taro + React + Vite multi-end (WeChat Mini Program, H5, etc.) project template, integrated with **@qlover/corekit-bridge** and **@qlover/fe-corekit** for IOC, request, i18n, theme, and auth.
 
 ## Tech Stack

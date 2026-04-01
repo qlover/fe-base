@@ -10,6 +10,7 @@ import type {
   RouteServiceInterface,
   RouteServiceState
 } from '@/interfaces/RouteServiceInterface';
+import type { SliceStoreAdapter } from '@qlover/corekit-bridge';
 
 const mainCategory: RouteCategory[] = ['main', 'general'];
 const authCategory: RouteCategory[] = ['auth', 'general'];
@@ -34,13 +35,13 @@ export class RouteService implements RouteServiceInterface {
   public useMainRoutes(): void {
     const routes = this.defaultRoutes;
     const activeRoutes = filterRouteByCategorys(routes, mainCategory);
-    this.store.updateState({ result: activeRoutes, loading: false });
+    this.store.emit({ result: activeRoutes, loading: false });
   }
 
   public useAuthRoutes(): void {
     const routes = this.defaultRoutes;
     const activeRoutes = filterRouteByCategorys(routes, authCategory);
-    this.store.updateState({ result: activeRoutes, loading: false });
+    this.store.emit({ result: activeRoutes, loading: false });
   }
 
   /**
@@ -48,6 +49,13 @@ export class RouteService implements RouteServiceInterface {
    */
   public getStore(): AsyncStore<RouteServiceState, string> {
     return this.store;
+  }
+
+  /**
+   * @override
+   */
+  public getUIStore(): SliceStoreAdapter<RouteServiceState> {
+    return this.store.getStore() as SliceStoreAdapter<RouteServiceState>;
   }
 
   /**

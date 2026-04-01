@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { createMockGlobals } from './__mocks__/createMockGlobals';
 
 // Tell React we are in a test environment that supports act()
+// @ts-expect-error - globalThis is not typed
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 // 设置测试环境

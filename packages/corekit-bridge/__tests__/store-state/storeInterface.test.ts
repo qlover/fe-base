@@ -1,33 +1,48 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { SliceStore } from '@qlover/slice-store';
 import {
-  StoreInterface,
-  type StoreStateInterface
+  SliceStoreAdapter,
+  type StoreStateInterface,
+  isStoreInterface
 } from '../../src/core/store-state';
+import { clone } from '../../src/core/store-state/clone';
+
+/**
+ * Test base: mirrors shallow object merge used by {@link SliceStoreAdapter}
+ * (legacy `StoreInterface` class `cloneState` + `emit` pattern).
+ */
+class TestingSliceStore<S extends StoreStateInterface> extends SliceStore<S> {
+  public cloneState(patch: Partial<S> = {} as Partial<S>): S {
+    const current = this.state;
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return current;
+    }
+    const next = clone(current);
+    Object.assign(next as object, patch as object);
+    return next;
+  }
+}
 
 class CounterState implements StoreStateInterface {
   public count = 0;
   public meta = { updated: false };
 }
 
-class CounterStore extends StoreInterface<CounterState> {
+class CounterStore extends TestingSliceStore<CounterState> {
   constructor() {
     super(() => new CounterState());
   }
-  /**
-   * @override
-   */
+
   public increment(): void {
     this.emit(this.cloneState({ count: this.state.count + 1 }));
   }
-  /**
-   * @override
-   */
+
   public setMeta(updated: boolean): void {
     this.emit(this.cloneState({ meta: { updated } }));
   }
 }
 
-describe('StoreInterface', () => {
+describe('SliceStore + shallow cloneState (adapter-aligned)', () => {
   let store: CounterStore;
 
   beforeEach(() => {
@@ -39,12 +54,12 @@ describe('StoreInterface', () => {
     expect(store.state.meta).toEqual({ updated: false });
   });
 
-  it('resetState should reset to initial state', () => {
+  it('reset should reset to initial state', () => {
     store.increment();
     store.setMeta(true);
     expect(store.state.count).toBe(1);
     expect(store.state.meta.updated).toBe(true);
-    store.resetState();
+    store.reset();
     expect(store.state.count).toBe(0);
     expect(store.state.meta).toEqual({ updated: false });
   });
@@ -82,14 +97,14 @@ describe('StoreInterface', () => {
     expect(store.state.meta.updated).toBe(true);
   });
 
-  it('resetState can be called multiple times and always resets', () => {
+  it('reset can be called multiple times and always resets', () => {
     store.increment();
     store.setMeta(true);
-    store.resetState();
+    store.reset();
     expect(store.state.count).toBe(0);
     expect(store.state.meta).toEqual({ updated: false });
     store.increment();
-    store.resetState();
+    store.reset();
     expect(store.state.count).toBe(0);
     expect(store.state.meta).toEqual({ updated: false });
   });
@@ -99,9 +114,9 @@ describe('StoreInterface', () => {
     expect(cloned).toHaveProperty('count', undefined);
   });
 
-  it('resetState should create a new state object each time', () => {
+  it('reset should create a new state object each time', () => {
     const first = store.state;
-    store.resetState();
+    store.reset();
     const second = store.state;
     expect(first).not.toBe(second);
   });
@@ -123,7 +138,7 @@ describe('StoreInterface', () => {
         return this.value * 2;
       }
     }
-    class CustomStore extends StoreInterface<CustomState> {
+    class CustomStore extends TestingSliceStore<CustomState> {
       constructor() {
         super(() => new CustomState());
       }
@@ -158,7 +173,7 @@ describe('StoreInterface', () => {
         this.value++;
       }
     }
-    class AdvancedStore extends StoreInterface<AdvancedState> {
+    class AdvancedStore extends TestingSliceStore<AdvancedState> {
       constructor() {
         super(() => new AdvancedState());
       }
@@ -186,20 +201,20 @@ describe('StoreInterface', () => {
       public [sym] = 42;
       public fn = (): string => 'hello';
     }
-    class ComplexStore extends StoreInterface<ComplexState> {
+    class ComplexStore extends TestingSliceStore<ComplexState> {
       constructor() {
         super(() => new ComplexState());
       }
     }
-    const store = new ComplexStore();
-    const cloned = store.cloneState({});
+    const complexStore = new ComplexStore();
+    const cloned = complexStore.cloneState({});
 
     // cloneState creates a new state object but properties are shallow cloned
-    expect(cloned).not.toBe(store.state);
-    expect(cloned.arr).toBe(store.state.arr); // shallow clone - same reference
-    expect(cloned.arr[2]).toBe(store.state.arr[2]);
-    expect(cloned.nested).toBe(store.state.nested); // shallow clone - same reference
-    expect(cloned.nested.foo).toBe(store.state.nested.foo);
+    expect(cloned).not.toBe(complexStore.state);
+    expect(cloned.arr).toBe(complexStore.state.arr); // shallow clone - same reference
+    expect(cloned.arr[2]).toBe(complexStore.state.arr[2]);
+    expect(cloned.nested).toBe(complexStore.state.nested); // shallow clone - same reference
+    expect(cloned.nested.foo).toBe(complexStore.state.nested.foo);
     expect(cloned[sym]).toBe(42);
     expect(cloned.fn()).toBe('hello');
   });
@@ -214,40 +229,71 @@ describe('StoreInterface', () => {
         return 'original';
       }
     }
-    class MethodStore extends StoreInterface<MethodState> {
+    class MethodStore extends TestingSliceStore<MethodState> {
       constructor() {
         super(() => new MethodState());
       }
     }
-    const store = new MethodStore();
+    const methodStore = new MethodStore();
     const newFn = () => 'patched';
-    const cloned = store.cloneState({ fn: newFn });
+    const cloned = methodStore.cloneState({ fn: newFn });
     expect(cloned.fn()).toBe('patched');
-    expect(store.state.fn()).toBe('original');
+    expect(methodStore.state.fn()).toBe('original');
   });
 
   it('cloneState works with readonly properties', () => {
     class ReadonlyState implements StoreStateInterface {
       public readonly foo = 123;
     }
-    class ReadonlyStore extends StoreInterface<ReadonlyState> {
+    class ReadonlyStore extends TestingSliceStore<ReadonlyState> {
       constructor() {
         super(() => new ReadonlyState());
       }
     }
-    const store = new ReadonlyStore();
-    const cloned = store.cloneState({});
+    const readonlyStore = new ReadonlyStore();
+    const cloned = readonlyStore.cloneState({});
     expect(cloned.foo).toBe(123);
   });
 
   it('cloneState handles empty or null state gracefully', () => {
     class NullState implements StoreStateInterface {}
-    class NullStore extends StoreInterface<NullState> {
+    class NullStore extends TestingSliceStore<NullState> {
       constructor() {
         super(() => null as unknown as NullState);
       }
     }
-    const store = new NullStore();
-    expect(() => store.cloneState({})).not.toThrow();
+    const nullStore = new NullStore();
+    expect(() => nullStore.cloneState({})).not.toThrow();
+  });
+});
+
+describe('StoreInterface', () => {
+  it('isStoreInterface returns true for SliceStoreAdapter', () => {
+    const adapter = new SliceStoreAdapter<CounterState>(() => new CounterState());
+    expect(isStoreInterface(adapter)).toBe(true);
+  });
+
+  it('isStoreInterface returns false for non-implementations', () => {
+    expect(isStoreInterface(null)).toBe(false);
+    expect(isStoreInterface({})).toBe(false);
+    expect(isStoreInterface(new CounterStore())).toBe(false);
+  });
+
+  it('SliceStoreAdapter exposes reset, update, getState, subscribe', () => {
+    const adapter = new SliceStoreAdapter<CounterState>(() => new CounterState());
+
+    expect(adapter.getState().count).toBe(0);
+    adapter.update({ count: 1 });
+    expect(adapter.getState().count).toBe(1);
+    adapter.reset();
+    expect(adapter.getState().count).toBe(0);
+
+    const listener = vi.fn();
+    const off = adapter.subscribe(listener);
+    adapter.update({ count: 1 });
+    expect(listener).toHaveBeenCalled();
+    off();
+    adapter.update({ count: 0 });
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });
