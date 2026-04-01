@@ -4,278 +4,203 @@
 
 ---
 
-### `StoreInterface` (Class)
+### `StoreInterface` (Interface)
 
-**Type:** `class StoreInterface<T>`
+**Type:** `interface StoreInterface<State>`
 
-Store interface
+**Since:** `3.0.0`
 
-Significance: Abstract base for all state stores
-Core idea: Provide a unified API for state management with reset and clone helpers
-Main function: Extend SliceStore, add resetState and cloneState utilities
-Main purpose: Simplify store implementation and ensure consistency
+Minimal store adapter contract (implementation-agnostic)
 
-**Naming Note:**
-
-- This class is currently named
-  `StoreInterface`
-  but it's actually an abstract class, not an interface
-- The naming is inconsistent because
-  `SliceStore`
-  (from
+- Significance: lets modules depend on a stable surface without importing
   `@qlover/slice-store`
-  ) only provides
-  an implementation class without a corresponding interface
-- In the next major version, this class will be renamed to better reflect its nature
-- The name
-  `StoreInterface`
-  will be preserved as an actual interface type for type definitions
 
-**Example:**
+- Core idea: four operations —
+  `reset`
+  ,
+  `update`
+  ,
+  `getState`
+  ,
+  `subscribe`
+
+- Main function: act as the widest adapter type when state shape is not fixed at compile time
+- Main purpose: bridge custom stores, tests, or facades that are not
+  `SliceStore`
+  -shaped
+
+Core features:
+
+- `reset`
+  — restore initial or maker-defined state (exact semantics are implementation-defined)
+- `update`
+  — apply a patch or replacement (
+  `State`
+  or
+  StoreUpdateValue
+  )
+- `getState`
+  — read the current typed snapshot
+- `subscribe`
+  — reactive updates
+  `(state, prevState) => void`
+
+Design decisions:
+
+- `StoreInterface`
+  is a **contract only** (since 3.0.0); it is not a runtime class — implement it
+  with
+  SliceStoreAdapter
+  ,
+  ZustandStoreAdapter
+  , or your own adapter.
+- Prefer narrowing at boundaries (validate then cast) instead of
+  `any`
+
+Relationship to higher-level stores:
+
+- Features like
+  `AsyncStore`
+  hold an internal
+  `StoreInterface<State>`
+  (often a
+  `SliceStoreAdapter`
+  )
+  and expose
+  `getStore()`
+  for
+  `subscribe`
+  /
+  `reset`
+  /
+  `update`
+  /
+  `getState`
+  .
+- Legacy “extend abstract StoreInterface + cloneState + emit” patterns should migrate to
+
+`SliceStore`
+
+- `implements StoreInterface`
+  or composition (see
+  MessagesStore
+  ).
+
+**Example:** Default adapter (`SliceStore` under the hood)
 
 ```ts
-class ChatStoreState implements StoreStateInterface {
-  isChatRunning: boolean = false;
+import { SliceStoreAdapter } from '@qlover/corekit-bridge'; // package entry
+
+class MyState implements StoreStateInterface {
+  data = '';
 }
 
-export class ChatStore extends StoreInterface<ChatStoreState> {
-  constructor() {
-    super(() => new ChatStoreState());
+const port: StoreInterface<MyState> = new SliceStoreAdapter(
+  () => new MyState()
+);
+port.subscribe((state) => console.log(state.data));
+```
+
+**Example:** When use zustand
+
+```ts
+import { createStore, type StoreApi } from 'zustand';
+
+class MyState implements StoreStateInterface {
+  count = 0;
+}
+
+export class ZustandStoreAdapter implements StoreInterface<MyState> {
+  private readonly store: StoreApi<MyState>;
+  constructor(init: () => MyState = () => new MyState()) {
+    this.store = createStore<MyState>(() => init());
+  }
+  reset(): void {
+    this.store.setState(this.store.getInitialState(), true);
+  }
+  update(value: MyState): void;
+  update(value: StoreUpdateValue<MyState>): void;
+  update(value: StoreUpdateValue<MyState>): void {
+    const prev = this.store.getState();
+    const next = shallowMerge(prev, value); // align with {@link StoreUpdateValue} rules
+    this.store.setState(next, true);
+  }
+  getState(): MyState {
+    return this.store.getState();
+  }
+  subscribe(
+    listener: (state: MyState, prevState: MyState) => void
+  ): () => void {
+    return this.store.subscribe(listener);
+  }
+}
+```
+
+**Example:** Consume through a generic helper
+
+```ts
+function resetAll(...adapters: WithStoreInterface<unknown>[]) {
+  for (const a of adapters) a.reset();
+}
+```
+
+**Example:** Partial `update` on object state
+
+```ts
+port.update({ data: 'patched' }); // shallow merge into current snapshot from {@link StoreInterface.getState}
+```
+
+**Example:** `isStoreInterface` at module boundaries
+
+```ts
+function asStorePort(x: unknown): StoreInterface<MyState> | undefined {
+  return isStoreInterface<MyState>(x) ? x : undefined;
+}
+```
+
+**Example:** Composition — facade exposes `readonly store`
+
+```ts
+import { SliceStoreAdapter } from '../impl/SliceStoreAdapter';
+
+class FeatureState implements StoreStateInterface {
+  count = 0;
+}
+
+class FeatureStore {
+  readonly store: StoreInterface<FeatureState>;
+
+  constructor(store = new SliceStoreAdapter(() => new FeatureState())) {
+    this.store = store;
+  }
+
+  emit(patch: Partial<FeatureState>) {
+    this.store.update(patch);
   }
 }
 ```
 
 ---
 
-#### `new StoreInterface` (Constructor)
-
-**Type:** `(stateFactory: Object) => StoreInterface<T>`
-
-#### Parameters
-
-| Name           | Type     | Optional | Default | Since | Deprecated | Description                                           |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `stateFactory` | `Object` | ❌       | -       | -     | -          | () => T, factory function to create the initial state |
-
----
-
-#### `stateFactory` (Property)
+#### `subscribe` (Property)
 
 **Type:** `Object`
 
-() => T, factory function to create the initial state
+Subscribe to state changes
 
 ---
 
-#### `state` (Accessor)
+#### `getState` (Method)
 
-**Type:** `accessor state`
-
----
-
-#### `clear` (Method)
-
-**Type:** `() => void`
+**Type:** `() => State`
 
 ---
 
-##### `clear` (CallSignature)
+##### `getState` (CallSignature)
 
-**Type:** `void`
+**Type:** `State`
 
-Clear all observers
-
-This method removes all registered listeners and their last selected values.
-It is useful when the component is unloaded or needs to reset the observer state.
-
-**Example:**
-
-```typescript
-// Register some observers
-observer.observe((state) => console.log(state));
-
-// Remove all observers
-observer.clear();
-
-// Now notifications will not trigger any listeners
-observer.notify({ count: 3 });
-```
-
----
-
-#### `cloneState` (Method)
-
-**Type:** `(source: Partial<T>) => T`
-
-#### Parameters
-
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<T>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
-
----
-
-##### `cloneState` (CallSignature)
-
-**Type:** `T`
-
-**Since:** `1.3.1`
-
-Clone the state of the store
-
-**Returns:**
-
-T - the new cloned state
-
-#### Parameters
-
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<T>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
-
----
-
-#### `emit` (Method)
-
-**Type:** `(state: T) => void`
-
-#### Parameters
-
-| Name    | Type | Optional | Default | Since | Deprecated | Description          |
-| ------- | ---- | -------- | ------- | ----- | ---------- | -------------------- |
-| `state` | `T`  | ❌       | -       | -     | -          | The new state object |
-
----
-
-##### `emit` (CallSignature)
-
-**Type:** `void`
-
-Update the state and notify all observers
-
-This method will replace the current state object and trigger all subscribed observers.
-The observers will receive the new and old state as parameters.
-
-**Example:**
-
-```typescript
-interface UserState {
-  name: string;
-  age: number;
-}
-
-const userStore = new SliceStore<UserState>({
-  name: 'John',
-  age: 20
-});
-userStore.emit({ name: 'Jane', age: 25 });
-```
-
-#### Parameters
-
-| Name    | Type | Optional | Default | Since | Deprecated | Description          |
-| ------- | ---- | -------- | ------- | ----- | ---------- | -------------------- |
-| `state` | `T`  | ❌       | -       | -     | -          | The new state object |
-
----
-
-#### `notify` (Method)
-
-**Type:** `(value: T, lastValue: T) => void`
-
-#### Parameters
-
-| Name        | Type | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `T`  | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `T`  | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-##### `notify` (CallSignature)
-
-**Type:** `void`
-
-Notify all observers that the state has changed
-
-This method will iterate through all registered observers and call their listeners.
-If an observer has a selector, it will only notify when the selected state part changes.
-
-**Example:**
-
-```typescript
-// Notify observers that the state has changed
-observer.notify({ count: 2, name: 'New name' });
-
-// Provide the previous state for comparison
-const oldState = { count: 1, name: 'Old name' };
-const newState = { count: 2, name: 'New name' };
-observer.notify(newState, oldState);
-```
-
-#### Parameters
-
-| Name        | Type | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `T`  | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `T`  | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-#### `observe` (Method)
-
-**Type:** `(selectorOrListener: Selector<T, K> \| Listener<T>, listener: Listener<K>) => Object`
-
-#### Parameters
-
-| Name                 | Type                            | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<T, K> \| Listener<T>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                   | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
-##### `observe` (CallSignature)
-
-**Type:** `Object`
-
-Register an observer to listen for state changes
-
-This method supports two calling methods:
-
-1. Provide a listener that listens to the entire state
-2. Provide a selector and a listener that listens to the selected part
-
-**Returns:**
-
-The function to unsubscribe, calling it removes the registered observer
-
-**Example:** Listen to the entire state
-
-```typescript
-const unsubscribe = observer.observe((state) => {
-  console.log('Full state:', state);
-});
-
-// Unsubscribe
-unsubscribe();
-```
-
-**Example:** Listen to a specific part of the state
-
-```typescript
-const unsubscribe = observer.observe(
-  (state) => state.user,
-  (user) => console.log('User information changed:', user)
-);
-```
-
-#### Parameters
-
-| Name                 | Type                            | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<T, K> \| Listener<T>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                   | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
+Read the current state snapshot
 
 ---
 
@@ -289,87 +214,47 @@ const unsubscribe = observer.observe(
 
 **Type:** `void`
 
-**Since:** `1.2.5`
+Reset state using implementation-defined rules (typically the store’s initial maker or factory)
 
-Reset the state to the initial value
-
-This method will use the maker provided in the constructor to create a new state object,
-and then emit it as the current state, triggering a notification to all observers.
-
-Use cases:
-
-- When you need to clear all state
-- When you need to restore to the initial state
-- When the current state is polluted or invalid
-
-**Example:**
-
-```typescript
-const store = new SliceStore(MyStateClass);
-// ... some operations modified the state ...
-store.reset(); // The state is reset to the initial value
-```
+Implementations should document whether listeners/observers run and whether storage side effects occur
 
 ---
 
-#### `resetState` (Method)
+#### `update` (Method)
 
-**Type:** `() => void`
+**Type:** `(value: State) => void`
+
+#### Parameters
+
+| Name    | Type    | Optional | Default | Since | Deprecated | Description |
+| ------- | ------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `State` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `resetState` (CallSignature)⚠️
+##### `update` (CallSignature)
 
 **Type:** `void`
 
-Reset the state of the store
-
-**Returns:**
-
-void
-
----
-
-#### `setDefaultState` (Method)
-
-**Type:** `(value: T) => this`
+Apply a patch or replacement to state
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ---- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `T`  | ❌       | -       | -     | -          | The new state object to set |
+| Name    | Type    | Optional | Default | Since | Deprecated | Description |
+| ------- | ------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `State` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `setDefaultState` (CallSignature)⚠️
+##### `update` (CallSignature)
 
-**Type:** `this`
-
-Set the default state
-
-Replace the entire state object, but will not trigger the observer notification.
-This method is mainly used for initialization, not recommended for regular state updates.
-
-**Returns:**
-
-The current instance, supporting method chaining
-
-**Example:**
-
-```typescript
-// Not recommended to use
-store.setDefaultState(initialState);
-
-// Recommended alternative
-store.emit(initialState);
-```
+**Type:** `void`
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ---- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `T`  | ❌       | -       | -     | -          | The new state object to set |
+| Name    | Type                      | Optional | Default | Since | Deprecated | Description |
+| ------- | ------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `StoreUpdateValue<State>` | ❌       | -       | -     | -          |             |
 
 ---
 
@@ -391,5 +276,91 @@ class ChatStoreState implements StoreStateInterface {
   isChatRunning: boolean = false;
 }
 ```
+
+---
+
+### `StoreUpdateValue` (TypeAlias)
+
+**Type:** `type StoreUpdateValue<T>`
+
+**Since:** `2.3.0`
+
+Patch argument for
+SliceStoreAdapter.update
+
+- Significance: keep
+  `update`
+  sound for shallow-merge semantics used by
+  `WithSliceStore`
+
+- Core idea: use
+  `Partial<T>`
+  only for ordinary objects; arrays and scalars need a full replacement value
+- Main function: drive overload-friendly typings at call sites
+- Main purpose: avoid
+  `Partial`
+  on arrays (weak typings and misleading “partial array” meaning)
+
+Resolution rules:
+
+- If
+  `T`
+  is a readonly tuple or array type →
+  `StoreUpdateValue<T>`
+  is
+  `T`
+  (replace whole value)
+- Else if
+  `T`
+  is an
+  `object`
+  (includes plain objects and class instances) →
+  `Partial<T>`
+
+- Else (primitives,
+  `null`
+  /
+  `undefined`
+  as non-object) →
+  `T`
+
+Runtime note: implementations should shallow-clone object state before merge; they must not deep-merge
+nested objects unless explicitly documented elsewhere
+
+**Example:**
+
+```ts
+type Row = { id: string; name: string };
+// object: partial patch
+const p: StoreUpdateValue<Row> = { name: 'x' };
+// array: full array
+const ids: StoreUpdateValue<string[]> = ['a', 'b'];
+// primitive: full value
+const n: StoreUpdateValue<number> = 42;
+```
+
+---
+
+### `isStoreInterface` (Function)
+
+**Type:** `(value: unknown) => callsignature isStoreInterface<T>`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
+
+---
+
+#### `isStoreInterface` (CallSignature)
+
+**Type:** `callsignature isStoreInterface<T>`
+
+#### Parameters
+
+| Name    | Type      | Optional | Default | Since | Deprecated | Description |
+| ------- | --------- | -------- | ------- | ----- | ---------- | ----------- |
+| `value` | `unknown` | ❌       | -       | -     | -          |             |
 
 ---

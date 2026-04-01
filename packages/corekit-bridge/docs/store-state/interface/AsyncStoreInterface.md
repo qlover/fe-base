@@ -22,7 +22,6 @@ Core actions:
 - Handle success: Mark operation as successful with result data
 - Handle failure: Mark operation as failed with error information
 - Reset state: Clear all state and return to initial values
-- Update state: Partially update state properties
 - Get duration: Calculate operation duration from timestamps
 
 **Example:** Basic usage
@@ -460,70 +459,6 @@ asyncService.success(processedData);
 
 ---
 
-#### `updateState` (Method)
-
-**Type:** `(state: Partial<S>) => void`
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-
----
-
-##### `updateState` (CallSignature)
-
-**Type:** `void`
-
-Update store state with partial state object
-
-Merges the provided partial state into the current state. This allows
-fine-grained control over state updates without replacing the entire state.
-
-Behavior:
-
-- Merges provided properties into current state
-- Only updates specified properties, others remain unchanged
-- Type-safe: Only accepts properties that exist in the state interface
-
-**Example:** Update loading state only
-
-```typescript
-asyncService.updateState({ loading: true });
-```
-
-**Example:** Update multiple properties
-
-```typescript
-asyncService.updateState({
-  loading: false,
-  result: data,
-  endTime: Date.now()
-});
-```
-
-**Example:** Update with custom state type
-
-```typescript
-interface CustomState extends AsyncStateInterface<User> {
-  customField: string;
-}
-asyncService.updateState<CustomState>({
-  customField: 'value'
-});
-```
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-
----
-
 ### `AsyncStateInterface` (Interface)
 
 **Type:** `interface AsyncStateInterface<T>`
@@ -920,27 +855,40 @@ Core features:
 
 Implementation pattern:
 
-- Typically implemented by classes that extend
-  `PersistentStoreInterface`
-
+- Typically
+  AsyncStore
+  : extends
+  PersistentStore
+  , composes
+  `StoreInterface<State>`
+  ,
+  and implements this interface
 - Combines async operation management with persistent state storage
-- Provides both imperative API (methods) and reactive API (store subscriptions)
+- Reactive updates: use
+  `getStore().subscribe(...)`
+  on the returned
+  StoreInterface
 
 **Example:** Basic usage
 
 ```typescript
-class UserStore
-  extends PersistentStoreInterface<AsyncStoreStateInterface<User>, string>
-  implements AsyncStoreInterface<AsyncStoreStateInterface<User>>
-{
-  async fetchUser(): Promise<void> {
-    this.start();
-    try {
-      const user = await api.getUser();
-      this.success(user);
-    } catch (error) {
-      this.failed(error);
-    }
+import { AsyncStore } from '../impl/AsyncStore';
+import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
+
+type User = { id: string; name: string };
+
+const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  storage: null,
+  defaultState: () => null
+});
+
+async function fetchUser(): Promise<void> {
+  userStore.start();
+  try {
+    const user = await api.getUser();
+    userStore.success(user);
+  } catch (error) {
+    userStore.failed(error);
   }
 }
 ```
@@ -948,11 +896,18 @@ class UserStore
 **Example:** Reactive usage
 
 ```typescript
-const userStore = new UserStore();
-const store = userStore.getStore();
+import { AsyncStore } from '../impl/AsyncStore';
+import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
 
-// Subscribe to state changes
-store.observe((state) => {
+type User = { id: string; name: string };
+
+const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  storage: null,
+  defaultState: () => null
+});
+const port = userStore.getStore();
+
+port.subscribe((state) => {
   if (state.loading) {
     console.log('Loading user...');
   } else if (state.result) {
@@ -960,6 +915,73 @@ store.observe((state) => {
   }
 });
 ```
+
+**Example:** Double `getStore` (gateway-style facades)
+
+```typescript
+const asyncLayer = gatewayService.getStore(); // AsyncStoreInterface<...>
+const port = asyncLayer.getStore(); // StoreInterface<...>
+const off = port.subscribe((state, prev) => {
+  if (!state.loading && state.error) console.error(state.error);
+});
+off();
+```
+
+**Example:** Inject {@link StoreInterface} via {@link AsyncStoreOptions.store}
+
+```typescript
+import { AsyncStore } from '../impl/AsyncStore';
+import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
+import { AsyncStoreState } from '../impl/AsyncStoreState';
+import { SliceStoreAdapter } from '../impl/SliceStoreAdapter';
+
+type User = { id: string };
+
+const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+  storage: null,
+  defaultState: () => null,
+  store: new SliceStoreAdapter(() => new AsyncStoreState<User>())
+});
+```
+
+---
+
+#### `emit` (Method)
+
+**Type:** `(state: State \| StoreUpdateValue<State>, options: Object) => void`
+
+#### Parameters
+
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                  |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                              |
+
+---
+
+##### `emit` (CallSignature)
+
+**Type:** `void`
+
+Apply a state patch and optionally persist (see
+PersistentStore.emit
+)
+
+**Example:**
+
+```typescript
+asyncStore.emit({ loading: true });
+asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
+```
+
+#### Parameters
+
+| Name              | Type                               | Optional | Default | Since | Deprecated | Description                                                  |
+| ----------------- | ---------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `state`           | `State \| StoreUpdateValue<State>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
+| `options`         | `Object`                           | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
+| `options.persist` | `boolean`                          | ✅       | -       | -     | -          |                                                              |
 
 ---
 
@@ -1320,15 +1342,19 @@ This allows consumers to subscribe to state changes and react to updates.
 
 Implementation note:
 
-- If the implementation extends
-  `StoreInterface`
-  , it typically returns
+- AsyncStore
+  returns its composed
+  StoreInterface
+  instance (not
   `this`
-
-- This enables reactive programming patterns with state subscriptions
-- The store provides
-  `observe()`
-  method for subscribing to state changes
+  )
+- Subscribe with
+  StoreInterface.subscribe
+  ; underlying
+  `SliceStore`
+  may still use
+  `observe`
+  internally
 
 **Returns:**
 
@@ -1337,18 +1363,17 @@ The store instance for reactive state access and subscriptions
 **Example:** Subscribe to state changes
 
 ```typescript
-const store = asyncService.getStore();
-store.observe((state) => {
+const port = asyncService.getStore();
+const unsub = port.subscribe((state) => {
   console.log('State changed:', state);
 });
 ```
 
-**Example:** Access store methods
+**Example:** Read snapshot
 
 ```typescript
-const store = asyncService.getStore();
-const currentState = store.state;
-store.clear(); // Clear all observers
+const port = asyncService.getStore();
+const currentState = port.getState();
 ```
 
 ---
@@ -1782,69 +1807,5 @@ asyncService.success(processedData);
 | ------------------------------------------------------ | ------------------ | -------- | ------- | ----- | ---------- | -------------------------------------------- |
 | `result`                                               | `parameter result` | ❌       | -       | -     | -          | The result of the successful async operation |
 | This is the data returned from the completed operation |
-
----
-
-#### `updateState` (Method)
-
-**Type:** `(state: Partial<S>) => void`
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-
----
-
-##### `updateState` (CallSignature)
-
-**Type:** `void`
-
-Update store state with partial state object
-
-Merges the provided partial state into the current state. This allows
-fine-grained control over state updates without replacing the entire state.
-
-Behavior:
-
-- Merges provided properties into current state
-- Only updates specified properties, others remain unchanged
-- Type-safe: Only accepts properties that exist in the state interface
-
-**Example:** Update loading state only
-
-```typescript
-asyncService.updateState({ loading: true });
-```
-
-**Example:** Update multiple properties
-
-```typescript
-asyncService.updateState({
-  loading: false,
-  result: data,
-  endTime: Date.now()
-});
-```
-
-**Example:** Update with custom state type
-
-```typescript
-interface CustomState extends AsyncStateInterface<User> {
-  customField: string;
-}
-asyncService.updateState<CustomState>({
-  customField: 'value'
-});
-```
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
 
 ---
