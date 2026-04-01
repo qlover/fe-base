@@ -1,6 +1,7 @@
 import {
   type StoreInterface,
-  type StoreStateInterface
+  type StoreStateInterface,
+  type StoreUpdateValue
 } from './StoreInterface';
 
 /**
@@ -103,7 +104,6 @@ export interface AsyncStateInterface<T> extends StoreStateInterface {
  * - Handle success: Mark operation as successful with result data
  * - Handle failure: Mark operation as failed with error information
  * - Reset state: Clear all state and return to initial values
- * - Update state: Partially update state properties
  * - Get duration: Calculate operation duration from timestamps
  *
  * @since `1.8.0`
@@ -305,47 +305,6 @@ export interface AsyncStateAction<T> {
   reset(): void;
 
   /**
-   * Update store state with partial state object
-   *
-   * Merges the provided partial state into the current state. This allows
-   * fine-grained control over state updates without replacing the entire state.
-   *
-   * Behavior:
-   * - Merges provided properties into current state
-   * - Only updates specified properties, others remain unchanged
-   * - Type-safe: Only accepts properties that exist in the state interface
-   *
-   * @template S - The state type that extends `AsyncStateInterface<T>`
-   * @param state - Partial state object containing properties to update
-   *   Only specified properties will be updated, others remain unchanged
-   *
-   * @example Update loading state only
-   * ```typescript
-   * asyncService.updateState({ loading: true });
-   * ```
-   *
-   * @example Update multiple properties
-   * ```typescript
-   * asyncService.updateState({
-   *   loading: false,
-   *   result: data,
-   *   endTime: Date.now()
-   * });
-   * ```
-   *
-   * @example Update with custom state type
-   * ```typescript
-   * interface CustomState extends AsyncStateInterface<User> {
-   *   customField: string;
-   * }
-   * asyncService.updateState<CustomState>({
-   *   customField: 'value'
-   * });
-   * ```
-   */
-  updateState<S extends AsyncStateInterface<T>>(state: Partial<S>): void;
-
-  /**
    * Get the duration of the async operation
    *
    * Calculates the duration of the async operation based on `startTime` and `endTime`.
@@ -514,9 +473,10 @@ export interface AsyncStateStatusInterface {
  * - Store access: Get underlying store for reactive subscriptions
  *
  * Implementation pattern:
- * - Typically implemented by classes that extend `PersistentStoreInterface`
+ * - Typically {@link AsyncStore}: extends {@link PersistentStore}, composes `StoreInterface<State>`,
+ *   and implements this interface
  * - Combines async operation management with persistent state storage
- * - Provides both imperative API (methods) and reactive API (store subscriptions)
+ * - Reactive updates: use `getStore().subscribe(...)` on the returned {@link StoreInterface}
  *
  * @since `1.8.0`
  * @template State - The state type that extends `AsyncStateInterface<any>`
@@ -524,33 +484,72 @@ export interface AsyncStateStatusInterface {
  *
  * @example Basic usage
  * ```typescript
- * class UserStore extends PersistentStoreInterface<AsyncStoreStateInterface<User>, string>
- *   implements AsyncStoreInterface<AsyncStoreStateInterface<User>> {
+ * import { AsyncStore } from '../impl/AsyncStore';
+ * import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
  *
- *   async fetchUser(): Promise<void> {
- *     this.start();
- *     try {
- *       const user = await api.getUser();
- *       this.success(user);
- *     } catch (error) {
- *       this.failed(error);
- *     }
+ * type User = { id: string; name: string };
+ *
+ * const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+ *   storage: null,
+ *   defaultState: () => null
+ * });
+ *
+ * async function fetchUser(): Promise<void> {
+ *   userStore.start();
+ *   try {
+ *     const user = await api.getUser();
+ *     userStore.success(user);
+ *   } catch (error) {
+ *     userStore.failed(error);
  *   }
  * }
  * ```
  *
  * @example Reactive usage
  * ```typescript
- * const userStore = new UserStore();
- * const store = userStore.getStore();
+ * import { AsyncStore } from '../impl/AsyncStore';
+ * import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
  *
- * // Subscribe to state changes
- * store.observe((state) => {
+ * type User = { id: string; name: string };
+ *
+ * const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+ *   storage: null,
+ *   defaultState: () => null
+ * });
+ * const port = userStore.getStore();
+ *
+ * port.subscribe((state) => {
  *   if (state.loading) {
  *     console.log('Loading user...');
  *   } else if (state.result) {
  *     console.log('User loaded:', state.result);
  *   }
+ * });
+ * ```
+ *
+ * @example Double `getStore` (gateway-style facades)
+ * ```typescript
+ * const asyncLayer = gatewayService.getStore(); // AsyncStoreInterface<...>
+ * const port = asyncLayer.getStore(); // StoreInterface<...>
+ * const off = port.subscribe((state, prev) => {
+ *   if (!state.loading && state.error) console.error(state.error);
+ * });
+ * off();
+ * ```
+ *
+ * @example Inject {@link StoreInterface} via {@link AsyncStoreOptions.store}
+ * ```typescript
+ * import { AsyncStore } from '../impl/AsyncStore';
+ * import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
+ * import { AsyncStoreState } from '../impl/AsyncStoreState';
+ * import { SliceStoreAdapter } from '../impl/SliceStoreAdapter';
+ *
+ * type User = { id: string };
+ *
+ * const userStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+ *   storage: null,
+ *   defaultState: () => null,
+ *   store: new SliceStoreAdapter(() => new AsyncStoreState<User>())
  * });
  * ```
  */
@@ -564,28 +563,43 @@ export interface AsyncStoreInterface<State extends AsyncStateInterface<any>>
    * This allows consumers to subscribe to state changes and react to updates.
    *
    * Implementation note:
-   * - If the implementation extends `StoreInterface`, it typically returns `this`
-   * - This enables reactive programming patterns with state subscriptions
-   * - The store provides `observe()` method for subscribing to state changes
+   * - {@link AsyncStore} returns its composed {@link StoreInterface} instance (not `this`)
+   * - Subscribe with {@link StoreInterface.subscribe}; underlying `SliceStore` may still use `observe` internally
    *
    * @returns The store instance for reactive state access and subscriptions
    *
    * @example Subscribe to state changes
    * ```typescript
-   * const store = asyncService.getStore();
-   * store.observe((state) => {
+   * const port = asyncService.getStore();
+   * const unsub = port.subscribe((state) => {
    *   console.log('State changed:', state);
    * });
    * ```
    *
-   * @example Access store methods
+   * @example Read snapshot
    * ```typescript
-   * const store = asyncService.getStore();
-   * const currentState = store.state;
-   * store.clear(); // Clear all observers
+   * const port = asyncService.getStore();
+   * const currentState = port.getState();
    * ```
    */
   getStore(): StoreInterface<State>;
+
+  /**
+   * Apply a state patch and optionally persist (see {@link PersistentStore.emit})
+   *
+   * @param state - Patch or full snapshot ({@link StoreUpdateValue})
+   * @param options - Pass `{ persist: false }` during restore to avoid write-back
+   *
+   * @example
+   * ```typescript
+   * asyncStore.emit({ loading: true });
+   * asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
+   * ```
+   */
+  emit(
+    state: State | StoreUpdateValue<State>,
+    options?: { persist?: boolean }
+  ): void;
 
   /**
    * Get current store state

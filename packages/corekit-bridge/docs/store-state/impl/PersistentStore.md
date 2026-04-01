@@ -13,9 +13,18 @@
 Abstract persistent store interface
 
 - Significance: Provides a base class for stores that need to persist state to storage
-- Core idea: Extend
-  `StoreInterface`
-  with storage synchronization capabilities
+- Core idea: Pair persistence hooks (
+  `restore`
+  /
+  `persist`
+  ) with a subclass-defined
+  `update()`
+  path
+  (see
+  AsyncStore
+  , which forwards to a composed
+  StoreInterface
+  )
 - Main function: Automatically sync state changes to storage and load state from storage
 - Main purpose: Enable state persistence with flexible storage backends
 
@@ -23,7 +32,9 @@ Core features:
 
 - Automatic persistence: State changes via
   `emit()`
-  are automatically persisted to storage
+  call
+  `update()`
+  then persist (when enabled)
 - Storage restoration: Load state from storage during initialization
 - Flexible storage backends: Support any
   `StorageInterface`
@@ -60,18 +71,51 @@ Design decisions:
   ). The base interface
   doesn't enforce this, allowing subclasses to decide whether expiration is needed.
 
-**Example:** Basic usage
+**Example:**
+
+```ts
+Prefer {@link AsyncStore}
+For async lifecycle + reactive updates, use {@link AsyncStore}: it extends this class,
+implements `restore` / `persist`, and forwards mutations through a composed {@link StoreInterface}.
+```
+
+**Example:** Subclass sketch (advanced)
+
+The constructor is
+`super(storage, initRestore)`
+— there is **no** state factory parameter
+on
+`PersistentStore`
+. Subclasses must override
+PersistentStore.update
+to apply
+snapshots, and keep their own “current” snapshot if
+`persist()`
+needs a default when called
+with no argument.
 
 ```typescript
 class MyStoreState implements StoreStateInterface {
-  data: string = '';
+  data = '';
 }
 
 class MyStore extends PersistentStore<MyStoreState, string> {
   private readonly storageKey = 'my-state';
+  private current = new MyStoreState();
 
   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
-    super(() => new MyStoreState(), storage);
+    super(storage, false);
+    this.restore();
+  }
+
+  protected override update(
+    state: MyStoreState | StoreUpdateValue<MyStoreState>
+  ): void {
+    if (state instanceof MyStoreState) {
+      this.current = state;
+    } else {
+      Object.assign(this.current, state);
+    }
   }
 
   restore(): MyStoreState | null {
@@ -79,11 +123,10 @@ class MyStore extends PersistentStore<MyStoreState, string> {
     try {
       const value = this.storage.getItem(this.storageKey);
       if (value) {
-        const restoredState = new MyStoreState();
-        Object.assign(restoredState, value);
-        // Update state without triggering persist
-        this.emit(restoredState, { persist: false });
-        return restoredState;
+        const restored = new MyStoreState();
+        Object.assign(restored, value);
+        this.emit(restored, { persist: false });
+        return restored;
       }
     } catch {
       return null;
@@ -93,56 +136,8 @@ class MyStore extends PersistentStore<MyStoreState, string> {
 
   persist(state?: MyStoreState): void {
     if (!this.storage) return;
-    const stateToPersist = state ?? this.state;
-    this.storage.setItem(this.storageKey, stateToPersist);
-  }
-}
-```
-
-**Example:** With expiration support (optional)
-
-```typescript
-// State interface defines expiration field if needed
-class ExpiringStoreState implements StoreStateInterface {
-  data: string = '';
-  expires?: number | Date | null; // Optional expiration support
-}
-
-class ExpiringStore extends PersistentStore<ExpiringStoreState, string> {
-  restore(): ExpiringStoreState | null {
-    if (!this.storage) return null;
-    try {
-      const stored = this.storage.getItem('expiring-state');
-      if (stored) {
-        const state = new ExpiringStoreState();
-        Object.assign(state, stored);
-
-        // Check expiration if present
-        if (state.expires) {
-          const expiresAt =
-            typeof state.expires === 'number'
-              ? state.expires
-              : state.expires.getTime();
-          if (Date.now() > expiresAt) {
-            // State expired, remove from storage
-            this.storage.removeItem('expiring-state');
-            return null;
-          }
-        }
-
-        this.emit(state, { persist: false });
-        return state;
-      }
-    } catch {
-      return null;
-    }
-    return null;
-  }
-
-  persist(state?: ExpiringStoreState): void {
-    if (!this.storage) return;
-    const stateToPersist = state ?? this.state;
-    this.storage.setItem('expiring-state', stateToPersist);
+    const snapshot = state ?? this.current;
+    this.storage.setItem(this.storageKey, snapshot);
   }
 }
 ```
@@ -151,26 +146,16 @@ class ExpiringStore extends PersistentStore<ExpiringStoreState, string> {
 
 #### `new PersistentStore` (Constructor)
 
-**Type:** `(stateFactory: Object, storage: null \| StorageInterface<Key, T, Opt>, initRestore: boolean) => PersistentStore<T, Key, Opt>`
+**Type:** `(storage: null \| StorageInterface<Key, T, Opt>, initRestore: boolean) => PersistentStore<T, Key, Opt>`
 
 #### Parameters
 
-| Name                                                                                  | Type                                    | Optional | Default | Since | Deprecated | Description                                                                         |
-| ------------------------------------------------------------------------------------- | --------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------- |
-| `stateFactory`                                                                        | `Object`                                | ❌       | -       | -     | -          | Factory function that creates a new instance of state type `T`                      |
-| Used to initialize the store state and reset state to defaults                        |
-| `storage`                                                                             | `null \| StorageInterface<Key, T, Opt>` | ✅       | `null`  | -     | -          | Storage implementation for persisting state, or `null` if persistence is not needed |
-| When `null`, `restore()` and `persist()` methods will not perform any operations      |
-| `initRestore`                                                                         | `boolean`                               | ✅       | `false` | -     | -          | Whether to automatically restore state from storage during construction             |
-| Set to `true` only if subclass fields are not needed for restore() (e.g., storageKey) |
-
----
-
-#### `stateFactory` (Property)
-
-**Type:** `Object`
-
-() => T, factory function to create the initial state
+| Name                                                                                        | Type                                    | Optional | Default | Since | Deprecated | Description                                                                         |
+| ------------------------------------------------------------------------------------------- | --------------------------------------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------------------------------------- |
+| `storage`                                                                                   | `null \| StorageInterface<Key, T, Opt>` | ✅       | `null`  | -     | -          | Storage implementation for persisting state, or `null` if persistence is not needed |
+| When `null`, `restore()` / `persist()` typically no-op (depending on subclass)              |
+| `initRestore`                                                                               | `boolean`                               | ✅       | `false` | -     | -          | Whether to automatically restore state from storage during construction             |
+| Set to `true` only if `restore()` does not read subclass fields initialized after `super()` |
 
 ---
 
@@ -187,77 +172,9 @@ When
 `null`
 ,
 `restore()`
-and
+/
 `persist()`
-methods will not perform any operations
-
----
-
-#### `state` (Accessor)
-
-**Type:** `accessor state`
-
----
-
-#### `clear` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `clear` (CallSignature)
-
-**Type:** `void`
-
-Clear all observers
-
-This method removes all registered listeners and their last selected values.
-It is useful when the component is unloaded or needs to reset the observer state.
-
-**Example:**
-
-```typescript
-// Register some observers
-observer.observe((state) => console.log(state));
-
-// Remove all observers
-observer.clear();
-
-// Now notifications will not trigger any listeners
-observer.notify({ count: 3 });
-```
-
----
-
-#### `cloneState` (Method)
-
-**Type:** `(source: Partial<T>) => T`
-
-#### Parameters
-
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<T>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
-
----
-
-##### `cloneState` (CallSignature)
-
-**Type:** `T`
-
-**Since:** `1.3.1`
-
-Clone the state of the store
-
-**Returns:**
-
-T - the new cloned state
-
-#### Parameters
-
-| Name     | Type         | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ------------ | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<T>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
+typically no-op (depending on subclass)
 
 ---
 
@@ -286,16 +203,18 @@ T - the new cloned state
 
 Emit state changes and automatically sync to storage
 
-Overrides the base
-`emit()`
-method to add automatic persistence functionality.
+Applies a new snapshot then optionally persists it.
 When state is emitted, it is automatically persisted to storage (if configured)
 unless explicitly disabled via options.
 
 Behavior:
 
-- Emits state change to all observers (via parent
-  `emit()`
+- Dispatches through subclass
+  `update()`
+  (e.g.
+  AsyncStore
+  → inner
+  StoreInterface
   )
 - Automatically persists state to storage if
   `persist`
@@ -425,106 +344,6 @@ if (storage) {
 
 ---
 
-#### `notify` (Method)
-
-**Type:** `(value: T, lastValue: T) => void`
-
-#### Parameters
-
-| Name        | Type | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `T`  | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `T`  | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-##### `notify` (CallSignature)
-
-**Type:** `void`
-
-Notify all observers that the state has changed
-
-This method will iterate through all registered observers and call their listeners.
-If an observer has a selector, it will only notify when the selected state part changes.
-
-**Example:**
-
-```typescript
-// Notify observers that the state has changed
-observer.notify({ count: 2, name: 'New name' });
-
-// Provide the previous state for comparison
-const oldState = { count: 1, name: 'Old name' };
-const newState = { count: 2, name: 'New name' };
-observer.notify(newState, oldState);
-```
-
-#### Parameters
-
-| Name        | Type | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `T`  | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `T`  | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-#### `observe` (Method)
-
-**Type:** `(selectorOrListener: Selector<T, K> \| Listener<T>, listener: Listener<K>) => Object`
-
-#### Parameters
-
-| Name                 | Type                            | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<T, K> \| Listener<T>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                   | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
-##### `observe` (CallSignature)
-
-**Type:** `Object`
-
-Register an observer to listen for state changes
-
-This method supports two calling methods:
-
-1. Provide a listener that listens to the entire state
-2. Provide a selector and a listener that listens to the selected part
-
-**Returns:**
-
-The function to unsubscribe, calling it removes the registered observer
-
-**Example:** Listen to the entire state
-
-```typescript
-const unsubscribe = observer.observe((state) => {
-  console.log('Full state:', state);
-});
-
-// Unsubscribe
-unsubscribe();
-```
-
-**Example:** Listen to a specific part of the state
-
-```typescript
-const unsubscribe = observer.observe(
-  (state) => state.user,
-  (user) => console.log('User information changed:', user)
-);
-```
-
-#### Parameters
-
-| Name                 | Type                            | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | ------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<T, K> \| Listener<T>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                   | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
 #### `persist` (Method)
 
 **Type:** `(state: S) => void`
@@ -536,15 +355,13 @@ const unsubscribe = observer.observe(
 | `state` | `S`  | ✅       | -       | -     | -          | Optional state to persist |
 
 - If provided: Persist the specified state object
-- If `undefined`: Persist the current store state (`this.state`) |
+- If `undefined`: Persist the current snapshot your subclass holds (the base class has no `this.state`) |
 
 ---
 
 ##### `persist` (CallSignature)
 
 **Type:** `void`
-
-**Default:** `this.state`
 
 Persist current state to storage
 
@@ -614,7 +431,7 @@ May throw errors if storage operations fail, including:
 ```typescript
 persist(state?: MyStoreState): void {
   if (!this.storage) return;
-  const stateToPersist = state ?? this.state;
+  const stateToPersist = state ?? this.current;
   this.storage.setItem('my-state', stateToPersist);
 }
 ```
@@ -626,7 +443,7 @@ private readonly storageKey = 'my-app-state';
 
 persist(state?: MyStoreState): void {
   if (!this.storage) return;
-  const stateToPersist = state ?? this.state;
+  const stateToPersist = state ?? this.current;
   this.storage.setItem(this.storageKey, stateToPersist);
 }
 ```
@@ -636,7 +453,7 @@ persist(state?: MyStoreState): void {
 ```typescript
 persist(state?: MyStoreState): void {
   if (!this.storage) return;
-  const stateToPersist = state ?? this.state;
+  const stateToPersist = state ?? this.current;
   const options: Opt = {
     expires: stateToPersist.expires
       ? (typeof stateToPersist.expires === 'number'
@@ -653,7 +470,7 @@ persist(state?: MyStoreState): void {
 ```typescript
 persist(state?: MyStoreState): void {
   if (!this.storage) return;
-  const stateToPersist = state ?? this.state;
+  const stateToPersist = state ?? this.current;
   // Only persist the data field, not the entire state
   this.storage.setItem('my-state-data', stateToPersist.data);
 }
@@ -678,58 +495,7 @@ store.persist(customState);
 | `state` | `S`  | ✅       | -       | -     | -          | Optional state to persist |
 
 - If provided: Persist the specified state object
-- If `undefined`: Persist the current store state (`this.state`) |
-
----
-
-#### `reset` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `reset` (CallSignature)
-
-**Type:** `void`
-
-**Since:** `1.2.5`
-
-Reset the state to the initial value
-
-This method will use the maker provided in the constructor to create a new state object,
-and then emit it as the current state, triggering a notification to all observers.
-
-Use cases:
-
-- When you need to clear all state
-- When you need to restore to the initial state
-- When the current state is polluted or invalid
-
-**Example:**
-
-```typescript
-const store = new SliceStore(MyStateClass);
-// ... some operations modified the state ...
-store.reset(); // The state is reset to the initial value
-```
-
----
-
-#### `resetState` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `resetState` (CallSignature)⚠️
-
-**Type:** `void`
-
-Reset the state of the store
-
-**Returns:**
-
-void
+- If `undefined`: Persist the current snapshot your subclass holds (the base class has no `this.state`) |
 
 ---
 
@@ -890,45 +656,26 @@ restore(): string | null {
 
 ---
 
-#### `setDefaultState` (Method)
+#### `update` (Method)
 
-**Type:** `(value: T) => this`
+**Type:** `(_state: T \| StoreUpdateValue<T>) => void`
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ---- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `T`  | ❌       | -       | -     | -          | The new state object to set |
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          |             |
 
 ---
 
-##### `setDefaultState` (CallSignature)⚠️
+##### `update` (CallSignature)
 
-**Type:** `this`
-
-Set the default state
-
-Replace the entire state object, but will not trigger the observer notification.
-This method is mainly used for initialization, not recommended for regular state updates.
-
-**Returns:**
-
-The current instance, supporting method chaining
-
-**Example:**
-
-```typescript
-// Not recommended to use
-store.setDefaultState(initialState);
-
-// Recommended alternative
-store.emit(initialState);
-```
+**Type:** `void`
 
 #### Parameters
 
-| Name    | Type | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ---- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `T`  | ❌       | -       | -     | -          | The new state object to set |
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | ----------- |
+| `_state` | `T \| StoreUpdateValue<T>` | ❌       | -       | -     | -          |             |
 
 ---

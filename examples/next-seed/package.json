@@ -1,6 +1,6 @@
 {
   "name": "examples/next-seed",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "cross-env APP_ENV=localhost next dev --port 3100",
@@ -52,6 +52,7 @@
     "node-fetch": "^2.7.0",
     "reflect-metadata": "^0.2.2",
     "uuid": "^13.0.0",
+    "zustand": "^5.0.12",
     "zod": "^4.3.6"
   },
   "devDependencies": {

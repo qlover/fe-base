@@ -1,7 +1,7 @@
 {
   "name": "@qlover/corekit-bridge",
   "description": "fe-corekit Abstraction tool bridge for real development environments",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "private": false,
   "type": "module",
   "sideEffects": false,
@@ -150,16 +150,21 @@
     "vite": "^5.4.10"
   },
   "peerDependencies": {
-    "reflect-metadata": ">=0.1.0"
+    "reflect-metadata": ">=0.1.0",
+    "zustand": ">=5.0.12"
   },
   "peerDependenciesMeta": {
     "reflect-metadata": {
+      "optional": true
+    },
+    "zustand": {
       "optional": true
     }
   },
   "devDependencies": {
     "@qlover/env-loader": "workspace:*",
     "@types/js-cookie": "^3.0.6",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zustand": "^5.0.12"
   }
 }

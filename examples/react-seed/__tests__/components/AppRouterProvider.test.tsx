@@ -23,14 +23,20 @@ const {
   ];
   const createBrowserRouter = vi.fn(() => ({}));
   const RouterProvider = () => <div data-testid="router-provider">Router</div>;
+  const routeServiceMock = {
+    getStore: () => ({
+      getState: () => ({ result: storeRoutes })
+    }),
+    getUIStore: () => ({
+      subscribe: vi.fn(() => () => {}),
+      getState: () => ({ result: storeRoutes })
+    }),
+    getRoutes: () => routes
+  };
   const useIOC = vi.fn((id: unknown) =>
     id === 'Logger'
       ? { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
-      : {
-          getStore: () => ({
-            getState: () => ({ result: storeRoutes })
-          })
-        }
+      : routeServiceMock
   );
   const useStore = vi.fn(
     (
@@ -85,7 +91,12 @@ describe('AppRouterProvider', () => {
               get state() {
                 return this.getState();
               }
-            })
+            }),
+            getUIStore: () => ({
+              subscribe: vi.fn(() => () => {}),
+              getState: () => ({ result: mockRoutesForStore })
+            }),
+            getRoutes: () => mockBaseRoutes
           }
     );
     mockUseStore.mockImplementation(

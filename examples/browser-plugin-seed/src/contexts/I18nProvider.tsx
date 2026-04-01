@@ -7,7 +7,7 @@ import type { I18nContextValue } from './i18nContext';
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const i18nService = useIOC(I.I18nService);
-  const locale = useStore(i18nService, (s) => s.locale);
+  const locale = useStore(i18nService.store, (s) => s.locale);
 
   const value = useMemo<I18nContextValue>(
     () => ({

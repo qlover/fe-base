@@ -1,8 +1,10 @@
 import {
   type MessageInterface,
-  MessagesStoreInterface,
+  type MessagesStoreInterface,
   type MessagesStateInterface
 } from '../interface/MessagesStoreInterface';
+import { SliceStoreAdapter, type StoreInterface } from '../../store-state';
+import { clone } from '../../store-state/clone';
 
 /**
  * Message status constants
@@ -56,6 +58,16 @@ export const MessageStatus = Object.freeze({
  */
 export type MessageStatusType =
   (typeof MessageStatus)[keyof typeof MessageStatus];
+
+/**
+ * How {@link MessagesStore} obtains its {@link StoreInterface} member
+ *
+ * - Pass a state factory: a {@link SliceStoreAdapter} is created internally (default).
+ * - Pass `{ store }` to use a custom {@link StoreInterface} (e.g. zustand adapter).
+ */
+export type MessagesStoreInit<
+  State extends MessagesStateInterface<MessageInterface<unknown>>
+> = (() => State) | { store: StoreInterface<State> };
 
 /**
  * Message store message interface
@@ -136,6 +148,13 @@ export interface MessageStoreMsg<T, R = unknown> extends MessageInterface<R> {
  * // ... process stream chunks
  * store.stopStreaming();
  * ```
+ *
+ * @example Custom {@link StoreInterface} (shared subscription chain)
+ * ```typescript
+ * const adapter = new SliceStoreAdapter(() => ({ messages: [] as MyMsg[] }));
+ * const store = new MessagesStore({ store: adapter });
+ * adapter.subscribe((s) => console.log(s.messages.length));
+ * ```
  */
 export class MessagesStore<
   MessageType extends MessageStoreMsg<unknown, unknown> = MessageStoreMsg<
@@ -144,9 +163,55 @@ export class MessagesStore<
   >,
   State extends MessagesStateInterface<MessageType> =
     MessagesStateInterface<MessageType>
-> extends MessagesStoreInterface<MessageType, State> {
+> implements MessagesStoreInterface<MessageType, State> {
+  public readonly store: StoreInterface<State>;
+
+  constructor(init: MessagesStoreInit<State>) {
+    this.store =
+      typeof init === 'function' ? new SliceStoreAdapter(init) : init.store;
+  }
+
+  /**
+   * Current snapshot (delegates to {@link MessagesStore.store})
+   */
+  public get state(): State {
+    return this.store.getState();
+  }
+
+  /**
+   * Push a state patch into {@link MessagesStore.store}
+   *
+   * - Callers pass **only the patch** (`Partial<State>`), not a pre-merged snapshot.
+   * - This method runs {@link MessagesStore.cloneState} once, then {@link StoreInterface.update},
+   *   so we avoid double `cloneState` at every call site and keep merge semantics in one place.
+   * - The adapter may still shallow-merge / emit internally; the important part is a single
+   *   “current + patch” step on this class.
+   */
+  protected emit(patch: Partial<State>): void {
+    this.store.update(this.cloneState(patch));
+  }
+
+  /**
+   * Shallow-clone current state and apply a patch (aligned with {@link SliceStoreAdapter.update})
+   */
+  protected cloneState(patch: Partial<State> = {} as Partial<State>): State {
+    const current = this.state;
+    if (
+      current === null ||
+      current === undefined ||
+      typeof current !== 'object'
+    ) {
+      return current;
+    }
+    const next = clone(current);
+    Object.assign(next as object, patch as object);
+    return next;
+  }
+
   /**
    * Merge message objects while preserving prototype chain
+   *
+   * @override
    *
    * **Important:** This method preserves the prototype chain for class instances,
    * ensuring that methods and instanceof checks continue to work after merging.
@@ -179,7 +244,7 @@ export class MessagesStore<
    * // Plain object merge
    * ```
    */
-  public override mergeMessage<T extends MessageStoreMsg<unknown, unknown>>(
+  public mergeMessage<T extends MessageType>(
     target: T,
     ...updates: Partial<T>[]
   ): T {
@@ -197,9 +262,11 @@ export class MessagesStore<
   /**
    * Get all messages from the store
    *
+   * @override
+   *
    * @returns Array of all messages in the store
    */
-  public override getMessages(): MessageType[] {
+  public getMessages(): MessageType[] {
     return this.state.messages ?? [];
   }
 
@@ -225,6 +292,8 @@ export class MessagesStore<
   /**
    * Create a new message instance with defaults
    *
+   * @override
+   *
    * Constructs a complete message object from partial data, applying
    * default values for required fields like ID, status, and timestamps.
    *
@@ -241,9 +310,7 @@ export class MessagesStore<
    * // Full message with generated ID, status=DRAFT, etc.
    * ```
    */
-  public override createMessage<T extends MessageType>(
-    message: Partial<T> = {}
-  ): T {
+  public createMessage<T extends MessageType>(message: Partial<T> = {}): T {
     const startTime = message.startTime ?? Date.now();
     const id = message.id ?? this.defaultId(message);
     const status = message.status ?? MessageStatus.DRAFT;
@@ -264,15 +331,19 @@ export class MessagesStore<
   /**
    * Get a message by its unique identifier
    *
+   * @override
+   *
    * @param id - Unique identifier of the message
    * @returns Message object or `undefined` if not found
    */
-  public override getMessageById(id: string): MessageType | undefined {
+  public getMessageById(id: string): MessageType | undefined {
     return this.getMessages().find((message) => message.id === id);
   }
 
   /**
    * Add a new message to the store
+   *
+   * @override
    *
    * If the message has an ID and already exists in the store, updates the
    * existing message instead of adding a duplicate. Otherwise creates and
@@ -298,7 +369,7 @@ export class MessagesStore<
    * });
    * ```
    */
-  public override addMessage<M extends MessageType>(message: Partial<M>): M {
+  public addMessage<M extends MessageType>(message: Partial<M>): M {
     // If the message has an id, update the message instead of adding it
     if (message.id) {
       const existingMessage = this.getMessageById(message.id) as M;
@@ -311,17 +382,15 @@ export class MessagesStore<
     const finalMessage = this.createMessage(message);
     const newMessages = [...this.getMessages(), finalMessage];
 
-    this.emit(
-      this.cloneState({
-        messages: newMessages
-      } as Partial<State>)
-    );
+    this.emit({ messages: newMessages } as Partial<State>);
 
     return finalMessage;
   }
 
   /**
    * Update an existing message in the store
+   *
+   * @override
    *
    * Applies multiple partial updates to a message identified by ID.
    * Uses a single traversal to find and update the message efficiently.
@@ -341,7 +410,7 @@ export class MessagesStore<
    * });
    * ```
    */
-  public override updateMessage<M extends MessageType>(
+  public updateMessage<M extends MessageType>(
     id: string,
     ...updates: Partial<M>[]
   ): M | undefined {
@@ -362,13 +431,15 @@ export class MessagesStore<
       return;
     }
 
-    this.emit(this.cloneState({ messages: newMessages } as Partial<State>));
+    this.emit({ messages: newMessages } as Partial<State>);
 
     return updatedMessage;
   }
 
   /**
    * Delete a message from the store
+   *
+   * @override
    *
    * Permanently removes a message from the store by its ID using a single
    * traversal with filter. Does nothing if the message doesn't exist.
@@ -380,7 +451,7 @@ export class MessagesStore<
    * store.deleteMessage('msg-123');
    * ```
    */
-  public override deleteMessage(id: string): void {
+  public deleteMessage(id: string): void {
     const messages = this.getMessages();
     // Use filter for single traversal deletion
     const newMessages = messages.filter((message) => message.id !== id);
@@ -390,11 +461,13 @@ export class MessagesStore<
       return;
     }
 
-    this.emit(this.cloneState({ messages: newMessages } as Partial<State>));
+    this.emit({ messages: newMessages } as Partial<State>);
   }
 
   /**
    * Type guard to check if an unknown value is a message
+   *
+   * @override
    *
    * Validates whether an unknown value is a non-null object,
    * which is the basic requirement for message objects.
@@ -412,34 +485,38 @@ export class MessagesStore<
    * }
    * ```
    */
-  public override isMessage<T extends MessageType>(
-    message: unknown
-  ): message is T {
+  public isMessage<T extends MessageType>(message: unknown): message is T {
     return typeof message === 'object' && message !== null;
   }
 
   /**
    * Get the index position of a message in the store
    *
+   * @override
+   *
    * @param id - Unique identifier of the message
    * @returns Zero-based index of the message, or `-1` if not found
    */
-  public override getMessageIndex(id: string): number {
+  public getMessageIndex(id: string): number {
     return this.getMessages().findIndex((message) => message.id === id);
   }
 
   /**
    * Get a message by its index position
    *
+   * @override
+   *
    * @param index - Zero-based index position
    * @returns Message at the index or `undefined` if out of bounds
    */
-  public override getMessageByIndex(index: number): MessageType | undefined {
+  public getMessageByIndex(index: number): MessageType | undefined {
     return this.getMessages().at(index);
   }
 
   /**
    * Replace all messages in the store
+   *
+   * @override
    *
    * Clears the current message list and replaces it with the provided
    * messages. Each message is processed through `createMessage` to ensure
@@ -452,16 +529,16 @@ export class MessagesStore<
    * store.resetMessages([message1, message2, message3]);
    * ```
    */
-  public override resetMessages(messages: MessageType[]): void {
-    this.emit(
-      this.cloneState({
-        messages: messages.map((message) => this.createMessage(message))
-      } as Partial<State>)
-    );
+  public resetMessages(messages: MessageType[]): void {
+    this.emit({
+      messages: messages.map((message) => this.createMessage(message))
+    } as Partial<State>);
   }
 
   /**
    * Convert all messages to JSON-serializable format
+   *
+   * @override
    *
    * Serializes all messages in the store to plain JavaScript objects
    * by parsing and stringifying. This removes methods and prototypes.
@@ -474,27 +551,31 @@ export class MessagesStore<
    * localStorage.setItem('messages', JSON.stringify(jsonData));
    * ```
    */
-  public override toJson(): Record<string, unknown>[] {
+  public toJson(): Record<string, unknown>[] {
     return JSON.parse(JSON.stringify(this.getMessages()));
   }
 
   /**
    * Start streaming mode
    *
+   * @override
+   *
    * Sets the store state to indicate that streaming is active.
    * Emits state change for reactive UI updates.
    */
-  public override startStreaming(): void {
-    this.emit(this.cloneState({ streaming: true } as Partial<State>));
+  public startStreaming(): void {
+    this.emit({ streaming: true } as Partial<State>);
   }
 
   /**
    * Stop streaming mode
    *
+   * @override
+   *
    * Sets the store state to indicate that streaming has ended.
    * Emits state change for reactive UI updates.
    */
-  public override stopStreaming(): void {
-    this.emit(this.cloneState({ streaming: false } as Partial<State>));
+  public stopStreaming(): void {
+    this.emit({ streaming: false } as Partial<State>);
   }
 }

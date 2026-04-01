@@ -255,10 +255,9 @@ if (store.getStatus() === 'success') {
 
 ```typescript
 const store = new UserServiceStore<TokenCredential, User>({});
-const underlyingStore = store.getStore();
+const port = store.getStore();
 
-// Subscribe to state changes
-underlyingStore.observe((state) => {
+port.subscribe((state) => {
   if (state.loading) {
     console.log('Authentication in progress...');
   } else if (state.status === 'success') {
@@ -266,6 +265,45 @@ underlyingStore.observe((state) => {
   }
 });
 ```
+
+---
+
+#### `emit` (Method)
+
+**Type:** `(state: UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>, options: Object) => void`
+
+#### Parameters
+
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                  |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                              |
+
+---
+
+##### `emit` (CallSignature)
+
+**Type:** `void`
+
+Apply a state patch and optionally persist (see
+PersistentStore.emit
+)
+
+**Example:**
+
+```typescript
+asyncStore.emit({ loading: true });
+asyncStore.emit({ result: data, endTime: Date.now() }, { persist: false });
+```
+
+#### Parameters
+
+| Name              | Type                                                                                    | Optional | Default | Since | Deprecated | Description                                                  |
+| ----------------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------------ |
+| `state`           | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          | Patch or full snapshot (StoreUpdateValue)                    |
+| `options`         | `Object`                                                                                | ✅       | -       | -     | -          | Pass `{ persist: false }` during restore to avoid write-back |
+| `options.persist` | `boolean`                                                                               | ✅       | -       | -     | -          |                                                              |
 
 ---
 
@@ -664,8 +702,8 @@ The store instance for reactive state access and subscriptions
 **Example:** Subscribe to state changes
 
 ```typescript
-const store = userServiceStore.getStore();
-store.observe((state) => {
+const port = userServiceStore.getStore();
+port.subscribe((state) => {
   console.log('State changed:', state);
 });
 ```
@@ -1184,69 +1222,5 @@ store.success(userInfo);
 
 If provided, credential is set and persisted atomically with user info
 If string is provided, it will be stored as-is (for simple token scenarios) |
-
----
-
-#### `updateState` (Method)
-
-**Type:** `(state: Partial<S>) => void`
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
-
----
-
-##### `updateState` (CallSignature)
-
-**Type:** `void`
-
-Update store state with partial state object
-
-Merges the provided partial state into the current state. This allows
-fine-grained control over state updates without replacing the entire state.
-
-Behavior:
-
-- Merges provided properties into current state
-- Only updates specified properties, others remain unchanged
-- Type-safe: Only accepts properties that exist in the state interface
-
-**Example:** Update loading state only
-
-```typescript
-asyncService.updateState({ loading: true });
-```
-
-**Example:** Update multiple properties
-
-```typescript
-asyncService.updateState({
-  loading: false,
-  result: data,
-  endTime: Date.now()
-});
-```
-
-**Example:** Update with custom state type
-
-```typescript
-interface CustomState extends AsyncStateInterface<User> {
-  customField: string;
-}
-asyncService.updateState<CustomState>({
-  customField: 'value'
-});
-```
-
-#### Parameters
-
-| Name                                                               | Type         | Optional | Default | Since | Deprecated | Description                                          |
-| ------------------------------------------------------------------ | ------------ | -------- | ------- | ----- | ---------- | ---------------------------------------------------- |
-| `state`                                                            | `Partial<S>` | ❌       | -       | -     | -          | Partial state object containing properties to update |
-| Only specified properties will be updated, others remain unchanged |
 
 ---

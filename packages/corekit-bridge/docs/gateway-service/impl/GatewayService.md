@@ -322,8 +322,9 @@ console.log('Current state:', state);
 **Example:** Subscribe to state changes
 
 ```typescript
-const store = service.getStore();
-store.observe((state) => {
+const asyncStore = service.getStore();
+const port = asyncStore.getStore();
+port.subscribe((state) => {
   console.log('State changed:', state);
 });
 ```
@@ -357,8 +358,22 @@ Core features:
 
 Design decisions:
 
-- Extends AsyncStoreOptions: Inherits store configuration options
-- Flexible store configuration: Can accept store instance or store options
+- Builds on
+  `AsyncStoreOptions`
+  but **omits**
+  `store`
+  and redeclares it as
+  AsyncStoreInterface
+
+  (gateway services inject an async facade, not a bare
+  StoreInterface
+  )
+
+- Other async options (
+  `storage`
+  ,
+  `defaultState`
+  , …) are unchanged
 
 **Example:** Basic usage with store instance
 
@@ -483,10 +498,18 @@ is provided.
 
 **Type:** `AsyncStoreInterface<AsyncStoreStateInterface<T>>`
 
-Store instance for state management
+Async store instance for state management
 
-The async store that manages service state (loading, success, error).
-Optional - services can work without store (though uncommon).
+Narrower than
+AsyncStoreOptions.store
+(
+`StoreInterface`
+): gateway services
+accept a full
+AsyncStoreInterface
+implementation (e.g.
+AsyncStore
+).
 
 ---
 

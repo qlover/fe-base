@@ -1,10 +1,11 @@
-import { StoreInterface } from '@qlover/corekit-bridge';
+import { SliceStoreAdapter } from '@qlover/corekit-bridge';
 import Taro from '@tarojs/taro';
 import enJSON from '@/assets/locales/en.json';
 import zhJSON from '@/assets/locales/zh.json';
 import { i18nConfig, I18nLocaleMap } from '@/config/i18n';
 import type { LocaleType } from '@/config/i18n';
 import type { I18nInterface } from '@interfaces/I18nInterface';
+import type { StoreInterface } from '@qlover/corekit-bridge';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -61,17 +62,47 @@ export function computeInitialLocaleState(
 }
 
 export class I18nService
-  extends StoreInterface<I18nStoreStateInterface>
-  implements I18nInterface<LocaleType>
+  implements I18nInterface<LocaleType>, StoreInterface<I18nStoreStateInterface>
 {
+  public store: StoreInterface<I18nStoreStateInterface>;
+
   constructor(
     protected logger: LoggerInterface,
     protected storage: StorageInterface<string, string>
   ) {
     const state = computeInitialLocaleState(storage);
-    super(() => state);
+    this.store = new SliceStoreAdapter(() => state);
 
     logger.log('I18nService resolved locale:', state.locale);
+  }
+  /**
+   * @override
+   */
+  public reset(): void {
+    this.store.reset();
+  }
+  /**
+   * @override
+   */
+  public update(value: unknown): void {
+    this.store.update(value as I18nStoreStateInterface);
+  }
+  /**
+   * @override
+   */
+  public getState(): I18nStoreStateInterface {
+    return this.store.getState();
+  }
+  /**
+   * @override
+   */
+  public subscribe(
+    listener: (
+      state: I18nStoreStateInterface,
+      prevState: I18nStoreStateInterface
+    ) => void
+  ): () => void {
+    return this.store.subscribe(listener);
   }
 
   /**
@@ -81,7 +112,7 @@ export class I18nService
 
   /** @override */
   public t(key: string, options?: Record<string, unknown>): string {
-    const locale = this.state.locale;
+    const locale = this.getState().locale;
     const messages = resources[locale] ?? resources[i18nConfig.defaultLocale];
     let text = messages[key];
     if (text === undefined) {
@@ -97,7 +128,7 @@ export class I18nService
   /** @override */
   public changeLocale(locale: LocaleType): Promise<void> {
     if (!this.isLocale(locale)) return Promise.resolve();
-    this.emit(this.cloneState({ locale }));
+    this.update({ locale });
     try {
       this.storage.setItem(STORAGE_KEY, locale);
     } catch (e) {
@@ -108,7 +139,7 @@ export class I18nService
 
   /** @override */
   public getLocale(): LocaleType {
-    return this.state.locale;
+    return this.getState().locale;
   }
 
   /** @override */

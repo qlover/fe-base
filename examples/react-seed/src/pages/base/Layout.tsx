@@ -6,7 +6,7 @@ import { RouteService } from '@/impls/RouteService';
 
 export default function BaseLayout() {
   const routeService = useIOC(RouteService);
-  const loading = useStore(routeService.getStore(), (s) => s.loading);
+  const loading = useStore(routeService.getUIStore(), (s) => s.loading);
 
   // 拦截一下路由渲染
   if (loading) {

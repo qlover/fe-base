@@ -298,7 +298,7 @@ export type UserServiceConfig<User, Credential> = Omit<
  *       // Validate credential (e.g., check expiration)
  *       if (this.isCredentialValid(credential)) {
  *         // Credential is valid, set status to SUCCESS
- *         this.getStore().updateState({
+ *         this.getStore().emit({
  *           status: AsyncStoreStatus.SUCCESS,
  *           loading: false,
  *           error: null,
@@ -336,7 +336,7 @@ export type UserServiceConfig<User, Credential> = Omit<
  *       // Validate with server
  *       const isValid = await this.getGateway()?.validateCredential?.(credential);
  *       if (isValid) {
- *         this.getStore().updateState({
+ *         this.getStore().emit({
  *           status: AsyncStoreStatus.SUCCESS,
  *           loading: false,
  *           error: null,
@@ -348,7 +348,7 @@ export type UserServiceConfig<User, Credential> = Omit<
  *       }
  *     } catch (error) {
  *       // Validation failed, keep status as DRAFT
- *       this.getStore().updateState({ error });
+ *       this.getStore().emit({ error });
  *     }
  *   }
  * }
@@ -363,7 +363,7 @@ export type UserServiceConfig<User, Credential> = Omit<
  *     // If credential exists after restore, treat as authenticated
  *     const credential = this.getStore().getCredential();
  *     if (credential) {
- *       this.getStore().updateState({
+ *       this.getStore().emit({
  *         status: AsyncStoreStatus.SUCCESS,
  *         loading: false,
  *         error: null,

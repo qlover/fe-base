@@ -1,8 +1,10 @@
 import {
-  StoreInterface,
+  SliceStoreAdapter,
+  type StoreInterface,
   type StoreStateInterface,
   type AsyncStateInterface
 } from '../store-state';
+import { clone } from '../store-state/clone';
 
 /**
  * Interface defining resource query parameters
@@ -79,6 +81,16 @@ export interface ResourceStateInterface extends StoreStateInterface {
 }
 
 /**
+ * How {@link ResourceStore} obtains its {@link StoreInterface} port
+ *
+ * - Pass a state factory: a {@link SliceStoreAdapter} is created internally (default path).
+ * - Pass `{ stateStore }` to inject a custom {@link StoreInterface}.
+ */
+export type ResourceStoreInit<S extends ResourceStateInterface> =
+  | (() => S)
+  | { stateStore: StoreInterface<S> };
+
+/**
  * Store class for managing resource state
  *
  * Provides methods for:
@@ -86,23 +98,64 @@ export interface ResourceStateInterface extends StoreStateInterface {
  * - Managing search parameters
  * - Tracking initialization state
  *
- * Uses immutable state updates through cloning
+ * Uses immutable state updates through cloning (see {@link ResourceStore.emit}).
  *
  * @template S Resource state type extending ResourceStateInterface
  *
  * @example Basic usage
  * ```typescript
- * interface UserState extends ResourceStateInterface {
- *   // Additional state properties
- * }
+ * interface UserState extends ResourceStateInterface {}
  *
- * const store = new ResourceStore<UserState>();
+ * const store = new ResourceStore<UserState>(() => ({
+ *   searchParams: { page: 1, pageSize: 20 },
+ *   initState: { loading: false, result: null, error: null },
+ *   listState: { loading: false, result: null, error: null }
+ * }));
  * store.changeSearchParams({ page: 1, pageSize: 20 });
  * ```
  */
-export class ResourceStore<
-  S extends ResourceStateInterface
-> extends StoreInterface<S> {
+export class ResourceStore<S extends ResourceStateInterface> {
+  /**
+   * Backing {@link StoreInterface} for `reset` / `update` / `getState` / `subscribe`
+   *
+   * Named `stateStore` to avoid confusion with {@link ResourceServiceInterface.store},
+   * which refers to this {@link ResourceStore} instance.
+   */
+  public readonly stateStore: StoreInterface<S>;
+
+  constructor(init: ResourceStoreInit<S>) {
+    this.stateStore =
+      typeof init === 'function' ? new SliceStoreAdapter(init) : init.stateStore;
+  }
+
+  public get state(): S {
+    return this.stateStore.getState();
+  }
+
+  /**
+   * Shallow-clone current state and apply a patch (aligned with {@link SliceStoreAdapter.update})
+   */
+  protected cloneState(patch: Partial<S> = {} as Partial<S>): S {
+    const current = this.state;
+    if (
+      current === null ||
+      current === undefined ||
+      typeof current !== 'object'
+    ) {
+      return current;
+    }
+    const next = clone(current);
+    Object.assign(next as object, patch as object);
+    return next;
+  }
+
+  /**
+   * Single merge point: patch → cloneState → {@link StoreInterface.update}
+   */
+  protected emit(patch: Partial<S>): void {
+    this.stateStore.update(this.cloneState(patch));
+  }
+
   /**
    * Updates the list loading state
    *
@@ -114,11 +167,9 @@ export class ResourceStore<
    * @param state - New list state
    */
   public changeListState(state: AsyncStateInterface<unknown>): void {
-    this.emit(
-      this.cloneState({
-        listState: state
-      } as Partial<S>)
-    );
+    this.emit({
+      listState: state
+    } as Partial<S>);
   }
 
   /**
@@ -132,11 +183,9 @@ export class ResourceStore<
    * @param params - New search parameters
    */
   public changeSearchParams(params: Partial<ResourceQuery>): void {
-    this.emit(
-      this.cloneState({
-        searchParams: params
-      } as Partial<S>)
-    );
+    this.emit({
+      searchParams: params
+    } as Partial<S>);
   }
 
   /**
@@ -150,10 +199,8 @@ export class ResourceStore<
    * @param state - New initialization state
    */
   public changeInitState(state: AsyncStateInterface<unknown>): void {
-    this.emit(
-      this.cloneState({
-        initState: state
-      } as Partial<S>)
-    );
+    this.emit({
+      initState: state
+    } as Partial<S>);
   }
 }

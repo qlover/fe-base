@@ -13,7 +13,7 @@ export function AppRouterProvider(props: { pages: ComponentMap }) {
 
   const routeService = useIOC(RouteService);
   const logger = useIOC('Logger');
-  const routes = useStore(routeService.getStore(), (s) => s.result ?? []);
+  const routes = useStore(routeService.getUIStore(), (s) => s.result ?? []);
 
   const routerLoader = useMemo(
     () =>

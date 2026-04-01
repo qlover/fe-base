@@ -357,7 +357,7 @@ describe('UserService', () => {
         expect(service.isAuthenticated()).toBe(false);
 
         // Developer manually sets status to SUCCESS after validation
-        service.getStore().updateState({
+        service.getStore().emit({
           status: AsyncStoreStatus.SUCCESS,
           loading: false,
           error: null,
@@ -487,7 +487,7 @@ describe('UserService', () => {
           expect(service.isAuthenticated()).toBe(false);
 
           // Set status to SUCCESS manually
-          service.getStore().updateState({
+          service.getStore().emit({
             status: AsyncStoreStatus.SUCCESS,
             loading: false,
             error: null,
@@ -520,7 +520,7 @@ describe('UserService', () => {
                 // Validate credential (e.g., check expiration)
                 if (this.isCredentialValid(credential)) {
                   // Credential is valid, set status to SUCCESS
-                  this.getStore().updateState({
+                  this.getStore().emit({
                     status: AsyncStoreStatus.SUCCESS,
                     loading: false,
                     error: null,
@@ -578,7 +578,7 @@ describe('UserService', () => {
                   this.getStore().setCredential(null);
                 } else {
                   // Valid, set status to SUCCESS
-                  this.getStore().updateState({
+                  this.getStore().emit({
                     status: AsyncStoreStatus.SUCCESS,
                     loading: false,
                     error: null,

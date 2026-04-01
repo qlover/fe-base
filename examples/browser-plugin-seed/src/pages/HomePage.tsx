@@ -14,10 +14,11 @@ export default function HomePage() {
   const tt = useI18nMapping(pageHomeI18n);
   const { navigate } = useRouter();
   const userService = useIOC(I.UserService);
-  const userState = useStore(userService.getStore());
-  const logined = useStore(userService.getStore(), loginedSelector);
+  const userStore = userService.getUIStore();
+  const userState = useStore(userStore);
+  const logined = useStore(userStore, loginedSelector);
 
-  logger.info('userState', userService, userState);
+  logger.info('userState', userService, userStore);
 
   return (
     <div

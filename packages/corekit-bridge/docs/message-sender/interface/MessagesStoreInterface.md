@@ -4,15 +4,194 @@
 
 ---
 
-### `MessagesStoreInterface` (Class)
+### `MessageInterface` (Interface)
 
-**Type:** `class MessagesStoreInterface<MessageType, State>`
+**Type:** `interface MessageInterface<T>`
 
-Abstract messages store interface for managing message collections
+Base message interface representing a complete message
 
-This abstract class provides a comprehensive interface for message store
-implementations, handling message CRUD operations, state management,
-streaming control, and data serialization.
+This interface defines the core structure of a message in the system,
+extending async state capabilities for handling loading, error, and
+success states during message lifecycle operations.
+
+**Example:**
+
+```typescript
+interface ChatMessage extends MessageInterface<string> {
+  id: string;
+  content: string;
+  sender: string;
+  timestamp: number;
+}
+```
+
+---
+
+#### `endTime` (Property)
+
+**Type:** `number`
+
+Timestamp when the async operation completed
+
+Will be 0 if operation hasn't completed
+Used with startTime to calculate total operation duration
+
+**Example:**
+
+```ts
+`Date.now()`;
+```
+
+---
+
+#### `error` (Property)
+
+**Type:** `unknown`
+
+Error information if the async operation failed
+
+Will be null if:
+
+- Operation hasn't completed
+- Operation completed successfully
+
+---
+
+#### `id` (Property)
+
+**Type:** `string`
+
+Unique message identifier
+
+Optional during message creation, assigned by the server upon successful
+transmission. Used for message tracking, updates, and deletion operations.
+
+**Example:**
+
+```ts
+`"msg-123e4567-e89b-12d3-a456-426614174000"`;
+```
+
+---
+
+#### `loading` (Property)
+
+**Type:** `boolean`
+
+**Default:** `ts
+false
+`
+
+Whether the async operation is currently in progress
+
+---
+
+#### `result` (Property)
+
+**Type:** `null \| T`
+
+The result of the async operation if successful
+
+Will be null if:
+
+- Operation hasn't completed
+- Operation failed
+- Operation completed but returned no data
+
+---
+
+#### `startTime` (Property)
+
+**Type:** `number`
+
+Timestamp when the async operation started
+
+Used for:
+
+- Performance tracking
+- Operation timeout detection
+- Loading time calculations
+
+**Example:**
+
+```ts
+`Date.now()`;
+```
+
+---
+
+#### `status` (Property)
+
+**Type:** `unknown`
+
+Status of the async operation
+
+**Example:**
+
+```ts
+`'pending' | 'success' | 'failed' | 'stopped'`;
+```
+
+---
+
+### `MessagesStateInterface` (Interface)
+
+**Type:** `interface MessagesStateInterface<T>`
+
+Messages state interface for managing message collection state
+
+This interface extends the base store state with message-specific
+state properties, including message history and streaming status.
+
+**Example:**
+
+```typescript
+const state: MessagesStateInterface<ChatMessage> = {
+  messages: [message1, message2],
+  streaming: true
+};
+```
+
+---
+
+#### `messages` (Property)
+
+**Type:** `T[]`
+
+Historical message list
+
+Contains all messages in the store, including sent messages,
+received responses, and system messages. Messages are typically
+ordered chronologically.
+
+---
+
+#### `streaming` (Property)
+
+**Type:** `boolean`
+
+**Default:** `false`
+
+Whether streaming is currently active
+
+Indicates if a message is currently being received in streaming mode.
+Used for UI state management and preventing concurrent operations.
+
+---
+
+### `MessagesStoreInterface` (Interface)
+
+**Type:** `interface MessagesStoreInterface<MessageType, State>`
+
+Messages store contract for managing message collections
+
+State snapshots and subscriptions live on
+MessagesStoreInterface.store
+
+(
+`StoreInterface<State>`
+), not on this interface itself. Message CRUD and
+helpers are defined here.
 
 Core features:
 
@@ -25,14 +204,9 @@ Core features:
 **Example:** Implementation
 
 ```typescript
-class ChatMessageStore extends MessagesStoreInterface<
-  ChatMessage,
-  ChatMessageState
-> {
-  createMessage(message: Partial<ChatMessage>): ChatMessage {
-    return new ChatMessage(message);
-  }
-  // ... implement other abstract methods
+class ChatMessageStore implements ChatMessageStoreInterface<string> {
+  readonly store: StoreInterface<ChatMessageStoreStateInterface<string>>;
+  // construct store (e.g. SliceStoreAdapter) + message methods
 }
 ```
 
@@ -47,35 +221,36 @@ const message = store.addMessage({ content: 'Hello' });
 // Get all messages
 const messages = store.getMessages();
 
+// Reactive state
+store.store.subscribe((state, prev) => { ... });
+
 // Update message
 store.updateMessage(message.id, { content: 'Hello, world!' });
 ```
 
 ---
 
-#### `new MessagesStoreInterface` (Constructor)
+#### `store` (Property)
 
-**Type:** `(stateFactory: Object) => MessagesStoreInterface<MessageType, State>`
+**Type:** `StoreInterface<State>`
 
-#### Parameters
+Backing store for state:
+`reset`
+,
+`update`
+,
+`getState`
+,
+`subscribe`
 
-| Name           | Type     | Optional | Default | Since | Deprecated | Description                                           |
-| -------------- | -------- | -------- | ------- | ----- | ---------- | ----------------------------------------------------- |
-| `stateFactory` | `Object` | ❌       | -       | -     | -          | () => T, factory function to create the initial state |
-
----
-
-#### `stateFactory` (Property)
-
-**Type:** `Object`
-
-() => T, factory function to create the initial state
-
----
-
-#### `state` (Accessor)
-
-**Type:** `accessor state`
+Default
+MessagesStore
+wiring uses
+SliceStoreAdapter
+; callers
+may inject another
+StoreInterface
+implementation.
 
 ---
 
@@ -120,68 +295,6 @@ console.log('Added message:', newMessage.id);
 | Name      | Type         | Optional | Default | Since | Deprecated | Description                   |
 | --------- | ------------ | -------- | ------- | ----- | ---------- | ----------------------------- |
 | `message` | `Partial<M>` | ❌       | -       | -     | -          | Partial message specification |
-
----
-
-#### `clear` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `clear` (CallSignature)
-
-**Type:** `void`
-
-Clear all observers
-
-This method removes all registered listeners and their last selected values.
-It is useful when the component is unloaded or needs to reset the observer state.
-
-**Example:**
-
-```typescript
-// Register some observers
-observer.observe((state) => console.log(state));
-
-// Remove all observers
-observer.clear();
-
-// Now notifications will not trigger any listeners
-observer.notify({ count: 3 });
-```
-
----
-
-#### `cloneState` (Method)
-
-**Type:** `(source: Partial<State>) => State`
-
-#### Parameters
-
-| Name     | Type             | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ---------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<State>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
-
----
-
-##### `cloneState` (CallSignature)
-
-**Type:** `State`
-
-**Since:** `1.3.1`
-
-Clone the state of the store
-
-**Returns:**
-
-T - the new cloned state
-
-#### Parameters
-
-| Name     | Type             | Optional | Default | Since | Deprecated | Description                                             |
-| -------- | ---------------- | -------- | ------- | ----- | ---------- | ------------------------------------------------------- |
-| `source` | `Partial<State>` | ✅       | -       | -     | -          | Partial<T> - properties to override in the cloned state |
 
 ---
 
@@ -267,50 +380,6 @@ console.log(deleted === undefined); // true
 | Name | Type     | Optional | Default | Since | Deprecated | Description                                |
 | ---- | -------- | -------- | ------- | ----- | ---------- | ------------------------------------------ |
 | `id` | `string` | ❌       | -       | -     | -          | Unique identifier of the message to delete |
-
----
-
-#### `emit` (Method)
-
-**Type:** `(state: State) => void`
-
-#### Parameters
-
-| Name    | Type    | Optional | Default | Since | Deprecated | Description          |
-| ------- | ------- | -------- | ------- | ----- | ---------- | -------------------- |
-| `state` | `State` | ❌       | -       | -     | -          | The new state object |
-
----
-
-##### `emit` (CallSignature)
-
-**Type:** `void`
-
-Update the state and notify all observers
-
-This method will replace the current state object and trigger all subscribed observers.
-The observers will receive the new and old state as parameters.
-
-**Example:**
-
-```typescript
-interface UserState {
-  name: string;
-  age: number;
-}
-
-const userStore = new SliceStore<UserState>({
-  name: 'John',
-  age: 20
-});
-userStore.emit({ name: 'Jane', age: 25 });
-```
-
-#### Parameters
-
-| Name    | Type    | Optional | Default | Since | Deprecated | Description          |
-| ------- | ------- | -------- | ------- | ----- | ---------- | -------------------- |
-| `state` | `State` | ❌       | -       | -     | -          | The new state object |
 
 ---
 
@@ -583,139 +652,6 @@ const merged = store.mergeMessage(
 
 ---
 
-#### `notify` (Method)
-
-**Type:** `(value: State, lastValue: State) => void`
-
-#### Parameters
-
-| Name        | Type    | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `State` | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `State` | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-##### `notify` (CallSignature)
-
-**Type:** `void`
-
-Notify all observers that the state has changed
-
-This method will iterate through all registered observers and call their listeners.
-If an observer has a selector, it will only notify when the selected state part changes.
-
-**Example:**
-
-```typescript
-// Notify observers that the state has changed
-observer.notify({ count: 2, name: 'New name' });
-
-// Provide the previous state for comparison
-const oldState = { count: 1, name: 'Old name' };
-const newState = { count: 2, name: 'New name' };
-observer.notify(newState, oldState);
-```
-
-#### Parameters
-
-| Name        | Type    | Optional | Default | Since | Deprecated | Description                                        |
-| ----------- | ------- | -------- | ------- | ----- | ---------- | -------------------------------------------------- |
-| `value`     | `State` | ❌       | -       | -     | -          | The new state value                                |
-| `lastValue` | `State` | ✅       | -       | -     | -          | Optional previous state value, used for comparison |
-
----
-
-#### `observe` (Method)
-
-**Type:** `(selectorOrListener: Selector<State, K> \| Listener<State>, listener: Listener<K>) => Object`
-
-#### Parameters
-
-| Name                 | Type                                    | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | --------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<State, K> \| Listener<State>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                           | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
-##### `observe` (CallSignature)
-
-**Type:** `Object`
-
-Register an observer to listen for state changes
-
-This method supports two calling methods:
-
-1. Provide a listener that listens to the entire state
-2. Provide a selector and a listener that listens to the selected part
-
-**Returns:**
-
-The function to unsubscribe, calling it removes the registered observer
-
-**Example:** Listen to the entire state
-
-```typescript
-const unsubscribe = observer.observe((state) => {
-  console.log('Full state:', state);
-});
-
-// Unsubscribe
-unsubscribe();
-```
-
-**Example:** Listen to a specific part of the state
-
-```typescript
-const unsubscribe = observer.observe(
-  (state) => state.user,
-  (user) => console.log('User information changed:', user)
-);
-```
-
-#### Parameters
-
-| Name                 | Type                                    | Optional | Default | Since | Deprecated | Description                                                    |
-| -------------------- | --------------------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------- |
-| `selectorOrListener` | `Selector<State, K> \| Listener<State>` | ❌       | -       | -     | -          | Selector function or listener that listens to the entire state |
-| `listener`           | `Listener<K>`                           | ✅       | -       | -     | -          | Listener for the selected result when a selector is provided   |
-
----
-
-#### `reset` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `reset` (CallSignature)
-
-**Type:** `void`
-
-**Since:** `1.2.5`
-
-Reset the state to the initial value
-
-This method will use the maker provided in the constructor to create a new state object,
-and then emit it as the current state, triggering a notification to all observers.
-
-Use cases:
-
-- When you need to clear all state
-- When you need to restore to the initial state
-- When the current state is polluted or invalid
-
-**Example:**
-
-```typescript
-const store = new SliceStore(MyStateClass);
-// ... some operations modified the state ...
-store.reset(); // The state is reset to the initial value
-```
-
----
-
 #### `resetMessages` (Method)
 
 **Type:** `(messages: MessageType[]) => void`
@@ -755,67 +691,6 @@ store.resetMessages([]);
 | Name       | Type            | Optional | Default | Since | Deprecated | Description                          |
 | ---------- | --------------- | -------- | ------- | ----- | ---------- | ------------------------------------ |
 | `messages` | `MessageType[]` | ❌       | -       | -     | -          | New message list to set in the store |
-
----
-
-#### `resetState` (Method)
-
-**Type:** `() => void`
-
----
-
-##### `resetState` (CallSignature)⚠️
-
-**Type:** `void`
-
-Reset the state of the store
-
-**Returns:**
-
-void
-
----
-
-#### `setDefaultState` (Method)
-
-**Type:** `(value: State) => this`
-
-#### Parameters
-
-| Name    | Type    | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `State` | ❌       | -       | -     | -          | The new state object to set |
-
----
-
-##### `setDefaultState` (CallSignature)⚠️
-
-**Type:** `this`
-
-Set the default state
-
-Replace the entire state object, but will not trigger the observer notification.
-This method is mainly used for initialization, not recommended for regular state updates.
-
-**Returns:**
-
-The current instance, supporting method chaining
-
-**Example:**
-
-```typescript
-// Not recommended to use
-store.setDefaultState(initialState);
-
-// Recommended alternative
-store.emit(initialState);
-```
-
-#### Parameters
-
-| Name    | Type    | Optional | Default | Since | Deprecated | Description                 |
-| ------- | ------- | -------- | ------- | ----- | ---------- | --------------------------- |
-| `value` | `State` | ❌       | -       | -     | -          | The new state object to set |
 
 ---
 
@@ -967,180 +842,5 @@ store.updateMessage(
 | --------- | -------------- | -------- | ------- | ----- | ---------- | --------------------------------------------------- |
 | `id`      | `string`       | ❌       | -       | -     | -          | Unique identifier of the message to update          |
 | `updates` | `Partial<M>[]` | ❌       | -       | -     | -          | Variable number of partial message objects to apply |
-
----
-
-### `MessageInterface` (Interface)
-
-**Type:** `interface MessageInterface<T>`
-
-Base message interface representing a complete message
-
-This interface defines the core structure of a message in the system,
-extending async state capabilities for handling loading, error, and
-success states during message lifecycle operations.
-
-**Example:**
-
-```typescript
-interface ChatMessage extends MessageInterface<string> {
-  id: string;
-  content: string;
-  sender: string;
-  timestamp: number;
-}
-```
-
----
-
-#### `endTime` (Property)
-
-**Type:** `number`
-
-Timestamp when the async operation completed
-
-Will be 0 if operation hasn't completed
-Used with startTime to calculate total operation duration
-
-**Example:**
-
-```ts
-`Date.now()`;
-```
-
----
-
-#### `error` (Property)
-
-**Type:** `unknown`
-
-Error information if the async operation failed
-
-Will be null if:
-
-- Operation hasn't completed
-- Operation completed successfully
-
----
-
-#### `id` (Property)
-
-**Type:** `string`
-
-Unique message identifier
-
-Optional during message creation, assigned by the server upon successful
-transmission. Used for message tracking, updates, and deletion operations.
-
-**Example:**
-
-```ts
-`"msg-123e4567-e89b-12d3-a456-426614174000"`;
-```
-
----
-
-#### `loading` (Property)
-
-**Type:** `boolean`
-
-**Default:** `ts
-false
-`
-
-Whether the async operation is currently in progress
-
----
-
-#### `result` (Property)
-
-**Type:** `null \| T`
-
-The result of the async operation if successful
-
-Will be null if:
-
-- Operation hasn't completed
-- Operation failed
-- Operation completed but returned no data
-
----
-
-#### `startTime` (Property)
-
-**Type:** `number`
-
-Timestamp when the async operation started
-
-Used for:
-
-- Performance tracking
-- Operation timeout detection
-- Loading time calculations
-
-**Example:**
-
-```ts
-`Date.now()`;
-```
-
----
-
-#### `status` (Property)
-
-**Type:** `unknown`
-
-Status of the async operation
-
-**Example:**
-
-```ts
-`'pending' | 'success' | 'failed' | 'stopped'`;
-```
-
----
-
-### `MessagesStateInterface` (Interface)
-
-**Type:** `interface MessagesStateInterface<T>`
-
-Messages state interface for managing message collection state
-
-This interface extends the base store state with message-specific
-state properties, including message history and streaming status.
-
-**Example:**
-
-```typescript
-const state: MessagesStateInterface<ChatMessage> = {
-  messages: [message1, message2],
-  streaming: true
-};
-```
-
----
-
-#### `messages` (Property)
-
-**Type:** `T[]`
-
-Historical message list
-
-Contains all messages in the store, including sent messages,
-received responses, and system messages. Messages are typically
-ordered chronologically.
-
----
-
-#### `streaming` (Property)
-
-**Type:** `boolean`
-
-**Default:** `false`
-
-Whether streaming is currently active
-
-Indicates if a message is currently being received in streaming mode.
-Used for UI state management and preventing concurrent operations.
 
 ---

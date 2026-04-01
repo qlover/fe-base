@@ -147,7 +147,7 @@ class CustomUserService extends UserService<User, TokenCredential> {
       // Validate credential (e.g., check expiration)
       if (this.isCredentialValid(credential)) {
         // Credential is valid, set status to SUCCESS
-        this.getStore().updateState({
+        this.getStore().emit({
           status: AsyncStoreStatus.SUCCESS,
           loading: false,
           error: null,
@@ -186,7 +186,7 @@ class CustomUserService extends UserService<User, Credential> {
       // Validate with server
       const isValid = await this.getGateway()?.validateCredential?.(credential);
       if (isValid) {
-        this.getStore().updateState({
+        this.getStore().emit({
           status: AsyncStoreStatus.SUCCESS,
           loading: false,
           error: null,
@@ -198,7 +198,7 @@ class CustomUserService extends UserService<User, Credential> {
       }
     } catch (error) {
       // Validation failed, keep status as DRAFT
-      this.getStore().updateState({ error });
+      this.getStore().emit({ error });
     }
   }
 }
@@ -214,7 +214,7 @@ class CustomUserService extends UserService<User, Credential> {
     // If credential exists after restore, treat as authenticated
     const credential = this.getStore().getCredential();
     if (credential) {
-      this.getStore().updateState({
+      this.getStore().emit({
         status: AsyncStoreStatus.SUCCESS,
         loading: false,
         error: null,

@@ -376,11 +376,7 @@ export class ChatMessageStore<T = unknown>
     const firstDraft = this.getFirstDraftMessage();
     const newDraftMessages = this.sliceDraftMessages();
 
-    this.emit(
-      this.cloneState({
-        draftMessages: newDraftMessages
-      })
-    );
+    this.emit({ draftMessages: newDraftMessages });
 
     return firstDraft;
   }
@@ -444,11 +440,7 @@ export class ChatMessageStore<T = unknown>
     // Both modes append to the end
     const newDraftMessages = [...this.getDraftMessages(), draftMessage];
 
-    this.emit(
-      this.cloneState({
-        draftMessages: newDraftMessages
-      })
-    );
+    this.emit({ draftMessages: newDraftMessages });
   }
 
   /**
@@ -476,11 +468,7 @@ export class ChatMessageStore<T = unknown>
       return;
     }
 
-    this.emit(
-      this.cloneState({
-        draftMessages: newDraftMessages
-      })
-    );
+    this.emit({ draftMessages: newDraftMessages });
   }
 
   /**
@@ -523,11 +511,7 @@ export class ChatMessageStore<T = unknown>
       return;
     }
 
-    this.emit(
-      this.cloneState({
-        draftMessages: newDraftMessages
-      })
-    );
+    this.emit({ draftMessages: newDraftMessages });
 
     return updatedMessage;
   }
@@ -556,11 +540,7 @@ export class ChatMessageStore<T = unknown>
       ? messages.map((msg) => this.createMessage(msg))
       : [];
 
-    this.emit(
-      this.cloneState({
-        draftMessages: newDraftMessages
-      })
-    );
+    this.emit({ draftMessages: newDraftMessages });
   }
 
   /**
@@ -581,7 +561,7 @@ export class ChatMessageStore<T = unknown>
    * ```
    */
   public changeDisabledSend(disabled: boolean): void {
-    this.emit(this.cloneState({ disabledSend: disabled }));
+    this.emit({ disabledSend: disabled });
   }
 
   /**

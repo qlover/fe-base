@@ -80,8 +80,8 @@ export interface GatewayServiceInterface<
    *
    * @example Subscribe to state changes
    * ```typescript
-   * const store = service.getStore();
-   * store.observe((state) => {
+   * const asyncStore = service.getStore();
+   * asyncStore.getStore().subscribe((state) => {
    *   console.log('State changed:', state);
    * });
    * ```
