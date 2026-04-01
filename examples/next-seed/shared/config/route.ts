@@ -10,6 +10,11 @@ export const ROUTE_LOGIN = '/auth/login' as const;
  */
 export const ROUTE_REGISTER = '/auth/register' as const;
 
+/**
+ * Current-user request / activity log viewer (requires auth). Pages Router: `src/pages/[locale]/admin/request-logs.tsx`.
+ */
+export const ROUTE_REQUEST_LOGS = '/admin/request-logs' as const;
+
 export const ROUTE_HOME = '/' as const;
 
 /** Routes that are allowed without authentication (public routes). */
@@ -29,6 +34,7 @@ export function isPublicPath(pathname: string): boolean {
         i18nConfig.supportedLngs.includes(localeSegment[1] as 'en' | 'zh')
       );
     }
-    return pathname === route || pathname.includes(route);
+    // Use suffix match so /auth/login does not match longer auth paths incorrectly
+    return pathname === route || pathname.endsWith(route);
   });
 }

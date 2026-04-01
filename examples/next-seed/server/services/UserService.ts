@@ -7,10 +7,14 @@ import { I } from '@config/ioc-identifiter';
 import type { UserSchema } from '@schemas/UserSchema';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import { ServerAuth } from './ServerAuth';
+import { RequestLogsRepository } from '../repositorys/RequestLogsRepository';
 import { SupabaseBridge } from '../repositorys/SupabaseBridge';
 import { PasswordEncrypt } from '../utils/PasswordEncrypt';
+import type { RequestLogsRepositoryInterface } from '../interfaces/RequestLogsRepositoryInterface';
 import type { ServerAuthInterface } from '../interfaces/ServerAuthInterface';
 import type {
+  UserLoginContext,
+  UserLoginParams,
   UserServiceInterface,
   UserServiceRegisterParams
 } from '../interfaces/UserServiceInterface';
@@ -29,7 +33,9 @@ export class UserService implements UserServiceInterface {
     protected userAuth: ServerAuthInterface,
     @inject(PasswordEncrypt)
     protected encryptor: EncryptorInterface<string, string>,
-    @inject(SupabaseBridge) protected supabaseBridge: SupabaseBridge
+    @inject(SupabaseBridge) protected supabaseBridge: SupabaseBridge,
+    @inject(RequestLogsRepository)
+    protected requestLogsRepository: RequestLogsRepositoryInterface
   ) {}
 
   /**
@@ -66,11 +72,7 @@ export class UserService implements UserServiceInterface {
   /**
    * @override
    */
-  public async login(params: {
-    email: string;
-    password: string;
-    authCode?: string;
-  }): Promise<UserSchema> {
+  public async login(params: UserLoginParams): Promise<UserSchema> {
     const supabase = await this.supabaseBridge.getSupabase();
 
     if (params.authCode) {
@@ -86,13 +88,36 @@ export class UserService implements UserServiceInterface {
 
     this.logger.info('supbase login succees', result.data);
 
+    await this.requestLogsRepository.insertEvent({
+      event_category: 'auth',
+      event_type: 'login',
+      success: true,
+      payload: {
+        auth_provider: 'supabase',
+        user_agent: params.loginContext?.userAgent ?? null,
+        ip_address: params.loginContext?.ipAddress ?? null,
+        login_method: params.authCode ? 'oauth' : 'password'
+      }
+    });
+
     return this.supabaseBridge.toUserSchema(result.data.user!);
   }
 
   /**
    * @override
    */
-  public async logout(): Promise<void> {
+  public async logout(context?: UserLoginContext): Promise<void> {
+    await this.requestLogsRepository.insertEvent({
+      event_category: 'auth',
+      event_type: 'logout',
+      success: true,
+      payload: {
+        auth_provider: 'supabase',
+        user_agent: context?.userAgent ?? null,
+        ip_address: context?.ipAddress ?? null
+      }
+    });
+
     const supabase = await this.supabaseBridge.getSupabase();
 
     const response = await supabase.auth.signOut();

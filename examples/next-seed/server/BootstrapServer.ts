@@ -87,12 +87,7 @@ export class BootstrapServer
   public execNoError<TaskReturn, Handled = TaskReturn>(
     task?: ExecutorAsyncTask<TaskReturn, BootstrapServerContextOptions>
   ): Promise<Handled | ExecutorError> {
-    const options: BootstrapServerContextOptions = {
-      logger: this.logger,
-      root: this.root,
-      ioc: this.IOC.implemention!,
-      IOC: this.IOC
-    };
+    const options = this.getContext();
 
     const plugins = this.getPlugins(this.IOC('SeedConfigInterface'));
     if (plugins.length > 0) {
@@ -115,6 +110,18 @@ export class BootstrapServer
         ) as unknown as TaskReturn;
       }
     ) as Promise<Handled | ExecutorError>;
+  }
+
+  /**
+   * Initial executor parameters. Subclasses may extend (e.g. add `ctx` on {@link NextApiServer}).
+   */
+  protected getContext(): BootstrapServerContextOptions {
+    return {
+      logger: this.logger,
+      root: this.root,
+      ioc: this.IOC.implemention!,
+      IOC: this.IOC
+    };
   }
 
   protected taskHandler<TaskReturn, Handled = TaskReturn>(

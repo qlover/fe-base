@@ -84,11 +84,11 @@ export const COMMON_ADMIN_NAV_USER_MANAGEMENT =
 export const COMMON_ADMIN_NAV_LOCALES = 'common:admin_nav__locales';
 
 /**
- * @description Admin sidebar nav - Login Log
- * @localZh 登录日志
- * @localEn Login Log
+ * @description Admin sidebar nav - request & activity logs
+ * @localZh 请求日志
+ * @localEn Request logs
  */
-export const COMMON_ADMIN_NAV_LOGINLOG = 'common:admin_nav__loginlog';
+export const COMMON_ADMIN_NAV_REQUEST_LOGS = 'common:admin_nav__request_logs';
 
 /**
  * @description logout dialog title
@@ -147,3 +147,10 @@ export const COMMON_USER_AUTH_FAILED_GO_TO_LOGIN =
  * @localEn Sign up
  */
 export const COMMON_AUTH_NAV_SIGN_UP = 'common:authNav_signUp';
+
+/**
+ * @description Auth nav - request / activity logs (signed-in users)
+ * @localZh 请求日志
+ * @localEn Activity logs
+ */
+export const COMMON_AUTH_NAV_REQUEST_LOGS = 'common:authNav_requestLogs';

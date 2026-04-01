@@ -1,6 +1,7 @@
 import * as commonTablesKeys from '../i18n-identifier/common/admin.table';
 import * as commonKeys from '../i18n-identifier/common/common';
 import * as homeKeys from '../i18n-identifier/pages/page.admin.home';
+import * as requestLogsKeys from '../i18n-identifier/pages/page.admin.request-logs';
 import * as userKeys from '../i18n-identifier/pages/page.admin.user';
 
 export const adminTableHeaderI18n = {
@@ -32,6 +33,26 @@ export const admin18n = Object.freeze({
 });
 
 export type AdminUsersI18nInterface = typeof adminUsers18n;
+
+export type AdminRequestLogsI18nInterface = typeof adminRequestLogs18n;
+
+export const adminRequestLogs18n = Object.freeze({
+  title: requestLogsKeys.ADMIN_REQUEST_LOGS_TITLE,
+  description: requestLogsKeys.ADMIN_REQUEST_LOGS_DESCRIPTION,
+  content: requestLogsKeys.ADMIN_REQUEST_LOGS_DESCRIPTION,
+  keywords: requestLogsKeys.ADMIN_REQUEST_LOGS_KEYWORDS,
+  colTime: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TIME,
+  colCategory: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_CATEGORY,
+  colType: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TYPE,
+  colSuccess: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_SUCCESS,
+  colHttp: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_HTTP,
+  colStatus: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_STATUS,
+  colDuration: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_DURATION,
+  colIp: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_IP,
+  colLoginMethod: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_LOGIN_METHOD,
+  colError: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_ERROR,
+  empty: requestLogsKeys.ADMIN_REQUEST_LOGS_EMPTY
+});
 
 export const adminUsers18n = Object.freeze({
   // basic meta properties

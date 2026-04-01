@@ -3,10 +3,11 @@
 import { clsx } from 'clsx';
 import { Link } from '@/i18n/routing';
 import {
+  COMMON_AUTH_NAV_REQUEST_LOGS,
   COMMON_AUTH_NAV_SIGN_UP,
   COMMON_USER_AUTH_FAILED_GO_TO_LOGIN
 } from '@config/i18n-identifier/common/common';
-import { ROUTE_LOGIN, ROUTE_REGISTER } from '@config/route';
+import { ROUTE_LOGIN, ROUTE_REGISTER, ROUTE_REQUEST_LOGS } from '@config/route';
 import { LogoutButton } from './LogoutButton';
 import { useWarnTranslations } from '../hook/useWarnTranslations';
 
@@ -38,7 +39,21 @@ export function AuthButtonUI(props: { hasAuth: boolean }) {
   const t = useWarnTranslations();
 
   if (hasAuth) {
-    return <LogoutButton data-testid="logout-button" />;
+    return (
+      <div
+        data-testid="AuthButton"
+        className="flex items-center gap-2"
+        data-auth={hasAuth}
+      >
+        <Link
+          href={ROUTE_REQUEST_LOGS}
+          className={clsx(linkBase, linkSecondary)}
+        >
+          {t(COMMON_AUTH_NAV_REQUEST_LOGS)}
+        </Link>
+        <LogoutButton data-testid="logout-button" />
+      </div>
+    );
   }
 
   return (

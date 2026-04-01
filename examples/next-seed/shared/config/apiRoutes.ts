@@ -78,6 +78,15 @@ export const API_USER_LOGOUT = '/api/user/logout' as const;
 export const API_USER_REGISTER = '/api/user/register' as const;
 
 /**
+ * API path: `/api/user/request-logs`
+ *
+ * @see [src/app/api/user/request-logs/route.ts](../../src/app/api/user/request-logs/route.ts)
+ *
+ * **Fallback:** Ctrl/Cmd+P (Quick Open) → `src/app/api/user/request-logs/route.ts`
+ */
+export const API_USER_REQUEST_LOGS = '/api/user/request-logs' as const;
+
+/**
  * API path: `/api/user/session`
  *
  * @see [src/app/api/user/session/route.ts](../../src/app/api/user/session/route.ts)
@@ -95,4 +104,5 @@ export type ApiRoutePath =
   | typeof API_USER_LOGIN
   | typeof API_USER_LOGOUT
   | typeof API_USER_REGISTER
+  | typeof API_USER_REQUEST_LOGS
   | typeof API_USER_SESSION;

@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
   const locale = searchParams.locale as LocaleType;
 
-  const result = await new NextApiServer(API_LOCALES_JSON).run(
+  const result = await new NextApiServer(API_LOCALES_JSON, req).run(
     async ({ parameters: { IOC } }) =>
       IOC(LocalesController).json(
         searchParams as unknown as LocalesControllerJsonQuery

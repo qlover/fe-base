@@ -155,7 +155,7 @@ export function AdminLayout({
 
         <main
           data-testid="AdminLayoutMain"
-          className="flex-1 flex flex-col min-w-0 overflow-auto bg-primary text-primary-text"
+          className="flex-1 flex flex-col min-w-0 overflow-auto bg-primary text-primary-text p-2"
         >
           {children}
         </main>

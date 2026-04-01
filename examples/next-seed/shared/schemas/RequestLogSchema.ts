@@ -1,0 +1,31 @@
+import { z } from 'zod';
+
+/** Optional keys written into `payload` by server code (UI may read these). */
+export type RequestLogPayload = {
+  http_method?: string | null;
+  http_path?: string | null;
+  http_status?: number | null;
+  duration_ms?: number | null;
+  user_agent?: string | null;
+  ip_address?: string | null;
+  login_method?: string | null;
+  auth_provider?: string | null;
+  correlation_id?: string | null;
+  device?: string | null;
+  error_code?: string | null;
+  error_message?: string | null;
+  [key: string]: unknown;
+};
+
+export const requestLogRowSchema = z.object({
+  id: z.string().uuid(),
+  user_id: z.string().uuid().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  event_category: z.string(),
+  event_type: z.string(),
+  success: z.boolean(),
+  payload: z.record(z.string(), z.unknown()).nullable()
+});
+
+export type RequestLogRow = z.infer<typeof requestLogRowSchema>;

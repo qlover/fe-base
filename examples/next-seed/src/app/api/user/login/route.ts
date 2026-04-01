@@ -87,7 +87,8 @@ import type { NextRequest } from 'next/server';
  */
 export async function POST(req: NextRequest) {
   const requestBody = await req.json();
-  return await new NextApiServer(API_USER_LOGIN).runWithJson(
-    async ({ parameters: { IOC } }) => IOC(UserController).login(requestBody)
+  return await new NextApiServer(API_USER_LOGIN, req).runWithJson(
+    async ({ parameters: { IOC, ctx } }) =>
+      IOC(UserController).login(requestBody, ctx)
   );
 }
