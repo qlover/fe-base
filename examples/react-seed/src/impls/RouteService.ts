@@ -34,13 +34,13 @@ export class RouteService implements RouteServiceInterface {
   public useMainRoutes(): void {
     const routes = this.defaultRoutes;
     const activeRoutes = filterRouteByCategorys(routes, mainCategory);
-    this.store.updateState({ result: activeRoutes, loading: false });
+    this.store.emit({ result: activeRoutes, loading: false });
   }
 
   public useAuthRoutes(): void {
     const routes = this.defaultRoutes;
     const activeRoutes = filterRouteByCategorys(routes, authCategory);
-    this.store.updateState({ result: activeRoutes, loading: false });
+    this.store.emit({ result: activeRoutes, loading: false });
   }
 
   /**
