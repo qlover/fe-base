@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import { AppRoutePage } from '@/uikit/components-app/AppRoutePage';
 import { HomeAuthUserEmail } from '@/uikit/components-app/HomeAuthUserEmail';
+import { ZustandCounterCard } from '@/uikit/components-app/ZustandCounterCard';
 import { i18nConfig } from '@config/i18n';
 import { homeI18n, homeI18nNamespace } from '@config/i18n-mapping/HomeI18n';
 import type { PageParamsProps } from '@interfaces/AppPageRouter';
@@ -66,6 +67,8 @@ export default async function Home({ params }: PageParamsProps) {
           </Button>
         </div>
       </section>
+
+      <ZustandCounterCard />
     </AppRoutePage>
   );
 }

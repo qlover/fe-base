@@ -2,6 +2,7 @@ import type { DialogHandler } from '@/impls/DialogHandler';
 import type { I18nService } from '@/impls/I18nService';
 import type { RouterService } from '@/impls/RouterService';
 import type { UserService } from '@/impls/UserService';
+import type { ZustandCounterService } from '@/impls/ZustandCounterService';
 import type { SeedServerConfigInterface } from '@interfaces/SeedConfigInterface';
 import type { SupabaseBridge } from '@server/repositorys/SupabaseBridge';
 import type * as CorekitBridge from '@qlover/corekit-bridge';
@@ -22,6 +23,7 @@ export const IOCIdentifier = Object.freeze({
   UserServiceInterface: 'UserServiceInterface',
   RouterServiceInterface: 'RouterServiceInterface',
   I18nServiceInterface: 'I18nServiceInterface',
+  ZustandCounterServiceInterface: 'ZustandCounterServiceInterface',
   /**
    * 数据库桥接接口
    *
@@ -66,6 +68,7 @@ export interface IOCIdentifierMap {
   [IOCIdentifier.UserServiceInterface]: UserService;
   [IOCIdentifier.RouterServiceInterface]: RouterService;
   [IOCIdentifier.I18nServiceInterface]: I18nService;
+  [IOCIdentifier.ZustandCounterServiceInterface]: ZustandCounterService;
   [IOCIdentifier.DialogHandler]: DialogHandler;
 }
 
