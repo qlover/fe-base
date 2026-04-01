@@ -1,5 +1,50 @@
 # @qlover/corekit-bridge
 
+## 3.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **store:** integrate Zustand for state management and add SliceStoreAdapter ([025ffce](https://github.com/qlover/fe-base/commit/025ffcef9d9e1eeec427cc2fc2742d142545417e)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Added Zustand as a dependency for state management, allowing for a more flexible and efficient store implementation.
+  - Introduced `SliceStoreAdapter` and `ZustandStoreAdapter` to provide a unified interface for managing state across different store implementations.
+  - Updated `StoreInterface` to support new update and reset functionalities, enhancing the overall state management capabilities.
+  - Refactored `core/store-state` to accommodate the new adapters and improve code organization.
+
+  These changes aim to enhance the state management architecture, providing better integration and usability for developers.
+
+- **store:** enhance AsyncStore with store interface integration ([129c4d4](https://github.com/qlover/fe-base/commit/129c4d4c4a7fe1aa64711765263c21f6851d1f32)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Refactored AsyncStore to utilize a new store interface for state updates, improving flexibility and compatibility with existing code.
+  - Introduced createAsyncStoreInterface to facilitate the creation of store instances, allowing for better state management.
+  - Updated AsyncStoreOptions to include a store property, providing an option to use an existing store instance or create a new one.
+  - Adjusted methods in AsyncStore to leverage the new store interface for state retrieval and updates, enhancing overall functionality.
+
+  These changes aim to streamline state management and improve the integration of store interfaces within the AsyncStore implementation.
+
+#### ♻️ Refactors
+
+- **tests:** update MessageSender tests for improved type safety and context handling ([f594dbc](https://github.com/qlover/fe-base/commit/f594dbc0bcb8159b04dbab47bb7e1788edb28718)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Refactored MessageSender tests to replace generic MessageStoreMsg with specific TestMessage type, enhancing type safety and clarity.
+  - Adjusted context handling in tests to ensure plugins can access and modify the correct context structure.
+  - Updated assertions and plugin implementations to align with the new type definitions, improving overall test reliability.
+
+  These changes aim to strengthen the test suite for MessageSender by ensuring better type adherence and context integrity.
+
+- **store:** replace updateState with emit in UserService and UserStore tests ([0f62078](https://github.com/qlover/fe-base/commit/0f620789d3851a3b1952063036128c813195c030)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Updated UserService and UserStore tests to replace the updateState method with emit for state updates, enhancing clarity and consistency in state management.
+  - Adjusted related test assertions to reflect the new emit method, ensuring accurate state handling during tests.
+  - Refactored AsyncStoreInterface tests to align with the new emit method, improving overall test reliability and maintainability.
+
+  These changes aim to streamline state update processes and improve the robustness of the test suite.
+
+- **docs:** update GatewayService and UserService documentation for state management ([fa40421](https://github.com/qlover/fe-base/commit/fa4042174df006f315e31448edf0738d166570b3)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Revised GatewayService documentation to clarify the use of AsyncStoreInterface and updated examples to reflect changes in state subscription methods.
+  - Modified UserService documentation to replace `updateState` with `emit` for state updates, enhancing consistency in state management practices.
+  - Improved clarity in UserStore and ChatMessageStore documentation regarding state handling and subscription patterns.
+
+  These changes aim to enhance the documentation's accuracy and usability for developers working with state management in the gateway and user services.
+
 ## 2.2.2
 
 ### Patch Changes

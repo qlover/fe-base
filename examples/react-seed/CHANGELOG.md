@@ -1,5 +1,35 @@
 # examples/react-seed
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **react-seed:** enhance type safety and store management ([2d6317c](https://github.com/qlover/fe-base/commit/2d6317ca46c45a30c8298b390ef81ab46b89d277)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Added a new `type-check` script to the package.json for TypeScript type checking.
+  - Updated `tsconfig.node.json` to include base URL and path mappings for improved module resolution.
+  - Refactored `AppRouterProvider` and `BaseLayout` components to utilize the new `getUIStore` method for accessing the UI store.
+  - Enhanced `RouteService` to implement `getUIStore`, providing a more consistent interface for store access.
+  - Updated various tests to reflect changes in store management and ensure type safety.
+
+  These changes aim to improve the overall type safety and maintainability of the React seed example.
+
+- **docs:** add English README for browser-plugin-seed ([f93e3d4](https://github.com/qlover/fe-base/commit/f93e3d48fdee677bae56e01c00cd64a180b95ee4)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Introduced a new English README file for the browser-plugin-seed example, providing installation instructions, project layout, and core concepts.
+  - Updated the existing Chinese README to include a link to the new English version.
+  - Enhanced clarity on setup steps, including prerequisites, installation, running the development server, and building for production.
+
+  These changes aim to improve accessibility and usability for English-speaking developers using the browser-plugin-seed template.
+
+#### ♻️ Refactors
+
+- **RouteService:** replace updateState with emit for route updates ([e8306d0](https://github.com/qlover/fe-base/commit/e8306d08ce6359c34487bb2e4d74258dc6196503)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Updated the RouteService class to replace the updateState method with emit for managing active routes in both useMainRoutes and useAuthRoutes methods.
+  - This change enhances consistency in state management across the application, aligning with recent updates in the store handling.
+
+  These modifications aim to improve clarity and maintainability in route management.
+
 ## 0.1.3
 
 ### Patch Changes

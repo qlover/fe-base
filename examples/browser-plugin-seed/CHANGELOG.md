@@ -1,5 +1,29 @@
 # examples/browser-plugin-seed
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **docs:** add English README for browser-plugin-seed ([f93e3d4](https://github.com/qlover/fe-base/commit/f93e3d48fdee677bae56e01c00cd64a180b95ee4)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Introduced a new English README file for the browser-plugin-seed example, providing installation instructions, project layout, and core concepts.
+  - Updated the existing Chinese README to include a link to the new English version.
+  - Enhanced clarity on setup steps, including prerequisites, installation, running the development server, and building for production.
+
+  These changes aim to improve accessibility and usability for English-speaking developers using the browser-plugin-seed template.
+
+#### ♻️ Refactors
+
+- **store:** enhance store management and type safety ([a3ae623](https://github.com/qlover/fe-base/commit/a3ae6232d20ac88837a80eaa72c3d6b12c87e13f)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Updated the `useStore` hook to support both `StoreInterface` and `SliceStoreLike`, improving flexibility in state management.
+  - Refactored `I18nService` to utilize `SliceStoreAdapter` for better state handling and access.
+  - Introduced `getUIStore` method in `UserService` for consistent store access.
+  - Adjusted `HomePage` to leverage the new store management methods, enhancing clarity in user state handling.
+  - Improved `AuthStore` methods to utilize the new store interface for state updates.
+
+  These changes aim to streamline store interactions and enhance type safety across the application.
+
 ## 0.0.3
 
 ### Patch Changes
