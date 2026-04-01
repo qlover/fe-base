@@ -1,5 +1,9 @@
 # Next Seed
 
+> 中文: [README.md](./README.md)
+
+**TL;DR**: `npm install` → copy `.env.template` to `.env` → `npm run dev` (default port **3100**, `APP_ENV=localhost`) → production: `npm run build` then `npm start` (default port **3101**).
+
 A full-stack Next.js seed with clear layering, front–back separation, and interface-oriented design.
 
 ---

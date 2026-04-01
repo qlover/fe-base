@@ -1,5 +1,9 @@
 # Taro Seed
 
+> English: [README.en.md](./README.en.md)
+
+**TL;DR**：`npm install` → 将 `.env.example` 复制为 `.env` 并配置 → 微信：`npm run dev:weapp` 后在微信开发者工具打开 `dist`；H5：`npm run dev:h5`。
+
 基于 Taro + React + Vite 的多端（微信小程序、H5 等）项目模板，集成 **@qlover/corekit-bridge** 与 **@qlover/fe-corekit**，提供 IOC、请求、国际化、主题与鉴权能力。
 
 ## 技术栈
