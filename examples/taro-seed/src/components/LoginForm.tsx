@@ -8,8 +8,8 @@ export function LoginForm() {
   const logger = useIOC(I.Logger);
   const authStore = useIOC(I.AuthStore);
   const userService = useIOC(I.UserService);
-  const loading = useStore(authStore, (s) => s.loading);
-  const error = useStore(authStore, (s) => s.error);
+  const loading = useStore(authStore.getStore(), (s) => s.loading);
+  const error = useStore(authStore.getStore(), (s) => s.error);
 
   const handleGetPhoneNumber = (
     e: BaseEventOrig<ButtonProps.onGetPhoneNumberEventDetail>

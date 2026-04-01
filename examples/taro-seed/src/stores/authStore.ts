@@ -1,5 +1,8 @@
 import { AsyncStoreStatus, UserStore } from '@qlover/corekit-bridge';
-import type { UserStateInterface } from '@qlover/corekit-bridge';
+import type {
+  StoreInterface,
+  UserStateInterface
+} from '@qlover/corekit-bridge';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type {
   UserCredentialSchema,
@@ -35,8 +38,12 @@ export class AuthStore extends UserStore<
   UserCredentialSchema,
   string
 > {
+  public getStore(): StoreInterface<AuthStoreStateInterface> {
+    return super.getStore() as StoreInterface<AuthStoreStateInterface>;
+  }
+
   public get state(): AuthStoreStateInterface {
-    return super.state as AuthStoreStateInterface;
+    return this.getState() as AuthStoreStateInterface;
   }
 
   constructor(storage: StorageInterface<string, UserSchema, unknown>) {
@@ -51,18 +58,10 @@ export class AuthStore extends UserStore<
   }
 
   public setOpenLoginForm(open: boolean): void {
-    this.emit(
-      this.cloneState({ openLoginForm: open } as Partial<
-        UserStateInterface<UserSchema, UserCredentialSchema>
-      >)
-    );
+    this.getStore().update({ openLoginForm: open });
   }
 
   public setCode(code: string): void {
-    this.emit(
-      this.cloneState({ code: code } as Partial<
-        UserStateInterface<UserSchema, UserCredentialSchema>
-      >)
-    );
+    this.getStore().update({ code });
   }
 }

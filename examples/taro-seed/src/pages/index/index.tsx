@@ -19,9 +19,10 @@ export default function Index() {
   const tt = useI18nMapping(pageHomeI18n);
   const { t } = useTranslation();
 
-  const user = useStore(authStore, (s) => s.result);
-  const showLoginForm = useStore(authStore, (s) => s.openLoginForm);
-  const code = useStore(authStore, (s) => s.code);
+  const uistore = authStore.getStore();
+  const user = useStore(uistore, (s) => s.result);
+  const showLoginForm = useStore(uistore, (s) => s.openLoginForm);
+  const code = useStore(uistore, (s) => s.code);
   const isAuthenticated = userService.isAuthenticated();
   const displayName = user?.nickname ?? user?.phoneNumber ?? '';
 

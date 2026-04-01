@@ -1,6 +1,7 @@
-import { StoreInterface } from '@qlover/corekit-bridge';
+import { SliceStoreAdapter } from '@qlover/corekit-bridge';
 import Taro from '@tarojs/taro';
 import { themeConfig, ThemeMap, type ThemeId } from '@/config/theme';
+import type { StoreInterface } from '@qlover/corekit-bridge';
 import type { StorageInterface } from '@qlover/fe-corekit';
 import type { LoggerInterface } from '@qlover/logger';
 
@@ -74,17 +75,48 @@ export function computeInitialThemeState(
   };
 }
 
-export class ThemeService extends StoreInterface<ThemeStoreStateInterface> {
+export class ThemeService implements StoreInterface<ThemeStoreStateInterface> {
   private systemDefaultTheme: ThemeId = ThemeMap.LIGHT;
-
+  protected store: StoreInterface<ThemeStoreStateInterface>;
   constructor(
     protected readonly logger: LoggerInterface,
     protected storage: StorageInterface<string, string>
   ) {
     const initial = computeInitialThemeState(storage);
-    super(() => initial.state);
+    this.store = new SliceStoreAdapter(() => initial.state);
+
     this.systemDefaultTheme = initial.systemDefaultTheme;
     logger.log('ThemeService resolved theme:', initial.state.resovleTheme);
+  }
+  /**
+   * @override
+   */
+  public reset(): void {
+    this.store.reset();
+  }
+  /**
+   * @override
+   */
+  public update(value: unknown): void {
+    this.store.update(value as ThemeStoreStateInterface);
+  }
+  /**
+   * @override
+   */
+  public getState(): ThemeStoreStateInterface {
+    return this.store.getState();
+  }
+
+  /**
+   * @override
+   */
+  public subscribe(
+    listener: (
+      state: ThemeStoreStateInterface,
+      prevState: ThemeStoreStateInterface
+    ) => void
+  ): () => void {
+    return this.store.subscribe(listener);
   }
 
   private getResolvedTheme(theme: ThemeId | typeof SYSTEM_VALUE): ThemeId {
@@ -92,15 +124,15 @@ export class ThemeService extends StoreInterface<ThemeStoreStateInterface> {
   }
 
   public getEffectiveTheme(): ThemeId {
-    return this.state.resovleTheme;
+    return this.getState().resovleTheme;
   }
 
   public getTheme(): ThemeId | typeof SYSTEM_VALUE {
-    return this.state.theme;
+    return this.getState().theme;
   }
 
   public getThemeDomValue(): ThemeId {
-    return this.state.resovleTheme;
+    return this.getState().resovleTheme;
   }
 
   public setTheme(theme: ThemeId | typeof SYSTEM_VALUE): void {
@@ -113,7 +145,7 @@ export class ThemeService extends StoreInterface<ThemeStoreStateInterface> {
       return;
     }
     const resovleTheme = this.getResolvedTheme(theme);
-    this.emit(this.cloneState({ theme, resovleTheme }));
+    this.update({ theme, resovleTheme });
     if (themeConfig.prioritizeStore) {
       try {
         this.storage.setItem(STORAGE_KEY, theme);
@@ -129,8 +161,8 @@ export class ThemeService extends StoreInterface<ThemeStoreStateInterface> {
   public init(): void {
     Taro.onThemeChange?.((res: { theme?: string }) => {
       this.systemDefaultTheme = resolveThemeFromSystem(res?.theme);
-      if (this.state.theme === SYSTEM_VALUE) {
-        this.emit(this.cloneState({ resovleTheme: this.systemDefaultTheme }));
+      if (this.getState().theme === SYSTEM_VALUE) {
+        this.update({ resovleTheme: this.systemDefaultTheme });
       }
     });
   }
