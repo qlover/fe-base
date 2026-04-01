@@ -13,3 +13,9 @@ declare module 'i18next' {
     detection?: DetectorOptions & MultiQuerystringOptions;
   }
 }
+
+declare module '@qlover/corekit-bridge/bootstrap' {
+  interface SeedConfigInterface {
+    readonly userCredentialKey: string;
+  }
+}

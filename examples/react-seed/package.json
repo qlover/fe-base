@@ -14,7 +14,8 @@
     "lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "type-check": "tsc --build --force"
   },
   "dependencies": {
     "@qlover/corekit-bridge": "workspace:*",

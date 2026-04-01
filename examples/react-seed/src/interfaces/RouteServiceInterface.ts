@@ -2,7 +2,8 @@ import type { RouteConfigValue } from './RouteLoaderInterface';
 import type { routePathLocaleParamKey } from '@config/seed.config';
 import type {
   AsyncStoreStateInterface,
-  AsyncStoreInterface
+  AsyncStoreInterface,
+  SliceStoreAdapter
 } from '@qlover/corekit-bridge';
 
 export interface RouteMeta {
@@ -50,5 +51,6 @@ export type RouteServiceState = AsyncStoreStateInterface<RouteConfigValue[]>;
 
 export interface RouteServiceInterface {
   getStore(): AsyncStoreInterface<RouteServiceState>;
+  getUIStore(): SliceStoreAdapter<RouteServiceState>;
   getRoutes(): RouteConfigValue[];
 }
