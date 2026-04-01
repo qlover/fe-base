@@ -1,5 +1,19 @@
 # @qlover/create-app
 
+## 3.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **docs:** enhance README for create-app with detailed usage and features ([ab65210](https://github.com/qlover/fe-base/commit/ab6521083f0bc951c085ec8bab147b9f586e7516)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Updated the English and Chinese README files to provide a comprehensive overview of the @qlover/create-app tool.
+  - Added descriptions of the template fetching process from GitHub, including post-processing of dependencies in generated projects.
+  - Introduced a TL;DR section for quick usage instructions and clarified the interactive flow for project setup.
+  - Expanded CLI options and examples to improve usability and understanding for developers.
+
+  These changes aim to enhance the documentation's clarity and accessibility for users of the create-app tool.
+
 ## 2.0.7
 
 ### Patch Changes

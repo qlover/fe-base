@@ -1,5 +1,28 @@
 # examples/taro-seed
 
+## 2.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **docs:** add English README for browser-plugin-seed ([f93e3d4](https://github.com/qlover/fe-base/commit/f93e3d48fdee677bae56e01c00cd64a180b95ee4)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Introduced a new English README file for the browser-plugin-seed example, providing installation instructions, project layout, and core concepts.
+  - Updated the existing Chinese README to include a link to the new English version.
+  - Enhanced clarity on setup steps, including prerequisites, installation, running the development server, and building for production.
+
+  These changes aim to improve accessibility and usability for English-speaking developers using the browser-plugin-seed template.
+
+#### ♻️ Refactors
+
+- **store:** improve store access and state management ([f468238](https://github.com/qlover/fe-base/commit/f46823847ea3a88a79f0f3f149a4f8f10b8bd653)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Updated `useStore` hook to support direct access to store instances, enhancing state retrieval in components.
+  - Refactored `LoginForm`, `I18nProvider`, and `Index` components to utilize the new store access methods for improved clarity.
+  - Enhanced `AuthStore`, `I18nService`, and `ThemeService` to implement `SliceStoreAdapter`, streamlining state updates and management.
+  - Adjusted various methods across services to ensure consistent state handling and improve type safety.
+
+  These changes aim to enhance the overall architecture of store management, providing clearer access patterns and better integration across the application.
+
 ## 1.0.2
 
 ### Patch Changes

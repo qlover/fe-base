@@ -1,5 +1,44 @@
 # examples/next-seed
 
+## 1.0.0
+
+### Major Changes
+
+#### ✨ Features
+
+- **docs:** add English README for browser-plugin-seed ([f93e3d4](https://github.com/qlover/fe-base/commit/f93e3d48fdee677bae56e01c00cd64a180b95ee4)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Introduced a new English README file for the browser-plugin-seed example, providing installation instructions, project layout, and core concepts.
+  - Updated the existing Chinese README to include a link to the new English version.
+  - Enhanced clarity on setup steps, including prerequisites, installation, running the development server, and building for production.
+
+  These changes aim to improve accessibility and usability for English-speaking developers using the browser-plugin-seed template.
+
+- **counter:** integrate Zustand for state management in the Next.js example ([a549c28](https://github.com/qlover/fe-base/commit/a549c28a8b85708ec1bec9826346508b13b595d7)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Added Zustand as a dependency to manage state more effectively.
+  - Implemented ZustandCounterService to handle counter logic, including increment, decrement, and reset functionalities.
+  - Created ZustandCounterServiceInterface to define the service contract.
+  - Introduced ZustandCounterCard component to display and interact with the counter.
+  - Updated IOCIdentifier and ClientIOCRegister to include the new ZustandCounterService.
+  - Enhanced the Home page to incorporate the ZustandCounterCard for user interaction.
+
+  These changes aim to improve state management and user experience in the Next.js example.
+
+#### ♻️ Refactors
+
+- **i18n:** convert I18nServiceInterface from abstract class to interface ([982c036](https://github.com/qlover/fe-base/commit/982c036290b005c87fa682c5afe4f847ab4d7574)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Changed I18nServiceInterface from an abstract class to an interface, simplifying its structure and enhancing type safety.
+  - Updated I18nService to implement the new interface, ensuring compatibility with the updated design.
+  - Refactored UserService to utilize the new getUIStore method for improved store access.
+  - Enhanced useStore and useSliceStoreAdapter hooks for better integration with SliceStoreAdapter.
+
+  These changes aim to streamline the internationalization service architecture and improve overall code maintainability.
+
+- **ZustandCounterService:** format imports and clean up interface file ([ed7a5b4](https://github.com/qlover/fe-base/commit/ed7a5b49bb7c5c8640c5b661edf5c7feccb8ef18)) ([#604](https://github.com/qlover/fe-base/pull/604))
+  - Reformatted import statements in ZustandCounterServiceInterface.ts for improved readability.
+  - Removed unnecessary blank lines to enhance code cleanliness.
+
+  These changes aim to improve the overall structure and maintainability of the ZustandCounterService interface file.
+
 ## 0.0.4
 
 ### Patch Changes
