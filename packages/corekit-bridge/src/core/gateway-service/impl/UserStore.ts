@@ -177,10 +177,9 @@ export interface UserStoreOptions<
  * @example Reactive usage
  * ```typescript
  * const store = new UserStore<User, Credential>({});
- * const underlyingStore = store.getStore();
+ * const port = store.getStore();
  *
- * // Subscribe to state changes
- * underlyingStore.observe((state) => {
+ * port.subscribe((state) => {
  *   if (state.loading) {
  *     console.log('Authentication in progress...');
  *   } else if (state.status === 'success') {
@@ -300,7 +299,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    *   // Example: Check if credential has expired
    *   if (credential.expiresAt && Date.now() < credential.expiresAt) {
    *     // Credential is valid, set status to SUCCESS
-   *     store.updateState({
+   *     store.emit({
    *       status: AsyncStoreStatus.SUCCESS,
    *       loading: false,
    *       error: null
@@ -327,7 +326,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    *     // Validate credential with server
    *     const isValid = await validateCredential(credential);
    *     if (isValid) {
-   *       store.updateState({
+   *       store.emit({
    *         status: AsyncStoreStatus.SUCCESS,
    *         loading: false,
    *         error: null
@@ -338,7 +337,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    *     }
    *   } catch (error) {
    *     // Validation failed, keep status as DRAFT
-   *     store.updateState({ error });
+   *     store.emit({ error });
    *   }
    * }
    * ```
@@ -354,7 +353,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * // After restore, if credential exists, treat as authenticated
    * const credential = store.getCredential();
    * if (credential) {
-   *   store.updateState({
+   *   store.emit({
    *     status: AsyncStoreStatus.SUCCESS,
    *     loading: false,
    *     error: null,
@@ -381,7 +380,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
       const hasRestoredCredential =
         credential !== null && credential !== undefined;
 
-      // Prepare state updates to be applied in a single updateState call
+      // Prepare state updates to be applied in a single emit() call
       const stateUpdates: Partial<UserStateInterface<User, Credential>> = {};
 
       // Add credential if restored
@@ -405,9 +404,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
 
       // Apply all state updates in a single call
       if (Object.keys(stateUpdates).length > 0) {
-        this.updateState<UserStateInterface<User, Credential>>(stateUpdates, {
-          persist: false
-        });
+        this.emit(stateUpdates, { persist: false });
       }
 
       return credential as R;
@@ -590,7 +587,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    */
   public setCredential(credential: Credential | null): void {
     // Update state with credential
-    this.updateState<UserStateInterface<User, Credential>>({
+    this.emit({
       credential: credential
     });
   }
@@ -619,7 +616,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @param user - The user information to store, or `null` to clear
    */
   public setUser(user: User | null): void {
-    this.updateState({
+    this.emit({
       result: user
     });
   }

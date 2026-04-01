@@ -56,59 +56,37 @@ export type StoreUpdateValue<T> = T extends readonly unknown[]
  * Minimal store adapter contract (implementation-agnostic)
  *
  * - Significance: lets modules depend on a stable surface without importing `@qlover/slice-store`
- * - Core idea: four operations — access backing store, reset, apply patch, read snapshot
+ * - Core idea: four operations — `reset`, `update`, `getState`, `subscribe`
  * - Main function: act as the widest adapter type when state shape is not fixed at compile time
  * - Main purpose: bridge custom stores, tests, or facades that are not `SliceStore`-shaped
  *
  * Core features:
- * - `getStore` — escape hatch to the real store for store-specific APIs
  * - `reset` — restore initial or maker-defined state (exact semantics are implementation-defined)
- * - `update` — apply a patch; value is `unknown` at this level so non-slice stores can accept ad-hoc payloads
- * - `getState` — read current snapshot as `unknown`; callers cast or narrow after type guards
+ * - `update` — apply a patch or replacement (`State` or {@link StoreUpdateValue})
+ * - `getState` — read the current typed snapshot
+ * - `subscribe` — reactive updates `(state, prevState) => void`
  *
  * Design decisions:
- * - `update` / `getState` use `unknown` here to keep the base interface store-agnostic; use
- *   {@link SliceStoreAdapter} when state type `T` is known and tied to `SliceStore<T>`
+ * - `StoreInterface` is a **contract only** (since 3.0.0); it is not a runtime class — implement it
+ *   with {@link SliceStoreAdapter}, {@link ZustandStoreAdapter}, or your own adapter.
  * - Prefer narrowing at boundaries (validate then cast) instead of `any`
  *
- * Relationship to `StoreInterface`:
- * - Legacy code often subclasses `StoreInterface` and uses `cloneState` + `emit`; adapter code can wrap
- *   that instance and expose `update` as shallow merge equivalent (see `WithSliceStore`)
+ * Relationship to higher-level stores:
+ * - Features like `AsyncStore` hold an internal `StoreInterface<State>` (often a `SliceStoreAdapter`)
+ *   and expose `getStore()` for `subscribe` / `reset` / `update` / `getState`.
+ * - Legacy “extend abstract StoreInterface + cloneState + emit” patterns should migrate to
+ *   `SliceStore` + `implements StoreInterface` or composition (see {@link MessagesStore}).
  *
- * You can implement the StoreInterface interface in your implementation layer for different store implementations like SliceStore, zustand, redux, etc., to provide flexible storage call options for the project.
- *
- * Since 3.0.0, the original StoreInterface abstract class has officially become the StoreInterface interface
- *
- * @template Store - Type of the backing store instance returned from `getStore`
- *
- * @exmaple When use SliceStore
+ * @example Default adapter (`SliceStore` under the hood)
  * ```ts
- * import { SliceStore } from '@qlover/slice-store';
+ * import { SliceStoreAdapter } from '@qlover/corekit-bridge'; // package entry
  *
  * class MyState implements StoreStateInterface {
- *   data: string = '';
+ *   data = '';
  * }
  *
- * class SliceStoreAdapter extends SliceStore<MyState> implements StoreInterface<MyState> {
- *   constructor() {
- *     super(() => new MyState());
- *   }
- *   reset(): void {
- *     this.reset();
- *   }
- *
- *   update(value: MyState): void {
- *     this.emit(value);
- *   }
- *
- *   getState(): MyState {
- *     return this.state;
- *   }
- *
- *   subscribe(listener: (state: MyState, prevState: MyState) => void): () => void {
- *     return this.observe(listener);
- *   }
- * }
+ * const port: StoreInterface<MyState> = new SliceStoreAdapter(() => new MyState());
+ * port.subscribe((state) => console.log(state.data));
  * ```
  *
  * @example When use zustand
@@ -130,8 +108,9 @@ export type StoreUpdateValue<T> = T extends readonly unknown[]
  *   update(value: MyState): void;
  *   update(value: StoreUpdateValue<MyState>): void;
  *   update(value: StoreUpdateValue<MyState>): void {
- *     // ... shallow merge for object-like state (incl. class instances)
- *     this.store.setState(next as MyState, true);
+ *     const prev = this.store.getState();
+ *     const next = shallowMerge(prev, value); // align with {@link StoreUpdateValue} rules
+ *     this.store.setState(next, true);
  *   }
  *   getState(): MyState {
  *     return this.store.getState();
@@ -146,6 +125,39 @@ export type StoreUpdateValue<T> = T extends readonly unknown[]
  * ```ts
  * function resetAll(...adapters: WithStoreInterface<unknown>[]) {
  *   for (const a of adapters) a.reset();
+ * }
+ * ```
+ *
+ * @example Partial `update` on object state
+ * ```ts
+ * port.update({ data: 'patched' }); // shallow merge into current snapshot from {@link StoreInterface.getState}
+ * ```
+ *
+ * @example `isStoreInterface` at module boundaries
+ * ```ts
+ * function asStorePort(x: unknown): StoreInterface<MyState> | undefined {
+ *   return isStoreInterface<MyState>(x) ? x : undefined;
+ * }
+ * ```
+ *
+ * @example Composition — facade exposes `readonly store`
+ * ```ts
+ * import { SliceStoreAdapter } from '../impl/SliceStoreAdapter';
+ *
+ * class FeatureState implements StoreStateInterface {
+ *   count = 0;
+ * }
+ *
+ * class FeatureStore {
+ *   readonly store: StoreInterface<FeatureState>;
+ *
+ *   constructor(store = new SliceStoreAdapter(() => new FeatureState())) {
+ *     this.store = store;
+ *   }
+ *
+ *   emit(patch: Partial<FeatureState>) {
+ *     this.store.update(patch);
+ *   }
  * }
  * ```
  *

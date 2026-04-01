@@ -31,8 +31,9 @@ import { isServiceName } from '../utils/typeGuards';
  * - Store configuration: Store instance or options for state management
  *
  * Design decisions:
- * - Extends AsyncStoreOptions: Inherits store configuration options
- * - Flexible store configuration: Can accept store instance or store options
+ * - Builds on `AsyncStoreOptions` but **omits** `store` and redeclares it as {@link AsyncStoreInterface}
+ *   (gateway services inject an async facade, not a bare {@link StoreInterface})
+ * - Other async options (`storage`, `defaultState`, …) are unchanged
  *
  * @since `1.8.0`
  * @template T - The type of data stored in the async store
@@ -367,8 +368,9 @@ export class GatewayService<
    *
    * @example Subscribe to state changes
    * ```typescript
-   * const store = service.getStore();
-   * store.observe((state) => {
+   * const asyncStore = service.getStore();
+   * const port = asyncStore.getStore();
+   * port.subscribe((state) => {
    *   console.log('State changed:', state);
    * });
    * ```

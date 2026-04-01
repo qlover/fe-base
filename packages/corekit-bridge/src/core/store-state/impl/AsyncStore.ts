@@ -149,17 +149,10 @@ export interface AsyncStoreOptions<
   initRestore?: boolean;
 
   /**
-   * Store instance
+   * Composed {@link StoreInterface} for snapshots (`update` / `getState` / `subscribe` / `reset`)
    *
-   * The store instance to use for state updates.
-   * If provided, the store will be used to update state.
-   * If not provided, a new store will be created.
-   *
-   * TODO: Remove this option, use store adapter to create store instance instead.
-   *
-   * This option is for compatibility with old code, it will be removed in the future.
-   *
-   * @default `SliceStoreAdapter`
+   * If omitted, {@link createAsyncStoreInterface} builds a default {@link SliceStoreAdapter}.
+   * Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping `AsyncStore`.
    */
   store?: StoreInterface<State>;
 }
@@ -175,7 +168,7 @@ export interface AsyncStoreOptions<
  * Core features:
  * - Async operation lifecycle: Start, stop, success, failure handling with automatic state updates
  * - Persistent storage: Optional automatic state persistence to storage backends
- * - Reactive state: Extends `PersistentStoreInterface` for reactive state subscriptions
+ * - Reactive state: Composes {@link StoreInterface} (default {@link SliceStoreAdapter}); use `getStore().subscribe`
  * - Status tracking: Complete status management (DRAFT, PENDING, SUCCESS, FAILED, STOPPED)
  * - Duration calculation: Track and calculate operation duration from timestamps
  * - Flexible storage: Support storing only result value or full state object
@@ -216,8 +209,8 @@ export interface AsyncStoreOptions<
  * ```typescript
  * const store = new AsyncStore<User, string>({ storage: null });
  *
- * // Subscribe to state changes
- * store.observe((state) => {
+ * const port = store.getStore();
+ * port.subscribe((state) => {
  *   if (state.loading) {
  *     console.log('Loading...');
  *   } else if (state.result) {
@@ -307,10 +300,7 @@ export class AsyncStore<
     this.store = createAsyncStoreInterface(options);
   }
 
-  protected override update(
-    _state: S | StoreUpdateValue<S>,
-    _options?: { persist?: boolean }
-  ): void {
+  protected override update(_state: S | StoreUpdateValue<S>): void {
     this.store.update(_state as StoreUpdateValue<S>);
   }
 
@@ -360,14 +350,16 @@ export class AsyncStore<
           | S['result']
           | null;
         if (value !== null && value !== undefined) {
-          this.updateState({ result: value }, { persist: false });
+          this.emit({ result: value } as StoreUpdateValue<S>, {
+            persist: false
+          });
           return this.getResult() as R;
         }
       } else {
         // When storageResult is false, storage contains the full state object
         const state = this.storage.getItem(this.storageKey) as S | null;
         if (state !== null && state !== undefined) {
-          this.updateState(state, { persist: false });
+          this.emit(state, { persist: false });
           return this.getState() as unknown as R;
         }
       }
@@ -441,23 +433,34 @@ export class AsyncStore<
   /**
    * Get the underlying store instance
    *
-   * Returns the store instance itself, enabling reactive state subscriptions.
-   * This method is required by `AsyncStoreInterface` and allows consumers to
-   * subscribe to state changes using the store's `observe()` method.
+   * Returns the composed {@link StoreInterface} (typically {@link SliceStoreAdapter}), enabling
+   * reactive subscriptions via {@link StoreInterface.subscribe}.
    *
    * @override
    * @returns The store instance for reactive subscriptions
    *
    * @example Subscribe to state changes
    * ```typescript
-   * const store = asyncStore.getStore();
-   * store.observe((state) => {
+   * const port = asyncStore.getStore();
+   * port.subscribe((state) => {
    *   console.log('State changed:', state);
    * });
    * ```
    */
   public getStore(): StoreInterface<S> {
     return this.store;
+  }
+
+  /**
+   * Apply a patch or full snapshot, then persist when configured (see {@link PersistentStore.emit})
+   *
+   * @override
+   */
+  public override emit(
+    state: S | StoreUpdateValue<S>,
+    options?: { persist?: boolean }
+  ): void {
+    super.emit(state as S, options);
   }
 
   /**
@@ -491,12 +494,14 @@ export class AsyncStore<
    * ```
    */
   public start(result?: S['result'] | undefined): void {
-    this.updateState({
-      loading: true,
-      result,
-      status: AsyncStoreStatus.PENDING,
-      startTime: Date.now()
-    });
+    this.emit(
+      {
+        loading: true,
+        result,
+        status: AsyncStoreStatus.PENDING,
+        startTime: Date.now()
+      } as StoreUpdateValue<S>
+    );
   }
 
   /**
@@ -535,13 +540,15 @@ export class AsyncStore<
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
 
-    this.updateState({
-      loading: false,
-      error,
-      result: newResult,
-      status: AsyncStoreStatus.STOPPED,
-      endTime: Date.now()
-    });
+    this.emit(
+      {
+        loading: false,
+        error,
+        result: newResult,
+        status: AsyncStoreStatus.STOPPED,
+        endTime: Date.now()
+      } as StoreUpdateValue<S>
+    );
   }
 
   /**
@@ -605,13 +612,15 @@ export class AsyncStore<
     // Otherwise, preserve the existing result
     const newResult = result !== undefined ? result : this.getState().result;
 
-    this.updateState({
-      loading: false,
-      error,
-      result: newResult,
-      status: AsyncStoreStatus.FAILED,
-      endTime: Date.now()
-    });
+    this.emit(
+      {
+        loading: false,
+        error,
+        result: newResult,
+        status: AsyncStoreStatus.FAILED,
+        endTime: Date.now()
+      } as StoreUpdateValue<S>
+    );
   }
 
   /**
@@ -649,13 +658,15 @@ export class AsyncStore<
    * ```
    */
   public success(result: S['result']): void {
-    this.updateState({
-      loading: false,
-      result,
-      error: null,
-      status: AsyncStoreStatus.SUCCESS,
-      endTime: Date.now()
-    });
+    this.emit(
+      {
+        loading: false,
+        result,
+        error: null,
+        status: AsyncStoreStatus.SUCCESS,
+        endTime: Date.now()
+      } as StoreUpdateValue<S>
+    );
   }
 
   /**
@@ -692,54 +703,6 @@ export class AsyncStore<
    */
   public getState(): S {
     return this.store.getState();
-  }
-
-  /**
-   * Update store state with partial state object
-   *
-   * Merges the provided partial state into the current state. This allows
-   * fine-grained control over state updates without replacing the entire state.
-   *
-   * Behavior:
-   * - Merges provided properties into current state
-   * - Only updates specified properties, others remain unchanged
-   * - Type-safe: Only accepts properties that exist in the state interface
-   * - Automatically persists state to storage (unless `persist: false` is specified)
-   *
-   * @override
-   * @template T - The state type that extends `AsyncStateInterface<T>`
-   * @param state - Partial state object containing properties to update
-   *   Only specified properties will be updated, others remain unchanged
-   * @param options - Optional configuration for emit behavior
-   * @param options.persist - Whether to persist state to storage
-   *   - `true` or `undefined`: Persist state to storage (default behavior)
-   *   - `false`: Skip persistence, useful during restore operations
-   *   @default `true`
-   *
-   * @example Update loading state only
-   * ```typescript
-   * store.updateState({ loading: true });
-   * ```
-   *
-   * @example Update multiple properties
-   * ```typescript
-   * store.updateState({
-   *   loading: false,
-   *   result: data,
-   *   endTime: Date.now()
-   * });
-   * ```
-   *
-   * @example Update without persistence
-   * ```typescript
-   * store.updateState({ loading: true }, { persist: false });
-   * ```
-   */
-  public updateState<T = S>(
-    state: Partial<T>,
-    options?: { persist?: boolean }
-  ): void {
-    return this.update(state as StoreUpdateValue<S>, options);
   }
 
   /**

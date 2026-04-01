@@ -396,7 +396,7 @@ describe('UserStore', () => {
       expect(store.getCredential()).toEqual(testCredential);
 
       // Manually set status to SUCCESS based on application logic
-      store.updateState({
+      store.emit({
         status: AsyncStoreStatus.SUCCESS,
         loading: false,
         error: null,
@@ -724,7 +724,7 @@ describe('UserStore', () => {
       const credential = store.getCredential();
       if (credential && credential.expiresIn > 0) {
         // Credential is valid, set status to SUCCESS
-        store.updateState({
+        store.emit({
           status: AsyncStoreStatus.SUCCESS,
           loading: false,
           error: null,

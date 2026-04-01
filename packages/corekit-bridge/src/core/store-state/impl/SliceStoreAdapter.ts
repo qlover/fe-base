@@ -120,7 +120,7 @@ function sliceStoreMakerFromInit<T>(seed: T, init: () => T): () => T {
  *
  * @example Overload 1 — wrap `StoreInterface` subclass (see `interface/StoreInterface.ts`)
  * ```ts
- * // class MyStore extends StoreInterface<MyState> { … }
+ * // class MyStore extends SliceStore<MyState> implements StoreInterface<MyState> { … }
  * const w = new SliceStoreAdapter<MyState, MyStore>(() => new MyStore());
  * w.getStore(); // MyStore
  * w.reset();

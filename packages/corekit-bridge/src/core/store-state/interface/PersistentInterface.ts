@@ -23,7 +23,8 @@ import type { StoreStateInterface } from './StoreInterface';
  * - State type constraint: `persist()` state parameter must extend `T` to ensure type safety
  *
  * Implementation pattern:
- * - Typically implemented by classes that extend `StoreInterface`
+ * - Typically implemented by {@link PersistentStore} subclasses (or similar) that forward snapshots
+ *   through a composed {@link StoreInterface} and implement `restore` / `persist`
  * - Storage operations should handle errors gracefully (e.g., return `null` on failure)
  * - `restore()` should not trigger persistence to avoid circular updates
  * - `persist()` should handle storage unavailability gracefully (no-op if storage is `null`)
@@ -35,98 +36,54 @@ import type { StoreStateInterface } from './StoreInterface';
  * @template Key - The type of keys used in storage (e.g., `string`, `number`, `symbol`, or custom types)
  * @template Opt - The type of options for storage operations (defaults to `unknown`)
  *
- * @example Basic usage
+ * @example Contract — three responsibilities
  * ```typescript
- * class MyStoreState implements StoreStateInterface {
- *   data: string = '';
- * }
- *
- * class MyStore extends StoreInterface<MyStoreState>
- *   implements PersistentStoreInterface<MyStoreState, string> {
- *   private readonly storageKey = 'my-state';
- *
- *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
- *     super(() => new MyStoreState());
- *     this.storage = storage;
- *   }
- *
- *   private storage: StorageInterface<string, MyStoreState> | null;
- *
- *   getStorage(): StorageInterface<string, MyStoreState> | null {
- *     return this.storage;
- *   }
- *
- *   restore(): MyStoreState | null {
- *     if (!this.storage) return null;
- *     try {
- *       const value = this.storage.getItem(this.storageKey);
- *       if (value) {
- *         const restoredState = new MyStoreState();
- *         Object.assign(restoredState, value);
- *         // Update state without triggering persist
- *         this.emit(restoredState, { persist: false });
- *         return restoredState;
- *       }
- *     } catch {
- *       return null;
- *     }
- *     return null;
- *   }
- *
- *   persist(state?: MyStoreState): void {
- *     if (!this.storage) return;
- *     const stateToPersist = state ?? this.state;
- *     this.storage.setItem(this.storageKey, stateToPersist);
- *   }
- * }
+ * const backend = port.getStorage(); // `StorageInterface` or `null` when persistence is off
+ * const hydrated = port.restore(); // load/validate; must not immediately write the same bytes back
+ * port.persist(); // snapshot current (or pass an explicit snapshot where your API allows)
  * ```
  *
- * @example With expiration support (optional)
+ * @example Production path — {@link AsyncStore} + reactive port
  * ```typescript
- * // State interface defines expiration field if needed
- * class ExpiringStoreState implements StoreStateInterface {
- *   data: string = '';
- *   expires?: number | Date | null; // Optional expiration support
- * }
+ * import { AsyncStore } from '../impl/AsyncStore';
+ * import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
  *
- * class ExpiringStore extends StoreInterface<ExpiringStoreState>
- *   implements PersistentStoreInterface<ExpiringStoreState, string> {
- *   restore(): ExpiringStoreState | null {
- *     if (!this.storage) return null;
- *     try {
- *       const stored = this.storage.getItem('expiring-state');
- *       if (stored) {
- *         const state = new ExpiringStoreState();
- *         Object.assign(state, stored);
+ * type User = { id: string; name: string };
  *
- *         // Check expiration if present
- *         if (state.expires) {
- *           const expiresAt =
- *             typeof state.expires === 'number'
- *               ? state.expires
- *               : state.expires.getTime();
- *           if (Date.now() > expiresAt) {
- *             // State expired, remove from storage
- *             this.storage.removeItem('expiring-state');
- *             return null;
- *           }
- *         }
+ * const session = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+ *   storage: storageBackend,
+ *   storageKey: 'session-user',
+ *   defaultState: () => null
+ * });
  *
- *         this.emit(state, { persist: false });
- *         return state;
- *       }
- *     } catch {
- *       return null;
- *     }
- *     return null;
+ * session.restore();
+ *
+ * const unsubscribe = session.getStore().subscribe((state, prev) => {
+ *   if (state.loading) return;
+ *   if (state.result && state.result !== prev.result) {
+ *     console.log('user ready', state.result.id);
  *   }
+ * });
+ * ```
  *
- *   persist(state?: ExpiringStoreState): void {
- *     if (!this.storage) return;
- *     const stateToPersist = state ?? this.state;
- *     this.storage.setItem('expiring-state', stateToPersist);
- *   }
- * }
+ * @example Avoid persist loops during `restore`
+ * When applying data you just read from storage, use your stack’s equivalent of
+ * {@link PersistentStore.emit} with `{ persist: false }` so hydration does not trigger
+ * an immediate write-back of the same payload.
+ *
+ * @example Custom {@link StoreInterface} inside {@link AsyncStore}
+ * ```typescript
+ * import type { AsyncStoreStateInterface } from '../impl/AsyncStore';
+ * import type { StoreInterface } from './StoreInterface';
+ *
+ * type User = { id: string };
+ * declare const customPort: StoreInterface<AsyncStoreStateInterface<User>>;
+ *
+ * const asyncStore = new AsyncStore<AsyncStoreStateInterface<User>, string>({
+ *   storage: null,
+ *   defaultState: () => null,
+ *   store: customPort
+ * });
  * ```
  */
 export interface PersistentInterface<
@@ -231,14 +188,12 @@ export interface PersistentInterface<
    *
    * @example Restore during initialization
    * ```typescript
-   * class MyStore extends StoreInterface<MyStoreState>
-   *   implements PersistentStoreInterface<MyStoreState, string> {
+   * class MyStore extends PersistentStore<MyStoreState, string> {
    *   constructor(storage: StorageInterface<string, MyStoreState> | null = null) {
-   *     super(() => new MyStoreState());
-   *     this.storage = storage;
-   *     // Restore state after initialization
+   *     super(storage, false);
    *     this.restore();
    *   }
+   *   // implement restore / persist / update
    * }
    * ```
    */

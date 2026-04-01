@@ -128,10 +128,9 @@ export interface UserStateInterface<
  * @example Reactive usage
  * ```typescript
  * const store = new UserServiceStore<TokenCredential, User>({});
- * const underlyingStore = store.getStore();
+ * const port = store.getStore();
  *
- * // Subscribe to state changes
- * underlyingStore.observe((state) => {
+ * port.subscribe((state) => {
  *   if (state.loading) {
  *     console.log('Authentication in progress...');
  *   } else if (state.status === 'success') {
@@ -155,8 +154,8 @@ export interface UserStoreInterface<
    *
    * @example Subscribe to state changes
    * ```typescript
-   * const store = userServiceStore.getStore();
-   * store.observe((state) => {
+   * const port = userServiceStore.getStore();
+   * port.subscribe((state) => {
    *   console.log('State changed:', state);
    * });
    * ```
