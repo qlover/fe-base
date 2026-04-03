@@ -12,7 +12,7 @@ import type {
   UserServiceInterface
 } from '@interfaces/UserServiceInterface';
 import { AppUserGateway } from './AppUserGateway';
-import type { AppApiConfig } from './AppApiRequester';
+import type { AppApiConfig } from './appApi/AppApiRequester';
 import type {
   SliceStoreAdapter,
   UserStateInterface

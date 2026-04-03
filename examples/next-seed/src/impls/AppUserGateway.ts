@@ -11,7 +11,7 @@ import {
   AppApiConfig,
   AppApiRequester,
   AppApiRequesterContext
-} from './AppApiRequester';
+} from './appApi/AppApiRequester';
 import type { LoginParams } from '@qlover/corekit-bridge';
 
 /**

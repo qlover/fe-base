@@ -6,8 +6,8 @@ import {
 import type { RequestEncryptPluginProps } from '@/impls/RequestEncryptPlugin';
 import { injectable } from '@shared/container';
 import type { AppApiResult } from '@interfaces/AppApiInterface';
-import { AppApiPluginOptions } from './appApi/AppApiPlugin';
-import type { DialogErrorConfig } from './DialogErrorPlugin';
+import { AppApiPluginOptions } from './AppApiPlugin';
+import type { DialogErrorConfig } from '../DialogErrorPlugin';
 import type {
   ExecutorContextInterface,
   RequestAdapterConfig,
