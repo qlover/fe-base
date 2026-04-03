@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { UserAuthFailed } from '@/uikit/components/UserAuthFailed';
 import { RequestLogsTable } from '@/uikit/components-pages/RequestLogsTable';
 import { WithUserAuth } from '@/uikit/components-pages/WithUserAuth';
+import { PageI18nProvider } from '@/uikit/context/PageI18nContext';
 import { useI18nMapping } from '@/uikit/hook/useI18nMapping';
 import { defaultNavItems } from '@config/adminNavs';
 import { API_USER_REQUEST_LOGS } from '@config/apiRoutes';
@@ -66,34 +67,21 @@ export default function AdminRequestLogsPage({}: AdminRequestLogsProps) {
   }, []);
 
   return (
-    <WithUserAuth failedElement={<UserAuthFailed />}>
-      <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
-        <div data-testid="PagesRoute-AdminRequestLogsPage">
-          <h1 className="text-2xl font-semibold text-primary-text mb-6">
-            {seoMetadata.title}
-          </h1>
-          <p className="text-secondary-text mb-6">{seoMetadata.description}</p>
-          <RequestLogsTable
-            rows={rows}
-            locale={locale}
-            loading={loading}
-            tt={{
-              colTime: seoMetadata.colTime,
-              colCategory: seoMetadata.colCategory,
-              colType: seoMetadata.colType,
-              colSuccess: seoMetadata.colSuccess,
-              colHttp: seoMetadata.colHttp,
-              colStatus: seoMetadata.colStatus,
-              colDuration: seoMetadata.colDuration,
-              colIp: seoMetadata.colIp,
-              colLoginMethod: seoMetadata.colLoginMethod,
-              colError: seoMetadata.colError,
-              empty: seoMetadata.empty
-            }}
-          />
-        </div>
-      </AdminLayout>
-    </WithUserAuth>
+    <PageI18nProvider value={seoMetadata}>
+      <WithUserAuth failedElement={<UserAuthFailed />}>
+        <AdminLayout seoMetadata={seoMetadata} navItems={defaultNavItems}>
+          <div>
+            <h1 className="text-2xl font-semibold text-primary-text mb-6">
+              {seoMetadata.title}
+            </h1>
+            <p className="text-secondary-text mb-6">
+              {seoMetadata.description}
+            </p>
+            <RequestLogsTable rows={rows} locale={locale} loading={loading} />
+          </div>
+        </AdminLayout>
+      </WithUserAuth>
+    </PageI18nProvider>
   );
 }
 

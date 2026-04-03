@@ -1,7 +1,9 @@
 'use client';
 
 import { Table } from 'antd';
+import type { AdminRequestLogsI18nInterface } from '@config/i18n-mapping/admin18n';
 import type { RequestLogRow } from '@schemas/RequestLogSchema';
+import { usePageI18nMapping } from '../context/PageI18nContext';
 import type { ColumnsType } from 'antd/es/table';
 
 export type RequestLogsTableTt = {
@@ -53,10 +55,10 @@ function formatError(row: RequestLogRow): string {
 export function RequestLogsTable(props: {
   rows: RequestLogRow[];
   locale: string;
-  tt: RequestLogsTableTt;
   loading?: boolean;
 }) {
-  const { rows, locale, tt, loading } = props;
+  const tt = usePageI18nMapping<AdminRequestLogsI18nInterface>();
+  const { rows, locale, loading } = props;
   const localeTag = locale === 'zh' ? 'zh-CN' : 'en-US';
 
   const columns: ColumnsType<RequestLogRow> = [
