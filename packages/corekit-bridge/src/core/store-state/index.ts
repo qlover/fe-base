@@ -1,4 +1,5 @@
 export * from './interface/StoreInterface';
+export * from './interface/PersistentInterface';
 export * from './impl/SliceStoreAdapter';
 export * from './impl/ZustandStoreAdapter';
 export * from './impl/PersistentStore';

@@ -159,7 +159,12 @@ class TestPersistentStore extends PersistentStore<TestState, string> {
   /**
    * @override
    */
-  protected override update(state: TestState | StoreUpdateValue<TestState>): void {
+  public emit(
+    state: TestState | StoreUpdateValue<TestState>,
+    options?: { persist?: boolean }
+  ): void {
+    super.emit(state, options);
+
     if (state instanceof TestState) {
       this._state = state;
       return;

@@ -1,3 +1,4 @@
+import type { StoreUpdateValue } from '../../store-state';
 import {
   AsyncStore,
   type AsyncStoreOptions
@@ -426,7 +427,7 @@ export class UserStore<User, Credential, Key, Opt = unknown>
    * @param _state - Optional state parameter (ignored, kept for interface compatibility)
    */
   public override persist<T extends UserStateInterface<User, Credential>>(
-    _state?: T | undefined
+    _state?: T | StoreUpdateValue<T>
   ): void {
     const storage = this.getStorage();
     if (!storage) {
