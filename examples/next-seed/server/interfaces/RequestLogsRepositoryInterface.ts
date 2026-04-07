@@ -5,6 +5,8 @@ export type RequestLogInsert = {
   event_category: string;
   event_type: string;
   success?: boolean;
+  /** API/request correlation id when known (e.g. AppApiResult.requestId). */
+  request_id?: string | null;
   payload?: Record<string, unknown> | null;
 };
 

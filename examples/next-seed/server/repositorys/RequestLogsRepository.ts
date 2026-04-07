@@ -18,6 +18,7 @@ const LIST_FIELDS = [
   'event_category',
   'event_type',
   'success',
+  'request_id',
   'payload'
 ] as const;
 
@@ -44,6 +45,7 @@ export class RequestLogsRepository
           event_category: row.event_category,
           event_type: row.event_type,
           success: row.success ?? true,
+          request_id: row.request_id ?? null,
           payload: row.payload ?? null
         }
       });

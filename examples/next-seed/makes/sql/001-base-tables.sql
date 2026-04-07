@@ -8,6 +8,7 @@ create table public.request_logs (
   event_category text not null,
   event_type text not null,
   success boolean not null default true,
+  request_id uuid,
   payload jsonb
 );
 
@@ -17,12 +18,14 @@ comment on column public.request_logs.created_at is 'Row insert time (event reco
 comment on column public.request_logs.updated_at is 'Last update time; append-only rows typically match created_at.';
 comment on column public.request_logs.event_category is 'High-level group, e.g. api, auth, system.';
 comment on column public.request_logs.event_type is 'Concrete event, e.g. http.request, login, logout.';
+comment on column public.request_logs.request_id is 'Optional correlation id for an API/request lifecycle (e.g. AppApiResult.requestId); auth-only rows may be null.';
 comment on column public.request_logs.payload is 'Event-specific context: HTTP fields, IP, errors, correlation_id, auth_provider, etc.';
 
 create index idx_request_logs_user_id on public.request_logs (user_id);
 create index idx_request_logs_created_at on public.request_logs (created_at desc);
 create index idx_request_logs_category on public.request_logs (event_category);
 create index idx_request_logs_event_type on public.request_logs (event_type);
+create index idx_request_logs_request_id on public.request_logs (request_id);
 
 alter table public.request_logs enable row level security;
 

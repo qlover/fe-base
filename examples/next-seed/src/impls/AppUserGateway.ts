@@ -1,5 +1,11 @@
 import { HttpMethods, RequestExecutor } from '@qlover/fe-corekit';
 import { inject, injectable } from '@shared/container';
+import {
+  API_USER_LOGIN,
+  API_USER_LOGOUT,
+  API_USER_REGISTER,
+  API_USER_SESSION
+} from '@config/apiRoutes';
 import { UserCredential, UserSchema } from '@schemas/UserSchema';
 import type {
   UserApiLoginTransaction,
@@ -49,7 +55,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiLoginTransaction['request']
     >({
       ..._config,
-      url: '/user/session',
+      url: API_USER_SESSION,
       method: HttpMethods.GET
     });
 
@@ -70,7 +76,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiLoginTransaction['response'],
       UserApiLoginTransaction['request']
     >({
-      url: '/user/login',
+      url: API_USER_LOGIN,
       method: HttpMethods.POST,
       data: params,
       encryptProps: 'password'
@@ -93,7 +99,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiRegisterTransaction['response'],
       UserApiRegisterTransaction['request']
     >({
-      url: '/user/register',
+      url: API_USER_REGISTER,
       method: HttpMethods.POST,
       data: params,
       encryptProps: 'password'
@@ -114,7 +120,7 @@ export class AppUserGateway implements UserServiceGatewayInterface {
       UserApiLogoutTransaction['response'],
       UserApiLogoutTransaction['request']
     >({
-      url: '/user/logout',
+      url: API_USER_LOGOUT,
       method: HttpMethods.POST
     });
 

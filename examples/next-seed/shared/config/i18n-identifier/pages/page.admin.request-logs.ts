@@ -27,6 +27,14 @@ export const ADMIN_REQUEST_LOGS_KEYWORDS = 'admin_request_logs:keywords';
 export const ADMIN_REQUEST_LOGS_COL_TIME = 'admin_request_logs:col__time';
 
 /**
+ * @description Table column — request id
+ * @localZh 请求 ID
+ * @localEn Request ID
+ */
+export const ADMIN_REQUEST_LOGS_COL_REQUEST_ID =
+  'admin_request_logs:col__request_id';
+
+/**
  * @description Table column — category
  * @localZh 类别
  * @localEn Category

@@ -8,6 +8,7 @@ import type { ColumnsType } from 'antd/es/table';
 
 export type RequestLogsTableTt = {
   colTime: string;
+  colRequestId: string;
   colCategory: string;
   colType: string;
   colSuccess: string;
@@ -72,6 +73,19 @@ export function RequestLogsTable(props: {
           dateStyle: 'medium',
           timeStyle: 'short'
         })
+    },
+    {
+      title: tt.colRequestId,
+      dataIndex: 'request_id',
+      key: 'request_id',
+      width: 200,
+      ellipsis: true,
+      render: (v: string | null) =>
+        v != null && v !== '' ? (
+          <span className="font-mono text-xs">{v}</span>
+        ) : (
+          '—'
+        )
     },
     {
       title: tt.colCategory,

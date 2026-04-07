@@ -18,13 +18,14 @@ export type RequestLogPayload = {
 };
 
 export const requestLogRowSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid().nullable(),
+  id: z.uuid(),
+  user_id: z.uuid().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   event_category: z.string(),
   event_type: z.string(),
   success: z.boolean(),
+  request_id: z.uuid().nullable(),
   payload: z.record(z.string(), z.unknown()).nullable()
 });
 

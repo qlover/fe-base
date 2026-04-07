@@ -61,7 +61,7 @@ export class AppApiRequester extends RequestExecutor<
   constructor() {
     super(
       new RequestAdapterFetch({
-        baseURL: '/api',
+        // baseURL: '/api',
         responseType: 'json'
       }),
       new LifecycleExecutor()

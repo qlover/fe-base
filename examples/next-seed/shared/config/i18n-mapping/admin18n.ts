@@ -42,6 +42,7 @@ export const adminRequestLogs18n = Object.freeze({
   content: requestLogsKeys.ADMIN_REQUEST_LOGS_DESCRIPTION,
   keywords: requestLogsKeys.ADMIN_REQUEST_LOGS_KEYWORDS,
   colTime: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TIME,
+  colRequestId: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_REQUEST_ID,
   colCategory: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_CATEGORY,
   colType: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_TYPE,
   colSuccess: requestLogsKeys.ADMIN_REQUEST_LOGS_COL_SUCCESS,
