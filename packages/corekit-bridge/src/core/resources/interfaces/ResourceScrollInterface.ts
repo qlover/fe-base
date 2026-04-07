@@ -1,4 +1,5 @@
 import type {
+  ResourceOptions,
   ResourceSearchParams,
   ResourceSearchResult
 } from './ResourceSearchInterface';
@@ -23,6 +24,7 @@ import type {
  *   request parameters exactly (including `cursor` / `page` if stored).
  * - Stateless adapters should require arguments for the three shortcuts (TypeScript cannot enforce—document or reject at runtime).
  * - Hard errors reject the `Promise`. Debounce and intersection observers stay in UI code.
+ * - Optional {@link ResourceOptions} (`resourceOptions`) on each method mirrors {@link ResourceSearchInterface.search}.
  */
 export interface ResourceScrollInterface<
   TItem,
@@ -31,21 +33,33 @@ export interface ResourceScrollInterface<
   /**
    * One window for the given `criteria` (required). Same as {@link ResourceSearchInterface.search}.
    */
-  search(criteria: Criteria): Promise<ResourceSearchResult<TItem>>;
+  search(
+    criteria: Criteria,
+    resourceOptions?: ResourceOptions
+  ): Promise<ResourceSearchResult<TItem>>;
 
   /**
    * Next window. Pass `criteria` with continuation from the last {@link ResourceSearchResult}, or omit to use
    * implementation-held state.
    */
-  loadNext(criteria?: Criteria): Promise<ResourceSearchResult<TItem>>;
+  loadNext(
+    criteria?: Criteria,
+    resourceOptions?: ResourceOptions
+  ): Promise<ResourceSearchResult<TItem>>;
 
   /**
    * First window for this scope. Pass `criteria` to derive scope from, or omit to use stored scope.
    */
-  loadFirst(criteria?: Criteria): Promise<ResourceSearchResult<TItem>>;
+  loadFirst(
+    criteria?: Criteria,
+    resourceOptions?: ResourceOptions
+  ): Promise<ResourceSearchResult<TItem>>;
 
   /**
    * Re-query the current slice. Pass `criteria` to run as-is, or omit to repeat the last stored request.
    */
-  refresh(criteria?: Criteria): Promise<ResourceSearchResult<TItem>>;
+  refresh(
+    criteria?: Criteria,
+    resourceOptions?: ResourceOptions
+  ): Promise<ResourceSearchResult<TItem>>;
 }

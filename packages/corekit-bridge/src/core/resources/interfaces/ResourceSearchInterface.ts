@@ -1,3 +1,11 @@
+import type { ResourceGatewayOptions } from './ResourceCRUDInterface';
+
+/**
+ * Per-call options for list/search/scroll adapters (e.g. {@link ResourceGatewayOptions.signal} for cancellation).
+ * Same shape as {@link ResourceGatewayOptions}; intersect with app-specific types at the call site for typed extras.
+ */
+export type ResourceOptions = ResourceGatewayOptions;
+
 /**
  * One sort level: field name plus optional direction/config (API-specific).
  *
@@ -23,7 +31,7 @@ export interface ResourceSortClause {
 }
 
 /**
- * Shared search/list request fields used by {@link ResourceSearchInterface} and {@link ResourceStore} `searchParams`.
+ * Shared search/list request fields used by {@link ResourceSearchInterface} and {@link ResourceSearchStore} state (`criteria` / `searchParams` patterns).
  * Covers common pagination, sort, keyword, and opaque filter/cursor hooks; domain-specific query shapes should extend
  * this type (intersection / interface `extends`).
  *
@@ -140,7 +148,7 @@ export interface ResourceSearchResult<T> {
  *
  * @remarks
  * **Strengths**
- * - {@link ResourceSearchParams} lives in this module; {@link ResourceStore} can keep `searchParams` typed with the same shape.
+ * - {@link ResourceSearchParams} lives in this module; {@link ResourceSearchStore} can keep `criteria` typed with the same shape.
  * - A single `search` method covers initial load, page changes, filter updates, and refresh (repeat the same `criteria`).
  * - {@link ResourceSearchResult} optional fields allow offset- and cursor-style APIs without forcing unused properties.
  * - Multi-field sorting uses {@link ResourceSearchParams.sort} (array of {@link ResourceSortClause}).
@@ -150,9 +158,11 @@ export interface ResourceSearchResult<T> {
  * - Real products still need a richer `Criteria` (scopes, date ranges, `include` trees, locale, feature flags). Keep those on your extended type; this package only standardizes the portable core.
  * - `filters`, `facets`, and `meta` are intentionally `unknown`; narrow them per API or wrap `search` in your service layer.
  * - Semantics of `page` vs `offset`, `total`, `hasMore`, and cursor stability are not enforced; document per adapter.
- * - No batching, cancellation, or incremental/streaming protocol in this interface.
+ * - Optional {@link ResourceOptions} on each call carries cross-cutting flags (e.g. `signal`); adapter-specific fields
+ *   can be passed via intersection types at the app layer.
+ * - No batching or incremental/streaming protocol beyond one `Promise` per call.
  * - Error shape, partial failures, and empty results are not modeled on the result type—use `Promise` rejection or wrapper types at the app layer if needed.
- * - One `search` call returns one page/window; “append vs replace” list state is a UI/{@link ResourceStore} concern.
+ * - One `search` call returns one page/window; “append vs replace” list state is a UI / {@link ResourceSearchStore} concern.
  *
  * **Single `search` vs overloads / extra methods**
  * - This port keeps **one** `search` entry point: every scenario is “call `search` with the `criteria` you mean”
@@ -174,6 +184,10 @@ export interface ResourceSearchInterface<
    * Run one list/search request for the given criteria (initial load, changed filters, refresh, or next page/cursor).
    *
    * @param criteria - Full query state; defaults for omitted fields are defined by the implementation or caller, not by this type.
+   * @param resourceOptions - Optional per-call flags (abort, tracing, etc.); implementations may ignore unknown fields.
    */
-  search(criteria: Criteria): Promise<ResourceSearchResult<TItem>>;
+  search(
+    criteria: Criteria,
+    resourceOptions?: ResourceOptions
+  ): Promise<ResourceSearchResult<TItem>>;
 }

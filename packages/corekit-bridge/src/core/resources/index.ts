@@ -3,3 +3,8 @@ export * from './interfaces/ResourceCRUDInterface';
 export * from './interfaces/ResourceIOInterface';
 export * from './interfaces/ResourceSearchInterface';
 export * from './interfaces/ResourceScrollInterface';
+export * from './impl/ResourceCRUD';
+export * from './impl/ResourceCRUDStore';
+export * from './impl/ResourceSearch';
+export * from './impl/ResourceSearchStore';
+export * from './impl/ResourceScroll';

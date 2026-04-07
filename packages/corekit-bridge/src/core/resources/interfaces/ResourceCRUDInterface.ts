@@ -1,6 +1,10 @@
 /** Scalar handle for the first overload of {@link detail}, {@link update}, and {@link remove} (extend at app level if needed). */
 export type RefType = string | number;
 
+export type ResourceGatewayOptions = {
+  signal?: AbortSignal;
+};
+
 /**
  * Port for resource CRUD only: detail, create, update, remove. Browse/search (paged list, infinite scroll,
  * refresh flows) should live on a separate search/query interface.
@@ -31,7 +35,7 @@ export interface ResourceCRUDInterface<T, Snapshot = T> {
    *
    * @param ref - {@link RefType} reference to the resource
    */
-  detail(ref: RefType): Promise<T>;
+  detail(ref: RefType, options?: ResourceGatewayOptions): Promise<T>;
 
   /**
    * Load full resource using a snapshot (cache, list row, or other hint).
@@ -39,7 +43,7 @@ export interface ResourceCRUDInterface<T, Snapshot = T> {
    *
    * @param snapshot - {@link Snapshot} as defined for this resource
    */
-  detail(snapshot: Snapshot): Promise<T>;
+  detail(snapshot: Snapshot, options?: ResourceGatewayOptions): Promise<T>;
 
   /**
    * Create a new resource; resolves to the persisted representation (including server-generated fields).
@@ -47,7 +51,7 @@ export interface ResourceCRUDInterface<T, Snapshot = T> {
    *
    * @param payload - {@link Snapshot} or {@link T} per caller convention
    */
-  create(payload: Snapshot | T): Promise<T>;
+  create(payload: Snapshot | T, options?: ResourceGatewayOptions): Promise<T>;
 
   /**
    * Update a resource: scalar locator plus a {@link Snapshot}-shaped body (patch / DTO — caller convention).
@@ -55,40 +59,50 @@ export interface ResourceCRUDInterface<T, Snapshot = T> {
    * @param ref - {@link RefType} reference to the resource
    * @param payload - {@link Snapshot} update body
    */
-  update(ref: RefType, payload: Snapshot): Promise<T>;
+  update(
+    ref: RefType,
+    payload: Snapshot,
+    options?: ResourceGatewayOptions
+  ): Promise<T>;
 
   /**
    * Update a resource using only a {@link Snapshot} (identity + fields in one object — caller convention).
    *
    * @param snapshot - {@link Snapshot} for the update
    */
-  update(snapshot: Snapshot): Promise<T>;
+  update(snapshot: Snapshot, options?: ResourceGatewayOptions): Promise<T>;
 
   /**
    * Delete a resource, addressed by scalar handle.
    *
    * @param ref - {@link RefType} reference to the resource
    */
-  remove(ref: RefType): Promise<void>;
+  remove(ref: RefType, options?: ResourceGatewayOptions): Promise<void>;
 
   /**
    * Delete a resource, addressed by snapshot / locator shape.
    *
    * @param snapshot - {@link Snapshot} identifying the target resource
    */
-  remove(snapshot: Snapshot): Promise<void>;
+  remove(snapshot: Snapshot, options?: ResourceGatewayOptions): Promise<void>;
 
   /**
    * Delete multiple resources by scalar handles (batch — caller / backend convention).
    *
    * @param refs - One or more {@link RefType} values; empty array is implementation-defined (no-op or error)
    */
-  remove(refs: readonly RefType[]): Promise<void>;
+  remove(
+    refs: readonly RefType[],
+    options?: ResourceGatewayOptions
+  ): Promise<void>;
 
   /**
    * Delete multiple resources by {@link Snapshot} values (batch).
    *
    * @param snapshots - One or more snapshots identifying targets; empty array is implementation-defined
    */
-  remove(snapshots: readonly Snapshot[]): Promise<void>;
+  remove(
+    snapshots: readonly Snapshot[],
+    options?: ResourceGatewayOptions
+  ): Promise<void>;
 }
