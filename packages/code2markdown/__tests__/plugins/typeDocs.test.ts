@@ -8,9 +8,9 @@ vi.mock('fs-extra', () => ({
 }));
 
 vi.mock('typedoc', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('typedoc')>();
+  const actual = await importOriginal();
   return {
-    ...actual,
+    ...(actual as Record<string, unknown>),
     Application: {
       bootstrap: vi.fn().mockResolvedValue({
         convert: vi.fn().mockResolvedValue({
