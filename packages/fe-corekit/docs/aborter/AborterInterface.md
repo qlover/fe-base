@@ -68,7 +68,7 @@ callback when timeout expires.
 
 #### `signal` (Property)
 
-**Type:** `AbortSignal`
+**Type:** `null \| AbortSignal`
 
 External AbortSignal for request cancellation
 
