@@ -115,9 +115,7 @@ const errorPlugin: LifecycleSyncPluginInterface<ExecutorContextInterface<any>> =
 **See:**
 
 - LifecyclePluginInterface - Async version that supports Promise
-
 - SyncLifecycleExecutor - Executor that uses this interface
-
 - ExecutorPluginInterface - Base plugin interface
 
 ---

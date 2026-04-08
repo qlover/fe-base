@@ -25,31 +25,20 @@ Creates a combined AbortSignal from multiple signals with cleanup capability
 Combines multiple AbortSignals into a single signal that aborts when any
 input signal aborts. Automatically uses the best available implementation:
 
-- Native
-  `AbortSignal.any()`
-  (Node.js 20+, modern browsers) for optimal performance
-- `any-signal`
-  library fallback for older environments (Node.js 16-19)
+- Native `AbortSignal.any()` (Node.js 20+, modern browsers) for optimal performance
+- `any-signal` library fallback for older environments (Node.js 16-19)
 
 Key features:
 
-- Filters out
-  `null`
-  and
-  `undefined`
-  signals automatically
+- Filters out `null` and `undefined` signals automatically
 - Propagates abort reasons correctly from source signals
-- Provides
-  `clear()`
-  method for manual cleanup of event listeners
+- Provides `clear()` method for manual cleanup of event listeners
 - No memory leaks with proper cleanup
 
 Performance notes:
 
 - Native implementation is faster and doesn't require manual cleanup
-- Library fallback requires calling
-  `clear()`
-  to prevent memory leaks
+- Library fallback requires calling `clear()` to prevent memory leaks
 - Both implementations provide consistent API
 
 **Returns:**

@@ -28,8 +28,7 @@ Fully Async Architecture:
 
 Why Fully Async?
 
-- `await`
-  works seamlessly with both sync and async values
+- `await` works seamlessly with both sync and async values
 - No performance penalty in modern JavaScript engines
 - Avoids runtime type detection complexity (no isPromise checks)
 - Prevents type system vs runtime behavior mismatches
@@ -88,7 +87,6 @@ const result = await executor.exec((ctx) => {
 **See:**
 
 - LifecycleSyncExecutor - Synchronous version of this executor
-
 - LifecyclePluginInterface - Default plugin interface
 
 ---
@@ -727,15 +725,9 @@ Execution logic:
 
 Plugin intervention modes:
 
-- Return a new function:
-  `return (ctx) => retryLogic(task, ctx);`
-- replaces task, executes at end
-- Return a value directly:
-  `return cachedValue;`
-- skips task execution entirely
-- Call and return:
-  `const result = await task(ctx); return result;`
-- executes task immediately in plugin
+- Return a new function: `return (ctx) => retryLogic(task, ctx);` - replaces task, executes at end
+- Return a value directly: `return cachedValue;` - skips task execution entirely
+- Call and return: `const result = await task(ctx); return result;` - executes task immediately in plugin
 - Return nothing: Original task runs normally
 
 Hook runtime tracking:
@@ -965,7 +957,6 @@ const result = await this.runHooks<Data, Data>(
 **See:**
 
 - runPluginsHooksAsync - The utility function that performs the actual execution
-
 - runHook - For executing a single hook
 
 #### Parameters
@@ -1006,9 +997,7 @@ Main features:
 
 - Plugin registration: Adds plugins to the execution pipeline
 - Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
-- Deduplication: Prevents duplicate plugins when
-  `onlyOne`
-  is true
+- Deduplication: Prevents duplicate plugins when `onlyOne` is true
 - Order preservation: Maintains plugin execution order
 - Validation: Ensures plugin is a valid object
 

@@ -22,55 +22,23 @@ Core features:
 - Storage access: Get underlying storage interface for direct storage operations
 - State restoration: Load state from storage during initialization or on demand
 - State persistence: Save state to storage automatically or manually
-- Flexible storage: Support any
-  `StorageInterface`
-  implementation (localStorage, sessionStorage, cookies, etc.)
+- Flexible storage: Support any `StorageInterface` implementation (localStorage, sessionStorage, cookies, etc.)
 - Type safety: Generic type parameters ensure type safety for state and storage keys
 
 Design decisions:
 
-- Storage is optional:
-  `getStorage()`
-  can return
-  `null`
-  to support stores without persistence
-- Generic restore type:
-  `restore()`
-  supports returning a different type
-  `R`
-  (defaults to
-  `T`
-  ) for flexibility
-- Optional state parameter:
-  `persist()`
-  accepts optional state parameter, defaults to current state
-- State type constraint:
-  `persist()`
-  state parameter must extend
-  `T`
-  to ensure type safety
+- Storage is optional: `getStorage()` can return `null` to support stores without persistence
+- Generic restore type: `restore()` supports returning a different type `R` (defaults to `T`) for flexibility
+- Optional state parameter: `persist()` accepts optional state parameter, defaults to current state
+- State type constraint: `persist()` state parameter must extend `T` to ensure type safety
 
 Implementation pattern:
 
-- Typically implemented by
-  PersistentStore
-  subclasses (or similar) that forward snapshots
-  through a composed
-  StoreInterface
-  and implement
-  `restore`
-  /
-  `persist`
-
-- Storage operations should handle errors gracefully (e.g., return
-  `null`
-  on failure)
-- `restore()`
-  should not trigger persistence to avoid circular updates
-- `persist()`
-  should handle storage unavailability gracefully (no-op if storage is
-  `null`
-  )
+- Typically implemented by PersistentStore subclasses (or similar) that forward snapshots
+  through a composed StoreInterface and implement `restore` / `persist`
+- Storage operations should handle errors gracefully (e.g., return `null` on failure)
+- `restore()` should not trigger persistence to avoid circular updates
+- `persist()` should handle storage unavailability gracefully (no-op if storage is `null`)
 
 Since 3.0.0 PersistentStoreInterface renamed to PersistentInterface.
 
@@ -148,9 +116,7 @@ Get the underlying storage interface
 Returns the storage interface instance used for persistence operations.
 This allows direct access to storage for custom operations or inspection.
 
-Returns
-`null`
-if:
+Returns `null` if:
 
 - Store is configured without persistence
 - Storage is not available (e.g., in environments without storage support)
@@ -165,9 +131,7 @@ Use cases:
 
 **Returns:**
 
-The storage interface instance, or
-`null`
-if storage is not available
+The storage interface instance, or `null` if storage is not available
 
 **Example:** Check storage availability
 
@@ -219,20 +183,14 @@ also be called manually to force persistence.
 
 Behavior:
 
-- No-op if storage is not available (
-  `getStorage()`
-  returns
-  `null`
-  )
+- No-op if storage is not available (`getStorage()` returns `null`)
 - Persists provided state if given, otherwise persists current state
 - Should handle storage errors gracefully (silently fail or log error)
 - Should not throw errors that would prevent state updates
 
 Type safety:
 
-- State parameter must extend
-  `T`
-  to ensure type compatibility
+- State parameter must extend `T` to ensure type compatibility
 - TypeScript will enforce this constraint at compile time
 - Allows persisting partial states or transformed states safely
 
@@ -241,9 +199,7 @@ Implementation notes:
 - Should serialize state appropriately for storage (JSON.stringify if needed)
 - Should handle storage quota exceeded errors gracefully
 - Should not block state updates if persistence fails
-- Can be called with
-  `undefined`
-  to persist current state explicitly
+- Can be called with `undefined` to persist current state explicitly
 
 **Example:** Persist current state
 
@@ -315,29 +271,17 @@ called during store initialization to restore previously persisted state.
 
 Behavior:
 
-- Returns
-  `null`
-  if storage is not available or restore fails
-- Returns
-  `null`
-  if no persisted state exists in storage
+- Returns `null` if storage is not available or restore fails
+- Returns `null` if no persisted state exists in storage
 - Returns restored state object if successful
 - Should NOT trigger persistence to avoid circular updates
-- Should handle storage errors gracefully (catch and return
-  `null`
-  )
+- Should handle storage errors gracefully (catch and return `null`)
 
 Type flexibility:
 
-- Supports returning a different type
-  `R`
-  (defaults to
-  `T`
-  )
+- Supports returning a different type `R` (defaults to `T`)
 - Useful when restoring partial state or transformed state
-- Type
-  `R`
-  must be compatible with the expected return type
+- Type `R` must be compatible with the expected return type
 
 Implementation notes:
 
@@ -348,9 +292,7 @@ Implementation notes:
 
 **Returns:**
 
-Restored state object, or
-`null`
-if:
+Restored state object, or `null` if:
 
 - Storage is not available
 - No persisted state exists

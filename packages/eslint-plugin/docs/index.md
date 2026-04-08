@@ -25,24 +25,14 @@ The primary goals of this plugin are:
 
 ## Rules Overview
 
-###
+### `ts-class-member-accessibility`
 
-`ts-class-member-accessibility`
-
-Requires explicit accessibility modifiers (
-`public`
-,
-`private`
-,
-`protected`
-) on all class members.
+Requires explicit accessibility modifiers (`public`, `private`, `protected`) on all class members.
 This makes code intent explicit and prevents accidental public exposure of internal members.
 
 **Use case**: Enforce Java/C#-style explicit visibility declarations for better code clarity.
 
-###
-
-`ts-class-method-return`
+### `ts-class-method-return`
 
 Ensures class methods have explicit return type annotations. This improves code clarity and
 makes method contracts explicit.
@@ -50,27 +40,17 @@ makes method contracts explicit.
 **Use case**: Require explicit return types to prevent accidental return type changes and
 improve IDE autocomplete.
 
-###
+### `ts-class-override`
 
-`ts-class-override`
-
-Requires
-`@override`
-JSDoc comments on methods that override parent methods or implement
+Requires `@override` JSDoc comments on methods that override parent methods or implement
 interface methods. This makes method relationships explicit and helps catch errors when
 parent methods are renamed or removed.
 
-**Use case**: Similar to Java's
-`@Override`
-annotation, makes inheritance relationships explicit.
+**Use case**: Similar to Java's `@Override` annotation, makes inheritance relationships explicit.
 
-###
+### `require-root-testid`
 
-`require-root-testid`
-
-Enforces the presence of
-`data-testid`
-attribute on root elements of TSX components.
+Enforces the presence of `data-testid` attribute on root elements of TSX components.
 This is essential for reliable testing and element selection in test suites.
 
 **Use case**: Ensure all components have test identifiers for automated testing.
@@ -81,21 +61,12 @@ This is essential for reliable testing and element selection in test suites.
 
 The plugin provides utility functions for managing browser global variables in ESLint configuration:
 
-- `disableGlobals`
-  : Disable specific global variables using ESLint's native globals configuration
-- `restrictSpecificGlobals`
-  : Restrict specific globals using
-  `no-restricted-globals`
-  rule (blacklist mode)
-- `restrictGlobals`
-  : Restrict all globals except allowed ones (whitelist mode)
+- `disableGlobals`: Disable specific global variables using ESLint's native globals configuration
+- `restrictSpecificGlobals`: Restrict specific globals using `no-restricted-globals` rule (blacklist mode)
+- `restrictGlobals`: Restrict all globals except allowed ones (whitelist mode)
 
 **Use case**: Control which browser globals are allowed, encouraging the use of alternatives
-(e.g., importing from
-`@/core/globals`
-instead of using
-`window`
-directly).
+(e.g., importing from `@/core/globals` instead of using `window` directly).
 
 ## Basic Usage
 
@@ -107,9 +78,7 @@ npm install --save-dev @qlover/eslint-plugin
 
 ### Configuration
 
-In your ESLint configuration file (e.g.,
-`eslint.config.js`
-):
+In your ESLint configuration file (e.g., `eslint.config.js`):
 
 ```javascript
 import qloverPlugin from '@qlover/eslint-plugin';
@@ -165,9 +134,7 @@ export default [
 
 ## Recommended Configuration
 
-The plugin provides a
-`recommended`
-configuration that enables all rules with sensible defaults.
+The plugin provides a `recommended` configuration that enables all rules with sensible defaults.
 This is a good starting point for most projects:
 
 ```javascript

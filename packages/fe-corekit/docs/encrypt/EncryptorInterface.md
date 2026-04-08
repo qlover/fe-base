@@ -26,10 +26,8 @@ Main features:
   - Hash-based encryption
 
 - Type safety: Generic type parameters for input/output types
-  - `ValueType`
-    : Type of data to encrypt/decrypt
-  - `EncryptResult`
-    : Type of encrypted output
+  - `ValueType`: Type of data to encrypt/decrypt
+  - `EncryptResult`: Type of encrypted output
   - Compile-time type checking
   - Type inference support
 
@@ -54,12 +52,7 @@ Design considerations:
 
 **Note:**
 
-In version
-`3.0.0`
-, the interface was renamed from
-`Encryptor`
-to
-`EncryptorInterface`
+In version `3.0.0`, the interface was renamed from `Encryptor` to `EncryptorInterface`
 
 **Example:** String encryption
 
@@ -145,9 +138,7 @@ storage.setItem('user', { password: 'secret' });
 Decrypts the encrypted data
 
 Transforms encrypted data back to its original format. Should be
-the inverse operation of
-`encrypt`
-.
+the inverse operation of `encrypt`.
 
 **Returns:**
 
@@ -189,9 +180,7 @@ console.log(decrypted); // 'data'
 Encrypts the provided value
 
 Transforms the input value into an encrypted format. The encryption
-should be reversible through the
-`decrypt`
-method.
+should be reversible through the `decrypt` method.
 
 **Returns:**
 

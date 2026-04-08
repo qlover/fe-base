@@ -102,10 +102,7 @@ including draft message state, ongoing send operations, and manual overrides.
 
 **Returns:**
 
-`true`
-if sending should be disabled,
-`false`
-otherwise
+`true` if sending should be disabled, `false` otherwise
 
 **Example:**
 
@@ -155,9 +152,7 @@ data from the store.
 
 **Returns:**
 
-First draft message or
-`null`
-if none exists
+First draft message or `null` if none exists
 
 **Example:**
 
@@ -192,9 +187,7 @@ If not provided, defaults to fetching all messages from store. |
 
 Get the message store instance
 
-Returns a more specific
-`ChatMessageStoreInterface`
-type for managing
+Returns a more specific `ChatMessageStoreInterface` type for managing
 chat messages, providing access to message persistence and state management.
 
 **Returns:**
@@ -236,9 +229,7 @@ Useful for displaying loading states or preventing duplicate sends.
 
 **Returns:**
 
-Currently sending message or
-`null`
-if none
+Currently sending message or `null` if none
 
 **Example:**
 
@@ -279,9 +270,7 @@ If not provided, defaults to fetching all messages from store. |
 Update the input content
 
 Triggers content change in the input field. To get the latest draft message
-from the UI, use
-`getFirstDraftMessage()`
-method instead.
+from the UI, use `getFirstDraftMessage()` method instead.
 
 **Example:**
 
@@ -329,12 +318,8 @@ features like streaming responses.
 
 Behavior:
 
-- Without
-  `message`
-  parameter: sends the current draft message
-- With
-  `gatewayOptions`
-  : enables streaming mode for real-time responses
+- Without `message` parameter: sends the current draft message
+- With `gatewayOptions`: enables streaming mode for real-time responses
 
 **Returns:**
 
@@ -437,10 +422,7 @@ that users want to interrupt or for handling timeout scenarios.
 
 **Returns:**
 
-`true`
-if stop was successful,
-`false`
-otherwise
+`true` if stop was successful, `false` otherwise
 
 **Example:** Stop current send
 

@@ -16,16 +16,9 @@ descriptions, return value descriptions, or custom tag content.
 
 Structure:
 
-- `tag`
-  : Identifies the type of description (e.g.,
-  `@summary`
-  ,
-  `@param`
-  )
-- `name`
-  : Optional name for tagged descriptions (e.g., parameter name)
-- `content`
-  : Array of comment display parts containing the actual text
+- `tag`: Identifies the type of description (e.g., `@summary`, `@param`)
+- `name`: Optional name for tagged descriptions (e.g., parameter name)
+- `content`: Array of comment display parts containing the actual text
 
 **Example:** Summary Description
 
@@ -70,6 +63,15 @@ content: [
 
 ---
 
+#### `contentMarkdown` (Property)
+
+**Type:** `string`
+
+Pre-rendered markdown/HTML for CommentDisplayPart arrays: joins parts
+without spurious line breaks and turns `@link` targets into in-document anchors.
+
+---
+
 #### `name` (Property)
 
 **Type:** `string`
@@ -95,15 +97,7 @@ identifies which parameter the description belongs to.
 JSDoc tag identifier for the description
 
 This field identifies the type of description content, such as
-
-`@summary`
-,
-`@param`
-,
-`@returns`
-,
-`@example`
-, or custom tags.
+`@summary`, `@param`, `@returns`, `@example`, or custom tags.
 
 **Example:**
 
@@ -234,30 +228,12 @@ for classes, interfaces, functions, and other code elements.
 
 Core Structure:
 
-- Basic identification:
-  `id`
-  ,
-  `name`
-  ,
-  `kind`
-
-- Type information:
-  `typeString`
-  ,
-  `kindName`
-
-- Documentation:
-  `descriptions`
-  with JSDoc comments
-- Source location:
-  `source`
-  for file and line information
-- Hierarchical structure:
-  `children`
-  for nested elements
-- Function-specific data:
-  `parametersList`
-  for method parameters
+- Basic identification: `id`, `name`, `kind`
+- Type information: `typeString`, `kindName`
+- Documentation: `descriptions` with JSDoc comments
+- Source location: `source` for file and line information
+- Hierarchical structure: `children` for nested elements
+- Function-specific data: `parametersList` for method parameters
 
 **Example:** Basic Structure
 
@@ -322,9 +298,7 @@ children: [
 
 Default value for parameters or properties
 
-This field is required when
-`parametersList`
-is present and contains
+This field is required when `parametersList` is present and contains
 the default value as a string representation.
 
 **Example:**
@@ -344,9 +318,7 @@ the default value as a string representation.
 Whether the element is deprecated
 
 This field indicates if the code element has been marked as deprecated
-using the
-`@deprecated`
-JSDoc tag.
+using the `@deprecated` JSDoc tag.
 
 ---
 
@@ -397,9 +369,7 @@ TypeDoc reflection kind indicating the type of code element
 
 This field contains the original TypeDoc reflection kind enum value.
 It's used for internal processing and can be converted to string
-using
-`ReflectionKindName`
-for template usage.
+using `ReflectionKindName` for template usage.
 
 **Example:**
 
@@ -452,11 +422,7 @@ or other code element as it appears in the source code.
 Whether the parameter or property is optional
 
 This field indicates if a parameter or property is optional, either
-through TypeScript's
-`?`
-syntax or the
-`@optional`
-JSDoc tag.
+through TypeScript's `?` syntax or the `@optional` JSDoc tag.
 
 ---
 
@@ -476,9 +442,7 @@ Required fields when present:
 - Parameter description
 - Default value (if any)
 - Deprecation status
-- Version information (
-  `@since`
-  tag)
+- Version information (`@since` tag)
 
 **Example:**
 
@@ -505,9 +469,7 @@ parametersList: [
 
 Version when the element was introduced
 
-This field contains the version information from the
-`@since`
-JSDoc tag,
+This field contains the version information from the `@since` JSDoc tag,
 indicating when the code element was first introduced in the API.
 
 **Example:**
@@ -565,9 +527,7 @@ parameter types, return types, and generic type parameters.
 Type alias for reflection kind names
 
 This type represents the union of all possible reflection kind names
-from the
-`ReflectionKindName`
-constant. It provides type safety when
+from the `ReflectionKindName` constant. It provides type safety when
 working with reflection kind names in templates and processing logic.
 
 **Example:**

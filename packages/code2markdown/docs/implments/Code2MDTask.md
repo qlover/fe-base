@@ -30,23 +30,15 @@ Main Features:
   - Provides execution context and state management
 
 - Task Interface: Provides simple and consistent task execution methods
-  - `run()`
-    : Primary execution method
-  - `exec()`
-    : Alias for
-    `run()`
-    for consistency with executor patterns
+  - `run()`: Primary execution method
+  - `exec()`: Alias for `run()` for consistency with executor patterns
 
 Design Considerations:
 
 - Uses dependency injection for executor to support testing and customization
 - Automatically configures all required plugins during construction
 - Maintains single responsibility principle by delegating to specialized plugins
-- Provides both
-  `run()`
-  and
-  `exec()`
-  methods for different usage patterns
+- Provides both `run()` and `exec()` methods for different usage patterns
 
 Plugin Execution Flow:
 
@@ -124,17 +116,11 @@ Accessible to subclasses for extension
 
 **Type:** `Promise<unknown>`
 
-Alias for
-`run()`
-method providing consistency with executor patterns
+Alias for `run()` method providing consistency with executor patterns
 
 This method provides an alternative interface that matches common
-executor patterns where
-`exec()`
-is the standard execution method.
-It delegates to
-`run()`
-to maintain consistent behavior.
+executor patterns where `exec()` is the standard execution method.
+It delegates to `run()` to maintain consistent behavior.
 
 **Returns:**
 

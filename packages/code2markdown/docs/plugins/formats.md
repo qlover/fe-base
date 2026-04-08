@@ -140,17 +140,9 @@ Determines whether a lifecycle method should be executed
 
 Skip Logic:
 
-- Returns
-  `false`
-  if skip is
-  `true`
-  (skip all)
-- Returns
-  `false`
-  if skip matches the lifecycle name (skip specific)
-- Returns
-  `true`
-  otherwise (execute normally)
+- Returns `false` if skip is `true` (skip all)
+- Returns `false` if skip matches the lifecycle name (skip specific)
+- Returns `true` otherwise (execute normally)
 
 **Returns:**
 
@@ -935,14 +927,9 @@ Controls whether to skip lifecycle execution
 
 Skip Options:
 
-- `true`
-- Skip all lifecycle methods (onBefore, onExec, onSuccess, onError)
-- `string`
-- Skip specific lifecycle method ('onBefore', 'onExec', 'onSuccess', 'onError')
-- `false`
-  or
-  `undefined`
-- Execute all lifecycle methods (default)
+- `true` - Skip all lifecycle methods (onBefore, onExec, onSuccess, onError)
+- `string` - Skip specific lifecycle method ('onBefore', 'onExec', 'onSuccess', 'onError')
+- `false` or `undefined` - Execute all lifecycle methods (default)
 
 **Example:**
 

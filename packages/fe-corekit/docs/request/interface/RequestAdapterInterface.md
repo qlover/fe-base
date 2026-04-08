@@ -25,9 +25,7 @@ Main features:
   - Query parameter serialization
 
 - Request customization: Headers, body, and method configuration
-  - Type-safe request data through generic
-    `RequestData`
-
+  - Type-safe request data through generic `RequestData`
   - Flexible header management
   - Support for all HTTP methods
 
@@ -38,9 +36,7 @@ Main features:
 
 Design considerations:
 
-- Generic
-  `RequestData`
-  type for type-safe request bodies
+- Generic `RequestData` type for type-safe request bodies
 - Extensible configuration for adapter-specific options
 - Compatible with both fetch and axios APIs
 - Supports middleware and interceptor patterns
@@ -129,8 +125,7 @@ baseURL: 'https://api.example.com';
 
 Request body data
 
-Mapping fetch
-`body`
+Mapping fetch `body`
 
 **TypeParam:** RequestData
 
@@ -229,8 +224,7 @@ Will be combined with baseURL if provided
 
 Processed by FetchURLPlugin during request
 
-TODO: Change to URL | Request, add attribute
-`input`
+TODO: Change to URL | Request, add attribute `input`
 
 **Example:**
 

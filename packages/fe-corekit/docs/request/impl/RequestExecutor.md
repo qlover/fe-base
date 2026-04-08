@@ -21,8 +21,7 @@ Core functionality:
 
 Main features:
 
-- Adapter abstraction: Works with any adapter implementing
-  `RequestAdapterInterface`
+- Adapter abstraction: Works with any adapter implementing `RequestAdapterInterface`
   - Supports multiple HTTP clients (Axios, Fetch, etc.)
   - Allows custom adapter implementations
   - Maintains consistent API regardless of underlying HTTP client
@@ -880,12 +879,8 @@ Plugin structure:
 
 Register a lifecycle plugin for request/response processing
 
-Plugins are executed in registration order for
-`onBefore`
- hooks and reverse order
-for
-`onSuccess`
- hooks, allowing for proper request/response transformation chains.
+Plugins are executed in registration order for `onBefore` hooks and reverse order
+for `onSuccess` hooks, allowing for proper request/response transformation chains.
 
 Plugin capabilities:
 - Modify request configuration before sending (headers, data, params, etc.)

@@ -23,12 +23,8 @@ coordination with the plugin executor.
 
 **Signal priority:**
 
-1. Custom signal from
-   `gatewayOptions.signal`
-   (user-provided)
-2. Plugin-created signal from
-   `context.parameters.signal`
-   (AborterPlugin)
+1. Custom signal from `gatewayOptions.signal` (user-provided)
+2. Plugin-created signal from `context.parameters.signal` (AborterPlugin)
 3. No signal (operation not cancellable)
 
 **Example:** Basic usage
@@ -90,20 +86,14 @@ plugin hooks, and ensures abort signals are checked before each callback.
 
 **Signal merging:**
 
-- Priority:
-  `gatewayOptions.signal`
-
-  > `context.parameters.signal`
-
+- Priority: `gatewayOptions.signal` > `context.parameters.signal`
 - Merged signal stored in both context parameters and returned options
 - Allows plugins to access the final signal
 
 **Callback wrapping:**
 
-- `onConnected`
-  : Checks signal → runs plugin hook → calls user callback
-- `onChunk`
-  : Checks signal → runs plugin hook → calls user callback with result
+- `onConnected`: Checks signal → runs plugin hook → calls user callback
+- `onChunk`: Checks signal → runs plugin hook → calls user callback with result
 - Other callbacks: Passed through unchanged
 
 **Important notes:**
@@ -199,18 +189,12 @@ then invokes user callback with the processed result.
 **Execution order:**
 
 1. Check if operation was aborted (throws if aborted)
-2. Run
-   `onStream`
-   plugin hooks via executor (async)
-3. Call user's
-   `onChunk`
-   callback with processed chunk
+2. Run `onStream` plugin hooks via executor (async)
+3. Call user's `onChunk` callback with processed chunk
 
 **Chunk processing:**
 
-- Plugins can transform chunks via
-  `onStream`
-  hook
+- Plugins can transform chunks via `onStream` hook
 - Processed chunk (or original if no transform) passed to user
 - If no executor: Original chunk passed directly to user
 
@@ -219,8 +203,7 @@ then invokes user callback with the processed result.
 - Signal checked first to enable early cancellation
 - Plugin processing is async (returns early if executor present)
 - User callback receives plugin-processed chunk
-- Fallback to original chunk if plugin returns
-  `undefined`
+- Fallback to original chunk if plugin returns `undefined`
 
 **Throws:**
 
@@ -293,12 +276,8 @@ Checks abort signal, runs plugin hooks, then invokes user callback.
 **Execution order:**
 
 1. Check if operation was aborted (throws if aborted)
-2. Run
-   `onConnected`
-   plugin hooks via executor
-3. Call user's
-   `onConnected`
-   callback
+2. Run `onConnected` plugin hooks via executor
+3. Call user's `onConnected` callback
 
 **Important notes:**
 

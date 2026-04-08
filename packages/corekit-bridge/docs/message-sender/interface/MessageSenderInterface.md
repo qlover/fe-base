@@ -34,15 +34,7 @@ Gateway options for message operations
 
 Configuration for gateway behavior including:
 
-- Stream event handlers (
-  `onChunk`
-  ,
-  `onComplete`
-  ,
-  `onError`
-  ,
-  `onProgress`
-  )
+- Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
 - Abort signal for cancellation control
 - Custom request parameters
 
@@ -100,9 +92,7 @@ const config = {
 
 Whether to throw errors on send failure
 
-When
-`true`
-, failed send operations throw errors instead of
+When `true`, failed send operations throw errors instead of
 returning error messages. Useful for error boundary handling.
 
 **Example:**
@@ -167,15 +157,11 @@ await sender.send({ content: 'Hello' });
 Get the gateway instance
 
 Returns the configured message gateway used for external communication.
-Returns
-`undefined`
-if no gateway has been configured.
+Returns `undefined` if no gateway has been configured.
 
 **Returns:**
 
-Gateway instance or
-`undefined`
-if not configured
+Gateway instance or `undefined` if not configured
 
 **Example:**
 
@@ -244,12 +230,8 @@ streaming mode (progressive response) based on the provided options.
 
 Behavior:
 
-- With
-  `streamEvent`
-  parameter: sends as streaming message with real-time updates
-- Without
-  `streamEvent`
-  : sends as normal message with single response
+- With `streamEvent` parameter: sends as streaming message with real-time updates
+- Without `streamEvent`: sends as normal message with single response
 
 **Returns:**
 

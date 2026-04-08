@@ -42,23 +42,10 @@ store.updateDraftMessage(draft.id, { content: 'Hello, world!' });
 
 **Type:** `StoreInterface<ChatMessageStoreStateInterface<T>>`
 
-Backing store for state:
-`reset`
-,
-`update`
-,
-`getState`
-,
-`subscribe`
+Backing store for state: `reset`, `update`, `getState`, `subscribe`
 
-Default
-MessagesStore
-wiring uses
-SliceStoreAdapter
-; callers
-may inject another
-StoreInterface
-implementation.
+Default MessagesStore wiring uses SliceStoreAdapter; callers
+may inject another <a href="../../store-state/interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> implementation.
 
 ---
 
@@ -284,15 +271,11 @@ console.log(deleted === undefined); // true
 Get draft message by ID
 
 Retrieves a specific draft message from the draft message list.
-Returns
-`null`
-if no draft with the given ID exists.
+Returns `null` if no draft with the given ID exists.
 
 **Returns:**
 
-Draft message or
-`null`
-if not found
+Draft message or `null` if not found
 
 **Example:**
 
@@ -356,18 +339,12 @@ the first element in the array. This follows a FIFO (First-In-First-Out) pattern
 
 Important:
 
-- Retrieves from
-  `draftMessages`
-  list (unsent drafts)
-- NOT from
-  `messages`
-  list (sent message history)
+- Retrieves from `draftMessages` list (unsent drafts)
+- NOT from `messages` list (sent message history)
 
 **Returns:**
 
-First queued draft message or
-`null`
-if none exists
+First queued draft message or `null` if none exists
 
 **Example:**
 
@@ -399,15 +376,11 @@ if (firstDraft) {
 Get a message by its unique identifier
 
 Retrieves a specific message from the store by ID.
-Returns
-`undefined`
-if no message with the given ID exists.
+Returns `undefined` if no message with the given ID exists.
 
 **Returns:**
 
-Message object or
-`undefined`
-if not found
+Message object or `undefined` if not found
 
 **Example:**
 
@@ -447,15 +420,11 @@ if (message) {
 Get a message by its index position
 
 Retrieves a message at the specified zero-based index position.
-Returns
-`undefined`
-if the index is out of bounds.
+Returns `undefined` if the index is out of bounds.
 
 **Returns:**
 
-Message at the index or
-`undefined`
-if out of bounds
+Message at the index or `undefined` if out of bounds
 
 **Example:**
 
@@ -495,15 +464,11 @@ const last = store.getMessageByIndex(messages.length - 1);
 Get the index position of a message in the store
 
 Returns the zero-based index of a message in the message array.
-Returns
-`-1`
-if the message doesn't exist in the store.
+Returns `-1` if the message doesn't exist in the store.
 
 **Returns:**
 
-Zero-based index of the message, or
-`-1`
-if not found
+Zero-based index of the message, or `-1` if not found
 
 **Example:**
 
@@ -577,9 +542,7 @@ is provided, retrieves from the draft queue.
 
 **Returns:**
 
-Message ready to send or
-`null`
-if none available
+Message ready to send or `null` if none available
 
 **Example:** Get next message to send
 
@@ -631,10 +594,7 @@ managed by this store. Useful for runtime type checking and validation.
 
 **Returns:**
 
-`true`
-if value is a valid message,
-`false`
-otherwise
+`true` if value is a valid message, `false` otherwise
 
 **Example:**
 
@@ -804,9 +764,7 @@ the draft message list. Useful for processing drafts one at a time.
 
 **Returns:**
 
-First queued draft message or
-`null`
-if none exists
+First queued draft message or `null` if none exists
 
 **Example:**
 
@@ -937,9 +895,7 @@ will be updated; other fields remain unchanged.
 
 **Returns:**
 
-Updated message or
-`undefined`
-if message not found
+Updated message or `undefined` if message not found
 
 **Example:**
 
@@ -979,16 +935,12 @@ const updated = store.updateDraftMessage('draft-123', {
 Update an existing message in the store
 
 Applies multiple partial updates to a message identified by ID.
-Updates are applied in order from left to right. Returns
-`undefined`
-
+Updates are applied in order from left to right. Returns `undefined`
 if no message with the given ID exists.
 
 **Returns:**
 
-Updated message or
-`undefined`
-if message not found
+Updated message or `undefined` if message not found
 
 **Example:** Single update
 

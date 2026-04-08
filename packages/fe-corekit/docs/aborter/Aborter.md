@@ -24,55 +24,32 @@ automatic cleanup.
 Main features:
 
 - Operation tracking: Unique ID generation and tracking for each operation
-  - Auto-generated IDs with counter:
-    `{aborterName}-{counter}`
-
-  - Custom ID support via
-    `abortId`
-    config
+  - Auto-generated IDs with counter: `{aborterName}-{counter}`
+  - Custom ID support via `abortId` config
   - Prevents duplicate registration with same ID
 
 - Timeout management: Automatic operation timeout with configurable duration
-  - Configure via
-    `abortTimeout`
-    in milliseconds
-  - Triggers
-    `onAbortedTimeout`
-    callback when timeout occurs
-  - Uses native
-    `AbortSignal.timeout()`
-    when available (Node.js 17.3+)
+  - Configure via `abortTimeout` in milliseconds
+  - Triggers `onAbortedTimeout` callback when timeout occurs
+  - Uses native `AbortSignal.timeout()` when available (Node.js 17.3+)
   - Falls back to manual timer implementation for older environments
 
 - Signal composition: Combines multiple AbortSignals into one
   - Internal controller signal (for manual abort)
-  - Timeout signal (if
-    `abortTimeout`
-    configured)
-  - External signal (if
-    `signal`
-    provided in config)
-  - Uses native
-    `AbortSignal.any()`
-    when available (Node.js 20+)
-  - Falls back to
-    `any-signal`
-    library for older environments
+  - Timeout signal (if `abortTimeout` configured)
+  - External signal (if `signal` provided in config)
+  - Uses native `AbortSignal.any()` when available (Node.js 20+)
+  - Falls back to `any-signal` library for older environments
 
 - Resource cleanup: Automatic cleanup of timers and event listeners
   - Clears timeout timers to prevent memory leaks
   - Removes event listeners from composed signals
   - Cleans up on success, error, or manual abort
-  - Supports batch cleanup with
-    `abortAll()`
+  - Supports batch cleanup with `abortAll()`
 
 - Callback support: Flexible callback system for abort events
-  - `onAborted`
-    : Called on manual abort via
-    `abort()`
-    method
-  - `onAbortedTimeout`
-    : Called when operation times out
+  - `onAborted`: Called on manual abort via `abort()` method
+  - `onAbortedTimeout`: Called when operation times out
   - Callbacks receive sanitized config (without callback functions)
   - Errors in callbacks are caught and ignored to prevent breaking abort flow
 
@@ -202,17 +179,12 @@ Stores all active operations with their controllers, cleanup functions, and conf
 
 Manually aborts a specific operation
 
-Triggers abort on the operation's controller, calls
-`onAborted`
-callback
+Triggers abort on the operation's controller, calls `onAborted` callback
 if configured, and cleans up all resources
 
 **Returns:**
 
-`true`
-if operation was aborted,
-`false`
-if not found
+`true` if operation was aborted, `false` if not found
 
 **Example:** Abort by ID
 
@@ -359,10 +331,7 @@ to clear timers and remove event listeners
 
 **Returns:**
 
-`true`
-if operation was cleaned up,
-`false`
-if not found
+`true` if operation was cleaned up, `false` if not found
 
 **Example:**
 
@@ -409,16 +378,10 @@ source signal aborts. Also sets up cleanup callbacks for timers and listeners.
 Signal composition logic:
 
 1. Always include internal controller signal
-2. Add timeout signal if
-   `abortTimeout`
-   is valid
-3. Add external signal if
-   `signal`
-   is provided
+2. Add timeout signal if `abortTimeout` is valid
+3. Add external signal if `signal` is provided
 4. Return single signal if no composition needed
-5. Use
-   `anySignal()`
-   to combine multiple signals
+5. Use `anySignal()` to combine multiple signals
 
 **Returns:**
 
@@ -466,11 +429,8 @@ Generates unique abort ID from configuration
 
 Priority order:
 
-1. Use
-   `config.abortId`
-   if provided
-2. Auto-generate:
-   `{aborterName}-{counter}`
+1. Use `config.abortId` if provided
+2. Auto-generate: `{aborterName}-{counter}`
 
 **Returns:**
 
@@ -519,9 +479,7 @@ Retrieves abort signal for a specific operation
 
 **Returns:**
 
-AbortSignal if found,
-`undefined`
-otherwise
+AbortSignal if found, `undefined` otherwise
 
 **Example:**
 
@@ -566,8 +524,7 @@ Valid timeout must be:
 
 **Returns:**
 
-`true`
-if timeout is valid
+`true` if timeout is valid
 
 #### Parameters
 
@@ -630,14 +587,11 @@ Error handling strategy:
 
 **Type:** `callsignature isClearable`
 
-Type guard to check if signal has
-`clear()`
-method
+Type guard to check if signal has `clear()` method
 
 **Returns:**
 
-`true`
-if signal is clearable
+`true` if signal is clearable
 
 #### Parameters
 
@@ -672,8 +626,7 @@ Detects timeout errors by checking:
 
 **Returns:**
 
-`true`
-if reason is timeout error
+`true` if reason is timeout error
 
 #### Parameters
 
@@ -704,15 +657,9 @@ Registers a new abort operation and returns abort ID and composed signal
 Creates an AbortController for the operation and composes it with timeout
 and external signals if provided. The returned signal will abort when:
 
-- Manual abort via
-  `abort()`
-  method
-- Timeout expires (if
-  `abortTimeout`
-  configured)
-- External signal aborts (if
-  `signal`
-  provided)
+- Manual abort via `abort()` method
+- Timeout expires (if `abortTimeout` configured)
+- External signal aborts (if `signal` provided)
 
 **Returns:**
 

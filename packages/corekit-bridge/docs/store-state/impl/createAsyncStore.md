@@ -36,11 +36,7 @@ This factory function creates an AsyncStoreInterface instance with flexible conf
 - If options are provided, it creates a new AsyncStore (default implementation) with those options
 - If nothing is provided, it creates a default AsyncStore
 
-Subscriptions: use
-`instance.getStore().subscribe(...)`
-on the inner
-StoreInterface
-.
+Subscriptions: use `instance.getStore().subscribe(...)` on the inner StoreInterface.
 
 **Returns:**
 

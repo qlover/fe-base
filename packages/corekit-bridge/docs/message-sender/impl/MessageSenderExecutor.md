@@ -526,9 +526,7 @@ onFinally: async (ctx) => {
 
 Reset stream timing counter
 
-Resets the
-`streamTimes`
-counter in the context's hook runtimes to zero.
+Resets the `streamTimes` counter in the context's hook runtimes to zero.
 This should be called at the start of a new streaming operation to ensure
 accurate timing tracking.
 
@@ -613,9 +611,7 @@ Promise resolving to task execution result
 
 Execute connection established event through all plugins
 
-Runs the
-`onConnected`
-hook for all registered plugins when a streaming
+Runs the `onConnected` hook for all registered plugins when a streaming
 connection is successfully established. This allows plugins to initialize
 state or perform setup before chunks start arriving.
 
@@ -680,15 +676,9 @@ Execution logic:
 
 Plugin intervention modes:
 
-- Return a new function:
-  `return (ctx) => retryLogic(task, ctx);`
-- replaces task, executes at end
-- Return a value directly:
-  `return cachedValue;`
-- skips task execution entirely
-- Call and return:
-  `const result = await task(ctx); return result;`
-- executes task immediately in plugin
+- Return a new function: `return (ctx) => retryLogic(task, ctx);` - replaces task, executes at end
+- Return a value directly: `return cachedValue;` - skips task execution entirely
+- Call and return: `const result = await task(ctx); return result;` - executes task immediately in plugin
 - Return nothing: Original task runs normally
 
 Hook runtime tracking:
@@ -918,7 +908,6 @@ const result = await this.runHooks<Data, Data>(
 **See:**
 
 - runPluginsHooksAsync - The utility function that performs the actual execution
-
 - runHook - For executing a single hook
 
 #### Parameters
@@ -951,9 +940,7 @@ const result = await this.runHooks<Data, Data>(
 
 Execute stream chunk processing through all plugins
 
-Runs the
-`onStream`
-hook for all registered plugins, passing the chunk
+Runs the `onStream` hook for all registered plugins, passing the chunk
 through the plugin chain. Automatically tracks and increments the stream
 chunk counter for monitoring purposes.
 
@@ -1016,9 +1003,7 @@ Main features:
 
 - Plugin registration: Adds plugins to the execution pipeline
 - Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
-- Deduplication: Prevents duplicate plugins when
-  `onlyOne`
-  is true
+- Deduplication: Prevents duplicate plugins when `onlyOne` is true
 - Order preservation: Maintains plugin execution order
 - Validation: Ensures plugin is a valid object
 

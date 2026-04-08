@@ -73,9 +73,7 @@ onError: (ctx, error) => {
 Read-only access to execution parameters
 
 Provides immutable access to the current parameters. To modify parameters,
-use
-`setParameters()`
-method which ensures safe cloning.
+use `setParameters()` method which ensures safe cloning.
 
 **Example:**
 
@@ -248,9 +246,7 @@ context.runtimes({
 Set the error state
 
 Stores an error in the context for access by error handling plugins.
-Accepts any type of error value and converts it to
-`ExecutorError`
-.
+Accepts any type of error value and converts it to `ExecutorError`.
 This matches the behavior of JavaScript's catch clause which can catch any type.
 
 **Example:**
@@ -640,12 +636,10 @@ resolution and providing fallback values.
 
 Resolution priority:
 
-1.  `FE_RELEASE_SOURCE_BRANCH`
-    environment variable (primary)
-2.  `FE_RELEASE_BRANCH`
-    environment variable (fallback)
-3.  'master' (default fallback)
-4.  Explicitly set value (highest priority)
+1. `FE_RELEASE_SOURCE_BRANCH` environment variable (primary)
+2. `FE_RELEASE_BRANCH` environment variable (fallback)
+3. 'master' (default fallback)
+4. Explicitly set value (highest priority)
 
 Use cases:
 

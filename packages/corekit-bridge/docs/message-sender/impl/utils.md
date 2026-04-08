@@ -23,9 +23,7 @@
 
 Simple template string interpolation utility
 
-Replaces placeholders in the format
-`${key}`
-with values from the provided
+Replaces placeholders in the format `${key}` with values from the provided
 data object. If a key is not found in the data object, the placeholder is
 left unchanged.
 

@@ -13,13 +13,7 @@ Cross-platform path utility
 Significance: Provides reliable path normalization and comparison across Windows & POSIX.
 Core idea: Always operate on a fully normalized local-style path before any comparison.
 Main function: Convert mixed style paths to the host format and expose helpers such as
-
-`startsWith`
-,
-`containsPath`
-, and
-`isSubPath`
-.
+`startsWith`, `containsPath`, and `isSubPath`.
 Main purpose: Make path handling predictable in toolchains that manipulate both Windows
 and POSIX paths.
 
@@ -124,24 +118,12 @@ pather.containsPath('src/utils/', 'utils/'); // true
 
 **Type:** `boolean`
 
-Check if
-`sourcePath`
-is inside (or equal to)
-`targetPath`
-.
-The comparison is segment-aware so
-`src/ab`
-is **not** considered inside
-`src/a`
-.
+Check if `sourcePath` is inside (or equal to) `targetPath`.
+The comparison is segment-aware so `src/ab` is **not** considered inside `src/a`.
 
 **Returns:**
 
-boolean Whether
-`sourcePath`
-is within
-`targetPath`
-.
+boolean Whether `sourcePath` is within `targetPath`.
 
 #### Parameters
 
@@ -223,23 +205,9 @@ pather.startsWith('src2/utils', 'src'); // false
 
 Convert any style path (Windows / POSIX / mixed) to the current platform format.
 
-- Replaces every
-  `/`
-  ,
-  `\\`
-  ,
-  `//`
-  , etc. with the local
-  `path.sep`
-  .
+- Replaces every `/`, `\\`, `//`, etc. with the local `path.sep`.
 - Collapses duplicate separators.
-- Resolves
-  `.`
-  and
-  `..`
-  via
-  `path.normalize`
-  .
+- Resolves `.` and `..` via `path.normalize`.
 
 **Returns:**
 

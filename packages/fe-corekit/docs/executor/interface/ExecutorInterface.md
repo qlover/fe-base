@@ -107,9 +107,7 @@ const result = await executor.exec(
 **See:**
 
 - LifecycleExecutor - Default implementation
-
 - LifecyclePluginInterface - Default plugin interface
-
 - ExecutorContextInterface - Context interface
 
 ---
@@ -339,9 +337,7 @@ Enablement Checking:
 - Hook-Specific: Can enable/disable per hook name
 
 Usage:
-This is the base interface. Most plugins should extend
-`LifecyclePluginInterface`
-
+This is the base interface. Most plugins should extend `LifecyclePluginInterface`
 which adds lifecycle hooks (onBefore, onExec, onSuccess, onError).
 
 **Example:** Basic plugin
@@ -361,7 +357,6 @@ const plugin: ExecutorPluginInterface<
 **See:**
 
 - LifecyclePluginInterface - Extended interface with lifecycle hooks
-
 - LifecycleExecutor - Executor that uses plugins
 
 ---

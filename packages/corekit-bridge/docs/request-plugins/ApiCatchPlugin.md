@@ -139,7 +139,6 @@ extends RequestAdapterResponse
 
 **Type:** `ExecutorError`
 
-`ApiCatchPlugin`
-returns value
+`ApiCatchPlugin` returns value
 
 ---

@@ -127,17 +127,9 @@ Determines whether a lifecycle method should be executed
 
 Skip Logic:
 
-- Returns
-  `false`
-  if skip is
-  `true`
-  (skip all)
-- Returns
-  `false`
-  if skip matches the lifecycle name (skip specific)
-- Returns
-  `true`
-  otherwise (execute normally)
+- Returns `false` if skip is `true` (skip all)
+- Returns `false` if skip matches the lifecycle name (skip specific)
+- Returns `true` otherwise (execute normally)
 
 **Returns:**
 
@@ -167,13 +159,14 @@ plugin.enabled('onExec', context); // Returns true
 
 #### `formatDescription` (Method)
 
-**Type:** `(comment: any) => FormatProjectDescription[]`
+**Type:** `(comment: any, ownerSourceFile: string) => FormatProjectDescription[]`
 
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since | Deprecated | Description            |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `comment` | `any` | ❌       | -       | -     | -          | TypeDoc comment object |
+| Name              | Type     | Optional | Default | Since | Deprecated | Description            |
+| ----------------- | -------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `comment`         | `any`    | ❌       | -       | -     | -          | TypeDoc comment object |
+| `ownerSourceFile` | `string` | ✅       | -       | -     | -          |                        |
 
 ---
 
@@ -193,36 +186,24 @@ Implementation Details:
 
 Business Rules:
 
-- Summary content is always included as
-  `@summary`
-  tag
+- Summary content is always included as `@summary` tag
 - Filters out tags specified in filterTags configuration
-- Prioritizes
-  `@summary`
-  and
-  `@description`
-  tags
+- Prioritizes `@summary` and `@description` tags
 - Preserves original tag order for non-priority tags
 - Handles missing or empty comments gracefully
 - Maintains tag names and content structure
 
 Filtered Tags (default):
 
-- `@default`
-  : Handled separately by getDefaultValue
-- `@since`
-  : Handled separately by getSinceVersion
-- `@deprecated`
-  : Handled separately by isDeprecated
-- `@optional`
-  : Handled separately by isOptional
+- `@default`: Handled separately by getDefaultValue
+- `@since`: Handled separately by getSinceVersion
+- `@deprecated`: Handled separately by isDeprecated
+- `@optional`: Handled separately by isOptional
 
 Priority Tags:
 
-- `@summary`
-  : Always displayed first
-- `@description`
-  : Displayed after summary
+- `@summary`: Always displayed first
+- `@description`: Displayed after summary
 - Other tags: Displayed in original order
 
 **Returns:**
@@ -246,21 +227,23 @@ const descriptions = this.formatDescription(comment);
 
 #### Parameters
 
-| Name      | Type  | Optional | Default | Since | Deprecated | Description            |
-| --------- | ----- | -------- | ------- | ----- | ---------- | ---------------------- |
-| `comment` | `any` | ❌       | -       | -     | -          | TypeDoc comment object |
+| Name              | Type     | Optional | Default | Since | Deprecated | Description            |
+| ----------------- | -------- | -------- | ------- | ----- | ---------- | ---------------------- |
+| `comment`         | `any`    | ❌       | -       | -     | -          | TypeDoc comment object |
+| `ownerSourceFile` | `string` | ✅       | -       | -     | -          |                        |
 
 ---
 
 #### `formatParameters` (Method)
 
-**Type:** `(parameters: ParameterReflection[]) => FormatProjectValue[]`
+**Type:** `(parameters: ParameterReflection[], ownerSourceFile: string) => FormatProjectValue[]`
 
 #### Parameters
 
-| Name         | Type                    | Optional | Default | Since | Deprecated | Description                        |
-| ------------ | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `parameters` | `ParameterReflection[]` | ❌       | -       | -     | -          | TypeDoc parameter reflection array |
+| Name              | Type                    | Optional | Default | Since | Deprecated | Description                        |
+| ----------------- | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `parameters`      | `ParameterReflection[]` | ❌       | -       | -     | -          | TypeDoc parameter reflection array |
+| `ownerSourceFile` | `string`                | ✅       | -       | -     | -          |                                    |
 
 ---
 
@@ -329,9 +312,10 @@ const params = this.formatParameters([
 
 #### Parameters
 
-| Name         | Type                    | Optional | Default | Since | Deprecated | Description                        |
-| ------------ | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
-| `parameters` | `ParameterReflection[]` | ❌       | -       | -     | -          | TypeDoc parameter reflection array |
+| Name              | Type                    | Optional | Default | Since | Deprecated | Description                        |
+| ----------------- | ----------------------- | -------- | ------- | ----- | ---------- | ---------------------------------- |
+| `parameters`      | `ParameterReflection[]` | ❌       | -       | -     | -          | TypeDoc parameter reflection array |
+| `ownerSourceFile` | `string`                | ✅       | -       | -     | -          |                                    |
 
 ---
 
@@ -1074,13 +1058,7 @@ relative imports and file references. Should match the project root.
 JSDoc tags to filter out from descriptions
 
 These tags will be excluded from the formatted descriptions
-as they are handled separately (e.g.,
-`@default`
-,
-`@since`
-,
-`@deprecated`
-).
+as they are handled separately (e.g., `@default`, `@since`, `@deprecated`).
 This prevents duplicate information in the generated documentation.
 
 ---
@@ -1104,14 +1082,9 @@ Controls whether to skip lifecycle execution
 
 Skip Options:
 
-- `true`
-- Skip all lifecycle methods (onBefore, onExec, onSuccess, onError)
-- `string`
-- Skip specific lifecycle method ('onBefore', 'onExec', 'onSuccess', 'onError')
-- `false`
-  or
-  `undefined`
-- Execute all lifecycle methods (default)
+- `true` - Skip all lifecycle methods (onBefore, onExec, onSuccess, onError)
+- `string` - Skip specific lifecycle method ('onBefore', 'onExec', 'onSuccess', 'onError')
+- `false` or `undefined` - Execute all lifecycle methods (default)
 
 **Example:**
 

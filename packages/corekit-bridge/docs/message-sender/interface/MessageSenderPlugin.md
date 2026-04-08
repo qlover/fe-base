@@ -204,12 +204,9 @@ commonly used in error handling and early termination scenarios
 Main features:
 
 - Conditional termination: Breaks chain only when return value exists
-- Error handling: Commonly used in
-  `onError`
-  lifecycle hooks
+- Error handling: Commonly used in `onError` lifecycle hooks
 - Result-based control: Enables flow control based on hook results
-- Flexible termination: Provides more nuanced control than
-  `breakChain`
+- Flexible termination: Provides more nuanced control than `breakChain`
 
 Common usage:
 
@@ -279,9 +276,7 @@ Number of stream chunks processed
 
 Tracks the count of stream chunks that have been processed
 through the plugin pipeline. Incremented automatically by
-
-`runStream`
-method.
+`runStream` method.
 
 **Example:**
 
@@ -408,15 +403,7 @@ Gateway options for message operations
 
 Configuration for gateway behavior including:
 
-- Stream event handlers (
-  `onChunk`
-  ,
-  `onComplete`
-  ,
-  `onError`
-  ,
-  `onProgress`
-  )
+- Stream event handlers (`onChunk`, `onComplete`, `onError`, `onProgress`)
 - Abort signal for cancellation control
 - Custom request parameters
 
@@ -493,9 +480,7 @@ state management operations during message sending.
 
 Whether to throw errors on send failure
 
-When
-`true`
-, failed send operations throw errors instead of
+When `true`, failed send operations throw errors instead of
 returning error messages. Useful for error boundary handling.
 
 **Example:**
@@ -566,9 +551,7 @@ Return value behavior:
 
 Type inference:
 
-- The return type
-  `R`
-  is automatically inferred from the task parameter
+- The return type `R` is automatically inferred from the task parameter
 - Return values are type-safe and match the task's return type
 - TypeScript can infer types from return statements without explicit annotations
 
@@ -801,16 +784,10 @@ onConnected: async (context) => {
 
 Error handling hook
 
-- For
-  `exec`
-  : returning a value or throwing will break the chain
-- For
-  `execNoError`
-  : returning a value or throwing will return the error
+- For `exec`: returning a value or throwing will break the chain
+- For `execNoError`: returning a value or throwing will return the error
 
-Because
-`onError`
-can break the chain, best practice is each plugin only handle plugin related error
+Because `onError` can break the chain, best practice is each plugin only handle plugin related error
 
 **Returns:**
 

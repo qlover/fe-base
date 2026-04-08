@@ -12,44 +12,18 @@ Synchronous key-value storage interface.
 
 Core concept:
 Contract for a sync storage that maps keys to values. All operations complete immediately;
-suitable for in-memory stores,
-`localStorage`
-/
-`sessionStorage`
-adapters, or any backend
+suitable for in-memory stores, `localStorage`/`sessionStorage` adapters, or any backend
 that does not require async I/O.
 
 Main features:
 
-- Key-value access:
-  `setItem`
-  /
-  `getItem`
-  /
-  `removeItem`
-  by key
-- Optional default on read: second
-  `getItem`
-  overload returns a default when key is missing
-- Bulk clear:
-  `clear()`
-  removes all entries
-- Optional parameters: generic
-  `Opt`
-  allows implementations to support expiry, scope, etc.
+- Key-value access: `setItem` / `getItem` / `removeItem` by key
+- Optional default on read: second `getItem` overload returns a default when key is missing
+- Bulk clear: `clear()` removes all entries
+- Optional parameters: generic `Opt` allows implementations to support expiry, scope, etc.
 
-Design note:
-`getItem`
-returns
-`V | null`
-when no default is given, to align with the
-browser
-Storage
-API (e.g.
-`localStorage.getItem`
-returns
-`string | null`
-).
+Design note: `getItem` returns `V | null` when no default is given, to align with the
+browser <a href="../index.md#storage-module" class="tsd-kind-module">Storage</a> API (e.g. `localStorage.getItem` returns `string | null`).
 
 **Example:** Basic usage
 
@@ -105,18 +79,12 @@ Scope of "all" is implementation-defined (e.g. may be limited to a prefix or nam
 
 Retrieves the value for the given key.
 
-Returns
-`null`
-when the key is not found, so the signature stays compatible with the
-browser
-Storage
-API.
+Returns `null` when the key is not found, so the signature stays compatible with the
+browser <a href="../index.md#storage-module" class="tsd-kind-module">Storage</a> API.
 
 **Returns:**
 
-The stored value, or
-`null`
-if the key does not exist.
+The stored value, or `null` if the key does not exist.
 
 #### Parameters
 
@@ -133,15 +101,11 @@ if the key does not exist.
 
 Retrieves the value for the given key, or the default when missing.
 
-Use this overload when a fallback is required so callers avoid explicit
-`null`
-checks.
+Use this overload when a fallback is required so callers avoid explicit `null` checks.
 
 **Returns:**
 
-The stored value if present, otherwise
-`defaultValue`
-.
+The stored value if present, otherwise `defaultValue`.
 
 #### Parameters
 
@@ -172,9 +136,7 @@ The stored value if present, otherwise
 
 Removes the entry for the given key.
 
-No-op if the key does not exist. Implementations may use
-`options`
-(e.g. scope) to
+No-op if the key does not exist. Implementations may use `options` (e.g. scope) to
 target a specific storage area.
 
 #### Parameters
@@ -206,11 +168,7 @@ target a specific storage area.
 
 Stores a value under the given key.
 
-Overwrites any existing value for
-`key`
-. Implementations may use
-`options`
-for
+Overwrites any existing value for `key`. Implementations may use `options` for
 behaviour such as TTL or storage scope.
 
 #### Parameters

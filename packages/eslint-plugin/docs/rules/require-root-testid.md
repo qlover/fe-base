@@ -2,17 +2,11 @@
 
 **Type:** `module require-root-testid`
 
-ESLint rule that enforces the presence of
-`data-testid`
-attribute on root elements of TSX components
+ESLint rule that enforces the presence of `data-testid` attribute on root elements of TSX components
 
-This rule ensures that all root elements in React components have a
-`data-testid`
-attribute,
+This rule ensures that all root elements in React components have a `data-testid` attribute,
 which is essential for testing purposes. The rule automatically fixes violations by adding
-a
-`data-testid`
-attribute with the component name as the value.
+a `data-testid` attribute with the component name as the value.
 
 ## Rule Details
 
@@ -21,14 +15,10 @@ The rule checks for root JSX elements in component functions. A root element is 
 - An element directly returned from a function (in a return statement)
 - An element that is the body of an arrow function expression
 
-When a root element is missing the
-`data-testid`
-attribute, the rule will:
+When a root element is missing the `data-testid` attribute, the rule will:
 
 1. Report an error
-2. Automatically fix it by adding
-   `data-testid="ComponentName"`
-   where ComponentName is
+2. Automatically fix it by adding `data-testid="ComponentName"` where ComponentName is
    derived from the component function name or JSX element name
 
 ## Examples
@@ -65,74 +55,57 @@ const ArrowComponent = () => {
 
 This rule accepts an options object with the following properties:
 
-###
+### `exclude`
 
-`exclude`
+**Type:** `string | string[] | RegExp | ((componentName: string) => boolean) | Array<string | RegExp | ((componentName: string) => boolean)>`
 
-**Type:**
-`string | string[] | RegExp | ((componentName: string) => boolean) | Array<string | RegExp | ((componentName: string) => boolean)>`
-
-**Default:**
-`undefined`
+**Default:** `undefined`
 
 Components to exclude from testid requirement. This option allows you to specify which
-components should be exempt from requiring a
-`data-testid`
-attribute on their root elements.
-The matching is performed against the JSX element name (e.g.,
-`<ConfigProvider>`
-,
-`<Provider>`
-)
+components should be exempt from requiring a `data-testid` attribute on their root elements.
+The matching is performed against the JSX element name (e.g., `<ConfigProvider>`, `<Provider>`)
 rather than the component function name.
 
 **Supported formats:**
 
 1. **Array of strings**: Exact match or endsWith match
 
-```ts
-exclude: ['ConfigProvider', 'Provider'];
-```
+   ```ts
+   exclude: ['ConfigProvider', 'Provider'];
+   ```
 
-- Matches:
-  `<ConfigProvider>`
-  ,
-  `<Provider>`
-  ,
-  `<MyProvider>`
-
-- Does not match:
-  `<Config>`
-  ,
-  `<MyConfigProvider>`
-  (unless ends with 'Provider')
+   - Matches: `<ConfigProvider>`, `<Provider>`, `<MyProvider>`
+   - Does not match: `<Config>`, `<MyConfigProvider>` (unless ends with 'Provider')
 
 2. **RegExp**: Regular expression pattern
 
-```ts
-exclude: /Provider$/;
-```
+   ```ts
+   exclude: /Provider$/;
+   ```
 
-- Matches any component name ending with 'Provider'
+   - Matches any component name ending with 'Provider'
 
 3. **String**: Treated as regex if wrapped in slashes, otherwise exact/endsWith match
 
-```ts
-exclude: '/Provider$/'; // Regex pattern
-exclude: 'Provider'; // Exact match or endsWith
-```
+   ```ts
+   exclude: '/Provider$/'; // Regex pattern
+   exclude: 'Provider'; // Exact match or endsWith
+   ```
 
 4. **Function**: Custom matching logic
 
-```ts
-exclude: (name: string) => name.includes('Provider');
-```
+   ```ts
+   exclude: (name: string) => name.includes('Provider');
+   ```
 
 5. **Array of mixed types**: Combine multiple matchers
-
-```ts
-exclude: ['ConfigProvider', /Provider$/, (name) => name.includes('Provider')];
-```
+   ```ts
+   exclude: [
+     'ConfigProvider',
+     /Provider$/,
+     (name) => name.includes('Provider')
+   ];
+   ```
 
 **Configuration examples:**
 
@@ -188,21 +161,16 @@ to selecting elements in tests, you can disable this rule.
 
 ## Implementation Notes
 
-- The rule uses automatic fixing to add
-  `data-testid`
-  attributes
+- The rule uses automatic fixing to add `data-testid` attributes
 - The testid value is derived from the component function name, or falls back to the JSX
   element name, or defaults to 'component'
 - Exclusion matching is performed against JSX element names, not component function names
 - The rule handles both function declarations and arrow function components
-- JSX member expressions (e.g.,
-  `<Antd.ConfigProvider>`
-  ) are supported
+- JSX member expressions (e.g., `<Antd.ConfigProvider>`) are supported
 
 **See:**
 
 - [Rule source](../../src/rules/require-root-testid.ts)
-
 - [Test source](../../__tests__/rules/require-root-testid.test.ts)
 
 ---

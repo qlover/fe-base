@@ -21,15 +21,9 @@ the executor, plugins, and the task being executed.
 Main features:
 
 - Parameter management: Read and update execution parameters
-  - Type-safe parameter access through generic type
-    `T`
-
-  - Immutable read access via
-    `parameters`
-    property
-  - Safe updates via
-    `setParameters()`
-    with internal cloning
+  - Type-safe parameter access through generic type `T`
+  - Immutable read access via `parameters` property
+  - Safe updates via `setParameters()` with internal cloning
   - Prevents accidental parameter mutation
 
 - Error tracking: Store and retrieve error state
@@ -39,40 +33,22 @@ Main features:
   - Automatically converts to ExecutorError
 
 - Return value handling: Access task return values
-  - Type-safe return value through generic type
-    `R`
-
+  - Type-safe return value through generic type `R`
   - Available to afterHooks for result transformation
   - Undefined until task completes successfully
 
 - Runtime metadata: Track execution timing and state
-  - Extensible runtime information via
-    `RuntimesType`
-
+  - Extensible runtime information via `RuntimesType`
   - Hook execution tracking
   - Performance monitoring support
   - Custom metadata storage
 
 Design considerations:
 
-- Immutable core properties:
-  `parameters`
-  ,
-  `error`
-  ,
-  `returnValue`
-  are read-only
-- Safe mutation methods:
-  `setParameters()`
-  ,
-  `setError()`
-  ,
-  `setReturnValue()`
-
+- Immutable core properties: `parameters`, `error`, `returnValue` are read-only
+- Safe mutation methods: `setParameters()`, `setError()`, `setReturnValue()`
 - Generic type safety: Full type inference for parameters and return values
-- Extensible runtimes: Custom runtime metadata via
-  `RuntimesType`
-  generic
+- Extensible runtimes: Custom runtime metadata via `RuntimesType` generic
 
 **Example:** Basic usage
 
@@ -192,11 +168,8 @@ console.log(context.runtimes.executionTime);
 
 **See:**
 
-- ExecutorHookRuntimesInterface
-  for runtime metadata interface
-
-- ExecutorContextImpl
-  for default implementation
+- <a href="./ExecutorHookRuntimesInterface.md#executorhookruntimesinterface-interface" class="tsd-kind-interface">ExecutorHookRuntimesInterface</a> for runtime metadata interface
+- ExecutorContextImpl for default implementation
 
 ---
 
@@ -228,9 +201,7 @@ onError: (ctx, error) => {
 Read-only access to execution parameters
 
 Provides immutable access to the current parameters. To modify parameters,
-use
-`setParameters()`
-method which ensures safe cloning.
+use `setParameters()` method which ensures safe cloning.
 
 **Example:**
 
@@ -419,9 +390,7 @@ context.runtimes({
 Set the error state
 
 Stores an error in the context for access by error handling plugins.
-Accepts any type of error value and converts it to
-`ExecutorError`
-.
+Accepts any type of error value and converts it to `ExecutorError`.
 This matches the behavior of JavaScript's catch clause which can catch any type.
 
 **Example:**

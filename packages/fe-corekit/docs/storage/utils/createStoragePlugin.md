@@ -20,23 +20,11 @@
 
 **Type:** `StorageExecutorPlugin<K, V, Opt>[]`
 
-Normalizes plugin input into an array of
-`StorageExecutorPlugin`
-.
+Normalizes plugin input into an array of `StorageExecutorPlugin`.
 
-- If a single
-  `StorageInterface`
-  is passed, returns one plugin that wraps it.
+- If a single `StorageInterface` is passed, returns one plugin that wraps it.
 - If an array is passed, maps each element: serializers and encryptors are adapted so that
-  only the pipeline value is passed to
-  `serialize`
-  /
-  `deserialize`
-  /
-  `encrypt`
-  /
-  `decrypt`
-  ; storage
+  only the pipeline value is passed to `serialize`/`deserialize`/`encrypt`/`decrypt`; storage
   instances are wrapped; other values are treated as already-implemented plugins. Array order
   is preserved (first plugin = first in set chain, last = storage in typical usage).
 
@@ -78,25 +66,12 @@ createStoragePlugin([jsonSerializer, encryptor, localStorage]);
 
 **Type:** `StorageExecutorPlugin<K, V, Opt>`
 
-Wraps a
-`StorageInterface`
-as a
-`StorageExecutorPlugin`
-so it can participate in the pipeline.
-Forwards
-`get`
-/
-`set`
-/
-`remove`
-/
-`clear`
-to the underlying storage.
+Wraps a `StorageInterface` as a `StorageExecutorPlugin` so it can participate in the pipeline.
+Forwards `get`/`set`/`remove`/`clear` to the underlying storage.
 
 **Returns:**
 
-A plugin that delegates to
-`storage`
+A plugin that delegates to `storage`
 
 #### Parameters
 
@@ -122,19 +97,11 @@ A plugin that delegates to
 
 **Type:** `callsignature isEncryptor<V, E>`
 
-Type guard: checks if the value is an encryptor (has
-`encrypt`
-and
-`decrypt`
-methods).
+Type guard: checks if the value is an encryptor (has `encrypt` and `decrypt` methods).
 
 **Returns:**
 
-`true`
-if
-`plugin`
-implements
-`EncryptorInterface<V, E>`
+`true` if `plugin` implements `EncryptorInterface<V, E>`
 
 #### Parameters
 
@@ -160,19 +127,11 @@ implements
 
 **Type:** `callsignature isSerializer<V>`
 
-Type guard: checks if the value is a serializer (has
-`serialize`
-and
-`deserialize`
-methods).
+Type guard: checks if the value is a serializer (has `serialize` and `deserialize` methods).
 
 **Returns:**
 
-`true`
-if
-`plugin`
-implements
-`SerializerIneterface<V>`
+`true` if `plugin` implements `SerializerIneterface<V>`
 
 #### Parameters
 

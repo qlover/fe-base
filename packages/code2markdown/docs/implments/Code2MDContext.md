@@ -815,12 +815,8 @@ Core Responsibilities:
 
 Design Considerations:
 
-- Source path defaults to
-  `src`
-  for common project structures
-- Generate path defaults to
-  `docs.output`
-  for clear separation
+- Source path defaults to `src` for common project structures
+- Generate path defaults to `docs.output` for clear separation
 - Private fields store intermediate processing data
 
 **Example:** Basic Configuration
@@ -916,16 +912,8 @@ Files or directories to exclude from processing
 This option allows you to exclude specific files or directories from
 being processed during documentation generation. Paths can be:
 
-- Relative paths from project root (e.g.,
-  `'src/test'`
-  ,
-  `'src/utils/helpers.ts'`
-  )
-- Directory names (e.g.,
-  `'node_modules'`
-  ,
-  `'dist'`
-  )
+- Relative paths from project root (e.g., `'src/test'`, `'src/utils/helpers.ts'`)
+- Directory names (e.g., `'node_modules'`, `'dist'`)
 - File patterns (simple matching, not full glob)
 
 Excluded paths are matched against file paths using simple string matching.
@@ -1048,12 +1036,10 @@ resolution and providing fallback values.
 
 Resolution priority:
 
-1.  `FE_RELEASE_SOURCE_BRANCH`
-    environment variable (primary)
-2.  `FE_RELEASE_BRANCH`
-    environment variable (fallback)
-3.  'master' (default fallback)
-4.  Explicitly set value (highest priority)
+1. `FE_RELEASE_SOURCE_BRANCH` environment variable (primary)
+2. `FE_RELEASE_BRANCH` environment variable (fallback)
+3. 'master' (default fallback)
+4. Explicitly set value (highest priority)
 
 Use cases:
 

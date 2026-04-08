@@ -10,20 +10,10 @@
 
 CookieStorage
 
-Significance: Provide a
-`Storage`
--like synchronous API backed by browser cookies.
-Core idea: Wrap the widely-used
-`js-cookie`
-library with a class that implements
-the
-`SyncStorage`
-interface so that the rest of the codebase can swap
-cookie storage in and out just like
-`localStorage`
-/
-`sessionStorage`
-.
+Significance: Provide a `Storage`-like synchronous API backed by browser cookies.
+Core idea: Wrap the widely-used `js-cookie` library with a class that implements
+the `SyncStorage` interface so that the rest of the codebase can swap
+cookie storage in and out just like `localStorage` / `sessionStorage`.
 Main function: get / set / remove / clear cookie values in a strongly-typed, synchronous way.
 Main purpose: Persist authentication tokens (or any small piece of data) when
 other storage solutions are not applicable, e.g. when third-party
@@ -103,11 +93,7 @@ Retrieve the value associated with a cookie key.
 
 **Returns:**
 
-T | null – Found value,
-`defaultValue`
-, or
-`null`
-when nothing is found.
+T | null – Found value, `defaultValue`, or `null` when nothing is found.
 
 #### Parameters
 
@@ -139,9 +125,7 @@ Obtain the cookie name located at the specified numeric index.
 
 **Returns:**
 
-string | null – Cookie name at the index, or
-`null`
-when out of bounds.
+string | null – Cookie name at the index, or `null` when out of bounds.
 
 #### Parameters
 

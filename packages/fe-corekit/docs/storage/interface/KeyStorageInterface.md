@@ -11,33 +11,15 @@
 Storage interface bound to a single fixed key.
 
 Core concept:
-A storage abstraction that only ever reads/writes one key, exposed as
-`key`
-. Callers use
-
-`get`
-/
-`set`
-/
-`remove`
-without passing a key; useful for token storage, single preference,
+A storage abstraction that only ever reads/writes one key, exposed as `key`. Callers use
+`get`/`set`/`remove` without passing a key; useful for token storage, single preference,
 or any "one value per instance" scenario.
 
 Main features:
 
-- Fixed key:
-  `readonly key`
-  identifies the sole key this instance operates on
-- Simple API:
-  `get()`
-  /
-  `set(value)`
-  /
-  `remove()`
-  with no key argument
-- Optional parameters: generic
-  `Opt`
-  allows implementations to support expiry, scope, etc.
+- Fixed key: `readonly key` identifies the sole key this instance operates on
+- Simple API: `get()` / `set(value)` / `remove()` with no key argument
+- Optional parameters: generic `Opt` allows implementations to support expiry, scope, etc.
 
 When to use: Prefer this over a generic key-value interface when the semantic is "one
 named slot" (e.g. auth token, theme, locale) and you want to avoid key typos and keep
@@ -67,13 +49,7 @@ const token = tokenStorage.get({ scope: 'session' });
 
 The single key this storage instance is bound to.
 
-All
-`get`
-/
-`set`
-/
-`remove`
-operations act on this key. Read-only so that the binding
+All `get`/`set`/`remove` operations act on this key. Read-only so that the binding
 cannot change after creation.
 
 ---
@@ -98,9 +74,7 @@ Reads the value for the bound key.
 
 **Returns:**
 
-The stored value, or
-`null`
-if no value has been set or it was removed.
+The stored value, or `null` if no value has been set or it was removed.
 
 #### Parameters
 
@@ -128,9 +102,7 @@ if no value has been set or it was removed.
 
 Removes the value for the bound key.
 
-No-op if the key is already absent. Implementations may use
-`options`
-(e.g. scope)
+No-op if the key is already absent. Implementations may use `options` (e.g. scope)
 to target a specific storage area.
 
 #### Parameters
@@ -160,9 +132,7 @@ to target a specific storage area.
 
 Writes the value for the bound key.
 
-Overwrites any existing value. Implementations may use
-`options`
-for behaviour such
+Overwrites any existing value. Implementations may use `options` for behaviour such
 as TTL or storage scope.
 
 #### Parameters

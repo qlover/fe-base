@@ -24,19 +24,13 @@ Creates an AbortSignal that triggers after a specified timeout
 
 Automatically uses the best available implementation:
 
-- Native
-  `AbortSignal.timeout()`
-  (Node.js 17.3+, modern browsers) for optimal performance
+- Native `AbortSignal.timeout()` (Node.js 17.3+, modern browsers) for optimal performance
 - Manual timer implementation for older environments (Node.js 16-17.2)
 
 Key features:
 
-- Aborts with
-  `TimeoutError`
-  DOMException for standard error handling
-- Provides
-  `clear()`
-  method to cancel timeout and prevent memory leaks
+- Aborts with `TimeoutError` DOMException for standard error handling
+- Provides `clear()` method to cancel timeout and prevent memory leaks
 - Handles invalid timeout values gracefully (NaN, Infinity, negative)
 - Clamps large timeouts to maximum safe value
 

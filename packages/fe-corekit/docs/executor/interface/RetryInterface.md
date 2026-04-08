@@ -176,9 +176,7 @@ The maximum number of milliseconds between two retries.
 
 The number of milliseconds before starting the first retry.
 
-Set this to
-`0`
-to retry immediately with no delay.
+Set this to `0` to retry immediately with no delay.
 
 ---
 
@@ -188,17 +186,9 @@ to retry immediately with no delay.
 
 Callback invoked on each failure. Receives a context object containing the error and retry state information.
 
-The function is called before
-`shouldConsumeRetry`
-and
-`shouldRetry`
-, for all errors except
-`AbortError`
-.
+The function is called before `shouldConsumeRetry` and `shouldRetry`, for all errors except `AbortError`.
 
-The function is not called on
-`AbortError`
-.
+The function is not called on `AbortError`.
 
 **Example:**
 
@@ -228,9 +218,7 @@ const result = await pRetry(run, {
 console.log(result);
 ```
 
-The
-`onFailedAttempt`
-function can return a promise. For example, to add a [delay](https://github.com/sindresorhus/delay):
+The `onFailedAttempt` function can return a promise. For example, to add a [delay](https://github.com/sindresorhus/delay):
 
 **Example:**
 
@@ -248,9 +236,7 @@ const result = await pRetry(run, {
 });
 ```
 
-If the
-`onFailedAttempt`
-function throws, all retries will be aborted and the original promise will reject with the thrown error.
+If the `onFailedAttempt` function throws, all retries will be aborted and the original promise will reject with the thrown error.
 
 ---
 
@@ -319,25 +305,13 @@ const options: RetryOptions = {
 
 
 
-Decide if this failure should consume a retry from the
-`retries`
- budget.
+Decide if this failure should consume a retry from the `retries` budget.
 
-When
-`false`
- is returned, the failure will not consume a retry or increment backoff values, but is still subject to
-`maxRetryTime`
-.
+When `false` is returned, the failure will not consume a retry or increment backoff values, but is still subject to `maxRetryTime`.
 
-The function is called after
-`onFailedAttempt`
-, but before
-`shouldRetry`
-.
+The function is called after `onFailedAttempt`, but before `shouldRetry`.
 
-The function is not called on
-`AbortError`
-.
+The function is not called on `AbortError`.
 
 **Example:**
 
@@ -357,16 +331,9 @@ return !(error instanceof RateLimitError);
 
 ```
 
+In the example above, `RateLimitError`s will not decrement the available `retries`.
 
-In the example above,
-`RateLimitError`
-s will not decrement the available
-`retries`
-.
-
-If the
-`shouldConsumeRetry`
- function throws, all retries will be aborted and the original promise will reject with the thrown error.
+If the `shouldConsumeRetry` function throws, all retries will be aborted and the original promise will reject with the thrown error.
 
 
 ---
@@ -382,21 +349,9 @@ If the
 
 Decide if a retry should occur based on the context. Returning true triggers a retry, false aborts with the error.
 
-The function is called after
-`onFailedAttempt`
- and
-`shouldConsumeRetry`
-.
+The function is called after `onFailedAttempt` and `shouldConsumeRetry`.
 
-The function is not called on
-`AbortError`
-,
-`TypeError`
- (except network errors), or if
-`retries`
- or
-`maxRetryTime`
- are exhausted.
+The function is not called on `AbortError`, `TypeError` (except network errors), or if `retries` or `maxRetryTime` are exhausted.
 
 **Example:**
 
@@ -412,14 +367,9 @@ shouldRetry: ({error, attemptNumber, retriesLeft}) => !(error instanceof CustomE
 
 ```
 
+In the example above, the operation will be retried unless the error is an instance of `CustomError`.
 
-In the example above, the operation will be retried unless the error is an instance of
-`CustomError`
-.
-
-If the
-`shouldRetry`
- function throws, all retries will be aborted and the original promise will reject with the thrown error.
+If the `shouldRetry` function throws, all retries will be aborted and the original promise will reject with the thrown error.
 
 
 ---
@@ -453,9 +403,7 @@ false
 
 Prevents retry timeouts from keeping the process alive.
 
-Only affects platforms with a
-`.unref()`
- method on timeouts, such as Node.js.
+Only affects platforms with a `.unref()` method on timeouts, such as Node.js.
 
 
 ---

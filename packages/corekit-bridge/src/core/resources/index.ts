@@ -3,9 +3,11 @@
  * @description Resource ports, type guards, and gateway wrappers for CRUD, search/list, scroll, and bulk I/O
  *
  * This barrel groups **contracts** (`ResourceCRUDInterface`, `ResourceSearchInterface`, `ResourceScrollInterface`,
- * `ResourceIOInterface`), **lifecycle hooks** ({@link LifecycleInterface}), **shared DTOs** (`ResourceSearchParams`,
- * `ResourceSearchResult`, import/export result types), and **concrete services** that wrap a gateway with async store
- * state ({@link ResourceCRUD}, {@link ResourceSearch}, {@link ResourceScroll}, {@link ResourceIO}) plus their stores.
+ * `ResourceIOInterface`), **lifecycle hooks** ({@link LifecycleInterface}), **shared DTOs** (`ResourceSearchParams` and
+ * {@link ResourceSearchResult} from the search module; bulk import/export shapes on {@link ResourceIOInterface}), and
+ * **concrete services** that wrap a gateway with async store state ({@link ResourceCRUD}, {@link ResourceSearch},
+ * {@link ResourceScroll}, {@link ResourceIO}) plus their stores. **Runtime guards** {@link isResourceSearchResult} and
+ * {@link isResourceSearchResultStrict} live in `./ResourceSearchResult.ts` (narrow unknown list/search payloads).
  *
  * ### Exported members (high level)
  *
@@ -30,12 +32,14 @@
  * } from '@qlover/corekit-bridge';
  *
  * // Implement ports against your HTTP layer, then wrap for store-backed loading state.
- * const crud = new ResourceCRUD(myUserGateway satisfies ResourceCRUDInterface<User>, {
- *   serviceName: 'users'
- * });
- * const list = new ResourceSearch(myUserListGateway satisfies ResourceSearchInterface<UserRow>, {
- *   serviceName: 'userList'
- * });
+ * const crud = new ResourceCRUD(
+ *   myUserGateway satisfies ResourceCRUDInterface<User>,
+ *   { serviceName: 'users' }
+ * );
+ * const list = new ResourceSearch(
+ *   myUserListGateway satisfies ResourceSearchInterface<UserRow>,
+ *   { serviceName: 'userList' }
+ * );
  *
  * await crud.detail('42');
  * await list.search({ page: 1, pageSize: 20 });
@@ -43,9 +47,12 @@
  *
  * ### Related documentation
  *
- * - [LifecycleInterface](../../../docs/resources/LifecycleInterface.md)
- * - [Resource interface overview](../../../docs/resources/ResourceInterface.md)
- * - [Resource store patterns](../../../docs/resources/ResourceStore.md)
+ * Paths are relative to `docs/resources/` (same layout as `pnpm build:docs` / `fe-code2md` for this package).
+ *
+ * - [LifecycleInterface](./LifecycleInterface.md)
+ * - [ResourceSearchResult](./ResourceSearchResult.md) — list/search result guards
+ * - Port contracts: [ResourceCRUDInterface](./interfaces/ResourceCRUDInterface.md), [ResourceSearchInterface](./interfaces/ResourceSearchInterface.md), [ResourceScrollInterface](./interfaces/ResourceScrollInterface.md), [ResourceIOInterface](./interfaces/ResourceIOInterface.md)
+ * - Wrappers: [ResourceCRUD](./impl/ResourceCRUD.md), [ResourceCRUDStore](./impl/ResourceCRUDStore.md), [ResourceSearch](./impl/ResourceSearch.md), [ResourceSearchStore](./impl/ResourceSearchStore.md), [ResourceScroll](./impl/ResourceScroll.md), [ResourceIO](./impl/ResourceIO.md)
  *
  * @see {@link ResourceCRUDInterface}
  * @see {@link ResourceSearchInterface}

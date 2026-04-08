@@ -21,50 +21,22 @@ all business logic without delegating to sub-services.
 
 **Persistence Behavior (inherited from UserStore):**
 
-- **Default**: Only
-  `credential`
-  is persisted to storage,
-  `user info`
-  is stored in memory only
-  - When
-    `store`
-    configuration includes
-    `storage`
-    and
-    `storageKey`
-    , **credential will be persisted using
-    `storageKey`
-    **
-  - **Note:**
-    `storageKey`
-    stores credential (not user info), which is different from AsyncStore
+- **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
+  - When `store` configuration includes `storage` and `storageKey`, **credential will be persisted using `storageKey`**
+  - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
   - User info will NOT be persisted and will be cleared on page reload
   - This ensures credential survives page reloads while user info is fetched fresh each time
 
-- **Dual persistence** (optional): Configure
-  `persistUserInfo: true`
-  and
-  `credentialStorageKey`
-  in store options
-  - Credential will be persisted to
-    `credentialStorageKey`
-
-  - User info will be persisted to
-    `storageKey`
-
+- **Dual persistence** (optional): Configure `persistUserInfo: true` and `credentialStorageKey` in store options
+  - Credential will be persisted to `credentialStorageKey`
+  - User info will be persisted to `storageKey`
   - Both will be restored from storage on service initialization
 
 **Important: Authentication Status After Restore**
 
-- When credential is restored from storage, the store status is **NOT automatically set to
-  `SUCCESS`
-  **
-- You must manually decide when to set status to
-  `SUCCESS`
-  based on your application's authentication logic
-- See
-  `isAuthenticated()`
-  method documentation for examples of custom authentication logic
+- When credential is restored from storage, the store status is **NOT automatically set to `SUCCESS`**
+- You must manually decide when to set status to `SUCCESS` based on your application's authentication logic
+- See `isAuthenticated()` method documentation for examples of custom authentication logic
 - See examples below for how to handle credential restoration
 
 Core features:
@@ -299,9 +271,7 @@ This is a convenience method that accesses the state's credential property direc
 
 **Returns:**
 
-The current credential data, or
-`null`
-if not available
+The current credential data, or `null` if not available
 
 **Example:** Get current credential
 
@@ -347,9 +317,7 @@ This is a convenience method that accesses the store's user info directly.
 
 **Returns:**
 
-The current user information, or
-`null`
-if not available
+The current user information, or `null` if not available
 
 **Example:** Get current user
 
@@ -386,9 +354,7 @@ Uses unified userStore for user info operations.
 
 **Returns:**
 
-Promise resolving to user information, or
-`null`
-if not available
+Promise resolving to user information, or `null` if not available
 
 **Throws:**
 
@@ -439,9 +405,7 @@ Check if user is authenticated
 
 Provides a **basic authentication check** that verifies:
 
-- Store status is
-  `SUCCESS`
-
+- Store status is `SUCCESS`
 - Credential exists
 
 **Important:** This is a basic implementation that may not suit all application scenarios.
@@ -455,17 +419,12 @@ Different applications may have different authentication requirements:
 **Override this method** to implement custom authentication logic based on your application's
 specific requirements. The base implementation only checks if status is SUCCESS and credential exists.
 
-**Note:** When credential is restored from storage via
-`restore()`
-, the status is NOT automatically
+**Note:** When credential is restored from storage via `restore()`, the status is NOT automatically
 set to SUCCESS. You need to manually set the status based on your validation logic (see examples below).
 
 **Returns:**
 
-`true`
-if user is authenticated (has SUCCESS status and credential),
-`false`
-otherwise
+`true` if user is authenticated (has SUCCESS status and credential), `false` otherwise
 
 **Example:** Basic usage
 
@@ -758,9 +717,7 @@ Uses separate userInfoStore for refresh operations (not authentication store).
 
 **Returns:**
 
-Promise resolving to refreshed user information, or
-`null`
-if refresh fails
+Promise resolving to refreshed user information, or `null` if refresh fails
 
 **Example:** Refresh user info
 
@@ -813,9 +770,7 @@ Uses unified userStore for registration state.
 
 **Returns:**
 
-Promise resolving to user information if registration succeeds, or
-`null`
-if it fails
+Promise resolving to user information if registration succeeds, or `null` if it fails
 
 **Example:** Register user
 
@@ -867,40 +822,14 @@ User service configuration
 
 **Persistence Behavior (inherited from UserStore):**
 
-- **Default**: Only
-  `credential`
-  is persisted to storage,
-  `user info`
-  is stored in memory only
-  - When
-    `store`
-    configuration includes
-    `storage`
-    and
-    `storageKey`
-    , **credential will be persisted using
-    `storageKey`
-    **
-  - **Note:**
-    `storageKey`
-    stores credential (not user info), which is different from AsyncStore
+- **Default**: Only `credential` is persisted to storage, `user info` is stored in memory only
+  - When `store` configuration includes `storage` and `storageKey`, **credential will be persisted using `storageKey`**
+  - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
   - User info will NOT be persisted and will be cleared on page reload
 
-- **Dual persistence** (optional): Configure
-  `persistUserInfo: true`
-  and
-  `credentialStorageKey`
-  in store options
-  - Credential will be persisted to
-    `credentialStorageKey`
-
-  - User info will be persisted to
-    `storageKey`
-    (when
-    `credentialStorageKey`
-    is different from
-    `storageKey`
-    )
+- **Dual persistence** (optional): Configure `persistUserInfo: true` and `credentialStorageKey` in store options
+  - Credential will be persisted to `credentialStorageKey`
+  - User info will be persisted to `storageKey` (when `credentialStorageKey` is different from `storageKey`)
 
 Design decisions:
 

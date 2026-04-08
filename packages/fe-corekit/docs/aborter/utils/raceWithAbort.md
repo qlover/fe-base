@@ -23,9 +23,7 @@
 Create an abort promise that rejects when the signal is aborted
 
 This function creates a promise that never resolves but rejects when the provided
-abort signal is triggered. It's designed to be used with
-`Promise.race()`
-to implement
+abort signal is triggered. It's designed to be used with `Promise.race()` to implement
 cancellable operations.
 
 Key features:
@@ -33,8 +31,7 @@ Key features:
 - Immediately rejects if signal is already aborted
 - Listens for abort events and rejects accordingly
 - Provides cleanup function to prevent memory leaks
-- Uses signal's reason or creates default
-  `AbortError`
+- Uses signal's reason or creates default `AbortError`
 
 **Returns:**
 
@@ -94,9 +91,7 @@ Race a promise with an abort signal
 
 This utility function allows you to make any promise cancellable by racing it
 against an abort signal. If the signal is aborted before the promise resolves,
-the operation will be cancelled and an
-`AbortError`
-will be thrown.
+the operation will be cancelled and an `AbortError` will be thrown.
 
 Core functionality:
 
@@ -115,9 +110,7 @@ Use cases:
 
 **Returns:**
 
-Promise that resolves/rejects with original promise result, or rejects with
-`AbortError`
-if aborted
+Promise that resolves/rejects with original promise result, or rejects with `AbortError` if aborted
 
 **Throws:**
 

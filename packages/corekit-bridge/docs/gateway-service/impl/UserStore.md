@@ -22,42 +22,16 @@ Other operations (getUserInfo, register, refreshUserInfo) should manage their ow
 
 **Persistence Behavior:**
 
-- **Default behavior**: Only
-  `credential`
-  is persisted to storage,
-  `user info`
-  (result) is stored in memory only
-  - When
-    `storage`
-    and
-    `storageKey`
-    are provided, **credential will be persisted using
-    `storageKey`
-    **
-  - **Note:**
-    `storageKey`
-    stores credential (not user info), which is different from AsyncStore
+- **Default behavior**: Only `credential` is persisted to storage, `user info` (result) is stored in memory only
+  - When `storage` and `storageKey` are provided, **credential will be persisted using `storageKey`**
+  - **Note:** `storageKey` stores credential (not user info), which is different from AsyncStore
   - User info will NOT be persisted and will be cleared on page reload
-  - This is different from AsyncStore which uses
-    `storageKey`
-    to persist
-    `result`
-    (user info)
+  - This is different from AsyncStore which uses `storageKey` to persist `result` (user info)
 
 - **Dual persistence** (optional): Can persist both user info and credential separately when configured
-  - Set
-    `persistUserInfo: true`
-    and provide a different
-    `credentialStorageKey`
-    from
-    `storageKey`
-
-  - Credential will be persisted to
-    `credentialStorageKey`
-
-  - User info will be persisted to
-    `storageKey`
-
+  - Set `persistUserInfo: true` and provide a different `credentialStorageKey` from `storageKey`
+  - Credential will be persisted to `credentialStorageKey`
+  - User info will be persisted to `storageKey`
   - Both will be restored from storage on initialization
 
 Core features:
@@ -66,11 +40,7 @@ Core features:
 - Async lifecycle: Inherits async operation lifecycle from AsyncStore (start, success, failed, reset)
 - Credential persistence: Only credential is persisted by default, user info is stored in memory only
 - Dual persistence: Can persist both user info and credential separately when configured
-- Enhanced methods:
-  `start`
-  and
-  `success`
-  support optional credential parameter for convenience
+- Enhanced methods: `start` and `success` support optional credential parameter for convenience
 
 Design decisions:
 
@@ -79,15 +49,9 @@ Design decisions:
 - Authentication-only: This store is only for login/logout operations
 - Credential-first persistence: Only credential is persisted by default (unlike AsyncStore which persists result)
 - Flexible persistence: Supports persisting both user info and credential separately when configured
-- Enhanced methods:
-  `start`
-  and
-  `success`
-  can accept credential for atomic updates
+- Enhanced methods: `start` and `success` can accept credential for atomic updates
 
-TODO: Where should we support the
-`storageResult`
-of the parent class
+TODO: Where should we support the `storageResult` of the parent class
 
 **Example:** Basic usage (persist only credential)
 
@@ -192,10 +156,8 @@ When storageResult=false, should return S
 
 Whether to persist user info (result) in addition to credential
 
-- `true`
-  : Persist both user info and credential (requires separate storage keys)
-- `false`
-  : Only persist credential, not user info (default behavior)
+- `true`: Persist both user info and credential (requires separate storage keys)
+- `false`: Only persist credential, not user info (default behavior)
 
 ---
 
@@ -205,16 +167,8 @@ Whether to persist user info (result) in addition to credential
 
 **Default:** `null`
 
-Storage implementation for persisting state, or
-`null`
-if persistence is not needed
-When
-`null`
-,
-`restore()`
-/
-`persist()`
-typically no-op (depending on subclass)
+Storage implementation for persisting state, or `null` if persistence is not needed
+When `null`, `restore()` / `persist()` typically no-op (depending on subclass)
 
 ---
 
@@ -227,9 +181,7 @@ typically no-op (depending on subclass)
 Storage key for persisting state
 
 The key used to store state in the storage backend.
-Set during construction from
-`AsyncStoreOptions.storageKey`
-.
+Set during construction from `AsyncStoreOptions.storageKey`.
 
 ---
 
@@ -243,24 +195,11 @@ Control the type of data stored in persistence
 
 This property controls what data is stored and restored from storage:
 
-- `true`
-  : Store only the result value (
-  `T`
-  ).
-  `restore()`
-  returns
-  `T | null`
-
-- `false`
-  : Store the full state object.
-  `restore()`
-  returns
-  `AsyncStoreStateInterface<T> | null`
+- `true`: Store only the result value (`T`). `restore()` returns `T | null`
+- `false`: Store the full state object. `restore()` returns `AsyncStoreStateInterface<T> | null`
 
 **Note:** This is primarily an internal testing property. In most cases, storing
-only the result value (
-`true`
-) is sufficient and more efficient.
+only the result value (`true`) is sufficient and more efficient.
 
 ---
 
@@ -287,10 +226,6 @@ only the result value (
 ##### `emit` (CallSignature)
 
 **Type:** `void`
-
-Apply a patch or full snapshot, then persist when configured (see
-PersistentStore.emit
-)
 
 #### Parameters
 
@@ -331,27 +266,11 @@ when an operation encounters an error or exception.
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Sets
-  `status`
-  to
-  `FAILED`
-
-- Records
-  `endTime`
-  with current timestamp
-- Sets
-  `error`
-  with the failure information
-- Preserves existing
-  `result`
-  if not provided, or sets
-  `result`
-  if explicitly provided
+- Sets `loading` to `false`
+- Sets `status` to `FAILED`
+- Records `endTime` with current timestamp
+- Sets `error` with the failure information
+- Preserves existing `result` if not provided, or sets `result` if explicitly provided
 - Automatically persists state to storage (if configured)
 
 **Example:** Handle API error (preserves existing result)
@@ -421,9 +340,7 @@ This is a convenience method that accesses the state's credential property direc
 
 **Returns:**
 
-The current credential data, or
-`null`
-if not available
+The current credential data, or `null` if not available
 
 ---
 
@@ -439,52 +356,19 @@ if not available
 
 Get the duration of the async operation
 
-Calculates the duration based on the current state's
-`startTime`
-and
-`endTime`
-:
+Calculates the duration based on the current state's `startTime` and `endTime`:
 
-- Returns
-  `0`
-  if operation has not started (
-  `startTime`
-  is
-  `0`
-  or not set)
-- If operation is in progress (
-  `endTime`
-  is
-  `0`
-  or not set), returns
-  `Date.now() - startTime`
-
-- If operation has completed, returns
-  `endTime - startTime`
-
-- Handles type conversion: supports
-  `number`
-  ,
-  `string`
-  (parsed via
-  `parseFloat`
-  ), or other types (converted via
-  `Number`
-  )
-- Returns
-  `0`
-  if startTime or endTime cannot be converted to valid numbers
-- Returns
-  `0`
-  if startTime is greater than endTime (invalid state)
-- Prevents overflow by checking against
-  `Number.MAX_SAFE_INTEGER`
+- Returns `0` if operation has not started (`startTime` is `0` or not set)
+- If operation is in progress (`endTime` is `0` or not set), returns `Date.now() - startTime`
+- If operation has completed, returns `endTime - startTime`
+- Handles type conversion: supports `number`, `string` (parsed via `parseFloat`), or other types (converted via `Number`)
+- Returns `0` if startTime or endTime cannot be converted to valid numbers
+- Returns `0` if startTime is greater than endTime (invalid state)
+- Prevents overflow by checking against `Number.MAX_SAFE_INTEGER`
 
 **Returns:**
 
-The duration of the async operation in milliseconds, or
-`0`
-if duration cannot be calculated
+The duration of the async operation in milliseconds, or `0` if duration cannot be calculated
 
 **Example:** Get duration for completed operation
 
@@ -519,18 +403,12 @@ console.log(`Operation has been running for ${duration}ms`);
 
 Get the error from the async operation
 
-Returns the error information if the operation failed, or
-`null`
-if no error.
-Equivalent to
-`getState().error`
-.
+Returns the error information if the operation failed, or `null` if no error.
+Equivalent to `getState().error`.
 
 **Returns:**
 
-The error information if operation failed, or
-`null`
-if no error
+The error information if operation failed, or `null` if no error
 
 **Example:** Handle error
 
@@ -556,16 +434,11 @@ if (error) {
 Get the loading state of the async operation
 
 Convenience method to check if an operation is currently in progress.
-Equivalent to
-`getState().loading`
-.
+Equivalent to `getState().loading`.
 
 **Returns:**
 
-`true`
-if the operation is in progress,
-`false`
-otherwise
+`true` if the operation is in progress, `false` otherwise
 
 **Example:** Check loading state
 
@@ -589,18 +462,12 @@ if (store.getLoading()) {
 
 Get the result from the async operation
 
-Returns the result data if the operation succeeded, or
-`null`
-if no result.
-Equivalent to
-`getState().result`
-.
+Returns the result data if the operation succeeded, or `null` if no result.
+Equivalent to `getState().result`.
 
 **Returns:**
 
-The result data if operation succeeded, or
-`null`
-if no result
+The result data if operation succeeded, or `null` if no result
 
 **Example:** Access result
 
@@ -632,18 +499,12 @@ This is a snapshot of the current state at the time of call.
 
 Current state object containing:
 
-- `loading`
-  : Whether operation is in progress
-- `result`
-  : Operation result (if successful)
-- `error`
-  : Error information (if failed)
-- `startTime`
-  : Operation start timestamp
-- `endTime`
-  : Operation end timestamp
-- `status`
-  : Operation status
+- `loading`: Whether operation is in progress
+- `result`: Operation result (if successful)
+- `error`: Error information (if failed)
+- `startTime`: Operation start timestamp
+- `endTime`: Operation end timestamp
+- `status`: Operation status
 
 **Example:** Get current state
 
@@ -679,12 +540,8 @@ if (state.loading) {
 Get the status of the async operation
 
 Returns the status information about the operation state.
-The status type depends on the implementation (e.g.,
-`'pending' | 'success' | 'failed' | 'stopped'`
-).
-Equivalent to
-`getState().status`
-.
+The status type depends on the implementation (e.g., `'pending' | 'success' | 'failed' | 'stopped'`).
+Equivalent to `getState().status`.
 
 **Returns:**
 
@@ -718,14 +575,8 @@ switch (status) {
 
 Get the underlying store instance
 
-Returns the composed
-StoreInterface
-(typically
-SliceStoreAdapter
-), enabling
-reactive subscriptions via
-StoreInterface.subscribe
-.
+Returns the composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> (typically SliceStoreAdapter), enabling
+reactive subscriptions via <a href="../interface/StoreInterface.md#subscribe-property" class="tsd-kind-property">StoreInterface.subscribe</a>.
 
 **Returns:**
 
@@ -759,9 +610,7 @@ that accesses the state's userInfo property directly.
 
 **Returns:**
 
-The current user information, or
-`null`
-if not available
+The current user information, or `null` if not available
 
 ---
 
@@ -777,19 +626,12 @@ if not available
 
 Check if the async operation is completed
 
-Returns
-`true`
-if the operation has finished, regardless of outcome.
-This includes success, failure, and stopped states. Returns
-`false`
-if still in progress.
+Returns `true` if the operation has finished, regardless of outcome.
+This includes success, failure, and stopped states. Returns `false` if still in progress.
 
 **Returns:**
 
-`true`
-if the async operation is completed (success, failed, or stopped),
-`false`
-otherwise
+`true` if the async operation is completed (success, failed, or stopped), `false` otherwise
 
 **Example:** Check if operation finished
 
@@ -814,25 +656,12 @@ if (store.isCompleted()) {
 
 Check if the async operation failed
 
-Returns
-`true`
-if the operation has failed with an error.
-This typically means
-`loading`
-is
-`false`
-and
-`error`
-is not
-`null`
-.
+Returns `true` if the operation has failed with an error.
+This typically means `loading` is `false` and `error` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is failed,
-`false`
-otherwise
+`true` if the async operation is failed, `false` otherwise
 
 **Example:** Handle failure
 
@@ -857,21 +686,12 @@ if (store.isFailed()) {
 
 Check if the async operation is pending (in progress)
 
-Returns
-`true`
-if the operation is currently in progress.
-This is equivalent to checking if
-`loading`
-is
-`true`
-.
+Returns `true` if the operation is currently in progress.
+This is equivalent to checking if `loading` is `true`.
 
 **Returns:**
 
-`true`
-if the async operation is pending (in progress),
-`false`
-otherwise
+`true` if the async operation is pending (in progress), `false` otherwise
 
 **Example:** Show loading indicator
 
@@ -895,17 +715,12 @@ if (store.isPending()) {
 
 Check if the async operation was stopped
 
-Returns
-`true`
-if the operation was manually stopped (e.g., user cancellation).
+Returns `true` if the operation was manually stopped (e.g., user cancellation).
 This is different from failure - stopping is intentional, failure is an error.
 
 **Returns:**
 
-`true`
-if the async operation is stopped,
-`false`
-otherwise
+`true` if the async operation is stopped, `false` otherwise
 
 **Example:** Handle stopped operation
 
@@ -929,29 +744,12 @@ if (store.isStopped()) {
 
 Check if the async operation completed successfully
 
-Returns
-`true`
-if the operation has completed successfully with a result.
-This typically means
-`loading`
-is
-`false`
-,
-`error`
-is
-`null`
-, and
-`result`
-is not
-`null`
-.
+Returns `true` if the operation has completed successfully with a result.
+This typically means `loading` is `false`, `error` is `null`, and `result` is not `null`.
 
 **Returns:**
 
-`true`
-if the async operation is successful,
-`false`
-otherwise
+`true` if the async operation is successful, `false` otherwise
 
 **Example:** Check success before accessing result
 
@@ -966,13 +764,13 @@ if (store.isSuccess()) {
 
 #### `persist` (Method)
 
-**Type:** `(_state: T) => void`
+**Type:** `(_state: T \| StoreUpdateValue<T>) => void`
 
 #### Parameters
 
-| Name     | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| -------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state` | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description                                                          |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
+| `_state` | `T \| StoreUpdateValue<T>` | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
 
 ---
 
@@ -982,31 +780,17 @@ if (store.isSuccess()) {
 
 Persist state to storage
 
-Persists credential to storage. If
-`persistUserInfo`
-is
-`true`
-and
-`credentialStorageKey`
-
-is different from
-`storageKey`
-, also persists user info to the default storage key.
+Persists credential to storage. If `persistUserInfo` is `true` and `credentialStorageKey`
+is different from `storageKey`, also persists user info to the default storage key.
 
 **Only credential is persisted by default**, user information is stored in memory only.
-Set
-`persistUserInfo`
-to
-`true`
-and provide a separate
-`credentialStorageKey`
-to persist both.
+Set `persistUserInfo` to `true` and provide a separate `credentialStorageKey` to persist both.
 
 #### Parameters
 
-| Name     | Type | Optional | Default | Since | Deprecated | Description                                                          |
-| -------- | ---- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
-| `_state` | `T`  | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
+| Name     | Type                       | Optional | Default | Since | Deprecated | Description                                                          |
+| -------- | -------------------------- | -------- | ------- | ----- | ---------- | -------------------------------------------------------------------- |
+| `_state` | `T \| StoreUpdateValue<T>` | ✅       | -       | -     | -          | Optional state parameter (ignored, kept for interface compatibility) |
 
 ---
 
@@ -1027,32 +811,11 @@ starting a new operation or clearing previous operation state.
 
 Behavior:
 
-- Resets
-  `loading`
-  to
-  `false`
-
-- Clears
-  `result`
-  (sets to
-  `null`
-  )
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
-- Resets
-  `startTime`
-  and
-  `endTime`
-  to
-  `0`
-
-- Resets
-  `status`
-  to
-  `DRAFT`
+- Resets `loading` to `false`
+- Clears `result` (sets to `null`)
+- Clears `error` (sets to `null`)
+- Resets `startTime` and `endTime` to `0`
+- Resets `status` to `DRAFT`
 
 **Example:** Reset before new operation
 
@@ -1085,21 +848,11 @@ store.reset();
 
 Restore state from storage
 
-Restores credential from storage. If
-`persistUserInfo`
-is
-`true`
-and
-`credentialStorageKey`
-
-is different from
-`storageKey`
-, also restores user info from the default storage key.
+Restores credential from storage. If `persistUserInfo` is `true` and `credentialStorageKey`
+is different from `storageKey`, also restores user info from the default storage key.
 
 **Important Design Decision:**
-This method **does NOT automatically set status to
-`SUCCESS`
-** when credential is restored.
+This method **does NOT automatically set status to `SUCCESS`** when credential is restored.
 Different applications have different authentication requirements:
 
 - Some may need to validate credential expiration
@@ -1107,18 +860,12 @@ Different applications have different authentication requirements:
 - Some may require additional permission checks
 - Some may consider restored credential as valid immediately
 
-**Developers must decide** when to set status to
-`SUCCESS`
-based on their application's
+**Developers must decide** when to set status to `SUCCESS` based on their application's
 authentication logic. The store only restores the data; it does not make authentication decisions.
 
 **Returns:**
 
-The restored credential value, or
-`null`
-if available, or
-`null`
-otherwise
+The restored credential value, or `null` if available, or `null` otherwise
 
 **Example:** Restore credential and manually set status based on validation
 
@@ -1290,27 +1037,11 @@ Other operations (getUserInfo, register, refreshUserInfo) should manage their ow
 
 Behavior:
 
-- Sets
-  `status`
-  to
-  `'pending'`
-  (authentication operation started)
-- Sets
-  `loading`
-  to
-  `true`
-  (indicates authentication operation in progress)
-- Records
-  `startTime`
-  timestamp (for performance tracking)
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
-- Optionally sets
-  `credential`
-  if provided
+- Sets `status` to `'pending'` (authentication operation started)
+- Sets `loading` to `true` (indicates authentication operation in progress)
+- Records `startTime` timestamp (for performance tracking)
+- Clears `error` (sets to `null`)
+- Optionally sets `credential` if provided
 
 **Example:** Start authentication
 
@@ -1361,24 +1092,10 @@ from failure - stopping is intentional, while failure indicates an error occurre
 
 Behavior:
 
-- Sets
-  `loading`
-  to
-  `false`
-
-- Sets
-  `status`
-  to
-  `STOPPED`
-
-- Records
-  `endTime`
-  with current timestamp
-- Optionally sets
-  `error`
-  and
-  `result`
-  if provided
+- Sets `loading` to `false`
+- Sets `status` to `STOPPED`
+- Records `endTime` with current timestamp
+- Optionally sets `error` and `result` if provided
 - Automatically persists state to storage (if configured)
 
 **Example:** Stop operation
@@ -1435,31 +1152,11 @@ Other operations (getUserInfo, register, refreshUserInfo) should manage their ow
 
 Behavior:
 
-- Sets
-  `status`
-  to
-  `'success'`
-  (authentication operation succeeded)
-- Sets
-  `loading`
-  to
-  `false`
-  (operation completed)
-- Records
-  `endTime`
-  timestamp (for performance tracking and duration calculation)
-- Clears
-  `error`
-  (sets to
-  `null`
-  )
-- Updates
-  `userInfo`
-  ,
-  `result`
-  , and optionally
-  `credential`
-  if provided
+- Sets `status` to `'success'` (authentication operation succeeded)
+- Sets `loading` to `false` (operation completed)
+- Records `endTime` timestamp (for performance tracking and duration calculation)
+- Clears `error` (sets to `null`)
+- Updates `userInfo`, `result`, and optionally `credential` if provided
 
 **Example:** Mark success with user info and credential
 
@@ -1496,30 +1193,6 @@ If string is provided, it will be stored as-is (for simple token scenarios) |
 
 ---
 
-#### `update` (Method)
-
-**Type:** `(_state: UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>) => void`
-
-#### Parameters
-
-| Name     | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
-| -------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_state` | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
-
----
-
-##### `update` (CallSignature)
-
-**Type:** `void`
-
-#### Parameters
-
-| Name     | Type                                                                                    | Optional | Default | Since | Deprecated | Description |
-| -------- | --------------------------------------------------------------------------------------- | -------- | ------- | ----- | ---------- | ----------- |
-| `_state` | `UserStateInterface<User, Credential> \| Partial<UserStateInterface<User, Credential>>` | ❌       | -       | -     | -          |             |
-
----
-
 ### `UserStoreOptions` (Interface)
 
 **Type:** `interface UserStoreOptions<State, Key, Opt>`
@@ -1536,46 +1209,20 @@ Extends AsyncStoreOptions with UserStore-specific persistence configuration.
 
 Storage key for persisting credential separately from user info
 
-**Important:** In UserStore,
-`storageKey`
-(from AsyncStoreOptions) is used to store **credential**,
-not user info. This is different from AsyncStore which uses
-`storageKey`
-to store
-`result`
-(user info).
+**Important:** In UserStore, `storageKey` (from AsyncStoreOptions) is used to store **credential**,
+not user info. This is different from AsyncStore which uses `storageKey` to store `result` (user info).
 
-If provided, credential will be persisted using this key instead of the default
-`storageKey`
-.
+If provided, credential will be persisted using this key instead of the default `storageKey`.
 This allows persisting both user info (result) and credential separately.
 
-When
-`credentialStorageKey`
-is set and different from
-`storageKey`
-:
+When `credentialStorageKey` is set and different from `storageKey`:
 
-- Credential is persisted to
-  `credentialStorageKey`
+- Credential is persisted to `credentialStorageKey`
+- User info can be persisted to `storageKey` if `persistUserInfo` is `true`
 
-- User info can be persisted to
-  `storageKey`
-  if
-  `persistUserInfo`
-  is
-  `true`
+When `credentialStorageKey` is `null` or same as `storageKey`:
 
-When
-`credentialStorageKey`
-is
-`null`
-or same as
-`storageKey`
-:
-
-- `storageKey`
-  is used to store credential (default behavior)
+- `storageKey` is used to store credential (default behavior)
 - User info is NOT persisted (stored in memory only)
 
 **Example:** Persist only credential (default)
@@ -1612,22 +1259,11 @@ Whether to automatically restore state from storage during construction
 **⚠️ This is primarily a testing/internal property.**
 
 **Initialization Order Issues:**
-When
-`initRestore`
-is
-`true`
-,
-`restore()`
-is called during
-`super()`
-execution,
+When `initRestore` is `true`, `restore()` is called during `super()` execution,
 which happens BEFORE subclass field initialization. This means:
 
-- Subclass fields (e.g.,
-  `private readonly storageKey = 'my-key'`
-  ) are NOT yet initialized
-- `restore()`
-  cannot access these fields, causing runtime errors or incorrect behavior
+- Subclass fields (e.g., `private readonly storageKey = 'my-key'`) are NOT yet initialized
+- `restore()` cannot access these fields, causing runtime errors or incorrect behavior
 - This is a fundamental limitation of JavaScript/TypeScript class initialization order
 
 ---
@@ -1640,16 +1276,10 @@ which happens BEFORE subclass field initialization. This means:
 
 Whether to persist user info (result) in addition to credential
 
-- `true`
-  : Persist both user info and credential (requires separate storage keys)
-- `false`
-  : Only persist credential, not user info (default behavior)
+- `true`: Persist both user info and credential (requires separate storage keys)
+- `false`: Only persist credential, not user info (default behavior)
 
-**Note:** This option only takes effect when
-`credentialStorageKey`
-is different from
-`storageKey`
-.
+**Note:** This option only takes effect when `credentialStorageKey` is different from `storageKey`.
 If both keys are the same, only credential will be persisted regardless of this setting.
 
 **Example:** Persist both user info and credential
@@ -1672,11 +1302,7 @@ const store = new UserStore<User, Credential>({
 Storage implementation for persisting state
 
 If provided, state changes will be automatically persisted to this storage.
-If
-`null`
-or
-`undefined`
-, the store will work without persistence.
+If `null` or `undefined`, the store will work without persistence.
 
 ---
 
@@ -1687,9 +1313,7 @@ or
 Storage key for persisting state
 
 The key used to store state in the storage backend.
-Required if
-`storage`
-is provided.
+Required if `storage` is provided.
 
 ---
 
@@ -1697,26 +1321,10 @@ is provided.
 
 **Type:** `StoreInterface<State>`
 
-Composed
-StoreInterface
-for snapshots (
-`update`
-/
-`getState`
-/
-`subscribe`
-/
-`reset`
-)
+Composed <a href="../interface/StoreInterface.md#storeinterface-interface" class="tsd-kind-interface">StoreInterface</a> for snapshots (`update` / `getState` / `subscribe` / `reset`)
 
-If omitted,
-createAsyncStoreInterface
-builds a default
-SliceStoreAdapter
-.
-Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping
-`AsyncStore`
-.
+If omitted, <a href="./createAsyncState.md#createasyncstoreinterface-function" class="tsd-kind-function">createAsyncStoreInterface</a> builds a default SliceStoreAdapter.
+Pass a custom adapter (zustand, tests, etc.) to control reactivity without swapping `AsyncStore`.
 
 ---
 
@@ -1744,26 +1352,14 @@ This function is called during store initialization and when state is reset.
 
 Behavior:
 
-- If
-  `storage`
-  is provided, the function receives storage and storageKey as parameters
-- If
-  `storage`
-  is not provided, the function receives
-  `undefined`
-  for both parameters
-- If the function returns
-  `null`
-  , a new
-  `AsyncStoreState`
-  instance will be created
+- If `storage` is provided, the function receives storage and storageKey as parameters
+- If `storage` is not provided, the function receives `undefined` for both parameters
+- If the function returns `null`, a new `AsyncStoreState` instance will be created
 - If the function returns a state object, that object will be used as the initial state
 
 **Returns:**
 
-The initial state instance, or
-`null`
-to use default state
+The initial state instance, or `null` to use default state
 
 **Example:** With storage restoration
 

@@ -12,29 +12,22 @@ services for user authentication, user information management, and credential st
 
 **Services:**
 
-- `UserService`
-  : Unified service for user authentication and management
-- `GatewayService`
-  : Base service class for gateway operations
+- `UserService`: Unified service for user authentication and management
+- `GatewayService`: Base service class for gateway operations
 
 **Stores:**
 
-- `UserStore`
-  : Store for managing user authentication state (credential and user info)
+- `UserStore`: Store for managing user authentication state (credential and user info)
 
 **Interfaces:**
 
-- `GatewayServiceInterface`
-  : Base interface for gateway services
-- `UserServiceInterface`
-  : Interface for user service operations
-- `UserStoreInterface`
-  : Interface for user store operations
+- `GatewayServiceInterface`: Base interface for gateway services
+- `UserServiceInterface`: Interface for user service operations
+- `UserStoreInterface`: Interface for user store operations
 
 **Utilities:**
 
-- `createUserStore`
-  : Factory function for creating UserStore instances
+- `createUserStore`: Factory function for creating UserStore instances
 - Type guards for runtime type checking
 
 ### Basic Usage

@@ -120,9 +120,7 @@ Maximum safe number of retries to prevent excessive attempts
 
 Converts RetryOptions to p-retry Options format
 
-Note: p-retry's
-`retries`
-is the number of retries (excluding the first attempt),
+Note: p-retry's `retries` is the number of retries (excluding the first attempt),
 while RetryOptions.maxRetries is the total number of attempts (including the first).
 So we need to subtract 1 from maxRetries.
 

@@ -20,9 +20,7 @@ Core Responsibilities:
 Main Features:
 
 - Template Management: Loads template files from specified directories
-  - Supports both
-    `.hbs`
-    and non-extension template names
+  - Supports both `.hbs` and non-extension template names
   - Resolves template paths relative to root directory
   - Caches template content for efficient reuse
 

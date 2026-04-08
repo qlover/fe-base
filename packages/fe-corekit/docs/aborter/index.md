@@ -17,20 +17,13 @@ Core functionality:
 
 ### Exported Members
 
-- `Aborter`
-  : Main abort manager class handling all abort operations
-- `AborterInterface`
-  : Interface defining the abort management API
-- `AborterConfig`
-  : Configuration type for abort operations
-- `AborterId`
-  : Type alias for abort operation identifiers
-- `AbortError`
-  : Custom error class for abort operations
-- `isAbortError`
-  : Utility function to detect abort-related errors
-- `ABORT_ERROR_ID`
-  : Constant identifier for abort errors
+- `Aborter`: Main abort manager class handling all abort operations
+- `AborterInterface`: Interface defining the abort management API
+- `AborterConfig`: Configuration type for abort operations
+- `AborterId`: Type alias for abort operation identifiers
+- `AbortError`: Custom error class for abort operations
+- `isAbortError`: Utility function to detect abort-related errors
+- `ABORT_ERROR_ID`: Constant identifier for abort errors
 
 ### Basic Usage
 
@@ -107,30 +100,15 @@ const result = await aborter.autoCleanup(
 
 ### Environment Compatibility
 
-- Node.js 16+: Full support with polyfills for
-  `AbortSignal.any()`
-  and
-  `AbortSignal.timeout()`
-
-- Node.js 20+: Uses native
-  `AbortSignal.any()`
-  and
-  `AbortSignal.timeout()`
-  for better performance
+- Node.js 16+: Full support with polyfills for `AbortSignal.any()` and `AbortSignal.timeout()`
+- Node.js 20+: Uses native `AbortSignal.any()` and `AbortSignal.timeout()` for better performance
 - Modern browsers: Full native support
-- Legacy browsers: Requires
-  `any-signal`
-  polyfill (automatically included)
+- Legacy browsers: Requires `any-signal` polyfill (automatically included)
 
 **See:**
 
-- Aborter
-  for the main abort manager class
-
-- AborterInterface
-  for the interface definition
-
-- AbortError
-  for abort error handling
+- <a href="./Aborter.md#aborter-class" class="tsd-kind-class">Aborter</a> for the main abort manager class
+- <a href="./AborterInterface.md#aborterinterface-interface" class="tsd-kind-interface">AborterInterface</a> for the interface definition
+- <a href="./AbortError.md#aborterror-class" class="tsd-kind-class">AbortError</a> for abort error handling
 
 ---

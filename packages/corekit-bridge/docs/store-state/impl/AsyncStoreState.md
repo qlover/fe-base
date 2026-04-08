@@ -10,14 +10,10 @@
 
 Async store state implementation
 
-- Significance: Provides a concrete implementation of
-  `AsyncStoreStateInterface`
-  for async operations
+- Significance: Provides a concrete implementation of `AsyncStoreStateInterface` for async operations
 - Core idea: Encapsulate all state properties needed for async operation lifecycle management
 - Main function: Track loading state, results, errors, timing, and status of async operations
-- Main purpose: Serve as the default state class for
-  `AsyncStore`
-  instances
+- Main purpose: Serve as the default state class for `AsyncStore` instances
 
 Core features:
 
@@ -28,24 +24,12 @@ Core features:
 
 State properties:
 
-- `loading`
-  : Whether the async operation is currently in progress
-- `result`
-  : The result data if operation succeeded, or
-  `null`
-  otherwise
-- `error`
-  : Error information if operation failed, or
-  `null`
-  otherwise
-- `startTime`
-  : Timestamp when operation started (0 if not started)
-- `endTime`
-  : Timestamp when operation completed (0 if not completed)
-- `status`
-  : Current status of the operation (defaults to
-  `DRAFT`
-  )
+- `loading`: Whether the async operation is currently in progress
+- `result`: The result data if operation succeeded, or `null` otherwise
+- `error`: Error information if operation failed, or `null` otherwise
+- `startTime`: Timestamp when operation started (0 if not started)
+- `endTime`: Timestamp when operation completed (0 if not completed)
+- `status`: Current status of the operation (defaults to `DRAFT`)
 
 **Example:** Basic usage
 
@@ -92,12 +76,8 @@ const state = new AsyncStoreState<User>({
 
 Timestamp when the async operation completed
 
-Used with
-`startTime`
-to calculate total operation duration.
-Will be
-`0`
-if operation hasn't completed.
+Used with `startTime` to calculate total operation duration.
+Will be `0` if operation hasn't completed.
 
 ---
 
@@ -109,9 +89,7 @@ if operation hasn't completed.
 
 Error information if the async operation failed
 
-Will be
-`null`
-if:
+Will be `null` if:
 
 - Operation hasn't completed
 - Operation completed successfully
@@ -136,9 +114,7 @@ Whether the async operation is currently in progress
 
 The result of the async operation if successful
 
-Will be
-`null`
-if:
+Will be `null` if:
 
 - Operation hasn't completed
 - Operation failed
@@ -155,9 +131,7 @@ if:
 Timestamp when the async operation started
 
 Used for performance tracking and duration calculations.
-Will be
-`0`
-if operation hasn't started.
+Will be `0` if operation hasn't started.
 
 ---
 
@@ -171,15 +145,10 @@ Current status of the async operation
 
 Status values:
 
-- `DRAFT`
-  : Initial state, operation hasn't started
-- `PENDING`
-  : Operation is in progress
-- `SUCCESS`
-  : Operation completed successfully
-- `FAILED`
-  : Operation failed with an error
-- `STOPPED`
-  : Operation was manually stopped
+- `DRAFT`: Initial state, operation hasn't started
+- `PENDING`: Operation is in progress
+- `SUCCESS`: Operation completed successfully
+- `FAILED`: Operation failed with an error
+- `STOPPED`: Operation was manually stopped
 
 ---

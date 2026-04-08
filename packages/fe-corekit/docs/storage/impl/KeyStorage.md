@@ -11,33 +11,15 @@
 Storage interface bound to a single fixed key.
 
 Core concept:
-A storage abstraction that only ever reads/writes one key, exposed as
-`key`
-. Callers use
-
-`get`
-/
-`set`
-/
-`remove`
-without passing a key; useful for token storage, single preference,
+A storage abstraction that only ever reads/writes one key, exposed as `key`. Callers use
+`get`/`set`/`remove` without passing a key; useful for token storage, single preference,
 or any "one value per instance" scenario.
 
 Main features:
 
-- Fixed key:
-  `readonly key`
-  identifies the sole key this instance operates on
-- Simple API:
-  `get()`
-  /
-  `set(value)`
-  /
-  `remove()`
-  with no key argument
-- Optional parameters: generic
-  `Opt`
-  allows implementations to support expiry, scope, etc.
+- Fixed key: `readonly key` identifies the sole key this instance operates on
+- Simple API: `get()` / `set(value)` / `remove()` with no key argument
+- Optional parameters: generic `Opt` allows implementations to support expiry, scope, etc.
 
 When to use: Prefer this over a generic key-value interface when the semantic is "one
 named slot" (e.g. auth token, theme, locale) and you want to avoid key typos and keep
@@ -80,13 +62,7 @@ const token = tokenStorage.get({ scope: 'session' });
 
 The single key this storage instance is bound to.
 
-All
-`get`
-/
-`set`
-/
-`remove`
-operations act on this key. Read-only so that the binding
+All `get`/`set`/`remove` operations act on this key. Read-only so that the binding
 cannot change after creation.
 
 ---

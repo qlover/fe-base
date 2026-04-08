@@ -12,79 +12,30 @@
 
 Minimal store adapter contract (implementation-agnostic)
 
-- Significance: lets modules depend on a stable surface without importing
-  `@qlover/slice-store`
-
-- Core idea: four operations —
-  `reset`
-  ,
-  `update`
-  ,
-  `getState`
-  ,
-  `subscribe`
-
+- Significance: lets modules depend on a stable surface without importing `@qlover/slice-store`
+- Core idea: four operations — `reset`, `update`, `getState`, `subscribe`
 - Main function: act as the widest adapter type when state shape is not fixed at compile time
-- Main purpose: bridge custom stores, tests, or facades that are not
-  `SliceStore`
-  -shaped
+- Main purpose: bridge custom stores, tests, or facades that are not `SliceStore`-shaped
 
 Core features:
 
-- `reset`
-  — restore initial or maker-defined state (exact semantics are implementation-defined)
-- `update`
-  — apply a patch or replacement (
-  `State`
-  or
-  StoreUpdateValue
-  )
-- `getState`
-  — read the current typed snapshot
-- `subscribe`
-  — reactive updates
-  `(state, prevState) => void`
+- `reset` — restore initial or maker-defined state (exact semantics are implementation-defined)
+- `update` — apply a patch or replacement (`State` or <a href="#storeupdatevalue-typealias" class="tsd-kind-type-alias">StoreUpdateValue</a>)
+- `getState` — read the current typed snapshot
+- `subscribe` — reactive updates `(state, prevState) => void`
 
 Design decisions:
 
-- `StoreInterface`
-  is a **contract only** (since 3.0.0); it is not a runtime class — implement it
-  with
-  SliceStoreAdapter
-  ,
-  ZustandStoreAdapter
-  , or your own adapter.
-- Prefer narrowing at boundaries (validate then cast) instead of
-  `any`
+- `StoreInterface` is a **contract only** (since 3.0.0); it is not a runtime class — implement it
+  with SliceStoreAdapter, ZustandStoreAdapter, or your own adapter.
+- Prefer narrowing at boundaries (validate then cast) instead of `any`
 
 Relationship to higher-level stores:
 
-- Features like
-  `AsyncStore`
-  hold an internal
-  `StoreInterface<State>`
-  (often a
-  `SliceStoreAdapter`
-  )
-  and expose
-  `getStore()`
-  for
-  `subscribe`
-  /
-  `reset`
-  /
-  `update`
-  /
-  `getState`
-  .
+- Features like `AsyncStore` hold an internal `StoreInterface<State>` (often a `SliceStoreAdapter`)
+  and expose `getStore()` for `subscribe` / `reset` / `update` / `getState`.
 - Legacy “extend abstract StoreInterface + cloneState + emit” patterns should migrate to
-
-`SliceStore`
-
-- `implements StoreInterface`
-  or composition (see
-  MessagesStore
-  ).
+  `SliceStore` + `implements StoreInterface` or composition (see MessagesStore).
 
 **Example:** Default adapter (`SliceStore` under the hood)
 
@@ -285,44 +236,18 @@ class ChatStoreState implements StoreStateInterface {
 
 **Since:** `2.3.0`
 
-Patch argument for
-SliceStoreAdapter.update
+Patch argument for SliceStoreAdapter.update
 
-- Significance: keep
-  `update`
-  sound for shallow-merge semantics used by
-  `WithSliceStore`
-
-- Core idea: use
-  `Partial<T>`
-  only for ordinary objects; arrays and scalars need a full replacement value
+- Significance: keep `update` sound for shallow-merge semantics used by `WithSliceStore`
+- Core idea: use `Partial<T>` only for ordinary objects; arrays and scalars need a full replacement value
 - Main function: drive overload-friendly typings at call sites
-- Main purpose: avoid
-  `Partial`
-  on arrays (weak typings and misleading “partial array” meaning)
+- Main purpose: avoid `Partial` on arrays (weak typings and misleading “partial array” meaning)
 
 Resolution rules:
 
-- If
-  `T`
-  is a readonly tuple or array type →
-  `StoreUpdateValue<T>`
-  is
-  `T`
-  (replace whole value)
-- Else if
-  `T`
-  is an
-  `object`
-  (includes plain objects and class instances) →
-  `Partial<T>`
-
-- Else (primitives,
-  `null`
-  /
-  `undefined`
-  as non-object) →
-  `T`
+- If `T` is a readonly tuple or array type → `StoreUpdateValue<T>` is `T` (replace whole value)
+- Else if `T` is an `object` (includes plain objects and class instances) → `Partial<T>`
+- Else (primitives, `null`/`undefined` as non-object) → `T`
 
 Runtime note: implementations should shallow-clone object state before merge; they must not deep-merge
 nested objects unless explicitly documented elsewhere

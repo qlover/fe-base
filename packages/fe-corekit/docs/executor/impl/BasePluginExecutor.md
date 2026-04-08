@@ -275,9 +275,7 @@ Main features:
 
 - Plugin registration: Adds plugins to the execution pipeline
 - Type safety: Only accepts plugins of type Plugin (enforced by generic constraint)
-- Deduplication: Prevents duplicate plugins when
-  `onlyOne`
-  is true
+- Deduplication: Prevents duplicate plugins when `onlyOne` is true
 - Order preservation: Maintains plugin execution order
 - Validation: Ensures plugin is a valid object
 
@@ -391,9 +389,7 @@ Each hook can modify the input data or perform validation.
 Hook name for the main execution logic
 
 This hook contains the core business logic for task execution.
-If not specified, the default
-`'onExec'`
-hook is used.
+If not specified, the default `'onExec'` hook is used.
 
 **Example:**
 
