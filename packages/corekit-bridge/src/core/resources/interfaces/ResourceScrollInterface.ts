@@ -10,6 +10,7 @@ import type {
  * and **`refresh`** are shortcuts whose `criteria` may be **omitted** when the implementation holds the last query state
  * (e.g. a service field or store).
  *
+ * @since 3.1.0
  * @typeParam TItem - Row or option shape.
  * @typeParam Criteria - Same as {@link ResourceSearchInterface}.
  *
@@ -25,6 +26,16 @@ import type {
  * - Stateless adapters should require arguments for the three shortcuts (TypeScript cannot enforce—document or reject at runtime).
  * - Hard errors reject the `Promise`. Debounce and intersection observers stay in UI code.
  * - Optional {@link ResourceOptions} (`resourceOptions`) on each method mirrors {@link ResourceSearchInterface.search}.
+ *
+ * @example Calling the port from UI (criteria optional only when the adapter holds state)
+ * ```typescript
+ * // First load: pass full criteria.
+ * await scroll.search({ pageSize: 20, keyword: 'news' });
+ * // Infinite scroll: omit criteria so the implementation advances from the last window.
+ * await scroll.loadNext(undefined, { signal: controller.signal });
+ * // Pull-to-refresh: repeat the last stored request.
+ * await scroll.refresh();
+ * ```
  */
 export interface ResourceScrollInterface<
   TItem,

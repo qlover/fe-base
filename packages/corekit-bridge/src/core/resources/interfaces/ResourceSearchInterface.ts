@@ -146,6 +146,7 @@ export interface ResourceSearchResult<T> {
  * @typeParam TItem - Each row in {@link ResourceSearchResult.items}
  * @typeParam Criteria - Search input; must include (or be) {@link ResourceSearchParams} fields; extend with filters, keyword, cursor, etc.
  *
+ * @since 3.1.0
  * @remarks
  * **Strengths**
  * - {@link ResourceSearchParams} lives in this module; {@link ResourceSearchStore} can keep `criteria` typed with the same shape.

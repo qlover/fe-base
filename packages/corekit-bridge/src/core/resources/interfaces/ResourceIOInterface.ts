@@ -3,11 +3,15 @@ import type { ResourceSearchParams } from './ResourceSearchInterface';
 /**
  * Typical binary/multipart import source (`File` in browsers is a {@link Blob}). For structured rows, pick another
  * `TPayload` on {@link ResourceIOInterface}.
+ *
+ * @since `3.1.0`
  */
 export type ResourceImportBody = Blob | FormData | ArrayBuffer;
 
 /**
  * Normalized import response. Only `status` is required; meaning is entirely API-defined (string token or numeric code).
+ *
+ * @since `3.1.0`
  */
 export interface ResourceInResult {
   status: string | number;
@@ -24,6 +28,8 @@ export interface ResourceInResult {
 /**
  * Normalized export response. Only `status` is required; payload is either inline `body` or remote `url`, or an async
  * `id`/`url` pair—per your backend.
+ *
+ * @since `3.1.0`
  */
 export interface ResourceOutResult {
   status: string | number;
@@ -53,14 +59,38 @@ export interface ResourceOutResult {
  *   `hint` when a single string is enough.
  * - Import-only or export-only backends can still implement this interface and reject the unsupported operation, or
  *   expose a thin facade that only forwards one method.
+ *
+ * @since `3.1.0`
+ *
+ * @example CSV import and filtered export
+ * ```typescript
+ * class ProductIO implements ResourceIOInterface<FormData, ProductSearchParams> {
+ *   async importData(source: FormData) {
+ *     const res = await fetch('/api/products/import', { method: 'POST', body: source });
+ *     return (await res.json()) as ResourceInResult;
+ *   }
+ *   async exportData(scope: ProductSearchParams) {
+ *     const res = await fetch('/api/products/export?' + new URLSearchParams(String(scope)));
+ *     return { status: 'ok', body: await res.blob() };
+ *   }
+ * }
+ * ```
  */
 export interface ResourceIOInterface<
   TPayload,
   TCriteria extends ResourceSearchParams = ResourceSearchParams
 > {
-  /** Submit data to import; resolves to a {@link ResourceInResult} on success. */
+  /**
+   * Submit data to import; resolves to a {@link ResourceInResult} on success.
+   *
+   * @since `3.1.0`
+   */
   importData(source: TPayload): Promise<ResourceInResult>;
 
-  /** Request an export for the given scope; resolves to a {@link ResourceOutResult} on success. */
+  /**
+   * Request an export for the given scope; resolves to a {@link ResourceOutResult} on success.
+   *
+   * @since `3.1.0`
+   */
   exportData(scope: TCriteria): Promise<ResourceOutResult>;
 }

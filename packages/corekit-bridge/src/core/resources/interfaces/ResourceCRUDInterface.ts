@@ -1,4 +1,9 @@
-/** Scalar handle for the first overload of {@link detail}, {@link update}, and {@link remove} (extend at app level if needed). */
+/**
+ * Scalar handle for the first overload of {@link ResourceCRUDInterface.detail}, {@link ResourceCRUDInterface.update},
+ * and {@link ResourceCRUDInterface.remove} (fork the alias in app code if you need UUID objects, branded ids, etc.).
+ *
+ * @example `'user-42'` | `1001`
+ */
 export type RefType = string | number;
 
 export type ResourceGatewayOptions = {
@@ -9,6 +14,7 @@ export type ResourceGatewayOptions = {
  * Port for resource CRUD only: detail, create, update, remove. Browse/search (paged list, infinite scroll,
  * refresh flows) should live on a separate search/query interface.
  *
+ * @since 3.1.0
  * @typeParam T - Full resource shape returned by the API
  * @typeParam Snapshot - Caller-defined shape for snapshot-style overloads and for {@link create} / {@link update}
  *   bodies where it differs from {@link T} (e.g. list row, composite locator, create DTO). Defaults to {@link T}.
@@ -28,6 +34,44 @@ export type ResourceGatewayOptions = {
  * - Batch `remove` returns `Promise<void>` only: per-id failures, partial success, and empty-array behavior are implementation-defined and not modeled here.
  * - {@link RefType} is only `string | number` in this module; other scalar keys must use the {@link Snapshot} overloads or a widened alias if you fork the type.
  * - Implementations must satisfy every overload signature (often one runtime method branching on argument shape).
+ *
+ * @example Gateway class with overload declarations + one runtime implementation each
+ * ```typescript
+ * class UserCRUD implements ResourceCRUDInterface<User, UserPatch> {
+ *   async detail(ref: RefType, options?: ResourceGatewayOptions): Promise<User>;
+ *   async detail(snapshot: UserPatch, options?: ResourceGatewayOptions): Promise<User>;
+ *   async detail(refOrSnap: RefType | UserPatch, options?: ResourceGatewayOptions): Promise<User> {
+ *     const id = typeof refOrSnap === 'object' ? refOrSnap.id : refOrSnap;
+ *     return loadUser(id, options);
+ *   }
+ *
+ *   async create(payload: UserPatch | User, options?: ResourceGatewayOptions): Promise<User> {
+ *     return persistUser(payload, options);
+ *   }
+ *
+ *   async update(ref: RefType, payload: UserPatch, options?: ResourceGatewayOptions): Promise<User>;
+ *   async update(snapshot: UserPatch, options?: ResourceGatewayOptions): Promise<User>;
+ *   async update(
+ *     refOrSnap: RefType | UserPatch,
+ *     payloadOrOpts?: UserPatch | ResourceGatewayOptions,
+ *     options?: ResourceGatewayOptions
+ *   ): Promise<User> {
+ *     // Branch: (ref, payload, opts?) vs (snapshot, opts?)
+ *     return patchUser(refOrSnap, payloadOrOpts as UserPatch, options);
+ *   }
+ *
+ *   async remove(ref: RefType, options?: ResourceGatewayOptions): Promise<void>;
+ *   async remove(snapshot: UserPatch, options?: ResourceGatewayOptions): Promise<void>;
+ *   async remove(refs: readonly RefType[], options?: ResourceGatewayOptions): Promise<void>;
+ *   async remove(snapshots: readonly UserPatch[], options?: ResourceGatewayOptions): Promise<void>;
+ *   async remove(
+ *     first: RefType | UserPatch | readonly RefType[] | readonly UserPatch[],
+ *     options?: ResourceGatewayOptions
+ *   ): Promise<void> {
+ *     await deleteUsers(first, options);
+ *   }
+ * }
+ * ```
  */
 export interface ResourceCRUDInterface<T, Snapshot = T> {
   /**

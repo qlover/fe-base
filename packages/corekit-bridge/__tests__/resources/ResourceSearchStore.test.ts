@@ -4,6 +4,7 @@
  * Coverage:
  * 1. ResourceSearchStoreState – defaults and constructor options (criteria preservation)
  * 2. ResourceSearchStore      – setCriteria, patchCriteria, pagination/keyword helpers
+ * 3. Staging APIs             – stageRefs / stageItems helpers
  */
 
 import { describe, expect, it } from 'vitest';
@@ -86,6 +87,109 @@ describe('ResourceSearchStore module', () => {
           pageSize: 50,
           keyword: 'q'
         });
+      });
+    });
+
+    describe('stageRefs', () => {
+      it('should setStageRefs replace the list', () => {
+        const store = new ResourceSearchStore<{ id: number }, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({ stageRefs: ['a'] })
+          }
+        );
+        store.setStageRefs([2, 3]);
+        expect(store.getState().stageRefs).toEqual([2, 3]);
+      });
+
+      it('should addStageRef dedupe and removeStageRef drop matches', () => {
+        const store = new ResourceSearchStore<unknown, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({ stageRefs: ['x'] })
+          }
+        );
+        store.addStageRef('y');
+        store.addStageRef('y');
+        expect(store.getState().stageRefs).toEqual(['x', 'y']);
+        store.removeStageRef('x');
+        expect(store.getState().stageRefs).toEqual(['y']);
+      });
+
+      it('should clearStageRefs', () => {
+        const store = new ResourceSearchStore<unknown, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({ stageRefs: [1, 2] })
+          }
+        );
+        store.clearStageRefs();
+        expect(store.getState().stageRefs).toEqual([]);
+      });
+    });
+
+    describe('stageItems', () => {
+      it('should setStageItems, addStageItem, removeStageItemAt', () => {
+        const store = new ResourceSearchStore<{ id: number }, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({
+                stageItems: [{ id: 1 }]
+              })
+          }
+        );
+        store.addStageItem({ id: 2 });
+        expect(store.getState().stageItems).toEqual([{ id: 1 }, { id: 2 }]);
+        store.removeStageItemAt(0);
+        expect(store.getState().stageItems).toEqual([{ id: 2 }]);
+        store.setStageItems([]);
+        expect(store.getState().stageItems).toEqual([]);
+      });
+
+      it('should removeStageItem by predicate', () => {
+        const store = new ResourceSearchStore<{ id: number }, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({
+                stageItems: [{ id: 1 }, { id: 2 }]
+              })
+          }
+        );
+        store.removeStageItem((r) => r.id === 1);
+        expect(store.getState().stageItems).toEqual([{ id: 2 }]);
+      });
+
+      it('should updateStageItemAt shallow-merge', () => {
+        const store = new ResourceSearchStore<
+          { id: number; name: string },
+          ListCriteria
+        >('staging', {
+          defaultState: () =>
+            new ResourceSearchStoreState({
+              stageItems: [{ id: 1, name: 'a' }]
+            })
+        });
+        store.updateStageItemAt(0, { name: 'b' });
+        expect(store.getState().stageItems[0]).toEqual({ id: 1, name: 'b' });
+      });
+
+      it('should clearStageItems', () => {
+        const store = new ResourceSearchStore<{ id: number }, ListCriteria>(
+          'staging',
+          {
+            defaultState: () =>
+              new ResourceSearchStoreState({
+                stageItems: [{ id: 1 }]
+              })
+          }
+        );
+        store.clearStageItems();
+        expect(store.getState().stageItems).toEqual([]);
       });
     });
   });

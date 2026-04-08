@@ -2,7 +2,18 @@ import type { ResourceSearchResult } from './interfaces/ResourceSearchInterface'
 
 /**
  * Narrow `unknown` to {@link ResourceSearchResult} by requiring a non-null object with an array `items`.
- * Optional fields are not validated.
+ * Optional fields (`total`, `page`, cursors, `facets`, `meta`, …) are **not** validated.
+ *
+ * @param value - Arbitrary value (e.g. parsed JSON) from a list/search endpoint
+ * @returns `true` when `value` is a non-null object with an `items` array (may be empty)
+ *
+ * @example Accept any object with an `items` array
+ * ```typescript
+ * const body: unknown = await res.json();
+ * if (isResourceSearchResult<Row>(body)) {
+ *   console.log(body.items.length);
+ * }
+ * ```
  */
 export function isResourceSearchResult<T = unknown>(
   value: unknown,
@@ -21,9 +32,21 @@ function isOptionalStringOrNull(v: unknown): boolean {
 }
 
 /**
- * Like {@link isResourceSearchResult}, but when optional keys are present their values must match the interface
- * (`total` / `page` / `pageSize` as finite numbers when present, `nextCursor` / `prevCursor` as string or null, `hasMore` as boolean).
- * Does not inspect `facets` or `meta`.
+ * Stricter variant of {@link isResourceSearchResult}: when optional keys exist, their **types** must match
+ * {@link ResourceSearchResult} (`total` / `page` / `pageSize` as finite numbers, `nextCursor` / `prevCursor` as
+ * `string | null | undefined`, `hasMore` as `boolean` when present). Does **not** inspect `facets` or `meta`.
+ *
+ * {@link ResourceSearch} uses this guard by default before committing to the store.
+ *
+ * @param value - Arbitrary value to validate
+ * @returns `true` when the loose shape holds and present optional fields have correct types
+ *
+ * @example Default guard before trusting a gateway response
+ * ```typescript
+ * if (!isResourceSearchResultStrict<Row>(payload)) {
+ *   throw new TypeError('Invalid search result');
+ * }
+ * ```
  */
 export function isResourceSearchResultStrict<T = unknown>(
   value: unknown,

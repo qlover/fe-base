@@ -43,6 +43,18 @@ export type ResourceSearchOptions<
  * Wraps {@link ResourceSearchInterface} with async store state. {@link ResourceSearchStoreState.result} holds the last
  * {@link ResourceSearchResult} (including `items`); {@link ResourceSearchStoreState.criteria} holds query params for
  * {@link ResourceSearch.refresh} and incremental updates via {@link ResourceSearchStore.patchCriteria} on {@link ResourceSearch.getStore}.
+ *
+ * @since 3.1.0
+ * @remarks
+ * - {@link search} **replaces** stored criteria with the argument snapshot before calling the gateway.
+ * - {@link refresh} optionally **shallow-merges** a `Partial<Criteria>`; omit the argument to repeat the last snapshot.
+ *
+ * @example Table: full criteria on filter change, partial merge on page size change
+ * ```typescript
+ * const list = new ResourceSearch(gateway, { serviceName: 'orders' });
+ * await list.search({ page: 1, pageSize: 20, keyword: 'paid' });
+ * await list.refresh({ pageSize: 50 }); // keeps keyword, resets page when size changes (see implementation)
+ * ```
  */
 export class ResourceSearch<
   TItem,
@@ -59,6 +71,11 @@ export class ResourceSearch<
     value: unknown
   ) => value is ResourceSearchResult<TItem>;
 
+  /**
+   * @param resource - Bare {@link ResourceSearchInterface} implementation
+   * @param options - `serviceName`, logger, optional {@link ResourceSearchStore} / state seed, custom
+   *   {@link ResourceSearchOptions.isResourceSearchResult} guard
+   */
   constructor(
     resource: ResourceSearchInterface<TItem, Criteria>,
     options?: Partial<ResourceSearchOptions<TItem, Criteria>>

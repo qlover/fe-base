@@ -45,12 +45,21 @@ export type ResourceScrollOptions<
  * last window; {@link ResourceSearchStoreState.criteria} tracks the request used for {@link ResourceScroll.refresh},
  * {@link ResourceScroll.loadFirst}, and {@link ResourceScroll.loadNext} when arguments are omitted.
  *
+ * @since 3.1.0
  * @remarks
  * This class implements {@link ResourceScrollInterface} on the outside but **only calls**
  * {@link ResourceSearchInterface.search} on the inner `resource` (typed as {@link ResourceSearchInterface}).
  * Adapters that also implement {@link ResourceScrollInterface} are accepted; any custom `loadNext` / `loadFirst` /
  * `refresh` on the inner object is **not** invoked—scroll semantics are driven by this wrapper’s criteria
  * normalization and stored state.
+ *
+ * @example First page then infinite append
+ * ```typescript
+ * const feed = new ResourceScroll(api, { serviceName: 'feed' });
+ * await feed.loadFirst({ pageSize: 10, keyword: 'ts' });
+ * await feed.loadNext(); // uses nextCursor or page+1 from the last result
+ * await feed.refresh(); // same slice/cursor as last successful request
+ * ```
  */
 export class ResourceScroll<
   TItem,
@@ -67,6 +76,11 @@ export class ResourceScroll<
     value: unknown
   ) => value is ResourceSearchResult<TItem>;
 
+  /**
+   * @param resource - Gateway exposing at least {@link ResourceSearchInterface.search}; extra scroll methods on the
+   *   same object are **not** called by this wrapper (see class remarks).
+   * @param options - Same shape as {@link ResourceSearch} (`serviceName`, store seed, response guard, logger)
+   */
   constructor(
     resource: ResourceSearchInterface<TItem, Criteria>,
     options?: Partial<ResourceScrollOptions<TItem, Criteria>>

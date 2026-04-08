@@ -37,12 +37,26 @@ export type ResourceCRUDOptions<T, S = T> = Omit<
   GatewayServiceOptions<T, ResourceCRUDInterface<T, S>>,
   'store'
 > & {
+  /**
+   * Custom factory for per-operation stores (`create`, `detail`, `update`, `remove`). Defaults to namespaced
+   * {@link ResourceCRUDStore} instances derived from `serviceName`.
+   */
   createStoreFactory?: (name: CRUDResourceName) => ResourceCRUDStore<T>;
+
+  /**
+   * Seed each new store with async state from this factory (loading flag, `activeDetail`, etc.).
+   */
   defaultState?: () => ResourceCRUDState<T> | null;
 
   /**
    * Optional guard on successful **response bodies** for {@link ResourceCRUD.create} and {@link ResourceCRUD.detail}
    * (full resource {@link T}, not the {@link Snapshot} DTO). When set, invalid payloads reject before `store.success`.
+   *
+   * @example
+   * ```typescript
+   * isResourceResult: (v): v is User =>
+   *   typeof v === 'object' && v !== null && typeof (v as User).id === 'string';
+   * ```
    */
   isResourceResult?: (value: unknown) => value is T;
 
@@ -59,6 +73,23 @@ const defaultIdentifiers: ResourceCRUDIdentifiers = {
 
 /**
  * Wraps a {@link ResourceCRUDInterface} implementation with async store state for UI binding.
+ *
+ * Each operation (`create`, `detail`, `update`, `remove`) drives its own {@link ResourceCRUDStore}: `start` before the
+ * gateway call, `success` / `failed` after. Use {@link getStore} or {@link getStoreInterface} to subscribe from components.
+ *
+ * @since 3.1.0
+ * @typeParam T - Persisted resource shape returned by the API
+ * @typeParam Snapshot - DTO / row / locator shape for overloads (defaults to {@link T})
+ *
+ * @example Wire a gateway and read loading state from the detail store
+ * ```typescript
+ * const users = new ResourceCRUD(userGateway, {
+ *   serviceName: 'users',
+ *   isResourceResult: (v): v is User => isUserDTO(v)
+ * });
+ * const detailStore = users.getStoreInterface('detail');
+ * await users.detail('42');
+ * ```
  */
 export class ResourceCRUD<T, Snapshot = T>
   extends GatewayService<
@@ -77,6 +108,10 @@ export class ResourceCRUD<T, Snapshot = T>
     | ((value: unknown) => value is T)
     | undefined;
 
+  /**
+   * @param resource - Bare {@link ResourceCRUDInterface} implementation (HTTP, RPC, mock, …)
+   * @param options - `serviceName`, logging, custom stores, {@link ResourceCRUDOptions.isResourceResult}, etc.
+   */
   constructor(
     resource: ResourceCRUDInterface<T, Snapshot>,
     options?: Partial<ResourceCRUDOptions<T, Snapshot>>
@@ -114,13 +149,17 @@ export class ResourceCRUD<T, Snapshot = T>
 
   /**
    * @override
+   * @param name - Which operation’s store to return; defaults to `'create'`
+   * @returns The {@link ResourceCRUDStore} backing that operation
    */
   public getStore(name: CRUDResourceName = 'create'): ResourceCRUDStore<T> {
     return this.storeMap[name];
   }
 
   /**
-   * For binding CRUD async state in UI layers.
+   * Subscribe-friendly view of async state for the given operation (same underlying store as {@link getStore}).
+   *
+   * @param name - `'create' | 'detail' | 'update' | 'remove'`
    */
   public getStoreInterface(
     name: CRUDResourceName
@@ -130,6 +169,9 @@ export class ResourceCRUD<T, Snapshot = T>
 
   /**
    * @override
+   * @param payload - Create body ({@link Snapshot} DTO or full {@link T} when shapes align)
+   * @param options - Per-call gateway options (e.g. `signal` from {@link ResourceGatewayOptions})
+   * @returns Persisted resource from the gateway
    */
   public create(
     payload: T | Snapshot,
@@ -163,7 +205,11 @@ export class ResourceCRUD<T, Snapshot = T>
   }
 
   /**
+   * Fetches one resource and updates the `'detail'` async store (`start` → `success` / `failed`).
+   *
    * @override
+   * @param snapshotOrRef - Scalar id/slug or snapshot/locator per {@link ResourceCRUDInterface}
+   * @param options - Per-call gateway options (e.g. abort `signal`)
    */
   public detail(ref: RefType, options?: ResourceGatewayOptions): Promise<T>;
   /**
@@ -221,8 +267,10 @@ export class ResourceCRUD<T, Snapshot = T>
     options?: ResourceGatewayOptions
   ): Promise<T>;
   /**
+   * Forwards to the inner gateway’s overloads; updates the `'update'` store’s async state.
+
    * @override
-   */
+      */
   public update(...args: UpdateArgs<Snapshot>): Promise<T> {
     const store = this.getStore('update');
 
@@ -279,8 +327,10 @@ export class ResourceCRUD<T, Snapshot = T>
     options?: ResourceGatewayOptions
   ): Promise<void>;
   /**
+   * On success commits `null` into the `'remove'` store via `success(null)` (void operation).
+
    * @override
-   */
+      */
   public remove(...args: RemoveArgs<Snapshot>): Promise<void> {
     const store = this.getStore('remove');
 
